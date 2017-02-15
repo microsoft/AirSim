@@ -23,26 +23,29 @@ There are two ways to get AirSim working on your machine. Click on below links a
 2.  [Use the precompiled binaries](docs/use_precompiled.md)
 
 ## Linux
-The official Linux build is expected to arrive in about a couple of weeks. All our current code is cross-platform and CMake enabled so please feel free to play around on other operating systems and [report any issues](issues/). We would love to make AirSim available on other platforms as well.
+The official Linux build is expected to arrive in about a couple of weeks. All our current code is cross-platform and CMake enabled so please feel free to play around on other operating systems and [report any issues](https://github.com/Microsoft/AirSim/issues). We would love to make AirSim available on other platforms as well.
 
 # How to Use It
 
 ## Manual flights
-Follow the steps to build and set up the Unreal environment above. Plugin your Pixhawk (or compatible device) in your USB port, turn on the RC and press the Play button in Unreal. You should be able to control the drones in the simulator with the RC and fly around. Press F1 key to view several available keyboard shortcuts.
+Follow the steps above to build and set up the Unreal environment. Plugin your Pixhawk (or compatible device) in your USB port, turn on the RC and press the Play button in Unreal. You should be able to control the drones in the simulator with the RC and fly around. Press F1 key to view several available keyboard shortcuts.
 
-[More detailed instructions and troubleshooting](docs/manual_flight.md)
+[More details](docs/manual_flight.md)
 
 ## Gathering training data
-There are two ways you can generate training data from AirSim. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. If you would like more data logging capabilities and other features, [file a feature request](https://github.com/Microsoft/AirSim/issues) or contribute changes. The data logging code is pretty simple and you can modify it to your heart's desire.
+There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. 
+![record screenshot](docs/images/record_data.png)
+
+If you would like more data logging capabilities and other features, [file a feature request](https://github.com/Microsoft/AirSim/issues) or contribute changes. The data logging code is pretty simple and you can modify it to your heart's desire.
 
 A more complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when you want to log data. See the next section for more details.
 
 ## Programmatic control
-The AirSim exposes easy to use APIs in order to retrive data from the drones that includes ground truth, sensor data as well as various images. It also exposes APIs to control the drones in a platform independent way. This allows you to use your code to control different drones platforms, for example, Pixhawk or DJI Matrice, without any changes. 
+The AirSim exposes easy to use APIs in order to retrive data from the drones that includes ground truth, sensor data as well as various images. It also exposes APIs to control the drones in a platform independent way. This allows you to use your code to control different drones platforms, for example, Pixhawk or DJI Matrice, without making changes as well as without having to learn internal protocols details. 
 
 These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an offboard computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real drones. Transfer learning and related research is one of our focus areas.
 
-[More detailed instructions for using APIs](docs/apis.md)
+[More details](docs/apis.md)
 
 # Paper
 You can get additional technical details in [our paper (work in progress)](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/02/aerial-informatics-robotics-TR.pdf). Please cite this as:
