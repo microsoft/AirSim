@@ -31,7 +31,7 @@ Just plugin your PixHawk (or compatible device) in your USB port, turn on the RC
 [More detailed instructions and troubleshooting](docs/manual_flight.md)
 
 ## Gathering training data
-There are two ways you can generate training data from AirSim. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. If you would like more data logging capabilities and other features, [file the feature request](issues/) or contribute changes. The code for data logging is pretty simple to modify to your heart's desire.
+There are two ways you can generate training data from AirSim. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. If you would like more data logging capabilities and other features, [file a feature request](issues/) or contribute changes. The code for data logging is pretty simple to modify to your heart's desire.
 
 More complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when you want to log data. See next section for more details.
 
