@@ -33,13 +33,13 @@ int main()
 
 ```
 
-You can find ready to run code in HelloDrone folder in the repository.
+You can find a ready to run project in HelloDrone folder in the repository.
 
 ## How does Hello Drone work?
-Above code uses the RPC client to connect to the RPC server that is automatically started by the AirSim. The RCP server routes all the commands to a class that implements [DroneControlBase](../AirLib/include/control/DroneControlBase.hpp). In essence, DroneControlBase defines our abstract interface for getting data from the drone and sending it commands. We currently have concrete implementation for DroneControlBase for MavLink based vehicles. The implementation for DJI drone platforms, specifically Matrice, is in works.
+Hello Drone uses the RPC client to connect to the RPC server that is automatically started by the AirSim. The RPC server routes all the commands to a class that implements [DroneControlBase](../AirLib/include/control/DroneControlBase.hpp). In essence, DroneControlBase defines our abstract interface for getting data from the quadrotor and sending back commands. We currently have concrete implementation for DroneControlBase for MavLink based vehicles. The implementation for DJI drone platforms, specifically Matrice, is in works.
 
 ## How to get images from drone?
-Here's sample code. For more information, please see [DroneControlBase](../AirLib/include/control/DroneControlBase.hpp) class.
+Here's a sample code. For more information, please see [DroneControlBase](../AirLib/include/control/DroneControlBase.hpp) class.
 
 ```
 int playWithImages() 
@@ -54,8 +54,8 @@ int playWithImages()
 }
 ```
 
-## Can I run above code on real drones as well?
-Absolutely! The AirLib is self-contained library that you can put on offboard computing modules such as Gigabyte barebone Mini PC. This modules then can talk to flight controllers such as Pixhawk using exact same code and MavLink protocol (or DJI protocol). The code you write for testing in simulator remains unchanged! We will post more detailed guide on how to do this soon.
+## Can I run above code on real quadrotors as well?
+Absolutely! The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as Pixhawk using exact same code and MavLink protocol (or DJI protocol). The code you write for testing in the simulator remains unchanged! We will post more detailed guide on how to do this soon.
 
 ## What else is in works?
 We are working on enabling other RPC stack such as ZeroMQ over protobufs so we can enable more languages such as Python. We also hope to release ROS adapters for our APIs with Linux builds.
