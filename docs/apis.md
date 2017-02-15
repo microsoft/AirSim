@@ -1,5 +1,5 @@
 ## Introduction
-This project includes a self-contained cross-platform library to retrieve data from the quadrotor and send the control commands. You can use this library for a simulated drone in Unreal engine or on real quadrotors such as a MavLink based vehicle platform (and very soon DJI quadrotors such as Matrice).
+This project includes a self-contained cross-platform library to retrieve data from the quadrotor and send the control commands. You can use this library for a simulated drone in Unreal engine or on a real quadrotor such as a MavLink based vehicle platform (and very soon DJI quadrotors such as Matrice).
 
 ## Hello Drone
 Here's the taste of how you can use our APIs:
