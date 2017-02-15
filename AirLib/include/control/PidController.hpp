@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef air_ros_PidController_hpp
 #define air_ros_PidController_hpp
 

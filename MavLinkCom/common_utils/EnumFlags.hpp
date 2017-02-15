@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef CommonUtils_EnumFlags_hpp
 #define CommonUtils_EnumFlags_hpp
 

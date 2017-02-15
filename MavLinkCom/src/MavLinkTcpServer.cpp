@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #include "MavLinkTcpServer.hpp"
 #include "impl/MavLinkTcpServerImpl.hpp"
 

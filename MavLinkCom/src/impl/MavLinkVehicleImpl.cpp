@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #include "MavLinkVehicleImpl.hpp"
 #include "MavLinkConnection.hpp"
 #include "../serial_com/SerialPort.hpp"

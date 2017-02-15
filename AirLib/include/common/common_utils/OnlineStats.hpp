@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef common_utils_OnlineStats_hpp
 #define airsim_core_OnlineStats_hpp
 

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef MavLinkCom_MavLinkNode_hpp
 #define MavLinkCom_MavLinkNode_hpp
 

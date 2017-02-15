@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
 //RPC code requires C++14. If build system like Unreal doesn't support it then use compiled binaries
