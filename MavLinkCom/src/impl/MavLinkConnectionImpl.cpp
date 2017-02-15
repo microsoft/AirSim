@@ -262,6 +262,7 @@ void MavLinkConnectionImpl::readPackets()
 		int count = safePort->read(buffer, MAXBUFFER);
 		if (count <= 0) {
 			// error, so just try again...
+			mavlink_errors_++;
 			continue;
 		}
 		for (int i = 0; i < count; i++)
@@ -272,6 +273,7 @@ void MavLinkConnectionImpl::readPackets()
 				continue;
 			}
 			else if (frame_state == MAVLINK_FRAMING_BAD_CRC) {
+				mavlink_errors_++;
 				Utils::logError(Utils::stringf("MavLink message %d, seqno %x has bad CRC %x received, expecting %x!", 
 					static_cast<int>(msgBuffer.msgid), static_cast<int>(msgBuffer.seq), static_cast<int>(buffer[i]), static_cast<int>(msgBuffer.checksum)).c_str());
 			}
@@ -303,6 +305,7 @@ void MavLinkConnectionImpl::readPackets()
 				}
 			}
 			else {
+				mavlink_errors_++;
 				Utils::logError("Unknown frame_state %d", frame_state);
 			}
 		}	

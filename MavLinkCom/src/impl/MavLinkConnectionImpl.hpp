@@ -79,6 +79,7 @@ namespace mavlinkcom_impl {
 		MavLinkSemaphore msg_available_;
 		bool waiting_for_msg_ = false;
 		long max_queue_length_ = 0;
+		long mavlink_errors_ = 0;
 	};
 }
 

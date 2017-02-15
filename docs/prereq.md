@@ -2,17 +2,24 @@
 
 ## What hardware do you need?
 ### Computer
-A good decent desktop or a laptop that has a GPU with at least 4GB of RAM, 32GB of RAM on the machine and a SSD. Large environments in Unreal requires a lot more RAM and a beefy GPU card. The typical computer hardware we use for the development purposes usually have 6 to 12 cores and a graphics card such as NVidia TitanX or NVidia GTX 1080 with 32GB to 64GB RAM and dual SSDs.
+Intel Core i7 or equivalent PC with 32GB of RAM and a SSD and GPU with at least 4GB of RAM. Large environments in Unreal requires a lot of RAM and a beefy GPU card. 
+The typical computer hardware we use for development purposes usually have 6 to 12 cores and graphics card such as NVidia TitanX or NVidia GTX 1080 with 32GB to 64GB RAM
+and fast SSD.
 
 ### RC Transmitter and Receiver
 This is the remote control that you usually use for real RC vehicles such as quadrotors. Our favorite is [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) because it has built-in USB ports. 
+We have also tested a Futaba 14SG, so if you have one of those already you should be fine.
 
-[Alternative to RC](docs/sitl.md)
+You can also fly without a remote control.  See [alternative to RC](sitl.md).
 
 ### Flight controller
-Our favorite flight controller is [Pixhawk](https://store.3dr.com/products/3dr-pixhawk).  You can also use other variants such as Pixfalcon, or the new Pixhawk Mini; however, we haven't tested them yet. In theory, you should be able to use any flight controller that supports MavLink protocol.
+Our favorite flight controller is [Pixhawk](https://www.amazon.com/Hobbypower-Controller-Absorber-Quadcopter-Multicopter/dp/B01N7ADMYQ/ref=sr_1_8?ie=UTF8&qid=1487146656&sr=8-8&keywords=pixhawk)
+or the [Pixhawk Mini](https://store.3dr.com/products/3dr-pixhawk).  You can also use other variants such as Pixfalcon, or the new Pixhawk clones; however, we
+haven't tested them yet. In theory, you should be able to use any flight controller that supports MavLink protocol.  Our code is tested with the
+[PX4 firmware](https://dev.px4.io/).  We have not tested Arducopter or other mavlink implementations.  Some of the flight API's do use the
+PX4 custom modes in the MAV_CMD_DO_SET_MODE messages (like PX4_CUSTOM_MAIN_MODE_AUTO)
 
-[Why do you need flight controller and alternatives](docs/why_flightcontroller.md)
+You can also fly without flight controller hardware.  See [alternative to RC](sitl.md).
 
 ## Setup steps
 1. Make sure your RC reciever is bound with its RC transmitter. Connect the RC trasmitter to the flight controller's RC port.
@@ -21,7 +28,7 @@ Our favorite flight controller is [Pixhawk](https://store.3dr.com/products/3dr-p
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected. You might also want to use QGroundControl to calibrate your RC and set up Flight Mode switch among other things (see below) so everything is green.
 
 ## Using the Remote Control
-When using hardware-in-loop mode, you can use remote controls such as Fly Sky, Spektrum etc.
+When using hardware-in-loop mode, you can use remote controls such as Fly Sky, Spektrum, Futaba etc.
 1. Connect the receiver for your remote control to the Pixhawk board. Make sure your remote control is bound to that receiver.
 2. In QGroundControl, go to Radio tab and calibrate (make sure, remote control is on and the receiver is showing the indicator for the binding). 
 3. Go to the Flight Mode tab and chose one of the remote control switches as "Mode Channel". Then set (for example) Stabilized and Attitude flight modes for two positions of the switch.

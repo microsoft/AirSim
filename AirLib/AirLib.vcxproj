@@ -62,6 +62,7 @@
     <ClInclude Include="include\control\RpcLibServer.hpp" />
     <ClInclude Include="include\control\SafetyEval.hpp" />
     <ClInclude Include="include\control\DroneControlServer.hpp" />
+    <ClInclude Include="include\control\Settings.h" />
     <ClInclude Include="include\control\SphereGeoFence.hpp" />
     <ClInclude Include="include\control\Waiter.hpp" />
     <ClInclude Include="include\physics\Environment.hpp" />
@@ -104,6 +105,7 @@
     <ClCompile Include="src\control\RpcLibClient.cpp" />
     <ClCompile Include="src\control\RpcLibServer.cpp" />
     <ClCompile Include="src\control\SafetyEval.cpp" />
+    <ClCompile Include="src\control\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MavLinkCom\MavLinkCom.vcxproj">

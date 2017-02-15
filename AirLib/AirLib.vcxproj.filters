@@ -243,6 +243,9 @@
     <ClInclude Include="include\common\common_utils\AsyncTasker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\control\Settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\control\DroneControlBase.cpp">
@@ -264,6 +267,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\control\MavLinkHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\control\Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

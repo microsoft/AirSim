@@ -33,6 +33,7 @@ add_library(AirLib STATIC
   ${AIRSIM_ROOT}/AirLib/src/control/RpcLibClient.cpp
   ${AIRSIM_ROOT}/AirLib/src/control/RpcLibServer.cpp
   ${AIRSIM_ROOT}/AirLib/src/control/SafetyEval.cpp
+  ${AIRSIM_ROOT}/AirLib/src/control/Settings.cpp
 			)
 
 ## Add these to your app that links this library:			
