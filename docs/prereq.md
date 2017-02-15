@@ -10,7 +10,7 @@ and fast SSD.
 This is the remote control that you usually use for real RC vehicles such as quadrotors. Our favorite is [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) because it has built-in USB ports. 
 We have also tested a Futaba 14SG, so if you have one of those already you should be fine.
 
-You can also fly without a remote control.  See [alternative to RC](docs/sitl.md).
+You can also fly without a remote control.  See [alternative to RC](sitl.md).
 
 ### Flight controller
 Our favorite flight controller is [Pixhawk](https://www.amazon.com/Hobbypower-Controller-Absorber-Quadcopter-Multicopter/dp/B01N7ADMYQ/ref=sr_1_8?ie=UTF8&qid=1487146656&sr=8-8&keywords=pixhawk)
@@ -19,7 +19,7 @@ haven't tested them yet. In theory, you should be able to use any flight control
 [PX4 firmware](https://dev.px4.io/).  We have not tested Arducopter or other mavlink implementations.  Some of the flight API's do use the
 PX4 custom modes in the MAV_CMD_DO_SET_MODE messages (like PX4_CUSTOM_MAIN_MODE_AUTO)
 
-You can also fly without flight controller hardware.  See [alternative to RC](docs/sitl.md).
+You can also fly without flight controller hardware.  See [alternative to RC](sitl.md).
 
 ## Setup steps
 1. Make sure your RC reciever is bound with its RC transmitter. Connect the RC trasmitter to the flight controller's RC port.

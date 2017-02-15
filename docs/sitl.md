@@ -23,12 +23,12 @@ make posix_sitl_default
 ```
 ./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/lpe/iris
 ```
-4. Now you can run Unreal environment and connect to SITL via UDP[settings file](docs/settings.md) with IP adress 127.0.0.1 and port 14560.
+4. Now you can run Unreal environment and connect to SITL via UDP[settings file](settings.md) with IP adress 127.0.0.1 and port 14560.
 If you are running a separate Ubuntu machine find its IP address and use that in the settings.json file.
-5. You should also be able to use QGroundControl just like with actual [flight controller harware](docs/prereq.md). 
+5. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 
 Note that as we don't have physical board, RC cannot be connected directly to it. 
 So the alternatives are either use XBox 360 Controller or connect your RC using USB port if it has it 
-(for example, in case of [FrSky Taranis X9D Plus](docs/prereq.md)) or using trainer USB cable to PC. 
+(for example, in case of [FrSky Taranis X9D Plus](prereq.md)) or using trainer USB cable to PC. 
 This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use RC control as below.
 
 # Using Joystick/Gamepad (Alternative to RC)

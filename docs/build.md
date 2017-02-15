@@ -1,5 +1,5 @@
 # How To Build and Install
-**Make sure you have read the [prerequisites](docs/prereq.md).**
+**Make sure you have read the [prerequisites](prereq.md).**
 
 ## Install Unreal Engine
   1. Download the Unreal 4 engine from [unreal.com](https://www.unrealengine.com/dashboard). While the Unreal Engine is open source, cross platform and free to download, registration is still required as of this writing. You need version 4.14 or higher.
@@ -9,8 +9,8 @@
 
 ## Install Dependencies
 AirSim code has two external dependencies: Eigen library and Boost library.
-1. If you don't have already, [install Boost](docs/install_boost.md).
-2. If you don't have already, [install Eigen](docs/install_eigen.md).
+1. If you don't have already, [install Boost](install_boost.md).
+2. If you don't have already, [install Eigen](install_eigen.md).
 
 ## Get the Code and Build
   1. You need Visual Studio 2015 Update 3 (make sure to install VC++). Other versions haven't been tested.
