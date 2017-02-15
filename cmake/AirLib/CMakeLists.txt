@@ -9,8 +9,6 @@ CommonSetup()
 find_package(Eigen3 3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
-message(STATUS "TEST=${CMAKE_CURRENT_LIST_DIR}/${AIRSIM_ROOT}/AirLib/src/control/DroneControlBase.cpp")
-
 ###########
 ## Build ##
 ###########

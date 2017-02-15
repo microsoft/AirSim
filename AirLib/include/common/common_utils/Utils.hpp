@@ -4,7 +4,7 @@
 #ifndef common_utils_Utils_hpp
 #define common_utils_Utils_hpp
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 //TODO: limit scope of below statements required to suppress VC++ warnings
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable:4996)
@@ -33,7 +33,8 @@
 
 #define STRICT_MODE_ON                                            \
     _Pragma("GCC diagnostic pop")          
-#elif _MSC_VER
+#else
+#if defined(_MSC_VER)
 //'=': conversion from 'double' to 'float', possible loss of data
 #define STRICT_MODE_OFF                                           \
     __pragma(warning(push))										  \
@@ -41,7 +42,7 @@
 #define STRICT_MODE_ON                                            \
     __pragma(warning(pop))										  
 #endif
-
+#endif
 #include <chrono>
 #include <thread>
 #include <memory>
