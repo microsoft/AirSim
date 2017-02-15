@@ -14,6 +14,8 @@ void ASimModeBase::BeginPlay()
     is_recording = false;
     record_tick_count = 0;
     setupInputBindings();
+
+    UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
@@ -64,7 +66,7 @@ void ASimModeBase::startRecording()
         UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
     }
     else
-        UAirBlueprintLib::LogMessage("File cannot be opened", record_filename.c_str(), LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessage("Please make sure path c:\\temp\\airsim exists.", "(config system is under works!)", LogDebugLevel::Failure);
 }
 
 bool ASimModeBase::toggleRecording()

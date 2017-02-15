@@ -3,7 +3,7 @@ using System.IO;
 
 public class AirSim : ModuleRules
 {
-    const string readmurl = "https://github.com/microsoft";
+    const string readmurl = "https://github.com/Microsoft/AirSim/blob/master/docs/install_boost.md";
 
     private string ModulePath
     {
@@ -104,11 +104,11 @@ public class AirSim : ModuleRules
                 "See: " + readmurl);
         }
 
-        if (!System.IO.File.Exists(Path.Combine(lib, "libboost_system-vc140-mt-1_62.lib")))
-        {
-            throw new System.Exception("Not finding libboost_system-vc140-mt-1_62.lib in " + lib + ".  " + 
-                "See: " + readmurl);
-        }
+        //if (!System.IO.File.Exists(Path.Combine(lib, "libboost_system-vc140-mt-1_62.lib")))
+        //{
+        //    throw new System.Exception("Not finding libboost_system-vc140-mt-1_62.lib in " + lib + ".  " + 
+        //        "See: " + readmurl);
+        //}
 
         PublicLibraryPaths.Add(Path.Combine(lib));
     }

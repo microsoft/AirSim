@@ -18,6 +18,7 @@ public:
 
 protected:
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
+    bool checkConnection();
 
 private:
     std::shared_ptr<MavMultiRotor> fpv_vehicle_;

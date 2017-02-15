@@ -79,10 +79,23 @@ void MavMultiRotor::openConnection()
         UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 180);
     }
 
-    if (!mav_.connectToLogViewer()) {
+    try {
+        if (!mav_.connectToLogViewer()) {
+            UAirBlueprintLib::LogMessage(FString("Connection to LogViewer failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
+        }
+    }
+    catch (std::runtime_error ex) {
+
         UAirBlueprintLib::LogMessage(FString("Connection to LogViewer failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
     }
-    if (!mav_.connectToQGC()) {
+
+    try {
+        if (!mav_.connectToQGC()) {
+            UAirBlueprintLib::LogMessage(FString("Connection to QGroundControl failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
+        }
+    }
+    catch (std::runtime_error ex) {
+
         UAirBlueprintLib::LogMessage(FString("Connection to QGroundControl failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
     }
 }
