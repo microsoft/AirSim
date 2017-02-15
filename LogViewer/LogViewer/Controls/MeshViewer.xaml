@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="LogViewer.Controls.MeshViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LogViewer.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <Grid Background="Black">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Viewport3D Name="MainViewPort" ClipToBounds="True">
+            <Viewport3D.Camera>
+                <PerspectiveCamera 
+	                  FarPlaneDistance="200"
+	                  LookDirection="0,0,0"
+	                  UpDirection="0,1,0"
+	                  NearPlaneDistance="1" 
+	                  Position="20,20,20" 
+	                  FieldOfView="75" />
+            </Viewport3D.Camera>
+            <ModelVisual3D>
+                <ModelVisual3D.Content>
+                    <DirectionalLight 
+	                    Color="White" 
+	                    Direction="-2,-3,-1" />
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+            <ModelVisual3D x:Name="xAxis">
+                <ModelVisual3D.Content>
+                    <GeometryModel3D>
+                        <GeometryModel3D.Geometry>
+                            <MeshGeometry3D 
+                        Positions="-100 0 0  100 0 0  -100 1 0  100 1 0  -100 0 1  100 0 1  -100 1 1  100 1 1"
+                        TriangleIndices="2 3 1  2 1 0  7 1 3  7 5 1  6 5 7  6 4 5  6 2 0  2 0 4  2 7 3  2 6 7  0 1 5  0 5 4">
+                            </MeshGeometry3D>
+                        </GeometryModel3D.Geometry>
+                        <GeometryModel3D.Material>
+                            <DiffuseMaterial>
+                                <DiffuseMaterial.Brush>
+                                    <SolidColorBrush Color="Gray"/>
+                                </DiffuseMaterial.Brush>
+                            </DiffuseMaterial>
+                        </GeometryModel3D.Material>
+                    </GeometryModel3D>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+            <ModelVisual3D  x:Name="yAxis">
+                <ModelVisual3D.Content>
+                    <GeometryModel3D>
+                        <GeometryModel3D.Geometry>
+                            <MeshGeometry3D
+                        Positions="0 -100 0  0 100 0  1 -100 0  1 100 0  0 -100 1  0 100 1  1 -100 1  1 100 1"
+                        TriangleIndices="2 3 1  2 1 0  7 1 3  7 5 1  6 5 7  6 4 5  6 2 0  2 0 4  2 7 3  2 6 7  0 1 5  0 5 4">
+                            </MeshGeometry3D>
+                        </GeometryModel3D.Geometry>
+                        <GeometryModel3D.Material>
+                            <DiffuseMaterial>
+                                <DiffuseMaterial.Brush>
+                                    <SolidColorBrush Color="Gray"/>
+                                </DiffuseMaterial.Brush>
+                            </DiffuseMaterial>
+                        </GeometryModel3D.Material>
+                    </GeometryModel3D>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+        </Viewport3D>
+    </Grid>
+</UserControl>
