@@ -36,7 +36,7 @@ There are two ways you can generate training data from AirSim. The easiest way i
 A more complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when you want to log data. See the next section for more details.
 
 ## Programmatic control
-The AirSim exposes easy to use APIs to retrive data from the quadrotor that includes ground truth, sensor data as well as various images. It also exposes APIs to control the drone in platform independent way. This allows you to use your code to control different quadrotor platforms, for example, PixHawk or DJI Matrice, without any changes. 
+The AirSim exposes easy to use APIs in order to retrive data from the quadrotor that includes ground truth, sensor data as well as various images. It also exposes APIs to control the quadrotor in a platform independent way. This allows you to use your code to control different quadrotor platforms, for example, PixHawk or DJI Matrice, without any changes. 
 
 These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an offboard computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real quadrotor. Transfer learning and related research is one of our focus areas.
 
