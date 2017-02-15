@@ -42,6 +42,9 @@ These APIs are also available as a part of a separate independent cross-platform
 
 [More detailed instructions for using APIs](docs/apis.md)
 
+# Paper
+You can read more about our architecture and design in [our paper (work in progress)](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/02/aerial-informatics-robotics.pdf).
+
 # Contribute
 We welcome contributions to help advance research frontiers. 
 
