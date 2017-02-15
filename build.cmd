@@ -1,8 +1,8 @@
 @echo off
 
-msbuild /p:Platform=x64 /p:Configuration=Debug DroneShell.sln
+msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
 if ERRORLEVEL 1 goto :buildfailed
-msbuild /p:Platform=x64 /p:Configuration=Release DroneShell.sln 
+msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln 
 if ERRORLEVEL 1 goto :buildfailed
 
 set MAVLINK_TARGET_LIB=AirLib\deps\MavLinkCom\lib
