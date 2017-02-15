@@ -1,6 +1,6 @@
 # Welcome to AirSim
 
-AirSim is a simulator for drones (and soon other vehicles) built on Unreal Engine. Its open source, cross platform and supports hardware-in-loop with popular platforms such as PixHawk for physically and visually realistic simulations. It is developed as Unreal plugin that can simply be dropped in to any Unreal environment you want. 
+AirSim is a simulator for quadrotors (and soon other vehicles) built on Unreal Engine. Its open source, cross platform and supports hardware-in-loop with popular platforms such as PixHawk for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want. 
 
 Our goal is to develop AirSim as a platform for AI research where we can experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
@@ -31,14 +31,14 @@ Just plugin your PixHawk (or compatible device) in your USB port, turn on RC and
 [More detailed instructions and troubleshooting](docs/manual_flight.md)
 
 ## Gathering training data
-There are two ways you can generate training data from AirSim. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. If you had like more data and other features, [file the feature request](issues/) or contribute changes. The code for data logging is pretty simple to modify to your heart's desire.
+There are two ways you can generate training data from AirSim. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. If you would like more data logging capabilities and other features, [file the feature request](issues/) or contribute changes. The code for data logging is pretty simple to modify to your heart's desire.
 
 More complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when you want to log data. See next section for more details.
 
 ## Programmatic control
-The AirSim exposes easy to use APIs to retrive data from the drone that includes ground truth, sensor data as well as various images. It also exposes APIs to control the drone in platform independent way. This allows you to use your code to control different drone platforms, for example, PixHawk or DJI Matrice, without any changes. 
+The AirSim exposes easy to use APIs to retrive data from the quadrotor that includes ground truth, sensor data as well as various images. It also exposes APIs to control the drone in platform independent way. This allows you to use your code to control different quadrotor platforms, for example, PixHawk or DJI Matrice, without any changes. 
 
-These APIs are also available as separate independent cross-platform library so you can deploy them on offboard computer on your vehicle. This way you can write and test your code in simulator and later execute it on real drone. Transfer learning and related research is one of our focus areas.
+These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an offboard computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real quadrotor. Transfer learning and related research is one of our focus areas.
 
 [More detailed instructions for using APIs](docs/apis.md)
 
