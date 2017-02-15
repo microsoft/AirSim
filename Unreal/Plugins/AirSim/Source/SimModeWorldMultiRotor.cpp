@@ -4,7 +4,7 @@
 #include "control/DroneControlBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include <memory>
-#include "Settings.h"
+#include "control/Settings.h"
 #include "FlyingPawn.h"
 
 void ASimModeWorldMultiRotor::BeginPlay()

@@ -97,13 +97,19 @@ Settings& Settings::loadJSonFile(std::wstring fileName)
 	std::wstring path = getFullPath(fileName);
 	settings_.file_ = path;
 
+    settings_.load_success = false;
 	std::ifstream s(path);
 	if (!s.fail()) {
 		json doc_;
 		s >> settings_.doc_;
+        settings_.load_success = true;
 	}
 
 	return singleton();
+}
+bool Settings::isLoadSuccess()
+{
+    return load_success;
 }
 
 void Settings::createDirectory(std::wstring parentFolder, std::wstring name)
