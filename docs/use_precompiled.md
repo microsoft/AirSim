@@ -1,0 +1,2 @@
+# Coming Soon
+Unreal Environments are highly detailed and generates very large files. We are still trying to figure out the best strategy to host our big binaries. If you had like to contribute or have suggestions, [let us know](issues/). We might make binaries available through private channels as one-off item to select individuals in meanwhile. Due to licensing restrictions, we cannot make some of our environments available in source code form.
