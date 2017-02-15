@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #include "TcpServer.hpp"
 #include "TcpClientPort.hpp"
 using boost::asio::ip::tcp;

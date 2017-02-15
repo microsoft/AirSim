@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #include "MavLinkFtpClientImpl.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>

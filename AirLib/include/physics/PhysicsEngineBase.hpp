@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef airsim_core_PhysicsEngineBase_hpp
 #define airsim_core_PhysicsEngineBase_hpp
 

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef msr_air_control_VehicleCommon_hpp
 #define msr_air_control_VehicleCommon_hpp
 

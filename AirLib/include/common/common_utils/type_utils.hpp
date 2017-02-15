@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef commn_utils_type_utils_hpp
 #define commn_utils_type_utils_hpp
 

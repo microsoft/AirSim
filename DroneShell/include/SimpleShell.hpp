@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef air_SimpleShell_hpp
 #define air_SimpleShell_hpp
 
@@ -277,7 +280,7 @@ public: //default commands
 
             std::cout << name;
             std::string lowerName = boost::algorithm::to_lower_copy(name);
-		    ShellCommand& cmd = command_infos_.at(lowerName);
+            ShellCommand& cmd = command_infos_.at(lowerName);
             std::cout << std::string(longest + 3 - name.size(), ' ');
             std::cout << cmd.getHelp() << std::endl;
             for(auto alias : command_aliases_) {

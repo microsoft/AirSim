@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 // PX4.cpp : Defines the entry point for the console application.
 
 #include "Utils.hpp"

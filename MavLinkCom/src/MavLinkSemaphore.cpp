@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 // this is done this way so we can hide the boost dependency from our public SDK headers.
 #include "MavLinkSemaphore.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>

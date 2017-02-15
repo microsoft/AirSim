@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #ifndef air_SafetyEval_hpp
 #define air_SafetyEval_hpp
 

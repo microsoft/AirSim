@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
 //if using Unreal Build system then include precompiled header file first
