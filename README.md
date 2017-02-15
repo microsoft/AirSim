@@ -1,4 +1,4 @@
-# Welcome to AirSim
+# Welcome to Aerial Informatics and Robotics Simulator (AirSim)
 
 AirSim is a simulator for quadrotors (and soon other vehicles) built on Unreal Engine. Its open source, cross platform and supports hardware-in-loop with popular platforms such as PixHawk for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want. 
 
