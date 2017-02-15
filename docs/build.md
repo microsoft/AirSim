@@ -16,11 +16,11 @@ AirSim code has two external dependencies: Eigen library and Boost library.
   1. You need Visual Studio 2015 Update 3 (make sure to install VC++). Other versions haven't been tested.
   2. Start VS2015 x64 Native Tools Command Prompt. Create a folder for repo and run
   `git clone https://github.com/Microsoft/AirSim.git`
-  3. Run `build`. If everything goes fine, you should have all the binaries that you need.
+  3. Run `build`. If everything goes fine, it will copy all the binaries that you need to your ~/AirSim/Unreal/Plugins/AirSim folder.  This Plugins folder can then be simply copied to your Unreal environment.
 
 ## Create Unreal Environment Project
 To run the simulator, you need an environment and its very easy to create one! [Unreal Marketplace](https://www.unrealengine.com/marketplace) has dozens of prebuilt extra-ordinarily detailed [environments](https://www.unrealengine.com/marketplace/content-cat/assets/environments) ranging from Moon to Mars and everything in between. The one we have used for testing our code is called [Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) but you can use any environment.
-  1. Either purchase an environment from Unreal Marketplace or choose one of the free ones such as [Infinity Blade series](https://www.unrealengine.com/marketplace/infinity-blade-plain-lands). Alternatively, if you look under the Learn tab in Epic Game Launcher, you will find many free samples that you can use. One of our favorite is, of course, "A Boy and His Kite" which is a 100 square mile of highly detailed environment (caution: you will need *very* beefy specs to run it!).
+  1. Either purchase an environment from Unreal Marketplace or choose one of the free ones such as [Infinity Blade series](https://www.unrealengine.com/marketplace/infinity-blade-plain-lands). Alternatively, if you look under the Learn tab in Epic Game Launcher, you will find many free samples that you can use. One of our favorites is "A Boy and His Kite" which is a 100 square miles of highly detailed environment (caution: you will need *very* beefy PC to run it!).
   2. Once you have the environment, you can simply go to the Library tab of the Epic Game Launcher and add in to any project you like. We recommand creating a new blank C++ project with no Starter Content and add your environment in to it. Tip: if the environment comes with MatineeActor, delete it to avoid any demo sequences.
 
 ## Install the AirSim Plugin
