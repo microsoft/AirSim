@@ -5,7 +5,7 @@ AirSim is a simulator for drones (and soon other vehicles) built on Unreal Engin
 Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
 **Check out the quick 1.5 minute demo**
-[![AirSim Demo Video](docs/images/demo_video.png)](https://youtu.be/GB-sBpXvM3s)
+[![AirSim Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
 # Development Status
 
