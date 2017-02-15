@@ -7,7 +7,12 @@
  
   ![Epic launcher install](images/epic_launcher_install.png).
 
-## Get the code and build
+## Install Dependencies
+AirSim code has two external dependencies: Eigen library and Boost library.
+1. If you don't have already, [install Boost](docs/install_boost.md).
+2. If you don't have already, [install Eigen](docs/install_eigen.md).
+
+## Get the Code and Build
   1. You need Visual Studio 2015 Update 3 (make sure to install VC++). Other versions haven't been tested.
   2. Start VS2015 x64 Native Tools Command Prompt. Create a folder for repo and run
   `git clone https://github.com/Microsoft/AirSim.git`
