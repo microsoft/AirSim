@@ -21,7 +21,7 @@ There are two ways to get AirSim working on your machine. Click on below links a
 2.  [Use the precompiled binaries](docs/use_precompiled.md)
 
 ## Linux
-The official Linux build is expected to arrive in about couple of weeks. All our current code is cross-platform and CMake enabled so please feel free to play around on other operating systems and [report any issues](issues/). We had love to make AirSim available on other platforms as well.
+The official Linux build is expected to arrive in about couple of weeks. All our current code is cross-platform and CMake enabled so please feel free to play around on other operating systems and [report any issues](issues/). We would love to make AirSim available on other platforms as well.
 
 # How to Use It
 
