@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\common\Common.hpp" />
+    <ClInclude Include="include\common\CommonStructs.hpp" />
+    <ClInclude Include="include\common\common_utils\ctpl_stl.h" />
+    <ClInclude Include="include\common\common_utils\EnumFlags.hpp" />
+    <ClInclude Include="include\common\common_utils\ExceptionUtils.hpp" />
+    <ClInclude Include="include\common\common_utils\json.hpp" />
+    <ClInclude Include="include\common\common_utils\MedianFilter.hpp" />
+    <ClInclude Include="include\common\common_utils\OnlineStats.hpp" />
+    <ClInclude Include="include\common\common_utils\optional.hpp" />
+    <ClInclude Include="include\common\common_utils\prettyprint.hpp" />
+    <ClInclude Include="include\common\common_utils\ProsumerQueue.hpp" />
+    <ClInclude Include="include\common\common_utils\RandomGenerator.hpp" />
+    <ClInclude Include="include\common\common_utils\ScheduledExecutor.hpp" />
+    <ClInclude Include="include\common\common_utils\sincos.hpp" />
+    <ClInclude Include="include\common\common_utils\type_utils.hpp" />
+    <ClInclude Include="include\common\common_utils\Utils.hpp" />
+    <ClInclude Include="include\common\DelayLine.hpp" />
+    <ClInclude Include="include\common\EarthUtils.hpp" />
+    <ClInclude Include="include\common\FirstOrderFilter.hpp" />
+    <ClInclude Include="include\common\FrequencyLimiter.hpp" />
+    <ClInclude Include="include\common\GaussianMarkov.hpp" />
+    <ClInclude Include="include\common\GeodeticConverter.hpp" />
+    <ClInclude Include="include\common\LogFileWriter.hpp" />
+    <ClInclude Include="include\common\StateReporter.hpp" />
+    <ClInclude Include="include\common\StateReporterWrapper.hpp" />
+    <ClInclude Include="include\common\UpdatableContainer.hpp" />
+    <ClInclude Include="include\common\UpdatableObject.hpp" />
+    <ClInclude Include="include\common\VectorMath.hpp" />
+    <ClInclude Include="include\common\common_utils\AsyncTasker.hpp" />
+    <ClInclude Include="include\control\ControlServerBase.hpp" />
+    <ClInclude Include="include\control\CubeGeoFence.hpp" />
+    <ClInclude Include="include\control\DroneControlBase.hpp" />
+    <ClInclude Include="include\control\DroneControlCommon.hpp" />
+    <ClInclude Include="include\control\IGeoFence.hpp" />
+    <ClInclude Include="include\control\MavLinkDroneControl.hpp" />
+    <ClInclude Include="include\control\MavLinkHelper.h" />
+    <ClInclude Include="include\control\ObstacleMap.hpp" />
+    <ClInclude Include="include\control\PidController.hpp" />
+    <ClInclude Include="include\control\RpcLibAdapators.hpp" />
+    <ClInclude Include="include\control\RpcLibClient.hpp" />
+    <ClInclude Include="include\control\RpcLibServer.hpp" />
+    <ClInclude Include="include\control\SafetyEval.hpp" />
+    <ClInclude Include="include\control\DroneControlServer.hpp" />
+    <ClInclude Include="include\control\SphereGeoFence.hpp" />
+    <ClInclude Include="include\control\Waiter.hpp" />
+    <ClInclude Include="include\physics\Environment.hpp" />
+    <ClInclude Include="include\physics\FastPhysicsEngine.hpp" />
+    <ClInclude Include="include\physics\Kinematics.hpp" />
+    <ClInclude Include="include\physics\PhysicsBody.hpp" />
+    <ClInclude Include="include\physics\PhysicsBodyVertex.hpp" />
+    <ClInclude Include="include\physics\PhysicsEngineBase.hpp" />
+    <ClInclude Include="include\physics\World.hpp" />
+    <ClInclude Include="include\sensors\barometer\BarometerBase.hpp" />
+    <ClInclude Include="include\sensors\barometer\BarometerSimple.hpp" />
+    <ClInclude Include="include\sensors\barometer\BarometerSimpleParams.hpp" />
+    <ClInclude Include="include\sensors\gps\GpsBase.hpp" />
+    <ClInclude Include="include\sensors\gps\GpsSimple.hpp" />
+    <ClInclude Include="include\sensors\gps\GpsSimpleParams.hpp" />
+    <ClInclude Include="include\sensors\imu\ImuBase.hpp" />
+    <ClInclude Include="include\sensors\imu\ImuSimple.hpp" />
+    <ClInclude Include="include\sensors\imu\ImuSimpleParams.hpp" />
+    <ClInclude Include="include\sensors\magnetometer\MagnetometerBase.hpp" />
+    <ClInclude Include="include\sensors\magnetometer\MagnetometerSimple.hpp" />
+    <ClInclude Include="include\sensors\magnetometer\MagnetometerSimpleParams.hpp" />
+    <ClInclude Include="include\sensors\SensorBase.hpp" />
+    <ClInclude Include="include\vehicles\configs\Firefly.hpp" />
+    <ClInclude Include="include\vehicles\configs\Px4QuadX.hpp" />
+    <ClInclude Include="include\vehicles\controllers\ControllerBase.hpp" />
+    <ClInclude Include="include\vehicles\controllers\MotorDirectController.hpp" />
+    <ClInclude Include="include\vehicles\controllers\MotorDirectControllerParams.hpp" />
+    <ClInclude Include="include\vehicles\controllers\RpyDirectController.hpp" />
+    <ClInclude Include="include\vehicles\controllers\RpyDirectControllerParams.hpp" />
+    <ClInclude Include="include\vehicles\MultiRotor.hpp" />
+    <ClInclude Include="include\vehicles\MultiRotorParams.hpp" />
+    <ClInclude Include="include\vehicles\Rotor.hpp" />
+    <ClInclude Include="include\vehicles\RotorParams.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\control\DroneControlBase.cpp" />
+    <ClCompile Include="src\control\MavLinkDroneControl.cpp" />
+    <ClCompile Include="src\control\MavLinkHelper.cpp" />
+    <ClCompile Include="src\control\ObstacleMap.cpp" />
+    <ClCompile Include="src\control\RpcLibClient.cpp" />
+    <ClCompile Include="src\control\RpcLibServer.cpp" />
+    <ClCompile Include="src\control\SafetyEval.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MavLinkCom\MavLinkCom.vcxproj">
+      <Project>{8510c7a4-bf63-41d2-94f6-d8731d137a5a}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4BFB7231-077A-4671-BD21-D3ADE3EA36E7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>AirLib</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)lib\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)lib\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)lib\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)lib\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;$(BOOST_ROOT);deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>MavLinkCom.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>rpc.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>deps\rpclib\lib\$(Platform)\$(Configuration);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;$(BOOST_ROOT);deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4100;4505;4820;4464;4514;4710;4571;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>deps\rpclib\lib\Debug;$(BOOST_ROOT)\stage\lib;deps\MavLinkCom\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MavLinkCom.lib;Setupapi.lib;Cfgmgr32.lib;rpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>rpc.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>deps\rpclib\lib\$(Platform)\$(Configuration);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;$(BOOST_ROOT);deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MavLinkCom.lib;Setupapi.lib;Cfgmgr32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>rpc.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>deps\rpclib\lib\$(Platform)\$(Configuration);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;$(BOOST_ROOT);deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>deps\rpclib\lib\Debug;deps\MavLinkCom\lib\x64\Release;$(BOOST_ROOT)\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MavLinkCom.lib;Setupapi.lib;Cfgmgr32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>rpc.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>deps\rpclib\lib\$(Platform)\$(Configuration);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

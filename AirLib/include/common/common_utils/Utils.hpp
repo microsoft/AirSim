@@ -1,0 +1,629 @@
+#ifndef common_utils_Utils_hpp
+#define common_utils_Utils_hpp
+
+#ifdef _MSC_VER
+//TODO: limit scope of below statements required to suppress VC++ warnings
+#define _CRT_SECURE_NO_WARNINGS 1
+#pragma warning(disable:4996)
+#endif
+
+#ifdef __GNUC__
+#define STRICT_MODE_OFF                                           \
+    _Pragma("GCC diagnostic push")                                  \
+    _Pragma("GCC diagnostic ignored \"-Wreturn-type\"")             \
+    _Pragma("GCC diagnostic ignored \"-Wdelete-non-virtual-dtor\"") \
+    _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")        \
+    _Pragma("GCC diagnostic ignored \"-pedantic\"")                 \
+    _Pragma("GCC diagnostic ignored \"-Wshadow\"")                  \
+    _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")          \
+    _Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \
+    _Pragma("GCC diagnostic ignored \"-Wmissing-field-initializers\"") \
+    _Pragma("GCC diagnostic ignored \"-Wredundant-decls\"")	
+
+/* Addition options that can be enabled 
+    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
+    _Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
+    _Pragma("GCC diagnostic ignored \"-Werror\"")                   \
+    _Pragma("GCC diagnostic ignored \"-Werror=\"")                  \
+    _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
+*/
+
+#define STRICT_MODE_ON                                            \
+    _Pragma("GCC diagnostic pop")          
+#elif _MSC_VER
+//'=': conversion from 'double' to 'float', possible loss of data
+#define STRICT_MODE_OFF                                           \
+    __pragma(warning(push))										  \
+    __pragma(warning( disable : 4100 4189 4244 4245 4239 4464 4456 4505 4514 4571 4624 4626 4267 4710 4820 5027 5031))					  
+#define STRICT_MODE_ON                                            \
+    __pragma(warning(pop))										  
+#endif
+
+#include <chrono>
+#include <thread>
+#include <memory>
+#include <string>
+#include <cstdarg>
+#include <cstring>
+#include <array>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <ctime>
+#include <random>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <queue>
+#include "type_utils.hpp"
+
+#ifndef _WIN32
+#include <limits.h>
+#include <sys/param.h>
+#endif
+
+//Stubs for C++17 optional type
+#if (defined __cplusplus) && (__cplusplus >= 201700L)
+#include <optional>
+#else
+#include "optional.hpp"
+#endif
+
+#if (defined __cplusplus) && (__cplusplus >= 201700L)
+using std::optional;
+#else
+using std::experimental::optional;
+#endif
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+#ifndef M_PIf
+#define M_PIf ((float)3.1415926535897932384626433832795028841972)
+#endif
+
+#ifndef M_PI
+#define M_PI ((double)3.1415926535897932384626433832795028841972)
+#endif
+
+#ifndef M_PIl
+#define M_PIl ((long double)3.1415926535897932384626433832795028841972)
+#endif
+
+#define EARTH_RADIUS (6378137.0f)
+
+/*
+    This file is collection of routines that can be included in ANY project just
+    by dropping in common_utils.hpp. Therefore there should not be any dependency 
+    in the code below other than STL. The code should be able to compilable on
+    all major platforms.
+*/
+
+#ifndef _MSC_VER
+static int _vscprintf(const char * format, va_list pargs)
+{
+    int retval;
+    va_list argcopy;
+    va_copy(argcopy, pargs);
+    retval = vsnprintf(NULL, 0, format, argcopy);
+    va_end(argcopy);
+    return retval;
+}
+#endif
+
+namespace common_utils {
+
+class Utils {
+private:
+    typedef std::chrono::system_clock system_clock;
+    typedef std::chrono::steady_clock steady_clock;
+    typedef std::string string;
+    typedef std::stringstream stringstream;
+    //this is not required for most compilers
+    typedef unsigned int uint;
+    typedef unsigned long ulong;
+    template <typename T>
+    using time_point = std::chrono::time_point<T>;    
+
+
+public:
+    static const char kPathSeparator =
+    #ifdef _WIN32
+                                '\\';
+    #else
+                                '/';
+    #endif
+
+    static void enableImmediateConsoleFlush() {
+        //disable buffering
+        setbuf(stdout, NULL);
+    }
+
+    template<typename T>
+    static T getRandomFromGaussian(T stddev = 1, T mean = 0)
+    {
+        static std::default_random_engine random_gen;
+        static std::normal_distribution<T> gaussian_dist(0.0f, 1.0f);
+
+        return gaussian_dist(random_gen) * stddev + mean;
+    }
+    
+    static constexpr double degreesToRadians(double degrees) {
+        return static_cast<double>(M_PIl * degrees / 180.0);
+    }
+    static constexpr float degreesToRadians(float degrees) {
+        return static_cast<float>(M_PI * degrees / 180.0f);
+    }
+    static constexpr double radiansToDegrees(double radians) {
+        return static_cast<double>(radians * 180.0 / M_PIl);
+    }
+    static constexpr float radiansToDegrees(float radians) {
+        return static_cast<float>(radians * 180.0f / M_PI);
+    }
+
+    static void logMessage(const char* message, ...) {
+        va_list args;
+        va_start(args, message);
+        
+        vprintf(message, args);
+        printf("\n");
+        fflush (stdout);
+        
+        va_end(args);
+    }
+    static void logError(const char* message, ...) {
+        va_list args;
+        va_start(args, message);
+        
+        vfprintf(stderr, message, args);
+        fprintf(stderr, "\n");
+        fflush (stderr);
+        
+        va_end(args);
+    }
+
+    template <typename T>
+    static int sign(T val) {
+        return T(0) < val ? 1 : (T(0) > val ? -1 : 0);
+    }   
+
+    /// Limits absolute value whole preserving sign
+    template <typename T> 
+    static T limitAbsValue(T val, T min_value, T max_value) {
+        T val_abs = std::abs(val);
+        T val_limited = std::max(val_abs, min_value);
+        val_limited = std::min(val_limited, max_value);
+        return sign(val) * val_limited;
+    }
+    
+    /// Limits absolute value whole preserving sign
+    template <typename T> 
+    static T clip(T val, T min_value, T max_value) {
+        return std::max(min_value, std::min(val, max_value));
+    }
+
+    template<typename Range>
+    static const string printRange(Range&& range, const string& delim = ", ",
+        const string& prefix="(", const string& suffix=")")
+    {
+        return printRange(std::begin(range), std::end(range), delim, prefix, suffix);
+    }
+    template<typename Iterator>
+    static const string printRange(Iterator start, Iterator last, const string& delim = ", ",
+        const string& prefix="(", const string& suffix=")")
+    {
+        stringstream ss;
+        ss << prefix;
+
+        for (Iterator i = start; i != last; ++i)
+        {
+            if (i != start)
+                ss << delim;
+            ss << *i;
+        }
+
+        ss << suffix;
+        return ss.str();         
+    }
+
+    static string formatNumber(double number, int digits_after_decimal = -1, int digits_before_decimal = -1, bool sign_always = false)
+    {
+        std::string format_string = "%";
+        if (sign_always)
+            format_string += "+";
+        if (digits_before_decimal >= 0)
+            format_string += "0" + std::to_string(digits_before_decimal + std::max(digits_after_decimal, 0) + 1);
+        if (digits_after_decimal >= 0)
+            format_string += "." + std::to_string(digits_after_decimal);
+        format_string += "f";
+
+        return stringf(format_string.c_str(), number);
+    }
+
+    static string stringf(const char* format, ...)
+    {
+        va_list args;
+        va_start(args, format);
+
+        auto size = _vscprintf(format, args) + 1U;
+        std::unique_ptr<char[]> buf(new char[size] ); 
+
+        #ifndef _MSC_VER
+            vsnprintf(buf.get(), size, format, args);
+        #else
+            vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
+        #endif
+
+        va_end(args);            
+
+        return string(buf.get());
+    }
+
+    static string getFileExtension(const string str)
+    {
+        int len = static_cast<int>(str.size());
+        const char* ptr = str.c_str();
+        int i = 0;
+        for (i = len - 1; i >= 0; i--)
+        {
+            if (ptr[i] == '.')
+                break;
+        }
+        if (i < 0) return "";
+        auto ui = static_cast<uint>(i);
+        return str.substr(ui, len - ui);
+    }
+
+    static string getUserHomeFolder()
+    {
+        char* ptr = std::getenv("HOME");
+        return ptr ? ptr : std::getenv("USERPROFILE");  //Windows uses USERPROFILE, Linux uses HOME
+    }
+    static string getLogFileNamePath(string prefix, string suffix, string extension, bool add_timestamp)
+    {
+        string timestamp = add_timestamp ? to_string(now()) : "";
+        stringstream filename_ss;
+        filename_ss << getUserHomeFolder() << kPathSeparator << prefix << suffix << timestamp << extension;
+        return filename_ss.str();
+    }
+    static string createLogFile(string suffix, std::ofstream& flog)
+    {
+        string filepath = getLogFileNamePath("log_", suffix, ".tsv", true);
+        flog.open(filepath, std::ios::trunc);
+        if (flog.fail())
+            throw std::ios_base::failure(std::strerror(errno));
+        logMessage("log file started: %s", filepath.c_str());
+        flog.exceptions(flog.exceptions() | std::ios::failbit | std::ifstream::badbit);
+        return filepath;
+    }
+
+    static std::string getLineFromFile(std::ifstream& file)
+    {
+        std::string line;
+        try {
+            std::getline(file, line);
+        }
+        catch(...) {
+            if (!file.eof())
+                throw;
+        }
+        return line;
+    }    
+    static string trim(const string& str, char ch)
+    {
+        int len = static_cast<int>(str.size());
+        const char* ptr = str.c_str();
+        int i = 0;
+        for (i = 0; i < len; i++)
+        {
+            if (ptr[i] != ch)
+                break;
+        }
+        int j = 0;
+        for (j = len - 1; j >= i; j--)
+        {
+            if (ptr[j] != ch)
+                break;
+        }
+        if (i > j) return "";
+        return str.substr(i, j - i + 1);
+    }
+    static std::vector<std::string> split(const string& s, char* splitChars, int numSplitChars)
+    {
+        auto start = s.begin();
+        std::vector<string> result;
+        for (auto it = s.begin(); it != s.end(); it++)
+        {
+            bool split = false;
+            for (int i = 0; i < numSplitChars; i++)
+            {
+                if (*it == splitChars[i]) {
+                    split = true;
+                    break;
+                }
+            }
+            if (split)
+            {
+                if (start < it)
+                {
+                    result.push_back(string(start, it));
+                }
+                start = it;
+                start++;
+            }
+        }
+        if (start < s.end())
+        {
+            result.push_back(string(start, s.end()));
+        }
+        return result;
+    }
+    static string toLower(const string& str)
+    {
+        auto len = str.size();
+        char* buf = new char[len + 1U];
+        str.copy(buf, len, 0);
+        buf[len] = '\0';
+#ifdef _WIN32
+        _strlwr_s(buf, len + 1U);
+#else
+        char* p = buf;
+        for (int i = len; i > 0; i--)
+        {
+            *p = tolower(*p);
+            p++;
+        }
+        *p = '\0';
+#endif
+        string lower = buf;
+        delete buf;
+        return lower;
+    }
+    //http://stackoverflow.com/a/28703383/207661
+    template <typename R>
+    static constexpr R bitmask(unsigned int const onecount)
+    {
+        //  return (onecount != 0)
+        //      ? (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount))
+        //      : 0;
+        return static_cast<R>(-(onecount != 0))
+            & (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount));
+    }
+
+    static inline int floorToInt(float x)
+    {
+        return static_cast<int> (std::floor(x));
+    }
+
+    template<typename T>
+    static constexpr T nan() {
+        return std::numeric_limits<T>::quiet_NaN();
+    }
+    template<typename T>
+    static constexpr T max() {
+        return std::numeric_limits<T>::max();
+    }
+    template<typename T>
+    static constexpr T min() {
+        return std::numeric_limits<T>::min();
+    }
+
+    template<typename T>
+    static void setValue(T arr[], size_t length, const T& val)
+    {
+        std::fill(arr, arr + length, val);
+    }
+
+    template<typename T, size_t N>
+    static void setValue(T (&arr)[N], const T& val)
+    {
+        std::fill(arr, arr+N, val);
+    }
+
+    template< class T, size_t N>
+    static std::size_t length(const T(&)[N])
+    {
+        return N;
+    };
+
+    static void saveToFile(string file_name, const char* data, uint size)
+    {
+        std::ofstream file(file_name, std::ios::binary);
+        file.write(data, size);
+    }
+    template<typename Container>
+    static typename std::enable_if<type_utils::is_container<Container>::value, void>::type
+    append(Container& to, const Container& from)
+    {
+        using std::begin;
+        using std::end;
+        to.insert(end(to), begin(from), end(from));
+    }
+    template<typename Container>
+    static typename std::enable_if<type_utils::is_container<Container>::value, void>::type
+        copy(const Container& from, Container& to)
+    {
+        using std::begin;
+        using std::end;
+        std::copy(begin(from), end(from), begin(to));
+    }
+    template<typename T>
+    static void copy(const T* from, T* to, uint count)
+    {
+        std::copy(from, from + count, to);
+    }
+
+    static const char* to_string(time_point<steady_clock> t)
+    {
+        time_t tt = system_clock::to_time_t(std::chrono::time_point_cast<system_clock::duration>(system_clock::now() + (t - steady_clock::now())));
+        return ctime(&tt);
+    }
+
+    static void appendLineToFile(string filepath, string line)
+    {
+        std::ofstream file;
+        file.open(filepath, std::ios::out | std::ios::app);
+        if (file.fail())
+            throw std::ios_base::failure(std::strerror(errno));
+        file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
+        file << line << std::endl;
+    }
+    static time_point<system_clock> now()
+    {
+        return system_clock::now();
+    }
+
+    static string to_string(time_point<system_clock> time)
+    {
+        time_t tt = system_clock::to_time_t(time);
+
+        char str[1024];
+        if (std::strftime(str, sizeof(str), "%Y-%m-%d-%H-%M-%S", std::localtime(&tt)))
+            return string(str);
+        else return string();
+
+        /* GCC doesn't implement put_time yet
+        stringstream ss;
+        ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d-%H-%M-%S");
+        return ss.str();
+        */
+    }
+
+    static string to_string(time_point<system_clock> time, const char* format)
+    {
+        time_t tt = system_clock::to_time_t(time);
+        char str[1024];
+        if (std::strftime(str, sizeof(str), format, std::localtime(&tt)))
+            return string(str);
+        else return string();
+    }
+    static string getLogFileTimeStamp()
+    {
+        return to_string(now(), "%Y%m%d%H%M%S");
+    }
+    static string getEnv(const string& var)
+    {
+        char* ptr = std::getenv(var.c_str());
+        return ptr ? ptr : "";
+    }
+
+    //Unix timestamp
+    static unsigned long getTimeSinceEpochMillis(std::time_t* t = nullptr)
+    {
+        std::time_t st = std::time(t);
+        auto millies = static_cast<std::chrono::milliseconds>(st).count();
+        return static_cast<unsigned long>(millies);
+    }
+    //high precision time in seconds since epoch
+    static double getTimeSinceEpoch(std::chrono::high_resolution_clock::time_point* t = nullptr)
+    {
+        using Clock = std::chrono::high_resolution_clock;
+        return std::chrono::duration<double>((t != nullptr ? *t : Clock::now() ).time_since_epoch()).count();
+    }
+
+    template<typename T>
+    static void clear(std::queue<T> &q, size_t max_elements = SIZE_MAX)
+    {
+        while(!q.empty() && max_elements > 0) {
+            q.pop();
+            --max_elements;
+        }
+    }
+
+    template<typename T>
+    static const std::vector<T>& emptyVector()
+    {
+        static const std::vector<T> empty_vector;
+        return empty_vector;
+    }
+
+
+    static constexpr float kelvinToCelcius(float kelvin)
+    {
+        return kelvin - 273.15f;
+    }
+    static constexpr float celciusToKelvin(float celcius)
+    {
+        return celcius + 273.15f;
+    }
+
+
+    //implements relative method - do not use for comparing with zero
+    //use this most of the time, tolerance needs to be meaningful in your context
+    template<typename TReal>
+    static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
+    {
+        TReal diff = std::fabs(a - b);
+        if (diff <= tolerance)
+            return true;
+
+        if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
+            return true;
+
+        return false;
+    }
+
+    //supply tolerance that is meaningful in your context
+    //for example, default tolerance may not work if you are comparing double with float
+    template<typename TReal>
+    static bool isApproximatelyZero(TReal a, TReal tolerance = std::numeric_limits<TReal>::epsilon())
+    {
+        if (std::fabs(a) <= tolerance)
+            return true;
+        return false;
+    }
+
+
+    //use this when you want to be on safe side
+    //for example, don't start rover unless signal is above 1
+    template<typename TReal>
+    static bool isDefinitelyLessThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
+    {
+        TReal diff = a - b;
+        if (diff < tolerance)
+            return true;
+
+        if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
+            return true;
+
+        return false;
+    }
+    template<typename TReal>
+    static bool isDefinitelyGreaterThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
+    {
+        TReal diff = a - b;
+        if (diff > tolerance)
+            return true;
+
+        if (diff > std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
+            return true;
+
+        return false;
+    }
+
+    //implements ULP method
+    //use this when you are only concerned about floating point precision issue
+    //for example, if you want to see if a is 1.0 by checking if its within
+    //10 closest representable floating point numbers around 1.0.
+    template<typename TReal>
+    static bool isWithinPrecisionInterval(TReal a, TReal b, unsigned int interval_size = 1)
+    {
+        TReal min_a = a - (a - std::nextafter(a, std::numeric_limits<TReal>::lowest())) * interval_size;
+        TReal max_a = a + (std::nextafter(a, std::numeric_limits<TReal>::max()) - a) * interval_size;
+
+        return min_a <= b && max_a >= b;
+    }
+
+    static void DebugBreak()
+    {
+#ifdef _MSC_VER
+        __debugbreak();
+#else
+        //TODO: Use GCC and Clang version from https://github.com/scottt/debugbreak
+#endif
+    }
+
+};
+
+} //namespace
+#endif

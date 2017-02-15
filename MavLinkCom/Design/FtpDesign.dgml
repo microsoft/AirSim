@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph Layout="Sugiyama" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="Error" Category="Problem" Bounds="89.1793308258057,98.0339187728347,50,25.96" Label="error" UseManualLocation="True" />
+    <Node Id="FromMavlinkConnection" Category="Comment" Bounds="147.789671522711,212.443294289141,122.81,25.96" Label="mavlink connection" UseManualLocation="True" />
+    <Node Id="Get" Bounds="-374.390655517578,-130.478388585725,50,25.96" Label="get" UseManualLocation="True" />
+    <Node Id="HandleListResponse" Bounds="-447.749517008463,127.441915219148,124.093333333333,25.96" Label="handleListResponse" />
+    <Node Id="HandleReadResponse" Bounds="-293.656134440104,127.441911404451,132.653333333333,25.96" Label="handleReadResponse" />
+    <Node Id="HandleWriteResponse" Bounds="-447.749537353516,183.402017300447,135.01,25.96" Label="handleWriteResponse" />
+    <Node Id="List" Bounds="-341.649108886719,-186.438488585725,50,25.96" Label="list" UseManualLocation="True" />
+    <Node Id="NextStep" Bounds="-60.002839457194,-107.504988116455,66.0233333333333,25.96" Label="nextStep" UseManualLocation="True" />
+    <Node Id="Put" Bounds="-342.743927001953,-18.5581885857253,50,25.96" Label="put" UseManualLocation="True" />
+    <Node Id="ReadFile" Bounds="130.179397786458,-153.846428169304,61.5733333333333,25.96" Label="readFile" />
+    <Node Id="Remove" Bounds="-370.048829956055,-74.5182885857253,59.8400000000001,25.96" Label="remove" UseManualLocation="True" />
+    <Node Id="Response" Category="Async" Bounds="-64.1973366909113,248.648726827382,106.376666666667,25.96" Label="handleResponse" UseManualLocation="True" />
+    <Node Id="Response1" Bounds="-447.749575195313,239.362117300447,148.87,25.96" Label="handleRemoveResponse" />
+    <Node Id="Retry" Bounds="-18.1006054941813,7.29106094360351,50,25.96" Label="retry" UseManualLocation="True" />
+    <Node Id="SendRemoveReq" Bounds="130.179340820313,-97.8863812271653,77.79,25.96" Label="removeFile" />
+    <Node Id="Step" Bounds="130.179364522298,-41.9262812271653,83.3633333333333,25.96" Label="listDirectory" />
+    <Node Id="Stop1" Bounds="-70.0583605953883,95.3309588623047,50,25.96" Label="stop" UseManualLocation="True" />
+    <Node Id="Switch" Bounds="110.179340820313,-193.846581227165,195.620085042318,197.8804" Group="Expanded" Label="switch" UseManualLocation="True" />
+    <Node Id="Timeout" Category="Async" Bounds="-120.573938827515,-51.5448881164551,61.4733333333333,25.96" Label="timeout" UseManualLocation="True" />
+    <Node Id="Watchdog" Bounds="-237.426176045736,-107.478388585525,109.446666666667,25.96" Label="runStateMachine" UseManualLocation="True" />
+    <Node Id="WriteFile" Bounds="221.752759195964,-153.846481227165,64.0466666666666,25.96" Label="writeFile" />
+    <Node Id="c098587d-5590-4403-acb7-6f161d280419" Bounds="-467.749575195312,87.4418114044508,326.746774088542,197.880405895996" Group="Expanded" Label="switch" UseManualLocation="True" />
+  </Nodes>
+  <Links>
+    <Link Source="Error" Target="Stop1" Bounds="-11.0596592491609,108.888066336539,100.238980538223,1.70148494446875" />
+    <Link Source="FromMavlinkConnection" Target="Response" Bounds="51.0601007987131,235.519384136868,96.7295708321463,15.9040749371538" Label="async" LabelBounds="87.4219198085242,247.471777370097,29.34,15.9600000000002" />
+    <Link Source="Get" Target="Watchdog" Bounds="-324.390655517578,-114.048833780289,78.0489515017204,10.769394279815" Label="start" LabelBounds="-296.846138124545,-128.624314495464,23.5066666666667,15.96" />
+    <Link Source="List" Target="Watchdog" Bounds="-294.630207174455,-160.47854038134,82.1552112314185,48.4297429396565" Label="start" LabelBounds="-252.536954656829,-153.946591245985,23.5066666666668,15.96" />
+    <Link Source="NextStep" Target="ReadFile" Bounds="6.02049387613931,-129.847457089418,115.429824370904,28.9810142826329" />
+    <Link Source="NextStep" Target="SendRemoveReq" Bounds="6.02049387613931,-91.1016561095009,115.16783598462,5.15118480238372" />
+    <Link Source="NextStep" Target="Step" Bounds="6.02049387613931,-83.0555689734511,137.739225538264,39.7325720586716" />
+    <Link Source="NextStep" Target="WriteFile" Bounds="6.02049387613931,-132.894566242455,206.856758279408,34.7678729621081" />
+    <Link Source="Put" Target="Watchdog" Bounds="-298.031496449386,-76.5688321138659,88.0994477762814,58.0106460787096" Label="start" LabelBounds="-278.588340176621,-65.1939036096521,23.5066666666667,15.96" />
+    <Link Source="ReadFile" Target="FromMavlinkConnection" Bounds="162.675114154413,-127.886409301758,43.6356367085208,331.406725064624" />
+    <Link Source="Remove" Target="Watchdog" Bounds="-310.208829956055,-81.2697589815604,64.322628028088,13.4671548052009" Label="start" LabelBounds="-292.204391023626,-94.4971018936391,23.5066666666667,15.96" />
+    <Link Source="Response" Target="Error" Bounds="-0.220252246872432,130.915227558768,97.8579727445198,117.733503215158" Label="nack" LabelBounds="22.7673321729579,172.543564162152,24.4033333333333,15.96" />
+    <Link Source="Response" Target="HandleListResponse" Bounds="-337.013882975676,156.171933992927,285.879039473899,92.4767967809985" />
+    <Link Source="Response" Target="HandleReadResponse" Bounds="-196.312260996709,157.801189635301,162.137578247952,90.8475411386244" />
+    <Link Source="Response" Target="HandleWriteResponse" Bounds="-304.505479259843,209.765683192592,240.308150870357,42.4642669795049" />
+    <Link Source="Response" Target="Response1" Bounds="-289.882530224985,254.480658502215,225.685201835499,5.78475161653165" />
+    <Link Source="Response" Target="Stop1" Bounds="-40.2245035033399,130.076903982857,26.332862809383,118.571826791069" Label="eof" LabelBounds="-48.1225643826012,181.816420449429,17.0633333333333,15.96" />
+    <Link Source="Retry" Target="Error" Bounds="22.2448848278139,33.2510609436035,69.7174444668705,58.9705795439587" Label="too many retries" LabelBounds="58.3952221498422,45.2493502365655,86.7066666666667,15.96" />
+    <Link Source="Retry" Target="NextStep" Bounds="-20.6108769355159,-72.9132905288768,23.6782623227259,80.2043514724803" Label="retry" LabelBounds="-37.2719046131187,-39.3083996141013,24.4966666666667,15.96" />
+    <Link Source="SendRemoveReq" Target="FromMavlinkConnection" Bounds="170.752433286295,-71.9263758850098,35.6102030664652,275.443961028682" />
+    <Link Source="Step" Target="FromMavlinkConnection" Bounds="173.766095857628,-15.9662814331055,32.2165883078901,219.50498014048" />
+    <Link Source="Stop1" Target="Watchdog" Bounds="-168.840955940911,-74.0978050709665,114.97436475336,169.428767747968" Label="terminate" LabelBounds="-164.008703129895,11.7396140351858,51,15.96" />
+    <Link Source="Switch" Target="ReadFile" Category="Contains" />
+    <Link Source="Switch" Target="SendRemoveReq" Category="Contains" />
+    <Link Source="Switch" Target="Step" Category="Contains" />
+    <Link Source="Switch" Target="WriteFile" Category="Contains" />
+    <Link Source="Timeout" Target="Retry" Bounds="-68.495860963227,-25.5848918151855,46.3643974577155,28.1991699117408" />
+    <Link Source="Watchdog" Target="NextStep" Bounds="-127.979509379069,-94.5249881164551,58.9766699218749,0" />
+    <Link Source="Watchdog" Target="Timeout" Bounds="-161.162582674283,-81.5449881164551,42.0764449862389,25.3549518415683" />
+    <Link Source="WriteFile" Target="FromMavlinkConnection" Bounds="211.861850475195,-127.886500854492,40.3344360119155,331.395731788781" />
+    <Link Source="c098587d-5590-4403-acb7-6f161d280419" Target="HandleListResponse" Category="Contains" />
+    <Link Source="c098587d-5590-4403-acb7-6f161d280419" Target="HandleReadResponse" Category="Contains" />
+    <Link Source="c098587d-5590-4403-acb7-6f161d280419" Target="HandleWriteResponse" Category="Contains" />
+    <Link Source="c098587d-5590-4403-acb7-6f161d280419" Target="Response1" Category="Contains" />
+    <Link Source="c098587d-5590-4403-acb7-6f161d280419" Target="Retry" Bounds="-141.002801106771,37.0667913573691,116.428649386986,62.1316769812177" Label="out of sequence" LabelBounds="-169.090082303451,50.4081530565206,85.36,15.96" />
+    <Link Source="c098587d-5590-4403-acb7-6f161d280419" Target="Stop1" Bounds="-141.002801106771,118.432074688215,62.326529853758,18.764224645051" />
+  </Links>
+  <Categories>
+    <Category Id="Async" Label="Async" IsTag="True" />
+    <Category Id="Comment" Label="Comment" Description="Represents a user defined comment on the diagram" CanBeDataDriven="True" IsProviderRoot="False" NavigationActionLabel="Comments" />
+    <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+    <Category Id="Problem" Label="Problem" IsTag="True" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="Group" Label="Group" Description="Display the node as a group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="IsProviderRoot" Label="IsProviderRoot" Description="IsProviderRoot" DataType="System.Boolean" />
+    <Property Id="IsTag" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="LabelBounds" DataType="System.Windows.Rect" />
+    <Property Id="Layout" DataType="System.String" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+  </Properties>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Async" ValueLabel="True">
+      <Condition Expression="HasCategory('Async')" />
+      <Setter Property="Background" Value="#FF7D7FCC" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Comment" ValueLabel="Has comment">
+      <Condition Expression="HasCategory('Comment')" />
+      <Setter Property="Background" Value="#FFF7E88B" />
+      <Setter Property="Stroke" Value="#FFE5C365" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="NodeRadius" Value="2" />
+      <Setter Property="MaxWidth" Value="250" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Start" ValueLabel="True">
+      <Condition Expression="HasCategory('Start')" />
+      <Setter Property="Background" Value="#FF48A646" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Problem" ValueLabel="True">
+      <Condition Expression="HasCategory('Problem')" />
+      <Setter Property="Background" Value="#FFA40A0A" />
+    </Style>
+  </Styles>
+</DirectedGraph>

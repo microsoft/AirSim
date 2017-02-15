@@ -1,0 +1,25 @@
+{
+    "FileVersion" : 3,
+    "Version" : "0.7.10",
+    "VersionName": "0.7.10",
+    "FriendlyName": "AIR Simulator",
+    "Description": "Aerial Informatics and Robotics Simulator for Unreal Engine",
+    "Category" : "Science",
+    "CreatedBy": "Shital Shah",
+    "CreatedByURL": "http://github.com/microsoft/air",
+    "DocsURL" : "",
+    "MarketplaceURL" : "",
+    "SupportURL" : "",
+    "EnabledByDefault" : true,
+    "CanContainContent": true,
+    "IsBetaVersion" : true,
+    "Installed" : true,
+    "Modules" :
+    [
+        {
+            "Name": "AirSim",
+            "Type" : "Runtime",
+            "LoadingPhase" : "PreDefault"
+        }
+    ]
+}
