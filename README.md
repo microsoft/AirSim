@@ -1,9 +1,10 @@
 # Welcome to Aerial Informatics and Robotics Simulator (AirSim)
 
-AirSim is a simulator for quadrotors (and soon other vehicles) built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular platforms such as PixHawk for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want. 
+AirSim is a simulator for drones (and soon other vehicles) built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as Pixhawk for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want. 
 
-Our goal is to develop AirSim as a platform for AI research where we can experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
+Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
+**Check out the quick 1.5 minute demo**
 [![AirSim Demo Video](docs/images/demo_video.png)](https://youtu.be/GB-sBpXvM3s)
 
 # Development Status
@@ -12,7 +13,7 @@ This project is under heavy development. While we are working through our backlo
 
 # How to Get It
 ## Prerequisites
-To get the best experience you will need PixHawk or compatible device and a RC controller. These enables the "hardware-in-loop simulation" that provides more realistic experience. [Follow these instructions](docs/prereq.md) on how to get it, set it up and other alternatives.
+To get the best experience you will need Pixhawk or compatible device and a RC controller. This enables the "hardware-in-loop simulation" for more realistic experience. [Follow these instructions](docs/prereq.md) on how to get it, set it up and other alternatives.
 
 ## Windows
 There are two ways to get AirSim working on your machine. Click on below links and follow the instructions.
@@ -26,7 +27,7 @@ The official Linux build is expected to arrive in about a couple of weeks. All o
 # How to Use It
 
 ## Manual flights
-Just plugin your PixHawk (or compatible device) in your USB port, turn on the RC and press the Play button in Unreal. You should be able to control the quadrotor in the simulator with the RC and fly around. Press F1 key to view several available keyboard shortcuts.
+Follow the steps to build and set up the Unreal environment above. Plugin your Pixhawk (or compatible device) in your USB port, turn on the RC and press the Play button in Unreal. You should be able to control the drones in the simulator with the RC and fly around. Press F1 key to view several available keyboard shortcuts.
 
 [More detailed instructions and troubleshooting](docs/manual_flight.md)
 
@@ -36,9 +37,9 @@ There are two ways you can generate training data from AirSim. The easiest way i
 A more complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when you want to log data. See the next section for more details.
 
 ## Programmatic control
-The AirSim exposes easy to use APIs in order to retrive data from the quadrotor that includes ground truth, sensor data as well as various images. It also exposes APIs to control the quadrotor in a platform independent way. This allows you to use your code to control different quadrotor platforms, for example, PixHawk or DJI Matrice, without any changes. 
+The AirSim exposes easy to use APIs in order to retrive data from the drones that includes ground truth, sensor data as well as various images. It also exposes APIs to control the drones in a platform independent way. This allows you to use your code to control different drones platforms, for example, Pixhawk or DJI Matrice, without any changes. 
 
-These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an offboard computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real quadrotor. Transfer learning and related research is one of our focus areas.
+These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an offboard computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real drones. Transfer learning and related research is one of our focus areas.
 
 [More detailed instructions for using APIs](docs/apis.md)
 

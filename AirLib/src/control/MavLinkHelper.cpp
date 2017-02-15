@@ -131,6 +131,12 @@ struct MavLinkHelper::impl {
                 rotor_controls_[i] = (rotor_controls_[i] + 1.0f) / 2.0f;
             }
         }
+        else { // we have 0 to 1
+            //TODO: make normalization vehicle independent?
+            for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
+                rotor_controls_[i] = Utils::clip(0.83f * rotor_controls_[i] + 0.17f, 0.0f, 1.0f);
+            }
+        }
     }
 
     void initializeHILSubscrptions()
