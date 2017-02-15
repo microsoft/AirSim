@@ -11,7 +11,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
-
+#include "Settings.h"
 
 namespace msr { namespace airlib {
 
@@ -31,6 +31,9 @@ public:
     MavLinkHelper();
     ~MavLinkHelper();
 
+	// Load mavlink specific settings from the given Settings file and update the
+	// Settings with any new settings that the settings file doesn't know about yet.
+	void loadSettings(Settings& settings);
 
     struct HILConnectionInfo {
 

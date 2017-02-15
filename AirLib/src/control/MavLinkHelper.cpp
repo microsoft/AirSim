@@ -86,6 +86,39 @@ struct MavLinkHelper::impl {
     long last_gps_time = 0;
     bool was_reseted = false;
 
+	void loadSettings(Settings& settings)
+	{
+		this->SimSysID = static_cast<uint8_t>(settings.getInt("SimSysID", this->SimSysID));
+		settings.setInt("SimSysID", this->SimSysID);
+		this->SimCompID = settings.getInt("SimCompID", this->SimCompID);
+		settings.setInt("SimCompID", this->SimCompID);
+
+		this->ExtRendererSysID = static_cast<uint8_t>(settings.getInt("ExtRendererSysID", this->ExtRendererSysID));
+		settings.setInt("ExtRendererSysID", this->ExtRendererSysID);
+		this->ExtRendererCompID = settings.getInt("ExtRendererCompID", this->ExtRendererCompID);
+		settings.setInt("ExtRendererCompID", this->ExtRendererCompID);
+
+		this->AirControlSysID = static_cast<uint8_t>(settings.getInt("AirControlSysID", this->AirControlSysID));
+		settings.setInt("AirControlSysID", this->AirControlSysID);
+		this->AirControlCompID = settings.getInt("AirControlCompID", this->AirControlCompID);
+		settings.setInt("AirControlCompID", this->AirControlCompID);
+
+		this->LocalHostIp = settings.getString("LocalHostIp", this->LocalHostIp);
+		settings.setString("LocalHostIp", this->LocalHostIp);
+		this->ExternalSimPort = settings.getInt("ExternalSimPort", this->ExternalSimPort);
+		settings.setInt("ExternalSimPort", this->ExternalSimPort);
+
+		this->LogViewerPort = settings.getInt("LogViewerPort", this->LogViewerPort);
+		settings.setInt("LogViewerPort", this->LogViewerPort);
+		this->LogViewerHostIp = settings.getString("LogViewerHostIp", this->LogViewerHostIp);
+		settings.setString("LogViewerHostIp", this->LogViewerHostIp);
+
+		this->QgcPort = settings.getInt("QgcPort", this->QgcPort);
+		settings.setInt("QgcPort", this->QgcPort);
+		this->QgcHostIp = settings.getString("QgcHostIp", this->QgcHostIp);
+		settings.setString("QgcHostIp", this->QgcHostIp);
+	}
+
 
     void normalizeRotorControls()
     {
@@ -599,6 +632,11 @@ MavLinkHelper::MavLinkHelper()
 MavLinkHelper::~MavLinkHelper()
 {
     pimpl_->close();
+}
+
+void MavLinkHelper::loadSettings(Settings& settings)
+{
+	pimpl_->loadSettings(settings);
 }
 
 int MavLinkHelper::getRotorControlsCount()
