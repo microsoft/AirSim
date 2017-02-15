@@ -26,7 +26,7 @@ The official Linux build is expected to arrive in about a couple of weeks. All o
 # How to Use It
 
 ## Manual flights
-Just plugin your PixHawk (or compatible device) in your USB port, turn on RC and press Play button in Unreal. You should be able to control drone in the simulator with RC and fly around. Press F1 key to view several available keyboard shortcuts.
+Just plugin your PixHawk (or compatible device) in your USB port, turn on the RC and press the Play button in Unreal. You should be able to control the quadrotor in the simulator with the RC and fly around. Press F1 key to view several available keyboard shortcuts.
 
 [More detailed instructions and troubleshooting](docs/manual_flight.md)
 
