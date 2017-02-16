@@ -37,6 +37,8 @@ There are two ways you can generate training data from AirSim for deep learning.
 
 ![record screenshot](docs/images/record_data3.png)
 
+There is a [Log Viewer](docs/log_viewer.md) provided that can visualize the streams of data that are published by the simulator (and your drone).
+
 If you would like more data logging capabilities and other features, [file a feature request](https://github.com/Microsoft/AirSim/issues) or contribute changes. The data logging code is pretty simple and you can modify it to your heart's desire.
 
 A more complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when you want to log data. See the next section for more details.

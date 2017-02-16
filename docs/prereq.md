@@ -4,7 +4,7 @@
 ### Computer
 Intel Core i7 or equivalent PC with 32GB of RAM and a SSD and GPU with at least 4GB of RAM. Large environments in Unreal requires a lot of RAM and a beefy GPU card. 
 The typical computer hardware we use for development purposes usually have 6 to 12 cores and graphics card such as NVidia TitanX or NVidia GTX 1080 with 32GB to 64GB RAM
-and fast SSD.
+and fast SSD.  See [why fast SSD](hard_drive.md).
 
 ### RC Transmitter and Receiver
 This is the remote control that you usually use for real RC vehicles such as quadrotors. Our favorite is [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) because it has built-in USB ports. 
