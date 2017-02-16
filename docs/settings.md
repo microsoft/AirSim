@@ -32,7 +32,7 @@ These settings define the Mavlink SystemId and ComponentId for the Simulator (Si
 and the node that allows remote control of the drone from another app this is called the Air Control node (AirControlSysID, AirControlCompID).
 
 If you want the simulator to also talk to your ground control app (like QGroundControl) you can also set the UDP address for that in case you want to run
-that on a differenct machine (QgcHostIp,QgcPort).
+that on a different machine (QgcHostIp,QgcPort).
 
 You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP address for that (LogViewerHostIp,LogViewerPort).
 
