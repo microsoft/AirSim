@@ -2,7 +2,7 @@
 
 MavLinkCom is a cross-platform C++ library that helps connect to and communicate with [MavLink](https://github.com/mavlink/mavlink) based vehicles.
 Specifically this library is designed to work well with [PX4](https://github.com/PX4/Firmware) based drones.
-To build the library you need Boost.  See [Installing Boost](README.md) below details on installing Boost.
+To build the library you need Boost.  See [Installing Boost](README.md#installing-boost) below details on installing Boost.
 
 ## Design
 

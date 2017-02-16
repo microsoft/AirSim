@@ -68,3 +68,5 @@ You are all ready to go now!
 6. Hit Play button.
 
 Congratulations! You are now running AirSim in your own Unreal environment.
+
+Note: if you have any trouble getting drone to fly, check your [hard drive performance](hard_drive.md).
