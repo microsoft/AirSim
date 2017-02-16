@@ -5,7 +5,7 @@ new flight algorithms in the simulator because they have a better chance of work
 If you do not want to spend money on this extra hardware then you can probably get away with "software-in-loop" simulation (SITL). 
 In this case, the firware runs in your computer as opposed to flight controller. One downside to SITL mode is that your PC usually has more power than 
 the tiny flight controller on your drone, so you may not get the same flying performance when trying the same thing on a real drone.
-But its still useful when you don't have a flight contoller handy.  it is just a few more steps to set up as shown below.
+But it's still useful when you don't have a flight contoller handy. It is just a few more steps to set up as shown below.
 
 # Software-In-Loop Simulation (SITL)
 1. Install [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).  You can also do this on an Ubuntu machine, but in that case
