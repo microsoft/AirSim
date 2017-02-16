@@ -7,7 +7,7 @@ To build the library you need Boost.  See [Installing Boost](README.md) below de
 ## Design
 
 You can view and edit the [Design.dgml](Design/Design.dgml) diagram in Visual Studio.  
-![Overview](design/images/overview.png)
+![Overview](Design/images/overview.png)
 
 The following are the most important classes in this library.
 
@@ -205,20 +205,20 @@ You can wire up different configurations of mavlink pipelines using the MavLinkC
 
 Example 1, we connect to PX4 over serial, and proxy those messages through to QGroundControl and the LogViewer who are listening on remote ports.  
 
-![Serial to QGC](design/images/example1.png)
+![Serial to QGC](Design/images/example1.png)
 
 Example 2: simulation can talk to jMavSim and jMavSim connects to PX4.  jMavSim can also manage multiple connections, so it can talk to unreal simulator. 
 Another MavLinkConnection can be joined to proxy connections that jMavSim doesn't support, like the LogViewer or a remote camera node.
 
-![Serial to QGC](design/images/example2.png)
+![Serial to QGC](Design/images/example2.png)
 
 Example 3: we use MavLinkConnection to connect to PX4 over serial, then join additional connections for all our remote nodes including jMavSim.
 
-![Serial to QGC](design/images/example3.png)
+![Serial to QGC](Design/images/example3.png)
 
 Example 4: We can also do distributed systems to control the drone remotely:
 
-![Serial to QGC](design/images/example4.png)
+![Serial to QGC](Design/images/example4.png)
 
 ### Installing Boost
 

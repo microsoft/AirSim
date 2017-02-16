@@ -1,6 +1,6 @@
 # CMAKE
 
-You need at least cmake version  3.4. 
+First you need at least [cmake version  3.4](https://cmake.org/install/).
 
 ## Windows
 
@@ -16,7 +16,7 @@ To build release bits delete CMakeCache.txt and run this:
 
 ## Linux    
 
-If you don't cmake version 3.*  you can run the following:
+If you don't have cmake version 3.* (for example, that is not the default on Ubuntu 14) you can run the following:
 ````
 sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
 sudo apt-get update
@@ -37,7 +37,7 @@ cmake -D CMAKE_BUILD_TYPE=Debug CMakeLists.txt
 make
 ````
 
-Now if gcc version 4.9 is not your default version of gcc, you can tell cmake to switch to that version by
+Now if gcc version 4.9 is not your default version of gcc, you will need to tell cmake to switch to that version by
 adding the following additional cmake command line arguments:
 
 ````
