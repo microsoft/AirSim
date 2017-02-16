@@ -5,7 +5,7 @@
 
 
 UENUM(BlueprintType, meta=(Bitflags))
-enum class EPIPCameraType
+enum class EPIPCameraType : uint8
 {
     PIP_CAMERA_TYPE_NONE = 0	UMETA(DisplayName="None"),
     PIP_CAMERA_TYPE_SCENE = 1	UMETA(DisplayName="Scene"),
