@@ -2,11 +2,14 @@
 
 MavLinkCom is a cross-platform C++ library that helps connect to and communicate with [MavLink](https://github.com/mavlink/mavlink) based vehicles.
 Specifically this library is designed to work well with [PX4](https://github.com/PX4/Firmware) based drones.
-To build the library you need Boost.  See [Installing Boost](Readme.md) below details on installing Boost.
+To build the library you need Boost.  See [Installing Boost](README.md) below details on installing Boost.
 
 ## Design
 
-You can view the [Design.dgml](Design.dgml) diagram in Visual Studio.  The following are the most important classes in this library.
+You can view and edit the [Design.dgml](Design/Design.dgml) diagram in Visual Studio.  
+![Overview](design/images/overview.png)
+
+The following are the most important classes in this library.
 
 ### MavLinkNode
 
@@ -47,7 +50,7 @@ same connection.  MavLinkVehicle uses this to track various messages that define
 
 MavLinkVehicle is a MavLinkNode that tracks various messages that define the overall vehicle state and provides a VehicleState struct
 containing a snapshot of that state, including home position, current orientation, local position, global position, and so on.
-This class also provides a bunch of helper methods that wrap commonly used commands providing simle method calls to do things like
+This class also provides a bunch of helper methods that wrap commonly used commands providing simple method calls to do things like
 arm, disarm, takeoff, land, go to a local coordinate, and fly under offbaord control either by position or velocity control.
 
 ### MavLinkTcpServer
@@ -196,7 +199,26 @@ are connecting your PC or laptop to the drone over USB.
 
 MavLinkVehicle actually has a helper method for this called allowFlightControlOverUsb, so now you know how it is implemented :-) 
 
+## Advanced Connections
 
+You can wire up different configurations of mavlink pipelines using the MavLinkConnection class "join" method as shown below.
+
+Example 1, we connect to PX4 over serial, and proxy those messages through to QGroundControl and the LogViewer who are listening on remote ports.  
+
+![Serial to QGC](design/images/example1.png)
+
+Example 2: simulation can talk to jMavSim and jMavSim connects to PX4.  jMavSim can also manage multiple connections, so it can talk to unreal simulator. 
+Another MavLinkConnection can be joined to proxy connections that jMavSim doesn't support, like the LogViewer or a remote camera node.
+
+![Serial to QGC](design/images/example2.png)
+
+Example 3: we use MavLinkConnection to connect to PX4 over serial, then join additional connections for all our remote nodes including jMavSim.
+
+![Serial to QGC](design/images/example3.png)
+
+Example 4: We can also do distributed systems to control the drone remotely:
+
+![Serial to QGC](design/images/example4.png)
 
 ### Installing Boost
 
