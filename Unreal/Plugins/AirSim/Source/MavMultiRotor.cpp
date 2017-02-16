@@ -21,16 +21,22 @@ void MavMultiRotor::initialize(AFlyingPawn* vehicle_pawn)
 	vehicle_.initialize(Px4QuadX::Params(), initial_kinematics,
 		&environment_, static_cast<ControllerBase*>(&mav_));
 
-	// load settings
-	Settings& settings = Settings::loadJSonFile(L"settings.json");
-	mav_.loadSettings(settings);
+	// try and load settings
+    try {
+	    Settings& settings = Settings::loadJSonFile(L"settings.json");
+	    mav_.loadSettings(settings);
 
-	auto settings_filename = Settings::singleton().getFileName();
-	std::wstring msg = L"Loading settings from " + settings_filename;
-	UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Success, 180);
+	    auto settings_filename = Settings::singleton().getFileName();
+	    std::wstring msg = L"Loading settings from " + settings_filename;
+	    UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Success, 30);
 
-	// write the settings back out so the user knows how to override any new settings.
-	settings.saveJSonFile(L"settings.json");
+	    // write the settings back out so the user knows how to override any new settings.
+	    settings.saveJSonFile(L"settings.json");
+    }
+    catch (std::runtime_error ex) {
+        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), TEXT(""), LogDebugLevel::Failure, 30);
+        UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 30);
+    }
 
 	mav_.initialize(&vehicle_);
 }

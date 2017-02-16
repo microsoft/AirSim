@@ -15,6 +15,7 @@ This is the only portion of project which is dependent on Unreal engine. We have
 
 ## MavLinkCom
 This is the library developed by our own team member Chris Lovett that provides C++ classes to talk to the MavLink devices. This library is stand alone and can be used in any project.
+See [MavLinkCom](../MavLinkCom/README.md) for more info.
 
 ## Sample Programs
 We have created few sample program to demonstrate how to use the API. See HelloDrone and DroneServer. The DroneServer demonstartes how to connect to the simulator using UDP port for QGC.

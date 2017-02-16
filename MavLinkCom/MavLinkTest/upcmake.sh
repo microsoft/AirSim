@@ -1,0 +1,1 @@
+export fn=/tmp/cmake.sh && ls $fn && (echo "use previous $fn? Enter for yes, ctrl+d for no." && read) || (wget -O $fn https://cmake.org/files/v3.4/cmake-3.4.3-Linux-x86_64.sh 1>&2) && (cd /opt && sudo bash ${fn} && sudo ln -f -s /opt/cmake*/bin/cmake /usr/local/bin/cmake && cd -)

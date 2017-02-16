@@ -3,7 +3,9 @@
 macro(CommonSetup)
     message(STATUS "Running CommonSetup...")   
     
-    SET(AIRSIM_ROOT "../..")
+    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
+    message(STATUS "found AIRSIM_ROOT=${AIRSIM_ROOT}")
+
     SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib) 
 
     IF(UNIX)

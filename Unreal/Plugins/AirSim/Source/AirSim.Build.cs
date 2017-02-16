@@ -9,12 +9,12 @@ public class AirSim : ModuleRules
     {
         get { return ModuleDirectory; }
     }
- 
+
     private string AirSimPath
     {
-        get { return Path.GetFullPath( Path.Combine( ModulePath, "AirLib") ); }
+        get { return Path.GetFullPath(Path.Combine(ModulePath, "AirLib")); }
     }
-    
+
     private enum CompileMode
     {
         HeaderOnlyNoRpc,
@@ -25,7 +25,7 @@ public class AirSim : ModuleRules
 
     private void SetupCompileMode(CompileMode mode, TargetInfo Target)
     {
-        switch(mode)
+        switch (mode)
         {
             case CompileMode.HeaderOnlyNoRpc:
                 Definitions.Add("AIRLIB_HEADER_ONLY=1");
@@ -53,7 +53,7 @@ public class AirSim : ModuleRules
     public AirSim(TargetInfo Target)
     {
         UEBuildConfiguration.bForceEnableExceptions = true;
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore"});
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //supress VC++ proprietory warnings
@@ -104,11 +104,12 @@ public class AirSim : ModuleRules
                 "See: " + readmurl);
         }
 
-        //if (!System.IO.File.Exists(Path.Combine(lib, "libboost_system-vc140-mt-1_62.lib")))
-        //{
-        //    throw new System.Exception("Not finding libboost_system-vc140-mt-1_62.lib in " + lib + ".  " + 
-        //        "See: " + readmurl);
-        //}
+        bool found = System.IO.Directory.GetFiles(lib, "libboost_system-*.lib").Length > 0;
+        if (!found)
+        {
+            throw new System.Exception("Not finding libboost_system-*.lib in " + lib + ".  " +
+                "See: " + readmurl);
+        }
 
         PublicLibraryPaths.Add(Path.Combine(lib));
     }

@@ -87,32 +87,32 @@ void MavLinkMessageBase::pack_float_array(int len, char* buffer, const float* fi
 
 
 #if MAVLINK_NEED_BYTE_SWAP
-#define _mav_get_uint16_t(buf, wire_offset, b) byte_swap_2((const char *)b,&buf[wire_offset], )
-#define _mav_get_int16_t(buf, wire_offset, b)  byte_swap_2((const char *)b,&buf[wire_offset], )
-#define _mav_get_uint32_t(buf, wire_offset, b) byte_swap_4((const char *)b,&buf[wire_offset], )
-#define _mav_get_int32_t(buf, wire_offset, b)  byte_swap_4((const char *)b,&buf[wire_offset], )
-#define _mav_get_uint64_t(buf, wire_offset, b) byte_swap_8((const char *)b,&buf[wire_offset], )
-#define _mav_get_int64_t(buf, wire_offset, b)  byte_swap_8((const char *)b,&buf[wire_offset], )
-#define _mav_get_float(buf, wire_offset, b)    byte_swap_4((const char *)b,&buf[wire_offset], )
-#define _mav_get_double(buf, wire_offset, b)   byte_swap_8((const char *)b,&buf[wire_offset], )
+#define _mav_get_uint16_t(buf, wire_offset, b) byte_swap_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_int16_t(buf, wire_offset, b)  byte_swap_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_uint32_t(buf, wire_offset, b) byte_swap_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_int32_t(buf, wire_offset, b)  byte_swap_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_uint64_t(buf, wire_offset, b) byte_swap_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_int64_t(buf, wire_offset, b)  byte_swap_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_float(buf, wire_offset, b)    byte_swap_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_double(buf, wire_offset, b)   byte_swap_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
 #elif !MAVLINK_ALIGNED_FIELDS											  
-#define _mav_get_uint16_t(buf, wire_offset, b) byte_copy_2((const char *)b,&buf[wire_offset], )
-#define _mav_get_int16_t(buf, wire_offset, b)  byte_copy_2((const char *)b,&buf[wire_offset], )
-#define _mav_get_uint32_t(buf, wire_offset, b) byte_copy_4((const char *)b,&buf[wire_offset], )
-#define _mav_get_int32_t(buf, wire_offset, b)  byte_copy_4((const char *)b,&buf[wire_offset], )
-#define _mav_get_uint64_t(buf, wire_offset, b) byte_copy_8((const char *)b,&buf[wire_offset], )
-#define _mav_get_int64_t(buf, wire_offset, b)  byte_copy_8((const char *)b,&buf[wire_offset], )
-#define _mav_get_float(buf, wire_offset, b)    byte_copy_4((const char *)b,&buf[wire_offset], )
-#define _mav_get_double(buf, wire_offset, b)   byte_copy_8((const char *)b,&buf[wire_offset], )
+#define _mav_get_uint16_t(buf, wire_offset, b) byte_copy_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_int16_t(buf, wire_offset, b)  byte_copy_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_uint32_t(buf, wire_offset, b) byte_copy_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_int32_t(buf, wire_offset, b)  byte_copy_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_uint64_t(buf, wire_offset, b) byte_copy_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_int64_t(buf, wire_offset, b)  byte_copy_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_float(buf, wire_offset, b)    byte_copy_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_double(buf, wire_offset, b)   byte_copy_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
 #else
-#define _mav_get_uint16_t(buf, wire_offset, b) *b = *(uint16_t *)&buf[wire_offset]
-#define _mav_get_int16_t(buf, wire_offset, b)  *b = *(int16_t *)&buf[wire_offset]
-#define _mav_get_uint32_t(buf, wire_offset, b) *b = *(uint32_t *)&buf[wire_offset]
-#define _mav_get_int32_t(buf, wire_offset, b)  *b = *(int32_t *)&buf[wire_offset]
-#define _mav_get_uint64_t(buf, wire_offset, b) *b = *(uint64_t *)&buf[wire_offset]
-#define _mav_get_int64_t(buf, wire_offset, b)  *b = *(int64_t *)&buf[wire_offset]
-#define _mav_get_float(buf, wire_offset, b)    *b = *(float *)&buf[wire_offset]
-#define _mav_get_double(buf, wire_offset, b)   *b = *(double *)&buf[wire_offset]
+#define _mav_get_uint16_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint16_t *>(&buf[wire_offset])
+#define _mav_get_int16_t(buf, wire_offset, b)  *b = *reinterpret_cast<const int16_t * >(&buf[wire_offset])
+#define _mav_get_uint32_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint32_t *>(&buf[wire_offset])
+#define _mav_get_int32_t(buf, wire_offset, b)  *b = *reinterpret_cast<const int32_t * >(&buf[wire_offset])
+#define _mav_get_uint64_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint64_t *>(&buf[wire_offset])
+#define _mav_get_int64_t(buf, wire_offset, b)  *b = *reinterpret_cast<const int64_t * >(&buf[wire_offset])
+#define _mav_get_float(buf, wire_offset, b)    *b = *reinterpret_cast<const float *   >(&buf[wire_offset])
+#define _mav_get_double(buf, wire_offset, b)   *b = *reinterpret_cast<const double *  >(&buf[wire_offset])
 #endif
 
 
