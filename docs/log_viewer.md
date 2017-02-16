@@ -9,7 +9,7 @@ simulator.
 
 To use this LogViewer, connect the simulator `before` you run the simulation.  Simply press the blue connector
 button on the top right corner of the window, select the Socket `tab`, enter the port number 14388, and
-your `localhost` network.  Then press the record button (triange on the right hand side of the toolbar).
+your `localhost` network.  Then press the record button (triangle on the right hand side of the toolbar).
 Now start the simulator, pick some mavlink items to graph,  you  should see something like this:
 
 ![Log Viewer](images/log_viewer.png)
