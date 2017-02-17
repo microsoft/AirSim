@@ -343,7 +343,7 @@ bool DroneControlBase::moveByRollPitchZ(float pitch, float roll, float z, float 
 bool DroneControlBase::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy, 
     float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z)
 {
-    if (safety_eval_ptr_ == nullptr)
+    if (!safety_eval_ptr_)
         throw std::invalid_argument("The setSafety call requires safety_eval_ptr_ to be set first");
 
     //default strategy is for move. In hover mode we set new strategy temporarily
@@ -498,7 +498,7 @@ bool DroneControlBase::emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& r
 
 bool DroneControlBase::safetyCheckVelocity(const Vector3r& velocity)
 {
-    if (safety_eval_ptr_ == nullptr) //safety checks disabled
+    if (!safety_eval_ptr_) //safety checks disabled
         return true;
 
     const auto& result = safety_eval_ptr_->isSafeVelocity(getPosition(), velocity, getOrientation());
@@ -506,7 +506,7 @@ bool DroneControlBase::safetyCheckVelocity(const Vector3r& velocity)
 }
 bool DroneControlBase::safetyCheckVelocityZ(float vx, float vy, float z)
 {
-    if (safety_eval_ptr_ == nullptr) //safety checks disabled
+    if (!safety_eval_ptr_) //safety checks disabled
         return true;
 
     const auto& result = safety_eval_ptr_->isSafeVelocityZ(getPosition(), vx, vy, z, getOrientation());
@@ -514,7 +514,7 @@ bool DroneControlBase::safetyCheckVelocityZ(float vx, float vy, float z)
 }
 bool DroneControlBase::safetyCheckDestination(const Vector3r& dest_pos)
 {
-    if (safety_eval_ptr_ == nullptr) //safety checks disabled
+    if (!safety_eval_ptr_) //safety checks disabled
         return true;
 
     const auto& result = safety_eval_ptr_->isSafeDestination(getPosition(), dest_pos, getOrientation());
