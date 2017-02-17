@@ -224,7 +224,7 @@ private:// types
             //tell other call to exit
             *is_cancelled_ = true;
 
-            //wait to aquire lock
+            //wait to acquire lock
             lock_ = std::unique_lock<std::mutex>(mtx);
 
             //reset cancellation before we proceed

@@ -15,7 +15,7 @@ void ASimModeWorldBase::BeginPlay()
 
     /*
     300Hz seems to be minimum for non-aggresive flights
-    400Hz is needed for moderately aggresive flights (such as
+    400Hz is needed for moderately aggressive flights (such as
     high yaw rate with simultaneous back move)
     500Hz is recommanded for more aggressive flights
     Lenovo P50 high-end config laptop seems to be topping out at 400Hz.
@@ -89,7 +89,7 @@ std::string ASimModeWorldBase::getReport()
 
 void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles)
 {
-    //should be overriden by derived class
+    //should be overridden by derived class
     //Unreal doesn't allow pure abstract methods in actors
 }
 

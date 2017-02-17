@@ -971,7 +971,7 @@ enum class MAV_SEVERITY {
     // Indicates about a possible future error if this is not resolved within a given
     // timeframe. Example would be a low battery warning.
     MAV_SEVERITY_WARNING = 4,
-    // An unusual event has occured, though not an error condition. This should be
+    // An unusual event has occurred, though not an error condition. This should be
     // investigated for the root cause.
     MAV_SEVERITY_NOTICE = 5,
     // Normal operational messages. Useful for logging. No action is required for
@@ -1399,9 +1399,9 @@ protected:
 // or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current
 // flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR.
 // This represents the internal navigation state machine. The system status shows
-// wether the system is currently active or not and if an emergency occured. During
+// wether the system is currently active or not and if an emergency occurred. During
 // the CRITICAL and EMERGENCY states the MAV is still considered to be active, but
-// should start emergency procedures autonomously. After a failure occured it should
+// should start emergency procedures autonomously. After a failure occurred it should
 // first move from active to critical to allow manual intervention and then move to
 // emergency after a certain timeout.
 class MavLinkSysStatus : public MavLinkMessageBase {
@@ -1789,9 +1789,9 @@ public:
     uint64_t time_usec = 0;
     // Absolute pressure (raw)
     int16_t press_abs = 0;
-    // Differential pressure 1 (raw, 0 if nonexistant)
+    // Differential pressure 1 (raw, 0 if nonexistent)
     int16_t press_diff1 = 0;
-    // Differential pressure 2 (raw, 0 if nonexistant)
+    // Differential pressure 2 (raw, 0 if nonexistent)
     int16_t press_diff2 = 0;
     // Raw Temperature measurement (raw)
     int16_t temperature = 0;
@@ -3710,7 +3710,7 @@ protected:
 };
 
 // The global position, as returned by the Global Positioning System (GPS). This is
-// NOT the global position estimate of the sytem, but rather a RAW sensor value. See
+// NOT the global position estimate of the system, but rather a RAW sensor value. See
 // message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed,
 // Z-axis up (GPS frame).
 class MavLinkHilGps : public MavLinkMessageBase {
@@ -4185,7 +4185,7 @@ public:
     uint16_t width = 0;
     // Height of a matrix or image
     uint16_t height = 0;
-    // number of packets beeing sent (set on ACK only)
+    // number of packets being sent (set on ACK only)
     uint16_t packets = 0;
     // type of requested/acknowledged data (as defined in ENUM DATA_TYPES in mavlink/include/mavlink_types.h)
     uint8_t type = 0;
@@ -4563,7 +4563,7 @@ public:
     // Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide
     // mAh consumption estimate
     int32_t current_consumed = 0;
-    // Consumed energy, in 100*Joules (intergrated U*I*dt) (1 = 100 Joule), -1: autopilot
+    // Consumed energy, in 100*Joules (integrated U*I*dt) (1 = 100 Joule), -1: autopilot
     // does not provide energy consumption estimate
     int32_t energy_consumed = 0;
     // Temperature of the battery in centi-degrees celsius. INT16_MAX for unknown
@@ -4722,7 +4722,7 @@ protected:
 };
 
 // GPS sensor input message. This is a raw sensor value sent by the GPS. This is NOT
-// the global position estimate of the sytem.
+// the global position estimate of the system.
 class MavLinkGpsInput : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 232;
@@ -6494,7 +6494,7 @@ public:
     // Desired approach vector in degrees compass heading (0..360). A negative value
     // indicates the system can define the approach vector at will.
     float DesiredApproachVector = 0;
-    // Desired ground speed at release time. This can be overriden by the airframe
+    // Desired ground speed at release time. This can be overridden by the airframe
     // in case it needs to meet minimum airspeed. A negative value indicates the system
     // can define the ground speed at will.
     float DesiredGroundSpeed = 0;

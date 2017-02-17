@@ -61,7 +61,7 @@ public: //interface for outside world
     * \return true if completed without preempting else false
     * 
     * This method by itself will block until it finishes the execution OR cancelable_action signals for preempt.
-    * This method can be called from ROS action server that runs on seperate thread for non-blocking implementation. 
+    * This method can be called from ROS action server that runs on separate thread for non-blocking implementation. 
     */
     virtual bool moveByAngle(float pitch, float roll, float z, float yaw, float duration
         , CancelableActionBase& cancelable_action);

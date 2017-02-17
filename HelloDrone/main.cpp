@@ -40,7 +40,7 @@ int imageExample()
     client.setImageTypeForCamera(0, DroneControlBase::ImageType::Segmentation);
     cout << "Press Enter to get depth image" << endl; cin.get();
     auto image = client.getImageForCamera(0, DroneControlBase::ImageType::Segmentation);
-    cout << "PNG images recieved bytes: " << image.size() << endl;
+    cout << "PNG images received bytes: " << image.size() << endl;
     cout << "Press Enter to save image" << endl; cin.get();
     ofstream file("c:\\temp\\depth.png", ios::binary);
     file.write((char*) image.data(), image.size());

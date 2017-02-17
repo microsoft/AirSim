@@ -118,7 +118,7 @@ public:
             return 214.65f - 2 * (geopot_height - 71);    
         else return 3;
         //Thermospehere has high kinetic temperature (500c to 2000c) but temperature
-        //as measured by thermometer would be very low because of almost vaccume
+        //as measured by thermometer would be very low because of almost vacuum
         //throw std::out_of_range("geopot_height must be less than 85km. Space domain is not supported yet!");
     }
 
@@ -221,7 +221,7 @@ public:
             Basic trignometry functions runs at 30ns.
 
         Accuracy:
-            Two points seperated by sqrt(2 km)
+            Two points separated by sqrt(2 km)
             Dipole Model:   2.50394e-05     3.40771e-06     3.6567e-05  (dec: 7.7500, inc: 55.3530)
             WMM2015 Model:  1.8350e-05		5.201e-06		5.0158e-05  (dec: 15.8248, inc: 69.1805)
             geo:            47.637  -122.147    622
@@ -271,7 +271,7 @@ public:
             declination = asin(cos(lon - MagPoleLon) * dec_factor);
         inclination = atan(2.0 / tan(mag_clat)); //do not use atan2 here
 
-        //tranform magnetic field vector to geographical coordinates
+        //transform magnetic field vector to geographical coordinates
         //ref: http://www.geo.mtu.edu/~jdiehl/magnotes.html
         double field_xy = field_mag * cos(inclination);
         return Vector3r(

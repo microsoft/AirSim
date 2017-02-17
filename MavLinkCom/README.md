@@ -166,7 +166,7 @@ This version of the code shows how to use the AsyncResult without blocking on a 
 
 	vehicle->releaseControl();
 	if (vehicle->loiter().then([=](bool rc) {
-		printf("loiter command %s\n", rc ? "suceeded" : "failed");
+		printf("loiter command %s\n", rc ? "succeeded" : "failed");
 	}
 	
 The following code gets all configurable parameters from the drone and prints them:
