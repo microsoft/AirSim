@@ -14,7 +14,7 @@ SerialPort::SerialPort() : port(io_service)
 {
 	closed_ = true;
 	read_buf_raw = new char[SERIAL_PORT_READ_BUF_SIZE];
-	if (read_buf_raw == nullptr)
+	if (!read_buf_raw)
 	{
 		throw std::runtime_error("out of memory");
 	}
