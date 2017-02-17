@@ -32,7 +32,7 @@ void ACameraDirector::setupInputBindings()
 
 bool ACameraDirector::checkCameraRefs()
 {
-    if (ExternalCamera == nullptr || TargetPawn == nullptr || TargetPawn->getFpvCamera() == nullptr) {
+    if (!ExternalCamera || !TargetPawn || !TargetPawn->getFpvCamera()) {
         UAirBlueprintLib::LogMessage("Cannot toggle PIP camera because FPV pwn camera and/or external camera is not set", "", LogDebugLevel::Failure, 60);
         return false;
     }
