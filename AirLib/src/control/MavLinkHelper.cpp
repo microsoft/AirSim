@@ -175,7 +175,8 @@ struct MavLinkHelper::impl {
         if (LogViewerHostIp.size() > 0) {
             logviewer_proxy_ = createProxy("LogViewer", LogViewerHostIp, LogViewerPort);
             if (!sendTestMessage(logviewer_proxy_)) {
-                // error talking to log viewer, so don't keep trying!
+                // error talking to log viewer, so don't keep trying, and close the connection also.
+                logviewer_proxy_->getConnection()->close();
                 logviewer_proxy_ = nullptr;
             }
         }
@@ -187,7 +188,8 @@ struct MavLinkHelper::impl {
         if (QgcHostIp.size() > 0) {
             qgc_proxy_ = createProxy("QGC", QgcHostIp, QgcPort);
             if (!sendTestMessage(qgc_proxy_)) {
-                // error talking to QGC, so don't keep trying!
+                // error talking to QGC, so don't keep trying, and close the connection also.
+                qgc_proxy_->getConnection()->close();
                 qgc_proxy_ = nullptr;
             }
         }
@@ -213,7 +215,7 @@ struct MavLinkHelper::impl {
 
         // it is ok to reuse the simulator sysid and compid here because this node is only used to send a few messages directly to this endpoint
         // and all other messages are funnelled through from PX4 via the Join method below.
-        auto node = std::make_shared<MavLinkNode>(SimSysID, SimCompID); //TODO: use -1 to autoset sys id on first heartbeat)
+        auto node = std::make_shared<MavLinkNode>(SimSysID, SimCompID);
         node->connect(connection);
 
         // now join the main connection to this one, this causes all PX4 messages to be sent to the proxy and all messages from the proxy will be
@@ -273,7 +275,7 @@ struct MavLinkHelper::impl {
     {
         close();
         connection_ = MavLinkConnection::connectLocalUdp("hil", ip, port);
-        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID); //TODO: use -1 to autoset sys id on first heartbeat
+        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID); 
         main_node_->connect(connection_);
     }
 
@@ -287,7 +289,7 @@ struct MavLinkHelper::impl {
         }
 
         connection_ = MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
-        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID); //TODO: use -1 to autoset sys id on first heartbeat
+        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID);
         main_node_->connect(connection_);
     }
 

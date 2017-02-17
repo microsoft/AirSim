@@ -41,7 +41,6 @@ RpcLibServer::RpcLibServer(DroneControlServer* drone, string server_address, uin
     pimpl_->server.bind("armDisarm", [&](bool arm) -> bool { return drone_->armDisarm(arm); });
     pimpl_->server.bind("requestControl", [&]() -> bool { return drone_->requestControl(); });
     pimpl_->server.bind("releaseControl", [&]() -> bool { return drone_->releaseControl(); });
-    pimpl_->server.bind("releaseControl", [&]() -> bool { return drone_->releaseControl(); });
     pimpl_->server.bind("takeoff", [&](float max_wait_seconds) -> bool { return drone_->takeoff(max_wait_seconds); });
     pimpl_->server.bind("land", [&]() -> bool { return drone_->land(); });
     pimpl_->server.bind("goHome", [&]() -> bool { return drone_->goHome(); });

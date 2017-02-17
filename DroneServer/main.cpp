@@ -37,6 +37,7 @@ bool parseCommandLine(int argc, const char* argv[])
 
 void printUsage() {
     cout << "Usage: DroneServer [-ipaddress 127.0.0.1]" << endl;
+    cout << "The optional ipaddress argument specifies the RPC local IP address to use." << endl;
 }
 
 int main(int argc, const char* argv[])
@@ -47,7 +48,6 @@ int main(int argc, const char* argv[])
     }
 
     MavLinkDroneControl::Parameters params;
-    params.udpAddress = server_address;
     MavLinkDroneControl mav(params);
     DroneControlServer server_wrapper(&mav);
     msr::airlib::RpcLibServer server(&server_wrapper, server_address);

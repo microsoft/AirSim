@@ -14,7 +14,8 @@ void ASimModeWorldMultiRotor::BeginPlay()
     if (fpv_vehicle_ != nullptr) {
         //create its control server
         drone_control_server_.reset(new msr::airlib::DroneControlServer(fpv_vehicle_->createOrGetDroneControl()));
-        rpclib_server_.reset(new msr::airlib::RpcLibServer(drone_control_server_.get()));
+        std::string server_address = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
+        rpclib_server_.reset(new msr::airlib::RpcLibServer(drone_control_server_.get(), server_address));
         rpclib_server_->start();
     }
 }
