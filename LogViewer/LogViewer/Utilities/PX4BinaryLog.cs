@@ -452,7 +452,7 @@ namespace MissionPlanner.Log
                         size = fmt.Length;
                     }
 
-                    // didnt find a match, return unknown packet type
+                    // didn't find a match, return unknown packet type
                     if (size == 0)
                         return;
 
@@ -528,7 +528,7 @@ namespace MissionPlanner.Log
                         size = fmt.Length;
                     }
 
-                    // didnt find a match, return unknown packet type
+                    // didn't find a match, return unknown packet type
                     if (fmt == null)
                         return null;
 
@@ -607,7 +607,7 @@ namespace MissionPlanner.Log
                         size = fmt.Length;
                     }
 
-                    // didnt find a match, return unknown packet type
+                    // didn't find a match, return unknown packet type
                     if (size == 0)
                         return "UNKW, " + packettype;
 
@@ -646,7 +646,7 @@ namespace MissionPlanner.Log
         /// <param name="message">raw binary message</param>
         /// <param name="name">Message type name</param>
         /// <param name="format">format string containing packet structure</param>
-        /// <returns>formated ascii string</returns>
+        /// <returns>formatted ascii string</returns>
         string ProcessMessage(byte[] message, string name, string format)
         {
             char[] form = format.ToCharArray();
