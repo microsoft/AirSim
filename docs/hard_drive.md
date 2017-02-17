@@ -47,6 +47,6 @@ but the drone still flies ok:
 ![Package Unreal Project](images/ue_hard_drive.png)
 
 This is what my fast  SSD looks like when the drone is flying in an Unreal Cooked app 
-(no UE editor, no debugger).  Not surprizingly it is flying perfectly in this case:
+(no UE editor, no debugger).  Not surprisingly it is flying perfectly in this case:
 
 ![Package Unreal Project](images/cooked_ssd.png)
