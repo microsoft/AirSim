@@ -13,7 +13,7 @@ namespace msr { namespace airlib {
 
 class RpcLibServer : ControlServerBase {
 public:
-    RpcLibServer(DroneControlServer* drone, uint16_t port = 41451);
+    RpcLibServer(DroneControlServer* drone, string server_address, uint16_t port = 41451);
     virtual void start(bool block = false) override;
     virtual void stop() override;
     virtual ~RpcLibServer() override;

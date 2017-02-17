@@ -54,6 +54,9 @@ int main()
     using namespace std;
     using namespace msr::airlib;
 
+
+    // This assumes you are running DroneServer already on the same machine.
+    // DroneServer must be running first.
     msr::airlib::RpcLibClient client;
 
     try {

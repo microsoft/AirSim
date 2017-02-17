@@ -25,8 +25,8 @@ STRICT_MODE_ON
 namespace msr { namespace airlib {
 
 struct RpcLibServer::impl {
-    impl(uint16_t port)
-        : server(port)
+    impl(string server_address, uint16_t port)
+        : server(server_address, port)
     {}
 
     rpc::server server;
@@ -34,10 +34,10 @@ struct RpcLibServer::impl {
 
 typedef msr::airlib_rpclib::RpcLibAdapators RpcLibAdapators;
 
-RpcLibServer::RpcLibServer(DroneControlServer* drone, uint16_t port)
+RpcLibServer::RpcLibServer(DroneControlServer* drone, string server_address, uint16_t port)
         : drone_(drone)
 {
-    pimpl_.reset(new impl(port));
+    pimpl_.reset(new impl(server_address, port));
     pimpl_->server.bind("armDisarm", [&](bool arm) -> bool { return drone_->armDisarm(arm); });
     pimpl_->server.bind("requestControl", [&]() -> bool { return drone_->requestControl(); });
     pimpl_->server.bind("releaseControl", [&]() -> bool { return drone_->releaseControl(); });
