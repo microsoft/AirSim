@@ -303,20 +303,9 @@ bool DroneControlBase::rotateByYawRate(float yaw_rate, float duration, Cancelabl
     return waiter.is_timeout();
 }
 
-bool DroneControlBase::hover(float duration, CancelableActionBase& cancelable_action)
+bool DroneControlBase::hover(CancelableActionBase& cancelable_action)
 {
-    return rotateByYawRate(0, duration, cancelable_action);
-}
-
-bool DroneControlBase::sleep(float duration, CancelableActionBase& cancelable_action)
-{
-    if (duration <= 0)
-        return true;
-    Waiter waiter(getCommandPeriod(), duration);
-    do {
-    } while (waiter.sleep(cancelable_action) && !waiter.is_timeout());
-
-    return waiter.is_timeout();
+    return moveToZ(getZ(), 0.5f, YawMode{ true,0 }, 1.0f, false, cancelable_action);
 }
 
 bool DroneControlBase::moveByVelocity(float vx, float vy, float vz, const YawMode& yaw_mode)
@@ -446,14 +435,14 @@ float DroneControlBase::getZ()
     return getPosition().z();
 }
 
-bool DroneControlBase::waitForFunction(WaitFunction function, float max_wait, CancelableActionBase& cancelable_action)
+bool DroneControlBase::waitForFunction(WaitFunction function, float max_wait_seconds, CancelableActionBase& cancelable_action)
 {
-    if (max_wait < 0)
+    if (max_wait_seconds < 0)
     {
         return false;
     }
     bool found = false;
-    Waiter waiter(getCommandPeriod(), max_wait);
+    Waiter waiter(getCommandPeriod(), max_wait_seconds);
     do {
         if (function()) {
             found = true;
@@ -464,17 +453,17 @@ bool DroneControlBase::waitForFunction(WaitFunction function, float max_wait, Ca
     return found;
 }
 
-bool DroneControlBase::waitForZ(float max_wait, float z, float margin, CancelableActionBase& cancelable_action)
+bool DroneControlBase::waitForZ(float max_wait_seconds, float z, float margin, CancelableActionBase& cancelable_action)
 {
-    float cur_z = 1.0f;
+    float cur_z = FLT_MAX;
     if (!waitForFunction([&]() {
         cur_z = getZ();
         return (std::abs(cur_z - z) <= margin);
-    }, max_wait, cancelable_action))
+    }, max_wait_seconds, cancelable_action))
     {
         //Only raise exception is time out occured. If preempted then return status.
         throw MoveException(Utils::stringf("Drone hasn't came to expected z of %f within time %f sec within error margin %f (current z = %f)",
-            z, max_wait, margin, cur_z));
+            z, max_wait_seconds, margin, cur_z));
     }
     return true;
 }

@@ -26,10 +26,10 @@ AsyncResult<bool> MavLinkVehicle::armDisarm(bool arm)
 	return ptr->armDisarm(arm);
 }
 
-AsyncResult<bool>  MavLinkVehicle::takeoff(float altitude, float pitch, float yaw)
+AsyncResult<bool>  MavLinkVehicle::takeoff(float z, float pitch, float yaw)
 {
 	auto ptr = static_cast<MavLinkVehicleImpl*>(pImpl.get());
-	return ptr->takeoff(altitude, pitch, yaw);
+	return ptr->takeoff(z, pitch, yaw);
 }
 
 AsyncResult<bool>  MavLinkVehicle::land(float yaw, float lat, float lon, float altitude)

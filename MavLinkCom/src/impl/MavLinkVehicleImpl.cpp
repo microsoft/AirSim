@@ -179,8 +179,10 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 				if (vehicle_state_.controls.offboard && offboard_control_mode_) {
 					// if we just lost offboard control, but user didn't call releaseControl, 
 					// so in this case request loiter so PX4 doesn't land the drone.
-					offboard_control_mode_ = false;
+                    releaseControl();
 					loiter();
+                    // but we keep this flag set to true so that subsequent offboard commands work.
+                    offboard_control_mode_ = true;
 				}
 				vehicle_state_.controls.offboard = isOffboard;
 			}
@@ -415,9 +417,9 @@ AsyncResult<bool> MavLinkVehicleImpl::armDisarm(bool arm)
 	return sendCommandAndWaitForAck(cmd);
 }
 
-AsyncResult<bool> MavLinkVehicleImpl::takeoff(float altitude, float pitch, float yaw)
+AsyncResult<bool> MavLinkVehicleImpl::takeoff(float z, float pitch, float yaw)
 {
-	float targetAlt = vehicle_state_.home.global_pos.alt + altitude;
+	float targetAlt = vehicle_state_.home.global_pos.alt - z;
 	Utils::logMessage("Take off to %f", targetAlt);
 	MavCmdNavTakeoff cmd{};
 	cmd.MinimumPitch = pitch;
@@ -472,15 +474,42 @@ bool MavLinkVehicleImpl::getRcSwitch(int channel, float threshold)
 
 void MavLinkVehicleImpl::requestControl()
 {
-	// Before we grant offbo
-	requestControlNoCheck();
+    offboard_control_mode_ = true;
+
+    // PX4 requires at least one offboard control message in order to set offboard_control_signal_lost 
+    // to false before it will accept transition to offboard control mode.
+    auto state = getVehicleState();
+    auto pos = state.local_est.pos;
+    moveToLocalPosition(pos.x, pos.y, pos.z, true, static_cast<float>(state.attitude.yaw * M_PI / 180));
+
+    int retries = 100;
+    while (retries-- > 0) {
+        bool r = false;
+        MavCmdNavGuidedEnable cmd{};
+        cmd.OnOff = 1;
+        if (!sendCommandAndWaitForAck(cmd).wait(1000, &r)) {
+            // timeout?
+        }
+        else if (!r) {
+            // REJECT_OFFBOARD, so try again.
+            moveToLocalPosition(pos.x, pos.y, pos.z, true, static_cast<float>(state.attitude.yaw * M_PI / 180));
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
+        else {
+            // got it!
+            return;
+        }
+    }
+
+    // hmmm, if we got here, then offboard has been consistently rejected!
+    throw std::runtime_error("offboard rejected");
+
 }
 
 void MavLinkVehicleImpl::requestControlNoCheck()
 {
-	// PX4 requires at least one offboard control message in order to set offboard_control_signal_lost 
-	// to false before it will accept transition to offboard control mode.
-	offboardIdle();
+    // this method is used to re-request control while move* methods are being called in case we lost it due 
+    // to a timeout.
 	offboard_control_mode_ = true;
 
 	MavCmdNavGuidedEnable cmd{};

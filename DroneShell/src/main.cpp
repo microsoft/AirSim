@@ -164,35 +164,6 @@ public:
     }
 };
 
-class CancelCommand : public DroneCommand {
-public:
-    CancelCommand() : DroneCommand("Cancel", "Cancel any pending tasks")
-    {
-    }
-
-    bool execute(const DroneCommandParameters& params) 
-    {
-        params.context->client.cancelAllTasks();
-        return false;
-    }
-};
-
-
-class SleepCommand : public DroneCommand {
-public:
-    SleepCommand() : DroneCommand("Sleep", "Sleep for specified seconds")
-    {
-        this->addSwitch({"-duration", "5", "maximum time to wait (default 5 seconds)" });
-    }
-
-    bool execute(const DroneCommandParameters& params) 
-    {
-        float duration = std::stof(getSwitch("-duration").value);
-        params.context->client.sleep(duration);
-        return false;
-    }
-};
-
 class GetHomePointCommand : public DroneCommand {
 public:
     GetHomePointCommand() : DroneCommand("GetHomePoint", "Display the homepoint set in the drone")
@@ -216,9 +187,9 @@ public:
 
 class MoveToZCommand : public DroneCommand {
 public:
-    MoveToZCommand() : DroneCommand("MoveToZ", "Move to z in meters (measured from takeoff point) with given velocity in m/s")
+    MoveToZCommand() : DroneCommand("MoveToZ", "Move to z in meters (measured from launch point) with given velocity in m/s")
     {
-        this->addSwitch({"-z", "-2.5", "Move to specified z above takeoff position (default -2.5 meters)" });
+        this->addSwitch({"-z", "-2.5", "Move to specified z above launch position (default -2.5 meters)" });
         this->addSwitch({"-velocity", "0.5", "Velocity to move at (default 0.5 meters per second)" });
         addYawModeSwitches();
         addLookaheadSwitches();
@@ -283,17 +254,14 @@ public:
 
 class HoverCommand : public DroneCommand {
 public:
-    HoverCommand() : DroneCommand("Hover", "Enter hover mode for a given duration")
+    HoverCommand() : DroneCommand("Hover", "Enter hover mode")
     {
-        this->addSwitch({"-duration", "5", "how long to hover (default within 5 seconds)" });
     }
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float duration = std::stof(getSwitch("-duration").value);
-
         params.context->tasker.execute([&]() {
-            params.context->client.hover(duration);
+            params.context->client.hover();
         });
 
         return false;
@@ -541,7 +509,8 @@ public:
 
         params.context->tasker.execute([&]() {
             params.context->client.moveByAngle(pitch, roll, z, yaw, duration);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveByAngle(-pitch, -roll, z, yaw, duration);
         }, iterations);
         
@@ -579,10 +548,12 @@ public:
         params.context->tasker.execute([&]() {
             params.context->client.moveToPosition(length, 0, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveToPosition(-length, 0, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
         }, iterations);
 
         return false;
@@ -615,13 +586,17 @@ public:
 
         params.context->tasker.execute([&]() {
             params.context->client.moveByAngle(pitch, -roll, z, yaw, duration);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveByAngle(-pitch, -roll, z, yaw, duration);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveByAngle(-pitch, roll, z, yaw, duration);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveByAngle(-pitch, -roll, z, yaw, duration);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
         }, iterations);
 
         return false;
@@ -658,16 +633,20 @@ public:
         params.context->tasker.execute([&]() {
             params.context->client.moveToPosition(length, -length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveToPosition(-length, -length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveToPosition(-length, length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             params.context->client.moveToPosition(length, length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
-            params.context->client.hover(pause_time);
+            params.context->client.hover();
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
         }, iterations);
 
         return false;
@@ -762,7 +741,8 @@ public:
                 float y = std::sin(seg_angle * seg) * radius;
                 params.context->client.moveToPosition(x, y, z, velocity, drivetrain,
                     yawMode, lookahead, adaptive_lookahead);
-                params.context->client.hover(pause_time);
+                params.context->client.hover();
+                std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             }
         }, iterations);
 
@@ -977,9 +957,7 @@ int main(int argc, char **argv) {
     TakeOffCommand takeOff;
     LandCommand land;
     GoHomeCommand goHome;
-    CancelCommand cancel;
     //TODO: add WaitForCompletion command
-    SleepCommand sleepCommand;
     GetHomePointCommand getHomePoint;
     MoveToZCommand moveToZ;
     RotateByYawRateCommand rotateByYawRate;
@@ -1009,8 +987,6 @@ int main(int argc, char **argv) {
     shell.addCommand(takeOff);
     shell.addCommand(land);
     shell.addCommand(goHome);
-    shell.addCommand(cancel);
-    shell.addCommand(sleepCommand);
     shell.addCommand(getHomePoint);
     shell.addCommand(moveToZ);
     shell.addCommand(rotateByYawRate);

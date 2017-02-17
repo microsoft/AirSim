@@ -91,7 +91,7 @@ std::string defaultLocalAddress{ "127.0.0.1" };
 // connection to create to talke to that server.
 bool offboard = false;
 PortAddress offboardEndPoint;
-#define DEFAULT_OFFBOARD_PORT 14566
+#define DEFAULT_OFFBOARD_PORT 14560
 
 // this is used if you want to connect MavLinkTest to the serial port of the Pixhawk directly
 bool serial = false;
@@ -100,10 +100,11 @@ int baudRate = 115200;
 
 // server mode is when you want another app to connect to Pixhawk and publish data back to this process.
 // this server will be listening for UDP packets, this is mutually exclusive with 'offboard' as this
-// server will become the primary "droneConnection".
+// server will become the primary "droneConnection".  For example, jMAVSim can talk to this server 
+// using their the -qgc option.
 bool server = false;
 PortAddress serverEndPoint;
-#define DEFAULT_SERVER_PORT 14560
+#define DEFAULT_SERVER_PORT 14550
 
 bool connectLogViewer = false;
 PortAddress logViewerEndPoint;
@@ -111,7 +112,7 @@ PortAddress logViewerEndPoint;
 
 // These are used to echo the mavlink messages to other 3rd party apps like QGC or LogViewer.
 std::vector<PortAddress> proxyEndPoints;
-#define DEFAULT_PROXY_PORT 14560
+#define DEFAULT_PROXY_PORT 14580
 
 // this switch controls whether we turn off the RC remote active link loss detection 
 // if you do not have radio connected this is needed to stop "failsafe" override in pixhawk 
@@ -496,11 +497,11 @@ void PrintUsage() {
 	printf("Usage: PX4 options\n");
 	printf("Connects to PX4 either over udp or serial COM port\n");
 	printf("Options: \n");
-	printf("    -offboard:ipaddr[:port]]               - connect to remote drone via this udp address, the remote app is the UDP server\n");
+	printf("    -udp:ipaddr[:port]]                    - connect to remote drone via this udp address, the remote app is the UDP server (default port 14550)\n");
 	printf("    -server:ipaddr[:port]                  - start mavlink server on this local port (so jMAVSim can connect to it using -udp)\n");
 	printf("    -serial[:comPortName][, baudrate]]     - open serial port\n");
 	printf("    -logviewer:ipaddr[:port]               - for sending mavlink information to Log Viewer\n");
-	printf("    -proxy:ipaddr[:port]                   - send all mavlink messages to proxy and from proxy to offboard\n");
+	printf("    -proxy:ipaddr[:port]                   - send all mavlink messages to and from remote node\n");
 	printf("    -local:ipaddr                          - specify local NIC address (default 127.0.0.1)\n");
 	printf("    -logdir:filename                       - specify local directory where mavlink logs are stored (default is no log files)\n");
 	printf("    -noradio							   - disables RC link loss failsafe\n");
@@ -524,7 +525,7 @@ bool ParseCommandLine(int argc, const char* argv[])
 			std::vector<std::string> parts;
 			boost::algorithm::split(parts, option, boost::is_any_of(":,"));
 			std::string lower = boost::algorithm::to_lower_copy(parts[0]);
-			if (lower == "offboard")
+			if (lower == "udp")
 			{
 				offboard = true;
 				offboardEndPoint.port = DEFAULT_OFFBOARD_PORT;

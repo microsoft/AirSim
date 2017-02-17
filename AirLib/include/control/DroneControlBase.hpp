@@ -28,13 +28,12 @@ public: //types
 
     struct StatusLock {
         StatusLock(DroneControlBase* drone)
-            : drone_(drone)
+            : drone_(drone), lock_(drone->status_mutex_)
         {
-            lock_ = std::unique_lock<std::mutex>(drone->status_mutex_);
         }
 
     private:
-        std::unique_lock<std::mutex> lock_;
+        std::lock_guard<std::recursive_mutex> lock_;
         DroneControlBase* drone_;
     };
 
@@ -53,7 +52,7 @@ public: //interface for outside world
     virtual bool armDisarm(bool arm, CancelableActionBase& cancelable_action) = 0;
     virtual bool requestControl(CancelableActionBase& cancelable_action) = 0;
     virtual bool releaseControl(CancelableActionBase& cancelable_action) = 0;
-    virtual bool takeoff(float max_wait, CancelableActionBase& cancelable_action) = 0;
+    virtual bool takeoff(float max_wait_seconds, CancelableActionBase& cancelable_action) = 0;
     virtual bool land(CancelableActionBase& cancelable_action) = 0;
     virtual bool goHome(CancelableActionBase& cancelable_action) = 0;
 
@@ -90,9 +89,7 @@ public: //interface for outside world
     virtual bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration, CancelableActionBase& cancelable_action);
     virtual bool rotateToYaw(float yaw, float margin, CancelableActionBase& cancelable_action);
     virtual bool rotateByYawRate(float yaw_rate, float duration, CancelableActionBase& cancelable_action);
-    virtual bool hover(float duration, CancelableActionBase& cancelable_action);
-    virtual bool sleep(float duration, CancelableActionBase& cancelable_action);
-
+    virtual bool hover(CancelableActionBase& cancelable_action);
 
     //status getters
     virtual Vector3r getPosition() = 0;
@@ -138,7 +135,7 @@ protected: //must implement interface by derived class
 
     //config commands
     virtual float getCommandPeriod() = 0; //time between two command required for drone in seconds
-    virtual float getMaxZ() = 0; //minimum height allowed for the drone after successful takeoff
+    virtual float getTakeoffZ() = 0;  // the height above ground for the drone after successful takeoff (Z above ground is negative due to NED coordinate system).
                                       //noise in difference of two position coordinates. This is not GPS or position accuracy which can be very low such as 1m.
                                       //the difference between two position cancels out transitional errors. Typically this would be 0.1m or lower.
     virtual float getDistanceAccuracy() = 0; 
@@ -167,7 +164,7 @@ protected: //utility functions and data members for derived classes
     virtual bool waitForFunction(WaitFunction function, float max_wait, CancelableActionBase& cancelable_action);
 
     //useful for derived class to check after takeoff
-    virtual bool waitForZ(float max_wait, float z, float margin, CancelableActionBase& cancelable_action);
+    virtual bool waitForZ(float max_wait_seconds, float z, float margin, CancelableActionBase& cancelable_action);
 
     /************* safety checks & emergency manuevers ************/
     virtual bool emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result);
@@ -255,7 +252,9 @@ private:// vars
     float obs_avoidance_vel_ = 0.5f;
     bool log_to_file = false;
 
-    std::mutex status_mutex_;
+    // we make this recursive so that DroneControlBase subclass can grab StatusLock then call a 
+    // base class method on DroneControlBase that also grabs the StatusLock.
+    std::recursive_mutex status_mutex_;
 };
 
 }} //namespace

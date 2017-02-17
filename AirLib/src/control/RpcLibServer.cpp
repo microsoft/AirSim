@@ -42,7 +42,7 @@ RpcLibServer::RpcLibServer(DroneControlServer* drone, uint16_t port)
     pimpl_->server.bind("requestControl", [&]() -> bool { return drone_->requestControl(); });
     pimpl_->server.bind("releaseControl", [&]() -> bool { return drone_->releaseControl(); });
     pimpl_->server.bind("releaseControl", [&]() -> bool { return drone_->releaseControl(); });
-    pimpl_->server.bind("takeoff", [&](float max_wait) -> bool { return drone_->takeoff(max_wait); });
+    pimpl_->server.bind("takeoff", [&](float max_wait_seconds) -> bool { return drone_->takeoff(max_wait_seconds); });
     pimpl_->server.bind("land", [&]() -> bool { return drone_->land(); });
     pimpl_->server.bind("goHome", [&]() -> bool { return drone_->goHome(); });
 
@@ -71,9 +71,7 @@ RpcLibServer::RpcLibServer(DroneControlServer* drone, uint16_t port)
         bool { return drone_->rotateToYaw(yaw, margin); });
     pimpl_->server.bind("rotateByYawRate", [&](float yaw_rate, float duration) -> 
         bool { return drone_->rotateByYawRate(yaw_rate, duration); });
-    pimpl_->server.bind("hover", [&](float duration) -> bool { return drone_->hover(duration); });
-    pimpl_->server.bind("sleep", [&](float duration) -> bool { return drone_->sleep(duration); });
-    pimpl_->server.bind("cancelAllTasks", [&]() -> void { return drone_->cancelAllTasks(); });
+    pimpl_->server.bind("hover", [&]() -> bool { return drone_->hover(); });
 
     pimpl_->server.bind("setSafety", [&](uint enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const RpcLibAdapators::Vector3r& origin, float xy_length, float max_z, float min_z) -> 

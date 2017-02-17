@@ -19,6 +19,7 @@ namespace mavlinkcom {
 
 	// This class represents a MavLinkNode that can be controlled, hence a "vehicle" of some sort.
 	// It also keeps certain state about the vehicle position so you can query it any time.
+    // All x,y,z coordinates are in the NED coordinate system.
 	class MavLinkVehicle : public MavLinkNode {
 	public:
 		MavLinkVehicle(int local_system_id, int local_component_id);
@@ -26,7 +27,7 @@ namespace mavlinkcom {
 		// Send command to arm or disarm the drone.  Drone will not fly until it is armed successfully.
 		// It returns false if the command is rejected.
 		AsyncResult<bool> armDisarm(bool arm);
-		AsyncResult<bool> takeoff(float altitude = 2.5, float pitch = 0, float yaw = 0);
+		AsyncResult<bool> takeoff(float z = -2.5, float pitch = 0, float yaw = 0);
 		AsyncResult<bool> land(float yaw, float lat = 0, float lon = 0, float altitude = 0);
 		AsyncResult<bool> returnToHome();
 		AsyncResult<bool> loiter();

@@ -21,7 +21,8 @@ namespace mavlinkcom {
 		MavLinkSemaphore resultReceived_;
 		T result_;
 		CompletionHandler owner_;
-		int state_;
+        int state_ = 0;
+        bool completed_ = false;
 
 		AsyncResultState(CompletionHandler owner) {
 			owner_ = owner;
@@ -57,10 +58,13 @@ namespace mavlinkcom {
 		void complete() {
 			CompletionHandler rh = owner_;
 			owner_ = nullptr;
+
+            completed_ = true;
 			if (rh != nullptr) {
 				rh(state_);
 			}
 		}
+        bool isCompleted() { return completed_; }
 	};
 
 	template<class T>
@@ -131,6 +135,11 @@ namespace mavlinkcom {
 			std::shared_ptr<AsyncResultState<T>> safe(state_);
 			return state_->getResult(millisecondTimeout, r);
 		}
+
+        bool isCompleted() {
+            return state_->isCompleted();
+        }
+
 	private:
 		static T getResult(std::shared_ptr<AsyncResultState<T>> state) {
 			return state->getResult();

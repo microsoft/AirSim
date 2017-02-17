@@ -19,7 +19,7 @@ public:
     bool armDisarm(bool arm);
     bool requestControl();
     bool releaseControl();
-    bool takeoff(float max_wait = 10);
+    bool takeoff(float max_wait_ms = 15);
     bool land();
     bool goHome();
     bool moveByAngle(float pitch, float roll, float z, float yaw, float duration);
@@ -37,8 +37,8 @@ public:
     bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration);
     bool rotateToYaw(float yaw, float margin = 5);
     bool rotateByYawRate(float yaw_rate, float duration);
-    bool hover(float duration);
-    bool sleep(float duration);
+    bool hover();
+
     Vector3r getPosition();
     Vector3r getVelocity();
     Quaternionr getOrientation();

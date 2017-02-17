@@ -43,14 +43,15 @@ public:
     bool armDisarm(bool arm, CancelableActionBase& cancelable_action) override;
     bool requestControl(CancelableActionBase& cancelable_action) override;
     bool releaseControl(CancelableActionBase& cancelable_action) override;
-    bool takeoff(float max_wait, CancelableActionBase& cancelable_action) override;
+    bool takeoff(float max_wait_seconds, CancelableActionBase& cancelable_action) override;
     bool land(CancelableActionBase& cancelable_action) override;
-    bool goHome(CancelableActionBase& cancelable_action) override;
+    bool goHome(CancelableActionBase& cancelable_action) override; 
+    bool hover(CancelableActionBase& cancelable_action) override;
     GeoPoint getHomePoint() override;
     GeoPoint getGpsLocation() override;
 
     float getCommandPeriod() override;
-    float getMaxZ() override;
+    float getTakeoffZ() override;
     float getDistanceAccuracy() override;
 
 protected:  //keep low level commands hidden from outside as they have no safety checks

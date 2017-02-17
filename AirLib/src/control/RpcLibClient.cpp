@@ -60,9 +60,9 @@ bool RpcLibClient::releaseControl()
 {
     return pimpl_->client.call("releaseControl").as<bool>();
 }
-bool RpcLibClient::takeoff(float max_wait)
+bool RpcLibClient::takeoff(float max_wait_seconds)
 {
-    return pimpl_->client.call("takeoff", max_wait).as<bool>();
+    return pimpl_->client.call("takeoff", max_wait_seconds).as<bool>();
 }
 bool RpcLibClient::land()
 {
@@ -121,14 +121,9 @@ bool RpcLibClient::rotateByYawRate(float yaw_rate, float duration)
     return pimpl_->client.call("rotateByYawRate", yaw_rate, duration).as<bool>();
 }
 
-bool RpcLibClient::hover(float duration)
+bool RpcLibClient::hover()
 {
-    return pimpl_->client.call("hover", duration).as<bool>();
-}
-
-bool RpcLibClient::sleep(float duration)
-{
-    return pimpl_->client.call("sleep", duration).as<bool>();
+    return pimpl_->client.call("hover").as<bool>();
 }
 
 bool RpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
@@ -136,11 +131,6 @@ bool RpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_reasons, flo
 {
     return pimpl_->client.call("setSafety", (uint) enable_reasons, obs_clearance, obs_startegy,
         obs_avoidance_vel, RpcLibAdapators::Vector3r(origin), xy_length, max_z, min_z).as<bool>();
-}
-
-void RpcLibClient::cancelAllTasks()
-{
-    pimpl_->client.call("cancelAllTasks");
 }
 
 //status getters

@@ -265,7 +265,7 @@ void TakeOffCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	reached = false;
 	offground = false;
 	bool rc = false;
-	if (com->takeoff(altitude).wait(3000, &rc)) {
+	if (com->takeoff(-altitude).wait(3000, &rc)) {
 		if (rc) {
 			printf("ok\n");
 		}
@@ -920,10 +920,10 @@ void GotoCommand::HandleMessage(const MavLinkMessage& message)
 
 		this->vx = localPos.vx;
 		this->vy = localPos.vy;
-		this->vz = -localPos.vz;
+		this->vz = localPos.vz;
 		this->x = localPos.x;
 		this->y = localPos.y;
-		this->z = -localPos.z;
+		this->z = localPos.z;
 
 		if (paused) {
 			return;
@@ -1357,9 +1357,6 @@ void WiggleCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 	com->requestControl();
 
-	// move to local position keeps the offboard control happy.
-	com->moveToLocalPosition(pos.x, pos.y, pos.z, true, static_cast<float>(state.attitude.yaw * M_PI / 180));
-
 	// start by moving right with 10 degree roll.
 	targetRoll_ = wiggle_angle_;
 	ready_ = false;
@@ -1406,7 +1403,7 @@ void WiggleCommand::HandleMessage(const MavLinkMessage& message)
 		// and check position
 		double dx = this->sx_ - pos.x;
 		double dy = this->sy_ - pos.y;
-		double z = -pos.z; // flip z
+		double z = pos.z; 
 
 		// the amount of roll should depend on our speed in that direction.
 		double speed = fabs(pos.vy);
@@ -1583,7 +1580,7 @@ void AltHoldCommand::HandleMessage(const MavLinkMessage& message)
 		// and check position
 		//double dx = this->sx_ - pos.x;
 		//double dy = this->sy_ - pos.y;
-		double z = -pos.z; // flip z
+		double z = pos.z; 
 
 		float ctrl = thrust_controller_.control(static_cast<float>(z));
 		float thrust = start_thrust_ + ctrl;

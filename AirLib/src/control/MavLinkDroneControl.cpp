@@ -151,27 +151,36 @@ bool MavLinkDroneControl::releaseControl(CancelableActionBase& cancelable_action
     is_offboard_mode_ = false;
     return true;
 }
-bool MavLinkDroneControl::takeoff(float max_wait, CancelableActionBase& cancelable_action)
+bool MavLinkDroneControl::takeoff(float max_wait_seconds, CancelableActionBase& cancelable_action)
 {
-    try {
-        bool rc = false;
-        if (!drone_->takeoff(-getMaxZ(), 0, 0).wait(10000, &rc))
-        {
-            throw MoveException("TakeOff command - timeout waiting for response");
-        }
-        if (!rc) {
-            throw MoveException("TakeOff command rejected by drone");
-        }
+    bool rc = false;
+    if (!drone_->takeoff(getTakeoffZ(), 0.0f, 0.0f).wait(static_cast<int>(max_wait_seconds * 1000), &rc))
+    {
+        throw MoveException("TakeOff command - timeout waiting for response");
+    }
+    if (!rc) {
+        throw MoveException("TakeOff command rejected by drone");
+    }
 
-        bool success = waitForZ(max_wait, getMaxZ(), getDistanceAccuracy(), cancelable_action);
-        return success;
-    }
-    catch (std::exception& ex) {
-        //TODO:: this exception seem to occur even when success
-        Utils::logError("Exception occured while MavLink takeoff call: %s", ex.what());
-        return false;
-    }
+    bool success = waitForZ(max_wait_seconds, getTakeoffZ(), getDistanceAccuracy(), cancelable_action);
+    return success;
 }
+
+bool MavLinkDroneControl::hover(CancelableActionBase& cancelable_action)
+{
+    bool rc = false;
+    AsyncResult<bool> result = drone_->loiter();
+    auto start_time = std::chrono::system_clock::now();
+    while (!cancelable_action.isCancelled())
+    {
+        if (result.wait(100, &rc))
+        {
+            break;
+        }
+    }
+    return rc;
+}
+
 bool MavLinkDroneControl::land(CancelableActionBase& cancelable_action)
 {
     // bugbug: really need a downward pointing distance to ground sensor to do this properly, for now
@@ -195,6 +204,7 @@ bool MavLinkDroneControl::land(CancelableActionBase& cancelable_action)
 
     float max_wait = 60;
     if (!waitForFunction([&]() {
+        updateState();
         return current_state.controls.landed;
     }, max_wait, cancelable_action))
     {
@@ -267,11 +277,11 @@ float MavLinkDroneControl::getCommandPeriod()
 {
     return 1.0f/50; //1 period of 50hz
 }
-float MavLinkDroneControl::getMaxZ() 
+float MavLinkDroneControl::getTakeoffZ()
 {
-    // pick a number, PX4 doesn't have a fixed limit here, but 2 meters is probably safe_bool
-    // enough to get out of the backwash turbulance.
-    return -2.0f;    
+    // pick a number, PX4 doesn't have a fixed limit here, but 3 meters is probably safe 
+    // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
+    return -3.0f;    
 }
 float MavLinkDroneControl::getDistanceAccuracy() 
 {

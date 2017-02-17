@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include <iostream>
+#include <chrono>
 #include "control/RpcLibClient.hpp"
 #include "control/DroneControlBase.hpp"
 STRICT_MODE_OFF
@@ -34,6 +35,17 @@ int imageExample()
 
     auto i3 = client.getImageForCamera(4, DroneControlBase::ImageType::Scene);
     cout << i3.size() << " " << (i3.size() > 0 ? i3[0] : -1) << endl;
+
+    /* cout << "Press Enter to enable retrival of depth images" << endl; cin.get();
+    client.setImageTypeForCamera(0, DroneControlBase::ImageType::Segmentation);
+    cout << "Press Enter to get depth image" << endl; cin.get();
+    auto image = client.getImageForCamera(0, DroneControlBase::ImageType::Segmentation);
+    cout << "PNG images recieved bytes: " << image.size() << endl;
+    cout << "Press Enter to save image" << endl; cin.get();
+    ofstream file("c:\\temp\\depth.png", ios::binary);
+    file.write((char*) image.data(), image.size());
+    file.close();*/
+
     return 0;
 }
 
@@ -44,31 +56,42 @@ int main()
 
     msr::airlib::RpcLibClient client;
 
-    cout << "Press Enter to enable retrival of depth images" << endl; cin.get();
-    client.setImageTypeForCamera(0, DroneControlBase::ImageType::Segmentation);
+    try {
 
-    cout << "Press Enter to get depth image" << endl; cin.get();
-    auto image = client.getImageForCamera(0, DroneControlBase::ImageType::Segmentation);
-    cout << "PNG images recieved bytes: " << image.size() << endl;
-    cout << "Press Enter to save image" << endl; cin.get();
-    ofstream file("c:\\temp\\depth.png", ios::binary);
-    file.write((char*) image.data(), image.size());
-    file.close();
+        cout << "Press Enter to arm the drone" << endl; cin.get();
+        client.armDisarm(true);
 
-    cout << "Press Enter to arm the drone" << endl; cin.get();
-    client.armDisarm(true);
+        cout << "Press Enter to takeoff" << endl; cin.get();
+        float takeoffTimeout = 1000; // wait 10 seconds to reach takeoff height.
+        // drone will take off to whatever it thinks is a safe minimum altitude
+        // so as to not get too much propellor backwash but also not too high.
+        // usually 2-5 meters or thereabouts.
+        client.takeoff(takeoffTimeout);
 
-    cout << "Press Enter to takeoff" << endl; cin.get();
-    client.takeoff(1000);
+        cout << "Press Enter to request offboard control" << endl; cin.get();
+        client.requestControl();
 
-    cout << "Press Enter to use offboard control" << endl; cin.get();
-    client.requestControl();
+        cout << "Press Enter to fly a 5 meters box at 2 m/s velocity" << endl; cin.get();        
+        auto position = client.getPosition();
+        float z = -3.0; // 3 meters above ground (NED coordinate system).
+        float speed = 2.0f;
+        float size = 5.0f; 
+        client.moveToPosition(position.x() + size, position.y(), z, speed);
+        client.moveToPosition(position.x() + size, position.y() + size, z, speed);
+        client.moveToPosition(position.x(), position.y() + size, z, speed);
+        client.moveToPosition(position.x(), position.y(), z, speed);
 
-    cout << "Press Enter to move 5 meters with 1 m/s velocity" << endl; cin.get();
-    client.moveToPosition(5, 0, 2.5f, 1);
+        cout << "Press Enter to land" << endl; cin.get();
+        client.land();
 
-    cout << "Press Enter to land" << endl; cin.get();
-    client.land();
+        cout << "Press Enter to disarm" << endl; cin.get();
+        client.armDisarm(false);
+
+    }
+    catch (rpc::rpc_error  e) {
+        std::string msg = e.get_error().as<std::string>();
+        cout << "Exception raised by the API, something went wrong." << endl << msg << endl;
+    }
 
     return 0;
 }

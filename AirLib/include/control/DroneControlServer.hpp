@@ -37,10 +37,10 @@ public:
         CallLock lock(action_mutex_, &is_cancelled_);
         return drone_->releaseControl(*this);
     }
-    bool takeoff(float max_wait)
+    bool takeoff(float max_wait_seconds)
     {
         CallLock lock(action_mutex_, &is_cancelled_);
-        return drone_->takeoff(max_wait, *this);
+        return drone_->takeoff(max_wait_seconds, *this);
     }
     bool land()
     {
@@ -118,16 +118,10 @@ public:
         return drone_->rotateByYawRate(yaw_rate, duration, *this);
     }
 
-    bool hover(float duration)
+    bool hover()
     {
         CallLock lock(action_mutex_, &is_cancelled_);
-        return drone_->hover(duration, *this);
-    }
-
-    bool sleep(double duration) override
-    {
-        CallLock lock(action_mutex_, &is_cancelled_);
-        return drone_->sleep(static_cast<float>(duration), *this);
+        return drone_->hover(*this);
     }
 
     //status getters

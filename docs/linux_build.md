@@ -39,7 +39,7 @@ Now type `make`.
 STATUS: all of the MavLinkCom library builds and runs on Linux, but the AirLib code is running into a weird
 difference in how GCC implements some -std=c++14 features... stay tuned...
 
-## Windows
+## Windows cmake
 
 You can also use cmake on Windows, but we have already checked in a .sln and .vcxproj files that are nicer than what
 cmake creates.  This is why we have separated the CMakeLists.txt files into a different directory, this ensures cmake 

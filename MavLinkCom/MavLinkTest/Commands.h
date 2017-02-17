@@ -127,7 +127,7 @@ public:
 	virtual bool Parse(std::vector<std::string>& args);
 
 	virtual void PrintHelp() {
-		printf("takeoff alt - take off to given altitude (in meters).\n");
+		printf("takeoff alt - take off to given altitude above ground (in meters).\n");
 	}
 
 	virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
