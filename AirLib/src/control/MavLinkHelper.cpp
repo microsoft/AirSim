@@ -199,8 +199,8 @@ struct MavLinkHelper::impl {
 
     DroneControlBase* createOrGetDroneControl()
     {
-        if (drone_control_ == nullptr) {
-            if (connection_ == nullptr)
+        if (!drone_control_) {
+            if (!connection_)
                 throw std::domain_error("MavLinkHelper requires connection object to be set before createOrGetDroneControl call");
             drone_control_ = std::static_pointer_cast<DroneControlBase>(
                 std::make_shared<MavLinkDroneControl>(AirControlSysID, AirControlCompID, connection_));
@@ -487,7 +487,7 @@ struct MavLinkHelper::impl {
 
     void update(real_T dt)
     {
-        if (connection_ == nullptr || !connection_->isOpen())
+        if (!connection_ || !connection_->isOpen())
             return;
 
         //send sensor updates
@@ -538,7 +538,7 @@ struct MavLinkHelper::impl {
 
     void sendMocapPose(const Vector3r& position, const Quaternionr& orientation)
     {
-        if (main_node_ == nullptr) return;
+        if (!main_node_) return;
 
         mavlinkcom::MavLinkAttPosMocap mocap_pose_message;
         mocap_pose_message.x = position.x(); mocap_pose_message.y = position.y(); mocap_pose_message.z = position.z();
@@ -549,7 +549,7 @@ struct MavLinkHelper::impl {
 
     void sendCollison(float normalX, float normalY, float normalZ)
     {
-        if (main_node_ == nullptr) return;
+        if (!main_node_) return;
 
         MavLinkCollision collision{};
         collision.src = 1;	//provider of data is MavLink system in id field
@@ -594,7 +594,7 @@ struct MavLinkHelper::impl {
 
     void setHILMode()
     {
-        if (main_node_ == nullptr) {
+        if (!main_node_) {
             return;
         }
 
