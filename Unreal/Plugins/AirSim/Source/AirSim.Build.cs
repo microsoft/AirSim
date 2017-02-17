@@ -56,7 +56,7 @@ public class AirSim : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
-        //supress VC++ proprietory warnings
+        //suppress VC++ proprietary warnings
         Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
         Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
 
