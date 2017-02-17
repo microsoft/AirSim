@@ -64,7 +64,7 @@ void AVehiclePawnBase::initialize()
 
 APIPCamera* AVehiclePawnBase::getFpvCamera()
 {
-    //should be overriden in derived class
+    //should be overridden in derived class
     return nullptr;
 }
 
