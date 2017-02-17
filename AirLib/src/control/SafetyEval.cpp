@@ -96,7 +96,7 @@ void SafetyEval::isSafeDestination(const Vector3r& dest_pos, const Vector3r& cur
     if (!(enable_reasons_ & SafetyViolationType_::Obstacle))
         return;
 
-    //tranform dest_pos vector to body frame
+    //transform dest_pos vector to body frame
     const Vector3r cur_dest = dest_pos - cur_pos;
     float cur_dest_norm = cur_dest.norm();    
     
