@@ -141,7 +141,7 @@ private:
         size_t nsize = (csize == 0) ? m_init_size : csize * 2;
 
         char* tmp = static_cast<char*>(::realloc(m_data, nsize));
-        if(tmp == nullptr) {
+        if(!tmp) {
             return false;
         }
 
