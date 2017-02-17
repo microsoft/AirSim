@@ -90,7 +90,7 @@ T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
 template<typename T>
 void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& foundActors)
 {
-    UGameplayStatics::GetAllActorsOfClass(context == nullptr ? GEngine : context, T::StaticClass(), foundActors);
+    UGameplayStatics::GetAllActorsOfClass((!context) ? GEngine : context, T::StaticClass(), foundActors);
 }
 
 bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collison_channel) 
