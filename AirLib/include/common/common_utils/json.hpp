@@ -10611,17 +10611,17 @@ basic_json_parser_66:
             assert(m_content <= m_start);
             assert(m_start <= m_cursor);
             assert(m_cursor <= m_limit);
-            assert(m_marker == nullptr or m_marker  <= m_limit);
+            assert(!m_marker or m_marker <= m_limit);
 
             // number of processed characters (p)
             const auto num_processed_chars = static_cast<size_t>(m_start - m_content);
             // offset for m_marker wrt. to m_start
-            const auto offset_marker = (m_marker == nullptr) ? 0 : m_marker - m_start;
+            const auto offset_marker = (!m_marker) ? 0 : m_marker - m_start;
             // number of unprocessed characters (u)
             const auto offset_cursor = m_cursor - m_start;
 
             // no stream is used or end of file is reached
-            if (m_stream == nullptr or m_stream->eof())
+            if (!m_stream or m_stream->eof())
             {
                 // m_start may or may not be pointing into m_line_buffer at
                 // this point. We trust the standard library to do the right
