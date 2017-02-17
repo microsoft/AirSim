@@ -34,7 +34,7 @@ public: //methods
         delay_line_.initialize(params_.update_latency);
         
         //initialize filters
-        eph_filter.initialize(params_.eph_time_constant, params_.eph_final, params_.eph_initial); //starting dilution set to 100 which we will reduce over time to targetted 0.3f, with 45% accuracy within 100 updates, each update occuring at 0.2s interval
+        eph_filter.initialize(params_.eph_time_constant, params_.eph_final, params_.eph_initial); //starting dilution set to 100 which we will reduce over time to targeted 0.3f, with 45% accuracy within 100 updates, each update occurring at 0.2s interval
         epv_filter.initialize(params_.epv_time_constant, params_.epv_final, params_.epv_initial);
     
         GpsSimple::reset();
