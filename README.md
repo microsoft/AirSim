@@ -30,6 +30,8 @@ The official Linux build is expected to arrive in about a couple of weeks. All o
 ## Manual flights
 Follow the steps above to build and set up the Unreal environment. Plugin your Pixhawk (or compatible device) in your USB port, turn on the RC and press the Play button in Unreal. You should be able to control the drones in the simulator with the RC and fly around. Press F1 key to view several available keyboard shortcuts.
 
+![record screenshot](docs/images/DroneGIF-03.gif)
+
 [More details](docs/manual_flight.md)
 
 ## Gathering training data
@@ -67,6 +69,9 @@ We welcome contributions to help advance research frontiers.
 
 - [More on our design](docs/design.md)
 - [More on our code structure](docs/code_structure.md)
+
+# Contact
+Joing the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay upto date or ask any questions.
 
 # License
 This project is released under MIT License. Please review [License file](LICENSE) for more details.
