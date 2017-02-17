@@ -33,8 +33,8 @@ public: //types
         }
 
     private:
-        std::lock_guard<std::recursive_mutex> lock_;
         DroneControlBase* drone_;
+        std::lock_guard<std::recursive_mutex> lock_;
     };
 
 public: //interface for outside world
@@ -142,7 +142,24 @@ protected: //must implement interface by derived class
 
     //naked variables for derived class access
     unordered_map<int, ImageType> enabled_images;
-    unordered_map<int, unordered_map<ImageType, vector<uint8_t>>> images;
+
+    struct EnumClassHash
+    {
+        template <typename T>
+        std::size_t operator()(T t) const
+        {
+            return static_cast<std::size_t>(t);
+        }
+    };
+
+    // this is a work around for GCC compile error to do with enum classes as unordered_map key.
+    // see http://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
+    template <typename Key>
+    using EnumClassHashType = typename std::conditional<std::is_enum<Key>::value, EnumClassHash, std::hash<Key>>::type;
+    template <typename Key, typename T>
+    using EnumClassUnorderedMap = std::unordered_map<Key, T, EnumClassHashType<Key>>;
+
+    unordered_map<int, EnumClassUnorderedMap<ImageType, vector<uint8_t>>> images;
 
 protected: //optional oveerides recommanded for any drones, default implementation may work
     virtual float getAutoLookahead(float velocity, float adaptive_lookahead,

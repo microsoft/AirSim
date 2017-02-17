@@ -455,7 +455,7 @@ bool DroneControlBase::waitForFunction(WaitFunction function, float max_wait_sec
 
 bool DroneControlBase::waitForZ(float max_wait_seconds, float z, float margin, CancelableActionBase& cancelable_action)
 {
-    float cur_z = FLT_MAX;
+    float cur_z = 100000;
     if (!waitForFunction([&]() {
         cur_z = getZ();
         return (std::abs(cur_z - z) <= margin);
@@ -653,7 +653,7 @@ bool DroneControlBase::setImageForCamera(int camera_id, ImageType type, const ve
     if (it != images.end())
         (it->second)[type] = image;
     
-    auto new_list = std::unordered_map<ImageType, vector<uint8_t>>();
+    auto new_list = EnumClassUnorderedMap<ImageType, vector<uint8_t>>();
     new_list[type] = image;
     images[camera_id] = new_list;
 

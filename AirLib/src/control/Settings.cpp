@@ -38,6 +38,7 @@ extern "C" {
 		);
 
 #define CreateDirectoryEx  CreateDirectoryExW
+
 #endif
 
 #ifndef MAX_PATH
@@ -56,8 +57,6 @@ extern "C" {
 }
 
 
-#else
-#include <sys/param.h>
 #endif
 
 #ifdef _WIN32
@@ -67,7 +66,8 @@ extern "C" {
 #define getcwd _getcwd
 #else
 #include <unistd.h>
-#include <sys/param.h>  // MAXPATHLEN definition
+#include <sys/param.h> // MAXPATHLEN definition
+#include <sys/stat.h> // get mkdir.
 #endif
 
 using json = nlohmann::json;
@@ -98,7 +98,15 @@ Settings& Settings::loadJSonFile(std::wstring fileName)
 	settings_.file_ = path;
 
     settings_.load_success = false;
-	std::ifstream s(path);
+
+#ifdef _WIN32
+    std::ifstream s(path);
+#else
+    // bugbug: how do you open unicode file names on Linux?
+    std::string ascii(path.begin(), path.end());
+    std::ifstream s(ascii);
+#endif
+
 	if (!s.fail()) {
 		json doc_;
 		s >> settings_.doc_;
@@ -123,8 +131,12 @@ void Settings::createDirectory(std::wstring parentFolder, std::wstring name)
 	}
 #else
 	// bugbug: how do you create unicode folders on Unix?
-	std::string ascii(path.begin(), path.end());
-	mkdir(ascii.c_str());
+	std::string asciiparent(parentFolder.begin(), parentFolder.end());
+    std::string asciiname(name.begin(), name.end());
+    std::string ascii = asciiparent + common_utils::Utils::kPathSeparator + asciiname;
+    struct stat buf;
+    stat(ascii.c_str(), &buf);
+	mkdir(ascii.c_str(), buf.st_mode); // inherit permissions
 #endif
 }
 
@@ -173,8 +185,14 @@ std::wstring Settings::getUserDocumentsFolder() {
 
 void Settings::saveJSonFile(std::wstring fileName)
 {
-	std::wstring path = getFullPath(fileName);
+    std::wstring path = getFullPath(fileName);
+#ifdef _WIN32
 	std::ofstream s(path);
+#else
+    // bugbug: how do you open unicode file names on Linux?
+    std::string ascii(path.begin(), path.end());
+    std::ofstream s(ascii);
+#endif
 	s << std::setw(2) << doc_ << std::endl;
 }
 

@@ -13,7 +13,7 @@ namespace msr {
 			nlohmann::json doc_;
     bool load_success = false;
 		public:
-			static wchar_t* getProductName() {
+			static const wchar_t* getProductName() {
 				return L"AirSim";
 			}
 
