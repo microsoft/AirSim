@@ -833,7 +833,7 @@ bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
         }
     }
 
-	if (droneConnection == nullptr)
+	if (!droneConnection)
 	{
 		// failed to connect
 		return false;
