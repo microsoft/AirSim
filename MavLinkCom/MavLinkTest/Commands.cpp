@@ -659,7 +659,7 @@ public:
 				newLen = size + len;
 			}
 			char* newBuffer = new char[newLen];
-			if (newBuffer == nullptr) {
+			if (!newBuffer) {
 				throw std::runtime_error("out of memory");
 			}
 			if (size > 0) {
@@ -681,7 +681,7 @@ public:
 
 void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
-	if (logViewer.get() == nullptr)
+	if (!logViewer.get())
 	{
 		printf("sendimage needs a logviewer (use -log on the command line)\n");
 		return;
@@ -704,7 +704,7 @@ void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	}
 
 	FILE* fptr = fopen(fileName.c_str(), "rb");
-	if (fptr == nullptr)
+	if (!fptr)
 	{
 		printf("Error opening file '%s'\n", fileName.c_str());
 		return;
@@ -1714,7 +1714,7 @@ bool FtpCommand::Parse(std::vector<std::string>& args)
 
 void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
-	if (client == nullptr) {
+	if (!client) {
 		client = std::make_shared<MavLinkFtpClient>(166, 1);
 		client->connect(com->getConnection());
 	}
