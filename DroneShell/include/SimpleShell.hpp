@@ -478,7 +478,7 @@ public:
         }
         catch(...) {
             // catch any other errors (that we have no information about)
-            std::cerr << "Non-standard exception occured" << std::endl;
+            std::cerr << "Non-standard exception occurred" << std::endl;
         }
         
         return false;
