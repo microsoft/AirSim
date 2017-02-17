@@ -380,7 +380,7 @@ bool DroneControlBase::moveByManual(float vx_max, float vy_max, float z_min, Dri
     } while (waiter_trim.sleep(cancelable_action) && !waiter_trim.is_timeout());
 
     if (count < kMinCountForTrim)
-        throw MoveException("Cannot compute RC trim because too few readings recieved");
+        throw MoveException("Cannot compute RC trim because too few readings received");
 
     //take average
     rc_data_trims.divideBy(static_cast<float>(count));
@@ -461,7 +461,7 @@ bool DroneControlBase::waitForZ(float max_wait_seconds, float z, float margin, C
         return (std::abs(cur_z - z) <= margin);
     }, max_wait_seconds, cancelable_action))
     {
-        //Only raise exception is time out occured. If preempted then return status.
+        //Only raise exception is time out occurred. If preempted then return status.
         throw MoveException(Utils::stringf("Drone hasn't came to expected z of %f within time %f sec within error margin %f (current z = %f)",
             z, max_wait_seconds, margin, cur_z));
     }
