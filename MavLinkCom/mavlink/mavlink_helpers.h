@@ -206,7 +206,7 @@ MAVLINK_HELPER void mavlink_update_checksum(mavlink_message_t* msg, uint8_t c)
 }
 
 /**
- * This is a varient of mavlink_frame_char() but with caller supplied
+ * This is a variant of mavlink_frame_char() but with caller supplied
  * parsing buffers. It is useful when you want to create a MAVLink
  * parser in a library that doesn't use any global variables
  *
@@ -386,7 +386,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	}
 
 	bufferIndex++;
-	// If a message has been sucessfully decoded, check index
+	// If a message has been successfully decoded, check index
 	if (status->msg_received == MAVLINK_FRAMING_OK)
 	{
 		//while(status->current_seq != rxmsg->seq)
