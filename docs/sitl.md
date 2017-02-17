@@ -23,7 +23,7 @@ make posix_sitl_default
 ```
 ./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/lpe/iris
 ```
-4. Now you can run Unreal environment and connect to SITL via UDP[settings file](settings.md) with IP adress 127.0.0.1 and port 14560.
+4. Now you can run Unreal environment and connect to SITL via UDP[settings file](settings.md) with IP address 127.0.0.1 and port 14560.
 If you are running a separate Ubuntu machine find its IP address and use that in the settings.json file.
 5. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 
 Note that as we don't have physical board, RC cannot be connected directly to it. 

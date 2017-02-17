@@ -9,7 +9,7 @@ then you will probably not get a good flying experience.
 
 In fact, if the hard drive is this busy, chances are the drone will not fly properly at all.
 For some unknown reason this I/O bottle neck also interferes with the drone control loop and if that
-loop doesn't run at a high rate (300-500 Hz) then the drone will not fly.  Not surprizing, the control
+loop doesn't run at a high rate (300-500 Hz) then the drone will not fly.  Not surprising, the control
 loop inside the PX4 firmware that runs on a Pixhawk flight controller runs at 1000 Hz.
 
 ### Reducing I/O

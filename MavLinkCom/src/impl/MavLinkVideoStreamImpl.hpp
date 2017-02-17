@@ -39,7 +39,7 @@ namespace mavlinkcom_impl {
 			int width;             ///< Width of the image stream
 			int height;            ///< Width of the image stream
 			std::vector<uint8_t> data;  ///< Buffer for the incoming bytestream
-			uint64_t start;			//time when we started recieving data
+			uint64_t start;			//time when we started receiving data
 
 			void ready()
 			{

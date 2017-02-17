@@ -22,7 +22,7 @@ PX4 custom modes in the MAV_CMD_DO_SET_MODE messages (like PX4_CUSTOM_MAIN_MODE_
 You can also fly without flight controller hardware.  See [alternative to RC](sitl.md).
 
 ## Setup steps
-1. Make sure your RC reciever is bound with its RC transmitter. Connect the RC trasmitter to the flight controller's RC port.
+1. Make sure your RC receiver is bound with its RC transmitter. Connect the RC trasmitter to the flight controller's RC port.
 2. Download [QGroundControl](http://qgroundcontrol.com/), launch it and connect your flight controller to the USB port.
 3. Install the PX4 firmware v1.4.4 from [github](https://github.com/PX4/Firmware/releases/tag/v1.4.4). The later releases have a bug that we are working with PX4 team to fix.
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected. You might also want to use QGroundControl to calibrate your RC and set up Flight Mode switch among other things (see below) so everything is green.

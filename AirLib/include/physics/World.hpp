@@ -115,10 +115,10 @@ private:
             update(static_cast<real_T>(dt));
         }
         catch(const std::exception& ex) {
-            Utils::logError("Exception occured while updating world: %s", ex.what());
+            Utils::logError("Exception occurred while updating world: %s", ex.what());
         }
         catch(...) {
-            Utils::logError("Exception occured while updating world");
+            Utils::logError("Exception occurred while updating world");
         }
         return true;
     }

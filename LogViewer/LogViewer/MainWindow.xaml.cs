@@ -1221,7 +1221,7 @@ namespace LogViewer
             public int width;             // Width of the image stream
             public int height;            // Width of the image stream
             public byte[] data;           // Buffer for the incoming bytestream
-            public long start;            // Time when we started recieving data
+            public long start;            // Time when we started receiving data
         };
 
         IncomingImage incoming_image = new IncomingImage();

@@ -132,7 +132,7 @@ private:
                 else
                     next.twist.linear = vcur_avg;
 
-                //there is no acceleration durring collison response
+                //there is no acceleration during collison response
                 next.accelerations.linear = Vector3r::Zero();
                 next.accelerations.angular = Vector3r::Zero();
                 

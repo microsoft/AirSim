@@ -27,12 +27,12 @@ void ASimModeBase::Tick(float DeltaSeconds)
 
 void ASimModeBase::reset()
 {
-    //Should be overriden by derived classes
+    //Should be overridden by derived classes
 }
 
 std::string ASimModeBase::getReport()
 {
-    //Should be overriden by derived classes
+    //Should be overridden by derived classes
     return std::string();
 }
 
