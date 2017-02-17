@@ -17,7 +17,7 @@ TcpClientPort::TcpClientPort() : socket_(io_service_)
 	boost::asio::socket_base::send_buffer_size option(1000000);
 
 	read_buf_raw_ = new char[TCP_MAXBUF_SIZE];
-	if (read_buf_raw_ == nullptr)
+	if (!read_buf_raw_)
 	{
 		throw std::runtime_error("out of memory");
 	}
