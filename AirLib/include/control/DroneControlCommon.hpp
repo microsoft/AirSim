@@ -5,8 +5,9 @@
 #define msr_air_control_VehicleCommon_hpp
 
 #include "common/Common.hpp"
-namespace msr { namespace airlib {
-    
+namespace msr {
+namespace airlib {
+
 enum class MoveCommandType {
     Invalid = 0,
 
@@ -28,7 +29,7 @@ enum class MoveCommandType {
     MoveByManual,
 
     SetSafety,
-    
+
     RotateByYawRate,
     RotateToYaw,
     Sleep
@@ -49,19 +50,16 @@ struct YawMode {
     YawMode()
     {}
 
-    YawMode(bool is_rate_val, float yaw_or_rate_val)
-    {
+    YawMode(bool is_rate_val, float yaw_or_rate_val) {
         is_rate = is_rate_val;
         yaw_or_rate = yaw_or_rate_val;
     }
 
-    static YawMode Zero()
-    {
+    static YawMode Zero() {
         return YawMode(true, 0);
     }
 
-    void setZeroRate()
-    {
+    void setZeroRate() {
         is_rate = true;
         yaw_or_rate = 0;
     }
@@ -99,37 +97,42 @@ struct RCData {
     double timestamp;
     float pitch = 0, roll = 0, throttle = 0, yaw = 0, switch1 = 0, switch2 = 0, switch3 = 0;
 
-    void add(const RCData& other)
-    {
-        pitch += other.pitch; roll += other.roll; throttle += other.throttle; yaw += other.yaw;
+    void add(const RCData& other) {
+        pitch += other.pitch;
+        roll += other.roll;
+        throttle += other.throttle;
+        yaw += other.yaw;
     }
-    void subtract(const RCData& other)
-    {
-        pitch -= other.pitch; roll -= other.roll; throttle -= other.throttle; yaw -= other.yaw;
+    void subtract(const RCData& other) {
+        pitch -= other.pitch;
+        roll -= other.roll;
+        throttle -= other.throttle;
+        yaw -= other.yaw;
     }
-    void divideBy(float k)
-    {
-        pitch /= k; roll /= k; throttle /= k; yaw /= k;   
+    void divideBy(float k) {
+        pitch /= k;
+        roll /= k;
+        throttle /= k;
+        yaw /= k;
     }
-    bool isAnyMoreThan(float k)
-    {
+    bool isAnyMoreThan(float k) {
         using std::abs;
         return abs(pitch) > k || abs(roll) > k || abs(throttle) > k || abs(yaw) > k;
     }
-    string toString()
-    {
+    string toString() {
         return Utils::stringf("RCData[pitch=%f, roll=%f, throttle=%f, yaw=%f]", pitch, roll, throttle, yaw);
     }
 };
 
 //General exception when move command has runtime errors
 class MoveException : public std::runtime_error {
-public:
+  public:
     MoveException(const std::string& message)
-        : runtime_error(message) { 
+        : runtime_error(message) {
     }
 };
 
 
-}} //namespace
+}
+} //namespace
 #endif

@@ -71,8 +71,7 @@ static inline bool msgpack_zbuffer_expand(msgpack_zbuffer* zbuf);
 
 
 static inline bool msgpack_zbuffer_init(msgpack_zbuffer* zbuf,
-        int level, size_t init_size)
-{
+                                        int level, size_t init_size) {
     memset(zbuf, 0, sizeof(msgpack_zbuffer));
     zbuf->init_size = init_size;
     if(deflateInit(&zbuf->stream, level) != Z_OK) {
@@ -82,14 +81,12 @@ static inline bool msgpack_zbuffer_init(msgpack_zbuffer* zbuf,
     return true;
 }
 
-static inline void msgpack_zbuffer_destroy(msgpack_zbuffer* zbuf)
-{
+static inline void msgpack_zbuffer_destroy(msgpack_zbuffer* zbuf) {
     deflateEnd(&zbuf->stream);
     free(zbuf->data);
 }
 
-static inline msgpack_zbuffer* msgpack_zbuffer_new(int level, size_t init_size)
-{
+static inline msgpack_zbuffer* msgpack_zbuffer_new(int level, size_t init_size) {
     msgpack_zbuffer* zbuf = (msgpack_zbuffer*)malloc(sizeof(msgpack_zbuffer));
     if (zbuf == NULL) return NULL;
     if(!msgpack_zbuffer_init(zbuf, level, init_size)) {
@@ -99,15 +96,15 @@ static inline msgpack_zbuffer* msgpack_zbuffer_new(int level, size_t init_size)
     return zbuf;
 }
 
-static inline void msgpack_zbuffer_free(msgpack_zbuffer* zbuf)
-{
-    if(zbuf == NULL) { return; }
+static inline void msgpack_zbuffer_free(msgpack_zbuffer* zbuf) {
+    if(zbuf == NULL) {
+        return;
+    }
     msgpack_zbuffer_destroy(zbuf);
     free(zbuf);
 }
 
-static inline bool msgpack_zbuffer_expand(msgpack_zbuffer* zbuf)
-{
+static inline bool msgpack_zbuffer_expand(msgpack_zbuffer* zbuf) {
     size_t used = (char*)zbuf->stream.next_out - zbuf->data;
     size_t csize = used + zbuf->stream.avail_out;
     size_t nsize = (csize == 0) ? zbuf->init_size : csize * 2;
@@ -124,8 +121,7 @@ static inline bool msgpack_zbuffer_expand(msgpack_zbuffer* zbuf)
     return true;
 }
 
-static inline int msgpack_zbuffer_write(void* data, const char* buf, size_t len)
-{
+static inline int msgpack_zbuffer_write(void* data, const char* buf, size_t len) {
     msgpack_zbuffer* zbuf = (msgpack_zbuffer*)data;
 
     zbuf->stream.next_in = (Bytef*)buf;
@@ -146,8 +142,7 @@ static inline int msgpack_zbuffer_write(void* data, const char* buf, size_t len)
     return 0;
 }
 
-static inline char* msgpack_zbuffer_flush(msgpack_zbuffer* zbuf)
-{
+static inline char* msgpack_zbuffer_flush(msgpack_zbuffer* zbuf) {
     while(true) {
         switch(deflate(&zbuf->stream, Z_FINISH)) {
         case Z_STREAM_END:
@@ -163,24 +158,20 @@ static inline char* msgpack_zbuffer_flush(msgpack_zbuffer* zbuf)
     }
 }
 
-static inline const char* msgpack_zbuffer_data(const msgpack_zbuffer* zbuf)
-{
+static inline const char* msgpack_zbuffer_data(const msgpack_zbuffer* zbuf) {
     return zbuf->data;
 }
 
-static inline size_t msgpack_zbuffer_size(const msgpack_zbuffer* zbuf)
-{
+static inline size_t msgpack_zbuffer_size(const msgpack_zbuffer* zbuf) {
     return (char*)zbuf->stream.next_out - zbuf->data;
 }
 
-static inline void msgpack_zbuffer_reset_buffer(msgpack_zbuffer* zbuf)
-{
+static inline void msgpack_zbuffer_reset_buffer(msgpack_zbuffer* zbuf) {
     zbuf->stream.avail_out += (char*)zbuf->stream.next_out - zbuf->data;
     zbuf->stream.next_out = (Bytef*)zbuf->data;
 }
 
-static inline bool msgpack_zbuffer_reset(msgpack_zbuffer* zbuf)
-{
+static inline bool msgpack_zbuffer_reset(msgpack_zbuffer* zbuf) {
     if(deflateReset(&zbuf->stream) != Z_OK) {
         return false;
     }
@@ -188,8 +179,7 @@ static inline bool msgpack_zbuffer_reset(msgpack_zbuffer* zbuf)
     return true;
 }
 
-static inline char* msgpack_zbuffer_release_buffer(msgpack_zbuffer* zbuf)
-{
+static inline char* msgpack_zbuffer_release_buffer(msgpack_zbuffer* zbuf) {
     char* tmp = zbuf->data;
     zbuf->data = NULL;
     zbuf->stream.next_out = NULL;

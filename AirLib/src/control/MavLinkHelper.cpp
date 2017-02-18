@@ -18,7 +18,8 @@
 #include "MavLinkNode.hpp"
 #include "MavLinkVideoStream.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 
 using namespace mavlinkcom;
@@ -41,12 +42,12 @@ struct MavLinkHelper::impl {
     uint8_t AirControlSysID = 134;
     int AirControlCompID = 1;
 
-    // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet) 
+    // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet)
     // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
     // same machine.  Whatever network you choose it has to be the same one for external
     std::string LocalHostIp = "127.0.0.1";
 
-    // This publishes the sim messagesd from your local machine so others can listen.  It publishes on LocalHostIp. 
+    // This publishes the sim messagesd from your local machine so others can listen.  It publishes on LocalHostIp.
     int ExternalSimPort = 14588;
 
     // The log viewer can be on a different machine, so you can configure it's ip address and port here.
@@ -89,49 +90,46 @@ struct MavLinkHelper::impl {
     long last_gps_time = 0;
     bool was_reseted = false;
 
-	void loadSettings(Settings& settings)
-	{
-		this->SimSysID = static_cast<uint8_t>(settings.getInt("SimSysID", this->SimSysID));
-		settings.setInt("SimSysID", this->SimSysID);
-		this->SimCompID = settings.getInt("SimCompID", this->SimCompID);
-		settings.setInt("SimCompID", this->SimCompID);
+    void loadSettings(Settings& settings) {
+        this->SimSysID = static_cast<uint8_t>(settings.getInt("SimSysID", this->SimSysID));
+        settings.setInt("SimSysID", this->SimSysID);
+        this->SimCompID = settings.getInt("SimCompID", this->SimCompID);
+        settings.setInt("SimCompID", this->SimCompID);
 
-		this->ExtRendererSysID = static_cast<uint8_t>(settings.getInt("ExtRendererSysID", this->ExtRendererSysID));
-		settings.setInt("ExtRendererSysID", this->ExtRendererSysID);
-		this->ExtRendererCompID = settings.getInt("ExtRendererCompID", this->ExtRendererCompID);
-		settings.setInt("ExtRendererCompID", this->ExtRendererCompID);
+        this->ExtRendererSysID = static_cast<uint8_t>(settings.getInt("ExtRendererSysID", this->ExtRendererSysID));
+        settings.setInt("ExtRendererSysID", this->ExtRendererSysID);
+        this->ExtRendererCompID = settings.getInt("ExtRendererCompID", this->ExtRendererCompID);
+        settings.setInt("ExtRendererCompID", this->ExtRendererCompID);
 
-		this->AirControlSysID = static_cast<uint8_t>(settings.getInt("AirControlSysID", this->AirControlSysID));
-		settings.setInt("AirControlSysID", this->AirControlSysID);
-		this->AirControlCompID = settings.getInt("AirControlCompID", this->AirControlCompID);
-		settings.setInt("AirControlCompID", this->AirControlCompID);
+        this->AirControlSysID = static_cast<uint8_t>(settings.getInt("AirControlSysID", this->AirControlSysID));
+        settings.setInt("AirControlSysID", this->AirControlSysID);
+        this->AirControlCompID = settings.getInt("AirControlCompID", this->AirControlCompID);
+        settings.setInt("AirControlCompID", this->AirControlCompID);
 
-		this->LocalHostIp = settings.getString("LocalHostIp", this->LocalHostIp);
-		settings.setString("LocalHostIp", this->LocalHostIp);
-		this->ExternalSimPort = settings.getInt("ExternalSimPort", this->ExternalSimPort);
-		settings.setInt("ExternalSimPort", this->ExternalSimPort);
+        this->LocalHostIp = settings.getString("LocalHostIp", this->LocalHostIp);
+        settings.setString("LocalHostIp", this->LocalHostIp);
+        this->ExternalSimPort = settings.getInt("ExternalSimPort", this->ExternalSimPort);
+        settings.setInt("ExternalSimPort", this->ExternalSimPort);
 
-		this->LogViewerPort = settings.getInt("LogViewerPort", this->LogViewerPort);
-		settings.setInt("LogViewerPort", this->LogViewerPort);
-		this->LogViewerHostIp = settings.getString("LogViewerHostIp", this->LogViewerHostIp);
-		settings.setString("LogViewerHostIp", this->LogViewerHostIp);
+        this->LogViewerPort = settings.getInt("LogViewerPort", this->LogViewerPort);
+        settings.setInt("LogViewerPort", this->LogViewerPort);
+        this->LogViewerHostIp = settings.getString("LogViewerHostIp", this->LogViewerHostIp);
+        settings.setString("LogViewerHostIp", this->LogViewerHostIp);
 
-		this->QgcPort = settings.getInt("QgcPort", this->QgcPort);
-		settings.setInt("QgcPort", this->QgcPort);
-		this->QgcHostIp = settings.getString("QgcHostIp", this->QgcHostIp);
-		settings.setString("QgcHostIp", this->QgcHostIp);
-	}
+        this->QgcPort = settings.getInt("QgcPort", this->QgcPort);
+        settings.setInt("QgcPort", this->QgcPort);
+        this->QgcHostIp = settings.getString("QgcHostIp", this->QgcHostIp);
+        settings.setString("QgcHostIp", this->QgcHostIp);
+    }
 
 
-    void normalizeRotorControls()
-    {
+    void normalizeRotorControls() {
         if (!is_controls_0_1_) {
             // change -1 to 1 to 0 to 1.
             for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
                 rotor_controls_[i] = (rotor_controls_[i] + 1.0f) / 2.0f;
             }
-        }
-        else { // we have 0 to 1
+        } else { // we have 0 to 1
             //TODO: make normalization vehicle independent?
             for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
                 rotor_controls_[i] = Utils::clip(0.83f * rotor_controls_[i] + 0.17f, 0.0f, 1.0f);
@@ -139,8 +137,7 @@ struct MavLinkHelper::impl {
         }
     }
 
-    void initializeHILSubscrptions()
-    {
+    void initializeHILSubscrptions() {
         is_any_heartbeat_ = false;
         is_hil_mode_set_ = false;
         is_armed_ = false;
@@ -163,31 +160,30 @@ struct MavLinkHelper::impl {
             node->sendMessage(test);
             test.system_status = 0;
             return true;
-        }
-        catch (std::runtime_error) {
+        } catch (std::runtime_error) {
             return false;
         }
     }
 
-    bool connectToLogViewer()
-    {
+    bool connectToLogViewer() {
         //set up logviewer proxy
         if (LogViewerHostIp.size() > 0) {
             logviewer_proxy_ = createProxy("LogViewer", LogViewerHostIp, LogViewerPort);
             if (!sendTestMessage(logviewer_proxy_)) {
-                // error talking to log viewer, so don't keep trying!
+                // error talking to log viewer, so don't keep trying, and close the connection also.
+                logviewer_proxy_->getConnection()->close();
                 logviewer_proxy_ = nullptr;
             }
         }
         return logviewer_proxy_ != nullptr;
     }
 
-    bool connectToQGC()
-    {
+    bool connectToQGC() {
         if (QgcHostIp.size() > 0) {
             qgc_proxy_ = createProxy("QGC", QgcHostIp, QgcPort);
             if (!sendTestMessage(qgc_proxy_)) {
-                // error talking to QGC, so don't keep trying!
+                // error talking to QGC, so don't keep trying, and close the connection also.
+                qgc_proxy_->getConnection()->close();
                 qgc_proxy_ = nullptr;
             }
         }
@@ -195,25 +191,23 @@ struct MavLinkHelper::impl {
     }
 
 
-    DroneControlBase* createOrGetDroneControl()
-    {
+    DroneControlBase* createOrGetDroneControl() {
         if (drone_control_ == nullptr) {
             if (connection_ == nullptr)
                 throw std::domain_error("MavLinkHelper requires connection object to be set before createOrGetDroneControl call");
             drone_control_ = std::static_pointer_cast<DroneControlBase>(
-                std::make_shared<MavLinkDroneControl>(AirControlSysID, AirControlCompID, connection_));
+                                 std::make_shared<MavLinkDroneControl>(AirControlSysID, AirControlCompID, connection_));
         }
 
         return drone_control_.get();
     }
 
-    std::shared_ptr<mavlinkcom::MavLinkNode> createProxy(std::string name, std::string ip, int port)
-    {
+    std::shared_ptr<mavlinkcom::MavLinkNode> createProxy(std::string name, std::string ip, int port) {
         auto connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), LocalHostIp, ip, port);
 
         // it is ok to reuse the simulator sysid and compid here because this node is only used to send a few messages directly to this endpoint
         // and all other messages are funnelled through from PX4 via the Join method below.
-        auto node = std::make_shared<MavLinkNode>(SimSysID, SimCompID); //TODO: use -1 to autoset sys id on first heartbeat)
+        auto node = std::make_shared<MavLinkNode>(SimSysID, SimCompID);
         node->connect(connection);
 
         // now join the main connection to this one, this causes all PX4 messages to be sent to the proxy and all messages from the proxy will be
@@ -223,15 +217,12 @@ struct MavLinkHelper::impl {
         return node;
     }
 
-    std::string findPixhawk()
-    {
+    std::string findPixhawk() {
         auto result = MavLinkConnection::findSerialPorts(0, 0);
-        for (auto iter = result.begin(); iter != result.end(); iter++)
-        {
+        for (auto iter = result.begin(); iter != result.end(); iter++) {
             SerialPortInfo info = *iter;
             if (info.vid == pixhawkVendorId) {
-                if (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
-                {
+                if (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId) {
                     // printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
                     return std::string(info.portName.begin(), info.portName.end());
                 }
@@ -240,8 +231,7 @@ struct MavLinkHelper::impl {
         return "";
     }
 
-    void connectToExternalSim()
-    {
+    void connectToExternalSim() {
         close();
 
         connection_ = MavLinkConnection::connectLocalUdp("ext_sim", LocalHostIp, ExternalSimPort);
@@ -252,33 +242,28 @@ struct MavLinkHelper::impl {
         connectToVideoServer();
     }
 
-    void connectToHIL(const HILConnectionInfo& connection_info)
-    {
+    void connectToHIL(const HILConnectionInfo& connection_info) {
         createHILConnection(connection_info);
         initializeHILSubscrptions();
     }
 
-    void createHILConnection(const HILConnectionInfo& connection_info)
-    {
+    void createHILConnection(const HILConnectionInfo& connection_info) {
         if (connection_info.use_serial) {
             createHILSerialConnection(connection_info.serial_port, connection_info.baud_rate);
-        }
-        else {
+        } else {
             createHILUdpConnection(connection_info.ip_address, connection_info.ip_port);
         }
         connectToVideoServer();
     }
 
-    void createHILUdpConnection(const std::string& ip, int port)
-    {
+    void createHILUdpConnection(const std::string& ip, int port) {
         close();
         connection_ = MavLinkConnection::connectLocalUdp("hil", ip, port);
-        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID); //TODO: use -1 to autoset sys id on first heartbeat
+        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID);
         main_node_->connect(connection_);
     }
 
-    void createHILSerialConnection(const std::string& port_name, int baud_rate)
-    {
+    void createHILSerialConnection(const std::string& port_name, int baud_rate) {
         close();
 
         std::string port_name_auto = port_name;
@@ -287,38 +272,33 @@ struct MavLinkHelper::impl {
         }
 
         connection_ = MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
-        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID); //TODO: use -1 to autoset sys id on first heartbeat
+        main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID);
         main_node_->connect(connection_);
     }
 
-    void connectToVideoServer()
-    {
+    void connectToVideoServer() {
         video_server_ = std::make_shared<MavLinkVideoServer>(ExtRendererSysID, ExtRendererCompID);
         video_server_->connect(connection_);
     }
 
-    mavlinkcom::MavLinkHilSensor getLastSensorMessage()
-    {
+    mavlinkcom::MavLinkHilSensor getLastSensorMessage() {
         std::lock_guard<std::mutex> guard(last_message_mutex_);
         return last_sensor_message_;
     }
 
-    mavlinkcom::MavLinkHilGps getLastGpsMessage()
-    {
+    mavlinkcom::MavLinkHilGps getLastGpsMessage() {
         std::lock_guard<std::mutex> guard(last_message_mutex_);
         return last_gps_message_;
     }
 
-    void externalSimSubscriber(std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg)
-    {
+    void externalSimSubscriber(std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
         if (msg.msgid == MocapPoseMessage.msgid) {
             std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
             MocapPoseMessage.decode(msg); // update current vehicle state.
         }
     }
 
-    void getStatusMessages(std::vector<std::string>& messages)
-    {
+    void getStatusMessages(std::vector<std::string>& messages) {
         messages.clear();
         std::lock_guard<std::mutex> guard(status_text_mutex_);
 
@@ -328,13 +308,11 @@ struct MavLinkHelper::impl {
         }
     }
 
-    void hILSubscriber(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg)
-    {
+    void hILSubscriber(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
         processHILMessages(msg);
     }
 
-    void processHILMessages(const MavLinkMessage& msg)
-    {
+    void processHILMessages(const MavLinkMessage& msg) {
         if (msg.msgid == HeartbeatMessage.msgid) {
             std::lock_guard<std::mutex> guard_heartbeat(heartbeat_mutex_);
 
@@ -344,7 +322,7 @@ struct MavLinkHelper::impl {
             if (!is_any_heartbeat_) {
                 is_any_heartbeat_ = true;
                 if (HeartbeatMessage.autopilot == static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_PX4) &&
-                    HeartbeatMessage.type == static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_FIXED_WING)) {
+                        HeartbeatMessage.type == static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_FIXED_WING)) {
                     // PX4 will scale fixed wing servo outputs to -1 to 1
                     // and it scales multi rotor servo outpus to 0 to 1.
                     is_controls_0_1_ = false;
@@ -384,8 +362,7 @@ struct MavLinkHelper::impl {
 
                 normalizeRotorControls();
             }
-        }
-        else if (msg.msgid == HilActuatorControlsMessage.msgid) {
+        } else if (msg.msgid == HilActuatorControlsMessage.msgid) {
             actuators_message_supported_ = true;
 
             std::lock_guard<std::mutex> guard_actuator(hil_controls_mutex_);    //use same mutex as HIL_CONTROl
@@ -399,8 +376,7 @@ struct MavLinkHelper::impl {
         }
     }
 
-    void sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt)
-    {
+    void sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt) {
         mavlinkcom::MavLinkHilSensor hil_sensor;
         hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochMillis() * 1000);
         hil_sensor.xacc = acceleration.x();
@@ -434,8 +410,7 @@ struct MavLinkHelper::impl {
     }
 
     void sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog,
-        float eph, float epv, int fix_type, unsigned int satellites_visible)
-    {
+                    float eph, float epv, int fix_type, unsigned int satellites_visible) {
         mavlinkcom::MavLinkHilGps hil_gps;
         hil_gps.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochMillis() * 1000);
         hil_gps.lat = static_cast<int32_t>(geo_point.latitude * 1E7);
@@ -463,28 +438,24 @@ struct MavLinkHelper::impl {
         last_gps_message_ = hil_gps;
     }
 
-    real_T getRotorControlSignal(unsigned int rotor_index)
-    {
+    real_T getRotorControlSignal(unsigned int rotor_index) {
         std::lock_guard<std::mutex> guard(hil_controls_mutex_);
         return rotor_controls_[rotor_index];
     }
 
-    void initialize(const MultiRotor* vehicle)
-    {
+    void initialize(const MultiRotor* vehicle) {
         vehicle_ = vehicle;
     }
 
     //*** Start: UpdatableState implementation ***//
-    void reset()
-    {
+    void reset() {
         was_reseted = true;
         Utils::setValue(rotor_controls_, 0.0f);
         last_gps_time = 0;
         setNormalMode();
     }
 
-    void update(real_T dt)
-    {
+    void update(real_T dt) {
         if (connection_ == nullptr || !connection_->isOpen())
             return;
 
@@ -493,10 +464,10 @@ struct MavLinkHelper::impl {
         const auto& mag_output = vehicle_->getMagnetometer()->getOutput();
         const auto& baro_output = vehicle_->getBarometer()->getOutput();
 
-        sendHILSensor(imu_output.linear_acceleration, 
-            imu_output.angular_velocity, 
-            mag_output.magnetic_field_body,
-            baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
+        sendHILSensor(imu_output.linear_acceleration,
+                      imu_output.angular_velocity,
+                      mag_output.magnetic_field_body,
+                      baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
 
         if (vehicle_->getGps() != nullptr) {
             const auto& gps_output = vehicle_->getGps()->getOutput();
@@ -516,7 +487,7 @@ struct MavLinkHelper::impl {
                     gps_cog += 360;
 
                 sendHILGps(gps_output.gnss.geo_point, gps_velocity, gps_velocity_xy.norm(), gps_cog,
-                    gps_output.gnss.eph, gps_output.gnss.epv, gps_output.gnss.fix_type, 10);
+                           gps_output.gnss.eph, gps_output.gnss.epv, gps_output.gnss.fix_type, 10);
             }
         }
 
@@ -526,27 +497,32 @@ struct MavLinkHelper::impl {
     }
     //*** End: UpdatableState implementation ***//
 
-    void getMocapPose(Vector3r& position, Quaternionr& orientation)
-    {
+    void getMocapPose(Vector3r& position, Quaternionr& orientation) {
         std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
-        position.x() = MocapPoseMessage.x; position.y() = MocapPoseMessage.y; position.z() = MocapPoseMessage.z; 
-        orientation.w() = MocapPoseMessage.q[0]; orientation.x() = MocapPoseMessage.q[1]; 
-        orientation.y() = MocapPoseMessage.q[2]; orientation.z() = MocapPoseMessage.q[3];
+        position.x() = MocapPoseMessage.x;
+        position.y() = MocapPoseMessage.y;
+        position.z() = MocapPoseMessage.z;
+        orientation.w() = MocapPoseMessage.q[0];
+        orientation.x() = MocapPoseMessage.q[1];
+        orientation.y() = MocapPoseMessage.q[2];
+        orientation.z() = MocapPoseMessage.q[3];
     }
 
-    void sendMocapPose(const Vector3r& position, const Quaternionr& orientation)
-    {
+    void sendMocapPose(const Vector3r& position, const Quaternionr& orientation) {
         if (main_node_ == nullptr) return;
 
         mavlinkcom::MavLinkAttPosMocap mocap_pose_message;
-        mocap_pose_message.x = position.x(); mocap_pose_message.y = position.y(); mocap_pose_message.z = position.z();
-        mocap_pose_message.q[0] = orientation.w(); mocap_pose_message.q[1] = orientation.x();
-        mocap_pose_message.q[2] = orientation.y(); mocap_pose_message.q[3] = orientation.z();
-        main_node_->sendMessage(mocap_pose_message);	
+        mocap_pose_message.x = position.x();
+        mocap_pose_message.y = position.y();
+        mocap_pose_message.z = position.z();
+        mocap_pose_message.q[0] = orientation.w();
+        mocap_pose_message.q[1] = orientation.x();
+        mocap_pose_message.q[2] = orientation.y();
+        mocap_pose_message.q[3] = orientation.z();
+        main_node_->sendMessage(mocap_pose_message);
     }
 
-    void sendCollison(float normalX, float normalY, float normalZ)
-    {
+    void sendCollison(float normalX, float normalY, float normalZ) {
         if (main_node_ == nullptr) return;
 
         MavLinkCollision collision{};
@@ -561,20 +537,17 @@ struct MavLinkHelper::impl {
         main_node_->sendMessage(collision);
     }
 
-    bool hasVideoRequest()
-    {
+    bool hasVideoRequest() {
         MavLinkVideoServer::MavLinkVideoRequest image_req;
         return video_server_->hasVideoRequest(image_req);
     }
 
-    void sendImage(unsigned char data[], uint32_t length, uint16_t width, uint16_t height)
-    {
+    void sendImage(unsigned char data[], uint32_t length, uint16_t width, uint16_t height) {
         const int MAVLINK_DATA_STREAM_IMG_PNG = 6;
         video_server_->sendFrame(data, length, width, height, MAVLINK_DATA_STREAM_IMG_PNG, 0);
     }
 
-    void setNormalMode()
-    {
+    void setNormalMode() {
         if (is_hil_mode_set_ && main_node_ != nullptr && connection_ != nullptr) {
             //TODO: this is depricated message, add support for MAV_CMD_DO_SET_MODE
             std::lock_guard<std::mutex> guard(set_mode_mutex_);
@@ -590,8 +563,7 @@ struct MavLinkHelper::impl {
         }
     }
 
-    void setHILMode()
-    {
+    void setHILMode() {
         if (main_node_ == nullptr) {
             return;
         }
@@ -604,8 +576,7 @@ struct MavLinkHelper::impl {
         is_hil_mode_set_ = true;
     }
 
-    void close()
-    {
+    void close() {
         if (connection_ != nullptr) {
             if (is_hil_mode_set_ && main_node_ != nullptr) {
                 setNormalMode();
@@ -633,117 +604,92 @@ struct MavLinkHelper::impl {
 };
 
 //empty constructor required for pimpl
-MavLinkHelper::MavLinkHelper()
-{
+MavLinkHelper::MavLinkHelper() {
     pimpl_.reset(new impl());
 }
 
-MavLinkHelper::~MavLinkHelper()
-{
+MavLinkHelper::~MavLinkHelper() {
     pimpl_->close();
 }
 
-void MavLinkHelper::loadSettings(Settings& settings)
-{
-	pimpl_->loadSettings(settings);
+void MavLinkHelper::loadSettings(Settings& settings) {
+    pimpl_->loadSettings(settings);
 }
 
-int MavLinkHelper::getRotorControlsCount()
-{
+int MavLinkHelper::getRotorControlsCount() {
     return RotorControlsCount;
 }
-void MavLinkHelper::connectToExternalSim()
-{
+void MavLinkHelper::connectToExternalSim() {
     pimpl_->connectToExternalSim();
 }
-void MavLinkHelper::connectToHIL(const HILConnectionInfo& connection_info)
-{
+void MavLinkHelper::connectToHIL(const HILConnectionInfo& connection_info) {
     pimpl_->connectToHIL(connection_info);
 }
-bool MavLinkHelper::connectToLogViewer()
-{
+bool MavLinkHelper::connectToLogViewer() {
     return pimpl_->connectToLogViewer();
 }
-bool MavLinkHelper::connectToQGC()
-{
+bool MavLinkHelper::connectToQGC() {
     return pimpl_->connectToQGC();
 }
-void MavLinkHelper::connectToVideoServer()
-{
+void MavLinkHelper::connectToVideoServer() {
     pimpl_->connectToVideoServer();
 }
-void MavLinkHelper::sendImage(unsigned char data[], uint32_t length, uint16_t width, uint16_t height)
-{
+void MavLinkHelper::sendImage(unsigned char data[], uint32_t length, uint16_t width, uint16_t height) {
     pimpl_->sendImage(data, length, width, height);
 }
-void MavLinkHelper::getMocapPose(Vector3r& position, Quaternionr& orientation)
-{
+void MavLinkHelper::getMocapPose(Vector3r& position, Quaternionr& orientation) {
     pimpl_->getMocapPose(position, orientation);
 }
-void MavLinkHelper::sendMocapPose(const Vector3r& position, const Quaternionr& orientation)
-{
+void MavLinkHelper::sendMocapPose(const Vector3r& position, const Quaternionr& orientation) {
     pimpl_->sendMocapPose(position, orientation);
 }
-void MavLinkHelper::sendCollison(float normalX, float normalY, float normalZ)
-{
+void MavLinkHelper::sendCollison(float normalX, float normalY, float normalZ) {
     pimpl_->sendCollison(normalX, normalY, normalZ);
 }
-bool MavLinkHelper::hasVideoRequest()
-{
+bool MavLinkHelper::hasVideoRequest() {
     return pimpl_->hasVideoRequest();
 }
-void MavLinkHelper::sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt)
-{
+void MavLinkHelper::sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt) {
     pimpl_->sendHILSensor(acceleration, gyro, mag, abs_pressure, pressure_alt);
 }
-void MavLinkHelper::sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog, float eph, float epv, int fix_type, unsigned int satellites_visible)
-{
+void MavLinkHelper::sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog, float eph, float epv, int fix_type, unsigned int satellites_visible) {
     pimpl_->sendHILGps(geo_point, velocity, velocity_xy, cog, eph, epv, fix_type, satellites_visible);
 }
-void MavLinkHelper::getStatusMessages(std::vector<std::string>& messages)
-{
+void MavLinkHelper::getStatusMessages(std::vector<std::string>& messages) {
     pimpl_->getStatusMessages(messages);
 }
-void MavLinkHelper::close()
-{
+void MavLinkHelper::close() {
     pimpl_->close();
 }
-void MavLinkHelper::setNormalMode()
-{
+void MavLinkHelper::setNormalMode() {
     pimpl_->setNormalMode();
 }
-void MavLinkHelper::setHILMode()
-{
+void MavLinkHelper::setHILMode() {
     pimpl_->setHILMode();
 }
-std::string MavLinkHelper::findPixhawk()
-{
+std::string MavLinkHelper::findPixhawk() {
     return pimpl_->findPixhawk();
 }
-void MavLinkHelper::initialize(const MultiRotor* vehicle)
-{
+void MavLinkHelper::initialize(const MultiRotor* vehicle) {
     pimpl_->initialize(vehicle);
 }
-real_T MavLinkHelper::getRotorControlSignal(unsigned int rotor_index)
-{
+real_T MavLinkHelper::getRotorControlSignal(unsigned int rotor_index) {
     return pimpl_->getRotorControlSignal(rotor_index);
 }
-DroneControlBase* MavLinkHelper::createOrGetDroneControl()
-{
+DroneControlBase* MavLinkHelper::createOrGetDroneControl() {
     return pimpl_->createOrGetDroneControl();
 }
 
 
 //*** Start: UpdatableState implementation ***//
-void MavLinkHelper::reset()
-{
+void MavLinkHelper::reset() {
     pimpl_->reset();
 }
-void MavLinkHelper::update(real_T dt)
-{
+void MavLinkHelper::update(real_T dt) {
     pimpl_->update(dt);
 }
 //*** End: UpdatableState implementation ***//
 
-}} //namespace
+}
+} //namespace
 #endif

@@ -7,16 +7,17 @@
 #include "common/Common.hpp"
 
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 
 struct BarometerSimpleParams {
-    //user specified sea level pressure 
+    //user specified sea level pressure
     real_T qnh = EarthUtils::SeaLevelPressure / 100.0f; // hPa
 
     //sea level min,avh,max = 950,1013,1050 ie approx 3.65% variation
     //put this in 2 std deviations to get sigma = ~18 hPa
-    //stddevs for various seasons are at 
+    //stddevs for various seasons are at
     //Mariner's Pressure Atlas, David Burch, 2014
     //https://www.starpath.com/ebooksamples/9780914025382_sample.pdf
     real_T pressure_factor_sigma = 0.0365f / 2;
@@ -34,5 +35,6 @@ struct BarometerSimpleParams {
 };
 
 
-}} //namespace
+}
+} //namespace
 #endif

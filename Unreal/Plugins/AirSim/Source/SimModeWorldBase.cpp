@@ -2,8 +2,7 @@
 #include "SimModeWorldBase.h"
 
 
-void ASimModeWorldBase::BeginPlay()
-{
+void ASimModeWorldBase::BeginPlay() {
     Super::BeginPlay();
 
     setupInputBindings();
@@ -15,7 +14,7 @@ void ASimModeWorldBase::BeginPlay()
 
     /*
     300Hz seems to be minimum for non-aggresive flights
-    400Hz is needed for moderately aggresive flights (such as
+    400Hz is needed for moderately aggressive flights (such as
     high yaw rate with simultaneous back move)
     500Hz is recommanded for more aggressive flights
     Lenovo P50 high-end config laptop seems to be topping out at 400Hz.
@@ -25,8 +24,7 @@ void ASimModeWorldBase::BeginPlay()
     world_.startAsyncUpdator(1/500.0f);
 }
 
-void ASimModeWorldBase::createWorld()
-{
+void ASimModeWorldBase::createWorld() {
     world_.initialize(&physics_engine_);
     reporter_.initialize(false);
 
@@ -41,8 +39,7 @@ void ASimModeWorldBase::createWorld()
         vehicle->beginPlay();
 }
 
-void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
+void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason) {
     world_.stopAsyncUpdator();
 
     for (auto& vehicle : vehicles_)
@@ -51,8 +48,7 @@ void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-void ASimModeWorldBase::Tick(float DeltaSeconds)
-{
+void ASimModeWorldBase::Tick(float DeltaSeconds) {
     world_.lock();
 
     for (auto& vehicle : vehicles_)
@@ -73,8 +69,7 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
-void ASimModeWorldBase::reset()
-{
+void ASimModeWorldBase::reset() {
     world_.lock();
     world_.reset();
     world_.unlock();
@@ -82,19 +77,16 @@ void ASimModeWorldBase::reset()
     Super::reset();
 }
 
-std::string ASimModeWorldBase::getReport()
-{
+std::string ASimModeWorldBase::getReport() {
     return reporter_.getOutput();
 }
 
-void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles)
-{
-    //should be overriden by derived class
+void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles) {
+    //should be overridden by derived class
     //Unreal doesn't allow pure abstract methods in actors
 }
 
-void ASimModeWorldBase::setupInputBindings()
-{
+void ASimModeWorldBase::setupInputBindings() {
     Super::setupInputBindings();
 
     UAirBlueprintLib::BindActionTokey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeWorldBase::reset);

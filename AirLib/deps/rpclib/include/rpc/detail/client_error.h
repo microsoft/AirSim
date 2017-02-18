@@ -13,7 +13,7 @@ namespace detail {
 //! doing something unexpected (e.g. calling a function that does not exist,
 //! wrong number of arguments, etc.)
 class client_error : public std::exception {
-public:
+  public:
     //! \brief Error codes used for signaling back to clients. These are used
     //! to produce google-able error messages (since the msgpack-rpc protocol
     //! does not define error handling in any more detail than sending an
@@ -30,7 +30,7 @@ public:
 
     const char *what() const noexcept;
 
-private:
+  private:
     std::string what_;
 };
 }

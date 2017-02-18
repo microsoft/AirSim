@@ -3,21 +3,18 @@
 #include "AirBlueprintLib.h"
 
 
-void AVehiclePawnBase::PostInitializeComponents()
-{
+void AVehiclePawnBase::PostInitializeComponents() {
     Super::PostInitializeComponents();
 }
 
-void AVehiclePawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
+void AVehiclePawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason) {
     state_ = initial_state_ = State();
 
     Super::EndPlay(EndPlayReason);
 }
 
-void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
-    FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
-{
+void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
+                                 FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) {
     // Deflect along the surface when we collide.
     //FRotator CurrentRotation = GetActorRotation(RootComponent);
     //SetActorRotation(FQuat::Slerp(CurrentRotation.Quaternion(), HitNormal.ToOrientationQuat(), 0.025f));
@@ -32,8 +29,7 @@ void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
     UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(state_.collison_info.collison_count), LogDebugLevel::Failure);
 }
 
-void AVehiclePawnBase::initialize()
-{
+void AVehiclePawnBase::initialize() {
     //set up key variables
     world_to_meters = UAirBlueprintLib::GetWorldToMetersScale(this);
     home_point = msr::airlib::GeoPoint(HomeLatitude, HomeLongitude, HomeAltitude);
@@ -43,7 +39,7 @@ void AVehiclePawnBase::initialize()
     initial_state_.ground_offset = FVector(0, 0, initial_state_.mesh_bounds.Z);
     initial_state_.transformation_offset = this->GetActorLocation() - initial_state_.ground_offset;
     ground_margin = FVector(0, 0, 20); //TODO: can we explain this experimental setting? 7 seems to be minimum
-    ground_trace_end = initial_state_.ground_offset + ground_margin; 
+    ground_trace_end = initial_state_.ground_offset + ground_margin;
 
     initial_state_.start_location = getPosition();
     initial_state_.last_position = initial_state_.start_location;
@@ -62,77 +58,64 @@ void AVehiclePawnBase::initialize()
     reset();
 }
 
-APIPCamera* AVehiclePawnBase::getFpvCamera()
-{
-    //should be overriden in derived class
+APIPCamera* AVehiclePawnBase::getFpvCamera() {
+    //should be overridden in derived class
     return nullptr;
 }
 
-void AVehiclePawnBase::reset()
-{
+void AVehiclePawnBase::reset() {
     state_ = initial_state_;
     this->SetActorLocation(state_.start_location, false, nullptr, ETeleportType::TeleportPhysics);
     this->SetActorRotation(state_.start_rotation, ETeleportType::TeleportPhysics);
 }
 
-const AVehiclePawnBase::GeoPoint& AVehiclePawnBase::getHomePoint() const
-{
+const AVehiclePawnBase::GeoPoint& AVehiclePawnBase::getHomePoint() const {
     return home_point;
 }
 
-const AVehiclePawnBase::CollisionInfo& AVehiclePawnBase::getCollisonInfo() const
-{
+const AVehiclePawnBase::CollisionInfo& AVehiclePawnBase::getCollisonInfo() const {
     return state_.collison_info;
 }
 
-FVector AVehiclePawnBase::getPosition() const
-{
+FVector AVehiclePawnBase::getPosition() const {
     return this->GetActorLocation(); // - state_.mesh_origin
 }
 
-FRotator AVehiclePawnBase::getOrientation() const
-{
+FRotator AVehiclePawnBase::getOrientation() const {
     return this->GetActorRotation();
 }
 
 
-AVehiclePawnBase::Vector3r AVehiclePawnBase::toNedMeters(const FVector& position) const
-{
+AVehiclePawnBase::Vector3r AVehiclePawnBase::toNedMeters(const FVector& position) const {
     return AVehiclePawnBase::toVector3r(position - state_.transformation_offset, 1 / world_to_meters, true);
 }
-FVector AVehiclePawnBase::toNeuUU(const Vector3r& position) const
-{
+FVector AVehiclePawnBase::toNeuUU(const Vector3r& position) const {
     return AVehiclePawnBase::toFVector(position, world_to_meters, true) + state_.transformation_offset;
 }
 
-void AVehiclePawnBase::toggleTrace()
-{
+void AVehiclePawnBase::toggleTrace() {
     state_.tracing_enabled = !state_.tracing_enabled;
 
     if (!state_.tracing_enabled)
         FlushPersistentDebugLines(this->GetWorld());
 }
 
-void AVehiclePawnBase::allowPassthroughToggleInput()
-{
+void AVehiclePawnBase::allowPassthroughToggleInput() {
     state_.passthrough_enabled = !state_.passthrough_enabled;
     UAirBlueprintLib::LogMessage("EnablePassthroughOnCollisons: ", FString::FromInt(state_.passthrough_enabled), LogDebugLevel::Informational);
 }
 
 
 //parameters in NED frame
-AVehiclePawnBase::Pose AVehiclePawnBase::getPose() const
-{
+AVehiclePawnBase::Pose AVehiclePawnBase::getPose() const {
     Vector3r position = toNedMeters(getPosition());
     Quaternionr orientation = AVehiclePawnBase::toQuaternionr(this->GetActorRotation().Quaternion(), true);
     return Pose(position, orientation);
 }
-void AVehiclePawnBase::setPose(const Pose& pose)
-{
+void AVehiclePawnBase::setPose(const Pose& pose) {
     setPose(pose.position, pose.orientation);
 }
-void AVehiclePawnBase::setPose(const Vector3r& position, const Quaternionr& orientation)
-{
+void AVehiclePawnBase::setPose(const Vector3r& position, const Quaternionr& orientation) {
     //translate to new AVehiclePawnBase position & orientation from NED to NEU
     FVector newAVehiclePawnBaseLocation = toNeuUU(position);
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
@@ -143,8 +126,7 @@ void AVehiclePawnBase::setPose(const Vector3r& position, const Quaternionr& orie
 }
 
 //parameters in NEU frame
-void AVehiclePawnBase::setPose(const FVector& position, const FQuat& orientation, bool enable_teleport)
-{
+void AVehiclePawnBase::setPose(const FVector& position, const FQuat& orientation, bool enable_teleport) {
     //must reset collison before we set pose. Setting pose will immediately call NotifyHit if there was collison
     //if there was no collison than has_collided would remain false, else it will be set so its value can be
     //checked at the start of next tick
@@ -162,8 +144,7 @@ void AVehiclePawnBase::setPose(const FVector& position, const FQuat& orientation
     }
 }
 
-bool AVehiclePawnBase::canTeleportWhileMove()  const
-{
+bool AVehiclePawnBase::canTeleportWhileMove()  const {
     //allow teleportation
     //  if collisons are not enabled
     //  or we have collided but passthrough is enabled
@@ -172,8 +153,7 @@ bool AVehiclePawnBase::canTeleportWhileMove()  const
     return !state_.collisons_enabled || (state_.collison_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
-AVehiclePawnBase::real_T AVehiclePawnBase::getMinZOverGround() const
-{
+AVehiclePawnBase::real_T AVehiclePawnBase::getMinZOverGround() const {
     FVector location = this->GetActorLocation();
     if (UAirBlueprintLib::HasObstacle(this, location, location - ground_trace_end))
         return toNedMeters(location).z();
@@ -181,31 +161,27 @@ AVehiclePawnBase::real_T AVehiclePawnBase::getMinZOverGround() const
         return Utils::max<float>();
 }
 
-FVector AVehiclePawnBase::toFVector(const Vector3r& vec, float scale, bool convert_from_ned)
-{
-    return FVector(vec.x() * scale, vec.y() * scale, 
-        (convert_from_ned ? -vec.z() : vec.z()) * scale);
+FVector AVehiclePawnBase::toFVector(const Vector3r& vec, float scale, bool convert_from_ned) {
+    return FVector(vec.x() * scale, vec.y() * scale,
+                   (convert_from_ned ? -vec.z() : vec.z()) * scale);
 }
 
-FQuat AVehiclePawnBase::toFQuat(const Quaternionr& q, bool convert_from_ned)
-{
+FQuat AVehiclePawnBase::toFQuat(const Quaternionr& q, bool convert_from_ned) {
     return FQuat(
-        convert_from_ned ? -q.x() : q.x(), 
-        convert_from_ned ? -q.y() : q.y(), 
-        q.z(), q.w());
+               convert_from_ned ? -q.x() : q.x(),
+               convert_from_ned ? -q.y() : q.y(),
+               q.z(), q.w());
 }
 
 
-AVehiclePawnBase::Vector3r AVehiclePawnBase::toVector3r(const FVector& vec, float scale, bool convert_to_ned)
-{
-    return Vector3r(vec.X * scale, vec.Y * scale, 
-        (convert_to_ned ? -vec.Z : vec.Z)  * scale);
+AVehiclePawnBase::Vector3r AVehiclePawnBase::toVector3r(const FVector& vec, float scale, bool convert_to_ned) {
+    return Vector3r(vec.X * scale, vec.Y * scale,
+                    (convert_to_ned ? -vec.Z : vec.Z)  * scale);
 }
 
-AVehiclePawnBase::Quaternionr AVehiclePawnBase::toQuaternionr(const FQuat& q, bool convert_to_ned)
-{
-    return Quaternionr(q.W, 
-        convert_to_ned ? -q.X : q.X, 
-        convert_to_ned ? -q.Y : q.Y, 
-        q.Z);
+AVehiclePawnBase::Quaternionr AVehiclePawnBase::toQuaternionr(const FQuat& q, bool convert_to_ned) {
+    return Quaternionr(q.W,
+                       convert_to_ned ? -q.X : q.X,
+                       convert_to_ned ? -q.Y : q.Y,
+                       q.Z);
 }

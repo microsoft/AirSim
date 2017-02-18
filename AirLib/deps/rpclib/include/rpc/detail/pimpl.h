@@ -29,7 +29,7 @@ struct ptr_checker {
 template <typename T, std::size_t Size, int Align = -1> class pimpl_ptr {
     typename aligned_storage<Size, Align>::type data;
 
-public:
+  public:
 #define PIMPL_PTR_CHECK_()                                                     \
     ptr_checker<T, sizeof(T), Size, Align, alignof(T)>                 \
         rpc_ptr_checker; (void) rpc_ptr_checker;
@@ -94,7 +94,7 @@ public:
 #elif defined(__amd64) || defined(__amd64__) || defined(__x86_64) || defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64)
 #define RPCLIB_DEF_ALIGN 8
 #else
-#error "Unkown architecture"
+#error "Unknown architecture"
 #endif
 
 #define RPCLIB_DECL_PIMPL(Size)                                                \

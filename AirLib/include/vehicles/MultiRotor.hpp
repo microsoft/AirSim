@@ -17,21 +17,19 @@
 #include "sensors/barometer/BarometerSimple.hpp"
 #include "sensors/gps/GpsSimple.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class MultiRotor : public PhysicsBody {
-public:
-    MultiRotor()
-    {
+  public:
+    MultiRotor() {
         MultiRotor::reset();
     }
-    MultiRotor(const MultiRotorParams& params, const Kinematics::State& initial_kinematic_state, Environment* environment, ControllerBase* controller_ptr)
-    {
+    MultiRotor(const MultiRotorParams& params, const Kinematics::State& initial_kinematic_state, Environment* environment, ControllerBase* controller_ptr) {
         initialize(params, initial_kinematic_state, environment, controller_ptr);
     }
-	void initialize(const MultiRotorParams& params, const Kinematics::State& initial_kinematic_state, Environment* environment, ControllerBase* controller_ptr)
-	{
-		params_ = params;
+    void initialize(const MultiRotorParams& params, const Kinematics::State& initial_kinematic_state, Environment* environment, ControllerBase* controller_ptr) {
+        params_ = params;
         controller_ptr_ = controller_ptr;
 
         PhysicsBody::initialize(params_.mass, params_.inertia, initial_kinematic_state, environment);
@@ -40,16 +38,15 @@ public:
 
         createSensors(params_, initial_kinematic_state, getEnvironment());
 
-		//setup drag factors (must come after createRotors).
-		setupDragFactors();
+        //setup drag factors (must come after createRotors).
+        setupDragFactors();
 
         MultiRotor::reset();
-	}
+    }
 
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         //reset inputs
         if (controller_ptr_)
             controller_ptr_->reset();
@@ -68,15 +65,13 @@ public:
         resetSensors();
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         updateDragFactors();
 
         //update forces and environment as a result of last dt
         PhysicsBody::update(dt);
     }
-    virtual void reportState(StateReporter& reporter) override
-    {
+    virtual void reportState(StateReporter& reporter) override {
         //call base
         PhysicsBody::reportState(reporter);
 
@@ -94,8 +89,7 @@ public:
 
 
     //implement abstract methods from PhysicsBody
-    virtual void kinematicsUpdated(real_T dt) override
-    {
+    virtual void kinematicsUpdated(real_T dt) override {
         updateSensors(params_, getKinematics(), getEnvironment(), dt);
 
         controller_ptr_->update(dt);
@@ -109,64 +103,51 @@ public:
 
 
     //physics body abstract interface
-    virtual Vector3r getLinearDragFactor() const override
-    {
+    virtual Vector3r getLinearDragFactor() const override {
         return linear_drag_factor_;
     }
-    virtual Vector3r getAngularDragFactor() const override
-    {
+    virtual Vector3r getAngularDragFactor() const override {
         return angular_drag_factor_;
     }
-    virtual uint vertexCount() const  override
-    {
+    virtual uint vertexCount() const  override {
         return static_cast<uint>(params_.rotor_poses.size());
     }
-    virtual PhysicsBodyVertex& getVertex(uint index)  override
-    {
+    virtual PhysicsBodyVertex& getVertex(uint index)  override {
         return rotors_.at(index);
     }
-    virtual const PhysicsBodyVertex& getVertex(uint index) const override
-    {
+    virtual const PhysicsBodyVertex& getVertex(uint index) const override {
         return rotors_.at(index);
     }
-    virtual real_T getRestitution() const override
-    {
+    virtual real_T getRestitution() const override {
         return params_.restitution;
     }
-    virtual real_T getFriction()  const override
-    {
+    virtual real_T getFriction()  const override {
         return params_.friction;
     }
 
     //sensor getters
-    const ImuBase* getImu() const 
-    {
+    const ImuBase* getImu() const {
         return imu_.get();
     }
-    const MagnetometerBase* getMagnetometer() const 
-    {
+    const MagnetometerBase* getMagnetometer() const {
         return magnetometer_.get();
     }
-    const BarometerBase* getBarometer() const 
-    {
+    const BarometerBase* getBarometer() const {
         return barometer_.get();
     }
-    const GpsBase* getGps() const 
-    {
+    const GpsBase* getGps() const {
         return gps_.get();
     }
 
 
-    Rotor::Output getRotorOutput(uint rotor_index) const
-    {
+    Rotor::Output getRotorOutput(uint rotor_index) const {
         return rotors_.at(rotor_index).getOutput();
     }
 
     virtual ~MultiRotor() = default;
 
-private: //methods
-    static void createRotors(const MultiRotorParams& params, vector<Rotor>& rotors, const Environment* environment)
-    {
+  private: //methods
+    static void createRotors(const MultiRotorParams& params, vector<Rotor>& rotors, const Environment* environment) {
         rotors.clear();
         //for each rotor pose
         for (uint rotor_index = 0; rotor_index < params.rotor_poses.size(); ++rotor_index) {
@@ -175,8 +156,7 @@ private: //methods
         }
     }
 
-    void reportSensors(const MultiRotorParams& params, StateReporter& reporter)
-    {
+    void reportSensors(const MultiRotorParams& params, StateReporter& reporter) {
         if (params.enabled_sensors.imu) {
             imu_->reportState(reporter);
         }
@@ -191,8 +171,7 @@ private: //methods
         }
     }
 
-    void updateSensors(const MultiRotorParams& params, const Kinematics::State& state, const Environment& environment, real_T dt)
-    {
+    void updateSensors(const MultiRotorParams& params, const Kinematics::State& state, const Environment& environment, real_T dt) {
         if (params.enabled_sensors.imu) {
             imu_->update(dt);
         }
@@ -207,8 +186,7 @@ private: //methods
         }
     }
 
-    void createSensors(const MultiRotorParams& params, const Kinematics::State& state, const Environment& environment)
-    {
+    void createSensors(const MultiRotorParams& params, const Kinematics::State& state, const Environment& environment) {
         sensors_ground_truth_.reset(new SensorBase::GroundTruth());
         sensors_ground_truth_->body = this;
         sensors_ground_truth_->environment = &getEnvironment();
@@ -235,8 +213,7 @@ private: //methods
         }
     }
 
-    void resetSensors()
-    {
+    void resetSensors() {
         if (imu_)
             imu_->reset();
         if (magnetometer_)
@@ -247,8 +224,7 @@ private: //methods
             barometer_->reset();
     }
 
-    real_T getAngDragIntOverFaceXY(real_T x, real_T y, real_T z)
-    {
+    real_T getAngDragIntOverFaceXY(real_T x, real_T y, real_T z) {
         /* Integral: 2 * integral_0^(y/2) integral_0^(x/2) (3/4 (a^2 + b^2) z + z^3/8) da db = 1/64 x y z (x^2 + y^2 + 2 z^2)
         https://www.wolframalpha.com/input/?i=integral_0%5E(y%2F2)+integral_0%5E(x%2F2)+(3%2F4)*(a%5E2+%2B+b%5E2)*z+%2B+z%5E3%2F8+da+db
         we multiply by 2 for l=-x/2 to 0 and l = 0 to x/2
@@ -256,8 +232,7 @@ private: //methods
         return 2.0f * 1.0f/64 * (x * y * z * (x*x + y*y + 2*z*z));
     }
 
-    void setupDragFactors()
-    {
+    void setupDragFactors() {
         /************* Linear drag *****************/
         //we use box as approximate size with dimensions x, y, z plus the area of propellers when they rotate
         //while moving along any axis, we find area that will be exposed in that direction
@@ -268,17 +243,17 @@ private: //methods
             real_T left_right_area = params_.dim.x * params_.dim.z;
             real_T front_back_area = params_.dim.y * params_.dim.z;
             linear_drag_factor_unit_ = Vector3r(
-                front_back_area + rotors_.size() * propeller_xsection, 
-                left_right_area + rotors_.size() * propeller_xsection, 
-                top_bottom_area) 
-                * params_.linear_drag_coefficient / 2; 
+                                           front_back_area + rotors_.size() * propeller_xsection,
+                                           left_right_area + rotors_.size() * propeller_xsection,
+                                           top_bottom_area)
+                                       * params_.linear_drag_coefficient / 2;
         }
 
         /************* Angular drag ******************************************************************
         Ref: http://physics.stackexchange.com/a/305020/14061
-        We will ignore drag due to shear stress. Drag due to angular friction is modelled for 
+        We will ignore drag due to shear stress. Drag due to angular friction is modelled for
         square body + cylinderical area of rotating propeller. For square box of dimension x,y,z
-        consider each face, for example, x-y face. The drag torque T_d is generated due to velocity 
+        consider each face, for example, x-y face. The drag torque T_d is generated due to velocity
         vector at each point on body which produces dynamic pressure P_d.
         T_d = F_d X r = F_d * r (because both are perpendicular)
         F_d = C * integrate(P_d) over area
@@ -303,25 +278,24 @@ private: //methods
                 arm_length_cube_sum += pow(params_.rotor_poses.at(i).position.norm(), 3.0f);
 
             real_T top_bottom_area = getAngDragIntOverFaceXY(params_.dim.x, params_.dim.y, params_.dim.z);
-            real_T left_right_area = getAngDragIntOverFaceXY(params_.dim.z, params_.dim.x, params_.dim.y); 
-            real_T front_back_area = getAngDragIntOverFaceXY(params_.dim.y, params_.dim.z, params_.dim.x); 
+            real_T left_right_area = getAngDragIntOverFaceXY(params_.dim.z, params_.dim.x, params_.dim.y);
+            real_T front_back_area = getAngDragIntOverFaceXY(params_.dim.y, params_.dim.z, params_.dim.x);
             angular_drag_factor_unit_ = Vector3r(
-                2 * (top_bottom_area + front_back_area) + arm_length_cube_sum * propeller_area,
-                2 * (top_bottom_area + left_right_area) + arm_length_cube_sum * propeller_area,
-                2 * (left_right_area + front_back_area) + arm_length_cube_sum * propeller_xsection)
-                * params_.angular_drag_coefficient / 2;
+                                            2 * (top_bottom_area + front_back_area) + arm_length_cube_sum * propeller_area,
+                                            2 * (top_bottom_area + left_right_area) + arm_length_cube_sum * propeller_area,
+                                            2 * (left_right_area + front_back_area) + arm_length_cube_sum * propeller_xsection)
+                                        * params_.angular_drag_coefficient / 2;
         }
     }
 
-    void updateDragFactors()
-    {
+    void updateDragFactors() {
         //update drag factors
         real_T air_density = hasEnvironment() ? getEnvironment().getState().air_density : EarthUtils::SeaLevelAirDensity;
         linear_drag_factor_ = linear_drag_factor_unit_ * air_density;
         angular_drag_factor_ = angular_drag_factor_unit_ * air_density;
     }
 
-private: //fields
+  private: //fields
     MultiRotorParams params_;
     ControllerBase* controller_ptr_ = nullptr;
 
@@ -331,7 +305,7 @@ private: //fields
     //drag
     Vector3r linear_drag_factor_unit_, angular_drag_factor_unit_;
     Vector3r linear_drag_factor_, angular_drag_factor_;
-    
+
     //sensors
     unique_ptr<SensorBase::GroundTruth> sensors_ground_truth_;
     unique_ptr<ImuBase> imu_;
@@ -340,5 +314,6 @@ private: //fields
     unique_ptr<BarometerBase> barometer_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

@@ -17,12 +17,13 @@ AirSim code has two external dependencies: Eigen library and Boost library.
   2. Start VS2015 x64 Native Tools Command Prompt. Create a folder for repo and run
   `git clone https://github.com/Microsoft/AirSim.git`
   3. Run `build`. If everything goes ok, it will copy all the binaries that you need to Unreal/Plugins folder in your repo.  This Plugins folder can then be simply copied to your Unreal environment.
-
+  4. [Linux build](linux_build.md) is coming... stay tuned.
+  
 ## Create Unreal Environment Project
 To run the simulator, you need an environment and its very easy to create one! [Unreal Marketplace](https://www.unrealengine.com/marketplace) has dozens of prebuilt extra-ordinarily detailed [environments](https://www.unrealengine.com/marketplace/content-cat/assets/environments) ranging from Moon to Mars and everything in between. The one we have used for testing is called [Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) but you can use any environment.
   1. Either purchase an environment from Unreal Marketplace or choose one of the free ones such as [Infinity Blade series](https://www.unrealengine.com/marketplace/infinity-blade-plain-lands). Alternatively, if you look under the Learn tab in Epic Game Launcher, you will find many free samples that you can use. One of our favorites is "A Boy and His Kite" which is a 100 square miles of highly detailed environment (caution: you will need *very* beefy PC to run it!).
   ![Epic Launcher - Learn](images/epic_launcher_learn.png)
-  2. Once you have the environment, you can simply go to the Library tab of the Epic Game Launcher and add in to any project you like. We recommand creating a new blank C++ project with no Starter Content and add your environment in to it. Tip: if the environment comes with MatineeActor, delete it to avoid any demo sequences.
+  2. Once you have the environment, you can simply go to the Library tab of the Epic Game Launcher and add in to any project you like. We recommend creating a new blank C++ project with no Starter Content and add your environment in to it. Tip: if the environment comes with MatineeActor, delete it to avoid any demo sequences.
 
 ## Install the AirSim Plugin
 ### Copy plugins folder
@@ -68,3 +69,5 @@ You are all ready to go now!
 6. Hit Play button.
 
 Congratulations! You are now running AirSim in your own Unreal environment.
+
+Note: if you have any trouble getting drone to fly, check your [hard drive performance](hard_drive.md).

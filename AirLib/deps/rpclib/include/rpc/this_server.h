@@ -12,7 +12,7 @@ class server_session;
 //! \brief Allows controlling the server instance from the
 //! currently executing handler.
 class this_server_t {
-public:
+  public:
     //! \brief Gracefully stops the server.
     void stop();
 
@@ -21,7 +21,7 @@ public:
 
     friend class rpc::detail::server_session;
 
-private:
+  private:
     bool stopping_;
 };
 

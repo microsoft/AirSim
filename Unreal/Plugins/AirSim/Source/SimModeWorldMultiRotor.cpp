@@ -7,24 +7,23 @@
 #include "control/Settings.h"
 #include "FlyingPawn.h"
 
-void ASimModeWorldMultiRotor::BeginPlay()
-{
+void ASimModeWorldMultiRotor::BeginPlay() {
     Super::BeginPlay();
 
     if (fpv_vehicle_ != nullptr) {
         //create its control server
         drone_control_server_.reset(new msr::airlib::DroneControlServer(fpv_vehicle_->createOrGetDroneControl()));
-        rpclib_server_.reset(new msr::airlib::RpcLibServer(drone_control_server_.get()));
+        std::string server_address = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
+        rpclib_server_.reset(new msr::airlib::RpcLibServer(drone_control_server_.get(), server_address));
         rpclib_server_->start();
     }
 }
 
-void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
-{
+void ASimModeWorldMultiRotor::Tick(float DeltaSeconds) {
     if (fpv_vehicle_ != nullptr) {
         using namespace msr::airlib;
         auto camera_type = drone_control_server_->getImageTypeForCamera(0);
-        if (camera_type != DroneControlBase::ImageType::None) { 
+        if (camera_type != DroneControlBase::ImageType::None) {
             if (CameraDirector != nullptr) {
                 APIPCamera* camera = CameraDirector->getCamera(0);
                 EPIPCameraType pip_type;
@@ -32,11 +31,14 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
                     //TODO: merge these two different types?
                     switch (camera_type) {
                     case DroneControlBase::ImageType::Scene:
-                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SCENE; break;
+                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SCENE;
+                        break;
                     case DroneControlBase::ImageType::Depth:
-                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_DEPTH; break;
+                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_DEPTH;
+                        break;
                     case DroneControlBase::ImageType::Segmentation:
-                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SEG; break;
+                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SEG;
+                        break;
                     default:
                         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_NONE;
                     }
@@ -68,8 +70,7 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
-void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
+void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason) {
     if (fpv_vehicle_ != nullptr) {
         rpclib_server_->stop();
         rpclib_server_.release();
@@ -79,8 +80,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-bool ASimModeWorldMultiRotor::checkConnection()
-{
+bool ASimModeWorldMultiRotor::checkConnection() {
     msr::airlib::MavLinkHelper mav;
     if (mav.findPixhawk() == "") {
         if (!Settings::singleton().isLoadSuccess())
@@ -97,8 +97,7 @@ bool ASimModeWorldMultiRotor::checkConnection()
     return true;
 }
 
-void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
-{
+void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles) {
     if (!checkConnection())
         return;
 

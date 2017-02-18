@@ -9,11 +9,10 @@
 
 
 UCLASS()
-class AIRSIM_API AVehiclePawnBase : public APawn
-{
+class AIRSIM_API AVehiclePawnBase : public APawn {
     GENERATED_BODY()
 
-public: //types
+  public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Pose Pose;
@@ -24,12 +23,12 @@ public: //types
     typedef msr::airlib::real_T real_T;
     typedef msr::airlib::Utils Utils;
 
-public: //modifiable properties
+  public: //modifiable properties
     //collisons settings
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collisons")
-    bool EnableCollisons = true; 
+    bool EnableCollisons = true;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collisons")
-    bool EnablePassthroughOnCollisons = false; 
+    bool EnablePassthroughOnCollisons = false;
 
     //GPS settings
     //defaults are Microsoft Building 99, WA, USA
@@ -42,13 +41,13 @@ public: //modifiable properties
 
     //trace settings
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
-    bool EnableTrace = false; 
+    bool EnableTrace = false;
 
     UFUNCTION(BlueprintCallable, Category = "Debugging")
     void toggleTrace();
 
-public: //interface
-    //overriden from pawn
+  public: //interface
+    //overridden from pawn
     virtual void PostInitializeComponents() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -82,11 +81,11 @@ public: //interface
     Vector3r toNedMeters(const FVector& position) const;
     FVector  toNeuUU(const Vector3r& position) const;
 
-private: //methods
+  private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
 
-private: //vars
+  private: //vars
     FVector ground_trace_end;
     FVector ground_margin;
     float world_to_meters;
@@ -107,6 +106,6 @@ private: //vars
         FVector ground_offset;
         FVector transformation_offset;
     };
-    
+
     State state_, initial_state_;
 };

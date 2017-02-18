@@ -371,7 +371,7 @@ namespace Microsoft.Networking.Mavlink
             PANORAMA_CREATE = 2800,
             ///<summary> Request VTOL transition |The target VTOL state, as defined by ENUM MAV_VTOL_STATE. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.|  </summary>
             DO_VTOL_TRANSITION = 3000,
-            ///<summary> Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity. |Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.| Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.| Desired ground speed at release time. This can be overriden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.| Minimum altitude clearance to the release position in meters. A negative value indicates the system can define the clearance at will.| Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT| Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT| Altitude, in meters AMSL|  </summary>
+            ///<summary> Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity. |Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.| Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.| Desired ground speed at release time. This can be overridden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.| Minimum altitude clearance to the release position in meters. A negative value indicates the system can define the clearance at will.| Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT| Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT| Altitude, in meters AMSL|  </summary>
             PAYLOAD_PREPARE_DEPLOY = 30001,
             ///<summary> Control the payload deployment. |Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deploment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.| Reserved| Reserved| Reserved| Reserved| Reserved| Reserved|  </summary>
             PAYLOAD_CONTROL_DEPLOY = 30002,
@@ -1723,7 +1723,7 @@ namespace Microsoft.Networking.Mavlink
             ERROR = 3,
             ///<summary> Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning. | </summary>
             WARNING = 4,
-            ///<summary> An unusual event has occured, though not an error condition. This should be investigated for the root cause. | </summary>
+            ///<summary> An unusual event has occurred, though not an error condition. This should be investigated for the root cause. | </summary>
             NOTICE = 5,
             ///<summary> Normal operational messages. Useful for logging. No action is required for these messages. | </summary>
             INFO = 6,
@@ -3332,9 +3332,9 @@ namespace Microsoft.Networking.Mavlink
             public UInt64 time_usec;
             /// <summary> Absolute pressure (raw) </summary>
             public Int16 press_abs;
-            /// <summary> Differential pressure 1 (raw, 0 if nonexistant) </summary>
+            /// <summary> Differential pressure 1 (raw, 0 if nonexistent) </summary>
             public Int16 press_diff1;
-            /// <summary> Differential pressure 2 (raw, 0 if nonexistant) </summary>
+            /// <summary> Differential pressure 2 (raw, 0 if nonexistent) </summary>
             public Int16 press_diff2;
             /// <summary> Raw Temperature measurement (raw) </summary>
             public Int16 temperature;
@@ -5218,7 +5218,7 @@ namespace Microsoft.Networking.Mavlink
             public UInt16 width;
             /// <summary> Height of a matrix or image </summary>
             public UInt16 height;
-            /// <summary> number of packets beeing sent (set on ACK only) </summary>
+            /// <summary> number of packets being sent (set on ACK only) </summary>
             public UInt16 packets;
             /// <summary> type of requested/acknowledged data (as defined in ENUM DATA_TYPES in mavlink/include/mavlink_types.h) </summary>
             public byte type;
@@ -5499,7 +5499,7 @@ namespace Microsoft.Networking.Mavlink
         {
             /// <summary> Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide mAh consumption estimate </summary>
             public Int32 current_consumed;
-            /// <summary> Consumed energy, in 100*Joules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate </summary>
+            /// <summary> Consumed energy, in 100*Joules (integrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate </summary>
             public Int32 energy_consumed;
             /// <summary> Temperature of the battery in centi-degrees celsius. INT16_MAX for unknown temperature. </summary>
             public Int16 temperature;

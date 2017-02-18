@@ -14,19 +14,18 @@ enum class LogDebugLevel : uint8 {
 };
 
 /**
- * 
+ *
  */
 UCLASS()
-class UAirBlueprintLib : public UBlueprintFunctionLibrary
-{
+class UAirBlueprintLib : public UBlueprintFunctionLibrary {
     GENERATED_BODY()
 
-public:
+  public:
     static void LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec);
 
     UFUNCTION(BlueprintCallable, Category = "Utilities")
     static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
-    
+
     UFUNCTION(BlueprintCallable, Category = "Utilities")
     static float GetWorldToMetersScale(const AActor* context);
 
@@ -49,7 +48,7 @@ public:
 
     template<class UserClass>
     static FInputActionBinding& BindActionTokey(const FName action_name, const FKey in_key, UserClass* actor,
-        typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func);
+            typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func);
 };
 
 template UChildActorComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);

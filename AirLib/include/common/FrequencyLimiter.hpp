@@ -8,17 +8,16 @@
 #include "UpdatableObject.hpp"
 #include "common/Common.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class FrequencyLimiter : UpdatableObject {
-public:
-    FrequencyLimiter(real_T frequency = Utils::max<float>(), real_T startup_delay = 0)
-    {
+  public:
+    FrequencyLimiter(real_T frequency = Utils::max<float>(), real_T startup_delay = 0) {
         initialize(frequency);
     }
 
-    void initialize(real_T frequency, real_T startup_delay = 0)
-    {
+    void initialize(real_T frequency, real_T startup_delay = 0) {
         if (Utils::isApproximatelyZero(frequency))
             interval_size_sec_ = 1E10;  //some high number
         else
@@ -37,13 +36,11 @@ public:
 
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         initialize(frequency_);
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         elapsed_total_sec_ += dt;
         elapsed_interval_sec_ += dt;
         ++update_count_;
@@ -54,10 +51,10 @@ public:
             else
                 startup_complete_ = true;
         }
-        
+
         if (startup_complete_)
             wait_complete_ = elapsed_interval_sec_ >= interval_size_sec_;
-        
+
         if (wait_complete_) {
             last_elapsed_interval_sec_ = elapsed_interval_sec_;
             elapsed_interval_sec_ = 0;
@@ -67,42 +64,35 @@ public:
     //*** End: UpdatableState implementation ***//
 
 
-    ulong getTimestamp() const
-    {
+    ulong getTimestamp() const {
         return start_timestamp_ms_ + static_cast<ulong>(elapsed_total_sec_ * 1000);
     }
 
-    real_T getElapsedTotalSec() const
-    {
+    real_T getElapsedTotalSec() const {
         return elapsed_total_sec_;
     }
 
-    real_T getElapsedIntervalSec() const
-    {
+    real_T getElapsedIntervalSec() const {
         return elapsed_interval_sec_;
     }
 
-    real_T getLastElapsedIntervalSec() const
-    {
+    real_T getLastElapsedIntervalSec() const {
         return last_elapsed_interval_sec_;
     }
 
-    bool isWaitComplete() const
-    {
+    bool isWaitComplete() const {
         return wait_complete_;
     }
 
-    bool isStartupComplete() const
-    {
+    bool isStartupComplete() const {
         return startup_complete_;
     }
 
-    uint getUpdateCount() const
-    {
+    uint getUpdateCount() const {
         return update_count_;
     }
 
-private:
+  private:
     real_T interval_size_sec_;
     real_T elapsed_total_sec_;
     real_T elapsed_interval_sec_;
@@ -115,5 +105,6 @@ private:
     bool startup_complete_;
 };
 
-}} //namespace
-#endif 
+}
+} //namespace
+#endif

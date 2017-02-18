@@ -10,7 +10,7 @@ namespace rpc {
 namespace detail {
 
 class thread_group {
-public:
+  public:
     thread_group() {}
     thread_group(thread_group const &) = delete;
 
@@ -28,9 +28,11 @@ public:
         }
     }
 
-    ~thread_group() { join_all(); }
+    ~thread_group() {
+        join_all();
+    }
 
-private:
+  private:
     std::vector<std::thread> threads_;
 };
 

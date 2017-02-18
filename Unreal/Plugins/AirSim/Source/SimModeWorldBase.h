@@ -13,11 +13,10 @@
 
 
 UCLASS()
-class AIRSIM_API ASimModeWorldBase : public ASimModeBase
-{
+class AIRSIM_API ASimModeWorldBase : public ASimModeBase {
     GENERATED_BODY()
-    
-public:
+
+  public:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick( float DeltaSeconds ) override;
@@ -27,14 +26,14 @@ public:
     virtual std::string getReport() override;
     virtual void setupInputBindings() override;
 
-protected:
+  protected:
     typedef std::shared_ptr<VehicleBase> VehiclePtr;
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
 
-private:
+  private:
     void createWorld();
 
-private:
+  private:
     msr::airlib::World world_;
     msr::airlib::FastPhysicsEngine physics_engine_;
 

@@ -5,8 +5,7 @@
 
 
 UENUM(BlueprintType, meta=(Bitflags))
-enum class EPIPCameraType
-{
+enum class EPIPCameraType : uint8 {
     PIP_CAMERA_TYPE_NONE = 0	UMETA(DisplayName="None"),
     PIP_CAMERA_TYPE_SCENE = 1	UMETA(DisplayName="Scene"),
     PIP_CAMERA_TYPE_DEPTH = 2	UMETA(DisplayName="Depth"),
@@ -16,20 +15,18 @@ enum class EPIPCameraType
 ENUM_CLASS_FLAGS(EPIPCameraType)
 
 UENUM(BlueprintType)
-enum class EPIPCameraMode : uint8
-{
+enum class EPIPCameraMode : uint8 {
     PIP_CAMERA_MODE_NONE = 0	UMETA(DisplayName="None"),
     PIP_CAMERA_MODE_MAIN = 1	UMETA(DisplayName="Main"),
     PIP_CAMERA_MODE_PIP = 2	UMETA(DisplayName="PIP")
 };
 
 UCLASS()
-class AIRSIM_API APIPCamera : public ACameraActor
-{
+class AIRSIM_API APIPCamera : public ACameraActor {
     GENERATED_BODY()
-    
-    
-public:
+
+
+  public:
     static constexpr EPIPCameraType DefaultEnabledCameras = EPIPCameraType::PIP_CAMERA_TYPE_ALL;
     static constexpr EPIPCameraMode DefaultCameraMode = EPIPCameraMode::PIP_CAMERA_MODE_NONE;
 
@@ -55,7 +52,7 @@ public:
     bool getScreenshot(EPIPCameraType camera_type, TArray<uint8>& compressedPng, float& width, float& height);
     void saveScreenshot(EPIPCameraType camera_type, FString fileSavePathPrefix, int fileSuffix);
 
-private:
+  private:
     UPROPERTY() USceneCaptureComponent2D* screen_capture_;
     UPROPERTY() USceneCaptureComponent2D* depth_capture_;
     UPROPERTY() USceneCaptureComponent2D* seg_capture_;
@@ -65,12 +62,12 @@ private:
     UPROPERTY() UTextureRenderTarget2D* seg_render_target_;
 
     //UPROPERTY(BlueprintReadWrite, Category = "Cameras")
-    EPIPCameraMode camera_mode_ = DefaultCameraMode;   
+    EPIPCameraMode camera_mode_ = DefaultCameraMode;
 
     //UPROPERTY(BlueprintReadWrite, Category = "Cameras", meta = (Bitmask, BitmaskEnum = "EPIPCameraType"))
     EPIPCameraType enabled_camera_types_ = DefaultEnabledCameras;
 
-private:
+  private:
     void activateCaptureComponent(const EPIPCameraType type);
     void deactivateCaptureComponent(const EPIPCameraType type);
     void deactivateMain();

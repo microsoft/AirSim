@@ -13,37 +13,34 @@
 #include "common/DelayLine.hpp"
 
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class GpsSimple : public GpsBase {
-public: //methods
-    GpsSimple()
-    {
+  public: //methods
+    GpsSimple() {
         GpsSimple::reset();
     }
-    GpsSimple(GroundTruth* ground_truth)
-    {
+    GpsSimple(GroundTruth* ground_truth) {
         initialize(ground_truth);
     }
-    void initialize(GroundTruth* ground_truth)
-    {
+    void initialize(GroundTruth* ground_truth) {
         GpsBase::initialize(ground_truth);
 
         //initialize frequency limiter
         freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
         delay_line_.initialize(params_.update_latency);
-        
+
         //initialize filters
-        eph_filter.initialize(params_.eph_time_constant, params_.eph_final, params_.eph_initial); //starting dilution set to 100 which we will reduce over time to targetted 0.3f, with 45% accuracy within 100 updates, each update occuring at 0.2s interval
+        eph_filter.initialize(params_.eph_time_constant, params_.eph_final, params_.eph_initial); //starting dilution set to 100 which we will reduce over time to targeted 0.3f, with 45% accuracy within 100 updates, each update occurring at 0.2s interval
         epv_filter.initialize(params_.epv_time_constant, params_.epv_final, params_.epv_initial);
-    
+
         GpsSimple::reset();
     }
 
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         freq_limiter_.reset();
         delay_line_.reset();
 
@@ -53,8 +50,7 @@ public: //methods
         addOutputToDelayLine(eph_filter.getOutput(), epv_filter.getOutput(), 0);
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         freq_limiter_.update(dt);
         eph_filter.update(dt);
         epv_filter.update(dt);
@@ -72,9 +68,8 @@ public: //methods
     //*** End: UpdatableState implementation ***//
 
     virtual ~GpsSimple() = default;
-private:
-    void addOutputToDelayLine(real_T eph, real_T epv, real_T dt)
-    {
+  private:
+    void addOutputToDelayLine(real_T eph, real_T epv, real_T dt) {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
 
@@ -95,7 +90,7 @@ private:
     }
 
 
-private:
+  private:
     typedef std::normal_distribution<> NormalDistribution;
 
     GpsSimpleParams params_;
@@ -105,5 +100,6 @@ private:
     DelayLine<Output> delay_line_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

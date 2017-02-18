@@ -6,7 +6,8 @@
 
 #include "common/Common.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 
 struct MotorDirectControllerParams {
@@ -14,5 +15,6 @@ struct MotorDirectControllerParams {
 };
 
 
-}} //namespace
+}
+} //namespace
 #endif

@@ -3,9 +3,9 @@
 new flight algorithms in the simulator because they have a better chance of working on the real drone when we are done testing.
 
 If you do not want to spend money on this extra hardware then you can probably get away with "software-in-loop" simulation (SITL). 
-In this case, the firware runs in your computer as opposed to flight controller. One downside to SITL mode is that your PC usually has more power than 
+In this case, the firmware runs in your computer as opposed to flight controller. One downside to SITL mode is that your PC usually has more power than 
 the tiny flight controller on your drone, so you may not get the same flying performance when trying the same thing on a real drone.
-But its still useful when you don't have a flight contoller handy.  it is just a few more steps to set up as shown below.
+But it's still useful when you don't have a flight controller handy. It is just a few more steps to set up as shown below.
 
 # Software-In-Loop Simulation (SITL)
 1. Install [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).  You can also do this on an Ubuntu machine, but in that case
@@ -23,7 +23,7 @@ make posix_sitl_default
 ```
 ./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/lpe/iris
 ```
-4. Now you can run Unreal environment and connect to SITL via UDP[settings file](settings.md) with IP adress 127.0.0.1 and port 14560.
+4. Now you can run Unreal environment and connect to SITL via UDP[settings file](settings.md) with IP address 127.0.0.1 and port 14560.
 If you are running a separate Ubuntu machine find its IP address and use that in the settings.json file.
 5. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 
 Note that as we don't have physical board, RC cannot be connected directly to it. 

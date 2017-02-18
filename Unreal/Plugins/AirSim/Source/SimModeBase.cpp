@@ -3,13 +3,11 @@
 #include "AirBlueprintLib.h"
 
 
-ASimModeBase::ASimModeBase()
-{
+ASimModeBase::ASimModeBase() {
     PrimaryActorTick.bCanEverTick = true;
 }
 
-void ASimModeBase::BeginPlay()
-{
+void ASimModeBase::BeginPlay() {
     Super::BeginPlay();
     is_recording = false;
     record_tick_count = 0;
@@ -18,41 +16,34 @@ void ASimModeBase::BeginPlay()
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 }
 
-void ASimModeBase::Tick(float DeltaSeconds)
-{
+void ASimModeBase::Tick(float DeltaSeconds) {
     if (is_recording)
         ++record_tick_count;
     Super::Tick(DeltaSeconds);
 }
 
-void ASimModeBase::reset()
-{
-    //Should be overriden by derived classes
+void ASimModeBase::reset() {
+    //Should be overridden by derived classes
 }
 
-std::string ASimModeBase::getReport()
-{
-    //Should be overriden by derived classes
+std::string ASimModeBase::getReport() {
+    //Should be overridden by derived classes
     return std::string();
 }
 
-FString ASimModeBase::getReportBP()
-{
+FString ASimModeBase::getReportBP() {
     return FString(getReport().c_str());
 }
 
-void ASimModeBase::setupInputBindings()
-{
+void ASimModeBase::setupInputBindings() {
     this->EnableInput(this->GetWorld()->GetFirstPlayerController());
 }
 
-bool ASimModeBase::isRecording()
-{
+bool ASimModeBase::isRecording() {
     return is_recording;
 }
 
-void ASimModeBase::startRecording()
-{
+void ASimModeBase::startRecording() {
     if (record_file.is_open()) {
         record_file.close();
         UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was already open"), LogDebugLevel::Failure);
@@ -64,13 +55,11 @@ void ASimModeBase::startRecording()
         is_recording = true;
 
         UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
-    }
-    else
+    } else
         UAirBlueprintLib::LogMessage("Please make sure path c:\\temp\\airsim exists.", "(config system is under works!)", LogDebugLevel::Failure);
 }
 
-bool ASimModeBase::toggleRecording()
-{
+bool ASimModeBase::toggleRecording() {
     if (isRecording())
         stopRecording();
     else
@@ -79,14 +68,12 @@ bool ASimModeBase::toggleRecording()
     return isRecording();
 }
 
-void ASimModeBase::stopRecording()
-{
+void ASimModeBase::stopRecording() {
     is_recording = false;
     if (!record_file.is_open()) {
         UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was not open"), LogDebugLevel::Failure);
-    }
-    else
+    } else
         record_file.close();
-    
+
     UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Stopped"), LogDebugLevel::Success);
 }

@@ -9,7 +9,7 @@ then you will probably not get a good flying experience.
 
 In fact, if the hard drive is this busy, chances are the drone will not fly properly at all.
 For some unknown reason this I/O bottle neck also interferes with the drone control loop and if that
-loop doesn't run at a high rate (300-500 Hz) then the drone will not fly.  Not surprizing, the control
+loop doesn't run at a high rate (300-500 Hz) then the drone will not fly.  Not surprising, the control
 loop inside the PX4 firmware that runs on a Pixhawk flight controller runs at 1000 Hz.
 
 ### Reducing I/O
@@ -47,6 +47,6 @@ but the drone still flies ok:
 ![Package Unreal Project](images/ue_hard_drive.png)
 
 This is what my fast  SSD looks like when the drone is flying in an Unreal Cooked app 
-(no UE editor, no debugger).  Not surprizingly it is flying perfectly in this case:
+(no UE editor, no debugger).  Not surprisingly it is flying perfectly in this case:
 
 ![Package Unreal Project](images/cooked_ssd.png)

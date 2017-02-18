@@ -7,7 +7,8 @@
 
 #include "common/Common.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 
 struct RpyDirectControllerParams {
@@ -16,5 +17,6 @@ struct RpyDirectControllerParams {
 };
 
 
-}} //namespace
+}
+} //namespace
 #endif

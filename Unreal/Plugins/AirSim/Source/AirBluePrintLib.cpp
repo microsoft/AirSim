@@ -13,13 +13,11 @@ parameters -> camel_case
 
 typedef common_utils::Utils Utils;
 
-void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec)
-{
+void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec) {
     LogMessage(FString(prefix.c_str()), FString(suffix.c_str()), level, persist_sec);
 }
 
-void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
-{
+void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec) {
     static TMap<FString, int> loggingKeys;
     static int counter = 1;
     int key = loggingKeys.FindOrAdd(prefix);
@@ -30,25 +28,32 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
 
     FColor color;
     switch (level) {
-    case LogDebugLevel::Informational: color = FColor(100, 100, 250); break;
-    case LogDebugLevel::Success: color = FColor::Green; break;
-    case LogDebugLevel::Failure: color = FColor::Red; break;
-    case LogDebugLevel::Unimportant: color = FColor::Silver; break;
-    default: color = FColor::Black; break;
+    case LogDebugLevel::Informational:
+        color = FColor(100, 100, 250);
+        break;
+    case LogDebugLevel::Success:
+        color = FColor::Green;
+        break;
+    case LogDebugLevel::Failure:
+        color = FColor::Red;
+        break;
+    case LogDebugLevel::Unimportant:
+        color = FColor::Silver;
+        break;
+    default:
+        color = FColor::Black;
+        break;
     }
     GEngine->AddOnScreenDebugMessage(key, persist_sec, color, prefix + suffix);
     //GEngine->AddOnScreenDebugMessage(key + 10, 60.0f, color, FString::FromInt(key));
 }
 
-float UAirBlueprintLib::GetWorldToMetersScale(const AActor* context)
-{
+float UAirBlueprintLib::GetWorldToMetersScale(const AActor* context) {
     float w2m = 100.f;
     UWorld* w = context->GetWorld();
-    if (w != nullptr)
-    {
+    if (w != nullptr) {
         AWorldSettings* ws = w->GetWorldSettings();
-        if (ws != nullptr)
-        {
+        if (ws != nullptr) {
             w2m = ws->WorldToMeters;
         }
     }
@@ -56,13 +61,11 @@ float UAirBlueprintLib::GetWorldToMetersScale(const AActor* context)
 }
 
 template<typename T>
-T* UAirBlueprintLib::GetActorComponent(AActor* actor, FString name)
-{
+T* UAirBlueprintLib::GetActorComponent(AActor* actor, FString name) {
     TArray<T*> components;
     actor->GetComponents(components);
     T* found = nullptr;
-    for (T* component : components)
-    {
+    for (T* component : components) {
         if (component->GetName().Compare(name) == 0) {
             found = component;
             break;
@@ -72,8 +75,7 @@ T* UAirBlueprintLib::GetActorComponent(AActor* actor, FString name)
 }
 
 template<typename T>
-T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
-{
+T* UAirBlueprintLib::FindActor(const UObject* context, FString name) {
     TArray<AActor*> foundActors;
     FindAllActor(context, foundActors);
 
@@ -88,13 +90,11 @@ T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
 }
 
 template<typename T>
-void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& foundActors)
-{
+void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& foundActors) {
     UGameplayStatics::GetAllActorsOfClass(context == nullptr ? GEngine : context, T::StaticClass(), foundActors);
 }
 
-bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collison_channel) 
-{
+bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collison_channel) {
     FCollisionQueryParams trace_params;
     trace_params.AddIgnoredActor(actor);
     if (ignore_actor != nullptr)
@@ -103,8 +103,7 @@ bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, co
     return actor->GetWorld()->LineTraceTestByChannel(start, end, collison_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collison_channel) 
-{
+bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collison_channel) {
     hit = FHitResult(ForceInit);
 
     FCollisionQueryParams trace_params;
@@ -115,8 +114,7 @@ bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, co
     return actor->GetWorld()->LineTraceSingleByChannel(hit, start, end, collison_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collison_channel) 
-{
+bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collison_channel) {
     TArray<FHitResult> hits;
 
     FCollisionQueryParams trace_params;
@@ -132,8 +130,7 @@ bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVecto
     return has_hit;
 }
 
-void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z, float fixed_z_val)
-{
+void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z, float fixed_z_val) {
     //can we see followee?
     FHitResult hit;
     FVector next_location = followee->GetActorLocation() + offset;
@@ -163,14 +160,13 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
 }
 
 template<class UserClass>
-FInputActionBinding& UAirBlueprintLib::BindActionTokey(const FName action_name, const FKey in_key, UserClass* actor, 
-    typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
-{
+FInputActionBinding& UAirBlueprintLib::BindActionTokey(const FName action_name, const FKey in_key, UserClass* actor,
+        typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func) {
     FInputActionKeyMapping action(action_name, in_key);
-    
+
     APlayerController* controller = actor->GetWorld()->GetFirstPlayerController();
 
     controller->PlayerInput->AddActionMapping(action);
     return controller->InputComponent->
-        BindAction(action_name, IE_Released, actor, func);
+           BindAction(action_name, IE_Released, actor, func);
 }

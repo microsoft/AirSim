@@ -12,7 +12,7 @@
 namespace common_utils {
 
 /*
-    This queue can support multiple producers consumers, but it should be used carefully 
+    This queue can support multiple producers consumers, but it should be used carefully
     because its a *blocking* queue after all. Do not treat as black box, read the code for
     what and how its doing so you know what will happen. There are non-blocking versions available
     out there but more often than not they are buggy. This one is simpler and effortlessly cross-platform.
@@ -23,23 +23,20 @@ namespace common_utils {
     do that then other consumer threads might starve and become pointless. Similarly
     in multi-producer scenario, the thread doing the push should not immediately come back to
     push. So ideally, producer and consumer threads should also perform any time consuming tasks
-    such as I/O so overall throughput of multi-producer/multi-consumer is maximized. You can tune 
+    such as I/O so overall throughput of multi-producer/multi-consumer is maximized. You can tune
     the number of thread so queue size doesn't grow out of bound. If you have
     only one producer and oner consumer than it might be better idea to do time consuming stuff
     such as I/O on sepratae threads so queue doesn't become too large.
 */
 
 template <typename T>
-class ProsumerQueue
-{
-public:
+class ProsumerQueue {
+  public:
     ProsumerQueue()=default;
 
-    T pop() 
-    {
+    T pop() {
         std::unique_lock<std::mutex> global_lock(mutex_);
-        while (queue_.empty())
-        {
+        while (queue_.empty()) {
             //this may be spurious wake-up
             //in multi-consumer scenario
             cond_.wait(global_lock);
@@ -49,8 +46,7 @@ public:
         return val;
     }
 
-    bool tryPop(T& item)
-    {
+    bool tryPop(T& item) {
         std::unique_lock<std::mutex> global_lock(mutex_);
         if(queue_.empty())
             return false;
@@ -60,37 +56,33 @@ public:
         return true;
     }
 
-    void clear()
-    {
+    void clear() {
         std::unique_lock<std::mutex> global_lock(mutex_);
         return queue_.clear();
     }
 
-    size_t size() const
-    {
+    size_t size() const {
         std::unique_lock<std::mutex> global_lock(mutex_);
         return queue_.size();
     }
 
-    bool empty() const
-    {
+    bool empty() const {
         std::unique_lock<std::mutex> global_lock(mutex_);
         return queue_.empty();
     }
 
-    void push(const T& item)
-    {
+    void push(const T& item) {
         std::unique_lock<std::mutex> global_lock(mutex_);
         queue_.push(item);
         global_lock.unlock();
         cond_.notify_one();
     }
-    
-    // non-copiable
-    ProsumerQueue(const ProsumerQueue&) = delete;            
-    ProsumerQueue& operator=(const ProsumerQueue&) = delete; 
 
-private:
+    // non-copiable
+    ProsumerQueue(const ProsumerQueue&) = delete;
+    ProsumerQueue& operator=(const ProsumerQueue&) = delete;
+
+  private:
     std::queue<T> queue_;
     std::mutex mutex_;
     std::condition_variable cond_;

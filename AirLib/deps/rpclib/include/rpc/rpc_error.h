@@ -16,7 +16,7 @@ namespace rpc {
 //! msgpack-rpc specification allows. In client code you probably don't want to
 //! throw it, hence its constructor is private.
 class rpc_error : public std::runtime_error {
-public:
+  public:
     //! \brief Returns the name of the function that was
     //! called on the server while the error occurred.
     std::string get_function_name() const;
@@ -25,12 +25,12 @@ public:
     //! provided.
     virtual RPCLIB_MSGPACK::object_handle& get_error();
 
-private:
+  private:
     friend class client;
     rpc_error(std::string const &what_arg, std::string const &function_name,
               RPCLIB_MSGPACK::object_handle o);
 
-private:
+  private:
     std::string func_name_;
     RPCLIB_MSGPACK::object_handle ob_h_;
 };

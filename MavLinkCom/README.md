@@ -2,7 +2,7 @@
 
 MavLinkCom is a cross-platform C++ library that helps connect to and communicate with [MavLink](https://github.com/mavlink/mavlink) based vehicles.
 Specifically this library is designed to work well with [PX4](https://github.com/PX4/Firmware) based drones.
-To build the library you need Boost.  See [Installing Boost](README.md) below details on installing Boost.
+To build the library you need Boost.  See [Installing Boost](README.md#installing-boost) below details on installing Boost.
 
 ## Design
 
@@ -166,7 +166,7 @@ This version of the code shows how to use the AsyncResult without blocking on a 
 
 	vehicle->releaseControl();
 	if (vehicle->loiter().then([=](bool rc) {
-		printf("loiter command %s\n", rc ? "suceeded" : "failed");
+		printf("loiter command %s\n", rc ? "succeeded" : "failed");
 	}
 	
 The following code gets all configurable parameters from the drone and prints them:
