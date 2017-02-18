@@ -35,22 +35,5 @@ macro(CommonSetup)
     if(NOT "${CMAKE_STATIC_LINKER_FLAGS}" STREQUAL "")
       string(SUBSTRING ${CMAKE_STATIC_LINKER_FLAGS} 9 -1 "BUILD_PLATFORM")
     endif() 
-    
-    IF(UNIX)
-        set(BUILD_TYPE "linux")
-        set(RPC_LIB "${AIRSIM_ROOT}/AirLib/deps/rpclib/lib/${BUILD_PLATFORM}/${BUILD_TYPE}/librpc.a")
-    ELSE()
-        string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
-        if("${BUILD_TYPE}" STREQUAL "debug")
-          set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_DEBUG /MDd /RTC1 /Gm /Od ")
-        elseif("${BUILD_TYPE}" STREQUAL "release")
-          set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MD /O2 /Oi /GL /Gm- /Gy /TP ")
-        else()
-          message(FATAL_ERROR "Please specify '-D CMAKE_BUILD_TYPE=Debug' or Release on the cmake command line")
-        endif()
-        set(RPC_LIB "${AIRSIM_ROOT}/AirLib/deps/rpclib/lib/${BUILD_PLATFORM}/${BUILD_TYPE}/rpc")
-    endif() 
-
 
 endmacro(CommonSetup)
-
