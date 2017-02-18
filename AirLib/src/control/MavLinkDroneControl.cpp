@@ -31,7 +31,7 @@ MavLinkDroneControl::MavLinkDroneControl(int local_system_id, int local_componen
 
     is_offboard_mode_ = false;
 
-    if (connection == nullptr)
+    if (!connection)
         throw std::invalid_argument("MavLinkDroneControl was supplied nullptr connection");
 
     // create MavLinkVehicle that uses this serial connection to talk to the PX4.

@@ -43,7 +43,7 @@ namespace mavlinkcom_impl {
 
 		std::shared_ptr<MavLinkConnection> ensureConnection()
 		{
-			if (connection_ == nullptr)
+			if (!connection_)
 			{
 				throw std::runtime_error("Cannot perform operation as there is no connection, did you forget to call connect() ?");
 			}

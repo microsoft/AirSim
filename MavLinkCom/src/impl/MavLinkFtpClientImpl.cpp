@@ -288,7 +288,7 @@ void MavLinkFtpClientImpl::listDirectory()
 bool MavLinkFtpClientImpl::openSourceFile()
 {
 	file_ptr_ = fopen(local_file_.c_str(), "rb");
-	if (file_ptr_ == nullptr)
+	if (!file_ptr_)
 	{
 		if (progress_ != nullptr) {
 			progress_->error = errno;
@@ -308,7 +308,7 @@ bool MavLinkFtpClientImpl::openSourceFile()
 
 bool MavLinkFtpClientImpl::createLocalFile()
 {
-	if (file_ptr_ == nullptr) {
+	if (!file_ptr_) {
 		auto path = boost::filesystem::system_complete(local_file_);
 		if (boost::filesystem::is_directory(path))
 		{
@@ -345,7 +345,7 @@ bool MavLinkFtpClientImpl::createLocalFile()
 		}
 
 		file_ptr_ = fopen(local_file_.c_str(), "wb");
-		if (file_ptr_ == nullptr)
+		if (!file_ptr_)
 		{
 			if (progress_ != nullptr) {
 				progress_->error = errno;

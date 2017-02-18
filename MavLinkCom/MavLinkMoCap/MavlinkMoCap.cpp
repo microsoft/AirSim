@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 
     // motive gives a weird error if the project is not found, so we look for it.
     FILE* ptr = fopen(project.c_str(), "rb");
-    if (ptr == nullptr) {
+    if (!ptr) {
         int rc = errno;
         printf("error: cannot open project file '%s', rc=%d\n", project.c_str(), rc);
         PrintUsage();

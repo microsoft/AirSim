@@ -16,7 +16,7 @@ UdpClientPort::UdpClientPort() : socket(io_service, { udp::v4() })
 	boost::asio::socket_base::send_buffer_size option(1000000);
 	
 	read_buf_raw = new char[UDP_MAXBUF_SIZE];
-	if (read_buf_raw == nullptr)
+	if (!read_buf_raw)
 	{
 		throw std::runtime_error("out of memory");
 	}
