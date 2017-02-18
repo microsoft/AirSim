@@ -7,6 +7,7 @@
 
 #include "control/Settings.h"
 #include "common/common_utils/Utils.hpp"
+#include <codecvt>
 #include <fstream>
 
 // #include "Shlobj.h" (this doesn't work because it defines a bunch of other conflicting stuff).
@@ -99,7 +100,13 @@ Settings& Settings::loadJSonFile(std::wstring fileName)
 	settings_.file_ = path;
 
     settings_.load_success = false;
-	std::ifstream s(path);
+#ifdef _WIN32
+    std::ifstream s(path);
+#else
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::string path_string = converter.to_bytes(path);
+    std::ifstream s(path_string);
+#endif
 	if (!s.fail()) {
 		json doc_;
 		s >> settings_.doc_;
@@ -115,17 +122,17 @@ bool Settings::isLoadSuccess()
 
 void Settings::createDirectory(std::wstring parentFolder, std::wstring name)
 {
+    wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
+    std::wstring path = parentFolder + sep + name;
 #ifdef _WIN32
-	wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
-	std::wstring path = parentFolder + sep + name;
 	int hr = CreateDirectoryEx(parentFolder.c_str(), path.c_str(), NULL);
 	if (hr != 0) {
 		common_utils::Utils::logMessage("CreateDirectoryEx failed %d\n", GetLastError());
 	}
 #else
-	// bugbug: how do you create unicode folders on Unix?
-	std::string ascii(path.begin(), path.end());
-	mkdir(ascii.c_str());
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::string path_string = converter.to_bytes(path);
+	mkdir(path_string.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
 }
 
@@ -174,9 +181,15 @@ std::wstring Settings::getUserDocumentsFolder() {
 
 void Settings::saveJSonFile(std::wstring fileName)
 {
-	std::wstring path = getFullPath(fileName);
+    std::wstring path = getFullPath(fileName);
+#ifdef _WIN32
 	std::ofstream s(path);
-	s << std::setw(2) << doc_ << std::endl;
+#else
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::string path_string = converter.to_bytes(path);
+    std::ofstream s(path_string);
+#endif
+    s << std::setw(2) << doc_ << std::endl;
 }
 
 Settings Settings::getChild(std::string name)
