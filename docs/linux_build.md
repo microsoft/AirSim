@@ -1,7 +1,5 @@
 # Linux Build
 
-The Linux build system is in progress... please stay tuned...
-
 ## cmake    
 
 First you will need at least [cmake version  3.4](https://cmake.org/install/).  
@@ -12,13 +10,17 @@ sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
 sudo apt-get update
 ````
 
-On Linux you first need a version of GCC that supports `-std=c++14`.  Version 4.9, or newer should work.  
-If you don't have version 4.9 you can get it by running these commands:
+On Linux you first need a version of GCC that supports `-std=c++14`.  Version 6, or newer should work.  
+If you don't have version 6 you can get it by running these commands:
 ````
-sudo apt-get install build-essential
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install gcc-4.9 g++-4.9 cpp-4.9
+sudo apt-get install build-essential software-properties-common -y
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+sudo apt-get update
+sudo apt-get install gcc-snapshot -y
+sudo apt-get update
+sudo apt-get install gcc-6 g++-6 -y
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
 ````
 
 Then run this:
@@ -27,17 +29,8 @@ cmake -D CMAKE_BUILD_TYPE=Debug CMakeLists.txt
 make
 ````
 
-Now if gcc version 4.9 is not your default version of gcc, you will also need to tell cmake to use this version by
-adding the following additional cmake command line arguments:
-
-````
--D CMAKE_C_COMPILER=gcc-4.9 -D CMAKE_CXX_COMPILER=g++-4.9 
-````
-
 Now type `make`.  
 
-STATUS: all of the MavLinkCom library builds and runs on Linux, but the AirLib code is running into a weird
-difference in how GCC implements some -std=c++14 features... stay tuned...
 
 ## Windows cmake
 

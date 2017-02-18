@@ -327,7 +327,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         // The general system state
         MavLinkExtendedSysState extstatus;
         extstatus.decode(msg);
-        bool landed = extstatus.landed_state == (int)MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND;
+        bool landed = extstatus.landed_state == static_cast<int>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND);
         std::lock_guard<std::mutex> guard(state_mutex_);
         if (vehicle_state_.controls.landed != landed) {
             state_version_++;
@@ -390,6 +390,8 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         vehicle_state_.local_est.updated_on = value.time_boot_ms;
         break;
     }
+    default:
+        break;
     }
 }
 

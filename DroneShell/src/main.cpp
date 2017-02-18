@@ -880,12 +880,12 @@ See RecordPose for information about log file format") {
 };
 
 
-std::string beforeScriptStartCallback(const DroneCommandParameters& params, std::string scriptFilePath) {
-    return false;
-}
-bool afterScriptEndCallback(const DroneCommandParameters& params, std::string scriptFilePath) {
-    return false;
-}
+//std::string beforeScriptStartCallback(const DroneCommandParameters& params, std::string scriptFilePath) {
+//    return false;
+//}
+//bool afterScriptEndCallback(const DroneCommandParameters& params, std::string scriptFilePath) {
+//    return false;
+//}
 // std::string beforeScriptCommandStartCallback(const DroneCommandParameters& params) {
 //     params.context->client.newTask();
 // }

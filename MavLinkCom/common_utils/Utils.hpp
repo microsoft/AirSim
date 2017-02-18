@@ -10,7 +10,6 @@
     _Pragma("GCC diagnostic ignored \"-Wreturn-type\"")             \
     _Pragma("GCC diagnostic ignored \"-Wdelete-non-virtual-dtor\"") \
     _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")        \
-    _Pragma("GCC diagnostic ignored \"-pedantic\"")                 \
     _Pragma("GCC diagnostic ignored \"-Wshadow\"")                  \
     _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")          \
     _Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \

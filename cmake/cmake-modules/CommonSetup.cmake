@@ -12,7 +12,7 @@ macro(CommonSetup)
         ## I had to remove the following for Eigen to build properly: -Wlogical-op -Wsign-promo 
         ## boost does not built cleam, so I had to disable these checks:
         set(BOOST_OVERRIDES " -Wno-error=undef  -Wno-error=ctor-dtor-privacy -Wno-error=old-style-cast  -Wno-error=shadow -Wno-error=redundant-decls -Wno-error=missing-field-initializers  -Wno-error=unused-parameter") 
-        ## Mavlink requires turning off -pedantic  and -Wno-error=switch-default 
+        ## Mavlink requires turning off -Wno-error=switch-default 
         set(MAVLINK_OVERRIDES "-Wno-error=switch-default ") 
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             set(CMAKE_CXX_STANDARD 14)
@@ -38,6 +38,7 @@ macro(CommonSetup)
     
     IF(UNIX)
         set(BUILD_TYPE "linux")
+        set(RPC_LIB "${AIRSIM_ROOT}/AirLib/deps/rpclib/lib/${BUILD_PLATFORM}/${BUILD_TYPE}/librpc.a")
     ELSE()
         string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
         if("${BUILD_TYPE}" STREQUAL "debug")
@@ -47,9 +48,9 @@ macro(CommonSetup)
         else()
           message(FATAL_ERROR "Please specify '-D CMAKE_BUILD_TYPE=Debug' or Release on the cmake command line")
         endif()
+        set(RPC_LIB "${AIRSIM_ROOT}/AirLib/deps/rpclib/lib/${BUILD_PLATFORM}/${BUILD_TYPE}/rpc")
     endif() 
 
-    set(RPC_LIB "${AIRSIM_ROOT}/AirLib/deps/rpclib/lib/${BUILD_PLATFORM}/${BUILD_TYPE}/rpc")
 
 endmacro(CommonSetup)
 
