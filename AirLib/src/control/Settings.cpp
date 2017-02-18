@@ -7,6 +7,7 @@
 
 #include "control/Settings.h"
 #include "common/common_utils/Utils.hpp"
+#include <codecvt>
 #include <fstream>
 
 // #include "Shlobj.h" (this doesn't work because it defines a bunch of other conflicting stuff).
@@ -102,9 +103,9 @@ Settings& Settings::loadJSonFile(std::wstring fileName)
 #ifdef _WIN32
     std::ifstream s(path);
 #else
-    // bugbug: how do you open unicode file names on Linux?
-    std::string ascii(path.begin(), path.end());
-    std::ifstream s(ascii);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::string path_string = converter.to_bytes(path);
+    std::ifstream s(path_string);
 #endif
 
 	if (!s.fail()) {
@@ -120,23 +121,18 @@ bool Settings::isLoadSuccess()
     return load_success;
 }
 
-void Settings::createDirectory(std::wstring parentFolder, std::wstring name)
-{
-#ifdef _WIN32
+void Settings::createDirectory(std::wstring parentFolder, std::wstring name) {
 	wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
 	std::wstring path = parentFolder + sep + name;
+#ifdef _WIN32    
 	int hr = CreateDirectoryEx(parentFolder.c_str(), path.c_str(), NULL);
 	if (hr != 0) {
 		common_utils::Utils::logMessage("CreateDirectoryEx failed %d\n", GetLastError());
 	}
 #else
-	// bugbug: how do you create unicode folders on Unix?
-	std::string asciiparent(parentFolder.begin(), parentFolder.end());
-    std::string asciiname(name.begin(), name.end());
-    std::string ascii = asciiparent + common_utils::Utils::kPathSeparator + asciiname;
-    struct stat buf;
-    stat(ascii.c_str(), &buf);
-	mkdir(ascii.c_str(), buf.st_mode); // inherit permissions
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::string path_string = converter.to_bytes(path);
+	  mkdir(path_string.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
 }
 
@@ -189,9 +185,9 @@ void Settings::saveJSonFile(std::wstring fileName)
 #ifdef _WIN32
 	std::ofstream s(path);
 #else
-    // bugbug: how do you open unicode file names on Linux?
-    std::string ascii(path.begin(), path.end());
-    std::ofstream s(ascii);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::string path_string = converter.to_bytes(path);
+    std::ofstream s(path_string);
 #endif
 	s << std::setw(2) << doc_ << std::endl;
 }

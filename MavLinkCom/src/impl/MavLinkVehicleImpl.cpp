@@ -128,8 +128,7 @@ AsyncResult<MavLinkHomePosition> MavLinkVehicleImpl::waitForHomePosition()
 	this->setMessageInterval(static_cast<int>(MavLinkMessageIds::MAVLINK_MSG_ID_HOME_POSITION), 1);
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
-		if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HOME_POSITION))
-		{
+        if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HOME_POSITION)) {
 			MavLinkHomePosition pos;
 			pos.decode(m);
 			result.setResult(pos);
@@ -156,8 +155,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 	}
 
 	switch (msg.msgid) {
-	case MavLinkHeartbeat::kMessageId:// MAVLINK_MSG_ID_HEARTBEAT:
-	{
+    case MavLinkHeartbeat::kMessageId: { // MAVLINK_MSG_ID_HEARTBEAT:
 		heartbeat_throttle_ = false;
 
 		MavLinkHeartbeat heartbeat;
@@ -190,22 +188,24 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 	}
 		break;
 
-	case MavLinkAttitude::kMessageId: // MAVLINK_MSG_ID_ATTITUDE:
-	{
+    case MavLinkAttitude::kMessageId: { // MAVLINK_MSG_ID_ATTITUDE:
 		MavLinkAttitude att;
 		att.decode(msg);
 
 		std::lock_guard<std::mutex> guard(state_mutex_);
 		state_version_++;
 		updateReadStats(msg);
-		vehicle_state_.attitude.roll = att.roll; vehicle_state_.attitude.pitch = att.pitch; vehicle_state_.attitude.yaw = att.yaw;
-		vehicle_state_.attitude.roll_rate = att.rollspeed; vehicle_state_.attitude.pitch_rate = att.pitchspeed; vehicle_state_.attitude.yaw_rate = att.yawspeed;
+        vehicle_state_.attitude.roll = att.roll;
+        vehicle_state_.attitude.pitch = att.pitch;
+        vehicle_state_.attitude.yaw = att.yaw;
+        vehicle_state_.attitude.roll_rate = att.rollspeed;
+        vehicle_state_.attitude.pitch_rate = att.pitchspeed;
+        vehicle_state_.attitude.yaw_rate = att.yawspeed;
 		vehicle_state_.attitude.updated_on = att.time_boot_ms;
 		//Utils::logMessage("Received attitude, acc=[%2.2f %2.2f %2.2f]", att.pitch, att.roll, att.yaw);
 		break;
 	}
-	case MavLinkGlobalPositionInt::kMessageId: // MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
-	{
+    case MavLinkGlobalPositionInt::kMessageId: { // MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 		MavLinkGlobalPositionInt pos;
 		pos.decode(msg);
 		std::lock_guard<std::mutex> guard(state_mutex_);
@@ -222,8 +222,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 		vehicle_state_.global_est.updated_on = pos.time_boot_ms;
 		break;
 	}
-	case MavLinkRcChannelsScaled::kMessageId:
-	{
+    case MavLinkRcChannelsScaled::kMessageId: {
 		MavLinkRcChannelsScaled ch;
 		ch.decode(msg);
 		std::lock_guard<std::mutex> guard(state_mutex_);
@@ -245,8 +244,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 
 		break;
 	}
-	case MavLinkRcChannels::kMessageId: // MAVLINK_MSG_ID_RC_CHANNELS:
-	{
+    case MavLinkRcChannels::kMessageId: { // MAVLINK_MSG_ID_RC_CHANNELS:
 		MavLinkRcChannels ch;
 		ch.decode(msg);
 
@@ -256,8 +254,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 
 		break;
 	}
-	case MavLinkServoOutputRaw::kMessageId: // MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
-	{
+    case MavLinkServoOutputRaw::kMessageId: { // MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
 		// The RAW values of the servo outputs
 		MavLinkServoOutputRaw servo;
 		servo.decode(msg);
@@ -272,36 +269,34 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 		break;
 	}
 
-    case MavLinkVfrHud::kMessageId:// MAVLINK_MSG_ID_VFR_HUD:
-	{
+    case MavLinkVfrHud::kMessageId: { // MAVLINK_MSG_ID_VFR_HUD:
 		// Metrics typically displayed on a HUD for fixed wing aircraft
 		break;
 	}
-    case MavLinkHighresImu::kMessageId: // MAVLINK_MSG_ID_HIGHRES_IMU:
-	{
+    case MavLinkHighresImu::kMessageId: { // MAVLINK_MSG_ID_HIGHRES_IMU:
 		// The IMU readings in SI units in NED body frame
 		break;
 	}
-	case MavLinkAltitude::kMessageId: // MAVLINK_MSG_ID_ALTITUDE:
-	{
+    case MavLinkAltitude::kMessageId: { // MAVLINK_MSG_ID_ALTITUDE:
 		MavLinkAltitude altitude;
 		altitude.decode(msg);
 		std::lock_guard<std::mutex> guard(state_mutex_);
 		state_version_++;
 		updateReadStats(msg);
-		vehicle_state_.altitude.altitude_amsl = altitude.altitude_amsl; vehicle_state_.altitude.altitude_local = altitude.altitude_local;
-		vehicle_state_.altitude.altitude_monotonic = altitude.altitude_monotonic; vehicle_state_.altitude.bottom_clearance = altitude.bottom_clearance;
-		vehicle_state_.altitude.altitude_relative = altitude.altitude_relative; vehicle_state_.altitude.altitude_terrain = altitude.altitude_terrain;
+        vehicle_state_.altitude.altitude_amsl = altitude.altitude_amsl;
+        vehicle_state_.altitude.altitude_local = altitude.altitude_local;
+        vehicle_state_.altitude.altitude_monotonic = altitude.altitude_monotonic;
+        vehicle_state_.altitude.bottom_clearance = altitude.bottom_clearance;
+        vehicle_state_.altitude.altitude_relative = altitude.altitude_relative;
+        vehicle_state_.altitude.altitude_terrain = altitude.altitude_terrain;
 		vehicle_state_.altitude.updated_on = altitude.time_usec;
 		break;
 	}
-    case MavLinkSysStatus::kMessageId:
-	{
+    case MavLinkSysStatus::kMessageId: {
 		//printSystemStatus(&msg);
 		break;
 	}
-	case MavLinkHomePosition::kMessageId: // MAVLINK_MSG_ID_HOME_POSITION:
-	{
+    case MavLinkHomePosition::kMessageId: { // MAVLINK_MSG_ID_HOME_POSITION:
 		MavLinkHomePosition home;
 		home.decode(msg);
 		std::lock_guard<std::mutex> guard(state_mutex_);
@@ -320,23 +315,20 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 		Utils::copy(home.q, vehicle_state_.home.local_pose.q);
 		break;
 	}
-    case MavLinkBatteryStatus::kMessageId: // MAVLINK_MSG_ID_BATTERY_STATUS
-	{
+    case MavLinkBatteryStatus::kMessageId: { // MAVLINK_MSG_ID_BATTERY_STATUS
 		// todo: use this to determine when we need to do emergency landing...
 		break;
 	}
-    case MavLinkAttitudeTarget::kMessageId: // MAVLINK_MSG_ID_ATTITUDE_TARGET
-	{
+    case MavLinkAttitudeTarget::kMessageId: { // MAVLINK_MSG_ID_ATTITUDE_TARGET
 		// Reports the current commanded attitude of the vehicle as specified by the autopilot
 		break;
 	}
-	case MavLinkExtendedSysState::kMessageId: // MAVLINK_MSG_ID_EXTENDED_SYS_STATE:
-	{
+    case MavLinkExtendedSysState::kMessageId: { // MAVLINK_MSG_ID_EXTENDED_SYS_STATE:
 		// Provides state for additional features
 		// The general system state
 		MavLinkExtendedSysState extstatus;
 		extstatus.decode(msg);
-		bool landed = extstatus.landed_state == (int)MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND;
+        bool landed = extstatus.landed_state == static_cast<int>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND);
 		std::lock_guard<std::mutex> guard(state_mutex_);
 		if (vehicle_state_.controls.landed != landed) {
 			state_version_++;
@@ -345,32 +337,27 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 		}
 		break;
 	}
-    case MavLinkActuatorControlTarget::kMessageId: // MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGE
-	{
+    case MavLinkActuatorControlTarget::kMessageId: { // MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGE
 		break;
 	}
-	case MavLinkStatustext::kMessageId: // MAVLINK_MSG_ID_STATUSTEXT:
-	{
+    case MavLinkStatustext::kMessageId: { // MAVLINK_MSG_ID_STATUSTEXT:
 		MavLinkStatustext statustext;
 		statustext.decode(msg);
 		Utils::logMessage("Received status sev=%d, text, %s",
 			static_cast<int>(statustext.severity), statustext.text);
 		break;
 	}
-	case MavLinkMessageInterval::kMessageId: // MAVLINK_MSG_ID_MESSAGE_INTERVAL:
-	{
+    case MavLinkMessageInterval::kMessageId: { // MAVLINK_MSG_ID_MESSAGE_INTERVAL:
 		MavLinkMessageInterval msgInt;
 		msgInt.decode(msg);
 		Utils::logMessage("Received message interval for msg=%d, interval = %d",
 			static_cast<int>(msgInt.message_id), msgInt.interval_us);
 		break;
 	}
-    case MavLinkNamedValueInt::kMessageId: // MAVLINK_MSG_ID_NAMED_VALUE_INT
-	{
+    case MavLinkNamedValueInt::kMessageId: { // MAVLINK_MSG_ID_NAMED_VALUE_INT
 		break;
 	}
-	case MavLinkHilControls::kMessageId: // MAVLINK_MSG_ID_HIL_CONTROLS:
-	{
+    case MavLinkHilControls::kMessageId: { // MAVLINK_MSG_ID_HIL_CONTROLS:
 		MavLinkHilControls value;
 		value.decode(msg);
 		std::lock_guard<std::mutex> guard(state_mutex_);
@@ -380,23 +367,32 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 		vehicle_state_.controls.actuator_controls[1] = value.pitch_elevator;
 		vehicle_state_.controls.actuator_controls[2] = value.yaw_rudder;
 		vehicle_state_.controls.actuator_controls[3] = value.throttle;
-		vehicle_state_.controls.actuator_controls[4] = value.aux1; vehicle_state_.controls.actuator_controls[5] = value.aux2; vehicle_state_.controls.actuator_controls[6] = value.aux3; vehicle_state_.controls.actuator_controls[7] = value.aux4;
-		vehicle_state_.controls.actuator_mode = value.mode; vehicle_state_.controls.actuator_nav_mode = value.nav_mode;
+        vehicle_state_.controls.actuator_controls[4] = value.aux1;
+        vehicle_state_.controls.actuator_controls[5] = value.aux2;
+        vehicle_state_.controls.actuator_controls[6] = value.aux3;
+        vehicle_state_.controls.actuator_controls[7] = value.aux4;
+        vehicle_state_.controls.actuator_mode = value.mode;
+        vehicle_state_.controls.actuator_nav_mode = value.nav_mode;
 		vehicle_state_.controls.updated_on = value.time_usec;
 		break;
 	}
-	case MavLinkLocalPositionNed::kMessageId: // MAVLINK_MSG_ID_LOCAL_POSITION_NED:
-	{
+    case MavLinkLocalPositionNed::kMessageId: { // MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 		MavLinkLocalPositionNed value;
 		value.decode(msg);
 		std::lock_guard<std::mutex> guard(state_mutex_);
 		state_version_++;
 		updateReadStats(msg);
-		vehicle_state_.local_est.pos.x = value.x; vehicle_state_.local_est.pos.y = value.y; vehicle_state_.local_est.pos.z = value.z;
-		vehicle_state_.local_est.vel.vx = value.vx; vehicle_state_.local_est.vel.vy = value.vy; vehicle_state_.local_est.vel.vz = value.vz;
+        vehicle_state_.local_est.pos.x = value.x;
+        vehicle_state_.local_est.pos.y = value.y;
+        vehicle_state_.local_est.pos.z = value.z;
+        vehicle_state_.local_est.vel.vx = value.vx;
+        vehicle_state_.local_est.vel.vy = value.vy;
+        vehicle_state_.local_est.vel.vz = value.vz;
 		vehicle_state_.local_est.updated_on = value.time_boot_ms;
 		break;
 	}
+    default:
+        break;
 	}
 }
 
@@ -701,14 +697,11 @@ void MavLinkVehicleImpl::moveByLocalVelocity(float vx, float vy, float vz, bool 
 	msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_POSITION |
 		MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
 
-	if (isYaw)
-	{
+    if (isYaw) {
 		msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
 		msg.yaw = yawOrRate;
 		msg.yaw_rate = 0;
-	}
-	else
-	{
+    } else {
 		msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
 		msg.yaw = 0;
 		msg.yaw_rate = yawOrRate;
@@ -737,8 +730,7 @@ void MavLinkVehicleImpl::moveByLocalVelocityWithAltHold(float vx, float vy, floa
 	msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_ALT_HOLD |
 		MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
 
-	if (isYaw)
-	{
+    if (isYaw) {
 		msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
 		msg.yaw = yawOrRate;
 		msg.yaw_rate = 0;
@@ -768,8 +760,7 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
 
 	msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY |
 		MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
-	if (isYaw)
-	{
+    if (isYaw) {
 		msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
 		msg.yaw = yawOrRate;
 		msg.yaw_rate = 0;

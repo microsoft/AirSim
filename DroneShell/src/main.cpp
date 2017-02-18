@@ -28,8 +28,7 @@ public:
 using DroneCommandParameters = SimpleShell<CommandContext>::ShellCommandParameters;
 using DroneCommandSwitch = SimpleShell<CommandContext>::ShellCommandSwitch;
 
-class DroneCommand : public SimpleShell<CommandContext>::ShellCommand
-{
+class DroneCommand : public SimpleShell<CommandContext>::ShellCommand {
 public:
     DroneCommand(std::string name, std::string help)
         : ShellCommand(name,help)
@@ -960,17 +959,13 @@ std::string server_address("127.0.0.1");
 bool parseCommandLine(int argc, const char* argv[])
 {
     // parse command line
-    for (int i = 1; i < argc; i++)
-    {
+    for (int i = 1; i < argc; i++) {
         const char* arg = argv[i];
-        if (arg[0] == '-' || arg[0] == '/')
-        {
+        if (arg[0] == '-' || arg[0] == '/') {
             std::string name = arg + 1;
-            if (name == "server" && i + 1 < argc)
-            {
+            if (name == "server" && i + 1 < argc) {
                 server_address = argv[++i];
-            }
-            else {
+            } else {
                 return false;
             }
         }
