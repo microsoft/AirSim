@@ -25,7 +25,7 @@ class handler_spec_response {};
 //! in a different thread, you can safely set different properties
 //! and everything will "just work".
 class this_handler_t {
-public:
+  public:
     //! \brief Sets an arbitrary object to be sent back as an error
     //! response to the client.
     //! \param err_obj The error object. This can be anything that
@@ -60,7 +60,7 @@ public:
 
     friend class rpc::detail::server_session;
 
-private:
+  private:
     RPCLIB_MSGPACK::object_handle error_, resp_;
     bool resp_enabled_ = true;
 };

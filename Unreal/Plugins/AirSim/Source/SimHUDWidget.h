@@ -6,11 +6,10 @@
 
 
 UCLASS()
-class AIRSIM_API USimHUDWidget : public UUserWidget
-{
-	GENERATED_BODY()
-	
-public:
+class AIRSIM_API USimHUDWidget : public UUserWidget {
+    GENERATED_BODY()
+
+  public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Refs")
     ASimModeBase* SimMode;
 };

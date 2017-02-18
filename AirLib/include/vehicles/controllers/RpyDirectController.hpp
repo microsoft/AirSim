@@ -9,20 +9,18 @@
 #include "RpyDirectControllerParams.hpp"
 #include "common/common_utils/Utils.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class RpyDirectController : public ControllerBase {
-public:
-    RpyDirectController()
-    {
+  public:
+    RpyDirectController() {
         RpyDirectController::reset();
     }
-    RpyDirectController(const RpyDirectControllerParams& params)
-    {
+    RpyDirectController(const RpyDirectControllerParams& params) {
         initialize(params);
     }
-    void initialize(const RpyDirectControllerParams& params)
-    {
+    void initialize(const RpyDirectControllerParams& params) {
         params_ = params;
         motor_control_signals_.resize(params_.rotor_count);
 
@@ -32,51 +30,50 @@ public:
     }
 
     //*** Start ControllerBase implementation ****//
-	virtual void reset() override
-	{
+    virtual void reset() override {
         motor_control_signals_.assign(params_.rotor_count, 0);
-	}
+    }
 
-	virtual void update(real_T dt) override
-	{
-		real_T throttle_speed = scale(throttle_, 1.0f / params_.throttle_scale);
-		real_T roll_speed = scale(roll_, throttle_speed / params_.roll_scale);
-		real_T pitch_speed = scale(pitch_, throttle_speed / params_.pitch_scale);
-		real_T yaw_speed = scale(yaw_, throttle_speed / params_.yaw_scale);
+    virtual void update(real_T dt) override {
+        real_T throttle_speed = scale(throttle_, 1.0f / params_.throttle_scale);
+        real_T roll_speed = scale(roll_, throttle_speed / params_.roll_scale);
+        real_T pitch_speed = scale(pitch_, throttle_speed / params_.pitch_scale);
+        real_T yaw_speed = scale(yaw_, throttle_speed / params_.yaw_scale);
 
         motor_control_signals_[0] = Utils::clip(throttle_speed - pitch_speed + roll_speed + yaw_speed, 0.0f, 1.0f);
         motor_control_signals_[1] = Utils::clip(throttle_speed + pitch_speed + roll_speed - yaw_speed, 0.0f, 1.0f);
         motor_control_signals_[2] = Utils::clip(throttle_speed + pitch_speed - roll_speed + yaw_speed, 0.0f, 1.0f);
         motor_control_signals_[3] = Utils::clip(throttle_speed - pitch_speed - roll_speed - yaw_speed, 0.0f, 1.0f);
-	}
+    }
 
-    virtual real_T getRotorControlSignal(unsigned int rotor_index) override
-    {
+    virtual real_T getRotorControlSignal(unsigned int rotor_index) override {
         return motor_control_signals_.at(rotor_index);
     }
     //*** End ControllerBase implementation ****//
 
 
     //RPY range -1 to 1, throttle 0 to 1
-    void setDesired(real_T throttle, real_T roll, real_T pitch, real_T yaw)
-    {
-        throttle_ = throttle; roll_ = roll; pitch_ = pitch; yaw_ = yaw;
+    void setDesired(real_T throttle, real_T roll, real_T pitch, real_T yaw) {
+        throttle_ = throttle;
+        roll_ = roll;
+        pitch_ = pitch;
+        yaw_ = yaw;
     }
 
     virtual ~RpyDirectController() = default;
 
-private:
-	//input between -1 to 1
-	real_T scale(real_T input, real_T factor)
-	{
-		return input * factor;
-	}
+  private:
+    //input between -1 to 1
+    real_T scale(real_T input, real_T factor) {
+        return input * factor;
+    }
 
-private:
+  private:
     real_T roll_ = 0, pitch_ = 0, yaw_ = 0, throttle_ = 0;
     vector<real_T> motor_control_signals_;
     RpyDirectControllerParams params_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

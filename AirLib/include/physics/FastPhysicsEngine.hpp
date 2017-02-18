@@ -12,34 +12,30 @@
 #include "common/LogFileWriter.hpp"
 #include "common/CommonStructs.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class FastPhysicsEngine : public PhysicsEngineBase {
-public:
-    FastPhysicsEngine()
-    { 
+  public:
+    FastPhysicsEngine() {
         FastPhysicsEngine::reset();
 
         logger_.open("c:\\temp\\FastPhysicsEngine.tsv", false);
     }
-    ~FastPhysicsEngine()
-    {
+    ~FastPhysicsEngine() {
         //log_file_.close();
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         for (PhysicsBody* body_ptr : *this) {
             updatePhysics(dt, *body_ptr);
         }
     }
-    virtual void reportState(StateReporter& reporter) override
-    {
+    virtual void reportState(StateReporter& reporter) override {
         for (PhysicsBody* body_ptr : *this) {
             reporter.writeValue("Phys", debug_string_.str());
             reporter.writeValue("Is Gounded", grounded_);
@@ -51,9 +47,8 @@ public:
     }
     //*** End: UpdatableState implementation ***//
 
-private:
-    void updatePhysics(real_T dt, PhysicsBody& body)
-    {
+  private:
+    void updatePhysics(real_T dt, PhysicsBody& body) {
         //get current kinematics state of the body - this state existed since last dt seconds
         const Kinematics::State& current = body.getKinematics();
         Kinematics::State next;
@@ -63,14 +58,13 @@ private:
 
         if (!getNextKinematicsOnCollison(dt, body, current, next, next_wrench))
             getNextKinematicsOnGround(dt, body, current, next, next_wrench);
-        
+
         body.setKinematics(next);
         body.setWrench(next_wrench);
         body.kinematicsUpdated(dt);
     }
 
-    bool getNextKinematicsOnCollison(real_T dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
-    {
+    bool getNextKinematicsOnCollison(real_T dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench) {
         static constexpr uint kCollisionResponseCycles = 1;
 
         /************************* Collison response ************************/
@@ -107,10 +101,10 @@ private:
                         http://chrishecker.com/images/e/e7/Gdmphys3.pdf
                         V(t+1) = V(t) + j*N / m
                     */
-                    real_T impulse_mag_denom = 1.0f / body.getMass() + 
-                        (body.getInertiaInv() * r.cross(collison_info.normal))
-                        .cross(r)
-                        .dot(collison_info.normal);
+                    real_T impulse_mag_denom = 1.0f / body.getMass() +
+                                               (body.getInertiaInv() * r.cross(collison_info.normal))
+                                               .cross(r)
+                                               .dot(collison_info.normal);
                     real_T impulse_mag = -contact_vel.dot(collison_info.normal) * (1 + body.getRestitution()) / impulse_mag_denom;
 
                     next.twist.linear = vcur_avg + collison_info.normal * (impulse_mag / body.getMass());
@@ -120,22 +114,21 @@ private:
                     //we will use friction to modify component in direction of tangent
                     Vector3r contact_tang = contact_vel - collison_info.normal * collison_info.normal.dot(contact_vel);
                     Vector3r contact_tang_unit = contact_tang.normalized();
-                    real_T friction_mag_denom =  1.0f / body.getMass() + 
-                        (body.getInertiaInv() * r.cross(contact_tang_unit))
-                        .cross(r)
-                        .dot(contact_tang_unit);
+                    real_T friction_mag_denom =  1.0f / body.getMass() +
+                                                 (body.getInertiaInv() * r.cross(contact_tang_unit))
+                                                 .cross(r)
+                                                 .dot(contact_tang_unit);
                     real_T friction_mag = -contact_tang.norm() * body.getFriction() / friction_mag_denom;
 
                     next.twist.linear += contact_tang_unit * friction_mag;
                     next.twist.angular += r.cross(contact_tang_unit) * (friction_mag / body.getMass());
-                }
-                else
+                } else
                     next.twist.linear = vcur_avg;
 
                 //there is no acceleration during collison response
                 next.accelerations.linear = Vector3r::Zero();
                 next.accelerations.angular = Vector3r::Zero();
-                
+
                 //do not use current.pose because it might be invalid
                 next.pose.position = collison_info.position + (collison_info.normal * collison_info.penetration_depth) + next.twist.linear * (dt * kCollisionResponseCycles);
                 next_wrench = Wrench::zero();
@@ -147,8 +140,7 @@ private:
         return false;
     }
 
-    bool getNextKinematicsOnGround(real_T dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
-    {
+    bool getNextKinematicsOnGround(real_T dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench) {
         /************************* reset state if we have hit the ground ************************/
         real_T min_z_over_ground = body.getEnvironment().getState().min_z_over_ground;
         grounded_ = 0;
@@ -173,8 +165,7 @@ private:
         return grounded_ != 0;
     }
 
-    void getNextKinematicsNoCollison(real_T dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
-    {
+    void getNextKinematicsNoCollison(real_T dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench) {
         /************************* Get force and torque acting on body ************************/
         //set wrench sum to zero
         Wrench wrench = Wrench::zero();
@@ -210,7 +201,7 @@ private:
         real_T avg_velocity_body_norm = avg_velocity_body.norm();
         Vector3r drag_force_world = Vector3r::Zero();
         if (!Utils::isApproximatelyZero(avg_velocity_body_norm, 1E-1f)) {
-            Vector3r drag_force_body = 
+            Vector3r drag_force_body =
                 body.getLinearDragFactor()
                 .cwiseProduct(avg_velocity_body)
                 .cwiseProduct(avg_velocity_body);
@@ -227,8 +218,8 @@ private:
         //if angular velocity is too low (for example, random noise), 1/norm can get randomly big and generate huge drag
         if (!Utils::isApproximatelyZero(avg_angular_norm, 1E-1f)) {
             Vector3r angular_drag_mag = body.getAngularDragFactor()
-                .cwiseProduct(avg_angular)
-                .cwiseProduct(avg_angular);
+                                        .cwiseProduct(avg_angular)
+                                        .cwiseProduct(avg_angular);
             angular_drag = -avg_angular / avg_angular_norm * angular_drag_mag.norm();
         }
         Vector3r torque_net = wrench.torque + angular_drag;
@@ -281,8 +272,7 @@ private:
 
             //re-normalize quaternion to avoid accumulating error
             next.pose.orientation.normalize();
-        } 
-        else //no change in angle, because angular velocity is zero (normalized vector is undefined)
+        } else //no change in angle, because angular velocity is zero (normalized vector is undefined)
             next.pose.orientation = current.pose.orientation;
 
         next.twist.angular = current.twist.angular + (current.accelerations.angular + next.accelerations.angular) * (0.5f * dt);
@@ -290,11 +280,12 @@ private:
         next_wrench = Wrench(force_net_world, torque_net);
     }
 
-private:
+  private:
     LogFileWriter logger_;
     std::stringstream debug_string_;
     int grounded_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

@@ -15,8 +15,7 @@ using namespace mavlinkcom_impl;
 const GUID serialDeviceClass = { 0x4d36e978, 0xe325, 0x11ce, 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 };
 
 
-bool parseVidPid(std::wstring deviceId, int* vid, int* pid)
-{
+bool parseVidPid(std::wstring deviceId, int* vid, int* pid) {
     const wchar_t* ptr = deviceId.c_str();
     const wchar_t* end = ptr + deviceId.size();
     // parse out the VID number
@@ -28,7 +27,7 @@ bool parseVidPid(std::wstring deviceId, int* vid, int* pid)
     long c = wcstol(pos + 5, &numberEnd, 16);
     *vid = (int)c;
 
-    // now the PID 
+    // now the PID
     pos = wcsstr(numberEnd, L"PID_");
     if (pos == NULL) {
         return false;
@@ -41,8 +40,7 @@ bool parseVidPid(std::wstring deviceId, int* vid, int* pid)
     return true;
 }
 
-void parseDisplayName(std::wstring displayName, SerialPortInfo* info)
-{
+void parseDisplayName(std::wstring displayName, SerialPortInfo* info) {
     info->displayName = displayName;
     const wchar_t* ptr = displayName.c_str();
     // parse out the VID number
@@ -58,8 +56,7 @@ void parseDisplayName(std::wstring displayName, SerialPortInfo* info)
 }
 
 
-std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int pid)
-{
+std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int pid) {
     bool debug = false;
     std::vector<SerialPortInfo> result;
 
@@ -71,8 +68,7 @@ std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int 
 
     SP_DEVINFO_DATA deviceInfo;
     deviceInfo.cbSize = sizeof(SP_DEVINFO_DATA);
-    for (int devIndex = 0; SetupDiEnumDeviceInfo(classInfo, devIndex, &deviceInfo); devIndex++)
-    {
+    for (int devIndex = 0; SetupDiEnumDeviceInfo(classInfo, devIndex, &deviceInfo); devIndex++) {
         ULONG size;
         HRESULT hr = CM_Get_Device_ID_Size(&size, deviceInfo.DevInst, 0);
         if (hr == CR_SUCCESS) {
@@ -86,8 +82,7 @@ std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int 
 
             int dvid = 0, dpid = 0;
             if (parseVidPid(buffer, &dvid, &dpid) &&
-                ((dvid == vid && dpid == pid) || (vid == 0 && pid == 0)))
-            {
+                    ((dvid == vid && dpid == pid) || (vid == 0 && pid == 0))) {
                 DWORD keyCount = 0;
                 if (!SetupDiGetDevicePropertyKeys(classInfo, &deviceInfo, NULL, 0, &keyCount, 0)) {
                     if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
@@ -103,8 +98,7 @@ std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int 
 
                 if (SetupDiGetDevicePropertyKeys(classInfo, &deviceInfo, keyArray, keyCount, &keyCount, 0)) {
 
-                    for (DWORD j = 0; j < keyCount; j++)
-                    {
+                    for (DWORD j = 0; j < keyCount; j++) {
                         DEVPROPKEY* key = &keyArray[j];
                         bool isItemNameProperty = (key->fmtid == PKEY_ItemNameDisplay.fmtid && key->pid == PKEY_ItemNameDisplay.pid);
                         if (isItemNameProperty) {

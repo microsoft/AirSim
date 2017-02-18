@@ -31,55 +31,55 @@ namespace clmdep_msgpack {
 MSGPACK_API_VERSION_NAMESPACE(v1) {
 /// @endcond
 
-namespace adaptor {
+    namespace adaptor {
 
-template <typename T>
-struct as<std::shared_ptr<T>, typename std::enable_if<clmdep_msgpack::has_as<T>::value>::type> {
-    std::shared_ptr<T> operator()(clmdep_msgpack::object const& o) const {
-        if(o.is_nil()) return nullptr;
-        return std::make_shared<T>(o.as<T>());
-    }
-};
-
-template <typename T>
-struct convert<std::shared_ptr<T>> {
-    clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, std::shared_ptr<T>& v) const {
-        if(o.is_nil()) v.reset();
-        else {
-            v = std::make_shared<T>();
-            clmdep_msgpack::adaptor::convert<T>()(o, *v);
+    template <typename T>
+    struct as<std::shared_ptr<T>, typename std::enable_if<clmdep_msgpack::has_as<T>::value>::type> {
+        std::shared_ptr<T> operator()(clmdep_msgpack::object const& o) const {
+            if(o.is_nil()) return nullptr;
+            return std::make_shared<T>(o.as<T>());
         }
-        return o;
-    }
-};
+    };
 
-template <typename T>
-struct pack<std::shared_ptr<T>> {
-    template <typename Stream>
-    clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const std::shared_ptr<T>& v) const {
-        if (v) o.pack(*v);
-        else o.pack_nil();
-        return o;
-    }
-};
+    template <typename T>
+    struct convert<std::shared_ptr<T>> {
+        clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, std::shared_ptr<T>& v) const {
+            if(o.is_nil()) v.reset();
+            else {
+                v = std::make_shared<T>();
+                clmdep_msgpack::adaptor::convert<T>()(o, *v);
+            }
+            return o;
+        }
+    };
 
-template <typename T>
-struct object<std::shared_ptr<T> > {
-    void operator()(clmdep_msgpack::object& o, const std::shared_ptr<T>& v) const {
-        if (v) clmdep_msgpack::adaptor::object<T>()(o, *v);
-        else o.type = clmdep_msgpack::type::NIL;
-    }
-};
+    template <typename T>
+    struct pack<std::shared_ptr<T>> {
+        template <typename Stream>
+        clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const std::shared_ptr<T>& v) const {
+            if (v) o.pack(*v);
+            else o.pack_nil();
+            return o;
+        }
+    };
 
-template <typename T>
-struct object_with_zone<std::shared_ptr<T>> {
-    void operator()(clmdep_msgpack::object::with_zone& o, const std::shared_ptr<T>& v) const {
-        if (v) clmdep_msgpack::adaptor::object_with_zone<T>()(o, *v);
-        else o.type = clmdep_msgpack::type::NIL;
-    }
-};
+    template <typename T>
+    struct object<std::shared_ptr<T> > {
+        void operator()(clmdep_msgpack::object& o, const std::shared_ptr<T>& v) const {
+            if (v) clmdep_msgpack::adaptor::object<T>()(o, *v);
+            else o.type = clmdep_msgpack::type::NIL;
+        }
+    };
 
-} // namespace adaptor
+    template <typename T>
+    struct object_with_zone<std::shared_ptr<T>> {
+        void operator()(clmdep_msgpack::object::with_zone& o, const std::shared_ptr<T>& v) const {
+            if (v) clmdep_msgpack::adaptor::object_with_zone<T>()(o, *v);
+            else o.type = clmdep_msgpack::type::NIL;
+        }
+    };
+
+    } // namespace adaptor
 
 /// @cond
 } // MSGPACK_API_VERSION_NAMESPACE(v1)

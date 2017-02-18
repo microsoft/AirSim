@@ -7,57 +7,72 @@
 #include "UpdatableObject.hpp"
 #include "common/Common.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 template<typename TUpdatableObjectPtr>
 class UpdatableContainer : public UpdatableObject {
-public: //limited container interface
+  public: //limited container interface
     typedef vector<TUpdatableObjectPtr> MembersContainer;
     typedef typename MembersContainer::iterator iterator;
     typedef typename MembersContainer::const_iterator const_iterator;
     typedef typename MembersContainer::value_type value_type;
-    iterator begin() { return members_.begin(); }
-    iterator end() { return members_.end(); }
-    const_iterator begin() const { return members_.begin(); }
-    const_iterator end() const { return members_.end(); }
-    uint size() const { return static_cast<uint>(members_.size()); }
-    const TUpdatableObjectPtr& at(uint index) const { members_.at(index);  }
-    TUpdatableObjectPtr& at(uint index) { return members_.at(index);  }
+    iterator begin() {
+        return members_.begin();
+    }
+    iterator end() {
+        return members_.end();
+    }
+    const_iterator begin() const {
+        return members_.begin();
+    }
+    const_iterator end() const {
+        return members_.end();
+    }
+    uint size() const {
+        return static_cast<uint>(members_.size());
+    }
+    const TUpdatableObjectPtr& at(uint index) const {
+        members_.at(index);
+    }
+    TUpdatableObjectPtr& at(uint index) {
+        return members_.at(index);
+    }
     //allow to override membership modifications
-    virtual void clear() { members_.clear(); }
-    virtual void insert(TUpdatableObjectPtr member) { members_.push_back(member);  }
-    virtual void erase_remove(TUpdatableObjectPtr obj) { 
-        members_.erase(std::remove(members_.begin(), members_.end(), obj), members_.end()); }
+    virtual void clear() {
+        members_.clear();
+    }
+    virtual void insert(TUpdatableObjectPtr member) {
+        members_.push_back(member);
+    }
+    virtual void erase_remove(TUpdatableObjectPtr obj) {
+        members_.erase(std::remove(members_.begin(), members_.end(), obj), members_.end());
+    }
 
-public:
-    UpdatableContainer()
-    {
+  public:
+    UpdatableContainer() {
         reset();
     }
-    void setCurrentMembersAsInitial(bool reset_members = true)
-    {
+    void setCurrentMembersAsInitial(bool reset_members = true) {
         initial_members_ = members_;
         if (reset_members)
             UpdatableContainer::reset();
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         members_ = initial_members_;
 
         for (TUpdatableObjectPtr& member : members_)
             member->reset();
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         for (TUpdatableObjectPtr& member : members_)
             member->update(dt);
     }
 
-    virtual void reportState(StateReporter& reporter) override
-    {
+    virtual void reportState(StateReporter& reporter) override {
         for (TUpdatableObjectPtr& member : members_)
             member->reportState(reporter);
     }
@@ -66,9 +81,10 @@ public:
 
     virtual ~UpdatableContainer() = default;
 
-private:
+  private:
     MembersContainer members_, initial_members_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

@@ -8,17 +8,17 @@
 #include "common/UpdatableObject.hpp"
 #include "common/CommonStructs.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class Kinematics : public UpdatableObject {
-public:
+  public:
     struct State {
         Pose pose;
         Twist twist;
         Accelerations accelerations;
 
-        static State zero()
-        {
+        static State zero() {
             State zero_state;
             zero_state.pose.position = Vector3r::Zero();
             zero_state.pose.orientation = Quaternionr::Identity();
@@ -29,35 +29,29 @@ public:
         }
     };
 
-    Kinematics()
-    {
+    Kinematics() {
         initialize(State());
     }
-    Kinematics(const State& initial)
-    {
+    Kinematics(const State& initial) {
         initialize(initial);
     }
-    void initialize(const State& initial)
-    {
+    void initialize(const State& initial) {
         initial_ = initial;
         Kinematics::reset();
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         current_ = initial_;
     }
 
-    virtual void update(real_T dt) override
-    {
-        //nothing to do because next state should be updated 
+    virtual void update(real_T dt) override {
+        //nothing to do because next state should be updated
         //by physics engine. The reason is that final state
         //needs to take in to account state of other objects as well,
         //for example, if collison occurs
     }
-    virtual void reportState(StateReporter& reporter) override
-    {
+    virtual void reportState(StateReporter& reporter) override {
         //call base
         UpdatableObject::reportState(reporter);
 
@@ -70,40 +64,34 @@ public:
     }
     //*** End: UpdatableState implementation ***//
 
-    const Pose& getPose() const
-    {
+    const Pose& getPose() const {
         return current_.pose;
     }
-    void setPose(const Pose& pose)
-    {
+    void setPose(const Pose& pose) {
         current_.pose = pose;
     }
-    const Twist& getTwist() const
-    {
+    const Twist& getTwist() const {
         return current_.twist;
     }
-    void setTwist(const Twist& twist)
-    {
+    void setTwist(const Twist& twist) {
         current_.twist = twist;
     }
 
-    const State& getState() const
-    {
+    const State& getState() const {
         return current_;
     }
-    void setState(const State& state)
-    {
+    void setState(const State& state) {
         current_ = state;
     }
-    const State& getInitialState() const
-    {
+    const State& getInitialState() const {
         return initial_;
     }
 
-private: //fields
+  private: //fields
     State initial_;
     State current_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

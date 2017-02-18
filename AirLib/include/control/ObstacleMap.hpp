@@ -7,12 +7,13 @@
 #include <mutex>
 #include "common/Common.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 /*
     ObstacleMap implements 2D map of obstacles in circular disk around the vehicle. The main
     design criteria is to make insert/delete/queries very fast. This is typically
-    not possible in grid based approach because these operations may have large 
+    not possible in grid based approach because these operations may have large
     constant. Current code is designed to be O(1) with small constant. This will
     enable sensors like lasers which needs much faster processing.
 
@@ -28,7 +29,7 @@ namespace msr { namespace airlib {
     Each segment between two ticks forms a cone in the circle where we will put the obstacle
     information. The segment between ticks 0-1 is 0, 1-2 is 1 and so on. So this scheme allows
     us to get the front cone always at segment 0. If we have only 4 sensors like in DJI Matrice
-    Guidance system then segment 1 has information about obstacles on right, seg 2 for back and 
+    Guidance system then segment 1 has information about obstacles on right, seg 2 for back and
     so on.
 
     Another design criteria is that this class is thread safe for concurrent updates and queries.
@@ -36,36 +37,35 @@ namespace msr { namespace airlib {
 */
 
 class ObstacleMap {
-private:
+  private:
     //stores distances for each tick segment
     vector<float> distances_;
     //what is the confidence in these values? This should typically be the standard deviation
-    vector<float> confidences_; 
+    vector<float> confidences_;
     //number of ticks, this decides reolution
     int ticks_;
     //blind spots don't get updated so we get its value from neighbours
     vector<bool> blindspots_;
-public:
+  public:
     //this will be return result of the queries
     struct ObstacleInfo {
         int tick;   //at what tick we found obstacle
         float distance; //what is the distance from obstacle
-        float confidence;  
+        float confidence;
 
-        string toString() const
-        {
+        string toString() const {
             return Utils::stringf("Obs: tick=%i, distance=%f, confidence=%f", tick, distance, confidence);
         }
     };
 
     //private version of hasObstacle doesn't do lock or check inputs
-    ObstacleInfo hasObstacle_(int from_tick, int to_tick) const;    
-private:
+    ObstacleInfo hasObstacle_(int from_tick, int to_tick) const;
+  private:
     int wrap(int tick) const;
 
     //currently we employ simple thread safe model: just serialize queries and updates
     std::mutex mutex_;
-public:
+  public:
     //if odd_blindspots = true then set all odd ticks as blind spots
     ObstacleMap(int ticks, bool odd_blindspots = false);
 
@@ -90,8 +90,9 @@ public:
     //convert tick to end of angle (in body frame) in radians
     float tickToAngleEnd(int tick) const;
     //convert tick to mid of the cone in radians
-    float tickToAngleMid(int tick) const;    
+    float tickToAngleMid(int tick) const;
 };
-    
-}} //namespace
+
+}
+} //namespace
 #endif

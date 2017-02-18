@@ -28,12 +28,13 @@ STRICT_MODE_OFF
 #include "linenoise.hpp"
 STRICT_MODE_ON
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 
 template <class ExecContext>
 class SimpleShell {
-public:
+  public:
     struct ShellCommandParameters {
         const std::vector<std::string>& args;
         ExecContext* const context;
@@ -49,12 +50,10 @@ public:
 
         ShellCommandSwitch() {}
         ShellCommandSwitch(const std::string& theName, const std::string& defaultValue, const std::string& helpText)
-            : default_value(defaultValue), name(theName), help(helpText) 
-        {
+            : default_value(defaultValue), name(theName), help(helpText) {
         }
         ShellCommandSwitch(const ShellCommandSwitch& other):
-            default_value(other.default_value), name(other.name), help(other.help), value(other.value)
-        {
+            default_value(other.default_value), name(other.name), help(other.help), value(other.value) {
         }
         void operator=(const ShellCommandSwitch& other) {
             name = other.name;
@@ -65,15 +64,14 @@ public:
     };
 
     class ShellCommand {
-    private:    
+      private:
         const std::string name_;
         const std::string help_;
         std::unordered_map<std::string, ShellCommandSwitch> switches_;
-    public:
+      public:
 
         ShellCommand(std::string name, std::string help)
-        : name_(name), help_(help)
-        {
+            : name_(name), help_(help) {
         }
 
         void addSwitch(const ShellCommandSwitch& s) {
@@ -81,37 +79,42 @@ public:
             switches_[lower] = s;
         }
 
-        const std::string& getName() const { return name_; }
+        const std::string& getName() const {
+            return name_;
+        }
 
-        const std::string& getHelp() const { return help_; }
+        const std::string& getHelp() const {
+            return help_;
+        }
 
         ShellCommandSwitch& getSwitch(const std::string& name) {
             std::string lower = boost::algorithm::to_lower_copy(name);
 
-            if (switches_.find(lower) != switches_.end()){
+            if (switches_.find(lower) != switches_.end()) {
                 ShellCommandSwitch& result = switches_.at(lower);
                 return result;
-            }                        
-            throw std::invalid_argument(common_utils::Utils::stringf("switch %s is not defined on this command", name.c_str()));                        
+            }
+            throw std::invalid_argument(common_utils::Utils::stringf("switch %s is not defined on this command", name.c_str()));
         }
 
-        int getSwitchInt(const std::string& name)
-        {
+        int getSwitchInt(const std::string& name) {
             return std::stoi(getSwitch(name).value);
         }
 
-        const std::vector<std::string> getSwitches() const { 
+        const std::vector<std::string> getSwitches() const {
             std::vector<std::string> result;
             for (auto kv : switches_) {
                 result.push_back(kv.first);
             }
-            return result; 
+            return result;
         }
 
-        virtual bool execute(const ShellCommandParameters&) { return false; };
-    private:
-        ShellCommand(){}
-        ShellCommand(ShellCommand& other){}
+        virtual bool execute(const ShellCommandParameters&) {
+            return false;
+        };
+      private:
+        ShellCommand() {}
+        ShellCommand(ShellCommand& other) {}
     };
 
 
@@ -147,12 +150,12 @@ public:
         _afterCommandEndCallback = value;
     }
 
-private:    //typedefs and sub types
+  private:    //typedefs and sub types
     typedef std::vector<std::string> VectorString;
     typedef boost::escaped_list_separator<char> CommandSeparator;
     typedef boost::tokenizer<CommandSeparator> CommandTokenizer;
-   
-public: //default commands
+
+  public: //default commands
     bool runScriptCommand(const ShellCommandParameters& params) {
         if (params.args.size() > 1) {
             std::string command_line, filePath = params.args[1];
@@ -161,18 +164,17 @@ public: //default commands
             std::ifstream scriptFile(filePath);
             while(std::getline(scriptFile, command_line)) {
                 if (_beforeScriptCommandStartCallback)
-                        _beforeScriptCommandStartCallback(params, command_line);
+                    _beforeScriptCommandStartCallback(params, command_line);
                 bool commandReturnValue = execute(command_line, params.context);
                 if (_afterScriptCommandEndCallback)
-                        commandReturnValue = _afterScriptCommandEndCallback(params, command_line, commandReturnValue);
+                    commandReturnValue = _afterScriptCommandEndCallback(params, command_line, commandReturnValue);
                 if (commandReturnValue)
                     return true;
             }
             if (_afterScriptEndCallback)
                 return _afterScriptEndCallback(params, filePath);
             return false;
-        }
-        else {
+        } else {
             std::cout << "Please specify the script to execute as first argument" << std::endl;
             return false;
         }
@@ -181,13 +183,11 @@ public: //default commands
     typedef std::function<bool (const ShellCommandParameters&)> SimpleShellCommand;
 
     class CommentCommand : public ShellCommand {
-    public:
-        CommentCommand() : ShellCommand("rem", "Comment out the line")
-        {
+      public:
+        CommentCommand() : ShellCommand("rem", "Comment out the line") {
         }
 
-        bool execute(const ShellCommandParameters& params) 
-        {
+        bool execute(const ShellCommandParameters& params) {
             return false;
         }
     };
@@ -195,13 +195,11 @@ public: //default commands
 
 
     class QuitCommand : public ShellCommand {
-    public:
-        QuitCommand() : ShellCommand("quit", "Exit the shell")
-        {
+      public:
+        QuitCommand() : ShellCommand("quit", "Exit the shell") {
         }
 
-        bool execute(const ShellCommandParameters& params) 
-        {
+        bool execute(const ShellCommandParameters& params) {
             return true;
         }
     };
@@ -210,26 +208,22 @@ public: //default commands
 
     class HelpCommand : public ShellCommand {
         SimpleShellCommand helpMethod_;
-    public:
-        HelpCommand() : ShellCommand("help", "Help on the supported commands or Help [Command] for help on a specific command")
-        {
+      public:
+        HelpCommand() : ShellCommand("help", "Help on the supported commands or Help [Command] for help on a specific command") {
         }
-        void bind(SimpleShellCommand helpMethod){
+        void bind(SimpleShellCommand helpMethod) {
             helpMethod_ = helpMethod;
         }
 
-        bool execute(const ShellCommandParameters& params) 
-        {
+        bool execute(const ShellCommandParameters& params) {
             return helpMethod_(params);
         }
     };
 
     HelpCommand helpCommand;
 
-    bool helpMethod(const ShellCommandParameters& params)
-    {
-        if (params.args.size() == 2) 
-        {
+    bool helpMethod(const ShellCommandParameters& params) {
+        if (params.args.size() == 2) {
             std::string name = boost::algorithm::to_lower_copy(params.args[1]);
 
             if (command_infos_.find(name) != command_infos_.end()) {
@@ -239,13 +233,11 @@ public: //default commands
 
                 size_t longest = 0;
                 auto switches = command.getSwitches();
-                for (const std::string& switchName : switches)
-                {
+                for (const std::string& switchName : switches) {
                     size_t len = switchName.size();
                     if (len > longest) longest = len;
                 }
-                for (const std::string& switchName : switches)
-                {
+                for (const std::string& switchName : switches) {
                     ShellCommandSwitch& sw = command.getSwitch(switchName);
                     std::cout << "   " << sw.name;
                     std::cout << std::string(longest + 5 - sw.name.size(), ' ');
@@ -300,36 +292,33 @@ public: //default commands
 
     class RunCommand : public ShellCommand {
         SimpleShellCommand runMethod_;
-    public:
-        RunCommand() : ShellCommand("run", "Run script specified in file")
-        {
+      public:
+        RunCommand() : ShellCommand("run", "Run script specified in file") {
         }
-        void bind(SimpleShellCommand runMethod){
+        void bind(SimpleShellCommand runMethod) {
             runMethod_ = runMethod;
         }
 
-        bool execute(const ShellCommandParameters& params) 
-        {
+        bool execute(const ShellCommandParameters& params) {
             return runMethod_(params);
         }
     };
     RunCommand runCommand;
 
-private:
+  private:
     std::unordered_map<std::string, ShellCommand&> command_infos_;
     std::unordered_map<std::string, std::string> command_aliases_;
     int command_history_size_;
     std::string prompt_;
-private:
+  private:
     void commandCompletitionCallBack(const char* editBuffer, VectorString& completions) {
         for(auto kv : command_infos_) {
             if (boost::starts_with(kv.first, editBuffer))
                 completions.push_back(kv.first);
         }
     }
-public:
-    SimpleShell(std::string prompt = "> ")
-    {
+  public:
+    SimpleShell(std::string prompt = "> ") {
         runCommand.bind(std::bind(&SimpleShell::runScriptCommand, this, std::placeholders::_1));
         helpCommand.bind(std::bind(&SimpleShell::helpMethod, this, std::placeholders::_1));
 
@@ -338,19 +327,19 @@ public:
         addCommand(helpCommand);
         addCommand(runCommand);
         addCommand(commentCommand);
-                        
+
         addAlias("q", "quit");
         addAlias("exit", "quit");
         addAlias("?", "help");
         addAlias("#", "rem");
-        
+
         //Setup the shell
         setCommandHistorySize(50);
         setPrompt(prompt);
-        
+
         //Setup the command completition
         linenoise::SetCompletionCallback(std::bind(&SimpleShell::commandCompletitionCallBack, this
-        , std::placeholders::_1, std::placeholders::_2));
+                                         , std::placeholders::_1, std::placeholders::_2));
     }
 
     // add a reference to a command (this object must remain valid, we do not copy it)
@@ -372,18 +361,24 @@ public:
     }
 
     //getters & setters
-    int getCommandHistorySize() const { return command_history_size_; }
-    void setCommandHistorySize(int value) { 
+    int getCommandHistorySize() const {
+        return command_history_size_;
+    }
+    void setCommandHistorySize(int value) {
         command_history_size_ = value;
-        linenoise::SetHistoryMaxLen(50); 
+        linenoise::SetHistoryMaxLen(50);
     }
 
-    std::string getPrompt() const { return prompt_; }
-    void setPrompt(std::string prompt) { prompt_ = prompt; }
-    
+    std::string getPrompt() const {
+        return prompt_;
+    }
+    void setPrompt(std::string prompt) {
+        prompt_ = prompt;
+    }
+
     void showMessage(const std::string& message) {
         std::cout << prompt_ << message << std::endl;
-    }    
+    }
 
     //template <class ExecContext>
     virtual bool execute(const ShellCommandParameters& params) {
@@ -397,27 +392,25 @@ public:
             cmd = &command_infos_.at(command);
         } else if (command_aliases_.find(command) != command_aliases_.end()) {
             command = command_aliases_.at(command);
-            if (command_infos_.find(command) != command_infos_.end()){
+            if (command_infos_.find(command) != command_infos_.end()) {
                 cmd = &command_infos_.at(command);
             } else {
                 std::cout << "Alias '" << params.args[0] << "' referred to unknown command '" << command << "'" << std::endl;
                 return false;
             }
-        }
-        else {
+        } else {
             std::cout << "Command '" << params.args[0] << "' is not supported" << std::endl;
             return false;
         }
 
         std::vector<std::string> nonSwitchArgs;
 
-        if (cmd != nullptr)
-        {
+        if (cmd != nullptr) {
             // parse out any switches (-foo 123) and set them on the command so they are easy to find.
             // and report errors for unexpected switches.
             // first initialize all switches to their  default value.
 
-            for (const std::string& switchName : cmd->getSwitches()){
+            for (const std::string& switchName : cmd->getSwitches()) {
                 ShellCommandSwitch& sw = cmd->getSwitch(switchName);
                 sw.value = sw.default_value;
             }
@@ -430,8 +423,7 @@ public:
                     if (i + 1 < len) {
                         cmd->getSwitch(arg).value = args.at(i + 1);
                         ++i;
-                    }
-                    else {
+                    } else {
                         throw std::invalid_argument(common_utils::Utils::stringf("switch %s is missing a value", arg.c_str()));
                     }
                 } else {
@@ -439,26 +431,26 @@ public:
                     nonSwitchArgs.push_back(arg);
                 }
             }
-            
+
             return cmd->execute(ShellCommandParameters{nonSwitchArgs, params.context, params.command_line, this});
         }
         return false;
     }
-    
+
     bool execute(const std::string& command_line, ExecContext* const context) {
-        const CommandSeparator separators('\\', ' ', '\"'); 
+        const CommandSeparator separators('\\', ' ', '\"');
 
         //Setup line editor
         VectorString args;
-        
+
         //parse arguments
         CommandTokenizer tok(command_line, separators);
         args.clear();
         for(auto token = tok.begin(); token != tok.end(); ++token)
             args.push_back(*token);
-        
+
         auto params = ShellCommandParameters{args, context, command_line, this};
-        
+
         try {
             if (_beforeCommandStartCallback)
                 _beforeCommandStartCallback(params, command_line);
@@ -469,21 +461,18 @@ public:
                 result =_afterCommandEndCallback(params, command_line, result);
 
             return result;
-        }
-        catch (rpc::rpc_error& rpc_ex) {
+        } catch (rpc::rpc_error& rpc_ex) {
             std::cerr << "RPC Error: " << rpc_ex.get_error().as<std::string>() << std::endl;
-        }
-        catch(const std::exception& ex) {
+        } catch(const std::exception& ex) {
             std::cerr << "Error occurred: " << ex.what() << std::endl;
-        }
-        catch(...) {
+        } catch(...) {
             // catch any other errors (that we have no information about)
             std::cerr << "Non-standard exception occurred" << std::endl;
         }
-        
+
         return false;
     }
-    
+
     //template <class ExecContext>
     bool readLineAndExecute(ExecContext* const context) {
         //get command line
@@ -494,8 +483,9 @@ public:
             return execute(line, context);
         }
         return false;
-    }    
+    }
 };
 
-}} //namespace
+}
+} //namespace
 #endif

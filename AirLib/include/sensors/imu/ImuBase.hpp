@@ -8,10 +8,11 @@
 #include "sensors/SensorBase.hpp"
 
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class ImuBase  : public SensorBase {
-public: //types
+  public: //types
     struct Output {	//structure is same as ROS IMU message
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         Quaternionr orientation;
@@ -20,9 +21,8 @@ public: //types
     };
 
 
-public:
-    virtual void reportState(StateReporter& reporter) override
-    {
+  public:
+    virtual void reportState(StateReporter& reporter) override {
         //call base
         UpdatableObject::reportState(reporter);
 
@@ -30,22 +30,21 @@ public:
         reporter.writeValue("IMU-Lin", output_.linear_acceleration);
     }
 
-    const Output& getOutput() const
-    {
+    const Output& getOutput() const {
         return output_;
     }
 
-protected:
-    void setOutput(const Output& output)
-    {
+  protected:
+    void setOutput(const Output& output) {
         output_ = output;
     }
 
 
-private: 
+  private:
     Output output_;
 };
 
 
-}} //namespace
-#endif 
+}
+} //namespace
+#endif

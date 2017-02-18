@@ -9,22 +9,21 @@
 #include <list>
 #include "common_utils/RandomGenerator.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class GaussianMarkov : UpdatableObject {
-public:
+  public:
     GaussianMarkov()
     {}
-    GaussianMarkov(real_T tau, real_T sigma, real_T initial_output) //in seconds
-    {
+    GaussianMarkov(real_T tau, real_T sigma, real_T initial_output) { //in seconds
         initialize(tau, sigma, initial_output);
     }
-    void initialize(real_T tau, real_T sigma, real_T initial_output)  //in seconds
-    {
+    void initialize(real_T tau, real_T sigma, real_T initial_output) { //in seconds
         tau_ = tau;
         sigma_ = sigma;
         rand_ = RandomGeneratorGausianR(0.0f, 1.0f);
-        
+
         if (std::isnan(initial_output))
             initial_output_ = getNextRandom() * sigma_;
         else
@@ -34,19 +33,17 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         output_ = initial_output_;
         rand_.reset();
     }
-    
-    virtual void update(real_T dt) override
-    {
+
+    virtual void update(real_T dt) override {
         /*
         Ref:
             A Comparison between Different Error Modeling of MEMS Applied to GPS/INS Integrated Systems
             Quinchia, sec 3.2, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3812568/
-        
+
             A Study of the Effects of Stochastic Inertial Sensor Errors in Dead-Reckoning Navigation
             John H Wall, 2007, eq 2.5, pg 13, http://etd.auburn.edu/handle/10415/945
         */
@@ -56,22 +53,21 @@ public:
     //*** End: UpdatableState implementation ***//
 
 
-    real_T getNextRandom()
-    {
+    real_T getNextRandom() {
         return rand_.next();
     }
 
-    real_T getOutput() const
-    {
+    real_T getOutput() const {
         return output_;
     }
 
-private:
+  private:
     RandomGeneratorGausianR rand_;
     real_T tau_, sigma_;
     real_T output_, initial_output_;
 };
 
 
-}} //namespace
+}
+} //namespace
 #endif

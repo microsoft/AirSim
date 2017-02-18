@@ -2,9 +2,8 @@
 
 #include "common/UpdatableObject.hpp"
 
-class VehicleBase : public msr::airlib::UpdatableObject
-{
-public:
+class VehicleBase : public msr::airlib::UpdatableObject {
+  public:
     typedef msr::airlib::UpdatableObject UpdatableObject;
 
     //pure abstract methods in addition to UpdatableObject

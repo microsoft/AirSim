@@ -49,122 +49,126 @@ namespace clmdep_msgpack {
 MSGPACK_API_VERSION_NAMESPACE(v1) {
 /// @endcond
 
-namespace adaptor {
+    namespace adaptor {
 
-template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
-struct convert<MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> > {
-    clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>& v) const {
-        if(o.type != clmdep_msgpack::type::MAP) { throw clmdep_msgpack::type_error(); }
-        clmdep_msgpack::object_kv* p(o.via.map.ptr);
-        clmdep_msgpack::object_kv* const pend(o.via.map.ptr + o.via.map.size);
-        MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> tmp;
-        for(; p != pend; ++p) {
-            K key;
-            p->key.convert(key);
-            p->val.convert(tmp[key]);
+    template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
+    struct convert<MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> > {
+        clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>& v) const {
+            if(o.type != clmdep_msgpack::type::MAP) {
+                throw clmdep_msgpack::type_error();
+            }
+            clmdep_msgpack::object_kv* p(o.via.map.ptr);
+            clmdep_msgpack::object_kv* const pend(o.via.map.ptr + o.via.map.size);
+            MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> tmp;
+            for(; p != pend; ++p) {
+                K key;
+                p->key.convert(key);
+                p->val.convert(tmp[key]);
+            }
+            tmp.swap(v);
+            return o;
         }
-        tmp.swap(v);
-        return o;
-    }
-};
+    };
 
-template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
-struct pack<MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> > {
-    template <typename Stream>
-    clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>& v) const {
-        uint32_t size = checked_get_container_size(v.size());
-        o.pack_map(size);
-        for(typename MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin()), it_end(v.end());
-            it != it_end; ++it) {
-            o.pack(it->first);
-            o.pack(it->second);
-        }
-        return o;
-    }
-};
-
-template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
-struct object_with_zone<MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> > {
-    void operator()(clmdep_msgpack::object::with_zone& o, const MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>& v) const {
-        o.type = clmdep_msgpack::type::MAP;
-        if(v.empty()) {
-            o.via.map.ptr  = nullptr;
-            o.via.map.size = 0;
-        } else {
+    template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
+    struct pack<MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> > {
+        template <typename Stream>
+        clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>& v) const {
             uint32_t size = checked_get_container_size(v.size());
-            clmdep_msgpack::object_kv* p = static_cast<clmdep_msgpack::object_kv*>(o.zone.allocate_align(sizeof(clmdep_msgpack::object_kv)*size));
-            clmdep_msgpack::object_kv* const pend = p + size;
-            o.via.map.ptr  = p;
-            o.via.map.size = size;
-            typename MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin());
-            do {
-                p->key = clmdep_msgpack::object(it->first, o.zone);
-                p->val = clmdep_msgpack::object(it->second, o.zone);
-                ++p;
-                ++it;
-            } while(p < pend);
+            o.pack_map(size);
+            for(typename MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin()), it_end(v.end());
+                    it != it_end; ++it) {
+                o.pack(it->first);
+                o.pack(it->second);
+            }
+            return o;
         }
-    }
-};
+    };
 
-template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
-struct convert<MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> > {
-    clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>& v) const {
-        if(o.type != clmdep_msgpack::type::MAP) { throw clmdep_msgpack::type_error(); }
-        clmdep_msgpack::object_kv* p(o.via.map.ptr);
-        clmdep_msgpack::object_kv* const pend(o.via.map.ptr + o.via.map.size);
-        MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> tmp;
-        for(; p != pend; ++p) {
-            std::pair<K, V> value;
-            p->key.convert(value.first);
-            p->val.convert(value.second);
-            tmp.insert(value);
+    template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
+    struct object_with_zone<MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc> > {
+        void operator()(clmdep_msgpack::object::with_zone& o, const MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>& v) const {
+            o.type = clmdep_msgpack::type::MAP;
+            if(v.empty()) {
+                o.via.map.ptr  = nullptr;
+                o.via.map.size = 0;
+            } else {
+                uint32_t size = checked_get_container_size(v.size());
+                clmdep_msgpack::object_kv* p = static_cast<clmdep_msgpack::object_kv*>(o.zone.allocate_align(sizeof(clmdep_msgpack::object_kv)*size));
+                clmdep_msgpack::object_kv* const pend = p + size;
+                o.via.map.ptr  = p;
+                o.via.map.size = size;
+                typename MSGPACK_STD_TR1::unordered_map<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin());
+                do {
+                    p->key = clmdep_msgpack::object(it->first, o.zone);
+                    p->val = clmdep_msgpack::object(it->second, o.zone);
+                    ++p;
+                    ++it;
+                } while(p < pend);
+            }
         }
-        tmp.swap(v);
-        return o;
-    }
-};
+    };
 
-template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
-struct pack<MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> > {
-    template <typename Stream>
-    clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>& v) const {
-        uint32_t size = checked_get_container_size(v.size());
-        o.pack_map(size);
-        for(typename MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin()), it_end(v.end());
-            it != it_end; ++it) {
-            o.pack(it->first);
-            o.pack(it->second);
+    template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
+    struct convert<MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> > {
+        clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>& v) const {
+            if(o.type != clmdep_msgpack::type::MAP) {
+                throw clmdep_msgpack::type_error();
+            }
+            clmdep_msgpack::object_kv* p(o.via.map.ptr);
+            clmdep_msgpack::object_kv* const pend(o.via.map.ptr + o.via.map.size);
+            MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> tmp;
+            for(; p != pend; ++p) {
+                std::pair<K, V> value;
+                p->key.convert(value.first);
+                p->val.convert(value.second);
+                tmp.insert(value);
+            }
+            tmp.swap(v);
+            return o;
         }
-        return o;
-    }
-};
+    };
 
-template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
-struct object_with_zone<MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> > {
-    void operator()(clmdep_msgpack::object::with_zone& o, const MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>& v) const {
-        o.type = clmdep_msgpack::type::MAP;
-        if(v.empty()) {
-            o.via.map.ptr  = nullptr;
-            o.via.map.size = 0;
-        } else {
+    template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
+    struct pack<MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> > {
+        template <typename Stream>
+        clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>& v) const {
             uint32_t size = checked_get_container_size(v.size());
-            clmdep_msgpack::object_kv* p = static_cast<clmdep_msgpack::object_kv*>(o.zone.allocate_align(sizeof(clmdep_msgpack::object_kv)*size));
-            clmdep_msgpack::object_kv* const pend = p + size;
-            o.via.map.ptr  = p;
-            o.via.map.size = size;
-            typename MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin());
-            do {
-                p->key = clmdep_msgpack::object(it->first, o.zone);
-                p->val = clmdep_msgpack::object(it->second, o.zone);
-                ++p;
-                ++it;
-            } while(p < pend);
+            o.pack_map(size);
+            for(typename MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin()), it_end(v.end());
+                    it != it_end; ++it) {
+                o.pack(it->first);
+                o.pack(it->second);
+            }
+            return o;
         }
-    }
-};
+    };
 
-} // namespace adaptor
+    template <typename K, typename V, typename Hash, typename Pred, typename Alloc>
+    struct object_with_zone<MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc> > {
+        void operator()(clmdep_msgpack::object::with_zone& o, const MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>& v) const {
+            o.type = clmdep_msgpack::type::MAP;
+            if(v.empty()) {
+                o.via.map.ptr  = nullptr;
+                o.via.map.size = 0;
+            } else {
+                uint32_t size = checked_get_container_size(v.size());
+                clmdep_msgpack::object_kv* p = static_cast<clmdep_msgpack::object_kv*>(o.zone.allocate_align(sizeof(clmdep_msgpack::object_kv)*size));
+                clmdep_msgpack::object_kv* const pend = p + size;
+                o.via.map.ptr  = p;
+                o.via.map.size = size;
+                typename MSGPACK_STD_TR1::unordered_multimap<K, V, Hash, Pred, Alloc>::const_iterator it(v.begin());
+                do {
+                    p->key = clmdep_msgpack::object(it->first, o.zone);
+                    p->val = clmdep_msgpack::object(it->second, o.zone);
+                    ++p;
+                    ++it;
+                } while(p < pend);
+            }
+        }
+    };
+
+    } // namespace adaptor
 
 /// @cond
 } // MSGPACK_API_VERSION_NAMESPACE(v1)

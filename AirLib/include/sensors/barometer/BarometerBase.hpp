@@ -8,10 +8,11 @@
 #include "sensors/SensorBase.hpp"
 
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class BarometerBase  : public SensorBase {
-public: //types
+  public: //types
     struct Output { //same fields as ROS message
         real_T altitude;    //meters
         real_T pressure;    //Pascal
@@ -19,9 +20,8 @@ public: //types
     };
 
 
-public:
-    virtual void reportState(StateReporter& reporter) override
-    {
+  public:
+    virtual void reportState(StateReporter& reporter) override {
         //call base
         UpdatableObject::reportState(reporter);
 
@@ -29,22 +29,21 @@ public:
         reporter.writeValue("Baro-Prs", output_.pressure);
     }
 
-    const Output& getOutput() const
-    {
+    const Output& getOutput() const {
         return output_;
     }
 
-protected:
-    void setOutput(const Output& output)
-    {
+  protected:
+    void setOutput(const Output& output) {
         output_ = output;
     }
 
 
-private: 
+  private:
     Output output_;
 };
 
 
-}} //namespace
-#endif 
+}
+} //namespace
+#endif

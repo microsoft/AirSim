@@ -3,26 +3,22 @@
 #include "AirBlueprintLib.h"
 
 
-ACameraDirector::ACameraDirector()
-{
+ACameraDirector::ACameraDirector() {
     PrimaryActorTick.bCanEverTick = true;
 
 }
 
-void ACameraDirector::BeginPlay()
-{
+void ACameraDirector::BeginPlay() {
     Super::BeginPlay();
 
     setupInputBindings();
 }
 
-void ACameraDirector::Tick( float DeltaTime )
-{
+void ACameraDirector::Tick( float DeltaTime ) {
     Super::Tick( DeltaTime );
 }
 
-void ACameraDirector::setupInputBindings()
-{
+void ACameraDirector::setupInputBindings() {
     this->EnableInput(this->GetWorld()->GetFirstPlayerController());
 
     UAirBlueprintLib::BindActionTokey("InputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::InputEventFpvView);
@@ -30,8 +26,7 @@ void ACameraDirector::setupInputBindings()
     UAirBlueprintLib::BindActionTokey("InputEventGroundView", EKeys::Backslash, this, &ACameraDirector::InputEventGroundView);
 }
 
-bool ACameraDirector::checkCameraRefs()
-{
+bool ACameraDirector::checkCameraRefs() {
     if (ExternalCamera == nullptr || TargetPawn == nullptr || TargetPawn->getFpvCamera() == nullptr) {
         UAirBlueprintLib::LogMessage("Cannot toggle PIP camera because FPV pwn camera and/or external camera is not set", "", LogDebugLevel::Failure, 60);
         return false;
@@ -39,8 +34,7 @@ bool ACameraDirector::checkCameraRefs()
     return true;
 }
 
-bool ACameraDirector::togglePIPScene()
-{
+bool ACameraDirector::togglePIPScene() {
     if (!checkCameraRefs())
         return false;
     EPIPCameraType main_state = ExternalCamera->toggleEnableCameraTypes(EPIPCameraType::PIP_CAMERA_TYPE_SCENE);
@@ -52,8 +46,7 @@ bool ACameraDirector::togglePIPScene()
         return pip_state != EPIPCameraType::PIP_CAMERA_TYPE_NONE;
 }
 
-bool ACameraDirector::togglePIPDepth()
-{
+bool ACameraDirector::togglePIPDepth() {
     if (!checkCameraRefs())
         return false;
     EPIPCameraType main_state = ExternalCamera->toggleEnableCameraTypes(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH);
@@ -65,8 +58,7 @@ bool ACameraDirector::togglePIPDepth()
         return pip_state != EPIPCameraType::PIP_CAMERA_TYPE_NONE;
 }
 
-bool ACameraDirector::togglePIPSeg()
-{
+bool ACameraDirector::togglePIPSeg() {
     if (!checkCameraRefs())
         return false;
     EPIPCameraType main_state = ExternalCamera->toggleEnableCameraTypes(EPIPCameraType::PIP_CAMERA_TYPE_SEG);
@@ -78,8 +70,7 @@ bool ACameraDirector::togglePIPSeg()
         return pip_state != EPIPCameraType::PIP_CAMERA_TYPE_NONE;
 }
 
-bool ACameraDirector::togglePIPAll()
-{
+bool ACameraDirector::togglePIPAll() {
     if (!checkCameraRefs())
         return false;
     EPIPCameraType main_state = ExternalCamera->toggleEnableCameraTypes(EPIPCameraType::PIP_CAMERA_TYPE_ALL);
@@ -92,8 +83,7 @@ bool ACameraDirector::togglePIPAll()
 }
 
 
-APIPCamera* ACameraDirector::getCamera(int id)
-{
+APIPCamera* ACameraDirector::getCamera(int id) {
     //TODO: support multiple camera
     if (TargetPawn != nullptr)
         return TargetPawn->getFpvCamera();
