@@ -6,4 +6,4 @@ We ask that you clean compile your changes on Windows or Linux and test that the
 still work. If your change is breaking the build, we might start to lose trust in your contributions :). If your change is significant, you might want to test on *both* Linux and Windows to be sure.
 
 # Coding Style
-We have the [sweet and short coding guideline](coding_guidelines.md) document you might have seen yet.
+We have the [sweet and short coding guideline](coding_guidelines.md) document you might have yet seen.
