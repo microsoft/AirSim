@@ -4,36 +4,7 @@
 #ifndef common_utils_Utils_hpp
 #define common_utils_Utils_hpp
 
-#ifdef __GNUC__
-#define STRICT_MODE_OFF                                           \
-    _Pragma("GCC diagnostic push")                                  \
-    _Pragma("GCC diagnostic ignored \"-Wreturn-type\"")             \
-    _Pragma("GCC diagnostic ignored \"-Wdelete-non-virtual-dtor\"") \
-    _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")        \
-    _Pragma("GCC diagnostic ignored \"-Wshadow\"")                  \
-    _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")          \
-    _Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \
-	_Pragma("GCC diagnostic ignored \"-Wmissing-field-initializers\"") \
-	_Pragma("GCC diagnostic ignored \"-Wredundant-decls\"")	
-
-
-/* Addition options that can be enabled 
-    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
-    _Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
-    _Pragma("GCC diagnostic ignored \"-Werror\"")                   \
-    _Pragma("GCC diagnostic ignored \"-Werror=\"")                  \
-    _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
-*/
-
-#define STRICT_MODE_ON                                            \
-    _Pragma("GCC diagnostic pop")          
-#elif defined(_MSC_VER)
-#define STRICT_MODE_OFF   __pragma(warning( push, 0 ))
-#define STRICT_MODE_ON    __pragma( pop )          
-
-#endif
-
-
+#include "StrictMode.hpp"
 #include <chrono>
 #include <thread>
 #include <memory>
@@ -49,11 +20,6 @@
 #include "type_utils.hpp"
 #include <limits>
 
-
-#ifndef _WIN32
-#include <limits.h>
-#include <sys/param.h>
-#endif
 
 //Stubs for C++17 optional type
 #if (defined __cplusplus) && (__cplusplus >= 201700L)

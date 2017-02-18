@@ -246,6 +246,9 @@
     <ClInclude Include="include\control\Settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\common\common_utils\StrictMode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\control\DroneControlBase.cpp">

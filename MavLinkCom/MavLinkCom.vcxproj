@@ -249,6 +249,7 @@
     <ClCompile Include="src\serial_com\TcpServer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common_utils\StrictMode.hpp" />
     <ClInclude Include="include\AsyncResult.hpp" />
     <ClInclude Include="common_utils\EnumFlags.hpp" />
     <ClInclude Include="common_utils\ExceptionUtils.hpp" />

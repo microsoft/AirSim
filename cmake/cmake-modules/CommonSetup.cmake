@@ -12,7 +12,7 @@ macro(CommonSetup)
         ## I had to remove the following for Eigen to build properly: -Wlogical-op -Wsign-promo 
         ## boost does not built cleam, so I had to disable these checks:
         set(BOOST_OVERRIDES " -Wno-error=undef  -Wno-error=ctor-dtor-privacy -Wno-error=old-style-cast  -Wno-error=shadow -Wno-error=redundant-decls -Wno-error=missing-field-initializers  -Wno-error=unused-parameter") 
-        ## Mavlink requires turning off -Wno-error=switch-default 
+        ## Mavlink requires turning off -pedantic  and -Wno-error=switch-default 
         set(MAVLINK_OVERRIDES "-Wno-error=switch-default ") 
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             set(CMAKE_CXX_STANDARD 14)

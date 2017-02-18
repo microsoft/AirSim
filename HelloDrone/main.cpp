@@ -91,7 +91,7 @@ int main()
         client.armDisarm(false);
 
     }
-    catch (rpc::rpc_error  e) {
+    catch (rpc::rpc_error&  e) {
         std::string msg = e.get_error().as<std::string>();
         cout << "Exception raised by the API, something went wrong." << endl << msg << endl;
     }
