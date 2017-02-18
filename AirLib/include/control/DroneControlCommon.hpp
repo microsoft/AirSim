@@ -86,6 +86,13 @@ struct VehicleParams {
     //what is the +/-window we should check on obstacle map?
     //for example 2 means check from ticks -2 to 2
     int obs_window = 0;
+    VehicleParams()
+      : vel_to_breaking_dist(0.5f),
+        min_vel_to_breaking_dist(1),
+        breaking_vel(0.25f),
+        distance_accuracy(0.1f),
+        obs_clearance(2),
+        obs_window(0) {}
 };    
 
 struct RCData {
