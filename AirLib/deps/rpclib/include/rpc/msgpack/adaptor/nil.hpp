@@ -27,62 +27,61 @@ namespace clmdep_msgpack {
 MSGPACK_API_VERSION_NAMESPACE(v1) {
 /// @endcond
 
-    namespace type {
+namespace type {
 
-    struct nil { };
+struct nil { };
 
-    inline bool operator<(nil const& lhs, nil const& rhs) {
-        return &lhs < &rhs;
+inline bool operator<(nil const& lhs, nil const& rhs) {
+    return &lhs < &rhs;
+}
+
+inline bool operator==(nil const& lhs, nil const& rhs) {
+    return &lhs == &rhs;
+}
+
+}  // namespace type
+
+namespace adaptor {
+
+template <>
+struct convert<type::nil> {
+    clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, type::nil&) const {
+        if(o.type != clmdep_msgpack::type::NIL) { throw clmdep_msgpack::type_error(); }
+        return o;
     }
+};
 
-    inline bool operator==(nil const& lhs, nil const& rhs) {
-        return &lhs == &rhs;
+template <>
+struct pack<type::nil> {
+    template <typename Stream>
+    clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const type::nil&) const {
+        o.pack_nil();
+        return o;
     }
+};
 
-    }  // namespace type
-
-    namespace adaptor {
-
-    template <>
-    struct convert<type::nil> {
-        clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, type::nil&) const {
-            if(o.type != clmdep_msgpack::type::NIL) {
-                throw clmdep_msgpack::type_error();
-            }
-            return o;
-        }
-    };
-
-    template <>
-    struct pack<type::nil> {
-        template <typename Stream>
-        clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const type::nil&) const {
-            o.pack_nil();
-            return o;
-        }
-    };
-
-    template <>
-    struct object<type::nil> {
-        void operator()(clmdep_msgpack::object& o, type::nil) const {
-            o.type = clmdep_msgpack::type::NIL;
-        }
-    };
-
-    template <>
-    struct object_with_zone<type::nil> {
-        void operator()(clmdep_msgpack::object::with_zone& o, type::nil v) const {
-            static_cast<clmdep_msgpack::object&>(o) << v;
-        }
-    };
-
-    } // namespace adaptror
-
-    template <>
-    inline void clmdep_msgpack::object::as<void>() const {
-        clmdep_msgpack::type::nil v;
-        convert(v);
+template <>
+struct object<type::nil> {
+    void operator()(clmdep_msgpack::object& o, type::nil) const {
+        o.type = clmdep_msgpack::type::NIL;
     }
+};
+
+template <>
+struct object_with_zone<type::nil> {
+    void operator()(clmdep_msgpack::object::with_zone& o, type::nil v) const {
+        static_cast<clmdep_msgpack::object&>(o) << v;
+    }
+};
+
+} // namespace adaptror
+
+template <>
+inline void clmdep_msgpack::object::as<void>() const
+{
+    clmdep_msgpack::type::nil v;
+    convert(v);
+}
 
 /// @cond
 }  // MSGPACK_API_VERSION_NAMESPACE(v1)

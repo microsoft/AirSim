@@ -7,8 +7,7 @@
 #include "common/Common.hpp"
 
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 struct GpsSimpleParams {
     real_T eph_time_constant = 0.9f, epv_time_constant = 0.9f;
@@ -21,6 +20,5 @@ struct GpsSimpleParams {
     real_T startup_delay = 1;        //sec
 };
 
-}
-} //namespace
+}} //namespace
 #endif

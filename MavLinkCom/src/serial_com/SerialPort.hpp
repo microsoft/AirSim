@@ -18,40 +18,41 @@
 
 class SerialPort;
 
-class SerialPort : public Port {
-  public:
-    SerialPort();
+class SerialPort : public Port
+{
+public:
+	SerialPort();
     ~SerialPort();
 
     // open the serial port
-    int connect(const char* portName, int baudRate);
+	int connect(const char* portName, int baudRate);
 
     // write to the serial port
-    int write(const uint8_t* ptr, int count);
+	int write(const uint8_t* ptr, int count);
 
     // read a given number of bytes from the port.
-    int read(uint8_t* buffer, int bytesToRead);
+	int read(uint8_t* buffer, int bytesToRead);
 
     // close the port.
     void close();
 
-    virtual bool isClosed() {
-        return closed_;
-    }
-  private:
-    void on_receive(const boost::system::error_code& ec, size_t bytes_transferred);
-    void on_sent(const boost::system::error_code& ec, size_t bytes_transferred);
-    void readPackets();
+	virtual bool isClosed() {
+		return closed_;
+	}
+private:
+	void on_receive(const boost::system::error_code& ec, size_t bytes_transferred);
+	void on_sent(const boost::system::error_code& ec, size_t bytes_transferred);
+	void readPackets();
 
-    bool closed_;
-    boost::asio::streambuf sbuf;
-    boost::asio::io_service io_service;
-    boost::asio::serial_port port;
-    std::thread read_thread;
-    boost::mutex mutex;
-    char* read_buf_raw;
-    mavlinkcom::MavLinkSemaphore written;
-    mavlinkcom::MavLinkSemaphore available;
+	bool closed_;
+	boost::asio::streambuf sbuf;
+	boost::asio::io_service io_service;
+	boost::asio::serial_port port;
+	std::thread read_thread;
+	boost::mutex mutex;
+	char* read_buf_raw;
+	mavlinkcom::MavLinkSemaphore written;
+	mavlinkcom::MavLinkSemaphore available;
 };
 
 #endif

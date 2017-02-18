@@ -18,8 +18,7 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 //numericals
 typedef float real_T;
@@ -63,24 +62,25 @@ using shared_ptr = std::shared_ptr<T>;
 template <typename T>
 using vector_size_type = typename std::vector<T>::size_type;
 
-inline std::ostream& operator<<(std::ostream &os, Quaternionr const &q) {
+inline std::ostream& operator<<(std::ostream &os, Quaternionr const &q) { 
     float p, r, y;
     VectorMath::toEulerianAngle(q, p, r, y);
     return os << "(" << r << "\t" << p << "\t" << y << ")" << q.w() << q.x() << "\t" << q.y() << "\t" << q.z() << "\t";
 }
 
-inline std::ostream& operator<<(std::ostream &os, Vector3r const &vec) {
+inline std::ostream& operator<<(std::ostream &os, Vector3r const &vec) { 
     return os << vec.x() << "\t" << vec.y() << "\t" << vec.z() << "\t";
 
 }
 
 
-static void logWarning(const char* format, ...) {
+static void logWarning(const char* format, ...)
+{
     va_list args;
     va_start(args, format);
 
     auto size = _vscprintf(format, args) + 1U;
-    std::unique_ptr<char[]> buf(new char[size] );
+    std::unique_ptr<char[]> buf(new char[size] ); 
 
 #ifndef _MSC_VER
     vsnprintf(buf.get(), size, format, args);
@@ -88,16 +88,17 @@ static void logWarning(const char* format, ...) {
     vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
 #endif
 
-    va_end(args);
+    va_end(args);            
 
     std::cout << "WARNING: " << string(buf.get());
 }
-static void logError(const char* format, ...) {
+static void logError(const char* format, ...)
+{
     va_list args;
     va_start(args, format);
 
     auto size = _vscprintf(format, args) + 1U;
-    std::unique_ptr<char[]> buf(new char[size] );
+    std::unique_ptr<char[]> buf(new char[size] ); 
 
 #ifndef _MSC_VER
     vsnprintf(buf.get(), size, format, args);
@@ -105,12 +106,11 @@ static void logError(const char* format, ...) {
     vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
 #endif
 
-    va_end(args);
+    va_end(args);            
 
     std::cerr << "ERROR: " << string(buf.get());
 }
 
 
-}
-} //namespace
+}} //namespace
 #endif

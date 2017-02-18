@@ -95,7 +95,8 @@ void msgpack_zone_clear(msgpack_zone* zone);
 MSGPACK_DLLEXPORT
 void* msgpack_zone_malloc_expand(msgpack_zone* zone, size_t size);
 
-static inline void* msgpack_zone_malloc_no_align(msgpack_zone* zone, size_t size) {
+static inline void* msgpack_zone_malloc_no_align(msgpack_zone* zone, size_t size)
+{
     char* ptr;
     msgpack_zone_chunk_list* cl = &zone->chunk_list;
 
@@ -110,7 +111,8 @@ static inline void* msgpack_zone_malloc_no_align(msgpack_zone* zone, size_t size
     return ptr;
 }
 
-static inline void* msgpack_zone_malloc(msgpack_zone* zone, size_t size) {
+static inline void* msgpack_zone_malloc(msgpack_zone* zone, size_t size)
+{
     char* aligned =
         (char*)(
             (size_t)(
@@ -134,10 +136,11 @@ static inline void* msgpack_zone_malloc(msgpack_zone* zone, size_t size) {
 
 
 bool msgpack_zone_push_finalizer_expand(msgpack_zone* zone,
-                                        void (*func)(void* data), void* data);
+        void (*func)(void* data), void* data);
 
 static inline bool msgpack_zone_push_finalizer(msgpack_zone* zone,
-        void (*func)(void* data), void* data) {
+        void (*func)(void* data), void* data)
+{
     msgpack_zone_finalizer_array* const fa = &zone->finalizer_array;
     msgpack_zone_finalizer* fin = fa->tail;
 
@@ -153,7 +156,8 @@ static inline bool msgpack_zone_push_finalizer(msgpack_zone* zone,
     return true;
 }
 
-static inline void msgpack_zone_swap(msgpack_zone* a, msgpack_zone* b) {
+static inline void msgpack_zone_swap(msgpack_zone* a, msgpack_zone* b)
+{
     msgpack_zone tmp = *a;
     *a = *b;
     *b = tmp;

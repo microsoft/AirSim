@@ -6,17 +6,15 @@
 
 #include "common/UpdatableObject.hpp"
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 class ControllerBase : public UpdatableObject {
-  public:
-    virtual void reset() = 0;
-    virtual void update(real_T dt) = 0;
+public:
+	virtual void reset() = 0;
+	virtual void update(real_T dt) = 0;
     //return 0 to 1 (corresponds to zero to full thrust)
-    virtual real_T getRotorControlSignal(unsigned int rotor_index) = 0;
+	virtual real_T getRotorControlSignal(unsigned int rotor_index) = 0;
 };
 
-}
-} //namespace
+}} //namespace
 #endif

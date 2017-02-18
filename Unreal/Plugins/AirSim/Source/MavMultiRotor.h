@@ -12,8 +12,9 @@
 #include "FlyingPawn.h"
 
 
-class MavMultiRotor : public VehicleBase {
-  public:
+class MavMultiRotor : public VehicleBase
+{
+public:
     typedef msr::airlib::GeoPoint GeoPoint;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Pose Pose;
@@ -30,8 +31,8 @@ class MavMultiRotor : public VehicleBase {
     typedef msr::airlib::Twist Twist;
     typedef msr::airlib::StateReporter StateReporter;
     typedef msr::airlib::UpdatableObject UpdatableObject;
-
-  public:
+        
+public:
     virtual ~MavMultiRotor() = default;
 
     //VehicleBase interface
@@ -52,12 +53,12 @@ class MavMultiRotor : public VehicleBase {
     //provides way to control the drone
     msr::airlib::DroneControlBase* createOrGetDroneControl();
 
-  private:
+private:
     msr::airlib::MavLinkHelper::HILConnectionInfo getConnectionInfo();
     void openConnection();
     void closeConnection();
 
-  private:
+private:
     MultiRotor vehicle_;
     msr::airlib::MavLinkHelper mav_;
     std::vector<std::string> mav_messages_;

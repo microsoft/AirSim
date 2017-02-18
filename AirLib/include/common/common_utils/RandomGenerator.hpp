@@ -10,22 +10,25 @@ namespace common_utils {
 
 template<typename TReturn, typename TDistribution, unsigned int Seed=42>
 class RandomGenerator {
-  public:
+public:
     template<typename... DistArgs>
     RandomGenerator(DistArgs... dist_args)
-        : dist_(dist_args...), rand_(Seed) {
+        : dist_(dist_args...), rand_(Seed)
+    {
     }
 
-    TReturn next() {
+    TReturn next()
+    {
         return dist_(rand_);
     }
 
-    void reset() {
+    void reset()
+    {
         rand_.seed(Seed);
         dist_.reset();
     }
 
-  private:
+private:
     TDistribution dist_;
     std::mt19937 rand_;
 };

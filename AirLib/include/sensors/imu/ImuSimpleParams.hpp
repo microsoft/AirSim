@@ -8,14 +8,13 @@
 #include <cmath>
 
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 
 // A description of the parameters:
 // https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model-and-Intrinsics
 struct ImuSimpleParams {
-    /* ref: Parameter values are for MPU 6000 IMU from InvenSense
+    /* ref: Parameter values are for MPU 6000 IMU from InvenSense 
     Design and Characterization of a Low Cost MEMS IMU Cluster for Precision Navigation
     Daniel R. Greenheck, 2009, sec 2.2, pp 17
     http://epublications.marquette.edu/cgi/viewcontent.cgi?article=1326&context=theses_open
@@ -34,7 +33,7 @@ struct ImuSimpleParams {
 
     struct Accelerometer {
         //velocity random walk (ARW)
-        real_T vrw = 0.24f * EarthUtils::Gravity / 1E3f; //mg converted to m/s^2
+        real_T vrw = 0.24f * EarthUtils::Gravity / 1E3f; //mg converted to m/s^2 
         //Bias Stability (tau = 800s)
         real_T tau = 800;
         real_T bias_stability = 36.0f * 1E-6f * 9.80665f; //ug converted to m/s^2
@@ -45,6 +44,5 @@ struct ImuSimpleParams {
 };
 
 
-}
-} //namespace
+}} //namespace
 #endif

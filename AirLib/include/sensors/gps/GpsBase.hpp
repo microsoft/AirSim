@@ -9,14 +9,13 @@
 #include "common/CommonStructs.hpp"
 
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 class GpsBase  : public SensorBase {
-  public: //types
+public: //types
     //TODO: cleanup GPS structures that are not needed
     struct GpsPoint {
-      public:
+    public:    
         double latitude, longitude;
         float height, altitude;
         int health;
@@ -24,14 +23,15 @@ class GpsBase  : public SensorBase {
         GpsPoint()
         {}
 
-        GpsPoint(double latitude_val, double longitude_val, float altitude_val, int health_val = -1, float height_val = std::numeric_limits<float>::quiet_NaN()) {
-            latitude = latitude_val;
-            longitude = longitude_val;
+        GpsPoint(double latitude_val, double longitude_val, float altitude_val, int health_val = -1, float height_val = std::numeric_limits<float>::quiet_NaN())
+        {
+            latitude = latitude_val; longitude = longitude_val;
             height = height_val, altitude = altitude_val;
             health = health_val;
         }
 
-        string to_string() {
+        string to_string()
+        {
             return Utils::stringf("latitude=%f, longitude=%f, altitude=%f, height=%f, health=%d", latitude, longitude, altitude, height, health);
         }
     };
@@ -90,8 +90,9 @@ class GpsBase  : public SensorBase {
     };
 
 
-  public:
-    virtual void reportState(StateReporter& reporter) override {
+public:
+    virtual void reportState(StateReporter& reporter) override
+    {
         //call base
         UpdatableObject::reportState(reporter);
 
@@ -101,20 +102,21 @@ class GpsBase  : public SensorBase {
         reporter.writeValue("GPS-Epv", output_.gnss.epv);
     }
 
-    const Output& getOutput() const {
+    const Output& getOutput() const
+    {
         return output_;
     }
 
-  protected:
-    void setOutput(const Output& output) {
+protected:
+    void setOutput(const Output& output)
+    {
         output_ = output;
     }
 
 
-  private:
+private: 
     Output output_;
 };
 
-}
-} //namespace
-#endif
+}} //namespace
+#endif 

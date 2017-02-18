@@ -12,25 +12,24 @@ STRICT_MODE_OFF
 #include <Eigen/Dense>
 STRICT_MODE_ON
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 template <class Vector3T, class QuaternionT, class RealT>
 class VectorMathT {
-  public:
+public:
     //IMPORTANT: make sure fixed size vectorizable types have no alignment assumption
     //https://eigen.tuxfamily.org/dox/group__TopicUnalignedArrayAssert.html
-    typedef Eigen::Matrix<float, 1, 1> Vector1f;
-    typedef Eigen::Matrix<double, 1, 1> Vector1d;
-    typedef Eigen::Matrix<float,2,1,Eigen::DontAlign> Vector2f;
-    typedef Eigen::Matrix<double,4,1,Eigen::DontAlign> Vector2d;
+	typedef Eigen::Matrix<float, 1, 1> Vector1f;
+	typedef Eigen::Matrix<double, 1, 1> Vector1d;
+	typedef Eigen::Matrix<float,2,1,Eigen::DontAlign> Vector2f;
+	typedef Eigen::Matrix<double,4,1,Eigen::DontAlign> Vector2d;
     typedef Eigen::Vector3f Vector3f;
-    typedef Eigen::Vector3d Vector3d;
-    typedef Eigen::Array3f Array3f;
-    typedef Eigen::Array3d Array3d;
+	typedef Eigen::Vector3d Vector3d;
+	typedef Eigen::Array3f Array3f;
+	typedef Eigen::Array3d Array3d;
     typedef Eigen::Quaternion<float,Eigen::DontAlign> Quaternionf;
     typedef Eigen::Quaternion<double,Eigen::DontAlign> Quaterniond;
-    typedef Eigen::Matrix<double, 3, 3> Matrix3x3d;
+	typedef Eigen::Matrix<double, 3, 3> Matrix3x3d;
     typedef Eigen::Matrix<float, 3, 3> Matrix3x3f;
     typedef Eigen::AngleAxisd AngleAxisd;
     typedef Eigen::AngleAxisf AngleAxisf;
@@ -40,21 +39,23 @@ class VectorMathT {
 
 
     struct Pose {
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-        Vector3T position;
-        QuaternionT orientation;
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		Vector3T position;
+		QuaternionT orientation;
 
-        Pose()
-        {}
+		Pose() 
+		{}
 
-        Pose(Vector3T position_val, QuaternionT orientation_val) {
+        Pose(Vector3T position_val, QuaternionT orientation_val)
+        {
             orientation = orientation_val;
             position = position_val;
         }
 
-        friend Pose operator-(const Pose& lhs, const Pose& rhs) {
-            return VectorMathT::subtract(lhs, rhs);
-        }
+		friend Pose operator-(const Pose& lhs, const Pose& rhs)
+		{
+			return VectorMathT::subtract(lhs, rhs);
+		}
     };
 
     struct Transform {
@@ -64,63 +65,70 @@ class VectorMathT {
     };
 
     class RandomVectorT {
-      public:
+    public:
         RandomVectorT()
         {}
         RandomVectorT(RealT min_val, RealT max_val)
-            : rx_(min_val, max_val), ry_(min_val, max_val), rz_(min_val, max_val) {
+            : rx_(min_val, max_val), ry_(min_val, max_val), rz_(min_val, max_val)
+        {
         }
         RandomVectorT(const Vector3T& min_val, const Vector3T& max_val)
-            : rx_(min_val.x(), max_val.x()), ry_(min_val.y(), max_val.y()), rz_(min_val.z(), max_val.z()) {
+            : rx_(min_val.x(), max_val.x()), ry_(min_val.y(), max_val.y()), rz_(min_val.z(), max_val.z())
+        {
         }
 
-        void reset() {
-            rx_.reset();
-            ry_.reset();
-            rz_.reset();
+        void reset()
+        {
+            rx_.reset(); ry_.reset(); rz_.reset();
         }
 
-        Vector3T next() {
+        Vector3T next()
+        {
             return Vector3T(rx_.next(), ry_.next(), rz_.next());
         }
-      private:
+    private:
         RandomGeneratorT rx_, ry_, rz_;
     };
 
     class RandomVectorGaussianT {
-      public:
+    public:
         RandomVectorGaussianT()
         {}
         RandomVectorGaussianT(RealT mean, RealT stddev)
-            : rx_(mean, stddev), ry_(mean, stddev), rz_(mean, stddev) {
+            : rx_(mean, stddev), ry_(mean, stddev), rz_(mean, stddev)
+        {
         }
         RandomVectorGaussianT(const Vector3T& mean, const Vector3T& stddev)
-            : rx_(mean.x(), stddev.x()), ry_(mean.y(), stddev.y()), rz_(mean.z(), stddev.z()) {
+            : rx_(mean.x(), stddev.x()), ry_(mean.y(), stddev.y()), rz_(mean.z(), stddev.z())
+        {
         }
 
-        void reset() {
-            rx_.reset();
-            ry_.reset();
-            rz_.reset();
+        void reset()
+        {
+            rx_.reset(); ry_.reset(); rz_.reset();
         }
 
-        Vector3T next() {
+        Vector3T next()
+        {
             return Vector3T(rx_.next(), ry_.next(), rz_.next());
         }
-      private:
+    private:
         RandomGeneratorGausianT rx_, ry_, rz_;
     };
 
-  public:
-    static float magnitude(const Vector2f& v) {
+public:
+    static float magnitude(const Vector2f& v)
+    {
         return v.norm();
     }
-
-    static RealT magnitude(const Vector3T& v) {
+    
+    static RealT magnitude(const Vector3T& v) 
+    {
         return v.norm();
     }
-
-    static Vector3T rotateVector(const Vector3T& v, const QuaternionT& q, bool assume_unit_quat) {
+    
+    static Vector3T rotateVector(const Vector3T& v, const QuaternionT& q, bool assume_unit_quat)
+    {
         //More performant method is at http://gamedev.stackexchange.com/a/50545/20758
         //QuaternionT vq(0, v.x(), v.y(), v.z());
         //QuaternionT qi = assume_unit_quat ? q.conjugate() : q.inverse();
@@ -129,7 +137,8 @@ class VectorMathT {
         return q._transformVector(v);
     }
 
-    static Vector3T rotateVectorReverse(const Vector3T& v, const QuaternionT& q, bool assume_unit_quat) {
+    static Vector3T rotateVectorReverse(const Vector3T& v, const QuaternionT& q, bool assume_unit_quat)
+    {
         //QuaternionT vq(0, v.x(), v.y(), v.z());
         //QuaternionT qi = assume_unit_quat ? q.conjugate() : q.inverse();
         //return (qi * vq * q).vec();
@@ -138,44 +147,51 @@ class VectorMathT {
             return q.inverse()._transformVector(v);
         else
             return q.conjugate()._transformVector(v);
-    }
+    }    
 
-    static Vector3T transformToBodyFrame(const Vector3T& v_world, const QuaternionT& q, bool assume_unit_quat) {
+    static Vector3T transformToBodyFrame(const Vector3T& v_world, const QuaternionT& q, bool assume_unit_quat)
+    {
         return rotateVectorReverse(v_world, q, assume_unit_quat);
     }
 
-    static Vector3T transformToWorldFrame(const Vector3T& v_body, const QuaternionT& q, bool assume_unit_quat) {
+    static Vector3T transformToWorldFrame(const Vector3T& v_body, const QuaternionT& q, bool assume_unit_quat)
+    {
         return rotateVector(v_body, q, assume_unit_quat);
     }
 
-    static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& pose, bool assume_unit_quat) {
+    static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& pose, bool assume_unit_quat)
+    {
         //translate
         Vector3T translated = v_body + pose.position;
         //rotate
         return transformToWorldFrame(translated, pose.orientation, assume_unit_quat);
     }
 
-    static QuaternionT negate(const QuaternionT& q) {
-        //from Gazebo implementation
-        return QuaternionT(-q.w(), -q.x(), -q.y(), -q.z());
-    }
+    static QuaternionT negate(const QuaternionT& q)
+	{
+		//from Gazebo implementation
+		return QuaternionT(-q.w(), -q.x(), -q.y(), -q.z());
+	}
 
 
-    static Vector3T getRandomVectorFromGaussian(RealT stddev = 1, RealT mean = 0) {
+    static Vector3T getRandomVectorFromGaussian(RealT stddev = 1, RealT mean = 0)
+    {
         return Vector3T(
-                   Utils::getRandomFromGaussian(stddev, mean),
-                   Utils::getRandomFromGaussian(stddev, mean),
-                   Utils::getRandomFromGaussian(stddev, mean)
-               );
+            Utils::getRandomFromGaussian(stddev, mean),
+            Utils::getRandomFromGaussian(stddev, mean),
+            Utils::getRandomFromGaussian(stddev, mean)
+        );
     }
 
-    static QuaternionT flipZAxis(const QuaternionT& q) {
+    static QuaternionT flipZAxis(const QuaternionT& q)
+    {
         //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
         return QuaternionT(q.w(), -q.x(), -q.y(), q.z());
     }
 
     static void toEulerianAngle(const QuaternionT& q
-                                , RealT& pitch, RealT& roll, RealT& yaw) {
+        , RealT& pitch, RealT& roll, RealT& yaw)
+    {
         RealT ysqr = q.y() * q.y();
         RealT t0 = -2.0f * (ysqr + q.z() * q.z()) + 1.0f;
         RealT t1 = +2.0f * (q.x() * q.y() + q.w() * q.z());
@@ -191,7 +207,8 @@ class VectorMathT {
         yaw = std::atan2(t1, t0);
     }
 
-    static Vector3T toAngularVelocity(const QuaternionT& start, const QuaternionT& end, RealT delta_sec) {
+    static Vector3T toAngularVelocity(const QuaternionT& start, const QuaternionT& end, RealT delta_sec)
+    {
         RealT p_s, r_s, y_s;
         toEulerianAngle(start, p_s, r_s, y_s);
 
@@ -211,24 +228,29 @@ class VectorMathT {
         return Vector3T(wx, wy, wz);
     }
 
-    static Vector3T nanVector() {
+	static Vector3T nanVector()
+	{
         static const Vector3T val(std::numeric_limits<RealT>::quiet_NaN(), std::numeric_limits<RealT>::quiet_NaN(), std::numeric_limits<RealT>::quiet_NaN());
         return val;
-    }
+	}
 
-    static QuaternionT nanQuaternion() {
-        return QuaternionT(std::numeric_limits<RealT>::quiet_NaN(), std::numeric_limits<RealT>::quiet_NaN(),
-                           std::numeric_limits<RealT>::quiet_NaN(), std::numeric_limits<RealT>::quiet_NaN());
-    }
+	static QuaternionT nanQuaternion()
+	{
+		return QuaternionT(std::numeric_limits<RealT>::quiet_NaN(), std::numeric_limits<RealT>::quiet_NaN(), 
+			std::numeric_limits<RealT>::quiet_NaN(), std::numeric_limits<RealT>::quiet_NaN());
+	}
 
-    static bool hasNan(const Vector3T& v) {
+    static bool hasNan(const Vector3T& v)
+    {
         return std::isnan(v.x()) || std::isnan(v.y()) || std::isnan(v.z());
     }
-    static bool hasNan(const QuaternionT& q) {
+    static bool hasNan(const QuaternionT& q)
+    {
         return std::isnan(q.x()) || std::isnan(q.y()) || std::isnan(q.z()) || std::isnan(q.w());
     }
 
-    static QuaternionT toQuaternion(RealT pitch, RealT roll, RealT yaw) {
+    static QuaternionT toQuaternion(RealT pitch, RealT roll, RealT yaw)
+    {
         QuaternionT q;
         RealT t0 = std::cos(yaw * 0.5f);
         RealT t1 = std::sin(yaw * 0.5f);
@@ -244,63 +266,73 @@ class VectorMathT {
         return q;
     }
 
-    //from http://osrf-distributions.s3.amazonaws.com/gazebo/api/dev/Pose_8hh_source.html
-    static Vector3T coordPositionSubtract(const Pose& lhs, const Pose& rhs) {
-        QuaternionT tmp(0,
-                        lhs.position.x() - rhs.position.x(),
-                        lhs.position.y() - rhs.position.y(),
-                        lhs.position.z() - rhs.position.z()
-                       );
+	//from http://osrf-distributions.s3.amazonaws.com/gazebo/api/dev/Pose_8hh_source.html
+	static Vector3T coordPositionSubtract(const Pose& lhs, const Pose& rhs)
+	{
+		QuaternionT tmp(0,
+			lhs.position.x() - rhs.position.x(),
+			lhs.position.y() - rhs.position.y(),
+			lhs.position.z() - rhs.position.z()
+		);
 
-        tmp = rhs.orientation.inverse() * (tmp * rhs.orientation);
+		tmp = rhs.orientation.inverse() * (tmp * rhs.orientation);
 
-        return tmp.vec();
-    }
-    static QuaternionT coordOrientationSubtract(const QuaternionT& lhs, const QuaternionT& rhs) {
-        QuaternionT result(rhs.inverse() * lhs);
-        result.normalize();
-        return result;
-    }
-    static Pose subtract(const Pose& lhs, const Pose& rhs) {
-        return Pose(coordPositionSubtract(lhs, rhs), coordOrientationSubtract(lhs.orientation, rhs.orientation));
-    }
+		return tmp.vec();
+	}
+	static QuaternionT coordOrientationSubtract(const QuaternionT& lhs, const QuaternionT& rhs)
+	{
+		QuaternionT result(rhs.inverse() * lhs);
+		result.normalize();
+		return result;
+	}
+	static Pose subtract(const Pose& lhs, const Pose& rhs)
+	{
+		return Pose(coordPositionSubtract(lhs, rhs), coordOrientationSubtract(lhs.orientation, rhs.orientation));
+	}
 
 
-    static std::string toString(const Vector3T& vect, const char* prefix = nullptr) {
+    static std::string toString(const Vector3T& vect, const char* prefix = nullptr)
+    {
         if (prefix)
             return Utils::stringf("%s[%f, %f, %f]", prefix, vect[0], vect[1], vect[2]);
         else
             return Utils::stringf("[%f, %f, %f]", vect[0], vect[1], vect[2]);
     }
-    static std::string toString(const QuaternionT& quaternion, bool add_eularian = false) {
+    static std::string toString(const QuaternionT& quaternion, bool add_eularian = false) 
+    {
         if (!add_eularian)
             return Utils::stringf("[%f, %f, %f, %f]", quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z());
         else {
             RealT pitch, roll, yaw;
             toEulerianAngle(quaternion, pitch, roll, yaw);
             return Utils::stringf("[%f, %f, %f, %f]-[%f, %f, %f]",
-                                  quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z(), pitch, roll, yaw);
+                quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z(), pitch, roll, yaw);
         }
-    }
-    static std::string toString(const Vector2f& vect) {
+    }    
+    static std::string toString(const Vector2f& vect)
+    {
         return Utils::stringf("[%f, %f]", vect[0], vect[1]);
     }
 
-    static RealT getYaw(const QuaternionT& q) {
+    static RealT getYaw(const QuaternionT& q)
+    {
         return std::atan2(2.0f * (q.z() * q.w() + q.x() * q.y())
-                          , - 1.0f + 2.0f * (q.w() * q.w() + q.x() * q.x()));
+            , - 1.0f + 2.0f * (q.w() * q.w() + q.x() * q.x()));
     }
 
-    static RealT getPitch(const QuaternionT& q) {
+    static RealT getPitch(const QuaternionT& q) 
+    {
         return std::asin(2.0f * (q.y() * q.w() - q.z() * q.x()));
     }
 
-    static RealT getRoll(const QuaternionT& q) {
+    static RealT getRoll(const QuaternionT& q)
+    {
         return std::atan2(2.0f * (q.z() * q.y() + q.w() * q.x())
-                          , 1.0f - 2.0f * (q.x() * q.x() + q.y() * q.y()));
+            , 1.0f - 2.0f * (q.x() * q.x() + q.y() * q.y()));
     }
 
-    static RealT normalizeAngleDegrees(RealT angle) {
+    static RealT normalizeAngleDegrees(RealT angle)
+    {
         angle = static_cast<RealT>(std::fmod(angle, 360));
         if (angle > 180)
             return angle - 360;
@@ -310,24 +342,23 @@ class VectorMathT {
             return angle;
     }
 
-    /**
-    * \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.
-    * RPY rotates about the fixed axes in the order x-y-z,
-    * which is the same as euler angles in the order z-y'-x''.
-    */
-    static RealT yawFromQuaternion(const QuaternionT& q) {
-        return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
-                     1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
-    }
+	/**
+	* \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.
+	* RPY rotates about the fixed axes in the order x-y-z,
+	* which is the same as euler angles in the order z-y'-x''.
+	*/
+	static RealT yawFromQuaternion(const QuaternionT& q) {
+		return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+			1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
+	}
 
-    static QuaternionT quaternionFromYaw(RealT yaw) {
-        return QuaternionT(Eigen::AngleAxisd(yaw, Vector3T::UnitZ()));
-    }
+	static QuaternionT quaternionFromYaw(RealT yaw) {
+		return QuaternionT(Eigen::AngleAxisd(yaw, Vector3T::UnitZ()));
+	}
 };
 typedef VectorMathT<Eigen::Vector3d, Eigen::Quaternion<double,Eigen::DontAlign>, double> VectorMathd;
 typedef VectorMathT<Eigen::Vector3f, Eigen::Quaternion<float,Eigen::DontAlign>, float> VectorMathf;
 
 
-}
-} //namespace
+}} //namespace
 #endif

@@ -29,7 +29,7 @@ struct ptr_checker {
 template <typename T, std::size_t Size, int Align = -1> class pimpl_ptr {
     typename aligned_storage<Size, Align>::type data;
 
-  public:
+public:
 #define PIMPL_PTR_CHECK_()                                                     \
     ptr_checker<T, sizeof(T), Size, Align, alignof(T)>                 \
         rpc_ptr_checker; (void) rpc_ptr_checker;

@@ -14,12 +14,11 @@
 #include "DroneControlCommon.hpp"
 #include "common/common_utils/EnumFlags.hpp"
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 //this class takes all inputs and outputs in NEU world coordinates in metric system
 class SafetyEval {
-  public:
+public:
     enum class SafetyViolationType_ :uint {
         NoSafetyViolation =                      0,
         GeoFence =                  1 << 0,
@@ -59,19 +58,20 @@ class SafetyEval {
         //setup default result
         EvalResult()
             :  is_safe(true), reason(SafetyViolationType_::NoSafetyViolation), suggested_vec(Vector3r::Zero()),
-               cur_risk_dist(Utils::nan<float>()), dest_risk_dist(Utils::nan<float>())
+                cur_risk_dist(Utils::nan<float>()), dest_risk_dist(Utils::nan<float>())
         {}
 
-        string toString() const {
+        string toString() const
+        {
             return Utils::stringf("SafetyEval: is_safe=%i, reason=%X, cur_risk_dist=%f, dest_risk_dist=%f, suggested_vec=%s,"
-                                  " cur=%s, dest=%s, cur_dest_body=%s, cur_obs=[%s], dest_obs=[%s], suggested_obs=[%s], message=%s",
-                                  is_safe, uint(reason), cur_risk_dist, dest_risk_dist, VectorMath::toString(suggested_vec).c_str(),
-                                  VectorMath::toString(cur_pos).c_str(), VectorMath::toString(dest_pos).c_str(), VectorMath::toString(cur_dest_body).c_str(),
-                                  cur_obs.toString().c_str(), dest_obs.toString().c_str(), suggested_obs.toString().c_str(), message.c_str());
+                " cur=%s, dest=%s, cur_dest_body=%s, cur_obs=[%s], dest_obs=[%s], suggested_obs=[%s], message=%s",
+                is_safe, uint(reason), cur_risk_dist, dest_risk_dist, VectorMath::toString(suggested_vec).c_str(),
+                VectorMath::toString(cur_pos).c_str(), VectorMath::toString(dest_pos).c_str(), VectorMath::toString(cur_dest_body).c_str(),
+                cur_obs.toString().c_str(), dest_obs.toString().c_str(), suggested_obs.toString().c_str(), message.c_str());
         }
     };
 
-  private:
+private:
     VehicleParams vehicle_params_;
     shared_ptr<IGeoFence> fence_ptr_;
     shared_ptr<ObstacleMap> obs_xy_ptr_;
@@ -85,19 +85,18 @@ class SafetyEval {
     void isCurrentSafer(SafetyEval::EvalResult& result);
     void setSuggestedVelocity(SafetyEval::EvalResult& result, const Quaternionr& quaternion);
     float adjustClearanceForPrStl(float base_clearance, float obs_confidence);
-  public:
+public:
     SafetyEval(VehicleParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy);
     EvalResult isSafeVelocity(const Vector3r& cur_pos, const Vector3r& velocity, const Quaternionr& quaternion);
     EvalResult isSafeVelocityZ(const Vector3r& cur_pos, float vx, float vy, float z, const Quaternionr& quaternion);
     EvalResult isSafeDestination(const Vector3r& dest,const Vector3r& cur_pos, const Quaternionr& quaternion);
     EvalResult isSafePosition(const Vector3r& cur_pos, const Quaternionr& quaternion);
-
+    
     void setSafety(SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_strategy,
-                   const Vector3r& origin, float xy_length, float max_z, float min_z);
+        const Vector3r& origin, float xy_length, float max_z, float min_z);
     void setObsAvoidanceStrategy(SafetyEval::ObsAvoidanceStrategy obs_strategy);
     SafetyEval::ObsAvoidanceStrategy getObsAvoidanceStrategy();
 };
 
-}
-} //namespace
+}} //namespace
 #endif

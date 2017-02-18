@@ -12,11 +12,10 @@
 #include "Environment.hpp"
 #include <unordered_set>
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 class PhysicsBody : public UpdatableObject {
-  public: //abstract interface
+public: //abstract interface
     virtual Vector3r getLinearDragFactor() const = 0;
     virtual Vector3r getAngularDragFactor() const = 0;
     virtual uint vertexCount() const = 0;
@@ -28,15 +27,18 @@ class PhysicsBody : public UpdatableObject {
     virtual PhysicsBodyVertex& getVertex(uint index) = 0;
     virtual const PhysicsBodyVertex& getVertex(uint index) const = 0;
 
-  public: //methods
+public: //methods
     //constructors
-    PhysicsBody() {
+    PhysicsBody()
+    {
         PhysicsBody::reset();
     }
-    PhysicsBody(real_T mass, const Matrix3x3r& inertia, const Kinematics::State& initial_kinematic_state, Environment* environment) {
+    PhysicsBody(real_T mass, const Matrix3x3r& inertia, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    {
         initialize(mass, inertia, initial_kinematic_state, environment);
     }
-    void initialize(real_T mass, const Matrix3x3r& inertia, const Kinematics::State& initial_kinematic_state, Environment* environment) {
+    void initialize(real_T mass, const Matrix3x3r& inertia, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    {
         kinematics_.initialize(initial_kinematic_state);
 
         mass_ = mass;
@@ -48,20 +50,23 @@ class PhysicsBody : public UpdatableObject {
     }
 
     //enable physics body detection
-    virtual UpdatableObject* getPhysicsBody() override {
+    virtual UpdatableObject* getPhysicsBody() override
+    {
         return this;
     }
 
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override {
+    virtual void reset() override
+    {
         kinematics_.reset();
         if (environment_)
             environment_->reset();
         wrench_ = Wrench::zero();
     }
 
-    virtual void update(real_T dt) override {
+    virtual void update(real_T dt) override
+    {
         //update position from kinematics so we have latest position after physics update
         environment_->setPosition(getKinematics().pose.position);
         environment_->update(dt);
@@ -73,7 +78,8 @@ class PhysicsBody : public UpdatableObject {
             getVertex(vertex_index).update(dt);
         }
     }
-    virtual void reportState(StateReporter& reporter) override {
+    virtual void reportState(StateReporter& reporter) override
+    {
         //call base
         UpdatableObject::reportState(reporter);
 
@@ -84,60 +90,76 @@ class PhysicsBody : public UpdatableObject {
 
 
     //getters
-    real_T getMass()  const {
+    real_T getMass()  const
+    {
         return mass_;
     }
-    const Matrix3x3r& getInertia()  const {
+    const Matrix3x3r& getInertia()  const
+    {
         return inertia_;
     }
-    const Matrix3x3r& getInertiaInv()  const {
+    const Matrix3x3r& getInertiaInv()  const
+    {
         return inertia_inv_;
     }
 
-    const Pose& getPose() const {
+    const Pose& getPose() const
+    {
         return kinematics_.getPose();
     }
-    void setPose(const Pose& pose) {
+    void setPose(const Pose& pose)
+    {
         return kinematics_.setPose(pose);
     }
-    const Twist& getTwist() const {
+    const Twist& getTwist() const
+    {
         return kinematics_.getTwist();
     }
-    void setTwist(const Twist& twist) {
+    void setTwist(const Twist& twist)
+    {
         return kinematics_.setTwist(twist);
     }
 
 
-    const Kinematics::State& getKinematics() const {
+    const Kinematics::State& getKinematics() const
+    {
         return kinematics_.getState();
     }
-    void setKinematics(const Kinematics::State& state) {
+    void setKinematics(const Kinematics::State& state)
+    {
         kinematics_.setState(state);
     }
-    const Kinematics::State& getInitialKinematics() const {
+    const Kinematics::State& getInitialKinematics() const
+    {
         return kinematics_.getInitialState();
     }
-    const Environment& getEnvironment() const {
+    const Environment& getEnvironment() const
+    {
         return *environment_;
     }
-    bool hasEnvironment() const {
+    bool hasEnvironment() const
+    {
         return environment_ != nullptr;
     }
-    const Wrench& getWrench() const {
+    const Wrench& getWrench() const
+    {
         return wrench_;
     }
-    void setWrench(const Wrench&  wrench) {
+    void setWrench(const Wrench&  wrench)
+    {
         wrench_ = wrench;
     }
-    const CollisionInfo& getCollisionInfo() const {
+    const CollisionInfo& getCollisionInfo() const
+    {
         return collison_info_;
     }
     //ability to get reference so individual fields can be modified
-    void setCollisionInfo(const CollisionInfo& collison_info) {
+    void setCollisionInfo(const CollisionInfo& collison_info)
+    {
         collison_info_ = collison_info;
     }
 
-  private:
+private:
     real_T mass_;
     Matrix3x3r inertia_, inertia_inv_;
 
@@ -152,6 +174,5 @@ class PhysicsBody : public UpdatableObject {
     Environment* environment_ = nullptr;
 };
 
-}
-} //namespace
+}} //namespace
 #endif

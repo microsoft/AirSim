@@ -24,14 +24,14 @@ class server_session;
 //! to allow binding functions before that. Use the `run` or `async_run`
 //! functions to start listening on the port.
 class server {
-  public:
+public:
     //! \brief Constructs a server that listens on the localhost on the
     //! specified port.
     //!
     //! \param port The port number to listen on.
     explicit server(uint16_t port);
 
-    //! \brief Constructs a server that listens on the specified address on
+    //! \brief Constructs a server that listens on the specified address on 
     //! the specified port.
     //!
     //! \param port The port number to listen on.
@@ -93,8 +93,8 @@ class server {
 
     friend class detail::server_session;
 
-  private:
-    RPCLIB_DECL_PIMPL(768)
+private:
+	RPCLIB_DECL_PIMPL(768)
     std::shared_ptr<detail::dispatcher> disp_;
 };
 

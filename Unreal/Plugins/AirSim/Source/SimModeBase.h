@@ -6,10 +6,11 @@
 #include "SimModeBase.generated.h"
 
 UCLASS()
-class AIRSIM_API ASimModeBase : public AActor {
+class AIRSIM_API ASimModeBase : public AActor
+{
     GENERATED_BODY()
 
-  public:
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Refs")
     ACameraDirector* CameraDirector;
 
@@ -22,7 +23,7 @@ class AIRSIM_API ASimModeBase : public AActor {
     UFUNCTION(BlueprintCallable, Category = "Recording")
     bool toggleRecording();
 
-  public:
+public:	
     // Sets default values for this actor's properties
     ASimModeBase();
     virtual void BeginPlay() override;
@@ -37,8 +38,8 @@ class AIRSIM_API ASimModeBase : public AActor {
 
     std::string record_filename = "c:\\temp\\airsim_rec.txt";
     std::string record_folder_path = "c:\\temp\\airsim\\img_";
-
-  protected:
+  
+protected:
     virtual void setupInputBindings();
     bool is_recording;
     std::ofstream record_file;

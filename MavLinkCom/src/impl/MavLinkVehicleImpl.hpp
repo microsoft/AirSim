@@ -22,69 +22,69 @@
 using namespace mavlinkcom;
 
 namespace mavlinkcom_impl {
-class MavLinkVehicleImpl : public MavLinkNodeImpl {
-  public:
-    MavLinkVehicleImpl(int local_system_id, int local_component_id);
-    ~MavLinkVehicleImpl();
-  public:
-    // Send command to arm or disarm the drone.  Drone will not fly until it is armed successfully.
-    // It returns false if the command is rejected.
-    AsyncResult<bool> armDisarm(bool arm);
-    AsyncResult<bool> takeoff(float z = -2.5, float pitch = 0, float yaw = 0);
-    AsyncResult<bool> land(float yaw, float lat = 0, float lon = 0, float altitude = 0);
-    AsyncResult<bool> returnToHome();
-    AsyncResult<bool> loiter();
+	class MavLinkVehicleImpl : public MavLinkNodeImpl {
+	public:
+		MavLinkVehicleImpl(int local_system_id, int local_component_id);
+		~MavLinkVehicleImpl();
+	public:
+		// Send command to arm or disarm the drone.  Drone will not fly until it is armed successfully.
+		// It returns false if the command is rejected.
+		AsyncResult<bool> armDisarm(bool arm);
+		AsyncResult<bool> takeoff(float z = -2.5, float pitch = 0, float yaw = 0);
+		AsyncResult<bool> land(float yaw, float lat = 0, float lon = 0, float altitude = 0);
+		AsyncResult<bool> returnToHome();
+		AsyncResult<bool> loiter();
 
-    void setStabilizedFlightMode();
-    void setHomePosition(float lat = 0, float lon = 0, float alt = 0);
-    void setAutoMode();
-    AsyncResult<MavLinkHomePosition> waitForHomePosition();
-    AsyncResult<bool> allowFlightControlOverUsb();
+		void setStabilizedFlightMode();
+		void setHomePosition(float lat = 0, float lon = 0, float alt = 0);
+		void setAutoMode();
+		AsyncResult<MavLinkHomePosition> waitForHomePosition();
+		AsyncResult<bool> allowFlightControlOverUsb();
+		
+		// request OFFBOARD control.  
+		void requestControl();
+		// release OFFBOARD control
+		void releaseControl();
+		// return true if we still have offboard control (can lose this if user flips the switch).
+		bool hasOffboardControl();
+		// send this to keep offboard control but do no movement.
+		void offboardIdle();
+		// offboard control methods.
+		bool isLocalControlSupported();
+		void moveToLocalPosition(float x, float y, float z, bool isYaw, float yawOrRate);
+		void moveToGlobalPosition(float lat, float lon, float alt, bool isYaw, float yawOrRate);
+		void moveByLocalVelocity(float vx, float vy, float vz, bool isYaw, float yawOrRate);
+		void moveByLocalVelocityWithAltHold(float vx, float vy, float z, bool isYaw, float yawOrRate);
 
-    // request OFFBOARD control.
-    void requestControl();
-    // release OFFBOARD control
-    void releaseControl();
-    // return true if we still have offboard control (can lose this if user flips the switch).
-    bool hasOffboardControl();
-    // send this to keep offboard control but do no movement.
-    void offboardIdle();
-    // offboard control methods.
-    bool isLocalControlSupported();
-    void moveToLocalPosition(float x, float y, float z, bool isYaw, float yawOrRate);
-    void moveToGlobalPosition(float lat, float lon, float alt, bool isYaw, float yawOrRate);
-    void moveByLocalVelocity(float vx, float vy, float vz, bool isYaw, float yawOrRate);
-    void moveByLocalVelocityWithAltHold(float vx, float vy, float z, bool isYaw, float yawOrRate);
+		// low level control, only use this one if you really know what you are doing!!
+		bool isAttitudeControlSupported();
 
-    // low level control, only use this one if you really know what you are doing!!
-    bool isAttitudeControlSupported();
+		// Move drone by directly controlling the attitude of the drone (units are degrees).
+		// If the rollRate, pitchRate and yawRate are all zero then you will get the default rates provided by the drone.
+		void moveByAttitude(float roll, float pitch, float yaw, float rollRate, float pitchRate, float yawRate, float thrust);
 
-    // Move drone by directly controlling the attitude of the drone (units are degrees).
-    // If the rollRate, pitchRate and yawRate are all zero then you will get the default rates provided by the drone.
-    void moveByAttitude(float roll, float pitch, float yaw, float rollRate, float pitchRate, float yawRate, float thrust);
+		int getVehicleStateVersion();
+		const VehicleState& getVehicleState();
 
-    int getVehicleStateVersion();
-    const VehicleState& getVehicleState();
+		uint32_t getTimeStamp();
+	private:
+		void writeMessage(MavLinkMessageBase& message, bool update_stats = true);
+		virtual void handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message);
+		void resetCommandParams(MavLinkCommandLong& cmd);
+		void updateReadStats(const MavLinkMessage& msg);
+		void checkOffboard();
+		bool getRcSwitch(int channel, float threshold);
+		void requestControlNoCheck();
 
-    uint32_t getTimeStamp();
-  private:
-    void writeMessage(MavLinkMessageBase& message, bool update_stats = true);
-    virtual void handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message);
-    void resetCommandParams(MavLinkCommandLong& cmd);
-    void updateReadStats(const MavLinkMessage& msg);
-    void checkOffboard();
-    bool getRcSwitch(int channel, float threshold);
-    void requestControlNoCheck();
-
-  private:
-    std::mutex state_mutex_;
-    int state_version_ = 0;
-    bool offboard_control_mode_ = false;
-    // this latch is reset even time we receive a heartbeat, this is useful for operations that we
-    // want to throttle to the heartbeat rate.
-    bool heartbeat_throttle_ = false;
-    VehicleState vehicle_state_;
-};
+	private:
+		std::mutex state_mutex_;
+		int state_version_ = 0;
+		bool offboard_control_mode_ = false;
+		// this latch is reset even time we receive a heartbeat, this is useful for operations that we
+		// want to throttle to the heartbeat rate.
+		bool heartbeat_throttle_ = false;
+		VehicleState vehicle_state_;
+	};
 }
 
 #endif

@@ -6,10 +6,11 @@
 #include "CameraDirector.generated.h"
 
 UCLASS()
-class AIRSIM_API ACameraDirector : public AActor {
+class AIRSIM_API ACameraDirector : public AActor
+{
     GENERATED_BODY()
-
-  public:
+    
+public:
     //below should be set by SimMode BP
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
     AVehiclePawnBase* TargetPawn;
@@ -35,12 +36,12 @@ class AIRSIM_API ACameraDirector : public AActor {
     UFUNCTION(BlueprintCallable, Category = "PIP")
     APIPCamera* getCamera(int id = 0);
 
-  public:
+public:	
     ACameraDirector();
     virtual void BeginPlay() override;
     virtual void Tick( float DeltaSeconds ) override;
 
-  private:
-    void setupInputBindings();
+private:
+    void setupInputBindings();	
     bool checkCameraRefs();
 };

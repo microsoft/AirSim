@@ -7,8 +7,7 @@
 #include "common/Common.hpp"
 #include <ostream>
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 //velocity
 struct Twist {
@@ -18,10 +17,12 @@ struct Twist {
     {}
 
     Twist(const Vector3r& linear_val, const Vector3r& angular_val)
-        : linear(linear_val), angular(angular_val) {
+        : linear(linear_val), angular(angular_val)
+    {
     }
 
-    static const Twist zero() {
+    static const Twist zero()
+    {
         static const Twist zero_twist(Vector3r::Zero(), Vector3r::Zero());
         return zero_twist;
     }
@@ -35,34 +36,40 @@ struct Wrench {
     {}
 
     Wrench(const Vector3r& force_val, const Vector3r& torque_val)
-        : force(force_val), torque(torque_val) {
+        : force(force_val), torque(torque_val)
+    {
     }
 
-    //support basic arithmatic
-    Wrench operator+(const Wrench& other) {
+    //support basic arithmatic 
+    Wrench operator+(const Wrench& other)
+    {
         Wrench result;
         result.force = this->force + other.force;
         result.torque = this->torque + other.torque;
         return result;
     }
-    Wrench operator+=(const Wrench& other) {
+    Wrench operator+=(const Wrench& other)
+    {
         force += other.force;
         torque += other.torque;
         return *this;
     }
-    Wrench operator-(const Wrench& other) {
+    Wrench operator-(const Wrench& other)
+    {
         Wrench result;
         result.force = this->force - other.force;
         result.torque = this->torque - other.torque;
         return result;
     }
-    Wrench operator-=(const Wrench& other) {
+    Wrench operator-=(const Wrench& other)
+    {
         force -= other.force;
         torque -= other.torque;
         return *this;
     }
 
-    static const Wrench zero() {
+    static const Wrench zero()
+    {
         static const Wrench zero_wrench(Vector3r::Zero(), Vector3r::Zero());
         return zero_wrench;
     }
@@ -76,18 +83,20 @@ struct Accelerations {
     {}
 
     Accelerations(const Vector3r& linear_val, const Vector3r& angular_val)
-        : linear(linear_val), angular(angular_val) {
+        : linear(linear_val), angular(angular_val)
+    {
     }
 
-    static const Accelerations zero() {
+    static const Accelerations zero()
+    {
         static const Accelerations zero_accelerations(Vector3r::Zero(), Vector3r::Zero());
         return zero_accelerations;
     }
 };
 
 struct PoseWithCovariance {
-    VectorMath::Pose pose;
-    vector<real_T> covariance;	//36 elements, 6x6 matrix
+	VectorMath::Pose pose;
+	vector<real_T> covariance;	//36 elements, 6x6 matrix
 
     PoseWithCovariance()
         : covariance(36, 0)
@@ -95,12 +104,12 @@ struct PoseWithCovariance {
 };
 
 struct PowerSupply {
-    vector<real_T> voltage, current;
+	vector<real_T> voltage, current;
 };
 
 struct TwistWithCovariance {
-    Twist twist;
-    vector<real_T> covariance;	//36 elements, 6x6 matrix
+	Twist twist;
+	vector<real_T> covariance;	//36 elements, 6x6 matrix
 
     TwistWithCovariance()
         : covariance(36, 0)
@@ -108,13 +117,13 @@ struct TwistWithCovariance {
 };
 
 struct Joystick {
-    vector<float> axes;
-    vector<int> buttons;
+	vector<float> axes;
+	vector<int> buttons;
 };
 
 struct Odometry {
-    PoseWithCovariance pose;
-    TwistWithCovariance twist;
+	PoseWithCovariance pose;
+	TwistWithCovariance twist;
 };
 
 struct GeoPoint {
@@ -124,20 +133,22 @@ struct GeoPoint {
     GeoPoint()
     {}
 
-    GeoPoint(double latitude_val, double longitude_val, float altitude_val) {
+    GeoPoint(double latitude_val, double longitude_val, float altitude_val)
+    {
         set(latitude_val, longitude_val, altitude_val);
     }
 
-    void set(double latitude_val, double longitude_val, float altitude_val) {
-        latitude = latitude_val, longitude = longitude_val;
-        altitude = altitude_val;
+    void set(double latitude_val, double longitude_val, float altitude_val)
+    {
+        latitude = latitude_val, longitude = longitude_val; altitude = altitude_val;
     }
 
-    friend std::ostream& operator<<(std::ostream &os, GeoPoint const &g) {
+    friend std::ostream& operator<<(std::ostream &os, GeoPoint const &g) { 
         return os << "[" << g.latitude << ", " << g.longitude << ", " << g.altitude << "]";
     }
 
-    std::string to_string() {
+    std::string to_string()
+    {
         return std::to_string(latitude) + string(", ") + std::to_string(longitude) + string(", ") + std::to_string(altitude);
     }
 };
@@ -152,13 +163,12 @@ struct CollisionInfo {
 };
 
 struct GeoPose {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    Quaternionr orientation;
-    GeoPoint position;
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+	Quaternionr orientation;
+	GeoPoint position;
 };
 
 
 
-}
-} //namespace
+}} //namespace
 #endif

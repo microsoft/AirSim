@@ -18,7 +18,7 @@ namespace detail {
 
 //! \brief Common logic for classes that have a write queue with async writing.
 class async_writer : public std::enable_shared_from_this<async_writer> {
-  public:
+public:
     async_writer(RPCLIB_ASIO::io_service *io,
                  RPCLIB_ASIO::ip::tcp::socket socket)
         : socket_(std::move(socket)), write_strand_(*io), exit_(false) {}
@@ -34,26 +34,26 @@ class async_writer : public std::enable_shared_from_this<async_writer> {
         RPCLIB_ASIO::async_write(
             socket_, RPCLIB_ASIO::buffer(item.data(), item.size()),
             write_strand_.wrap(
-        [this, self](std::error_code ec, std::size_t transferred) {
-            (void)transferred;
-            if (!ec) {
-                write_queue_.pop_front();
-                if (write_queue_.size() > 0) {
-                    if (!exit_) {
-                        do_write();
+                [this, self](std::error_code ec, std::size_t transferred) {
+                    (void)transferred;
+                    if (!ec) {
+                        write_queue_.pop_front();
+                        if (write_queue_.size() > 0) {
+                            if (!exit_) {
+                                do_write();
+                            }
+                        }
+                    } else {
+                        LOG_ERROR("Error while writing to socket: {}", ec);
                     }
-                }
-            } else {
-                LOG_ERROR("Error while writing to socket: {}", ec);
-            }
 
-            if (exit_) {
-                LOG_INFO("Closing socket");
-                socket_.shutdown(
-                    RPCLIB_ASIO::ip::tcp::socket::shutdown_both);
-                socket_.close();
-            }
-        }));
+                    if (exit_) {
+                        LOG_INFO("Closing socket");
+                        socket_.shutdown(
+                            RPCLIB_ASIO::ip::tcp::socket::shutdown_both);
+                        socket_.close();
+                    }
+                }));
     }
 
     void write(RPCLIB_MSGPACK::sbuffer &&data) {
@@ -67,7 +67,7 @@ class async_writer : public std::enable_shared_from_this<async_writer> {
 
     friend class rpc::client;
 
-  protected:
+protected:
     RPCLIB_ASIO::ip::tcp::socket socket_;
     RPCLIB_ASIO::strand write_strand_;
     std::atomic_bool exit_{false};
@@ -75,7 +75,7 @@ class async_writer : public std::enable_shared_from_this<async_writer> {
     std::mutex m_exit_;
     std::condition_variable cv_exit_;
 
-  private:
+private:
     std::deque<RPCLIB_MSGPACK::sbuffer> write_queue_;
     RPCLIB_CREATE_LOG_CHANNEL(async_writer)
 };

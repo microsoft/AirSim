@@ -24,7 +24,7 @@
 namespace rpc {
 namespace detail {
 class logger {
-  public:
+public:
     static logger &instance() {
         static logger inst;
         return inst;
@@ -65,7 +65,7 @@ class logger {
         basic_log("INFO", channel, RPCLIB_FMT::format(msg, args...));
     }
 
-  private:
+private:
     logger() {}
 
 #ifdef _MSC_VER
@@ -84,10 +84,10 @@ class logger {
         timespec now_t = {};
         clock_gettime(CLOCK_REALTIME, &now_t);
         ss << std::put_time(
-               std::localtime(reinterpret_cast<time_t *>(&now_t.tv_sec)),
-               "%F %T")
+                  std::localtime(reinterpret_cast<time_t *>(&now_t.tv_sec)),
+                  "%F %T")
            << RPCLIB_FMT::format(
-               ".{:03}", round(static_cast<double>(now_t.tv_nsec) / 1.0e6));
+                  ".{:03}", round(static_cast<double>(now_t.tv_nsec) / 1.0e6));
         return ss.str();
     }
 #endif
@@ -101,7 +101,7 @@ class logger {
                           arg("time", now()), arg("msg", msg));
     }
 
-  private:
+private:
     std::mutex mut_print_;
 };
 } /* detail */
@@ -117,10 +117,10 @@ class logger {
     static constexpr const char *rpc_channel_name = #Name;                  \
     _Pragma("GCC diagnostic pop")
 #elif defined(__clang__)
-_Pragma("clang diagnostic push")                                            \
-_Pragma("clang diagnostic ignored \"-Wunused-variable\"")                       \
-static constexpr const char *rpc_channel_name = #Name;                  \
-_Pragma("clang diagnostic pop")
+    _Pragma("clang diagnostic push")                                            \
+    _Pragma("clang diagnostic ignored \"-Wunused-variable\"")                       \
+    static constexpr const char *rpc_channel_name = #Name;                  \
+    _Pragma("clang diagnostic pop")
 #endif
 
 RPCLIB_CREATE_LOG_CHANNEL(global)

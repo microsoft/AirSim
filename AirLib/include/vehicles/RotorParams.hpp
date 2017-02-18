@@ -7,8 +7,7 @@
 
 #include "common/Common.hpp"
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 
 //In NED system, +ve torque would generate clockwise rotation
@@ -26,7 +25,7 @@ struct RotorParams {
     \rho = air density (1.225 kg/m^3)
     n = revolusions per sec
     D = propeller diameter in meters
-    C_T, C_P = dimensionless constants available at
+    C_T, C_P = dimensionless constants available at 
         propeller performance database http://m-selig.ae.illinois.edu/props/propDB.html
 
     We use values for GWS 9X5 propeller for which,
@@ -41,6 +40,5 @@ struct RotorParams {
 };
 
 
-}
-} //namespace
+}} //namespace
 #endif

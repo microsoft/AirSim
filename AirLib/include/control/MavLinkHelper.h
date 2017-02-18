@@ -16,12 +16,12 @@
 #include <vector>
 #include "Settings.h"
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 
-class MavLinkHelper : public ControllerBase {
-  public:
+class MavLinkHelper : public ControllerBase
+{
+public:
     typedef msr::airlib::GeoPoint GeoPoint;
     typedef msr::airlib::VectorMath VectorMath;
     typedef msr::airlib::Vector3r Vector3r;
@@ -34,9 +34,9 @@ class MavLinkHelper : public ControllerBase {
     MavLinkHelper();
     ~MavLinkHelper();
 
-    // Load mavlink specific settings from the given Settings file and update the
-    // Settings with any new settings that the settings file doesn't know about yet.
-    void loadSettings(Settings& settings);
+	// Load mavlink specific settings from the given Settings file and update the
+	// Settings with any new settings that the settings file doesn't know about yet.
+	void loadSettings(Settings& settings);
 
     struct HILConnectionInfo {
 
@@ -57,7 +57,7 @@ class MavLinkHelper : public ControllerBase {
     int getRotorControlsCount();
     void connectToExternalSim();
     void connectToHIL(const HILConnectionInfo& connection_info);
-    void connectToVideoServer();
+    void connectToVideoServer();    
     bool connectToLogViewer();
     bool connectToQGC();
     void sendImage(unsigned char data[], uint32_t length, uint16_t width, uint16_t height);
@@ -85,6 +85,5 @@ class MavLinkHelper : public ControllerBase {
     std::unique_ptr<impl> pimpl_;
 };
 
-}
-} //namespace
+}} //namespace
 #endif

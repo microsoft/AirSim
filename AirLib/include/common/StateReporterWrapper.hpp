@@ -13,41 +13,46 @@
 #include "StateReporter.hpp"
 #include "UpdatableContainer.hpp"
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 class StateReporterWrapper : public UpdatableObject {
-  public:
+public:
     static constexpr real_T DefaultReportFreq = 3.0f;
 
-    StateReporterWrapper(bool enabled = false, int float_precision = 3, bool is_scientific_notation = false) {
+    StateReporterWrapper(bool enabled = false, int float_precision = 3, bool is_scientific_notation = false)
+    {
         initialize(enabled, float_precision, is_scientific_notation);
     }
-    void initialize(bool enabled = false, int float_precision = 3, bool is_scientific_notation = false) {
+    void initialize(bool enabled = false, int float_precision = 3, bool is_scientific_notation = false)
+    {
         enabled_ = enabled;
         report_.initialize(float_precision, is_scientific_notation);
         report_freq_.initialize(DefaultReportFreq);
         StateReporterWrapper::reset();
     }
 
-    void clearReport() {
+    void clearReport()
+    {
         report_.clear();
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override {
+    virtual void reset() override
+    {
         clearReport();
         dt_stats_.clear();
         report_freq_.reset();
     }
 
-    virtual void update(real_T dt) override {
+    virtual void update(real_T dt) override
+    {
         if (enabled_) {
             dt_stats_.insert(dt);
             report_freq_.update(dt);
         }
     }
-    virtual void reportState(StateReporter& reporter) override {
+    virtual void reportState(StateReporter& reporter) override
+    {
         //write dt stats
         report_.writeNameOnly("dt");
         report_.writeValueOnly(dt_stats_.mean());
@@ -56,23 +61,28 @@ class StateReporterWrapper : public UpdatableObject {
     }
     //*** End: UpdatableState implementation ***//
 
-    bool canReport() {
+    bool canReport()
+    {
         return enabled_ && report_freq_.isWaitComplete();
     }
 
-    StateReporter* getReporter() {
+    StateReporter* getReporter()
+    {
         return &report_;
     }
 
-    string getOutput() {
+    string getOutput()
+    {
         return report_.getOutput();
     }
 
-    void setReportFreq(real_T freq) {
+    void setReportFreq(real_T freq)
+    {
         report_freq_.initialize(freq);
     }
 
-    void setEnable(bool enable) {
+    void setEnable(bool enable)
+    {
         if (enable == enabled_)
             return;
 
@@ -82,11 +92,12 @@ class StateReporterWrapper : public UpdatableObject {
         else
             report_freq_.initialize(0);
     }
-    bool getEnable() {
+    bool getEnable()
+    {
         return enabled_;
     }
 
-  private:
+private:
     typedef common_utils::OnlineStats OnlineStats;
 
     StateReporter report_;
@@ -97,6 +108,5 @@ class StateReporterWrapper : public UpdatableObject {
     bool enabled_;
 };
 
-}
-} //namespace
+}} //namespace
 #endif

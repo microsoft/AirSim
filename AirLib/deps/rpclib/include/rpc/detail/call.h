@@ -27,7 +27,7 @@ decltype(auto) call(Functor f, Arg &&arg) {
 template <typename Functor, typename... Args>
 decltype(auto) call(Functor f, std::tuple<Args...> &args) {
     return call_helper(f, std::forward<std::tuple<Args...>>(args),
-                       std::index_sequence_for<Args...> {});
+                       std::index_sequence_for<Args...>{});
 }
 }
 }

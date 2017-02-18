@@ -17,7 +17,7 @@ class server_session;
 //! \note Accessing the this_session() object is thread safe, but incurs some
 //! syncrhonization cost in the form of atomic flags. (usually not a concern)
 class this_session_t {
-  public:
+public:
     //! \brief Gracefully exits the session (i.e. ongoing writes and reads are
     //! completed; queued writes and reads are not).
     //! \note Use this function if you need to close the connection from a
@@ -26,7 +26,7 @@ class this_session_t {
 
     friend class rpc::detail::server_session;
 
-  private:
+private:
     void clear();
 
     std::atomic_bool exit_{false};

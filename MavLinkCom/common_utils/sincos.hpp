@@ -18,16 +18,16 @@ https://android.googlesource.com/platform/bionic/+/master/libm/sincos.c
 #ifdef _MSC_VER //GNU/Linux compilers have these functions
 //inline here is forced and is hack. Ideally these definitions needs to be in cpp file. http://stackoverflow.com/a/6469881/207661
 inline void sincos(double x, double* p_sin, double* p_cos) {
-    *p_sin = sin(x);
-    *p_cos = cos(x);
+	*p_sin = sin(x);
+	*p_cos = cos(x);
 }
 inline void sincosf(float x, float* p_sinf, float* p_cosf) {
-    *p_sinf = sinf(x);
-    *p_cosf = cosf(x);
+	*p_sinf = sinf(x);
+	*p_cosf = cosf(x);
 }
 inline void sincosl(long double x, long double* p_sinl, long double* p_cosl) {
-    *p_sinl = sinl(x);
-    *p_cosl = cosl(x);
+	*p_sinl = sinl(x);
+	*p_cosl = cosl(x);
 }
 #endif
 

@@ -7,8 +7,7 @@
 #include "common/Common.hpp"
 
 
-namespace msr {
-namespace airlib {
+namespace msr { namespace airlib {
 
 
 struct MagnetometerSimpleParams {
@@ -30,6 +29,5 @@ struct MagnetometerSimpleParams {
 };
 
 
-}
-} //namespace
+}} //namespace
 #endif

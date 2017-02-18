@@ -49,48 +49,50 @@ namespace clmdep_msgpack {
 MSGPACK_API_VERSION_NAMESPACE(v1) {
 /// @endcond
 
-    template <typename T>
-    struct unique_ptr : std::auto_ptr<T> {
-        explicit unique_ptr(T* p = 0) throw() : std::auto_ptr<T>(p) {}
-        unique_ptr(unique_ptr& a) throw() : std::auto_ptr<T>(a) {}
-        template<class Y>
-        unique_ptr (unique_ptr<Y>& a) throw() : std::auto_ptr<T>(a) {}
-    };
+template <typename T>
+struct unique_ptr : std::auto_ptr<T> {
+    explicit unique_ptr(T* p = 0) throw() : std::auto_ptr<T>(p) {}
+    unique_ptr(unique_ptr& a) throw() : std::auto_ptr<T>(a) {}
+    template<class Y>
+    unique_ptr (unique_ptr<Y>& a) throw() : std::auto_ptr<T>(a) {}
+};
 
-    template <typename T>
-    T& move(T& t) {
-        return t;
-    }
+template <typename T>
+T& move(T& t)
+{
+    return t;
+}
 
-    template <typename T>
-    T const& move(T const& t) {
-        return t;
-    }
+template <typename T>
+T const& move(T const& t)
+{
+    return t;
+}
 
-    template <bool P, typename T = void>
-    struct enable_if {
-        typedef T type;
-    };
+template <bool P, typename T = void>
+struct enable_if {
+    typedef T type;
+};
 
-    template <typename T>
-    struct enable_if<false, T> {
-    };
+template <typename T>
+struct enable_if<false, T> {
+};
 
-    template<typename T, T val>
-    struct integral_constant {
-        static T const value = val;
-        typedef T value_type;
-        typedef integral_constant<T, val> type;
-    };
+template<typename T, T val>
+struct integral_constant {
+    static T const value = val;
+    typedef T value_type;
+    typedef integral_constant<T, val> type;
+};
 
-    typedef integral_constant<bool, true> true_type;
-    typedef integral_constant<bool, false> false_type;
+typedef integral_constant<bool, true> true_type;
+typedef integral_constant<bool, false> false_type;
 
-    template<class T, class U>
-    struct is_same : false_type {};
+template<class T, class U>
+struct is_same : false_type {};
 
-    template<class T>
-    struct is_same<T, T> : true_type {};
+template<class T>
+struct is_same<T, T> : true_type {};
 
 /// @cond
 }  // MSGPACK_API_VERSION_NAMESPACE(v1)

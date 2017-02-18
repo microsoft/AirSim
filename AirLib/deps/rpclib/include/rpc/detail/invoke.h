@@ -9,8 +9,7 @@ namespace detail {
 template<typename T>
 using invoke = typename T::type;
 
-}
-}
+}}
 
 
 #endif /* end of include guard: INVOKE_H_0CWMPLUE */

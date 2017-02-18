@@ -12,7 +12,7 @@ namespace detail {
 //! \brief Represents a response and creates a msgpack to be sent back
 //! as per the msgpack-rpc spec.
 class response {
-  public:
+public:
     //! \brief Creates a response that represents a normal return value.
     //! \param id The sequence id (as per protocol).
     //! \param result The return value to store in the response.
@@ -67,7 +67,7 @@ class response {
     using response_type =
         std::tuple<uint32_t, uint32_t, RPCLIB_MSGPACK::object, RPCLIB_MSGPACK::object>;
 
-  private:
+private:
     //! \brief Default constructor for responses.
     response();
 

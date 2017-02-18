@@ -12,20 +12,21 @@
 #include "rpc/msgpack.hpp"
 
 
-namespace msr {
-namespace airlib_rpclib {
+namespace msr { namespace airlib_rpclib {
 
 class RpcLibAdapators {
-  public:
+public:
     template<typename TSrc, typename TDest>
-    static void to(const std::vector<TSrc>& s, std::vector<TDest>& d) {
+    static void to(const std::vector<TSrc>& s, std::vector<TDest>& d)
+    {
         d.clear();
         for (size_t i = 0; i < s.size(); ++i)
             d.push_back(s.at(i).to());
     }
 
     template<typename TSrc, typename TDest>
-    static void from(const std::vector<TSrc>& s, std::vector<TDest>& d) {
+    static void from(const std::vector<TSrc>& s, std::vector<TDest>& d)
+    {
         d.clear();
         for (size_t i = 0; i < s.size(); ++i)
             d.push_back(TDest(s.at(i)));
@@ -35,15 +36,17 @@ class RpcLibAdapators {
         bool is_rate;
         float yaw_or_rate;
         MSGPACK_DEFINE_ARRAY(is_rate, yaw_or_rate);
-
+    
         YawMode()
         {}
 
-        YawMode(const msr::airlib::YawMode& s) {
+        YawMode(const msr::airlib::YawMode& s)
+        {
             is_rate = s.is_rate;
             yaw_or_rate = s.yaw_or_rate;
         }
-        msr::airlib::YawMode to() const {
+        msr::airlib::YawMode to() const
+        {
             return msr::airlib::YawMode(is_rate, yaw_or_rate);
         }
     };
@@ -55,12 +58,14 @@ class RpcLibAdapators {
         Vector3r()
         {}
 
-        Vector3r(const msr::airlib::Vector3r& s) {
+        Vector3r(const msr::airlib::Vector3r& s)
+        {
             x_ = s.x();
             y_ = s.y();
             z_ = s.z();
         }
-        msr::airlib::Vector3r to() const {
+        msr::airlib::Vector3r to() const
+        {
             return msr::airlib::Vector3r(x_, y_, z_);
         }
     };
@@ -73,13 +78,15 @@ class RpcLibAdapators {
         Quaternionr()
         {}
 
-        Quaternionr(const msr::airlib::Quaternionr& s) {
+        Quaternionr(const msr::airlib::Quaternionr& s)
+        {
             w_ = s.w();
             x_ = s.x();
             y_ = s.y();
             z_ = s.z();
         }
-        msr::airlib::Quaternionr to() const {
+        msr::airlib::Quaternionr to() const
+        {
             return msr::airlib::Quaternionr(w_, x_, y_, z_);
         }
     };
@@ -92,12 +99,14 @@ class RpcLibAdapators {
         GeoPoint()
         {}
 
-        GeoPoint(const msr::airlib::GeoPoint& s) {
+        GeoPoint(const msr::airlib::GeoPoint& s)
+        {
             latitude = s.latitude;
             longitude = s.longitude;
             altitude = s.altitude;
         }
-        msr::airlib::GeoPoint to() const {
+        msr::airlib::GeoPoint to() const
+        {
             return msr::airlib::GeoPoint(latitude, longitude, altitude);
         }
     };
@@ -111,7 +120,8 @@ class RpcLibAdapators {
         RCData()
         {}
 
-        RCData(const msr::airlib::RCData& s) {
+        RCData(const msr::airlib::RCData& s)
+        {
             timestamp = s.timestamp;
             pitch = s.pitch;
             roll = s.roll;
@@ -121,7 +131,8 @@ class RpcLibAdapators {
             switch2 = s.switch2;
             switch3 = s.switch3;
         }
-        msr::airlib::RCData to() const {
+        msr::airlib::RCData to() const
+        {
             msr::airlib::RCData d;
             d.timestamp = timestamp;
             d.pitch = pitch;
@@ -137,8 +148,7 @@ class RpcLibAdapators {
     };
 };
 
-}
-} //namespace
+}} //namespace
 
 MSGPACK_ADD_ENUM(msr::airlib::DrivetrainType);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::SafetyViolationType_);

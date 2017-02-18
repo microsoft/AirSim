@@ -14,158 +14,179 @@ using namespace mavlinkcom_impl;
 //================================= CLIENT ==============================================================
 
 MavLinkVideoClientImpl::MavLinkVideoClientImpl(int system_id, int component_id)
-    : MavLinkNodeImpl(system_id, component_id) {
+	: MavLinkNodeImpl(system_id, component_id)
+{
 }
 
-MavLinkVideoClientImpl::~MavLinkVideoClientImpl() {
-    close();
+MavLinkVideoClientImpl::~MavLinkVideoClientImpl()
+{
+	close();
 }
 
-void MavLinkVideoClientImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
-    switch (message.msgid) {
-    case MavLinkDataTransmissionHandshake::kMessageId: { //MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE:
-        MavLinkDataTransmissionHandshake p;
-        p.decode(message);
+void MavLinkVideoClientImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message)
+{
+	switch (message.msgid)
+	{
+    case MavLinkDataTransmissionHandshake::kMessageId: //MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE:
+	{
+		MavLinkDataTransmissionHandshake p;
+		p.decode(message);
+		
+		std::lock_guard<std::mutex> guard(state_mutex);
+		incoming_image.size = p.size;
+		incoming_image.packets = p.packets;
+		incoming_image.payload = p.payload;
+		incoming_image.quality = p.jpg_quality;
+		incoming_image.type = p.type;
+		incoming_image.width = p.width;
+		incoming_image.height = p.height;
+		incoming_image.start = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		incoming_image.packetsArrived = 0;
+		incoming_image.data.resize(incoming_image.size);
 
-        std::lock_guard<std::mutex> guard(state_mutex);
-        incoming_image.size = p.size;
-        incoming_image.packets = p.packets;
-        incoming_image.payload = p.payload;
-        incoming_image.quality = p.jpg_quality;
-        incoming_image.type = p.type;
-        incoming_image.width = p.width;
-        incoming_image.height = p.height;
-        incoming_image.start = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-        incoming_image.packetsArrived = 0;
-        incoming_image.data.resize(incoming_image.size);
+		break;
+	}
+    case MavLinkEncapsulatedData::kMessageId: // MAVLINK_MSG_ID_ENCAPSULATED_DATA:
+	{
+		MavLinkEncapsulatedData img;
+		img.decode(message);
 
-        break;
-    }
-    case MavLinkEncapsulatedData::kMessageId: { // MAVLINK_MSG_ID_ENCAPSULATED_DATA:
-        MavLinkEncapsulatedData img;
-        img.decode(message);
+		std::lock_guard<std::mutex> guard(state_mutex);
 
-        std::lock_guard<std::mutex> guard(state_mutex);
+		int seq = img.seqnr;
+		int pos = seq * incoming_image.payload;
 
-        int seq = img.seqnr;
-        int pos = seq * incoming_image.payload;
+		// Check if we have a valid transaction
+		if (incoming_image.packets == 0)
+		{
+			incoming_image.packetsArrived = 0;
+			Utils::logError("Aborting image reception because of zero packets");
+			break;
+		}
 
-        // Check if we have a valid transaction
-        if (incoming_image.packets == 0) {
-            incoming_image.packetsArrived = 0;
-            Utils::logError("Aborting image reception because of zero packets");
-            break;
-        }
+		for (int i = 0; i < incoming_image.payload; ++i)
+		{
+			if (pos < incoming_image.size) {
+				incoming_image.data[pos] = img.data[i];
+			}
+			++pos;
+		}
 
-        for (int i = 0; i < incoming_image.payload; ++i) {
-            if (pos < incoming_image.size) {
-                incoming_image.data[pos] = img.data[i];
-            }
-            ++pos;
-        }
+		++incoming_image.packetsArrived;
 
-        ++incoming_image.packetsArrived;
+		// emit signal if all packets arrived
+		if (incoming_image.packetsArrived >= incoming_image.packets)
+		{
+			Utils::logMessage("Image is available: %d packets arrived", incoming_image.packetsArrived);
 
-        // emit signal if all packets arrived
-        if (incoming_image.packetsArrived >= incoming_image.packets) {
-            Utils::logMessage("Image is available: %d packets arrived", incoming_image.packetsArrived);
-
-            // Restart statemachine
-            incoming_image.packets = 0;
-            incoming_image.packetsArrived = 0;
-            incoming_image.ready();
-        }
-        break;
-    }
-    }
+			// Restart statemachine
+			incoming_image.packets = 0;
+			incoming_image.packetsArrived = 0;
+			incoming_image.ready();
+		}
+		break;
+	}
+	}
 }
 
-bool MavLinkVideoClientImpl::readNextFrame(MavLinkVideoClient::MavLinkVideoFrame& image) {
-    return incoming_image.read(image);
+bool MavLinkVideoClientImpl::readNextFrame(MavLinkVideoClient::MavLinkVideoFrame& image)
+{
+	return incoming_image.read(image);
 }
 
 
 //image APIs
-void MavLinkVideoClientImpl::requestVideo(int camera_id, float every_n_sec, bool save_locally) {
-    MavCmdDoControlVideo cmd{};
-    cmd.CameraId = static_cast<float>(camera_id);
-    cmd.Transmission = 1.0f;
-    cmd.TransmissionMode = every_n_sec;
-    cmd.Recording = save_locally ? 1.0f : 0.0f;
-    sendCommand(cmd);
+void MavLinkVideoClientImpl::requestVideo(int camera_id, float every_n_sec, bool save_locally)
+{
+	MavCmdDoControlVideo cmd{};
+	cmd.CameraId = static_cast<float>(camera_id);
+	cmd.Transmission = 1.0f;
+	cmd.TransmissionMode = every_n_sec;
+	cmd.Recording = save_locally ? 1.0f : 0.0f;
+	sendCommand(cmd);
 }
 
 //================================= SERVER ==============================================================
 
 MavLinkVideoServerImpl::MavLinkVideoServerImpl(int system_id, int component_id)
-    : MavLinkNodeImpl(system_id, component_id) {
+	: MavLinkNodeImpl(system_id, component_id)
+{
 }
 
-MavLinkVideoServerImpl::~MavLinkVideoServerImpl() {
+MavLinkVideoServerImpl::~MavLinkVideoServerImpl()
+{
 }
 
-void MavLinkVideoServerImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
-    switch (message.msgid) {
-    case MavLinkCommandLong::kMessageId: {
-        MavLinkCommandLong cmd;
-        cmd.decode(message);
+void MavLinkVideoServerImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message)
+{
+	switch (message.msgid)
+	{
+	case MavLinkCommandLong::kMessageId:
+	{
+		MavLinkCommandLong cmd;
+		cmd.decode(message);
 
-        switch (static_cast<MAV_CMD>(cmd.command)) {
-        case MAV_CMD::MAV_CMD_DO_CONTROL_VIDEO: {
-            std::lock_guard<std::mutex> guard(state_mutex);
-            image_request_.camera_id = static_cast<int>(cmd.param1);
-            image_request_.every_n_sec = cmd.param2;
-            image_request_.save_locally = cmd.param3 == 0 ? false : true;
-            image_request_.valid = true;
-            break;
-        }
-        default:
-            break;
-        }
-    }
-    }
+		switch (static_cast<MAV_CMD>(cmd.command))
+		{
+        case MAV_CMD::MAV_CMD_DO_CONTROL_VIDEO:
+		{
+			std::lock_guard<std::mutex> guard(state_mutex);
+			image_request_.camera_id = static_cast<int>(cmd.param1);
+			image_request_.every_n_sec = cmd.param2;
+			image_request_.save_locally = cmd.param3 == 0 ? false : true;
+			image_request_.valid = true;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	}
 }
 
-bool MavLinkVideoServerImpl::hasVideoRequest(MavLinkVideoServer::MavLinkVideoRequest& req) {
-    std::lock_guard<std::mutex> guard(state_mutex);
-    if (image_request_.valid) {
-        req = image_request_;
-        image_request_.valid = false;
-        return true;
-    } else return false;
+bool MavLinkVideoServerImpl::hasVideoRequest(MavLinkVideoServer::MavLinkVideoRequest& req)
+{
+	std::lock_guard<std::mutex> guard(state_mutex);
+	if (image_request_.valid) {
+		req = image_request_;
+		image_request_.valid = false;
+		return true;
+	}
+	else return false;
 }
 
-void MavLinkVideoServerImpl::sendFrame(uint8_t data[], uint32_t data_size, uint16_t width, uint16_t height, uint8_t image_type, uint8_t image_quality) {
-    MavLinkDataTransmissionHandshake ack;
-    // Prepare and send acknowledgment packet
-    ack.type = image_type;
-    ack.size = static_cast<uint32_t>(data_size);
-    ack.packets = static_cast<uint16_t>(ack.size / PACKET_PAYLOAD);
-    if (ack.size % PACKET_PAYLOAD) // one more packet with the rest of data
-        ++ack.packets;
-    ack.payload = static_cast<uint8_t>(PACKET_PAYLOAD);
-    ack.jpg_quality = image_quality;
-    ack.width = width;
-    ack.height = height;
+void MavLinkVideoServerImpl::sendFrame(uint8_t data[], uint32_t data_size, uint16_t width, uint16_t height, uint8_t image_type, uint8_t image_quality)
+{
+	MavLinkDataTransmissionHandshake ack;
+	// Prepare and send acknowledgment packet
+	ack.type = image_type;
+	ack.size = static_cast<uint32_t>(data_size);
+	ack.packets = static_cast<uint16_t>(ack.size / PACKET_PAYLOAD);
+	if (ack.size % PACKET_PAYLOAD) // one more packet with the rest of data
+		++ack.packets;
+	ack.payload = static_cast<uint8_t>(PACKET_PAYLOAD);
+	ack.jpg_quality = image_quality;
+	ack.width = width;
+	ack.height = height;
 
-    sendMessage(ack);
+	sendMessage(ack);
 
-    uint32_t byteIndex = 0;
-    MavLinkEncapsulatedData packet;
+	uint32_t byteIndex = 0;
+	MavLinkEncapsulatedData packet;
 
-    for (int i = 0; i < ack.packets; ++i) {
-        // Copy PACKET_PAYLOAD bytes of image data to send buffer
-        for (int j = 0; j < PACKET_PAYLOAD; ++j) {
-            if (byteIndex < ack.size)
-                packet.data[j] = data[byteIndex];
-            else // fill packet data with padding bits
-                packet.data[j] = 0;
-            ++byteIndex;
-        }
+	for (int i = 0; i < ack.packets; ++i) {
+		// Copy PACKET_PAYLOAD bytes of image data to send buffer
+		for (int j = 0; j < PACKET_PAYLOAD; ++j) {
+			if (byteIndex < ack.size)
+				packet.data[j] = data[byteIndex];
+			else // fill packet data with padding bits
+				packet.data[j] = 0;
+			++byteIndex;
+		}
 
-        // Send ENCAPSULATED_IMAGE packet
-        packet.seqnr = i;
-        sendMessage(packet);
-    }
+		// Send ENCAPSULATED_IMAGE packet
+		packet.seqnr = i;
+		sendMessage(packet);
+	}
 
 }
