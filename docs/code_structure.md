@@ -19,3 +19,7 @@ See [MavLinkCom](../MavLinkCom/README.md) for more info.
 
 ## Sample Programs
 We have created few sample program to demonstrate how to use the API. See HelloDrone and DroneServer. The DroneServer demonstrates how to connect to the simulator using UDP port for QGC.
+
+## Contributing
+
+See [Contibution Guidelines](docs/contributing.md)
