@@ -68,6 +68,7 @@ extern "C" {
 #else
 #include <unistd.h>
 #include <sys/param.h>  // MAXPATHLEN definition
+#include <sys/stat.h>
 #endif
 
 using json = nlohmann::json;
