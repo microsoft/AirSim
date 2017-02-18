@@ -18,22 +18,23 @@
 #ifdef __GNUC__
 #define STRICT_MODE_OFF                                           \
     _Pragma("GCC diagnostic push")                                  \
-    _Pragma("GCC diagnostic ignored \"-Wreturn-type\"")             \
+    _Pragma("GCC diagnostic ignored \"-Wctor-dtor-privacy\"")        \
     _Pragma("GCC diagnostic ignored \"-Wdelete-non-virtual-dtor\"") \
-    _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")        \
-    _Pragma("GCC diagnostic ignored \"-pedantic\"")                 \    
-_Pragma("GCC diagnostic ignored \"-Wshadow\"")                  \
-_Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")          \
-_Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \
-_Pragma("GCC diagnostic ignored \"-Wmissing-field-initializers\"") \
-_Pragma("GCC diagnostic ignored \"-Wredundant-decls\"")	
+    _Pragma("GCC diagnostic ignored \"-Wmissing-field-initializers\"") \
+    _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")          \
+    _Pragma("GCC diagnostic ignored \"-Wredundant-decls\"")         \
+    _Pragma("GCC diagnostic ignored \"-Wreturn-type\"")             \
+    _Pragma("GCC diagnostic ignored \"-Wshadow\"")                  \
+    _Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \
+    _Pragma("GCC diagnostic ignored \"-Wundef\"")                   \
+    _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")
 
 /* Addition options that can be enabled 
-_Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
-_Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
-_Pragma("GCC diagnostic ignored \"-Werror\"")                   \
-_Pragma("GCC diagnostic ignored \"-Werror=\"")                  \
-_Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
+    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
+    _Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
+    _Pragma("GCC diagnostic ignored \"-Werror\"")                   \
+    _Pragma("GCC diagnostic ignored \"-Werror=\"")                  \
+    _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
 */
 
 #define STRICT_MODE_ON                                            \

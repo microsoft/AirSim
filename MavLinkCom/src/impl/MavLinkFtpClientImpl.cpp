@@ -207,7 +207,7 @@ void MavLinkFtpClientImpl::runStateMachine()
 			std::lock_guard<std::mutex> guard(mutex_);
 			after = messages_;
 			if (messages_ > 0) {
-				rate = (double)total_time_.count() / (double)messages_;
+				rate = static_cast<double>(total_time_.count()) / static_cast<double>(messages_);
 				if (progress_ != nullptr)
 				{
 					progress_->average_rate = rate;

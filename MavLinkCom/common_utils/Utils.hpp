@@ -20,6 +20,9 @@
 #include "type_utils.hpp"
 #include <limits>
 
+#ifndef _WIN32
+#include <limits.h> // needed for CHAR_BIT used below
+#endif
 
 //Stubs for C++17 optional type
 #if (defined __cplusplus) && (__cplusplus >= 201700L)
@@ -38,15 +41,15 @@ using std::experimental::optional;
 #include <cmath>
 
 #ifndef M_PIf
-#define M_PIf ((float)3.1415926535897932384626433832795028841972)
+#define M_PIf static_cast<float>(3.1415926535897932384626433832795028841972)
 #endif
 
 #ifndef M_PI
-#define M_PI ((double)3.1415926535897932384626433832795028841972)
+#define M_PI static_cast<double>(3.1415926535897932384626433832795028841972)
 #endif
 
 #ifndef M_PIl
-#define M_PIl ((long double)3.1415926535897932384626433832795028841972)
+#define M_PIl static_cast<long double>(3.1415926535897932384626433832795028841972)
 #endif
 
 #define EARTH_RADIUS (6378137.0f)

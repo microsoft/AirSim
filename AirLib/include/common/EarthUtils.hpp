@@ -54,8 +54,8 @@ public:
         }
 
         /* round down to nearest sampling resolution */
-        int min_lat = (int)(latitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES;
-        int min_lon = (int)(longitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES;
+        int min_lat = static_cast<int>(latitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES;
+        int min_lon = static_cast<int>(longitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES;
 
         /* for the rare case of hitting the bounds exactly
         * the rounding logic wouldn't fit, so enforce it.
@@ -67,7 +67,7 @@ public:
         }
 
         if (latitude >= MAG_SAMPLING_MAX_LAT) {
-            min_lat = (int)(latitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES - MAG_SAMPLING_RES;
+            min_lat =  static_cast<int>(latitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES - MAG_SAMPLING_RES;
         }
 
         if (longitude <= MAG_SAMPLING_MIN_LON) {
@@ -75,7 +75,7 @@ public:
         }
 
         if (longitude >= MAG_SAMPLING_MAX_LON) {
-            min_lon = (int)(longitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES - MAG_SAMPLING_RES;
+            min_lon =  static_cast<int>(longitude / MAG_SAMPLING_RES) * MAG_SAMPLING_RES - MAG_SAMPLING_RES;
         }
 
         /* find index of nearest low sampling point */

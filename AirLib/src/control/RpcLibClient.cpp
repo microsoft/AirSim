@@ -129,7 +129,7 @@ bool RpcLibClient::hover()
 bool RpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
     float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z)
 {
-    return pimpl_->client.call("setSafety", (uint) enable_reasons, obs_clearance, obs_startegy,
+    return pimpl_->client.call("setSafety", static_cast<uint>(enable_reasons), obs_clearance, obs_startegy,
         obs_avoidance_vel, RpcLibAdapators::Vector3r(origin), xy_length, max_z, min_z).as<bool>();
 }
 

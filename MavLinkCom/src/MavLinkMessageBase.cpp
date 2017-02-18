@@ -34,55 +34,81 @@ void MavLinkMessageBase::pack_int8_t(char* buffer, const int8_t* field, int offs
 }
 void MavLinkMessageBase::pack_int16_t(char* buffer, const int16_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_int16_t(buffer, offset, *field);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_uint16_t(char* buffer, const uint16_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_uint16_t(buffer, offset, *field);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_uint32_t(char* buffer, const uint32_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_uint32_t(buffer, offset, *field);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_int32_t(char* buffer, const int32_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_int32_t(buffer, offset, *field);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_uint64_t(char* buffer, const uint64_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_uint64_t(buffer, offset, *field);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_int64_t(char* buffer, const int64_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_int64_t(buffer, offset, *field);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_float(char* buffer, const float* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_float(buffer, offset, *field);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_char_array(int len, char* buffer, const char* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_char_array(buffer, offset, field, len);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_uint8_t_array(int len, char* buffer, const uint8_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_uint8_t_array(buffer, offset, field, len);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_int8_t_array(int len, char* buffer, const int8_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_int8_t_array(buffer, offset, field, len);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_uint16_t_array(int len, char* buffer, const uint16_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_uint16_t_array(buffer, offset, field, len);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_int16_t_array(int len, char* buffer, const int16_t* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_int16_t_array(buffer, offset, field, len);
+	STRICT_MODE_ON
 }
 void MavLinkMessageBase::pack_float_array(int len, char* buffer, const float* field, int offset) const
 {
+	STRICT_MODE_OFF
 	_mav_put_float_array(buffer, offset, field, len);
+	STRICT_MODE_ON
 }
 
 

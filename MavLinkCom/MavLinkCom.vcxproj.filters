@@ -192,7 +192,9 @@
     <ClInclude Include="src\serial_com\UdpServer.hpp">
       <Filter>serial_com</Filter>
     </ClInclude>
-    <ClInclude Include="common_utils\StrictMode.hpp" />
+    <ClInclude Include="common_utils\StrictMode.hpp">
+      <Filter>common_utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mavlink">

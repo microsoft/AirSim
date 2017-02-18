@@ -1,6 +1,11 @@
 ﻿#pragma once
 #include <string>
+
+#include "common/common_utils/Utils.hpp"
+STRICT_MODE_OFF
+// this json library is not strict clean
 #include "common/common_utils/json.hpp"
+STRICT_MODE_ON
 
 namespace msr {
 	namespace airlib {

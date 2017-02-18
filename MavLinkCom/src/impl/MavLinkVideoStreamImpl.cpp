@@ -86,6 +86,8 @@ void MavLinkVideoClientImpl::handleMessage(std::shared_ptr<MavLinkConnection> co
 		}
 		break;
 	}
+	default:
+		break;
 	}
 }
 
@@ -141,6 +143,8 @@ void MavLinkVideoServerImpl::handleMessage(std::shared_ptr<MavLinkConnection> co
 			break;
 		}
 	}
+	default:
+		break;
 	}
 }
 

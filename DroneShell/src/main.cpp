@@ -21,7 +21,7 @@ namespace msr { namespace airlib {
 
 struct CommandContext {
 public:
-    RpcLibClient& client;
+    RpcLibClient client;
     AsyncTasker tasker;
 };
 
@@ -991,9 +991,7 @@ int main(int argc, const char *argv[]) {
         return -1;
     }
 
-    RpcLibClient client(server_address);
-
-    CommandContext command_context{ client };
+    CommandContext command_context{ /*RpcClient*/{server_address}, /*AsyncTasker*/ {} };
 
     command_context.tasker.setErrorHandler([](std::exception& e) {
         try {
