@@ -9,10 +9,11 @@
 #include "common/CommonStructs.hpp"
 #include "common/EarthUtils.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class Environment : public UpdatableObject {
-public:
+  public:
     struct State {
         //these fields must be set at initialization time
         GeoPoint geo_point;
@@ -28,21 +29,17 @@ public:
         State()
         {}
         State(const Vector3r& position_val, const GeoPoint& geo_point_val, real_T min_z_over_ground_val)
-            : geo_point(geo_point_val), min_z_over_ground(min_z_over_ground_val), position(position_val)
-        {
+            : geo_point(geo_point_val), min_z_over_ground(min_z_over_ground_val), position(position_val) {
         }
     };
-public:
-    Environment()
-    {
+  public:
+    Environment() {
         Environment::reset();
     }
-    Environment(const State& initial)
-    {
+    Environment(const State& initial) {
         initialize(initial);
     }
-    void initialize(const State& initial)
-    {
+    void initialize(const State& initial) {
         initial_ = initial;
 
         home_geo_point_ = EarthUtils::HomeGeoPoint(initial_.geo_point);
@@ -51,41 +48,34 @@ public:
 
         Environment::reset();
     }
-    
+
     //in local NED coordinates
-    void setPosition(const Vector3r& position)
-    {
+    void setPosition(const Vector3r& position) {
         current_.position = position;
     }
 
-    const State& getInitialState() const
-    {
+    const State& getInitialState() const {
         return initial_;
     }
-    const State& getState() const
-    {
+    const State& getState() const {
         return current_;
     }
-    State& getState()
-    {
+    State& getState() {
         return current_;
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset()
-    {
+    virtual void reset() {
         current_ = initial_;
     }
 
-    virtual void update(real_T dt)
-    {
+    virtual void update(real_T dt) {
         updateState(current_, dt, home_geo_point_);
     }
     //*** End: UpdatableState implementation ***//
 
-private:
-    static void updateState(State& state, real_T dt, const EarthUtils::HomeGeoPoint& home_geo_point)
-    {
+  private:
+    static void updateState(State& state, real_T dt, const EarthUtils::HomeGeoPoint& home_geo_point) {
         state.geo_point = EarthUtils::nedToGeodetic(state.position, home_geo_point);
 
         real_T geo_pot = EarthUtils::getGeopotential(state.geo_point.altitude / 1000.0f);
@@ -97,10 +87,11 @@ private:
         state.gravity = Vector3r(0, 0, EarthUtils::getGravity(state.geo_point.altitude));
     }
 
-private:
+  private:
     State initial_, current_;
     EarthUtils::HomeGeoPoint home_geo_point_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

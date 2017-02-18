@@ -128,22 +128,21 @@ int msgpack_pack_object(msgpack_packer* pk, msgpack_object d);
 
 #include "pack_template.h"
 
-inline void msgpack_packer_init(msgpack_packer* pk, void* data, msgpack_packer_write callback)
-{
+inline void msgpack_packer_init(msgpack_packer* pk, void* data, msgpack_packer_write callback) {
     pk->data = data;
     pk->callback = callback;
 }
 
-inline msgpack_packer* msgpack_packer_new(void* data, msgpack_packer_write callback)
-{
+inline msgpack_packer* msgpack_packer_new(void* data, msgpack_packer_write callback) {
     msgpack_packer* pk = (msgpack_packer*)calloc(1, sizeof(msgpack_packer));
-    if(!pk) { return NULL; }
+    if(!pk) {
+        return NULL;
+    }
     msgpack_packer_init(pk, data, callback);
     return pk;
 }
 
-inline void msgpack_packer_free(msgpack_packer* pk)
-{
+inline void msgpack_packer_free(msgpack_packer* pk) {
     free(pk);
 }
 

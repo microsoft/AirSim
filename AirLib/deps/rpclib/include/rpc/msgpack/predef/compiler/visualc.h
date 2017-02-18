@@ -37,23 +37,23 @@ Version number available as major, minor, and patch.
 #   if !defined (_MSC_FULL_VER)
 #       define MSGPACK_COMP_MSVC_BUILD 0
 #   else
-        /* how many digits does the build number have? */
+/* how many digits does the build number have? */
 #       if _MSC_FULL_VER / 10000 == _MSC_VER
-            /* four digits */
+/* four digits */
 #           define MSGPACK_COMP_MSVC_BUILD (_MSC_FULL_VER % 10000)
 #       elif _MSC_FULL_VER / 100000 == _MSC_VER
-            /* five digits */
+/* five digits */
 #           define MSGPACK_COMP_MSVC_BUILD (_MSC_FULL_VER % 100000)
 #       else
 #           error "Cannot determine build number from _MSC_FULL_VER"
 #       endif
 #   endif
-    /*
-    VS2014 was skipped in the release sequence for MS. Which
-    means that the compiler and VS product versions are no longer
-    in sync. Hence we need to use different formulas for
-    mapping from MSC version to VS product version.
-    */
+/*
+VS2014 was skipped in the release sequence for MS. Which
+means that the compiler and VS product versions are no longer
+in sync. Hence we need to use different formulas for
+mapping from MSC version to VS product version.
+*/
 #   if (_MSC_VER >= 1900)
 #       define MSGPACK_COMP_MSVC_DETECTION MSGPACK_VERSION_NUMBER(\
             _MSC_VER/100-5,\

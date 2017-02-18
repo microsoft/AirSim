@@ -10,10 +10,11 @@
 #include "common/CommonStructs.hpp"
 #include "common/Common.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class EarthUtils {
-private:
+  private:
 
     /** set this always to the sampling in degrees for the table below */
     static constexpr int MAG_SAMPLING_RES      = 10;
@@ -22,8 +23,7 @@ private:
     static constexpr int MAG_SAMPLING_MIN_LON  = -180;
     static constexpr int MAG_SAMPLING_MAX_LON  = 180;
 
-    static constexpr int DECLINATION_TABLE[13][37] =
-    {
+    static constexpr int DECLINATION_TABLE[13][37] = {
         { 46, 45, 44, 42, 41, 40, 38, 36, 33, 28, 23, 16, 10, 4, -1, -5, -9, -14, -19, -26, -33, -40, -48, -55, -61, -66, -71, -74, -75, -72, -61, -25, 22, 40, 45, 47, 46 },
         { 30, 30, 30, 30, 29, 29, 29, 29, 27, 24, 18, 11, 3, -3, -9, -12, -15, -17, -21, -26, -32, -39, -45, -51, -55, -57, -56, -53, -44, -31, -14, 0, 13, 21, 26, 29, 30 },
         { 21, 22, 22, 22, 22, 22, 22, 22, 21, 18, 13, 5, -3, -11, -17, -20, -21, -22, -23, -25, -29, -35, -40, -44, -45, -44, -40, -32, -22, -12, -3, 3, 9, 14, 18, 20, 21 },
@@ -38,18 +38,17 @@ private:
         { 4, 8, 12, 15, 17, 18, 16, 12, 5, -3, -12, -18, -20, -19, -16, -13, -8, -4, -1, 1, 4, 6, 8, 9, 9, 9, 7, 3, -1, -6, -10, -12, -11, -9, -5, 0, 4 },
         { 3, 9, 14, 17, 20, 21, 19, 14, 4, -8, -19, -25, -26, -25, -21, -17, -12, -7, -2, 1, 5, 9, 13, 15, 16, 16, 13, 7, 0, -7, -12, -15, -14, -11, -6, -1, 3 },
     };
-public:
+  public:
     //return declination in degrees
     //Ref: https://github.com/PX4/ecl/blob/master/EKF/geo.cpp
-    static real_T getMagDeclination(real_T latitude, real_T longitude)
-    {
+    static real_T getMagDeclination(real_T latitude, real_T longitude) {
         /*
         * If the values exceed valid ranges, return zero as default
         * as we have no way of knowing what the closest real value
         * would be.
         */
         if (latitude < -90.0f || latitude > 90.0f ||
-            longitude < -180.0f || longitude > 180.0f) {
+                longitude < -180.0f || longitude > 180.0f) {
             throw std::out_of_range(Utils::stringf("invalid latitude (%f) or longitude (%f) value", latitude, longitude));
         }
 
@@ -97,8 +96,7 @@ public:
 
     //geopot_height = Earth_radius * altitude / (Earth_radius + altitude) /// all in kilometers
     //temperature is in Kelvin = 273.15 + celcius
-    static real_T getStandardTemperature(real_T geopot_height) 
-    {
+    static real_T getStandardTemperature(real_T geopot_height) {
         //standard atmospheric pressure
         //Below 51km: Practical Meteorology by Roland Stull, pg 12
         //Above 51km: http://www.braeunig.us/space/atmmodel.htm
@@ -108,28 +106,26 @@ public:
             return 216.65f;
         else if (geopot_height <= 32)
             return 196.65f + geopot_height;
-        else if (geopot_height <= 47)       
+        else if (geopot_height <= 47)
             return 228.65f + 2.8f * (geopot_height - 32);
         else if (geopot_height <= 51)     //Mesosphere starts
             return 270.65f;
-        else if (geopot_height <= 71)       
+        else if (geopot_height <= 71)
             return 270.65f - 2.8f * (geopot_height - 51);
-        else if (geopot_height <= 84.85f)    
-            return 214.65f - 2 * (geopot_height - 71);    
+        else if (geopot_height <= 84.85f)
+            return 214.65f - 2 * (geopot_height - 71);
         else return 3;
         //Thermospehere has high kinetic temperature (500c to 2000c) but temperature
         //as measured by thermometer would be very low because of almost vacuum
         //throw std::out_of_range("geopot_height must be less than 85km. Space domain is not supported yet!");
     }
 
-    static real_T getGeopotential(real_T altitude_km) 
-    {
+    static real_T getGeopotential(real_T altitude_km) {
         static constexpr real_T radius_km = EARTH_RADIUS / 1000.0f;
         return radius_km * altitude_km / (radius_km + altitude_km);
     }
 
-    static real_T getStandardPressure(real_T altitude /* meters */)    //return Pa
-    {
+    static real_T getStandardPressure(real_T altitude /* meters */) {  //return Pa
         real_T geopot_height = getGeopotential(altitude / 1000.0f);
 
         real_T t = getStandardTemperature(geopot_height);
@@ -137,8 +133,7 @@ public:
         return getStandardPressure(geopot_height, t);
     }
 
-    static real_T getStandardPressure(real_T geopot_height, real_T std_temperature)    //return Pa
-    {
+    static real_T getStandardPressure(real_T geopot_height, real_T std_temperature) {  //return Pa
         //Below 51km: Practical Meteorology by Roland Stull, pg 12
         //Above 51km: http://www.braeunig.us/space/atmmodel.htm
         //Validation data: https://www.avs.org/AVS/files/c7/c7edaedb-95b2-438f-adfb-36de54f87b9e.pdf
@@ -157,31 +152,27 @@ public:
         else if (geopot_height <= 84.85f)
             return 3.956420f * powf(214.65f / std_temperature, -17.0816f);
         else return 1E-3f;
-        //throw std::out_of_range("altitude must be less than 86km. Space domain is not supported yet!");    
+        //throw std::out_of_range("altitude must be less than 86km. Space domain is not supported yet!");
     }
 
-    static real_T getAirDensity(real_T std_pressure, real_T std_temperature)  //kg / m^3
-    {
+    static real_T getAirDensity(real_T std_pressure, real_T std_temperature) { //kg / m^3
         //http://www.braeunig.us/space/atmmodel.htm
         return std_pressure / 287.053f / std_temperature;
     }
 
-    static real_T getAirDensity(real_T altitude)  //kg / m^3
-    {
+    static real_T getAirDensity(real_T altitude) { //kg / m^3
         real_T geo_pot = getGeopotential(altitude / 1000.0f);
         real_T std_temperature = getStandardTemperature(geo_pot);
         real_T std_pressure = getStandardPressure(geo_pot, std_temperature);
         return getAirDensity(std_pressure, std_temperature);
     }
 
-    static real_T getSpeedofSound(real_T altitude)  // m/s
-    {
+    static real_T getSpeedofSound(real_T altitude) { // m/s
         //http://www.braeunig.us/space/atmmodel.htm
         return sqrt(1.400f * 287.053f * getStandardTemperature(getGeopotential(altitude)));
     }
 
-    static real_T getGravity(real_T altitude)
-    {
+    static real_T getGravity(real_T altitude) {
         //derivation: http://www.citycollegiate.com/gravitation_XId.htm
         if (altitude < 10000 && altitude > -10000)   //up to 10 km, difference is too small
             return EarthUtils::Gravity;
@@ -193,14 +184,12 @@ public:
         }
     }
 
-    static Vector3r getMagField(const GeoPoint& geo_point)  //return Tesla
-    {
+    static Vector3r getMagField(const GeoPoint& geo_point) { //return Tesla
         double declination, inclination;
         return getMagField(geo_point, declination, inclination);
     }
 
-    static Vector3r getMagField(const GeoPoint& geo_point, double& declination, double& inclination)  //return Tesla
-    {
+    static Vector3r getMagField(const GeoPoint& geo_point, double& declination, double& inclination) { //return Tesla
         /*
         We calculate magnetic field using simple dipol model of Earth, i.e., assume
         earth as perfect dipole sphere and ignoring all but first order terms.
@@ -210,9 +199,9 @@ public:
         correctly as vehicle moves in any direction and if field component signs are correct. For this purpose, simple
         diapole model is good enough. Keep in mind that actual field values may differ by as much as 10X in either direction
         although for many tests differences seems to be within 3X or sometime even to first decimal digit. Again what matters is
-        how field changes wrt to movement as opposed to actual field values. To get better field strength one should use latest 
-        World Magnetic Model like WMM2015 from NOAA. However these recent model is fairly complex and very expensive to calculate. 
-        Other possibilities: 
+        how field changes wrt to movement as opposed to actual field values. To get better field strength one should use latest
+        World Magnetic Model like WMM2015 from NOAA. However these recent model is fairly complex and very expensive to calculate.
+        Other possibilities:
             - WMM2010 mocel, expensive to compute: http://williams.best.vwh.net/magvar/magfield.c
             - Android's mag field calculation (still uses WMM2010 and fails at North Pole): https://goo.gl/1CZB9x
 
@@ -246,19 +235,19 @@ public:
         double sin_lat = sin(lat);
 
         //find magnetic colatitude
-        double mag_clat = acos(cos_lat * cos_MagPoleLat + 
-            sin_lat * sin_MagPoleLat * cos(lon - MagPoleLon) );
+        double mag_clat = acos(cos_lat * cos_MagPoleLat +
+                               sin_lat * sin_MagPoleLat * cos(lon - MagPoleLon) );
 
         //calculation of magnetic longitude is not needed but just in case if someone wants it
-        //double mag_lon = asin( 
+        //double mag_lon = asin(
         //    (sin(lon - MagPoleLon) * sin(lat)) /
         //    sin(mag_clat));
 
         //field strength only depends on magnetic colatitude
         //https://en.wikipedia.org/wiki/Dipole_model_of_the_Earth's_magnetic_field
         double cos_mag_clat = cos(mag_clat);
-        double field_mag = MeanMagField * pow(EARTH_RADIUS / altitude, 3) * 
-            sqrt(1 + 3 * cos_mag_clat * cos_mag_clat);
+        double field_mag = MeanMagField * pow(EARTH_RADIUS / altitude, 3) *
+                           sqrt(1 + 3 * cos_mag_clat * cos_mag_clat);
 
         //find inclination and declination
         //equation of declination in above referenced book is only partial
@@ -275,10 +264,10 @@ public:
         //ref: http://www.geo.mtu.edu/~jdiehl/magnotes.html
         double field_xy = field_mag * cos(inclination);
         return Vector3r(
-            static_cast<real_T>(field_xy * cos(declination)),
-            static_cast<real_T>(field_xy * sin(declination)),
-            static_cast<real_T>(field_mag * sin(inclination))
-        );
+                   static_cast<real_T>(field_xy * cos(declination)),
+                   static_cast<real_T>(field_xy * sin(declination)),
+                   static_cast<real_T>(field_mag * sin(inclination))
+               );
     }
 
     struct HomeGeoPoint {
@@ -288,12 +277,10 @@ public:
 
         HomeGeoPoint()
         {}
-        HomeGeoPoint(const GeoPoint& home_point_val)
-        {
+        HomeGeoPoint(const GeoPoint& home_point_val) {
             initialize(home_point_val);
         }
-        void initialize(const GeoPoint& home_point_val)
-        {
+        void initialize(const GeoPoint& home_point_val) {
             home_point = home_point_val;
             lat_rad = Utils::degreesToRadians(home_point.latitude);
             lon_rad = Utils::degreesToRadians(home_point.longitude);
@@ -302,8 +289,7 @@ public:
         }
     };
 
-    static GeoPoint nedToGeodetic(const Vector3r& v, const HomeGeoPoint& home_geo_point)
-    {
+    static GeoPoint nedToGeodetic(const Vector3r& v, const HomeGeoPoint& home_geo_point) {
         double x_rad = v.x() / EARTH_RADIUS;
         double y_rad = v.y() / EARTH_RADIUS;
         double c = sqrt(x_rad*x_rad + y_rad*y_rad);
@@ -311,19 +297,18 @@ public:
         double lat_rad, lon_rad;
         if (!Utils::isApproximatelyZero(c)) { //avoids large changes?
             lat_rad = asin(cos_c * home_geo_point.sin_lat + (x_rad * sin_c * home_geo_point.cos_lat) / c);
-            lon_rad = (home_geo_point.lon_rad + 
-                atan2(y_rad * sin_c, c * home_geo_point.cos_lat * cos_c - x_rad * home_geo_point.sin_lat * sin_c));
+            lon_rad = (home_geo_point.lon_rad +
+                       atan2(y_rad * sin_c, c * home_geo_point.cos_lat * cos_c - x_rad * home_geo_point.sin_lat * sin_c));
 
-            return GeoPoint(Utils::radiansToDegrees(lat_rad), Utils::radiansToDegrees(lon_rad), 
-                home_geo_point.home_point.altitude - v.z());
+            return GeoPoint(Utils::radiansToDegrees(lat_rad), Utils::radiansToDegrees(lon_rad),
+                            home_geo_point.home_point.altitude - v.z());
         } else
             return GeoPoint(home_geo_point.home_point.latitude, home_geo_point.home_point.longitude, home_geo_point.home_point.altitude - v.z());
     }
 
     //below are approximate versions and would produce errors of more than 10m for points farther than 1km
     //for more accurate versions, please use the version in EarthUtils::nedToGeodetic
-    static Vector3r GeodeticToNedFast(const GeoPoint& geo, const GeoPoint& home)
-    {
+    static Vector3r GeodeticToNedFast(const GeoPoint& geo, const GeoPoint& home) {
         double d_lat = geo.latitude - home.latitude;
         double d_lon = geo.longitude - home.longitude;
         real_T d_alt = static_cast<real_T>(home.altitude - geo.altitude);
@@ -331,8 +316,7 @@ public:
         real_T y = static_cast<real_T>(Utils::degreesToRadians(d_lon) * EARTH_RADIUS * cos(Utils::degreesToRadians(geo.latitude)));
         return Vector3r(x, y, d_alt);
     }
-    static GeoPoint nedToGeodeticFast(const Vector3r& local, const GeoPoint& home)
-    {
+    static GeoPoint nedToGeodeticFast(const Vector3r& local, const GeoPoint& home) {
         GeoPoint r;
         double d_lat = local.x() / EARTH_RADIUS;
         double d_lon = local.y() / (EARTH_RADIUS * cos(Utils::degreesToRadians(home.latitude)));
@@ -343,7 +327,7 @@ public:
         return r;
     }
 
-public: //consts
+  public: //consts
     //ref: https://www.ngdc.noaa.gov/geomag/GeomagneticPoles.shtml
     static constexpr double MagPoleLat = Utils::degreesToRadians(80.31f);
     static constexpr double MagPoleLon = Utils::degreesToRadians(-72.62f);
@@ -354,13 +338,13 @@ public: //consts
     static constexpr float Radius = EARTH_RADIUS; //m
 
 
-private:
+  private:
     /* magnetic field */
-    static float get_mag_lookup_table_val(int lat_index, int lon_index)
-    {
+    static float get_mag_lookup_table_val(int lat_index, int lon_index) {
         return static_cast<float>(DECLINATION_TABLE[lat_index][lon_index]);
     }
 };
 
-}} //namespace
+}
+} //namespace
 #endif

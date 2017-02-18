@@ -23,7 +23,7 @@
 #
 # if MSGPACK_PP_VARIADICS
 # 	 if MSGPACK_PP_VARIADICS_MSVC
-		/* To be used internally when __VA_ARGS__ could be empty ( or is a single element ) */
+/* To be used internally when __VA_ARGS__ could be empty ( or is a single element ) */
 #    	define MSGPACK_PP_REM_CAT(...) MSGPACK_PP_CAT(__VA_ARGS__,)
 # 	 endif
 #    define MSGPACK_PP_REM(...) __VA_ARGS__
@@ -38,7 +38,7 @@
 */
 # if MSGPACK_PP_VARIADICS && !(MSGPACK_PP_VARIADICS_MSVC && _MSC_VER <= 1400)
 # 	 if MSGPACK_PP_VARIADICS_MSVC
-		/* To be used internally when the size could be 0 ( or 1 ) */
+/* To be used internally when the size could be 0 ( or 1 ) */
 #    	define MSGPACK_PP_TUPLE_REM_CAT(size) MSGPACK_PP_REM_CAT
 # 	 endif
 #    define MSGPACK_PP_TUPLE_REM(size) MSGPACK_PP_REM

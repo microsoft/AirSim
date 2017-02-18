@@ -9,19 +9,21 @@
 #include "DroneControlServer.hpp"
 #include "ControlServerBase.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class RpcLibServer : ControlServerBase {
-public:
+  public:
     RpcLibServer(DroneControlServer* drone, string server_address, uint16_t port = 41451);
     virtual void start(bool block = false) override;
     virtual void stop() override;
     virtual ~RpcLibServer() override;
-private:
+  private:
     DroneControlServer* drone_;
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

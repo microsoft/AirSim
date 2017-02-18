@@ -9,21 +9,19 @@
 #include "ImuSimpleParams.hpp"
 #include "ImuBase.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class ImuSimple : public ImuBase {
-public:
+  public:
     //constructors
-    ImuSimple()
-    {
+    ImuSimple() {
         ImuSimple::reset();
     }
-    ImuSimple(GroundTruth* ground_truth)
-    {
+    ImuSimple(GroundTruth* ground_truth) {
         initialize(ground_truth);
     }
-    void initialize(GroundTruth* ground_truth)
-    {
+    void initialize(GroundTruth* ground_truth) {
         ImuBase::initialize(ground_truth);
 
         gyro_bias_stability_norm = params_.gyro.bias_stability / sqrt(params_.gyro.tau);
@@ -33,25 +31,22 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         state_.gyroscope_bias = params_.gyro.turn_on_bias;
         state_.accelerometer_bias = params_.accel.turn_on_bias;
         gauss_dist.reset();
         updateOutput(0);
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         updateOutput(dt);
     }
     //*** End: UpdatableState implementation ***//
 
     virtual ~ImuSimple() = default;
 
-private: //methods
-    void updateOutput(real_T dt)
-    {
+  private: //methods
+    void updateOutput(real_T dt) {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
 
@@ -60,8 +55,8 @@ private: //methods
         output.orientation = ground_truth.kinematics->pose.orientation;
 
         //acceleration is in world frame so transform to body frame
-        output.linear_acceleration = VectorMath::transformToBodyFrame(output.linear_acceleration, 
-            ground_truth.kinematics->pose.orientation, true);
+        output.linear_acceleration = VectorMath::transformToBodyFrame(output.linear_acceleration,
+                                     ground_truth.kinematics->pose.orientation, true);
 
         //add noise
         addNoise(output.linear_acceleration, output.angular_velocity, dt);
@@ -70,8 +65,7 @@ private: //methods
         setOutput(output);
     }
 
-    void addNoise(Vector3r& linear_acceleration, Vector3r& angular_velocity, float dt)
-    {
+    void addNoise(Vector3r& linear_acceleration, Vector3r& angular_velocity, float dt) {
         //ref: An introduction to inertial navigation, Oliver J. Woodman, Sec 3.2, pp 10-12
         //https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-696.pdf
 
@@ -95,7 +89,7 @@ private: //methods
     }
 
 
-private: //fields
+  private: //fields
     ImuSimpleParams params_;
     RandomVectorGaussianR gauss_dist = RandomVectorGaussianR(0, 1);
 
@@ -109,5 +103,6 @@ private: //fields
 };
 
 
-}} //namespace
+}
+} //namespace
 #endif

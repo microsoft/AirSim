@@ -27,43 +27,48 @@ namespace clmdep_msgpack {
 MSGPACK_API_VERSION_NAMESPACE(v1) {
 /// @endcond
 
-namespace adaptor {
+    namespace adaptor {
 
-template <>
-struct convert<bool> {
-    clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, bool& v) const {
-        if(o.type != clmdep_msgpack::type::BOOLEAN) { throw clmdep_msgpack::type_error(); }
-        v = o.via.boolean;
-        return o;
-    }
-};
+    template <>
+    struct convert<bool> {
+        clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, bool& v) const {
+            if(o.type != clmdep_msgpack::type::BOOLEAN) {
+                throw clmdep_msgpack::type_error();
+            }
+            v = o.via.boolean;
+            return o;
+        }
+    };
 
-template <>
-struct pack<bool> {
-    template <typename Stream>
-    clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const bool& v) const {
-        if(v) { o.pack_true(); }
-        else { o.pack_false(); }
-        return o;
-    }
-};
+    template <>
+    struct pack<bool> {
+        template <typename Stream>
+        clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const bool& v) const {
+            if(v) {
+                o.pack_true();
+            } else {
+                o.pack_false();
+            }
+            return o;
+        }
+    };
 
-template <>
-struct object<bool> {
-    void operator()(clmdep_msgpack::object& o, bool v) const {
-        o.type = clmdep_msgpack::type::BOOLEAN;
-        o.via.boolean = v;
-    }
-};
+    template <>
+    struct object<bool> {
+        void operator()(clmdep_msgpack::object& o, bool v) const {
+            o.type = clmdep_msgpack::type::BOOLEAN;
+            o.via.boolean = v;
+        }
+    };
 
-template <>
-struct object_with_zone<bool> {
-    void operator()(clmdep_msgpack::object::with_zone& o, bool v) const {
-        static_cast<clmdep_msgpack::object&>(o) << v;
-    }
-};
+    template <>
+    struct object_with_zone<bool> {
+        void operator()(clmdep_msgpack::object::with_zone& o, bool v) const {
+            static_cast<clmdep_msgpack::object&>(o) << v;
+        }
+    };
 
-} // namespace adaptor
+    } // namespace adaptor
 
 /// @cond
 }  // MSGPACK_API_VERSION_NAMESPACE(v1)

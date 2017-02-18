@@ -8,26 +8,24 @@
 #include <stdio.h>
 #include "MavLinkMessageBase.hpp"
 
-namespace mavlinkcom
-{
+namespace mavlinkcom {
 
-	// This class reads/writes MavLinkMessages to a local file.
-	class MavLinkLog
-	{
-		std::string file_name_;
-		FILE* ptr_;
-		bool reading_;
-		bool writing_;
-	public:
-		MavLinkLog();
-		~MavLinkLog();
-		bool isOpen();
-		void openForReading(const std::string& filename);
-		void openForWriting(const std::string& filename);
-		void close();
-		void write(const mavlinkcom::MavLinkMessage& msg);
-		bool read(mavlinkcom::MavLinkMessage& msg);
-	};
+// This class reads/writes MavLinkMessages to a local file.
+class MavLinkLog {
+    std::string file_name_;
+    FILE* ptr_;
+    bool reading_;
+    bool writing_;
+  public:
+    MavLinkLog();
+    ~MavLinkLog();
+    bool isOpen();
+    void openForReading(const std::string& filename);
+    void openForWriting(const std::string& filename);
+    void close();
+    void write(const mavlinkcom::MavLinkMessage& msg);
+    bool read(mavlinkcom::MavLinkMessage& msg);
+};
 
 }
 

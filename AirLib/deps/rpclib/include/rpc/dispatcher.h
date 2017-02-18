@@ -24,7 +24,7 @@ namespace detail {
 //! \brief This class maintains a registry of functors associated with their
 //! names, and callable using a msgpack-rpc call pack.
 class dispatcher {
-public:
+  public:
     //! \brief Binds a functor to a name so it becomes callable via RPC.
     //! \param name The name of the functor.
     //! \param func The functor to bind.
@@ -82,7 +82,7 @@ public:
     //! \brief This functor type unifies the interfaces of functions that are
     //!        called remotely
     using adaptor_type = std::function<std::unique_ptr<RPCLIB_MSGPACK::object_handle>(
-        RPCLIB_MSGPACK::object const &)>;
+                             RPCLIB_MSGPACK::object const &)>;
 
     //! \brief This is the type of messages as per the msgpack-rpc spec.
     using call_t = std::tuple<int8_t, uint32_t, std::string, RPCLIB_MSGPACK::object>;
@@ -90,7 +90,7 @@ public:
     //! \brief This is the type of notification messages.
     using notification_t = std::tuple<int8_t, std::string, RPCLIB_MSGPACK::object>;
 
-private:
+  private:
     //! \brief Checks the argument count and throws an exception if
     //! it is not the expected amount.
     static void enforce_arg_count(std::string const &func, std::size_t found,
@@ -108,7 +108,7 @@ private:
 
     enum class request_type { call = 0, notification = 2 };
 
-private:
+  private:
     std::unordered_map<std::string, adaptor_type> funcs_;
     RPCLIB_CREATE_LOG_CHANNEL(dispatcher)
 };

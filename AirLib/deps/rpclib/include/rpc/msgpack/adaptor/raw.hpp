@@ -29,81 +29,87 @@ namespace clmdep_msgpack {
 MSGPACK_API_VERSION_NAMESPACE(v1) {
 /// @endcond
 
-namespace type {
+    namespace type {
 
-struct raw_ref {
-    raw_ref() : size(0), ptr(nullptr) {}
-    raw_ref(const char* p, uint32_t s) : size(s), ptr(p) {}
+    struct raw_ref {
+        raw_ref() : size(0), ptr(nullptr) {}
+        raw_ref(const char* p, uint32_t s) : size(s), ptr(p) {}
 
-    uint32_t size;
-    const char* ptr;
+        uint32_t size;
+        const char* ptr;
 
-    std::string str() const { return std::string(ptr, size); }
+        std::string str() const {
+            return std::string(ptr, size);
+        }
 
-    bool operator== (const raw_ref& x) const
-    {
-        return size == x.size && std::memcmp(ptr, x.ptr, size) == 0;
-    }
+        bool operator== (const raw_ref& x) const {
+            return size == x.size && std::memcmp(ptr, x.ptr, size) == 0;
+        }
 
-    bool operator!= (const raw_ref& x) const
-    {
-        return !(*this == x);
-    }
+        bool operator!= (const raw_ref& x) const {
+            return !(*this == x);
+        }
 
-    bool operator< (const raw_ref& x) const
-    {
-        if(size == x.size) { return std::memcmp(ptr, x.ptr, size) < 0; }
-        else { return size < x.size; }
-    }
+        bool operator< (const raw_ref& x) const {
+            if(size == x.size) {
+                return std::memcmp(ptr, x.ptr, size) < 0;
+            } else {
+                return size < x.size;
+            }
+        }
 
-    bool operator> (const raw_ref& x) const
-    {
-        if(size == x.size) { return std::memcmp(ptr, x.ptr, size) > 0; }
-        else { return size > x.size; }
-    }
-};
+        bool operator> (const raw_ref& x) const {
+            if(size == x.size) {
+                return std::memcmp(ptr, x.ptr, size) > 0;
+            } else {
+                return size > x.size;
+            }
+        }
+    };
 
-} // namespace type
+    } // namespace type
 
-namespace adaptor {
+    namespace adaptor {
 
-template <>
-struct convert<clmdep_msgpack::type::raw_ref> {
-    clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, clmdep_msgpack::type::raw_ref& v) const {
-        if(o.type != clmdep_msgpack::type::BIN) { throw clmdep_msgpack::type_error(); }
-        v.ptr  = o.via.bin.ptr;
-        v.size = o.via.bin.size;
-        return o;
-    }
-};
+    template <>
+    struct convert<clmdep_msgpack::type::raw_ref> {
+        clmdep_msgpack::object const& operator()(clmdep_msgpack::object const& o, clmdep_msgpack::type::raw_ref& v) const {
+            if(o.type != clmdep_msgpack::type::BIN) {
+                throw clmdep_msgpack::type_error();
+            }
+            v.ptr  = o.via.bin.ptr;
+            v.size = o.via.bin.size;
+            return o;
+        }
+    };
 
-template <>
-struct pack<clmdep_msgpack::type::raw_ref> {
-    template <typename Stream>
-    clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const clmdep_msgpack::type::raw_ref& v) const {
-        o.pack_bin(v.size);
-        o.pack_bin_body(v.ptr, v.size);
-        return o;
-    }
-};
+    template <>
+    struct pack<clmdep_msgpack::type::raw_ref> {
+        template <typename Stream>
+        clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const clmdep_msgpack::type::raw_ref& v) const {
+            o.pack_bin(v.size);
+            o.pack_bin_body(v.ptr, v.size);
+            return o;
+        }
+    };
 
-template <>
-struct object<clmdep_msgpack::type::raw_ref> {
-    void operator()(clmdep_msgpack::object& o, const clmdep_msgpack::type::raw_ref& v) const {
-        o.type = clmdep_msgpack::type::BIN;
-        o.via.bin.ptr = v.ptr;
-        o.via.bin.size = v.size;
-    }
-};
+    template <>
+    struct object<clmdep_msgpack::type::raw_ref> {
+        void operator()(clmdep_msgpack::object& o, const clmdep_msgpack::type::raw_ref& v) const {
+            o.type = clmdep_msgpack::type::BIN;
+            o.via.bin.ptr = v.ptr;
+            o.via.bin.size = v.size;
+        }
+    };
 
-template <>
-struct object_with_zone<clmdep_msgpack::type::raw_ref> {
-    void operator()(clmdep_msgpack::object::with_zone& o, const clmdep_msgpack::type::raw_ref& v) const {
-        static_cast<clmdep_msgpack::object&>(o) << v;
-    }
-};
+    template <>
+    struct object_with_zone<clmdep_msgpack::type::raw_ref> {
+        void operator()(clmdep_msgpack::object::with_zone& o, const clmdep_msgpack::type::raw_ref& v) const {
+            static_cast<clmdep_msgpack::object&>(o) << v;
+        }
+    };
 
-} // namespace adaptor
+    } // namespace adaptor
 
 /// @cond
 } // MSGPACK_API_VERSION_NAMESPACE(v1)

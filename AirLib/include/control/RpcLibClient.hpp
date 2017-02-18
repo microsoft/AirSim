@@ -11,10 +11,11 @@
 #include "SafetyEval.hpp"
 #include "DroneControlBase.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class RpcLibClient {
-public:
+  public:
     RpcLibClient(const string& ip_address = "127.0.0.1", uint16_t port = 41451);
     bool armDisarm(bool arm);
     bool requestControl();
@@ -24,16 +25,16 @@ public:
     bool goHome();
     bool moveByAngle(float pitch, float roll, float z, float yaw, float duration);
 
-    bool moveByVelocity(float vx, float vy, float vz, float duration, 
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode());
+    bool moveByVelocity(float vx, float vy, float vz, float duration,
+                        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode());
     bool moveByVelocityZ(float vx, float vy, float z, float duration,
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode());
-    bool moveOnPath(const vector<Vector3r>& path, float velocity, 
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveToPosition(float x, float y, float z, float velocity, 
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveToZ(float z, float velocity, 
-        const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
+                         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode());
+    bool moveOnPath(const vector<Vector3r>& path, float velocity,
+                    DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
+    bool moveToPosition(float x, float y, float z, float velocity,
+                        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
+    bool moveToZ(float z, float velocity,
+                 const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
     bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration);
     bool rotateToYaw(float yaw, float margin = 5);
     bool rotateByYawRate(float yaw_rate, float duration);
@@ -57,13 +58,14 @@ public:
     vector<uint8_t> getImageForCamera(int camera_id, DroneControlBase::ImageType type);
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
-        float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
+                   float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
 
     ~RpcLibClient();    //required for pimpl
-private:
+  private:
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };
 
-}} //namespace
+}
+} //namespace
 #endif

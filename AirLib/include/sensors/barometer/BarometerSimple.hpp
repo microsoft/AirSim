@@ -12,50 +12,45 @@
 #include "common/GaussianMarkov.hpp"
 
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class BarometerSimple  : public BarometerBase {
-public:
-    BarometerSimple()
-    {
+  public:
+    BarometerSimple() {
         BarometerSimple::reset();
     }
-    BarometerSimple(GroundTruth* ground_truth)
-    {
+    BarometerSimple(GroundTruth* ground_truth) {
         initialize(ground_truth);
-    }    
-    void initialize(GroundTruth* ground_truth)
-    {
+    }
+    void initialize(GroundTruth* ground_truth) {
         BarometerBase::initialize(ground_truth);
-        
+
         pressure_factor.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, Utils::nan<real_T>());
 
         uncorrelated_noise = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
         correlated_noise.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
-        
+
         BarometerSimple::reset();
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         updateOutput(0);
         pressure_factor.reset();
         correlated_noise.reset();
         uncorrelated_noise.reset();
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         updateOutput(dt);
     }
     //*** End: UpdatableState implementation ***//
 
     virtual ~BarometerSimple() = default;
 
-private: //methods
-    void updateOutput(real_T dt)
-    {
+  private: //methods
+    void updateOutput(real_T dt) {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
 
@@ -81,7 +76,7 @@ private: //methods
         setOutput(output);
     }
 
-private:
+  private:
     BarometerSimpleParams params_;
 
     GaussianMarkov pressure_factor;
@@ -89,5 +84,6 @@ private:
     RandomGeneratorGausianR uncorrelated_noise;
 };
 
-}} //namespace
-#endif 
+}
+} //namespace
+#endif

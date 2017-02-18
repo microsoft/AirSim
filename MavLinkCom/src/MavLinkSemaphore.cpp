@@ -9,31 +9,27 @@
 using namespace mavlinkcom;
 
 MavLinkSemaphore::MavLinkSemaphore() {
-	impl_ = nullptr;
-	impl_ = new boost::interprocess::interprocess_semaphore(0);
+    impl_ = nullptr;
+    impl_ = new boost::interprocess::interprocess_semaphore(0);
 }
 
-MavLinkSemaphore::~MavLinkSemaphore()
-{
-	if (impl_ != nullptr) {
-		delete impl_;
-		impl_ = nullptr;
-	}
+MavLinkSemaphore::~MavLinkSemaphore() {
+    if (impl_ != nullptr) {
+        delete impl_;
+        impl_ = nullptr;
+    }
 }
 
-void MavLinkSemaphore::wait()
-{
-	impl_->wait();
+void MavLinkSemaphore::wait() {
+    impl_->wait();
 }
 
-void MavLinkSemaphore::post()
-{
-	impl_->post();
+void MavLinkSemaphore::post() {
+    impl_->post();
 }
 
-bool MavLinkSemaphore::timed_wait(int millisecondTimeout)
-{
-	auto boost_time = boost::posix_time::microsec_clock::universal_time();
-	boost::posix_time::ptime ptimeout = boost_time + boost::posix_time::milliseconds(millisecondTimeout);
-	return impl_->timed_wait(ptimeout);
+bool MavLinkSemaphore::timed_wait(int millisecondTimeout) {
+    auto boost_time = boost::posix_time::microsec_clock::universal_time();
+    boost::posix_time::ptime ptimeout = boost_time + boost::posix_time::milliseconds(millisecondTimeout);
+    return impl_->timed_wait(ptimeout);
 }

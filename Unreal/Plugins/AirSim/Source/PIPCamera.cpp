@@ -4,8 +4,7 @@
 #include "ImageUtils.h"
 #include <string>
 
-APIPCamera::APIPCamera()
-{
+APIPCamera::APIPCamera() {
     static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> scene_render_target_finder(TEXT("TextureRenderTarget2D'/AirSim/HUDAssets/FpvRenderTarget.FpvRenderTarget'"));
     scene_render_target_ = scene_render_target_finder.Object;
 
@@ -16,8 +15,7 @@ APIPCamera::APIPCamera()
     seg_render_target_ = seg_render_target_finder.Object;
 }
 
-void APIPCamera::PostInitializeComponents()
-{
+void APIPCamera::PostInitializeComponents() {
     Super::PostInitializeComponents();
 
     camera_ = UAirBlueprintLib::GetActorComponent<UCameraComponent>(this, TEXT("CameraComponent"));
@@ -27,8 +25,7 @@ void APIPCamera::PostInitializeComponents()
     seg_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SegmentationCaptureComponent"));
 }
 
-void APIPCamera::setToMainView()
-{
+void APIPCamera::setToMainView() {
     camera_->Activate();
     APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
     controller->SetViewTarget(this);
@@ -37,8 +34,7 @@ void APIPCamera::setToMainView()
     camera_mode_ = EPIPCameraMode::PIP_CAMERA_MODE_MAIN;
 }
 
-void APIPCamera::setToPIPView()
-{
+void APIPCamera::setToPIPView() {
     deactivateMain();
 
     activateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE);
@@ -48,16 +44,14 @@ void APIPCamera::setToPIPView()
     camera_mode_ = EPIPCameraMode::PIP_CAMERA_MODE_PIP;
 }
 
-void APIPCamera::disableAll()
-{
+void APIPCamera::disableAll() {
     deactivateMain();
     deactivatePIP();
 
     camera_mode_ = EPIPCameraMode::PIP_CAMERA_MODE_NONE;
 }
 
-void APIPCamera::deactivateCaptureComponent(const EPIPCameraType type)
-{
+void APIPCamera::deactivateCaptureComponent(const EPIPCameraType type) {
     USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
     if (capture != nullptr) {
         capture->Deactivate();
@@ -65,8 +59,7 @@ void APIPCamera::deactivateCaptureComponent(const EPIPCameraType type)
     }
 }
 
-void APIPCamera::activateCaptureComponent(const EPIPCameraType type)
-{
+void APIPCamera::activateCaptureComponent(const EPIPCameraType type) {
     USceneCaptureComponent2D* capture = getCaptureComponent(type, true);
     if (capture != nullptr) {
         capture->TextureTarget = getTexureRenderTarget(type, false);
@@ -74,8 +67,7 @@ void APIPCamera::activateCaptureComponent(const EPIPCameraType type)
     }
 }
 
-UTextureRenderTarget2D* APIPCamera::getTexureRenderTarget(const EPIPCameraType type, bool if_active)
-{
+UTextureRenderTarget2D* APIPCamera::getTexureRenderTarget(const EPIPCameraType type, bool if_active) {
     switch (type) {
     case EPIPCameraType::PIP_CAMERA_TYPE_SCENE:
         if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SCENE)))
@@ -98,8 +90,7 @@ UTextureRenderTarget2D* APIPCamera::getTexureRenderTarget(const EPIPCameraType t
 
 }
 
-USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const EPIPCameraType type, bool if_active)
-{
+USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const EPIPCameraType type, bool if_active) {
     switch (type) {
     case EPIPCameraType::PIP_CAMERA_TYPE_SCENE:
         if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SCENE)))
@@ -123,21 +114,18 @@ USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const EPIPCameraType t
 }
 
 
-void APIPCamera::deactivatePIP()
-{
+void APIPCamera::deactivatePIP() {
     deactivateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE);
     deactivateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH);
     deactivateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SEG);
 }
 
 
-void APIPCamera::deactivateMain()
-{
+void APIPCamera::deactivateMain() {
     camera_->Deactivate();
 }
 
-void APIPCamera::refreshCurrentMode()
-{
+void APIPCamera::refreshCurrentMode() {
     switch (camera_mode_) {
     case EPIPCameraMode::PIP_CAMERA_MODE_NONE:
         disableAll();
@@ -154,13 +142,11 @@ void APIPCamera::refreshCurrentMode()
     }
 }
 
-EPIPCameraMode APIPCamera::getCameraMode()
-{
+EPIPCameraMode APIPCamera::getCameraMode() {
     return camera_mode_;
 }
 
-EPIPCameraType APIPCamera::toggleEnableCameraTypes(EPIPCameraType types)
-{
+EPIPCameraType APIPCamera::toggleEnableCameraTypes(EPIPCameraType types) {
     enabled_camera_types_ = enabled_camera_types_ ^ types;
     deactivatePIP();
     refreshCurrentMode();
@@ -168,19 +154,16 @@ EPIPCameraType APIPCamera::toggleEnableCameraTypes(EPIPCameraType types)
     return enabled_camera_types_ & types;
 }
 
-EPIPCameraType APIPCamera::getEnableCameraTypes()
-{
+EPIPCameraType APIPCamera::getEnableCameraTypes() {
     return enabled_camera_types_;
 }
 
-void APIPCamera::setEnableCameraTypes(EPIPCameraType types)
-{
+void APIPCamera::setEnableCameraTypes(EPIPCameraType types) {
     enabled_camera_types_ = types;
 }
 
 
-bool APIPCamera::getScreenshot(EPIPCameraType camera_type, TArray<uint8>& compressedPng, float& width, float& height)
-{
+bool APIPCamera::getScreenshot(EPIPCameraType camera_type, TArray<uint8>& compressedPng, float& width, float& height) {
     USceneCaptureComponent2D* capture = getCaptureComponent(camera_type, true);;
 
 
@@ -210,8 +193,7 @@ bool APIPCamera::getScreenshot(EPIPCameraType camera_type, TArray<uint8>& compre
     return true;
 }
 
-void APIPCamera::saveScreenshot(EPIPCameraType camera_type, FString fileSavePathPrefix, int fileSuffix)
-{
+void APIPCamera::saveScreenshot(EPIPCameraType camera_type, FString fileSavePathPrefix, int fileSuffix) {
     TArray<uint8> compressedPng;
     float width, height;
     if (getScreenshot(camera_type, compressedPng, width, height)) {

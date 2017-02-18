@@ -21,9 +21,9 @@
     _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")          \
     _Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \
     _Pragma("GCC diagnostic ignored \"-Wmissing-field-initializers\"") \
-    _Pragma("GCC diagnostic ignored \"-Wredundant-decls\"")	
+    _Pragma("GCC diagnostic ignored \"-Wredundant-decls\"")
 
-/* Addition options that can be enabled 
+/* Addition options that can be enabled
     _Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
     _Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
     _Pragma("GCC diagnostic ignored \"-Werror\"")                   \
@@ -32,15 +32,15 @@
 */
 
 #define STRICT_MODE_ON                                            \
-    _Pragma("GCC diagnostic pop")          
+    _Pragma("GCC diagnostic pop")
 #else
 #if defined(_MSC_VER)
 //'=': conversion from 'double' to 'float', possible loss of data
 #define STRICT_MODE_OFF                                           \
     __pragma(warning(push))										  \
-    __pragma(warning( disable : 4100 4189 4244 4245 4239 4464 4456 4505 4514 4571 4624 4626 4267 4710 4820 5027 5031))					  
+    __pragma(warning( disable : 4100 4189 4244 4245 4239 4464 4456 4505 4514 4571 4624 4626 4267 4710 4820 5027 5031))
 #define STRICT_MODE_ON                                            \
-    __pragma(warning(pop))										  
+    __pragma(warning(pop))
 #endif
 #endif
 #include <chrono>
@@ -98,14 +98,13 @@ using std::experimental::optional;
 
 /*
     This file is collection of routines that can be included in ANY project just
-    by dropping in common_utils.hpp. Therefore there should not be any dependency 
+    by dropping in common_utils.hpp. Therefore there should not be any dependency
     in the code below other than STL. The code should be able to compilable on
     all major platforms.
 */
 
 #ifndef _MSC_VER
-static int _vscprintf(const char * format, va_list pargs)
-{
+static int _vscprintf(const char * format, va_list pargs) {
     int retval;
     va_list argcopy;
     va_copy(argcopy, pargs);
@@ -118,7 +117,7 @@ static int _vscprintf(const char * format, va_list pargs)
 namespace common_utils {
 
 class Utils {
-private:
+  private:
     typedef std::chrono::system_clock system_clock;
     typedef std::chrono::steady_clock steady_clock;
     typedef std::string string;
@@ -127,16 +126,16 @@ private:
     typedef unsigned int uint;
     typedef unsigned long ulong;
     template <typename T>
-    using time_point = std::chrono::time_point<T>;    
+    using time_point = std::chrono::time_point<T>;
 
 
-public:
+  public:
     static const char kPathSeparator =
-    #ifdef _WIN32
-                                '\\';
-    #else
-                                '/';
-    #endif
+#ifdef _WIN32
+        '\\';
+#else
+        '/';
+#endif
 
     static void enableImmediateConsoleFlush() {
         //disable buffering
@@ -144,14 +143,13 @@ public:
     }
 
     template<typename T>
-    static T getRandomFromGaussian(T stddev = 1, T mean = 0)
-    {
+    static T getRandomFromGaussian(T stddev = 1, T mean = 0) {
         static std::default_random_engine random_gen;
         static std::normal_distribution<T> gaussian_dist(0.0f, 1.0f);
 
         return gaussian_dist(random_gen) * stddev + mean;
     }
-    
+
     static constexpr double degreesToRadians(double degrees) {
         return static_cast<double>(M_PIl * degrees / 180.0);
     }
@@ -168,70 +166,66 @@ public:
     static void logMessage(const char* message, ...) {
         va_list args;
         va_start(args, message);
-        
+
         vprintf(message, args);
         printf("\n");
         fflush (stdout);
-        
+
         va_end(args);
     }
     static void logError(const char* message, ...) {
         va_list args;
         va_start(args, message);
-        
+
         vfprintf(stderr, message, args);
         fprintf(stderr, "\n");
         fflush (stderr);
-        
+
         va_end(args);
     }
 
     template <typename T>
     static int sign(T val) {
         return T(0) < val ? 1 : (T(0) > val ? -1 : 0);
-    }   
+    }
 
     /// Limits absolute value whole preserving sign
-    template <typename T> 
+    template <typename T>
     static T limitAbsValue(T val, T min_value, T max_value) {
         T val_abs = std::abs(val);
         T val_limited = std::max(val_abs, min_value);
         val_limited = std::min(val_limited, max_value);
         return sign(val) * val_limited;
     }
-    
+
     /// Limits absolute value whole preserving sign
-    template <typename T> 
+    template <typename T>
     static T clip(T val, T min_value, T max_value) {
         return std::max(min_value, std::min(val, max_value));
     }
 
     template<typename Range>
     static const string printRange(Range&& range, const string& delim = ", ",
-        const string& prefix="(", const string& suffix=")")
-    {
+                                   const string& prefix="(", const string& suffix=")") {
         return printRange(std::begin(range), std::end(range), delim, prefix, suffix);
     }
     template<typename Iterator>
     static const string printRange(Iterator start, Iterator last, const string& delim = ", ",
-        const string& prefix="(", const string& suffix=")")
-    {
+                                   const string& prefix="(", const string& suffix=")") {
         stringstream ss;
         ss << prefix;
 
-        for (Iterator i = start; i != last; ++i)
-        {
+        for (Iterator i = start; i != last; ++i) {
             if (i != start)
                 ss << delim;
             ss << *i;
         }
 
         ss << suffix;
-        return ss.str();         
+        return ss.str();
     }
 
-    static string formatNumber(double number, int digits_after_decimal = -1, int digits_before_decimal = -1, bool sign_always = false)
-    {
+    static string formatNumber(double number, int digits_after_decimal = -1, int digits_before_decimal = -1, bool sign_always = false) {
         std::string format_string = "%";
         if (sign_always)
             format_string += "+";
@@ -244,32 +238,29 @@ public:
         return stringf(format_string.c_str(), number);
     }
 
-    static string stringf(const char* format, ...)
-    {
+    static string stringf(const char* format, ...) {
         va_list args;
         va_start(args, format);
 
         auto size = _vscprintf(format, args) + 1U;
-        std::unique_ptr<char[]> buf(new char[size] ); 
+        std::unique_ptr<char[]> buf(new char[size] );
 
-        #ifndef _MSC_VER
-            vsnprintf(buf.get(), size, format, args);
-        #else
-            vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
-        #endif
+#ifndef _MSC_VER
+        vsnprintf(buf.get(), size, format, args);
+#else
+        vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
+#endif
 
-        va_end(args);            
+        va_end(args);
 
         return string(buf.get());
     }
 
-    static string getFileExtension(const string str)
-    {
+    static string getFileExtension(const string str) {
         int len = static_cast<int>(str.size());
         const char* ptr = str.c_str();
         int i = 0;
-        for (i = len - 1; i >= 0; i--)
-        {
+        for (i = len - 1; i >= 0; i--) {
             if (ptr[i] == '.')
                 break;
         }
@@ -278,20 +269,17 @@ public:
         return str.substr(ui, len - ui);
     }
 
-    static string getUserHomeFolder()
-    {
+    static string getUserHomeFolder() {
         char* ptr = std::getenv("HOME");
         return ptr ? ptr : std::getenv("USERPROFILE");  //Windows uses USERPROFILE, Linux uses HOME
     }
-    static string getLogFileNamePath(string prefix, string suffix, string extension, bool add_timestamp)
-    {
+    static string getLogFileNamePath(string prefix, string suffix, string extension, bool add_timestamp) {
         string timestamp = add_timestamp ? to_string(now()) : "";
         stringstream filename_ss;
         filename_ss << getUserHomeFolder() << kPathSeparator << prefix << suffix << timestamp << extension;
         return filename_ss.str();
     }
-    static string createLogFile(string suffix, std::ofstream& flog)
-    {
+    static string createLogFile(string suffix, std::ofstream& flog) {
         string filepath = getLogFileNamePath("log_", suffix, ".tsv", true);
         flog.open(filepath, std::ios::trunc);
         if (flog.fail())
@@ -301,69 +289,57 @@ public:
         return filepath;
     }
 
-    static std::string getLineFromFile(std::ifstream& file)
-    {
+    static std::string getLineFromFile(std::ifstream& file) {
         std::string line;
         try {
             std::getline(file, line);
-        }
-        catch(...) {
+        } catch(...) {
             if (!file.eof())
                 throw;
         }
         return line;
-    }    
-    static string trim(const string& str, char ch)
-    {
+    }
+    static string trim(const string& str, char ch) {
         int len = static_cast<int>(str.size());
         const char* ptr = str.c_str();
         int i = 0;
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             if (ptr[i] != ch)
                 break;
         }
         int j = 0;
-        for (j = len - 1; j >= i; j--)
-        {
+        for (j = len - 1; j >= i; j--) {
             if (ptr[j] != ch)
                 break;
         }
         if (i > j) return "";
         return str.substr(i, j - i + 1);
     }
-    static std::vector<std::string> split(const string& s, char* splitChars, int numSplitChars)
-    {
+    static std::vector<std::string> split(const string& s, char* splitChars, int numSplitChars) {
         auto start = s.begin();
         std::vector<string> result;
-        for (auto it = s.begin(); it != s.end(); it++)
-        {
+        for (auto it = s.begin(); it != s.end(); it++) {
             bool split = false;
-            for (int i = 0; i < numSplitChars; i++)
-            {
+            for (int i = 0; i < numSplitChars; i++) {
                 if (*it == splitChars[i]) {
                     split = true;
                     break;
                 }
             }
-            if (split)
-            {
-                if (start < it)
-                {
+            if (split) {
+                if (start < it) {
                     result.push_back(string(start, it));
                 }
                 start = it;
                 start++;
             }
         }
-        if (start < s.end())
-        {
+        if (start < s.end()) {
             result.push_back(string(start, s.end()));
         }
         return result;
     }
-    static string toLower(const string& str)
-    {
+    static string toLower(const string& str) {
         auto len = str.size();
         char* buf = new char[len + 1U];
         str.copy(buf, len, 0);
@@ -372,8 +348,7 @@ public:
         _strlwr_s(buf, len + 1U);
 #else
         char* p = buf;
-        for (int i = len; i > 0; i--)
-        {
+        for (int i = len; i > 0; i--) {
             *p = tolower(*p);
             p++;
         }
@@ -385,17 +360,15 @@ public:
     }
     //http://stackoverflow.com/a/28703383/207661
     template <typename R>
-    static constexpr R bitmask(unsigned int const onecount)
-    {
+    static constexpr R bitmask(unsigned int const onecount) {
         //  return (onecount != 0)
         //      ? (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount))
         //      : 0;
         return static_cast<R>(-(onecount != 0))
-            & (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount));
+               & (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount));
     }
 
-    static inline int floorToInt(float x)
-    {
+    static inline int floorToInt(float x) {
         return static_cast<int> (std::floor(x));
     }
 
@@ -413,58 +386,49 @@ public:
     }
 
     template<typename T>
-    static void setValue(T arr[], size_t length, const T& val)
-    {
+    static void setValue(T arr[], size_t length, const T& val) {
         std::fill(arr, arr + length, val);
     }
 
     template<typename T, size_t N>
-    static void setValue(T (&arr)[N], const T& val)
-    {
+    static void setValue(T (&arr)[N], const T& val) {
         std::fill(arr, arr+N, val);
     }
 
     template< class T, size_t N>
-    static std::size_t length(const T(&)[N])
-    {
+    static std::size_t length(const T(&)[N]) {
         return N;
     };
 
-    static void saveToFile(string file_name, const char* data, uint size)
-    {
+    static void saveToFile(string file_name, const char* data, uint size) {
         std::ofstream file(file_name, std::ios::binary);
         file.write(data, size);
     }
     template<typename Container>
     static typename std::enable_if<type_utils::is_container<Container>::value, void>::type
-    append(Container& to, const Container& from)
-    {
+    append(Container& to, const Container& from) {
         using std::begin;
         using std::end;
         to.insert(end(to), begin(from), end(from));
     }
     template<typename Container>
     static typename std::enable_if<type_utils::is_container<Container>::value, void>::type
-        copy(const Container& from, Container& to)
-    {
+    copy(const Container& from, Container& to) {
         using std::begin;
         using std::end;
         std::copy(begin(from), end(from), begin(to));
     }
     template<typename T>
-    static void copy(const T* from, T* to, uint count)
-    {
+    static void copy(const T* from, T* to, uint count) {
         std::copy(from, from + count, to);
     }
 
-    static const char* to_string(time_point<steady_clock> t)
-    {
+    static const char* to_string(time_point<steady_clock> t) {
         time_t tt = system_clock::to_time_t(std::chrono::time_point_cast<system_clock::duration>(system_clock::now() + (t - steady_clock::now())));
         return ctime(&tt);
     }
 
-    static void appendLineToFile(string filepath, string line)
-    {
+    static void appendLineToFile(string filepath, string line) {
         std::ofstream file;
         file.open(filepath, std::ios::out | std::ios::app);
         if (file.fail())
@@ -472,13 +436,11 @@ public:
         file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
         file << line << std::endl;
     }
-    static time_point<system_clock> now()
-    {
+    static time_point<system_clock> now() {
         return system_clock::now();
     }
 
-    static string to_string(time_point<system_clock> time)
-    {
+    static string to_string(time_point<system_clock> time) {
         time_t tt = system_clock::to_time_t(time);
 
         char str[1024];
@@ -493,41 +455,35 @@ public:
         */
     }
 
-    static string to_string(time_point<system_clock> time, const char* format)
-    {
+    static string to_string(time_point<system_clock> time, const char* format) {
         time_t tt = system_clock::to_time_t(time);
         char str[1024];
         if (std::strftime(str, sizeof(str), format, std::localtime(&tt)))
             return string(str);
         else return string();
     }
-    static string getLogFileTimeStamp()
-    {
+    static string getLogFileTimeStamp() {
         return to_string(now(), "%Y%m%d%H%M%S");
     }
-    static string getEnv(const string& var)
-    {
+    static string getEnv(const string& var) {
         char* ptr = std::getenv(var.c_str());
         return ptr ? ptr : "";
     }
 
     //Unix timestamp
-    static unsigned long getTimeSinceEpochMillis(std::time_t* t = nullptr)
-    {
+    static unsigned long getTimeSinceEpochMillis(std::time_t* t = nullptr) {
         std::time_t st = std::time(t);
         auto millies = static_cast<std::chrono::milliseconds>(st).count();
         return static_cast<unsigned long>(millies);
     }
     //high precision time in seconds since epoch
-    static double getTimeSinceEpoch(std::chrono::high_resolution_clock::time_point* t = nullptr)
-    {
+    static double getTimeSinceEpoch(std::chrono::high_resolution_clock::time_point* t = nullptr) {
         using Clock = std::chrono::high_resolution_clock;
         return std::chrono::duration<double>((t != nullptr ? *t : Clock::now() ).time_since_epoch()).count();
     }
 
     template<typename T>
-    static void clear(std::queue<T> &q, size_t max_elements = SIZE_MAX)
-    {
+    static void clear(std::queue<T> &q, size_t max_elements = SIZE_MAX) {
         while(!q.empty() && max_elements > 0) {
             q.pop();
             --max_elements;
@@ -535,19 +491,16 @@ public:
     }
 
     template<typename T>
-    static const std::vector<T>& emptyVector()
-    {
+    static const std::vector<T>& emptyVector() {
         static const std::vector<T> empty_vector;
         return empty_vector;
     }
 
 
-    static constexpr float kelvinToCelcius(float kelvin)
-    {
+    static constexpr float kelvinToCelcius(float kelvin) {
         return kelvin - 273.15f;
     }
-    static constexpr float celciusToKelvin(float celcius)
-    {
+    static constexpr float celciusToKelvin(float celcius) {
         return celcius + 273.15f;
     }
 
@@ -555,8 +508,7 @@ public:
     //implements relative method - do not use for comparing with zero
     //use this most of the time, tolerance needs to be meaningful in your context
     template<typename TReal>
-    static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
-    {
+    static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon()) {
         TReal diff = std::fabs(a - b);
         if (diff <= tolerance)
             return true;
@@ -570,8 +522,7 @@ public:
     //supply tolerance that is meaningful in your context
     //for example, default tolerance may not work if you are comparing double with float
     template<typename TReal>
-    static bool isApproximatelyZero(TReal a, TReal tolerance = std::numeric_limits<TReal>::epsilon())
-    {
+    static bool isApproximatelyZero(TReal a, TReal tolerance = std::numeric_limits<TReal>::epsilon()) {
         if (std::fabs(a) <= tolerance)
             return true;
         return false;
@@ -581,8 +532,7 @@ public:
     //use this when you want to be on safe side
     //for example, don't start rover unless signal is above 1
     template<typename TReal>
-    static bool isDefinitelyLessThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
-    {
+    static bool isDefinitelyLessThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon()) {
         TReal diff = a - b;
         if (diff < tolerance)
             return true;
@@ -593,8 +543,7 @@ public:
         return false;
     }
     template<typename TReal>
-    static bool isDefinitelyGreaterThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
-    {
+    static bool isDefinitelyGreaterThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon()) {
         TReal diff = a - b;
         if (diff > tolerance)
             return true;
@@ -610,16 +559,14 @@ public:
     //for example, if you want to see if a is 1.0 by checking if its within
     //10 closest representable floating point numbers around 1.0.
     template<typename TReal>
-    static bool isWithinPrecisionInterval(TReal a, TReal b, unsigned int interval_size = 1)
-    {
+    static bool isWithinPrecisionInterval(TReal a, TReal b, unsigned int interval_size = 1) {
         TReal min_a = a - (a - std::nextafter(a, std::numeric_limits<TReal>::lowest())) * interval_size;
         TReal max_a = a + (std::nextafter(a, std::numeric_limits<TReal>::max()) - a) * interval_size;
 
         return min_a <= b && max_a >= b;
     }
 
-    static void DebugBreak()
-    {
+    static void DebugBreak() {
 #ifdef _MSC_VER
         __debugbreak();
 #else

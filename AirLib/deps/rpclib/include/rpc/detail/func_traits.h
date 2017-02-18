@@ -22,13 +22,21 @@ struct nonzero_arg {};
 struct void_result {};
 struct nonvoid_result {};
 
-template <int N> struct arg_count_trait { typedef nonzero_arg type; };
+template <int N> struct arg_count_trait {
+    typedef nonzero_arg type;
+};
 
-template <> struct arg_count_trait<0> { typedef zero_arg type; };
+template <> struct arg_count_trait<0> {
+    typedef zero_arg type;
+};
 
-template <typename T> struct result_trait { typedef nonvoid_result type; };
+template <typename T> struct result_trait {
+    typedef nonvoid_result type;
+};
 
-template <> struct result_trait<void> { typedef void_result type; };
+template <> struct result_trait<void> {
+    typedef void_result type;
+};
 }
 
 //! \brief Provides a small function traits implementation that

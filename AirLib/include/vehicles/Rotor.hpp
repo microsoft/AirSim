@@ -13,10 +13,11 @@
 #include "common/FirstOrderFilter.hpp"
 #include "physics/PhysicsBodyVertex.hpp"
 
-namespace msr { namespace airlib {
+namespace msr {
+namespace airlib {
 
 class Rotor : public PhysicsBodyVertex {
-public: //types
+  public: //types
     struct Output {
         real_T thrust;
         real_T torque_scaler;
@@ -26,46 +27,40 @@ public: //types
         real_T control_signal_input;
     };
 
-public: //methods
-    Rotor()
-    {
+  public: //methods
+    Rotor() {
         Rotor::reset();
     }
-    Rotor(const Vector3r& position, const Vector3r& normal, RotorTurningDirection turning_direction, 
-        const RotorParams& params, const Environment* environment, uint id = -1)
-    {
+    Rotor(const Vector3r& position, const Vector3r& normal, RotorTurningDirection turning_direction,
+          const RotorParams& params, const Environment* environment, uint id = -1) {
         initialize(position, normal, turning_direction, params, environment, id);
     }
-    void initialize(const Vector3r& position, const Vector3r& normal, RotorTurningDirection turning_direction, 
-        const RotorParams& params, const Environment* environment, uint id = -1)
-    {
+    void initialize(const Vector3r& position, const Vector3r& normal, RotorTurningDirection turning_direction,
+                    const RotorParams& params, const Environment* environment, uint id = -1) {
         id_ = id;
         params_ = params;
         turning_direction_ = turning_direction;
         environment_ = environment;
         air_density_sea_level_ = EarthUtils::getAirDensity(0.0f);
-        
+
         control_signal_filter_.initialize(params_.control_signal_filter_tc, 0, 0);
-        
+
         PhysicsBodyVertex::initialize(position, normal);   //call base initializer
 
         Rotor::reset();
     }
-    
+
     //0 to 1 - will be scalled to 0 to max_speed
-    void setControlSignal(real_T control_signal)
-    {
+    void setControlSignal(real_T control_signal) {
         control_signal_filter_.setInput(Utils::clip(control_signal, 0.0f, 1.0f));
     }
 
-    Output getOutput() const
-    {
+    Output getOutput() const {
         return output_;
     }
-    
+
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
+    virtual void reset() override {
         //update environmental factors before we call base
         updateEnvironmentalFactors();
 
@@ -76,8 +71,7 @@ public: //methods
         setOutput(output_, params_, control_signal_filter_, turning_direction_, 0);
     }
 
-    virtual void update(real_T dt) override
-    {
+    virtual void update(real_T dt) override {
         //update environmental factors before we call base
         updateEnvironmentalFactors();
 
@@ -91,8 +85,7 @@ public: //methods
         control_signal_filter_.update(dt);
     }
 
-    virtual void reportState(StateReporter& reporter) override
-    {
+    virtual void reportState(StateReporter& reporter) override {
         reporter.writeValue("Dir", turning_direction_);
         reporter.writeValue("Ctrl-in", output_.control_signal_input);
         reporter.writeValue("Ctrl-fl", output_.control_signal_filtered);
@@ -103,18 +96,16 @@ public: //methods
     //*** End: UpdatableState implementation ***//
 
 
-protected:
-    virtual void setWrench(Wrench& wrench, real_T dt) override
-    {
+  protected:
+    virtual void setWrench(Wrench& wrench, real_T dt) override {
         Vector3r normal = getNormal();
         //forces and torques are proportional to air density: http://physics.stackexchange.com/a/32013/14061
         wrench.force = normal * output_.thrust * air_density_ratio_;
         wrench.torque = normal * output_.torque_scaler * air_density_ratio_; //TODO: try using filtered control here
     }
 
-private: //methods
-    static void setOutput(Output& output, const RotorParams& params, const FirstOrderFilter<real_T>& control_signal_filter, RotorTurningDirection turning_direction, real_T dt)
-    {
+  private: //methods
+    static void setOutput(Output& output, const RotorParams& params, const FirstOrderFilter<real_T>& control_signal_filter, RotorTurningDirection turning_direction, real_T dt) {
         output.control_signal_input = control_signal_filter.getInput();
         output.control_signal_filtered = control_signal_filter.getOutput();
         //see relationship of rotation speed with thrust: http://physics.stackexchange.com/a/32013/14061
@@ -124,14 +115,13 @@ private: //methods
         output.turning_direction = turning_direction;
     }
 
-    void updateEnvironmentalFactors()
-    {
+    void updateEnvironmentalFactors() {
         //update air density ration - this will affect generated force and torques by rotors
         air_density_ratio_ = environment_->getState().air_density / air_density_sea_level_;
     }
 
 
-private: //fields
+  private: //fields
     uint id_; //only used for debug messages
     RotorTurningDirection turning_direction_;
     RotorParams params_;
@@ -142,5 +132,6 @@ private: //fields
 };
 
 
-}} //namespace
+}
+} //namespace
 #endif

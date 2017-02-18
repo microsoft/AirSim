@@ -15,10 +15,10 @@
 extern "C" {
 
 #ifndef _SHLOBJ_H_
-	__declspec(dllimport)
-		int
-		__stdcall
-		SHGetFolderPathW(_In_ void*  hwnd, _In_ int csidl, _In_opt_ void * hToken, uint32_t dwFlags, _Out_writes_(MAX_PATH) wchar_t* pszPath);
+    __declspec(dllimport)
+    int
+    __stdcall
+    SHGetFolderPathW(_In_ void*  hwnd, _In_ int csidl, _In_opt_ void * hToken, uint32_t dwFlags, _Out_writes_(MAX_PATH) wchar_t* pszPath);
 
 #define SHGetFolderPath SHGetFolderPathW
 
@@ -28,14 +28,14 @@ extern "C" {
 #endif
 
 #ifndef CreateDirectoryEx
-	__declspec(dllimport)
-		bool
-		__stdcall
-		CreateDirectoryExW(
-			_In_     const wchar_t* lpTemplateDirectory,
-			_In_     const wchar_t* lpNewDirectory,
-			_In_opt_ void* lpSecurityAttributes
-		);
+    __declspec(dllimport)
+    bool
+    __stdcall
+    CreateDirectoryExW(
+        _In_     const wchar_t* lpTemplateDirectory,
+        _In_     const wchar_t* lpNewDirectory,
+        _In_opt_ void* lpSecurityAttributes
+    );
 
 #define CreateDirectoryEx  CreateDirectoryExW
 
@@ -47,12 +47,12 @@ extern "C" {
 
 #ifndef _ERRHANDLING_H_
 
-	__declspec(dllimport)
-		int
-		__stdcall
-		GetLastError(
-			void
-		);
+    __declspec(dllimport)
+    int
+    __stdcall
+    GetLastError(
+        void
+    );
 #endif
 }
 
@@ -76,26 +76,22 @@ using namespace msr::airlib;
 
 Settings Settings::settings_;
 
-Settings::Settings()
-{
+Settings::Settings() {
 }
 
 
-Settings::~Settings()
-{
+Settings::~Settings() {
 }
 
-std::wstring Settings::getFullPath(std::wstring fileName)
-{
-	wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
-	std::wstring path = ensureAppDataFolder(Settings::getProductName());
-	return path + sep + fileName;
+std::wstring Settings::getFullPath(std::wstring fileName) {
+    wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
+    std::wstring path = ensureAppDataFolder(Settings::getProductName());
+    return path + sep + fileName;
 }
 
-Settings& Settings::loadJSonFile(std::wstring fileName)
-{
-	std::wstring path = getFullPath(fileName);
-	settings_.file_ = path;
+Settings& Settings::loadJSonFile(std::wstring fileName) {
+    std::wstring path = getFullPath(fileName);
+    settings_.file_ = path;
 
     settings_.load_success = false;
 
@@ -107,168 +103,149 @@ Settings& Settings::loadJSonFile(std::wstring fileName)
     std::ifstream s(ascii);
 #endif
 
-	if (!s.fail()) {
-		json doc_;
-		s >> settings_.doc_;
+    if (!s.fail()) {
+        json doc_;
+        s >> settings_.doc_;
         settings_.load_success = true;
-	}
+    }
 
-	return singleton();
+    return singleton();
 }
-bool Settings::isLoadSuccess()
-{
+bool Settings::isLoadSuccess() {
     return load_success;
 }
 
-void Settings::createDirectory(std::wstring parentFolder, std::wstring name)
-{
+void Settings::createDirectory(std::wstring parentFolder, std::wstring name) {
 #ifdef _WIN32
-	wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
-	std::wstring path = parentFolder + sep + name;
-	int hr = CreateDirectoryEx(parentFolder.c_str(), path.c_str(), NULL);
-	if (hr != 0) {
-		common_utils::Utils::logMessage("CreateDirectoryEx failed %d\n", GetLastError());
-	}
+    wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
+    std::wstring path = parentFolder + sep + name;
+    int hr = CreateDirectoryEx(parentFolder.c_str(), path.c_str(), NULL);
+    if (hr != 0) {
+        common_utils::Utils::logMessage("CreateDirectoryEx failed %d\n", GetLastError());
+    }
 #else
-	// bugbug: how do you create unicode folders on Unix?
-	std::string asciiparent(parentFolder.begin(), parentFolder.end());
+    // bugbug: how do you create unicode folders on Unix?
+    std::string asciiparent(parentFolder.begin(), parentFolder.end());
     std::string asciiname(name.begin(), name.end());
     std::string ascii = asciiparent + common_utils::Utils::kPathSeparator + asciiname;
     struct stat buf;
     stat(ascii.c_str(), &buf);
-	mkdir(ascii.c_str(), buf.st_mode); // inherit permissions
+    mkdir(ascii.c_str(), buf.st_mode); // inherit permissions
 #endif
 }
 
-std::wstring Settings::getUserHomeFolder()
-{
-	//Windows uses USERPROFILE, Linux uses HOME
+std::wstring Settings::getUserHomeFolder() {
+    //Windows uses USERPROFILE, Linux uses HOME
 #ifdef _WIN32
-	return _wgetenv(L"USERPROFILE");
+    return _wgetenv(L"USERPROFILE");
 #else
-	std::string result = std::getenv("HOME");
-	return std::wstring(result.begin(), result.end());
+    std::string result = std::getenv("HOME");
+    return std::wstring(result.begin(), result.end());
 #endif
 }
 
 
 std::wstring Settings::ensureAppDataFolder(std::wstring productName) {
 
-	wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
-	std::wstring docs = getUserDocumentsFolder();
-	std::wstring path = docs + sep + productName;
-	// make sure this directory exists.
-	createDirectory(docs, productName);
-	return path;
+    wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
+    std::wstring docs = getUserDocumentsFolder();
+    std::wstring path = docs + sep + productName;
+    // make sure this directory exists.
+    createDirectory(docs, productName);
+    return path;
 }
 
 std::wstring Settings::getUserDocumentsFolder() {
-	//Windows uses USERPROFILE, Linux uses HOME
-	wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
+    //Windows uses USERPROFILE, Linux uses HOME
+    wchar_t sep = static_cast<wchar_t>(common_utils::Utils::kPathSeparator);
 #ifdef _WIN32
-	wchar_t szPath[MAX_PATH];
+    wchar_t szPath[MAX_PATH];
 
-	if (0 == SHGetFolderPath(NULL,
-		CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE,
-		NULL,
-		0,
-		szPath))
-	{
-		return std::wstring(szPath);
-	}
+    if (0 == SHGetFolderPath(NULL,
+                             CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE,
+                             NULL,
+                             0,
+                             szPath)) {
+        return std::wstring(szPath);
+    }
 
-	return getUserHomeFolder() + sep + L"Documents";
+    return getUserHomeFolder() + sep + L"Documents";
 #else
-	return getUserHomeFolder() + sep + L"Documents";
+    return getUserHomeFolder() + sep + L"Documents";
 #endif
 }
 
-void Settings::saveJSonFile(std::wstring fileName)
-{
+void Settings::saveJSonFile(std::wstring fileName) {
     std::wstring path = getFullPath(fileName);
 #ifdef _WIN32
-	std::ofstream s(path);
+    std::ofstream s(path);
 #else
     // bugbug: how do you open unicode file names on Linux?
     std::string ascii(path.begin(), path.end());
     std::ofstream s(ascii);
 #endif
-	s << std::setw(2) << doc_ << std::endl;
+    s << std::setw(2) << doc_ << std::endl;
 }
 
-Settings Settings::getChild(std::string name)
-{
-	Settings child;
-	if (doc_.count(name) == 1) {
-		child.doc_ = doc_[name].get<nlohmann::json>();
-	}
-	return child;
+Settings Settings::getChild(std::string name) {
+    Settings child;
+    if (doc_.count(name) == 1) {
+        child.doc_ = doc_[name].get<nlohmann::json>();
+    }
+    return child;
 }
 
-std::string Settings::getString(std::string name, std::string defaultValue)
-{
-	if (doc_.count(name) == 1) {
-		return doc_[name].get<std::string>();
-	}
-	else {
-		doc_[name] = defaultValue;
-		return defaultValue;
-	}
+std::string Settings::getString(std::string name, std::string defaultValue) {
+    if (doc_.count(name) == 1) {
+        return doc_[name].get<std::string>();
+    } else {
+        doc_[name] = defaultValue;
+        return defaultValue;
+    }
 }
 
-double Settings::getDouble(std::string name, double defaultValue)
-{
-	if (doc_.count(name) == 1) {
-		return doc_[name].get<double>();
-	}
-	else {
-		doc_[name] = defaultValue;
-		return defaultValue;
-	}
+double Settings::getDouble(std::string name, double defaultValue) {
+    if (doc_.count(name) == 1) {
+        return doc_[name].get<double>();
+    } else {
+        doc_[name] = defaultValue;
+        return defaultValue;
+    }
 }
 
-bool Settings::getBool(std::string name, bool defaultValue)
-{
-	if (doc_.count(name) == 1) {
-		return doc_[name].get<bool>();
-	}
-	else {
-		doc_[name] = defaultValue;
-		return defaultValue;
-	}
+bool Settings::getBool(std::string name, bool defaultValue) {
+    if (doc_.count(name) == 1) {
+        return doc_[name].get<bool>();
+    } else {
+        doc_[name] = defaultValue;
+        return defaultValue;
+    }
 }
 
-int Settings::getInt(std::string name, int defaultValue)
-{
-	if (doc_.count(name) == 1) {
-		return doc_[name].get<int>();
-	}
-	else {
-		doc_[name] = defaultValue;
-		return defaultValue;
-	}
+int Settings::getInt(std::string name, int defaultValue) {
+    if (doc_.count(name) == 1) {
+        return doc_[name].get<int>();
+    } else {
+        doc_[name] = defaultValue;
+        return defaultValue;
+    }
 }
 
-void Settings::setString(std::string name, std::string value)
-{
-	doc_[name] = value;
+void Settings::setString(std::string name, std::string value) {
+    doc_[name] = value;
 }
-void Settings::setDouble(std::string name, double value)
-{
-	doc_[name] = value;
+void Settings::setDouble(std::string name, double value) {
+    doc_[name] = value;
 }
-void Settings::setBool(std::string name, bool value)
-{
-	doc_[name] = value;
+void Settings::setBool(std::string name, bool value) {
+    doc_[name] = value;
 }
-void Settings::setInt(std::string name, int value)
-{
-	doc_[name] = value;
+void Settings::setInt(std::string name, int value) {
+    doc_[name] = value;
 }
 
-void Settings::setChild(std::string name, Settings& value)
-{
-	doc_[name] = value.doc_;
+void Settings::setChild(std::string name, Settings& value) {
+    doc_[name] = value.doc_;
 }
 
 #endif

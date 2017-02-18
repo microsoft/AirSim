@@ -5,17 +5,15 @@
 
 
 UENUM(BlueprintType)
-enum class ESimulatorMode : uint8
-{
+enum class ESimulatorMode : uint8 {
     SIM_MODE_HIL 	UMETA(DisplayName="Hardware-in-loop")
 };
 
 UCLASS()
-class AIRSIM_API ASimHUD : public AHUD
-{
+class AIRSIM_API ASimHUD : public AHUD {
     GENERATED_BODY()
 
-public:
+  public:
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventToggleReport"))
     void InputEventToggleReport();
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventToggleHelp"))
@@ -33,6 +31,6 @@ public:
 
     virtual void BeginPlay() override;
 
-protected:
+  protected:
     virtual void setupInputBindings();
 };
