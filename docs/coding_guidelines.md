@@ -62,4 +62,4 @@ There are very few reasons to use `new` or `delete` explicitly. Instead use smar
 
 ## This is Too Short, ye?
 
-Yes, and it's on purpose because no one likes to read 200 page coding guidelines. The goal here is to cover only most significant things. If you had like to know about how to write better code in C++, please see [GotW](https://herbsutter.com/gotw/) and [Effective Modern C++](http://shop.oreilly.com/product/0636920033707.do) book. All our code requires (strict mode compilation in GCC)[http://shitalshah.com/p/how-to-enable-and-use-gcc-strict-mode-compilation/] and  Level 4 warnings-as-errors in VC++.
+Yes, and it's on purpose because no one likes to read 200 page coding guidelines. The goal here is to cover only most significant things which are already not covered by [strict mode compilation in GCC](http://shitalshah.com/p/how-to-enable-and-use-gcc-strict-mode-compilation/) and Level 4 warnings-as-errors in VC++. If you had like to know about how to write better code in C++, please see [GotW](https://herbsutter.com/gotw/) and [Effective Modern C++](http://shop.oreilly.com/product/0636920033707.do) book.
