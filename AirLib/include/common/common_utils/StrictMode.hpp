@@ -27,7 +27,9 @@
     _Pragma("GCC diagnostic ignored \"-Wshadow\"")                  \
     _Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \
     _Pragma("GCC diagnostic ignored \"-Wundef\"")                   \
-    _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")
+    _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")        \
+    _Pragma("GCC diagnostic ignored \"-Wstrict-overflow\"")         \
+    _Pragma("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
 
 /* Addition options that can be enabled 
     _Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
