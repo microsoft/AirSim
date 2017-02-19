@@ -13,16 +13,20 @@ void ASimModeWorldMultiRotor::BeginPlay()
 
     if (fpv_vehicle_ != nullptr) {
         //create its control server
-        drone_control_server_.reset(new msr::airlib::DroneControlServer(fpv_vehicle_->createOrGetDroneControl()));
-        std::string server_address = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
-        rpclib_server_.reset(new msr::airlib::RpcLibServer(drone_control_server_.get(), server_address));
-        rpclib_server_->start();
+		try {
+			drone_control_server_.reset(new msr::airlib::DroneControlServer(fpv_vehicle_->createOrGetDroneControl()));
+			std::string server_address = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
+			rpclib_server_.reset(new msr::airlib::RpcLibServer(drone_control_server_.get(), server_address));
+			rpclib_server_->start();
+		}
+		catch (std::exception&) {
+		}
     }
 }
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
-    if (fpv_vehicle_ != nullptr) {
+    if (fpv_vehicle_ != nullptr && drone_control_server_ != nullptr) {
         using namespace msr::airlib;
         auto camera_type = drone_control_server_->getImageTypeForCamera(0);
         if (camera_type != DroneControlBase::ImageType::None) { 
@@ -71,7 +75,7 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    if (fpv_vehicle_ != nullptr) {
+	if (fpv_vehicle_ != nullptr && drone_control_server_ != nullptr) {
         rpclib_server_->stop();
         rpclib_server_.release();
         drone_control_server_.release();
@@ -82,20 +86,9 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool ASimModeWorldMultiRotor::checkConnection()
 {
-    msr::airlib::MavLinkHelper mav;
-    if (mav.findPixhawk() == "") {
-        if (!Settings::singleton().isLoadSuccess())
-            Settings::singleton().loadJSonFile(L"settings.json");
-        if (!Settings::singleton().isLoadSuccess()) {
-            UAirBlueprintLib::LogMessage(TEXT("Could not detect Pixhawk on any serial ports"), TEXT(""), LogDebugLevel::Failure);
-            UAirBlueprintLib::LogMessage(TEXT("Either connect Pixhawk or use software-in-loop mode"), TEXT(""), LogDebugLevel::Failure);
-            UAirBlueprintLib::LogMessage("Settings can also be set at: ", Settings::singleton().getFileName().c_str(), LogDebugLevel::Failure);
-            UAirBlueprintLib::LogMessage(TEXT("Instructions are available at: "), TEXT("http://github.com/Microsoft/AirSim"), LogDebugLevel::Failure);
-            return false;
-        }
-    }
-
-    return true;
+	// [chris] problem with disabling createVehicles, is it leaves the game in a weird unresponsive state.
+	// we already check findPixhawk later anyway, so this check was redundant.
+	return true;
 }
 
 void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)

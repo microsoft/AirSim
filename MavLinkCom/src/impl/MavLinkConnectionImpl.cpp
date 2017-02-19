@@ -357,7 +357,7 @@ void MavLinkConnectionImpl::drainQueue()
 			try {
 				(*ptr).handler(sharedPtr, message);
 			}
-			catch (std::runtime_error e) {
+			catch (std::exception e) {
 				Utils::logError("MavLinkConnection subscriber threw exception: %s", e.what());
 			}
 		}

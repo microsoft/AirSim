@@ -45,7 +45,7 @@ void Command::Execute(std::shared_ptr<MavLinkVehicle> com)
 			try {
 				HandleMessage(msg);
 			}
-			catch (std::runtime_error& e) {
+			catch (std::exception& e) {
 				Utils::logError("### Runtime Error: %s", e.what());
 			}
 			catch (...) {

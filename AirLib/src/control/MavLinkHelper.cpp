@@ -141,14 +141,16 @@ struct MavLinkHelper::impl {
 
     void initializeHILSubscrptions()
     {
-        is_any_heartbeat_ = false;
-        is_hil_mode_set_ = false;
-        is_armed_ = false;
-        is_controls_0_1_ = true;
-        Utils::setValue(rotor_controls_, 0.0f);
-        //TODO: main_node_->setMessageInterval(...);
-        auto subscriber = std::bind(&impl::hILSubscriber, this, std::placeholders::_1, std::placeholders::_2);
-        connection_->subscribe(subscriber);
+		if (connection_ != nullptr) {
+			is_any_heartbeat_ = false;
+			is_hil_mode_set_ = false;
+			is_armed_ = false;
+			is_controls_0_1_ = true;
+			Utils::setValue(rotor_controls_, 0.0f);
+			//TODO: main_node_->setMessageInterval(...);
+			auto subscriber = std::bind(&impl::hILSubscriber, this, std::placeholders::_1, std::placeholders::_2);
+			connection_->subscribe(subscriber);
+		}
     }
 
     bool sendTestMessage(std::shared_ptr<MavLinkNode> node) {
@@ -164,7 +166,7 @@ struct MavLinkHelper::impl {
             test.system_status = 0;
             return true;
         }
-        catch (std::runtime_error) {
+        catch (std::exception) {
             return false;
         }
     }
@@ -211,6 +213,9 @@ struct MavLinkHelper::impl {
 
     std::shared_ptr<mavlinkcom::MavLinkNode> createProxy(std::string name, std::string ip, int port)
     {
+		if (connection_ == nullptr)
+			throw std::domain_error("MavLinkHelper requires connection object to be set before createProxy call");
+
         auto connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), LocalHostIp, ip, port);
 
         // it is ok to reuse the simulator sysid and compid here because this node is only used to send a few messages directly to this endpoint
@@ -286,6 +291,9 @@ struct MavLinkHelper::impl {
         std::string port_name_auto = port_name;
         if (port_name_auto == "" || port_name_auto == "*") {
             port_name_auto = findPixhawk();
+			if (port_name_auto == "") {
+				throw std::domain_error("Could not find a connected PX4 flight controller");
+			}
         }
 
         connection_ = MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);

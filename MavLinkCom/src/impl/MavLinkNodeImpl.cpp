@@ -457,7 +457,7 @@ void MavLinkNodeImpl::sendCommand(MavLinkCommand& command)
     try {
         sendMessage(cmd);
     }
-    catch (std::runtime_error e) {
+    catch (std::exception e) {
         // silently fail since we are on a background thread here...
     }
 }

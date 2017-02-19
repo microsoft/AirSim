@@ -33,7 +33,7 @@ void MavMultiRotor::initialize(AFlyingPawn* vehicle_pawn)
 	    // write the settings back out so the user knows how to override any new settings.
 	    settings.saveJSonFile(L"settings.json");
     }
-    catch (std::runtime_error ex) {
+    catch (std::exception ex) {
         UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), TEXT(""), LogDebugLevel::Failure, 30);
         UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 30);
     }
@@ -89,7 +89,7 @@ void MavMultiRotor::openConnection()
 
 		mav_.connectToHIL(getConnectionInfo());
 	}
-	catch (std::runtime_error ex) {
+	catch (std::exception ex) {
 
 		UAirBlueprintLib::LogMessage(FString("Connection to drone failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
 		UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 180);
@@ -100,7 +100,7 @@ void MavMultiRotor::openConnection()
             UAirBlueprintLib::LogMessage(FString("Connection to LogViewer failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
         }
     }
-    catch (std::runtime_error ex) {
+    catch (std::exception ex) {
 
         UAirBlueprintLib::LogMessage(FString("Connection to LogViewer failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
     }
@@ -110,7 +110,7 @@ void MavMultiRotor::openConnection()
             UAirBlueprintLib::LogMessage(FString("Connection to QGroundControl failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
         }
     }
-    catch (std::runtime_error ex) {
+    catch (std::exception ex) {
 
         UAirBlueprintLib::LogMessage(FString("Connection to QGroundControl failed, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
     }
