@@ -694,11 +694,11 @@ std::vector<std::string> parseArgs(std::string s)
 	return result;
 }
 
-void HexDump(uint8_t *buffer, int len)
+void HexDump(uint8_t *buffer, uint len)
 {
-	for (int i = 0; i < len; i += 16) {
+	for (uint i = 0; i < len; i += 16) {
 
-		int j = 0;
+		uint j = 0;
 		for (j = i; j < i + 16 && j < len; j++)
 		{
 			uint8_t b = buffer[i + j];
