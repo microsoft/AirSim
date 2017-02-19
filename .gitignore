@@ -272,3 +272,13 @@ ModelManifest.xml
 /cmake/MavLinkCom/MavLinkTest/MavLinkTest
 /cmake/MavLinkCom/lib/libMavLinkCom.a
 /cmake/AirLib/lib/libAirLib.a
+/cmake/MavLinkCom/MavLinkTest/Makefile
+/cmake/MavLinkCom/Makefile
+/cmake/Makefile
+/cmake/HelloDrone/Makefile
+/cmake/DroneShell/Makefile
+/cmake/DroneServer/Makefile
+/cmake/AirLib/Makefile
+/cmake/HelloDrone/HelloDrone
+/cmake/DroneShell/DroneShell
+/cmake/DroneServer/DroneServer
