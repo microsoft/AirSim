@@ -279,7 +279,12 @@ struct MavLinkHelper::impl {
     void createHILUdpConnection(const std::string& ip, int port)
     {
         close();
-        connection_ = MavLinkConnection::connectLocalUdp("hil", ip, port);
+		if (ip == LocalHostIp) {
+			connection_ = MavLinkConnection::connectLocalUdp("hil", ip, port);
+		}
+		else {
+			connection_ = MavLinkConnection::connectRemoteUdp("hil", LocalHostIp, ip, port);
+		}
         main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID); 
         main_node_->connect(connection_);
     }

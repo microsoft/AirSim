@@ -78,7 +78,7 @@ namespace mavlinkcom_impl {
 		std::mutex msg_queue_mutex_;
 		MavLinkSemaphore msg_available_;
 		bool waiting_for_msg_ = false;
-		long max_queue_length_ = 0;
+		size_t max_queue_length_ = 0;
 		long mavlink_errors_ = 0;
 	};
 }

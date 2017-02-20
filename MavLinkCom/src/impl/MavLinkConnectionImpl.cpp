@@ -298,7 +298,7 @@ void MavLinkConnectionImpl::readPackets()
                         std::lock_guard<std::mutex> guard(msg_queue_mutex_);
                         MavLinkMessage& message = reinterpret_cast<MavLinkMessage&>(msg);
                         msg_queue_.push(message);
-                        long size = msg_queue_.size();
+                        size_t size = msg_queue_.size();
                         if (size > max_queue_length_) {
                             max_queue_length_ = size;
                         }
