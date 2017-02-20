@@ -8,7 +8,7 @@ AirLib consists of the following components:
 4. *Control library:* This part of AirLib provides abstract base class for our APIs and concrete implementation for specific vehicle platforms such as MavLink. It also has classes for the RPC client and server.
 
 ## Unreal/Plugins/AirSim
-This is the only portion of project which is dependent on Unreal engine. We have kept it isolated so we can implement simulators for other platforms as well (for example, Unity). The Unreal code takes advantage of its UObject based classes including Blueprints.
+This is the only portion of project which is dependent on Unreal engine. We have kept it isolated so we can implement simulator for other platforms as well (for example, Unity). The Unreal code takes advantage of its UObject based classes including Blueprints.
 1. *SimMode_ classes*: We wish to support various simulator modes such as pure Computer Vision mode where there is no drone. The SimMode classes help implement many different modes.
 2. *VehiclePawnBase*: This is the base class for all vehicle pawn visualizations.
 3. *VehicleBase*: This class provides abstract interface to implement a combination of rendering component (i.e. Unreal pawn), physics component (i.e. MultiRotor) and controller (i.e. MavLinkHelper).
@@ -18,7 +18,7 @@ This is the library developed by our own team member [Chris Lovett](https://gith
 See [MavLinkCom](../MavLinkCom/README.md) for more info.
 
 ## Sample Programs
-We have created sample programs to demonstrate how to use the API. See HelloDrone and DroneServer. DroneServer demonstrates how to connect to the simulator using UDP port for QGC.
+We have created a few sample programs to demonstrate how to use the API. See HelloDrone and DroneServer. DroneServer demonstrates how to connect to the simulator using UDP port for QGC.
 
 ## Contributing
 
