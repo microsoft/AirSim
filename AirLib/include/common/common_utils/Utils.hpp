@@ -327,13 +327,13 @@ public:
     static string toLower(const string& str)
     {
         auto len = str.size();
-        char* buf = new char[len + 1U];
-        str.copy(buf, len, 0);
+		std::unique_ptr<char[]> buf(new char[len + 1U]);
+        str.copy(buf.get(), len, 0);
         buf[len] = '\0';
 #ifdef _WIN32
-        _strlwr_s(buf, len + 1U);
+        _strlwr_s(buf.get(), len + 1U);
 #else
-        char* p = buf;
+        char* p = buf.get();
         for (int i = len; i > 0; i--)
         {
             *p = tolower(*p);
@@ -341,8 +341,7 @@ public:
         }
         *p = '\0';
 #endif
-        string lower = buf;
-        delete buf;
+        string lower = buf.get();
         return lower;
     }
     //http://stackoverflow.com/a/28703383/207661

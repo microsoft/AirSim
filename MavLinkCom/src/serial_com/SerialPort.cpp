@@ -24,7 +24,7 @@ SerialPort::SerialPort() : port(io_service)
 SerialPort::~SerialPort()
 {
     close();
-	delete read_buf_raw;
+	delete[] read_buf_raw;
 	read_buf_raw = nullptr;
 }
 

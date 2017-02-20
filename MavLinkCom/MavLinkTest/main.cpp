@@ -57,14 +57,13 @@ void DebugOutput(const char* message, ...) {
 	va_list args;
 	va_start(args, message);
 
-	char* buffer = new char[8000];
-	vsprintf(buffer, message, args);
-	OutputDebugStringA(buffer);
+	std::unique_ptr<char[]> buffer(new char[8000]);
+	vsprintf(buffer.get(), message, args);
+	OutputDebugStringA(buffer.get());
 	OutputDebugStringA("\n");
 	fflush(stdout);
 
 	va_end(args);
-	delete buffer;
 }
 #else 
 // how do you write to the debug output windows on Unix ?
@@ -72,12 +71,11 @@ void DebugOutput(const char* message, ...) {
 	va_list args;
 	va_start(args, message);
 
-	char* buffer = new char[8000];
-	vsprintf(buffer, message, args);
+	std::unique_ptr<char[]> buffer(new char[8000]);
+	vsprintf(buffer.get(), message, args);
 	fflush(stdout);
 
 	va_end(args);
-	delete buffer;
 }
 #endif
 

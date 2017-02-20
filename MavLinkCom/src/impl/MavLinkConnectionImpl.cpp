@@ -316,7 +316,7 @@ void MavLinkConnectionImpl::readPackets()
 
 	} //while
 
-	delete buffer;
+	delete[]  buffer;
 
 } //readPackets
 

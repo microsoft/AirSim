@@ -25,7 +25,7 @@ UdpClientPort::UdpClientPort() : socket(io_service, { udp::v4() })
 UdpClientPort::~UdpClientPort()
 {
 	close();
-	delete read_buf_raw;
+	delete[] read_buf_raw;
 	read_buf_raw = nullptr;
 }
 

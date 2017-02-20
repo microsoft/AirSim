@@ -674,7 +674,7 @@ public:
 
 	~StreamBuffer() {
 		if (buffer != nullptr) {
-			delete buffer;
+			delete[] buffer;
 		}
 	}
 };
@@ -725,7 +725,7 @@ void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 			len += i;
 		}
 	}
-	delete temp;
+	delete[] temp;
 	fclose(fptr);
 
 	MavLinkVideoServer stream{ 1, 1 };

@@ -26,7 +26,7 @@ TcpClientPort::TcpClientPort() : socket_(io_service_)
 TcpClientPort::~TcpClientPort()
 {
 	close();
-	delete read_buf_raw_;
+	delete[] read_buf_raw_;
 	read_buf_raw_ = nullptr;
 }
 
