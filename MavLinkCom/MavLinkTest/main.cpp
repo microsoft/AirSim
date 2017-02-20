@@ -35,6 +35,7 @@ static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 
 #define MAV_STATE_ENUM_END (static_cast<uint8_t>(MAV_STATE::MAV_STATE_POWEROFF)+1)
 
 typedef common_utils::Utils Utils;
+typedef unsigned int uint;
 using namespace mavlinkcom; 
 
 struct FlagName {
