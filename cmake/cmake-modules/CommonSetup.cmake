@@ -27,6 +27,8 @@ macro(CommonSetup)
         set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NXCOMPAT /DYNAMICBASE /INCREMENTAL:NO ")
     ENDIF()
 
+    find_package(Threads REQUIRED)
+
     ## common boost settings to make sure we are all on the same page
     set(Boost_USE_STATIC_LIBS ON) 
     set(Boost_USE_MULTITHREADED ON)  
