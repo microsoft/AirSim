@@ -14,7 +14,7 @@ macro(CommonSetup)
         set(BOOST_OVERRIDES " -Wno-error=undef  -Wno-error=ctor-dtor-privacy -Wno-error=old-style-cast  -Wno-error=shadow -Wno-error=redundant-decls -Wno-error=missing-field-initializers  -Wno-error=unused-parameter") 
         ## Mavlink requires turning off -pedantic  and -Wno-error=switch-default 
         set(MAVLINK_OVERRIDES "-Wno-error=switch-default ") 
-        set(RPC_LIB_DEFINES "-D MSGPACK_PP_VARIADICS_MSVC=0 -Wno-error=ignored-attributes -Wno-error=deprecated-declarations -Wno-error=misleading-indentation")
+        set(RPC_LIB_DEFINES "-D MSGPACK_PP_VARIADICS_MSVC=0")
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             set(CMAKE_CXX_STANDARD 14)
         else ()

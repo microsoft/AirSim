@@ -15,6 +15,11 @@
 # Copyright (c) 2009 Benoit Jacob <jacob.benoit.1@gmail.com>
 # Redistribution and use is allowed according to the terms of the 2-clause BSD license.
 
+# Note: We don't want to use eigen in /usr/include/eigen3, because it might be older.
+# So we ask the user to install newer bits then export EIGEN_ROOT variable so we can
+# find it there.
+set (EIGEN_ROOT "$ENV{EIGEN_ROOT}")
+
 if(NOT Eigen3_FIND_VERSION)
   if(NOT Eigen3_FIND_VERSION_MAJOR)
     set(Eigen3_FIND_VERSION_MAJOR 2)
@@ -61,12 +66,16 @@ if (EIGEN3_INCLUDE_DIR)
 
 else (EIGEN3_INCLUDE_DIR)
 
+ 
+   if (${EIGEN_ROOT} STREQUAL "" )
+       message(ERROR " Please set your EIGEN_ROOT install location")
+   endif()
+
   find_path(EIGEN3_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library
       PATHS
       $ENV{EIGEN_ROOT}
-      ${CMAKE_INSTALL_PREFIX}/include
-      ${KDE4_INCLUDE_DIR}
       PATH_SUFFIXES eigen3 eigen
+      NO_DEFAULT_PATH
     )
 
   if(EIGEN3_INCLUDE_DIR)
