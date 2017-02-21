@@ -23,19 +23,20 @@ make posix_sitl_default
 ```
 ./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/lpe/iris
 ```
-4. Now you can run Unreal environment and connect to SITL via UDP [settings file](settings.md) with UdpIp address 127.0.0.1 and UdpPort 14560,
-set UseSerial to false.
-5. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 
+You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is
+waiting for someone to connect.
+4. Now edit [settings file](settings.md) with UdpIp address 127.0.0.1 and UdpPort 14560, set UseSerial to false
+5. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from
+things like local_position_estimator and "commander" and so on.
+6. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 
 Note that as we don't have physical board, RC cannot be connected directly to it. 
 So the alternatives are either use XBox 360 Controller or connect your RC using USB port if it has it 
 (for example, in case of [FrSky Taranis X9D Plus](prereq.md)) or using trainer USB cable to PC. 
 This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use RC control as below.
 
-If you want to run the above posix_sitl in a VirtualBox Ubuntu machine then it will have a different ip address from localhost.
-So in this case you need to do the following:
-1. Run the sitl so it is "listening", you should see the message `INFO  [simulator] Waiting for initial data on UDP port 14560`
-2. Edit the [settings file](settings.md) so that the UseSerial is false, the UdpIp address is the ip address of your virtual machine
-and the LocalIpAddress is the address of your host machine running the Unreal engine.  
+If you want to run the above posix_sitl in a `VirtualBox Ubuntu` machine then it will have a different ip address from localhost.
+So in this case you need to set the [settings file](settings.md) with the UdpIp address set to the ip address of your virtual machine
+and the LocalIpAddress is the address of your host machine running the Unreal engine. 
 
 # Using Joystick/Gamepad (Alternative to RC)
 Why do you need RC for simulator? Because usual joysticks are not very accurate and in fact very "noisy" for flying! 
