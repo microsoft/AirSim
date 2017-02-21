@@ -934,7 +934,7 @@ See RecordPose for information about log file format")
 
 // std::string beforeScriptStartCallback(const DroneCommandParameters& params, std::string scriptFilePath) 
 // {
-//     return false;
+//     return "";
 // }
 // bool afterScriptEndCallback(const DroneCommandParameters& params, std::string scriptFilePath) 
 // {
