@@ -18,7 +18,8 @@ This is the library developed by our own team member [Chris Lovett](https://gith
 See [MavLinkCom](../MavLinkCom/README.md) for more info.
 
 ## Sample Programs
-We have created a few sample programs to demonstrate how to use the API. See HelloDrone and DroneServer. DroneServer demonstrates how to connect to the simulator using UDP port for QGC.
+We have created a few sample programs to demonstrate how to use the API. See HelloDrone and DroneShell. 
+DroneShell demonstrates how to connect to the simulator using UDP.  The simulator is running a server (similar to DroneServer).
 
 ## Contributing
 

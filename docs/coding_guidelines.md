@@ -77,9 +77,9 @@ When overriding virtual method, use override suffix.
 
 This is really about memory management.  A simulator has much performance cricial code, so we try and avoid overloading the memory manager
 with lots of calls to new/delete.  We also want to avoid too much copying of things on the stack, so we pass things by reference when ever possible.
-But when the object really needs to live longer than the call stack you often need to allocate that object on 
-the heap, and so you have a pointer.  Now, if management of the lifetime of that object is going to be tricky we recommend using C++ 11 
-[C++ 11 smart pointers](https://cppstyle.wordpress.com/c11-smart-pointers/).  
+But when the object really needs to live longer than the call stack you often need to allocate that object on
+the heap, and so you have a pointer.  Now, if management of the lifetime of that object is going to be tricky we recommend using 
+[C++ 11 smart pointers](https://cppstyle.wordpress.com/c11-smart-pointers/). 
 But smart pointers do have a cost, so don’t use them blindly everywhere.  For private code 
 where performance is paramount, raw pointers can be used.  Raw pointers are also often needed when interfacing with legacy systems
 that only accept pointer types, for example, sockets API.  But we try to wrap those legacy interfaces as
