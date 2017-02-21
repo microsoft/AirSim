@@ -118,7 +118,7 @@ std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int 
                                     std::wstring displayName((WCHAR*)propertyBuffer);
                                     parseDisplayName(displayName, &portInfo);
                                 }
-                                delete propertyBuffer;
+                                delete[] propertyBuffer;
                             }
                         }
                     }
@@ -126,7 +126,7 @@ std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int 
 
                 result.push_back(portInfo);
 
-                delete keyArray;
+                delete[] keyArray;
             }
         }
     }

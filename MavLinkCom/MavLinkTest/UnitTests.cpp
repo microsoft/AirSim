@@ -163,7 +163,7 @@ public:
 					image[i] = i;
 				}
 				stream->sendFrame(reinterpret_cast<uint8_t*>(image), size, 100, 100, 0, 0);
-				delete image;
+				delete[] image;
 			}
 		});
 	}
