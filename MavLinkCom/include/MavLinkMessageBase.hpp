@@ -104,6 +104,24 @@ namespace mavlinkcom
 
 		friend class mavlinkcom_impl::MavLinkNodeImpl;
 	};
+
+
+	// The location of a landing area captured from a downward facing camera
+	class MavLinkTelemetry : public MavLinkMessageBase {
+	public:
+		const static uint8_t kMessageId = 204; // in the user range 180-229.
+		MavLinkTelemetry() { msgid = kMessageId; }
+		long messagesSent;		 // number of messages sent since the last telemetry message
+		long messagesReceived;	 // number of messages received since the last telemetry message
+		long messagesHandled;	 // number of messages handled since the last telemetry message
+		long crcErrors;			 // # crc errors detected in mavlink stream since the last telemetry message
+		long handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
+		long renderTime;         // total time spent rendering frames since the last telemetry message
+	protected:
+		virtual int pack(char* buffer) const;
+		virtual int unpack(const char* buffer);
+	};
+
 }
 
 #endif

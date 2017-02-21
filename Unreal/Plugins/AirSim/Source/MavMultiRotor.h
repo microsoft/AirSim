@@ -10,7 +10,7 @@
 #include "control/DroneControlBase.hpp"
 #include "VehicleBase.h"
 #include "FlyingPawn.h"
-
+#include <chrono>
 
 class MavMultiRotor : public VehicleBase
 {
@@ -41,7 +41,7 @@ public:
     virtual void beginPlay() override;
     virtual void endPlay() override;
     virtual void updateRenderedState() override;
-    virtual void updateRendering() override;
+    virtual void updateRendering(float dt) override;
 
     //PhysicsBody interface
     //this just wrapped around MultiRotor physics body
@@ -64,7 +64,9 @@ private:
     std::vector<std::string> mav_messages_;
     msr::airlib::Environment environment_;
     AFlyingPawn* vehicle_pawn_;
-
+	real_T total_ = 0;
+	std::chrono::time_point<std::chrono::system_clock> telemetry_start_;
+	const real_T kTelemetryInterval = 0.1f;
     real_T rotor_speeds_[4];
     int rotor_directions_[4];
     real_T rotor_thrusts_[4];

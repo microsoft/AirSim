@@ -22,3 +22,5 @@ cd boost_1_63_0
 ./bootstrap.sh
 ./b2 variant=release link=static runtime-link=shared threading=multi
 ````
+
+If you want to debug the boost binaries use variant=debug instead.

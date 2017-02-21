@@ -24,6 +24,13 @@ using namespace mavlinkcom_impl;
 
 MavLinkConnectionImpl::MavLinkConnectionImpl()
 {
+	// add our custom telemetry message length.
+	telemetry_.crcErrors = 0;
+	telemetry_.handlerMicroseconds = 0;
+	telemetry_.messagesHandled = 0;
+	telemetry_.messagesReceived = 0;
+	telemetry_.messagesSent = 0;
+	telemetry_.renderTime = 0;
 	closed = true;
 }
 std::string MavLinkConnectionImpl::getName() {
@@ -156,10 +163,16 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& msg)
 		{
 			sendLog_->write(msg);
 		}
-		const mavlink_message_t& m = reinterpret_cast<const mavlink_message_t&>(msg);
-		std::lock_guard<std::mutex> guard(buffer_mutex);
-		unsigned len = mavlink_msg_to_send_buffer(message_buf, &m);
-		port->write(message_buf, len);
+		{
+			const mavlink_message_t& m = reinterpret_cast<const mavlink_message_t&>(msg);
+			std::lock_guard<std::mutex> guard(buffer_mutex);
+			unsigned len = mavlink_msg_to_send_buffer(message_buf, &m);
+			port->write(message_buf, len);
+		}
+		{
+			std::lock_guard<std::mutex> guard(telemetry_mutex_);
+			telemetry_.messagesSent++;
+		}
 	}
 }
 
@@ -178,6 +191,9 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessageBase& msg)
 	// calculate checksum
 	uint8_t crc_extra = mavlink_message_crcs[m.msgid];
 	int msglen = mavlink_message_lengths[m.msgid];
+	if (m.msgid == MavLinkTelemetry::kMessageId) {
+		msglen = 24; // mavlink doesn't know about our custom telemetry message.
+	}		
 	if (len != msglen) {
 		throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
 	}
@@ -266,7 +282,8 @@ void MavLinkConnectionImpl::readPackets()
 		int count = safePort->read(buffer, MAXBUFFER);
 		if (count <= 0) {
 			// error, so just try again...
-			mavlink_errors_++;
+			std::lock_guard<std::mutex> guard(telemetry_mutex_);
+			telemetry_.crcErrors++;
 			continue;
 		}
 		for (int i = 0; i < count; i++)
@@ -277,9 +294,8 @@ void MavLinkConnectionImpl::readPackets()
 				continue;
 			}
 			else if (frame_state == MAVLINK_FRAMING_BAD_CRC) {
-				mavlink_errors_++;
-				Utils::logError(Utils::stringf("MavLink message %d, seqno %x has bad CRC %x received, expecting %x!", 
-					static_cast<int>(msgBuffer.msgid), static_cast<int>(msgBuffer.seq), static_cast<int>(buffer[i]), static_cast<int>(msgBuffer.checksum)).c_str());
+				std::lock_guard<std::mutex> guard(telemetry_mutex_);
+				telemetry_.crcErrors++;
 			}
 			else if (frame_state == MAVLINK_FRAMING_OK)
 			{
@@ -293,15 +309,15 @@ void MavLinkConnectionImpl::readPackets()
 
 				if (con_ != nullptr && !closed)
 				{
+					{
+						std::lock_guard<std::mutex> guard(telemetry_mutex_);
+						telemetry_.messagesReceived++;
+					}
 					// queue event for publishing.
                     {
                         std::lock_guard<std::mutex> guard(msg_queue_mutex_);
                         MavLinkMessage& message = reinterpret_cast<MavLinkMessage&>(msg);
                         msg_queue_.push(message);
-                        size_t size = msg_queue_.size();
-                        if (size > max_queue_length_) {
-                            max_queue_length_ = size;
-                        }
                     }
 					if (waiting_for_msg_) {
 						msg_available_.post();
@@ -309,8 +325,8 @@ void MavLinkConnectionImpl::readPackets()
 				}
 			}
 			else {
-				mavlink_errors_++;
-				Utils::logError("Unknown frame_state %d", frame_state);
+				std::lock_guard<std::mutex> guard(telemetry_mutex_);
+				telemetry_.crcErrors++;
 			}
 		}	
 
@@ -351,6 +367,8 @@ void MavLinkConnectionImpl::drainQueue()
 			snapshot_stale = false;
 		}
 		auto end = snapshot.end();
+
+		auto startTime = std::chrono::system_clock::now();
 		std::shared_ptr<MavLinkConnection> sharedPtr = std::shared_ptr<MavLinkConnection>(this->con_);
 		for (auto ptr = snapshot.begin(); ptr != end; ptr++)
 		{
@@ -360,6 +378,15 @@ void MavLinkConnectionImpl::drainQueue()
 			catch (std::exception e) {
 				Utils::logError("MavLinkConnection subscriber threw exception: %s", e.what());
 			}
+		}
+
+		{
+			auto endTime = std::chrono::system_clock::now();
+			auto diff = endTime - startTime;
+			long microseconds = static_cast<long>(std::chrono::duration_cast<std::chrono::microseconds>(diff).count());
+			std::lock_guard<std::mutex> guard(telemetry_mutex_);
+			telemetry_.messagesHandled++;
+			telemetry_.handlerMicroseconds += microseconds;
 		}
 	}
 }
@@ -376,3 +403,16 @@ void MavLinkConnectionImpl::publishPackets()
 	}
 }
 
+
+void MavLinkConnectionImpl::getTelemetry(MavLinkTelemetry& result)
+{
+	std::lock_guard<std::mutex> guard(telemetry_mutex_);
+	result = telemetry_;
+	// reset counters 
+	telemetry_.crcErrors = 0;
+	telemetry_.handlerMicroseconds = 0;
+	telemetry_.messagesHandled = 0;
+	telemetry_.messagesReceived = 0;
+	telemetry_.messagesSent = 0;
+	telemetry_.renderTime = 0;
+}

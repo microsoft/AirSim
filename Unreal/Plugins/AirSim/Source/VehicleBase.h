@@ -16,5 +16,5 @@ public:
     //called when physics gets updated (must be fast, avoid rendering)
     virtual void updateRenderedState() = 0;
     //called when render changes are required
-    virtual void updateRendering() = 0;
+    virtual void updateRendering(float dt) = 0;
 };

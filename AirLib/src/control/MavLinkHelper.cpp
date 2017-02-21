@@ -654,6 +654,16 @@ struct MavLinkHelper::impl {
         }
     }
 
+	void reportTelemetry(float renderTime)
+	{
+		if (logviewer_proxy_ == nullptr || connection_ == nullptr) {
+			return;
+		}
+		MavLinkTelemetry data;
+		connection_->getTelemetry(data);
+		data.renderTime = static_cast<long>(renderTime * 1000000);// microseconds
+		logviewer_proxy_->sendMessage(data);
+	}
 };
 
 //empty constructor required for pimpl
@@ -757,7 +767,6 @@ DroneControlBase* MavLinkHelper::createOrGetDroneControl()
     return pimpl_->createOrGetDroneControl();
 }
 
-
 //*** Start: UpdatableState implementation ***//
 void MavLinkHelper::reset()
 {
@@ -768,6 +777,11 @@ void MavLinkHelper::update(real_T dt)
     pimpl_->update(dt);
 }
 //*** End: UpdatableState implementation ***//
+
+void MavLinkHelper::reportTelemetry(float renderTime)
+{
+	return pimpl_->reportTelemetry(renderTime);
+}
 
 }} //namespace
 #endif

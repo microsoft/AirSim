@@ -109,5 +109,14 @@ void MavLinkConnection::join(std::shared_ptr<MavLinkConnection> remote, bool sub
 	pImpl->join(remote);
 }
 
+// get the next telemetry snapshot, then clear the internal counters and start over.  This way each snapshot
+// gives you a picture of what happened in whatever timeslice you decide to call this method.
+void MavLinkConnection::getTelemetry(MavLinkTelemetry& result)
+{
+	pImpl->getTelemetry(result);
+}
+
+
+
 //MavLinkConnection::MavLinkConnection(MavLinkConnection&&) = default;
 //MavLinkConnection& MavLinkConnection::operator=(MavLinkConnection&&) = default;

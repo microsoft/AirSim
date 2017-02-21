@@ -54,6 +54,9 @@ public:
     float getTakeoffZ() override;
     float getDistanceAccuracy() override;
 
+	// optional telemetry
+	void reportTelemetry(long renderTime) override;
+
 protected:  //keep low level commands hidden from outside as they have no safety checks
     void commandRollPitchZ(float pitch, float roll, float z, float yaw) override;
     void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;

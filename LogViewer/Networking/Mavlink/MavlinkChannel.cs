@@ -179,6 +179,21 @@ namespace Microsoft.Networking.Mavlink
         IPort port;
         byte seqno;
 
+        public MavlinkChannel()
+        {
+            // plug in our custom mavlink_simulator_telemetry message
+            int id = MAVLink.mavlink_telemetry.MessageId;
+            Type info = MAVLink.MAVLINK_MESSAGE_INFO[id];
+            if (info != null && typeof(MAVLink.mavlink_telemetry) != info)
+            {
+                throw new Exception("The custom messageid " + id + " is already defined, so we can't use it for mavlink_simulator_telemetry");
+            }
+            else
+            {
+                MAVLink.MAVLINK_MESSAGE_INFO[id] = typeof(MAVLink.mavlink_telemetry);
+            }
+        }
+
         public void Start(IPort port)
         {
             this.port = port;

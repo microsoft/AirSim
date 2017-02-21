@@ -217,3 +217,23 @@ void MavLinkMessageBase::unpack_float_array(int len, const char* buffer, float* 
 		field++;
 	}
 }
+
+int MavLinkTelemetry::pack(char* buffer) const {
+	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messagesSent), 0);
+	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messagesReceived), 4);
+	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messagesHandled), 8);
+	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->crcErrors), 12);
+	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->handlerMicroseconds), 16);
+	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->renderTime), 20);
+	return 24;
+}
+
+int MavLinkTelemetry::unpack(const char* buffer) {
+	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messagesSent), 0);
+	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messagesReceived), 4);
+	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messagesHandled), 8);
+	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->crcErrors), 12);
+	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->handlerMicroseconds), 16);
+	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->renderTime), 20);
+	return 24;
+}

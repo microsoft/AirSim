@@ -18,6 +18,7 @@ using namespace mavlinkcom;
 
 namespace mavlinkcom_impl {
 
+	// See MavLinkConnection.hpp for definitions of these methods.
 	class MavLinkConnectionImpl
 	{
 	public:
@@ -43,6 +44,8 @@ namespace mavlinkcom_impl {
 		void unsubscribe(int id);		
 		uint8_t getNextSequence();
 		void join(std::shared_ptr<MavLinkConnection> remote, bool subscribeToLeft = true, bool subscribeToRight = true);
+		void getTelemetry(MavLinkTelemetry& result);
+
 	private:
 		static std::shared_ptr<MavLinkConnection> createConnection(const std::string& nodeName, Port* port);
         void joinLeftSubscriber(std::shared_ptr<MavLinkConnection> remote, std::shared_ptr<MavLinkConnection>con, const MavLinkMessage& msg);
@@ -78,8 +81,8 @@ namespace mavlinkcom_impl {
 		std::mutex msg_queue_mutex_;
 		MavLinkSemaphore msg_available_;
 		bool waiting_for_msg_ = false;
-		size_t max_queue_length_ = 0;
-		long mavlink_errors_ = 0;
+		std::mutex telemetry_mutex_;
+		MavLinkTelemetry telemetry_;
 	};
 }
 

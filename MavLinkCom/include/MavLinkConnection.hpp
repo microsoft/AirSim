@@ -111,6 +111,11 @@ namespace mavlinkcom {
         // Send the given already encoded message, assuming the compid and sysid have been set by the caller.
         void sendMessage(const MavLinkMessage& msg);
 
+		// get the next telemetry snapshot, then clear the internal counters and start over.  This way each snapshot
+		// gives you a picture of what happened in whatever timeslice you decide to call this method.  This is packaged
+		// in a mavlink message so you can easily send it to the LogViewer.
+		void getTelemetry(MavLinkTelemetry& result);
+
     protected:
         void startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort);
 

@@ -81,6 +81,7 @@ public:
     virtual void update(real_T dt) override;
     //*** End: UpdatableState implementation ***//
 
+	void reportTelemetry(float renderTime);
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };

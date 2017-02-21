@@ -39,6 +39,16 @@ MavLinkDroneControl::MavLinkDroneControl(int local_system_id, int local_componen
     drone_->connect(connection);
 }
 
+void MavLinkDroneControl::reportTelemetry(long renderTime)
+{
+	MavLinkTelemetry telemetry;
+	auto con = drone_->getConnection();
+	if (con != nullptr) {
+		con->getTelemetry(telemetry);
+		telemetry.renderTime = renderTime;				
+		drone_->sendMessage(telemetry);
+	}
+}
 
 shared_ptr<mavlinkcom::MavLinkConnection> MavLinkDroneControl::createConnection(const Parameters& params)
 {

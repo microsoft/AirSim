@@ -68,7 +68,7 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
 
     //perfom any expensive rendering update outside of lock region
     for (auto& vehicle : vehicles_)
-        vehicle->updateRendering();
+        vehicle->updateRendering(DeltaSeconds);
 
     Super::Tick(DeltaSeconds);
 }

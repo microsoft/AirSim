@@ -5816,5 +5816,21 @@ namespace Microsoft.Networking.Mavlink
 
         };
 
+
+
+        // custom message from the simulator 
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
+        public struct mavlink_telemetry
+        {
+            public const int MessageId = 204;
+            public int messagesSent;       // number of messages sent since the last telemetry message
+            public int messagesReceived;   // number of messages received since the last telemetry message
+            public int messagesHandled;    // number of messages handled since the last telemetry message
+            public int crcErrors;          // # crc errors detected in mavlink stream since the last telemetry message
+            public int handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
+            public int renderTime;          // total time spent rendering frames since the last message
+        };
+
+
     }
 }

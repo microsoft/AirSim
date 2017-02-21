@@ -115,6 +115,8 @@ public: //interface for outside world
     virtual bool setImageForCamera(int camera_id, ImageType type, const vector<uint8_t>& image);
     virtual vector<uint8_t> getImageForCamera(int camera_id, ImageType type);
 
+	// optional telemetry
+	virtual void reportTelemetry(long renderTime) {}
 
     DroneControlBase() = default;
     virtual ~DroneControlBase() = default;
