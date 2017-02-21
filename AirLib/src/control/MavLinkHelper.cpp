@@ -174,26 +174,29 @@ struct MavLinkHelper::impl {
     bool connectToLogViewer()
     {
         //set up logviewer proxy
-        if (LogViewerHostIp.size() > 0) {
-            logviewer_proxy_ = createProxy("LogViewer", LogViewerHostIp, LogViewerPort);
-            if (!sendTestMessage(logviewer_proxy_)) {
-                // error talking to log viewer, so don't keep trying, and close the connection also.
-                logviewer_proxy_->getConnection()->close();
-                logviewer_proxy_ = nullptr;
-            }
+		if (LogViewerHostIp.size() == 0) {
+			return true; // log viewer connection is disabled.
+		}
+        logviewer_proxy_ = createProxy("LogViewer", LogViewerHostIp, LogViewerPort);
+        if (!sendTestMessage(logviewer_proxy_)) {
+            // error talking to log viewer, so don't keep trying, and close the connection also.
+            logviewer_proxy_->getConnection()->close();
+            logviewer_proxy_ = nullptr;
         }
         return logviewer_proxy_ != nullptr;
     }
 
     bool connectToQGC()
     {
-        if (QgcHostIp.size() > 0) {
-            qgc_proxy_ = createProxy("QGC", QgcHostIp, QgcPort);
-            if (!sendTestMessage(qgc_proxy_)) {
-                // error talking to QGC, so don't keep trying, and close the connection also.
-                qgc_proxy_->getConnection()->close();
-                qgc_proxy_ = nullptr;
-            }
+        if (QgcHostIp.size() == 0) {
+			return true; // QGC connection is disabled.
+		}
+
+        qgc_proxy_ = createProxy("QGC", QgcHostIp, QgcPort);
+        if (!sendTestMessage(qgc_proxy_)) {
+            // error talking to QGC, so don't keep trying, and close the connection also.
+            qgc_proxy_->getConnection()->close();
+            qgc_proxy_ = nullptr;
         }
         return qgc_proxy_ != nullptr;
     }
@@ -216,7 +219,13 @@ struct MavLinkHelper::impl {
 		if (connection_ == nullptr)
 			throw std::domain_error("MavLinkHelper requires connection object to be set before createProxy call");
 
-        auto connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), LocalHostIp, ip, port);
+		std::string localIp = LocalHostIp;
+		if (ip == "127.0.0.1") {
+			// we might have a remote HIL, but a local LogViewer and/or QGC, in which case use localhost.
+			localIp = ip;
+		}
+
+        auto connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), localIp, ip, port);
 
         // it is ok to reuse the simulator sysid and compid here because this node is only used to send a few messages directly to this endpoint
         // and all other messages are funnelled through from PX4 via the Join method below.
