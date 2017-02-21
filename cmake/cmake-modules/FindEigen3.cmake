@@ -67,7 +67,7 @@ if (EIGEN3_INCLUDE_DIR)
 else (EIGEN3_INCLUDE_DIR)
 
  
-   if (${EIGEN_ROOT} STREQUAL "" )
+   if ("${EIGEN_ROOT}" STREQUAL "" )
        message(ERROR " Please set your EIGEN_ROOT install location")
    endif()
 
