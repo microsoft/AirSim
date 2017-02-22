@@ -37,22 +37,21 @@ void Command::Execute(std::shared_ptr<MavLinkVehicle> com)
 		Close();
 	}
 	this->vehicle = com;
-	if (subscription == 0) {
-		if (subscription != 0) {
-			this->vehicle->getConnection()->unsubscribe(subscription);
-		}
-		subscription = com->getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
-			try {
-				HandleMessage(msg);
-			}
-			catch (std::exception& e) {
-				Utils::logError("### Runtime Error: %s", e.what());
-			}
-			catch (...) {
-				Utils::logError("### unhandled exception");
-			}
-		});
-	}
+	
+    if (subscription == 0)
+    {
+        subscription = com->getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
+            try {
+                HandleMessage(msg);
+            }
+            catch (std::exception& e) {
+                Utils::logError("### Runtime Error: %s", e.what());
+            }
+            catch (...) {
+                Utils::logError("### unhandled exception");
+            }
+        });
+    }
 }
 
 void Command::Close() {
@@ -245,7 +244,7 @@ bool TakeOffCommand::Parse(std::vector<std::string>& args)
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "takeoff") {
-
+            altitude = 5; // default
 			if (args.size() > 1)
 			{
 				altitude = static_cast<float>(atof(args[1].c_str()));
@@ -817,6 +816,7 @@ void IdleCommand::Close()
 	this->requested_control_ = false;
 	Command::Close();
 }
+
 void IdleCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
 	Command::Execute(com);
@@ -863,6 +863,9 @@ bool GotoCommand::Parse(std::vector<std::string>& args) {
 				tx = static_cast<float>(atof(args[1].c_str()));
 				ty = static_cast<float>(atof(args[2].c_str()));
 				tz = static_cast<float>(atof(args[3].c_str()));
+                if (tz > 0) {
+                    tz = -tz; // probably mean negative, since we are using NED coordinates.
+                }
 				return true;
 			}
 			else {
@@ -872,6 +875,7 @@ bool GotoCommand::Parse(std::vector<std::string>& args) {
 	}
 	return false;
 }
+
 void GotoCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 	this->channel = com;
 	this->requestedControl = false;
@@ -1077,17 +1081,17 @@ void OrbitCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 		throw std::runtime_error(Utils::stringf("Your drone does not support the MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED capability."));
 	}
 
-	GotoCommand::Execute(com);
 	printf("orbit current position at radius %f\n", static_cast<float>(radius));
 	orbiting = false;
 	flyingToRadius = false;
 	startAngle = 0;
 	startTime = 0;
 	orbits = 0;
-	halfWay = false;
+	halfWay = false;    
 	previousAngle = 0;	
 	orbitSpeed = 0;
 	printf("waiting for local position...\n");
+    GotoCommand::Execute(com);
 }
 
 void OrbitCommand::HasLocalPosition() {
@@ -1385,7 +1389,7 @@ void WiggleCommand::HandleMessage(const MavLinkMessage& message)
 			DebugOutput("start_thrust_=%f", start_thrust_);
 			// these PID values were calculated experimentally using AltHoldCommand, this provides the best
 			// control over thrust to achieve minimal over/under shoot in a reasonable amount of time.
-			thrust_controller_.setPoint(this->sz_, .05f, .005f, 0.09f);
+			thrust_controller_.setPoint(-this->sz_, .05f, .005f, 0.09f);
 		}
 		break;
 	}
@@ -1408,7 +1412,7 @@ void WiggleCommand::HandleMessage(const MavLinkMessage& message)
 		// the amount of roll should depend on our speed in that direction.
 		double speed = fabs(pos.vy);
 
-		float ctrl = thrust_controller_.control(static_cast<float>(z));
+		float ctrl = thrust_controller_.control(static_cast<float>(-z));
 
 		float thrust = start_thrust_ + ctrl;
 
