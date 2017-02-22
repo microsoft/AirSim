@@ -11,7 +11,6 @@
 #include "MavLinkVideoStream.hpp"
 #include "MavLinkTcpServer.hpp"
 #include "MavLinkFtpClient.hpp"
-#include <thread>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -163,7 +162,7 @@ public:
 					image[i] = i;
 				}
 				stream->sendFrame(reinterpret_cast<uint8_t*>(image), size, 100, 100, 0, 0);
-				delete image;
+				delete [] image;
 			}
 		});
 	}
