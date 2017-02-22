@@ -35,6 +35,7 @@ public class AirSim : ModuleRules
             case CompileMode.HeaderOnlyWithRpc:
                 Definitions.Add("AIRLIB_HEADER_ONLY=1");
                 AddLibDependency("AirLib", Path.Combine(AirSimPath, "lib"), "AirLib", Target, false);
+                LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
             case CompileMode.CppCompileNoRpc:
                 LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
