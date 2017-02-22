@@ -40,7 +40,7 @@ several available keyboard shortcuts.
 
 ![record screenshot](docs/images/DroneGIF-03.gif)
 
-See [Walkthoguth Demo Video](https://youtu.be/HNWdYrtw3f0).
+See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0).
 
 [More details](docs/manual_flight.md)
 
