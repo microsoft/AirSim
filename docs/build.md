@@ -34,7 +34,7 @@ To run the simulator, you need an environment and its very easy to create one! [
   ![Unreal folder structure](images/unreal_folders.png)
 
 ### Enable plugin for your Unreal project
-  In your Unreal project's .uproject file, add Plugins section and key *"AdditionalDependencies"* so your project file looks like this:
+  In your Unreal project's .uproject file, add `Plugins` section and key `AdditionalDependencies` so your project file looks like this:
   ```
     {
         "FileVersion": 3,
@@ -72,4 +72,6 @@ You are all ready to go now!
 
 Congratulations! You are now running AirSim in your own Unreal environment.
 
-Note: if you have any trouble getting drone to fly, check your [hard drive performance](hard_drive.md).
+### FAQ
+
+If you run into problems, check the [FAQ](faq.md) and feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
