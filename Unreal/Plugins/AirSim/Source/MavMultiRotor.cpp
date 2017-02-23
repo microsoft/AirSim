@@ -145,18 +145,8 @@ void MavMultiRotor::updateRenderedState()
 
 void MavMultiRotor::updateRendering(float dt)
 {
-	if (total_ == 0) {
-		real_T total_ = 0;
-		telemetry_start_ = std::chrono::system_clock::now();
-	}
-	total_ += dt;
-	auto now = std::chrono::system_clock::now();
-	if (std::chrono::duration<double>(now - telemetry_start_).count() > kTelemetryInterval)
-	{ 
-		mav_.reportTelemetry(total_);
-		total_ = 0;
-		telemetry_start_ = now;
-	}
+	mav_.reportTelemetry(dt);
+
 	//update rotor animations
 	for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
 		vehicle_pawn_->setRotorSpeed(i, rotor_speeds_[i] * rotor_directions_[i]);
