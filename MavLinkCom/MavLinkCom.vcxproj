@@ -225,6 +225,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common_utils\ThreadUtils.cpp" />
     <ClCompile Include="src\impl\MavLinkFtpClientImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkNodeImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkTcpServerImpl.cpp" />
@@ -250,6 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_utils\StrictMode.hpp" />
+    <ClInclude Include="common_utils\ThreadUtils.hpp" />
     <ClInclude Include="include\AsyncResult.hpp" />
     <ClInclude Include="common_utils\EnumFlags.hpp" />
     <ClInclude Include="common_utils\ExceptionUtils.hpp" />

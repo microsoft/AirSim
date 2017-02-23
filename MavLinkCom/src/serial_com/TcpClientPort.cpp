@@ -3,6 +3,7 @@
 
 #include "TcpClientPort.hpp"
 #include "Utils.hpp"
+#include "ThreadUtils.hpp"
 #include <boost/lexical_cast.hpp>
 using namespace common_utils;
 
@@ -94,6 +95,7 @@ void TcpClientPort::connect(const std::string& localHost, int localPort, const s
 
 void TcpClientPort::readPackets()
 {
+	CurrentThread::setMaximumPriority();
 	socket_.async_receive(
 		boost::asio::buffer(read_buf_raw_, TCP_MAXBUF_SIZE), 
 		boost::bind(

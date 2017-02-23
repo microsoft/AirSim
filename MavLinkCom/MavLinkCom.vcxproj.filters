@@ -67,6 +67,9 @@
     <ClCompile Include="src\MavLinkVideoStream.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="common_utils\ThreadUtils.cpp">
+      <Filter>common_utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -193,6 +196,9 @@
       <Filter>serial_com</Filter>
     </ClInclude>
     <ClInclude Include="common_utils\StrictMode.hpp">
+      <Filter>common_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common_utils\ThreadUtils.hpp">
       <Filter>common_utils</Filter>
     </ClInclude>
   </ItemGroup>

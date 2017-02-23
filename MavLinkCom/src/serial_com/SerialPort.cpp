@@ -4,6 +4,8 @@
 #include "SerialPort.hpp"
 #include <limits>
 #include "Utils.hpp"
+#include "ThreadUtils.hpp"
+
 
 using namespace common_utils;
 using namespace boost::asio;
@@ -54,6 +56,8 @@ SerialPort::connect(const char* portName, int baudRate)
 
 void SerialPort::readPackets()
 {
+	CurrentThread::setMaximumPriority();
+
 	port.async_read_some(
 		boost::asio::buffer(read_buf_raw, SERIAL_PORT_READ_BUF_SIZE),
 		boost::bind(

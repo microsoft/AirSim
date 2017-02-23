@@ -3,6 +3,7 @@
 
 #include "UdpClientPort.hpp"
 #include "Utils.hpp"
+#include "ThreadUtils.hpp"
 #include <boost/lexical_cast.hpp>
 using namespace common_utils;
 
@@ -74,6 +75,7 @@ void UdpClientPort::connect(const std::string& localHost, int localPort, const s
 
 void UdpClientPort::readPackets()
 {
+	CurrentThread::setMaximumPriority();
 	socket.async_receive_from(
 		boost::asio::buffer(read_buf_raw, UDP_MAXBUF_SIZE), remote_endpoint,
 		boost::bind(

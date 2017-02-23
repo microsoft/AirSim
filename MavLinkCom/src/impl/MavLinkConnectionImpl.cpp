@@ -3,6 +3,7 @@
 
 #include "MavLinkConnectionImpl.hpp"
 #include "Utils.hpp"
+#include "ThreadUtils.hpp"
 #include "../serial_com/Port.h"
 #include "../serial_com/SerialPort.hpp"
 #include "../serial_com/UdpClientPort.hpp"
@@ -259,6 +260,7 @@ void MavLinkConnectionImpl::join(std::shared_ptr<MavLinkConnection> remote, bool
 
 void MavLinkConnectionImpl::readPackets()
 {
+	CurrentThread::setMaximumPriority();
 	std::shared_ptr<Port> safePort = this->port;
 	mavlink_message_t msg;
 	mavlink_status_t status;
@@ -393,6 +395,7 @@ void MavLinkConnectionImpl::drainQueue()
 
 void MavLinkConnectionImpl::publishPackets()
 {
+	CurrentThread::setMaximumPriority();
 	while (!closed) {
 
 		drainQueue();
