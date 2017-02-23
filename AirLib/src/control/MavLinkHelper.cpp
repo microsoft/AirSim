@@ -288,12 +288,12 @@ struct MavLinkHelper::impl {
     void createHILUdpConnection(const std::string& ip, int port)
     {
         close();
-		if (ip == LocalHostIp) {
-			connection_ = MavLinkConnection::connectLocalUdp("hil", ip, port);
-		}
-		else {
-			connection_ = MavLinkConnection::connectRemoteUdp("hil", LocalHostIp, ip, port);
-		}
+        // In this case the HIL is already waiting for us to connect (in other words the HIL is the server)
+        // so in this case we use connectRemoteUdp.  This will work for both localhost and remote UDP addresses.
+        // But if the hil is not localhost then LocalHostIp will also need to be changed to be a real ip address
+        // of one of your local network adapters that can reach the remote HIL.  You can do that using your
+        // !/Documents/AirSim/settings.json file.
+		connection_ = MavLinkConnection::connectRemoteUdp("hil", LocalHostIp, ip, port);		
         main_node_ = std::make_shared<MavLinkNode>(SimSysID, SimCompID); 
         main_node_->connect(connection_);
     }
