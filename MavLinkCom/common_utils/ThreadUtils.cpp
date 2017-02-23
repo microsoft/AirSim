@@ -26,7 +26,7 @@ bool CurrentThread::setMaximumPriority()
 	int err = pthread_getschedparam(pthread_self(), &policy, &param);
 	if (err != 0) return false;
 	int maxPriority = sched_get_priority_max(policy);
-	int err = pthread_setschedprio(pthread_self(), maxPriority);
+	err = pthread_setschedprio(pthread_self(), maxPriority);
 	return err == 0;
 #endif
 }
