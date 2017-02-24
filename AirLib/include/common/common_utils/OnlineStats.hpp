@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #ifndef common_utils_OnlineStats_hpp
-#define airsim_core_OnlineStats_hpp
+#define common_utils_OnlineStats_hpp
 
 #include <cmath>
 

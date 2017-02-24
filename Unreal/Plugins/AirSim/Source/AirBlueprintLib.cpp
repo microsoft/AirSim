@@ -70,12 +70,16 @@ T* UAirBlueprintLib::GetActorComponent(AActor* actor, FString name)
     }
     return found;
 }
+template UChildActorComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
+template USceneCaptureComponent2D* UAirBlueprintLib::GetActorComponent(AActor*, FString);
+template UStaticMeshComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
+template URotatingMovementComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 
 template<typename T>
 T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
 {
     TArray<AActor*> foundActors;
-    FindAllActor(context, foundActors);
+    FindAllActor<T>(context, foundActors);
 
     for (AActor* actor : foundActors) {
         if (actor->GetName().Compare(name) == 0) {
