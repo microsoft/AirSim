@@ -22,7 +22,7 @@
 #include "rpc/msgpack/adaptor/adaptor_base.hpp"
 #include "rpc/msgpack/adaptor/check_container_size.hpp"
 
-// To suppress warning on Boost.1.58.0
+// To supress warning on Boost.1.58.0
 #if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"

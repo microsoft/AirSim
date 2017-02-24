@@ -133,7 +133,7 @@ information and acquired knowledge:
 #   endif
 #endif
 
-/* Some architectures are strictly one endianness (as opposed
+/* Some architectures are strictly one endianess (as opposed
  * the current common bi-endianess).
  */
 #if !MSGPACK_ENDIAN_BIG_BYTE && !MSGPACK_ENDIAN_BIG_WORD && \

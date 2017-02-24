@@ -99,7 +99,7 @@ template <>
 struct pack<clmdep_msgpack::type::ext> {
     template <typename Stream>
     clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const clmdep_msgpack::type::ext& v) const {
-        // size limit has already been checked at ext's constructor
+        // size limit has aleady been checked at ext's constructor
         uint32_t size = v.size();
         o.pack_ext(size, v.type());
         o.pack_ext_body(v.data(), size);
@@ -110,7 +110,7 @@ struct pack<clmdep_msgpack::type::ext> {
 template <>
 struct object_with_zone<clmdep_msgpack::type::ext> {
     void operator()(clmdep_msgpack::object::with_zone& o, const clmdep_msgpack::type::ext& v) const {
-        // size limit has already been checked at ext's constructor
+        // size limit has aleady been checked at ext's constructor
         uint32_t size = v.size();
         o.type = clmdep_msgpack::type::EXT;
         char* ptr = static_cast<char*>(o.zone.allocate_align(size + 1));
@@ -139,7 +139,7 @@ public:
         detail::check_container_size_for_ext<sizeof(std::size_t)>(s);
     }
 
-    // size limit has already been checked at ext's constructor
+    // size limit has aleady been checked at ext's constructor
     ext_ref(ext const& x) : m_ptr(&x.m_data[0]), m_size(x.size()) {}
 
     const char* data() const {
@@ -184,7 +184,7 @@ private:
 };
 
 inline ext::ext(ext_ref const& x) {
-    // size limit has already been checked at ext_ref's constructor
+    // size limit has aleady been checked at ext_ref's constructor
     m_data.reserve(x.size() + 1);
 
     m_data.push_back(x.type());
@@ -208,7 +208,7 @@ template <>
 struct pack<clmdep_msgpack::type::ext_ref> {
     template <typename Stream>
     clmdep_msgpack::packer<Stream>& operator()(clmdep_msgpack::packer<Stream>& o, const clmdep_msgpack::type::ext_ref& v) const {
-        // size limit has already been checked at ext_ref's constructor
+        // size limit has aleady been checked at ext_ref's constructor
         uint32_t size = v.size();
         o.pack_ext(size, v.type());
         o.pack_ext_body(v.data(), size);
@@ -219,7 +219,7 @@ struct pack<clmdep_msgpack::type::ext_ref> {
 template <>
 struct object<clmdep_msgpack::type::ext_ref> {
     void operator()(clmdep_msgpack::object& o, const clmdep_msgpack::type::ext_ref& v) const {
-        // size limit has already been checked at ext_ref's constructor
+        // size limit has aleady been checked at ext_ref's constructor
         uint32_t size = v.size();
         o.type = clmdep_msgpack::type::EXT;
         o.via.ext.ptr = v.m_ptr;
