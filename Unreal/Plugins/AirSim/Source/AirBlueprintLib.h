@@ -52,7 +52,3 @@ public:
         typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func);
 };
 
-template UChildActorComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
-template USceneCaptureComponent2D* UAirBlueprintLib::GetActorComponent(AActor*, FString);
-template UStaticMeshComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
-template URotatingMovementComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);

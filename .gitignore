@@ -283,3 +283,8 @@ ModelManifest.xml
 /cmake/DroneShell/DroneShell
 /cmake/DroneServer/DroneServer
 external/
+
+# Eclipse Project file
+/.project
+/.cproject
+/.settings
