@@ -35,6 +35,7 @@ public class AirSim : ModuleRules
             case CompileMode.HeaderOnlyWithRpc:
                 Definitions.Add("AIRLIB_HEADER_ONLY=1");
                 AddLibDependency("AirLib", Path.Combine(AirSimPath, "lib"), "AirLib", Target, false);
+                LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
             case CompileMode.CppCompileNoRpc:
                 LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
@@ -63,7 +64,7 @@ public class AirSim : ModuleRules
         AddEigenDependency();
         PrivateIncludePaths.Add(Path.Combine(AirSimPath, "include"));
         AddOSLibDependencies(Target);
-        AddBoostDependency();
+        AddBoostDependency(Target);
         LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
 
         SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
@@ -89,7 +90,7 @@ public class AirSim : ModuleRules
         }
     }
 
-    private void AddBoostDependency()
+    private void AddBoostDependency(TargetInfo Target)
     {
         string boost = System.Environment.GetEnvironmentVariable("BOOST_ROOT");
         if (string.IsNullOrEmpty(boost) || !System.IO.Directory.Exists(boost))
@@ -97,21 +98,27 @@ public class AirSim : ModuleRules
             throw new System.Exception("BOOST_ROOT is not defined, or points to a non-existant directory, please set this environment variable.  " +
                 "See: " + readmurl);
         }
-        string lib = Path.Combine(boost, "stage", "lib");
-        if (!System.IO.Directory.Exists(lib))
-        {
-            throw new System.Exception("Please build boost and make sure the libraries are at " + lib + ". " +
-                "See: " + readmurl);
+        if (Target.Platform == UnrealTargetPlatform.Linux) {
+            string lib = Path.Combine(boost, "lib");
+            PublicAdditionalLibraries.Add(Path.Combine(lib, "libboost_system.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(lib, "libboost_filesystem.a"));
+        } else {
+            string lib = Path.Combine(boost, "stage", "lib");
+            if (!System.IO.Directory.Exists(lib))
+            {
+                throw new System.Exception("Please build boost and make sure the libraries are at " + lib + ". " +
+                    "See: " + readmurl);
+            }
+
+            bool found = System.IO.Directory.GetFiles(lib, "libboost_system-*.lib").Length > 0;
+            if (!found)
+            {
+                throw new System.Exception("Not finding libboost_system-*.lib in " + lib + ".  " +
+                    "See: " + readmurl);
+            }
+            PublicLibraryPaths.Add(Path.Combine(lib));
         }
 
-        bool found = System.IO.Directory.GetFiles(lib, "libboost_system-*.lib").Length > 0;
-        if (!found)
-        {
-            throw new System.Exception("Not finding libboost_system-*.lib in " + lib + ".  " +
-                "See: " + readmurl);
-        }
-
-        PublicLibraryPaths.Add(Path.Combine(lib));
     }
 
 
@@ -133,6 +140,8 @@ public class AirSim : ModuleRules
             isLibrarySupported = true;
 
             PublicAdditionalLibraries.Add(Path.Combine(LibPath, PlatformString, ConfigurationString, LibFileName + ".lib"));
+        } else if (Target.Platform == UnrealTargetPlatform.Linux) {
+            PublicAdditionalLibraries.Add(Path.Combine(LibPath, "lib" + LibFileName + ".a"));
         }
 
         if (isLibrarySupported && IsAddLibInclude)

@@ -304,7 +304,7 @@ const VehicleParams& MavLinkDroneControl::getVehicleParams()
 //TODO: decouple DroneControlBase, VehicalParams and SafetyEval
 const VehicleParams& MavLinkDroneControl::getInternalVehicleParams()
 {
-    static const VehicleParams vehicle_params_;
+    static const VehicleParams vehicle_params_{};
     return vehicle_params_; //defaults are good for DJI Matrice 100
 }
 

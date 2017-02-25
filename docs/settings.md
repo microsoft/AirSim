@@ -1,7 +1,7 @@
 # settings.json
 
-The AirSim Unreal plugin creates a settings.json file in the AirSim folder in your Documents folder.
-This [json file](https://en.wikipedia.org/wiki/JSON) contains the following settings:
+The AirSim Unreal plugin can use a settings.json file in the AirSim folder in your Documents folder if it exists.
+Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
 
 ```
 {

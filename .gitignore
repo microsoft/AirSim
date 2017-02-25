@@ -282,3 +282,14 @@ ModelManifest.xml
 /cmake/HelloDrone/HelloDrone
 /cmake/DroneShell/DroneShell
 /cmake/DroneServer/DroneServer
+external/
+deps/
+
+# Eclipse Project file
+/.project
+/.cproject
+/.settings
+
+/boost
+/eigen
+/build_debug
