@@ -226,6 +226,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common_utils\ThreadUtils.cpp" />
+    <ClCompile Include="common_utils\Utils.cpp" />
     <ClCompile Include="src\impl\MavLinkFtpClientImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkNodeImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkTcpServerImpl.cpp" />

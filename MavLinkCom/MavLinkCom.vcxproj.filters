@@ -70,6 +70,7 @@
     <ClCompile Include="common_utils\ThreadUtils.cpp">
       <Filter>common_utils</Filter>
     </ClCompile>
+    <ClCompile Include="common_utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">

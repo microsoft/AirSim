@@ -62,18 +62,6 @@ using std::experimental::optional;
 */
 
 
-#ifndef _MSC_VER
-static int _vscprintf(const char * format, va_list pargs)
-{
-    int retval;
-    va_list argcopy;
-    va_copy(argcopy, pargs);
-    retval = vsnprintf(NULL, 0, format, argcopy);
-    va_end(argcopy);
-    return retval;
-}
-#endif
-
 namespace common_utils {
 
 class Utils {
@@ -105,26 +93,10 @@ public:
 	static float degreesToRadians(float degrees) {
 		return static_cast<float>(degrees*(M_PI / 180.0f));
 	}
-    static void logMessage(const char* message, ...) {
-        va_list args;
-        va_start(args, message);
-        
-        vprintf(message, args);
-        printf("\n");
-        fflush (stdout);
-        
-        va_end(args);
-    }
-    static void logError(const char* message, ...) {
-        va_list args;
-        va_start(args, message);
-        
-        vfprintf(stderr, message, args);
-        fprintf(stderr, "\n");
-        fflush (stderr);
-        
-        va_end(args);
-    }
+
+    static void logMessage(const char* message, ...);
+
+    static void logError(const char* message, ...);
 
     template <typename T>
     static int sign(T val) {
@@ -164,58 +136,11 @@ public:
         return ss.str();         
     }
 
-    static string stringf(const char* format, ...)
-    {
-        va_list args;
-        va_start(args, format);
+    static string stringf(const char* format, ...);
 
-        int size = _vscprintf(format, args) + 1;
-        std::unique_ptr<char[]> buf(new char[size] ); 
+    static string getFileExtension(const string str);
 
-        #ifndef _MSC_VER
-            vsnprintf(buf.get(), size, format, args);
-        #else
-            vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
-        #endif
-
-        va_end(args);            
-
-        return string(buf.get());
-    }
-
-	static string getFileExtension(const string str)
-	{
-		int len = static_cast<int>(str.size());
-		const char* ptr = str.c_str();
-		int i = 0;
-		for (i = len - 1; i >= 0; i--)
-		{
-			if (ptr[i] == '.')
-				break;
-		}
-		if (i < 0) return "";
-		return str.substr(i, len - i);
-	}
-
-	static string trim(const string& str, char ch)
-	{
-		int len = static_cast<int>(str.size());
-		const char* ptr = str.c_str();
-		int i = 0;
-		for (i = 0; i < len; i++)
-		{
-			if (ptr[i] != ch)
-				break;
-		}
-		int j = 0;
-		for (j = len - 1; j > 0; j--)
-		{
-			if (ptr[j] != ch)
-				break;
-		}
-		if (i > j) return "";
-		return str.substr(i, j - i + 1);
-	}
+    static string trim(const string& str, char ch);
 
 
 	//http://stackoverflow.com/a/28703383/207661
