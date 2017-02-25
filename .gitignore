@@ -289,3 +289,7 @@ deps/
 /.project
 /.cproject
 /.settings
+
+/boost
+/eigen
+/build_debug
