@@ -2,7 +2,7 @@
 #include "FlyingPawn.h"
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
-#include "MavMultiRotor.h"
+#include "MavMultiRotorConnector.h"
 
 void AFlyingPawn::initialize()
 {
@@ -42,9 +42,9 @@ void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
 		rotating_movements_[rotor_index]->RotationRate.Yaw = radsPerSec * 180.0f / M_PIf * RotatorFactor;
 }
 
-msr::airlib::MavLinkHelper::HILConnectionInfo AFlyingPawn::getHILConnectionInfo()
+msr::airlib::MavLinkDroneController::ConnectionInfo AFlyingPawn::getMavConnectionInfo()
 {
-	msr::airlib::MavLinkHelper::HILConnectionInfo connection_info;
+	msr::airlib::MavLinkDroneController::ConnectionInfo connection_info;
 	connection_info.vehicle_name = std::string(TCHAR_TO_UTF8(*VehicleName));
 	connection_info.use_serial = UseSerial;
 	connection_info.ip_address = std::string(TCHAR_TO_UTF8(*UdpIP));

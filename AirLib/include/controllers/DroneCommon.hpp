@@ -1,40 +1,11 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-#ifndef msr_air_control_VehicleCommon_hpp
-#define msr_air_control_VehicleCommon_hpp
+#ifndef air_DroneCommon_hpp
+#define air_DroneCommon_hpp
 
 #include "common/Common.hpp"
+
+
 namespace msr { namespace airlib {
-    
-enum class MoveCommandType {
-    Invalid = 0,
 
-    Arm,
-    Disarm,
-    RequestControl,
-    ReleaseControl,
-    TakeOff,
-    Land,
-    Hover,
-    GoHome,
-
-    MoveByAngle,
-    MoveByVelocity,
-    MoveByVelocityZ,
-    MoveToPosition,
-    MoveOnPath,
-    MoveToZ,
-    MoveByManual,
-
-    SetSafety,
-    
-    RotateByYawRate,
-    RotateToYaw,
-    Sleep
-};
-
-const string kActionServerName = "drone_move";
 
 enum class DrivetrainType {
     MaxDegreeOfFreedome = 0,
@@ -115,14 +86,6 @@ struct RCData {
     }
 };
 
-//General exception when move command has runtime errors
-class MoveException : public std::runtime_error {
-public:
-    MoveException(const std::string& message)
-        : runtime_error(message) { 
-    }
-};
-
-
 }} //namespace
+
 #endif

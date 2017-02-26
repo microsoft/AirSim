@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#include "Commands.h"
 #include "Utils.hpp"
+#include "Commands.h"
 #include <chrono>
 #include <math.h>
 #include <iostream>

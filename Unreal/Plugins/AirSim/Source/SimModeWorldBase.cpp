@@ -41,6 +41,12 @@ void ASimModeWorldBase::createWorld()
         vehicle->beginPlay();
 }
 
+size_t ASimModeWorldBase::getVehicleCount() const
+{
+    return vehicles_.size();
+}
+
+
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     world_.stopAsyncUpdator();

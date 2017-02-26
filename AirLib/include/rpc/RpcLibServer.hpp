@@ -6,19 +6,19 @@
 
 #include "common/Common.hpp"
 #include <functional>
-#include "DroneControlServer.hpp"
+#include "controllers/DroneControllerCancelable.hpp"
 #include "ControlServerBase.hpp"
 
 namespace msr { namespace airlib {
 
 class RpcLibServer : ControlServerBase {
 public:
-    RpcLibServer(DroneControlServer* drone, string server_address, uint16_t port = 41451);
+    RpcLibServer(DroneControllerCancelable* drone, string server_address, uint16_t port = 41451);
     virtual void start(bool block = false) override;
     virtual void stop() override;
     virtual ~RpcLibServer() override;
 private:
-    DroneControlServer* drone_;
+    DroneControllerCancelable* drone_;
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };

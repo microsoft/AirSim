@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VehicleBase.h"
+#include "VehicleConnectorBase.h"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"

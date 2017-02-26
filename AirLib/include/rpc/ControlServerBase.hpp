@@ -6,7 +6,6 @@
 
 #include "common/Common.hpp"
 #include <functional>
-#include "DroneControlServer.hpp"
 
 
 namespace msr { namespace airlib {

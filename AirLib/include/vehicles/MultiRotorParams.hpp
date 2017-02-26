@@ -6,8 +6,7 @@
 
 #include "common/Common.hpp"
 #include "RotorParams.hpp"
-#include "vehicles/controllers/RpyDirectControllerParams.hpp"
-#include "vehicles/controllers/MotorDirectControllerParams.hpp"
+
 
 
 namespace msr { namespace airlib {
@@ -46,9 +45,6 @@ struct MultiRotorParams {
     } dim;
 
     RotorParams rotor_params;
-    RpyDirectControllerParams rpy_direct_controller_params;
-    MotorDirectControllerParams motor_direct_controller_params;
-
     
     struct EnabledSensors {
     	bool imu = true;

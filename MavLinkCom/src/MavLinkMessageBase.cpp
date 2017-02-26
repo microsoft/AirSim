@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#include "Utils.hpp"
 #include "MavLinkMessageBase.hpp"
 #include "MavLinkConnection.hpp"
-#include "Utils.hpp"
 using namespace common_utils;
 
 STRICT_MODE_OFF

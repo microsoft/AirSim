@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#include "UdpClientPort.hpp"
 #include "Utils.hpp"
 #include "ThreadUtils.hpp"
+#include "UdpClientPort.hpp"
 #include <boost/lexical_cast.hpp>
 using namespace common_utils;
 

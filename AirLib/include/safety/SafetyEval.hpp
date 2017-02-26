@@ -11,7 +11,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "IGeoFence.hpp"
 #include "common/Common.hpp"
-#include "DroneControlCommon.hpp"
+#include "controllers/DroneCommon.hpp"
 #include "common/common_utils/EnumFlags.hpp"
 
 namespace msr { namespace airlib {

@@ -7,38 +7,37 @@
 
 #include "common/Common.hpp"
 #include "Waiter.hpp"
-#include "control/SafetyEval.hpp"
+#include "safety/SafetyEval.hpp"
 #include "common/CommonStructs.hpp"
-#include "DroneControlCommon.hpp"
+#include "VehicleControllerBase.hpp"
+#include "DroneCommon.hpp"
 
 namespace msr { namespace airlib {
 
 //This interface represents generic drone commands
 //RETURN values: true if not prempted else false. For error conditions, raise exceptions.
-class DroneControlBase {
+class DroneControllerBase : public VehicleControllerBase {
 public: //types
-    class UnsafeMoveException : public MoveException {
+    class UnsafeMoveException : public VehicleMoveException {
     public:
         const SafetyEval::EvalResult result;
 
         UnsafeMoveException(const SafetyEval::EvalResult result_val, const string message = "")
-            : MoveException(message), result(result_val)
+            : VehicleMoveException(message), result(result_val)
         {}
     };
 
     struct StatusLock {
-        StatusLock(DroneControlBase* drone)
+        StatusLock(DroneControllerBase* drone)
             : drone_(drone), lock_(drone->status_mutex_)
         {
         }
 
     private:
-        DroneControlBase* drone_;
+        DroneControllerBase* drone_;
         std::lock_guard<std::recursive_mutex> lock_;
     };
 
-public: //interface for outside world
-    
     enum class ImageType : uint {
         None = 0,
         Scene = 1, 
@@ -48,48 +47,32 @@ public: //interface for outside world
     };
     typedef common_utils::EnumFlags<ImageType>  ImageTypeFlags;
 
-    //atomic actions
-    virtual bool armDisarm(bool arm, CancelableActionBase& cancelable_action) = 0;
-    virtual bool requestControl(CancelableActionBase& cancelable_action) = 0;
-    virtual bool releaseControl(CancelableActionBase& cancelable_action) = 0;
-    virtual bool takeoff(float max_wait_seconds, CancelableActionBase& cancelable_action) = 0;
-    virtual bool land(CancelableActionBase& cancelable_action) = 0;
-    virtual bool goHome(CancelableActionBase& cancelable_action) = 0;
+public: //interface for outside world
+    /* return value bool indicates command was cancelled, not a failure */
 
-    /** \brief Move drone by specifieng roll, pitch angles in degrees, z in meters (NED) and yaw in degree.
-    * \param cancelable_action This object implements preemptible sleep and allows to specify when is it safe to preempt 
-    * \return true if completed without preempting else false
-    * 
-    * This method by itself will block until it finishes the execution OR cancelable_action signals for preempt.
-    * This method can be called from ROS action server that runs on separate thread for non-blocking implementation. 
-    */
+    //administrative commands
+    virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) = 0;
+    virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) = 0;
+    virtual bool land(CancelableBase& cancelable_action) = 0;
+    virtual bool goHome(CancelableBase& cancelable_action) = 0;
+
+    //movement commands
     virtual bool moveByAngle(float pitch, float roll, float z, float yaw, float duration
-        , CancelableActionBase& cancelable_action);
-
-    /**
-    * \brief Move drone by specifieng velocty components in 3 axis wrt to ground for given amount of time
-    */
+        , CancelableBase& cancelable_action);
     virtual bool moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode,
-        CancelableActionBase& cancelable_action);
-
-    /**
-    * \brief Move drone by specifieng velocty components in X-Y plan wrt to ground while maintaining hight
-    */
+        CancelableBase& cancelable_action);
     virtual bool moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode,
-        CancelableActionBase& cancelable_action);
+        CancelableBase& cancelable_action);
     virtual bool moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
-        float lookahead, float adaptive_lookahead, CancelableActionBase& cancelable_action);
-
-    /** \brief Move drone to position specified in NEU local coordinate system.
-    */
+        float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
     virtual bool moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
-        const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, CancelableActionBase& cancelable_action);
+        const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
     virtual bool moveToZ(float z, float velocity, const YawMode& yaw_mode,
-        float lookahead, float adaptive_lookahead, CancelableActionBase& cancelable_action);
-    virtual bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration, CancelableActionBase& cancelable_action);
-    virtual bool rotateToYaw(float yaw, float margin, CancelableActionBase& cancelable_action);
-    virtual bool rotateByYawRate(float yaw_rate, float duration, CancelableActionBase& cancelable_action);
-    virtual bool hover(CancelableActionBase& cancelable_action);
+        float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
+    virtual bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration, CancelableBase& cancelable_action);
+    virtual bool rotateToYaw(float yaw, float margin, CancelableBase& cancelable_action);
+    virtual bool rotateByYawRate(float yaw_rate, float duration, CancelableBase& cancelable_action);
+    virtual bool hover(CancelableBase& cancelable_action);
 
     //status getters
     virtual Vector3r getPosition() = 0;
@@ -101,28 +84,26 @@ public: //interface for outside world
     virtual double timestampNow() = 0;
     virtual GeoPoint getHomePoint() = 0;
     virtual GeoPoint getGpsLocation() = 0;
-    virtual bool isOffboardMode() = 0;
 
+    //safety settings
     virtual void setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr);
     virtual bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
     virtual const VehicleParams& getVehicleParams() = 0;
 
+
     //request image
-    virtual bool setImageTypeForCamera(int camera_id, ImageType type);
+    virtual void setImageTypeForCamera(int camera_id, ImageType type);
     virtual ImageType getImageTypeForCamera(int camera_id);
     //get/set image
-    virtual bool setImageForCamera(int camera_id, ImageType type, const vector<uint8_t>& image);
+    virtual void setImageForCamera(int camera_id, ImageType type, const vector<uint8_t>& image);
     virtual vector<uint8_t> getImageForCamera(int camera_id, ImageType type);
 
 	// optional telemetry
-	virtual void reportTelemetry(long renderTime) {}
+    virtual void reportTelemetry(float renderTime);
 
-    DroneControlBase() = default;
-    virtual ~DroneControlBase() = default;
-
-protected: //types
-    typedef std::function<bool()> WaitFunction;
+    DroneControllerBase() = default;
+    virtual ~DroneControllerBase() = default;
 
 protected: //must implement interface by derived class
     //low level commands
@@ -168,28 +149,30 @@ protected: //optional oveerides recommanded for any drones, default implementati
         float max_factor = 40, float min_factor = 30);
     virtual float getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel);
 
-protected: //higher level functions with no need to override in general
-           //*********************************safe wrapper around low level commands***************************************************
+protected: //utility functions and data members for derived classes
+    typedef std::function<bool()> WaitFunction;
+
+    // helper function can wait for anything (as defined by the given function) up to the max_wait duration (in seconds).
+    // returns true if the wait function succeeded, or false if timeout occurred or the timeout is invalid.
+    virtual bool waitForFunction(WaitFunction function, float max_wait, CancelableBase& cancelable_action);
+
+    //useful for derived class to check after takeoff
+    virtual bool waitForZ(float max_wait_seconds, float z, float margin, CancelableBase& cancelable_action);
+
+    //*********************************safe wrapper around low level commands***************************************************
     virtual bool moveByVelocity(float vx, float vy, float vz, const YawMode& yaw_mode);
     virtual bool moveByVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode);
     virtual bool moveToPosition(const Vector3r& dest, const YawMode& yaw_mode);
     virtual bool moveByRollPitchZ(float pitch, float roll, float z, float yaw);
     //****************************************************************************************************************************
 
-protected: //utility functions and data members for derived classes
-
-    // helper function can wait for anything (as defined by the given function) up to the max_wait duration (in seconds).
-    // returns true if the wait function succeeded, or false if timeout occurred or the timeout is invalid.
-    virtual bool waitForFunction(WaitFunction function, float max_wait, CancelableActionBase& cancelable_action);
-
-    //useful for derived class to check after takeoff
-    virtual bool waitForZ(float max_wait_seconds, float z, float margin, CancelableActionBase& cancelable_action);
-
     /************* safety checks & emergency manuevers ************/
     virtual bool emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result);
     virtual bool safetyCheckVelocity(const Vector3r& velocity);
     virtual bool safetyCheckVelocityZ(float vx, float vy, float z);
     virtual bool safetyCheckDestination(const Vector3r& dest_loc);
+    /************* safety checks & emergency manuevers ************/
+
     void logHomePoint();
 
 private:    //types
@@ -219,12 +202,12 @@ private:    //types
         }
     };
 
-    //instances of this class is always local variable in DroneControlBase methods
+    //instances of this class is always local variable in DroneControllerBase methods
     class VirtualRCEnable {
     private:
-        DroneControlBase* drone_base_ptr_;
+        DroneControllerBase* drone_base_ptr_;
     public:
-        VirtualRCEnable(DroneControlBase* drone_base_ptr)
+        VirtualRCEnable(DroneControllerBase* drone_base_ptr)
         {
             drone_base_ptr_ = drone_base_ptr;
             drone_base_ptr_->commandEnableVirtualRC(true);
@@ -271,8 +254,8 @@ private:// vars
     float obs_avoidance_vel_ = 0.5f;
     bool log_to_file = false;
 
-    // we make this recursive so that DroneControlBase subclass can grab StatusLock then call a 
-    // base class method on DroneControlBase that also grabs the StatusLock.
+    // we make this recursive so that DroneControllerBase subclass can grab StatusLock then call a 
+    // base class method on DroneControllerBase that also grabs the StatusLock.
     std::recursive_mutex status_mutex_;
 };
 

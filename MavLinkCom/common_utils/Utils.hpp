@@ -5,6 +5,8 @@
 #define common_utils_Utils_hpp
 
 #include "StrictMode.hpp"
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <chrono>
 #include <thread>
 #include <memory>
@@ -15,7 +17,6 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include <ctime>
 #include <iomanip>
 #include "type_utils.hpp"
 #include <limits>
@@ -36,9 +37,6 @@ using std::optional;
 #else
 using std::experimental::optional;
 #endif
-
-#define _USE_MATH_DEFINES
-#include <cmath>
 
 #ifndef M_PIf
 #define M_PIf static_cast<float>(3.1415926535897932384626433832795028841972)

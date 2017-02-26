@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include "control/RpcLibServer.hpp"
-#include "control/MavLinkDroneControl.hpp"
+#include "rpc/RpcLibServer.hpp"
+#include "controllers/MavLinkDroneController.hpp"
 
 using namespace std;
 using namespace msr::airlib;
@@ -47,16 +47,20 @@ int main(int argc, const char* argv[])
         return 1;
     }
 
-    MavLinkDroneControl::Parameters params;
-    MavLinkDroneControl mav(params);
-    DroneControlServer server_wrapper(&mav);
+    MavLinkDroneController::ConnectionInfo connection_info;
+    connection_info.use_serial = false;
+    connection_info.ip_port = connection_info.qgc_ip_port;
+
+    MavLinkDroneController mav_drone;
+    mav_drone.initialize(connection_info, nullptr, true);   //TODO: need to review how is_simulation flag might affect here
+    DroneControllerCancelable server_wrapper(&mav_drone);
     msr::airlib::RpcLibServer server(&server_wrapper, server_address);
     
     auto v = std::vector<msr::airlib::uint8_t>{ 5, 4, 3 };
-    server_wrapper.setImageForCamera(3, DroneControlBase::ImageType::Depth, v);
-    server_wrapper.setImageForCamera(4, DroneControlBase::ImageType::Scene, std::vector<msr::airlib::uint8_t>{6, 5, 4, 3, 2});
+    server_wrapper.setImageForCamera(3, DroneControllerBase::ImageType::Depth, v);
+    server_wrapper.setImageForCamera(4, DroneControllerBase::ImageType::Scene, std::vector<msr::airlib::uint8_t>{6, 5, 4, 3, 2});
     
-    std::cout << "Server started at " << server_address << ":" << params.udpPort << std::endl;
+    std::cout << "Server connected to MavLink endpoint at " << server_address << ":" << connection_info.ip_port << std::endl;
     server.start(true);
     return 0;
 }

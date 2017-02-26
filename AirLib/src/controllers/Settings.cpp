@@ -5,7 +5,7 @@
 #include "AirSim.h"
 #endif
 
-#include "control/Settings.h"
+#include "controllers/Settings.h"
 #include "common/common_utils/Utils.hpp"
 #include <codecvt>
 #include <fstream>

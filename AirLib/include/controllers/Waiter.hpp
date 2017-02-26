@@ -11,7 +11,7 @@
 
 namespace msr { namespace airlib {
 
-class CancelableActionBase {
+class CancelableBase {
 public:
     virtual bool isCancelled() = 0;
     virtual void cancelAllTasks() = 0;
@@ -33,7 +33,7 @@ public:
         return !isCancelled();
     }
 
-    virtual ~CancelableActionBase() = default;
+    virtual ~CancelableBase() = default;
 };
 
 class Waiter {
@@ -49,7 +49,7 @@ public:
         : sleep_duration_(sleep_duration_seconds), timeout_duration_(timeout_duration)
     {}
 
-    virtual bool sleep(CancelableActionBase& cancelable_action)
+    virtual bool sleep(CancelableBase& cancelable_action)
     {
         // Sleeps for the time needed to get current running time up to the requested sleep_duration_.
         // So this can be used to "throttle" any loop to check something every sleep_duration_ seconds.

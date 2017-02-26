@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "control/MavLinkHelper.h"
+#include "controllers/MavLinkDroneController.hpp"
 #include "VehiclePawnBase.h"
 #include "FlyingPawn.generated.h"
 
@@ -16,7 +16,7 @@ public: //interface
 	virtual APIPCamera* getFpvCamera() override;
 	virtual void initialize() override;
 
-	msr::airlib::MavLinkHelper::HILConnectionInfo getHILConnectionInfo();
+	msr::airlib::MavLinkDroneController::ConnectionInfo getMavConnectionInfo();
 	void setRotorSpeed(int rotor_index, float radsPerSec);
 
 public: //blueprint properties

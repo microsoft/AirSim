@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "Rotor.hpp"
-#include "vehicles/controllers/ControllerBase.hpp"
+#include "controllers/ControllerBase.hpp"
 #include "MultiRotorParams.hpp"
 #include <vector>
 #include "physics/PhysicsBody.hpp"
@@ -103,7 +103,7 @@ public:
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
             rotors_.at(rotor_index).setControlSignal(
-                controller_ptr_->getRotorControlSignal(rotor_index));
+                controller_ptr_->getVertexControlSignal(rotor_index));
         }
     }
 

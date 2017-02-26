@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#include "Utils.hpp"
+#include <boost/lexical_cast.hpp>
 #include "MavLinkVehicleImpl.hpp"
 #include "MavLinkConnection.hpp"
 #include "../serial_com/SerialPort.hpp"
@@ -8,7 +10,6 @@
 #include <exception>
 #include <cstring>
 #include <thread>
-#include <boost/lexical_cast.hpp>
 using namespace common_utils;
 
 using namespace mavlinkcom_impl;

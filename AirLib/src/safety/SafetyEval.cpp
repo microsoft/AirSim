@@ -8,7 +8,7 @@
 #include "AirSim.h"
 #endif
 
-#include "control/SafetyEval.hpp"
+#include "safety/SafetyEval.hpp"
 
 #include <cmath>
 #include <sstream>

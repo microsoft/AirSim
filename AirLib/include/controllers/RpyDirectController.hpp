@@ -5,7 +5,7 @@
 #define msr_air_copter_sim_RpyDirectController_hpp
 
 #include <exception>
-#include "ControllerBase.hpp"
+#include "controllers/ControllerBase.hpp"
 #include "RpyDirectControllerParams.hpp"
 #include "common/common_utils/Utils.hpp"
 
@@ -50,9 +50,13 @@ public:
         motor_control_signals_[3] = Utils::clip(throttle_speed - pitch_speed - roll_speed - yaw_speed, 0.0f, 1.0f);
 	}
 
-    virtual real_T getRotorControlSignal(unsigned int rotor_index) override
+    virtual real_T getVertexControlSignal(unsigned int rotor_index) override
     {
         return motor_control_signals_.at(rotor_index);
+    }
+    virtual size_t getVertexCount() override
+    {
+        return 4;
     }
     //*** End ControllerBase implementation ****//
 

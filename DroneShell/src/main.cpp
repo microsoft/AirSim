@@ -10,11 +10,11 @@
 #include "common/Common.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "common/common_utils/AsyncTasker.hpp"
-#include "control/RpcLibClient.hpp"
+#include "rpc/RpcLibClient.hpp"
 #include "SimpleShell.hpp"
 #include "common/EarthUtils.hpp"
-#include "control/DroneControlCommon.hpp"
-#include "control/SafetyEval.hpp"
+#include "controllers/DroneCommon.hpp"
+#include "safety/SafetyEval.hpp"
 
 
 namespace msr { namespace airlib {
@@ -104,7 +104,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.requestControl();
+        params.context->client.setOffboardMode(true);
         return false;
     }
 };
@@ -117,7 +117,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.releaseControl();
+        params.context->client.setOffboardMode(false);
         return false;
     }
 };

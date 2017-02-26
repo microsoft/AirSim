@@ -1,7 +1,7 @@
 #include "AirSim.h"
 #include "SimModeBase.h"
 #include "AirBlueprintLib.h"
-
+#include "controllers/Settings.h"
 
 ASimModeBase::ASimModeBase()
 {
@@ -16,6 +16,19 @@ void ASimModeBase::BeginPlay()
     setupInputBindings();
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
+
+    //load settings file if found
+    typedef msr::airlib::Settings Settings;
+    try {
+        Settings& settings = Settings::loadJSonFile(L"settings.json");
+        auto settings_filename = Settings::singleton().getFileName();
+        std::wstring msg = L"Loading settings from " + settings_filename;
+        UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Informational, 30);
+    }
+    catch (std::exception ex) {
+        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), TEXT(""), LogDebugLevel::Failure, 30);
+        UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 30);
+    }
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)

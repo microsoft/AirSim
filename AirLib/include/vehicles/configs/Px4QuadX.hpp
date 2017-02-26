@@ -5,14 +5,12 @@
 #define msr_air_copter_sim_vehicles_Pix4QuadX_hpp
 
 #include "vehicles/MultiRotorParams.hpp"
-#include "vehicles/controllers/RpyDirectControllerParams.hpp"
 
 namespace msr { namespace airlib {
 
 class Px4QuadX {
 private:
     typedef msr::airlib::MultiRotorParams  MultiRotorParams;
-    typedef msr::airlib::RpyDirectControllerParams RpyDirectControllerParams;
     typedef MultiRotorParams::RotorPose RotorPose;
     MultiRotorParams params_;
 public:
@@ -40,9 +38,6 @@ public:
             params_.inertia(1, 1) += (pos.x()*pos.x() + pos.z()*pos.z()) * motor_assembly_weight;
             params_.inertia(2, 2) += (pos.x()*pos.x() + pos.y()*pos.y()) * motor_assembly_weight;
         }
-
-        params_.rpy_direct_controller_params.rotor_count = 4;
-        params_.motor_direct_controller_params.rotor_count = 4;
     }
 
     const MultiRotorParams& getParams()

@@ -9,7 +9,7 @@
 #endif
 
 #include <thread>
-#include "control/ObstacleMap.hpp"
+#include "safety/ObstacleMap.hpp"
 #include "common/common_utils/Utils.hpp"
 
 namespace msr { namespace airlib {

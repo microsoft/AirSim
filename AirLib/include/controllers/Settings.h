@@ -16,7 +16,7 @@ namespace msr {
 			static Settings settings_;
 			std::wstring file_;
 			nlohmann::json doc_;
-    bool load_success = false;
+            bool load_success = false;
 		public:
 			static const wchar_t* getProductName() {
 				return L"AirSim";
@@ -26,8 +26,8 @@ namespace msr {
 				return settings_;
 			}
 
-    static std::wstring getFullPath(std::wstring fileName);
-    bool isLoadSuccess();
+            static std::wstring getFullPath(std::wstring fileName);
+            bool isLoadSuccess();
 			static Settings& loadJSonFile(std::wstring fileName);
 			void saveJSonFile(std::wstring fileName);
 			std::wstring getFileName() { return file_; }

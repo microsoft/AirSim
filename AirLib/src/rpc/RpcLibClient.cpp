@@ -19,9 +19,9 @@ STRICT_MODE_OFF
 #endif // !RPCLIB_MSGPACK
 
 #include "rpc/client.h"
-#include "control/RpcLibAdapators.hpp"
+#include "rpc/RpcLibAdapators.hpp"
 STRICT_MODE_ON
-#include "control/RpcLibClient.hpp"
+#include "rpc/RpcLibClient.hpp"
 #ifdef _MSC_VER
 __pragma(warning( disable : 4239))
 #endif			  
@@ -52,13 +52,17 @@ bool RpcLibClient::armDisarm(bool arm)
 {
     return pimpl_->client.call("armDisarm", arm).as<bool>();
 }
-bool RpcLibClient::requestControl()
+void RpcLibClient::setOffboardMode(bool is_set)
 {
-    return pimpl_->client.call("requestControl").as<bool>();
+    pimpl_->client.call("setOffboardMode", is_set);
 }
-bool RpcLibClient::releaseControl()
+void RpcLibClient::setSimulationMode(bool is_set)
 {
-    return pimpl_->client.call("releaseControl").as<bool>();
+    pimpl_->client.call("setSimulationMode", is_set);
+}
+void RpcLibClient::setUserInputs(const vector<float>& inputs)
+{
+    pimpl_->client.call("setUserInputs", inputs);
 }
 bool RpcLibClient::takeoff(float max_wait_seconds)
 {
@@ -71,6 +75,14 @@ bool RpcLibClient::land()
 bool RpcLibClient::goHome()
 {
     return pimpl_->client.call("goHome").as<bool>();
+}
+void RpcLibClient::start()
+{
+    pimpl_->client.call("start");
+}
+void RpcLibClient::stop()
+{
+    pimpl_->client.call("stop");
 }
 
 
@@ -174,23 +186,28 @@ bool RpcLibClient::isOffboardMode()
     return pimpl_->client.call("isOffboardMode").as<bool>();
 }
 
+bool RpcLibClient::isSimulationMode()
+{
+    return pimpl_->client.call("isSimulationMode").as<bool>();
+}
+
 std::string RpcLibClient::getDebugInfo()
 {
     return pimpl_->client.call("getDebugInfo").as<std::string>();
 }
 
-bool RpcLibClient::setImageTypeForCamera(int camera_id, DroneControlBase::ImageType type)
+void RpcLibClient::setImageTypeForCamera(int camera_id, DroneControllerBase::ImageType type)
 {
-    return pimpl_->client.call("setImageTypeForCamera", camera_id, type).as<bool>();
+    pimpl_->client.call("setImageTypeForCamera", camera_id, type);
 }
 
-DroneControlBase::ImageType RpcLibClient::getImageTypeForCamera(int camera_id)
+DroneControllerBase::ImageType RpcLibClient::getImageTypeForCamera(int camera_id)
 {
-    return pimpl_->client.call("getImageTypeForCamera", camera_id).as<DroneControlBase::ImageType>();
+    return pimpl_->client.call("getImageTypeForCamera", camera_id).as<DroneControllerBase::ImageType>();
 }
 
 //get/set image
-vector<uint8_t> RpcLibClient::getImageForCamera(int camera_id, DroneControlBase::ImageType type)
+vector<uint8_t> RpcLibClient::getImageForCamera(int camera_id, DroneControllerBase::ImageType type)
 {
     return pimpl_->client.call("getImageForCamera", camera_id, type).as<vector<uint8_t>>();
 }
