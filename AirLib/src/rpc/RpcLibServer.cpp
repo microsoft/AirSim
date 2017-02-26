@@ -16,7 +16,7 @@ STRICT_MODE_OFF
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 
-#include "rpc/server.h"
+#include <rpc/server.h>
 #include "rpc/RpcLibAdapators.hpp"
 STRICT_MODE_ON
 #include "rpc/RpcLibServer.hpp"
