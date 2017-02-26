@@ -28,7 +28,7 @@ void Utils::logMessage(const char* message, ...) {
     std::unique_ptr<char[]> buf(new char[size]);
 
 #ifndef _MSC_VER
-    vsnprintf(buf.get(), size, format, args);
+    vsnprintf(buf.get(), size, message, args);
 #else
     vsnprintf_s(buf.get(), size, _TRUNCATE, message, args);
 #endif
@@ -50,7 +50,7 @@ void Utils::logError(const char* message, ...) {
     std::unique_ptr<char[]> buf(new char[size]);
 
 #ifndef _MSC_VER
-    vsnprintf(buf.get(), size, format, args);
+    vsnprintf(buf.get(), size, message, args);
 #else
     vsnprintf_s(buf.get(), size, _TRUNCATE, message, args);
 #endif
