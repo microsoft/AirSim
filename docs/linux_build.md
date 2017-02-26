@@ -8,6 +8,7 @@ If you don't have cmake version 3.* (for example, that is not the default on Ubu
 ````
 sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
 sudo apt-get update
+sudo apt-get install cmake
 ````
 
 Then get the right version of Eigen, see [Install Eigen](install_eigen.md).  
