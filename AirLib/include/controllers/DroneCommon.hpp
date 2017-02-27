@@ -40,6 +40,7 @@ struct YawMode {
 
 //properties of vehicle
 struct VehicleParams {
+    VehicleParams(){}; 
     //what is the breaking distance for given velocity?
     //currently we support simple linear relationship
     float vel_to_breaking_dist = 0.5f;   //ideally this should be 2X for very high speed but for testing we are keeping it 0.5
