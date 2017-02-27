@@ -21,9 +21,9 @@ AirSim code has two external dependencies: Eigen library and Boost library.
   2. Start VS2015 x64 Native Tools Command Prompt. Create a folder for repo and run
   `git clone https://github.com/Microsoft/AirSim.git`
   3. Install [cmake](https://cmake.org/download/) which is used to build the rpclib.
-  3. Run `build.cmd` from the command line. If everything goes ok, it will copy all the binaries that you need to Unreal/Plugins folder in your repo. 
+  4. Run `build.cmd` from the command line. If everything goes ok, it will copy all the binaries that you need to Unreal/Plugins folder in your repo. 
   This Plugins folder can then be simply copied to your Unreal environment.
-  4. [Linux build](linux_build.md) is coming... stay tuned.
+  5. [Linux build](linux_build.md) is coming... stay tuned.
   
 ## Create Unreal Environment Project
 
