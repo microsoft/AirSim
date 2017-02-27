@@ -27,7 +27,7 @@ You can also fly without flight controller hardware.  See [alternative to RC](si
 3. Install the PX4 firmware v1.4.4 from [github](https://github.com/PX4/Firmware/releases/tag/v1.4.4). The later releases have a bug that we are working with PX4 team to fix.
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected. You might also want to use QGroundControl to calibrate your RC and set up Flight Mode switch among other things (see below) so everything is green.
 
-See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0).
+See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0) and  [Unreal AirSim Setup  Video](https://youtu.be/1oY8Qu5maQQ) that shows you all the setup steps in this document.
 
 ## Using the Remote Control
 When using hardware-in-loop mode, you can use remote controls such as Fly Sky, Spektrum, Futaba etc.
