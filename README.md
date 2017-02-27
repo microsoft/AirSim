@@ -86,7 +86,7 @@ We welcome contributions to help advance research frontiers.
 
 - [More on our design](docs/design.md)
 - [More on our code structure](docs/code_structure.md)
-- [Contibution Guidelines](docs/contributing.md)
+- [Contribution Guidelines](docs/contributing.md)
 
 ## Contact
 Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
