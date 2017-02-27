@@ -74,7 +74,7 @@ else (EIGEN3_INCLUDE_DIR)
   find_path(EIGEN3_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library
       PATHS
       $ENV{EIGEN_ROOT}
-      PATH_SUFFIXES eigen3 eigen
+      PATH_SUFFIXES Eigen3 Eigen eigen3 eigen
       NO_DEFAULT_PATH
     )
 

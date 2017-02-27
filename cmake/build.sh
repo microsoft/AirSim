@@ -27,3 +27,13 @@ fi
 cmake $GCCARGS CMakeLists.txt
 
 make
+
+pushd ..
+mkdir -p AirLib/lib/x64/Debug
+mkdir -p AirLib/deps/rpclib
+mkdir -p AirLib/deps/MavLinkCom
+cp -p cmake/output/lib/* AirLib/lib/x64/Debug
+cp -rp external/rpclib/include AirLib/deps/rpclib
+cp -rp MavLinkCom/include AirLib/deps/MavLinkCom
+cp -rp AirLib Unreal/Plugins/AirSim/Source
+popd

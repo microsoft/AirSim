@@ -26,7 +26,7 @@ ENDIF()
 include_directories(
   ${AIRSIM_ROOT}/HelloDrone
   ${AIRSIM_ROOT}/AirLib/include
-  ${AIRSIM_ROOT}/AirLib/deps/rpclib/include
+  ${RPC_LIB_INCLUDES}
   ${AIRSIM_ROOT}/MavLinkCom/include
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
   ${Boost_INCLUDE_DIRS}
@@ -38,11 +38,10 @@ add_executable(HelloDrone
 			${AIRSIM_ROOT}/HelloDrone/main.cpp
 			)
 			
-find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(${PROJECT_NAME} MavLinkCom)
 target_link_libraries(${PROJECT_NAME} AirLib)
-target_link_libraries(${PROJECT_NAME} ${CMAKE_PROJECT_NAME}-${RPCLIB_NAME_SUFFIX})
+target_link_libraries(${PROJECT_NAME} ${RPC_LIB})
 IF(UNIX)
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 ENDIF()

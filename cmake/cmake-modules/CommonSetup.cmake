@@ -6,12 +6,13 @@ macro(CommonSetup)
     find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
     message(STATUS "found AIRSIM_ROOT=${AIRSIM_ROOT}")
 
-    SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib) 
+    SET(LIBRARY_OUTPUT_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}) 
+	SET(EXECUTABLE_OUTPUT_PATH ${AIRSIM_ROOT}/cmake/output/bin) 
 
     IF(UNIX)
         ## I had to remove the following for Eigen to build properly: -Wlogical-op -Wsign-promo 
         ## boost does not built cleam, so I had to disable these checks:
-        set(BOOST_OVERRIDES " -Wno-error=undef  -Wno-error=ctor-dtor-privacy -Wno-error=old-style-cast  -Wno-error=shadow -Wno-error=redundant-decls -Wno-error=missing-field-initializers  -Wno-error=unused-parameter") 
+        set(BOOST_OVERRIDES " -Wno-error=undef -Wno-error=ctor-dtor-privacy -Wno-error=old-style-cast  -Wno-error=shadow -Wno-error=redundant-decls -Wno-error=missing-field-initializers  -Wno-error=unused-parameter") 
         ## Mavlink requires turning off -pedantic  and -Wno-error=switch-default 
         set(MAVLINK_OVERRIDES "-Wno-error=switch-default ") 
         set(RPC_LIB_DEFINES "-D MSGPACK_PP_VARIADICS_MSVC=0")
@@ -19,8 +20,8 @@ macro(CommonSetup)
             set(CMAKE_CXX_STANDARD 14)
         else ()
 		    ##TODO: Werror removed temporarily. It should be added back after Linux build is stable
-            set(CMAKE_CXX_FLAGS "-std=c++14 -stdlib=libc++ -ggdb -Wall -Wextra  -Wstrict-aliasing -fmax-errors=2 -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wnoexcept -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option ${MAVLINK_OVERRIDES} ${BOOST_OVERRIDES} ${RPC_LIB_DEFINES} -ldl ${CMAKE_CXX_FLAGS}")
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi")
+            set(CMAKE_CXX_FLAGS "-std=c++14 -ggdb -lpthread -Wall -Wextra -Wstrict-aliasing -fmax-errors=2 -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wnoexcept -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option ${MAVLINK_OVERRIDES} ${BOOST_OVERRIDES} ${RPC_LIB_DEFINES} -ldl ${CMAKE_CXX_FLAGS}")
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
         endif ()
         set(BUILD_PLATFORM "x64")
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -44,7 +45,7 @@ macro(CommonSetup)
     
     IF(UNIX)
         set(BUILD_TYPE "linux")
-        set(RPC_LIB "${AIRSIM_ROOT}/AirLib/deps/rpclib/lib/${BUILD_PLATFORM}/${BUILD_TYPE}/librpc.a")
+
     ELSE()
         string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
         if("${BUILD_TYPE}" STREQUAL "debug")
@@ -54,9 +55,11 @@ macro(CommonSetup)
         else()
           message(FATAL_ERROR "Please specify '-D CMAKE_BUILD_TYPE=Debug' or Release on the cmake command line")
         endif()
-        set(RPC_LIB "${AIRSIM_ROOT}/AirLib/deps/rpclib/lib/${BUILD_PLATFORM}/${BUILD_TYPE}/rpc")
     endif() 
-
-
+	
+	set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/include") 
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
+	set(RPC_LIB ${CMAKE_PROJECT_NAME}-${RPCLIB_NAME_SUFFIX})
+	set(RPC_BIN_NAME "${AIRSIM_ROOT}/cmake/${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${RPC_LIB}.a")
 endmacro(CommonSetup)
 

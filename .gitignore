@@ -293,3 +293,13 @@ deps/
 /boost
 /eigen
 /build_debug
+/cmake/CPackSourceConfig.cmake
+/cmake/CPackConfig.cmake
+/cmake/arch.c
+/cmake/rpclib/version.h
+/cmake/rpclib/Makefile
+/cmake/rpclib
+/cmake/output/lib/libMavLinkCom.a
+/cmake/output/lib/libAirSim-rpclib.a
+/cmake/output/lib/libAirLib.a
+/cmake/output/lib

@@ -20,7 +20,7 @@ include_directories(
   ${AIRSIM_ROOT}/AirLib/
   ${AIRSIM_ROOT}/AirLib/include
   ${AIRSIM_ROOT}/MavLinkCom/include
-  ${AIRSIM_ROOT}/external/rpclib/include
+  ${RPC_LIB_INCLUDES}
 )
 
 add_library(AirLib STATIC
@@ -34,7 +34,7 @@ add_library(AirLib STATIC
 			)
 
 ## Add these to your app that links this library:			
-target_link_libraries(${PROJECT_NAME} ${CMAKE_PROJECT_NAME}-${RPCLIB_NAME_SUFFIX})
+target_link_libraries(${PROJECT_NAME} ${RPC_LIB})
 
 #string(SUBSTRING ${CMAKE_STATIC_LINKER_FLAGS} 9 -1 "BUILD_PLATFORM")
 #find_package(Threads REQUIRED)

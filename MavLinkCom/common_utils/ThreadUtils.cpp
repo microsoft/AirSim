@@ -20,7 +20,7 @@ bool CurrentThread::setMaximumPriority()
 		return false;
 	}
 	return true;
-#elif __APPLE__
+#elif defined(__APPLE__)
     // TODO: How to handle POSIX thread priorities on OSX?
     return true;
 #else

@@ -737,7 +737,7 @@ struct MavLinkDroneController::impl {
     {
         if (connection_ != nullptr) {
             //TODO: can we do this?
-            throw std::exception("Cannot call setSimulationMode after connection was already established for MavLink");
+            throw std::domain_error("Cannot call setSimulationMode after connection was already established for MavLink");
         }
 
         is_simulation_mode_ = is_set;
