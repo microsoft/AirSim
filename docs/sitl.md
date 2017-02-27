@@ -21,16 +21,16 @@ cd Firmware
 git submodule update --init --recursive
 make posix_sitl_default
 ```
-3. Use following command to start PX4 firmware in SITL mode:
+4. Use following command to start PX4 firmware in SITL mode:
 ```
 ./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/lpe/iris
 ```
-You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is
+5. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is
 waiting for someone to connect.
-4. Now edit [settings file](settings.md) with `UdpIp` address 127.0.0.1 and `UdpPort` 14560, set `UseSerial` to false
-5. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from
+6. Now edit [settings file](settings.md) with `UdpIp` address 127.0.0.1 and `UdpPort` 14560, set `UseSerial` to false
+7. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from
 things like `local_position_estimator` and `commander` and so on.
-6. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 
+8. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 
 Note that as we don't have physical board, RC cannot be connected directly to it. 
 So the alternatives are either use XBox 360 Controller or connect your RC using USB port if it has it 
 (for example, in case of [FrSky Taranis X9D Plus](prereq.md)) or using trainer USB cable to PC. 
