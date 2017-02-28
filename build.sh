@@ -46,7 +46,7 @@ if [[ ! -d boost ]]; then
 	./bootstrap.sh --prefix="$boost_dir/installation" --without-libraries=python
 	./b2 -j8 toolset=clang cxxflags="-fPIC -stdlib=libc++" linkflags="-stdlib=libc++" \
 		runtime-link=shared variant=release link=static threading=multi install
-	rm download
+	rm ../../download
 
 	popd &>/dev/null
 fi
