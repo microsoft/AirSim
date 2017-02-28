@@ -28,6 +28,12 @@ export EIGEN_ROOT="$(pwd)/eigen"
 boost_dir="$(pwd)/boost/boost_1_63_0"
 # get & build boost
 if [[ ! -d boost ]]; then
+	ldconfig -p | grep -q libc++
+	if [ $? -ne 0 ]; then
+		echo "it's necessary libc++ to compile boost"
+		exit 1
+	fi
+
 	# because we are using Clang, we cannot use the system's boost libs, because
 	# we could run into the same ABI problems as stated above
 	echo "downloading & building boost..."
