@@ -10,8 +10,8 @@
 #include "common/Common.hpp"
 #include "common_utils/OnlineStats.hpp"
 #include "common/FrequencyLimiter.hpp"
+#include "UpdatableObject.hpp"
 #include "StateReporter.hpp"
-#include "UpdatableContainer.hpp"
 
 namespace msr { namespace airlib {
 
@@ -34,6 +34,7 @@ public:
     void clearReport()
     {
         report_.clear();
+        is_wait_complete = false;
     }
 
     //*** Start: UpdatableState implementation ***//
@@ -49,6 +50,7 @@ public:
         if (enabled_) {
             dt_stats_.insert(dt);
             report_freq_.update(dt);
+            is_wait_complete = is_wait_complete || report_freq_.isWaitComplete();
         }
     }
     virtual void reportState(StateReporter& reporter) override
@@ -63,7 +65,7 @@ public:
 
     bool canReport()
     {
-        return enabled_ && report_freq_.isWaitComplete();
+        return enabled_ && is_wait_complete;
     }
 
     StateReporter* getReporter()
@@ -106,6 +108,7 @@ private:
 
     FrequencyLimiter report_freq_;
     bool enabled_;
+    bool is_wait_complete = false;
 };
 
 }} //namespace

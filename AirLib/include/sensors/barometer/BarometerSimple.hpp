@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_Barometer_hpp
-#define msr_air_copter_sim_Barometer_hpp
+#ifndef msr_airlib_Barometer_hpp
+#define msr_airlib_Barometer_hpp
 
 #include <random>
 #include "common/Common.hpp"
@@ -16,24 +16,13 @@ namespace msr { namespace airlib {
 
 class BarometerSimple  : public BarometerBase {
 public:
-    BarometerSimple()
+    BarometerSimple(const BarometerSimpleParams& params = BarometerSimpleParams())
+        : params_(params)
     {
-        BarometerSimple::reset();
-    }
-    BarometerSimple(GroundTruth* ground_truth)
-    {
-        initialize(ground_truth);
-    }    
-    void initialize(GroundTruth* ground_truth)
-    {
-        BarometerBase::initialize(ground_truth);
-        
         pressure_factor.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, Utils::nan<real_T>());
 
         uncorrelated_noise = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
         correlated_noise.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
-        
-        BarometerSimple::reset();
     }
 
     //*** Start: UpdatableState implementation ***//

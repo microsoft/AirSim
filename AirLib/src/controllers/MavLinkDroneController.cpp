@@ -18,6 +18,11 @@
 #include "MavLinkVideoStream.hpp"
 #include "MavLinkVehicle.hpp"
 
+//sensors
+#include "sensors/barometer/BarometerBase.hpp"
+#include "sensors/imu/ImuBase.hpp"
+#include "sensors/gps/GpsBase.hpp"
+#include "sensors/magnetometer/MagnetometerBase.hpp"
 
 namespace msr { namespace airlib {
 
@@ -465,23 +470,41 @@ struct MavLinkDroneController::impl {
         setNormalMode();
     }
 
+    const ImuBase* getImu()
+    {
+        return static_cast<const ImuBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Imu));
+    }
+    const MagnetometerBase* getMagnetometer()
+    {
+        return static_cast<const MagnetometerBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Magnetometer));
+    }
+    const BarometerBase* getBarometer()
+    {
+        return static_cast<const BarometerBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Barometer));
+    }
+    const GpsBase* getGps()
+    {
+        return static_cast<const GpsBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Gps));
+    }
+
     void update(real_T dt)
     {
         if (phys_vehicle_ == nullptr || connection_ == nullptr || !connection_->isOpen())
             return;
 
         //send sensor updates
-        const auto& imu_output = phys_vehicle_->getImu()->getOutput();
-        const auto& mag_output = phys_vehicle_->getMagnetometer()->getOutput();
-        const auto& baro_output = phys_vehicle_->getBarometer()->getOutput();
+        const auto& imu_output = getImu()->getOutput();
+        const auto& mag_output = getMagnetometer()->getOutput();
+        const auto& baro_output = getBarometer()->getOutput();
 
         sendHILSensor(imu_output.linear_acceleration, 
             imu_output.angular_velocity, 
             mag_output.magnetic_field_body,
             baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
 
-        if (phys_vehicle_->getGps() != nullptr) {
-            const auto& gps_output = phys_vehicle_->getGps()->getOutput();
+        const auto gps = getGps();
+        if (gps != nullptr) {
+            const auto& gps_output = gps->getOutput();
 
             //send GPS
             if (gps_output.is_valid && gps_output.gnss.time_utc > last_gps_time_) {

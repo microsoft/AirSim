@@ -9,7 +9,6 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "common/LogFileWriter.hpp"
 #include "common/CommonStructs.hpp"
 
 namespace msr { namespace airlib {
@@ -19,17 +18,13 @@ public:
     FastPhysicsEngine()
     { 
         FastPhysicsEngine::reset();
+    }
 
-        logger_.open("c:\\temp\\FastPhysicsEngine.tsv", false);
-    }
-    ~FastPhysicsEngine()
-    {
-        //log_file_.close();
-    }
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        //nothing to do yet
     }
 
     virtual void update(real_T dt) override
@@ -291,7 +286,6 @@ private:
     }
 
 private:
-    LogFileWriter logger_;
     std::stringstream debug_string_;
     int grounded_;
 };

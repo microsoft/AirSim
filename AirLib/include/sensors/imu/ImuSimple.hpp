@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 
-#ifndef msr_air_copter_sim_SimpleImu_hpp
-#define msr_air_copter_sim_SimpleImu_hpp
+#ifndef msr_airlib_SimpleImu_hpp
+#define msr_airlib_SimpleImu_hpp
 
 #include "common/Common.hpp"
 #include "ImuSimpleParams.hpp"
@@ -14,22 +14,11 @@ namespace msr { namespace airlib {
 class ImuSimple : public ImuBase {
 public:
     //constructors
-    ImuSimple()
+    ImuSimple(const ImuSimpleParams& params = ImuSimpleParams())
+        : params_(params)
     {
-        ImuSimple::reset();
-    }
-    ImuSimple(GroundTruth* ground_truth)
-    {
-        initialize(ground_truth);
-    }
-    void initialize(GroundTruth* ground_truth)
-    {
-        ImuBase::initialize(ground_truth);
-
         gyro_bias_stability_norm = params_.gyro.bias_stability / sqrt(params_.gyro.tau);
         accel_bias_stability_norm = params_.accel.bias_stability / sqrt(params_.accel.tau);
-
-        ImuSimple::reset();
     }
 
     //*** Start: UpdatableState implementation ***//

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_Gps_hpp
-#define msr_air_copter_sim_Gps_hpp
+#ifndef msr_airlib_Gps_hpp
+#define msr_airlib_Gps_hpp
 
 #include <random>
 #include "common/Common.hpp"
@@ -17,29 +17,17 @@ namespace msr { namespace airlib {
 
 class GpsSimple : public GpsBase {
 public: //methods
-    GpsSimple()
+    GpsSimple(const GpsSimpleParams& params = GpsSimpleParams())
+        : params_(params)
     {
-        GpsSimple::reset();
-    }
-    GpsSimple(GroundTruth* ground_truth)
-    {
-        initialize(ground_truth);
-    }
-    void initialize(GroundTruth* ground_truth)
-    {
-        GpsBase::initialize(ground_truth);
-
         //initialize frequency limiter
         freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
         delay_line_.initialize(params_.update_latency);
-        
+
         //initialize filters
         eph_filter.initialize(params_.eph_time_constant, params_.eph_final, params_.eph_initial); //starting dilution set to 100 which we will reduce over time to targeted 0.3f, with 45% accuracy within 100 updates, each update occurring at 0.2s interval
         epv_filter.initialize(params_.epv_time_constant, params_.epv_final, params_.epv_initial);
-    
-        GpsSimple::reset();
     }
-
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override

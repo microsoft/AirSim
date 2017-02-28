@@ -1,56 +1,70 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_vehicles_Pix4QuadX_hpp
-#define msr_air_copter_sim_vehicles_Pix4QuadX_hpp
+#ifndef msr_airlib_vehicles_Pix4QuadX_hpp
+#define msr_airlib_vehicles_Pix4QuadX_hpp
 
 #include "vehicles/MultiRotorParams.hpp"
 
+//sensors
+#include "sensors/barometer/BarometerSimple.hpp"
+#include "sensors/imu/ImuSimple.hpp"
+#include "sensors/gps/GpsSimple.hpp"
+#include "sensors/magnetometer/MagnetometerSimple.hpp"
+
 namespace msr { namespace airlib {
 
-class Px4QuadX {
-private:
-    typedef msr::airlib::MultiRotorParams  MultiRotorParams;
-    typedef MultiRotorParams::RotorPose RotorPose;
-    MultiRotorParams params_;
-public:
-    Px4QuadX()
+class Px4QuadX : public MultiRotorParams {
+protected:
+    virtual void setup(Params& params, SensorCollection& sensors) override
     {
-        params_.mass = 1.0; //can be varied from 0.800 to 1.600
-        real_T motor_assembly_weight = 0.055f;  //weight for MT2212 motor for F450 frame
-        params_.inertia = Matrix3x3r::Zero();
-
-        params_.dim.x = 0.180f; params_.dim.y = 0.11f; params_.dim.z = 0.040f;
-
+        //set up arm lengths
         //dimensions are for F450 frame: http://artofcircuits.com/product/quadcopter-frame-hj450-with-power-distribution
-        std::vector<real_T> arm_lengths{ 0.2275f, 0.2275f, 0.2275f, 0.2275f };
-        params_.initializeRotorPoses(static_cast<uint>(arm_lengths.size()), arm_lengths.data(), 2.5f / 100);
+        params.rotor_count = 4;
+        std::vector<real_T> arm_lengths(params.rotor_count, 0.2275f);
 
-        //http://farside.ph.utexas.edu/teaching/336k/Newtonhtml/node64.html
-        real_T box_mass = params_.mass - params_.rotor_poses.size() * motor_assembly_weight;
-        params_.inertia(0, 0) = box_mass / 12.0f * (params_.dim.y*params_.dim.y + params_.dim.z*params_.dim.z); 
-        params_.inertia(1, 1) = box_mass / 12.0f * (params_.dim.x*params_.dim.x + params_.dim.z*params_.dim.z); 
-        params_.inertia(2, 2) = box_mass / 12.0f * (params_.dim.x*params_.dim.x + params_.dim.y*params_.dim.y); 
+        //set up mass
+        params.mass = 1.0f; //can be varied from 0.800 to 1.600
+        real_T motor_assembly_weight = 0.055f;  //weight for MT2212 motor for F450 frame
+        real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
 
-        for (auto i = 0; i < params_.rotor_poses.size(); ++i) {
-            const auto& pos = params_.rotor_poses.at(i).position;
-            params_.inertia(0, 0) += (pos.y()*pos.y() + pos.z()*pos.z()) * motor_assembly_weight;
-            params_.inertia(1, 1) += (pos.x()*pos.x() + pos.z()*pos.z()) * motor_assembly_weight;
-            params_.inertia(2, 2) += (pos.x()*pos.x() + pos.y()*pos.y()) * motor_assembly_weight;
-        }
+        //set up dimensions of core body box
+        params.body_box.x = 0.180f; params.body_box.y = 0.11f; params.body_box.z = 0.040f;
+        real_T rotor_z = 2.5f / 100;
+
+        //computer rotor poses
+        initializeRotorPoses(params.rotor_poses, params.rotor_count, arm_lengths.data(), rotor_z);
+        //compute inertia matrix
+        computeInertiaMatrix(params.inertia, params.body_box, params.rotor_poses, box_mass, motor_assembly_weight);
+        //create sensors
+        createStandardSensors(sensors, params.enabled_sensors);
+
+        //leave everything else to defaults
     }
 
-    const MultiRotorParams& getParams()
+private:
+    void createStandardSensors(SensorCollection& sensors, const EnabledSensors& enabled_sensors)
     {
-        return params_;
+        sensor_storage_.clear();
+        if (enabled_sensors.imu)
+            sensors.insert(createSensor<ImuSimple>(), SensorCollection::SensorType::Imu);
+        if (enabled_sensors.magnetometer)
+            sensors.insert(createSensor<MagnetometerSimple>(), SensorCollection::SensorType::Magnetometer);
+        if (enabled_sensors.gps)
+            sensors.insert(createSensor<GpsSimple>(), SensorCollection::SensorType::Gps);
+        if (enabled_sensors.barometer)
+            sensors.insert(createSensor<BarometerSimple>(), SensorCollection::SensorType::Barometer);
     }
 
-    static const MultiRotorParams& Params()
+    template<typename SensorClass>
+    SensorBase* createSensor()
     {
-        static Px4QuadX vehicle_;	
-        return vehicle_.getParams();
+        sensor_storage_.emplace_back(unique_ptr<SensorClass>(new SensorClass()));
+        return sensor_storage_.back().get();
     }
 
+private:
+    vector<unique_ptr<SensorBase>> sensor_storage_;
 };
 
 }} //namespace

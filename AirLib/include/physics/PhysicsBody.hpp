@@ -5,7 +5,7 @@
 #define airsim_core_PhysicsBody_hpp
 
 #include "common/Common.hpp"
-#include "common/UpdatableContainer.hpp"
+#include "common/UpdatableObject.hpp"
 #include "PhysicsBodyVertex.hpp"
 #include "common/CommonStructs.hpp"
 #include "Kinematics.hpp"
@@ -31,7 +31,7 @@ public: //methods
     //constructors
     PhysicsBody()
     {
-        PhysicsBody::reset();
+        //allow default constructor with later call for initialize
     }
     PhysicsBody(real_T mass, const Matrix3x3r& inertia, const Kinematics::State& initial_kinematic_state, Environment* environment)
     {

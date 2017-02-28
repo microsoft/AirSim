@@ -7,6 +7,8 @@ using namespace msr::airlib;
 
 void MavMultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn)
 {
+    vehicle_params_.initialize();
+
 	vehicle_pawn_ = vehicle_pawn;
 	vehicle_pawn_->initialize();
 
@@ -19,7 +21,7 @@ void MavMultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn)
 	initial_environment.min_z_over_ground = vehicle_pawn_->getMinZOverGround();
 	environment_.initialize(initial_environment);
     createController(vehicle_);
-	vehicle_.initialize(Px4QuadX::Params(), initial_kinematics,
+	vehicle_.initialize(&vehicle_params_, initial_kinematics,
 		&environment_, controller_.get());
 }
 
@@ -99,7 +101,7 @@ void MavMultiRotorConnector::updateRenderedState()
 	for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
 		const auto& rotor_output = vehicle_.getRotorOutput(i);
 		rotor_speeds_[i] = rotor_output.speed;
-		rotor_directions_[i] = rotor_output.turning_direction;
+		rotor_directions_[i] = static_cast<int>(rotor_output.turning_direction);
 		rotor_thrusts_[i] = rotor_output.thrust;
 		rotor_controls_filtered_[i] = rotor_output.control_signal_filtered;
 	}

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_RpyDirectController_hpp
-#define msr_air_copter_sim_RpyDirectController_hpp
+#ifndef msr_airlib_RpyDirectController_hpp
+#define msr_airlib_RpyDirectController_hpp
 
 #include <exception>
 #include "controllers/ControllerBase.hpp"
@@ -13,11 +13,7 @@ namespace msr { namespace airlib {
 
 class RpyDirectController : public ControllerBase {
 public:
-    RpyDirectController()
-    {
-        RpyDirectController::reset();
-    }
-    RpyDirectController(const RpyDirectControllerParams& params)
+    RpyDirectController(const RpyDirectControllerParams& params = RpyDirectControllerParams())
     {
         initialize(params);
     }

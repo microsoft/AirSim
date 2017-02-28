@@ -16,7 +16,7 @@ protected:
 public:
     PhysicsBodyVertex()
     {
-        PhysicsBodyVertex::reset();
+        //allow default constructor with later call for initialize
     }
     PhysicsBodyVertex(const Vector3r& position, const Vector3r& normal)
     {

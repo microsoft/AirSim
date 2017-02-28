@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_MagnetometerSimpleParams_hpp
-#define msr_air_copter_sim_MagnetometerSimpleParams_hpp
+#ifndef msr_airlib_MagnetometerSimpleParams_hpp
+#define msr_airlib_MagnetometerSimpleParams_hpp
 
 #include "common/Common.hpp"
 

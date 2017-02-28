@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_MultiRotorParameters_hpp
-#define msr_air_copter_sim_MultiRotorParameters_hpp
+#ifndef msr_airlib_MultiRotorParameters_hpp
+#define msr_airlib_MultiRotorParameters_hpp
 
 #include "common/Common.hpp"
 #include "RotorParams.hpp"
-
-
+#include "sensors/SensorCollection.hpp"
 
 namespace msr { namespace airlib {
 
-//needs separate include because of circular reference in controller	
-struct MultiRotorParams {
+class MultiRotorParams {
+//All units are SI
+public: //types
     struct RotorPose {
         Vector3r position;  //relative to center of gravity of vehicle body
         Vector3r normal;
@@ -25,35 +25,61 @@ struct MultiRotorParams {
         {}
     };
 
-    vector<RotorPose> rotor_poses;
-    
-    real_T mass = 1;
-    real_T motor_assembly_weight = 0.055f;  //weight for MT2212 motor for F450 frame
-    Matrix3x3r inertia = Matrix3x3r::Identity();
-
-    real_T linear_drag_coefficient = 1.3f / 4.0f; 
-	//sample value 1.3 from http://klsin.bpmsg.com/how-fast-can-a-quadcopter-fly/, but divided by 4 to account
-	// for nice streamlined frame design and allow higher top speed which is more fun.
-    //angular coefficient is usually 10X smaller than linear, however we should replace this with exact number
-    //http://physics.stackexchange.com/q/304742/14061
-    real_T angular_drag_coefficient = 0.13f; 
-    real_T restitution = 0.15f;
-    real_T friction = 0.7f;
-
-    struct dimensions {
-        real_T x, y, z; //box in the center with dimensions x, y and z
-    } dim;
-
-    RotorParams rotor_params;
-    
     struct EnabledSensors {
-    	bool imu = true;
-    	bool magnetometer = true;
-    	bool gps = true;
+        bool imu = true;
+        bool magnetometer = true;
+        bool gps = true;
         bool barometer = true;
-    } enabled_sensors;
+    };
 
-    void initializeRotorPoses(uint rotor_count, real_T arm_lengths[], real_T rotor_z /* z relative to center of gravity */)
+    //TODO: support arbitrary shapes for cor body via interfaces
+    struct BoxDimensions {
+        real_T x, y, z; //box in the center with dimensions x, y and z
+    };
+
+    struct Params {
+        /*********** required parameters ***********/
+        uint rotor_count;
+        vector<RotorPose> rotor_poses;
+        real_T mass;
+        Matrix3x3r inertia;
+        BoxDimensions body_box;
+
+        /*********** optional parameters with defaults ***********/
+        real_T linear_drag_coefficient = 1.3f / 4.0f; 
+        //sample value 1.3 from http://klsin.bpmsg.com/how-fast-can-a-quadcopter-fly/, but divided by 4 to account
+        // for nice streamlined frame design and allow higher top speed which is more fun.
+        //angular coefficient is usually 10X smaller than linear, however we should replace this with exact number
+        //http://physics.stackexchange.com/q/304742/14061
+        real_T angular_drag_coefficient = 0.13f; 
+        real_T restitution = 0.15f;
+        real_T friction = 0.7f;
+        EnabledSensors enabled_sensors;
+        RotorParams rotor_params;
+    };
+
+public: //interface
+    void initialize()
+    {
+        setup(params_, sensors_);
+    }
+
+    const Params& getParams() const
+    {
+        return params_;
+    }
+
+    SensorCollection& getSensors()
+    {
+        return sensors_;
+    }
+
+protected: //must override by derived class
+    //this method must clean up any previous initializations
+    virtual void setup(Params& params, SensorCollection& sensors) = 0;
+
+protected: //static utility functions for derived classes to use
+    static void initializeRotorPoses(vector<RotorPose>& rotor_poses, uint rotor_count, real_T arm_lengths[], real_T rotor_z /* z relative to center of gravity */)
     {
         Vector3r unit_z(0, 0, -1);  //NED frame
         if (rotor_count == 4) {
@@ -86,6 +112,28 @@ struct MultiRotorParams {
     {
         return (rotor_index < 2) ? RotorTurningDirection::RotorTurningDirectionCCW : RotorTurningDirection::RotorTurningDirectionCW;
     }
+
+    static void computeInertiaMatrix(Matrix3x3r& inertia, const BoxDimensions& body_box, const vector<RotorPose>& rotor_poses,
+        real_T box_mass, real_T motor_assembly_weight)
+    {
+        inertia = Matrix3x3r::Zero();
+
+        //http://farside.ph.utexas.edu/teaching/336k/Newtonhtml/node64.html
+        inertia(0, 0) = box_mass / 12.0f * (body_box.y*body_box.y + body_box.z*body_box.z); 
+        inertia(1, 1) = box_mass / 12.0f * (body_box.x*body_box.x + body_box.z*body_box.z); 
+        inertia(2, 2) = box_mass / 12.0f * (body_box.x*body_box.x + body_box.y*body_box.y); 
+
+        for (auto i = 0; i < rotor_poses.size(); ++i) {
+            const auto& pos = rotor_poses.at(i).position;
+            inertia(0, 0) += (pos.y()*pos.y() + pos.z()*pos.z()) * motor_assembly_weight;
+            inertia(1, 1) += (pos.x()*pos.x() + pos.z()*pos.z()) * motor_assembly_weight;
+            inertia(2, 2) += (pos.x()*pos.x() + pos.y()*pos.y()) * motor_assembly_weight;
+        }
+    }
+
+private:
+    Params params_;
+    SensorCollection sensors_;
 };
 
 }} //namespace

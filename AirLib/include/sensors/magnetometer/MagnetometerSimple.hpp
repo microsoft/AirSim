@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_MagnetometerSimple_hpp
-#define msr_air_copter_sim_MagnetometerSimple_hpp
+#ifndef msr_airlib_MagnetometerSimple_hpp
+#define msr_airlib_MagnetometerSimple_hpp
 
 #include <random>
 #include "common/Common.hpp"
@@ -16,30 +16,18 @@ namespace msr { namespace airlib {
 
 class MagnetometerSimple : public MagnetometerBase {
 public: 
-    MagnetometerSimple()
+    MagnetometerSimple(const MagnetometerSimpleParams& params = MagnetometerSimpleParams())
+        : params_(params)
     {
-        MagnetometerSimple::reset();
-    }
-    MagnetometerSimple(GroundTruth* ground_truth)
-    {
-        initialize(ground_truth);
-    }
-    void initialize(GroundTruth* ground_truth)
-    {
-        MagnetometerBase::initialize(ground_truth);
-        
         noise_vec_ = RandomVectorGaussianR(Vector3r::Zero(), params_.noise_sigma);
         bias_vec_ = RandomVectorR(-params_.noise_bias, params_.noise_bias).next();
-
-        MagnetometerSimple::reset();
     }
-
 
     //*** Start: UpdatableObject implementation ***//
     virtual void reset() override
     {
+        //Ground truth is reset before sensors are reset
         updateReference(getGroundTruth());
-
         noise_vec_.reset();
         updateOutput(0);
     }

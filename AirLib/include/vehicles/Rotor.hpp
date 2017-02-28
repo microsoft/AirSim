@@ -9,9 +9,9 @@
 #include <limits>
 #include "common/Common.hpp"
 #include "physics/Environment.hpp"
-#include "MultiRotorParams.hpp"
 #include "common/FirstOrderFilter.hpp"
 #include "physics/PhysicsBodyVertex.hpp"
+#include "RotorParams.hpp"
 
 namespace msr { namespace airlib {
 
@@ -29,7 +29,7 @@ public: //types
 public: //methods
     Rotor()
     {
-        Rotor::reset();
+        //allow default constructor with later call for initialize
     }
     Rotor(const Vector3r& position, const Vector3r& normal, RotorTurningDirection turning_direction, 
         const RotorParams& params, const Environment* environment, uint id = -1)
@@ -93,7 +93,7 @@ public: //methods
 
     virtual void reportState(StateReporter& reporter) override
     {
-        reporter.writeValue("Dir", turning_direction_);
+        reporter.writeValue("Dir", static_cast<int>(turning_direction_));
         reporter.writeValue("Ctrl-in", output_.control_signal_input);
         reporter.writeValue("Ctrl-fl", output_.control_signal_filtered);
         reporter.writeValue("speed", output_.speed);
@@ -120,7 +120,7 @@ private: //methods
         //see relationship of rotation speed with thrust: http://physics.stackexchange.com/a/32013/14061
         output.speed = sqrt(output.control_signal_filtered * params.max_speed_square);
         output.thrust = output.control_signal_filtered * params.max_thrust;
-        output.torque_scaler = output.control_signal_input * params.max_torque * turning_direction;
+        output.torque_scaler = output.control_signal_input * params.max_torque * static_cast<int>(turning_direction);
         output.turning_direction = turning_direction;
     }
 

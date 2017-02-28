@@ -35,7 +35,7 @@ public:
 public:
     Environment()
     {
-        Environment::reset();
+        //allow default constructor with later call for initialize
     }
     Environment(const State& initial)
     {

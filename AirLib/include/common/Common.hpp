@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_air_copter_sim_Common_hpp
-#define msr_air_copter_sim_Common_hpp
+#ifndef msr_airlib_Common_hpp
+#define msr_airlib_Common_hpp
 
 #include <string>
 #include <memory>
@@ -70,9 +70,7 @@ inline std::ostream& operator<<(std::ostream &os, Quaternionr const &q) {
 
 inline std::ostream& operator<<(std::ostream &os, Vector3r const &vec) { 
     return os << vec.x() << "\t" << vec.y() << "\t" << vec.z() << "\t";
-
 }
-
 
 static void logWarning(const char* format, ...)
 {

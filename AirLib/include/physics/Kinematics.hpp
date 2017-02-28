@@ -29,11 +29,7 @@ public:
         }
     };
 
-    Kinematics()
-    {
-        initialize(State());
-    }
-    Kinematics(const State& initial)
+    Kinematics(const State& initial = State::zero())
     {
         initialize(initial);
     }

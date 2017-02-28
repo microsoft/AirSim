@@ -4,7 +4,7 @@
 #ifndef airsim_core_PhysicsEngineBase_hpp
 #define airsim_core_PhysicsEngineBase_hpp
 
-#include "common/UpdatableObject.hpp"
+#include "common/UpdatableContainer.hpp"
 #include "common/Common.hpp"
 #include "PhysicsBody.hpp"
 

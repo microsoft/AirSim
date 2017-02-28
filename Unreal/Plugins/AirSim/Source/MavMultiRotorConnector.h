@@ -51,6 +51,7 @@ private:
 
 private:
     MultiRotor vehicle_;
+    msr::airlib::Px4QuadX vehicle_params_;
     std::unique_ptr<msr::airlib::DroneControllerBase> controller_;
     std::vector<std::string> controller_messages_;
     msr::airlib::Environment environment_;

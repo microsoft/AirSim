@@ -32,7 +32,7 @@ private:
 public:
     FirstOrderFilter()
     {
-        FirstOrderFilter::reset();
+        //allow default constructor with later call for initialize
     }
     FirstOrderFilter(float timeConstant, T initial_input, T initial_output)
     {
