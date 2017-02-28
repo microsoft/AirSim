@@ -8,6 +8,12 @@ set -e
 # we need to use clang because the Unreal Engine is built with clang as well and
 # there are some symbol inconsistencies in the C++ library with regard to C++11
 # (see GCC Dual ABI: # https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)
+
+#!/bin/bash
+if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
+	echo "clang is necessary to compile AirSim"
+fi
+
 export CC=/usr/bin/clang
 export CXX=/usr/bin/clang++
 
