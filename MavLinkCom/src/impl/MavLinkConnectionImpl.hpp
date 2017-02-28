@@ -47,7 +47,7 @@ namespace mavlinkcom_impl {
 		void getTelemetry(MavLinkTelemetry& result);
 
 	private:
-		static std::shared_ptr<MavLinkConnection> createConnection(const std::string& nodeName, Port* port);
+		static std::shared_ptr<MavLinkConnection> createConnection(const std::string& nodeName, std::shared_ptr<Port> port);
         void joinLeftSubscriber(std::shared_ptr<MavLinkConnection> remote, std::shared_ptr<MavLinkConnection>con, const MavLinkMessage& msg);
         void joinRightSubscriber(std::shared_ptr<MavLinkConnection>con, const MavLinkMessage& msg);
 		void publishPackets();

@@ -58,14 +58,23 @@ void SerialPort::readPackets()
 {
 	CurrentThread::setMaximumPriority();
 
-	port.async_read_some(
-		boost::asio::buffer(read_buf_raw, SERIAL_PORT_READ_BUF_SIZE),
-		boost::bind(
-			&SerialPort::on_receive,
-			this, boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
+	while (!closed_) {
+		boost::system::error_code ec;
+		size_t bytes = port.read_some(
+			boost::asio::buffer(read_buf_raw, SERIAL_PORT_READ_BUF_SIZE), ec);
+		on_receive(ec, bytes);
+	}
 
-	io_service.run();
+	// async mode is not used because boost will not run that async thread at maximum priority
+	// which is what we need in the Unreal environment.
+	//port.async_read_some(
+	//	boost::asio::buffer(read_buf_raw, SERIAL_PORT_READ_BUF_SIZE),
+	//	boost::bind(
+	//		&SerialPort::on_receive,
+	//		this, boost::asio::placeholders::error,
+	//		boost::asio::placeholders::bytes_transferred));
+	//
+	//io_service.run();
 }
 
 
@@ -164,12 +173,16 @@ SerialPort::read(uint8_t* buffer, int bytesToRead)
 void
 SerialPort::close()
 {
-	port.close();
-	available.post();
-	if (read_thread.joinable())
-	{
-		read_thread.join();
+	if (!closed_) {
+		closed_ = true;
+		port.close();
+		available.post();
+		io_service.stop();
+		if (read_thread.joinable())
+		{
+			read_thread.join();
+		}
 	}
-	closed_ = true;
+
 }
 

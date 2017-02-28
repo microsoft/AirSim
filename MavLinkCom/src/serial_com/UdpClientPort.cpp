@@ -76,14 +76,22 @@ void UdpClientPort::connect(const std::string& localHost, int localPort, const s
 void UdpClientPort::readPackets()
 {
 	CurrentThread::setMaximumPriority();
-	socket.async_receive_from(
-		boost::asio::buffer(read_buf_raw, UDP_MAXBUF_SIZE), remote_endpoint,
-		boost::bind(
-			&UdpClientPort::on_receive,
-			this, boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
+	while (!closed) {
+		boost::system::error_code ec;
+		size_t bytes = socket.receive_from(
+				boost::asio::buffer(read_buf_raw, UDP_MAXBUF_SIZE), remote_endpoint, 0, ec);			
+		on_receive(ec, bytes);
+	}
 
-	io_service.run();
+	// async mode is not used because boost will not run that async thread at maximum priority
+	// which is what we need in the Unreal environment.
+	//socket.async_receive_from(
+	//	boost::asio::buffer(read_buf_raw, UDP_MAXBUF_SIZE), remote_endpoint,
+	//	boost::bind(
+	//		&UdpClientPort::on_receive,
+	//		this, boost::asio::placeholders::error,
+	//		boost::asio::placeholders::bytes_transferred));
+	//io_service.run();
 }
 
 int UdpClientPort::write(const uint8_t* ptr, int count)

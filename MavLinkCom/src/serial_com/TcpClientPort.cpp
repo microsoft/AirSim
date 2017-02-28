@@ -96,14 +96,26 @@ void TcpClientPort::connect(const std::string& localHost, int localPort, const s
 void TcpClientPort::readPackets()
 {
 	CurrentThread::setMaximumPriority();
-	socket_.async_receive(
-		boost::asio::buffer(read_buf_raw_, TCP_MAXBUF_SIZE), 
-		boost::bind(
-			&TcpClientPort::on_receive,
-			this, boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
 
-	io_service_.run();
+	while (!closed_) {
+		boost::system::error_code ec;
+		size_t bytes = socket_.receive(
+				boost::asio::buffer(read_buf_raw_, TCP_MAXBUF_SIZE), 0, ec);
+		on_receive(ec, bytes);
+	}
+
+
+	// async mode is not used because boost will not run that async thread at maximum priority
+	// which is what we need in the Unreal environment.
+
+	//socket_.async_receive(
+	//	boost::asio::buffer(read_buf_raw_, TCP_MAXBUF_SIZE), 
+	//	boost::bind(
+	//		&TcpClientPort::on_receive,
+	//		this, boost::asio::placeholders::error,
+	//		boost::asio::placeholders::bytes_transferred));
+
+	//io_service_.run();
 }
 
 int TcpClientPort::write(const uint8_t* ptr, int count)

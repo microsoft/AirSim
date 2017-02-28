@@ -44,17 +44,17 @@ MavLinkConnectionImpl::~MavLinkConnectionImpl()
 	close();
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::createConnection(const std::string& nodeName, Port* port)
+std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::createConnection(const std::string& nodeName, std::shared_ptr<Port> port)
 {
 	// std::shared_ptr<MavLinkCom> owner, const std::string& nodeName
 	std::shared_ptr<MavLinkConnection> con = std::make_shared<MavLinkConnection>();
-	con->startListening(nodeName, std::shared_ptr<Port>(port));
+	con->startListening(nodeName, port);
 	return con;
 }
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const std::string& nodeName, std::string localAddr, int localPort)
 {
-	UdpClientPort* socket = new UdpClientPort();
+	std::shared_ptr<UdpClientPort> socket = std::make_shared<UdpClientPort>();
 
 	socket->connect(localAddr, localPort, "", 0);
 
@@ -63,7 +63,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort)
 {
-	UdpClientPort* socket = new UdpClientPort();
+	std::shared_ptr<UdpClientPort> socket = std::make_shared<UdpClientPort>();
 
 	socket->connect(localAddr, 0, remoteAddr, remotePort);
 
@@ -72,7 +72,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(cons
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std::string& nodeName, std::string localAddr, const std::string& remoteIpAddr, int remotePort)
 {
-	TcpClientPort* socket = new TcpClientPort();
+	std::shared_ptr<TcpClientPort> socket = std::make_shared<TcpClientPort>();
 
 	socket->connect(localAddr, 0, remoteIpAddr, remotePort);
 
@@ -81,7 +81,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std:
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, std::string name, int baudRate, const std::string initString)
 {
-	SerialPort * serial = new SerialPort();
+	std::shared_ptr<SerialPort> serial = std::make_shared<SerialPort>();
 
 	int hr = serial->connect(name.c_str(), baudRate);
 	if (hr < 0)
