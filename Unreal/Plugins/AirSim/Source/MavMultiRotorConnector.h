@@ -23,7 +23,7 @@ public:
     typedef msr::airlib::UpdatableObject UpdatableObject;
         
 public:
-    virtual ~MavMultiRotorConnector() = default;
+	virtual ~MavMultiRotorConnector();
 
     //VehicleConnectorBase interface
     //implements game interface to update pawn

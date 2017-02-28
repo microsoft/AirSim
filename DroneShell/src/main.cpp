@@ -202,7 +202,7 @@ public:
         float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveToZ(z, velocity, getYawMode(), lookahead, adaptive_lookahead);
         });
 
@@ -224,7 +224,7 @@ public:
         float duration = std::stof(getSwitch("-duration").value);
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.rotateByYawRate(yaw_rate, duration);
         });
 
@@ -246,7 +246,7 @@ public:
         float margin = std::stof(getSwitch("-yaw_margin").value);
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.rotateToYaw(yaw, margin);
         });
 
@@ -263,7 +263,7 @@ public:
     bool execute(const DroneCommandParameters& params) 
     {
         CommandContext* context = params.context;
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.hover();
         });
 
@@ -335,7 +335,7 @@ public:
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveByManual(vx, vy, z, drivetrain, yawMode, duration);
         });
 
@@ -364,7 +364,7 @@ public:
         float duration = std::stof(getSwitch("-duration").value);
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveByAngle(pitch, roll, z, yaw, duration);
         });
 
@@ -395,7 +395,7 @@ public:
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveByVelocity(vx, vy, vz, duration, drivetrain, yawMode);
         });
 
@@ -425,7 +425,7 @@ public:
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveByVelocityZ(vx, vy, z, duration, drivetrain, yawMode);
         });
 
@@ -490,7 +490,7 @@ public:
             }
         }
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.setSafety(SafetyEval::SafetyViolationType(safety_flags), obs_clearance,
                 SafetyEval::ObsAvoidanceStrategy(obs_strategy), obs_avoidance_vel, origin, xy_length, min_z, max_z);
         });
@@ -524,7 +524,7 @@ public:
         int iterations = getSwitchInt("-iterations");
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveByAngle(pitch, roll, z, yaw, duration);
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
@@ -563,7 +563,7 @@ public:
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveToPosition(length, 0, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
             context->client.hover();
@@ -603,7 +603,7 @@ public:
         int iterations = getSwitchInt("-iterations");
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveByAngle(pitch, -roll, z, yaw, duration);
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
@@ -650,7 +650,7 @@ public:
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveToPosition(length, -length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
             context->client.hover();
@@ -711,7 +711,7 @@ public:
             path.push_back(Vector3r(length, length, z));
         }
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead);
         }, iterations);
 
@@ -757,7 +757,7 @@ public:
         float seg_angle = 2*M_PIf / seg_count;
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             for(float seg = 0; seg < seg_count; ++seg) {
                 float x = std::cos(seg_angle * seg) * radius;
                 float y = std::sin(seg_angle * seg) * radius;
@@ -833,7 +833,7 @@ public:
             }
         }
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead);
         }, iterations);
 
@@ -891,7 +891,7 @@ See RecordPose for information about log file format")
         float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
         CommandContext* context = params.context;
 
-        context->tasker.execute([&]() {
+        context->tasker.execute([=]() {
             std::ifstream file;
             string file_path_name = Utils::getLogFileNamePath("rec_pos", "", ".log", false);
             file.exceptions(file.exceptions() | std::ios::failbit);

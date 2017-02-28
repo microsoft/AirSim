@@ -23,6 +23,12 @@ void MavMultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn)
 		&environment_, controller_.get());
 }
 
+MavMultiRotorConnector::~MavMultiRotorConnector()
+{
+	stopApiServer();
+	delete controller_.release();
+}
+
 void MavMultiRotorConnector::createController(MultiRotor& vehicle)
 {
     controller_.reset(new msr::airlib::MavLinkDroneController());
@@ -132,9 +138,11 @@ void MavMultiRotorConnector::startApiServer()
 }
 void MavMultiRotorConnector::stopApiServer()
 {
-    rpclib_server_->stop();
-    rpclib_server_.release();
-    controller_cancelable_.release();
+	if (rpclib_server_ != nullptr) {
+		rpclib_server_->stop();
+		delete rpclib_server_.release();
+		delete controller_cancelable_.release();
+	}
 }
 
 bool MavMultiRotorConnector::isApiServerStarted()

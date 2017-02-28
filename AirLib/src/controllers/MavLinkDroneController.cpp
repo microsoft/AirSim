@@ -98,7 +98,7 @@ struct MavLinkDroneController::impl {
         if (phys_vehicle_ != nullptr)
             mav_vehicle_.reset(new mavlinkcom::MavLinkVehicle(connection_info_.vehicle_sysid, connection_info_.vehicle_compid));
         else
-            mav_vehicle_.release();
+            delete mav_vehicle_.release();
     }
 
     ConnectionInfo getMavConnectionInfo()

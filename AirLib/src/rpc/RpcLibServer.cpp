@@ -29,6 +29,10 @@ struct RpcLibServer::impl {
         : server(server_address, port)
     {}
 
+	~impl() {
+		server.close_sessions();
+	}
+
     rpc::server server;
 };
 
@@ -102,7 +106,9 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
 
 //required for pimpl
 RpcLibServer::~RpcLibServer()
-{}
+{
+	stop();
+}
 
 void RpcLibServer::start(bool block)
 {
@@ -115,6 +121,7 @@ void RpcLibServer::start(bool block)
 void RpcLibServer::stop()
 {
     pimpl_->server.stop();
+	pimpl_->server.close_sessions();
 }
 
 }} //namespace
