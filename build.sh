@@ -8,6 +8,12 @@ set -e
 # we need to use clang because the Unreal Engine is built with clang as well and
 # there are some symbol inconsistencies in the C++ library with regard to C++11
 # (see GCC Dual ABI: # https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)
+
+#!/bin/bash
+if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
+	echo "clang is necessary to compile AirSim"
+fi
+
 export CC=/usr/bin/clang
 export CXX=/usr/bin/clang++
 
@@ -28,6 +34,12 @@ export EIGEN_ROOT="$(pwd)/eigen"
 boost_dir="$(pwd)/boost/boost_1_63_0"
 # get & build boost
 if [[ ! -d boost ]]; then
+	ldconfig -p | grep -q libc++
+	if [ $? -ne 0 ]; then
+		echo "it's necessary libc++ to compile boost"
+		exit 1
+	fi
+
 	# because we are using Clang, we cannot use the system's boost libs, because
 	# we could run into the same ABI problems as stated above
 	echo "downloading & building boost..."
@@ -40,7 +52,7 @@ if [[ ! -d boost ]]; then
 	./bootstrap.sh --prefix="$boost_dir/installation" --without-libraries=python
 	./b2 -j8 toolset=clang cxxflags="-fPIC -stdlib=libc++" linkflags="-stdlib=libc++" \
 		runtime-link=shared variant=release link=static threading=multi install
-	rm download
+	rm ../../download
 
 	popd &>/dev/null
 fi
