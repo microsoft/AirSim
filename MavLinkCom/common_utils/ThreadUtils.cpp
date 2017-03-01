@@ -14,7 +14,8 @@ bool CurrentThread::setMaximumPriority()
 {
 #ifdef _WIN32
 	HANDLE thread = GetCurrentThread();
-	int rc = SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+    // THREAD_PRIORITY_HIGHEST is too high and makes animation a bit jumpy.
+	int rc = SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 	if (rc == 0) {
 		rc = GetLastError();
 		return false;
