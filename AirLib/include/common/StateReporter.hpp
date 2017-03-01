@@ -82,10 +82,9 @@ public:
         real_T pitch, roll, yaw;
         VectorMath::toEulerianAngle(quat, pitch, roll, yaw);
 
-        ss_ << name << ": " <<
-            "(" << roll << ", " << pitch << ", " << yaw << ") -" <<
-            " [" << quat.w() << ", " <<
-            quat.x() << ", " << quat.y() << ", " << quat.z()  << "]\n";
+        ss_ << name << ":\n" <<
+            "    euler: (" << roll << ", " << pitch << ", " << yaw << ")\n" <<
+            "    quat: [" << quat.w() << ", " << quat.x() << ", " << quat.y() << ", " << quat.z()  << "]\n";
     }
 
     //write APIs - generic values

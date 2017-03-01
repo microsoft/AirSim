@@ -167,7 +167,12 @@ void MavMultiRotorConnector::update(real_T dt)
 
 void MavMultiRotorConnector::reportState(StateReporter& reporter)
 {
+    // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
+    FVector unrealPosition = vehicle_pawn_->getPosition();
+    reporter.writeValue("unreal pos", AVehiclePawnBase::toVector3r(unrealPosition, 1.0f, false));
+
 	vehicle_.reportState(reporter);
+
 }
 
 MavMultiRotorConnector::UpdatableObject* MavMultiRotorConnector::getPhysicsBody()

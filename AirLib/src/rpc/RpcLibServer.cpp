@@ -30,7 +30,6 @@ struct RpcLibServer::impl {
     {}
 
 	~impl() {
-		server.close_sessions();
 	}
 
     rpc::server server;
@@ -121,7 +120,6 @@ void RpcLibServer::start(bool block)
 void RpcLibServer::stop()
 {
     pimpl_->server.stop();
-	pimpl_->server.close_sessions();
 }
 
 }} //namespace
