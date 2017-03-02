@@ -976,7 +976,7 @@ public:
             }
             ofstream file;
             FileSystem::createBinaryFile(file_path_name, file);
-            file.write((char*) image.data(), image.size());
+            file.write(reinterpret_cast<const char*>(image.data()), image.size());
             file.close();
 
             cout << "Image saved to: " << name << " (" << image.size() << " bytes)" << endl;

@@ -26,13 +26,13 @@ namespace msr {
 
 			std::string getFileName() { return file_; }
 
-			static std::string Settings::getFullPath(std::string fileName)
+			static std::string getFullPath(std::string fileName)
 			{
 				std::string path = common_utils::FileSystem::ensureAppDataFolder();
 				return path + common_utils::FileSystem::kPathSeparator + fileName;
 			}
 
-			static Settings& Settings::loadJSonFile(std::string fileName)
+			static Settings& loadJSonFile(std::string fileName)
 			{
 				std::string path = getFullPath(fileName);
 				settings_.file_ = path;
@@ -48,12 +48,12 @@ namespace msr {
 
 				return singleton();
 			}
-			bool Settings::isLoadSuccess()
+			bool isLoadSuccess()
 			{
 				return load_success_;
 			}
 
-			void Settings::saveJSonFile(std::string fileName)
+			void saveJSonFile(std::string fileName)
 			{
 				std::string path = getFullPath(fileName);
 				std::ofstream s;
@@ -61,7 +61,7 @@ namespace msr {
 				s << std::setw(2) << doc_ << std::endl;
 			}
 
-			Settings Settings::getChild(std::string name)
+			Settings getChild(std::string name)
 			{
 				Settings child;
 				if (doc_.count(name) == 1) {
@@ -70,7 +70,7 @@ namespace msr {
 				return child;
 			}
 
-			std::string Settings::getString(std::string name, std::string defaultValue)
+			std::string getString(std::string name, std::string defaultValue)
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<std::string>();
@@ -81,7 +81,7 @@ namespace msr {
 				}
 			}
 
-			double Settings::getDouble(std::string name, double defaultValue)
+			double getDouble(std::string name, double defaultValue)
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<double>();
@@ -92,7 +92,7 @@ namespace msr {
 				}
 			}
 
-			bool Settings::getBool(std::string name, bool defaultValue)
+			bool getBool(std::string name, bool defaultValue)
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<bool>();
@@ -103,7 +103,7 @@ namespace msr {
 				}
 			}
 
-			int Settings::getInt(std::string name, int defaultValue)
+			int getInt(std::string name, int defaultValue)
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<int>();
@@ -114,30 +114,27 @@ namespace msr {
 				}
 			}
 
-			void Settings::setString(std::string name, std::string value)
+			void setString(std::string name, std::string value)
 			{
 				doc_[name] = value;
 			}
-			void Settings::setDouble(std::string name, double value)
+			void setDouble(std::string name, double value)
 			{
 				doc_[name] = value;
 			}
-			void Settings::setBool(std::string name, bool value)
+			void setBool(std::string name, bool value)
 			{
 				doc_[name] = value;
 			}
-			void Settings::setInt(std::string name, int value)
+			void setInt(std::string name, int value)
 			{
 				doc_[name] = value;
 			}
 
-			void Settings::setChild(std::string name, Settings& value)
+			void setChild(std::string name, Settings& value)
 			{
 				doc_[name] = value.doc_;
 			}
-
-			Settings(){}
-			~Settings(){}
 		};
 
 	}

@@ -130,7 +130,7 @@ protected: //static utility functions for derived classes to use
         inertia(1, 1) = box_mass / 12.0f * (body_box.x*body_box.x + body_box.z*body_box.z); 
         inertia(2, 2) = box_mass / 12.0f * (body_box.x*body_box.x + body_box.y*body_box.y); 
 
-        for (auto i = 0; i < rotor_poses.size(); ++i) {
+        for (size_t i = 0; i < rotor_poses.size(); ++i) {
             const auto& pos = rotor_poses.at(i).position;
             inertia(0, 0) += (pos.y()*pos.y() + pos.z()*pos.z()) * motor_assembly_weight;
             inertia(1, 1) += (pos.x()*pos.x() + pos.z()*pos.z()) * motor_assembly_weight;
