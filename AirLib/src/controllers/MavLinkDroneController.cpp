@@ -244,7 +244,7 @@ struct MavLinkDroneController::impl {
             throw std::invalid_argument("mav_vehicle_udp_port parameter is not set, or has an invalid value.  Please run 'rosparam' to set '/AirNode/mav_vehicle_udp_port' to to the local UDP port start listening on for mavlink messages, for example: 14550.\n");
         }
 
-        connection_ = MavLinkConnection::connectLocalUdp("hil", ip, port);
+        connection_ = MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
         main_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
         main_node_->connect(connection_);
     }
