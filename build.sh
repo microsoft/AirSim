@@ -80,12 +80,14 @@ make -j8 AirLib MavLinkCom
 popd &>/dev/null
 
 
-cp -p AirLib/deps/rpclib/lib/x64/Debug/librpc.a AirLib/deps/rpclib/lib
-cp -p $build_dir/AirLib/lib/libAirLib.a AirLib/lib
+
+
+mkdir -p AirLib/deps/MavLinkCom AirLib/deps/rpclib/lib AirLib/lib || true
+cp -p $build_dir/output/lib/libAirSim-rpclib.a AirLib/deps/rpclib/lib
+cp -p $build_dir/output/lib/libAirLib.a AirLib/lib
 cp -rp MavLinkCom/include AirLib/deps/MavLinkCom
-cp -rp $build_dir/MavLinkCom/lib AirLib/deps/MavLinkCom
+cp -rp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
 cp -rp AirLib Unreal/Plugins/AirSim/Source
-rm -rf Unreal/Plugins/AirSim/Source/AirLib/deps/rpclib/rpclib
 
 echo ""
 echo "============================================================"
@@ -95,4 +97,5 @@ echo "  (<unreal project_root> contains a file named <project>.uproject)"
 echo "============================================================"
 echo "And do (required for building the Unreal plugin):"
 echo "export BOOST_ROOT=\"$BOOST_ROOT\""
+echo "export EIGEN_ROOT=\"$EIGEN_ROOT\""
 
