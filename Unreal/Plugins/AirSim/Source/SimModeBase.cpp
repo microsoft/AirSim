@@ -19,9 +19,9 @@ void ASimModeBase::BeginPlay()
     //load settings file if found
     typedef msr::airlib::Settings Settings;
     try {
-        Settings& settings = Settings::loadJSonFile(L"settings.json");
+        Settings& settings = Settings::loadJSonFile("settings.json");
         auto settings_filename = Settings::singleton().getFileName();
-        std::wstring msg = L"Loading settings from " + settings_filename;
+        std::string msg = "Loading settings from " + settings_filename;
         UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Informational, 30);
     }
     catch (std::exception ex) {
@@ -70,7 +70,8 @@ void ASimModeBase::startRecording()
         UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was already open"), LogDebugLevel::Failure);
     }
 
-    record_file.open(record_filename, std::ios::out | std::ios::app);
+    std::string fullPath = common_utils::FileSystem::getLogFileNamePath(record_filename, "", ".txt", true);
+    common_utils::FileSystem::createTextFile(fullPath, record_file);
 
     if (record_file.is_open()) {
         is_recording = true;
@@ -78,7 +79,7 @@ void ASimModeBase::startRecording()
         UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
     }
     else
-        UAirBlueprintLib::LogMessage("Please make sure path c:\\temp\\airsim exists.", "(config system is under works!)", LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessage("Error creating log file", fullPath.c_str(), LogDebugLevel::Failure);
 }
 
 bool ASimModeBase::toggleRecording()

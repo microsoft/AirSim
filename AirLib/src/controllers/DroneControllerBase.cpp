@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include "controllers/DroneControllerBase.hpp"
+#include "common/common_utils/FileSystem.hpp"
 
 namespace msr { namespace airlib {
 
@@ -113,7 +114,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
 
     std::ofstream flog;
     if (log_to_file)
-        Utils::createLogFile("MoveToPosition", flog);
+        common_utils::FileSystem::createLogFile("MoveToPosition", flog);
 
     Vector3r point;
     float path_length = 0;

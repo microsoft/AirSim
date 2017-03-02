@@ -93,13 +93,7 @@ private:
 
 
 public:
-    static const char kPathSeparator =
-    #ifdef _WIN32
-                                '\\';
-    #else
-                                '/';
-    #endif
-
+ 
     static void enableImmediateConsoleFlush() {
         //disable buffering
         setbuf(stdout, NULL);
@@ -225,56 +219,6 @@ public:
         return string(buf.get());
     }
 
-    static string getFileExtension(const string str)
-    {
-        int len = static_cast<int>(str.size());
-        const char* ptr = str.c_str();
-        int i = 0;
-        for (i = len - 1; i >= 0; i--)
-        {
-            if (ptr[i] == '.')
-                break;
-        }
-        if (i < 0) return "";
-        auto ui = static_cast<uint>(i);
-        return str.substr(ui, len - ui);
-    }
-
-    static string getUserHomeFolder()
-    {
-        char* ptr = std::getenv("HOME");
-        return ptr ? ptr : std::getenv("USERPROFILE");  //Windows uses USERPROFILE, Linux uses HOME
-    }
-    static string getLogFileNamePath(string prefix, string suffix, string extension, bool add_timestamp)
-    {
-        string timestamp = add_timestamp ? to_string(now()) : "";
-        stringstream filename_ss;
-        filename_ss << getUserHomeFolder() << kPathSeparator << prefix << suffix << timestamp << extension;
-        return filename_ss.str();
-    }
-    static string createLogFile(string suffix, std::ofstream& flog)
-    {
-        string filepath = getLogFileNamePath("log_", suffix, ".tsv", true);
-        flog.open(filepath, std::ios::trunc);
-        if (flog.fail())
-            throw std::ios_base::failure(std::strerror(errno));
-        logMessage("log file started: %s", filepath.c_str());
-        flog.exceptions(flog.exceptions() | std::ios::failbit | std::ifstream::badbit);
-        return filepath;
-    }
-
-    static std::string getLineFromFile(std::ifstream& file)
-    {
-        std::string line;
-        try {
-            std::getline(file, line);
-        }
-        catch(...) {
-            if (!file.eof())
-                throw;
-        }
-        return line;
-    }    
     static string trim(const string& str, char ch)
     {
         int len = static_cast<int>(str.size());
@@ -424,15 +368,6 @@ public:
         return ctime(&tt);
     }
 
-    static void appendLineToFile(string filepath, string line)
-    {
-        std::ofstream file;
-        file.open(filepath, std::ios::out | std::ios::app);
-        if (file.fail())
-            throw std::ios_base::failure(std::strerror(errno));
-        file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
-        file << line << std::endl;
-    }
     static time_point<system_clock> now()
     {
         return system_clock::now();

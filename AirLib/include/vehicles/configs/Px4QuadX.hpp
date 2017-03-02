@@ -130,7 +130,7 @@ private:
             child.setString("SerialPort", connection_info.serial_port);
             child.setInt("SerialBaudRate", connection_info.baud_rate);
             settings.setChild(connection_info.vehicle_name, child);
-            settings.saveJSonFile(L"settings.json");
+            settings.saveJSonFile("settings.json");
         }
 
         return connection_info;

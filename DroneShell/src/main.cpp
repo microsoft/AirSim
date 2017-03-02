@@ -9,15 +9,20 @@
 #include <utility>
 #include "common/Common.hpp"
 #include "common/common_utils/Utils.hpp"
+#include "common/common_utils/FileSystem.hpp"
 #include "common/common_utils/AsyncTasker.hpp"
 #include "rpc/RpcLibClient.hpp"
 #include "SimpleShell.hpp"
 #include "common/EarthUtils.hpp"
 #include "controllers/DroneCommon.hpp"
+#include "controllers/DroneControllerBase.hpp"
 #include "safety/SafetyEval.hpp"
 
 
 namespace msr { namespace airlib {
+
+using namespace std;
+using namespace common_utils;
 
 struct CommandContext {
 public:
@@ -865,8 +870,8 @@ Each record is tab separated floating point numbers containing GPS lat,lon,alt,z
             quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z()
         );
 
-        string file_path_name = Utils::getLogFileNamePath("rec_pos", "", ".log", false);
-        Utils::appendLineToFile(file_path_name, line);
+        std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false);
+        FileSystem::appendLineToFile(file_path_name, line);
 
         return false;
     }
@@ -893,38 +898,89 @@ See RecordPose for information about log file format")
 
         context->tasker.execute([=]() {
             std::ifstream file;
-            string file_path_name = Utils::getLogFileNamePath("rec_pos", "", ".log", false);
+            std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false);
             file.exceptions(file.exceptions() | std::ios::failbit);
-            file.open(file_path_name, std::ios::in);
+            FileSystem::openTextFile(file_path_name, file);
 
             Vector3r position;
             Quaternionr quaternion;
             GeoPoint gps_point;
             float pitch, roll, yaw;
 
-            if (!file.eof()) {
-                while (!file.eof()) {
-                    string line = Utils::getLineFromFile(file);
-                    if (line.length() > 0) {
-                        //parse
-                        std::stringstream line_ss(line);
-                        line_ss >> gps_point.latitude >> gps_point.longitude >> gps_point.altitude; // >> gps_point.height >> gps_point.health;
-                        line_ss >> position[0] >> position[1] >> position[2];
-                        line_ss >> quaternion.w() >> quaternion.x() >> quaternion.y() >> quaternion.z();
+            while (!file.eof()) {
+                string line = FileSystem::readLineFromFile(file);
+                if (line.length() > 0) {
+                    //parse
+                    std::stringstream line_ss(line);
+                    line_ss >> gps_point.latitude >> gps_point.longitude >> gps_point.altitude; // >> gps_point.height >> gps_point.health;
+                    line_ss >> position[0] >> position[1] >> position[2];
+                    line_ss >> quaternion.w() >> quaternion.x() >> quaternion.y() >> quaternion.z();
 
-                        params.shell_ptr->showMessage(gps_point.to_string());
-                        params.shell_ptr->showMessage(VectorMath::toString(position));
-                        params.shell_ptr->showMessage(VectorMath::toString(quaternion));
+                    params.shell_ptr->showMessage(gps_point.to_string());
+                    params.shell_ptr->showMessage(VectorMath::toString(position));
+                    params.shell_ptr->showMessage(VectorMath::toString(quaternion));
 
-                        GeoPoint home_point = context->client.getHomePoint();
-                        Vector3r local_point = EarthUtils::GeodeticToNedFast(gps_point, home_point);
-                        VectorMath::toEulerianAngle(quaternion, pitch, roll, yaw);
+                    GeoPoint home_point = context->client.getHomePoint();
+                    Vector3r local_point = EarthUtils::GeodeticToNedFast(gps_point, home_point);
+                    VectorMath::toEulerianAngle(quaternion, pitch, roll, yaw);
 
-                        context->client.moveToPosition(local_point.x(), local_point.y(), local_point.z(), velocity, 
-                            DrivetrainType::MaxDegreeOfFreedome, YawMode(false, yaw), lookahead, adaptive_lookahead);
-                    }
+                    context->client.moveToPosition(local_point.x(), local_point.y(), local_point.z(), velocity, 
+                        DrivetrainType::MaxDegreeOfFreedome, YawMode(false, yaw), lookahead, adaptive_lookahead);
                 }
             }
+        });
+
+        return false;
+    }
+};
+
+
+class GetImageCommand : public DroneCommand {
+public:
+    GetImageCommand() : DroneCommand("GetImage", "Get an image from the simulator")
+    {
+        this->addSwitch({"-type", "depth", "scene, depth, or segmentation" });
+        this->addSwitch({"-name", "image", "name of the file" });
+    }
+
+    bool execute(const DroneCommandParameters& params) 
+    {
+        std::string type = getSwitch("-type").value;
+        std::string name = getSwitch("-name").value;
+        CommandContext* context = params.context;
+
+        DroneControllerBase::ImageType imageType;
+
+        if (type == "depth") {
+            imageType = DroneControllerBase::ImageType::Depth;
+        } else if (type == "scene") {
+            imageType = DroneControllerBase::ImageType::Scene;
+        } else if (type == "segmentation") {
+            imageType = DroneControllerBase::ImageType::Segmentation;
+        } else {
+            cout << "Error: Invalid image type '" << type << "', expecting either 'depth', 'scene' or 'segmentation'" << endl;
+            return true;
+        }
+
+        context->tasker.execute([=]() {
+            std::string file_path_name = FileSystem::getLogFileNamePath(name, "", ".png", false);
+
+            context->client.setImageTypeForCamera(0, imageType);
+
+            auto image = context->client.getImageForCamera(0, imageType);
+
+            // if we are too quick we miss the image.
+            while (image.size() <= 1) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                image = context->client.getImageForCamera(0, imageType);
+            }
+            ofstream file;
+            FileSystem::createBinaryFile(file_path_name, file);
+            file.write((char*) image.data(), image.size());
+            file.close();
+
+            cout << "Image saved to: " << name << " (" << image.size() << " bytes)" << endl;
+            
         });
 
         return false;
@@ -1046,6 +1102,7 @@ int main(int argc, const char *argv[]) {
     CircleByPathCommand circleByPath;
     RecordPoseCommand  recordPose;
     PlayPoseCommand playPose;
+    GetImageCommand imageCommand;
 
     //TODO: add command line args help, arg count validation
     shell.addCommand(arm);
@@ -1075,6 +1132,7 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(circleByPath);
     shell.addCommand(recordPose);
     shell.addCommand(playPose);
+    shell.addCommand(imageCommand);
 
     while(!shell.readLineAndExecute(&command_context)) {
     }

@@ -27,6 +27,7 @@ add_library(AirLib STATIC
   ${AIRSIM_ROOT}/AirLib/src/controllers/DroneControllerBase.cpp
   ${AIRSIM_ROOT}/AirLib/src/controllers/MavLinkDroneController.cpp
   ${AIRSIM_ROOT}/AirLib/src/controllers/Settings.cpp  
+  ${AIRSIM_ROOT}/AirLib/src/controllers/FileSystem.cpp  
   ${AIRSIM_ROOT}/AirLib/src/safety/ObstacleMap.cpp
   ${AIRSIM_ROOT}/AirLib/src/safety/SafetyEval.cpp
   ${AIRSIM_ROOT}/AirLib/src/rpc/RpcLibClient.cpp

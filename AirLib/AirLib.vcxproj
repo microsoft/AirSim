@@ -106,6 +106,7 @@
     <ClCompile Include="src\rpc\RpcLibServer.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />
     <ClCompile Include="src\controllers\Settings.cpp" />
+    <ClCompile Include="src\controllers\FileSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MavLinkCom\MavLinkCom.vcxproj">

@@ -35,10 +35,9 @@ public:
     virtual void startRecording();
     virtual void stopRecording();
     virtual bool isRecording();
+    FString getRecordingPath();
 
-    std::string record_filename = "c:\\temp\\airsim_rec.txt";
-    std::string record_folder_path = "c:\\temp\\airsim\\img_";
-  
+    std::string record_filename = "airsim_rec";    
 protected:
     virtual void setupInputBindings();
     bool is_recording;
