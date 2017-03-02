@@ -13,9 +13,10 @@ and wait about 20 minutes (coffee time :-). Note: On Linux, you can drop the `ad
 On Linux if you need a command line way to do this try the following:
 
 ````
+cd ~
 wget https://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.zip/download
 unzip download
-rm boost_1_63_0.zip
+rm download
 echo export BOOST_ROOT=$PWD/boost_1_63_0 >> ~/.bashrc
 source ~/.bashrc
 cd boost_1_63_0
