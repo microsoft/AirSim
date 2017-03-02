@@ -6,7 +6,7 @@ git submodule update --init --recursive
 
 WHERE cmake >nul 2>nul
 IF %ERRORLEVEL% NEQ 0 (
-	echo cmake was not found! First install it from https://cmake.org/ .
+	echo cmake was not found! First install the latest version from https://cmake.org/.
 	goto :buildfailed
 )
 
