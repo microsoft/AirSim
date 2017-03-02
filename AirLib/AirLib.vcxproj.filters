@@ -210,9 +210,6 @@
     <ClInclude Include="include\controllers\RpyDirectControllerParams.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\Settings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\controllers\VehicleControllerBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -247,6 +244,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\sensors\SensorCollection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\Settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -682,10 +682,5 @@ vector<uint8_t> DroneControllerBase::getImageForCamera(int camera_id, ImageType 
         return empty_vec;
 }
 
-void DroneControllerBase::reportTelemetry(float renderTime)
-{
-    //no default action
-}
-
 }} //namespace
 #endif

@@ -7,6 +7,7 @@
 #include "common/Common.hpp"
 #include "RotorParams.hpp"
 #include "sensors/SensorCollection.hpp"
+#include "controllers/DroneControllerBase.hpp"
 
 namespace msr { namespace airlib {
 
@@ -61,7 +62,7 @@ public: //types
 public: //interface
     void initialize()
     {
-        setup(params_, sensors_);
+        setup(params_, sensors_, controller_);
     }
 
     const Params& getParams() const
@@ -74,9 +75,15 @@ public: //interface
         return sensors_;
     }
 
+    //return pointer because we might have derived class
+    DroneControllerBase* getController()
+    {
+        return controller_.get();
+    }
+
 protected: //must override by derived class
     //this method must clean up any previous initializations
-    virtual void setup(Params& params, SensorCollection& sensors) = 0;
+    virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) = 0;
 
 protected: //static utility functions for derived classes to use
     static void initializeRotorPoses(vector<RotorPose>& rotor_poses, uint rotor_count, real_T arm_lengths[], real_T rotor_z /* z relative to center of gravity */)
@@ -134,6 +141,7 @@ protected: //static utility functions for derived classes to use
 private:
     Params params_;
     SensorCollection sensors_;
+    std::unique_ptr<DroneControllerBase> controller_;
 };
 
 }} //namespace

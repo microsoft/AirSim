@@ -39,14 +39,8 @@ static const int RotorControlsCount = 8;
 struct MavLinkDroneController::impl {
     std::shared_ptr<mavlinkcom::MavLinkNode> logviewer_proxy_, qgc_proxy_;
 
-    // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet) 
-    // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
-    // same machine.  Whatever network you choose it has to be the same one for external
-    std::string LocalHostIp = "127.0.0.1";
-
     size_t status_messages_MaxSize = 5000;
-
-
+    
     std::shared_ptr<mavlinkcom::MavLinkNode> main_node_;
     std::shared_ptr<mavlinkcom::MavLinkConnection> connection_;
     std::shared_ptr<mavlinkcom::MavLinkVideoServer> video_server_;
@@ -80,7 +74,7 @@ struct MavLinkDroneController::impl {
     std::queue<std::string> status_messages_;
     int hil_state_freq_;
     bool actuators_message_supported_;
-    const MultiRotor* phys_vehicle_;    //this is optional
+    const SensorCollection* sensors_;    //this is optional
     long last_gps_time_;
     bool was_reseted_;
 
@@ -94,16 +88,13 @@ struct MavLinkDroneController::impl {
     bool is_simulation_mode_;
     PidController thrust_controller_;
 
-    void initialize(const ConnectionInfo& connection_info, const MultiRotor* vehicle, bool is_simulation)
+    void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
     {
         connection_info_ = connection_info;
-        phys_vehicle_ = vehicle;
+        sensors_ = sensors;
         is_simulation_mode_ = is_simulation;
 
-        if (phys_vehicle_ != nullptr)
-            mav_vehicle_.reset(new mavlinkcom::MavLinkVehicle(connection_info_.vehicle_sysid, connection_info_.vehicle_compid));
-        else
-            delete mav_vehicle_.release();
+        mav_vehicle_.reset(new mavlinkcom::MavLinkVehicle(connection_info_.vehicle_sysid, connection_info_.vehicle_compid));
     }
 
     ConnectionInfo getMavConnectionInfo()
@@ -163,7 +154,7 @@ struct MavLinkDroneController::impl {
     {
         //set up logviewer proxy
         if (connection_info_.logviewer_ip_address.size() > 0) {
-            logviewer_proxy_ = createProxy("LogViewer", connection_info_.logviewer_ip_address, connection_info_.logviewer_ip_port);
+            logviewer_proxy_ = createProxy("LogViewer", connection_info_.logviewer_ip_address, connection_info_.logviewer_ip_port, connection_info_.local_host_ip);
             if (!sendTestMessage(logviewer_proxy_)) {
                 // error talking to log viewer, so don't keep trying, and close the connection also.
                 logviewer_proxy_->getConnection()->close();
@@ -176,7 +167,7 @@ struct MavLinkDroneController::impl {
     bool connectToQGC()
     {
         if (connection_info_.qgc_ip_address.size() > 0) {
-            qgc_proxy_ = createProxy("QGC", connection_info_.qgc_ip_address, connection_info_.qgc_ip_port);
+            qgc_proxy_ = createProxy("QGC", connection_info_.qgc_ip_address, connection_info_.qgc_ip_port, connection_info_.local_host_ip);
             if (!sendTestMessage(qgc_proxy_)) {
                 // error talking to QGC, so don't keep trying, and close the connection also.
                 qgc_proxy_->getConnection()->close();
@@ -187,12 +178,12 @@ struct MavLinkDroneController::impl {
     }
 
 
-    std::shared_ptr<mavlinkcom::MavLinkNode> createProxy(std::string name, std::string ip, int port)
+    std::shared_ptr<mavlinkcom::MavLinkNode> createProxy(std::string name, std::string ip, int port, string local_host_ip)
     {
         if (connection_ == nullptr)
             throw std::domain_error("MavLinkDroneController requires connection object to be set before createProxy call");
 
-        auto connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), LocalHostIp, ip, port);
+        auto connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), local_host_ip, ip, port);
 
         // it is ok to reuse the simulator sysid and compid here because this node is only used to send a few messages directly to this endpoint
         // and all other messages are funnelled through from PX4 via the Join method below.
@@ -472,24 +463,24 @@ struct MavLinkDroneController::impl {
 
     const ImuBase* getImu()
     {
-        return static_cast<const ImuBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Imu));
+        return static_cast<const ImuBase*>(sensors_->getByType(SensorCollection::SensorType::Imu));
     }
     const MagnetometerBase* getMagnetometer()
     {
-        return static_cast<const MagnetometerBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Magnetometer));
+        return static_cast<const MagnetometerBase*>(sensors_->getByType(SensorCollection::SensorType::Magnetometer));
     }
     const BarometerBase* getBarometer()
     {
-        return static_cast<const BarometerBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Barometer));
+        return static_cast<const BarometerBase*>(sensors_->getByType(SensorCollection::SensorType::Barometer));
     }
     const GpsBase* getGps()
     {
-        return static_cast<const GpsBase*>(phys_vehicle_->getSensors().getByType(SensorCollection::SensorType::Gps));
+        return static_cast<const GpsBase*>(sensors_->getByType(SensorCollection::SensorType::Gps));
     }
 
     void update(real_T dt)
     {
-        if (phys_vehicle_ == nullptr || connection_ == nullptr || !connection_->isOpen())
+        if (sensors_ == nullptr || connection_ == nullptr || !connection_->isOpen())
             return;
 
         //send sensor updates
@@ -550,8 +541,7 @@ struct MavLinkDroneController::impl {
         connectToLogViewer();
         connectToQGC();
 
-        if (mav_vehicle_ != nullptr)
-            mav_vehicle_->connect(connection_);
+        mav_vehicle_->connect(connection_);
     }
     void stop()
     {
@@ -671,14 +661,12 @@ struct MavLinkDroneController::impl {
     //additional methods for DroneControllerBase
     void updateState()
     {
-        if (mav_vehicle_ != nullptr) {
-            StatusLock lock(parent_);
-            int version = mav_vehicle_->getVehicleStateVersion();
-            if (version != state_version_)
-            {
-                current_state = mav_vehicle_->getVehicleState();
-                state_version_ = version;
-            }
+        StatusLock lock(parent_);
+        int version = mav_vehicle_->getVehicleStateVersion();
+        if (version != state_version_)
+        {
+            current_state = mav_vehicle_->getVehicleState();
+            state_version_ = version;
         }
     }
 
@@ -937,9 +925,9 @@ MavLinkDroneController::~MavLinkDroneController()
     pimpl_->close();
 }
 
-void MavLinkDroneController::initialize(const ConnectionInfo& connection_info, const MultiRotor* vehicle, bool is_simulation)
+void MavLinkDroneController::initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
 {
-   pimpl_->initialize(connection_info, vehicle, is_simulation);
+   pimpl_->initialize(connection_info, sensors, is_simulation);
 }
 
 MavLinkDroneController::ConnectionInfo MavLinkDroneController::getMavConnectionInfo()

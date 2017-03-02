@@ -43,6 +43,12 @@ public:
         //default implementation
         //clean up any resources
     }
+
+    virtual void reportTelemetry(float renderTime)
+    {
+        //no default action
+    }
+
 };
 
 class ControllerException : public std::runtime_error {

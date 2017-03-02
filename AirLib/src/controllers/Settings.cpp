@@ -5,7 +5,7 @@
 #include "AirSim.h"
 #endif
 
-#include "controllers/Settings.h"
+#include "controllers/Settings.hpp"
 #include "common/common_utils/Utils.hpp"
 #include <codecvt>
 #include <fstream>
@@ -98,7 +98,7 @@ Settings& Settings::loadJSonFile(std::wstring fileName)
 	std::wstring path = getFullPath(fileName);
 	settings_.file_ = path;
 
-    settings_.load_success = false;
+    settings_.load_success_ = false;
 
 #ifdef _WIN32
     std::ifstream s(path);
@@ -111,14 +111,14 @@ Settings& Settings::loadJSonFile(std::wstring fileName)
 	if (!s.fail()) {
 		json doc_;
 		s >> settings_.doc_;
-        settings_.load_success = true;
+        settings_.load_success_ = true;
 	}
 
 	return singleton();
 }
 bool Settings::isLoadSuccess()
 {
-    return load_success;
+    return load_success_;
 }
 
 void Settings::createDirectory(std::wstring parentFolder, std::wstring name) {

@@ -1,10 +1,9 @@
 #pragma once
 
-#include "controllers/MavLinkDroneController.hpp"
 #include "controllers/DroneControllerCancelable.hpp"
 #include "rpc/RpcLibServer.hpp"
-#include "vehicles/configs/Px4QuadX.hpp"
 #include "vehicles/MultiRotor.hpp"
+#include "vehicles/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
@@ -46,17 +45,12 @@ public:
     virtual UpdatableObject* getPhysicsBody() override;
 
 private:
-    msr::airlib::MavLinkDroneController::ConnectionInfo getConnectionInfo();
-    void createController(MultiRotor& vehicle);
-
-private:
     MultiRotor vehicle_;
-    msr::airlib::Px4QuadX vehicle_params_;
-    std::unique_ptr<msr::airlib::DroneControllerBase> controller_;
     std::vector<std::string> controller_messages_;
     msr::airlib::Environment environment_;
     AFlyingPawn* vehicle_pawn_;
 
+    std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
     std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;
     std::unique_ptr<msr::airlib::RpcLibServer> rpclib_server_;
 

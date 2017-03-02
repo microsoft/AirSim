@@ -62,7 +62,7 @@
     <ClInclude Include="include\rpc\RpcLibServer.hpp" />
     <ClInclude Include="include\safety\SafetyEval.hpp" />
     <ClInclude Include="include\controllers\DroneControllerCancelable.hpp" />
-    <ClInclude Include="include\controllers\Settings.h" />
+    <ClInclude Include="include\controllers\Settings.hpp" />
     <ClInclude Include="include\safety\SphereGeoFence.hpp" />
     <ClInclude Include="include\controllers\VehicleControllerBase.hpp" />
     <ClInclude Include="include\controllers\Waiter.hpp" />

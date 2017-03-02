@@ -16,7 +16,7 @@ namespace msr {
 			static Settings settings_;
 			std::wstring file_;
 			nlohmann::json doc_;
-            bool load_success = false;
+            bool load_success_ = false;
 		public:
 			static const wchar_t* getProductName() {
 				return L"AirSim";

@@ -21,14 +21,13 @@ public:
     {
         //allow default constructor with later call for initialize
     }
-    MultiRotor(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment, ControllerBase* controller_ptr)
+    MultiRotor(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
     {
-        initialize(params, initial_kinematic_state, environment, controller_ptr);
+        initialize(params, initial_kinematic_state, environment);
     }
-	void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment, ControllerBase* controller_ptr)
+	void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
 	{
 		params_ = params;
-        controller_ptr_ = controller_ptr;
 
         PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
 
@@ -42,13 +41,17 @@ public:
         MultiRotor::reset();
 	}
 
+    DroneControllerBase* getController()
+    {
+        return params_->getController();
+    }
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
         //reset inputs
-        if (controller_ptr_)
-            controller_ptr_->reset();
+        if (getController())
+            getController()->reset();
 
         //reset rotors, kinematics and environment
         PhysicsBody::reset();
@@ -94,12 +97,12 @@ public:
     {
         updateSensors(*params_, getKinematics(), getEnvironment(), dt);
 
-        controller_ptr_->update(dt);
+        getController()->update(dt);
 
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
             rotors_.at(rotor_index).setControlSignal(
-                controller_ptr_->getVertexControlSignal(rotor_index));
+                getController()->getVertexControlSignal(rotor_index));
         }
     }
 
@@ -256,7 +259,6 @@ private: //methods
 
 private: //fields
     MultiRotorParams* params_;
-    ControllerBase* controller_ptr_ = nullptr;
 
     //let us be the owner of rotors object
     vector<Rotor> rotors_;

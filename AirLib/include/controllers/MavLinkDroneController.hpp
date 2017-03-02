@@ -56,6 +56,11 @@ public:
         int offboard_compid = 1;
         uint8_t vehicle_sysid = 135;
         int vehicle_compid = 1;    
+
+        // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet) 
+        // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
+        // same machine.  Whatever network you choose it has to be the same one for external
+        std::string local_host_ip = "127.0.0.1";
     };
 
 public:
@@ -64,7 +69,7 @@ public:
     ~MavLinkDroneController();
 
     //non-base interface specific to MavLinKDroneController
-    void initialize(const ConnectionInfo& connection_info, const MultiRotor* vehicle, bool is_simulation);
+    void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation);
     ConnectionInfo getMavConnectionInfo();
     static std::string findPixhawk();
 
