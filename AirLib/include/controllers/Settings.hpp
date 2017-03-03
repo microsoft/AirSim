@@ -18,7 +18,7 @@ namespace msr {
 			static Settings settings_;
 			std::string file_;
 			nlohmann::json doc_;
-            bool load_success_ = false;
+			bool load_success_ = false;
 		public:
 			static Settings& singleton() {
 				return settings_;
@@ -61,74 +61,86 @@ namespace msr {
 				s << std::setw(2) << doc_ << std::endl;
 			}
 
-			Settings getChild(std::string name)
+			bool getChild(std::string name, Settings& child) const
 			{
-				Settings child;
-				if (doc_.count(name) == 1) {
+				if (doc_.count(name) == 1 && doc_[name].type() == nlohmann::detail::value_t::object) {
 					child.doc_ = doc_[name].get<nlohmann::json>();
+					return true;
 				}
-				return child;
+				return false;
 			}
 
-			std::string getString(std::string name, std::string defaultValue)
+			std::string getString(std::string name, std::string defaultValue) const
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<std::string>();
 				}
 				else {
-					doc_[name] = defaultValue;
 					return defaultValue;
 				}
 			}
 
-			double getDouble(std::string name, double defaultValue)
+			double getDouble(std::string name, double defaultValue) const
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<double>();
 				}
 				else {
-					doc_[name] = defaultValue;
 					return defaultValue;
 				}
 			}
 
-			bool getBool(std::string name, bool defaultValue)
+			bool getBool(std::string name, bool defaultValue) const
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<bool>();
 				}
 				else {
-					doc_[name] = defaultValue;
 					return defaultValue;
 				}
 			}
 
-			int getInt(std::string name, int defaultValue)
+			int getInt(std::string name, int defaultValue) const
 			{
 				if (doc_.count(name) == 1) {
 					return doc_[name].get<int>();
 				}
 				else {
-					doc_[name] = defaultValue;
 					return defaultValue;
 				}
 			}
 
-			void setString(std::string name, std::string value)
+			bool setString(std::string name, std::string value)
 			{
-				doc_[name] = value;
+				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::string || doc_[name] != value) {
+					doc_[name] = value;
+					return true;
+				}
+				return false;
 			}
-			void setDouble(std::string name, double value)
+			bool setDouble(std::string name, double value)
 			{
-				doc_[name] = value;
+				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_float || (double)doc_[name] != value) {
+					doc_[name] = value;
+					return true;
+				}
+				return false;
 			}
-			void setBool(std::string name, bool value)
+			bool setBool(std::string name, bool value)
 			{
-				doc_[name] = value;
+				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::boolean || (bool)doc_[name] != value) {
+					doc_[name] = value;
+					return true;
+				}
+				return false;
 			}
-			void setInt(std::string name, int value)
+			bool setInt(std::string name, int value)
 			{
-				doc_[name] = value;
+				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_integer || (int)doc_[name] != value) {
+					doc_[name] = value;
+					return true;
+				}
+				return false;
 			}
 
 			void setChild(std::string name, Settings& value)

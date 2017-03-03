@@ -104,7 +104,7 @@ public:
         // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
         std::wstring wide_path = converter.from_bytes(filepath);
-        file.open(wide_path, std::ios::out | std::ios::app);
+        file.open(wide_path, std::ios::out | std::ios::trunc);
 #else
         file.open(filepath, std::ios::trunc);
 #endif
