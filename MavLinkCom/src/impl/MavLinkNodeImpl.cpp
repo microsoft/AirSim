@@ -113,6 +113,7 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
 
 	// request capabilities, it will respond with AUTOPILOT_VERSION.
 	MavCmdRequestAutopilotCapabilities cmd{};
+	cmd.p1 = 1;
 	sendCommand(cmd);
 
 	return result;

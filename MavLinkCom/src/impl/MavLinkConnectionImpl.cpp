@@ -6,7 +6,7 @@
 #include <boost/thread.hpp>
 #include "MavLinkConnectionImpl.hpp"
 #include "../serial_com/Port.h"
-#include "../serial_com/SerialPort.hpp"
+#include "../serial_com/OldSerialPort.hpp"
 #include "../serial_com/UdpClientPort.hpp"
 #include "../serial_com/TcpClientPort.hpp"
 #define MAVLINK_PACKED

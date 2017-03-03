@@ -124,6 +124,9 @@ bool noparams = false;
 std::string logDirectory;
 std::shared_ptr<MavLinkLog> inLogFile;
 std::shared_ptr<MavLinkLog> outLogFile;
+std::thread telemetry_thread;
+bool telemetry = false;
+
 
 void OpenLogFiles() {
 	if (logDirectory.size() > 0)
@@ -505,6 +508,7 @@ void PrintUsage() {
 	printf("    -logdir:filename                       - specify local directory where mavlink logs are stored (default is no log files)\n");
 	printf("    -noradio							   - disables RC link loss failsafe\n");
 	printf("    -nsh                                   - enter NuttX shell immediately on connecting with PX4\n");
+	printf("    -telemetry                             - generate telemetry mavlink messages for logviewer");
 	printf("If no arguments it will find a COM port matching the name 'PX4'\n");
 	printf("You can specify -proxy multiple times with different port numbers to proxy drone messages out to multiple listeners\n");
 }
@@ -629,6 +633,9 @@ bool ParseCommandLine(int argc, const char* argv[])
 			}
 			else if (lower == "noparams") {
 				noparams = true;
+			}
+			else if (lower == "telemetry") {
+				telemetry = true;
 			}
 			else
 			{
@@ -785,6 +792,32 @@ std::shared_ptr<MavLinkConnection> connectServer(const PortAddress& endPoint, st
 std::shared_ptr<MavLinkConnection> droneConnection;
 std::shared_ptr<MavLinkConnection> logConnection;
 
+void runTelemetry() {
+	while (telemetry) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		if (droneConnection != nullptr) {
+			MavLinkTelemetry tel;
+			droneConnection->getTelemetry(tel);
+			tel.compid = LocalComponentId;
+			tel.sysid = LocalSystemId;
+			if (logConnection != nullptr) {
+				logConnection->sendMessage(tel);
+			}
+		}
+	}
+}
+
+void startTelemetry() {
+	telemetry_thread = std::thread(&runTelemetry);
+}
+
+void stopTelemetry() {
+	telemetry = false;
+	if (telemetry_thread.joinable()) {
+		telemetry_thread.join();
+	}
+}
+
 bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
 {
 	if (offboard && serial)
@@ -855,6 +888,9 @@ bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
 		}
 		logConnection = connectProxy(droneConnection, logViewerEndPoint, "log");
 		usedPorts.push_back(logViewerEndPoint);
+		if (serial && telemetry) {
+			startTelemetry();
+		}
 	}
 	else {
 		logConnection = nullptr;
@@ -954,7 +990,7 @@ int console() {
 		sendImage->setLogViewer(logViewer);
 	}
 
-	//checkPulse(mavLinkVehicle);
+	checkPulse(mavLinkVehicle);
 
 	int retries = 0;
 	while (retries++ < 5) {
@@ -991,7 +1027,12 @@ int console() {
 	{
 		if (!noparams) {
 			printf("Downloading drone parameters so we know how to control it properly...\n");
-			mavLinkVehicle->getParamList();
+			try {
+				mavLinkVehicle->getParamList();
+			}
+			catch (std::exception e) {
+				printf("%s\n", e.what());
+			}
 		}
 		mavLinkVehicle->setStabilizedFlightMode();
 	}
@@ -1088,6 +1129,7 @@ int console() {
 
 	}
 
+	stopTelemetry();
 	logViewer = nullptr;
 	droneConnection = nullptr;
 	logConnection = nullptr;

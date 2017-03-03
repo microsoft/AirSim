@@ -22,9 +22,6 @@
     <ClCompile Include="src\impl\MavLinkVideoStreamImpl.cpp">
       <Filter>src\impl</Filter>
     </ClCompile>
-    <ClCompile Include="src\serial_com\SerialPort.cpp">
-      <Filter>serial_com</Filter>
-    </ClCompile>
     <ClCompile Include="src\serial_com\TcpClientPort.cpp">
       <Filter>serial_com</Filter>
     </ClCompile>
@@ -71,6 +68,9 @@
       <Filter>common_utils</Filter>
     </ClCompile>
     <ClCompile Include="common_utils\Utils.cpp" />
+    <ClCompile Include="src\serial_com\OldSerialPort.cpp">
+      <Filter>serial_com</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -181,9 +181,6 @@
     <ClInclude Include="src\serial_com\Port.h">
       <Filter>serial_com</Filter>
     </ClInclude>
-    <ClInclude Include="src\serial_com\SerialPort.hpp">
-      <Filter>serial_com</Filter>
-    </ClInclude>
     <ClInclude Include="src\serial_com\TcpClientPort.hpp">
       <Filter>serial_com</Filter>
     </ClInclude>
@@ -201,6 +198,9 @@
     </ClInclude>
     <ClInclude Include="common_utils\ThreadUtils.hpp">
       <Filter>common_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial_com\OldSerialPort.hpp">
+      <Filter>serial_com</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
