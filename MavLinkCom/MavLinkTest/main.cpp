@@ -737,12 +737,6 @@ std::shared_ptr<MavLinkConnection> connectProxy(std::shared_ptr<MavLinkConnectio
 	// forward all PX4 messages to the remote proxy and all messages from remote proxy to PX4.
 	droneConnection->join(proxyConnection);
 
-	if (verbose) {
-		proxyConnection->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
-			printf("Received msg %d from proxy\n", static_cast<int>(msg.msgid));
-		});
-	}
-
 	return proxyConnection;
 }
 
@@ -845,6 +839,13 @@ bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
 		droneConnection = connectOffboard();
 		usedPorts.push_back(offboardEndPoint);
 	}
+
+    if (verbose) {
+        droneConnection->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
+            printf("Received msg %d from drone\n", static_cast<int>(msg.msgid));
+        });
+    }
+
     
     if (server)
     {
