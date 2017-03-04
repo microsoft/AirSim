@@ -183,9 +183,15 @@ bool APIPCamera::getScreenshot(EPIPCameraType camera_type, TArray<uint8>& compre
 {
     USceneCaptureComponent2D* capture = getCaptureComponent(camera_type, true);;
 
-
     if (capture == nullptr) {
         UAirBlueprintLib::LogMessage(TEXT("Can't take screenshot because eithercamera type is not active"), TEXT(""), LogDebugLevel::Failure);
+        return false;
+    }
+
+    capture->TextureTarget = getTexureRenderTarget(camera_type, false);
+
+    if (capture->TextureTarget == nullptr) {
+        UAirBlueprintLib::LogMessage(TEXT("Can't take screenshot because texture target is null"), TEXT(""), LogDebugLevel::Failure);
         return false;
     }
 

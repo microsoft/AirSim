@@ -13,7 +13,7 @@
 #include <Shlobj.h>
 #include <direct.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <direct.h>
 #else
 #include <unistd.h>
 #include <sys/param.h> // MAXPATHLEN definition
@@ -24,21 +24,22 @@ using namespace common_utils;
 
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
 // Windows, OSX and Linux.
-std::string FileSystem::createDirectory(std::string parentFolder, std::string name) {
-    std::string path = parentFolder + kPathSeparator + name;
+std::string FileSystem::createDirectory(std::string fullPath) {
+    
 #ifdef _WIN32
-
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-    std::wstring wide_parent = converter.from_bytes(parentFolder);
-    std::wstring wide_name = converter.from_bytes(name);
-    int hr = CreateDirectoryEx(wide_parent.c_str(), wide_name.c_str(), NULL);
-    if (hr != 0) {
-        common_utils::Utils::logMessage("CreateDirectoryEx failed %d\n", GetLastError());
+    std::wstring wide_path = converter.from_bytes(fullPath);
+    int hr = CreateDirectory(wide_path.c_str(), NULL);
+    if (hr == 0) {
+        hr = GetLastError();
+        if (hr != ERROR_ALREADY_EXISTS) {
+            throw std::invalid_argument(Utils::stringf("Error creating directory, hr=%d", hr));
+        }
     }
 #else
-    mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    mkdir(fullPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
-    return path;
+    return fullPath;
 }
 
 
@@ -59,10 +60,8 @@ std::string FileSystem::getUserDocumentsFolder() {
     }
 
     // fall back in case SHGetFolderPath failed for some reason.
-    return getUserHomeFolder() + kPathSeparator + "Documents";
-#else
-    return getUserHomeFolder() + kPathSeparator + "Documents";
 #endif
+    return combine(getUserHomeFolder(), "Documents");
 }
 
 #endif

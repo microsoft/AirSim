@@ -28,8 +28,8 @@ namespace msr {
 
 			static std::string getFullPath(std::string fileName)
 			{
-				std::string path = common_utils::FileSystem::ensureAppDataFolder();
-				return path + common_utils::FileSystem::kPathSeparator + fileName;
+				std::string path = common_utils::FileSystem::getAppDataFolder();
+				return common_utils::FileSystem::combine(path, fileName);
 			}
 
 			static Settings& loadJSonFile(std::string fileName)

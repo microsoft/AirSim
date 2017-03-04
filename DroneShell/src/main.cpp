@@ -936,17 +936,57 @@ See RecordPose for information about log file format")
 
 
 class GetImageCommand : public DroneCommand {
+    int image_index_ = 0;
 public:
     GetImageCommand() : DroneCommand("GetImage", "Get an image from the simulator")
     {
-        this->addSwitch({"-type", "depth", "scene, depth, or segmentation" });
-        this->addSwitch({"-name", "image", "name of the file" });
+        this->addSwitch({ "-type", "depth", "scene, depth, or segmentation" });
+        this->addSwitch({ "-name", "image", "name of the file" });
+        this->addSwitch({ "-iterations", "1", "number of images to capture" });
+        this->addSwitch({ "-pause_time", "100", "pause time between each image in milliseconds (default 100)" });
+    }
+
+    void getImages(CommandContext* context, DroneControllerBase::ImageType imageType, std::string baseName, int iterations, int pause_time)
+    {
+        // group the images by the current date.
+        std::string folderName = Utils::to_string(Utils::now(), "%Y-%m-%d");
+        std::string path = FileSystem::ensureFolder(FileSystem::combine(FileSystem::getAppDataFolder(), folderName));
+        
+        for (int i = 0; i < iterations; i++) {
+
+            context->client.setImageTypeForCamera(0, imageType);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // give it time to generate image.
+            auto image = context->client.getImageForCamera(0, imageType);            
+            // turn it off again so simulator doesn't choke...
+            context->client.setImageTypeForCamera(0, DroneControllerBase::ImageType::None);
+
+            // size 1 is a trick we had to do to keep RPCLIB happy...
+            if (image.size() <= 1) {
+                cout << "error getting image, check sim for error messages" << endl;
+                return;
+            }
+
+            std::string imageName = Utils::stringf("%s%d.png", baseName.c_str(), image_index_++);
+            std::string file_path_name = FileSystem::combine(path, imageName);
+
+            ofstream file;
+            FileSystem::createBinaryFile(file_path_name, file);
+            file.write(reinterpret_cast<const char*>(image.data()), image.size());
+            file.close();
+
+            cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << endl;
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(pause_time));
+        }
+
     }
 
     bool execute(const DroneCommandParameters& params) 
     {
         std::string type = getSwitch("-type").value;
         std::string name = getSwitch("-name").value;
+        int iterations = std::stoi(getSwitch("-iterations").value);
+        int pause_time = std::stoi(getSwitch("-pause_time").value);
         CommandContext* context = params.context;
 
         DroneControllerBase::ImageType imageType;
@@ -963,24 +1003,7 @@ public:
         }
 
         context->tasker.execute([=]() {
-            std::string file_path_name = FileSystem::getLogFileNamePath(name, "", ".png", false);
-
-            context->client.setImageTypeForCamera(0, imageType);
-
-            auto image = context->client.getImageForCamera(0, imageType);
-
-            // if we are too quick we miss the image.
-            while (image.size() <= 1) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                image = context->client.getImageForCamera(0, imageType);
-            }
-            ofstream file;
-            FileSystem::createBinaryFile(file_path_name, file);
-            file.write(reinterpret_cast<const char*>(image.data()), image.size());
-            file.close();
-
-            cout << "Image saved to: " << name << " (" << image.size() << " bytes)" << endl;
-            
+            getImages(context, imageType, name, iterations, pause_time);
         });
 
         return false;

@@ -670,17 +670,25 @@ vector<uint8_t> DroneControllerBase::getImageForCamera(int camera_id, ImageType 
     //TODO: bug: MSGPACK bombs out if vector if of 0 size
     static vector<uint8_t> empty_vec(1);
 
+    vector<uint8_t> result;
+
     //TODO: perf work
     auto it = images.find(camera_id);
     if (it != images.end()) {
         auto it2 = it->second.find(type);
         if (it2 != it->second.end())
-            return it2->second;
+            result = it2->second;
         else
-            return empty_vec;
+            result = empty_vec;
 
     } else
-        return empty_vec;
+        result = empty_vec;
+
+    if (result.size() == 0) {
+        result = empty_vec;
+    }
+
+    return result;
 }
 
 }} //namespace

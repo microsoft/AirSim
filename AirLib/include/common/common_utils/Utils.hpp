@@ -375,12 +375,7 @@ public:
 
     static string to_string(time_point<system_clock> time)
     {
-        time_t tt = system_clock::to_time_t(time);
-
-        char str[1024];
-        if (std::strftime(str, sizeof(str), "%Y-%m-%d-%H-%M-%S", std::localtime(&tt)))
-            return string(str);
-        else return string();
+        return to_string(now(), "%Y-%m-%d-%H-%M-%S");
 
         /* GCC doesn't implement put_time yet
         stringstream ss;

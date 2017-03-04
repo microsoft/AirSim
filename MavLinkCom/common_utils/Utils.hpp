@@ -74,13 +74,6 @@ private:
     using time_point = std::chrono::time_point<T>;    
 
 public:
-    static const char kPathSeparator =
-    #ifdef _WIN32
-                                '\\';
-    #else
-                                '/';
-    #endif
-
     static void enableImmediateConsoleFlush() {
         //disable buffering
         setbuf(stdout, NULL);

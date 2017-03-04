@@ -19,16 +19,18 @@ namespace common_utils {
 class FileSystem
 {
     typedef unsigned int uint;
+
+    // please use the combine() method instead.
+    static const char kPathSeparator =
+#ifdef _WIN32
+        '\\';
+#else
+        '/';
+#endif
+
 public:
 
-    static const char kPathSeparator =
-    #ifdef _WIN32
-                                '\\';
-    #else
-                                '/';
-    #endif
-
-    static std::string createDirectory(std::string parentFolder, std::string name);
+    static std::string createDirectory(std::string fullPath);
 
     static std::string getUserHomeFolder()
     {
@@ -44,10 +46,27 @@ public:
 
     static std::string getUserDocumentsFolder();
 
-    static std::string ensureAppDataFolder() {
-        std::string docs = getUserDocumentsFolder();
+    static std::string getAppDataFolder() {
+        return ensureFolder(combine(getUserDocumentsFolder(), ProductFolderName));
+    }
+
+    static std::string ensureFolder(std::string fullpath) {
         // make sure this directory exists.
-        return createDirectory(docs, ProductFolderName);
+        return createDirectory(fullpath);
+    }
+
+    static std::string combine(const std::string parentFolder, const std::string child) {
+        size_t len = parentFolder.size();
+        if (len > 0 && parentFolder[len - 1] == kPathSeparator) {
+            // parent already ends with '/'
+            return parentFolder + child;
+        } 
+        len = child.size();
+        if (len > 0 && child[0] == kPathSeparator) {
+            // child already starts with '/'
+            return parentFolder + child;
+        }
+        return parentFolder + kPathSeparator + child;
     }
 
     static std::string getFileExtension(const std::string str)
@@ -68,9 +87,11 @@ public:
 
     static std::string getLogFileNamePath(std::string prefix, std::string suffix, std::string extension, bool add_timestamp)
     {
+        std::string logfolder = Utils::to_string(Utils::now(), "%Y-%m-%d");
+        std::string fullPath = combine(getAppDataFolder(), logfolder);
         std::string timestamp = add_timestamp ? Utils::to_string(Utils::now()) : "";
         std::stringstream filename_ss;
-        filename_ss << ensureAppDataFolder() << kPathSeparator << prefix << suffix << timestamp << extension;
+        filename_ss << ensureFolder(fullPath) << kPathSeparator << prefix << suffix << timestamp << extension;
         return filename_ss.str();
     }
 
