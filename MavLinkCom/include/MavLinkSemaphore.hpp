@@ -5,6 +5,10 @@
 #define MavLinkCom_Semaphore_hpp
 #include <memory>
 
+#ifdef __APPLE__
+#include <semaphore.h>
+#endif
+
 namespace mavlinkcom
 {
 	/*
@@ -27,13 +31,16 @@ namespace mavlinkcom
 		void wait();
 
 		// wait for a given number of milliseconds for one call to post.  Returns false if a timeout or EINTR occurs.
-		// If post has already been called then timed_wait returns immediately decrementing the count so the next 
+		// If post has already been called then timed_wait returns immediately decrementing the count so the next
 		// wait will block.  Throws exception if an error occurs.
 		bool timed_wait(int milliseconds);
-	private: 
+	private:
 		class semaphore_impl;
 		std::unique_ptr<semaphore_impl> impl_;
 	};
 }
 
+#endif
+#ifdef __APPLE__
+int sem_timedwait(sem_t *sem, const struct timespec *abs_timeout);
 #endif
