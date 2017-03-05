@@ -1006,7 +1006,7 @@ int console() {
 			break;
 		}
 		catch (std::exception e) {
-			printf("%s\n", e.what());
+			printf("isLocalControlSupported failed: %s\n", e.what());
 		}
 	}
 

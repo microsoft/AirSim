@@ -51,7 +51,7 @@ void UdpClientPort::connect(const std::string& localHost, int localPort, const s
 {
 	udp::resolver resolver(io_service);
 	{
-		std::string portName = boost::lexical_cast<std::string>(localPort);
+		std::string portName = std::to_string(localPort);
 		udp::resolver::query query(udp::v4(), localHost, portName);
 		udp::resolver::iterator iter = resolver.resolve(query);
 		local_endpoint = *iter;
@@ -59,7 +59,7 @@ void UdpClientPort::connect(const std::string& localHost, int localPort, const s
 
 	if (remotePort != 0)
 	{
-		std::string remotePortName = boost::lexical_cast<std::string>(remotePort);
+		std::string remotePortName = std::to_string(remotePort);
 		udp::resolver::query query(udp::v4(), remoteHost, remotePortName);
 		udp::resolver::iterator iter = resolver.resolve(query);
 		remote_endpoint = *iter;

@@ -136,7 +136,7 @@ namespace LogViewer
                         var q = new System.Windows.Media.Media3D.Quaternion(payload.q1, payload.q2, payload.q3, payload.q4);
                         UiDispatcher.RunOnUIThread(() =>
                         {
-                            ModelViewer.ModelAttitude = initialAttitude * q;
+                            //ModelViewer.ModelAttitude = initialAttitude * q;
                         });
                         break;
                     }
@@ -153,6 +153,7 @@ namespace LogViewer
                         });
                         break;
                     }
+
                 case MAVLink.MAVLINK_MSG_ID.HIL_STATE_QUATERNION:
                     {
                         var payload = (MAVLink.mavlink_hil_state_quaternion_t)e.TypedPayload;

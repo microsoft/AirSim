@@ -198,6 +198,11 @@ public:
 		std::copy(from, from + count, to);
 	}
 
+	static const int to_integer(std::string s)
+	{
+		return atoi(s.c_str());
+	}
+
     static const char* to_string(time_point<steady_clock> t)
     {
         time_t tt = system_clock::to_time_t(std::chrono::time_point_cast<system_clock::duration>(system_clock::now() + (t - steady_clock::now())));

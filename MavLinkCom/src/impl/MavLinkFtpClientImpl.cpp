@@ -513,7 +513,7 @@ void MavLinkFtpClientImpl::handleListResponse()
 			if (i > 0) {
 				// remove the file size field.
 				std::string size(name.begin() + i + 1, name.end());
-				info.size = boost::lexical_cast<int>(size);
+				info.size = Utils::to_integer(size);
 				name.erase(name.begin() + i, name.end());
 			}
 			info.name = name;

@@ -69,7 +69,7 @@ void TcpClientPort::connect(const std::string& localHost, int localPort, const s
 
 	tcp::resolver resolver(io_service_);
 	{
-		std::string portName = boost::lexical_cast<std::string>(localPort);
+		std::string portName = std::to_string(localPort);
 		tcp::resolver::query query(tcp::v4(), localHost, portName);
 		tcp::resolver::iterator iter = resolver.resolve(query);
 		local_endpoint_ = *iter;
@@ -80,7 +80,7 @@ void TcpClientPort::connect(const std::string& localHost, int localPort, const s
 		throw std::runtime_error("remote port cannot be zero");
 	}
 
-	std::string remotePortName = boost::lexical_cast<std::string>(remotePort);
+	std::string remotePortName = std::to_string(remotePort);
 	tcp::resolver::query query(tcp::v4(), remoteHost, remotePortName);
 	tcp::resolver::iterator iter = resolver.resolve(query);
 	remote_endpoint_ = *iter;
