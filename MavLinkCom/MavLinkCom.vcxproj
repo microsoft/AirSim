@@ -248,7 +248,7 @@
     <ClCompile Include="src\impl\MavLinkConnectionImpl.cpp" />
     <ClCompile Include="src\MavLinkVideoStream.cpp" />
     <ClCompile Include="src\impl\MavLinkVideoStreamImpl.cpp" />
-    <ClCompile Include="src\serial_com\OldSerialPort.cpp" />
+    <ClCompile Include="src\serial_com\SerialPort.cpp" />
     <ClCompile Include="src\serial_com\TcpClientPort.cpp" />
     <ClCompile Include="src\serial_com\UdpClientPort.cpp" />
     <ClCompile Include="src\serial_com\UdpServer.cpp" />
@@ -291,8 +291,8 @@
     <ClInclude Include="mavlink\mavlink_helpers.h" />
     <ClInclude Include="mavlink\mavlink_types.h" />
     <ClInclude Include="mavlink\protocol.h" />
-    <ClInclude Include="src\serial_com\OldSerialPort.hpp" />
     <ClInclude Include="src\serial_com\Port.h" />
+    <ClInclude Include="src\serial_com\SerialPort.hpp" />
     <ClInclude Include="src\serial_com\TcpClientPort.hpp" />
     <ClInclude Include="src\serial_com\UdpClientPort.hpp" />
     <ClInclude Include="src\serial_com\UdpServer.hpp" />

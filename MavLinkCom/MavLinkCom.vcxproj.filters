@@ -68,9 +68,7 @@
       <Filter>common_utils</Filter>
     </ClCompile>
     <ClCompile Include="common_utils\Utils.cpp" />
-    <ClCompile Include="src\serial_com\OldSerialPort.cpp">
-      <Filter>serial_com</Filter>
-    </ClCompile>
+    <ClCompile Include="src\serial_com\SerialPort.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -199,9 +197,7 @@
     <ClInclude Include="common_utils\ThreadUtils.hpp">
       <Filter>common_utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\serial_com\OldSerialPort.hpp">
-      <Filter>serial_com</Filter>
-    </ClInclude>
+    <ClInclude Include="src\serial_com\SerialPort.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mavlink">
