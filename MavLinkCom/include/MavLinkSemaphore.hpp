@@ -3,24 +3,36 @@
 
 #ifndef MavLinkCom_Semaphore_hpp
 #define MavLinkCom_Semaphore_hpp
+#include <memory>
 
-namespace boost {
-	namespace interprocess {
-		class interprocess_semaphore;
-	}
-}
 namespace mavlinkcom
 {
+	/*
+	A semaphore is used to signal an event across threads.  One thread blocks on Wait() until
+	the other thread calls Signal.  It is a counting semaphore so if the thread calls Signal
+	before the Wait() then the Wait() does not block.
+	*/
 	class MavLinkSemaphore
 	{
 	public:
 		MavLinkSemaphore();
 		~MavLinkSemaphore();
-		void wait();
+
+		// Increment the semaphore count to unblock the next waiter (the next wait caller will return).
+		// Throws exception if an error occurs.
 		void post();
+
+		// wait indefinitely for one call to post.  If post has already been called then wait returns immediately
+		// decrementing the count so the next wait in the queue will block.  Throws exception if an error occurs.
+		void wait();
+
+		// wait for a given number of milliseconds for one call to post.  Returns false if a timeout or EINTR occurs.
+		// If post has already been called then timed_wait returns immediately decrementing the count so the next 
+		// wait will block.  Throws exception if an error occurs.
 		bool timed_wait(int milliseconds);
-	private:
-		boost::interprocess::interprocess_semaphore* impl_;
+	private: 
+		class semaphore_impl;
+		std::unique_ptr<semaphore_impl> impl_;
 	};
 }
 
