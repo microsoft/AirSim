@@ -25,13 +25,7 @@
     <ClCompile Include="src\serial_com\TcpClientPort.cpp">
       <Filter>serial_com</Filter>
     </ClCompile>
-    <ClCompile Include="src\serial_com\TcpServer.cpp">
-      <Filter>serial_com</Filter>
-    </ClCompile>
     <ClCompile Include="src\serial_com\UdpClientPort.cpp">
-      <Filter>serial_com</Filter>
-    </ClCompile>
-    <ClCompile Include="src\serial_com\UdpServer.cpp">
       <Filter>serial_com</Filter>
     </ClCompile>
     <ClCompile Include="src\impl\windows\MavLinkFindSerialPorts.cpp">
@@ -67,8 +61,18 @@
     <ClCompile Include="common_utils\ThreadUtils.cpp">
       <Filter>common_utils</Filter>
     </ClCompile>
-    <ClCompile Include="common_utils\Utils.cpp" />
-    <ClCompile Include="src\serial_com\SerialPort.cpp" />
+    <ClCompile Include="common_utils\FileSystem.cpp">
+      <Filter>common_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial_com\SerialPort.cpp">
+      <Filter>serial_com</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serial_com\SocketInit.cpp">
+      <Filter>serial_com</Filter>
+    </ClCompile>
+    <ClCompile Include="common_utils\Utils.cpp">
+      <Filter>common_utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -182,13 +186,7 @@
     <ClInclude Include="src\serial_com\TcpClientPort.hpp">
       <Filter>serial_com</Filter>
     </ClInclude>
-    <ClInclude Include="src\serial_com\TcpServer.hpp">
-      <Filter>serial_com</Filter>
-    </ClInclude>
     <ClInclude Include="src\serial_com\UdpClientPort.hpp">
-      <Filter>serial_com</Filter>
-    </ClInclude>
-    <ClInclude Include="src\serial_com\UdpServer.hpp">
       <Filter>serial_com</Filter>
     </ClInclude>
     <ClInclude Include="common_utils\StrictMode.hpp">
@@ -197,7 +195,15 @@
     <ClInclude Include="common_utils\ThreadUtils.hpp">
       <Filter>common_utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\serial_com\SerialPort.hpp" />
+    <ClInclude Include="common_utils\FileSystem.hpp">
+      <Filter>common_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial_com\SerialPort.hpp">
+      <Filter>serial_com</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial_com\SocketInit.hpp">
+      <Filter>serial_com</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mavlink">

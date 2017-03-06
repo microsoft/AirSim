@@ -3,7 +3,7 @@
 
 #include <thread>
 
-namespace common_utils {
+namespace mavlink_utils {
 
 	class CurrentThread
 	{

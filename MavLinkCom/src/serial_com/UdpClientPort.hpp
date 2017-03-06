@@ -35,6 +35,10 @@ public:
 
 	bool isClosed();
 
+
+	std::string remoteAddress();
+	int remotePort();
+
 private:
 	class UdpSocketImpl;
 	std::unique_ptr<UdpSocketImpl> impl_;

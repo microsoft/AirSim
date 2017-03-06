@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <tuple>
 
-namespace common_utils {
+namespace mavlink_utils {
 
 template <typename T>
 class MedianFilter {

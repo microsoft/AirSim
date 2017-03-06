@@ -21,8 +21,9 @@ namespace mavlinkcom {
 		~MavLinkTcpServer();
 
 		// This method accepts a new connection from a remote machine and gives that connection the given name.
-		// This is how you can build a TCP server by calling this method each time a new connection is received on your handler.
-		void acceptTcp(const std::string& nodeName, MavLinkConnectionHandler handler);
+		// This is how you can build a TCP server by calling this method in a loop as long as you want to continue
+		// receiving new incoming connections.
+		std::shared_ptr<MavLinkConnection> acceptTcp(const std::string& nodeName);
 
 	public:
 		//needed for piml pattern

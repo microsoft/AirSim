@@ -20,15 +20,15 @@ class FileSystem
 {
     typedef unsigned int uint;
 
-    // please use the combine() method instead.
-    static const char kPathSeparator =
-#ifdef _WIN32
-        '\\';
-#else
-        '/';
-#endif
-
 public:
+
+	// please use the combine() method instead.
+	static const char kPathSeparator =
+#ifdef _WIN32
+		'\\';
+#else
+		'/';
+#endif
 
     static std::string createDirectory(std::string fullPath);
 
@@ -68,6 +68,15 @@ public:
         }
         return parentFolder + kPathSeparator + child;
     }
+
+	static void removeLeaf(std::string& path) {
+		size_t size = path.size();
+		size_t pos = path.find_last_of('/');
+		if (pos != std::string::npos) {
+			path.erase(pos, size - pos);
+		}
+	}
+
 
     static std::string getFileExtension(const std::string str)
     {

@@ -6,8 +6,9 @@
 #include "UdpClientPort.hpp"
 #include <stdio.h>
 #include <string.h>
+#include "SocketInit.hpp"
 
-using namespace common_utils;
+using namespace mavlink_utils;
 
 #ifdef _WIN32
 // windows
@@ -48,31 +49,16 @@ const int SOCKET_ERROR = -1;
 
 class UdpClientPort::UdpSocketImpl
 {
+	SocketInit init;
 	SOCKET sock = INVALID_SOCKET;
 	sockaddr_in localaddr;
 	sockaddr_in remoteaddr;
 	bool hasRemote = false;
-	SOCKET sendSocket = INVALID_SOCKET;
 	bool closed_ = true;
 public:
 
 	bool isClosed() {
 		return closed_;
-	}
-
-	void initialize()
-	{
-#ifdef _WIN32
-		if (!socket_initialized_) {
-			socket_initialized_ = true;
-			WSADATA wsaData;
-			// Initialize Winsock
-			int rc = WSAStartup(MAKEWORD(2, 2), (LPWSADATA)&wsaData);
-			if (rc != 0) {
-				throw std::runtime_error(Utils::stringf("UdpClientPort WSAStartup failed with error : %d\n", rc));
-			}
-		}
-#endif
 	}
 
 	static void resolveAddress(const std::string& ipAddress, int port, sockaddr_in& addr)
@@ -116,8 +102,6 @@ public:
 
 	int connect(const std::string& localHost, int localPort, const std::string& remoteHost, int remotePort)
 	{
-		initialize();
-
 		sock = socket(AF_INET, SOCK_DGRAM, 0);
 
 		resolveAddress(localHost, localPort, localaddr);
@@ -137,7 +121,7 @@ public:
 		if (rc < 0)
 		{
 			int hr = WSAGetLastError();
-			throw std::runtime_error(Utils::stringf("UdpClientPort connect bind failed with error: %d\n", hr));
+			throw std::runtime_error(Utils::stringf("UdpClientPort socket bind failed with error: %d\n", hr));
 			return hr;
 		}
 		closed_ = false;
@@ -147,19 +131,17 @@ public:
 	// write to the serial port
 	int write(const uint8_t* ptr, int count)
 	{
-		if (sendSocket == INVALID_SOCKET)
+		if (remoteaddr.sin_port == 0)
 		{
-			if (remoteaddr.sin_port == 0)
-			{
-				throw std::runtime_error("UdpClientPort cannot send until we've received something first so we can find out what port to send to.\n");
-				return 0;
-			}
+			throw std::runtime_error("UdpClientPort cannot send until we've received something first so we can find out what port to send to.\n");
+			return 0;
 		}
 
 		socklen_t addrlen = sizeof(sockaddr_in);
 		int hr = sendto(sock, reinterpret_cast<const char*>(ptr), count, 0, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen);
 		if (hr == SOCKET_ERROR)
 		{
+			hr = WSAGetLastError();
 			throw std::runtime_error(Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr));
 		}
 
@@ -179,8 +161,8 @@ public:
 			int rc = recvfrom(sock, reinterpret_cast<char*>(result), bytesToRead, 0, reinterpret_cast<sockaddr*>(&other), &addrlen);
 			if (rc < 0)
 			{
-#ifdef _WIN32
 				int hr = WSAGetLastError();
+#ifdef _WIN32
 				if (hr == WSAEMSGSIZE)
 				{
 					// message was too large for the buffer, no problem, return what we have.					
@@ -192,7 +174,6 @@ public:
 				}
 				else
 #else
-				int hr = errno;
 				if (hr == EINTR)
 				{
 					// skip this, it is was interrupted.
@@ -209,7 +190,9 @@ public:
 			if (remoteaddr.sin_port == 0)
 			{
 				// we now have it.
-				remoteaddr.sin_port = ntohs(other.sin_port);
+				remoteaddr.sin_family = other.sin_family;
+				remoteaddr.sin_addr = other.sin_addr;
+				remoteaddr.sin_port = other.sin_port;
 			}
 			else if (other.sin_addr.s_addr != remoteaddr.sin_addr.s_addr)
 			{
@@ -244,6 +227,15 @@ public:
 #endif
 		}
 	}
+
+	std::string remoteAddress() {
+		return inet_ntoa(remoteaddr.sin_addr);
+	}
+
+	int remotePort() {
+		return ntohs(remoteaddr.sin_port);
+	}
+
 };
 
 //-----------------------------------------------------------------------------------------
@@ -282,4 +274,14 @@ UdpClientPort::read(uint8_t* buffer, int bytesToRead)
 bool UdpClientPort::isClosed()
 {
 	return impl_->isClosed();
+}
+
+std::string UdpClientPort::remoteAddress()
+{
+	return impl_->remoteAddress();
+}
+
+int UdpClientPort::remotePort()
+{
+	return impl_->remotePort();
 }

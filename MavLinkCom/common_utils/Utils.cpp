@@ -17,7 +17,7 @@ static int _vscprintf(const char * format, va_list pargs)
 #include <Windows.h> // OutputDebugStringA
 #endif
 
-using namespace common_utils;
+using namespace mavlink_utils;
 using namespace std;
 
 void Utils::logMessage(const char* message, ...) {

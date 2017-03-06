@@ -96,7 +96,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;_WIN32;WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);common_utils;include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -130,7 +130,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;_WIN32;WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);common_utils;include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -166,7 +166,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;_WIN32;WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);common_utils;include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -200,7 +200,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0600;_WIN32;WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);common_utils;include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -229,6 +229,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common_utils\FileSystem.cpp" />
     <ClCompile Include="common_utils\ThreadUtils.cpp" />
     <ClCompile Include="common_utils\Utils.cpp" />
     <ClCompile Include="src\impl\MavLinkFtpClientImpl.cpp" />
@@ -249,12 +250,12 @@
     <ClCompile Include="src\MavLinkVideoStream.cpp" />
     <ClCompile Include="src\impl\MavLinkVideoStreamImpl.cpp" />
     <ClCompile Include="src\serial_com\SerialPort.cpp" />
+    <ClCompile Include="src\serial_com\SocketInit.cpp" />
     <ClCompile Include="src\serial_com\TcpClientPort.cpp" />
     <ClCompile Include="src\serial_com\UdpClientPort.cpp" />
-    <ClCompile Include="src\serial_com\UdpServer.cpp" />
-    <ClCompile Include="src\serial_com\TcpServer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common_utils\FileSystem.hpp" />
     <ClInclude Include="common_utils\StrictMode.hpp" />
     <ClInclude Include="common_utils\ThreadUtils.hpp" />
     <ClInclude Include="include\AsyncResult.hpp" />
@@ -293,10 +294,9 @@
     <ClInclude Include="mavlink\protocol.h" />
     <ClInclude Include="src\serial_com\Port.h" />
     <ClInclude Include="src\serial_com\SerialPort.hpp" />
+    <ClInclude Include="src\serial_com\SocketInit.hpp" />
     <ClInclude Include="src\serial_com\TcpClientPort.hpp" />
     <ClInclude Include="src\serial_com\UdpClientPort.hpp" />
-    <ClInclude Include="src\serial_com\UdpServer.hpp" />
-    <ClInclude Include="src\serial_com\TcpServer.hpp" />
     <ClInclude Include="include\VehicleState.hpp" />
   </ItemGroup>
   <ItemGroup>

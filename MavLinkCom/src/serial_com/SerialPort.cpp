@@ -1,6 +1,4 @@
 #include "SerialPort.hpp"
-//#include "../common_utils/Utils.hpp"
-//using namespace common_utils;
 
 #ifdef _WIN32
 #include <comdef.h>

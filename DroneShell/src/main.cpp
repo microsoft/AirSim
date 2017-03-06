@@ -49,9 +49,9 @@ public:
             if (rate.empty()) {
                 return YawMode(false, 0);
             }
-            return YawMode(true, std::stof(rate));
+            return YawMode(true, getSwitch("-yaw_rate").toFloat());
         }
-        return YawMode(/*bool is_rate_val, float yaw_or_rate_val*/ false, std::stof(yaw));
+        return YawMode(/*bool is_rate_val, float yaw_or_rate_val*/ false, getSwitch("-yaw").toFloat());
     }
 
     void addYawModeSwitches(){
@@ -65,7 +65,7 @@ public:
     }
 
     DrivetrainType getDriveTrain() {            
-        int drivetrain = getSwitchInt("-drivetrain");
+        int drivetrain = getSwitch("-drivetrain").toInt();
         return static_cast<DrivetrainType>(drivetrain);
     }
 
@@ -136,7 +136,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.takeoff(std::stof(getSwitch("-takeoff_wait").value));
+        params.context->client.takeoff(getSwitch("-takeoff_wait").toFloat());
         return false;
     }
 };
@@ -201,10 +201,10 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float z = std::stof(getSwitch("-z").value);
-        float velocity = std::stof(getSwitch("-velocity").value);
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
+		float z = getSwitch("-z").toFloat();
+        float velocity = getSwitch("-velocity").toFloat();
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -225,8 +225,8 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float yaw_rate = std::stof(getSwitch("-yaw_rate").value);
-        float duration = std::stof(getSwitch("-duration").value);
+        float yaw_rate = getSwitch("-yaw_rate").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -247,8 +247,8 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float yaw = std::stof(getSwitch("-yaw").value);
-        float margin = std::stof(getSwitch("-yaw_margin").value);
+        float yaw = getSwitch("-yaw").toFloat();
+        float margin = getSwitch("-yaw_margin").toFloat();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -297,12 +297,12 @@ public:
 
     bool execute(const DroneCommandParameters& params)
     {
-        float x = std::stof(getSwitch("-x").value);
-        float y = std::stof(getSwitch("-y").value);
-        float z = std::stof(getSwitch("-z").value);
-        float velocity = std::stof(getSwitch("-velocity").value);
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
+        float x = getSwitch("-x").toFloat();
+        float y = getSwitch("-y").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float velocity = getSwitch("-velocity").toFloat();
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto drivetrain = getDriveTrain();
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
@@ -332,10 +332,10 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float vx = std::stof(getSwitch("-vx").value);
-        float vy = std::stof(getSwitch("-vy").value);
-        float z = std::stof(getSwitch("-z").value);
-        float duration = std::stof(getSwitch("-duration").value);
+        float vx = getSwitch("-vx").toFloat();
+        float vy = getSwitch("-vy").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         auto drivetrain = getDriveTrain();
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
@@ -362,11 +362,11 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float pitch = std::stof(getSwitch("-pitch").value);
-        float roll = std::stof(getSwitch("-roll").value);
-        float z = std::stof(getSwitch("-z").value);
-        float yaw = std::stof(getSwitch("-yaw").value);
-        float duration = std::stof(getSwitch("-duration").value);
+        float pitch = getSwitch("-pitch").toFloat();
+        float roll = getSwitch("-roll").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float yaw = getSwitch("-yaw").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -392,10 +392,10 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float vx = std::stof(getSwitch("-vx").value);
-        float vy = std::stof(getSwitch("-vy").value);
-        float vz = std::stof(getSwitch("-vz").value);
-        float duration = std::stof(getSwitch("-duration").value);
+        float vx = getSwitch("-vx").toFloat();
+        float vy = getSwitch("-vy").toFloat();
+        float vz = getSwitch("-vz").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         auto drivetrain = getDriveTrain();
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
@@ -422,10 +422,10 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float vx = std::stof(getSwitch("-vx").value);
-        float vy = std::stof(getSwitch("-vy").value);
-        float z = std::stof(getSwitch("-z").value);
-        float duration = std::stof(getSwitch("-duration").value);
+        float vx = getSwitch("-vx").toFloat();
+        float vy = getSwitch("-vy").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         auto drivetrain = getDriveTrain();
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
@@ -454,9 +454,9 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        int safety_flags_switch = std::stoi(getSwitch("-safety_flags").value);
-        float obs_clearance = std::stof(getSwitch("-obs_clearance").value);
-        float obs_avoidance_vel = std::stof(getSwitch("-obs_avoidance_vel").value);
+		int safety_flags_switch = getSwitch("-safety_flags").toInt();
+        float obs_clearance = getSwitch("-obs_clearance").toFloat();
+        float obs_avoidance_vel = getSwitch("-obs_avoidance_vel").toFloat();
         uint obs_strategy = std::stoi(getSwitch("-obs_strategy").value);
         CommandContext* context = params.context;
 
@@ -469,23 +469,22 @@ public:
 
         std::string s_xy_length = getSwitch("-xy_length").value;
         if (!s_xy_length.empty()){
-            xy_length = std::stof(s_xy_length);
+			xy_length = getSwitch("-xy_length").toFloat();
         }
 
         std::string s_min_z = getSwitch("-min_z").value;
         if (!s_min_z.empty()){
-            min_z = std::stof(s_min_z);
+			min_z = getSwitch("-min_z").toFloat();
         }
 
         std::string s_max_z = getSwitch("-max_z").value;
         if (!s_max_z.empty()){
-            max_z = std::stof(s_max_z);
+			max_z = getSwitch("-max_z").toFloat();
         }
 
         std::string s_origin = getSwitch("-origin").value;
         if (!s_origin.empty()){
-            std::vector<std::string> parts;
-            boost::algorithm::split(parts, s_origin, boost::is_any_of(","));
+            std::vector<std::string> parts = Utils::split(s_origin, ",", 1);
             if (parts.size() == 3){            
                 origin[0] = std::stof(parts[0]); 
                 origin[1] = std::stof(parts[1]); 
@@ -520,13 +519,13 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float pitch = std::stof(getSwitch("-pitch").value);
-        float roll = std::stof(getSwitch("-roll").value);
-        float z = std::stof(getSwitch("-z").value);
-        float duration = std::stof(getSwitch("-duration").value);
-        float yaw = std::stof(getSwitch("-yaw").value);
-        float pause_time = std::stof(getSwitch("-pause_time").value);
-        int iterations = getSwitchInt("-iterations");
+		float pitch = getSwitch("-pitch").toFloat();
+        float roll = getSwitch("-roll").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float duration = getSwitch("-duration").toFloat();
+        float yaw = getSwitch("-yaw").toFloat();
+        float pause_time = getSwitch("-pause_time").toFloat();
+		int iterations = getSwitch("-iterations").toInt();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -557,14 +556,14 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float length = std::stof(getSwitch("-length").value);
-        float z = std::stof(getSwitch("-z").value);
-        float velocity = std::stof(getSwitch("-velocity").value);
-        float pause_time = std::stof(getSwitch("-pause_time").value);
-        int iterations = getSwitchInt("-iterations");
+        float length = getSwitch("-length").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float velocity = getSwitch("-velocity").toFloat();
+        float pause_time = getSwitch("-pause_time").toFloat();
+        int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
 
@@ -599,13 +598,13 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float pitch = std::stof(getSwitch("-pitch").value);
-        float roll = std::stof(getSwitch("-roll").value);
-        float z = std::stof(getSwitch("-z").value);
-        float duration = std::stof(getSwitch("-duration").value);
-        float yaw = std::stof(getSwitch("-yaw").value);
-        float pause_time = std::stof(getSwitch("-pause_time").value);
-        int iterations = getSwitchInt("-iterations");
+        float pitch = getSwitch("-pitch").toFloat();
+        float roll = getSwitch("-roll").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float duration = getSwitch("-duration").toFloat();
+        float yaw = getSwitch("-yaw").toFloat();
+        float pause_time = getSwitch("-pause_time").toFloat();
+		int iterations = getSwitch("-iterations").toInt();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -644,14 +643,14 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float length = std::stof(getSwitch("-length").value);
-        float z = std::stof(getSwitch("-z").value);
-        float velocity = std::stof(getSwitch("-velocity").value);
-        float pause_time = std::stof(getSwitch("-pause_time").value);
-        int iterations = getSwitchInt("-iterations");
+        float length = getSwitch("-length").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float velocity = getSwitch("-velocity").toFloat();
+        float pause_time = getSwitch("-pause_time").toFloat();
+		int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
 
@@ -696,14 +695,14 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float length = std::stof(getSwitch("-length").value);
-        float z = std::stof(getSwitch("-z").value);
-        float velocity = std::stof(getSwitch("-velocity").value);
-        //float pause_time = std::stof(getSwitch("-pause_time").value);
-        int iterations = getSwitchInt("-iterations");
+        float length = getSwitch("-length").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float velocity = getSwitch("-velocity").toFloat();
+        //float pause_time = getSwitch("-pause_time").toFloat();
+		int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         int path_rep = std::stoi(getSwitch("-path_rep").value);
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
@@ -744,15 +743,15 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float radius = std::stof(getSwitch("-radius").value);
-        float z = std::stof(getSwitch("-z").value);
-        float seg_length = std::stof(getSwitch("-seg_length").value);
-        float pause_time = std::stof(getSwitch("-pause_time").value);
-        float velocity = std::stof(getSwitch("-velocity").value);
+        float radius = getSwitch("-radius").toFloat();
+        float z = getSwitch("-z").toFloat();
+        float seg_length = getSwitch("-seg_length").toFloat();
+        float pause_time = getSwitch("-pause_time").toFloat();
+        float velocity = getSwitch("-velocity").toFloat();
         auto drivetrain = getDriveTrain();
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
-        int iterations = getSwitchInt("-iterations");
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
+		int iterations = getSwitch("-iterations").toInt();
         auto yawMode = getYawMode();
 
         float angle = std::acos(1 - (seg_length*seg_length / (2 * radius*radius)));
@@ -799,14 +798,14 @@ public:
     {
         using std::swap;
 
-        float radius = std::stof(getSwitch("-radius").value);
-        float z_path = std::stof(getSwitch("-z").value);
-        float seg_length = std::stof(getSwitch("-seg_length").value);
-        float velocity = std::stof(getSwitch("-velocity").value);
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
+        float radius = getSwitch("-radius").toFloat();
+        float z_path = getSwitch("-z").toFloat();
+        float seg_length = getSwitch("-seg_length").toFloat();
+        float velocity = getSwitch("-velocity").toFloat();
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto drivetrain = getDriveTrain();
-        int iterations = getSwitchInt("-iterations");
+        int iterations = getSwitch("-iterations").toInt();
         int path_rep = std::stoi(getSwitch("-path_rep").value);
         string plane = getSwitch("-plane").value;
         auto yawMode = getYawMode();
@@ -891,9 +890,9 @@ See RecordPose for information about log file format")
 
     bool execute(const DroneCommandParameters& params) 
     {
-        float velocity = std::stof(getSwitch("-velocity").value);
-        float lookahead = std::stof(getSwitch("-lookahead").value);
-        float adaptive_lookahead = std::stof(getSwitch("-adaptive_lookahead").value);
+        float velocity = getSwitch("-velocity").toFloat();
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {

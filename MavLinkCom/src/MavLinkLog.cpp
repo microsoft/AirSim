@@ -6,7 +6,7 @@
 #include <chrono>
 
 using namespace mavlinkcom;
-using namespace common_utils;
+using namespace mavlink_utils;
 
 MavLinkLog::MavLinkLog()
 {

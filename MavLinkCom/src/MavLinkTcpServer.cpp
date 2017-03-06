@@ -12,9 +12,9 @@ MavLinkTcpServer::MavLinkTcpServer(const std::string& local_addr, int local_port
 {
 }
 
-void MavLinkTcpServer::acceptTcp(const std::string& nodeName, MavLinkConnectionHandler handler)
+std::shared_ptr<MavLinkConnection> MavLinkTcpServer::acceptTcp(const std::string& nodeName)
 {
-	impl_->acceptTcp(nodeName, handler);
+	return impl_->acceptTcp(nodeName);
 }
 
 MavLinkTcpServer::MavLinkTcpServer() {

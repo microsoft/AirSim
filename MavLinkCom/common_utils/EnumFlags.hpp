@@ -4,7 +4,7 @@
 #ifndef CommonUtils_EnumFlags_hpp
 #define CommonUtils_EnumFlags_hpp
 
-namespace common_utils {
+namespace mavlink_utils {
 
 template<class TEnum,class TUnderlying=typename std::underlying_type<TEnum>::type>
 class EnumFlags

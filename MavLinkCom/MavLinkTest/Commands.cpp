@@ -9,10 +9,9 @@
 #include <string.h>
 #include <string>
 #include "MavLinkMessages.hpp"
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
+#include "FileSystem.hpp"
 
-using namespace common_utils;
+using namespace mavlink_utils;
 using namespace mavlinkcom;
 
 // from main.cpp.
@@ -628,7 +627,7 @@ bool SendImageCommand::Parse(std::vector<std::string>& args) {
 		if (cmd == "sendimage") {
 			if (args.size() == 4)
 			{
-				fileName = common_utils::Utils::trim(args[1], '"');
+				fileName = Utils::trim(args[1], '"');
 				width = atoi(args[2].c_str());
 				height = atoi(args[3].c_str());
 				return true;
@@ -686,7 +685,7 @@ void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 		return;
 	}
 	std::string ext = Utils::getFileExtension(fileName);
-	ext = boost::algorithm::to_lower_copy(ext);
+	ext = Utils::toLower(ext);
 	uint8_t type = 0;
 	if (ext == ".png") {
 		type = static_cast<uint8_t>(MAVLINK_DATA_STREAM_TYPE::MAVLINK_DATA_STREAM_IMG_PNG);
@@ -1610,36 +1609,27 @@ void AltHoldCommand::HandleMessage(const MavLinkMessage& message)
 	}
 }
 
-std::string FtpCommand::resolve(std::string name)
-{
-	if (name.size() > 0 && name[0] == '/')
-	{
-		// absolute path overrides cwd.
-		return name;
+std::string replaceAll(std::string s, char toFind, char toReplace) {
+	size_t pos = s.find_first_of(toFind, 0);
+	while (pos != std::string::npos) {
+		s.replace(pos, 1, 1, toReplace);
+		pos = s.find_first_of(toFind, 0);
 	}
+	return s;
+}
 
-	auto currentPath = boost::filesystem::path(cwd);
-	auto srcPath = boost::filesystem::path(name);
-	for (auto iter = srcPath.begin(); iter != srcPath.end(); iter++)
-	{
-		if (*iter == "..") {
-			currentPath.remove_leaf();
-		}
-		else if (*iter == ".") {
-			// ignore this
-		}
-		else {
-			currentPath.append((*iter).generic_wstring(), boost::filesystem::path::codecvt());
-		}
+std::string normalize(std::string arg) {
+	if (FileSystem::kPathSeparator == '\\') {
+		return replaceAll(arg, '/', '\\'); // make sure user input matches what FileSystem will do when resolving paths.
 	}
+	return arg;
+}
 
-	// PX4 doesn't like relative names (it horks the board, no more responses after that)
-	std::string temp = currentPath.generic_string();
-	boost::replace_all(temp, "\\", "/"); // PX4 is unix style.
-	if (temp.size() == 0 || temp[0] != '/') {
-		temp = "/" + temp;
+std::string toPX4Path(std::string arg) {
+	if (FileSystem::kPathSeparator == '\\') {
+		return replaceAll(arg, '\\', '/'); // PX4 uses '/'
 	}
-	return temp;
+	return arg;
 }
 
 bool FtpCommand::Parse(std::vector<std::string>& args)
@@ -1650,17 +1640,20 @@ bool FtpCommand::Parse(std::vector<std::string>& args)
 		std::string command = args[0];
 		if (command == "ls") {
 			cmd = list;
+
 			if (args.size() > 1) {
-				source = resolve(args[1]);
+				std::string rel = normalize(args[1]);
+				source = FileSystem::resolve(cwd, rel);
 			}
 			else {
-				source = resolve("");
+				source = FileSystem::resolve(cwd, "");
 			}
 		}
 		else if (command == "cd") {
 			cmd = cd;
 			if (args.size() > 1) {
-				cwd = resolve(args[1]);
+				std::string rel = normalize(args[1]);
+				cwd = FileSystem::resolve(cwd, rel);
 			}
 			else {
 				cmd = none;
@@ -1670,7 +1663,8 @@ bool FtpCommand::Parse(std::vector<std::string>& args)
 		else if (command == "get") {
 			cmd = get;
 			if (args.size() > 1) {
-				target = resolve(args[1]);
+				std::string rel = normalize(args[1]);
+				target = FileSystem::resolve(cwd, rel);
 				if (args.size() > 2) {
 					source = args[2];
 				}
@@ -1690,7 +1684,8 @@ bool FtpCommand::Parse(std::vector<std::string>& args)
 				// local remote
 				source = args[1];
 				if (args.size() > 2) {
-					target = resolve(args[2]);
+					std::string rel = normalize(args[1]);
+					target = FileSystem::resolve(cwd, rel);
 				}
 				else {
 					cmd = none;
@@ -1705,7 +1700,8 @@ bool FtpCommand::Parse(std::vector<std::string>& args)
 		else if (command == "rm") {
 			cmd = remove;
 			if (args.size() > 1) {
-				target = resolve(args[1]);
+				std::string rel = replaceAll(args[1], '\\', '/'); // PX4 is unix style.
+				target = FileSystem::resolve(cwd, rel);
 			}
 			else {
 				cmd = none;
@@ -1732,7 +1728,7 @@ void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	switch (cmd)
 	{
 	case FtpCommand::list:
-		client->list(progress, source, files);
+		client->list(progress, toPX4Path(source), files);
 		for (auto iter = files.begin(); iter != files.end(); iter++)
 		{
 			auto info = *iter;
@@ -1754,7 +1750,7 @@ void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 		// NOP
 		break;
 	case FtpCommand::get:
-		client->get(progress, target, source);
+		client->get(progress, toPX4Path(target), source);
 		if (progress.error != 0) {
 			printf("%s\n", progress.message.c_str());
 			printf("get failed\n");
@@ -1767,7 +1763,7 @@ void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 		}
 		break;
 	case FtpCommand::put:
-		client->put(progress, target, source);
+		client->put(progress, toPX4Path(target), source);
 		if (progress.error != 0) {
 			printf("%s\n", progress.message.c_str());
 			printf("put failed\n");
@@ -1780,7 +1776,7 @@ void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 		}
 		break;
 	case FtpCommand::remove:
-		client->remove(progress, target);
+		client->remove(progress, toPX4Path(target));
 		if (progress.error != 0) {
 			printf("remove failed\n");
 		}

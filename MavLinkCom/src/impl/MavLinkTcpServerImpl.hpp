@@ -12,7 +12,7 @@
 
 using namespace mavlinkcom;
 
-class TcpServer;
+class TcpClientPort;
 
 namespace mavlinkcom_impl
 {
@@ -22,14 +22,14 @@ namespace mavlinkcom_impl
 		MavLinkTcpServerImpl(const std::string& local_addr, int local_port);
 		~MavLinkTcpServerImpl();
 
-		void acceptTcp(const std::string& nodeName, MavLinkConnectionHandler handler);
+		// accept one new connection from a remote machine.
+		std::shared_ptr<MavLinkConnection> acceptTcp(const std::string& nodeName);
 	private:
 
 		std::string local_address_;
 		int local_port_;
-		MavLinkConnectionHandler handler_;
 		std::string accept_node_name_;
-		std::shared_ptr<TcpServer> server_;
+		std::shared_ptr<TcpClientPort> server_;
 	};
 }
 

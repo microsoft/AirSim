@@ -8,7 +8,7 @@
 
 #define PACKET_PAYLOAD 253	//hard coded in MavLink code - do not change
 
-using namespace common_utils;
+using namespace mavlink_utils;
 
 using namespace mavlinkcom_impl;
 //================================= CLIENT ==============================================================

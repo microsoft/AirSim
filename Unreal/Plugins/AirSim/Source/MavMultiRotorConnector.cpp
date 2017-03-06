@@ -104,8 +104,8 @@ void MavMultiRotorConnector::stopApiServer()
 {
 	if (rpclib_server_ != nullptr) {
 		rpclib_server_->stop();
-		delete rpclib_server_.release();
-		delete controller_cancelable_.release();
+		rpclib_server_.reset(nullptr);
+		controller_cancelable_.reset(nullptr);
 	}
 }
 

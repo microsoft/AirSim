@@ -6,7 +6,7 @@
 #include "MavLinkMessages.hpp"
 #include "MavLinkSemaphore.hpp"
 
-using namespace common_utils;
+using namespace mavlink_utils;
 
 using namespace mavlinkcom_impl;
 
@@ -124,7 +124,7 @@ AsyncResult<MavLinkHeartbeat>  MavLinkNodeImpl::waitForHeartbeat()
 	Utils::logMessage("Waiting for heartbeat from PX4...");
 
 	// wait for a heartbeat msg since this will give us the port to send commands to...
-	this->setMessageInterval(static_cast<int>(MavLinkMessageIds::MAVLINK_MSG_ID_HEARTBEAT), 1);
+	//this->setMessageInterval(static_cast<int>(MavLinkMessageIds::MAVLINK_MSG_ID_HEARTBEAT), 1);
 	auto con = ensureConnection();
 
 	AsyncResult<MavLinkHeartbeat> result([=](int state) {

@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <fstream>
 #include "common/common_utils/Utils.hpp"
-#include <boost/algorithm/string.hpp>
-#include <boost/tokenizer.hpp>
 //better handle below dependency
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
@@ -62,6 +60,22 @@ public:
             help = other.help;
             value = other.value;
         }
+		float toFloat() {
+			try {
+				return std::stof(value);
+			}
+			catch (std::exception&) {
+				throw std::invalid_argument(Utils::stringf("expecting float value for switch '%s', but found '%s'", name.c_str(), value.c_str()));
+			}
+		}
+		int toInt() {
+			try {
+				return std::stoi(value);
+			}
+			catch (std::exception&) {
+				throw std::invalid_argument(Utils::stringf("expecting integer value for switch '%s', but found '%s'", name.c_str(), value.c_str()));
+			}
+		}
     };
 
     class ShellCommand {
@@ -77,7 +91,7 @@ public:
         }
 
         void addSwitch(const ShellCommandSwitch& s) {
-            std::string lower = boost::algorithm::to_lower_copy(s.name);
+            std::string lower = Utils::toLower(s.name);
             switches_[lower] = s;
         }
 
@@ -86,18 +100,13 @@ public:
         const std::string& getHelp() const { return help_; }
 
         ShellCommandSwitch& getSwitch(const std::string& name) {
-            std::string lower = boost::algorithm::to_lower_copy(name);
+            std::string lower = Utils::toLower(name);
 
             if (switches_.find(lower) != switches_.end()){
                 ShellCommandSwitch& result = switches_.at(lower);
                 return result;
             }                        
             throw std::invalid_argument(common_utils::Utils::stringf("switch %s is not defined on this command", name.c_str()));                        
-        }
-
-        int getSwitchInt(const std::string& name)
-        {
-            return std::stoi(getSwitch(name).value);
         }
 
         const std::vector<std::string> getSwitches() const { 
@@ -149,8 +158,6 @@ public:
 
 private:    //typedefs and sub types
     typedef std::vector<std::string> VectorString;
-    typedef boost::escaped_list_separator<char> CommandSeparator;
-    typedef boost::tokenizer<CommandSeparator> CommandTokenizer;
    
 public: //default commands
     bool runScriptCommand(const ShellCommandParameters& params) {
@@ -228,9 +235,25 @@ public: //default commands
 
     bool helpMethod(const ShellCommandParameters& params)
     {
-        if (params.args.size() == 2) 
+		std::string name;
+
+		if (params.args.size() > 0) {
+			if (params.args[0] == "help" || params.args[0] == "?") {
+				if (params.args.size() > 1) {
+					// syntax: help movetoposition
+					name = params.args[1];
+				}
+			}
+			else {
+				// syntax: movetoposition -?
+				name = params.args[0];
+			}
+		}
+
+
+        if (name.size() > 0)
         {
-            std::string name = boost::algorithm::to_lower_copy(params.args[1]);
+			name = Utils::toLower(name);
 
             if (command_infos_.find(name) != command_infos_.end()) {
                 ShellCommand& command = command_infos_.at(name);
@@ -253,11 +276,12 @@ public: //default commands
                 }
                 return false;
             } else {
-                std::cout << "### command '" << params.args[1] << "' not found" << std::endl;
+                std::cout << "### command '" << name << "' not found" << std::endl;
                 std::cout << std::endl;
             }
         }
 
+		// show general help on all commands.
         size_t longest = 0;
         for(auto kv : command_infos_) {
             size_t len = kv.first.size();
@@ -276,21 +300,21 @@ public: //default commands
             return p1.compare(p2) < 0;
         });
 
-        for(auto name : sorted) {
+        for(auto commandName : sorted) {
 
-            std::cout << name;
-            std::string lowerName = boost::algorithm::to_lower_copy(name);
+            std::cout << commandName;
+            std::string lowerName = Utils::toLower(commandName);
             ShellCommand& cmd = command_infos_.at(lowerName);
-            std::cout << std::string(longest + 3 - name.size(), ' ');
+            std::cout << std::string(longest + 3 - commandName.size(), ' ');
             std::cout << cmd.getHelp() << std::endl;
             for(auto alias : command_aliases_) {
 
-                std::string lowerAlias = boost::algorithm::to_lower_copy(alias.second);
+                std::string lowerAlias = Utils::toLower(alias.second);
 
-                if (lowerAlias == name) {
+                if (lowerAlias == commandName) {
                     std::cout << " " << alias.first;
                     std::cout << std::string(longest + 3 - alias.first.size(), ' ');
-                    std::cout << "same as " <<  name << std::endl;
+                    std::cout << "same as " <<  commandName << std::endl;
                 }
             }
         }
@@ -322,10 +346,34 @@ private:
     std::string prompt_;
 private:
     void commandCompletitionCallBack(const char* editBuffer, VectorString& completions) {
-        for(auto kv : command_infos_) {
-            if (boost::starts_with(kv.first, editBuffer))
-                completions.push_back(kv.first);
-        }
+		std::vector<string> words = Utils::tokenize(string(editBuffer), " \t", 2);
+		if (words.size() > 0) {
+			string cmd = Utils::toLower(words[0]);
+			for (auto kv : command_infos_) {
+				std::string first = kv.first;
+				if (first == cmd && words.size() > 1) {
+					// then we can do some argument help on the last argument!
+					string prefix;
+					for (size_t i = 0; i < words.size() - 1; i++) {
+						if (prefix.size() > 0) prefix += " ";
+						prefix += words[i];
+					}
+					string last_arg = words[words.size() - 1];
+					ShellCommand& info = kv.second;
+					auto arg_list = info.getSwitches();
+					for (auto ptr = arg_list.begin(); ptr != arg_list.end(); ptr++) {
+						string switch_name = *ptr;
+						if (switch_name.find(last_arg.c_str() == 0)) { // starts-with
+							completions.push_back(prefix + " " + switch_name);
+						}
+					}
+					return;
+				}
+				else if (first.find(cmd.c_str()) == 0) { // starts-with
+					completions.push_back(kv.first);					
+				}
+			}
+		}
     }
 public:
     SimpleShell(std::string prompt = "> ")
@@ -355,19 +403,19 @@ public:
 
     // add a reference to a command (this object must remain valid, we do not copy it)
     void addCommand(ShellCommand& command) {
-        std::string lower = boost::algorithm::to_lower_copy(command.getName());
+        std::string lower = Utils::toLower(command.getName());
         command_infos_.insert({lower, command });
     }
     void removeCommand(std::string command) {
-        std::string lower = boost::algorithm::to_lower_copy(command);
+        std::string lower = Utils::toLower(command);
         command_infos_.erase(lower);
     }
     void addAlias(std::string alias, std::string command) {
-        std::string lower = boost::algorithm::to_lower_copy(alias);
+        std::string lower = Utils::toLower(alias);
         command_aliases_.insert({lower, command});
     }
     void removeAlias(std::string alias) {
-        std::string lower = boost::algorithm::to_lower_copy(alias);
+        std::string lower = Utils::toLower(alias);
         command_aliases_.erase(lower);
     }
 
@@ -389,7 +437,7 @@ public:
     virtual bool execute(const ShellCommandParameters& params) {
         if (params.args.size() == 0)
             return false;
-        std::string command = boost::algorithm::to_lower_copy(params.args[0]);
+        std::string command = Utils::toLower(params.args[0]);
 
         ShellCommand* cmd = nullptr;
 
@@ -424,10 +472,15 @@ public:
 
             const std::vector<std::string>& args = params.args;
             int len = static_cast<int>(args.size());
+			bool help = false;
             for(int i = 0; i < len; i++) {
                 std::string arg = args.at(i);
-                if (!arg.empty() && arg.at(0) == '-') {
-                    if (i + 1 < len) {
+                if (!arg.empty() && (arg.at(0) == '-' || arg.at(0) == '/')) {
+					std::string option = "-" + arg.substr(1);
+					if (option == "-?" || option == "-help" || option == "-h") {
+						help = true;
+					}
+                    else if (i + 1 < len) {
                         cmd->getSwitch(arg).value = args.at(i + 1);
                         ++i;
                     }
@@ -439,23 +492,23 @@ public:
                     nonSwitchArgs.push_back(arg);
                 }
             }
-            
-            return cmd->execute(ShellCommandParameters{nonSwitchArgs, params.context, params.command_line, this});
+
+			ShellCommandParameters execParams{ nonSwitchArgs, params.context, params.command_line, this };
+
+			if (help) {
+				return helpCommand.execute(execParams);
+			}
+			else {
+				return cmd->execute(execParams);
+			}
         }
         return false;
     }
     
     bool execute(const std::string& command_line, ExecContext* const context) {
-        const CommandSeparator separators('\\', ' ', '\"'); 
 
-        //Setup line editor
-        VectorString args;
-        
         //parse arguments
-        CommandTokenizer tok(command_line, separators);
-        args.clear();
-        for(auto token = tok.begin(); token != tok.end(); ++token)
-            args.push_back(*token);
+		VectorString args = Utils::tokenize(command_line, " \t", 2);
         
         auto params = ShellCommandParameters{args, context, command_line, this};
         

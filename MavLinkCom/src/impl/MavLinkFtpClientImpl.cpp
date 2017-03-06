@@ -2,14 +2,12 @@
 // Licensed under the MIT License.
 
 #include "MavLinkFtpClientImpl.hpp"
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
 #include <mutex>
 #include "Utils.hpp"
+#include "FileSystem.hpp"
 #include <sys/stat.h>
 
-using namespace common_utils;
+using namespace mavlink_utils;
 using namespace mavlinkcom;
 using namespace mavlinkcom_impl;
 using milliseconds = std::chrono::milliseconds;
@@ -309,28 +307,27 @@ bool MavLinkFtpClientImpl::openSourceFile()
 bool MavLinkFtpClientImpl::createLocalFile()
 {
 	if (file_ptr_ == nullptr) {
-		auto path = boost::filesystem::system_complete(local_file_);
-		if (boost::filesystem::is_directory(path))
+		auto path = FileSystem::getFullPath(local_file_);
+		if (FileSystem::isDirectory(path))
 		{
 			// user was lazy, only told us where to put the file, so we borrow the name of the file
 			// from the source.
-			auto remote = boost::filesystem::path(remote_file_);
-			path.append(remote.filename().generic_wstring(), boost::filesystem::path::codecvt());
-			local_file_ = path.generic_string();
+			auto remote = FileSystem::getFileName(remote_file_);
+			local_file_ = FileSystem::combine(path, remote);
 		}
 		else
 		{
 			// check if directory exists.
-			boost::filesystem::path dir = path.remove_filename();
-			if (boost::filesystem::is_directory(dir))
+			FileSystem::removeLeaf(path);
+			if (FileSystem::isDirectory(path))
 			{
 				// perfect.
 			}
-			else if (boost::filesystem::exists(dir))
+			else if (FileSystem::exists(path))
 			{
 				if (progress_ != nullptr) {
 					progress_->error = errno;
-					progress_->message = Utils::stringf("Error opening file because '%s' is not a directory", dir.generic_string().c_str());
+					progress_->message = Utils::stringf("Error opening file because '%s' is not a directory", path.c_str());
 				}
 				return false;
 			}
@@ -338,7 +335,7 @@ bool MavLinkFtpClientImpl::createLocalFile()
 			{
 				if (progress_ != nullptr) {
 					progress_->error = errno;
-					progress_->message = Utils::stringf("Error opening file because '%s' should be a directory but it was not found", dir.generic_string().c_str());
+					progress_->message = Utils::stringf("Error opening file because '%s' should be a directory but it was not found", path.c_str());
 				}
 				return false;
 			}

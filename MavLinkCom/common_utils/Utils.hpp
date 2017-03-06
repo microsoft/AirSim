@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef common_utils_Utils_hpp
-#define common_utils_Utils_hpp
+#ifndef mavlink_utils_Utils_hpp
+#define mavlink_utils_Utils_hpp
 
 #include "StrictMode.hpp"
 #define _USE_MATH_DEFINES
@@ -60,7 +60,7 @@ using std::experimental::optional;
 */
 
 
-namespace common_utils {
+namespace mavlink_utils {
 
 class Utils {
 private:
@@ -133,6 +133,67 @@ public:
 
     static string trim(const string& str, char ch);
 
+	static std::vector<std::string> split(std::string s, const char* splitChars, int numSplitChars)
+	{
+		auto start = s.begin();
+		std::vector<std::string> result;
+		for (auto it = s.begin(); it != s.end(); it++)
+		{
+			bool split = false;
+			for (int i = 0; i < numSplitChars; i++)
+			{
+				if (*it == splitChars[i]) {
+					split = true;
+					break;
+				}
+			}
+			if (split)
+			{
+				if (start < it)
+				{
+					result.push_back(std::string(start, it));
+				}
+				start = it;
+				start++;
+			}
+		}
+		if (start < s.end())
+		{
+			result.push_back(std::string(start, s.end()));
+		}
+		return result;
+	}
+
+#ifdef _WIN32
+	static string toLower(const std::string str)
+	{
+		int len = static_cast<int>(str.size());
+		char* buf = new char[len + 1];
+		str.copy(buf, len, 0);
+		buf[len] = '\0';
+		_strlwr_s(buf, len + 1);
+		string lower = buf;
+		delete buf;
+		return lower;
+	}
+#else
+	static std::string toLower(const string str)
+	{
+		int len = str.size();
+		char* buf = new char[len + 1];
+		str.copy(buf, len, 0);
+		char* p = buf;
+		for (int i = len; i > 0; i--)
+		{
+			*p = tolower(*p);
+			p++;
+		}
+		*p = '\0';
+		string lower = buf;
+		delete buf;
+		return lower;
+	}
+#endif
 
 	//http://stackoverflow.com/a/28703383/207661
 	template <typename R>
@@ -198,7 +259,7 @@ public:
 		std::copy(from, from + count, to);
 	}
 
-	static const int to_integer(std::string s)
+	static int to_integer(std::string s)
 	{
 		return atoi(s.c_str());
 	}
@@ -216,19 +277,17 @@ public:
 
     static string to_string(time_point<system_clock> time)
     {
-        time_t tt = system_clock::to_time_t(time);
-
-        char str[1024];
-        if (std::strftime(str, sizeof(str), "%Y-%m-%d-%H-%M-%S", std::localtime(&tt)))
-            return string(str);
-        else return string();
-
-        /* GCC doesn't implement put_time yet
-        stringstream ss;
-        ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d-%H-%M-%S");
-        return ss.str();
-        */
+		return to_string(time, "%Y-%m-%d-%H-%M-%S");
     }
+
+	static string to_string(time_point<system_clock> time, const char* format)
+	{
+		time_t tt = system_clock::to_time_t(time);
+		char str[1024];
+		if (std::strftime(str, sizeof(str), format, std::localtime(&tt)))
+			return string(str);
+		else return string();
+	}
 
     static string getEnv(const string& var)
     {

@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <valarray>
 
-namespace common_utils { namespace type_utils {
+namespace mavlink_utils { namespace type_utils {
 	//from: https://raw.githubusercontent.com/louisdx/cxx-prettyprint/master/prettyprint.hpp
 	//also see https://gist.github.com/louisdx/1076849
     namespace detail

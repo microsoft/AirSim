@@ -4,184 +4,296 @@
 #include "Utils.hpp"
 #include "ThreadUtils.hpp"
 #include "TcpClientPort.hpp"
-#include <boost/lexical_cast.hpp>
-using namespace common_utils;
+#include <stdio.h>
+#include <string.h>
+#include "SocketInit.hpp"
 
-// theoretical datagram max size, in practice the data link layer can impose additional limits.
-#define TCP_MAXBUF_SIZE 65535
+using namespace mavlink_utils;
 
-TcpClientPort::TcpClientPort() : socket_(io_service_)
+#ifdef _WIN32
+// windows
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+// Need to link with Ws2_32.lib
+#pragma comment (lib, "Ws2_32.lib")
+
+typedef int socklen_t;
+static bool socket_initialized_ = false;
+#else
+
+// posix
+#include <sys/types.h> 
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <cerrno>
+#include <netdb.h>
+#include <errno.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+typedef int SOCKET;
+const int INVALID_SOCKET = -1;
+const int ERROR_ACCESS_DENIED = EACCES;
+
+inline int WSAGetLastError() {
+	return errno;
+}
+const int SOCKET_ERROR = -1;
+#define E_NOT_SUFFICIENT_BUFFER ENOMEM
+
+#endif
+
+class TcpClientPort::TcpSocketImpl
 {
-	closed_ = true;
-	waiting_ = false;
-	// increase send buffer to 1mb from default of 64kb
-	boost::asio::socket_base::send_buffer_size option(1000000);
+	SocketInit init;
+	SOCKET sock = INVALID_SOCKET;
+	sockaddr_in localaddr;
+	sockaddr_in remoteaddr;
+	bool closed_ = true;
+public:
 
-	read_buf_raw_ = new char[TCP_MAXBUF_SIZE];
-	if (read_buf_raw_ == nullptr)
-	{
-		throw std::runtime_error("out of memory");
+	bool isClosed() {
+		return closed_;
 	}
+
+	static void resolveAddress(const std::string& ipAddress, int port, sockaddr_in& addr)
+	{
+		struct addrinfo hints;
+		memset(&hints, 0, sizeof(hints));
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;
+
+		addr.sin_family = AF_INET;
+		addr.sin_port = htons(port);
+
+		bool found = false;
+		struct addrinfo *result = NULL;
+		std::string serviceName = std::to_string(port);
+		int rc = getaddrinfo(ipAddress.c_str(), serviceName.c_str(), &hints, &result);
+		if (rc != 0) {
+			throw std::runtime_error(Utils::stringf("TcpClientPort getaddrinfo failed with error: %d\n", rc));
+		}
+		for (struct addrinfo *ptr = result; ptr != NULL; ptr = ptr->ai_next)
+		{
+			if (ptr->ai_family == AF_INET && ptr->ai_socktype == SOCK_STREAM && ptr->ai_protocol == IPPROTO_TCP)
+			{
+				// found it!
+				sockaddr_in* sptr = reinterpret_cast<sockaddr_in*>(ptr->ai_addr);
+				addr.sin_family = sptr->sin_family;
+				addr.sin_addr.s_addr = sptr->sin_addr.s_addr;
+				addr.sin_port = sptr->sin_port;
+				found = true;
+				break;
+			}
+		}
+
+		freeaddrinfo(result);
+		if (!found) {
+			throw std::runtime_error(Utils::stringf("TcpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port));
+		}
+	}
+
+	int connect(const std::string& localHost, int localPort, const std::string& remoteHost, int remotePort)
+	{
+		sock = socket(AF_INET, SOCK_STREAM, 0);
+
+		resolveAddress(localHost, localPort, localaddr);
+		resolveAddress(remoteHost, remotePort, remoteaddr);
+
+		// bind socket to local address.
+		socklen_t addrlen = sizeof(sockaddr_in);
+		int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
+		if (rc < 0)
+		{
+			int hr = WSAGetLastError();
+			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
+		}
+
+		rc = ::connect(sock, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen);
+		if (rc != 0) {
+			int hr = WSAGetLastError();
+			throw std::runtime_error(Utils::stringf("TcpClientPort socket connect failed with error: %d\n", hr));
+		}
+
+		closed_ = false;
+		return 0;
+	}
+
+	void accept(const std::string& localHost, int localPort)
+	{
+		SOCKET local = socket(AF_INET, SOCK_STREAM, 0);
+
+		resolveAddress(localHost, localPort, localaddr);
+
+		// bind socket to local address.
+		socklen_t addrlen = sizeof(sockaddr_in);
+		int rc = ::bind(local, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
+		if (rc < 0)
+		{
+			int hr = WSAGetLastError();
+			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
+		}
+
+		// start listening for incoming connection
+		rc = ::listen(local, 1);
+		if (rc < 0)
+		{
+			int hr = WSAGetLastError();
+			throw std::runtime_error(Utils::stringf("TcpClientPort socket listen failed with error: %d\n", hr));
+		}
+
+		// accept 1
+		sock = ::accept(local, reinterpret_cast<sockaddr*>(&remoteaddr), &addrlen);
+		if (sock == INVALID_SOCKET) {
+			int hr = WSAGetLastError();
+			throw std::runtime_error(Utils::stringf("TcpClientPort accept failed with error: %d\n", hr));
+		}
+
+		closed_ = false;
+	}
+
+	// write to the serial port
+	int write(const uint8_t* ptr, int count)
+	{
+		socklen_t addrlen = sizeof(sockaddr_in);
+		int hr = send(sock, reinterpret_cast<const char*>(ptr), count, 0);
+		if (hr == SOCKET_ERROR)
+		{
+			throw std::runtime_error(Utils::stringf("TcpClientPort socket send failed with error: %d\n", hr));
+		}
+
+		return hr;
+	}
+
+	int read(uint8_t* result, int bytesToRead)
+	{
+		int bytesRead = 0;
+		// try and receive something, up until port is closed anyway.
+
+		while (!closed_)
+		{
+			socklen_t addrlen = sizeof(sockaddr_in);
+			int rc = recv(sock, reinterpret_cast<char*>(result), bytesToRead, 0);
+			if (rc < 0)
+			{
+#ifdef _WIN32
+				int hr = WSAGetLastError();
+				if (hr == WSAEMSGSIZE)
+				{
+					// message was too large for the buffer, no problem, return what we have.					
+				}
+				else if (hr == WSAECONNRESET || hr == ERROR_IO_PENDING)
+				{
+					// try again - this can happen if server recreates the socket on their side.
+					continue;
+				}
+				else
+#else
+				int hr = errno;
+				if (hr == EINTR)
+				{
+					// skip this, it is was interrupted.
+					continue;
+				}
+				else
+#endif
+				{
+					return -1;
+				}
+			}
+
+			if (rc == 0)
+			{
+				//printf("Connection closed\n");
+				return -1;
+			}
+			else
+			{
+				return rc;
+			}
+		}
+		return -1;
+	}
+
+
+	void close()
+	{
+		if (!closed_) {
+			closed_ = true;
+
+#ifdef _WIN32
+			closesocket(sock);
+#else
+			int fd = static_cast<int>(sock);
+			::close(fd);
+#endif
+		}
+	}
+
+	std::string remoteAddress() {
+		return inet_ntoa(remoteaddr.sin_addr);
+	}
+
+	int remotePort() {
+		return ntohs(remoteaddr.sin_port);
+	}
+
+};
+
+//-----------------------------------------------------------------------------------------
+
+TcpClientPort::TcpClientPort()
+{
+	impl_.reset(new TcpSocketImpl());
 }
 
 TcpClientPort::~TcpClientPort()
 {
 	close();
-	delete[] read_buf_raw_;
-	read_buf_raw_ = nullptr;
 }
 
 void TcpClientPort::close()
 {
-	if (!closed_) {
-		closed_ = true;
-		socket_.close();
-		if (waiting_) {
-			waiting_ = false;
-			available_.post();
-		}
-		if (read_thread_.joinable())
-		{
-			read_thread_.join();
-		}
-	}
-	io_service_.stop();
-}
-
-void TcpClientPort::start()
-{
-	// this is called from TcpServer when this ports sockets has been bound to a new accepted connection.
-
-	//local_endpoint_ = socket_.local_endpoint();
-
-	//remote_endpoint_ = socket_.remote_endpoint();
-
-	closed_ = false;
-
-	read_thread_ = std::thread{ &TcpClientPort::readPackets, this };
+	impl_->close();
 }
 
 void TcpClientPort::connect(const std::string& localHost, int localPort, const std::string& remoteHost, int remotePort)
 {
-	if (!socket_.is_open()) {
-		socket_.open(tcp::v4());
-	}
-
-	tcp::resolver resolver(io_service_);
-	{
-		std::string portName = std::to_string(localPort);
-		tcp::resolver::query query(tcp::v4(), localHost, portName);
-		tcp::resolver::iterator iter = resolver.resolve(query);
-		local_endpoint_ = *iter;
-	}
-
-	if (remotePort == 0)
-	{
-		throw std::runtime_error("remote port cannot be zero");
-	}
-
-	std::string remotePortName = std::to_string(remotePort);
-	tcp::resolver::query query(tcp::v4(), remoteHost, remotePortName);
-	tcp::resolver::iterator iter = resolver.resolve(query);
-	remote_endpoint_ = *iter;
-	
-	socket_.connect(remote_endpoint_);
-
-	closed_ = false;
-
-	read_thread_ = std::thread{ &TcpClientPort::readPackets, this };
-
+	impl_->connect(localHost, localPort, remoteHost, remotePort);
 }
 
-void TcpClientPort::readPackets()
+void TcpClientPort::accept(const std::string& localHost, int localPort)
 {
-	CurrentThread::setMaximumPriority();
-
-	while (!closed_) {
-		boost::system::error_code ec;
-		size_t bytes = socket_.receive(
-				boost::asio::buffer(read_buf_raw_, TCP_MAXBUF_SIZE), 0, ec);
-		on_receive(ec, bytes);
-	}
-
-
-	// async mode is not used because boost will not run that async thread at maximum priority
-	// which is what we need in the Unreal environment.
-
-	//socket_.async_receive(
-	//	boost::asio::buffer(read_buf_raw_, TCP_MAXBUF_SIZE), 
-	//	boost::bind(
-	//		&TcpClientPort::on_receive,
-	//		this, boost::asio::placeholders::error,
-	//		boost::asio::placeholders::bytes_transferred));
-
-	//io_service_.run();
+	impl_->accept(localHost, localPort);
 }
 
 int TcpClientPort::write(const uint8_t* ptr, int count)
 {
-	if (closed_) {
-		return 0;
-	}
-	size_t size = static_cast<size_t>(count);
-	size_t sent = socket_.send(boost::asio::buffer(ptr, count));
-
-	return count;
-}
-
-void TcpClientPort::on_receive(const boost::system::error_code& ec, size_t bytes_transferred)
-{
-	boost::mutex::scoped_lock guard(mutex_);
-	if (!socket_.is_open())
-		return;
-
-	if (ec) {
-		printf("read tcp port %d error %d: %s\n", local_endpoint_.port(), ec.value(), ec.message().c_str());
-		return;
-	}
-
-	if (bytes_transferred > 0) {
-		sbuf_.sputn(read_buf_raw_, bytes_transferred);
-		if (waiting_) {
-			waiting_ = false;
-			available_.post();
-		}
-	}
-
-	// next packet...
-	socket_.async_receive(
-		boost::asio::buffer(read_buf_raw_, TCP_MAXBUF_SIZE), 
-		boost::bind(
-			&TcpClientPort::on_receive,
-			this, boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
+	return impl_->write(ptr, count);
 }
 
 int
 TcpClientPort::read(uint8_t* buffer, int bytesToRead)
 {
-	char* ptr = reinterpret_cast<char*>(buffer);
-	int bytesread = 0;
-	while (bytesread < bytesToRead && !closed_)
-	{
-		int delta = 0;
-		int remaining = bytesToRead - bytesread;
-		{
-			boost::mutex::scoped_lock guard(mutex_);
-			if (!socket_.is_open())
-				return -1;
-			delta = static_cast<int>(sbuf_.sgetn(ptr + bytesread, remaining));
-			bytesread += delta;
-		}
-		if (delta == 0 && bytesread > 0) {
-			// then return what we have.
-			break;
-		}
-		if (delta == 0) {
-			// we have exhausted available bytes, so time to wait for more
-			waiting_ = true;
-			available_.timed_wait(1000);
-		}
-	}
-	return bytesread;
+	return impl_->read(buffer, bytesToRead);
+}
+
+bool TcpClientPort::isClosed()
+{
+	return impl_->isClosed();
+}
+
+std::string TcpClientPort::remoteAddress()
+{
+	return impl_->remoteAddress();
+}
+
+int TcpClientPort::remotePort()
+{
+	return impl_->remotePort();
 }

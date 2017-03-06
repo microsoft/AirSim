@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 #include "Utils.hpp"
-#include <boost/lexical_cast.hpp>
 #include "MavLinkVehicleImpl.hpp"
 #include "MavLinkConnection.hpp"
 #include "../serial_com/SerialPort.hpp"
@@ -10,7 +9,7 @@
 #include <exception>
 #include <cstring>
 #include <thread>
-using namespace common_utils;
+using namespace mavlink_utils;
 
 using namespace mavlinkcom_impl;
 #define PACKET_PAYLOAD 253	//hard coded in MavLink code - do not change

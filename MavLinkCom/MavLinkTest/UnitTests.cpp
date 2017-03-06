@@ -5,20 +5,20 @@
 #include <thread>
 #include <chrono>
 #include "Utils.hpp"
+#include "FileSystem.hpp"
 #include "MavLinkVehicle.hpp"
 #include "MavLinkMessages.hpp"
 #include "MavLinkConnection.hpp"
 #include "MavLinkVideoStream.hpp"
 #include "MavLinkTcpServer.hpp"
 #include "MavLinkFtpClient.hpp"
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include "MavLinkSemaphore.hpp"
 #include <iostream>
 
-using namespace common_utils;
+using namespace mavlink_utils;
 using namespace mavlinkcom;
+
+extern std::string replaceAll(std::string s, char toFind, char toReplace);
 
 void UnitTests::RunAll(std::string comPort, int boardRate)
 {
@@ -86,11 +86,11 @@ void UnitTests::TcpPingTest() {
 	const int testPort = 45166;
 
 	std::shared_ptr<MavLinkTcpServer> server = std::make_shared<MavLinkTcpServer>("127.0.0.1", testPort);
-	std::shared_ptr<MavLinkNode> serverNode;
-
-	server->acceptTcp("test", [&](std::shared_ptr<MavLinkConnection> con) {
-
-		serverNode = std::make_shared<MavLinkNode>(1, 1);
+	
+	std::future<int> future = std::async(std::launch::async, [=] {
+		// accept one incoming connection
+		std::shared_ptr<MavLinkConnection> con = server->acceptTcp("test");
+		std::shared_ptr<MavLinkNode> serverNode = std::make_shared<MavLinkNode>(1, 1);
 		serverNode->connect(con);
 
 		// send a heartbeat to the client
@@ -102,6 +102,7 @@ void UnitTests::TcpPingTest() {
 		hb.system_status = 1;
 		hb.type = 1;
 		serverNode->sendMessage(hb);
+		return 0;
 	});
 
 	MavLinkSemaphore  received;
@@ -177,10 +178,13 @@ void UnitTests::SendImageTest() {
 
 	std::shared_ptr<MavLinkTcpServer> server = std::make_shared<MavLinkTcpServer>(testAddr, testPort);
 
-	// this is the server code, it will accept 1 connection from a client on port 14588
-	// for this unit test we are expecting a request to send an image.
-	server->acceptTcp("test", [&](std::shared_ptr<MavLinkConnection> con) {
+	std::future<int> future = std::async(std::launch::async, [=] {
+
+		// this is the server code, it will accept 1 connection from a client on port 14588
+		// for this unit test we are expecting a request to send an image.
+		auto con = server->acceptTcp("test");
 		this->server_ = new ImageServer(con);
+		return 0;
 	});
 
 	// add a drone connection so the mavLinkCom can use it to send requests to the above server.
@@ -235,9 +239,9 @@ void UnitTests::FtpTest() {
 		printf("Found %d files in '/fs/microsd' folder\n", static_cast<int>(files.size()));
 	}
 
-	auto tempPath = boost::filesystem::temp_directory_path();
-	tempPath.append("ftptest.txt", boost::filesystem::path::codecvt());
-	boost::filesystem::ofstream stream(tempPath);
+	auto tempPath = FileSystem::getTempFolder();
+	tempPath = FileSystem::combine(tempPath, "ftptest.txt");
+	std::ofstream stream(tempPath);
 
 	const char* TestPattern = "This is line %d\n";
 
@@ -249,10 +253,10 @@ void UnitTests::FtpTest() {
 	stream.close();
 
 	std::string remotePath = "/fs/microsd/ftptest.txt";
-	std::string localPath = tempPath.generic_string();
+	std::string localPath = tempPath;
 #if defined(_WIN32)
 	// I wish there was a cleaner way to do this, but I can't use tempPath.native() because on windows that is a wstring and on our linux build it is a string.
-	boost::replace_all(localPath, "/", "\\");
+	replaceAll(localPath, '/', '\\');
 #endif
 
 	ftp.put(progress, remotePath, localPath);
@@ -266,7 +270,7 @@ void UnitTests::FtpTest() {
 		printf("put succeeded\n");
 	}
 
-	boost::filesystem::remove(tempPath);
+	FileSystem::remove(tempPath);
 
 	ftp.get(progress, remotePath, localPath);
 
@@ -276,7 +280,7 @@ void UnitTests::FtpTest() {
 	}
 
 	// verify the file contents.
-	boost::filesystem::ifstream istream(tempPath);
+	std::ifstream istream(tempPath);
 
 	int count = 0;
 	std::string line;
@@ -295,7 +299,7 @@ void UnitTests::FtpTest() {
 	printf("get succeeded\n");
 
 	istream.close();
-	boost::filesystem::remove(tempPath);
+	FileSystem::remove(tempPath);
 
 	ftp.remove(progress, remotePath);
 

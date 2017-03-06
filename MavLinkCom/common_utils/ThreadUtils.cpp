@@ -7,7 +7,7 @@
 #include <pthread.h>
 #endif
 
-using namespace common_utils;
+using namespace mavlink_utils;
 
 // make the current thread run with maximum priority.
 bool CurrentThread::setMaximumPriority()

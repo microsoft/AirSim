@@ -20,7 +20,7 @@ fi
 GCCARGS="-D CMAKE_BUILD_TYPE=Debug"
 
 GCCVERSION=$(gcc -v 2>&1 | sed -n "/^gcc version/p" | sed -e "s/^gcc version \([0-9]\)/\1/g" | cut -d"." -f1)
-if [ $GCCVERSION -lt 7 ]; then
+if [ $GCCVERSION -lt 5 ]; then
   GCCARGS="$GCCARGS -D CMAKE_C_COMPILER=gcc-6 -D CMAKE_CXX_COMPILER=g++-6"
 fi
 

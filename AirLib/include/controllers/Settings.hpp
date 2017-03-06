@@ -120,7 +120,7 @@ namespace msr {
 			}
 			bool setDouble(std::string name, double value)
 			{
-				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_float || (double)doc_[name] != value) {
+				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_float || static_cast<double>(doc_[name]) != value) {
 					doc_[name] = value;
 					return true;
 				}
@@ -128,7 +128,7 @@ namespace msr {
 			}
 			bool setBool(std::string name, bool value)
 			{
-				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::boolean || (bool)doc_[name] != value) {
+				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::boolean || static_cast<bool>(doc_[name]) != value) {
 					doc_[name] = value;
 					return true;
 				}
@@ -136,7 +136,7 @@ namespace msr {
 			}
 			bool setInt(std::string name, int value)
 			{
-				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_integer || (int)doc_[name] != value) {
+				if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_integer || static_cast<int>(doc_[name]) != value) {
 					doc_[name] = value;
 					return true;
 				}

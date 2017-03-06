@@ -12,7 +12,7 @@
 #include "MavLinkConnection.hpp"
 #include "MavLinkMessageBase.hpp"
 #include "MavLinkSemaphore.hpp"
-#include "../serial_com/TcpServer.hpp"
+#include "../serial_com/TcpClientPort.hpp"
 
 using namespace mavlinkcom;
 
@@ -61,7 +61,7 @@ namespace mavlinkcom_impl {
 		uint8_t next_seq = 0;
 		std::thread read_thread;
 		std::string accept_node_name_;
-		std::shared_ptr<TcpServer> server_; 
+		std::shared_ptr<TcpClientPort> server_;
 		std::shared_ptr<MavLinkLog> sendLog_;
 
 		struct MessageHandlerEntry {

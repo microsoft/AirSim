@@ -4,7 +4,7 @@
 #include "Utils.hpp"
 #include "MavLinkMessageBase.hpp"
 #include "MavLinkConnection.hpp"
-using namespace common_utils;
+using namespace mavlink_utils;
 
 STRICT_MODE_OFF
 #define MAVLINK_PACKED

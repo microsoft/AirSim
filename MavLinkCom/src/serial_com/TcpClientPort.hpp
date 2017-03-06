@@ -4,58 +4,44 @@
 #ifndef SERIAL_COM_TCPCLIENTPORT_HPP
 #define SERIAL_COM_TCPCLIENTPORT_HPP
 
-#include <iostream>
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
 #include <stdio.h>
 #include <thread>
+#include <memory>
+#include <mutex>
 #include "Port.h"
 #include "MavLinkSemaphore.hpp"
-
-using boost::asio::ip::tcp;
 
 class TcpClientPort : public Port
 {
 public:
 	TcpClientPort();
-
-	void connect(const std::string& localAddress, int localPort, const std::string& remoteAddress, int remotePort);
-
 	~TcpClientPort();
 
-	// write to the port, return number of bytes written or -1 if error.
-	virtual int write(const uint8_t* ptr, int count);
+	// Connect can set you up two different ways.  Pass 0 for local port to get any free local
+	// port. localHost allows you to be specific about which local adapter to use in case you 
+	// have multiple ethernet adapters. 
+	void connect(const std::string& localHost, int localPort, const std::string& remoteHost, int remotePort);
 
-	// read a given number of bytes from the port (blocking until the requested bytes are available).
-	// return the number of bytes read or -1 if error.
-	virtual int read(uint8_t* buffer, int bytesToRead);
+	// start listening on the local adapter, and accept one connection request from a remote machine.
+	void accept(const std::string& localHost, int localPort);
+
+	// write the given bytes to the port, return number of bytes written or -1 if error.
+	int write(const uint8_t* ptr, int count);
+
+	// read some bytes from the port, return the number of bytes read or -1 if error.
+	int read(uint8_t* buffer, int bytesToRead);
 
 	// close the port.
-	virtual void close();	
+	void close();
 
-	virtual bool isClosed() {
-		return closed_;
-	}
+	bool isClosed();
+	std::string remoteAddress();
+	int remotePort();
 
-	// for use by TcpServer only.
-	void start();
-	tcp::socket& socket() { return socket_;  }
 private:
-	void readPackets();
-	void on_receive(const boost::system::error_code& ec, size_t bytes_transferred);
-	boost::asio::streambuf sbuf_;
-	boost::asio::io_service io_service_;
-	tcp::socket socket_;
-	std::thread read_thread_;
-	tcp::endpoint remote_endpoint_;
-	tcp::endpoint local_endpoint_;
-	boost::mutex mutex_;
-	mavlinkcom::MavLinkSemaphore available_;
-	bool waiting_;
-	char* read_buf_raw_;
-	bool closed_;
+	class TcpSocketImpl;
+	std::unique_ptr<TcpSocketImpl> impl_;
 };
 
-#endif
+
+#endif // SERIAL_COM_UDPCLIENTPORT_HPP

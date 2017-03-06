@@ -4,6 +4,7 @@
 // PX4.cpp : Defines the entry point for the console application.
 
 #include "Utils.hpp"
+#include "FileSystem.hpp"
 #include "MavLinkConnection.hpp"
 #include "MavLinkVehicle.hpp"
 #include "MavLinkMessages.hpp"
@@ -16,10 +17,6 @@
 #include <map>
 #include <ctime>
 #include "UnitTests.h"
-STRICT_MODE_OFF
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-STRICT_MODE_ON
 /* enable math defines on Windows */
 
 #define M_PI_2     1.57079632679489661923   // pi/2
@@ -34,7 +31,8 @@ static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 
 #define MAV_TYPE_ENUM_END (static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_ADSB)+1)
 #define MAV_STATE_ENUM_END (static_cast<uint8_t>(MAV_STATE::MAV_STATE_POWEROFF)+1)
 
-typedef common_utils::Utils Utils;
+typedef mavlink_utils::Utils Utils;
+typedef mavlink_utils::FileSystem FileSystem;
 typedef unsigned int uint;
 using namespace mavlinkcom; 
 
@@ -134,42 +132,26 @@ void OpenLogFiles() {
 		std::time_t result = std::time(nullptr);
 		auto local = std::localtime(&result);
 
-		auto path = boost::filesystem::system_complete(logDirectory);
-		if (!boost::filesystem::is_directory(path))
-		{
-			if (!boost::filesystem::create_directory(path)) {
-				throw std::runtime_error(Utils::stringf("Failed to create log file directory '%s'.", path.generic_string().c_str()));
-			}
-		}
+		//auto path = boost::filesystem::system_complete(logDirectory);
+		auto path = FileSystem::getFullPath(logDirectory);
+		FileSystem::ensureFolder(path);
 
-		path.append("logs", boost::filesystem::path::codecvt());
-		if (!boost::filesystem::is_directory(path))
-		{
-			if (!boost::filesystem::create_directory(path)) {
-				throw std::runtime_error(Utils::stringf("Failed to create log file directory '%s'.", path.generic_string().c_str()));
-			}
-		}
+		path = FileSystem::combine(path, "logs");
+		FileSystem::ensureFolder(path);
 
 		std::string today = Utils::stringf("%04d-%02d-%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday);
-		path.append(today, boost::filesystem::path::codecvt());
-		if (!boost::filesystem::is_directory(path))
-		{
-			if (!boost::filesystem::create_directory(path)) {
-				throw std::runtime_error(Utils::stringf("Failed to create log file directory '%s'.", path.generic_string().c_str()));
-			}
-		}
+		path = FileSystem::combine(path, today);
+		FileSystem::ensureFolder(path);
 
 		std::string input = Utils::stringf("%02d-%02d-%02d-input.mavlink", local->tm_hour, local->tm_min, local->tm_sec);
-		auto infile = boost::filesystem::system_complete(path);
-		infile.append(input, boost::filesystem::path::codecvt());
+		auto infile = FileSystem::combine(path, input);
 		inLogFile = std::make_shared<MavLinkLog>();
-		inLogFile->openForWriting(infile.generic_string());
+		inLogFile->openForWriting(infile);
 
 		std::string output = Utils::stringf("%02d-%02d-%02d-output.mavlink", local->tm_hour, local->tm_min, local->tm_sec);
-		auto outfile = boost::filesystem::system_complete(path);
-		outfile.append(output, boost::filesystem::path::codecvt());
+		auto outfile = FileSystem::combine(path, output);
 		outLogFile = std::make_shared<MavLinkLog>();
-		outLogFile->openForWriting(outfile.generic_string());
+		outLogFile->openForWriting(outfile);
 
 	}
 }
@@ -525,9 +507,8 @@ bool ParseCommandLine(int argc, const char* argv[])
 		if (arg[0] == '-' || arg[0] == '/')
 		{
 			std::string option(arg + 1);
-			std::vector<std::string> parts;
-			boost::algorithm::split(parts, option, boost::is_any_of(":,"));
-			std::string lower = boost::algorithm::to_lower_copy(parts[0]);
+			std::vector<std::string> parts = Utils::split(option, ":,", 2);
+			std::string lower = Utils::toLower(parts[0]);
 			if (lower == "udp")
 			{
 				offboard = true;
@@ -1051,7 +1032,7 @@ int console() {
 			std::getline(std::cin, line);
 		}
 
-		line = common_utils::Utils::trim(line, ' ');
+		line = mavlink_utils::Utils::trim(line, ' ');
 
 		if (line.length() > 0)
 		{
