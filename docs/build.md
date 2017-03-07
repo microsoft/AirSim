@@ -12,8 +12,9 @@
   ![Epic launcher install](images/epic_launcher_install.png).
 
 ## Install Dependencies
-AirSim code has two external dependencies: Eigen library and Boost library.
-  2. If you don't have already, [install Eigen](install_eigen.md).
+AirSim code has two external dependencies:
+  1. If you don't have already, [install Eigen](install_eigen.md).
+  2. We use [rpclib](https://github.com/rpclib/rpclib.git) which is included as a git submodule.  So you don't have any setup to do for this one.
 
 ## Get the Code and Build
   1. You need Visual Studio 2015 Update 3 (make sure to install VC++). Other versions haven't been tested.

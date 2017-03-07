@@ -48,7 +48,7 @@ make
 ## Reset cmake
 
 Just a tid bit for those not familiar with cmake, if for any reason you need to re-run cmake to regenerate new make files
-(perhaps you want to move boost or eigen) then the following is the equivalent of `clean` for cmake:
+(perhaps you want to move eigen) then the following is the equivalent of `clean` for cmake:
 ````
 rm CMakeCache.txt 
 rm -rf CMakeFiles
