@@ -16,7 +16,7 @@ namespace msr { namespace airlib {
 
 /// DroneControllerBase represents a generic drone that can be controlled and queried for current state.
 /// All control methods return a boolean where true means the command was completed successfully, and
-/// false means the command was cancelled.  These same methods also provide a CancelableBase& cancelable_action
+/// false means the command was cancelled.  
 /// 
 /// Cancellable actions: all commands return a CancelableBase& cancelable_action object.
 /// These objects can be used to cancel the command, or find out if the command has

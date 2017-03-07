@@ -11,7 +11,6 @@
 #include "MavLinkConnection.hpp"
 #include "MavLinkVehicle.hpp"
 #include "MavLinkMessages.hpp"
-#include <boost/algorithm/string.hpp>
 
 using namespace mavlinkcom;
 
@@ -63,9 +62,7 @@ bool ParseCommandLine(int argc, char* argv[]) {
         if (arg[0] == '-' || arg[0] == '/')
         {
             std::string option(arg + 1);
-            std::vector<std::string> parts;
-            boost::algorithm::split(parts, option, boost::is_any_of(":,"));
-            std::string lower = boost::algorithm::to_lower_copy(parts[0]);
+            std::vector<std::string> parts = Utils::split(parts, ":,", 2);
             if (lower == "server")
             {
                 if (parts.size() > 1)

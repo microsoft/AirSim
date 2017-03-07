@@ -90,13 +90,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;STATIC_RB_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../MavLinkCom;$(BOOST_ROOT);$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../MavLinkCom;$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -111,13 +111,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;STATIC_RB_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../MavLinkCom;$(BOOST_ROOT);$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../MavLinkCom;$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingToolsx64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -134,7 +134,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;STATIC_RB_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../MavLinkCom;$(BOOST_ROOT);$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../MavLinkCom;$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -142,7 +142,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -159,7 +159,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;STATIC_RB_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../MavLinkCom;$(BOOST_ROOT);$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../MavLinkCom;$(NPTRACKINGTOOLS_INC);</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -167,7 +167,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(NPTRACKINGTOOLS_LIB);</AdditionalLibraryDirectories>
       <AdditionalDependencies>NPTrackingToolsx64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>

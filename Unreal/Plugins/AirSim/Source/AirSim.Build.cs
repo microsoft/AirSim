@@ -3,7 +3,7 @@ using System.IO;
 
 public class AirSim : ModuleRules
 {
-    const string readmurl = "https://github.com/Microsoft/AirSim/blob/master/docs/install_boost.md";
+    const string readmurl = "https://github.com/Microsoft/AirSim/blob/master/docs/install_eigen.md";
 
     private string ModulePath
     {
@@ -64,7 +64,6 @@ public class AirSim : ModuleRules
         AddEigenDependency();
         PrivateIncludePaths.Add(Path.Combine(AirSimPath, "include"));
         AddOSLibDependencies(Target);
-        AddBoostDependency(Target);
         LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
 
         SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
@@ -89,38 +88,6 @@ public class AirSim : ModuleRules
             PublicAdditionalLibraries.Add("Shell32.lib");
         }
     }
-
-    private void AddBoostDependency(TargetInfo Target)
-    {
-        string boost = System.Environment.GetEnvironmentVariable("BOOST_ROOT");
-        if (string.IsNullOrEmpty(boost) || !System.IO.Directory.Exists(boost))
-        {
-            throw new System.Exception("BOOST_ROOT is not defined, or points to a non-existant directory, please set this environment variable.  " +
-                "See: " + readmurl);
-        }
-        if (Target.Platform == UnrealTargetPlatform.Linux) {
-            string lib = Path.Combine(boost, "lib");
-            PublicAdditionalLibraries.Add(Path.Combine(lib, "libboost_system.a"));
-            PublicAdditionalLibraries.Add(Path.Combine(lib, "libboost_filesystem.a"));
-        } else {
-            string lib = Path.Combine(boost, "stage", "lib");
-            if (!System.IO.Directory.Exists(lib))
-            {
-                throw new System.Exception("Please build boost and make sure the libraries are at " + lib + ". " +
-                    "See: " + readmurl);
-            }
-
-            bool found = System.IO.Directory.GetFiles(lib, "libboost_system-*.lib").Length > 0;
-            if (!found)
-            {
-                throw new System.Exception("Not finding libboost_system-*.lib in " + lib + ".  " +
-                    "See: " + readmurl);
-            }
-            PublicLibraryPaths.Add(Path.Combine(lib));
-        }
-
-    }
-
 
     private bool LoadAirSimDependency(TargetInfo Target, string LibName, string LibFileName)
     {

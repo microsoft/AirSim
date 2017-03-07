@@ -2,7 +2,6 @@
 
 MavLinkCom is a cross-platform C++ library that helps connect to and communicate with [MavLink](https://github.com/mavlink/mavlink) based vehicles.
 Specifically this library is designed to work well with [PX4](https://github.com/PX4/Firmware) based drones.
-To build the library you need Boost.  See [Installing Boost](README.md#installing-boost) below details on installing Boost.
 
 ## Design
 
@@ -219,15 +218,3 @@ Example 3: we use MavLinkConnection to connect to PX4 over serial, then join add
 Example 4: We can also do distributed systems to control the drone remotely:
 
 ![Serial to QGC](Design/images/example4.png)
-
-### Installing Boost
-
-1. download [boost 1.63 zip file](https://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.zip/download) 
-2. unzip boost someplace and then [set an environment variable](http://www.computerhope.com/issues/ch000549.htm) named BOOST_ROOT that
- points to the folder you just unzippsed.  It should point to the root folder that contains 'bootstrap.bat'.
-3. open developer command prompt for VS2015 and cd over to the boost folder and run' bootstrapbat'
-4. from that same location run **b2 variant=debug,release link=static runtime-link=shared threading=multi address-model=64** and wait about 20 minutes (coffee time :-)
-5. (on linux you can drop the address-model=64).
-
-Now start a new instance of Visual Studio 2015 (so it finds your new BOOST_ROOT variable), and load "~\MavLinkTest\MavLinkTest.sln" and select "x64" build target.
-select MavLinkTest as the startup project, then hit F5.

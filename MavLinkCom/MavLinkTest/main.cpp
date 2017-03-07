@@ -132,7 +132,6 @@ void OpenLogFiles() {
 		std::time_t result = std::time(nullptr);
 		auto local = std::localtime(&result);
 
-		//auto path = boost::filesystem::system_complete(logDirectory);
 		auto path = FileSystem::getFullPath(logDirectory);
 		FileSystem::ensureFolder(path);
 

@@ -13,7 +13,6 @@
 
 ## Install Dependencies
 AirSim code has two external dependencies: Eigen library and Boost library.
-  1. If you don't have already, [install Boost](install_boost.md).
   2. If you don't have already, [install Eigen](install_eigen.md).
 
 ## Get the Code and Build
