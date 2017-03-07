@@ -64,6 +64,10 @@ public:
         this->addSwitch({"-adaptive_lookahead", "1", "Whether to apply adaptive lookahead (1=yes, 0=no) (default 1)" });
     }
 
+	void addRelativeSwitch() {
+		this->addSwitch({ "-r", "0", "specify x,y,z is relative to current position rather than home position, 0 means absolute, 1 means relative" });
+	}
+
     DrivetrainType getDriveTrain() {            
         int drivetrain = getSwitch("-drivetrain").toInt();
         return static_cast<DrivetrainType>(drivetrain);
@@ -276,6 +280,28 @@ public:
     }
 };
 
+class GetPositionCommand : public DroneCommand {
+public:
+	GetPositionCommand() : DroneCommand("Pos", "Get the current position")
+	{
+	}
+
+	bool execute(const DroneCommandParameters& params)
+	{
+		CommandContext* context = params.context;
+		context->tasker.execute([=]() {
+			auto pos = context->client.getPosition();
+			auto gps = context->client.getGpsLocation();
+
+			std::cout << "Local position: x=" << pos.x() << ", y=" << pos.y() << ", z=" << pos.z() << std::endl;
+			std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
+
+		});
+
+		return false;
+	}
+};
+
 class MoveToPositionCommand : public DroneCommand {
 public:
     MoveToPositionCommand() : DroneCommand("MoveToPosition", "Move to x,y,z with specified velocity")
@@ -287,6 +313,7 @@ public:
         addYawModeSwitches();
         addDriveTrainSwitch();
         addLookaheadSwitches();
+		addRelativeSwitch();
     }
 
     void MoveToPosition(CommandContext* context, float x, float y, float z, float velocity, DrivetrainType drivetrain, YawMode yawMode, float lookahead, float adaptive_lookahead)
@@ -297,15 +324,23 @@ public:
 
     bool execute(const DroneCommandParameters& params)
     {
+		CommandContext* context = params.context;
         float x = getSwitch("-x").toFloat();
         float y = getSwitch("-y").toFloat();
         float z = getSwitch("-z").toFloat();
+
+		if (getSwitch("-r").toInt() == 1) {
+			auto pos = context->client.getPosition();
+			x += pos.x();
+			y += pos.y();
+			z += pos.z();
+		}
+
         float velocity = getSwitch("-velocity").toFloat();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto drivetrain = getDriveTrain();
         auto yawMode = getYawMode();
-        CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
             MoveToPosition(context, x, y, z, velocity,
@@ -636,6 +671,7 @@ public:
         this->addSwitch({"-duration", "5", "the duration of this command in seconds (default 5)" });
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
+		addRelativeSwitch();
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
@@ -643,6 +679,8 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
+		CommandContext* context = params.context;
+
         float length = getSwitch("-length").toFloat();
         float z = getSwitch("-z").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
@@ -652,22 +690,29 @@ public:
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto yawMode = getYawMode();
-        CommandContext* context = params.context;
+
+		float x = 0, y = 0;
+		if (getSwitch("-r").toInt() == 1) {
+			auto pos = context->client.getPosition();
+			x += pos.x();
+			y += pos.y();
+			z += pos.z();
+		}
 
         context->tasker.execute([=]() {
-            context->client.moveToPosition(length, -length, z, velocity, drivetrain,
+            context->client.moveToPosition(x + length, y - length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveToPosition(-length, -length, z, velocity, drivetrain,
+            context->client.moveToPosition(x - length, y - length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveToPosition(-length, length, z, velocity, drivetrain,
+            context->client.moveToPosition(x - length, y + length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveToPosition(length, length, z, velocity, drivetrain,
+            context->client.moveToPosition(x + length, y + length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead);
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
@@ -688,6 +733,7 @@ public:
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
         this->addSwitch({"-path_rep", "1000", "number of times around the square (default 1000)" });
+		addRelativeSwitch();
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
@@ -705,14 +751,21 @@ public:
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         int path_rep = std::stoi(getSwitch("-path_rep").value);
         auto yawMode = getYawMode();
+		float x = 0, y = 0;
         CommandContext* context = params.context;
+		if (getSwitch("-r").toInt() == 1) {
+			auto pos = context->client.getPosition();
+			x += pos.x();
+			y += pos.y();
+			z += pos.z();
+		}
 
         std::vector<Vector3r> path;
         for(int i = 0; i < path_rep; ++i) {
-            path.push_back(Vector3r(length, -length, z));
-            path.push_back(Vector3r(-length, -length, z));
-            path.push_back(Vector3r(-length, length, z));
-            path.push_back(Vector3r(length, length, z));
+            path.push_back(Vector3r(x + length, y - length, z));
+            path.push_back(Vector3r(x - length, y - length, z));
+            path.push_back(Vector3r(x - length, y + length, z));
+            path.push_back(Vector3r(x + length, y + length, z));
         }
 
         context->tasker.execute([=]() {
@@ -736,6 +789,7 @@ public:
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
 
+		addRelativeSwitch();
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
@@ -743,6 +797,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
+		CommandContext* context = params.context;
         float radius = getSwitch("-radius").toFloat();
         float z = getSwitch("-z").toFloat();
         float seg_length = getSwitch("-seg_length").toFloat();
@@ -753,18 +808,25 @@ public:
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
 		int iterations = getSwitch("-iterations").toInt();
         auto yawMode = getYawMode();
+		float cx = 0, cy = 0;
+		if (getSwitch("-r").toInt() == 1) {
+			auto pos = context->client.getPosition();
+			cx += pos.x();
+			cy += pos.y();
+			z += pos.z();
+		}
+
 
         float angle = std::acos(1 - (seg_length*seg_length / (2 * radius*radius)));
         if (std::isnan(angle))
             throw std::invalid_argument(common_utils::Utils::stringf("radius=%f and seg_length=%f doesn't form valid circle", radius, seg_length));
         int seg_count = common_utils::Utils::floorToInt(2*M_PIf / angle);
         float seg_angle = 2*M_PIf / seg_count;
-        CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
             for(float seg = 0; seg < seg_count; ++seg) {
-                float x = std::cos(seg_angle * seg) * radius;
-                float y = std::sin(seg_angle * seg) * radius;
+                float x = cx + std::cos(seg_angle * seg) * radius;
+                float y = cy + std::sin(seg_angle * seg) * radius;
                 context->client.moveToPosition(x, y, z, velocity, drivetrain,
                     yawMode, lookahead, adaptive_lookahead);
                 context->client.hover();
@@ -792,6 +854,7 @@ public:
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
+		addRelativeSwitch();
     }
 
     bool execute(const DroneCommandParameters& params) 
@@ -810,6 +873,14 @@ public:
         string plane = getSwitch("-plane").value;
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
+		float cx = 0, cy = 0;
+		if (getSwitch("-r").toInt() == 1) {
+			auto pos = context->client.getPosition();
+			cx += pos.x();
+			cy += pos.y();
+			z_path += pos.z();
+		}
+
 
         float angle = std::acos(1 - (seg_length*seg_length / (2 * radius*radius)));
         if (std::isnan(angle))
@@ -817,7 +888,7 @@ public:
         int seg_count = common_utils::Utils::floorToInt(2*M_PIf / angle);
         float seg_angle = 2*M_PIf / seg_count;
 
-        const Vector3r origin = plane != "xy" && plane != "yx" ? Vector3r(0, 0, z_path + radius) : Vector3r(0, 0, z_path);
+        const Vector3r origin = plane != "xy" && plane != "yx" ? Vector3r(cx, cy, z_path + radius) : Vector3r(cx, cy, z_path);
 
         std::vector<Vector3r> path;
         for(int i = 0; i < path_rep; ++i) {
@@ -1110,6 +1181,7 @@ int main(int argc, const char *argv[]) {
     RotateToYawCommand rotateToYaw;
     HoverCommand hover;
     MoveToPositionCommand moveToPosition;
+	GetPositionCommand getPosition;
     MoveByManualCommand moveByManual;
     MoveByAngleCommand moveByAngle;
     MoveByVelocityCommand moveByVelocity;
@@ -1133,6 +1205,7 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(releaseControl);
     shell.addCommand(takeOff);
     shell.addCommand(land);
+	shell.addCommand(getPosition);
     shell.addCommand(goHome);
     shell.addCommand(getHomePoint);
     shell.addCommand(moveToZ);
