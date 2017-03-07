@@ -14,8 +14,30 @@
 
 namespace msr { namespace airlib {
 
-//This interface represents generic drone commands
-//RETURN values: true if not prempted else false. For error conditions, raise exceptions.
+/// DroneControllerBase represents a generic drone that can be controlled and queried for current state.
+/// All control methods return a boolean where true means the command was completed successfully, and
+/// false means the command was cancelled.  These same methods also provide a CancelableBase& cancelable_action
+/// 
+/// Cancellable actions: all commands return a CancelableBase& cancelable_action object.
+/// These objects can be used to cancel the command, or find out if the command has
+/// been cancelled.  Only one command can be active at a time, so the next command you
+/// send will automatically and immediately cancel any previous command that is in progress.
+/// Many movement actions also take a duration, and when that duration is up the drone
+/// will automatically hover at whatever location it is at.
+///
+/// NOTE: It is very important to understand the local position coordinate system.
+/// All x,y,z values below are in North/East/Down NED coordinates.  This means the
+/// z values will be more negative the higher you go.  Ground is zero, and then it is
+/// negative from there up.  This is the defacto standard in the drone world so it is
+/// simpler to keep with that throughout the AirSim library.
+/// 
+/// NOTE: all the movement commands, except hover, require you first call setOffboardMode(true).  If that succeeds
+/// it means your application now has control over the drone and the user cannot control the drone unless they
+/// flip a switch on their controller taking control back from your program.  If the user takes control back
+/// and you call one of these methods, an exception will be thrown telling your program that it no longer
+/// has control.  If you call setOffboardMode(false) the drone will hover waiting for user RC input.
+	
+
 class DroneControllerBase : public VehicleControllerBase {
 public: //types
     class UnsafeMoveException : public VehicleMoveException {
@@ -48,148 +70,128 @@ public: //types
     typedef common_utils::EnumFlags<ImageType>  ImageTypeFlags;
 
 public: //interface for outside world
-    /* return value bool indicates command was cancelled, not a failure */
 
-	// NOTE: It is very important to understand the local position coordinate system.
-	// All x,y,z values below are in North/East/Down NED coordinates.  This means the
-	// z values will be more negative the higher you go.  Ground is zero, and then it is
-	// negative from there up.  This is the defacto standard in the drone world so it is
-	// simpler to keep with that throughout the AirSim library.
-
-	// Cancellable actions: all commands return a CancelableBase& cancelable_action object.
-	// These objects can be used to cancel the command, or find out if the command has
-	// been cancelled.  Only one command can be active at a time, so the next command you
-	// send will automatically and immediately cancel any previous command that is in progress.
-	// Many movement actions also take a duration, and when that duration is up the drone
-	// will automatically hover at whatever location it is at.
-
-    // The drone must be armed before it will fly.  Set arm to true to arm the drone.  
-	// On some drones arming may cause the motors to spin on low throttle, this is normal.
-	// Set arm to false to disarm the drone.  This will disable the motors, so don't do that
-	// unless the drone is on the ground!  Arming the drone also sets the "home position"
-	// This home position is local position x=0,y=0,z=0.  You can also query what GPS location
-	// that is via getHomePoint.  
+    /// The drone must be armed before it will fly.  Set arm to true to arm the drone.  
+	/// On some drones arming may cause the motors to spin on low throttle, this is normal.
+	/// Set arm to false to disarm the drone.  This will disable the motors, so don't do that
+	/// unless the drone is on the ground!  Arming the drone also sets the "home position"
+	/// This home position is local position x=0,y=0,z=0.  You can also query what GPS location
+	/// that is via getHomePoint.  
     virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) = 0;
 
-	// When armed you can tell the drone to takeoff.  This will fly to a preset altitude (like 2.5 meters)
-	// about the home position.  Once the drone is safely in the air you can use other commands to fly from there.
-	// If the drone is already flying takeoff will be ignored.
+	/// When armed you can tell the drone to takeoff.  This will fly to a preset altitude (like 2.5 meters)
+	/// above the home position.  Once the drone is safely in the air you can use other commands to fly from there.
+	/// If the drone is already flying takeoff will be ignored.
     virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) = 0;
 
-	// At any point this command will disable offboard control and land the drone at the current GPS location.
-	// How quickly the drone descends is up to the drone.  Some models will descend slowly if they have no 
-	// lidar telling them how far it is to the ground, while others that can see the ground will descend more
-	// quickly until they get near the ground.  None of that behavior is defined in this API because it is 
-	// depends on what kind of hardware the drone has onboard.
+	/// At any point this command will disable offboard control and land the drone at the current GPS location.
+	/// How quickly the drone descends is up to the drone.  Some models will descend slowly if they have no 
+	/// lidar telling them how far it is to the ground, while others that can see the ground will descend more
+	/// quickly until they get near the ground.  None of that behavior is defined in this API because it is 
+	/// depends on what kind of hardware the drone has onboard.
     virtual bool land(CancelableBase& cancelable_action) = 0;
 
-	// This command is a safety measure, at any point this command will cancel offboard control and send the
-	// drone back to the launch point (or home position).  Most drones are also configured to climb to a safe
-	// altitude before doing that so they don't run into a tree on the way home.
+	/// This command is a safety measure, at any point this command will cancel offboard control and send the
+	/// drone back to the launch point (or home position).  Most drones are also configured to climb to a safe
+	/// altitude before doing that so they don't run into a tree on the way home.
     virtual bool goHome(CancelableBase& cancelable_action) = 0;
 
-    // all the movement commands, except hover, require you first call setOffboardMode(true).  If that succeeds
-	// it means your application now has control over the drone and the user cannot control the drone unless they
-	// flip a switch on their controller taking control back from your program.  If the user takes control back
-	// and you call one of these methods, an exception will be thrown telling your program that it no longer
-	// has control.  If you call setOffboardMode(false) the drone will hover waiting for user RC input.
-	
-	// Move the drone by controlling the angles (or attitude) of the drone, if you set pitch, roll to zero
-	// and z to the current z value then it is equivalent to a hover command.  A little bit of pitch can
-	// make the drone move forwards, a little bit of roll can make it move sideways.  The yaw control can
-	// make the drone spin around on the spot.  The duration says how long you want to apply these settings
-	// before reverting to a hover command.  So you can say "fly forwards slowly for 1 second" using 
-	// moveByAngle(0.1, 0, z, yaw, 1).  The cancelable_action can be used to canel all actions.  In fact,
-	// every time you call another move* method you will automatically cancel any previous action that is
-	// happening.
+	/// Move the drone by controlling the angles (or attitude) of the drone, if you set pitch, roll to zero
+	/// and z to the current z value then it is equivalent to a hover command.  A little bit of pitch can
+	/// make the drone move forwards, a little bit of roll can make it move sideways.  The yaw control can
+	/// make the drone spin around on the spot.  The duration says how long you want to apply these settings
+	/// before reverting to a hover command.  So you can say "fly forwards slowly for 1 second" using 
+	/// moveByAngle(0.1, 0, z, yaw, 1, ...).  The cancelable_action can be used to canel all actions.  In fact,
+	/// every time you call another move* method you will automatically cancel any previous action that is
+	/// happening.
     virtual bool moveByAngle(float pitch, float roll, float z, float yaw, float duration
         , CancelableBase& cancelable_action);
 
 
-	// Move the drone by controlling the velocity vector of the drone. A little bit of vx can
-	// make the drone move forwards, a little bit of vy can make it move sideways.  A bit of vz can move
-	// the drone up or down vertically.  The yaw_mode can set a specific yaw target, or tell the drone
-	// to move as a specified yaw rate.  The yaw rate command is handy if you want to do a slow 360 
-	// and capture a nice smooth panorama.  The duration says how long you want to apply these settings
-	// before reverting to a hover command.  So you can say "fly forwards slowly for 1 second" using 
-	// moveByAngle(0.1, 0, z, yaw, 1).  The cancelable_action can be used to canel all actions.  In fact,
-	// every time you call another move* method you will automatically cancel any previous action that is
-	// happening.
+	/// Move the drone by controlling the velocity vector of the drone. A little bit of vx can
+	/// make the drone move forwards, a little bit of vy can make it move sideways.  A bit of vz can move
+	/// the drone up or down vertically.  The yaw_mode can set a specific yaw target, or tell the drone
+	/// to move as a specified yaw rate.  The yaw rate command is handy if you want to do a slow 360 
+	/// and capture a nice smooth panorama.  The duration says how long you want to apply these settings
+	/// before reverting to a hover command.  So you can say "fly forwards slowly for 1 second" using 
+	/// moveByVelocity(0.1, 0, 0, 1, ...).  The cancelable_action can be used to canel all actions.  In fact,
+	/// every time you call another move* method you will automatically cancel any previous action that is
+	/// happening.
     virtual bool moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode,
         CancelableBase& cancelable_action);
 
 
-	// Move the drone by controlling the velocity x,y of the drone but with a fixed altitude z. A little bit of vx can
-	// make the drone move forwards, a little bit of vy can make it move sideways. 
-	// The yaw_mode can set a specific yaw target, or tell the drone
-	// to move as a specified yaw rate.  The yaw rate command is handy if you want to do a slow 360 
-	// and capture a nice smooth panorama.  The duration says how long you want to apply these settings
-	// before reverting to a hover command.  So you can say "fly forwards slowly for 1 second" using 
-	// moveByAngle(0.1, 0, z, yaw, 1).  The cancelable_action can be used to canel all actions.  In fact,
-	// every time you call another move* method you will automatically cancel any previous action that is
-	// happening.
+	/// Move the drone by controlling the velocity x,y of the drone but with a fixed altitude z. A little bit of vx can
+	/// make the drone move forwards, a little bit of vy can make it move sideways. 
+	/// The yaw_mode can set a specific yaw target, or tell the drone
+	/// to move as a specified yaw rate.  The yaw rate command is handy if you want to do a slow 360 
+	/// and capture a nice smooth panorama.  The duration says how long you want to apply these settings
+	/// before reverting to a hover command.  So you can say "fly forwards slowly for 1 second" using 
+	/// moveByVelocityZ(0.1, 0, z, 1, ...).  The cancelable_action can be used to canel all actions.  In fact,
+	/// every time you call another move* method you will automatically cancel any previous action that is
+	/// happening.
     virtual bool moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode,
         CancelableBase& cancelable_action);
 
-	// Move the drone along the given path at the given speed and yaw.  The lookahead argument will smooth this path
-	// by looking ahead from current location by a given number of meters, then it will try and move the drone to 
-	// that lookahead position.  The lookahead can also ensure the drone doesn't stop and start at each vertex along
-	// the path.
+	/// Move the drone along the given path at the given speed and yaw.  The lookahead argument will smooth this path
+	/// by looking ahead from current location by a given number of meters, then it will try and move the drone to 
+	/// that lookahead position, thereby smoothing any corners in the path.  The lookahead can also ensure the drone 
+	/// doesn't stop and start at each vertex along the path.
     virtual bool moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
 
 
-	// Move the drone to the absolution x, y, z positions, at given speed and yaw.  Remember z is negative.  
-	// Positive z is under ground.  Instead of moving to the yaw before starting, the drone will move to the yaw position 
-	// smoothly as it goes, which means for short paths it may not reach that target heading until it has already
-	// reached the end point at which time the drone will continue rotating until it reaches the desired heading.
-	// bugbug: why is there a lookahead on this method?
+	/// Move the drone to the absolution x, y, z local positions at given speed and yaw.  Remember z is negative.  
+	/// Positive z is under ground.  Instead of moving to the yaw before starting, the drone will move to the yaw position 
+	/// smoothly as it goes, which means for short paths it may not reach that target heading until it has already
+	/// reached the end point at which time the drone will continue rotating until it reaches the desired heading.
+	/// bugbug: why is there a lookahead on this method?
     virtual bool moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
         const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
 
-	// moveToZ is a shortcut for moveToPosition at the current x, y location.
+	/// moveToZ is a shortcut for moveToPosition at the current x, y location.
     virtual bool moveToZ(float z, float velocity, const YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
 
     virtual bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration, CancelableBase& cancelable_action);
 
-	// Rotate the drone to the specified fixed heading (yaw) while remaining stationery at the current x, y, and z.
+	/// Rotate the drone to the specified fixed heading (yaw) while remaining stationery at the current x, y, and z.
     virtual bool rotateToYaw(float yaw, float margin, CancelableBase& cancelable_action);
 
-	// Rotate the drone to the specified yaw rate while remaining stationery at the current x, y, and z.
-	// bugbug: why isn't it just rotate(yaw_mode) ?
+	/// Rotate the drone to the specified yaw rate while remaining stationery at the current x, y, and z.
+	/// bugbug: why isn't it just rotate(yaw_mode) ?
     virtual bool rotateByYawRate(float yaw_rate, float duration, CancelableBase& cancelable_action);
 
-	// Hover at the current x, y, and z.  If the drone is moving when this is called, it will try
-	// and move back to the location it was at when this command was received and hover there.  
+	/// Hover at the current x, y, and z.  If the drone is moving when this is called, it will try
+	/// and move back to the location it was at when this command was received and hover there.  
     virtual bool hover(CancelableBase& cancelable_action);
 
-    // get the current local position in NED coordinate (x=North/y=East,z=Down) so z is negative.
+    /// get the current local position in NED coordinate (x=North/y=East,z=Down) so z is negative.
     virtual Vector3r getPosition() = 0;
 
-	// get the current X and Y position
+	/// get the current X and Y position
     Vector2r getPositionXY();
 
-	// Get the Z position (z starts at zero on the ground, and becomes more and more negative as you go up)
+	/// Get the Z position (z starts at zero on the ground, and becomes more and more negative as you go up)
     float getZ();
 
-	// Get the current velocity of the drone
+	/// Get the current velocity of the drone
     virtual Vector3r getVelocity() = 0;
 
-	// Get the current orientation (or attitude) of the drone as a Quaternion.
+	/// Get the current orientation (or attitude) of the drone as a Quaternion.
     virtual Quaternionr getOrientation() = 0;
 
-	// Get the current RC inputs that are being applied by the user.
+	/// Get the current RC inputs that are being applied by the user.
     virtual RCData getRCData() = 0;
 
-	// Get a timestamp
+	/// Get a timestamp
     virtual double timestampNow() = 0;
 
-	// Get the home point (where drone was armed before takeoff).  This is the location the drone 
-	// will return to if you call goHome().
+	/// Get the home point (where drone was armed before takeoff).  This is the location the drone 
+	/// will return to if you call goHome().
     virtual GeoPoint getHomePoint() = 0;
 
-	// Get the current GPS location of the drone.
+	/// Get the current GPS location of the drone.
     virtual GeoPoint getGpsLocation() = 0;
 
     //safety settings
@@ -199,18 +201,18 @@ public: //interface for outside world
     virtual const VehicleParams& getVehicleParams() = 0;
 
 
-    // Call this method when you want to start requesting certain types of images for a given camera.  Camera id's start at 0
-	// and increment from there.  The number of cameras you can configure depends on the drone (or simulator).
+    /// Call this method when you want to start requesting certain types of images for a given camera.  Camera id's start at 0
+	/// and increment from there.  The number of cameras you can configure depends on the drone (or simulator).
     virtual void setImageTypeForCamera(int camera_id, ImageType type);
 
-	// Get the image type that is configured for the given camera id.
+	/// Get the image type that is configured for the given camera id.
     virtual ImageType getImageTypeForCamera(int camera_id);
 
-    // After calling setImageTypeForCamera you can tghen request the actual images using this method.
-	// The image is return in the .png format.  
+    /// After calling setImageTypeForCamera you can tghen request the actual images using this method.
+	/// The image is return in the .png format.  
 	virtual vector<uint8_t> getImageForCamera(int camera_id, ImageType type);
 
-	// bugbug: what is this doing here?  This should be a private implementation detail of the particular drone implementation.
+	/// bugbug: what is this doing here?  This should be a private implementation detail of the particular drone implementation.
 	virtual void setImageForCamera(int camera_id, ImageType type, const vector<uint8_t>& image);
 
     DroneControllerBase() = default;

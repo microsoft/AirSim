@@ -303,3 +303,5 @@ deps/
 /cmake/output/lib/libAirSim-rpclib.a
 /cmake/output/lib/libAirLib.a
 /cmake/output/lib
+/AirLib/include/controllers/html
+/AirLib/include/controllers/latex
