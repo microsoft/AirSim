@@ -4,12 +4,7 @@
 #ifndef SERIAL_COM_TCPCLIENTPORT_HPP
 #define SERIAL_COM_TCPCLIENTPORT_HPP
 
-#include <stdio.h>
-#include <thread>
-#include <memory>
-#include <mutex>
 #include "Port.h"
-#include "MavLinkSemaphore.hpp"
 
 class TcpClientPort : public Port
 {

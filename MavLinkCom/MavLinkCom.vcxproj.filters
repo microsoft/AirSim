@@ -46,9 +46,6 @@
     <ClCompile Include="src\MavLinkNode.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\MavLinkSemaphore.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\MavLinkTcpServer.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -72,6 +69,9 @@
     </ClCompile>
     <ClCompile Include="common_utils\Utils.cpp">
       <Filter>common_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Semaphore.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,9 +147,6 @@
     <ClInclude Include="include\MavLinkNode.hpp">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\MavLinkSemaphore.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\MavLinkTcpServer.hpp">
       <Filter>include</Filter>
     </ClInclude>
@@ -203,6 +200,9 @@
     </ClInclude>
     <ClInclude Include="src\serial_com\SocketInit.hpp">
       <Filter>serial_com</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Semaphore.hpp">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

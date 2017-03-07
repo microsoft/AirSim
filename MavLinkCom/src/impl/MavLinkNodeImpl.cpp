@@ -4,7 +4,7 @@
 #include "MavLinkNodeImpl.hpp"
 #include "Utils.hpp"
 #include "MavLinkMessages.hpp"
-#include "MavLinkSemaphore.hpp"
+#include "Semaphore.hpp"
 
 using namespace mavlink_utils;
 
@@ -262,7 +262,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 {
 	std::vector<MavLinkParameter> result;
 	bool done = false;
-	MavLinkSemaphore paramReceived;
+	Semaphore paramReceived;
 	bool waiting = false;
 	int paramCount = 0;
 	int paramIndex = 0;

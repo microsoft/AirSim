@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 #include <future>
-#include "MavLinkSemaphore.hpp"
+#include "Semaphore.hpp"
 
 namespace mavlinkcom {
 
@@ -18,7 +18,7 @@ namespace mavlinkcom {
 	{
 	public:
 		typedef std::function<void(int state)> CompletionHandler;
-		MavLinkSemaphore resultReceived_;
+		mavlink_utils::Semaphore resultReceived_;
 		T result_;
 		CompletionHandler owner_;
         int state_ = 0;

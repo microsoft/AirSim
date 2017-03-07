@@ -241,7 +241,7 @@
     <ClCompile Include="src\MavLinkMessageBase.cpp" />
     <ClCompile Include="src\MavLinkMessages.cpp" />
     <ClCompile Include="src\MavLinkNode.cpp" />
-    <ClCompile Include="src\MavLinkSemaphore.cpp" />
+    <ClCompile Include="src\Semaphore.cpp" />
     <ClCompile Include="src\MavLinkTcpServer.cpp" />
     <ClCompile Include="src\MavLinkVehicle.cpp" />
     <ClCompile Include="src\impl\MavLinkVehicleImpl.cpp" />
@@ -267,6 +267,7 @@
     <ClInclude Include="common_utils\sincos.hpp" />
     <ClInclude Include="common_utils\type_utils.hpp" />
     <ClInclude Include="common_utils\Utils.hpp" />
+    <ClInclude Include="include\Semaphore.hpp" />
     <ClInclude Include="src\impl\MavLinkFtpClientImpl.hpp" />
     <ClInclude Include="src\impl\MavLinkNodeImpl.hpp" />
     <ClInclude Include="src\impl\MavLinkTcpServerImpl.hpp" />
@@ -275,7 +276,6 @@
     <ClInclude Include="include\MavLinkMessageBase.hpp" />
     <ClInclude Include="include\MavLinkMessages.hpp" />
     <ClInclude Include="include\MavLinkNode.hpp" />
-    <ClInclude Include="include\MavLinkSemaphore.hpp" />
     <ClInclude Include="include\MavLinkTcpServer.hpp" />
     <ClInclude Include="include\MavLinkVehicle.hpp" />
     <ClInclude Include="src\impl\MavLinkVehicleImpl.hpp" />

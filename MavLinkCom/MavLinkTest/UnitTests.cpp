@@ -12,7 +12,7 @@
 #include "MavLinkVideoStream.hpp"
 #include "MavLinkTcpServer.hpp"
 #include "MavLinkFtpClient.hpp"
-#include "MavLinkSemaphore.hpp"
+#include "Semaphore.hpp"
 #include <iostream>
 
 using namespace mavlink_utils;
@@ -51,7 +51,7 @@ void UnitTests::UdpPingTest() {
 
 	auto localConnection = MavLinkConnection::connectLocalUdp("jMavSim", "127.0.0.1", 14588);
 
-	MavLinkSemaphore  received;
+	Semaphore  received;
 	auto id = localConnection->subscribe([&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
 		printf("    Received message %d\n", msg.msgid);
 		received.post();
@@ -105,7 +105,7 @@ void UnitTests::TcpPingTest() {
 		return 0;
 	});
 
-	MavLinkSemaphore  received;
+	Semaphore  received;
 	auto client = MavLinkConnection::connectTcp("local", "127.0.0.1", "127.0.0.1", testPort);
 	client->subscribe([&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
 		printf("Received msg %d\n", msg.msgid);
@@ -124,7 +124,7 @@ void UnitTests::SerialPx4Test()
 	auto connection = MavLinkConnection::connectSerial("px4", com_port_, baud_rate_);
 
 	int count = 0;
-	MavLinkSemaphore  received;
+	Semaphore  received;
 
 	auto id = connection->subscribe([&](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
 		//printf("    Received message %d\n", static_cast<int>(msg.msgid));
