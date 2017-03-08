@@ -8,15 +8,16 @@ set -e
 # update the rpclib git submodule
 git submodule update --init --recursive 
 
-# we need to use clang because the Unreal Engine is built with clang as well and
-# there are some symbol inconsistencies in the C++ library with regard to C++11
-# (see GCC Dual ABI: # https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)
-
 #!/bin/bash
-if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
-	echo "clang is necessary to compile AirSim"
-	echo "please run : sudo apt-get install clang++-3.8"
-	echo "followed by: sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 "
+if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/xclang++") ]]; then
+	echo "ERROR: clang 3.9 is necessary to compile AirSim and run it in Unreal"
+	echo "       please run : sudo apt-get install clang++-3.9"
+	echo "       followed by: sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9 "
+
+  echo "       We need to use clang because the Unreal Engine is built with clang as well and"
+  echo "       there are some symbol inconsistencies in the C++ library with regard to C++11"
+  echo "       (see GCC Dual ABI: # https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)"
+
 	exit 1
 fi
 
