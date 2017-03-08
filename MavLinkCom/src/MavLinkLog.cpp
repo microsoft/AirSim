@@ -13,6 +13,7 @@ MavLinkLog::MavLinkLog()
 	ptr_ = nullptr;
 	reading_ = false;
 	writing_ = false;
+	json_ = false;
 }
 
 MavLinkLog::~MavLinkLog()
@@ -35,13 +36,17 @@ void MavLinkLog::openForReading(const std::string& filename)
 	reading_ = true;
 	writing_ = false;
 }
-void MavLinkLog::openForWriting(const std::string& filename)
+void MavLinkLog::openForWriting(const std::string& filename, bool json)
 {
 	close();
+	json_ = json;
 	file_name_ = filename;
 	ptr_ = fopen(filename.c_str(), "wb");
 	if (ptr_ == nullptr) {
 		throw std::runtime_error(Utils::stringf("Could not open the file %s, error=%d", filename.c_str(), errno));
+	}
+	if (json) {
+		fprintf(ptr_, "{ \"rows\": [\n");
 	}
 	reading_ = false;
 	writing_ = true;
@@ -50,6 +55,9 @@ void MavLinkLog::openForWriting(const std::string& filename)
 void MavLinkLog::close()
 {
 	FILE* temp = ptr_;
+	if (json_ && ptr_ != nullptr) {
+		fprintf(ptr_, "]}\n");
+	}
 	ptr_ = nullptr;
 	if (temp != nullptr) {
 		fclose(temp);
@@ -79,18 +87,27 @@ void MavLinkLog::write(const mavlinkcom::MavLinkMessage& msg)
 		if (reading_) {
 			throw std::runtime_error("Log file was opened for reading");
 		}
-		uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		// for compatibility with QGroundControl we have to save the time field in big endian.
-		time = ConvertBigEndian(time);
-		fwrite(&time, sizeof(uint64_t), 1, ptr_);
-		fwrite(&msg.magic, 1, 1, ptr_);
-		fwrite(&msg.len, 1, 1, ptr_);
-		fwrite(&msg.seq, 1, 1, ptr_);
-		fwrite(&msg.sysid, 1, 1, ptr_);
-		fwrite(&msg.compid, 1, 1, ptr_);
-		fwrite(&msg.msgid, 1, 1, ptr_);
-		fwrite(&msg.payload64, 1, msg.len, ptr_);
-		fwrite(&msg.checksum, sizeof(uint16_t), 1, ptr_);
+		if (json_) {
+			MavLinkMessageBase* strongTypedMsg = MavLinkMessageBase::lookup(msg);
+			if (strongTypedMsg != nullptr) {
+				std::string line = strongTypedMsg->toJSon();
+				fprintf(ptr_, "    %s\n", line.c_str());
+			}
+		}
+		else {
+			uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			// for compatibility with QGroundControl we have to save the time field in big endian.
+			time = ConvertBigEndian(time);
+			fwrite(&time, sizeof(uint64_t), 1, ptr_);
+			fwrite(&msg.magic, 1, 1, ptr_);
+			fwrite(&msg.len, 1, 1, ptr_);
+			fwrite(&msg.seq, 1, 1, ptr_);
+			fwrite(&msg.sysid, 1, 1, ptr_);
+			fwrite(&msg.compid, 1, 1, ptr_);
+			fwrite(&msg.msgid, 1, 1, ptr_);
+			fwrite(&msg.payload64, 1, msg.len, ptr_);
+			fwrite(&msg.checksum, sizeof(uint16_t), 1, ptr_);
+		}
 	}
 }
 

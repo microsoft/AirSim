@@ -120,6 +120,7 @@ bool verbose = false;
 bool nsh = false;
 bool noparams = false;
 std::string logDirectory;
+bool jsonLogFormat = false;
 std::shared_ptr<MavLinkLog> inLogFile;
 std::shared_ptr<MavLinkLog> outLogFile;
 std::thread telemetry_thread;
@@ -142,15 +143,16 @@ void OpenLogFiles() {
 		path = FileSystem::combine(path, today);
 		FileSystem::ensureFolder(path);
 
-		std::string input = Utils::stringf("%02d-%02d-%02d-input.mavlink", local->tm_hour, local->tm_min, local->tm_sec);
+		char* ext = jsonLogFormat ? "json" : "mavlink";
+		std::string input = Utils::stringf("%02d-%02d-%02d-input.%s", local->tm_hour, local->tm_min, local->tm_sec, ext);
 		auto infile = FileSystem::combine(path, input);
 		inLogFile = std::make_shared<MavLinkLog>();
-		inLogFile->openForWriting(infile);
+		inLogFile->openForWriting(infile, jsonLogFormat);
 
-		std::string output = Utils::stringf("%02d-%02d-%02d-output.mavlink", local->tm_hour, local->tm_min, local->tm_sec);
+		std::string output = Utils::stringf("%02d-%02d-%02d-output.%s", local->tm_hour, local->tm_min, local->tm_sec, ext);
 		auto outfile = FileSystem::combine(path, output);
 		outLogFile = std::make_shared<MavLinkLog>();
-		outLogFile->openForWriting(outfile);
+		outLogFile->openForWriting(outfile, jsonLogFormat);
 
 	}
 }
@@ -487,6 +489,7 @@ void PrintUsage() {
 	printf("    -proxy:ipaddr[:port]                   - send all mavlink messages to and from remote node\n");
 	printf("    -local:ipaddr                          - specify local NIC address (default 127.0.0.1)\n");
 	printf("    -logdir:filename                       - specify local directory where mavlink logs are stored (default is no log files)\n");
+	printf("    -logformat:json                        - the default is binary, if you specify this option you will get mavlink logs in json format\n");
 	printf("    -noradio							   - disables RC link loss failsafe\n");
 	printf("    -nsh                                   - enter NuttX shell immediately on connecting with PX4\n");
 	printf("    -telemetry                             - generate telemetry mavlink messages for logviewer");
@@ -497,6 +500,7 @@ void PrintUsage() {
 bool ParseCommandLine(int argc, const char* argv[])
 {
 	const char* logDirOption = "logdir";
+	const char* logformatOption = "logformat";
 	const char* outLogFileOption = "outlogfile";
 
 	// parse command line
@@ -568,6 +572,22 @@ bool ParseCommandLine(int argc, const char* argv[])
 				{
 					std::string fileName(arg + 1 + strlen(logDirOption) + 1);
 					logDirectory = fileName;
+				}
+			}
+			else if (lower == logformatOption) {
+
+				if (parts.size() > 1)
+				{
+					std::string format(arg + 1 + strlen(logformatOption) + 1);
+					format = Utils::toLower(format);
+					if (format == "json") {
+						jsonLogFormat = true;
+					}
+					else {
+
+						printf("### Error: invalid logformat '%s', expecting 'json'\n", format.c_str());
+						return false;
+					}
 				}
 			}
 			else if (lower == "local")

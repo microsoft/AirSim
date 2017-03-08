@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <sstream>
 #include <memory>
 namespace mavlinkcom_impl {
 	class MavLinkConnectionImpl;
@@ -35,6 +36,7 @@ namespace mavlinkcom
 		uint8_t compid;  ///< ID of the message sender component
 		uint8_t msgid;   ///< ID of message in payload
 		uint64_t payload64[(255 + 2 + 7) / 8];
+
 	};
 
 	// This is the base class for all the strongly typed messages define in MavLinkMessages.hpp
@@ -47,6 +49,10 @@ namespace mavlinkcom
 
 		// unpack the given message
 		void decode(const MavLinkMessage& msg);
+
+		// find what type of message this is and decode it on the heap (call delete when you are done with it).
+		static MavLinkMessageBase* lookup(const MavLinkMessage& msg);
+		virtual std::string toJSon() = 0;
 	protected:
 		virtual int pack(char* buffer) const = 0;
 		virtual int unpack(const char* buffer) = 0;
@@ -83,6 +89,14 @@ namespace mavlinkcom
 		void unpack_int16_t_array(int len, const char* buffer, int16_t* field, int offset);
 		void unpack_float_array(int len, const char* buffer, float* field, int offset);
 
+		std::string char_array_tostring(int len, const char* field);
+		std::string uint8_t_array_tostring(int len, const uint8_t* field);
+		std::string int8_t_array_tostring(int len, const int8_t* field);
+		std::string int16_t_array_tostring(int len, const int16_t* field);
+		std::string uint16_t_array_tostring(int len, const uint16_t* field);
+		std::string float_array_tostring(int len, const float* field);
+		std::string float_tostring(float value);
+
 		friend class mavlinkcom_impl::MavLinkConnectionImpl;
 	};
 
@@ -117,6 +131,19 @@ namespace mavlinkcom
 		long crcErrors;			 // # crc errors detected in mavlink stream since the last telemetry message
 		long handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
 		long renderTime;         // total time spent rendering frames since the last telemetry message
+		virtual std::string toJSon() {
+
+			std::ostringstream result;
+			result << "\"MavLinkTelemetry\"" << " : { ";
+			result << "\"messagesSent\":" << this->messagesSent << ",";
+			result << "\"messagesReceived\":" << this->messagesReceived << ",";
+			result << "\"messagesHandled\":" << this->messagesHandled << ",";
+			result << "\"crcErrors\":" << this->crcErrors << ",";
+			result << "\"handlerMicroseconds\":" << this->handlerMicroseconds << ",";
+			result << "\"renderTime\":" << this->renderTime;
+			result << "}";
+			return result.str();
+		}
 	protected:
 		virtual int pack(char* buffer) const;
 		virtual int unpack(const char* buffer);

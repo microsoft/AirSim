@@ -18,12 +18,13 @@ namespace mavlinkcom
 		FILE* ptr_;
 		bool reading_;
 		bool writing_;
+		bool json_;
 	public:
 		MavLinkLog();
 		~MavLinkLog();
 		bool isOpen();
 		void openForReading(const std::string& filename);
-		void openForWriting(const std::string& filename);
+		void openForWriting(const std::string& filename, bool json = false);
 		void close();
 		void write(const mavlinkcom::MavLinkMessage& msg);
 		bool read(mavlinkcom::MavLinkMessage& msg);

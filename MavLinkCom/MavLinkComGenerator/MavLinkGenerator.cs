@@ -16,7 +16,7 @@ namespace MavLinkComGenerator
         StreamWriter impl;
         MavLink definitions;
 
-        public void Generate(MavLink definitions, string outputDirectory)
+        public void GenerateMessages(MavLink definitions, string outputDirectory)
         {
             this.definitions = definitions;
 
@@ -24,6 +24,8 @@ namespace MavLinkComGenerator
             {
                 using (impl = new StreamWriter(Path.Combine(outputDirectory, "MavLinkMessages.cpp")))
                 {
+                    header.WriteLine("// Copyright (c) Microsoft Corporation. All rights reserved.");
+                    header.WriteLine("// Licensed under the MIT License.");
                     header.WriteLine("#ifndef MavLinkCom_MavLinkMessages_hpp");
                     header.WriteLine("#define MavLinkCom_MavLinkMessages_hpp");
                     header.WriteLine("");
@@ -35,13 +37,17 @@ namespace MavLinkComGenerator
                     header.WriteLine("{");
                     header.WriteLine("");
 
-                    impl.WriteLine("#include \"MavLinkMessages.hpp\"");
+                    impl.WriteLine("// Copyright (c) Microsoft Corporation. All rights reserved.");
+                    impl.WriteLine("// Licensed under the MIT License.");
+                    impl.WriteLine("#include \"MavLinkMessages.hpp\""); ;
+                    impl.WriteLine("#include <sstream>");
                     impl.WriteLine("using namespace mavlinkcom;");
                     impl.WriteLine("");
 
                     GenerateEnums();
                     GenerateMessages();
                     GenerateCommands();
+                    GenerateDecodeMethod();
 
                     header.WriteLine("}");
                     header.WriteLine("");
@@ -49,6 +55,7 @@ namespace MavLinkComGenerator
                 }
             }
         }
+
 
         private void GenerateCommands()
         {
@@ -188,6 +195,13 @@ namespace MavLinkComGenerator
         {
             foreach (var m in definitions.messages)
             {
+                int id = int.Parse(m.id);
+                if (id > 255)
+                {
+                    // these require mavlink 2...
+                    continue;
+                }
+
                 string name = CamelCase(m.name);
                 Console.WriteLine("generating message {0}", name);
                 if (!string.IsNullOrWhiteSpace(m.description))
@@ -238,6 +252,7 @@ namespace MavLinkComGenerator
                     }
                 }
 
+                header.WriteLine("    virtual std::string toJSon();");
                 header.WriteLine("protected:");
 
                 header.WriteLine("    virtual int pack(char* buffer) const;");
@@ -298,9 +313,95 @@ namespace MavLinkComGenerator
                 impl.WriteLine("}");
                 impl.WriteLine("");
 
+
+                impl.WriteLine("std::string MavLink{0}::toJSon() {{", name);
+                impl.WriteLine("    std::ostringstream result;");
+
+                impl.WriteLine("    result << \"{{ \\\"name\\\": \\\"{0}\\\", \\\"id\\\": {1}\";", m.name, id);
+
+                for (int i = 0; i < length; i++)
+                {
+                    var field = m.fields[i];
+                    var type = field.type;
+                    if (type == "uint8_t_mavlink_version")
+                    {
+                        type = "uint8_t";
+                    }
+                    impl.Write("    result << \", \\\"{0}\\\":\" ", field.name);
+
+                    if (field.isArray)
+                    {
+                        if (type == "char")
+                        {
+                            impl.Write(" << \"\\\"\" << ");
+                            impl.Write("char_array_tostring({1}, reinterpret_cast<{0}*>(&this->{2}[0]))", type, field.array_length, field.name);
+                            impl.Write(" << \"\\\"\"");
+                        }
+                        else
+                        {
+                            impl.Write(" << \"[\" << ");
+                            impl.Write("{0}_array_tostring({1}, reinterpret_cast<{0}*>(&this->{2}[0]))", type, field.array_length, field.name);
+                            impl.Write(" << \"]\"");
+                        }
+                    }
+                    else if (type == "int8_t")
+                    {
+                        // so that stream doesn't try and treat this as a char.
+                        impl.Write(" << static_cast<int>(this->{0})", field.name);
+                    }
+                    else if (type == "uint8_t")
+                    {
+                        // so that stream doesn't try and treat this as a char.
+                        impl.Write(" << static_cast<unsigned int>(this->{0})", field.name);
+                    }
+                    else if (type == "float")
+                    {
+                        impl.Write(" << float_tostring(this->{0})", field.name);
+                    }
+                    else 
+                    {
+                        impl.Write(" << this->{0}", field.name);
+                    }
+
+                    impl.WriteLine(";");
+                }
+                impl.WriteLine("    result << \"},\";");
+
+                impl.WriteLine(" return result.str();");
+                impl.WriteLine("}");
+                impl.WriteLine("");
+
                 header.WriteLine("};");
                 header.WriteLine("");
             }
+        }
+
+        public void GenerateDecodeMethod()
+        {
+            impl.WriteLine("MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {");
+            impl.WriteLine("    MavLinkMessageBase* result = nullptr;");
+            impl.WriteLine("    switch (static_cast<MavLinkMessageIds>(msg.msgid)) {");
+            foreach (var m in definitions.messages)
+            {
+                int id = int.Parse(m.id);
+                if (id > 255)
+                {
+                    // these require mavlink 2...
+                    continue;
+                }
+                impl.WriteLine("    case MavLinkMessageIds::MAVLINK_MSG_ID_{0}:", m.name);
+                string name = CamelCase(m.name);
+
+                impl.WriteLine("        result = new MavLink{0}();", name);
+                impl.WriteLine("        break;");
+            }
+
+            impl.WriteLine("    }");
+            impl.WriteLine("    if (result != nullptr) {");
+            impl.WriteLine("        result->decode(msg);");
+            impl.WriteLine("    }");
+            impl.WriteLine("    return result;");
+            impl.WriteLine("}");
         }
 
         public Tuple<string,int> ParseArrayType(string type)
@@ -342,6 +443,12 @@ namespace MavLinkComGenerator
             bool first = true;
             foreach (var m in definitions.messages)
             {
+                int id = int.Parse(m.id);
+                if (id > 255)
+                {
+                    // these require mavlink 2...
+                    continue;
+                }
                 if (!first)
                 {
                     header.WriteLine(",");

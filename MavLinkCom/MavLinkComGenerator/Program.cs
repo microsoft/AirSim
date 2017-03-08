@@ -102,7 +102,7 @@ namespace MavLinkComGenerator
             //parse the XML
             MavLink mavlink = MavlinkParser.Parse(xmlInput);
             MavLinkGenerator gen = new MavLinkGenerator();
-            gen.Generate(mavlink, outputFolder);
+            gen.GenerateMessages(mavlink, outputFolder);
         }
     }
 }

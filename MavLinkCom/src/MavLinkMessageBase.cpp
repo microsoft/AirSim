@@ -4,6 +4,7 @@
 #include "Utils.hpp"
 #include "MavLinkMessageBase.hpp"
 #include "MavLinkConnection.hpp"
+#include <sstream>
 using namespace mavlink_utils;
 
 STRICT_MODE_OFF
@@ -236,4 +237,73 @@ int MavLinkTelemetry::unpack(const char* buffer) {
 	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->handlerMicroseconds), 16);
 	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->renderTime), 20);
 	return 24;
+}
+
+
+std::string MavLinkMessageBase::char_array_tostring(int len, const char* field)
+{
+	int i = 0;
+	for (i= 0; i < len; i++)
+	{
+		if (field[i] == '\0')
+			break;
+	}
+	return std::string(field, i);
+}
+
+std::string MavLinkMessageBase::float_tostring(float value) 
+{
+	// json can't handle "nan", so we convert it to null.
+	if (isnan(value) || isinf(value)) {
+		return "null";
+	}
+	std::ostringstream s;
+	s << value;
+	return s.str();
+}
+
+
+template<class T>
+class BinaryArray
+{
+public:
+	static std::string toString(int len, const T* field) {
+		std::ostringstream line;
+		for (int i = 0; i < len; i++) {
+			line << field[i];
+			if (i + 1 < len) {
+				line << ", ";
+			}
+		}
+		return line.str();
+	}
+};
+
+std::string MavLinkMessageBase::uint8_t_array_tostring(int len, const uint8_t* field)
+{
+	return BinaryArray<uint8_t>::toString(len, field);
+}
+std::string MavLinkMessageBase::int8_t_array_tostring(int len, const int8_t* field)
+{
+	return BinaryArray<int8_t>::toString(len, field);
+}
+std::string MavLinkMessageBase::int16_t_array_tostring(int len, const int16_t* field)
+{
+	return BinaryArray<int16_t>::toString(len, field);
+}
+std::string MavLinkMessageBase::uint16_t_array_tostring(int len, const uint16_t* field)
+{
+	return BinaryArray<uint16_t>::toString(len, field);
+}
+
+std::string MavLinkMessageBase::float_array_tostring(int len, const float* field)
+{
+	std::ostringstream line;
+	for (int i = 0; i < len; i++) {
+		line << float_tostring(field[i]);
+		if (i + 1 < len) {
+			line << ", ";
+		}
+	}
+	return line.str();
 }
