@@ -5,6 +5,7 @@
 #include "MavLinkMessageBase.hpp"
 #include "MavLinkConnection.hpp"
 #include <sstream>
+#include <cmath>
 using namespace mavlink_utils;
 
 STRICT_MODE_OFF
@@ -254,7 +255,7 @@ std::string MavLinkMessageBase::char_array_tostring(int len, const char* field)
 std::string MavLinkMessageBase::float_tostring(float value) 
 {
 	// json can't handle "nan", so we convert it to null.
-	if (isnan(value) || isinf(value)) {
+	if (std::isnan(value) || std::isinf(value)) {
 		return "null";
 	}
 	std::ostringstream s;

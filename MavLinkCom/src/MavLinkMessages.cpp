@@ -25,16 +25,16 @@ int MavLinkHeartbeat::unpack(const char* buffer) {
 }
 
 std::string MavLinkHeartbeat::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HEARTBEAT\", \"id\": 0";
-	result << ", \"custom_mode\":" << this->custom_mode;
-	result << ", \"type\":" << static_cast<unsigned int>(this->type);
-	result << ", \"autopilot\":" << static_cast<unsigned int>(this->autopilot);
-	result << ", \"base_mode\":" << static_cast<unsigned int>(this->base_mode);
-	result << ", \"system_status\":" << static_cast<unsigned int>(this->system_status);
-	result << ", \"mavlink_version\":" << static_cast<unsigned int>(this->mavlink_version);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HEARTBEAT\", \"id\": 0";
+	ss << ", \"custom_mode\":" << this->custom_mode;
+	ss << ", \"type\":" << static_cast<unsigned int>(this->type);
+	ss << ", \"autopilot\":" << static_cast<unsigned int>(this->autopilot);
+	ss << ", \"base_mode\":" << static_cast<unsigned int>(this->base_mode);
+	ss << ", \"system_status\":" << static_cast<unsigned int>(this->system_status);
+	ss << ", \"mavlink_version\":" << static_cast<unsigned int>(this->mavlink_version);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSysStatus::pack(char* buffer) const {
@@ -72,23 +72,23 @@ int MavLinkSysStatus::unpack(const char* buffer) {
 }
 
 std::string MavLinkSysStatus::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SYS_STATUS\", \"id\": 1";
-	result << ", \"onboard_control_sensors_present\":" << this->onboard_control_sensors_present;
-	result << ", \"onboard_control_sensors_enabled\":" << this->onboard_control_sensors_enabled;
-	result << ", \"onboard_control_sensors_health\":" << this->onboard_control_sensors_health;
-	result << ", \"load\":" << this->load;
-	result << ", \"voltage_battery\":" << this->voltage_battery;
-	result << ", \"current_battery\":" << this->current_battery;
-	result << ", \"drop_rate_comm\":" << this->drop_rate_comm;
-	result << ", \"errors_comm\":" << this->errors_comm;
-	result << ", \"errors_count1\":" << this->errors_count1;
-	result << ", \"errors_count2\":" << this->errors_count2;
-	result << ", \"errors_count3\":" << this->errors_count3;
-	result << ", \"errors_count4\":" << this->errors_count4;
-	result << ", \"battery_remaining\":" << static_cast<int>(this->battery_remaining);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SYS_STATUS\", \"id\": 1";
+	ss << ", \"onboard_control_sensors_present\":" << this->onboard_control_sensors_present;
+	ss << ", \"onboard_control_sensors_enabled\":" << this->onboard_control_sensors_enabled;
+	ss << ", \"onboard_control_sensors_health\":" << this->onboard_control_sensors_health;
+	ss << ", \"load\":" << this->load;
+	ss << ", \"voltage_battery\":" << this->voltage_battery;
+	ss << ", \"current_battery\":" << this->current_battery;
+	ss << ", \"drop_rate_comm\":" << this->drop_rate_comm;
+	ss << ", \"errors_comm\":" << this->errors_comm;
+	ss << ", \"errors_count1\":" << this->errors_count1;
+	ss << ", \"errors_count2\":" << this->errors_count2;
+	ss << ", \"errors_count3\":" << this->errors_count3;
+	ss << ", \"errors_count4\":" << this->errors_count4;
+	ss << ", \"battery_remaining\":" << static_cast<int>(this->battery_remaining);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSystemTime::pack(char* buffer) const {
@@ -104,12 +104,12 @@ int MavLinkSystemTime::unpack(const char* buffer) {
 }
 
 std::string MavLinkSystemTime::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SYSTEM_TIME\", \"id\": 2";
-	result << ", \"time_unix_usec\":" << this->time_unix_usec;
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SYSTEM_TIME\", \"id\": 2";
+	ss << ", \"time_unix_usec\":" << this->time_unix_usec;
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkPing::pack(char* buffer) const {
@@ -129,14 +129,14 @@ int MavLinkPing::unpack(const char* buffer) {
 }
 
 std::string MavLinkPing::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"PING\", \"id\": 4";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"seq\":" << this->seq;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"PING\", \"id\": 4";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"seq\":" << this->seq;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkChangeOperatorControl::pack(char* buffer) const {
@@ -156,14 +156,14 @@ int MavLinkChangeOperatorControl::unpack(const char* buffer) {
 }
 
 std::string MavLinkChangeOperatorControl::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"CHANGE_OPERATOR_CONTROL\", \"id\": 5";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"control_request\":" << static_cast<unsigned int>(this->control_request);
-	result << ", \"version\":" << static_cast<unsigned int>(this->version);
-	result << ", \"passkey\":" << "\"" << char_array_tostring(25, reinterpret_cast<char*>(&this->passkey[0])) << "\"";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"CHANGE_OPERATOR_CONTROL\", \"id\": 5";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"control_request\":" << static_cast<unsigned int>(this->control_request);
+	ss << ", \"version\":" << static_cast<unsigned int>(this->version);
+	ss << ", \"passkey\":" << "\"" << char_array_tostring(25, reinterpret_cast<char*>(&this->passkey[0])) << "\"";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkChangeOperatorControlAck::pack(char* buffer) const {
@@ -181,13 +181,13 @@ int MavLinkChangeOperatorControlAck::unpack(const char* buffer) {
 }
 
 std::string MavLinkChangeOperatorControlAck::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"CHANGE_OPERATOR_CONTROL_ACK\", \"id\": 6";
-	result << ", \"gcs_system_id\":" << static_cast<unsigned int>(this->gcs_system_id);
-	result << ", \"control_request\":" << static_cast<unsigned int>(this->control_request);
-	result << ", \"ack\":" << static_cast<unsigned int>(this->ack);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"CHANGE_OPERATOR_CONTROL_ACK\", \"id\": 6";
+	ss << ", \"gcs_system_id\":" << static_cast<unsigned int>(this->gcs_system_id);
+	ss << ", \"control_request\":" << static_cast<unsigned int>(this->control_request);
+	ss << ", \"ack\":" << static_cast<unsigned int>(this->ack);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAuthKey::pack(char* buffer) const {
@@ -201,11 +201,11 @@ int MavLinkAuthKey::unpack(const char* buffer) {
 }
 
 std::string MavLinkAuthKey::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"AUTH_KEY\", \"id\": 7";
-	result << ", \"key\":" << "\"" << char_array_tostring(32, reinterpret_cast<char*>(&this->key[0])) << "\"";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"AUTH_KEY\", \"id\": 7";
+	ss << ", \"key\":" << "\"" << char_array_tostring(32, reinterpret_cast<char*>(&this->key[0])) << "\"";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSetMode::pack(char* buffer) const {
@@ -223,13 +223,13 @@ int MavLinkSetMode::unpack(const char* buffer) {
 }
 
 std::string MavLinkSetMode::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SET_MODE\", \"id\": 11";
-	result << ", \"custom_mode\":" << this->custom_mode;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"base_mode\":" << static_cast<unsigned int>(this->base_mode);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SET_MODE\", \"id\": 11";
+	ss << ", \"custom_mode\":" << this->custom_mode;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"base_mode\":" << static_cast<unsigned int>(this->base_mode);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkParamRequestRead::pack(char* buffer) const {
@@ -249,14 +249,14 @@ int MavLinkParamRequestRead::unpack(const char* buffer) {
 }
 
 std::string MavLinkParamRequestRead::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"PARAM_REQUEST_READ\", \"id\": 20";
-	result << ", \"param_index\":" << this->param_index;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"PARAM_REQUEST_READ\", \"id\": 20";
+	ss << ", \"param_index\":" << this->param_index;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkParamRequestList::pack(char* buffer) const {
@@ -272,12 +272,12 @@ int MavLinkParamRequestList::unpack(const char* buffer) {
 }
 
 std::string MavLinkParamRequestList::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"PARAM_REQUEST_LIST\", \"id\": 21";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"PARAM_REQUEST_LIST\", \"id\": 21";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkParamValue::pack(char* buffer) const {
@@ -299,15 +299,15 @@ int MavLinkParamValue::unpack(const char* buffer) {
 }
 
 std::string MavLinkParamValue::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"PARAM_VALUE\", \"id\": 22";
-	result << ", \"param_value\":" << float_tostring(this->param_value);
-	result << ", \"param_count\":" << this->param_count;
-	result << ", \"param_index\":" << this->param_index;
-	result << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
-	result << ", \"param_type\":" << static_cast<unsigned int>(this->param_type);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"PARAM_VALUE\", \"id\": 22";
+	ss << ", \"param_value\":" << float_tostring(this->param_value);
+	ss << ", \"param_count\":" << this->param_count;
+	ss << ", \"param_index\":" << this->param_index;
+	ss << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
+	ss << ", \"param_type\":" << static_cast<unsigned int>(this->param_type);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkParamSet::pack(char* buffer) const {
@@ -329,15 +329,15 @@ int MavLinkParamSet::unpack(const char* buffer) {
 }
 
 std::string MavLinkParamSet::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"PARAM_SET\", \"id\": 23";
-	result << ", \"param_value\":" << float_tostring(this->param_value);
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
-	result << ", \"param_type\":" << static_cast<unsigned int>(this->param_type);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"PARAM_SET\", \"id\": 23";
+	ss << ", \"param_value\":" << float_tostring(this->param_value);
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
+	ss << ", \"param_type\":" << static_cast<unsigned int>(this->param_type);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGpsRawInt::pack(char* buffer) const {
@@ -369,20 +369,20 @@ int MavLinkGpsRawInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkGpsRawInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS_RAW_INT\", \"id\": 24";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << this->alt;
-	result << ", \"eph\":" << this->eph;
-	result << ", \"epv\":" << this->epv;
-	result << ", \"vel\":" << this->vel;
-	result << ", \"cog\":" << this->cog;
-	result << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
-	result << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS_RAW_INT\", \"id\": 24";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << this->alt;
+	ss << ", \"eph\":" << this->eph;
+	ss << ", \"epv\":" << this->epv;
+	ss << ", \"vel\":" << this->vel;
+	ss << ", \"cog\":" << this->cog;
+	ss << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
+	ss << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGpsStatus::pack(char* buffer) const {
@@ -406,16 +406,16 @@ int MavLinkGpsStatus::unpack(const char* buffer) {
 }
 
 std::string MavLinkGpsStatus::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS_STATUS\", \"id\": 25";
-	result << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
-	result << ", \"satellite_prn\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_prn[0])) << "]";
-	result << ", \"satellite_used\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_used[0])) << "]";
-	result << ", \"satellite_elevation\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_elevation[0])) << "]";
-	result << ", \"satellite_azimuth\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_azimuth[0])) << "]";
-	result << ", \"satellite_snr\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_snr[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS_STATUS\", \"id\": 25";
+	ss << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
+	ss << ", \"satellite_prn\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_prn[0])) << "]";
+	ss << ", \"satellite_used\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_used[0])) << "]";
+	ss << ", \"satellite_elevation\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_elevation[0])) << "]";
+	ss << ", \"satellite_azimuth\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_azimuth[0])) << "]";
+	ss << ", \"satellite_snr\":" << "[" << uint8_t_array_tostring(20, reinterpret_cast<uint8_t*>(&this->satellite_snr[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkScaledImu::pack(char* buffer) const {
@@ -447,20 +447,20 @@ int MavLinkScaledImu::unpack(const char* buffer) {
 }
 
 std::string MavLinkScaledImu::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SCALED_IMU\", \"id\": 26";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"xacc\":" << this->xacc;
-	result << ", \"yacc\":" << this->yacc;
-	result << ", \"zacc\":" << this->zacc;
-	result << ", \"xgyro\":" << this->xgyro;
-	result << ", \"ygyro\":" << this->ygyro;
-	result << ", \"zgyro\":" << this->zgyro;
-	result << ", \"xmag\":" << this->xmag;
-	result << ", \"ymag\":" << this->ymag;
-	result << ", \"zmag\":" << this->zmag;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SCALED_IMU\", \"id\": 26";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"xacc\":" << this->xacc;
+	ss << ", \"yacc\":" << this->yacc;
+	ss << ", \"zacc\":" << this->zacc;
+	ss << ", \"xgyro\":" << this->xgyro;
+	ss << ", \"ygyro\":" << this->ygyro;
+	ss << ", \"zgyro\":" << this->zgyro;
+	ss << ", \"xmag\":" << this->xmag;
+	ss << ", \"ymag\":" << this->ymag;
+	ss << ", \"zmag\":" << this->zmag;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRawImu::pack(char* buffer) const {
@@ -492,20 +492,20 @@ int MavLinkRawImu::unpack(const char* buffer) {
 }
 
 std::string MavLinkRawImu::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RAW_IMU\", \"id\": 27";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"xacc\":" << this->xacc;
-	result << ", \"yacc\":" << this->yacc;
-	result << ", \"zacc\":" << this->zacc;
-	result << ", \"xgyro\":" << this->xgyro;
-	result << ", \"ygyro\":" << this->ygyro;
-	result << ", \"zgyro\":" << this->zgyro;
-	result << ", \"xmag\":" << this->xmag;
-	result << ", \"ymag\":" << this->ymag;
-	result << ", \"zmag\":" << this->zmag;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RAW_IMU\", \"id\": 27";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"xacc\":" << this->xacc;
+	ss << ", \"yacc\":" << this->yacc;
+	ss << ", \"zacc\":" << this->zacc;
+	ss << ", \"xgyro\":" << this->xgyro;
+	ss << ", \"ygyro\":" << this->ygyro;
+	ss << ", \"zgyro\":" << this->zgyro;
+	ss << ", \"xmag\":" << this->xmag;
+	ss << ", \"ymag\":" << this->ymag;
+	ss << ", \"zmag\":" << this->zmag;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRawPressure::pack(char* buffer) const {
@@ -527,15 +527,15 @@ int MavLinkRawPressure::unpack(const char* buffer) {
 }
 
 std::string MavLinkRawPressure::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RAW_PRESSURE\", \"id\": 28";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"press_abs\":" << this->press_abs;
-	result << ", \"press_diff1\":" << this->press_diff1;
-	result << ", \"press_diff2\":" << this->press_diff2;
-	result << ", \"temperature\":" << this->temperature;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RAW_PRESSURE\", \"id\": 28";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"press_abs\":" << this->press_abs;
+	ss << ", \"press_diff1\":" << this->press_diff1;
+	ss << ", \"press_diff2\":" << this->press_diff2;
+	ss << ", \"temperature\":" << this->temperature;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkScaledPressure::pack(char* buffer) const {
@@ -555,14 +555,14 @@ int MavLinkScaledPressure::unpack(const char* buffer) {
 }
 
 std::string MavLinkScaledPressure::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SCALED_PRESSURE\", \"id\": 29";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"press_abs\":" << float_tostring(this->press_abs);
-	result << ", \"press_diff\":" << float_tostring(this->press_diff);
-	result << ", \"temperature\":" << this->temperature;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SCALED_PRESSURE\", \"id\": 29";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"press_abs\":" << float_tostring(this->press_abs);
+	ss << ", \"press_diff\":" << float_tostring(this->press_diff);
+	ss << ", \"temperature\":" << this->temperature;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAttitude::pack(char* buffer) const {
@@ -588,17 +588,17 @@ int MavLinkAttitude::unpack(const char* buffer) {
 }
 
 std::string MavLinkAttitude::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ATTITUDE\", \"id\": 30";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"rollspeed\":" << float_tostring(this->rollspeed);
-	result << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
-	result << ", \"yawspeed\":" << float_tostring(this->yawspeed);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ATTITUDE\", \"id\": 30";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"rollspeed\":" << float_tostring(this->rollspeed);
+	ss << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
+	ss << ", \"yawspeed\":" << float_tostring(this->yawspeed);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAttitudeQuaternion::pack(char* buffer) const {
@@ -626,18 +626,18 @@ int MavLinkAttitudeQuaternion::unpack(const char* buffer) {
 }
 
 std::string MavLinkAttitudeQuaternion::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ATTITUDE_QUATERNION\", \"id\": 31";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"q1\":" << float_tostring(this->q1);
-	result << ", \"q2\":" << float_tostring(this->q2);
-	result << ", \"q3\":" << float_tostring(this->q3);
-	result << ", \"q4\":" << float_tostring(this->q4);
-	result << ", \"rollspeed\":" << float_tostring(this->rollspeed);
-	result << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
-	result << ", \"yawspeed\":" << float_tostring(this->yawspeed);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ATTITUDE_QUATERNION\", \"id\": 31";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"q1\":" << float_tostring(this->q1);
+	ss << ", \"q2\":" << float_tostring(this->q2);
+	ss << ", \"q3\":" << float_tostring(this->q3);
+	ss << ", \"q4\":" << float_tostring(this->q4);
+	ss << ", \"rollspeed\":" << float_tostring(this->rollspeed);
+	ss << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
+	ss << ", \"yawspeed\":" << float_tostring(this->yawspeed);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLocalPositionNed::pack(char* buffer) const {
@@ -663,17 +663,17 @@ int MavLinkLocalPositionNed::unpack(const char* buffer) {
 }
 
 std::string MavLinkLocalPositionNed::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOCAL_POSITION_NED\", \"id\": 32";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"vx\":" << float_tostring(this->vx);
-	result << ", \"vy\":" << float_tostring(this->vy);
-	result << ", \"vz\":" << float_tostring(this->vz);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOCAL_POSITION_NED\", \"id\": 32";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"vx\":" << float_tostring(this->vx);
+	ss << ", \"vy\":" << float_tostring(this->vy);
+	ss << ", \"vz\":" << float_tostring(this->vz);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGlobalPositionInt::pack(char* buffer) const {
@@ -703,19 +703,19 @@ int MavLinkGlobalPositionInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkGlobalPositionInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GLOBAL_POSITION_INT\", \"id\": 33";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << this->alt;
-	result << ", \"relative_alt\":" << this->relative_alt;
-	result << ", \"vx\":" << this->vx;
-	result << ", \"vy\":" << this->vy;
-	result << ", \"vz\":" << this->vz;
-	result << ", \"hdg\":" << this->hdg;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GLOBAL_POSITION_INT\", \"id\": 33";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << this->alt;
+	ss << ", \"relative_alt\":" << this->relative_alt;
+	ss << ", \"vx\":" << this->vx;
+	ss << ", \"vy\":" << this->vy;
+	ss << ", \"vz\":" << this->vz;
+	ss << ", \"hdg\":" << this->hdg;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRcChannelsScaled::pack(char* buffer) const {
@@ -749,21 +749,21 @@ int MavLinkRcChannelsScaled::unpack(const char* buffer) {
 }
 
 std::string MavLinkRcChannelsScaled::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RC_CHANNELS_SCALED\", \"id\": 34";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"chan1_scaled\":" << this->chan1_scaled;
-	result << ", \"chan2_scaled\":" << this->chan2_scaled;
-	result << ", \"chan3_scaled\":" << this->chan3_scaled;
-	result << ", \"chan4_scaled\":" << this->chan4_scaled;
-	result << ", \"chan5_scaled\":" << this->chan5_scaled;
-	result << ", \"chan6_scaled\":" << this->chan6_scaled;
-	result << ", \"chan7_scaled\":" << this->chan7_scaled;
-	result << ", \"chan8_scaled\":" << this->chan8_scaled;
-	result << ", \"port\":" << static_cast<unsigned int>(this->port);
-	result << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RC_CHANNELS_SCALED\", \"id\": 34";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"chan1_scaled\":" << this->chan1_scaled;
+	ss << ", \"chan2_scaled\":" << this->chan2_scaled;
+	ss << ", \"chan3_scaled\":" << this->chan3_scaled;
+	ss << ", \"chan4_scaled\":" << this->chan4_scaled;
+	ss << ", \"chan5_scaled\":" << this->chan5_scaled;
+	ss << ", \"chan6_scaled\":" << this->chan6_scaled;
+	ss << ", \"chan7_scaled\":" << this->chan7_scaled;
+	ss << ", \"chan8_scaled\":" << this->chan8_scaled;
+	ss << ", \"port\":" << static_cast<unsigned int>(this->port);
+	ss << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRcChannelsRaw::pack(char* buffer) const {
@@ -797,21 +797,21 @@ int MavLinkRcChannelsRaw::unpack(const char* buffer) {
 }
 
 std::string MavLinkRcChannelsRaw::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RC_CHANNELS_RAW\", \"id\": 35";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"chan1_raw\":" << this->chan1_raw;
-	result << ", \"chan2_raw\":" << this->chan2_raw;
-	result << ", \"chan3_raw\":" << this->chan3_raw;
-	result << ", \"chan4_raw\":" << this->chan4_raw;
-	result << ", \"chan5_raw\":" << this->chan5_raw;
-	result << ", \"chan6_raw\":" << this->chan6_raw;
-	result << ", \"chan7_raw\":" << this->chan7_raw;
-	result << ", \"chan8_raw\":" << this->chan8_raw;
-	result << ", \"port\":" << static_cast<unsigned int>(this->port);
-	result << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RC_CHANNELS_RAW\", \"id\": 35";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"chan1_raw\":" << this->chan1_raw;
+	ss << ", \"chan2_raw\":" << this->chan2_raw;
+	ss << ", \"chan3_raw\":" << this->chan3_raw;
+	ss << ", \"chan4_raw\":" << this->chan4_raw;
+	ss << ", \"chan5_raw\":" << this->chan5_raw;
+	ss << ", \"chan6_raw\":" << this->chan6_raw;
+	ss << ", \"chan7_raw\":" << this->chan7_raw;
+	ss << ", \"chan8_raw\":" << this->chan8_raw;
+	ss << ", \"port\":" << static_cast<unsigned int>(this->port);
+	ss << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkServoOutputRaw::pack(char* buffer) const {
@@ -859,28 +859,28 @@ int MavLinkServoOutputRaw::unpack(const char* buffer) {
 }
 
 std::string MavLinkServoOutputRaw::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SERVO_OUTPUT_RAW\", \"id\": 36";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"servo1_raw\":" << this->servo1_raw;
-	result << ", \"servo2_raw\":" << this->servo2_raw;
-	result << ", \"servo3_raw\":" << this->servo3_raw;
-	result << ", \"servo4_raw\":" << this->servo4_raw;
-	result << ", \"servo5_raw\":" << this->servo5_raw;
-	result << ", \"servo6_raw\":" << this->servo6_raw;
-	result << ", \"servo7_raw\":" << this->servo7_raw;
-	result << ", \"servo8_raw\":" << this->servo8_raw;
-	result << ", \"servo9_raw\":" << this->servo9_raw;
-	result << ", \"servo10_raw\":" << this->servo10_raw;
-	result << ", \"servo11_raw\":" << this->servo11_raw;
-	result << ", \"servo12_raw\":" << this->servo12_raw;
-	result << ", \"servo13_raw\":" << this->servo13_raw;
-	result << ", \"servo14_raw\":" << this->servo14_raw;
-	result << ", \"servo15_raw\":" << this->servo15_raw;
-	result << ", \"servo16_raw\":" << this->servo16_raw;
-	result << ", \"port\":" << static_cast<unsigned int>(this->port);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SERVO_OUTPUT_RAW\", \"id\": 36";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"servo1_raw\":" << this->servo1_raw;
+	ss << ", \"servo2_raw\":" << this->servo2_raw;
+	ss << ", \"servo3_raw\":" << this->servo3_raw;
+	ss << ", \"servo4_raw\":" << this->servo4_raw;
+	ss << ", \"servo5_raw\":" << this->servo5_raw;
+	ss << ", \"servo6_raw\":" << this->servo6_raw;
+	ss << ", \"servo7_raw\":" << this->servo7_raw;
+	ss << ", \"servo8_raw\":" << this->servo8_raw;
+	ss << ", \"servo9_raw\":" << this->servo9_raw;
+	ss << ", \"servo10_raw\":" << this->servo10_raw;
+	ss << ", \"servo11_raw\":" << this->servo11_raw;
+	ss << ", \"servo12_raw\":" << this->servo12_raw;
+	ss << ", \"servo13_raw\":" << this->servo13_raw;
+	ss << ", \"servo14_raw\":" << this->servo14_raw;
+	ss << ", \"servo15_raw\":" << this->servo15_raw;
+	ss << ", \"servo16_raw\":" << this->servo16_raw;
+	ss << ", \"port\":" << static_cast<unsigned int>(this->port);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionRequestPartialList::pack(char* buffer) const {
@@ -900,14 +900,14 @@ int MavLinkMissionRequestPartialList::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionRequestPartialList::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_REQUEST_PARTIAL_LIST\", \"id\": 37";
-	result << ", \"start_index\":" << this->start_index;
-	result << ", \"end_index\":" << this->end_index;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_REQUEST_PARTIAL_LIST\", \"id\": 37";
+	ss << ", \"start_index\":" << this->start_index;
+	ss << ", \"end_index\":" << this->end_index;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionWritePartialList::pack(char* buffer) const {
@@ -927,14 +927,14 @@ int MavLinkMissionWritePartialList::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionWritePartialList::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_WRITE_PARTIAL_LIST\", \"id\": 38";
-	result << ", \"start_index\":" << this->start_index;
-	result << ", \"end_index\":" << this->end_index;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_WRITE_PARTIAL_LIST\", \"id\": 38";
+	ss << ", \"start_index\":" << this->start_index;
+	ss << ", \"end_index\":" << this->end_index;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionItem::pack(char* buffer) const {
@@ -974,24 +974,24 @@ int MavLinkMissionItem::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionItem::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_ITEM\", \"id\": 39";
-	result << ", \"param1\":" << float_tostring(this->param1);
-	result << ", \"param2\":" << float_tostring(this->param2);
-	result << ", \"param3\":" << float_tostring(this->param3);
-	result << ", \"param4\":" << float_tostring(this->param4);
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"seq\":" << this->seq;
-	result << ", \"command\":" << this->command;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"frame\":" << static_cast<unsigned int>(this->frame);
-	result << ", \"current\":" << static_cast<unsigned int>(this->current);
-	result << ", \"autocontinue\":" << static_cast<unsigned int>(this->autocontinue);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_ITEM\", \"id\": 39";
+	ss << ", \"param1\":" << float_tostring(this->param1);
+	ss << ", \"param2\":" << float_tostring(this->param2);
+	ss << ", \"param3\":" << float_tostring(this->param3);
+	ss << ", \"param4\":" << float_tostring(this->param4);
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"seq\":" << this->seq;
+	ss << ", \"command\":" << this->command;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"frame\":" << static_cast<unsigned int>(this->frame);
+	ss << ", \"current\":" << static_cast<unsigned int>(this->current);
+	ss << ", \"autocontinue\":" << static_cast<unsigned int>(this->autocontinue);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionRequest::pack(char* buffer) const {
@@ -1009,13 +1009,13 @@ int MavLinkMissionRequest::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionRequest::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_REQUEST\", \"id\": 40";
-	result << ", \"seq\":" << this->seq;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_REQUEST\", \"id\": 40";
+	ss << ", \"seq\":" << this->seq;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionSetCurrent::pack(char* buffer) const {
@@ -1033,13 +1033,13 @@ int MavLinkMissionSetCurrent::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionSetCurrent::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_SET_CURRENT\", \"id\": 41";
-	result << ", \"seq\":" << this->seq;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_SET_CURRENT\", \"id\": 41";
+	ss << ", \"seq\":" << this->seq;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionCurrent::pack(char* buffer) const {
@@ -1053,11 +1053,11 @@ int MavLinkMissionCurrent::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionCurrent::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_CURRENT\", \"id\": 42";
-	result << ", \"seq\":" << this->seq;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_CURRENT\", \"id\": 42";
+	ss << ", \"seq\":" << this->seq;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionRequestList::pack(char* buffer) const {
@@ -1073,12 +1073,12 @@ int MavLinkMissionRequestList::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionRequestList::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_REQUEST_LIST\", \"id\": 43";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_REQUEST_LIST\", \"id\": 43";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionCount::pack(char* buffer) const {
@@ -1096,13 +1096,13 @@ int MavLinkMissionCount::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionCount::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_COUNT\", \"id\": 44";
-	result << ", \"count\":" << this->count;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_COUNT\", \"id\": 44";
+	ss << ", \"count\":" << this->count;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionClearAll::pack(char* buffer) const {
@@ -1118,12 +1118,12 @@ int MavLinkMissionClearAll::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionClearAll::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_CLEAR_ALL\", \"id\": 45";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_CLEAR_ALL\", \"id\": 45";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionItemReached::pack(char* buffer) const {
@@ -1137,11 +1137,11 @@ int MavLinkMissionItemReached::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionItemReached::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_ITEM_REACHED\", \"id\": 46";
-	result << ", \"seq\":" << this->seq;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_ITEM_REACHED\", \"id\": 46";
+	ss << ", \"seq\":" << this->seq;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionAck::pack(char* buffer) const {
@@ -1159,13 +1159,13 @@ int MavLinkMissionAck::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionAck::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_ACK\", \"id\": 47";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"type\":" << static_cast<unsigned int>(this->type);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_ACK\", \"id\": 47";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"type\":" << static_cast<unsigned int>(this->type);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSetGpsGlobalOrigin::pack(char* buffer) const {
@@ -1185,14 +1185,14 @@ int MavLinkSetGpsGlobalOrigin::unpack(const char* buffer) {
 }
 
 std::string MavLinkSetGpsGlobalOrigin::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SET_GPS_GLOBAL_ORIGIN\", \"id\": 48";
-	result << ", \"latitude\":" << this->latitude;
-	result << ", \"longitude\":" << this->longitude;
-	result << ", \"altitude\":" << this->altitude;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SET_GPS_GLOBAL_ORIGIN\", \"id\": 48";
+	ss << ", \"latitude\":" << this->latitude;
+	ss << ", \"longitude\":" << this->longitude;
+	ss << ", \"altitude\":" << this->altitude;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGpsGlobalOrigin::pack(char* buffer) const {
@@ -1210,13 +1210,13 @@ int MavLinkGpsGlobalOrigin::unpack(const char* buffer) {
 }
 
 std::string MavLinkGpsGlobalOrigin::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS_GLOBAL_ORIGIN\", \"id\": 49";
-	result << ", \"latitude\":" << this->latitude;
-	result << ", \"longitude\":" << this->longitude;
-	result << ", \"altitude\":" << this->altitude;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS_GLOBAL_ORIGIN\", \"id\": 49";
+	ss << ", \"latitude\":" << this->latitude;
+	ss << ", \"longitude\":" << this->longitude;
+	ss << ", \"altitude\":" << this->altitude;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkParamMapRc::pack(char* buffer) const {
@@ -1246,19 +1246,19 @@ int MavLinkParamMapRc::unpack(const char* buffer) {
 }
 
 std::string MavLinkParamMapRc::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"PARAM_MAP_RC\", \"id\": 50";
-	result << ", \"param_value0\":" << float_tostring(this->param_value0);
-	result << ", \"scale\":" << float_tostring(this->scale);
-	result << ", \"param_value_min\":" << float_tostring(this->param_value_min);
-	result << ", \"param_value_max\":" << float_tostring(this->param_value_max);
-	result << ", \"param_index\":" << this->param_index;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
-	result << ", \"parameter_rc_channel_index\":" << static_cast<unsigned int>(this->parameter_rc_channel_index);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"PARAM_MAP_RC\", \"id\": 50";
+	ss << ", \"param_value0\":" << float_tostring(this->param_value0);
+	ss << ", \"scale\":" << float_tostring(this->scale);
+	ss << ", \"param_value_min\":" << float_tostring(this->param_value_min);
+	ss << ", \"param_value_max\":" << float_tostring(this->param_value_max);
+	ss << ", \"param_index\":" << this->param_index;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"param_id\":" << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
+	ss << ", \"parameter_rc_channel_index\":" << static_cast<unsigned int>(this->parameter_rc_channel_index);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionRequestInt::pack(char* buffer) const {
@@ -1276,13 +1276,13 @@ int MavLinkMissionRequestInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionRequestInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_REQUEST_INT\", \"id\": 51";
-	result << ", \"seq\":" << this->seq;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_REQUEST_INT\", \"id\": 51";
+	ss << ", \"seq\":" << this->seq;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSafetySetAllowedArea::pack(char* buffer) const {
@@ -1312,19 +1312,19 @@ int MavLinkSafetySetAllowedArea::unpack(const char* buffer) {
 }
 
 std::string MavLinkSafetySetAllowedArea::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SAFETY_SET_ALLOWED_AREA\", \"id\": 54";
-	result << ", \"p1x\":" << float_tostring(this->p1x);
-	result << ", \"p1y\":" << float_tostring(this->p1y);
-	result << ", \"p1z\":" << float_tostring(this->p1z);
-	result << ", \"p2x\":" << float_tostring(this->p2x);
-	result << ", \"p2y\":" << float_tostring(this->p2y);
-	result << ", \"p2z\":" << float_tostring(this->p2z);
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"frame\":" << static_cast<unsigned int>(this->frame);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SAFETY_SET_ALLOWED_AREA\", \"id\": 54";
+	ss << ", \"p1x\":" << float_tostring(this->p1x);
+	ss << ", \"p1y\":" << float_tostring(this->p1y);
+	ss << ", \"p1z\":" << float_tostring(this->p1z);
+	ss << ", \"p2x\":" << float_tostring(this->p2x);
+	ss << ", \"p2y\":" << float_tostring(this->p2y);
+	ss << ", \"p2z\":" << float_tostring(this->p2z);
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"frame\":" << static_cast<unsigned int>(this->frame);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSafetyAllowedArea::pack(char* buffer) const {
@@ -1350,17 +1350,17 @@ int MavLinkSafetyAllowedArea::unpack(const char* buffer) {
 }
 
 std::string MavLinkSafetyAllowedArea::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SAFETY_ALLOWED_AREA\", \"id\": 55";
-	result << ", \"p1x\":" << float_tostring(this->p1x);
-	result << ", \"p1y\":" << float_tostring(this->p1y);
-	result << ", \"p1z\":" << float_tostring(this->p1z);
-	result << ", \"p2x\":" << float_tostring(this->p2x);
-	result << ", \"p2y\":" << float_tostring(this->p2y);
-	result << ", \"p2z\":" << float_tostring(this->p2z);
-	result << ", \"frame\":" << static_cast<unsigned int>(this->frame);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SAFETY_ALLOWED_AREA\", \"id\": 55";
+	ss << ", \"p1x\":" << float_tostring(this->p1x);
+	ss << ", \"p1y\":" << float_tostring(this->p1y);
+	ss << ", \"p1z\":" << float_tostring(this->p1z);
+	ss << ", \"p2x\":" << float_tostring(this->p2x);
+	ss << ", \"p2y\":" << float_tostring(this->p2y);
+	ss << ", \"p2z\":" << float_tostring(this->p2z);
+	ss << ", \"frame\":" << static_cast<unsigned int>(this->frame);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAttitudeQuaternionCov::pack(char* buffer) const {
@@ -1384,16 +1384,16 @@ int MavLinkAttitudeQuaternionCov::unpack(const char* buffer) {
 }
 
 std::string MavLinkAttitudeQuaternionCov::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ATTITUDE_QUATERNION_COV\", \"id\": 61";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-	result << ", \"rollspeed\":" << float_tostring(this->rollspeed);
-	result << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
-	result << ", \"yawspeed\":" << float_tostring(this->yawspeed);
-	result << ", \"covariance\":" << "[" << float_array_tostring(9, reinterpret_cast<float*>(&this->covariance[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ATTITUDE_QUATERNION_COV\", \"id\": 61";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+	ss << ", \"rollspeed\":" << float_tostring(this->rollspeed);
+	ss << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
+	ss << ", \"yawspeed\":" << float_tostring(this->yawspeed);
+	ss << ", \"covariance\":" << "[" << float_array_tostring(9, reinterpret_cast<float*>(&this->covariance[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkNavControllerOutput::pack(char* buffer) const {
@@ -1421,18 +1421,18 @@ int MavLinkNavControllerOutput::unpack(const char* buffer) {
 }
 
 std::string MavLinkNavControllerOutput::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"NAV_CONTROLLER_OUTPUT\", \"id\": 62";
-	result << ", \"nav_roll\":" << float_tostring(this->nav_roll);
-	result << ", \"nav_pitch\":" << float_tostring(this->nav_pitch);
-	result << ", \"alt_error\":" << float_tostring(this->alt_error);
-	result << ", \"aspd_error\":" << float_tostring(this->aspd_error);
-	result << ", \"xtrack_error\":" << float_tostring(this->xtrack_error);
-	result << ", \"nav_bearing\":" << this->nav_bearing;
-	result << ", \"target_bearing\":" << this->target_bearing;
-	result << ", \"wp_dist\":" << this->wp_dist;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"NAV_CONTROLLER_OUTPUT\", \"id\": 62";
+	ss << ", \"nav_roll\":" << float_tostring(this->nav_roll);
+	ss << ", \"nav_pitch\":" << float_tostring(this->nav_pitch);
+	ss << ", \"alt_error\":" << float_tostring(this->alt_error);
+	ss << ", \"aspd_error\":" << float_tostring(this->aspd_error);
+	ss << ", \"xtrack_error\":" << float_tostring(this->xtrack_error);
+	ss << ", \"nav_bearing\":" << this->nav_bearing;
+	ss << ", \"target_bearing\":" << this->target_bearing;
+	ss << ", \"wp_dist\":" << this->wp_dist;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGlobalPositionIntCov::pack(char* buffer) const {
@@ -1464,20 +1464,20 @@ int MavLinkGlobalPositionIntCov::unpack(const char* buffer) {
 }
 
 std::string MavLinkGlobalPositionIntCov::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GLOBAL_POSITION_INT_COV\", \"id\": 63";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << this->alt;
-	result << ", \"relative_alt\":" << this->relative_alt;
-	result << ", \"vx\":" << float_tostring(this->vx);
-	result << ", \"vy\":" << float_tostring(this->vy);
-	result << ", \"vz\":" << float_tostring(this->vz);
-	result << ", \"covariance\":" << "[" << float_array_tostring(36, reinterpret_cast<float*>(&this->covariance[0])) << "]";
-	result << ", \"estimator_type\":" << static_cast<unsigned int>(this->estimator_type);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GLOBAL_POSITION_INT_COV\", \"id\": 63";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << this->alt;
+	ss << ", \"relative_alt\":" << this->relative_alt;
+	ss << ", \"vx\":" << float_tostring(this->vx);
+	ss << ", \"vy\":" << float_tostring(this->vy);
+	ss << ", \"vz\":" << float_tostring(this->vz);
+	ss << ", \"covariance\":" << "[" << float_array_tostring(36, reinterpret_cast<float*>(&this->covariance[0])) << "]";
+	ss << ", \"estimator_type\":" << static_cast<unsigned int>(this->estimator_type);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLocalPositionNedCov::pack(char* buffer) const {
@@ -1513,22 +1513,22 @@ int MavLinkLocalPositionNedCov::unpack(const char* buffer) {
 }
 
 std::string MavLinkLocalPositionNedCov::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOCAL_POSITION_NED_COV\", \"id\": 64";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"vx\":" << float_tostring(this->vx);
-	result << ", \"vy\":" << float_tostring(this->vy);
-	result << ", \"vz\":" << float_tostring(this->vz);
-	result << ", \"ax\":" << float_tostring(this->ax);
-	result << ", \"ay\":" << float_tostring(this->ay);
-	result << ", \"az\":" << float_tostring(this->az);
-	result << ", \"covariance\":" << "[" << float_array_tostring(45, reinterpret_cast<float*>(&this->covariance[0])) << "]";
-	result << ", \"estimator_type\":" << static_cast<unsigned int>(this->estimator_type);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOCAL_POSITION_NED_COV\", \"id\": 64";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"vx\":" << float_tostring(this->vx);
+	ss << ", \"vy\":" << float_tostring(this->vy);
+	ss << ", \"vz\":" << float_tostring(this->vz);
+	ss << ", \"ax\":" << float_tostring(this->ax);
+	ss << ", \"ay\":" << float_tostring(this->ay);
+	ss << ", \"az\":" << float_tostring(this->az);
+	ss << ", \"covariance\":" << "[" << float_array_tostring(45, reinterpret_cast<float*>(&this->covariance[0])) << "]";
+	ss << ", \"estimator_type\":" << static_cast<unsigned int>(this->estimator_type);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRcChannels::pack(char* buffer) const {
@@ -1582,31 +1582,31 @@ int MavLinkRcChannels::unpack(const char* buffer) {
 }
 
 std::string MavLinkRcChannels::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RC_CHANNELS\", \"id\": 65";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"chan1_raw\":" << this->chan1_raw;
-	result << ", \"chan2_raw\":" << this->chan2_raw;
-	result << ", \"chan3_raw\":" << this->chan3_raw;
-	result << ", \"chan4_raw\":" << this->chan4_raw;
-	result << ", \"chan5_raw\":" << this->chan5_raw;
-	result << ", \"chan6_raw\":" << this->chan6_raw;
-	result << ", \"chan7_raw\":" << this->chan7_raw;
-	result << ", \"chan8_raw\":" << this->chan8_raw;
-	result << ", \"chan9_raw\":" << this->chan9_raw;
-	result << ", \"chan10_raw\":" << this->chan10_raw;
-	result << ", \"chan11_raw\":" << this->chan11_raw;
-	result << ", \"chan12_raw\":" << this->chan12_raw;
-	result << ", \"chan13_raw\":" << this->chan13_raw;
-	result << ", \"chan14_raw\":" << this->chan14_raw;
-	result << ", \"chan15_raw\":" << this->chan15_raw;
-	result << ", \"chan16_raw\":" << this->chan16_raw;
-	result << ", \"chan17_raw\":" << this->chan17_raw;
-	result << ", \"chan18_raw\":" << this->chan18_raw;
-	result << ", \"chancount\":" << static_cast<unsigned int>(this->chancount);
-	result << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RC_CHANNELS\", \"id\": 65";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"chan1_raw\":" << this->chan1_raw;
+	ss << ", \"chan2_raw\":" << this->chan2_raw;
+	ss << ", \"chan3_raw\":" << this->chan3_raw;
+	ss << ", \"chan4_raw\":" << this->chan4_raw;
+	ss << ", \"chan5_raw\":" << this->chan5_raw;
+	ss << ", \"chan6_raw\":" << this->chan6_raw;
+	ss << ", \"chan7_raw\":" << this->chan7_raw;
+	ss << ", \"chan8_raw\":" << this->chan8_raw;
+	ss << ", \"chan9_raw\":" << this->chan9_raw;
+	ss << ", \"chan10_raw\":" << this->chan10_raw;
+	ss << ", \"chan11_raw\":" << this->chan11_raw;
+	ss << ", \"chan12_raw\":" << this->chan12_raw;
+	ss << ", \"chan13_raw\":" << this->chan13_raw;
+	ss << ", \"chan14_raw\":" << this->chan14_raw;
+	ss << ", \"chan15_raw\":" << this->chan15_raw;
+	ss << ", \"chan16_raw\":" << this->chan16_raw;
+	ss << ", \"chan17_raw\":" << this->chan17_raw;
+	ss << ", \"chan18_raw\":" << this->chan18_raw;
+	ss << ", \"chancount\":" << static_cast<unsigned int>(this->chancount);
+	ss << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRequestDataStream::pack(char* buffer) const {
@@ -1628,15 +1628,15 @@ int MavLinkRequestDataStream::unpack(const char* buffer) {
 }
 
 std::string MavLinkRequestDataStream::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"REQUEST_DATA_STREAM\", \"id\": 66";
-	result << ", \"req_message_rate\":" << this->req_message_rate;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"req_stream_id\":" << static_cast<unsigned int>(this->req_stream_id);
-	result << ", \"start_stop\":" << static_cast<unsigned int>(this->start_stop);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"REQUEST_DATA_STREAM\", \"id\": 66";
+	ss << ", \"req_message_rate\":" << this->req_message_rate;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"req_stream_id\":" << static_cast<unsigned int>(this->req_stream_id);
+	ss << ", \"start_stop\":" << static_cast<unsigned int>(this->start_stop);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkDataStream::pack(char* buffer) const {
@@ -1654,13 +1654,13 @@ int MavLinkDataStream::unpack(const char* buffer) {
 }
 
 std::string MavLinkDataStream::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"DATA_STREAM\", \"id\": 67";
-	result << ", \"message_rate\":" << this->message_rate;
-	result << ", \"stream_id\":" << static_cast<unsigned int>(this->stream_id);
-	result << ", \"on_off\":" << static_cast<unsigned int>(this->on_off);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"DATA_STREAM\", \"id\": 67";
+	ss << ", \"message_rate\":" << this->message_rate;
+	ss << ", \"stream_id\":" << static_cast<unsigned int>(this->stream_id);
+	ss << ", \"on_off\":" << static_cast<unsigned int>(this->on_off);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkManualControl::pack(char* buffer) const {
@@ -1684,16 +1684,16 @@ int MavLinkManualControl::unpack(const char* buffer) {
 }
 
 std::string MavLinkManualControl::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MANUAL_CONTROL\", \"id\": 69";
-	result << ", \"x\":" << this->x;
-	result << ", \"y\":" << this->y;
-	result << ", \"z\":" << this->z;
-	result << ", \"r\":" << this->r;
-	result << ", \"buttons\":" << this->buttons;
-	result << ", \"target\":" << static_cast<unsigned int>(this->target);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MANUAL_CONTROL\", \"id\": 69";
+	ss << ", \"x\":" << this->x;
+	ss << ", \"y\":" << this->y;
+	ss << ", \"z\":" << this->z;
+	ss << ", \"r\":" << this->r;
+	ss << ", \"buttons\":" << this->buttons;
+	ss << ", \"target\":" << static_cast<unsigned int>(this->target);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRcChannelsOverride::pack(char* buffer) const {
@@ -1725,20 +1725,20 @@ int MavLinkRcChannelsOverride::unpack(const char* buffer) {
 }
 
 std::string MavLinkRcChannelsOverride::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RC_CHANNELS_OVERRIDE\", \"id\": 70";
-	result << ", \"chan1_raw\":" << this->chan1_raw;
-	result << ", \"chan2_raw\":" << this->chan2_raw;
-	result << ", \"chan3_raw\":" << this->chan3_raw;
-	result << ", \"chan4_raw\":" << this->chan4_raw;
-	result << ", \"chan5_raw\":" << this->chan5_raw;
-	result << ", \"chan6_raw\":" << this->chan6_raw;
-	result << ", \"chan7_raw\":" << this->chan7_raw;
-	result << ", \"chan8_raw\":" << this->chan8_raw;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RC_CHANNELS_OVERRIDE\", \"id\": 70";
+	ss << ", \"chan1_raw\":" << this->chan1_raw;
+	ss << ", \"chan2_raw\":" << this->chan2_raw;
+	ss << ", \"chan3_raw\":" << this->chan3_raw;
+	ss << ", \"chan4_raw\":" << this->chan4_raw;
+	ss << ", \"chan5_raw\":" << this->chan5_raw;
+	ss << ", \"chan6_raw\":" << this->chan6_raw;
+	ss << ", \"chan7_raw\":" << this->chan7_raw;
+	ss << ", \"chan8_raw\":" << this->chan8_raw;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMissionItemInt::pack(char* buffer) const {
@@ -1778,24 +1778,24 @@ int MavLinkMissionItemInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkMissionItemInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MISSION_ITEM_INT\", \"id\": 73";
-	result << ", \"param1\":" << float_tostring(this->param1);
-	result << ", \"param2\":" << float_tostring(this->param2);
-	result << ", \"param3\":" << float_tostring(this->param3);
-	result << ", \"param4\":" << float_tostring(this->param4);
-	result << ", \"x\":" << this->x;
-	result << ", \"y\":" << this->y;
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"seq\":" << this->seq;
-	result << ", \"command\":" << this->command;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"frame\":" << static_cast<unsigned int>(this->frame);
-	result << ", \"current\":" << static_cast<unsigned int>(this->current);
-	result << ", \"autocontinue\":" << static_cast<unsigned int>(this->autocontinue);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MISSION_ITEM_INT\", \"id\": 73";
+	ss << ", \"param1\":" << float_tostring(this->param1);
+	ss << ", \"param2\":" << float_tostring(this->param2);
+	ss << ", \"param3\":" << float_tostring(this->param3);
+	ss << ", \"param4\":" << float_tostring(this->param4);
+	ss << ", \"x\":" << this->x;
+	ss << ", \"y\":" << this->y;
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"seq\":" << this->seq;
+	ss << ", \"command\":" << this->command;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"frame\":" << static_cast<unsigned int>(this->frame);
+	ss << ", \"current\":" << static_cast<unsigned int>(this->current);
+	ss << ", \"autocontinue\":" << static_cast<unsigned int>(this->autocontinue);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkVfrHud::pack(char* buffer) const {
@@ -1819,16 +1819,16 @@ int MavLinkVfrHud::unpack(const char* buffer) {
 }
 
 std::string MavLinkVfrHud::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"VFR_HUD\", \"id\": 74";
-	result << ", \"airspeed\":" << float_tostring(this->airspeed);
-	result << ", \"groundspeed\":" << float_tostring(this->groundspeed);
-	result << ", \"alt\":" << float_tostring(this->alt);
-	result << ", \"climb\":" << float_tostring(this->climb);
-	result << ", \"heading\":" << this->heading;
-	result << ", \"throttle\":" << this->throttle;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"VFR_HUD\", \"id\": 74";
+	ss << ", \"airspeed\":" << float_tostring(this->airspeed);
+	ss << ", \"groundspeed\":" << float_tostring(this->groundspeed);
+	ss << ", \"alt\":" << float_tostring(this->alt);
+	ss << ", \"climb\":" << float_tostring(this->climb);
+	ss << ", \"heading\":" << this->heading;
+	ss << ", \"throttle\":" << this->throttle;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkCommandInt::pack(char* buffer) const {
@@ -1866,23 +1866,23 @@ int MavLinkCommandInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkCommandInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"COMMAND_INT\", \"id\": 75";
-	result << ", \"param1\":" << float_tostring(this->param1);
-	result << ", \"param2\":" << float_tostring(this->param2);
-	result << ", \"param3\":" << float_tostring(this->param3);
-	result << ", \"param4\":" << float_tostring(this->param4);
-	result << ", \"x\":" << this->x;
-	result << ", \"y\":" << this->y;
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"command\":" << this->command;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"frame\":" << static_cast<unsigned int>(this->frame);
-	result << ", \"current\":" << static_cast<unsigned int>(this->current);
-	result << ", \"autocontinue\":" << static_cast<unsigned int>(this->autocontinue);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"COMMAND_INT\", \"id\": 75";
+	ss << ", \"param1\":" << float_tostring(this->param1);
+	ss << ", \"param2\":" << float_tostring(this->param2);
+	ss << ", \"param3\":" << float_tostring(this->param3);
+	ss << ", \"param4\":" << float_tostring(this->param4);
+	ss << ", \"x\":" << this->x;
+	ss << ", \"y\":" << this->y;
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"command\":" << this->command;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"frame\":" << static_cast<unsigned int>(this->frame);
+	ss << ", \"current\":" << static_cast<unsigned int>(this->current);
+	ss << ", \"autocontinue\":" << static_cast<unsigned int>(this->autocontinue);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkCommandLong::pack(char* buffer) const {
@@ -1916,21 +1916,21 @@ int MavLinkCommandLong::unpack(const char* buffer) {
 }
 
 std::string MavLinkCommandLong::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"COMMAND_LONG\", \"id\": 76";
-	result << ", \"param1\":" << float_tostring(this->param1);
-	result << ", \"param2\":" << float_tostring(this->param2);
-	result << ", \"param3\":" << float_tostring(this->param3);
-	result << ", \"param4\":" << float_tostring(this->param4);
-	result << ", \"param5\":" << float_tostring(this->param5);
-	result << ", \"param6\":" << float_tostring(this->param6);
-	result << ", \"param7\":" << float_tostring(this->param7);
-	result << ", \"command\":" << this->command;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"confirmation\":" << static_cast<unsigned int>(this->confirmation);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"COMMAND_LONG\", \"id\": 76";
+	ss << ", \"param1\":" << float_tostring(this->param1);
+	ss << ", \"param2\":" << float_tostring(this->param2);
+	ss << ", \"param3\":" << float_tostring(this->param3);
+	ss << ", \"param4\":" << float_tostring(this->param4);
+	ss << ", \"param5\":" << float_tostring(this->param5);
+	ss << ", \"param6\":" << float_tostring(this->param6);
+	ss << ", \"param7\":" << float_tostring(this->param7);
+	ss << ", \"command\":" << this->command;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"confirmation\":" << static_cast<unsigned int>(this->confirmation);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkCommandAck::pack(char* buffer) const {
@@ -1946,12 +1946,12 @@ int MavLinkCommandAck::unpack(const char* buffer) {
 }
 
 std::string MavLinkCommandAck::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"COMMAND_ACK\", \"id\": 77";
-	result << ", \"command\":" << this->command;
-	result << ", \"result\":" << static_cast<unsigned int>(this->result);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"COMMAND_ACK\", \"id\": 77";
+	ss << ", \"command\":" << this->command;
+	ss << ", \"result\":" << static_cast<unsigned int>(this->result);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkManualSetpoint::pack(char* buffer) const {
@@ -1977,17 +1977,17 @@ int MavLinkManualSetpoint::unpack(const char* buffer) {
 }
 
 std::string MavLinkManualSetpoint::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MANUAL_SETPOINT\", \"id\": 81";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"thrust\":" << float_tostring(this->thrust);
-	result << ", \"mode_switch\":" << static_cast<unsigned int>(this->mode_switch);
-	result << ", \"manual_override_switch\":" << static_cast<unsigned int>(this->manual_override_switch);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MANUAL_SETPOINT\", \"id\": 81";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"thrust\":" << float_tostring(this->thrust);
+	ss << ", \"mode_switch\":" << static_cast<unsigned int>(this->mode_switch);
+	ss << ", \"manual_override_switch\":" << static_cast<unsigned int>(this->manual_override_switch);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSetAttitudeTarget::pack(char* buffer) const {
@@ -2017,19 +2017,19 @@ int MavLinkSetAttitudeTarget::unpack(const char* buffer) {
 }
 
 std::string MavLinkSetAttitudeTarget::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SET_ATTITUDE_TARGET\", \"id\": 82";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-	result << ", \"body_roll_rate\":" << float_tostring(this->body_roll_rate);
-	result << ", \"body_pitch_rate\":" << float_tostring(this->body_pitch_rate);
-	result << ", \"body_yaw_rate\":" << float_tostring(this->body_yaw_rate);
-	result << ", \"thrust\":" << float_tostring(this->thrust);
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"type_mask\":" << static_cast<unsigned int>(this->type_mask);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SET_ATTITUDE_TARGET\", \"id\": 82";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+	ss << ", \"body_roll_rate\":" << float_tostring(this->body_roll_rate);
+	ss << ", \"body_pitch_rate\":" << float_tostring(this->body_pitch_rate);
+	ss << ", \"body_yaw_rate\":" << float_tostring(this->body_yaw_rate);
+	ss << ", \"thrust\":" << float_tostring(this->thrust);
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"type_mask\":" << static_cast<unsigned int>(this->type_mask);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAttitudeTarget::pack(char* buffer) const {
@@ -2055,17 +2055,17 @@ int MavLinkAttitudeTarget::unpack(const char* buffer) {
 }
 
 std::string MavLinkAttitudeTarget::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ATTITUDE_TARGET\", \"id\": 83";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-	result << ", \"body_roll_rate\":" << float_tostring(this->body_roll_rate);
-	result << ", \"body_pitch_rate\":" << float_tostring(this->body_pitch_rate);
-	result << ", \"body_yaw_rate\":" << float_tostring(this->body_yaw_rate);
-	result << ", \"thrust\":" << float_tostring(this->thrust);
-	result << ", \"type_mask\":" << static_cast<unsigned int>(this->type_mask);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ATTITUDE_TARGET\", \"id\": 83";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+	ss << ", \"body_roll_rate\":" << float_tostring(this->body_roll_rate);
+	ss << ", \"body_pitch_rate\":" << float_tostring(this->body_pitch_rate);
+	ss << ", \"body_yaw_rate\":" << float_tostring(this->body_yaw_rate);
+	ss << ", \"thrust\":" << float_tostring(this->thrust);
+	ss << ", \"type_mask\":" << static_cast<unsigned int>(this->type_mask);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSetPositionTargetLocalNed::pack(char* buffer) const {
@@ -2109,26 +2109,26 @@ int MavLinkSetPositionTargetLocalNed::unpack(const char* buffer) {
 }
 
 std::string MavLinkSetPositionTargetLocalNed::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SET_POSITION_TARGET_LOCAL_NED\", \"id\": 84";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"vx\":" << float_tostring(this->vx);
-	result << ", \"vy\":" << float_tostring(this->vy);
-	result << ", \"vz\":" << float_tostring(this->vz);
-	result << ", \"afx\":" << float_tostring(this->afx);
-	result << ", \"afy\":" << float_tostring(this->afy);
-	result << ", \"afz\":" << float_tostring(this->afz);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
-	result << ", \"type_mask\":" << this->type_mask;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SET_POSITION_TARGET_LOCAL_NED\", \"id\": 84";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"vx\":" << float_tostring(this->vx);
+	ss << ", \"vy\":" << float_tostring(this->vy);
+	ss << ", \"vz\":" << float_tostring(this->vz);
+	ss << ", \"afx\":" << float_tostring(this->afx);
+	ss << ", \"afy\":" << float_tostring(this->afy);
+	ss << ", \"afz\":" << float_tostring(this->afz);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
+	ss << ", \"type_mask\":" << this->type_mask;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkPositionTargetLocalNed::pack(char* buffer) const {
@@ -2168,24 +2168,24 @@ int MavLinkPositionTargetLocalNed::unpack(const char* buffer) {
 }
 
 std::string MavLinkPositionTargetLocalNed::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"POSITION_TARGET_LOCAL_NED\", \"id\": 85";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"vx\":" << float_tostring(this->vx);
-	result << ", \"vy\":" << float_tostring(this->vy);
-	result << ", \"vz\":" << float_tostring(this->vz);
-	result << ", \"afx\":" << float_tostring(this->afx);
-	result << ", \"afy\":" << float_tostring(this->afy);
-	result << ", \"afz\":" << float_tostring(this->afz);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
-	result << ", \"type_mask\":" << this->type_mask;
-	result << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"POSITION_TARGET_LOCAL_NED\", \"id\": 85";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"vx\":" << float_tostring(this->vx);
+	ss << ", \"vy\":" << float_tostring(this->vy);
+	ss << ", \"vz\":" << float_tostring(this->vz);
+	ss << ", \"afx\":" << float_tostring(this->afx);
+	ss << ", \"afy\":" << float_tostring(this->afy);
+	ss << ", \"afz\":" << float_tostring(this->afz);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
+	ss << ", \"type_mask\":" << this->type_mask;
+	ss << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSetPositionTargetGlobalInt::pack(char* buffer) const {
@@ -2229,26 +2229,26 @@ int MavLinkSetPositionTargetGlobalInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkSetPositionTargetGlobalInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SET_POSITION_TARGET_GLOBAL_INT\", \"id\": 86";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"lat_int\":" << this->lat_int;
-	result << ", \"lon_int\":" << this->lon_int;
-	result << ", \"alt\":" << float_tostring(this->alt);
-	result << ", \"vx\":" << float_tostring(this->vx);
-	result << ", \"vy\":" << float_tostring(this->vy);
-	result << ", \"vz\":" << float_tostring(this->vz);
-	result << ", \"afx\":" << float_tostring(this->afx);
-	result << ", \"afy\":" << float_tostring(this->afy);
-	result << ", \"afz\":" << float_tostring(this->afz);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
-	result << ", \"type_mask\":" << this->type_mask;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SET_POSITION_TARGET_GLOBAL_INT\", \"id\": 86";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"lat_int\":" << this->lat_int;
+	ss << ", \"lon_int\":" << this->lon_int;
+	ss << ", \"alt\":" << float_tostring(this->alt);
+	ss << ", \"vx\":" << float_tostring(this->vx);
+	ss << ", \"vy\":" << float_tostring(this->vy);
+	ss << ", \"vz\":" << float_tostring(this->vz);
+	ss << ", \"afx\":" << float_tostring(this->afx);
+	ss << ", \"afy\":" << float_tostring(this->afy);
+	ss << ", \"afz\":" << float_tostring(this->afz);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
+	ss << ", \"type_mask\":" << this->type_mask;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkPositionTargetGlobalInt::pack(char* buffer) const {
@@ -2288,24 +2288,24 @@ int MavLinkPositionTargetGlobalInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkPositionTargetGlobalInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"POSITION_TARGET_GLOBAL_INT\", \"id\": 87";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"lat_int\":" << this->lat_int;
-	result << ", \"lon_int\":" << this->lon_int;
-	result << ", \"alt\":" << float_tostring(this->alt);
-	result << ", \"vx\":" << float_tostring(this->vx);
-	result << ", \"vy\":" << float_tostring(this->vy);
-	result << ", \"vz\":" << float_tostring(this->vz);
-	result << ", \"afx\":" << float_tostring(this->afx);
-	result << ", \"afy\":" << float_tostring(this->afy);
-	result << ", \"afz\":" << float_tostring(this->afz);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
-	result << ", \"type_mask\":" << this->type_mask;
-	result << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"POSITION_TARGET_GLOBAL_INT\", \"id\": 87";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"lat_int\":" << this->lat_int;
+	ss << ", \"lon_int\":" << this->lon_int;
+	ss << ", \"alt\":" << float_tostring(this->alt);
+	ss << ", \"vx\":" << float_tostring(this->vx);
+	ss << ", \"vy\":" << float_tostring(this->vy);
+	ss << ", \"vz\":" << float_tostring(this->vz);
+	ss << ", \"afx\":" << float_tostring(this->afx);
+	ss << ", \"afy\":" << float_tostring(this->afy);
+	ss << ", \"afz\":" << float_tostring(this->afz);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
+	ss << ", \"type_mask\":" << this->type_mask;
+	ss << ", \"coordinate_frame\":" << static_cast<unsigned int>(this->coordinate_frame);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLocalPositionNedSystemGlobalOffset::pack(char* buffer) const {
@@ -2331,17 +2331,17 @@ int MavLinkLocalPositionNedSystemGlobalOffset::unpack(const char* buffer) {
 }
 
 std::string MavLinkLocalPositionNedSystemGlobalOffset::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET\", \"id\": 89";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET\", \"id\": 89";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilState::pack(char* buffer) const {
@@ -2385,26 +2385,26 @@ int MavLinkHilState::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilState::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_STATE\", \"id\": 90";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"rollspeed\":" << float_tostring(this->rollspeed);
-	result << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
-	result << ", \"yawspeed\":" << float_tostring(this->yawspeed);
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << this->alt;
-	result << ", \"vx\":" << this->vx;
-	result << ", \"vy\":" << this->vy;
-	result << ", \"vz\":" << this->vz;
-	result << ", \"xacc\":" << this->xacc;
-	result << ", \"yacc\":" << this->yacc;
-	result << ", \"zacc\":" << this->zacc;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_STATE\", \"id\": 90";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"rollspeed\":" << float_tostring(this->rollspeed);
+	ss << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
+	ss << ", \"yawspeed\":" << float_tostring(this->yawspeed);
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << this->alt;
+	ss << ", \"vx\":" << this->vx;
+	ss << ", \"vy\":" << this->vy;
+	ss << ", \"vz\":" << this->vz;
+	ss << ", \"xacc\":" << this->xacc;
+	ss << ", \"yacc\":" << this->yacc;
+	ss << ", \"zacc\":" << this->zacc;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilControls::pack(char* buffer) const {
@@ -2438,21 +2438,21 @@ int MavLinkHilControls::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilControls::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_CONTROLS\", \"id\": 91";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"roll_ailerons\":" << float_tostring(this->roll_ailerons);
-	result << ", \"pitch_elevator\":" << float_tostring(this->pitch_elevator);
-	result << ", \"yaw_rudder\":" << float_tostring(this->yaw_rudder);
-	result << ", \"throttle\":" << float_tostring(this->throttle);
-	result << ", \"aux1\":" << float_tostring(this->aux1);
-	result << ", \"aux2\":" << float_tostring(this->aux2);
-	result << ", \"aux3\":" << float_tostring(this->aux3);
-	result << ", \"aux4\":" << float_tostring(this->aux4);
-	result << ", \"mode\":" << static_cast<unsigned int>(this->mode);
-	result << ", \"nav_mode\":" << static_cast<unsigned int>(this->nav_mode);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_CONTROLS\", \"id\": 91";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"roll_ailerons\":" << float_tostring(this->roll_ailerons);
+	ss << ", \"pitch_elevator\":" << float_tostring(this->pitch_elevator);
+	ss << ", \"yaw_rudder\":" << float_tostring(this->yaw_rudder);
+	ss << ", \"throttle\":" << float_tostring(this->throttle);
+	ss << ", \"aux1\":" << float_tostring(this->aux1);
+	ss << ", \"aux2\":" << float_tostring(this->aux2);
+	ss << ", \"aux3\":" << float_tostring(this->aux3);
+	ss << ", \"aux4\":" << float_tostring(this->aux4);
+	ss << ", \"mode\":" << static_cast<unsigned int>(this->mode);
+	ss << ", \"nav_mode\":" << static_cast<unsigned int>(this->nav_mode);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilRcInputsRaw::pack(char* buffer) const {
@@ -2492,24 +2492,24 @@ int MavLinkHilRcInputsRaw::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilRcInputsRaw::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_RC_INPUTS_RAW\", \"id\": 92";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"chan1_raw\":" << this->chan1_raw;
-	result << ", \"chan2_raw\":" << this->chan2_raw;
-	result << ", \"chan3_raw\":" << this->chan3_raw;
-	result << ", \"chan4_raw\":" << this->chan4_raw;
-	result << ", \"chan5_raw\":" << this->chan5_raw;
-	result << ", \"chan6_raw\":" << this->chan6_raw;
-	result << ", \"chan7_raw\":" << this->chan7_raw;
-	result << ", \"chan8_raw\":" << this->chan8_raw;
-	result << ", \"chan9_raw\":" << this->chan9_raw;
-	result << ", \"chan10_raw\":" << this->chan10_raw;
-	result << ", \"chan11_raw\":" << this->chan11_raw;
-	result << ", \"chan12_raw\":" << this->chan12_raw;
-	result << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_RC_INPUTS_RAW\", \"id\": 92";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"chan1_raw\":" << this->chan1_raw;
+	ss << ", \"chan2_raw\":" << this->chan2_raw;
+	ss << ", \"chan3_raw\":" << this->chan3_raw;
+	ss << ", \"chan4_raw\":" << this->chan4_raw;
+	ss << ", \"chan5_raw\":" << this->chan5_raw;
+	ss << ", \"chan6_raw\":" << this->chan6_raw;
+	ss << ", \"chan7_raw\":" << this->chan7_raw;
+	ss << ", \"chan8_raw\":" << this->chan8_raw;
+	ss << ", \"chan9_raw\":" << this->chan9_raw;
+	ss << ", \"chan10_raw\":" << this->chan10_raw;
+	ss << ", \"chan11_raw\":" << this->chan11_raw;
+	ss << ", \"chan12_raw\":" << this->chan12_raw;
+	ss << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilActuatorControls::pack(char* buffer) const {
@@ -2529,14 +2529,14 @@ int MavLinkHilActuatorControls::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilActuatorControls::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_ACTUATOR_CONTROLS\", \"id\": 93";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"flags\":" << this->flags;
-	result << ", \"controls\":" << "[" << float_array_tostring(16, reinterpret_cast<float*>(&this->controls[0])) << "]";
-	result << ", \"mode\":" << static_cast<unsigned int>(this->mode);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_ACTUATOR_CONTROLS\", \"id\": 93";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"flags\":" << this->flags;
+	ss << ", \"controls\":" << "[" << float_array_tostring(16, reinterpret_cast<float*>(&this->controls[0])) << "]";
+	ss << ", \"mode\":" << static_cast<unsigned int>(this->mode);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkOpticalFlow::pack(char* buffer) const {
@@ -2564,18 +2564,18 @@ int MavLinkOpticalFlow::unpack(const char* buffer) {
 }
 
 std::string MavLinkOpticalFlow::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"OPTICAL_FLOW\", \"id\": 100";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"flow_comp_m_x\":" << float_tostring(this->flow_comp_m_x);
-	result << ", \"flow_comp_m_y\":" << float_tostring(this->flow_comp_m_y);
-	result << ", \"ground_distance\":" << float_tostring(this->ground_distance);
-	result << ", \"flow_x\":" << this->flow_x;
-	result << ", \"flow_y\":" << this->flow_y;
-	result << ", \"sensor_id\":" << static_cast<unsigned int>(this->sensor_id);
-	result << ", \"quality\":" << static_cast<unsigned int>(this->quality);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"OPTICAL_FLOW\", \"id\": 100";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"flow_comp_m_x\":" << float_tostring(this->flow_comp_m_x);
+	ss << ", \"flow_comp_m_y\":" << float_tostring(this->flow_comp_m_y);
+	ss << ", \"ground_distance\":" << float_tostring(this->ground_distance);
+	ss << ", \"flow_x\":" << this->flow_x;
+	ss << ", \"flow_y\":" << this->flow_y;
+	ss << ", \"sensor_id\":" << static_cast<unsigned int>(this->sensor_id);
+	ss << ", \"quality\":" << static_cast<unsigned int>(this->quality);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGlobalVisionPositionEstimate::pack(char* buffer) const {
@@ -2601,17 +2601,17 @@ int MavLinkGlobalVisionPositionEstimate::unpack(const char* buffer) {
 }
 
 std::string MavLinkGlobalVisionPositionEstimate::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GLOBAL_VISION_POSITION_ESTIMATE\", \"id\": 101";
-	result << ", \"usec\":" << this->usec;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GLOBAL_VISION_POSITION_ESTIMATE\", \"id\": 101";
+	ss << ", \"usec\":" << this->usec;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkVisionPositionEstimate::pack(char* buffer) const {
@@ -2637,17 +2637,17 @@ int MavLinkVisionPositionEstimate::unpack(const char* buffer) {
 }
 
 std::string MavLinkVisionPositionEstimate::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"VISION_POSITION_ESTIMATE\", \"id\": 102";
-	result << ", \"usec\":" << this->usec;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"VISION_POSITION_ESTIMATE\", \"id\": 102";
+	ss << ", \"usec\":" << this->usec;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkVisionSpeedEstimate::pack(char* buffer) const {
@@ -2667,14 +2667,14 @@ int MavLinkVisionSpeedEstimate::unpack(const char* buffer) {
 }
 
 std::string MavLinkVisionSpeedEstimate::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"VISION_SPEED_ESTIMATE\", \"id\": 103";
-	result << ", \"usec\":" << this->usec;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"VISION_SPEED_ESTIMATE\", \"id\": 103";
+	ss << ", \"usec\":" << this->usec;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkViconPositionEstimate::pack(char* buffer) const {
@@ -2700,17 +2700,17 @@ int MavLinkViconPositionEstimate::unpack(const char* buffer) {
 }
 
 std::string MavLinkViconPositionEstimate::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"VICON_POSITION_ESTIMATE\", \"id\": 104";
-	result << ", \"usec\":" << this->usec;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"VICON_POSITION_ESTIMATE\", \"id\": 104";
+	ss << ", \"usec\":" << this->usec;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHighresImu::pack(char* buffer) const {
@@ -2752,25 +2752,25 @@ int MavLinkHighresImu::unpack(const char* buffer) {
 }
 
 std::string MavLinkHighresImu::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIGHRES_IMU\", \"id\": 105";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"xacc\":" << float_tostring(this->xacc);
-	result << ", \"yacc\":" << float_tostring(this->yacc);
-	result << ", \"zacc\":" << float_tostring(this->zacc);
-	result << ", \"xgyro\":" << float_tostring(this->xgyro);
-	result << ", \"ygyro\":" << float_tostring(this->ygyro);
-	result << ", \"zgyro\":" << float_tostring(this->zgyro);
-	result << ", \"xmag\":" << float_tostring(this->xmag);
-	result << ", \"ymag\":" << float_tostring(this->ymag);
-	result << ", \"zmag\":" << float_tostring(this->zmag);
-	result << ", \"abs_pressure\":" << float_tostring(this->abs_pressure);
-	result << ", \"diff_pressure\":" << float_tostring(this->diff_pressure);
-	result << ", \"pressure_alt\":" << float_tostring(this->pressure_alt);
-	result << ", \"temperature\":" << float_tostring(this->temperature);
-	result << ", \"fields_updated\":" << this->fields_updated;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIGHRES_IMU\", \"id\": 105";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"xacc\":" << float_tostring(this->xacc);
+	ss << ", \"yacc\":" << float_tostring(this->yacc);
+	ss << ", \"zacc\":" << float_tostring(this->zacc);
+	ss << ", \"xgyro\":" << float_tostring(this->xgyro);
+	ss << ", \"ygyro\":" << float_tostring(this->ygyro);
+	ss << ", \"zgyro\":" << float_tostring(this->zgyro);
+	ss << ", \"xmag\":" << float_tostring(this->xmag);
+	ss << ", \"ymag\":" << float_tostring(this->ymag);
+	ss << ", \"zmag\":" << float_tostring(this->zmag);
+	ss << ", \"abs_pressure\":" << float_tostring(this->abs_pressure);
+	ss << ", \"diff_pressure\":" << float_tostring(this->diff_pressure);
+	ss << ", \"pressure_alt\":" << float_tostring(this->pressure_alt);
+	ss << ", \"temperature\":" << float_tostring(this->temperature);
+	ss << ", \"fields_updated\":" << this->fields_updated;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkOpticalFlowRad::pack(char* buffer) const {
@@ -2806,22 +2806,22 @@ int MavLinkOpticalFlowRad::unpack(const char* buffer) {
 }
 
 std::string MavLinkOpticalFlowRad::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"OPTICAL_FLOW_RAD\", \"id\": 106";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"integration_time_us\":" << this->integration_time_us;
-	result << ", \"integrated_x\":" << float_tostring(this->integrated_x);
-	result << ", \"integrated_y\":" << float_tostring(this->integrated_y);
-	result << ", \"integrated_xgyro\":" << float_tostring(this->integrated_xgyro);
-	result << ", \"integrated_ygyro\":" << float_tostring(this->integrated_ygyro);
-	result << ", \"integrated_zgyro\":" << float_tostring(this->integrated_zgyro);
-	result << ", \"time_delta_distance_us\":" << this->time_delta_distance_us;
-	result << ", \"distance\":" << float_tostring(this->distance);
-	result << ", \"temperature\":" << this->temperature;
-	result << ", \"sensor_id\":" << static_cast<unsigned int>(this->sensor_id);
-	result << ", \"quality\":" << static_cast<unsigned int>(this->quality);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"OPTICAL_FLOW_RAD\", \"id\": 106";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"integration_time_us\":" << this->integration_time_us;
+	ss << ", \"integrated_x\":" << float_tostring(this->integrated_x);
+	ss << ", \"integrated_y\":" << float_tostring(this->integrated_y);
+	ss << ", \"integrated_xgyro\":" << float_tostring(this->integrated_xgyro);
+	ss << ", \"integrated_ygyro\":" << float_tostring(this->integrated_ygyro);
+	ss << ", \"integrated_zgyro\":" << float_tostring(this->integrated_zgyro);
+	ss << ", \"time_delta_distance_us\":" << this->time_delta_distance_us;
+	ss << ", \"distance\":" << float_tostring(this->distance);
+	ss << ", \"temperature\":" << this->temperature;
+	ss << ", \"sensor_id\":" << static_cast<unsigned int>(this->sensor_id);
+	ss << ", \"quality\":" << static_cast<unsigned int>(this->quality);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilSensor::pack(char* buffer) const {
@@ -2863,25 +2863,25 @@ int MavLinkHilSensor::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilSensor::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_SENSOR\", \"id\": 107";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"xacc\":" << float_tostring(this->xacc);
-	result << ", \"yacc\":" << float_tostring(this->yacc);
-	result << ", \"zacc\":" << float_tostring(this->zacc);
-	result << ", \"xgyro\":" << float_tostring(this->xgyro);
-	result << ", \"ygyro\":" << float_tostring(this->ygyro);
-	result << ", \"zgyro\":" << float_tostring(this->zgyro);
-	result << ", \"xmag\":" << float_tostring(this->xmag);
-	result << ", \"ymag\":" << float_tostring(this->ymag);
-	result << ", \"zmag\":" << float_tostring(this->zmag);
-	result << ", \"abs_pressure\":" << float_tostring(this->abs_pressure);
-	result << ", \"diff_pressure\":" << float_tostring(this->diff_pressure);
-	result << ", \"pressure_alt\":" << float_tostring(this->pressure_alt);
-	result << ", \"temperature\":" << float_tostring(this->temperature);
-	result << ", \"fields_updated\":" << this->fields_updated;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_SENSOR\", \"id\": 107";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"xacc\":" << float_tostring(this->xacc);
+	ss << ", \"yacc\":" << float_tostring(this->yacc);
+	ss << ", \"zacc\":" << float_tostring(this->zacc);
+	ss << ", \"xgyro\":" << float_tostring(this->xgyro);
+	ss << ", \"ygyro\":" << float_tostring(this->ygyro);
+	ss << ", \"zgyro\":" << float_tostring(this->zgyro);
+	ss << ", \"xmag\":" << float_tostring(this->xmag);
+	ss << ", \"ymag\":" << float_tostring(this->ymag);
+	ss << ", \"zmag\":" << float_tostring(this->zmag);
+	ss << ", \"abs_pressure\":" << float_tostring(this->abs_pressure);
+	ss << ", \"diff_pressure\":" << float_tostring(this->diff_pressure);
+	ss << ", \"pressure_alt\":" << float_tostring(this->pressure_alt);
+	ss << ", \"temperature\":" << float_tostring(this->temperature);
+	ss << ", \"fields_updated\":" << this->fields_updated;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSimState::pack(char* buffer) const {
@@ -2935,31 +2935,31 @@ int MavLinkSimState::unpack(const char* buffer) {
 }
 
 std::string MavLinkSimState::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SIM_STATE\", \"id\": 108";
-	result << ", \"q1\":" << float_tostring(this->q1);
-	result << ", \"q2\":" << float_tostring(this->q2);
-	result << ", \"q3\":" << float_tostring(this->q3);
-	result << ", \"q4\":" << float_tostring(this->q4);
-	result << ", \"roll\":" << float_tostring(this->roll);
-	result << ", \"pitch\":" << float_tostring(this->pitch);
-	result << ", \"yaw\":" << float_tostring(this->yaw);
-	result << ", \"xacc\":" << float_tostring(this->xacc);
-	result << ", \"yacc\":" << float_tostring(this->yacc);
-	result << ", \"zacc\":" << float_tostring(this->zacc);
-	result << ", \"xgyro\":" << float_tostring(this->xgyro);
-	result << ", \"ygyro\":" << float_tostring(this->ygyro);
-	result << ", \"zgyro\":" << float_tostring(this->zgyro);
-	result << ", \"lat\":" << float_tostring(this->lat);
-	result << ", \"lon\":" << float_tostring(this->lon);
-	result << ", \"alt\":" << float_tostring(this->alt);
-	result << ", \"std_dev_horz\":" << float_tostring(this->std_dev_horz);
-	result << ", \"std_dev_vert\":" << float_tostring(this->std_dev_vert);
-	result << ", \"vn\":" << float_tostring(this->vn);
-	result << ", \"ve\":" << float_tostring(this->ve);
-	result << ", \"vd\":" << float_tostring(this->vd);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SIM_STATE\", \"id\": 108";
+	ss << ", \"q1\":" << float_tostring(this->q1);
+	ss << ", \"q2\":" << float_tostring(this->q2);
+	ss << ", \"q3\":" << float_tostring(this->q3);
+	ss << ", \"q4\":" << float_tostring(this->q4);
+	ss << ", \"roll\":" << float_tostring(this->roll);
+	ss << ", \"pitch\":" << float_tostring(this->pitch);
+	ss << ", \"yaw\":" << float_tostring(this->yaw);
+	ss << ", \"xacc\":" << float_tostring(this->xacc);
+	ss << ", \"yacc\":" << float_tostring(this->yacc);
+	ss << ", \"zacc\":" << float_tostring(this->zacc);
+	ss << ", \"xgyro\":" << float_tostring(this->xgyro);
+	ss << ", \"ygyro\":" << float_tostring(this->ygyro);
+	ss << ", \"zgyro\":" << float_tostring(this->zgyro);
+	ss << ", \"lat\":" << float_tostring(this->lat);
+	ss << ", \"lon\":" << float_tostring(this->lon);
+	ss << ", \"alt\":" << float_tostring(this->alt);
+	ss << ", \"std_dev_horz\":" << float_tostring(this->std_dev_horz);
+	ss << ", \"std_dev_vert\":" << float_tostring(this->std_dev_vert);
+	ss << ", \"vn\":" << float_tostring(this->vn);
+	ss << ", \"ve\":" << float_tostring(this->ve);
+	ss << ", \"vd\":" << float_tostring(this->vd);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkRadioStatus::pack(char* buffer) const {
@@ -2985,17 +2985,17 @@ int MavLinkRadioStatus::unpack(const char* buffer) {
 }
 
 std::string MavLinkRadioStatus::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RADIO_STATUS\", \"id\": 109";
-	result << ", \"rxerrors\":" << this->rxerrors;
-	result << ", \"fixed\":" << this->fixed;
-	result << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
-	result << ", \"remrssi\":" << static_cast<unsigned int>(this->remrssi);
-	result << ", \"txbuf\":" << static_cast<unsigned int>(this->txbuf);
-	result << ", \"noise\":" << static_cast<unsigned int>(this->noise);
-	result << ", \"remnoise\":" << static_cast<unsigned int>(this->remnoise);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RADIO_STATUS\", \"id\": 109";
+	ss << ", \"rxerrors\":" << this->rxerrors;
+	ss << ", \"fixed\":" << this->fixed;
+	ss << ", \"rssi\":" << static_cast<unsigned int>(this->rssi);
+	ss << ", \"remrssi\":" << static_cast<unsigned int>(this->remrssi);
+	ss << ", \"txbuf\":" << static_cast<unsigned int>(this->txbuf);
+	ss << ", \"noise\":" << static_cast<unsigned int>(this->noise);
+	ss << ", \"remnoise\":" << static_cast<unsigned int>(this->remnoise);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkFileTransferProtocol::pack(char* buffer) const {
@@ -3015,14 +3015,14 @@ int MavLinkFileTransferProtocol::unpack(const char* buffer) {
 }
 
 std::string MavLinkFileTransferProtocol::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"FILE_TRANSFER_PROTOCOL\", \"id\": 110";
-	result << ", \"target_network\":" << static_cast<unsigned int>(this->target_network);
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"payload\":" << "[" << uint8_t_array_tostring(251, reinterpret_cast<uint8_t*>(&this->payload[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"FILE_TRANSFER_PROTOCOL\", \"id\": 110";
+	ss << ", \"target_network\":" << static_cast<unsigned int>(this->target_network);
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"payload\":" << "[" << uint8_t_array_tostring(251, reinterpret_cast<uint8_t*>(&this->payload[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkTimesync::pack(char* buffer) const {
@@ -3038,12 +3038,12 @@ int MavLinkTimesync::unpack(const char* buffer) {
 }
 
 std::string MavLinkTimesync::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"TIMESYNC\", \"id\": 111";
-	result << ", \"tc1\":" << this->tc1;
-	result << ", \"ts1\":" << this->ts1;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"TIMESYNC\", \"id\": 111";
+	ss << ", \"tc1\":" << this->tc1;
+	ss << ", \"ts1\":" << this->ts1;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkCameraTrigger::pack(char* buffer) const {
@@ -3059,12 +3059,12 @@ int MavLinkCameraTrigger::unpack(const char* buffer) {
 }
 
 std::string MavLinkCameraTrigger::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"CAMERA_TRIGGER\", \"id\": 112";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"seq\":" << this->seq;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"CAMERA_TRIGGER\", \"id\": 112";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"seq\":" << this->seq;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilGps::pack(char* buffer) const {
@@ -3102,23 +3102,23 @@ int MavLinkHilGps::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilGps::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_GPS\", \"id\": 113";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << this->alt;
-	result << ", \"eph\":" << this->eph;
-	result << ", \"epv\":" << this->epv;
-	result << ", \"vel\":" << this->vel;
-	result << ", \"vn\":" << this->vn;
-	result << ", \"ve\":" << this->ve;
-	result << ", \"vd\":" << this->vd;
-	result << ", \"cog\":" << this->cog;
-	result << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
-	result << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_GPS\", \"id\": 113";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << this->alt;
+	ss << ", \"eph\":" << this->eph;
+	ss << ", \"epv\":" << this->epv;
+	ss << ", \"vel\":" << this->vel;
+	ss << ", \"vn\":" << this->vn;
+	ss << ", \"ve\":" << this->ve;
+	ss << ", \"vd\":" << this->vd;
+	ss << ", \"cog\":" << this->cog;
+	ss << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
+	ss << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilOpticalFlow::pack(char* buffer) const {
@@ -3154,22 +3154,22 @@ int MavLinkHilOpticalFlow::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilOpticalFlow::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_OPTICAL_FLOW\", \"id\": 114";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"integration_time_us\":" << this->integration_time_us;
-	result << ", \"integrated_x\":" << float_tostring(this->integrated_x);
-	result << ", \"integrated_y\":" << float_tostring(this->integrated_y);
-	result << ", \"integrated_xgyro\":" << float_tostring(this->integrated_xgyro);
-	result << ", \"integrated_ygyro\":" << float_tostring(this->integrated_ygyro);
-	result << ", \"integrated_zgyro\":" << float_tostring(this->integrated_zgyro);
-	result << ", \"time_delta_distance_us\":" << this->time_delta_distance_us;
-	result << ", \"distance\":" << float_tostring(this->distance);
-	result << ", \"temperature\":" << this->temperature;
-	result << ", \"sensor_id\":" << static_cast<unsigned int>(this->sensor_id);
-	result << ", \"quality\":" << static_cast<unsigned int>(this->quality);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_OPTICAL_FLOW\", \"id\": 114";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"integration_time_us\":" << this->integration_time_us;
+	ss << ", \"integrated_x\":" << float_tostring(this->integrated_x);
+	ss << ", \"integrated_y\":" << float_tostring(this->integrated_y);
+	ss << ", \"integrated_xgyro\":" << float_tostring(this->integrated_xgyro);
+	ss << ", \"integrated_ygyro\":" << float_tostring(this->integrated_ygyro);
+	ss << ", \"integrated_zgyro\":" << float_tostring(this->integrated_zgyro);
+	ss << ", \"time_delta_distance_us\":" << this->time_delta_distance_us;
+	ss << ", \"distance\":" << float_tostring(this->distance);
+	ss << ", \"temperature\":" << this->temperature;
+	ss << ", \"sensor_id\":" << static_cast<unsigned int>(this->sensor_id);
+	ss << ", \"quality\":" << static_cast<unsigned int>(this->quality);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHilStateQuaternion::pack(char* buffer) const {
@@ -3213,26 +3213,26 @@ int MavLinkHilStateQuaternion::unpack(const char* buffer) {
 }
 
 std::string MavLinkHilStateQuaternion::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIL_STATE_QUATERNION\", \"id\": 115";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"attitude_quaternion\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->attitude_quaternion[0])) << "]";
-	result << ", \"rollspeed\":" << float_tostring(this->rollspeed);
-	result << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
-	result << ", \"yawspeed\":" << float_tostring(this->yawspeed);
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << this->alt;
-	result << ", \"vx\":" << this->vx;
-	result << ", \"vy\":" << this->vy;
-	result << ", \"vz\":" << this->vz;
-	result << ", \"ind_airspeed\":" << this->ind_airspeed;
-	result << ", \"true_airspeed\":" << this->true_airspeed;
-	result << ", \"xacc\":" << this->xacc;
-	result << ", \"yacc\":" << this->yacc;
-	result << ", \"zacc\":" << this->zacc;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIL_STATE_QUATERNION\", \"id\": 115";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"attitude_quaternion\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->attitude_quaternion[0])) << "]";
+	ss << ", \"rollspeed\":" << float_tostring(this->rollspeed);
+	ss << ", \"pitchspeed\":" << float_tostring(this->pitchspeed);
+	ss << ", \"yawspeed\":" << float_tostring(this->yawspeed);
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << this->alt;
+	ss << ", \"vx\":" << this->vx;
+	ss << ", \"vy\":" << this->vy;
+	ss << ", \"vz\":" << this->vz;
+	ss << ", \"ind_airspeed\":" << this->ind_airspeed;
+	ss << ", \"true_airspeed\":" << this->true_airspeed;
+	ss << ", \"xacc\":" << this->xacc;
+	ss << ", \"yacc\":" << this->yacc;
+	ss << ", \"zacc\":" << this->zacc;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkScaledImu2::pack(char* buffer) const {
@@ -3264,20 +3264,20 @@ int MavLinkScaledImu2::unpack(const char* buffer) {
 }
 
 std::string MavLinkScaledImu2::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SCALED_IMU2\", \"id\": 116";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"xacc\":" << this->xacc;
-	result << ", \"yacc\":" << this->yacc;
-	result << ", \"zacc\":" << this->zacc;
-	result << ", \"xgyro\":" << this->xgyro;
-	result << ", \"ygyro\":" << this->ygyro;
-	result << ", \"zgyro\":" << this->zgyro;
-	result << ", \"xmag\":" << this->xmag;
-	result << ", \"ymag\":" << this->ymag;
-	result << ", \"zmag\":" << this->zmag;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SCALED_IMU2\", \"id\": 116";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"xacc\":" << this->xacc;
+	ss << ", \"yacc\":" << this->yacc;
+	ss << ", \"zacc\":" << this->zacc;
+	ss << ", \"xgyro\":" << this->xgyro;
+	ss << ", \"ygyro\":" << this->ygyro;
+	ss << ", \"zgyro\":" << this->zgyro;
+	ss << ", \"xmag\":" << this->xmag;
+	ss << ", \"ymag\":" << this->ymag;
+	ss << ", \"zmag\":" << this->zmag;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLogRequestList::pack(char* buffer) const {
@@ -3297,14 +3297,14 @@ int MavLinkLogRequestList::unpack(const char* buffer) {
 }
 
 std::string MavLinkLogRequestList::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOG_REQUEST_LIST\", \"id\": 117";
-	result << ", \"start\":" << this->start;
-	result << ", \"end\":" << this->end;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOG_REQUEST_LIST\", \"id\": 117";
+	ss << ", \"start\":" << this->start;
+	ss << ", \"end\":" << this->end;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLogEntry::pack(char* buffer) const {
@@ -3326,15 +3326,15 @@ int MavLinkLogEntry::unpack(const char* buffer) {
 }
 
 std::string MavLinkLogEntry::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOG_ENTRY\", \"id\": 118";
-	result << ", \"time_utc\":" << this->time_utc;
-	result << ", \"size\":" << this->size;
-	result << ", \"id\":" << this->id;
-	result << ", \"num_logs\":" << this->num_logs;
-	result << ", \"last_log_num\":" << this->last_log_num;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOG_ENTRY\", \"id\": 118";
+	ss << ", \"time_utc\":" << this->time_utc;
+	ss << ", \"size\":" << this->size;
+	ss << ", \"id\":" << this->id;
+	ss << ", \"num_logs\":" << this->num_logs;
+	ss << ", \"last_log_num\":" << this->last_log_num;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLogRequestData::pack(char* buffer) const {
@@ -3356,15 +3356,15 @@ int MavLinkLogRequestData::unpack(const char* buffer) {
 }
 
 std::string MavLinkLogRequestData::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOG_REQUEST_DATA\", \"id\": 119";
-	result << ", \"ofs\":" << this->ofs;
-	result << ", \"count\":" << this->count;
-	result << ", \"id\":" << this->id;
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOG_REQUEST_DATA\", \"id\": 119";
+	ss << ", \"ofs\":" << this->ofs;
+	ss << ", \"count\":" << this->count;
+	ss << ", \"id\":" << this->id;
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLogData::pack(char* buffer) const {
@@ -3384,14 +3384,14 @@ int MavLinkLogData::unpack(const char* buffer) {
 }
 
 std::string MavLinkLogData::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOG_DATA\", \"id\": 120";
-	result << ", \"ofs\":" << this->ofs;
-	result << ", \"id\":" << this->id;
-	result << ", \"count\":" << static_cast<unsigned int>(this->count);
-	result << ", \"data\":" << "[" << uint8_t_array_tostring(90, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOG_DATA\", \"id\": 120";
+	ss << ", \"ofs\":" << this->ofs;
+	ss << ", \"id\":" << this->id;
+	ss << ", \"count\":" << static_cast<unsigned int>(this->count);
+	ss << ", \"data\":" << "[" << uint8_t_array_tostring(90, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLogErase::pack(char* buffer) const {
@@ -3407,12 +3407,12 @@ int MavLinkLogErase::unpack(const char* buffer) {
 }
 
 std::string MavLinkLogErase::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOG_ERASE\", \"id\": 121";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOG_ERASE\", \"id\": 121";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLogRequestEnd::pack(char* buffer) const {
@@ -3428,12 +3428,12 @@ int MavLinkLogRequestEnd::unpack(const char* buffer) {
 }
 
 std::string MavLinkLogRequestEnd::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LOG_REQUEST_END\", \"id\": 122";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LOG_REQUEST_END\", \"id\": 122";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGpsInjectData::pack(char* buffer) const {
@@ -3453,14 +3453,14 @@ int MavLinkGpsInjectData::unpack(const char* buffer) {
 }
 
 std::string MavLinkGpsInjectData::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS_INJECT_DATA\", \"id\": 123";
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"len\":" << static_cast<unsigned int>(this->len);
-	result << ", \"data\":" << "[" << uint8_t_array_tostring(110, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS_INJECT_DATA\", \"id\": 123";
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"len\":" << static_cast<unsigned int>(this->len);
+	ss << ", \"data\":" << "[" << uint8_t_array_tostring(110, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGps2Raw::pack(char* buffer) const {
@@ -3496,22 +3496,22 @@ int MavLinkGps2Raw::unpack(const char* buffer) {
 }
 
 std::string MavLinkGps2Raw::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS2_RAW\", \"id\": 124";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << this->alt;
-	result << ", \"dgps_age\":" << this->dgps_age;
-	result << ", \"eph\":" << this->eph;
-	result << ", \"epv\":" << this->epv;
-	result << ", \"vel\":" << this->vel;
-	result << ", \"cog\":" << this->cog;
-	result << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
-	result << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
-	result << ", \"dgps_numch\":" << static_cast<unsigned int>(this->dgps_numch);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS2_RAW\", \"id\": 124";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << this->alt;
+	ss << ", \"dgps_age\":" << this->dgps_age;
+	ss << ", \"eph\":" << this->eph;
+	ss << ", \"epv\":" << this->epv;
+	ss << ", \"vel\":" << this->vel;
+	ss << ", \"cog\":" << this->cog;
+	ss << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
+	ss << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
+	ss << ", \"dgps_numch\":" << static_cast<unsigned int>(this->dgps_numch);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkPowerStatus::pack(char* buffer) const {
@@ -3529,13 +3529,13 @@ int MavLinkPowerStatus::unpack(const char* buffer) {
 }
 
 std::string MavLinkPowerStatus::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"POWER_STATUS\", \"id\": 125";
-	result << ", \"Vcc\":" << this->Vcc;
-	result << ", \"Vservo\":" << this->Vservo;
-	result << ", \"flags\":" << this->flags;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"POWER_STATUS\", \"id\": 125";
+	ss << ", \"Vcc\":" << this->Vcc;
+	ss << ", \"Vservo\":" << this->Vservo;
+	ss << ", \"flags\":" << this->flags;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSerialControl::pack(char* buffer) const {
@@ -3559,16 +3559,16 @@ int MavLinkSerialControl::unpack(const char* buffer) {
 }
 
 std::string MavLinkSerialControl::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SERIAL_CONTROL\", \"id\": 126";
-	result << ", \"baudrate\":" << this->baudrate;
-	result << ", \"timeout\":" << this->timeout;
-	result << ", \"device\":" << static_cast<unsigned int>(this->device);
-	result << ", \"flags\":" << static_cast<unsigned int>(this->flags);
-	result << ", \"count\":" << static_cast<unsigned int>(this->count);
-	result << ", \"data\":" << "[" << uint8_t_array_tostring(70, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SERIAL_CONTROL\", \"id\": 126";
+	ss << ", \"baudrate\":" << this->baudrate;
+	ss << ", \"timeout\":" << this->timeout;
+	ss << ", \"device\":" << static_cast<unsigned int>(this->device);
+	ss << ", \"flags\":" << static_cast<unsigned int>(this->flags);
+	ss << ", \"count\":" << static_cast<unsigned int>(this->count);
+	ss << ", \"data\":" << "[" << uint8_t_array_tostring(70, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGpsRtk::pack(char* buffer) const {
@@ -3606,23 +3606,23 @@ int MavLinkGpsRtk::unpack(const char* buffer) {
 }
 
 std::string MavLinkGpsRtk::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS_RTK\", \"id\": 127";
-	result << ", \"time_last_baseline_ms\":" << this->time_last_baseline_ms;
-	result << ", \"tow\":" << this->tow;
-	result << ", \"baseline_a_mm\":" << this->baseline_a_mm;
-	result << ", \"baseline_b_mm\":" << this->baseline_b_mm;
-	result << ", \"baseline_c_mm\":" << this->baseline_c_mm;
-	result << ", \"accuracy\":" << this->accuracy;
-	result << ", \"iar_num_hypotheses\":" << this->iar_num_hypotheses;
-	result << ", \"wn\":" << this->wn;
-	result << ", \"rtk_receiver_id\":" << static_cast<unsigned int>(this->rtk_receiver_id);
-	result << ", \"rtk_health\":" << static_cast<unsigned int>(this->rtk_health);
-	result << ", \"rtk_rate\":" << static_cast<unsigned int>(this->rtk_rate);
-	result << ", \"nsats\":" << static_cast<unsigned int>(this->nsats);
-	result << ", \"baseline_coords_type\":" << static_cast<unsigned int>(this->baseline_coords_type);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS_RTK\", \"id\": 127";
+	ss << ", \"time_last_baseline_ms\":" << this->time_last_baseline_ms;
+	ss << ", \"tow\":" << this->tow;
+	ss << ", \"baseline_a_mm\":" << this->baseline_a_mm;
+	ss << ", \"baseline_b_mm\":" << this->baseline_b_mm;
+	ss << ", \"baseline_c_mm\":" << this->baseline_c_mm;
+	ss << ", \"accuracy\":" << this->accuracy;
+	ss << ", \"iar_num_hypotheses\":" << this->iar_num_hypotheses;
+	ss << ", \"wn\":" << this->wn;
+	ss << ", \"rtk_receiver_id\":" << static_cast<unsigned int>(this->rtk_receiver_id);
+	ss << ", \"rtk_health\":" << static_cast<unsigned int>(this->rtk_health);
+	ss << ", \"rtk_rate\":" << static_cast<unsigned int>(this->rtk_rate);
+	ss << ", \"nsats\":" << static_cast<unsigned int>(this->nsats);
+	ss << ", \"baseline_coords_type\":" << static_cast<unsigned int>(this->baseline_coords_type);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGps2Rtk::pack(char* buffer) const {
@@ -3660,23 +3660,23 @@ int MavLinkGps2Rtk::unpack(const char* buffer) {
 }
 
 std::string MavLinkGps2Rtk::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS2_RTK\", \"id\": 128";
-	result << ", \"time_last_baseline_ms\":" << this->time_last_baseline_ms;
-	result << ", \"tow\":" << this->tow;
-	result << ", \"baseline_a_mm\":" << this->baseline_a_mm;
-	result << ", \"baseline_b_mm\":" << this->baseline_b_mm;
-	result << ", \"baseline_c_mm\":" << this->baseline_c_mm;
-	result << ", \"accuracy\":" << this->accuracy;
-	result << ", \"iar_num_hypotheses\":" << this->iar_num_hypotheses;
-	result << ", \"wn\":" << this->wn;
-	result << ", \"rtk_receiver_id\":" << static_cast<unsigned int>(this->rtk_receiver_id);
-	result << ", \"rtk_health\":" << static_cast<unsigned int>(this->rtk_health);
-	result << ", \"rtk_rate\":" << static_cast<unsigned int>(this->rtk_rate);
-	result << ", \"nsats\":" << static_cast<unsigned int>(this->nsats);
-	result << ", \"baseline_coords_type\":" << static_cast<unsigned int>(this->baseline_coords_type);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS2_RTK\", \"id\": 128";
+	ss << ", \"time_last_baseline_ms\":" << this->time_last_baseline_ms;
+	ss << ", \"tow\":" << this->tow;
+	ss << ", \"baseline_a_mm\":" << this->baseline_a_mm;
+	ss << ", \"baseline_b_mm\":" << this->baseline_b_mm;
+	ss << ", \"baseline_c_mm\":" << this->baseline_c_mm;
+	ss << ", \"accuracy\":" << this->accuracy;
+	ss << ", \"iar_num_hypotheses\":" << this->iar_num_hypotheses;
+	ss << ", \"wn\":" << this->wn;
+	ss << ", \"rtk_receiver_id\":" << static_cast<unsigned int>(this->rtk_receiver_id);
+	ss << ", \"rtk_health\":" << static_cast<unsigned int>(this->rtk_health);
+	ss << ", \"rtk_rate\":" << static_cast<unsigned int>(this->rtk_rate);
+	ss << ", \"nsats\":" << static_cast<unsigned int>(this->nsats);
+	ss << ", \"baseline_coords_type\":" << static_cast<unsigned int>(this->baseline_coords_type);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkScaledImu3::pack(char* buffer) const {
@@ -3708,20 +3708,20 @@ int MavLinkScaledImu3::unpack(const char* buffer) {
 }
 
 std::string MavLinkScaledImu3::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SCALED_IMU3\", \"id\": 129";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"xacc\":" << this->xacc;
-	result << ", \"yacc\":" << this->yacc;
-	result << ", \"zacc\":" << this->zacc;
-	result << ", \"xgyro\":" << this->xgyro;
-	result << ", \"ygyro\":" << this->ygyro;
-	result << ", \"zgyro\":" << this->zgyro;
-	result << ", \"xmag\":" << this->xmag;
-	result << ", \"ymag\":" << this->ymag;
-	result << ", \"zmag\":" << this->zmag;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SCALED_IMU3\", \"id\": 129";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"xacc\":" << this->xacc;
+	ss << ", \"yacc\":" << this->yacc;
+	ss << ", \"zacc\":" << this->zacc;
+	ss << ", \"xgyro\":" << this->xgyro;
+	ss << ", \"ygyro\":" << this->ygyro;
+	ss << ", \"zgyro\":" << this->zgyro;
+	ss << ", \"xmag\":" << this->xmag;
+	ss << ", \"ymag\":" << this->ymag;
+	ss << ", \"zmag\":" << this->zmag;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkDataTransmissionHandshake::pack(char* buffer) const {
@@ -3747,17 +3747,17 @@ int MavLinkDataTransmissionHandshake::unpack(const char* buffer) {
 }
 
 std::string MavLinkDataTransmissionHandshake::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"DATA_TRANSMISSION_HANDSHAKE\", \"id\": 130";
-	result << ", \"size\":" << this->size;
-	result << ", \"width\":" << this->width;
-	result << ", \"height\":" << this->height;
-	result << ", \"packets\":" << this->packets;
-	result << ", \"type\":" << static_cast<unsigned int>(this->type);
-	result << ", \"payload\":" << static_cast<unsigned int>(this->payload);
-	result << ", \"jpg_quality\":" << static_cast<unsigned int>(this->jpg_quality);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"DATA_TRANSMISSION_HANDSHAKE\", \"id\": 130";
+	ss << ", \"size\":" << this->size;
+	ss << ", \"width\":" << this->width;
+	ss << ", \"height\":" << this->height;
+	ss << ", \"packets\":" << this->packets;
+	ss << ", \"type\":" << static_cast<unsigned int>(this->type);
+	ss << ", \"payload\":" << static_cast<unsigned int>(this->payload);
+	ss << ", \"jpg_quality\":" << static_cast<unsigned int>(this->jpg_quality);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkEncapsulatedData::pack(char* buffer) const {
@@ -3773,12 +3773,12 @@ int MavLinkEncapsulatedData::unpack(const char* buffer) {
 }
 
 std::string MavLinkEncapsulatedData::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ENCAPSULATED_DATA\", \"id\": 131";
-	result << ", \"seqnr\":" << this->seqnr;
-	result << ", \"data\":" << "[" << uint8_t_array_tostring(253, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ENCAPSULATED_DATA\", \"id\": 131";
+	ss << ", \"seqnr\":" << this->seqnr;
+	ss << ", \"data\":" << "[" << uint8_t_array_tostring(253, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkDistanceSensor::pack(char* buffer) const {
@@ -3806,18 +3806,18 @@ int MavLinkDistanceSensor::unpack(const char* buffer) {
 }
 
 std::string MavLinkDistanceSensor::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"DISTANCE_SENSOR\", \"id\": 132";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"min_distance\":" << this->min_distance;
-	result << ", \"max_distance\":" << this->max_distance;
-	result << ", \"current_distance\":" << this->current_distance;
-	result << ", \"type\":" << static_cast<unsigned int>(this->type);
-	result << ", \"id\":" << static_cast<unsigned int>(this->id);
-	result << ", \"orientation\":" << static_cast<unsigned int>(this->orientation);
-	result << ", \"covariance\":" << static_cast<unsigned int>(this->covariance);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"DISTANCE_SENSOR\", \"id\": 132";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"min_distance\":" << this->min_distance;
+	ss << ", \"max_distance\":" << this->max_distance;
+	ss << ", \"current_distance\":" << this->current_distance;
+	ss << ", \"type\":" << static_cast<unsigned int>(this->type);
+	ss << ", \"id\":" << static_cast<unsigned int>(this->id);
+	ss << ", \"orientation\":" << static_cast<unsigned int>(this->orientation);
+	ss << ", \"covariance\":" << static_cast<unsigned int>(this->covariance);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkTerrainRequest::pack(char* buffer) const {
@@ -3837,14 +3837,14 @@ int MavLinkTerrainRequest::unpack(const char* buffer) {
 }
 
 std::string MavLinkTerrainRequest::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"TERRAIN_REQUEST\", \"id\": 133";
-	result << ", \"mask\":" << this->mask;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"grid_spacing\":" << this->grid_spacing;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"TERRAIN_REQUEST\", \"id\": 133";
+	ss << ", \"mask\":" << this->mask;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"grid_spacing\":" << this->grid_spacing;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkTerrainData::pack(char* buffer) const {
@@ -3866,15 +3866,15 @@ int MavLinkTerrainData::unpack(const char* buffer) {
 }
 
 std::string MavLinkTerrainData::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"TERRAIN_DATA\", \"id\": 134";
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"grid_spacing\":" << this->grid_spacing;
-	result << ", \"data\":" << "[" << int16_t_array_tostring(16, reinterpret_cast<int16_t*>(&this->data[0])) << "]";
-	result << ", \"gridbit\":" << static_cast<unsigned int>(this->gridbit);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"TERRAIN_DATA\", \"id\": 134";
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"grid_spacing\":" << this->grid_spacing;
+	ss << ", \"data\":" << "[" << int16_t_array_tostring(16, reinterpret_cast<int16_t*>(&this->data[0])) << "]";
+	ss << ", \"gridbit\":" << static_cast<unsigned int>(this->gridbit);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkTerrainCheck::pack(char* buffer) const {
@@ -3890,12 +3890,12 @@ int MavLinkTerrainCheck::unpack(const char* buffer) {
 }
 
 std::string MavLinkTerrainCheck::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"TERRAIN_CHECK\", \"id\": 135";
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"TERRAIN_CHECK\", \"id\": 135";
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkTerrainReport::pack(char* buffer) const {
@@ -3921,17 +3921,17 @@ int MavLinkTerrainReport::unpack(const char* buffer) {
 }
 
 std::string MavLinkTerrainReport::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"TERRAIN_REPORT\", \"id\": 136";
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"terrain_height\":" << float_tostring(this->terrain_height);
-	result << ", \"current_height\":" << float_tostring(this->current_height);
-	result << ", \"spacing\":" << this->spacing;
-	result << ", \"pending\":" << this->pending;
-	result << ", \"loaded\":" << this->loaded;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"TERRAIN_REPORT\", \"id\": 136";
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"terrain_height\":" << float_tostring(this->terrain_height);
+	ss << ", \"current_height\":" << float_tostring(this->current_height);
+	ss << ", \"spacing\":" << this->spacing;
+	ss << ", \"pending\":" << this->pending;
+	ss << ", \"loaded\":" << this->loaded;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkScaledPressure2::pack(char* buffer) const {
@@ -3951,14 +3951,14 @@ int MavLinkScaledPressure2::unpack(const char* buffer) {
 }
 
 std::string MavLinkScaledPressure2::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SCALED_PRESSURE2\", \"id\": 137";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"press_abs\":" << float_tostring(this->press_abs);
-	result << ", \"press_diff\":" << float_tostring(this->press_diff);
-	result << ", \"temperature\":" << this->temperature;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SCALED_PRESSURE2\", \"id\": 137";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"press_abs\":" << float_tostring(this->press_abs);
+	ss << ", \"press_diff\":" << float_tostring(this->press_diff);
+	ss << ", \"temperature\":" << this->temperature;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAttPosMocap::pack(char* buffer) const {
@@ -3980,15 +3980,15 @@ int MavLinkAttPosMocap::unpack(const char* buffer) {
 }
 
 std::string MavLinkAttPosMocap::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ATT_POS_MOCAP\", \"id\": 138";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ATT_POS_MOCAP\", \"id\": 138";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSetActuatorControlTarget::pack(char* buffer) const {
@@ -4010,15 +4010,15 @@ int MavLinkSetActuatorControlTarget::unpack(const char* buffer) {
 }
 
 std::string MavLinkSetActuatorControlTarget::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SET_ACTUATOR_CONTROL_TARGET\", \"id\": 139";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"controls\":" << "[" << float_array_tostring(8, reinterpret_cast<float*>(&this->controls[0])) << "]";
-	result << ", \"group_mlx\":" << static_cast<unsigned int>(this->group_mlx);
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SET_ACTUATOR_CONTROL_TARGET\", \"id\": 139";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"controls\":" << "[" << float_array_tostring(8, reinterpret_cast<float*>(&this->controls[0])) << "]";
+	ss << ", \"group_mlx\":" << static_cast<unsigned int>(this->group_mlx);
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkActuatorControlTarget::pack(char* buffer) const {
@@ -4036,13 +4036,13 @@ int MavLinkActuatorControlTarget::unpack(const char* buffer) {
 }
 
 std::string MavLinkActuatorControlTarget::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ACTUATOR_CONTROL_TARGET\", \"id\": 140";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"controls\":" << "[" << float_array_tostring(8, reinterpret_cast<float*>(&this->controls[0])) << "]";
-	result << ", \"group_mlx\":" << static_cast<unsigned int>(this->group_mlx);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ACTUATOR_CONTROL_TARGET\", \"id\": 140";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"controls\":" << "[" << float_array_tostring(8, reinterpret_cast<float*>(&this->controls[0])) << "]";
+	ss << ", \"group_mlx\":" << static_cast<unsigned int>(this->group_mlx);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAltitude::pack(char* buffer) const {
@@ -4068,17 +4068,17 @@ int MavLinkAltitude::unpack(const char* buffer) {
 }
 
 std::string MavLinkAltitude::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ALTITUDE\", \"id\": 141";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"altitude_monotonic\":" << float_tostring(this->altitude_monotonic);
-	result << ", \"altitude_amsl\":" << float_tostring(this->altitude_amsl);
-	result << ", \"altitude_local\":" << float_tostring(this->altitude_local);
-	result << ", \"altitude_relative\":" << float_tostring(this->altitude_relative);
-	result << ", \"altitude_terrain\":" << float_tostring(this->altitude_terrain);
-	result << ", \"bottom_clearance\":" << float_tostring(this->bottom_clearance);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ALTITUDE\", \"id\": 141";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"altitude_monotonic\":" << float_tostring(this->altitude_monotonic);
+	ss << ", \"altitude_amsl\":" << float_tostring(this->altitude_amsl);
+	ss << ", \"altitude_local\":" << float_tostring(this->altitude_local);
+	ss << ", \"altitude_relative\":" << float_tostring(this->altitude_relative);
+	ss << ", \"altitude_terrain\":" << float_tostring(this->altitude_terrain);
+	ss << ", \"bottom_clearance\":" << float_tostring(this->bottom_clearance);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkResourceRequest::pack(char* buffer) const {
@@ -4100,15 +4100,15 @@ int MavLinkResourceRequest::unpack(const char* buffer) {
 }
 
 std::string MavLinkResourceRequest::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"RESOURCE_REQUEST\", \"id\": 142";
-	result << ", \"request_id\":" << static_cast<unsigned int>(this->request_id);
-	result << ", \"uri_type\":" << static_cast<unsigned int>(this->uri_type);
-	result << ", \"uri\":" << "[" << uint8_t_array_tostring(120, reinterpret_cast<uint8_t*>(&this->uri[0])) << "]";
-	result << ", \"transfer_type\":" << static_cast<unsigned int>(this->transfer_type);
-	result << ", \"storage\":" << "[" << uint8_t_array_tostring(120, reinterpret_cast<uint8_t*>(&this->storage[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"RESOURCE_REQUEST\", \"id\": 142";
+	ss << ", \"request_id\":" << static_cast<unsigned int>(this->request_id);
+	ss << ", \"uri_type\":" << static_cast<unsigned int>(this->uri_type);
+	ss << ", \"uri\":" << "[" << uint8_t_array_tostring(120, reinterpret_cast<uint8_t*>(&this->uri[0])) << "]";
+	ss << ", \"transfer_type\":" << static_cast<unsigned int>(this->transfer_type);
+	ss << ", \"storage\":" << "[" << uint8_t_array_tostring(120, reinterpret_cast<uint8_t*>(&this->storage[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkScaledPressure3::pack(char* buffer) const {
@@ -4128,14 +4128,14 @@ int MavLinkScaledPressure3::unpack(const char* buffer) {
 }
 
 std::string MavLinkScaledPressure3::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SCALED_PRESSURE3\", \"id\": 143";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"press_abs\":" << float_tostring(this->press_abs);
-	result << ", \"press_diff\":" << float_tostring(this->press_diff);
-	result << ", \"temperature\":" << this->temperature;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SCALED_PRESSURE3\", \"id\": 143";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"press_abs\":" << float_tostring(this->press_abs);
+	ss << ", \"press_diff\":" << float_tostring(this->press_diff);
+	ss << ", \"temperature\":" << this->temperature;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkFollowTarget::pack(char* buffer) const {
@@ -4169,21 +4169,21 @@ int MavLinkFollowTarget::unpack(const char* buffer) {
 }
 
 std::string MavLinkFollowTarget::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"FOLLOW_TARGET\", \"id\": 144";
-	result << ", \"timestamp\":" << this->timestamp;
-	result << ", \"custom_state\":" << this->custom_state;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << float_tostring(this->alt);
-	result << ", \"vel\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->vel[0])) << "]";
-	result << ", \"acc\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->acc[0])) << "]";
-	result << ", \"attitude_q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->attitude_q[0])) << "]";
-	result << ", \"rates\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->rates[0])) << "]";
-	result << ", \"position_cov\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->position_cov[0])) << "]";
-	result << ", \"est_capabilities\":" << static_cast<unsigned int>(this->est_capabilities);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"FOLLOW_TARGET\", \"id\": 144";
+	ss << ", \"timestamp\":" << this->timestamp;
+	ss << ", \"custom_state\":" << this->custom_state;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << float_tostring(this->alt);
+	ss << ", \"vel\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->vel[0])) << "]";
+	ss << ", \"acc\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->acc[0])) << "]";
+	ss << ", \"attitude_q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->attitude_q[0])) << "]";
+	ss << ", \"rates\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->rates[0])) << "]";
+	ss << ", \"position_cov\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->position_cov[0])) << "]";
+	ss << ", \"est_capabilities\":" << static_cast<unsigned int>(this->est_capabilities);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkControlSystemState::pack(char* buffer) const {
@@ -4229,27 +4229,27 @@ int MavLinkControlSystemState::unpack(const char* buffer) {
 }
 
 std::string MavLinkControlSystemState::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"CONTROL_SYSTEM_STATE\", \"id\": 146";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"x_acc\":" << float_tostring(this->x_acc);
-	result << ", \"y_acc\":" << float_tostring(this->y_acc);
-	result << ", \"z_acc\":" << float_tostring(this->z_acc);
-	result << ", \"x_vel\":" << float_tostring(this->x_vel);
-	result << ", \"y_vel\":" << float_tostring(this->y_vel);
-	result << ", \"z_vel\":" << float_tostring(this->z_vel);
-	result << ", \"x_pos\":" << float_tostring(this->x_pos);
-	result << ", \"y_pos\":" << float_tostring(this->y_pos);
-	result << ", \"z_pos\":" << float_tostring(this->z_pos);
-	result << ", \"airspeed\":" << float_tostring(this->airspeed);
-	result << ", \"vel_variance\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->vel_variance[0])) << "]";
-	result << ", \"pos_variance\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->pos_variance[0])) << "]";
-	result << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-	result << ", \"roll_rate\":" << float_tostring(this->roll_rate);
-	result << ", \"pitch_rate\":" << float_tostring(this->pitch_rate);
-	result << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"CONTROL_SYSTEM_STATE\", \"id\": 146";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"x_acc\":" << float_tostring(this->x_acc);
+	ss << ", \"y_acc\":" << float_tostring(this->y_acc);
+	ss << ", \"z_acc\":" << float_tostring(this->z_acc);
+	ss << ", \"x_vel\":" << float_tostring(this->x_vel);
+	ss << ", \"y_vel\":" << float_tostring(this->y_vel);
+	ss << ", \"z_vel\":" << float_tostring(this->z_vel);
+	ss << ", \"x_pos\":" << float_tostring(this->x_pos);
+	ss << ", \"y_pos\":" << float_tostring(this->y_pos);
+	ss << ", \"z_pos\":" << float_tostring(this->z_pos);
+	ss << ", \"airspeed\":" << float_tostring(this->airspeed);
+	ss << ", \"vel_variance\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->vel_variance[0])) << "]";
+	ss << ", \"pos_variance\":" << "[" << float_array_tostring(3, reinterpret_cast<float*>(&this->pos_variance[0])) << "]";
+	ss << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+	ss << ", \"roll_rate\":" << float_tostring(this->roll_rate);
+	ss << ", \"pitch_rate\":" << float_tostring(this->pitch_rate);
+	ss << ", \"yaw_rate\":" << float_tostring(this->yaw_rate);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkBatteryStatus::pack(char* buffer) const {
@@ -4279,19 +4279,19 @@ int MavLinkBatteryStatus::unpack(const char* buffer) {
 }
 
 std::string MavLinkBatteryStatus::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"BATTERY_STATUS\", \"id\": 147";
-	result << ", \"current_consumed\":" << this->current_consumed;
-	result << ", \"energy_consumed\":" << this->energy_consumed;
-	result << ", \"temperature\":" << this->temperature;
-	result << ", \"voltages\":" << "[" << uint16_t_array_tostring(10, reinterpret_cast<uint16_t*>(&this->voltages[0])) << "]";
-	result << ", \"current_battery\":" << this->current_battery;
-	result << ", \"id\":" << static_cast<unsigned int>(this->id);
-	result << ", \"battery_function\":" << static_cast<unsigned int>(this->battery_function);
-	result << ", \"type\":" << static_cast<unsigned int>(this->type);
-	result << ", \"battery_remaining\":" << static_cast<int>(this->battery_remaining);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"BATTERY_STATUS\", \"id\": 147";
+	ss << ", \"current_consumed\":" << this->current_consumed;
+	ss << ", \"energy_consumed\":" << this->energy_consumed;
+	ss << ", \"temperature\":" << this->temperature;
+	ss << ", \"voltages\":" << "[" << uint16_t_array_tostring(10, reinterpret_cast<uint16_t*>(&this->voltages[0])) << "]";
+	ss << ", \"current_battery\":" << this->current_battery;
+	ss << ", \"id\":" << static_cast<unsigned int>(this->id);
+	ss << ", \"battery_function\":" << static_cast<unsigned int>(this->battery_function);
+	ss << ", \"type\":" << static_cast<unsigned int>(this->type);
+	ss << ", \"battery_remaining\":" << static_cast<int>(this->battery_remaining);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAutopilotVersion::pack(char* buffer) const {
@@ -4325,21 +4325,21 @@ int MavLinkAutopilotVersion::unpack(const char* buffer) {
 }
 
 std::string MavLinkAutopilotVersion::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"AUTOPILOT_VERSION\", \"id\": 148";
-	result << ", \"capabilities\":" << this->capabilities;
-	result << ", \"uid\":" << this->uid;
-	result << ", \"flight_sw_version\":" << this->flight_sw_version;
-	result << ", \"middleware_sw_version\":" << this->middleware_sw_version;
-	result << ", \"os_sw_version\":" << this->os_sw_version;
-	result << ", \"board_version\":" << this->board_version;
-	result << ", \"vendor_id\":" << this->vendor_id;
-	result << ", \"product_id\":" << this->product_id;
-	result << ", \"flight_custom_version\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->flight_custom_version[0])) << "]";
-	result << ", \"middleware_custom_version\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->middleware_custom_version[0])) << "]";
-	result << ", \"os_custom_version\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->os_custom_version[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"AUTOPILOT_VERSION\", \"id\": 148";
+	ss << ", \"capabilities\":" << this->capabilities;
+	ss << ", \"uid\":" << this->uid;
+	ss << ", \"flight_sw_version\":" << this->flight_sw_version;
+	ss << ", \"middleware_sw_version\":" << this->middleware_sw_version;
+	ss << ", \"os_sw_version\":" << this->os_sw_version;
+	ss << ", \"board_version\":" << this->board_version;
+	ss << ", \"vendor_id\":" << this->vendor_id;
+	ss << ", \"product_id\":" << this->product_id;
+	ss << ", \"flight_custom_version\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->flight_custom_version[0])) << "]";
+	ss << ", \"middleware_custom_version\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->middleware_custom_version[0])) << "]";
+	ss << ", \"os_custom_version\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->os_custom_version[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkLandingTarget::pack(char* buffer) const {
@@ -4367,18 +4367,18 @@ int MavLinkLandingTarget::unpack(const char* buffer) {
 }
 
 std::string MavLinkLandingTarget::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"LANDING_TARGET\", \"id\": 149";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"angle_x\":" << float_tostring(this->angle_x);
-	result << ", \"angle_y\":" << float_tostring(this->angle_y);
-	result << ", \"distance\":" << float_tostring(this->distance);
-	result << ", \"size_x\":" << float_tostring(this->size_x);
-	result << ", \"size_y\":" << float_tostring(this->size_y);
-	result << ", \"target_num\":" << static_cast<unsigned int>(this->target_num);
-	result << ", \"frame\":" << static_cast<unsigned int>(this->frame);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"LANDING_TARGET\", \"id\": 149";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"angle_x\":" << float_tostring(this->angle_x);
+	ss << ", \"angle_y\":" << float_tostring(this->angle_y);
+	ss << ", \"distance\":" << float_tostring(this->distance);
+	ss << ", \"size_x\":" << float_tostring(this->size_x);
+	ss << ", \"size_y\":" << float_tostring(this->size_y);
+	ss << ", \"target_num\":" << static_cast<unsigned int>(this->target_num);
+	ss << ", \"frame\":" << static_cast<unsigned int>(this->frame);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkEstimatorStatus::pack(char* buffer) const {
@@ -4410,20 +4410,20 @@ int MavLinkEstimatorStatus::unpack(const char* buffer) {
 }
 
 std::string MavLinkEstimatorStatus::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ESTIMATOR_STATUS\", \"id\": 230";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"vel_ratio\":" << float_tostring(this->vel_ratio);
-	result << ", \"pos_horiz_ratio\":" << float_tostring(this->pos_horiz_ratio);
-	result << ", \"pos_vert_ratio\":" << float_tostring(this->pos_vert_ratio);
-	result << ", \"mag_ratio\":" << float_tostring(this->mag_ratio);
-	result << ", \"hagl_ratio\":" << float_tostring(this->hagl_ratio);
-	result << ", \"tas_ratio\":" << float_tostring(this->tas_ratio);
-	result << ", \"pos_horiz_accuracy\":" << float_tostring(this->pos_horiz_accuracy);
-	result << ", \"pos_vert_accuracy\":" << float_tostring(this->pos_vert_accuracy);
-	result << ", \"flags\":" << this->flags;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ESTIMATOR_STATUS\", \"id\": 230";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"vel_ratio\":" << float_tostring(this->vel_ratio);
+	ss << ", \"pos_horiz_ratio\":" << float_tostring(this->pos_horiz_ratio);
+	ss << ", \"pos_vert_ratio\":" << float_tostring(this->pos_vert_ratio);
+	ss << ", \"mag_ratio\":" << float_tostring(this->mag_ratio);
+	ss << ", \"hagl_ratio\":" << float_tostring(this->hagl_ratio);
+	ss << ", \"tas_ratio\":" << float_tostring(this->tas_ratio);
+	ss << ", \"pos_horiz_accuracy\":" << float_tostring(this->pos_horiz_accuracy);
+	ss << ", \"pos_vert_accuracy\":" << float_tostring(this->pos_vert_accuracy);
+	ss << ", \"flags\":" << this->flags;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkWindCov::pack(char* buffer) const {
@@ -4453,19 +4453,19 @@ int MavLinkWindCov::unpack(const char* buffer) {
 }
 
 std::string MavLinkWindCov::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"WIND_COV\", \"id\": 231";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"wind_x\":" << float_tostring(this->wind_x);
-	result << ", \"wind_y\":" << float_tostring(this->wind_y);
-	result << ", \"wind_z\":" << float_tostring(this->wind_z);
-	result << ", \"var_horiz\":" << float_tostring(this->var_horiz);
-	result << ", \"var_vert\":" << float_tostring(this->var_vert);
-	result << ", \"wind_alt\":" << float_tostring(this->wind_alt);
-	result << ", \"horiz_accuracy\":" << float_tostring(this->horiz_accuracy);
-	result << ", \"vert_accuracy\":" << float_tostring(this->vert_accuracy);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"WIND_COV\", \"id\": 231";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"wind_x\":" << float_tostring(this->wind_x);
+	ss << ", \"wind_y\":" << float_tostring(this->wind_y);
+	ss << ", \"wind_z\":" << float_tostring(this->wind_z);
+	ss << ", \"var_horiz\":" << float_tostring(this->var_horiz);
+	ss << ", \"var_vert\":" << float_tostring(this->var_vert);
+	ss << ", \"wind_alt\":" << float_tostring(this->wind_alt);
+	ss << ", \"horiz_accuracy\":" << float_tostring(this->horiz_accuracy);
+	ss << ", \"vert_accuracy\":" << float_tostring(this->vert_accuracy);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGpsInput::pack(char* buffer) const {
@@ -4513,28 +4513,28 @@ int MavLinkGpsInput::unpack(const char* buffer) {
 }
 
 std::string MavLinkGpsInput::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS_INPUT\", \"id\": 232";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"time_week_ms\":" << this->time_week_ms;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"alt\":" << float_tostring(this->alt);
-	result << ", \"hdop\":" << float_tostring(this->hdop);
-	result << ", \"vdop\":" << float_tostring(this->vdop);
-	result << ", \"vn\":" << float_tostring(this->vn);
-	result << ", \"ve\":" << float_tostring(this->ve);
-	result << ", \"vd\":" << float_tostring(this->vd);
-	result << ", \"speed_accuracy\":" << float_tostring(this->speed_accuracy);
-	result << ", \"horiz_accuracy\":" << float_tostring(this->horiz_accuracy);
-	result << ", \"vert_accuracy\":" << float_tostring(this->vert_accuracy);
-	result << ", \"ignore_flags\":" << this->ignore_flags;
-	result << ", \"time_week\":" << this->time_week;
-	result << ", \"gps_id\":" << static_cast<unsigned int>(this->gps_id);
-	result << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
-	result << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS_INPUT\", \"id\": 232";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"time_week_ms\":" << this->time_week_ms;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"alt\":" << float_tostring(this->alt);
+	ss << ", \"hdop\":" << float_tostring(this->hdop);
+	ss << ", \"vdop\":" << float_tostring(this->vdop);
+	ss << ", \"vn\":" << float_tostring(this->vn);
+	ss << ", \"ve\":" << float_tostring(this->ve);
+	ss << ", \"vd\":" << float_tostring(this->vd);
+	ss << ", \"speed_accuracy\":" << float_tostring(this->speed_accuracy);
+	ss << ", \"horiz_accuracy\":" << float_tostring(this->horiz_accuracy);
+	ss << ", \"vert_accuracy\":" << float_tostring(this->vert_accuracy);
+	ss << ", \"ignore_flags\":" << this->ignore_flags;
+	ss << ", \"time_week\":" << this->time_week;
+	ss << ", \"gps_id\":" << static_cast<unsigned int>(this->gps_id);
+	ss << ", \"fix_type\":" << static_cast<unsigned int>(this->fix_type);
+	ss << ", \"satellites_visible\":" << static_cast<unsigned int>(this->satellites_visible);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkGpsRtcmData::pack(char* buffer) const {
@@ -4552,13 +4552,13 @@ int MavLinkGpsRtcmData::unpack(const char* buffer) {
 }
 
 std::string MavLinkGpsRtcmData::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"GPS_RTCM_DATA\", \"id\": 233";
-	result << ", \"flags\":" << static_cast<unsigned int>(this->flags);
-	result << ", \"len\":" << static_cast<unsigned int>(this->len);
-	result << ", \"data\":" << "[" << uint8_t_array_tostring(180, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"GPS_RTCM_DATA\", \"id\": 233";
+	ss << ", \"flags\":" << static_cast<unsigned int>(this->flags);
+	ss << ", \"len\":" << static_cast<unsigned int>(this->len);
+	ss << ", \"data\":" << "[" << uint8_t_array_tostring(180, reinterpret_cast<uint8_t*>(&this->data[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHighLatency::pack(char* buffer) const {
@@ -4618,34 +4618,34 @@ int MavLinkHighLatency::unpack(const char* buffer) {
 }
 
 std::string MavLinkHighLatency::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HIGH_LATENCY\", \"id\": 234";
-	result << ", \"custom_mode\":" << this->custom_mode;
-	result << ", \"latitude\":" << this->latitude;
-	result << ", \"longitude\":" << this->longitude;
-	result << ", \"roll\":" << this->roll;
-	result << ", \"pitch\":" << this->pitch;
-	result << ", \"heading\":" << this->heading;
-	result << ", \"heading_sp\":" << this->heading_sp;
-	result << ", \"altitude_amsl\":" << this->altitude_amsl;
-	result << ", \"altitude_sp\":" << this->altitude_sp;
-	result << ", \"wp_distance\":" << this->wp_distance;
-	result << ", \"base_mode\":" << static_cast<unsigned int>(this->base_mode);
-	result << ", \"landed_state\":" << static_cast<unsigned int>(this->landed_state);
-	result << ", \"throttle\":" << static_cast<int>(this->throttle);
-	result << ", \"airspeed\":" << static_cast<unsigned int>(this->airspeed);
-	result << ", \"airspeed_sp\":" << static_cast<unsigned int>(this->airspeed_sp);
-	result << ", \"groundspeed\":" << static_cast<unsigned int>(this->groundspeed);
-	result << ", \"climb_rate\":" << static_cast<int>(this->climb_rate);
-	result << ", \"gps_nsat\":" << static_cast<unsigned int>(this->gps_nsat);
-	result << ", \"gps_fix_type\":" << static_cast<unsigned int>(this->gps_fix_type);
-	result << ", \"battery_remaining\":" << static_cast<unsigned int>(this->battery_remaining);
-	result << ", \"temperature\":" << static_cast<int>(this->temperature);
-	result << ", \"temperature_air\":" << static_cast<int>(this->temperature_air);
-	result << ", \"failsafe\":" << static_cast<unsigned int>(this->failsafe);
-	result << ", \"wp_num\":" << static_cast<unsigned int>(this->wp_num);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HIGH_LATENCY\", \"id\": 234";
+	ss << ", \"custom_mode\":" << this->custom_mode;
+	ss << ", \"latitude\":" << this->latitude;
+	ss << ", \"longitude\":" << this->longitude;
+	ss << ", \"roll\":" << this->roll;
+	ss << ", \"pitch\":" << this->pitch;
+	ss << ", \"heading\":" << this->heading;
+	ss << ", \"heading_sp\":" << this->heading_sp;
+	ss << ", \"altitude_amsl\":" << this->altitude_amsl;
+	ss << ", \"altitude_sp\":" << this->altitude_sp;
+	ss << ", \"wp_distance\":" << this->wp_distance;
+	ss << ", \"base_mode\":" << static_cast<unsigned int>(this->base_mode);
+	ss << ", \"landed_state\":" << static_cast<unsigned int>(this->landed_state);
+	ss << ", \"throttle\":" << static_cast<int>(this->throttle);
+	ss << ", \"airspeed\":" << static_cast<unsigned int>(this->airspeed);
+	ss << ", \"airspeed_sp\":" << static_cast<unsigned int>(this->airspeed_sp);
+	ss << ", \"groundspeed\":" << static_cast<unsigned int>(this->groundspeed);
+	ss << ", \"climb_rate\":" << static_cast<int>(this->climb_rate);
+	ss << ", \"gps_nsat\":" << static_cast<unsigned int>(this->gps_nsat);
+	ss << ", \"gps_fix_type\":" << static_cast<unsigned int>(this->gps_fix_type);
+	ss << ", \"battery_remaining\":" << static_cast<unsigned int>(this->battery_remaining);
+	ss << ", \"temperature\":" << static_cast<int>(this->temperature);
+	ss << ", \"temperature_air\":" << static_cast<int>(this->temperature_air);
+	ss << ", \"failsafe\":" << static_cast<unsigned int>(this->failsafe);
+	ss << ", \"wp_num\":" << static_cast<unsigned int>(this->wp_num);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkVibration::pack(char* buffer) const {
@@ -4671,17 +4671,17 @@ int MavLinkVibration::unpack(const char* buffer) {
 }
 
 std::string MavLinkVibration::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"VIBRATION\", \"id\": 241";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"vibration_x\":" << float_tostring(this->vibration_x);
-	result << ", \"vibration_y\":" << float_tostring(this->vibration_y);
-	result << ", \"vibration_z\":" << float_tostring(this->vibration_z);
-	result << ", \"clipping_0\":" << this->clipping_0;
-	result << ", \"clipping_1\":" << this->clipping_1;
-	result << ", \"clipping_2\":" << this->clipping_2;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"VIBRATION\", \"id\": 241";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"vibration_x\":" << float_tostring(this->vibration_x);
+	ss << ", \"vibration_y\":" << float_tostring(this->vibration_y);
+	ss << ", \"vibration_z\":" << float_tostring(this->vibration_z);
+	ss << ", \"clipping_0\":" << this->clipping_0;
+	ss << ", \"clipping_1\":" << this->clipping_1;
+	ss << ", \"clipping_2\":" << this->clipping_2;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkHomePosition::pack(char* buffer) const {
@@ -4713,20 +4713,20 @@ int MavLinkHomePosition::unpack(const char* buffer) {
 }
 
 std::string MavLinkHomePosition::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"HOME_POSITION\", \"id\": 242";
-	result << ", \"latitude\":" << this->latitude;
-	result << ", \"longitude\":" << this->longitude;
-	result << ", \"altitude\":" << this->altitude;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-	result << ", \"approach_x\":" << float_tostring(this->approach_x);
-	result << ", \"approach_y\":" << float_tostring(this->approach_y);
-	result << ", \"approach_z\":" << float_tostring(this->approach_z);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"HOME_POSITION\", \"id\": 242";
+	ss << ", \"latitude\":" << this->latitude;
+	ss << ", \"longitude\":" << this->longitude;
+	ss << ", \"altitude\":" << this->altitude;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+	ss << ", \"approach_x\":" << float_tostring(this->approach_x);
+	ss << ", \"approach_y\":" << float_tostring(this->approach_y);
+	ss << ", \"approach_z\":" << float_tostring(this->approach_z);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkSetHomePosition::pack(char* buffer) const {
@@ -4760,21 +4760,21 @@ int MavLinkSetHomePosition::unpack(const char* buffer) {
 }
 
 std::string MavLinkSetHomePosition::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"SET_HOME_POSITION\", \"id\": 243";
-	result << ", \"latitude\":" << this->latitude;
-	result << ", \"longitude\":" << this->longitude;
-	result << ", \"altitude\":" << this->altitude;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-	result << ", \"approach_x\":" << float_tostring(this->approach_x);
-	result << ", \"approach_y\":" << float_tostring(this->approach_y);
-	result << ", \"approach_z\":" << float_tostring(this->approach_z);
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"SET_HOME_POSITION\", \"id\": 243";
+	ss << ", \"latitude\":" << this->latitude;
+	ss << ", \"longitude\":" << this->longitude;
+	ss << ", \"altitude\":" << this->altitude;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"q\":" << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+	ss << ", \"approach_x\":" << float_tostring(this->approach_x);
+	ss << ", \"approach_y\":" << float_tostring(this->approach_y);
+	ss << ", \"approach_z\":" << float_tostring(this->approach_z);
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMessageInterval::pack(char* buffer) const {
@@ -4790,12 +4790,12 @@ int MavLinkMessageInterval::unpack(const char* buffer) {
 }
 
 std::string MavLinkMessageInterval::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MESSAGE_INTERVAL\", \"id\": 244";
-	result << ", \"interval_us\":" << this->interval_us;
-	result << ", \"message_id\":" << this->message_id;
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MESSAGE_INTERVAL\", \"id\": 244";
+	ss << ", \"interval_us\":" << this->interval_us;
+	ss << ", \"message_id\":" << this->message_id;
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkExtendedSysState::pack(char* buffer) const {
@@ -4811,12 +4811,12 @@ int MavLinkExtendedSysState::unpack(const char* buffer) {
 }
 
 std::string MavLinkExtendedSysState::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"EXTENDED_SYS_STATE\", \"id\": 245";
-	result << ", \"vtol_state\":" << static_cast<unsigned int>(this->vtol_state);
-	result << ", \"landed_state\":" << static_cast<unsigned int>(this->landed_state);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"EXTENDED_SYS_STATE\", \"id\": 245";
+	ss << ", \"vtol_state\":" << static_cast<unsigned int>(this->vtol_state);
+	ss << ", \"landed_state\":" << static_cast<unsigned int>(this->landed_state);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkAdsbVehicle::pack(char* buffer) const {
@@ -4854,23 +4854,23 @@ int MavLinkAdsbVehicle::unpack(const char* buffer) {
 }
 
 std::string MavLinkAdsbVehicle::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"ADSB_VEHICLE\", \"id\": 246";
-	result << ", \"ICAO_address\":" << this->ICAO_address;
-	result << ", \"lat\":" << this->lat;
-	result << ", \"lon\":" << this->lon;
-	result << ", \"altitude\":" << this->altitude;
-	result << ", \"heading\":" << this->heading;
-	result << ", \"hor_velocity\":" << this->hor_velocity;
-	result << ", \"ver_velocity\":" << this->ver_velocity;
-	result << ", \"flags\":" << this->flags;
-	result << ", \"squawk\":" << this->squawk;
-	result << ", \"altitude_type\":" << static_cast<unsigned int>(this->altitude_type);
-	result << ", \"callsign\":" << "\"" << char_array_tostring(9, reinterpret_cast<char*>(&this->callsign[0])) << "\"";
-	result << ", \"emitter_type\":" << static_cast<unsigned int>(this->emitter_type);
-	result << ", \"tslc\":" << static_cast<unsigned int>(this->tslc);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"ADSB_VEHICLE\", \"id\": 246";
+	ss << ", \"ICAO_address\":" << this->ICAO_address;
+	ss << ", \"lat\":" << this->lat;
+	ss << ", \"lon\":" << this->lon;
+	ss << ", \"altitude\":" << this->altitude;
+	ss << ", \"heading\":" << this->heading;
+	ss << ", \"hor_velocity\":" << this->hor_velocity;
+	ss << ", \"ver_velocity\":" << this->ver_velocity;
+	ss << ", \"flags\":" << this->flags;
+	ss << ", \"squawk\":" << this->squawk;
+	ss << ", \"altitude_type\":" << static_cast<unsigned int>(this->altitude_type);
+	ss << ", \"callsign\":" << "\"" << char_array_tostring(9, reinterpret_cast<char*>(&this->callsign[0])) << "\"";
+	ss << ", \"emitter_type\":" << static_cast<unsigned int>(this->emitter_type);
+	ss << ", \"tslc\":" << static_cast<unsigned int>(this->tslc);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkCollision::pack(char* buffer) const {
@@ -4896,17 +4896,17 @@ int MavLinkCollision::unpack(const char* buffer) {
 }
 
 std::string MavLinkCollision::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"COLLISION\", \"id\": 247";
-	result << ", \"id\":" << this->id;
-	result << ", \"time_to_minimum_delta\":" << float_tostring(this->time_to_minimum_delta);
-	result << ", \"altitude_minimum_delta\":" << float_tostring(this->altitude_minimum_delta);
-	result << ", \"horizontal_minimum_delta\":" << float_tostring(this->horizontal_minimum_delta);
-	result << ", \"src\":" << static_cast<unsigned int>(this->src);
-	result << ", \"action\":" << static_cast<unsigned int>(this->action);
-	result << ", \"threat_level\":" << static_cast<unsigned int>(this->threat_level);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"COLLISION\", \"id\": 247";
+	ss << ", \"id\":" << this->id;
+	ss << ", \"time_to_minimum_delta\":" << float_tostring(this->time_to_minimum_delta);
+	ss << ", \"altitude_minimum_delta\":" << float_tostring(this->altitude_minimum_delta);
+	ss << ", \"horizontal_minimum_delta\":" << float_tostring(this->horizontal_minimum_delta);
+	ss << ", \"src\":" << static_cast<unsigned int>(this->src);
+	ss << ", \"action\":" << static_cast<unsigned int>(this->action);
+	ss << ", \"threat_level\":" << static_cast<unsigned int>(this->threat_level);
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkV2Extension::pack(char* buffer) const {
@@ -4928,15 +4928,15 @@ int MavLinkV2Extension::unpack(const char* buffer) {
 }
 
 std::string MavLinkV2Extension::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"V2_EXTENSION\", \"id\": 248";
-	result << ", \"message_type\":" << this->message_type;
-	result << ", \"target_network\":" << static_cast<unsigned int>(this->target_network);
-	result << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
-	result << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
-	result << ", \"payload\":" << "[" << uint8_t_array_tostring(249, reinterpret_cast<uint8_t*>(&this->payload[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"V2_EXTENSION\", \"id\": 248";
+	ss << ", \"message_type\":" << this->message_type;
+	ss << ", \"target_network\":" << static_cast<unsigned int>(this->target_network);
+	ss << ", \"target_system\":" << static_cast<unsigned int>(this->target_system);
+	ss << ", \"target_component\":" << static_cast<unsigned int>(this->target_component);
+	ss << ", \"payload\":" << "[" << uint8_t_array_tostring(249, reinterpret_cast<uint8_t*>(&this->payload[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkMemoryVect::pack(char* buffer) const {
@@ -4956,14 +4956,14 @@ int MavLinkMemoryVect::unpack(const char* buffer) {
 }
 
 std::string MavLinkMemoryVect::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"MEMORY_VECT\", \"id\": 249";
-	result << ", \"address\":" << this->address;
-	result << ", \"ver\":" << static_cast<unsigned int>(this->ver);
-	result << ", \"type\":" << static_cast<unsigned int>(this->type);
-	result << ", \"value\":" << "[" << int8_t_array_tostring(32, reinterpret_cast<int8_t*>(&this->value[0])) << "]";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"MEMORY_VECT\", \"id\": 249";
+	ss << ", \"address\":" << this->address;
+	ss << ", \"ver\":" << static_cast<unsigned int>(this->ver);
+	ss << ", \"type\":" << static_cast<unsigned int>(this->type);
+	ss << ", \"value\":" << "[" << int8_t_array_tostring(32, reinterpret_cast<int8_t*>(&this->value[0])) << "]";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkDebugVect::pack(char* buffer) const {
@@ -4985,15 +4985,15 @@ int MavLinkDebugVect::unpack(const char* buffer) {
 }
 
 std::string MavLinkDebugVect::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"DEBUG_VECT\", \"id\": 250";
-	result << ", \"time_usec\":" << this->time_usec;
-	result << ", \"x\":" << float_tostring(this->x);
-	result << ", \"y\":" << float_tostring(this->y);
-	result << ", \"z\":" << float_tostring(this->z);
-	result << ", \"name\":" << "\"" << char_array_tostring(10, reinterpret_cast<char*>(&this->name[0])) << "\"";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"DEBUG_VECT\", \"id\": 250";
+	ss << ", \"time_usec\":" << this->time_usec;
+	ss << ", \"x\":" << float_tostring(this->x);
+	ss << ", \"y\":" << float_tostring(this->y);
+	ss << ", \"z\":" << float_tostring(this->z);
+	ss << ", \"name\":" << "\"" << char_array_tostring(10, reinterpret_cast<char*>(&this->name[0])) << "\"";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkNamedValueFloat::pack(char* buffer) const {
@@ -5011,13 +5011,13 @@ int MavLinkNamedValueFloat::unpack(const char* buffer) {
 }
 
 std::string MavLinkNamedValueFloat::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"NAMED_VALUE_FLOAT\", \"id\": 251";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"value\":" << float_tostring(this->value);
-	result << ", \"name\":" << "\"" << char_array_tostring(10, reinterpret_cast<char*>(&this->name[0])) << "\"";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"NAMED_VALUE_FLOAT\", \"id\": 251";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"value\":" << float_tostring(this->value);
+	ss << ", \"name\":" << "\"" << char_array_tostring(10, reinterpret_cast<char*>(&this->name[0])) << "\"";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkNamedValueInt::pack(char* buffer) const {
@@ -5035,13 +5035,13 @@ int MavLinkNamedValueInt::unpack(const char* buffer) {
 }
 
 std::string MavLinkNamedValueInt::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"NAMED_VALUE_INT\", \"id\": 252";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"value\":" << this->value;
-	result << ", \"name\":" << "\"" << char_array_tostring(10, reinterpret_cast<char*>(&this->name[0])) << "\"";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"NAMED_VALUE_INT\", \"id\": 252";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"value\":" << this->value;
+	ss << ", \"name\":" << "\"" << char_array_tostring(10, reinterpret_cast<char*>(&this->name[0])) << "\"";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkStatustext::pack(char* buffer) const {
@@ -5057,12 +5057,12 @@ int MavLinkStatustext::unpack(const char* buffer) {
 }
 
 std::string MavLinkStatustext::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"STATUSTEXT\", \"id\": 253";
-	result << ", \"severity\":" << static_cast<unsigned int>(this->severity);
-	result << ", \"text\":" << "\"" << char_array_tostring(50, reinterpret_cast<char*>(&this->text[0])) << "\"";
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"STATUSTEXT\", \"id\": 253";
+	ss << ", \"severity\":" << static_cast<unsigned int>(this->severity);
+	ss << ", \"text\":" << "\"" << char_array_tostring(50, reinterpret_cast<char*>(&this->text[0])) << "\"";
+	ss << "},";
+	return ss.str();
 }
 
 int MavLinkDebug::pack(char* buffer) const {
@@ -5080,13 +5080,13 @@ int MavLinkDebug::unpack(const char* buffer) {
 }
 
 std::string MavLinkDebug::toJSon() {
-	std::ostringstream result;
-	result << "{ \"name\": \"DEBUG\", \"id\": 254";
-	result << ", \"time_boot_ms\":" << this->time_boot_ms;
-	result << ", \"value\":" << float_tostring(this->value);
-	result << ", \"ind\":" << static_cast<unsigned int>(this->ind);
-	result << "},";
-	return result.str();
+	std::ostringstream ss;
+	ss << "{ \"name\": \"DEBUG\", \"id\": 254";
+	ss << ", \"time_boot_ms\":" << this->time_boot_ms;
+	ss << ", \"value\":" << float_tostring(this->value);
+	ss << ", \"ind\":" << static_cast<unsigned int>(this->ind);
+	ss << "},";
+	return ss.str();
 }
 
 void MavCmdNavWaypoint::pack() {
@@ -6769,6 +6769,8 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
 		break;
 	case MavLinkMessageIds::MAVLINK_MSG_ID_DEBUG:
 		result = new MavLinkDebug();
+		break;
+	default:
 		break;
 	}
 	if (result != nullptr) {

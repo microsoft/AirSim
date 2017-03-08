@@ -143,7 +143,7 @@ void OpenLogFiles() {
 		path = FileSystem::combine(path, today);
 		FileSystem::ensureFolder(path);
 
-		char* ext = jsonLogFormat ? "json" : "mavlink";
+		const char* ext = jsonLogFormat ? "json" : "mavlink";
 		std::string input = Utils::stringf("%02d-%02d-%02d-input.%s", local->tm_hour, local->tm_min, local->tm_sec, ext);
 		auto infile = FileSystem::combine(path, input);
 		inLogFile = std::make_shared<MavLinkLog>();
@@ -816,11 +816,11 @@ bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
 {
 	if (offboard && serial)
 	{
-		printf("Cannot connect to local serial pixhawk and -offboard drone at the same time \n");
+		printf("Cannot connect to local -serial pixhawk and -udp drone at the same time \n");
 		return false;
 	}
 	if (!offboard && !serial && !server) {
-		printf("Must specify one of -serial, -offboard or -server otherwise we don't have a drone connection\n");
+		printf("Must specify one of -serial, -udp or -server otherwise we don't have a drone connection\n");
 		return false;
 	}
 	if (offboard && server)
@@ -991,7 +991,8 @@ int console() {
 		sendImage->setLogViewer(logViewer);
 	}
 
-	checkPulse(mavLinkVehicle);
+	// this stops us from being able to connect to SITL mode PX4.
+	//checkPulse(mavLinkVehicle);
 
 	int retries = 0;
 	while (retries++ < 5) {

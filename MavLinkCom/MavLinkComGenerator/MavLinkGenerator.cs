@@ -315,9 +315,9 @@ namespace MavLinkComGenerator
 
 
                 impl.WriteLine("std::string MavLink{0}::toJSon() {{", name);
-                impl.WriteLine("    std::ostringstream result;");
+                impl.WriteLine("    std::ostringstream ss;");
 
-                impl.WriteLine("    result << \"{{ \\\"name\\\": \\\"{0}\\\", \\\"id\\\": {1}\";", m.name, id);
+                impl.WriteLine("    ss << \"{{ \\\"name\\\": \\\"{0}\\\", \\\"id\\\": {1}\";", m.name, id);
 
                 for (int i = 0; i < length; i++)
                 {
@@ -327,7 +327,7 @@ namespace MavLinkComGenerator
                     {
                         type = "uint8_t";
                     }
-                    impl.Write("    result << \", \\\"{0}\\\":\" ", field.name);
+                    impl.Write("    ss << \", \\\"{0}\\\":\" ", field.name);
 
                     if (field.isArray)
                     {
@@ -365,9 +365,9 @@ namespace MavLinkComGenerator
 
                     impl.WriteLine(";");
                 }
-                impl.WriteLine("    result << \"},\";");
+                impl.WriteLine("    ss << \"},\";");
 
-                impl.WriteLine(" return result.str();");
+                impl.WriteLine(" return ss.str();");
                 impl.WriteLine("}");
                 impl.WriteLine("");
 
@@ -396,6 +396,8 @@ namespace MavLinkComGenerator
                 impl.WriteLine("        break;");
             }
 
+            impl.WriteLine("    default:");
+            impl.WriteLine("        break;");
             impl.WriteLine("    }");
             impl.WriteLine("    if (result != nullptr) {");
             impl.WriteLine("        result->decode(msg);");
