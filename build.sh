@@ -5,6 +5,9 @@ cd "$SCRIPT_DIR"
 
 set -e
 
+# update the rpclib git submodule
+git submodule update --init --recursive 
+
 # we need to use clang because the Unreal Engine is built with clang as well and
 # there are some symbol inconsistencies in the C++ library with regard to C++11
 # (see GCC Dual ABI: # https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)
@@ -12,62 +15,44 @@ set -e
 #!/bin/bash
 if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
 	echo "clang is necessary to compile AirSim"
+	echo "please run : sudo apt-get install clang++-3.8"
+	echo "followed by: sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 "
+	exit 1
 fi
 
 export CC=/usr/bin/clang
 export CXX=/usr/bin/clang++
 
-
-if [[ ! -d eigen ]]; then
-	echo "downloading eigen..."
-	wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
-	unzip 3.3.2.zip -d eigen
-	pushd eigen
-	mv eigen* eigen3
-	echo "3.3.2" > version
-	popd &>/dev/null
-	rm 3.3.2.zip
-fi
-export EIGEN_ROOT="$(pwd)/eigen"
-
-
-boost_dir="$(pwd)/boost/boost_1_63_0"
-# get & build boost
-if [[ ! -d boost ]]; then
-	ldconfig -p | grep -q libc++
-	if [ $? -ne 0 ]; then
-		echo "it's necessary libc++ to compile boost"
-		exit 1
+if [[ ! -d "$EIGEN_ROOT" ]]; then 
+	if [[ ! -d eigen ]]; then
+		echo "downloading eigen..."
+		wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
+		unzip 3.3.2.zip -d eigen
+		pushd eigen
+		mv eigen* eigen3
+		echo "3.3.2" > version
+		popd &>/dev/null
+		rm 3.3.2.zip
 	fi
-
-	# because we are using Clang, we cannot use the system's boost libs, because
-	# we could run into the same ABI problems as stated above
-	echo "downloading & building boost..."
-	wget https://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.zip/download
-	mkdir boost
-	unzip download -d boost
-	mkdir "$boost_dir/installation"
-
-	pushd "$boost_dir"
-	./bootstrap.sh --prefix="$boost_dir/installation" --without-libraries=python
-	./b2 -j8 toolset=clang cxxflags="-fPIC -stdlib=libc++" linkflags="-stdlib=libc++" \
-		runtime-link=shared variant=release link=static threading=multi install
-	rm ../../download
-
-	popd &>/dev/null
+	export EIGEN_ROOT="$(pwd)/eigen"
 fi
-
-export BOOST_ROOT=$boost_dir/installation
-
 
 build_dir=build_debug
-# to clean, just delete the directory...
+echo "putting build in build_debug folder, to clean, just delete the directory..."
 
+# this ensures the cmake files will be built in our $build_dir instead.
+if [[ -f "../cmake/CMakeCache.txt" ]]; then
+    rm "../cmake/CMakeCache.txt"
+fi
+if [[ -d "../cmake/CMakeFiles" ]]; then
+    rm -rf "../cmake/CMakeFiles"
+fi
 
 if [[ ! -d $build_dir ]]; then
 	mkdir -p $build_dir
 	pushd $build_dir
-	cmake ../cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_FIND_ROOT_PATH="$BOOST_ROOT" \
+
+	cmake ../cmake -DCMAKE_BUILD_TYPE=Debug \
 		|| (cd .. && rm -r $build_dir && exit 1)
 	popd &>/dev/null
 fi
@@ -80,14 +65,14 @@ make -j8 AirLib MavLinkCom
 popd &>/dev/null
 
 
+mkdir -p AirLib/lib/x64/Debug
+mkdir -p AirLib/deps/rpclib
+mkdir -p AirLib/deps/MavLinkCom
+rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug
+rsync -a --delete external/rpclib/include AirLib/deps/rpclib
+rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
+rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 
-
-mkdir -p AirLib/deps/MavLinkCom AirLib/deps/rpclib/lib AirLib/lib || true
-cp -p $build_dir/output/lib/libAirSim-rpclib.a AirLib/deps/rpclib/lib
-cp -p $build_dir/output/lib/libAirLib.a AirLib/lib
-cp -rp MavLinkCom/include AirLib/deps/MavLinkCom
-cp -rp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
-cp -rp AirLib Unreal/Plugins/AirSim/Source
 
 echo ""
 echo "============================================================"
@@ -96,6 +81,5 @@ echo "rsync -t -r Unreal/plugins <unreal project_root>"
 echo "  (<unreal project_root> contains a file named <project>.uproject)"
 echo "============================================================"
 echo "And do (required for building the Unreal plugin):"
-echo "export BOOST_ROOT=\"$BOOST_ROOT\""
 echo "export EIGEN_ROOT=\"$EIGEN_ROOT\""
 
