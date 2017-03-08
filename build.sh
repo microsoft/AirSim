@@ -9,8 +9,8 @@ set -e
 git submodule update --init --recursive 
 
 #!/bin/bash
-if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/xclang++") ]]; then
-	echo "ERROR: clang 3.9 is necessary to compile AirSim and run it in Unreal"
+if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
+	echo "ERROR: clang++ 3.9 is necessary to compile AirSim and run it in Unreal"
 	echo "       please run : sudo apt-get install clang++-3.9"
 	echo "       followed by: sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9 "
 
