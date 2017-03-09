@@ -1,0 +1,25 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- define a new file type -->
+  <ItemGroup>
+    <EigenLibraries Include="$(MSBuildThisFile)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);InvokeEigenBuild</PrepareForBuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="InvokeEigenBuild"
+          Inputs="@(EigenLibraries)"
+          Outputs="$(MSBuildThisFileDirectory)\..\AirLib\deps\rpclib\lib\x64\$(Configuration)\rpc.lib">
+
+      <Message Importance="High" Text="######## Building Eigen Library"/>
+      <Exec
+        Command="$(MSBuildThisFileDirectory)\BuildEigen.cmd"
+        WorkingDirectory="$(MSBuildThisFileDirectory)"
+        Outputs="$(MSBuildThisFileDirectory)\..\AirLib\deps\rpclib\lib\x64\$(Configuration)\rpc.lib"
+      >
+      <Output TaskParameter="Outputs" ItemName="FileWrites" />
+    </Exec>
+
+  </Target>
+</Project>

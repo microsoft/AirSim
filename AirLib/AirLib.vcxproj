@@ -291,6 +291,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)\build\eigen.targets"/>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
