@@ -877,7 +877,7 @@ bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
 	}
 	mavLinkVehicle->connect(droneConnection);
 
-    if (serial) {
+    if (!server) {
         // local connection, then we own sending the heartbeat.
         mavLinkVehicle->startHeartbeat();        
     }
