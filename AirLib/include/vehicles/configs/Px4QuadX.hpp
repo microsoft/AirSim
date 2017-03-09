@@ -89,8 +89,8 @@ private:
             connection_info.qgc_ip_address = child.getString("QgcHostIp", connection_info.qgc_ip_address);
             connection_info.qgc_ip_port = child.getInt("QgcPort", connection_info.qgc_ip_port);
 
-            connection_info.ip_address = child.getString("SitlIp", connection_info.ip_address);
-            connection_info.ip_port = child.getInt("SitlPort", connection_info.ip_port);
+            connection_info.sitl_ip_address = child.getString("SitlIp", connection_info.ip_address);
+            connection_info.sitl_ip_port = child.getInt("SitlPort", connection_info.ip_port);
 
             connection_info.local_host_ip = child.getString("LocalHostIp", connection_info.local_host_ip);
 

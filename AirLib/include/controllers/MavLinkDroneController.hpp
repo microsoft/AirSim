@@ -37,9 +37,14 @@ public:
         std::string serial_port = "*";
         int baud_rate = 115200;
 
-        //Used to connect via SITL: needed only if use_serial = false
+        //Used to connect to drone over UDP: needed only if use_serial = false
         std::string ip_address = "127.0.0.1";
         int ip_port = 14560;
+
+		// The PX4 SITL app requires receiving drone commands over a different mavlink channel.
+		// So set this to '127.0.0.1' to enable that separate command channel.
+		std::string sitl_ip_address = "";
+		int sitl_ip_port = 14556;
 
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
         int logviewer_ip_port = 14388;

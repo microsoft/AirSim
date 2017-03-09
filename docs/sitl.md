@@ -28,6 +28,7 @@ make posix_sitl_default
 5. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is
 waiting for someone to connect.
 6. Now edit [settings file](settings.md) with `UdpIp` address 127.0.0.1 and `UdpPort` 14560, set `UseSerial` to false
+and set `SitlIp` to 127.0.0.1 and `SitlPort` to 14556.
 7. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from
 things like `local_position_estimator` and `commander` and so on.
 8. You should also be able to use QGroundControl just like with actual [flight controller harware](prereq.md). 

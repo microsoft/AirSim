@@ -41,7 +41,7 @@ struct MavLinkDroneController::impl {
 
     size_t status_messages_MaxSize = 5000;
     
-    std::shared_ptr<mavlinkcom::MavLinkNode> main_node_;
+    std::shared_ptr<mavlinkcom::MavLinkNode> hil_node_;
     std::shared_ptr<mavlinkcom::MavLinkConnection> connection_;
     std::shared_ptr<mavlinkcom::MavLinkVideoServer> video_server_;
     std::shared_ptr<DroneControllerBase> mav_vehicle_control_;
@@ -118,7 +118,7 @@ struct MavLinkDroneController::impl {
         }
     }
 
-    void initializeMavSubscrptions()
+    void initializeMavSubscriptions()
     {
         if (connection_ != nullptr) {
             is_any_heartbeat_ = false;
@@ -127,8 +127,9 @@ struct MavLinkDroneController::impl {
             is_controls_0_1_ = true;
             Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
-            auto subscriber = std::bind(&impl::hILSubscriber, this, std::placeholders::_1, std::placeholders::_2);
-            connection_->subscribe(subscriber);
+            connection_->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg){
+				processMavMessages(msg);
+			});
         }
     }
 
@@ -217,7 +218,7 @@ struct MavLinkDroneController::impl {
     void connect()
     {
         createMavConnection(connection_info_);
-        initializeMavSubscrptions();
+        initializeMavSubscriptions();
     }
 
     void createMavConnection(const ConnectionInfo& connection_info)
@@ -237,16 +238,27 @@ struct MavLinkDroneController::impl {
         close();
 
         if (ip == "") {
-            throw std::invalid_argument("mav_vehicle_udp parameter is not set, or has an invalid value.  Please run 'rosparam' to set '/AirNode/mav_vehicle_udp' to the local UDP address to start listening on for the mavlink messages, for example: '127.0.0.1' or '192.168.1.64'.\n");
+            throw std::invalid_argument("UdpIp setting is invalid.");
         }
 
         if (port == 0) {
-            throw std::invalid_argument("mav_vehicle_udp_port parameter is not set, or has an invalid value.  Please run 'rosparam' to set '/AirNode/mav_vehicle_udp_port' to to the local UDP port start listening on for mavlink messages, for example: 14550.\n");
+            throw std::invalid_argument("UdpPort setting has an invalid value.");
         }
 
         connection_ = MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
-        main_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
-        main_node_->connect(connection_);
+        hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
+        hil_node_->connect(connection_);
+
+		if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0) {
+			// bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
+			// as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
+			auto sitlconnection = MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);			
+			mav_vehicle_->connect(sitlconnection);
+		}
+		else {
+			mav_vehicle_->connect(connection_);
+		}
+
     }
 
     void createMavSerialConnection(const std::string& port_name, int baud_rate)
@@ -262,16 +274,17 @@ struct MavLinkDroneController::impl {
         }
 
         if (port_name_auto == "") {
-            throw std::invalid_argument("mav_vehicle_serial parameter is not set, or has an invalid value.  Please run 'rosparam' to set '/AirNode/mav_vehicle_serial' to the name of the serial device, for example '/dev/ttyACM0'.  Note you can ls -l /dev/serial/by-id to find which device your PX4 is showing up as.\n");
+            throw std::invalid_argument("SerialPort setting has an invalid value.");
         }
 
         if (baud_rate == 0) {
-            throw std::invalid_argument("mav_vehicle_params.baudRate parameter is not set, or has an invalid value.  Please run 'rosparam' to set '/AirNode/mav_vehicle_params.baudRate' to to the correct value, for example: 115200 or 57600\n");
+            throw std::invalid_argument("SerialBaudRate has an invalid value");
         }
 
         connection_ = MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
-        main_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
-        main_node_->connect(connection_);
+        hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
+        hil_node_->connect(connection_);
+		mav_vehicle_->connect(connection_); // in this case we can use the same connection.
     }
 
     mavlinkcom::MavLinkHilSensor getLastSensorMessage()
@@ -292,11 +305,6 @@ struct MavLinkDroneController::impl {
             std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
             MocapPoseMessage.decode(msg); // update current vehicle state.
         }
-    }
-
-    void hILSubscriber(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg)
-    {
-        processMavMessages(msg);
     }
 
     void processMavMessages(const MavLinkMessage& msg)
@@ -386,8 +394,8 @@ struct MavLinkDroneController::impl {
         //TODO: enable tempeprature? diff_presure
         hil_sensor.fields_updated = was_reseted_ ? (1 << 31) : 0;
 
-        if (main_node_ != nullptr) {
-            main_node_->sendMessage(hil_sensor);
+        if (hil_node_ != nullptr) {
+            hil_node_->sendMessage(hil_sensor);
         }
 
         // also forward this message to the log viewer so we can see it there also.
@@ -417,8 +425,8 @@ struct MavLinkDroneController::impl {
         hil_gps.cog = static_cast<uint16_t>(cog * 100);
         hil_gps.satellites_visible = static_cast<uint8_t>(satellites_visible);
 
-        if (main_node_ != nullptr) {
-            main_node_->sendMessage(hil_gps);
+        if (hil_node_ != nullptr) {
+            hil_node_->sendMessage(hil_gps);
         }
 
         if (logviewer_proxy_ != nullptr) {
@@ -541,7 +549,6 @@ struct MavLinkDroneController::impl {
         connectToLogViewer();
         connectToQGC();
 
-        mav_vehicle_->connect(connection_);
     }
     void stop()
     {
@@ -559,29 +566,29 @@ struct MavLinkDroneController::impl {
 
     void sendMocapPose(const Vector3r& position, const Quaternionr& orientation)
     {
-        if (main_node_ == nullptr) return;
+        if (mav_vehicle_ == nullptr) return;
 
         mavlinkcom::MavLinkAttPosMocap mocap_pose_message;
         mocap_pose_message.x = position.x(); mocap_pose_message.y = position.y(); mocap_pose_message.z = position.z();
         mocap_pose_message.q[0] = orientation.w(); mocap_pose_message.q[1] = orientation.x();
         mocap_pose_message.q[2] = orientation.y(); mocap_pose_message.q[3] = orientation.z();
-        main_node_->sendMessage(mocap_pose_message);	
+		mav_vehicle_->sendMessage(mocap_pose_message);
     }
 
     void sendCollison(float normalX, float normalY, float normalZ)
     {
-        if (main_node_ == nullptr) return;
+        if (mav_vehicle_ == nullptr) return;
 
         MavLinkCollision collision{};
         collision.src = 1;	//provider of data is MavLink system in id field
-        collision.id = main_node_->getLocalSystemId();
+        collision.id = mav_vehicle_->getLocalSystemId();
         collision.action = static_cast<uint8_t>(MAV_COLLISION_ACTION::MAV_COLLISION_ACTION_REPORT);
         collision.threat_level = static_cast<uint8_t>(MAV_COLLISION_THREAT_LEVEL::MAV_COLLISION_THREAT_LEVEL_NONE);
         // we are abusing these fields, passing the angle of the object we hit, so that jMAVSim knows how to bounce off.
         collision.time_to_minimum_delta = normalX;
         collision.altitude_minimum_delta = normalY;
         collision.horizontal_minimum_delta = normalZ;
-        main_node_->sendMessage(collision);
+		mav_vehicle_->sendMessage(collision);
     }
 
     bool hasVideoRequest()
@@ -598,16 +605,16 @@ struct MavLinkDroneController::impl {
 
     void setNormalMode()
     {
-        if (is_hil_mode_set_ && main_node_ != nullptr && connection_ != nullptr) {
+        if (is_hil_mode_set_ && mav_vehicle_ != nullptr && connection_ != nullptr) {
             //TODO: this is depricated message, add support for MAV_CMD_DO_SET_MODE
             std::lock_guard<std::mutex> guard(set_mode_mutex_);
             SetModeMessage.target_system = connection_info_.sim_sysid;
             SetModeMessage.base_mode = 0;  //disarm
-            main_node_->sendMessage(SetModeMessage);
+			mav_vehicle_->sendMessage(SetModeMessage);
 
             mavlinkcom::MavCmdComponentArmDisarm disarm_msg;
             disarm_msg.p1ToArm = 0;
-            main_node_->sendCommand(disarm_msg);
+			mav_vehicle_->sendCommand(disarm_msg);
 
             is_hil_mode_set_ = false;
         }
@@ -615,7 +622,7 @@ struct MavLinkDroneController::impl {
 
     void setHILMode()
     {
-        if (main_node_ == nullptr) {
+        if (mav_vehicle_ == nullptr) {
             return;
         }
 
@@ -623,22 +630,22 @@ struct MavLinkDroneController::impl {
         std::lock_guard<std::mutex> guard_setmode(set_mode_mutex_);
         SetModeMessage.target_system = connection_info_.sim_sysid;
         SetModeMessage.base_mode = 32;  //HIL + disarm
-        main_node_->sendMessage(SetModeMessage);
+		mav_vehicle_->sendMessage(SetModeMessage);
         is_hil_mode_set_ = true;
     }
 
     void close()
     {
         if (connection_ != nullptr) {
-            if (is_hil_mode_set_ && main_node_ != nullptr) {
+            if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
                 setNormalMode();
             }
 
             connection_->close();
         }
 
-        if (main_node_ != nullptr)
-            main_node_->close();
+        if (hil_node_ != nullptr)
+            hil_node_->close();
 
         if (video_server_ != nullptr)
             video_server_->close();
