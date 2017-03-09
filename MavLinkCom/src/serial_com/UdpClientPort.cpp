@@ -124,6 +124,19 @@ public:
 			throw std::runtime_error(Utils::stringf("UdpClientPort socket bind failed with error: %d\n", hr));
 			return hr;
 		}
+
+		if (hasRemote && remotePort != 0) {
+			// limit the socket to only send/receive to/from this remote address/port, this ensures our
+			// subsequent recvfrom calls don't steal messages from other UdpClientPorts.
+			rc = ::connect(sock, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen); 
+			if (rc < 0)
+			{
+				int hr = WSAGetLastError();
+				throw std::runtime_error(Utils::stringf("UdpClientPort socket could not connect to remote host at %s:%d, error: %d\n", 
+					remoteHost.c_str(), remotePort, hr));
+				return hr;
+			}
+		}
 		closed_ = false;
 		return 0;
 	}
@@ -172,11 +185,15 @@ public:
 					// try again - this can happen if server recreates the socket on their side.
 					continue;
 				}
-				else
+				else if (hr == WSAEINTR)
+				{
+					// skip this, it is was interrupted, and if user is closing the port closed_ will be true.
+					continue;
+				}
 #else
 				if (hr == EINTR)
 				{
-					// skip this, it is was interrupted.
+					// skip this, it is was interrupted, and if user is closing the port closed_ will be true.
 					continue;
 				}
 				else
