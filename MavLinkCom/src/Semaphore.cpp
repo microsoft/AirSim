@@ -79,7 +79,7 @@ public:
 #include <mach/task.h>
 #include <mach/semaphore.h>
 
-class semaphore_impl
+class Semaphore::semaphore_impl
 {
 	semaphore_t semaphore;
 	task_t owner;
