@@ -24,11 +24,267 @@ namespace Microsoft.Networking.Mavlink
 
         public const bool MAVLINK_NEED_BYTE_SWAP = (MAVLINK_ENDIAN == MAVLINK_LITTLE_ENDIAN);
 
-        public static readonly byte[] MAVLINK_MESSAGE_LENGTHS = new byte[] { 9, 31, 12, 0, 14, 28, 3, 32, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 20, 2, 25, 23, 30, 101, 22, 26, 16, 14, 28, 32, 28, 28, 22, 22, 21, 6, 6, 37, 4, 4, 2, 2, 4, 2, 2, 3, 13, 12, 37, 4, 0, 0, 27, 25, 0, 0, 0, 0, 0, 68, 26, 185, 229, 42, 6, 4, 0, 11, 18, 0, 0, 37, 20, 35, 33, 3, 0, 0, 0, 22, 39, 37, 53, 51, 53, 51, 0, 28, 56, 42, 33, 0, 0, 0, 0, 0, 0, 0, 26, 32, 32, 20, 32, 62, 44, 64, 84, 9, 254, 16, 12, 36, 44, 64, 22, 6, 14, 12, 97, 2, 2, 113, 35, 6, 79, 35, 35, 22, 13, 255, 14, 18, 43, 8, 22, 14, 36, 43, 41, 32, 243, 14, 0, 0, 100, 36, 60, 30, 42, 8, 4, 12, 15, 13, 6, 15, 14, 0, 12, 3, 8, 28, 44, 3, 9, 22, 12, 18, 34, 66, 98, 8, 48, 19, 3, 20, 24, 29, 45, 4, 40, 2, 206, 7, 29, 0, 0, 0, 0, 27, 44, 22, 25, 0, 0, 0, 0, 0, 42, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 3, 3, 6, 7, 2, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 52, 53, 6, 2, 38, 0, 254, 36, 30, 18, 18, 51, 9, 0 };
+        public static readonly byte[] MAVLINK_MESSAGE_LENGTHS = new byte[] { 9, 31, 12, 0, 14, 28, 3, 32, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 20, 2, 25, 23, 30, 101, 22, 26, 16, 14, 28, 32, 28, 28, 22, 22, 21, 6, 6, 37, 4, 4, 2, 2, 4, 2, 2, 3, 13, 12, 37, 4, 0, 0, 27, 25, 0, 0, 0, 0, 0, 68, 26, 185, 229, 42, 6, 4, 0, 11, 18, 0, 0, 37, 20, 35, 33, 3, 0, 0, 0, 22, 39, 37, 53, 51, 53, 51, 0, 28, 56, 42, 33, 81, 0, 0, 0, 0, 0, 0, 26, 32, 32, 20, 32, 62, 44, 64, 84, 9, 254, 16, 12, 36, 44, 64, 22, 6, 14, 12, 97, 2, 2, 113, 35, 6, 79, 35, 35, 22, 13, 255, 14, 18, 43, 8, 22, 14, 36, 43, 41, 32, 243, 14, 93, 0, 100, 36, 60, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 40, 63, 182, 54, 0, 0, 0, 0, 0, 0, 32, 52, 53, 6, 2, 38, 19, 254, 36, 30, 18, 18, 51, 9, 0 };
 
-        public static readonly byte[] MAVLINK_MESSAGE_CRCS = new byte[] { 50, 124, 137, 0, 237, 217, 104, 119, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0, 214, 159, 220, 168, 24, 23, 170, 144, 67, 115, 39, 246, 185, 104, 237, 244, 222, 212, 9, 254, 230, 28, 28, 132, 221, 232, 11, 153, 41, 39, 78, 196, 0, 0, 15, 3, 0, 0, 0, 0, 0, 153, 183, 51, 59, 118, 148, 21, 0, 243, 124, 0, 0, 38, 20, 158, 152, 143, 0, 0, 0, 106, 49, 22, 143, 140, 5, 150, 0, 231, 183, 63, 54, 0, 0, 0, 0, 0, 0, 0, 175, 102, 158, 208, 56, 93, 138, 108, 32, 185, 84, 34, 174, 124, 237, 4, 76, 128, 56, 116, 134, 237, 203, 250, 87, 203, 220, 25, 226, 46, 29, 223, 85, 6, 229, 203, 1, 195, 109, 168, 181, 47, 72, 131, 0, 0, 103, 154, 178, 200, 134, 219, 208, 188, 84, 22, 19, 21, 134, 0, 78, 68, 189, 127, 154, 21, 21, 144, 1, 234, 73, 181, 22, 83, 167, 138, 234, 240, 47, 189, 52, 174, 229, 85, 159, 186, 72, 0, 0, 0, 0, 92, 36, 71, 98, 0, 0, 0, 0, 0, 134, 205, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 101, 50, 202, 17, 162, 0, 0, 0, 0, 0, 0, 207, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 104, 85, 95, 130, 184, 0, 8, 204, 49, 170, 44, 83, 46, 0 };
+        public static readonly byte[] MAVLINK_MESSAGE_CRCS = new byte[] { 50, 124, 137, 0, 237, 217, 104, 119, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0, 214, 159, 220, 168, 24, 23, 170, 144, 67, 115, 39, 246, 185, 104, 237, 244, 222, 212, 9, 254, 230, 28, 28, 132, 221, 232, 11, 153, 41, 39, 78, 196, 0, 0, 15, 3, 0, 0, 0, 0, 0, 153, 183, 51, 59, 118, 148, 21, 0, 243, 124, 0, 0, 38, 20, 158, 152, 143, 0, 0, 0, 106, 49, 22, 143, 140, 5, 150, 0, 231, 183, 63, 54, 47, 0, 0, 0, 0, 0, 0, 175, 102, 158, 208, 56, 93, 138, 108, 32, 185, 84, 34, 174, 124, 237, 4, 76, 128, 56, 116, 134, 237, 203, 250, 87, 203, 220, 25, 226, 46, 29, 223, 85, 6, 229, 203, 1, 195, 109, 168, 181, 47, 72, 131, 127, 0, 103, 154, 178, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 163, 105, 151, 35, 179, 0, 0, 0, 0, 0, 0, 90, 104, 85, 95, 130, 184, 81, 8, 204, 49, 170, 44, 83, 46, 0 };
 
-        public static readonly Type[] MAVLINK_MESSAGE_INFO = new Type[] { typeof(mavlink_heartbeat_t), typeof(mavlink_sys_status_t), typeof(mavlink_system_time_t), null, typeof(mavlink_ping_t), typeof(mavlink_change_operator_control_t), typeof(mavlink_change_operator_control_ack_t), typeof(mavlink_auth_key_t), null, null, null, typeof(mavlink_set_mode_t), null, null, null, null, null, null, null, null, typeof(mavlink_param_request_read_t), typeof(mavlink_param_request_list_t), typeof(mavlink_param_value_t), typeof(mavlink_param_set_t), typeof(mavlink_gps_raw_int_t), typeof(mavlink_gps_status_t), typeof(mavlink_scaled_imu_t), typeof(mavlink_raw_imu_t), typeof(mavlink_raw_pressure_t), typeof(mavlink_scaled_pressure_t), typeof(mavlink_attitude_t), typeof(mavlink_attitude_quaternion_t), typeof(mavlink_local_position_ned_t), typeof(mavlink_global_position_int_t), typeof(mavlink_rc_channels_scaled_t), typeof(mavlink_rc_channels_raw_t), typeof(mavlink_servo_output_raw_t), typeof(mavlink_mission_request_partial_list_t), typeof(mavlink_mission_write_partial_list_t), typeof(mavlink_mission_item_t), typeof(mavlink_mission_request_t), typeof(mavlink_mission_set_current_t), typeof(mavlink_mission_current_t), typeof(mavlink_mission_request_list_t), typeof(mavlink_mission_count_t), typeof(mavlink_mission_clear_all_t), typeof(mavlink_mission_item_reached_t), typeof(mavlink_mission_ack_t), typeof(mavlink_set_gps_global_origin_t), typeof(mavlink_gps_global_origin_t), typeof(mavlink_param_map_rc_t), typeof(mavlink_mission_request_int_t), null, null, typeof(mavlink_safety_set_allowed_area_t), typeof(mavlink_safety_allowed_area_t), null, null, null, null, null, typeof(mavlink_attitude_quaternion_cov_t), typeof(mavlink_nav_controller_output_t), typeof(mavlink_global_position_int_cov_t), typeof(mavlink_local_position_ned_cov_t), typeof(mavlink_rc_channels_t), typeof(mavlink_request_data_stream_t), typeof(mavlink_data_stream_t), null, typeof(mavlink_manual_control_t), typeof(mavlink_rc_channels_override_t), null, null, typeof(mavlink_mission_item_int_t), typeof(mavlink_vfr_hud_t), typeof(mavlink_command_int_t), typeof(mavlink_command_long_t), typeof(mavlink_command_ack_t), null, null, null, typeof(mavlink_manual_setpoint_t), typeof(mavlink_set_attitude_target_t), typeof(mavlink_attitude_target_t), typeof(mavlink_set_position_target_local_ned_t), typeof(mavlink_position_target_local_ned_t), typeof(mavlink_set_position_target_global_int_t), typeof(mavlink_position_target_global_int_t), null, typeof(mavlink_local_position_ned_system_global_offset_t), typeof(mavlink_hil_state_t), typeof(mavlink_hil_controls_t), typeof(mavlink_hil_rc_inputs_raw_t), null, null, null, null, null, null, null, typeof(mavlink_optical_flow_t), typeof(mavlink_global_vision_position_estimate_t), typeof(mavlink_vision_position_estimate_t), typeof(mavlink_vision_speed_estimate_t), typeof(mavlink_vicon_position_estimate_t), typeof(mavlink_highres_imu_t), typeof(mavlink_optical_flow_rad_t), typeof(mavlink_hil_sensor_t), typeof(mavlink_sim_state_t), typeof(mavlink_radio_status_t), typeof(mavlink_file_transfer_protocol_t), typeof(mavlink_timesync_t), typeof(mavlink_camera_trigger_t), typeof(mavlink_hil_gps_t), typeof(mavlink_hil_optical_flow_t), typeof(mavlink_hil_state_quaternion_t), typeof(mavlink_scaled_imu2_t), typeof(mavlink_log_request_list_t), typeof(mavlink_log_entry_t), typeof(mavlink_log_request_data_t), typeof(mavlink_log_data_t), typeof(mavlink_log_erase_t), typeof(mavlink_log_request_end_t), typeof(mavlink_gps_inject_data_t), typeof(mavlink_gps2_raw_t), typeof(mavlink_power_status_t), typeof(mavlink_serial_control_t), typeof(mavlink_gps_rtk_t), typeof(mavlink_gps2_rtk_t), typeof(mavlink_scaled_imu3_t), typeof(mavlink_data_transmission_handshake_t), typeof(mavlink_encapsulated_data_t), typeof(mavlink_distance_sensor_t), typeof(mavlink_terrain_request_t), typeof(mavlink_terrain_data_t), typeof(mavlink_terrain_check_t), typeof(mavlink_terrain_report_t), typeof(mavlink_scaled_pressure2_t), typeof(mavlink_att_pos_mocap_t), typeof(mavlink_set_actuator_control_target_t), typeof(mavlink_actuator_control_target_t), typeof(mavlink_altitude_t), typeof(mavlink_resource_request_t), typeof(mavlink_scaled_pressure3_t), null, null, typeof(mavlink_control_system_state_t), typeof(mavlink_battery_status_t), typeof(mavlink_autopilot_version_t), typeof(mavlink_landing_target_t), typeof(mavlink_sensor_offsets_t), typeof(mavlink_set_mag_offsets_t), typeof(mavlink_meminfo_t), typeof(mavlink_ap_adc_t), typeof(mavlink_digicam_configure_t), typeof(mavlink_digicam_control_t), typeof(mavlink_mount_configure_t), typeof(mavlink_mount_control_t), typeof(mavlink_mount_status_t), null, typeof(mavlink_fence_point_t), typeof(mavlink_fence_fetch_point_t), typeof(mavlink_fence_status_t), typeof(mavlink_ahrs_t), typeof(mavlink_simstate_t), typeof(mavlink_hwstatus_t), typeof(mavlink_radio_t), typeof(mavlink_limits_status_t), typeof(mavlink_wind_t), typeof(mavlink_data16_t), typeof(mavlink_data32_t), typeof(mavlink_data64_t), typeof(mavlink_data96_t), typeof(mavlink_rangefinder_t), typeof(mavlink_airspeed_autocal_t), typeof(mavlink_rally_point_t), typeof(mavlink_rally_fetch_point_t), typeof(mavlink_compassmot_status_t), typeof(mavlink_ahrs2_t), typeof(mavlink_camera_status_t), typeof(mavlink_camera_feedback_t), typeof(mavlink_battery2_t), typeof(mavlink_ahrs3_t), typeof(mavlink_autopilot_version_request_t), typeof(mavlink_remote_log_data_block_t), typeof(mavlink_remote_log_block_status_t), typeof(mavlink_led_control_t), null, null, null, null, typeof(mavlink_mag_cal_progress_t), typeof(mavlink_mag_cal_report_t), typeof(mavlink_ekf_status_report_t), typeof(mavlink_pid_tuning_t), null, null, null, null, null, typeof(mavlink_gimbal_report_t), typeof(mavlink_gimbal_control_t), null, null, null, null, null, null, null, null, null, null, null, null, typeof(mavlink_gimbal_torque_cmd_report_t), typeof(mavlink_gopro_heartbeat_t), typeof(mavlink_gopro_get_request_t), typeof(mavlink_gopro_get_response_t), typeof(mavlink_gopro_set_request_t), typeof(mavlink_gopro_set_response_t), null, null, null, null, null, null, typeof(mavlink_rpm_t), null, null, null, null, null, null, null, null, null, null, null, null, null, null, typeof(mavlink_vibration_t), typeof(mavlink_home_position_t), typeof(mavlink_set_home_position_t), typeof(mavlink_message_interval_t), typeof(mavlink_extended_sys_state_t), typeof(mavlink_adsb_vehicle_t), null, typeof(mavlink_v2_extension_t), typeof(mavlink_memory_vect_t), typeof(mavlink_debug_vect_t), typeof(mavlink_named_value_float_t), typeof(mavlink_named_value_int_t), typeof(mavlink_statustext_t), typeof(mavlink_debug_t), null };
+        public static readonly Type[] MAVLINK_MESSAGE_INFO = new Type[] { typeof(mavlink_heartbeat_t), // 0
+            typeof(mavlink_sys_status_t), // 1
+            typeof(mavlink_system_time_t), // 2
+            null, // 3
+            typeof(mavlink_ping_t), // 4 
+            typeof(mavlink_change_operator_control_t), // 5
+            typeof(mavlink_change_operator_control_ack_t), // 6
+            typeof(mavlink_auth_key_t), // 7
+            null, // 8
+            null, // 9
+            null, // 10
+            typeof(mavlink_set_mode_t), // 11
+            null,                                                                // 12
+            null,                                                                // 13
+            null,                                                                // 14
+            null,                                                                // 15
+            null,                                                                // 16
+            null,                                                                // 17
+            null,                                                                // 18
+            null,                                                                // 19
+            typeof(mavlink_param_request_read_t),                                // 20
+            typeof(mavlink_param_request_list_t),                                // 21
+            typeof(mavlink_param_value_t),                                       // 22
+            typeof(mavlink_param_set_t),                                         // 23
+            typeof(mavlink_gps_raw_int_t),                                       // 24
+            typeof(mavlink_gps_status_t),                                        // 25
+            typeof(mavlink_scaled_imu_t),                                        // 26
+            typeof(mavlink_raw_imu_t),                                           // 27
+            typeof(mavlink_raw_pressure_t),                                      // 28
+            typeof(mavlink_scaled_pressure_t),                                   // 29 
+            typeof(mavlink_attitude_t),                                          // 30
+            typeof(mavlink_attitude_quaternion_t),                               // 31
+            typeof(mavlink_local_position_ned_t),                                // 32
+            typeof(mavlink_global_position_int_t),                               // 33
+            typeof(mavlink_rc_channels_scaled_t),                                // 34
+            typeof(mavlink_rc_channels_raw_t),                                   // 35
+            typeof(mavlink_servo_output_raw_t),                                  // 36
+            typeof(mavlink_mission_request_partial_list_t),                      // 37
+            typeof(mavlink_mission_write_partial_list_t),                        // 38
+            typeof(mavlink_mission_item_t),                                      // 39 
+            typeof(mavlink_mission_request_t),                                   // 40
+            typeof(mavlink_mission_set_current_t),                               // 41
+            typeof(mavlink_mission_current_t),                                   // 42
+            typeof(mavlink_mission_request_list_t),                              // 43
+            typeof(mavlink_mission_count_t),                                     // 44
+            typeof(mavlink_mission_clear_all_t),                                 // 45
+            typeof(mavlink_mission_item_reached_t),                              // 46
+            typeof(mavlink_mission_ack_t),                                       // 47
+            typeof(mavlink_set_gps_global_origin_t),                             // 48
+            typeof(mavlink_gps_global_origin_t),                                 // 49
+            typeof(mavlink_param_map_rc_t),                                      // 50
+            typeof(mavlink_mission_request_int_t),                               // 51
+            null,                                                                // 52
+            null,                                                                // 53
+            typeof(mavlink_safety_set_allowed_area_t),                           // 54
+            typeof(mavlink_safety_allowed_area_t),                               // 55
+            null,                                                                // 56
+            null,                                                                // 57
+            null,                                                                // 58
+            null,                                                                // 59
+            null,                                                                // 60
+            typeof(mavlink_attitude_quaternion_cov_t),                           // 61
+            typeof(mavlink_nav_controller_output_t),                             // 62
+            typeof(mavlink_global_position_int_cov_t),                           // 63
+            typeof(mavlink_local_position_ned_cov_t),                            // 64
+            typeof(mavlink_rc_channels_t),                                       // 65
+            typeof(mavlink_request_data_stream_t),                               // 66
+            typeof(mavlink_data_stream_t),                                       // 67
+            null,                                                                // 68
+            typeof(mavlink_manual_control_t),                                    // 69
+            typeof(mavlink_rc_channels_override_t),                              // 70
+            null,                                                                // 71
+            null,                                                                // 72
+            typeof(mavlink_mission_item_int_t),                                  // 73
+            typeof(mavlink_vfr_hud_t),                                           // 74
+            typeof(mavlink_command_int_t),                                       // 75
+            typeof(mavlink_command_long_t),                                      // 76
+            typeof(mavlink_command_ack_t),                                       // 77
+            null,                                                                // 78
+            null,                                                                // 79
+            null,                                                                // 80
+            typeof(mavlink_manual_setpoint_t),                                   // 81
+            typeof(mavlink_set_attitude_target_t),                               // 82
+            typeof(mavlink_attitude_target_t),                                   // 83
+            typeof(mavlink_set_position_target_local_ned_t),                     // 84
+            typeof(mavlink_position_target_local_ned_t),                         // 85
+            typeof(mavlink_set_position_target_global_int_t),                    // 86
+            typeof(mavlink_position_target_global_int_t),                        // 87
+            null,                                                                // 88
+            typeof(mavlink_local_position_ned_system_global_offset_t),           // 89
+            typeof(mavlink_hil_state_t),                                         // 90
+            typeof(mavlink_hil_controls_t),                                      // 91
+            typeof(mavlink_hil_rc_inputs_raw_t),                                 // 92
+            typeof(mavlink_hil_actuator_controls_t),                             // 93
+            null,                                                                // 94
+            null,                                                                // 95
+            null,                                                                // 96
+            null,                                                                // 97
+            null,                                                                // 98
+            null,                                                                // 99
+            typeof(mavlink_optical_flow_t),                                      // 100
+            typeof(mavlink_global_vision_position_estimate_t),                   // 101
+            typeof(mavlink_vision_position_estimate_t),                          // 102
+            typeof(mavlink_vision_speed_estimate_t),                             // 103
+            typeof(mavlink_vicon_position_estimate_t),                           // 104
+            typeof(mavlink_highres_imu_t),                                       // 105
+            typeof(mavlink_optical_flow_rad_t),                                  // 106
+            typeof(mavlink_hil_sensor_t),                                        // 107
+            typeof(mavlink_sim_state_t),                                         // 108
+            typeof(mavlink_radio_status_t),                                      // 109
+            typeof(mavlink_file_transfer_protocol_t),                            // 110
+            typeof(mavlink_timesync_t),                                          // 111
+            typeof(mavlink_camera_trigger_t),                                    // 112
+            typeof(mavlink_hil_gps_t),                                           // 113
+            typeof(mavlink_hil_optical_flow_t),                                  // 114
+            typeof(mavlink_hil_state_quaternion_t),                              // 115
+            typeof(mavlink_scaled_imu2_t),                                       // 116
+            typeof(mavlink_log_request_list_t),                                  // 117
+            typeof(mavlink_log_entry_t),                                         // 118
+            typeof(mavlink_log_request_data_t),                                  // 119
+            typeof(mavlink_log_data_t),                                          // 120
+            typeof(mavlink_log_erase_t),                                         // 121
+            typeof(mavlink_log_request_end_t),                                   // 122
+            typeof(mavlink_gps_inject_data_t),                                   // 123
+            typeof(mavlink_gps2_raw_t),                                          // 124
+            typeof(mavlink_power_status_t),                                      // 125
+            typeof(mavlink_serial_control_t),                                    // 126
+            typeof(mavlink_gps_rtk_t),                                           // 127
+            typeof(mavlink_gps2_rtk_t),                                          // 128
+            typeof(mavlink_scaled_imu3_t),                                       // 129
+            typeof(mavlink_data_transmission_handshake_t),                       // 130
+            typeof(mavlink_encapsulated_data_t),                                 // 131
+            typeof(mavlink_distance_sensor_t),                                   // 132
+            typeof(mavlink_terrain_request_t),                                   // 133
+            typeof(mavlink_terrain_data_t),                                      // 134
+            typeof(mavlink_terrain_check_t),                                     // 135
+            typeof(mavlink_terrain_report_t),                                    // 136
+            typeof(mavlink_scaled_pressure2_t),                                  // 137
+            typeof(mavlink_att_pos_mocap_t),                                     // 138
+            typeof(mavlink_set_actuator_control_target_t),                       // 139
+            typeof(mavlink_actuator_control_target_t),                           // 140
+            typeof(mavlink_altitude_t),                                          // 141
+            typeof(mavlink_resource_request_t),                                  // 142
+            typeof(mavlink_scaled_pressure3_t),                                  // 143
+            null,                                                                // 144
+            null,                                                                // 145
+            typeof(mavlink_control_system_state_t),                              // 146
+            typeof(mavlink_battery_status_t),                                    // 147
+            typeof(mavlink_autopilot_version_t),                                 // 148
+            typeof(mavlink_landing_target_t),                                    // 149
+            typeof(mavlink_sensor_offsets_t),                                    // 150
+            typeof(mavlink_set_mag_offsets_t),                                   // 151
+            typeof(mavlink_meminfo_t),                                           // 152
+            typeof(mavlink_ap_adc_t),                                            // 153
+            typeof(mavlink_digicam_configure_t),                                 // 154
+            typeof(mavlink_digicam_control_t),                                   // 155
+            typeof(mavlink_mount_configure_t),                                   // 156
+            typeof(mavlink_mount_control_t),                                     // 157
+            typeof(mavlink_mount_status_t),                                      // 158
+            null,                                                                // 159
+            typeof(mavlink_fence_point_t),                                       // 160
+            typeof(mavlink_fence_fetch_point_t),                                 // 161
+            typeof(mavlink_fence_status_t),                                      // 162
+            typeof(mavlink_ahrs_t),                                              // 163
+            typeof(mavlink_simstate_t),                                          // 164
+            typeof(mavlink_hwstatus_t),                                          // 165
+            typeof(mavlink_radio_t),                                             // 166
+            typeof(mavlink_limits_status_t),                                     // 167
+            typeof(mavlink_wind_t),                                              // 168
+            typeof(mavlink_data16_t),                                            // 169
+            typeof(mavlink_data32_t),                                            // 170
+            typeof(mavlink_data64_t),                                            // 171
+            typeof(mavlink_data96_t),                                            // 172
+            typeof(mavlink_rangefinder_t),                                       // 173
+            typeof(mavlink_airspeed_autocal_t),                                  // 174
+            typeof(mavlink_rally_point_t),                                       // 175
+            typeof(mavlink_rally_fetch_point_t),                                 // 176
+            typeof(mavlink_compassmot_status_t),                                 // 177
+            typeof(mavlink_ahrs2_t),                                             // 178
+            typeof(mavlink_camera_status_t),                                     // 179
+            typeof(mavlink_camera_feedback_t),                                   // 180
+            typeof(mavlink_battery2_t),                                          // 181
+            typeof(mavlink_ahrs3_t),                                             // 182
+            typeof(mavlink_autopilot_version_request_t),                         // 183
+            typeof(mavlink_remote_log_data_block_t),                             // 184
+            typeof(mavlink_remote_log_block_status_t),                           // 1858
+            typeof(mavlink_led_control_t),                                       // 186
+            null,                                                                // 187
+            null,                                                                // 188
+            null,                                                                // 189
+            null,                                                                // 190
+            typeof(mavlink_mag_cal_progress_t),                                  // 191
+            typeof(mavlink_mag_cal_report_t),                                    // 192
+            typeof(mavlink_ekf_status_report_t),                                 // 193
+            typeof(mavlink_pid_tuning_t),                                        // 194
+            null,                                                                // 195
+            null,                                                                // 196
+            null,                                                                // 197
+            null,                                                                // 198
+            null,                                                                // 199
+            typeof(mavlink_gimbal_report_t),                                     // 200
+            typeof(mavlink_gimbal_control_t),                                    // 201
+            null,                                                                // 202
+            null,                                                                // 203
+            null,                                                                // 204
+            null,                                                                // 205
+            null,                                                                // 206
+            null,                                                                // 207
+            null,                                                                // 208
+            null,                                                                // 209
+            null,                                                                // 210
+            null,                                                                // 211
+            null,                                                                // 212
+            null,                                                                // 213
+            typeof(mavlink_gimbal_torque_cmd_report_t),                          // 214
+            typeof(mavlink_gopro_heartbeat_t),                                   // 215
+            typeof(mavlink_gopro_get_request_t),                                 // 216
+            typeof(mavlink_gopro_get_response_t),                                // 217
+            typeof(mavlink_gopro_set_request_t),                                 // 218
+            typeof(mavlink_gopro_set_response_t),                                // 219
+            null,                                                                // 220
+            null,                                                                // 221
+            null,                                                                // 222
+            null,                                                                // 223
+            null,                                                                // 224
+            null,                                                                // 225
+            typeof(mavlink_rpm_t),                                               // 226
+            null,                                                                // 227
+            null,                                                                // 228
+            null,                                                                // 229
+            null,                                                                // 230
+            null,                                                                // 231
+            null,                                                                // 232
+            null,                                                                // 233
+            null,                                                                // 234
+            null,                                                                // 235
+            null,                                                                // 236
+            null,                                                                // 237
+            null,                                                                // 238
+            null,                                                                // 239
+            null,                                                                // 240
+            typeof(mavlink_vibration_t),                                         // 241
+            typeof(mavlink_home_position_t),                                     // 242
+            typeof(mavlink_set_home_position_t),                                 // 243
+            typeof(mavlink_message_interval_t),                                  // 244
+            typeof(mavlink_extended_sys_state_t),                                // 245
+            typeof(mavlink_adsb_vehicle_t),                                      // 246
+            typeof(mavlink_collision_t),                                         // 247
+            typeof(mavlink_v2_extension_t),                                      // 248
+            typeof(mavlink_memory_vect_t),                                       // 249
+            typeof(mavlink_debug_vect_t),                                        // 250
+            typeof(mavlink_named_value_float_t),                                 // 251
+            typeof(mavlink_named_value_int_t),                                   // 252
+            typeof(mavlink_statustext_t),                                        // 253
+            typeof(mavlink_debug_t),                                             // 254
+            null                                                                 // 255
+            };
 
         public static readonly string[] MAVLINK_NAMES = new string[] { "HEARTBEAT", "SYS_STATUS", "SYSTEM_TIME", null, "PING", "CHANGE_OPERATOR_CONTROL", "CHANGE_OPERATOR_CONTROL_ACK", "AUTH_KEY", null, null, null, "SET_MODE", null, null, null, null, null, null, null, null, "PARAM_REQUEST_READ", "PARAM_REQUEST_LIST", "PARAM_VALUE", "PARAM_SET", "GPS_RAW_INT", "GPS_STATUS", "SCALED_IMU", "RAW_IMU", "RAW_PRESSURE", "SCALED_PRESSURE", "ATTITUDE", "ATTITUDE_QUATERNION", "LOCAL_POSITION_NED", "GLOBAL_POSITION_INT", "RC_CHANNELS_SCALED", "RC_CHANNELS_RAW", "SERVO_OUTPUT_RAW", "MISSION_REQUEST_PARTIAL_LIST", "MISSION_WRITE_PARTIAL_LIST", "MISSION_ITEM", "MISSION_REQUEST", "MISSION_SET_CURRENT", "MISSION_CURRENT", "MISSION_REQUEST_LIST", "MISSION_COUNT", "MISSION_CLEAR_ALL", "MISSION_ITEM_REACHED", "MISSION_ACK", "SET_GPS_GLOBAL_ORIGIN", "GPS_GLOBAL_ORIGIN", "PARAM_MAP_RC", "MISSION_REQUEST_INT", null, null, "SAFETY_SET_ALLOWED_AREA", "SAFETY_ALLOWED_AREA", null, null, null, null, null, "ATTITUDE_QUATERNION_COV", "NAV_CONTROLLER_OUTPUT", "GLOBAL_POSITION_INT_COV", "LOCAL_POSITION_NED_COV", "RC_CHANNELS", "REQUEST_DATA_STREAM", "DATA_STREAM", null, "MANUAL_CONTROL", "RC_CHANNELS_OVERRIDE", null, null, "MISSION_ITEM_INT", "VFR_HUD", "COMMAND_INT", "COMMAND_LONG", "COMMAND_ACK", null, null, null, "MANUAL_SETPOINT", "SET_ATTITUDE_TARGET", "ATTITUDE_TARGET", "SET_POSITION_TARGET_LOCAL_NED", "POSITION_TARGET_LOCAL_NED", "SET_POSITION_TARGET_GLOBAL_INT", "POSITION_TARGET_GLOBAL_INT", null, "LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET", "HIL_STATE", "HIL_CONTROLS", "HIL_RC_INPUTS_RAW", null, null, null, null, null, null, null, "OPTICAL_FLOW", "GLOBAL_VISION_POSITION_ESTIMATE", "VISION_POSITION_ESTIMATE", "VISION_SPEED_ESTIMATE", "VICON_POSITION_ESTIMATE", "HIGHRES_IMU", "OPTICAL_FLOW_RAD", "HIL_SENSOR", "SIM_STATE", "RADIO_STATUS", "FILE_TRANSFER_PROTOCOL", "TIMESYNC", "CAMERA_TRIGGER", "HIL_GPS", "HIL_OPTICAL_FLOW", "HIL_STATE_QUATERNION", "SCALED_IMU2", "LOG_REQUEST_LIST", "LOG_ENTRY", "LOG_REQUEST_DATA", "LOG_DATA", "LOG_ERASE", "LOG_REQUEST_END", "GPS_INJECT_DATA", "GPS2_RAW", "POWER_STATUS", "SERIAL_CONTROL", "GPS_RTK", "GPS2_RTK", "SCALED_IMU3", "DATA_TRANSMISSION_HANDSHAKE", "ENCAPSULATED_DATA", "DISTANCE_SENSOR", "TERRAIN_REQUEST", "TERRAIN_DATA", "TERRAIN_CHECK", "TERRAIN_REPORT", "SCALED_PRESSURE2", "ATT_POS_MOCAP", "SET_ACTUATOR_CONTROL_TARGET", "ACTUATOR_CONTROL_TARGET", "ALTITUDE", "RESOURCE_REQUEST", "SCALED_PRESSURE3", null, null, "CONTROL_SYSTEM_STATE", "BATTERY_STATUS", "AUTOPILOT_VERSION", "LANDING_TARGET", "SENSOR_OFFSETS", "SET_MAG_OFFSETS", "MEMINFO", "AP_ADC", "DIGICAM_CONFIGURE", "DIGICAM_CONTROL", "MOUNT_CONFIGURE", "MOUNT_CONTROL", "MOUNT_STATUS", null, "FENCE_POINT", "FENCE_FETCH_POINT", "FENCE_STATUS", "AHRS", "SIMSTATE", "HWSTATUS", "RADIO", "LIMITS_STATUS", "WIND", "DATA16", "DATA32", "DATA64", "DATA96", "RANGEFINDER", "AIRSPEED_AUTOCAL", "RALLY_POINT", "RALLY_FETCH_POINT", "COMPASSMOT_STATUS", "AHRS2", "CAMERA_STATUS", "CAMERA_FEEDBACK", "BATTERY2", "AHRS3", "AUTOPILOT_VERSION_REQUEST", "REMOTE_LOG_DATA_BLOCK", "REMOTE_LOG_BLOCK_STATUS", "LED_CONTROL", null, null, null, null, "MAG_CAL_PROGRESS", "MAG_CAL_REPORT", "EKF_STATUS_REPORT", "PID_TUNING", null, null, null, null, null, "GIMBAL_REPORT", "GIMBAL_CONTROL", null, null, null, null, null, null, null, null, null, null, null, null, "GIMBAL_TORQUE_CMD_REPORT", "GOPRO_HEARTBEAT", "GOPRO_GET_REQUEST", "GOPRO_GET_RESPONSE", "GOPRO_SET_REQUEST", "GOPRO_SET_RESPONSE", null, null, null, null, null, null, "RPM", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "VIBRATION", "HOME_POSITION", "SET_HOME_POSITION", "MESSAGE_INTERVAL", "EXTENDED_SYS_STATE", "ADSB_VEHICLE", null, "V2_EXTENSION", "MEMORY_VECT", "DEBUG_VECT", "NAMED_VALUE_FLOAT", "NAMED_VALUE_INT", "STATUSTEXT", "DEBUG", null };
 
@@ -103,6 +359,7 @@ namespace Microsoft.Networking.Mavlink
             HIL_STATE = 90,
             HIL_CONTROLS = 91,
             HIL_RC_INPUTS_RAW = 92,
+            HIL_ACTUATOR_CONTROLS = 93,
             OPTICAL_FLOW = 100,
             GLOBAL_VISION_POSITION_ESTIMATE = 101,
             VISION_POSITION_ESTIMATE = 102,
@@ -4469,6 +4726,22 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 81)]
+        public struct mavlink_hil_actuator_controls_t
+        {
+            /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
+            public UInt64 time_usec;
+            // Flags as bitfield, reserved for future use.
+            public UInt64 flags;
+            // Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+            public float[] controls;
+            // System mode (MAV_MODE), includes arming state.
+            public byte mode;
+
+        };
+
         [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 33)]
         public struct mavlink_hil_rc_inputs_raw_t
         {
@@ -5708,6 +5981,27 @@ namespace Microsoft.Networking.Mavlink
             public byte emitter_type;
             /// <summary> Time since last communication in seconds </summary>
             public byte tslc;
+
+        };
+
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct mavlink_collision_t
+        {
+            // Unique identifier, domain based on src field
+            public UInt32 id;
+            // Estimated time until collision occurs (seconds)
+            public float time_to_minimum_delta;
+            // Closest vertical distance in meters between vehicle and object
+            public float altitude_minimum_delta;
+            // Closest horizontal distance in meteres between vehicle and object
+            public float horizontal_minimum_delta;
+            // Collision data source
+            public byte src;
+            // Action that is being taken to avoid this collision
+            public byte action;
+            // How concerned the aircraft is about this collision
+            public byte threat_level;
 
         };
 
