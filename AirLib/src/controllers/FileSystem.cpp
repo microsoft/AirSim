@@ -44,6 +44,7 @@ std::string FileSystem::createDirectory(std::string fullPath) {
 
 
 std::string FileSystem::getUserDocumentsFolder() {
+	std::string path;
 #ifdef _WIN32
     // Windows users can move the Documents folder to any location they want
     // SHGetFolderPath knows how to find it.
@@ -56,12 +57,15 @@ std::string FileSystem::getUserDocumentsFolder() {
         szPath))
     {
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-        return converter.to_bytes(szPath);
+		path = converter.to_bytes(szPath);
     }
 
     // fall back in case SHGetFolderPath failed for some reason.
 #endif
-    return combine(getUserHomeFolder(), "Documents");
+	if (path == "") {
+		path = combine(getUserHomeFolder(), "Documents");
+	}
+	return ensureFolder(path);
 }
 
 #endif

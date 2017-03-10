@@ -42,8 +42,8 @@ public:
         int ip_port = 14560;
 
 		// The PX4 SITL app requires receiving drone commands over a different mavlink channel.
-		// So set this to '127.0.0.1' to enable that separate command channel.
-		std::string sitl_ip_address = "";
+		// So set this to empty string to disable this separate command channel.
+		std::string sitl_ip_address = "127.0.0.1";
 		int sitl_ip_port = 14556;
 
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
