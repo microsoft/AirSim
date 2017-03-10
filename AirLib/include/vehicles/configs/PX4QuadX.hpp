@@ -128,7 +128,7 @@ private:
 			changed |= child.setBool("UseSerial", connection_info.use_serial);
 			changed |= child.setString("UdpIp", connection_info.ip_address);
 			changed |= child.setInt("UdpPort", connection_info.ip_port);
-			changed |= changed |= child.setString("SerialPort", connection_info.serial_port);
+			changed |= child.setString("SerialPort", connection_info.serial_port);
 			changed |= child.setInt("SerialBaudRate", connection_info.baud_rate);
 
 			if (changed) {
