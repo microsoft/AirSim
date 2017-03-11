@@ -46,8 +46,8 @@ private: //methods
         switch (params_.ref_source)
         {
         case MagnetometerSimpleParams::ReferenceSource::ReferenceSource_Constant:
-            //constant from jMavSim that we know works well
-            magnetic_field_true_ = Vector3r(0.44831f, 0.01664f, 0.89372f); //Tesla to Gauss
+            // Constant magnetic field for Seattle
+            magnetic_field_true_ = Vector3r(0.34252f, 0.09805f, 0.93438f);
             break;
         case MagnetometerSimpleParams::ReferenceSource::ReferenceSource_DipoleModel:
             magnetic_field_true_ = EarthUtils::getMagField(ground_truth.environment->getState().geo_point) * 1E4f; //Tesla to Gauss
@@ -66,7 +66,7 @@ private: //methods
 
         // Calculate the magnetic field noise.
         // Calculate the magnetic field noise.
-        output.magnetic_field_body = VectorMath::transformToBodyFrame(magnetic_field_true_, //Vector3r(0.44831f, 0.01664f, 0.89372f)
+        output.magnetic_field_body = VectorMath::transformToBodyFrame(magnetic_field_true_,
             ground_truth.kinematics->pose.orientation, true) * params_.scale_factor
             + noise_vec_.next()
             + bias_vec_;
