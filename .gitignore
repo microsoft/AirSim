@@ -305,3 +305,4 @@ deps/
 /cmake/output/lib
 /AirLib/include/controllers/html
 /AirLib/include/controllers/latex
+/Eigen3

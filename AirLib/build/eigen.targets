@@ -5,21 +5,67 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);InvokeEigenBuild</PrepareForBuildDependsOn>
+    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);InvokeRpcLibBuild;InvokeEigenBuild</PrepareForBuildDependsOn>
+    <EIGEN_ROOT Condition="'$(EIGEN_ROOT)'==''">$(MSBuildThisFileDirectory)\..\..</EIGEN_ROOT>
   </PropertyGroup>
+
+  <Target Name="InvokeRpcLibBuild"
+          Inputs="@(EigenLibraries)"
+          Outputs="$(MSBuildThisFileDirectory)\..\deps\rpclib\lib\x64\$(Configuration)\rpc.lib"
+          Condition="!Exists('$(MSBuildThisFileDirectory)\..\deps\rpclib\lib\x64\$(Configuration)\rpc.lib')">
+
+      <Message Importance="High" Text="######## Building Rpclib"/>
+      <Exec
+        Command="$(MSBuildThisFileDirectory)\BuildRpcLib.cmd"
+        WorkingDirectory="$(MSBuildThisFileDirectory)">
+      </Exec>
+  </Target>
+
+  <!-- This simple inline task does nothing. -->
+  <UsingTask
+    TaskName="GetEigen"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll" >
+    <ParameterGroup >
+      <TargetDirectory ParameterType="System.String" Required="true" />
+      <EigenSourceUrl ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression" />
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Reference Include="System.Net.Http" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        var client = new System.Net.Http.HttpClient();
+        Log.LogMessage(MessageImportance.High, "Downloading Eigen from " + EigenSourceUrl);
+        var stream = client.GetStreamAsync(new System.Uri(EigenSourceUrl)).Result;
+        string zipFile = Path.Combine(TargetDirectory, "3.3.2.zip");
+        using (var file = File.Create(zipFile))
+        {
+            stream.CopyTo(file);
+        }
+        string finalDir = Path.Combine(TargetDirectory, "Eigen3");
+        Log.LogMessage(MessageImportance.High, "Extracting Eigen to "+ finalDir);
+        ZipFile.ExtractToDirectory(zipFile, TargetDirectory);
+        Directory.Move(Path.Combine(TargetDirectory, "eigen-eigen-da9b4e14c255"), finalDir);
+        File.Delete(zipFile);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
 
   <Target Name="InvokeEigenBuild"
           Inputs="@(EigenLibraries)"
-          Outputs="$(MSBuildThisFileDirectory)\..\AirLib\deps\rpclib\lib\x64\$(Configuration)\rpc.lib">
+          Outputs="$(EIGEN_ROOT)\Eigen3\signature_of_eigen3_matrix_library"
+          Condition="!Exists('$(EIGEN_ROOT)\Eigen3\signature_of_eigen3_matrix_library')">
 
-      <Message Importance="High" Text="######## Building Eigen Library"/>
-      <Exec
-        Command="$(MSBuildThisFileDirectory)\BuildEigen.cmd"
-        WorkingDirectory="$(MSBuildThisFileDirectory)"
-        Outputs="$(MSBuildThisFileDirectory)\..\AirLib\deps\rpclib\lib\x64\$(Configuration)\rpc.lib"
-      >
-      <Output TaskParameter="Outputs" ItemName="FileWrites" />
-    </Exec>
+    <Message Importance="High" Text="######## Making sure we have Eigen "/>
+    
+    <GetEigen TargetDirectory="$(EIGEN_ROOT)"
+              EigenSourceUrl="http://bitbucket.org/eigen/eigen/get/3.3.2.zip"/>
 
   </Target>
 </Project>
