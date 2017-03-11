@@ -252,6 +252,9 @@
     <ClInclude Include="include\common\common_utils\FileSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\vehicles\configs\BlacksheepQuadX.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp">

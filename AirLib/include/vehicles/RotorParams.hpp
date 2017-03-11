@@ -31,7 +31,7 @@ struct RotorParams {
     We use values for GWS 9X5 propeller for which,
     C_T = 0.109919, C_P = 0.040164 @ 6396.667 RPM
     */
-    real_T max_speed_square = pow(6396.667f / 60 * 2 * M_PIf, 2.0f);  //rad/sec, 6396.667 RPM
+    real_T max_speed_square = pow((6396.667f / 60) * 2 * M_PIf, 2.0f);  //rad/sec, 6396.667 RPM
     real_T max_thrust = 4.179446268f; //computed from above formula
     real_T max_torque =  0.055562f; //computed from above formula
     real_T control_signal_filter_tc = 0.005f;    //time constant for low pass filter

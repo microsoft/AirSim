@@ -88,6 +88,7 @@
     <ClInclude Include="include\sensors\magnetometer\MagnetometerSimpleParams.hpp" />
     <ClInclude Include="include\sensors\SensorBase.hpp" />
     <ClInclude Include="include\sensors\SensorCollection.hpp" />
+    <ClInclude Include="include\vehicles\configs\BlacksheepQuadX.hpp" />
     <ClInclude Include="include\vehicles\configs\Px4QuadX.hpp" />
     <ClInclude Include="include\controllers\ControllerBase.hpp" />
     <ClInclude Include="include\controllers\MotorDirectController.hpp" />
@@ -291,7 +292,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)\build\eigen.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)\build\eigen.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

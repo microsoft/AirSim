@@ -86,38 +86,60 @@ protected: //must override by derived class
     virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) = 0;
 
 protected: //static utility functions for derived classes to use
-    static void initializeRotorPoses(vector<RotorPose>& rotor_poses, uint rotor_count, real_T arm_lengths[], real_T rotor_z /* z relative to center of gravity */)
+
+	/// Initializes 4 rotors in the usual QuadX pattern:  http://ardupilot.org/copter/_images/MOTORS_QuadX_QuadPlus.jpg
+	/// which shows that given an array of 4 motors, the first is placed top right and flies counter clockwise (CCW) and
+	/// the second is placed bottom left, and also flies CCW.  The third in the array is placed top left and flies clockwise (CW)
+	/// while the last is placed bottom right and also flies clockwise.  This is how the 4 items in the arm_lengths and
+	/// arm_angles arrays will be used.  So arm_lengths is 4 numbers (in meters) where four arm lengths, 0 is top right, 
+	/// 1 is bottom left, 2 is top left and 3 is bottom right.  arm_angles is 4 numbers (in degrees)  relative to forward vector (0,1), 
+	/// provided in the same order where 0 is top right, 1 is bottom left, 2 is top left and 3 is bottom right, so for example, 
+	/// the angles for a regular symmetric X pattern would be 45, 225, 315, 135.  The rotor_z is the offset of each motor upwards
+	/// relative to the center of mass (in meters). 
+	static void initializeRotorQuadX(vector<RotorPose>& rotor_poses /* the result we are building */,
+		uint rotor_count /* must be 4 */, 
+		real_T arm_lengths[], 
+		real_T arm_angles[], 
+		real_T rotor_z /* z relative to center of gravity */)
+	{
+		Vector3r unit_z(0, 0, -1);  //NED frame
+		if (rotor_count == 4) {
+			rotor_poses.clear();
+
+			/* Note: rotor_poses are built in this order:
+			(2)  |   (0)
+                 |
+			--------------
+                 |
+			(1)  |   (3)		
+			*/
+			Quaternionr quadx_rot(AngleAxisr(M_PIf / 4, unit_z));
+			rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[0], rotor_z), quadx_rot, true),
+				unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
+			rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[1], rotor_z), quadx_rot, true),
+				unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
+			rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(arm_lengths[2], 0, rotor_z), quadx_rot, true), 
+				unit_z, RotorTurningDirection::RotorTurningDirectionCW);
+			rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(-arm_lengths[3], 0, rotor_z), quadx_rot, true), 
+				unit_z, RotorTurningDirection::RotorTurningDirectionCW);
+		}
+		else
+			throw std::invalid_argument("Rotor count other than 4 is not supported by this method!");
+	}
+
+
+	/// Initialize the rotor_poses given the rotor_count, the arm lengths and the arm angles (relative to forwards vector).
+	/// Also provide the direction you want to spin each rotor and the z-offsetof the rotors relative to the center of gravity.
+    static void initializeRotors(vector<RotorPose>& rotor_poses, uint rotor_count, real_T arm_lengths[], real_T arm_angles[], RotorTurningDirection rotor_directions[], real_T rotor_z /* z relative to center of gravity */)
     {
         Vector3r unit_z(0, 0, -1);  //NED frame
-        if (rotor_count == 4) {
-            rotor_poses.clear();
-            uint rotor_index = 0;
-            /*
-                           ^ x
-                      (2)  |   (0)
-                           |
-                    --------------- y
-                           |
-                      (1)  |   (3)
-                           |
-
-            */
-            Quaternionr quadx_rot(AngleAxisr(M_PIf / 4, unit_z));
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[0], rotor_z), quadx_rot, true),
-                unit_z, getRotorTurningDirection(rotor_index++));
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[1], rotor_z), quadx_rot, true),
-                unit_z, getRotorTurningDirection(rotor_index++));
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(arm_lengths[2], 0, rotor_z), quadx_rot, true), unit_z,
-                getRotorTurningDirection(rotor_index++));
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(-arm_lengths[3], 0, rotor_z), quadx_rot, true), unit_z,
-                getRotorTurningDirection(rotor_index++));
-        } else
-            throw std::invalid_argument("Rotor count other than 4 is not supported yet!");
-    }
-
-    static RotorTurningDirection getRotorTurningDirection(uint rotor_index)
-    {
-        return (rotor_index < 2) ? RotorTurningDirection::RotorTurningDirectionCCW : RotorTurningDirection::RotorTurningDirectionCW;
+		rotor_poses.clear();
+		for (uint i = 0; i < rotor_count; i++)
+		{
+			Quaternionr angle(AngleAxisr(arm_angles[i] * M_PIf / 180, unit_z));
+			rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[i], rotor_z), angle, true),
+				unit_z, rotor_directions[i]);
+		}
     }
 
     static void computeInertiaMatrix(Matrix3x3r& inertia, const BoxDimensions& body_box, const vector<RotorPose>& rotor_poses,

@@ -76,7 +76,7 @@ struct MavLinkDroneController::impl {
     bool actuators_message_supported_;
     const SensorCollection* sensors_;    //this is optional
     long last_gps_time_;
-    bool was_reseted_;
+    bool was_reset_;
 
     //additional variables required for DroneControllerBase implementation
     //this is optional for methods that might not use vehicle commands
@@ -113,7 +113,7 @@ struct MavLinkDroneController::impl {
         else { // we have 0 to 1
             //TODO: make normalization vehicle independent?
             for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
-                rotor_controls_[i] = Utils::clip(0.83f * rotor_controls_[i] + 0.17f, 0.0f, 1.0f);
+                rotor_controls_[i] = Utils::clip(0.8f * rotor_controls_[i] + 0.20f, 0.0f, 1.0f);
             }
         }
     }
@@ -130,6 +130,14 @@ struct MavLinkDroneController::impl {
             connection_->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg){
 				processMavMessages(msg);
 			});
+
+			// listen to the other mavlink connection also
+			auto mavcon = mav_vehicle_->getConnection();
+			if (mavcon != connection_) {
+				mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
+					processMavMessages(msg);
+				});
+			}
         }
     }
 
@@ -307,6 +315,17 @@ struct MavLinkDroneController::impl {
         }
     }
 
+	void setArmed(bool armed)
+	{
+		is_armed_ = armed;
+		if (!armed) {
+			// motors are not armed!
+			for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
+				rotor_controls_[i] = 0;
+			}
+		}
+	}
+
     void processMavMessages(const MavLinkMessage& msg)
     {
         if (msg.msgid == HeartbeatMessage.msgid) {
@@ -314,7 +333,8 @@ struct MavLinkDroneController::impl {
 
             //TODO: have MavLinkNode track armed state so we don't have to re-decode message here again
             HeartbeatMessage.decode(msg);
-            is_armed_ = (HeartbeatMessage.base_mode & static_cast<uint8_t>(MAV_MODE_FLAG::MAV_MODE_FLAG_SAFETY_ARMED)) > 0;
+            bool armed = (HeartbeatMessage.base_mode & static_cast<uint8_t>(MAV_MODE_FLAG::MAV_MODE_FLAG_SAFETY_ARMED)) > 0;
+			setArmed(armed);
             if (!is_any_heartbeat_) {
                 is_any_heartbeat_ = true;
                 if (HeartbeatMessage.autopilot == static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_PX4) &&
@@ -392,7 +412,7 @@ struct MavLinkDroneController::impl {
         hil_sensor.abs_pressure = abs_pressure;
         hil_sensor.pressure_alt = pressure_alt;
         //TODO: enable tempeprature? diff_presure
-        hil_sensor.fields_updated = was_reseted_ ? (1 << 31) : 0;
+        hil_sensor.fields_updated = was_reset_ ? (1 << 31) : 0;
 
         if (hil_node_ != nullptr) {
             hil_node_->sendMessage(hil_sensor);
@@ -458,14 +478,14 @@ struct MavLinkDroneController::impl {
         is_simulation_mode_ = false;
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
-        was_reseted_ = false;
+        was_reset_ = false;
     }
 
     //*** Start: VehicleControllerBase implementation ***//
     void reset()
     {
         resetState();
-        was_reseted_ = true;
+        was_reset_ = true;
         setNormalMode();
     }
 
@@ -525,8 +545,8 @@ struct MavLinkDroneController::impl {
         }
 
         //must be done at the end
-        if (was_reseted_)
-            was_reseted_ = false;
+        if (was_reset_)
+            was_reset_ = false;
     }
 
     void getStatusMessages(std::vector<std::string>& messages)
