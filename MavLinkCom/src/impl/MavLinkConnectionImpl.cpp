@@ -167,7 +167,12 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& msg)
 			const mavlink_message_t& m = reinterpret_cast<const mavlink_message_t&>(msg);
 			std::lock_guard<std::mutex> guard(buffer_mutex);
 			unsigned len = mavlink_msg_to_send_buffer(message_buf, &m);
-			port->write(message_buf, len);
+			try {
+				port->write(message_buf, len);
+			}
+			catch (std::exception& e) {
+				throw std::runtime_error(Utils::stringf("MavLinkConnectionImpl: Error sending message on connection '%s', details: %s", name.c_str(), e.what()));
+			}
 		}
 		{
 			std::lock_guard<std::mutex> guard(telemetry_mutex_);

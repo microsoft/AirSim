@@ -196,6 +196,10 @@ public:
 					// skip this, it is was interrupted, and if user is closing the port closed_ will be true.
 					continue;
 				}
+				else if (hr == ECONNRESET) {
+					// try again - this can happen if server recreates the socket on their side.
+					continue;
+				}
 				else
 #endif
 				{

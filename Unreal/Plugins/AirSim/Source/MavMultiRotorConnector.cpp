@@ -77,7 +77,12 @@ void MavMultiRotorConnector::updateRenderedState()
 
 void MavMultiRotorConnector::updateRendering(float dt)
 {
-    vehicle_.getController()->reportTelemetry(dt);
+	try {
+		vehicle_.getController()->reportTelemetry(dt);
+	}
+	catch (std::exception &e) {
+		UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
+	}
 
 	//update rotor animations
 	for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
