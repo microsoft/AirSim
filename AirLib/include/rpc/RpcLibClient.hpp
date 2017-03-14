@@ -19,7 +19,6 @@ public:
     bool armDisarm(bool arm);
     void setOffboardMode(bool is_set);
     void setSimulationMode(bool is_set);
-    void setUserInputs(const vector<float>& inputs);
     void start();
     void stop();
     bool takeoff(float max_wait_ms = 15);

@@ -36,11 +36,6 @@ public:
         CallLock lock(action_mutex_, &is_cancelled_);
         controller_->setSimulationMode(is_set);
     }
-    void setUserInputs(const vector<float>& inputs)
-    {
-        CallLock lock(action_mutex_, &is_cancelled_);
-        controller_->setUserInputs(inputs);
-    }
     void start()
     {
         CallLock lock(action_mutex_, &is_cancelled_);

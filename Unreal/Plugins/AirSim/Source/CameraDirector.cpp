@@ -25,9 +25,9 @@ void ACameraDirector::setupInputBindings()
 {
     this->EnableInput(this->GetWorld()->GetFirstPlayerController());
 
-    UAirBlueprintLib::BindActionTokey("InputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::InputEventFpvView);
-    UAirBlueprintLib::BindActionTokey("InputEventFlyWithView", EKeys::RightBracket, this, &ACameraDirector::InputEventFlyWithView);
-    UAirBlueprintLib::BindActionTokey("InputEventGroundView", EKeys::Backslash, this, &ACameraDirector::InputEventGroundView);
+    UAirBlueprintLib::BindActionToKey("InputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::InputEventFpvView);
+    UAirBlueprintLib::BindActionToKey("InputEventFlyWithView", EKeys::RightBracket, this, &ACameraDirector::InputEventFlyWithView);
+    UAirBlueprintLib::BindActionToKey("InputEventGroundView", EKeys::Backslash, this, &ACameraDirector::InputEventGroundView);
 }
 
 bool ACameraDirector::checkCameraRefs()

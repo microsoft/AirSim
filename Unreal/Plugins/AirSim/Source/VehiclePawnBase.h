@@ -46,6 +46,7 @@ public: //modifiable properties
     UFUNCTION(BlueprintCallable, Category = "Debugging")
     void toggleTrace();
 
+
 public: //interface
     //overridden from pawn
     virtual void PostInitializeComponents() override;

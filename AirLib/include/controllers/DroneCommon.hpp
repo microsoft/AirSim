@@ -62,7 +62,10 @@ struct VehicleParams {
 
 struct RCData {
     double timestamp;
-    float pitch = 0, roll = 0, throttle = 0, yaw = 0, switch1 = 0, switch2 = 0, switch3 = 0;
+    //pitch, roll, yaw should be in range -1 to 1
+    //switches should be integer value indicating its state, 0=on, 1=off for example.
+    float pitch = 0, roll = 0, throttle = 0, yaw = 0;
+    unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, switch5 = 0;
 
     void add(const RCData& other)
     {

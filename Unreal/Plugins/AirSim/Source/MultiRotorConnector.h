@@ -11,7 +11,7 @@
 #include "FlyingPawn.h"
 #include <chrono>
 
-class MavMultiRotorConnector : public VehicleConnectorBase
+class MultiRotorConnector : public VehicleConnectorBase
 {
 public:
     typedef msr::airlib::real_T real_T;
@@ -20,13 +20,18 @@ public:
     typedef msr::airlib::MultiRotor MultiRotor;
     typedef msr::airlib::StateReporter StateReporter;
     typedef msr::airlib::UpdatableObject UpdatableObject;
-        
+    
+    enum class ConfigType {
+        Pixhawk,
+        RosFlight
+    };
+
 public:
-	virtual ~MavMultiRotorConnector();
+	virtual ~MultiRotorConnector();
 
     //VehicleConnectorBase interface
     //implements game interface to update pawn
-    void initialize(AFlyingPawn* vehicle_pawn);
+    void initialize(AFlyingPawn* vehicle_pawn, ConfigType type);
     virtual void beginPlay() override;
     virtual void endPlay() override;
     virtual void updateRenderedState() override;

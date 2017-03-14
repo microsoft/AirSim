@@ -252,7 +252,64 @@
     <ClInclude Include="include\common\common_utils\FileSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\configs\BlacksheepQuadX.hpp">
+    <ClInclude Include="include\controllers\rosflight\firmware\turbotrig\turbotrig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\turbotrig\turbovec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\board.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\commlink.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\commonstate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\controller.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\dummyboard.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\dummycommlink.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\estimator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\firmware.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\mixer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\mode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\mux.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\param.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\rc.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\firmware\sensors.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\RosFlightDroneController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\AirSimRosFlightBoard.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\rosflight\AirSimRosFlightCommLink.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\configs\RosFlightQuadX.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

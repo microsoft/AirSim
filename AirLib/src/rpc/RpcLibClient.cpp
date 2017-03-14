@@ -60,10 +60,6 @@ void RpcLibClient::setSimulationMode(bool is_set)
 {
     pimpl_->client.call("setSimulationMode", is_set);
 }
-void RpcLibClient::setUserInputs(const vector<float>& inputs)
-{
-    pimpl_->client.call("setUserInputs", inputs);
-}
 bool RpcLibClient::takeoff(float max_wait_seconds)
 {
     return pimpl_->client.call("takeoff", max_wait_seconds).as<bool>();

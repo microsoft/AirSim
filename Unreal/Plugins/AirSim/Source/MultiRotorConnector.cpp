@@ -1,33 +1,42 @@
 #include "AirSim.h"
-#include "MavMultiRotorConnector.h"
+#include "MultiRotorConnector.h"
 #include "vehicles/configs/PX4QuadX.hpp"
+#include "vehicles/configs/RosFlightQuadX.hpp"
 #include "vehicles/configs/BlacksheepQuadX.hpp"
 #include "AirBlueprintLib.h"
+#include <exception>
 
 using namespace msr::airlib;
 
-void MavMultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn)
+void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, MultiRotorConnector::ConfigType type)
 {
-    auto name = vehicle_pawn->getVehicleName();
-
-    std::string model = "Generic";
-    Settings& settings = Settings::singleton();
-    Settings child;
-    auto settings_filename = Settings::singleton().getFileName();
-    if (!settings_filename.empty()) {
-        settings.getChild(name, child);
-        model = child.getString("Model", model);
-    }
-    if (model == "Blacksheep") {
-        vehicle_params_.reset(new msr::airlib::BlacksheepQuadX(vehicle_pawn->getVehicleName()));
-    }
-    else {
-        vehicle_params_.reset(new msr::airlib::Px4QuadX(vehicle_pawn->getVehicleName()));
-    }
-    vehicle_params_->initialize();
-
     vehicle_pawn_ = vehicle_pawn;
     vehicle_pawn_->initialize();
+
+    //create controller
+	switch (type) {
+	case ConfigType::Pixhawk:
+		std::string model = "Generic";
+		Settings& settings = Settings::singleton();
+		Settings child;
+		auto settings_filename = Settings::singleton().getFileName();
+		if (!settings_filename.empty()) {
+			settings.getChild(name, child);
+			model = child.getString("Model", model);
+		}
+		if (model == "Blacksheep") {
+			vehicle_params_.reset(new msr::airlib::BlacksheepQuadX(vehicle_pawn->getVehicleName()));
+		}
+		else {
+			vehicle_params_.reset(new msr::airlib::Px4QuadX(vehicle_pawn->getVehicleName()));
+		}
+        break;
+    case ConfigType::RosFlight:
+        vehicle_params_.reset(new msr::airlib::RosFlightQuadX());
+        break;
+    default:
+        throw std::exception("ConfigType is not supported in MultiRotorConnector::initialize");
+    }
 
     //init physics vehicle
     auto initial_kinematics = Kinematics::State::zero();
@@ -37,16 +46,26 @@ void MavMultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn)
     initial_environment.geo_point = vehicle_pawn_->getHomePoint();
     initial_environment.min_z_over_ground = vehicle_pawn_->getMinZOverGround();
     environment_.initialize(initial_environment);
-    vehicle_.initialize(vehicle_params_.get(), initial_kinematics,
-        &environment_);
+
+    vehicle_params_->initialize();
+    vehicle_.initialize(vehicle_params_.get(), initial_kinematics, &environment_);
+
+    //pass ground truth to some controllers
+    switch (type) {
+    case ConfigType::RosFlight:
+        static_cast<RosFlightQuadX*>(vehicle_params_.get())->initializePhysics(&environment_, &vehicle_.getKinematics());
+        break;
+    default: //no additional initializations needed
+        break;
+    }
 }
 
-MavMultiRotorConnector::~MavMultiRotorConnector()
+MultiRotorConnector::~MultiRotorConnector()
 {
     stopApiServer();
 }
 
-void MavMultiRotorConnector::beginPlay()
+void MultiRotorConnector::beginPlay()
 {
     //connect to HIL
     try {
@@ -60,17 +79,17 @@ void MavMultiRotorConnector::beginPlay()
     }
 }
 
-msr::airlib::VehicleControllerBase* MavMultiRotorConnector::getController()
+msr::airlib::VehicleControllerBase* MultiRotorConnector::getController()
 {
     return vehicle_.getController();
 }
 
-void MavMultiRotorConnector::endPlay()
+void MultiRotorConnector::endPlay()
 {
     vehicle_.getController()->stop();
 }
 
-void MavMultiRotorConnector::updateRenderedState()
+void MultiRotorConnector::updateRenderedState()
 {
     //move collison info from rendering engine to vehicle
     vehicle_.setCollisionInfo(vehicle_pawn_->getCollisonInfo());
@@ -89,16 +108,18 @@ void MavMultiRotorConnector::updateRenderedState()
     }
 
     vehicle_.getController()->getStatusMessages(controller_messages_);
+
+    vehicle_.getController()->setRCData(vehicle_pawn_->getRCData());
 }
 
-void MavMultiRotorConnector::updateRendering(float dt)
+void MultiRotorConnector::updateRendering(float dt)
 {
-    try {
-        vehicle_.getController()->reportTelemetry(dt);
-    }
-    catch (std::exception &e) {
-        UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
-    }
+	try {
+		vehicle_.getController()->reportTelemetry(dt);
+	}
+	catch (std::exception &e) {
+		UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
+	}
 
     //update rotor animations
     for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
@@ -111,7 +132,7 @@ void MavMultiRotorConnector::updateRendering(float dt)
 }
 
 
-void MavMultiRotorConnector::startApiServer()
+void MultiRotorConnector::startApiServer()
 {
     //TODO: remove static up cast from below?
     controller_cancelable_.reset(new msr::airlib::DroneControllerCancelable(
@@ -121,7 +142,7 @@ void MavMultiRotorConnector::startApiServer()
     rpclib_server_->start();
 
 }
-void MavMultiRotorConnector::stopApiServer()
+void MultiRotorConnector::stopApiServer()
 {
     if (rpclib_server_ != nullptr) {
         rpclib_server_->stop();
@@ -130,25 +151,25 @@ void MavMultiRotorConnector::stopApiServer()
     }
 }
 
-bool MavMultiRotorConnector::isApiServerStarted()
+bool MultiRotorConnector::isApiServerStarted()
 {
     return rpclib_server_ != nullptr;
 }
 
 //*** Start: UpdatableState implementation ***//
-void MavMultiRotorConnector::reset()
+void MultiRotorConnector::reset()
 {
     vehicle_pawn_->reset();    //we do flier resetPose so that flier is placed back without collisons
     vehicle_.reset();
 }
 
-void MavMultiRotorConnector::update(real_T dt)
+void MultiRotorConnector::update(real_T dt)
 {
     //this is high frequency physics tick, flier gets ticked at rendering frame rate
     vehicle_.update(dt);
 }
 
-void MavMultiRotorConnector::reportState(StateReporter& reporter)
+void MultiRotorConnector::reportState(StateReporter& reporter)
 {
     // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
     FVector unrealPosition = vehicle_pawn_->getPosition();
@@ -158,7 +179,7 @@ void MavMultiRotorConnector::reportState(StateReporter& reporter)
 
 }
 
-MavMultiRotorConnector::UpdatableObject* MavMultiRotorConnector::getPhysicsBody()
+MultiRotorConnector::UpdatableObject* MultiRotorConnector::getPhysicsBody()
 {
     return vehicle_.getPhysicsBody();
 }

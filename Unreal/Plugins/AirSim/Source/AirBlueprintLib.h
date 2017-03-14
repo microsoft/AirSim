@@ -48,7 +48,11 @@ public:
     static void FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z = false, float fixed_z_val = 2.0f);
 
     template<class UserClass>
-    static FInputActionBinding& BindActionTokey(const FName action_name, const FKey in_key, UserClass* actor,
+    static FInputActionBinding& BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,
         typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func);
+
+    template<class UserClass>
+    static FInputAxisBinding& BindAxisToKey(const FName axis_name, const FKey in_key, UserClass* actor,
+        typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func);
 };
 

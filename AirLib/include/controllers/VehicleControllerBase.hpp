@@ -20,18 +20,19 @@ public:
     virtual void setSimulationMode(bool is_set) = 0;
     virtual bool isOffboardMode() = 0;
     virtual bool isSimulationMode() = 0;
-    
-    //Supplies the controller 16 channels of input
-    virtual void setUserInputs(const vector<float>& inputs)
-    {
-        //default implementation
-    }
 };
 
 class VehicleControllerException : public ControllerException {
 public:
     VehicleControllerException(const std::string& message)
         : ControllerException(message) { 
+    }
+};  
+
+class VehicleCommandNotImplementedException : public VehicleControllerException {
+public:
+    VehicleCommandNotImplementedException(const std::string& message)
+        : VehicleControllerException(message) { 
     }
 };  
 

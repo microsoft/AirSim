@@ -8,11 +8,6 @@
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
 
-//sensors
-#include "sensors/barometer/BarometerSimple.hpp"
-#include "sensors/imu/ImuSimple.hpp"
-#include "sensors/gps/GpsSimple.hpp"
-#include "sensors/magnetometer/MagnetometerSimple.hpp"
 
 namespace msr { namespace airlib {
 
@@ -50,13 +45,13 @@ protected:
 		//compute inertia matrix
         computeInertiaMatrix(params.inertia, params.body_box, params.rotor_poses, box_mass, motor_assembly_weight);
         //create sensors
-        createStandardSensors(sensors, params.enabled_sensors);
+        createStandardSensors(sensor_storage_, sensors, params.enabled_sensors);
         //create MavLink controller for PX4
-        createMavController(controller, sensors);
+        createController(controller, sensors);
     }
 
 private:
-    void createMavController(unique_ptr<DroneControllerBase>& controller, SensorCollection& sensors)
+    void createController(unique_ptr<DroneControllerBase>& controller, SensorCollection& sensors)
     {
         controller.reset(new MavLinkDroneController());
         auto mav_controller = static_cast<MavLinkDroneController*>(controller.get());
@@ -71,10 +66,10 @@ private:
 
         //read settings and override defaults
         Settings& settings = Settings::singleton();
-		Settings child;
+        Settings child;
         auto settings_filename = Settings::singleton().getFileName();
         if (!settings_filename.empty()) {
-			settings.getChild(connection_info.vehicle_name, child);
+            settings.getChild(connection_info.vehicle_name, child);
 
             // allow json overrides on a per-vehicle basis.
             connection_info.sim_sysid = static_cast<uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));
@@ -107,26 +102,26 @@ private:
 
         // update settings file with any new values that we now have.
         if (connection_info.vehicle_name.size() > 0) {
-			
+            
             bool changed = child.setInt("SimSysID", connection_info.sim_sysid);
             changed |= child.setInt("SimCompID", connection_info.sim_compid);
 
-			changed |= child.setInt("VehicleSysID", connection_info.vehicle_sysid);
-			changed |= child.setInt("VehicleCompID", connection_info.vehicle_compid);
+            changed |= child.setInt("VehicleSysID", connection_info.vehicle_sysid);
+            changed |= child.setInt("VehicleCompID", connection_info.vehicle_compid);
 
-			changed |= child.setInt("OffboardSysID", connection_info.offboard_sysid);
-			changed |= child.setInt("OffboardCompID", connection_info.offboard_compid);
+            changed |= child.setInt("OffboardSysID", connection_info.offboard_sysid);
+            changed |= child.setInt("OffboardCompID", connection_info.offboard_compid);
 
-			changed |= child.setString("LogViewerHostIp", connection_info.logviewer_ip_address);
-			changed |= child.setInt("LogViewerPort", connection_info.logviewer_ip_port);
+            changed |= child.setString("LogViewerHostIp", connection_info.logviewer_ip_address);
+            changed |= child.setInt("LogViewerPort", connection_info.logviewer_ip_port);
 
-			changed |= child.setString("QgcHostIp", connection_info.qgc_ip_address);
-			changed |= child.setInt("QgcPort", connection_info.qgc_ip_port);
+            changed |= child.setString("QgcHostIp", connection_info.qgc_ip_address);
+            changed |= child.setInt("QgcPort", connection_info.qgc_ip_port);
 
 			changed |= child.setString("SitlIp", connection_info.sitl_ip_address);
 			changed |= child.setInt("SitlPort", connection_info.sitl_ip_port);
 
-			changed |= child.setString("LocalHostIp", connection_info.local_host_ip);
+            changed |= child.setString("LocalHostIp", connection_info.local_host_ip);
 
 			changed |= child.setBool("UseSerial", connection_info.use_serial);
 			changed |= child.setString("UdpIp", connection_info.ip_address);
@@ -134,33 +129,13 @@ private:
 			changed |= child.setString("SerialPort", connection_info.serial_port);
 			changed |= child.setInt("SerialBaudRate", connection_info.baud_rate);
 
-			if (changed) {
-				settings.setChild(connection_info.vehicle_name, child);
-				settings.saveJSonFile("settings.json");
-			}
+            if (changed) {
+                settings.setChild(connection_info.vehicle_name, child);
+                settings.saveJSonFile("settings.json");
+            }
         }
 
         return connection_info;
-    }
-
-    void createStandardSensors(SensorCollection& sensors, const EnabledSensors& enabled_sensors)
-    {
-        sensor_storage_.clear();
-        if (enabled_sensors.imu)
-            sensors.insert(createSensor<ImuSimple>(), SensorCollection::SensorType::Imu);
-        if (enabled_sensors.magnetometer)
-            sensors.insert(createSensor<MagnetometerSimple>(), SensorCollection::SensorType::Magnetometer);
-        if (enabled_sensors.gps)
-            sensors.insert(createSensor<GpsSimple>(), SensorCollection::SensorType::Gps);
-        if (enabled_sensors.barometer)
-            sensors.insert(createSensor<BarometerSimple>(), SensorCollection::SensorType::Barometer);
-    }
-
-    template<typename SensorClass>
-    SensorBase* createSensor()
-    {
-        sensor_storage_.emplace_back(unique_ptr<SensorClass>(new SensorClass()));
-        return sensor_storage_.back().get();
     }
 
 private:

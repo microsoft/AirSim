@@ -12,12 +12,12 @@ void ASimModeWorldMultiRotor::BeginPlay()
 
     if (fpv_vehicle_connector_ != nullptr) {
         //create its control server
-		try {
+        try {
             fpv_vehicle_connector_->startApiServer();
-		}
-		catch (std::exception& ex) {
+        }
+        catch (std::exception& ex) {
             UAirBlueprintLib::LogMessage("Cannot start RpcLib Server",  ex.what(), LogDebugLevel::Failure);
-		}
+        }
     }
 }
 
@@ -75,7 +75,7 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (fpv_vehicle_connector_ != nullptr) {
+    if (fpv_vehicle_connector_ != nullptr) {
         fpv_vehicle_connector_->stopApiServer();
     }
 
@@ -84,7 +84,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool ASimModeWorldMultiRotor::checkConnection()
 {
-	return true;
+    return true;
 }
 
 void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
@@ -116,8 +116,8 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* pawn)
 {
-    auto vehicle = std::make_shared<MavMultiRotorConnector>();
-    vehicle->initialize(pawn);
+    auto vehicle = std::make_shared<MultiRotorConnector>();
+    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::Pixhawk);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

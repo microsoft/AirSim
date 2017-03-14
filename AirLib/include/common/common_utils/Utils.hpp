@@ -244,7 +244,7 @@ public:
         std::vector<string> result;
         for (auto it = s.begin(); it != s.end(); it++)
         {
-			char ch = *it;
+            char ch = *it;
             bool split = false;
             for (int i = 0; i < numSplitChars; i++)
             {
@@ -270,64 +270,64 @@ public:
         return result;
     }
 
-	// split a line into tokens using any of the given separators as token separators.
-	// this method also understands quoted string literals (either single or double quotes) and returns the
-	// quoted value without the quotes, and this value can contain separators.
-	static std::vector<std::string> tokenize(const std::string& line, const char* separators, int numSeparators)
-	{
-		auto start = line.begin();
-		std::vector<std::string> result;
-		auto end = line.end();
-		for (auto it = line.begin(); it != end; )
-		{
-			bool split = false;
-			char ch = *it;
-			if (ch == '\'' || ch == '"') {
-				// skip quoted literal
-				if (start < it)
-				{
-					result.push_back(string(start, it));
-				}
-				it++;
-				start = it;
-				for (; it != end; it++) {					
-					if (*it == ch) {
-						break;
-					} 
-				}
-				split = true;
-			} else {
-				for (int i = 0; i < numSeparators; i++) {
-					if (ch == separators[i]) {
-						split = true;
-						break;
-					}
-				}
-			}
-			if (split)
-			{
-				if (start < it)
-				{
-					result.push_back(string(start, it));
-				}
-				start = it;
-				if (start < end) start++;
-			}
-			if (it != end) {
-				it++;
-			}
-		}
-		if (start < end)
-		{
-			result.push_back(string(start, end));
-		}
-		return result;
-	}
+    // split a line into tokens using any of the given separators as token separators.
+    // this method also understands quoted string literals (either single or double quotes) and returns the
+    // quoted value without the quotes, and this value can contain separators.
+    static std::vector<std::string> tokenize(const std::string& line, const char* separators, int numSeparators)
+    {
+        auto start = line.begin();
+        std::vector<std::string> result;
+        auto end = line.end();
+        for (auto it = line.begin(); it != end; )
+        {
+            bool split = false;
+            char ch = *it;
+            if (ch == '\'' || ch == '"') {
+                // skip quoted literal
+                if (start < it)
+                {
+                    result.push_back(string(start, it));
+                }
+                it++;
+                start = it;
+                for (; it != end; it++) {					
+                    if (*it == ch) {
+                        break;
+                    } 
+                }
+                split = true;
+            } else {
+                for (int i = 0; i < numSeparators; i++) {
+                    if (ch == separators[i]) {
+                        split = true;
+                        break;
+                    }
+                }
+            }
+            if (split)
+            {
+                if (start < it)
+                {
+                    result.push_back(string(start, it));
+                }
+                start = it;
+                if (start < end) start++;
+            }
+            if (it != end) {
+                it++;
+            }
+        }
+        if (start < end)
+        {
+            result.push_back(string(start, end));
+        }
+        return result;
+    }
 
     static string toLower(const string& str)
     {
         auto len = str.size();
-		std::unique_ptr<char[]> buf(new char[len + 1U]);
+        std::unique_ptr<char[]> buf(new char[len + 1U]);
         str.copy(buf.get(), len, 0);
         buf[len] = '\0';
 #ifdef _WIN32

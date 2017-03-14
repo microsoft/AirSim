@@ -101,5 +101,5 @@ void ASimModeWorldBase::setupInputBindings()
 {
     Super::setupInputBindings();
 
-    UAirBlueprintLib::BindActionTokey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeWorldBase::reset);
+    UAirBlueprintLib::BindActionToKey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeWorldBase::reset);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Common.hpp"
-#include "MavMultiRotorConnector.h"
+#include "MultiRotorConnector.h"
 #include "SimModeWorldBase.h"
 #include "SimModeWorldMultiRotor.generated.h"
 

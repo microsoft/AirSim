@@ -13,7 +13,7 @@ namespace msr { namespace airlib {
 class MagnetometerBase  : public SensorBase {
 public: //types
     struct Output { //same fields as ROS message
-        Vector3r magnetic_field_body;
+        Vector3r magnetic_field_body; //in Gauss
         vector<real_T> magnetic_field_covariance; //9 elements 3x3 matrix    
     };
 

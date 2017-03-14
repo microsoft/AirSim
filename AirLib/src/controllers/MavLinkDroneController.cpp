@@ -760,11 +760,6 @@ struct MavLinkDroneController::impl {
         return is_simulation_mode_;
     }
 
-    void setUserInputs(const vector<float>& inputs)
-    {
-        //TODO: support XBox/Keyboard inputs for MavLink based drone?
-    }
-
     void setOffboardMode(bool is_set)
     {
         if (is_set) {
@@ -887,25 +882,19 @@ struct MavLinkDroneController::impl {
         mav_vehicle_->moveToLocalPosition(x, y, z, !yaw_mode.is_rate, yaw);
     }
 
-    //virtual RC mode
     RCData getRCData()
     {
-        RCData rc_data;
-        return rc_data;
+        throw VehicleCommandNotImplementedException("getRCData() function is not yet implemented");
+    }
+
+    void setRCData(const RCData& rcData)
+    {
+        throw VehicleCommandNotImplementedException("getRCData() function is not yet implemented");
     }
 
     bool validateRCData(const RCData& rc_data)
     {
         return true;
-    }
-
-    void commandVirtualRC(const RCData& rc_data)
-    {
-        throw VehicleMoveException("commandVirtualRC is not implemented yet");
-    }
-    void commandEnableVirtualRC(bool enable)
-    {
-        throw VehicleMoveException("commandVirtualRC is not implemented yet");
     }
 
     //drone parameters
@@ -1061,10 +1050,6 @@ bool MavLinkDroneController::armDisarm(bool arm, CancelableBase& cancelable_acti
 }
 
 
-void MavLinkDroneController::setUserInputs(const vector<float>& inputs)
-{
-    pimpl_->setUserInputs(inputs);
-}
 void MavLinkDroneController::setOffboardMode(bool is_set)
 {
     pimpl_->setOffboardMode(is_set);
@@ -1119,20 +1104,15 @@ void MavLinkDroneController::commandPosition(float x, float y, float z, const Ya
     return pimpl_->commandPosition(x, y, z, yaw_mode);
 }
 
-//virtual RC mode
 RCData MavLinkDroneController::getRCData()
 {
     return pimpl_->getRCData();
 }
+void MavLinkDroneController::setRCData(const RCData& rcData)
+{
+    return pimpl_->setRCData(rcData);
+}
 
-void MavLinkDroneController::commandVirtualRC(const RCData& rc_data)
-{
-    return pimpl_->commandVirtualRC(rc_data);
-}
-void MavLinkDroneController::commandEnableVirtualRC(bool enable)
-{
-    return pimpl_->commandEnableVirtualRC(enable);
-}
 
 //drone parameters
 float MavLinkDroneController::getCommandPeriod() 

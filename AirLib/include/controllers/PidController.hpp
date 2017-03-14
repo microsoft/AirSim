@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef air_ros_PidController_hpp
-#define air_ros_PidController_hpp
+#ifndef msr_airlib__PidController_hpp
+#define msr_airlib__PidController_hpp
 
 #include <chrono>
 
