@@ -10,10 +10,9 @@ But it's still useful when you don't have a flight controller handy. It is just 
 # Software-In-Loop Simulation (SITL)
 1. Install [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).  You can also do this on an Ubuntu machine, 
 but in that case you will have to use real ip addresses instead of localhost (See Using VirtualBox Ubuntu below).
-2. Type `bash` at Windows command prompt. Follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html) 
-and follow all the instructions under `NuttX based hardware` to install prerequisites.  We have also included a summary of
-those PX4 instructions in [this page](px4.md).
-
+2. Type `bash` at Windows command prompt. Follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html)
+and follow **all** the instructions under `NuttX based hardware` to install prerequisites.  We've also included
+out own copy of the [PX4 setup instructions](px4.md) which is a bit more concise about what we need exactly.
 3. Get the PX4 source code and build the posix SITL version of PX4:
 ```
 git clone https://github.com/PX4/Firmware.git
