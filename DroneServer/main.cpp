@@ -21,10 +21,9 @@ int main(int argc, const char* argv[])
     connection_info.vehicle_name = "Pixhawk";
     
     // read settings and override defaults
-    Settings& settings = Settings::singleton();
+    Settings& settings = Settings::singleton().loadJSonFile("settings.json");
     Settings child;
-    auto settings_filename = Settings::singleton().getFileName();
-    if (!settings_filename.empty()) {
+    if (settings.isLoadSuccess()) {
         settings.getChild(connection_info.vehicle_name, child);
 
         // allow json overrides on a per-vehicle basis.
