@@ -267,6 +267,7 @@ struct MavLinkDroneController::impl {
 			mav_vehicle_->connect(connection_);
 		}
 
+		mav_vehicle_->startHeartbeat();
     }
 
     void createMavSerialConnection(const std::string& port_name, int baud_rate)

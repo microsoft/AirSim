@@ -1,8 +1,8 @@
 # Linux Build
 
-## cmake    
+## cmake
 
-First you will need at least [cmake version  3.4](https://cmake.org/install/).  
+First you will need at least [cmake version  3.4](https://cmake.org/install/). 
 If you don't have cmake version 3.* (for example, that is not the default on Ubuntu 14) you can run the following:
 
 ````
@@ -14,7 +14,7 @@ sudo apt-get install cmake
 Then get the right version of Eigen, see [Install Eigen](install_eigen.md).  
 
 Next you need a version of GCC that supports `-std=c++14`.  Version 5.4 or newer should work.  
-If you don't have version 6 you can get it by running these commands:
+The following commands will get you gcc 6:
 ````
 sudo apt-get update
 sudo apt-get install build-essential software-properties-common -y
@@ -62,14 +62,14 @@ cmake creates.  This is why we have separated the CMakeLists.txt files into a di
 doesn't override our hand built VS project files.
 
 This will create the debug build:
-
-    cmake -G "Visual Studio 14 2015 Win64" -D CMAKE_BUILD_TYPE=Debug CMakeLists.txt
-    msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
-    
+````
+cmake -G "Visual Studio 14 2015 Win64" -D CMAKE_BUILD_TYPE=Debug CMakeLists.txt
+msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
+````
 To build release bits you have to delete CMakeCache.txt (it's not clear that cmake supports building
 one set of vcxproj make files that can do both debug and release, if someone knows how please submit a pull request!)
 and run this:
-    
-    cmake -G "Visual Studio 14 2015 Win64" -D CMAKE_BUILD_TYPE=Release CMakeLists.txt
-    msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln
-
+````
+cmake -G "Visual Studio 14 2015 Win64" -D CMAKE_BUILD_TYPE=Release CMakeLists.txt
+msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln
+````
