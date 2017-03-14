@@ -69,7 +69,7 @@ int main()
         cout << "Press Enter to takeoff" << endl; cin.get();
         float takeoffTimeout = 1000; // wait 10 seconds to reach takeoff height.
         // drone will take off to whatever it thinks is a safe minimum altitude
-        // so as to not get too much propellor backwash but also not too high.
+        // so as to not get too much propeller backwash but also not too high.
         // usually 2-5 meters or thereabouts.
         client.takeoff(takeoffTimeout);
 

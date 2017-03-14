@@ -196,8 +196,8 @@ private: //methods
         /************* Linear drag *****************/
         //we use box as approximate size with dimensions x, y, z plus the area of propellers when they rotate
         //while moving along any axis, we find area that will be exposed in that direction
-        real_T propeller_area = M_PIf * params.rotor_params.propeller_radius * params.rotor_params.propeller_radius;
-        real_T propeller_xsection = M_PIf * params.rotor_params.propeller_radius * params.rotor_params.propeller_height;
+        real_T propeller_area = M_PIf * params.rotor_params.propeller_diameter * params.rotor_params.propeller_diameter;
+        real_T propeller_xsection = M_PIf * params.rotor_params.propeller_diameter * params.rotor_params.propeller_height;
         {
             real_T top_bottom_area = params.body_box.x * params.body_box.y;
             real_T left_right_area = params.body_box.x * params.body_box.z;

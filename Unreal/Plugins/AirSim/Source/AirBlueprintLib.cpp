@@ -140,6 +140,9 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
 {
     //can we see followee?
     FHitResult hit;
+    if (followee == nullptr) {
+        return;
+    }
     FVector next_location = followee->GetActorLocation() + offset;
     if (fixed_z)
         next_location.Z = fixed_z_val;
