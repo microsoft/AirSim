@@ -45,12 +45,12 @@ namespace msr {
 
                 Vector3r unit_z(0, 0, -1);  //NED frame
 
-                                            // relative to Forward vector in the order (0,3,1,2) required by quad X pattern
-                                            // http://ardupilot.org/copter/_images/MOTORS_QuadX_QuadPlus.jpg
-                arm_lengths.push_back(22);
-                arm_lengths.push_back(25.5);
-                arm_lengths.push_back(22);
-                arm_lengths.push_back(25.5);
+                // relative to Forward vector in the order (0,3,1,2) required by quad X pattern
+                // http://ardupilot.org/copter/_images/MOTORS_QuadX_QuadPlus.jpg
+                arm_lengths.push_back(0.22);
+                arm_lengths.push_back(0.255);
+                arm_lengths.push_back(0.22);
+                arm_lengths.push_back(0.255);
 
                 // note: the Forward vector is actually the "x" axis, and the AngleAxisr rotation is pointing down and is left handed, so this means the rotation
                 // is counter clockwise, so the vector (arm_lengths[i], 0) is the X-axis, so the CCW rotations to position each arm correctly are listed below:
