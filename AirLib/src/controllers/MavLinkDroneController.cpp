@@ -203,6 +203,11 @@ struct MavLinkDroneController::impl {
         // send directly to the PX4 (using whatever sysid/compid comes from that remote node).
         connection_->join(connection);
 
+        auto mavcon = mav_vehicle_->getConnection();
+        if (mavcon != connection_) {
+            mavcon->join(connection);
+        }
+
         return node;
     }
 
