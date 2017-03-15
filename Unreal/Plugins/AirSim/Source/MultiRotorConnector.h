@@ -54,6 +54,7 @@ private:
     std::vector<std::string> controller_messages_;
     msr::airlib::Environment environment_;
     AFlyingPawn* vehicle_pawn_;
+    std::string api_server_address_;
 
     std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
     std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;

@@ -889,7 +889,7 @@ struct MavLinkDroneController::impl {
 
     void setRCData(const RCData& rcData)
     {
-        throw VehicleCommandNotImplementedException("getRCData() function is not yet implemented");
+        //TODO: use RC data to control MavLink drone
     }
 
     bool validateRCData(const RCData& rc_data)

@@ -1,8 +1,7 @@
 #include "AirSim.h"
 #include "MultiRotorConnector.h"
-#include "vehicles/configs/PX4QuadX.hpp"
+#include "vehicles/configs/PX4ConfigCreator.hpp"
 #include "vehicles/configs/RosFlightQuadX.hpp"
-#include "vehicles/configs/BlacksheepQuadX.hpp"
 #include "AirBlueprintLib.h"
 #include <exception>
 
@@ -16,20 +15,7 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, MultiRotorConnec
     //create controller
 	switch (type) {
 	case ConfigType::Pixhawk:
-		std::string model = "Generic";
-		Settings& settings = Settings::singleton();
-		Settings child;
-		auto settings_filename = Settings::singleton().getFileName();
-		if (!settings_filename.empty()) {
-			settings.getChild(name, child);
-			model = child.getString("Model", model);
-		}
-		if (model == "Blacksheep") {
-			vehicle_params_.reset(new msr::airlib::BlacksheepQuadX(vehicle_pawn->getVehicleName()));
-		}
-		else {
-			vehicle_params_.reset(new msr::airlib::Px4QuadX(vehicle_pawn->getVehicleName()));
-		}
+        vehicle_params_ = PX4ConfigCreator::createConfig(vehicle_pawn->getVehicleName());
         break;
     case ConfigType::RosFlight:
         vehicle_params_.reset(new msr::airlib::RosFlightQuadX());
@@ -137,8 +123,8 @@ void MultiRotorConnector::startApiServer()
     //TODO: remove static up cast from below?
     controller_cancelable_.reset(new msr::airlib::DroneControllerCancelable(
         vehicle_.getController()));
-    std::string server_address = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
-    rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), server_address));
+    api_server_address_ = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
+    rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
     rpclib_server_->start();
 
 }

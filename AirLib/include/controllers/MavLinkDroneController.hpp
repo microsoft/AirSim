@@ -66,6 +66,8 @@ public:
         // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
         // same machine.  Whatever network you choose it has to be the same one for external
         std::string local_host_ip = "127.0.0.1";
+
+        std::string model = "Generic";
     };
 
 public:

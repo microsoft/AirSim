@@ -16,6 +16,7 @@ void ASimModeBase::BeginPlay()
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
+    //TODO: should this be done somewhere else?
     //load settings file if found
     typedef msr::airlib::Settings Settings;
     try {
