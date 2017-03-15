@@ -3,7 +3,7 @@
 
 ## Install Unreal Engine
   1. Download the Unreal 4 engine from [unreal.com](https://www.unrealengine.com/dashboard). While the Unreal Engine is open source, cross platform and free to download, registration is still required as of this writing. 
-  You need version 4.14, we do not yet support version 4.15.  So to get version 4.14 you may need to expand "Add versions" as shown below:
+  You need version 4.15. Unfortunately, version 4.14 no longer works because of some files are incompatible. So to get version 4.15 you may need to expand "Add versions" as shown below:
 
   ![Unreal Versions](images/unreal_versions.png)
 
