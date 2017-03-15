@@ -24,13 +24,16 @@ public:
     virtual void initialize() override;
     virtual void reset() override;
 
-public: //blueprint properties
+public: //blueprint
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
 		float RotatorFactor = 1.0f;
 
 	//HIL settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HIL")
 		FString VehicleName = "Pixhawk";
+
+    UFUNCTION(BlueprintCallable, Category = "Init")
+        void initializeForPlay();
 
 private: //methods
 	void setupComponentReferences();

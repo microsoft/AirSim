@@ -7,7 +7,10 @@
 void AFlyingPawn::initialize()
 {
     Super::initialize();
+}
 
+void AFlyingPawn::initializeForPlay()
+{
     //get references of components so we can use later
     setupComponentReferences();
 
