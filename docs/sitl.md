@@ -7,12 +7,16 @@ In this case, the firmware runs in your computer as opposed to flight controller
 the tiny flight controller on your drone, so you may not get the same flying performance when trying the same thing on a real drone.
 But it's still useful when you don't have a flight controller handy. It is just a few more steps to set up as shown below.
 
-# Software-In-Loop Simulation (SITL)
-1. Install [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).  You can also do this on an Ubuntu machine, 
-but in that case you will have to use real ip addresses instead of localhost (See Using VirtualBox Ubuntu below).
-2. Type `bash` at Windows command prompt. Follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html)
+## Software-In-Loop Simulation (SITL)
+
+The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux.
+Sorry it doesn't run in Windows, but if you install [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)
+you can build and run it there.
+
+1. From your Linux bash terminal follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html)
 and follow **all** the instructions under `NuttX based hardware` to install prerequisites.  We've also included
 out own copy of the [PX4 setup instructions](px4.md) which is a bit more concise about what we need exactly.
+
 3. Get the PX4 source code and build the posix SITL version of PX4:
 ```
 git clone https://github.com/PX4/Firmware.git
@@ -35,13 +39,25 @@ So the alternatives are either use XBox 360 Controller or connect your RC using 
 (for example, in case of [FrSky Taranis X9D Plus](prereq.md)) or using trainer USB cable to PC. 
 This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use RC control as below.
 
-# Using VirtualBox Ubuntu
+## Setting GPS origin
+
+PX4 SITL mode needs to be configured to get the home location correct.  Run the following in the PX4 console window
+so that the origin matches that which is setup in AirSim AVehiclePawnBase::HomeLatitude and HomeLongitude.
+
+````
+param set LPE_LAT 47.641468
+param set LPE_LON -122.140165
+````
+
+Now close Unreal app, restart `./build_posix_sitl_default/src/firmware/posix/px4` and re-start the unreal app.  
+
+## Using VirtualBox Ubuntu
 
 If you want to run the above posix_sitl in a `VirtualBox Ubuntu` machine then it will have a different ip address from localhost.
-So in this case you need to set the [settings file](settings.md) with the UdpIp address set to the ip address of your virtual machine
-and the LocalIpAddress is the address of your host machine running the Unreal engine. 
+So in this case you need to edit the [settings file](settings.md) and change the UdpIp and SitlIp to the ip address of your virtual machine
+set the  LocalIpAddress to the address of your host machine running the Unreal engine. 
 
-# Using Joystick/Gamepad (Alternative to RC)
+## Using Joystick/Gamepad (Alternative to RC)
 Why do you need RC for simulator? Because usual joysticks are not very accurate and in fact very "noisy" for flying! 
 We have tried it and gladly switched back to regular RC. But just in case you want to try it as well, here are the instructions.
 
