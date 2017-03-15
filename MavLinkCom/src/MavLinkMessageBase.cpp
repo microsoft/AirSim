@@ -227,7 +227,8 @@ int MavLinkTelemetry::pack(char* buffer) const {
 	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->crcErrors), 12);
 	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->handlerMicroseconds), 16);
 	pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->renderTime), 20);
-	return 24;
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->wifiRssi), 24);    
+	return 28;
 }
 
 int MavLinkTelemetry::unpack(const char* buffer) {
@@ -237,7 +238,8 @@ int MavLinkTelemetry::unpack(const char* buffer) {
 	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->crcErrors), 12);
 	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->handlerMicroseconds), 16);
 	unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->renderTime), 20);
-	return 24;
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->wifiRssi), 24);
+	return 28;
 }
 
 

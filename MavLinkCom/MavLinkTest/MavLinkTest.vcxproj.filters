@@ -24,6 +24,9 @@
     <ClInclude Include="UnitTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="wifi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

@@ -17,6 +17,7 @@
 #include <map>
 #include <ctime>
 #include "UnitTests.h"
+
 /* enable math defines on Windows */
 
 #define M_PI_2     1.57079632679489661923   // pi/2
@@ -120,6 +121,7 @@ bool verbose = false;
 bool nsh = false;
 bool noparams = false;
 std::string logDirectory;
+std::string ifaceName; 
 bool jsonLogFormat = false;
 std::shared_ptr<MavLinkLog> inLogFile;
 std::shared_ptr<MavLinkLog> outLogFile;
@@ -492,7 +494,8 @@ void PrintUsage() {
 	printf("    -logformat:json                        - the default is binary, if you specify this option you will get mavlink logs in json format\n");
 	printf("    -noradio							   - disables RC link loss failsafe\n");
 	printf("    -nsh                                   - enter NuttX shell immediately on connecting with PX4\n");
-	printf("    -telemetry                             - generate telemetry mavlink messages for logviewer");
+	printf("    -telemetry                             - generate telemetry mavlink messages for logviewer\n");
+    printf("    -wifi:iface                            - add wifi rssi to the telemetry using given wifi interface name (e.g. wplsp0)\n");
 	printf("If no arguments it will find a COM port matching the name 'PX4'\n");
 	printf("You can specify -proxy multiple times with different port numbers to proxy drone messages out to multiple listeners\n");
 }
@@ -502,6 +505,7 @@ bool ParseCommandLine(int argc, const char* argv[])
 	const char* logDirOption = "logdir";
 	const char* logformatOption = "logformat";
 	const char* outLogFileOption = "outlogfile";
+    const char* wifiOption = "wifi";
 
 	// parse command line
 	for (int i = 1; i < argc; i++)
@@ -637,6 +641,14 @@ bool ParseCommandLine(int argc, const char* argv[])
 			else if (lower == "telemetry") {
 				telemetry = true;
 			}
+            else if (lower == wifiOption)
+            {
+                if (parts.size() > 1)
+                {
+                    std::string name(arg + 1 + strlen(wifiOption) + 1);
+                    ifaceName = name;
+                }
+            }
 			else
 			{
 				printf("### Error: unexpected argument: %s\n", arg);
@@ -791,7 +803,8 @@ void runTelemetry() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		if (droneConnection != nullptr) {
 			MavLinkTelemetry tel;
-			droneConnection->getTelemetry(tel);
+            tel.wifiInterfaceName = ifaceName.c_str();
+            droneConnection->getTelemetry(tel);
 			tel.compid = LocalComponentId;
 			tel.sysid = LocalSystemId;
 			if (logConnection != nullptr) {

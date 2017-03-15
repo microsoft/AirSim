@@ -253,6 +253,7 @@
     <ClCompile Include="src\serial_com\SocketInit.cpp" />
     <ClCompile Include="src\serial_com\TcpClientPort.cpp" />
     <ClCompile Include="src\serial_com\UdpClientPort.cpp" />
+    <ClCompile Include="src\serial_com\wifi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_utils\FileSystem.hpp" />
@@ -298,6 +299,7 @@
     <ClInclude Include="src\serial_com\TcpClientPort.hpp" />
     <ClInclude Include="src\serial_com\UdpClientPort.hpp" />
     <ClInclude Include="include\VehicleState.hpp" />
+    <ClInclude Include="src\serial_com\wifi.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Design\Design.dgml" />

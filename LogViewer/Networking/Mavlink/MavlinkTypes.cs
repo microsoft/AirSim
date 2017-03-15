@@ -6123,6 +6123,7 @@ namespace Microsoft.Networking.Mavlink
             public int crcErrors;          // # crc errors detected in mavlink stream since the last telemetry message
             public int handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
             public int renderTime;          // total time spent rendering frames since the last message
+            public int wifiRssi;            // if this device is communicating over wifi this is the signal strength.
         };
 
 

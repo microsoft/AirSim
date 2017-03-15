@@ -131,6 +131,8 @@ namespace mavlinkcom
 		long crcErrors;			 // # crc errors detected in mavlink stream since the last telemetry message
 		long handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
 		long renderTime;         // total time spent rendering frames since the last telemetry message
+        const char* wifiInterfaceName; // the name of the wifi interface we are measuring RSSI on.
+        int wifiRssi;            // if this device is communicating over wifi this is the signal strength.
 		virtual std::string toJSon() {
 
 			std::ostringstream result;
@@ -141,6 +143,7 @@ namespace mavlinkcom
 			result << "\"crcErrors\":" << this->crcErrors << ",";
 			result << "\"handlerMicroseconds\":" << this->handlerMicroseconds << ",";
 			result << "\"renderTime\":" << this->renderTime;
+            result << "\"wifiRssi\":" << this->wifiRssi;
 			result << "}";
 			return result.str();
 		}

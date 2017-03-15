@@ -30,6 +30,7 @@ public:
 
 	bool isClosed();
 
+    int getRssi(const char* ifaceName);
 
 	std::string remoteAddress();
 	int remotePort();

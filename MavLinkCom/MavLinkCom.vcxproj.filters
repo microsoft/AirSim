@@ -73,6 +73,9 @@
     <ClCompile Include="src\Semaphore.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\serial_com\wifi.cpp">
+      <Filter>serial_com</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -203,6 +206,9 @@
     </ClInclude>
     <ClInclude Include="include\Semaphore.hpp">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serial_com\wifi.h">
+      <Filter>serial_com</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

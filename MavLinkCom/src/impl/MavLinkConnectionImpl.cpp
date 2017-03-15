@@ -410,7 +410,6 @@ void MavLinkConnectionImpl::publishPackets()
 	}
 }
 
-
 void MavLinkConnectionImpl::getTelemetry(MavLinkTelemetry& result)
 {
 	std::lock_guard<std::mutex> guard(telemetry_mutex_);
@@ -422,4 +421,7 @@ void MavLinkConnectionImpl::getTelemetry(MavLinkTelemetry& result)
 	telemetry_.messagesReceived = 0;
 	telemetry_.messagesSent = 0;
 	telemetry_.renderTime = 0;
+    if (telemetry_.wifiInterfaceName != nullptr) {
+        telemetry_.wifiRssi = port->getRssi(telemetry_.wifiInterfaceName);
+    }
 }

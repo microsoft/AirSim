@@ -44,7 +44,8 @@ LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/MavLinkVideoStre
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/SerialPort.cpp") 
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/TcpClientPort.cpp") 
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/UdpClientPort.cpp") 
-LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/SocketInit.cpp") 
+LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/SocketInit.cpp")
+LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/wifi.cpp")
 
 IF(UNIX)
     LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/linux/MavLinkFindSerialPorts.cpp")

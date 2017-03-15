@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 #ifndef SERIAL_COM_SERIALPORT_HPP
 #define SERIAL_COM_SERIALPORT_HPP
@@ -50,6 +52,9 @@ public:
 
 	virtual bool isClosed();
 
+    virtual int getRssi(const char* ifaceName) {
+        return 0; // not supported on serial port.
+    }
 private:
 	int setAttributes(int baud_rate, Parity parity, int data_bits, StopBits bits, Handshake hs, int readTimeout, int writeTimeout);
 

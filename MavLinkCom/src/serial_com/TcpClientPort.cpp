@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "SocketInit.hpp"
+#include "wifi.h"
 
 using namespace mavlink_utils;
 
@@ -60,6 +61,10 @@ public:
 		return closed_;
 	}
 
+    int getRssi(const char* ifaceName)
+    {
+        return getWifiRssi(static_cast<int>(sock), ifaceName);
+    }
 	static void resolveAddress(const std::string& ipAddress, int port, sockaddr_in& addr)
 	{
 		struct addrinfo hints;
@@ -296,4 +301,9 @@ std::string TcpClientPort::remoteAddress()
 int TcpClientPort::remotePort()
 {
 	return impl_->remotePort();
+}
+
+int TcpClientPort::getRssi(const char* ifaceName)
+{
+    return impl_->getRssi(ifaceName);
 }
