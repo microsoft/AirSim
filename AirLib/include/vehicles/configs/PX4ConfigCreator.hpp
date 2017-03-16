@@ -26,7 +26,7 @@ public:
             config.reset((new Px4QuadX(connection_info)));
         }
 
-        return std::move(config);
+        return config;
     }
 
 private:

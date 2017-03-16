@@ -20,7 +20,7 @@ public:
         }
 
         // Simply get the state of the controller from XInput.
-        DWORD dwResult = XInputGetState(index, &controllers_[index].state);
+        auto dwResult = XInputGetState(index, &controllers_[index].state);
 
         if( dwResult == ERROR_SUCCESS )
             controllers_[index].bConnected = true;
