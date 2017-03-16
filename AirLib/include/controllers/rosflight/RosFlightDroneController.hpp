@@ -135,15 +135,18 @@ public:
 
     void setRCData(const RCData& rcData)
     {
-        board_->setInputChannel(0, angleToPwm(rcData.roll)); //X
-        board_->setInputChannel(1, angleToPwm(rcData.yaw)); //Y
-        board_->setInputChannel(2, thrustToPwm(rcData.throttle)); //F
-        board_->setInputChannel(3, angleToPwm(-rcData.pitch)); //Z
-        board_->setInputChannel(4, switchToPwm(rcData.switch1));
-        board_->setInputChannel(5, switchToPwm(rcData.switch2));
-        board_->setInputChannel(6, switchToPwm(rcData.switch3));
-        board_->setInputChannel(7, switchToPwm(rcData.switch4));
-        board_->setInputChannel(8, switchToPwm(rcData.switch5));
+        if (rcData.is_connected) {
+            board_->setInputChannel(0, angleToPwm(rcData.roll)); //X
+            board_->setInputChannel(1, angleToPwm(rcData.yaw)); //Y
+            board_->setInputChannel(2, thrustToPwm(rcData.throttle)); //F
+            board_->setInputChannel(3, angleToPwm(-rcData.pitch)); //Z
+            board_->setInputChannel(4, switchToPwm(rcData.switch1));
+            board_->setInputChannel(5, switchToPwm(rcData.switch2));
+            board_->setInputChannel(6, switchToPwm(rcData.switch3));
+            board_->setInputChannel(7, switchToPwm(rcData.switch4));
+            board_->setInputChannel(8, switchToPwm(rcData.switch5));
+        }
+        //else we don't have RC data
     }
     
     double timestampNow() override

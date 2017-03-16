@@ -10,13 +10,16 @@ class SimJoyStick
 {
 public:
     struct State {
-        short left_x, left_y, right_x, right_y;
+        int16_t left_x, left_y, right_x, right_y;
         bool left_trigger, right_trigger;
-        unsigned short buttons;
+        uint16_t buttons;
         bool is_connected;
     };
 
     static void setEnabled(bool enabled);
+    static bool isEnabled();
+    static void setInitializedSuccess(bool success);
+    static bool isInitializedSuccess();
 
     void getJoyStickState(unsigned int index, State& state);
 
@@ -24,7 +27,8 @@ public:
     ~SimJoyStick();    //required for pimpl
 private:
     static bool enabled_;
-
+    static bool initialized_success_;
+    
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };

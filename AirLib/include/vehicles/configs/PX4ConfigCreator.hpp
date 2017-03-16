@@ -8,6 +8,7 @@
 #include "controllers/Settings.hpp"
 #include "BlacksheepQuadX.hpp"
 #include "PX4QuadX.hpp"
+#include "SimJoyStick/SimJoyStick.h"
 
 namespace msr { namespace airlib {
 
@@ -25,6 +26,9 @@ public:
         else {
             config.reset((new Px4QuadX(connection_info)));
         }
+
+        //In SITL mode enable joystick support
+        SimJoyStick::setEnabled(!connection_info.use_serial);
 
         return config;
     }

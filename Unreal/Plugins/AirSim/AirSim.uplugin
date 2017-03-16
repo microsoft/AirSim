@@ -1,7 +1,7 @@
 {
     "FileVersion" : 3,
-    "Version" : "0.7.10",
-    "VersionName": "0.7.10",
+    "Version" : "0.8.10",
+    "VersionName": "0.8.10",
     "FriendlyName": "AIR Simulator",
     "Description": "Aerial Informatics and Robotics Simulator for Unreal Engine",
     "Category" : "Science",
@@ -13,7 +13,8 @@
     "EnabledByDefault" : true,
     "CanContainContent": true,
     "IsBetaVersion" : true,
-    "Installed" : true,
+    "Installed": true,
+    "EngineVersion": "4.15.0",
     "Modules" :
     [
         {

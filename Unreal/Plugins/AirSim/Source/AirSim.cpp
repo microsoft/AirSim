@@ -19,13 +19,14 @@ void FAirSim::StartupModule()
 #if defined _WIN32 || defined _WIN64
     FString filePath = *FPaths::GamePluginsDir() + FString("AirSim/Dependencies/x360ce/xinput9_1_0.dll");
     xinput_dllHandle = FPlatformProcess::GetDllHandle(*filePath); // Retrieve the DLL.
-    SimJoyStick::setEnabled(xinput_dllHandle != NULL);
+    SimJoyStick::setInitializedSuccess(xinput_dllHandle != NULL);
 #endif
 }
 
 void FAirSim::ShutdownModule()
 {
 #if defined _WIN32 || defined _WIN64
+    SimJoyStick::setInitializedSuccess(false);
     FPlatformProcess::FreeDllHandle(xinput_dllHandle);
     xinput_dllHandle = NULL;
 #endif

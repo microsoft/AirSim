@@ -1,6 +1,7 @@
 #include "AirSim.h"
 #include "SimModeBase.h"
 #include "AirBlueprintLib.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 ASimModeBase::ASimModeBase()
 {
@@ -13,6 +14,16 @@ void ASimModeBase::BeginPlay()
     is_recording = false;
     record_tick_count = 0;
     setupInputBindings();
+
+    //check engine version
+    uint16 min_major = 4, min_minor = 15;
+    if ((FEngineVersion::Current().GetMajor() == min_major && FEngineVersion::Current().GetMinor() < min_minor) || 
+        (FEngineVersion::Current().GetMajor() < min_major && FEngineVersion::Current().GetMajor() != 0))
+        FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT(
+            "Your Unreal Engine version is older and not supported."
+            "If you keep running anyway, you may see some weired behaviour!\n"
+            "Please upgrade to version 4.15.\n" 
+            "Upgrade instructions are at https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md")));
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 

@@ -4,6 +4,7 @@
 #include "common/CommonStructs.hpp"
 #include "MultiRotorConnector.h"
 #include "SimJoyStick/SimJoyStick.h"
+#include "common/Common.hpp"
 
 void AFlyingPawn::initialize()
 {
@@ -58,10 +59,10 @@ const AFlyingPawn::RCData& AFlyingPawn::getRCData()
     rc_data_.is_connected = joystick_state_.is_connected;
 
     if (rc_data_.is_connected) {
-        rc_data_.throttle = joystick_state_.left_y;
-        rc_data_.yaw = joystick_state_.left_x;
-        rc_data_.roll = joystick_state_.right_y;
-        rc_data_.pitch = joystick_state_.right_y;
+        rc_data_.throttle = joyStickToRC(joystick_state_.left_y);
+        rc_data_.yaw = joyStickToRC(joystick_state_.left_x);
+        rc_data_.roll = joyStickToRC(joystick_state_.right_x);
+        rc_data_.pitch = joyStickToRC(joystick_state_.right_y);
 
         rc_data_.switch1 = joystick_state_.left_trigger ? 1 : 0;
         rc_data_.switch2 = joystick_state_.right_trigger ? 1 : 0;
@@ -69,6 +70,12 @@ const AFlyingPawn::RCData& AFlyingPawn::getRCData()
     //else don't waste time
     
     return rc_data_;
+}
+
+float AFlyingPawn::joyStickToRC(int16_t val)
+{
+    float valf = static_cast<float>(val);
+    return (valf - Utils::min<int16_t>()) / Utils::max<uint16_t>();
 }
 
 void AFlyingPawn::reset()
