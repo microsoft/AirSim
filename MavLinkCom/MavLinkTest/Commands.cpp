@@ -1871,3 +1871,35 @@ void NshCommand::HandleMessage(const MavLinkMessage& msg)
 		}
 	}
 }
+
+
+
+bool SetMessageIntervalCommand::Parse(std::vector<std::string>& args)
+{
+	msgid_ = 0;
+	frequency_ = 0;
+
+	if (args.size() == 3) {
+		std::string cmd = args[0];
+		cmd = Utils::toLower(cmd);
+		if (cmd == "setmessageinterval") {
+			msgid_ = atoi(args[1].c_str());
+			frequency_ = atoi(args[2].c_str());		
+			if (msgid_ <= 0) {
+				printf("invalid message id %d.\n", msgid_);
+				return false;
+			}
+			if (frequency_ < 0 || frequency_ > 1000) {
+				printf("invalid frequence %d, valid range is 0 <= f <= 1000.\n", frequency_);
+				return false;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+void SetMessageIntervalCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
+	com->setMessageInterval(msgid_, frequency_);
+}

@@ -966,6 +966,7 @@ int console() {
 	cmdTable.push_back(nshCommand);
 	cmdTable.push_back(new AltHoldCommand());
 	cmdTable.push_back(sendImage = new SendImageCommand());
+	cmdTable.push_back(new SetMessageIntervalCommand());
 
 	if (!connect(mavLinkVehicle)) {
 		return 1;

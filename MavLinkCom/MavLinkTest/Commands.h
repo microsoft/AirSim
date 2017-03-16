@@ -643,4 +643,27 @@ private:
 };
 
 
+class SetMessageIntervalCommand : public Command
+{
+public:
+	SetMessageIntervalCommand() {
+		this->Name = "SetMessageInterval msgid interval - turn on/off a given mavlink stream";
+	}
+	virtual bool Parse(std::vector<std::string>& args);
+
+	virtual void PrintHelp() {
+		printf("SetMessageInterval msgid interval - turn on/off a given mavlink stream.\n");
+		printf("where the msgid is an integer from mavlink common.xml, and the interval is.\n");
+		printf("a frequency, the number of messages per second you'd like to receive.\n");
+		printf("Setting this to 0 turns off the given message stream.\n");
+	}
+
+	virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
+private:
+	int msgid_;
+	int frequency_;
+};
+
+
+
 #endif
