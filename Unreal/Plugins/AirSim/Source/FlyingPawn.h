@@ -3,6 +3,7 @@
 #include <memory>
 #include "VehiclePawnBase.h"
 #include "controllers/DroneCommon.hpp"
+#include "SimJoyStick/SimJoyStick.h"
 #include "FlyingPawn.generated.h"
 
 UCLASS()
@@ -39,12 +40,7 @@ private: //methods
 	void setupComponentReferences();
 	void setStencilIDs();
     void setupInputBindings();
-
-    void inputEventThrottle(float val);
-    void inputEventYaw(float val);
-    void inputEventPitch(float val);
-    void inputEventRoll(float val);
-    void inputEventArmDisArm();
+    void detectUsbRc();
 
 private: //variables
 		 //Unreal components
@@ -52,5 +48,7 @@ private: //variables
 	UPROPERTY() APIPCamera* fpv_camera_;
 	UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
 
-    RCData rc_data;
+    SimJoyStick joystick_;
+    SimJoyStick::State joystick_state_;
+    RCData rc_data_;
 };

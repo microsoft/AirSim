@@ -57,14 +57,13 @@ void Mode::init(Board* _board, CommLink* _comm_link, CommonState* _common_state,
 
 bool Mode::arm(void)
 {
-    bool success;
+    bool success = false;
     if (!started_gyro_calibration && common_state->is_disarmed())
     {
         comm_link->log_message("Cannot arm because gyro calibration is not complete", 1);
         
         sensors->start_gyro_calibration();
         started_gyro_calibration = true;
-        success = false;
     } else if (sensors->gyro_calibration_complete())
     {
         started_gyro_calibration = false;

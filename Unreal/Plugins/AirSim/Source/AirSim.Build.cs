@@ -86,6 +86,13 @@ public class AirSim : ModuleRules
         {
             // for SHGetFolderPath.
             PublicAdditionalLibraries.Add("Shell32.lib");
+
+            // XInput for JoyStick, make sure to delay load this because we use generated DLL from x360ce
+            PublicDelayLoadDLLs.Add("xinput9_1_0.dll");
+            //Lib for the xinput DLL
+            //this should be in path, typically at C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64
+            //typically gets installed with Visual Studio
+            PublicAdditionalLibraries.Add("xinput9_1_0.lib");
         }
     }
 

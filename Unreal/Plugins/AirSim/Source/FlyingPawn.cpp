@@ -3,6 +3,7 @@
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
 #include "MultiRotorConnector.h"
+#include "SimJoyStick/SimJoyStick.h"
 
 void AFlyingPawn::initialize()
 {
@@ -18,6 +19,20 @@ void AFlyingPawn::initializeForPlay()
     setStencilIDs();
 
     setupInputBindings();
+
+    detectUsbRc();
+}
+
+void AFlyingPawn::detectUsbRc()
+{
+    joystick_.getJoyStickState(0, joystick_state_);
+
+    rc_data_.is_connected = joystick_state_.is_connected;
+
+    if (rc_data_.is_connected)
+        UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Detected", LogDebugLevel::Informational);
+    else
+        UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Not detected", LogDebugLevel::Informational);
 }
 
 void AFlyingPawn::setStencilIDs()
@@ -38,15 +53,29 @@ void AFlyingPawn::setStencilIDs()
 
 const AFlyingPawn::RCData& AFlyingPawn::getRCData()
 {
-    return rc_data;
+    joystick_.getJoyStickState(0, joystick_state_);
+
+    rc_data_.is_connected = joystick_state_.is_connected;
+
+    if (rc_data_.is_connected) {
+        rc_data_.throttle = joystick_state_.left_y;
+        rc_data_.yaw = joystick_state_.left_x;
+        rc_data_.roll = joystick_state_.right_y;
+        rc_data_.pitch = joystick_state_.right_y;
+
+        rc_data_.switch1 = joystick_state_.left_trigger ? 1 : 0;
+        rc_data_.switch2 = joystick_state_.right_trigger ? 1 : 0;
+    }
+    //else don't waste time
+    
+    return rc_data_;
 }
 
 void AFlyingPawn::reset()
 {
     Super::reset();
 
-    rc_data = RCData();
-    rc_data.switch1 = rc_data.switch2 = rc_data.switch3 = 1;
+    rc_data_ = RCData();
 }
 
 
@@ -76,40 +105,14 @@ void AFlyingPawn::setupComponentReferences()
     }
 }
 
-void AFlyingPawn::inputEventThrottle(float val)
-{
-    rc_data.throttle = val;
-    UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(val), LogDebugLevel::Informational);
-}
-void AFlyingPawn::inputEventYaw(float val)
-{
-    rc_data.yaw = val;
-    UAirBlueprintLib::LogMessage(TEXT("Yaw: "), FString::SanitizeFloat(val), LogDebugLevel::Informational);
-}
-void AFlyingPawn::inputEventPitch(float val)
-{
-    rc_data.pitch = -val;
-    UAirBlueprintLib::LogMessage(TEXT("Pitch: "), FString::SanitizeFloat(val), LogDebugLevel::Informational);
-}
-void AFlyingPawn::inputEventRoll(float val)
-{
-    rc_data.roll = val;
-    UAirBlueprintLib::LogMessage(TEXT("Roll: "), FString::SanitizeFloat(val), LogDebugLevel::Informational);
-}
-void AFlyingPawn::inputEventArmDisArm()
-{
-    rc_data.switch5 = rc_data.switch5 <= 0 ? 1 : 0;
-    UAirBlueprintLib::LogMessage(TEXT("Arm/Disarm"), FString::SanitizeFloat(rc_data.switch5), LogDebugLevel::Informational);
-}
 
 void AFlyingPawn::setupInputBindings()
 {
-    this->EnableInput(this->GetWorld()->GetFirstPlayerController());
+    //this->EnableInput(this->GetWorld()->GetFirstPlayerController());
 
-    UAirBlueprintLib::BindAxisToKey("InputEventThrottle", EKeys::Gamepad_LeftY, this, &AFlyingPawn::inputEventThrottle);
-    UAirBlueprintLib::BindAxisToKey("InputEventYaw", EKeys::Gamepad_LeftX, this, &AFlyingPawn::inputEventYaw);
-    UAirBlueprintLib::BindAxisToKey("InputEventPitch", EKeys::Gamepad_RightY, this, &AFlyingPawn::inputEventPitch);
-    UAirBlueprintLib::BindAxisToKey("InputEventRoll", EKeys::Gamepad_RightX, this, &AFlyingPawn::inputEventRoll);
-    UAirBlueprintLib::BindActionToKey("InputEventArmDisArm", EKeys::Gamepad_LeftTrigger, this, &AFlyingPawn::inputEventArmDisArm);
-
+    //UAirBlueprintLib::BindAxisToKey("InputEventThrottle", EKeys::Gamepad_LeftY, this, &AFlyingPawn::inputEventThrottle);
+    //UAirBlueprintLib::BindAxisToKey("InputEventYaw", EKeys::Gamepad_LeftX, this, &AFlyingPawn::inputEventYaw);
+    //UAirBlueprintLib::BindAxisToKey("InputEventPitch", EKeys::Gamepad_RightY, this, &AFlyingPawn::inputEventPitch);
+    //UAirBlueprintLib::BindAxisToKey("InputEventRoll", EKeys::Gamepad_RightX, this, &AFlyingPawn::inputEventRoll);
+    //UAirBlueprintLib::BindActionToKey("InputEventArmDisArm", EKeys::Gamepad_LeftTrigger, this, &AFlyingPawn::inputEventArmDisArm);
 }
