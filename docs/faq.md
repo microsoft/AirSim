@@ -22,6 +22,10 @@ So on Windows you can find the actual COM port using Device Manager, look under 
 device in and see what new COM port shows up.  Let's say you see a new port named "USB Serial Port (COM5)". 
 Well, then change the SerialPort setting to this: "SerialPort":"COM5,115200".  
 
-On Linux, the device can be found by running "ls /dev/serial/by-id" if you see a device name listed there
-that contains Pixhawk or 3DR then you can use that long name instead of '*', like this:
-"SerialPort":"/dev/serial/by-id/
+On Linux, the device can be found by running "ls /dev/serial/by-id" if you see a device name listed that looks
+like this `usb-3D_Robotics_PX4_FMU_v2.x_0-if00` then you can use that name to connect, like this:
+"SerialPort":"/dev/serial/by-id/usb-3D_Robotics_PX4_FMU_v2.x_0-if00".  Note this long name is actually a symbolic link to the real 
+name, if you use "ls -l ..." you can find that symbolic link, it is usually something like "/dev/ttyACM0",
+so this will also work "SerialPort":"/dev/ttyACM0,115200".  But that mapping is similar to windows, it is
+automatically assigned and can change, whereas the long name will work even if the actual tty serial device
+mapping changes.
