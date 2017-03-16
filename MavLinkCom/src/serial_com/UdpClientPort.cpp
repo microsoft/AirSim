@@ -152,7 +152,8 @@ public:
 	{
 		if (remoteaddr.sin_port == 0)
 		{
-			throw std::runtime_error("UdpClientPort cannot send until we've received something first so we can find out what port to send to.\n");
+			// well if we are creating a server, we don't know when the client is going to connect, so skip this exception for now.
+			//throw std::runtime_error("UdpClientPort cannot send until we've received something first so we can find out what port to send to.\n");
 			return 0;
 		}
 
@@ -161,6 +162,8 @@ public:
 		if (hr == SOCKET_ERROR)
 		{
 			hr = WSAGetLastError();
+			// perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
+			remoteaddr.sin_port = 0;
 			throw std::runtime_error(Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr));
 		}
 
