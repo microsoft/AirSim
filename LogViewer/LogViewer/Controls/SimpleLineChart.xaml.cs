@@ -51,7 +51,6 @@ namespace LogViewer.Controls
         public readonly static RoutedUICommand CommandLockTooltip = new RoutedUICommand("Lock Tooltip", "LockTooltip", typeof(SimpleLineChart));
     }
 
-
     public sealed partial class SimpleLineChart : UserControl
     {
         private DataSeries series;
@@ -61,12 +60,12 @@ namespace LogViewer.Controls
         bool liveScrolling;
         double liveScrollingXScale = 1;
 
-
         /// <summary>
         /// Set this property to add the chart to a group of charts.  The group will share the same "scale" information across the 
-        /// combined chart group so that the charts line up under each other if they are arranged in a stack.
+        /// combined chart group so that the charts line up under each other if they are arranged in a stack (if the group has
+        /// ScaleIndependently set to true).
         /// </summary>
-        public SimpleLineChart Next { get; set; }
+        public ChartGroup Group { get; set; }
 
         public SimpleLineChart()
         {
@@ -182,7 +181,7 @@ namespace LogViewer.Controls
             }
         }
 
-        void DelayedUpdate()
+        public void DelayedUpdate()
         {
             _delayedUpdates.StartDelayedAction("Update", UpdateChart, TimeSpan.FromMilliseconds(30));
         }
@@ -209,25 +208,7 @@ namespace LogViewer.Controls
             zoomTransform = new MatrixTransform();
             UpdateChart();
         }
-
-        /// <summary>
-        /// Walk the circularly linked list to find all charts in the current chart group that we belong to.
-        /// </summary>
-        public IEnumerable<SimpleLineChart> GroupItems
-        {
-            get
-            {
-                for (var ptr = this; ptr != null; ptr = ptr.Next)
-                {
-                    yield return ptr;
-                    if (ptr.Next == this)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
+        
         public void SetData(DataSeries series)
         {
             this.dirty = true;
@@ -257,39 +238,10 @@ namespace LogViewer.Controls
         bool ComputeScale()
         {
             bool changed = false;
-            if (this.Next != null)
+
+            if (this.Group != null && !scaleIndependently)
             {
-                ChartScaleInfo combined = null;
-
-                int index = this.scaleIndex;
-
-                // make sure they are all up to date.
-                foreach (var ptr in GroupItems)
-                {
-                    ChartScaleInfo info = ptr.ComputeScaleSelf(index);
-                    if (combined == null)
-                    {
-                        combined = info;
-                    }
-                    else
-                    {
-                        combined.Combine(info);
-                    }
-                }
-
-                //Debug.WriteLine("Combined scale: minx={0}, maxx={1}, miny={2}, maxy={3}", combined.minX, combined.maxX, combined.minY, combined.maxY);
-
-                foreach (var ptr in GroupItems)
-                {
-                    if (ptr.ApplyScale(combined))
-                    {
-                        if (ptr != this)
-                        {
-                            ptr.DelayedUpdate();
-                        }
-                        changed = true;
-                    }
-                }
+                changed = this.Group.ComputeScale(this);
             }
             else
             {
@@ -342,7 +294,7 @@ namespace LogViewer.Controls
             return scaleSelf;
         }
 
-        bool ApplyScale(ChartScaleInfo info)
+        internal bool ApplyScale(ChartScaleInfo info)
         {
             if (info == null)
             {
@@ -478,6 +430,8 @@ namespace LogViewer.Controls
             scaleIndex = 0;
             updateIndex = 0;
 
+            ComputeScale();
+
             if (series.Values == null || series.Values.Count == 0)
             {
                 Graph.Data = null;
@@ -497,8 +451,6 @@ namespace LogViewer.Controls
                 minX = double.MaxValue;
                 maxX = double.MinValue;
             }
-
-            ComputeScale();
 
             double count = series.Values.Count;
             PathGeometry g = new PathGeometry();
@@ -632,6 +584,7 @@ namespace LogViewer.Controls
 
             }
         }
+
 
         const double TooltipThreshold = 20;
 
@@ -867,6 +820,35 @@ namespace LogViewer.Controls
             AdornerCanvas.Children.Clear();
         }
 
+        private void OnScaleIndependently(object sender, RoutedEventArgs e)
+        {
+            bool value = !ScaleIndependentMenuItem.IsChecked;
+            ScaleIndependentMenuItem.IsChecked = value;
+
+            if (this.Group != null)
+            {
+                this.Group.ScaleIndependently = value;
+            }
+            else
+            {
+                scaleIndependently = value;
+            }
+        }
+
+        bool scaleIndependently = false;
+
+        public bool ScaleIndependently
+        {
+            get { return scaleIndependently;  }
+            set
+            {
+                if (scaleIndependently != value)
+                {
+                    scaleIndependently = value;
+                    DelayedUpdate();
+                }
+            }
+        }
     }
 
 }

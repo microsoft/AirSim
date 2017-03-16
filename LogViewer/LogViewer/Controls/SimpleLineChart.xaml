@@ -11,6 +11,7 @@
     <Grid x:Name="RootContent" ClipToBounds="True"  Background="Transparent">
         <Grid.ContextMenu>
             <ContextMenu x:Name="ContextMenu">
+                <MenuItem x:Name="ScaleIndependentMenuItem" Header="Scale independendently" Click="OnScaleIndependently"/>
                 <MenuItem x:Name="LockTooltipMenuItem" Header="Lock Tooltip" Click="OnLockTooltip" IsEnabled="False"/>
                 <MenuItem x:Name="AddTrendLineMenuItem" Header="Add Trend Line" Click="OnAddTrendLine" IsEnabled="False"/>
                 <Separator/>

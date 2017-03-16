@@ -855,7 +855,11 @@ namespace LogViewer
                 {
                     if (chartGroup != null)
                     {
-                        ChartStack.AddToGroup(chartGroup, chart);
+                        chartGroup.AddChart(chart);
+                        if (chartGroup.Parent == null)
+                        {
+                            ChartStack.AddChartGroup(chartGroup);
+                        }
                     }
                     else
                     {
@@ -1080,11 +1084,11 @@ namespace LogViewer
             // todo: remove the graphs...
         }
 
-        Grid chartGroup;
+        ChartGroup chartGroup;
 
         private void OnGroupChecked(object sender, RoutedEventArgs e)
         {
-            chartGroup = new Grid() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+            chartGroup = new ChartGroup() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
         }
 
         private void OnGroupUnchecked(object sender, RoutedEventArgs e)

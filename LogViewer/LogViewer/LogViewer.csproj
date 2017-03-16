@@ -106,6 +106,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ChartGroup.cs" />
     <Compile Include="Controls\CloseBox.xaml.cs">
       <DependentUpon>CloseBox.xaml</DependentUpon>
     </Compile>
