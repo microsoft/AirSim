@@ -62,18 +62,30 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort)
 {
+	std::string local = localAddr;
+	// just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also. 
+	if (remoteAddr == "127.0.0.1") {
+		local = "127.0.0.1";
+	}
+
 	std::shared_ptr<UdpClientPort> socket = std::make_shared<UdpClientPort>();
 
-	socket->connect(localAddr, 0, remoteAddr, remotePort);
+	socket->connect(local, 0, remoteAddr, remotePort);
 
 	return createConnection(nodeName, socket);
 }
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std::string& nodeName, std::string localAddr, const std::string& remoteIpAddr, int remotePort)
 {
+	std::string local = localAddr;
+	// just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also. 
+	if (remoteIpAddr == "127.0.0.1") {
+		local = "127.0.0.1";
+	}
+
 	std::shared_ptr<TcpClientPort> socket = std::make_shared<TcpClientPort>();
 
-	socket->connect(localAddr, 0, remoteIpAddr, remotePort);
+	socket->connect(local, 0, remoteIpAddr, remotePort);
 
 	return createConnection(nodeName, socket);
 }
