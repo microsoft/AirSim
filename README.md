@@ -11,9 +11,10 @@ for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve 
 
 [![AirSim Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
+# Development Status
 
-This project is under active development. While we are working through our backlog of new features and known issues, we welcome contributions! 
-Our current release is in beta and our APIs are subject to change.
+This project is under heavy development. The current release is in beta and all APIs are subject to change. The next major features currently in works are standalone mode, 
+several API enhancements and Python client support. We welcome contributions!
 
 # How to Get It
 ## Prerequisites
@@ -27,19 +28,21 @@ There are two ways to get AirSim working on your machine. Click on below links a
 2.  [Use the precompiled binaries](docs/use_precompiled.md)
 
 ## Linux
-The official Linux build is expected to arrive in about a couple of weeks. All our current code is cross-platform and CMake enabled so please 
-feel free to play around on other operating systems and [report any issues](https://github.com/Microsoft/AirSim/issues). We would love to make 
-AirSim available on other platforms as well.
+Good news! Several people have reported that they have been running in Linux as well as OSX successfully. Please check [conversations on Linux](https://github.com/microsoft/airsim/issues?utf8=%E2%9C%93&q=linux). 
+You can find our experimental [Linux build instruction here](docs/linux_build.md). We are still in process of making this little bit nicer and release official Linux build soon! 
+AirSim code is designed to be cross platform and we would love to make AirSim available on other platforms as well. 
 
 # How to Use It
 
+## Video Tutorials
+- [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0)
+- [AirSim Setup  Video](https://youtu.be/1oY8Qu5maQQ) (shows you all the setup steps)
+
 ## Manual flights
 If you have a Pixhawk flight controller (or compatible device) and a remote control you can manually control the drones in the simulator 
-and fly around. 
+and fly around.
 
 ![record screenshot](docs/images/DroneGIF-03.gif)
-
-See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0).
 
 [More details](docs/manual_flight.md)
 
@@ -49,13 +52,13 @@ This will start writing pose and images for each frame.
 
 ![record screenshot](docs/images/record_data.png)
 
-There is a [Log Viewer](docs/log_viewer.md) provided that can visualize the streams of data that are published by the simulator (and your drone).
-
 If you would like more data logging capabilities and other features, [file a feature request](https://github.com/Microsoft/AirSim/issues) or contribute changes. 
 The data logging code is pretty simple and you can modify it to your heart's desire.
 
 A more complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when 
 you want to log data. See the next section for more details.
+
+For MavLink enabled drones, you can also use our [Log Viewer](docs/log_viewer.md) to visualize the streams of data.
 
 ## Programmatic control
 The AirSim exposes easy to use APIs in order to retrieve data from the drones that includes ground truth, sensor data as well as various images. It also exposes 

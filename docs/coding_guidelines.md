@@ -10,7 +10,7 @@ thousands of others. Unfortunately most of these can't even agree on something a
 
 ## Naming Conventions
 
-Avoid using any sort of Hungarian notation on naming and "_ptr" on pointers.
+Avoid using any sort of Hungarian notation on names and "_ptr" on pointers.
 
 | **Code Element** | **Style** | **Comment** |
 | --- | --- | --- |

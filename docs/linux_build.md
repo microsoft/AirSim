@@ -25,23 +25,12 @@ sudo apt-get update
 sudo apt-get install gcc-6 g++-6 -y
 ````
 
-Now you can either do this, to make gcc 6 your default gcc compiler:
-````
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
-````
-or you can add the following to the cmake command line instead:
-````
--D CMAKE_C_COMPILER=gcc-6 -D CMAKE_CXX_COMPILER=g++-6
-````
-
-Then run cmake:
-````
-cmake -D CMAKE_BUILD_TYPE=Debug CMakeLists.txt
+Now go to cmake folder and run following commands:
 
 ````
-
-Now you are ready to build:
-````
+mkdir build
+cd build
+cmake -D CMAKE_C_COMPILER=gcc-6 -D CMAKE_CXX_COMPILER=g++-6 -D CMAKE_BUILD_TYPE=Debug ..
 make
 ````
 
@@ -53,7 +42,6 @@ Just a tid bit for those not familiar with cmake, if for any reason you need to 
 rm CMakeCache.txt 
 rm -rf CMakeFiles
 ````
-
 
 ## Windows cmake
 
