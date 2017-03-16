@@ -33,10 +33,15 @@ public:
     typedef Eigen::Matrix<float, 3, 3> Matrix3x3f;
     typedef Eigen::AngleAxisd AngleAxisd;
     typedef Eigen::AngleAxisf AngleAxisf;
-    typedef common_utils::Utils Utils;
-    typedef common_utils::RandomGenerator<RealT, std::normal_distribution<RealT>> RandomGeneratorGausianT;
-    typedef common_utils::RandomGenerator<RealT, std::uniform_real_distribution<RealT>> RandomGeneratorT;
 
+    typedef common_utils::Utils Utils;
+    //use different seeds for each component
+    typedef common_utils::RandomGenerator<RealT, std::normal_distribution<RealT>, 1> RandomGeneratorGausianXT;
+    typedef common_utils::RandomGenerator<RealT, std::normal_distribution<RealT>, 2> RandomGeneratorGausianYT;
+    typedef common_utils::RandomGenerator<RealT, std::normal_distribution<RealT>, 3> RandomGeneratorGausianZT;
+    typedef common_utils::RandomGenerator<RealT, std::uniform_real_distribution<RealT>, 1> RandomGeneratorXT;
+    typedef common_utils::RandomGenerator<RealT, std::uniform_real_distribution<RealT>, 2> RandomGeneratorYT;
+    typedef common_utils::RandomGenerator<RealT, std::uniform_real_distribution<RealT>, 3> RandomGeneratorZT;
 
     struct Pose {
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -87,7 +92,9 @@ public:
             return Vector3T(rx_.next(), ry_.next(), rz_.next());
         }
     private:
-        RandomGeneratorT rx_, ry_, rz_;
+        RandomGeneratorXT rx_;
+        RandomGeneratorYT ry_;
+        RandomGeneratorZT rz_;
     };
 
     class RandomVectorGaussianT {
@@ -113,7 +120,9 @@ public:
             return Vector3T(rx_.next(), ry_.next(), rz_.next());
         }
     private:
-        RandomGeneratorGausianT rx_, ry_, rz_;
+        RandomGeneratorGausianXT rx_;
+        RandomGeneratorGausianYT ry_;
+        RandomGeneratorGausianZT rz_;
     };
 
 public:
