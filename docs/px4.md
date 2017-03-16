@@ -20,6 +20,7 @@ Oh, and if you don't have git yet just run this:
 sudo apt-get install git
 ````
 
+We are currently testing using the 1.6.0rc1 version, but the latest master branch should be ok too.
 Now to build it you will need the right tools.
 
 ## PX4 Build tools

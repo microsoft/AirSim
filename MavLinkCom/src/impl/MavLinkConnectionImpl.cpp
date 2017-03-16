@@ -209,7 +209,7 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessageBase& msg)
 	uint8_t crc_extra = mavlink_message_crcs[m.msgid];
 	int msglen = mavlink_message_lengths[m.msgid];
 	if (m.msgid == MavLinkTelemetry::kMessageId) {
-		msglen = 24; // mavlink doesn't know about our custom telemetry message.
+		msglen = 28; // mavlink doesn't know about our custom telemetry message.
 	}		
 	if (len != msglen) {
 		throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
