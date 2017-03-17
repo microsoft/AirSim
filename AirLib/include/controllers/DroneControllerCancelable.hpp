@@ -259,9 +259,9 @@ private:// types
 
     private:
         std::unique_lock<std::mutex> lock_;
-        std::atomic_bool* is_cancelled_;
         bool loop_post_needed = false;
         DroneControllerBase* controller_;
+        std::atomic_bool* is_cancelled_;
     };
 
 private: //vars
