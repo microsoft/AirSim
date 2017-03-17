@@ -939,18 +939,21 @@ void checkPulse(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
 }
 
 const char* IgnoreStateTable[] = {
-    "Baro #0 fail:  STALE!"
+    "Baro #0 fail:  STALE!",
+	nullptr
 };
 
 void handleStatus(const MavLinkStatustext& statustext) {
     std::string msg = statustext.text;
-    for (size_t i = 0; i < sizeof(IgnoreStateTable); i++)
+    for (size_t i = 0; IgnoreStateTable[i] != nullptr; i++)
     {
         if (msg == IgnoreStateTable[i]) {
             return;
         }
     }
-    Utils::logMessage("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), statustext.text);
+
+	std::string safeText(statustext.text, 50);
+    Utils::logMessage("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), safeText.c_str());
 }
 
 int console() {

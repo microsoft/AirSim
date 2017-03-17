@@ -95,14 +95,12 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const s
 	std::shared_ptr<SerialPort> serial = std::make_shared<SerialPort>();
 
 	int hr = serial->connect(name.c_str(), baudRate);
-	if (hr < 0)
+	if (hr != 0)
 		throw std::runtime_error(Utils::stringf("Could not open the serial port %s, error=%d", name.c_str(), hr));
 
-	// send this right away.
+	// send this right away just in case serial link is not already configured 
 	if (initString.size() > 0) {
-		hr = serial->write(reinterpret_cast<const uint8_t*>(initString.c_str()), static_cast<int>(initString.size()));
-		if (hr < 0)
-			throw std::runtime_error(Utils::stringf("Could not send initial string to the serial port %s, error=%d", name.c_str(), hr));
+		serial->write(reinterpret_cast<const uint8_t*>(initString.c_str()), static_cast<int>(initString.size()));
 	}
 
 	return createConnection(nodeName, serial);
