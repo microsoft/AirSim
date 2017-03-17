@@ -284,11 +284,27 @@ public:
 
 std::string MavLinkMessageBase::uint8_t_array_tostring(int len, const uint8_t* field)
 {
-	return BinaryArray<uint8_t>::toString(len, field);
+    // ostringstream tries to convert uint8_t to 'char' which is not what we want here.
+    std::ostringstream line;
+    for (int i = 0; i < len; i++) {
+        line << static_cast<unsigned int>(field[i]);
+        if (i + 1 < len) {
+            line << ", ";
+        }
+    }
+    return line.str();
 }
 std::string MavLinkMessageBase::int8_t_array_tostring(int len, const int8_t* field)
 {
-	return BinaryArray<int8_t>::toString(len, field);
+    // ostringstream tries to convert int8_t to 'char' which is not what we want here.
+    std::ostringstream line;
+    for (int i = 0; i < len; i++) {
+        line << static_cast<int>(field[i]);
+        if (i + 1 < len) {
+            line << ", ";
+        }
+    }
+    return line.str();
 }
 std::string MavLinkMessageBase::int16_t_array_tostring(int len, const int16_t* field)
 {
