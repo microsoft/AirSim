@@ -217,7 +217,13 @@ public: //interface for outside world
 
 	/// bugbug: what is this doing here?  This should be a private implementation detail of the particular drone implementation.
 	virtual void setImageForCamera(int camera_id, ImageType type, const vector<uint8_t>& image);
-    
+
+    //*********************************common pre & post for move commands***************************************************
+    //TODO: make these protected
+    virtual bool loopCommandPre();
+    virtual void loopCommandPost();
+    //*********************************common pre & post for move commands***************************************************
+
     DroneControllerBase() = default;
     virtual ~DroneControllerBase() = default;
 
@@ -272,6 +278,7 @@ protected: //utility functions and data members for derived classes
 
     //useful for derived class to check after takeoff
     virtual bool waitForZ(float max_wait_seconds, float z, float margin, CancelableBase& cancelable_action);
+
 
     //*********************************safe wrapper around low level commands***************************************************
     virtual bool moveByVelocity(float vx, float vy, float vz, const YawMode& yaw_mode);
