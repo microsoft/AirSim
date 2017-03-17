@@ -34,21 +34,23 @@ namespace mavlinkcom_impl {
 		AsyncResult<bool> land(float yaw, float lat = 0, float lon = 0, float altitude = 0);
 		AsyncResult<bool> returnToHome();
 		AsyncResult<bool> loiter();
-
-		void setStabilizedFlightMode();
-		void setHomePosition(float lat = 0, float lon = 0, float alt = 0);
-		void setAutoMode();
+        AsyncResult<bool> setPositionHoldMode();
+        AsyncResult<bool> setStabilizedFlightMode();
+        AsyncResult<bool> setHomePosition(float lat = 0, float lon = 0, float alt = 0);
+        AsyncResult<bool> setMissionMode();
 		AsyncResult<MavLinkHomePosition> waitForHomePosition();
 		AsyncResult<bool> allowFlightControlOverUsb();
 		
 		// request OFFBOARD control.  
-		void requestControl();
+        void requestControl();
 		// release OFFBOARD control
-		void releaseControl();
+        void releaseControl();
+
 		// return true if we still have offboard control (can lose this if user flips the switch).
 		bool hasOffboardControl();
-		// send this to keep offboard control but do no movement.
-		void offboardIdle();
+        // send this to keep offboard control but do no movement.
+        void offboardIdle();
+
 		// offboard control methods.
 		bool isLocalControlSupported();
 		void moveToLocalPosition(float x, float y, float z, bool isYaw, float yawOrRate);
@@ -74,12 +76,13 @@ namespace mavlinkcom_impl {
 		void updateReadStats(const MavLinkMessage& msg);
 		void checkOffboard();
 		bool getRcSwitch(int channel, float threshold);
-		void requestControlNoCheck();
+        AsyncResult<bool>  setMode(int modeFlags, int customMode = 0, int customSubMode = 0);
 
 	private:
 		std::mutex state_mutex_;
 		int state_version_ = 0;
-		bool offboard_control_mode_ = false;
+        bool control_requested_ = false;
+        int requested_mode_ = 0;
 		// this latch is reset even time we receive a heartbeat, this is useful for operations that we
 		// want to throttle to the heartbeat rate.
 		bool heartbeat_throttle_ = false;

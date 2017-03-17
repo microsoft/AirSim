@@ -31,10 +31,10 @@ namespace mavlinkcom {
 		AsyncResult<bool> land(float yaw, float lat = 0, float lon = 0, float altitude = 0);
 		AsyncResult<bool> returnToHome();
 		AsyncResult<bool> loiter();
-
-		void setStabilizedFlightMode();
-		void setHomePosition(float lat = 0, float lon = 0, float alt = 0);
-		void setAutoMode();
+        AsyncResult<bool> setPositionHoldMode();
+        AsyncResult<bool> setStabilizedFlightMode();
+        AsyncResult<bool> setHomePosition(float lat = 0, float lon = 0, float alt = 0);
+        AsyncResult<bool> setMissionMode();
 		AsyncResult<MavLinkHomePosition> waitForHomePosition();
 		AsyncResult<bool> allowFlightControlOverUsb();
 
@@ -45,8 +45,6 @@ namespace mavlinkcom {
 		// return true if we still have offboard control (can lose this if user flips the switch).
 		bool hasOffboardControl();
 
-		// send this to keep offboard control but do no movement.
-		void offboardIdle();
 		// offboard control methods.
 		bool isLocalControlSupported();
 		void moveToLocalPosition(float x, float y, float z, bool isYaw, float yawOrRate);

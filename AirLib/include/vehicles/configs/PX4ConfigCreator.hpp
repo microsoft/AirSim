@@ -42,8 +42,8 @@ private:
 
         //read settings and override defaults
         Settings& settings = Settings::singleton();
+        Settings child;
         if (settings.isLoadSuccess()) {
-            Settings child;
             settings.getChild(connection_info.vehicle_name, child);
 
             // allow json overrides on a per-vehicle basis.
@@ -75,39 +75,44 @@ private:
             connection_info.baud_rate = child.getInt("SerialBaudRate", connection_info.baud_rate);
             connection_info.model = child.getString("Model", connection_info.model);
         }
-        //do not write to users settings unless file didn't exist!
-        else if (settings.hasFileName() && connection_info.vehicle_name.size() > 0) {
-            Settings child;
-            child.setInt("SimSysID", connection_info.sim_sysid);
-            child.setInt("SimCompID", connection_info.sim_compid);
+        
+        // update settings file with any new values that we now have.
+        if (connection_info.vehicle_name.size() > 0) {
+			
+            bool changed = child.setInt("SimSysID", connection_info.sim_sysid);
+            changed |= child.setInt("SimCompID", connection_info.sim_compid);
 
-            child.setInt("VehicleSysID", connection_info.vehicle_sysid);
-            child.setInt("VehicleCompID", connection_info.vehicle_compid);
+			changed |= child.setInt("VehicleSysID", connection_info.vehicle_sysid);
+			changed |= child.setInt("VehicleCompID", connection_info.vehicle_compid);
 
-            child.setInt("OffboardSysID", connection_info.offboard_sysid);
-            child.setInt("OffboardCompID", connection_info.offboard_compid);
+			changed |= child.setInt("OffboardSysID", connection_info.offboard_sysid);
+			changed |= child.setInt("OffboardCompID", connection_info.offboard_compid);
 
-            child.setString("LogViewerHostIp", connection_info.logviewer_ip_address);
-            child.setInt("LogViewerPort", connection_info.logviewer_ip_port);
+			changed |= child.setString("LogViewerHostIp", connection_info.logviewer_ip_address);
+			changed |= child.setInt("LogViewerPort", connection_info.logviewer_ip_port);
 
-            child.setString("QgcHostIp", connection_info.qgc_ip_address);
-            child.setInt("QgcPort", connection_info.qgc_ip_port);
+			changed |= child.setString("QgcHostIp", connection_info.qgc_ip_address);
+			changed |= child.setInt("QgcPort", connection_info.qgc_ip_port);
 
-            child.setString("SitlIp", connection_info.sitl_ip_address);
-            child.setInt("SitlPort", connection_info.sitl_ip_port);
+			changed |= child.setString("SitlIp", connection_info.sitl_ip_address);
+			changed |= child.setInt("SitlPort", connection_info.sitl_ip_port);
 
-            child.setString("LocalHostIp", connection_info.local_host_ip);
+			changed |= child.setString("LocalHostIp", connection_info.local_host_ip);
 
-            child.setBool("UseSerial", connection_info.use_serial);
-            child.setString("UdpIp", connection_info.ip_address);
-            child.setInt("UdpPort", connection_info.ip_port);
-            child.setString("SerialPort", connection_info.serial_port);
-            child.setInt("SerialBaudRate", connection_info.baud_rate);
-            child.setString("Model", connection_info.model);
-            
-            settings.setChild(connection_info.vehicle_name, child);
-            settings.saveJSonFile("settings.json");
+			changed |= child.setBool("UseSerial", connection_info.use_serial);
+			changed |= child.setString("UdpIp", connection_info.ip_address);
+			changed |= child.setInt("UdpPort", connection_info.ip_port);
+			changed |= child.setString("SerialPort", connection_info.serial_port);
+			changed |= child.setInt("SerialBaudRate", connection_info.baud_rate);
+            changed |= child.setString("Model", connection_info.model);
+
+            // only write to the file if we have new values to save.
+			if (changed) {
+				settings.setChild(connection_info.vehicle_name, child);
+				settings.saveJSonFile("settings.json");
+			}
         }
+
 
         return connection_info;
     }

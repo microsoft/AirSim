@@ -15,7 +15,7 @@ using namespace mavlink_utils;
 using namespace mavlinkcom;
 
 // from main.cpp.
-void DebugOutput(const char* message, ...);
+
 void mavlink_quaternion_to_euler(const float quaternion[4], float* roll, float* pitch, float* yaw);
 void PrintHeartbeat(const MavLinkMessage& msg);
 
@@ -470,7 +470,7 @@ void MissionCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 
 	Command::Execute(com);
 	printf("Executing preprogrammed mission (if there is one)...\n");
-	com->setAutoMode();
+	com->setMissionMode();
 }
 
 void MissionCommand::HandleMessage(const MavLinkMessage& message)
@@ -796,64 +796,6 @@ void CapabilitiesCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	}
 }
 
-bool IdleCommand::Parse(std::vector<std::string>& args)
-{
-	if (args.size() > 0) {
-		std::string cmd = args[0];
-		if (cmd == "idle") {
-			return true;
-		}
-	}
-	return false;
-}
-
-void IdleCommand::Close()
-{
-	if (this->requested_control_ && this->vehicle != nullptr && this->vehicle->hasOffboardControl()) {
-		this->vehicle->releaseControl();
-	}
-	this->requested_control_ = false;
-	Command::Close();
-}
-
-void IdleCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
-{
-	Command::Execute(com);
-
-	// control works better if we get about 50 of these per second (20ms interval, if we can).
-	this->vehicle->setMessageInterval(static_cast<int>(MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED), 50);
-	this->vehicle->requestControl();
-	this->requested_control_ = true;
-	this->has_control_ = false;
-}
-
-void IdleCommand::HandleMessage(const MavLinkMessage& message)
-{
-	switch (message.msgid)
-	{
-	case MavLinkLocalPositionNed::kMessageId: // MAVLINK_MSG_ID_LOCAL_POSITION_NED:
-	{
-		if (this->requested_control_) {
-			if (vehicle->hasOffboardControl()) {
-				this->has_control_ = true;
-				this->vehicle->offboardIdle();
-			}
-			else if (this->has_control_) {
-				this->has_control_ = true;
-				OnLostOffboardControl();
-			}
-		} 
-	}
-	default:
-		break;
-	}
-}
-
-void IdleCommand::OnLostOffboardControl() {
-	printf("### Lost offboard control, user must have flipped a flight mode switch\n");
-	Close();
-}
-
 bool GotoCommand::Parse(std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -896,7 +838,6 @@ void GotoCommand::TakeControl()
 {
 	if (!this->requestedControl) {
 		// control works better if we get about 50 of these per second (20ms interval, if we can).
-		this->channel->setMessageInterval(static_cast<int>(MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED), 50);
 		this->channel->requestControl();
 		this->requestedControl = true;
 	}
@@ -932,25 +873,17 @@ void GotoCommand::HandleMessage(const MavLinkMessage& message)
 			return;
 		}
 
-		if (vehicle->hasOffboardControl()) {
-			this->hasControl = true;
-		}
-		else 
-		{
-			// not ready for offboard control, or we have lost offboard control.
-			if (this->hasControl) {
-				this->hasControl = false;
-				OnLostOffboardControl();
-			}
+		if (!this->requestedControl || ! channel->hasOffboardControl()) {
 			return;
 		}
 		
-
 		if (!this->hasLocalPosition) {
 			this->hasLocalPosition = true;
 			HasLocalPosition();
 		}
+
 		UpdateTarget();
+
 		if (targetPosition) {
 			// must send these regularly to keep offboard control.
 			channel->moveToLocalPosition(tx, ty, tz, is_yaw, static_cast<float>(theading * M_PI / 180));
@@ -1056,8 +989,13 @@ bool OrbitCommand::Parse(std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "orbit") {
+            radius = 0;
 			if (args.size() > 1) {
 				radius = static_cast<float>(atof(args[1].c_str()));
+                if (radius < 1 || radius > 100) {
+                    printf("radius '%f' is invalid, expecting 1 < radius < 100\n", radius);
+                    return false;
+                }
 			}
 			else
 			{
@@ -1067,6 +1005,10 @@ bool OrbitCommand::Parse(std::vector<std::string>& args) {
 			speed = 1;
 			if (args.size() > 2) {
 				speed = static_cast<float>(atof(args[2].c_str()));
+                if (speed < 0.1 || speed > 10) {
+                    printf("speed '%f' is invalid, expecting 0.1 < radius < 10\n", speed);
+                    return false;
+                }
 			}
 			return true;
 		}
@@ -1321,12 +1263,141 @@ void RotateCommand::UpdateTarget()
 	}
 }
 
+
+
+bool SquareCommand::Parse(std::vector<std::string>& args)
+{
+    if (args.size() > 0) {
+        std::string cmd = args[0];
+        if (cmd == "square") {
+            length_ = 1;
+            speed_ = 0.2f;
+            if (args.size() > 1) {
+                length_ = static_cast<float>(atof(args[1].c_str()));
+                if (length_ < 0 || length_ > 100) {
+                    printf("invalid length '%f', expecting 1 < length < 100 ", length_);
+                    return false;
+                }
+            } 
+            if (args.size() > 2) {
+                speed_ = static_cast<float>(atof(args[2].c_str()));
+                if (speed_ < 0.1 || speed_ > 10) {
+                    printf("invalid speed '%f', expecting 0.1 < speed < 10", speed_);
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+void SquareCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
+    if (!com->isLocalControlSupported()) {
+        throw std::runtime_error(Utils::stringf("Your drone does not support the MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED capability."));
+    }
+    started_ = false;
+    leg_ = 0;
+    near = speed_;
+    printf("executing a square pattern of length %f and at %f m/s\n", length_, speed_);
+    GotoCommand::Execute(com);
+}
+
+void SquareCommand::setNextTarget() {
+    
+    switch (leg_) {
+    case 0:
+        printf("Driving north\n");
+        tx = sx_ + length_;
+        ty = sy_;
+        tz = sz_;
+        theading = 0;
+        break;
+    case 1:
+        printf("Driving east\n");
+        tx = sx_ + length_;
+        ty = sy_ + length_;
+        tz = sz_;
+        theading = 0;
+        break;
+    case 2:
+        printf("Driving south\n");
+        tx = sx_;
+        ty = sy_ + length_;
+        tz = sz_;
+        theading = 0;
+        break;
+    case 3:
+        printf("Driving west\n");
+        tx = sx_;
+        ty = sy_ ;
+        tz = sz_;
+        tvx = 0;
+        theading = 0;
+        break;
+    default:
+        break;
+    }
+
+
+}
+
+void SquareCommand::HasLocalPosition()
+{
+    if (!started_) {
+        sx_ = x; sy_ = y; sz_ = z;
+        started_ = true;
+        // ok, now we can start moving by velocity
+        setNextTarget();
+    }
+}
+
+void SquareCommand::UpdateTarget()
+{
+    if (started_) {
+        float dx = tx - x;
+        float dy = ty - y;
+        float dist = sqrtf((dx*dx) + (dy*dy));
+
+        if (fabsf(dx) < near && fabsf(dy) < near)
+        {
+            leg_++;
+            if (leg_ == 4) leg_ = 0;
+            setNextTarget();
+
+            // recompute to new target.
+            dx = tx - x;
+            dy = ty - y;
+            dist = sqrtf((dx*dx) + (dy*dy));
+
+        }
+
+        if (dist > speed_) {
+            float scale = speed_ / dist;
+            dx *= scale;
+            dy *= scale;
+        }
+        tvx = dx;
+        tvy = dy;
+        tvz = 0;
+
+        MoveAltHold(tvx, tvy, tz, theading, true);
+    }
+}
+
 bool WiggleCommand::Parse(std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		wiggle_size_ = 1;
 		std::string cmd = args[0];
 		if (cmd == "wiggle") {
+            xaxis_ = false;
+            wiggle_size_ = 2;
+            wiggle_angle_ = 10;
+
 			if (args.size() > 1)
 			{
 				wiggle_size_ = static_cast<float>(atof(args[1].c_str()));
@@ -1335,6 +1406,13 @@ bool WiggleCommand::Parse(std::vector<std::string>& args)
 			{
 				wiggle_angle_ = static_cast<float>(atof(args[2].c_str()));
 			}
+            if (args.size() > 3)
+            {
+                auto axis = args[3];
+                if (axis == "x") {
+                    xaxis_ = true;
+                }
+            }
 			
 			return true;
 		}
@@ -1360,8 +1438,10 @@ void WiggleCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 	com->requestControl();
 
-	// start by moving right with 10 degree roll.
-	targetRoll_ = wiggle_angle_;
+    meter_.reset();
+
+	// start by moving right with 10 degree roll.    
+    targetAngle_ = wiggle_angle_;
 	ready_ = false;
 	started_ = true;
 }
@@ -1400,70 +1480,148 @@ void WiggleCommand::HandleMessage(const MavLinkMessage& message)
 		MavLinkLocalPositionNed pos;
 		pos.decode(message);
 
-		// track how our actual roll is coming along compared to our target 
-		float roll, pitch;
+        if (xaxis_) {
+            wiggleX(pos);
+        }
+        else {
+            wiggleY(pos);
+        }
 
-		// and check position
-		double dx = this->sx_ - pos.x;
-		double dy = this->sy_ - pos.y;
-		double z = pos.z; 
+        meter_.reportMessageRate();
 
-		// the amount of roll should depend on our speed in that direction.
-		double speed = fabs(pos.vy);
-
-		float ctrl = thrust_controller_.control(static_cast<float>(-z));
-
-		float thrust = start_thrust_ + ctrl;
-
-		// passed the midpoint.
-		if ((previous_ > 0 && pos.vy < 0) || (previous_ < 0 && pos.vy > 0))
-		{
-			DebugOutput("wiggle velocity flipped");
-			flipped_ = true;
-		}
-		previous_ = pos.vy;
-
-		// fade out the roll as we pick up speed so we don't overshoot.
-		roll = targetRoll_;
-		if (flipped_ && !ramp_up_speed_) {
-			float f = fmax(static_cast<float>(speed * 2), 1.0f);
-			roll /= f;
-		}
-		if (ramp_up_speed_ && speed > 0.5f) {
-			ramp_up_speed_ = false;
-		}
-
-		// see if we just crossed the wiggle distance threshold.
-		// (roll affects the y-position).
-		if (flipped_ && targetRoll_ > 0 && dy < -wiggle_size_)
-		{
-			flipped_ = false;
-			// reverse direction with a -30 degrees quick stop
-			targetRoll_ = static_cast<float>(-wiggle_angle_);
-			roll = targetRoll_; 
-			DebugOutput("wiggle reversing direction");
-		}
-		else if (flipped_ && targetRoll_ < 0 && dy > wiggle_size_)
-		{
-			flipped_ = false;
-			// reverse direction with a 30 degrees quick stop
-			targetRoll_ = static_cast<float>(wiggle_angle_);
-			roll = targetRoll_;
-			DebugOutput("wiggle reversing direction");
-		}
-
-		// try and keep x on target by using pitch, but only use a little bit since it shouldn't wander
-		// too much in that direction.
-		pitch = fmax(-0.2f, fmin(0.2f, static_cast<float>((pos.vx / 5.0f) - (dx / 10.0f))));
-
-		//DebugOutput("ctrl=%f, sz=%f, z=%f, dz=%f, new thrust=%f", ctrl, sz_, z, sz_ - z, thrust);
-		pitch = static_cast<float>(pitch * 180.0f / M_PI);
-		vehicle->moveByAttitude(roll, pitch, 0.0f, 0, 0, 0, thrust);
 		break;
 	}
 	default:
 		break;
 	}
+}
+
+void WiggleCommand::wiggleX(const MavLinkLocalPositionNed& pos)
+{
+    // track how our actual pitch is coming along compared to our target 
+    float roll, pitch;
+
+    // and check position
+    double dx = this->sx_ - pos.x;
+    double dy = this->sy_ - pos.y;
+    double z = pos.z;
+
+    // the amount of pitch should depend on our speed in that direction.
+    double speed = fabs(pos.vx);
+
+    float ctrl = thrust_controller_.control(static_cast<float>(-z));
+
+    float thrust = start_thrust_ + ctrl;
+
+    // passed the midpoint.
+    if ((previous_ > 0 && pos.vx < 0) || (previous_ < 0 && pos.vx > 0))
+    {
+        DebugOutput("wiggle velocity flipped");
+        flipped_ = true;
+    }
+    previous_ = pos.vx;
+
+    // fade out the pitch as we pick up speed so we don't overshoot.
+    pitch = targetAngle_;
+    if (flipped_ && !ramp_up_speed_) {
+        float f = fmax(static_cast<float>(speed * 2), 1.0f);
+        pitch /= f;
+    }
+    if (ramp_up_speed_ && speed > 0.5f) {
+        ramp_up_speed_ = false;
+    }
+
+    // see if we just crossed the wiggle distance threshold.
+    // (pitch affects the x-position).
+    if (flipped_ && targetAngle_ > 0 && dx > wiggle_size_)
+    {
+        flipped_ = false;
+        // reverse direction with a -30 degrees quick stop
+        targetAngle_ = static_cast<float>(-wiggle_angle_);
+        pitch = targetAngle_;
+        DebugOutput("wiggle reversing direction");
+    }
+    else if (flipped_ && targetAngle_ < 0 && dx < -wiggle_size_)
+    {
+        flipped_ = false;
+        // reverse direction with a 30 degrees quick stop
+        targetAngle_ = static_cast<float>(wiggle_angle_);
+        pitch = targetAngle_;
+        DebugOutput("wiggle reversing direction");
+    }
+
+    // try and keep y on target by using roll, but only use a little bit since it shouldn't wander
+    // too much in that direction.
+    roll = fmax(-0.2f, fmin(0.2f, static_cast<float>((-pos.vy / 5.0f) + (dy / 10.0f))));
+
+    //DebugOutput("ctrl=%f, sz=%f, z=%f, dz=%f, new thrust=%f", ctrl, sz_, z, sz_ - z, thrust);
+    roll = static_cast<float>(roll * 180.0f / M_PI);
+    vehicle->moveByAttitude(roll, pitch, 0.0f, 0, 0, 0, thrust);
+
+}
+void WiggleCommand::wiggleY(const MavLinkLocalPositionNed& pos)
+{
+
+    // track how our actual roll is coming along compared to our target 
+    float roll, pitch;
+
+    // and check position
+    double dx = this->sx_ - pos.x;
+    double dy = this->sy_ - pos.y;
+    double z = pos.z;
+
+    // the amount of roll should depend on our speed in that direction.
+    double speed = fabs(pos.vy);
+
+    float ctrl = thrust_controller_.control(static_cast<float>(-z));
+
+    float thrust = start_thrust_ + ctrl;
+
+    // passed the midpoint.
+    if ((previous_ > 0 && pos.vy < 0) || (previous_ < 0 && pos.vy > 0))
+    {
+        DebugOutput("wiggle velocity flipped");
+        flipped_ = true;
+    }
+    previous_ = pos.vy;
+
+    // fade out the roll as we pick up speed so we don't overshoot.
+    roll = targetAngle_;
+    if (flipped_ && !ramp_up_speed_) {
+        float f = fmax(static_cast<float>(speed * 2), 1.0f);
+        roll /= f;
+    }
+    if (ramp_up_speed_ && speed > 0.5f) {
+        ramp_up_speed_ = false;
+    }
+
+    // see if we just crossed the wiggle distance threshold.
+    // (roll affects the y-position).
+    if (flipped_ && targetAngle_ > 0 && dy < -wiggle_size_)
+    {
+        flipped_ = false;
+        // reverse direction with a -30 degrees quick stop
+        targetAngle_ = static_cast<float>(-wiggle_angle_);
+        roll = targetAngle_;
+        DebugOutput("wiggle reversing direction");
+    }
+    else if (flipped_ && targetAngle_ < 0 && dy > wiggle_size_)
+    {
+        flipped_ = false;
+        // reverse direction with a 30 degrees quick stop
+        targetAngle_ = static_cast<float>(wiggle_angle_);
+        roll = targetAngle_;
+        DebugOutput("wiggle reversing direction");
+    }
+
+    // try and keep x on target by using pitch, but only use a little bit since it shouldn't wander
+    // too much in that direction.
+    pitch = fmax(-0.2f, fmin(0.2f, static_cast<float>((pos.vx / 5.0f) - (dx / 10.0f))));
+
+    //DebugOutput("ctrl=%f, sz=%f, z=%f, dz=%f, new thrust=%f", ctrl, sz_, z, sz_ - z, thrust);
+    pitch = static_cast<float>(pitch * 180.0f / M_PI);
+    vehicle->moveByAttitude(roll, pitch, 0.0f, 0, 0, 0, thrust);
+
 }
 
 void WiggleCommand::Close() 

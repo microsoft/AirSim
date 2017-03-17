@@ -13,8 +13,35 @@
 #include "MavLinkFtpClient.hpp"
 #include "Utils.hpp"
 #include <memory>
+#include <chrono>
 
 using namespace mavlinkcom;
+
+// from main.cpp
+void DebugOutput(const char* message, ...);
+
+class RateMeter {
+public:
+    void reset() {
+        start_time_ = std::chrono::system_clock::now();
+        msg_count_ = 0;
+    }
+    void reportMessageRate() {
+        auto t = std::chrono::system_clock::now();
+        auto diff = t - start_time_;
+        double dt = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()) / 1000.0;
+        if (dt > 1) {
+            // report our message rate.
+            DebugOutput("msg rate is %d Hz", msg_count_);
+            start_time_ = t;
+            msg_count_ = 0;
+        }
+        msg_count_++;
+    }
+private:
+    std::chrono::time_point<std::chrono::system_clock> start_time_;
+    long msg_count_;
+};
 
 class Command
 {
@@ -461,6 +488,38 @@ public:
 	virtual void UpdateTarget();
 };
 
+
+// this is our moveByVelocityZ test.
+class SquareCommand : public GotoCommand
+{
+
+public:
+    SquareCommand() {
+        this->Name = "square length [speed]";
+        length_ = 0;
+    }
+    virtual bool Parse(std::vector<std::string>& args);
+
+    virtual void PrintHelp() {
+        printf("square length [speed] - make a square of given length at given speed (default 0.2m/s).\n");
+    }
+
+    virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
+
+    virtual void HasLocalPosition();
+
+    virtual void UpdateTarget();
+
+private:
+    void setNextTarget();
+    bool started_;
+    int leg_;
+    float length_;
+    float speed_;
+    float sx_, sy_, sz_; // start pos
+    float near = 0.5f; // meters
+};
+
 class PidController
 {
 private:
@@ -526,48 +585,38 @@ class WiggleCommand : public Command
 	float sx_, sy_, sz_;
 	float wiggle_size_ = 2;
 	float wiggle_angle_ = 30;
-	float targetRoll_ = 0;
+	float targetAngle_ = 0;
 	bool started_;
 	bool ready_;
 	float start_thrust_;
 	float previous_;
 	bool flipped_;
 	bool ramp_up_speed_;
+    bool xaxis_;
+    RateMeter meter_;
 	MavLinkAttitudeTarget _current;
 	PidController thrust_controller_;
+    void wiggleX(const MavLinkLocalPositionNed& pos);
+    void wiggleY(const MavLinkLocalPositionNed& pos);
 public:
 	WiggleCommand() {
-		this->Name = "wiggle";
+		this->Name = "wiggle [distance] [angle] [direction]";
 	}
 	virtual bool Parse(std::vector<std::string>& args);
 
 	virtual void PrintHelp() {
 		printf("wiggle - wiggle the drone using low level attitude control.\n");
+        printf("options:\n");
+        printf("    distance - in meters to travel between direction changes.\n");
+        printf("    angle    - the amount of attitude to get us moving in the specified direction.\n");
+        printf("    x or y   - the direction to move.\n");
 	}
 	virtual void Close();
 	virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
 	virtual void HandleMessage(const MavLinkMessage& message);
 };
 
-class IdleCommand : public Command
-{
-private:
-	bool requested_control_;
-	bool has_control_;
-public:
 
-	IdleCommand() {
-		this->Name = "idle";
-	}
-	virtual void PrintHelp() {
-		printf("idle - tests a noop offboard control operation.\n");
-	}
-	virtual bool Parse(std::vector<std::string>& args);
-	virtual void Close();
-	virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
-	virtual void HandleMessage(const MavLinkMessage& message);
-	virtual void OnLostOffboardControl();
-};
 
 // for testing PID controller.
 class AltHoldCommand : public Command

@@ -938,6 +938,21 @@ void checkPulse(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
 	}
 }
 
+const char* IgnoreStateTable[] = {
+    "Baro #0 fail:  STALE!"
+};
+
+void handleStatus(const MavLinkStatustext& statustext) {
+    std::string msg = statustext.text;
+    for (size_t i = 0; i < sizeof(IgnoreStateTable); i++)
+    {
+        if (msg == IgnoreStateTable[i]) {
+            return;
+        }
+    }
+    Utils::logMessage("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), statustext.text);
+}
+
 int console() {
 
 	std::string line;
@@ -973,29 +988,36 @@ int console() {
 	}
 
 	droneConnection->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
+
+        MavLinkStatustext statustext;
 		if (inLogFile != nullptr && inLogFile->isOpen()) {
 			inLogFile->write(message);
 		}
-		if (message.msgid == MavLinkHeartbeat::kMessageId)
-		{
-			CheckHeartbeat(message);
-		}
-		else if (message.msgid == MavLinkAttitudeTarget::kMessageId)
-		{
-			MavLinkAttitudeTarget target;
-			target.decode(message);
+        switch (message.msgid) {
+        case MavLinkHeartbeat::kMessageId:
+            CheckHeartbeat(message);
+            break;
+        case MavLinkAttitudeTarget::kMessageId:
+            /*
+            MavLinkAttitudeTarget target;
+            target.decode(message);
 
-			float pitch, roll, yaw;
-			mavlink_quaternion_to_euler(target.q, &roll, &pitch, &yaw);
-			/*
-			float q2[4];
-			mavlink_euler_to_quaternion(roll, pitch, yaw, q2);*/
+            float pitch, roll, yaw;
+            mavlink_quaternion_to_euler(target.q, &roll, &pitch, &yaw);
+            float q2[4];
+            mavlink_euler_to_quaternion(roll, pitch, yaw, q2);*/
 
-			//DebugOutput("q1 : %f\t%f\t%f\t%g", target.q[0], target.q[1], target.q[2], target.q[3]);
-			//DebugOutput("q2 : %f\t%f\t%f\t%g", q2[0], q2[1], q2[2], q2[3]);
-			//DebugOutput("target roll: %f\tpitch: %f\tyaw:%f\tthrust: %f", roll, pitch, yaw, target.thrust);
-
-		}
+            //DebugOutput("q1 : %f\t%f\t%f\t%g", target.q[0], target.q[1], target.q[2], target.q[3]);
+            //DebugOutput("q2 : %f\t%f\t%f\t%g", q2[0], q2[1], q2[2], q2[3]);
+            //DebugOutput("target roll: %f\tpitch: %f\tyaw:%f\tthrust: %f", roll, pitch, yaw, target.thrust);
+            break;
+        case MavLinkStatustext::kMessageId: // MAVLINK_MSG_ID_STATUSTEXT:
+            statustext.decode(message);
+            handleStatus(statustext);
+            break;
+        default:
+            break;
+        }
 	});
 
 	if (logConnection != nullptr) {
@@ -1015,8 +1037,8 @@ int console() {
 				cmdTable.push_back(new GotoCommand());
 				cmdTable.push_back(new RotateCommand());
 				cmdTable.push_back(orbit);
+                cmdTable.push_back(new SquareCommand());
 				cmdTable.push_back(new WiggleCommand());
-				cmdTable.push_back(new IdleCommand());
 			}
 			break;
 		}
