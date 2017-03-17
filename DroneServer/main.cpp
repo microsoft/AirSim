@@ -17,6 +17,18 @@ void printUsage() {
 
 int main(int argc, const char* argv[])
 {
+    if (argc != 2) {
+        std::cout << "Usage: " << argv[0] << " is_simulation" << std::endl;
+        std::cout << "\t where is_simulation = 0 or 1" << std::endl;
+        return 1;
+    }
+
+    bool is_simulation = std::atoi(argv[1]) == 1;
+    if (is_simulation)
+        std::cout << "You are running in simulation mode." << std::endl;
+    else
+        std::cout << "WARNING: This is not simulation!" << std::endl;
+
     MavLinkDroneController::ConnectionInfo connection_info;
     connection_info.vehicle_name = "Pixhawk";
     
@@ -52,10 +64,20 @@ int main(int argc, const char* argv[])
         connection_info.ip_port = child.getInt("UdpPort", connection_info.ip_port);
         connection_info.serial_port = child.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = child.getInt("SerialBaudRate", connection_info.baud_rate);
+
+        if (!is_simulation && !connection_info.use_serial) {
+            std::cout << "Settings is not using serial connection. In non-simulation mode only serial connection is allowed!" << std::endl;
+            return 2;
+        }
+    }
+    else {
+        std::cout << "Could not load settings from " << Settings::singleton().getFileName() << std::endl;
+        return 3;
+
     }
 
     MavLinkDroneController mav_drone;
-    mav_drone.initialize(connection_info, nullptr, true);   //TODO: need to review how is_simulation flag might affect here
+    mav_drone.initialize(connection_info, nullptr, is_simulation);   //TODO: need to review how is_simulation flag might affect here
     mav_drone.start();
 
     DroneControllerCancelable server_wrapper(&mav_drone);
