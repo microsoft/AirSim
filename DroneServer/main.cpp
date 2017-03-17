@@ -77,7 +77,7 @@ int main(int argc, const char* argv[])
     }
 
     MavLinkDroneController mav_drone;
-    mav_drone.initialize(connection_info, nullptr, is_simulation);   //TODO: need to review how is_simulation flag might affect here
+    mav_drone.initialize(connection_info, nullptr, is_simulation);
     mav_drone.start();
 
     DroneControllerCancelable server_wrapper(&mav_drone);
@@ -87,7 +87,25 @@ int main(int argc, const char* argv[])
     server_wrapper.setImageForCamera(3, DroneControllerBase::ImageType::Depth, v);
     server_wrapper.setImageForCamera(4, DroneControllerBase::ImageType::Scene, std::vector<msr::airlib::uint8_t>{6, 5, 4, 3, 2});
     
+    //start server in async mode
+    server.start(false);
+
     std::cout << "Server connected to MavLink endpoint at " << connection_info.local_host_ip << ":" << connection_info.ip_port << std::endl;
-    server.start(true);
+    std::cout << "Hit Ctrl+C to terminate." << std::endl;
+
+    std::vector<std::string> messages;
+    while (true) {
+        //check messages
+        server_wrapper.getStatusMessages(messages);
+        if (messages.size() > 1) {
+            for (const auto& message : messages) {
+                std::cout << message << std::endl;
+            }
+        }
+
+        constexpr static std::chrono::milliseconds MessageCheckDurationMillis(100);
+        std::this_thread::sleep_for(MessageCheckDurationMillis);
+    }
+
     return 0;
 }

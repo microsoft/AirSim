@@ -113,7 +113,7 @@ void RpcLibServer::start(bool block)
     if (block)
         pimpl_->server.run();
     else
-        pimpl_->server.async_run(2);   //2 threads
+        pimpl_->server.async_run(4);   //4 threads
 }
 
 void RpcLibServer::stop()

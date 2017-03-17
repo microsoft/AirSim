@@ -325,7 +325,7 @@ struct MavLinkDroneController::impl {
 	{
 		is_armed_ = armed;
 		if (!armed) {
-			// motors are not armed!
+			//reset motor controls
 			for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
 				rotor_controls_[i] = 0;
 			}
@@ -401,6 +401,9 @@ struct MavLinkDroneController::impl {
 
     void sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt)
     {
+        if (!is_simulation_mode_)
+            throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
+
         mavlinkcom::MavLinkHilSensor hil_sensor;
         hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochMillis() * 1000);
         hil_sensor.xacc = acceleration.x();
@@ -436,6 +439,9 @@ struct MavLinkDroneController::impl {
     void sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog,
         float eph, float epv, int fix_type, unsigned int satellites_visible)
     {
+        if (!is_simulation_mode_)
+            throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
+
         mavlinkcom::MavLinkHilGps hil_gps;
         hil_gps.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochMillis() * 1000);
         hil_gps.lat = static_cast<int32_t>(geo_point.latitude * 1E7);
@@ -465,6 +471,9 @@ struct MavLinkDroneController::impl {
 
     real_T getVertexControlSignal(unsigned int rotor_index)
     {
+        if (!is_simulation_mode_)
+            throw std::logic_error("Attempt to read simulated motor controls while not in simulation mode");
+
         std::lock_guard<std::mutex> guard(hil_controls_mutex_);
         return rotor_controls_[rotor_index];
     }
@@ -481,7 +490,6 @@ struct MavLinkDroneController::impl {
         current_state = mavlinkcom::VehicleState();
         target_height_ = 0;
         is_offboard_mode_ = false;
-        is_simulation_mode_ = false;
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
@@ -568,8 +576,8 @@ struct MavLinkDroneController::impl {
 
     void start()
     {
-        close();
-        resetState();
+        close(); //just in case if connections were open
+        resetState(); //reset all variables we might have changed during last session
 
         connect();
         connectToLogViewer();
@@ -648,6 +656,10 @@ struct MavLinkDroneController::impl {
 
     void setHILMode()
     {
+        if (!is_simulation_mode_)
+            throw std::logic_error("Attempt to set device in HIL mode while not in simulation mode");
+
+
         if (mav_vehicle_ == nullptr) {
             return;
         }
