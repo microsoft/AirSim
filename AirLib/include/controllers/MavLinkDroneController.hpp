@@ -123,6 +123,9 @@ public:
     float getCommandPeriod() override;
     float getTakeoffZ() override;
     float getDistanceAccuracy() override;
+
+    virtual bool loopCommandPre() override;
+    virtual void loopCommandPost() override;
 protected: 
     void commandRollPitchZ(float pitch, float roll, float z, float yaw) override;
     void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;

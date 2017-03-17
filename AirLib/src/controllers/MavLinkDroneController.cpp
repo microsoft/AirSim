@@ -574,6 +574,11 @@ struct MavLinkDroneController::impl {
         }
     }
 
+    void addStatusMessage(const std::string& message) {
+        std::lock_guard<std::mutex> guard(status_text_mutex_);
+        status_messages_.push(message);
+    }
+
     void start()
     {
         close(); //just in case if connections were open
@@ -946,6 +951,64 @@ struct MavLinkDroneController::impl {
 		logviewer_proxy_->sendMessage(data);
 	}
 
+    bool startOffboardMode()
+    {
+        try {
+            mav_vehicle_->requestControl();
+        }
+        catch (std::exception& ex) {
+            ensureSafeMode();
+            addStatusMessage(std::string("Request control failed: ") + ex.what());
+            return false;
+        }
+        return true;
+    }
+
+    void endOffboardMode()
+    {
+        mav_vehicle_->releaseControl();
+        ensureSafeMode();
+    }
+
+    void ensureSafeMode() 
+    {
+        const VehicleState& state = mav_vehicle_->getVehicleState();
+        if (state.controls.landed || !state.controls.armed) {
+            return;
+        }
+
+        bool r = false;
+        
+        // ok, we are flying, so let's try and hover where we are at.
+        addStatusMessage("Auto entering loiter mode for safety reasons");
+        if (!mav_vehicle_->loiter().wait(500, &r) || !r)
+        {
+            addStatusMessage("Loiter command failed, trying to enter position hold for safety reasons");
+            if (!mav_vehicle_->loiter().wait(500, &r) || !r) //TODO: replace this with below position hold command
+            //if (!mav_vehicle_->setPositionHoldMode().wait(500, &r) || !r)
+            {
+                addStatusMessage("Position hold failed, trying to land for safety reasons");
+                bool rc = false;
+                if (!mav_vehicle_->land(state.global_est.heading, state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt).wait(500, &rc) || !r) {
+                    addStatusMessage("Landing failed, trying to return to home for safety reasons");
+                    if (!mav_vehicle_->returnToHome().wait(500, &r) || !r)
+                    {
+                        addStatusMessage("Argh, everything we tried has failed!");
+                    }
+                }
+            }
+        }
+    }
+
+    bool loopCommandPre()
+    {
+        return startOffboardMode();
+    }
+
+    void loopCommandPost()
+    {
+        endOffboardMode();
+    }
 }; //impl
 
 //empty constructor required for pimpl
@@ -1125,6 +1188,15 @@ void MavLinkDroneController::setRCData(const RCData& rcData)
     return pimpl_->setRCData(rcData);
 }
 
+bool MavLinkDroneController::loopCommandPre()
+{
+    return pimpl_->loopCommandPre();
+}
+
+void MavLinkDroneController::loopCommandPost()
+{
+    pimpl_->loopCommandPost();
+}
 
 //drone parameters
 float MavLinkDroneController::getCommandPeriod() 
