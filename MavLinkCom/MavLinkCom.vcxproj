@@ -257,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_utils\FileSystem.hpp" />
+    <ClInclude Include="common_utils\json.hpp" />
     <ClInclude Include="common_utils\StrictMode.hpp" />
     <ClInclude Include="common_utils\ThreadUtils.hpp" />
     <ClInclude Include="include\AsyncResult.hpp" />

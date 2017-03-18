@@ -13,6 +13,11 @@
 #include "MavLinkTcpServer.hpp"
 #include "MavLinkFtpClient.hpp"
 #include "Semaphore.hpp"
+
+STRICT_MODE_OFF
+#include "json.hpp"
+STRICT_MODE_ON
+
 #include <iostream>
 
 using namespace mavlink_utils;
@@ -28,11 +33,12 @@ void UnitTests::RunAll(std::string comPort, int boardRate)
 		throw std::runtime_error("unit tests need a serial connection to Pixhawk, please specify -serial argument");
 	}
 
-	RunTest("UdpPingTest", [=] { UdpPingTest(); });
-	RunTest("TcpPingTest", [=] { TcpPingTest(); });
-	RunTest("SendImageTest", [=] { SendImageTest(); });
-	RunTest("SerialPx4Test", [=] { SerialPx4Test(); });
-	RunTest("FtpTest", [=] { FtpTest(); });
+	//RunTest("UdpPingTest", [=] { UdpPingTest(); });
+	//RunTest("TcpPingTest", [=] { TcpPingTest(); });
+	//RunTest("SendImageTest", [=] { SendImageTest(); });
+	//RunTest("SerialPx4Test", [=] { SerialPx4Test(); });
+	//RunTest("FtpTest", [=] { FtpTest(); });
+    RunTest("JSonLogTest", [=] { JSonLogTest(); });
 }
 
 void UnitTests::RunTest(const std::string& name, TestHandler handler)
@@ -312,5 +318,72 @@ void UnitTests::FtpTest() {
 		printf("remove succeeded\n");
 	}
 
+
+}
+
+void UnitTests::JSonLogTest()
+{
+    auto connection = MavLinkConnection::connectSerial("px4", com_port_, baud_rate_);
+
+    MavLinkLog log;
+
+    auto tempPath = FileSystem::getTempFolder();
+    tempPath = FileSystem::combine(tempPath, "test.mavlink");
+    log.openForWriting(tempPath, true);
+
+    int count = 0;
+    Semaphore  received;
+
+    auto id = connection->subscribe([&](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
+        count++;
+        log.write(msg);
+        if (count > 50) {
+            received.post();
+        }
+    });
+
+    if (!received.timed_wait(30000)) {
+        throw std::runtime_error("PX4 is not sending 50 messages in 30 seconds.");
+    }
+
+    connection->unsubscribe(id);
+    connection->close();
+    log.close();
+
+    // Now verification
+    nlohmann::json doc;
+
+    std::ifstream s;
+    FileSystem::openTextFile(tempPath, s);
+    if (!s.fail()) {
+        s >> doc;        
+    }
+    else {
+        throw std::runtime_error(Utils::stringf("Cannot open json file at '%s'.", tempPath.c_str()));
+    }
+
+    if (doc.count("rows") == 1) {
+        nlohmann::json rows = doc["rows"].get<nlohmann::json>();
+        int found = 0;
+        int imu = 0;
+        if (rows.is_array()) {
+            size_t size = rows.size();
+            for (size_t i = 0; i < size; i++)
+            {
+                auto ptr = rows[i];
+                if (ptr.is_object()) {
+                    if (ptr.count("name") == 1) {
+                        auto name = ptr["name"].get<std::string>();
+                        if (name == "HIGHRES_IMU") {
+                            imu++;
+                        }
+                        found++;
+                    }
+                }
+            }
+        }
+
+        printf("found %d valid rows in the json file, and %d HIGHRES_IMU records\n", found, imu);
+    }
 
 }

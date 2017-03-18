@@ -83,6 +83,10 @@
       <HintPath>..\packages\Microsoft.Maps.MapControl.WPF.1.0.0.3\lib\net40-Client\Microsoft.Maps.MapControl.WPF.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -138,6 +142,7 @@
     <Compile Include="Model\ChartModels.cs" />
     <Compile Include="Model\CsvDataLog.cs" />
     <Compile Include="Model\IDataLog.cs" />
+    <Compile Include="Model\JSonDataLog.cs" />
     <Compile Include="Model\MavlinkLog.cs" />
     <Compile Include="Model\Px4DataLog.cs" />
     <Compile Include="Utilities\ColorExtensions.cs" />

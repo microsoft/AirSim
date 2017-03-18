@@ -33,6 +33,8 @@ void MavLinkLog::openForReading(const std::string& filename)
 	if (ptr_ == nullptr) {
 		throw std::runtime_error(Utils::stringf("Could not open the file %s, error=%d", filename.c_str(), errno));
 	}
+
+    fseek(ptr_, 0, SEEK_SET);
 	reading_ = true;
 	writing_ = false;
 }
@@ -56,6 +58,7 @@ void MavLinkLog::close()
 {
 	FILE* temp = ptr_;
 	if (json_ && ptr_ != nullptr) {
+        fprintf(ptr_, "    {}\n"); // so that trailing comma on last row isn't a problem.
 		fprintf(ptr_, "]}\n");
 	}
 	ptr_ = nullptr;
@@ -92,6 +95,7 @@ void MavLinkLog::write(const mavlinkcom::MavLinkMessage& msg)
 			if (strongTypedMsg != nullptr) {
 				std::string line = strongTypedMsg->toJSon();
 				fprintf(ptr_, "    %s\n", line.c_str());
+                delete strongTypedMsg;
 			}
 		}
 		else {
@@ -118,8 +122,10 @@ bool MavLinkLog::read(mavlinkcom::MavLinkMessage& msg)
 			throw std::runtime_error("Log file was opened for writing");
 		}
 		uint64_t time;
-		size_t s = fread(&time, sizeof(uint64_t), 1, ptr_);
-		if (s == 0) {
+
+		size_t s = fread(&time, 1, sizeof(uint64_t), ptr_);
+		if (s < sizeof(uint64_t)) {
+            int hr = errno;            
 			return false;
 		}
 		s = fread(&msg.magic, 1, 1, ptr_);
@@ -150,7 +156,7 @@ bool MavLinkLog::read(mavlinkcom::MavLinkMessage& msg)
 		if (s < msg.len) {
 			return false;
 		}
-		s = fread(&msg.checksum, sizeof(uint16_t), 1, ptr_);
+		s = fread(&msg.checksum, 1, sizeof(uint16_t), ptr_);
 		if (s < sizeof(uint16_t)) {
 			return false;
 		}

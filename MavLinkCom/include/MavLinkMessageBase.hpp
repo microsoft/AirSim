@@ -53,6 +53,7 @@ namespace mavlinkcom
 		// find what type of message this is and decode it on the heap (call delete when you are done with it).
 		static MavLinkMessageBase* lookup(const MavLinkMessage& msg);
 		virtual std::string toJSon() = 0;
+        virtual ~MavLinkMessageBase() {}
 	protected:
 		virtual int pack(char* buffer) const = 0;
 		virtual int unpack(const char* buffer) = 0;

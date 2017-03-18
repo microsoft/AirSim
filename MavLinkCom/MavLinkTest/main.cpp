@@ -14,9 +14,20 @@
 #include <vector>
 #include <string.h>
 #include <functional>
+
 #include <map>
 #include <ctime>
 #include "UnitTests.h"
+
+#if defined(_WIN32)
+#include <filesystem>
+// for some unknown reason, VC++ doesn't define this handy macro...
+#define __cpp_lib_experimental_filesystem 201406
+#else
+#if __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+#endif
+#endif
 
 /* enable math defines on Windows */
 
@@ -123,11 +134,78 @@ bool noparams = false;
 std::string logDirectory;
 std::string ifaceName; 
 bool jsonLogFormat = false;
+bool convertExisting = false;
 std::shared_ptr<MavLinkLog> inLogFile;
 std::shared_ptr<MavLinkLog> outLogFile;
 std::thread telemetry_thread;
 bool telemetry = false;
 
+#if defined(__cpp_lib_experimental_filesystem)
+
+using namespace std::experimental::filesystem::v1;
+
+void ConvertLogFileToJson(std::string logFile)
+{
+    std::string fullPath = FileSystem::getFullPath(logFile);
+    printf("Converting logfile: %s...", fullPath.c_str());
+    try {
+
+        //FILE* ptr = fopen(fullPath.c_str(), "rb");
+
+        //int a = fgetc(ptr);
+        //int b = fgetc(ptr);
+        //int c = fgetc(ptr);
+        //int d = fgetc(ptr);
+
+        //printf("0x%02x 0x%02x 0x%02x 0x%02x\n", a, b, c, d);
+
+        //fclose(ptr);
+
+        MavLinkMessage msg;
+
+        MavLinkLog log;
+        log.openForReading(fullPath);
+        
+        path jsonPath(logFile);
+        jsonPath.replace_extension(".json");
+
+        MavLinkLog jsonLog;
+        jsonLog.openForWriting(jsonPath.generic_string(), true);
+
+        while (log.read(msg)) {
+            jsonLog.write(msg);
+        }
+        jsonLog.close();
+        printf("done\n");
+    }
+    catch (std::exception&ex) {
+        printf("error: %s\n", ex.what());
+    }
+}
+
+void ConvertLogFilesToJson(std::string directory)
+{
+    printf("converting log files in: %s\n", directory.c_str());
+    if (directory == "") {
+        printf("Please provide the -logdir option\n");
+        return;
+    }
+    auto fullPath = FileSystem::getFullPath(directory);
+    if (!FileSystem::isDirectory(fullPath)) {
+        printf("-logdir:%s, does not exist\n", fullPath.c_str());
+    }
+    path dirPath(fullPath);
+   
+    for (directory_iterator next(dirPath), end; next != end; ++next) {
+        auto path = next->path();
+        auto ext = path.extension();
+        if (ext == ".mavlink") {
+            ConvertLogFileToJson(path.generic_string());
+        }
+    }
+}
+
+#endif
 
 void OpenLogFiles() {
 	if (logDirectory.size() > 0)
@@ -492,7 +570,8 @@ void PrintUsage() {
 	printf("    -local:ipaddr                          - specify local NIC address (default 127.0.0.1)\n");
 	printf("    -logdir:filename                       - specify local directory where mavlink logs are stored (default is no log files)\n");
 	printf("    -logformat:json                        - the default is binary, if you specify this option you will get mavlink logs in json format\n");
-	printf("    -noradio							   - disables RC link loss failsafe\n");
+    printf("    -convertExisting                       - convert all existing .mavlink log files in the logdir to json\n");
+    printf("    -noradio							   - disables RC link loss failsafe\n");
 	printf("    -nsh                                   - enter NuttX shell immediately on connecting with PX4\n");
 	printf("    -telemetry                             - generate telemetry mavlink messages for logviewer\n");
     printf("    -wifi:iface                            - add wifi rssi to the telemetry using given wifi interface name (e.g. wplsp0)\n");
@@ -594,6 +673,9 @@ bool ParseCommandLine(int argc, const char* argv[])
 					}
 				}
 			}
+            else if (lower == "convertexisting") {
+                convertExisting = true;
+            }
 			else if (lower == "local")
 			{
 				if (parts.size() > 1)
@@ -1190,6 +1272,13 @@ int main(int argc, const char* argv[])
 		PrintUsage();
 		return 1;
 	}
+
+#if defined(__cpp_lib_experimental_filesystem)
+    if (convertExisting) {
+        ConvertLogFilesToJson(logDirectory);
+        return 0;
+    }
+#endif
 
 	OpenLogFiles();
 

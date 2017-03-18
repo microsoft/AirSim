@@ -93,6 +93,15 @@ std::string FileSystem::getFullPath(const std::string fileName)
 	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 	std::wstring wide_path = converter.from_bytes(fileName);
 
+    // convert from std::path '/' to windows backslash.
+    size_t length = wide_path.size();
+    for (size_t i = 0; i < length; i++)
+    {
+        if (wide_path[i] == '/') {
+            wide_path[i] = kPathSeparator;
+        }
+    }
+
 	wchar_t szPath[MAX_PATH];
 	int len = GetFullPathName(wide_path.c_str(), MAX_PATH, szPath, NULL);
 	if (len == 0)
@@ -108,14 +117,15 @@ std::string FileSystem::getFullPath(const std::string fileName)
 
 	char buf[PATH_MAX];
 	char* cwd = getcwd(buf, PATH_MAX);
+
 	std::string path = cwd;
 
-	size_t size = path.size();
+	size_t size = fileName.size();
 	if (size == 0) {
 		return path;
 	}
-	if (path[0] == kPathSeparator) {
-		return path;
+	if (fileName[0] == kPathSeparator) {
+		return fileName;
 	}
 
 	return resolve(path, fileName);

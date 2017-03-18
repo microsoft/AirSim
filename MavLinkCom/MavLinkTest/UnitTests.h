@@ -17,6 +17,7 @@ public:
 	void TcpPingTest();
 	void SendImageTest();
 	void FtpTest();
+    void JSonLogTest();
 private:
 	void RunTest(const std::string& name, TestHandler handler);
 	ImageServer* server_;
