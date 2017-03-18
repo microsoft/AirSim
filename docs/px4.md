@@ -59,7 +59,7 @@ then it runs cmake (if necessary), then it runs the build itself.  So in a way t
 It shouldn't take long, about 2 minutes.  If all succeeds, the last line will link the `px4` app, which you can then run using the following:
 
 ````
-./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/lpe/iris
+./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/ekf2/iris
 ````
 
 And you should see output that looks like this:

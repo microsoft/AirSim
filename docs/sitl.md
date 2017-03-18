@@ -25,7 +25,7 @@ make posix_sitl_default
 ```
 4. Use following command to start PX4 firmware in SITL mode:
 ```
-./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/lpe/iris
+./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/ekf2/iris
 ```
 5. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is
 waiting for someone to connect.
