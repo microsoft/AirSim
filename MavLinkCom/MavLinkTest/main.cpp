@@ -14,7 +14,7 @@
 #include <vector>
 #include <string.h>
 #include <functional>
-
+#include <mutex>
 #include <map>
 #include <ctime>
 #include "UnitTests.h"
@@ -139,6 +139,7 @@ std::shared_ptr<MavLinkLog> inLogFile;
 std::shared_ptr<MavLinkLog> outLogFile;
 std::thread telemetry_thread;
 bool telemetry = false;
+std::mutex logLock;
 
 #if defined(__cpp_lib_experimental_filesystem)
 
@@ -1079,6 +1080,7 @@ int console() {
 
         MavLinkStatustext statustext;
 		if (inLogFile != nullptr && inLogFile->isOpen()) {
+			std::lock_guard<std::mutex> lock(logLock);
 			inLogFile->write(message);
 		}
         switch (message.msgid) {
@@ -1178,6 +1180,7 @@ int console() {
 
 		line = mavlink_utils::Utils::trim(line, ' ');
 
+
 		if (line.length() > 0)
 		{
 			if (line.length() == 0)
@@ -1224,6 +1227,16 @@ int console() {
 					{
 						// found it!
 						selected = command;
+
+						if (inLogFile != nullptr && inLogFile->isOpen()) {
+							auto str = Utils::stringf("cmd:%s", line.c_str());
+							MavLinkStatustext st;
+							strncpy(st.text, str.c_str(), 50);
+							MavLinkMessage m;
+							st.encode(m, 0);
+							std::lock_guard<std::mutex> lock(logLock);
+							inLogFile->write(m);
+						}
 						break;
 					}
 				}

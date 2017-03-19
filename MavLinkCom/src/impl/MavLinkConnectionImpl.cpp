@@ -16,9 +16,6 @@ STRICT_MODE_OFF
 #include "../mavlink/mavlink_types.h"
 STRICT_MODE_ON
 
-static const uint8_t mavlink_message_crcs[256] = MAVLINK_MESSAGE_CRCS;
-static const uint8_t mavlink_message_lengths[256] = MAVLINK_MESSAGE_LENGTHS;
-
 using namespace mavlink_utils;
 using namespace mavlinkcom_impl;
 
@@ -193,40 +190,9 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& msg)
 
 void MavLinkConnectionImpl::sendMessage(const MavLinkMessageBase& msg)
 {
-	mavlink_message_t m;
-	m.magic = MAVLINK_STX;
-	m.msgid = msg.msgid;
-	m.sysid = msg.sysid;
-	m.compid = msg.compid;
-	m.seq = getNextSequence();
-
-	// pack the payload buffer.
-	int len = msg.pack(reinterpret_cast<char*>(m.payload64));
-
-	// calculate checksum
-	uint8_t crc_extra = mavlink_message_crcs[m.msgid];
-	int msglen = mavlink_message_lengths[m.msgid];
-	if (m.msgid == MavLinkTelemetry::kMessageId) {
-		msglen = 28; // mavlink doesn't know about our custom telemetry message.
-	}		
-	if (len != msglen) {
-		throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
-	}
-	m.len = msglen;
-	m.checksum = crc_calculate((reinterpret_cast<const uint8_t*>(&m)) + 3, MAVLINK_CORE_HEADER_LEN);
-	crc_accumulate_buffer(&m.checksum, reinterpret_cast<const char*>(&m.payload64[0]), msglen);
-#if MAVLINK_CRC_EXTRA
-	crc_accumulate(crc_extra, &m.checksum);
-#endif
-
-	// these macros use old style cast.
-	STRICT_MODE_OFF
-	mavlink_ck_a(&m) = (uint8_t)(m.checksum & 0xFF);
-	mavlink_ck_b(&m) = (uint8_t)(m.checksum >> 8);
-	STRICT_MODE_ON
-
-	// send the message, now that it is ready
-	sendMessage(reinterpret_cast<const MavLinkMessage&>(m));
+	MavLinkMessage m;
+	msg.encode(m, getNextSequence());
+	sendMessage(m);
 }
 
 int MavLinkConnectionImpl::subscribe(MessageHandler handler)
