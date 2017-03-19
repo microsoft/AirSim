@@ -65,10 +65,6 @@ int main(int argc, const char* argv[])
         connection_info.serial_port = child.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = child.getInt("SerialBaudRate", connection_info.baud_rate);
 
-        if (!is_simulation && !connection_info.use_serial) {
-            std::cout << "Settings is not using serial connection. In non-simulation mode only serial connection is allowed!" << std::endl;
-            return 2;
-        }
     }
     else {
         std::cout << "Could not load settings from " << Settings::singleton().getFileName() << std::endl;

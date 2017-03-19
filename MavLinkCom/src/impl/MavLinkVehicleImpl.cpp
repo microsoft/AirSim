@@ -184,7 +184,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
                     // try and take it back.
                     vehicle_state_.controls.offboard = false;
                     control_requested_ = false;
-                    printf("MavLinkVehicle: detected mode change, will top trying to do offboard control\n");
+                    printf("MavLinkVehicle: detected mode change, will stop trying to do offboard control\n");
                 }
             }
 		}
@@ -605,6 +605,9 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
 
 AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode)
 {
+	// this mode change take precedence over offboard mode.
+	control_requested_ = false;
+
     if ((vehicle_state_.mode & static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED)) != 0) {
         mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED); // must preserve this flag.
     }
