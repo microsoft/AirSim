@@ -276,6 +276,27 @@ public:
 
 };
 
+
+class BatteryCommand : public Command
+{
+	bool got_battery_;
+public:
+	BatteryCommand() {
+		this->Name = "battery";
+		this->got_battery_ = false;
+	}
+	virtual bool Parse(std::vector<std::string>& args);
+
+	virtual void PrintHelp() {
+		printf("battery  - print next battery message.\n");
+	}
+
+	virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
+	virtual void HandleMessage(const MavLinkMessage& msg);
+
+};
+
+
 class StatusCommand : public Command
 {
 	bool printStatus = false;

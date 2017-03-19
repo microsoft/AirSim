@@ -549,6 +549,34 @@ void PositionCommand::HandleMessage(const MavLinkMessage& message)
 	}
 }
 
+bool BatteryCommand::Parse(std::vector<std::string>& args) {
+	if (args.size() > 0) {
+		std::string cmd = args[0];
+		if (cmd == "battery") {
+			return true;
+		}
+	}
+	return false;
+}
+
+void BatteryCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
+	Command::Execute(com);
+	got_battery_ = false;
+}
+
+void BatteryCommand::HandleMessage(const MavLinkMessage& message)
+{
+	if (!got_battery_ && MavLinkBatteryStatus::kMessageId)
+	{
+		MavLinkBatteryStatus status;
+		status.decode(message);
+		got_battery_ = true;
+		printf("Battery voltage %d mV\n", status.current_battery);
+	}
+}
+
+
 bool StatusCommand::Parse(std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
