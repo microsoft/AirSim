@@ -454,6 +454,27 @@ AsyncResult<bool> MavLinkVehicleImpl::takeoff(float z, float pitch, float yaw)
 	return sendCommandAndWaitForAck(cmd);
 }
 
+AsyncResult<bool> MavLinkVehicleImpl::waitForAltitude(float z, float dz, float dvz)
+{
+	std::shared_ptr<MavLinkConnection> con = ensureConnection();
+	AsyncResult<bool> result([=](int subscription) {
+		con->unsubscribe(subscription);
+	});
+
+	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
+		if (m.msgid == static_cast<uint8_t>(MavLinkLocalPositionNed::kMessageId)) {
+			MavLinkLocalPositionNed pos;
+			pos.decode(m);
+
+			if (fabs(pos.z - z) <= dz && fabs(pos.vz) < dvz) {
+				result.setResult(true);
+			}
+		}
+	});
+
+	return result;
+}
+
 AsyncResult<bool> MavLinkVehicleImpl::land(float yaw, float lat, float lon, float altitude)
 {
 	MavCmdNavLand cmd{};

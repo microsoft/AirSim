@@ -736,5 +736,22 @@ private:
 };
 
 
+class WaitForAltitudeCommand : public Command
+{
+public:
+	WaitForAltitudeCommand() {
+		this->Name = "WaitForAltitude z dz dvz";
+	}
+	virtual bool Parse(std::vector<std::string>& args);
+
+	virtual void PrintHelp() {
+		printf("WaitForAltitudeCommand z dz dvz - wait for drone to get with in dz of the specified local z, and settle down to given velocity delta (dvz).\n");
+	}
+
+	virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
+private:
+	float z, dz, dvz;
+
+};
 
 #endif

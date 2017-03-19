@@ -32,6 +32,12 @@ AsyncResult<bool>  MavLinkVehicle::takeoff(float z, float pitch, float yaw)
 	return ptr->takeoff(z, pitch, yaw);
 }
 
+AsyncResult<bool> MavLinkVehicle::waitForAltitude(float z, float dz, float dvz)
+{
+	auto ptr = static_cast<MavLinkVehicleImpl*>(pImpl.get());
+	return ptr->waitForAltitude(z, dz, dvz);
+}
+
 AsyncResult<bool>  MavLinkVehicle::land(float yaw, float lat, float lon, float altitude)
 {
 	auto ptr = static_cast<MavLinkVehicleImpl*>(pImpl.get());

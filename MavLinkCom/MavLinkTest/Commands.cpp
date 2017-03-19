@@ -2115,3 +2115,45 @@ void SetMessageIntervalCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
 	com->setMessageInterval(msgid_, frequency_);
 }
+
+bool WaitForAltitudeCommand::Parse(std::vector<std::string>& args)
+{
+	if (args.size() > 0) {
+		std::string cmd = args[0];
+		cmd = Utils::toLower(cmd);
+		if (cmd == "waitforaltitude") {
+			if (args.size() == 4) {
+				z = static_cast<float>(atof(args[1].c_str()));
+				dz = static_cast<float>(atof(args[2].c_str()));
+				dvz = static_cast<float>(atof(args[3].c_str()));
+				if (z > 0) {
+					z = -z;
+				}
+				return true;
+			}
+			else {
+				printf("wrong number of arguments.\n");
+				PrintHelp();
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+void WaitForAltitudeCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
+	bool rc = false;
+	if (com->waitForAltitude(z, dz, dvz).wait(30000, &rc)) {
+		if (!rc) {
+			printf("altitude not reached\n");
+		}
+		else {
+			printf("target altitude & velocity reached\n");
+		}
+	}
+	else {
+		printf("timeout waiting for set altitude\n");
+	}
+
+}

@@ -1069,7 +1069,7 @@ int console() {
 	cmdTable.push_back(sendImage = new SendImageCommand());
 	cmdTable.push_back(new SetMessageIntervalCommand());
 	cmdTable.push_back(new BatteryCommand());
-	
+	cmdTable.push_back(new WaitForAltitudeCommand());
 
 	if (!connect(mavLinkVehicle)) {
 		return 1;
