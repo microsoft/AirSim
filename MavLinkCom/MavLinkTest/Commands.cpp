@@ -412,7 +412,7 @@ bool LoiterCommand::Parse(std::vector<std::string>& args) {
 void LoiterCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
 	bool rc = false;
-	if (com->loiter().wait(5000, &rc)) {
+	if (com->loiter().wait(2000, &rc)) {
 		if (rc) {
 			printf("ok\n");
 		}
@@ -825,16 +825,37 @@ void CapabilitiesCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 }
 
 bool GotoCommand::Parse(std::vector<std::string>& args) {
+	cruise_speed_ = 0;
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "goto") {
-			if (args.size() == 4) {
+			if (args.size() >= 4) {
 				tx = static_cast<float>(atof(args[1].c_str()));
 				ty = static_cast<float>(atof(args[2].c_str()));
 				tz = static_cast<float>(atof(args[3].c_str()));
                 if (tz > 0) {
                     tz = -tz; // probably mean negative, since we are using NED coordinates.
                 }
+				if (fabs(tx) > 100) {
+					printf("### invalid -100 < x < 100 \n");
+					return false;
+				}
+				if (fabs(ty) > 100) {
+					printf("### invalid -100 < y < 100 \n");
+					return false;
+				}
+				if (fabs(tz) > 100) {
+					printf("### invalid -100 < z < 100 \n");
+					return false;
+				}
+
+				if (args.size() == 5) {
+					cruise_speed_ = static_cast<float>(atof(args[4].c_str()));		
+					if (cruise_speed_ < 0 || cruise_speed_ > 10) {
+						printf("### invalid speed, 0 < speed < 10\n");
+						return false;
+					}
+				}
 				return true;
 			}
 			else {
@@ -859,6 +880,7 @@ void GotoCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 	this->theading = 0;
 	this->paused = false;
 	Command::Execute(com);
+
 	TakeControl();
 }
 
@@ -1328,7 +1350,7 @@ void SquareCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         throw std::runtime_error(Utils::stringf("Your drone does not support the MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED capability."));
     }
     started_ = false;
-    leg_ = 0;
+    leg_ = 0;	
     near = speed_;
     printf("executing a square pattern of length %f and at %f m/s\n", length_, speed_);
     GotoCommand::Execute(com);
@@ -1376,6 +1398,7 @@ void SquareCommand::setNextTarget() {
 void SquareCommand::HasLocalPosition()
 {
     if (!started_) {
+		theading = 0;
         sx_ = x; sy_ = y; sz_ = z;
         started_ = true;
         // ok, now we can start moving by velocity
@@ -1708,12 +1731,15 @@ bool AltHoldCommand::Parse(std::vector<std::string>& args)
 
 void AltHoldCommand::Close()
 {
-	vehicle->releaseControl();
+	if (vehicle != nullptr) {
+		vehicle->releaseControl();
+	}
 	Command::Close();
 }
 
 void AltHoldCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
+	vehicle = com;
 	if (!com->isAttitudeControlSupported()) {
 		throw std::runtime_error(Utils::stringf("Your drone does not support the MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET capability."));
 	}

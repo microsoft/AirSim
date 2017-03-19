@@ -1064,7 +1064,8 @@ int console() {
 	cmdTable.push_back(new RequestImageCommand());
 	cmdTable.push_back(new FtpCommand());
 	cmdTable.push_back(nshCommand);
-	cmdTable.push_back(new AltHoldCommand());
+	// this is advanced command that can get us into trouble on real drone, so remove it for now.
+	//cmdTable.push_back(new AltHoldCommand());
 	cmdTable.push_back(sendImage = new SendImageCommand());
 	cmdTable.push_back(new SetMessageIntervalCommand());
 	cmdTable.push_back(new BatteryCommand());

@@ -624,7 +624,7 @@ AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int cust
 
 AsyncResult<bool>  MavLinkVehicleImpl::setPositionHoldMode()
 {
-    return setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) |
+    return setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
         static_cast<int>(PX4_CUSTOM_MAIN_MODE_POSCTL));
 }
 
@@ -654,8 +654,8 @@ AsyncResult<bool> MavLinkVehicleImpl::setMissionMode()
 
 AsyncResult<bool> MavLinkVehicleImpl::loiter()
 {
-    return setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) |
-        static_cast<int>(PX4_CUSTOM_MAIN_MODE_AUTO) |
+    return setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
+        static_cast<int>(PX4_CUSTOM_MAIN_MODE_AUTO),
         static_cast<int>(PX4_CUSTOM_SUB_MODE_AUTO_LOITER));
 }
 
@@ -742,8 +742,7 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
 	msg.x = x; msg.y = y; msg.z = z;
 	msg.coordinate_frame = static_cast<uint8_t>(MAV_FRAME::MAV_FRAME_LOCAL_NED);
 
-	msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY |
-		MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
+	msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
     if (isYaw) {
 		msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
 		msg.yaw = yawOrRate;

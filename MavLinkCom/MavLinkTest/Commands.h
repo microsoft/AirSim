@@ -395,6 +395,7 @@ protected:
 	bool is_yaw; // is target a heading or a rate (true=heading, false=rate).
 	float theading; // target heading
 	float targetSpeed;
+	float cruise_speed_;
 	bool paused = false;
 	const float nearDelta = 0.5f; // meters
 	const float almostStationery = 0.6f;
@@ -406,7 +407,7 @@ public:
 	virtual bool Parse(std::vector<std::string>& args);
 
 	virtual void PrintHelp() {
-		printf("goto x,y,z  - move the drone to local coordinates x,y,z (in meters).\n");
+		printf("goto x y z [speed] - move the drone to local coordinates x,y,z (in meters).\n");
 	}
 
 	virtual void Close();
