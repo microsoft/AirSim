@@ -22,7 +22,7 @@ namespace LogViewer.Model
         string file;
         DateTime startTime;
         TimeSpan duration;
-        List<Message> data;
+        List<Message> data = new List<Message>();
         LogItemSchema schema = new LogItemSchema() { Name = "MavlinkLog", Type = "Root" };
         Dictionary<Type, LogItemSchema> schemaCache = new Dictionary<Type, LogItemSchema>();
         Dictionary<string, MAVLink.mavlink_param_value_t> parameters = new Dictionary<string, MAVLink.mavlink_param_value_t>();

@@ -308,6 +308,7 @@ namespace LogViewer
             Task.Run(async () => { await LoadBinaryFile(fileName); });
         }
 
+
         private async void OnOpenFile(object sender, RoutedEventArgs e)
         {
             OpenButton.IsEnabled = false;
@@ -319,7 +320,6 @@ namespace LogViewer
             if (fo.ShowDialog() == true)
             {
                 SystemConsole.Show();
-
                 foreach (var file in fo.FileNames)
                 {
                     switch (System.IO.Path.GetExtension(file).ToLowerInvariant())
@@ -343,6 +343,7 @@ namespace LogViewer
                             break;
                     }
                 }
+                ShowTotalFlightTime();
             }
             OpenButton.IsEnabled = true;
         }
@@ -430,8 +431,7 @@ namespace LogViewer
                 {
                     ShowMap();
                 }
-
-                ShowTotalFlightTime();
+                
             });
 
         }
