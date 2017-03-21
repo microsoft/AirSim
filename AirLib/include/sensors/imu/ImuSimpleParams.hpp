@@ -5,6 +5,7 @@
 #define msr_airlib_SimpleImuParams_hpp
 
 #include "common/Common.hpp"
+#include "common/EarthUtils.hpp"
 #include <cmath>
 
 

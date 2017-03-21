@@ -6,7 +6,6 @@
 
 #include "vehicles/MultiRotorParams.hpp"
 #include "controllers/rosflight/RosFlightDroneController.hpp"
-#include "SimJoyStick/SimJoyStick.h"
 
 
 namespace msr { namespace airlib {
@@ -57,9 +56,6 @@ protected:
         createStandardSensors(sensor_storage_, sensors, params.enabled_sensors);
         createController(controller, sensors);
 
-        //enable joystick support as we are doing in-memory firmware
-        SimJoyStick::setEnabled(true);
-        
         //leave everything else to defaults
     }
 

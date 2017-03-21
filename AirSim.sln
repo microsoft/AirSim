@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DroneServer", "DroneServer\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MavLinkTest", "MavLinkCom\MavLinkTest\MavLinkTest.vcxproj", "{25EB67BE-468A-4AA5-910F-07EFD58C5516}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Examples", "Examples\Examples.vcxproj", "{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -71,6 +73,14 @@ Global
 		{25EB67BE-468A-4AA5-910F-07EFD58C5516}.Release|x64.Build.0 = Release|x64
 		{25EB67BE-468A-4AA5-910F-07EFD58C5516}.Release|x86.ActiveCfg = Release|Win32
 		{25EB67BE-468A-4AA5-910F-07EFD58C5516}.Release|x86.Build.0 = Release|Win32
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Debug|x64.ActiveCfg = Debug|x64
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Debug|x64.Build.0 = Debug|x64
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Debug|x86.ActiveCfg = Debug|Win32
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Debug|x86.Build.0 = Debug|Win32
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Release|x64.ActiveCfg = Release|x64
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Release|x64.Build.0 = Release|x64
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Release|x86.ActiveCfg = Release|Win32
+		{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
