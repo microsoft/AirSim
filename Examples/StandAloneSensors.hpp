@@ -22,6 +22,8 @@ public:
 
         float interations = total_duration / period;
 
+        output << std::fixed;
+
         double last = Utils::getTimeSinceEpoch();
         for (auto i = 0; i < interations; ++i) {
             const auto& imu_output = imu.getOutput();
