@@ -22,14 +22,18 @@ macro(CommonSetup)
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             set(CMAKE_CXX_STANDARD 14)
         else ()
-		    ##TODO: Werror removed temporarily. It should be added back after Linux build is stable
-            set(CMAKE_CXX_FLAGS "-std=c++14 -ggdb -lpthread -Wall -Wextra -Wstrict-aliasing -fmax-errors=2 -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wnoexcept -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option ${MAVLINK_OVERRIDES} ${BOOST_OVERRIDES} ${RPC_LIB_DEFINES} -ldl ${CMAKE_CXX_FLAGS}")
+            ##TODO: Werror removed temporarily. It should be added back after Linux build is stable
+            set(CMAKE_CXX_FLAGS "-std=c++14 -ggdb  -Wall -Wextra -Wstrict-aliasing -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option ${MAVLINK_OVERRIDES} ${BOOST_OVERRIDES} ${RPC_LIB_DEFINES} ${CMAKE_CXX_FLAGS}")
 
             if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
                 # make sure to match the compiler flags with which the Unreal
                 # Engine is built with
                 set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
                 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi ")
+                set(CXX_EXP_LIB "-lc++experimental")
+            else()
+                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpthread -ldl -Wnoexcept -Wstrict-null-sentinel -fmax-errors=10")
+                set(CXX_EXP_LIB "-lstdc++fs")
             endif ()
         endif ()
         set(BUILD_PLATFORM "x64")

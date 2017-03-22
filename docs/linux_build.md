@@ -2,7 +2,7 @@
 
 ## cmake
 
-First you will need at least [cmake version  3.4](https://cmake.org/install/). 
+First you will need at least [cmake version  3.5](https://cmake.org/install/). 
 If you don't have cmake version 3.* (for example, that is not the default on Ubuntu 14) you can run the following:
 
 ````
@@ -11,53 +11,45 @@ sudo apt-get update
 sudo apt-get install cmake
 ````
 
-Then get the right version of Eigen, see [Install Eigen](install_eigen.md).  
-
-Next you need a version of GCC that supports `-std=c++14`.  Version 5.4 or newer should work.  
-The following commands will get you gcc 6:
+Next you need a version of [CLang compiler](http://releases.llvm.org/3.9.0/tools/clang/docs/ReleaseNotes.html) that supports `-std=c++14`.  Version 3.9 or newer should work.   The following commands will get you clang 3.9:
 ````
 sudo apt-get update
-sudo apt-get install build-essential software-properties-common -y
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main"
 sudo apt-get update
-sudo apt-get install gcc-snapshot -y
-sudo apt-get update
-sudo apt-get install gcc-6 g++-6 -y
+sudo apt-get install clang-3.9 lldb-3.9
+sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9
 ````
 
-Now go to cmake folder and run following commands:
+Next you will need the latest version of libc++ library, which you can build yourself by doing this:
 
 ````
-mkdir build
-cd build
-cmake -D CMAKE_C_COMPILER=gcc-6 -D CMAKE_CXX_COMPILER=g++-6 -D CMAKE_BUILD_TYPE=Debug ..
-make
+# Checkout LLVM sources
+git clone --depth=1 https://github.com/llvm-mirror/llvm.git llvm-source
+git clone --depth=1 https://github.com/llvm-mirror/libcxx.git llvm-source/projects/libcxx
+git clone --depth=1 https://github.com/llvm-mirror/libcxxabi.git llvm-source/projects/libcxxabi
+
+export C_COMPILER=clang
+export COMPILER=clang++
+
+# Build and install libc++ (Use unstable ABI for better sanitizer coverage)
+mkdir llvm-build && cd llvm-build
+cmake -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr \
+      -DLIBCXX_ABI_UNSTABLE=ON \
+      -DLLVM_USE_SANITIZER=${LIBCXX_SANITIZER} \
+      ../llvm-source
+make cxx -j2
+sudo make install-cxxabi install-cxx
 ````
 
-## Reset cmake
+Now you can run the build.sh at the root level of the AirSim repo:
 
-Just a tid bit for those not familiar with cmake, if for any reason you need to re-run cmake to regenerate new make files
-(perhaps you want to move eigen) then the following is the equivalent of `clean` for cmake:
 ````
-rm CMakeCache.txt 
-rm -rf CMakeFiles
+./build.sh
 ````
+This will create a `build_debug` folder containing the build output and the cmake generated make files.
 
-## Windows cmake
+## Reset build
 
-You can also use cmake on Windows, but we have already checked in a .sln and .vcxproj files that are nicer than what
-cmake creates.  This is why we have separated the CMakeLists.txt files into a different directory, this ensures cmake 
-doesn't override our hand built VS project files.
-
-This will create the debug build:
-````
-cmake -G "Visual Studio 14 2015 Win64" -D CMAKE_BUILD_TYPE=Debug CMakeLists.txt
-msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
-````
-To build release bits you have to delete CMakeCache.txt (it's not clear that cmake supports building
-one set of vcxproj make files that can do both debug and release, if someone knows how please submit a pull request!)
-and run this:
-````
-cmake -G "Visual Studio 14 2015 Win64" -D CMAKE_BUILD_TYPE=Release CMakeLists.txt
-msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln
-````
+If for any reason you need to re-run cmake to regenerate new make files just deete the `build_debug` folder.

@@ -173,7 +173,7 @@ public:
 		buf[len] = '\0';
 		_strlwr_s(buf, len + 1);
 		string lower = buf;
-		delete buf;
+		delete[] buf;
 		return lower;
 	}
 #else
@@ -190,7 +190,7 @@ public:
 		}
 		*p = '\0';
 		string lower = buf;
-		delete buf;
+		delete[] buf;
 		return lower;
 	}
 #endif
