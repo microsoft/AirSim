@@ -63,13 +63,13 @@ namespace mavlinkcom_impl {
 		// Move drone by directly controlling the attitude of the drone (units are degrees).
 		// If the rollRate, pitchRate and yawRate are all zero then you will get the default rates provided by the drone.
 		void moveByAttitude(float roll, float pitch, float yaw, float rollRate, float pitchRate, float yawRate, float thrust);
+        void writeMessage(MavLinkMessageBase& message, bool update_stats = true);
 
 		int getVehicleStateVersion();
 		const VehicleState& getVehicleState();
 
 		uint32_t getTimeStamp();
 	private:
-		void writeMessage(MavLinkMessageBase& message, bool update_stats = true);
 		virtual void handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message);
 		void resetCommandParams(MavLinkCommandLong& cmd);
 		void updateReadStats(const MavLinkMessage& msg);

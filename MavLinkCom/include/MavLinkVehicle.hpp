@@ -55,6 +55,7 @@ namespace mavlinkcom {
 		void moveToGlobalPosition(float lat, float lon, float alt, bool isYaw, float yawOrRate);
 		void moveByLocalVelocity(float vx, float vy, float vz, bool isYaw, float yawOrRate);
 		void moveByLocalVelocityWithAltHold(float vx, float vy, float z, bool isYaw, float yawOrRate);
+        void writeMessage(MavLinkMessageBase& message, bool update_stats = true);
 
 		// low level control, only use this one if you really know what you are doing!!
 		bool isAttitudeControlSupported();

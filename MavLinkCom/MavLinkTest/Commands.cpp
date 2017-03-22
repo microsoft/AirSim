@@ -376,6 +376,8 @@ bool PlayLogCommand::Parse(const std::vector<std::string>& args)
 void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     MavLinkMessage msg;
+    std::fill_n(quaternion_, 4, 0.0f);
+    quaternion_[0] = 1; //unit quaternion
     while (log_.read(msg)) {
         switch (msg.msgid)
         {
@@ -390,6 +392,34 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
                 printf("Executing %s", line.c_str());
                 command->Execute(com);
             }
+            break;
+        }
+        case MavLinkLocalPositionNed::kMessageId: {
+            MavLinkLocalPositionNed pos_msg;
+            pos_msg.decode(msg);
+            MavLinkAttPosMocap mocap;
+            mocap.x = x = pos_msg.x;
+            mocap.y = y = pos_msg.y;
+            mocap.z = z = pos_msg.z;
+            std::copy(quaternion_, quaternion_ + 1, mocap.q);
+            com->writeMessage(mocap);
+            break;
+        }
+        case MavLinkAttitudeQuaternion::kMessageId: {
+            MavLinkAttitudeQuaternion q_msg;
+            q_msg.decode(msg);
+            MavLinkAttPosMocap mocap;
+            mocap.x = x;
+            mocap.y = y;
+            mocap.z = z;
+
+            quaternion_[0] = q_msg.q1; //w
+            quaternion_[1] = q_msg.q2; //x
+            quaternion_[2] = q_msg.q3; //y
+            quaternion_[3] = q_msg.q4; //z
+
+            std::copy(quaternion_, quaternion_ + 1, mocap.q);
+            com->writeMessage(mocap);
             break;
         }
         default:

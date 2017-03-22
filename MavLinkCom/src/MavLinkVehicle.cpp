@@ -92,6 +92,12 @@ void MavLinkVehicle::moveByAttitude(float roll, float pitch, float yaw, float ro
 	ptr->moveByAttitude(roll, pitch, yaw, rollRate, pitchRate, yawRate, thrust);
 }
 
+void MavLinkVehicle::writeMessage(MavLinkMessageBase& message, bool update_stats)
+{
+    auto ptr = static_cast<MavLinkVehicleImpl*>(pImpl.get());
+    ptr->writeMessage(message, update_stats);
+}
+
 AsyncResult<bool> MavLinkVehicle::loiter()
 {
 	auto ptr = static_cast<MavLinkVehicleImpl*>(pImpl.get());
