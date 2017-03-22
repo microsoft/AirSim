@@ -10,10 +10,6 @@ It should find the setting titled "Use Less CPU when in Background", and you wan
 
 This can be a machine performance issue, check your [hard drive performance](hard_drive.md).
 
-### How to get cmake to use GCC 6 without making GCC 6 my default
-
-Add these to your cmake command line `-D CMAKE_C_COMPILER=gcc-6 -D CMAKE_CXX_COMPILER=g++-6`.
-
 ### It is not finding my pixhawk hardware
 
 Check your settings.json file for this line "SerialPort":"*,115200".  The asterix here means "find any 
@@ -29,3 +25,8 @@ name, if you use "ls -l ..." you can find that symbolic link, it is usually some
 so this will also work "SerialPort":"/dev/ttyACM0,115200".  But that mapping is similar to windows, it is
 automatically assigned and can change, whereas the long name will work even if the actual tty serial device
 mapping changes.
+
+### My mouse disappears
+
+Yes, Unreal steals the mouse, and we don't draw one.  So to get your mouse back just use Alt+TAB to switch to a different window.
+
