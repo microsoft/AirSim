@@ -737,53 +737,6 @@ bool ParseCommandLine(int argc, const char* argv[])
 }
 
 
-std::vector<std::string> parseArgs(std::string s)
-{
-	auto start = s.begin();
-	std::vector<std::string> result;
-	auto theEnd = s.end();
-	auto it = s.begin();
-	while (it != theEnd)
-	{
-		char ch = *it;
-		if (ch == ' ' || ch == '\t' || ch == ',') {
-			if (start < it)
-			{
-				result.push_back(std::string(start, it));
-			}
-			it++;
-			start = it;
-		}
-		else if (*it == '"')
-		{
-			// treat literals as one word
-			it++;
-			start = it;
-			while (*it != '"' && it != theEnd)
-			{
-				it++;
-			}
-			auto end = it;
-			if (start < it)
-			{
-				result.push_back(std::string(start, end));
-			}
-			if (*it == '"') {
-				it++;
-			}
-			start = it;
-		}
-		else {
-			it++;
-		}
-	}
-	if (start < theEnd)
-	{
-		result.push_back(std::string(start, s.end()));
-	}
-	return result;
-}
-
 void HexDump(uint8_t *buffer, uint len)
 {
 	for (uint i = 0; i < len; i += 16) {
@@ -1040,7 +993,9 @@ int console() {
 	NshCommand* nshCommand = new NshCommand();
 
 	std::vector<Command*> cmdTable;
-	cmdTable.push_back(new ArmDisarmCommand());
+    Command::setAllCommand(&cmdTable);
+    
+    cmdTable.push_back(new ArmDisarmCommand());
 	cmdTable.push_back(new TakeOffCommand());
 	cmdTable.push_back(new LandCommand());
 	cmdTable.push_back(new MissionCommand());
@@ -1176,7 +1131,7 @@ int console() {
 			{
 				continue;
 			}
-			std::vector<std::string> args = parseArgs(line);
+			std::vector<std::string> args = Command::parseArgs(line);
 			std::string cmd = args[0];
 
 			if (cmd == "x")
@@ -1208,30 +1163,20 @@ int console() {
 				}
 			}
 			else {
-				Command* selected = nullptr;
-				for (size_t i = 0; i < cmdTable.size(); i++)
-				{
-					Command* command = cmdTable[i];
-					if (command->Parse(args))
-					{
-						// found it!
-						selected = command;
-
-						if (inLogFile != nullptr && inLogFile->isOpen()) {
-							auto str = Utils::stringf("cmd:%s", line.c_str());
-							MavLinkStatustext st;
-							strncpy(st.text, str.c_str(), 50);
-							MavLinkMessage m;
-							st.encode(m, 0);
-							std::lock_guard<std::mutex> lock(logLock);
-							inLogFile->write(m);
-						}
-						break;
-					}
-				}
+				Command* selected = Command::create(args);
+                //add command text in log
+                if (selected != nullptr && inLogFile != nullptr && inLogFile->isOpen()) {
+                    auto str = std::string(Command::kCommandLogPrefix) + line;
+                    MavLinkStatustext st;
+                    strncpy(st.text, str.c_str(), 50);
+                    MavLinkMessage m;
+                    st.encode(m, 0);
+                    std::lock_guard<std::mutex> lock(logLock);
+                    inLogFile->write(m);
+                }
 
 				if (currentCommand != nullptr && currentCommand != selected) {
-					// close previous command.
+                    // close previous command.
 					currentCommand->Close();
 				}
 				currentCommand = selected;

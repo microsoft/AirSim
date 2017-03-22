@@ -16,6 +16,10 @@ using namespace mavlinkcom;
 
 // from main.cpp.
 
+static std::vector<Command*> const * all_commands_;
+std::vector<Command*> const * Command::getAllCommand() { return all_commands_;  }
+void Command::setAllCommand(std::vector<Command*> const * all_commands) { all_commands_ = all_commands; }
+
 void mavlink_quaternion_to_euler(const float quaternion[4], float* roll, float* pitch, float* yaw);
 void PrintHeartbeat(const MavLinkMessage& msg);
 
@@ -62,7 +66,79 @@ void Command::Close() {
 	vehicle = nullptr;
 }
 
-bool ArmDisarmCommand::Parse(std::vector<std::string>& args) {
+
+std::vector<std::string> Command::parseArgs(std::string s)
+{
+    auto start = s.begin();
+    std::vector<std::string> result;
+    auto theEnd = s.end();
+    auto it = s.begin();
+    while (it != theEnd)
+    {
+        char ch = *it;
+        if (ch == ' ' || ch == '\t' || ch == ',') {
+            if (start < it)
+            {
+                result.push_back(std::string(start, it));
+            }
+            it++;
+            start = it;
+        }
+        else if (*it == '"')
+        {
+            // treat literals as one word
+            it++;
+            start = it;
+            while (*it != '"' && it != theEnd)
+            {
+                it++;
+            }
+            auto end = it;
+            if (start < it)
+            {
+                result.push_back(std::string(start, end));
+            }
+            if (*it == '"') {
+                it++;
+            }
+            start = it;
+        }
+        else {
+            it++;
+        }
+    }
+    if (start < theEnd)
+    {
+        result.push_back(std::string(start, s.end()));
+    }
+    return result;
+}
+
+Command* Command::create(const std::vector<std::string>& args)
+{
+    if (all_commands_ == nullptr)
+        throw std::runtime_error("all_commands_ member must be set before calling Command::parseLine()");
+
+    const auto& cmdTable = *all_commands_;
+
+    Command* selected = nullptr;
+    for (size_t i = 0; i < cmdTable.size(); i++)
+    {
+        Command* command = cmdTable.at(i);
+        if (command->Parse(args))
+            return command;
+    }
+
+    return nullptr;
+}
+
+Command* Command::create(const std::string& line)
+{
+    std::vector<std::string> args = Command::parseArgs(line);
+    return create(args);
+}
+
+bool ArmDisarmCommand::Parse(const std::vector<std::string>& args) {
 	this->arm = false;
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -78,6 +154,9 @@ bool ArmDisarmCommand::Parse(std::vector<std::string>& args) {
 	}
 	return false;
 }
+
+
+
 
 void ArmDisarmCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 
@@ -104,7 +183,7 @@ void ArmDisarmCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 	}
 }
 
-bool GetParamsCommand::Parse(std::vector<std::string>& args)
+bool GetParamsCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -155,7 +234,7 @@ void GetParamsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	Close();
 }
 
-bool GetSetParamCommand::Parse(std::vector<std::string>& args)
+bool GetSetParamCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -238,7 +317,7 @@ void GetSetParamCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	}
 }
 
-bool TakeOffCommand::Parse(std::vector<std::string>& args)
+bool TakeOffCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -275,6 +354,50 @@ void TakeOffCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	}
 }
 
+
+bool PlayLogCommand::Parse(const std::vector<std::string>& args)
+{
+    if (args.size() <= 0)
+        return false;
+    
+    std::string cmd = args[0];
+    if (cmd == "playlog") {
+        if (args.size() > 1) {
+            log_.openForReading(args.at(1));
+            return true;
+        } 
+        else {
+            printf("Usage: playlog <mavlink_logfile>\n");
+        }
+    }
+    return false;
+}
+
+void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
+    MavLinkMessage msg;
+    while (log_.read(msg)) {
+        switch (msg.msgid)
+        {
+        case MavLinkStatustext::kMessageId: {
+            MavLinkStatustext status_msg;
+            status_msg.decode(msg);
+            if (std::strstr(status_msg.text, kCommandLogPrefix) == status_msg.text) {
+                std::string line = std::string(status_msg.text).substr(std::strlen(kCommandLogPrefix));
+                auto command = Command::create(line);
+                if (command == nullptr)
+                    throw std::runtime_error(std::string("Command for line ") + line + " cannot be found");
+                printf("Executing %s", line.c_str());
+                command->Execute(com);
+            }
+            break;
+        }
+        default:
+            break;
+        }
+    }
+}
+
 void TakeOffCommand::HandleMessage(const MavLinkMessage& msg)
 {
 	if (msg.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_GPS_RAW_INT))
@@ -306,7 +429,7 @@ void TakeOffCommand::HandleMessage(const MavLinkMessage& msg)
 	}
 }
 
-bool LandCommand::Parse(std::vector<std::string>& args) {
+bool LandCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "land") {
@@ -354,7 +477,7 @@ void LandCommand::HandleMessage(const MavLinkMessage& message)
 	}
 }
 
-bool RtlCommand::Parse(std::vector<std::string>& args) {
+bool RtlCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "rtl") {
@@ -400,7 +523,7 @@ void RtlCommand::HandleMessage(const MavLinkMessage& message)
 	}
 }
 
-bool LoiterCommand::Parse(std::vector<std::string>& args) {
+bool LoiterCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "loiter") {
@@ -425,7 +548,7 @@ void LoiterCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	}
 }
 
-bool RequestImageCommand::Parse(std::vector<std::string>& args) {
+bool RequestImageCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "req_img") {
@@ -457,7 +580,7 @@ void RequestImageCommand::HandleMessage(const MavLinkMessage& msg)
 	}
 }
 
-bool MissionCommand::Parse(std::vector<std::string>& args) {
+bool MissionCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "mission") {
@@ -490,7 +613,7 @@ void MissionCommand::HandleMessage(const MavLinkMessage& message)
 	}
 }
 
-bool PositionCommand::Parse(std::vector<std::string>& args) {
+bool PositionCommand::Parse(const std::vector<std::string>& args) {
 
 	this->printLocalPosition = true;
 	this->printGlobalosition = true;
@@ -549,7 +672,7 @@ void PositionCommand::HandleMessage(const MavLinkMessage& message)
 	}
 }
 
-bool BatteryCommand::Parse(std::vector<std::string>& args) {
+bool BatteryCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "battery") {
@@ -577,7 +700,7 @@ void BatteryCommand::HandleMessage(const MavLinkMessage& message)
 }
 
 
-bool StatusCommand::Parse(std::vector<std::string>& args) {
+bool StatusCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "status") {
@@ -648,7 +771,7 @@ void StatusCommand::HandleMessage(const MavLinkMessage& message)
 
 }
 
-bool SendImageCommand::Parse(std::vector<std::string>& args) {
+bool SendImageCommand::Parse(const std::vector<std::string>& args) {
 	fileName = "";
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -759,7 +882,7 @@ void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	stream.sendFrame(reinterpret_cast<uint8_t*>(sbuf.buffer), static_cast<uint32_t>(len), width, height, type, 100);
 }
 
-bool CapabilitiesCommand::Parse(std::vector<std::string>& args) {
+bool CapabilitiesCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "cap" || cmd == "capabilities") {
@@ -824,7 +947,7 @@ void CapabilitiesCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	}
 }
 
-bool GotoCommand::Parse(std::vector<std::string>& args) {
+bool GotoCommand::Parse(const std::vector<std::string>& args) {
 	cruise_speed_ = 0;
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -1035,7 +1158,7 @@ void GotoCommand::TargetReached()
 	printf("target reached\n");
 }
 
-bool OrbitCommand::Parse(std::vector<std::string>& args) {
+bool OrbitCommand::Parse(const std::vector<std::string>& args) {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
 		if (cmd == "orbit") {
@@ -1232,7 +1355,7 @@ void OrbitCommand::MeasureTime(float degrees)
 }
 
 
-bool RotateCommand::Parse(std::vector<std::string>& args)
+bool RotateCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -1315,7 +1438,7 @@ void RotateCommand::UpdateTarget()
 
 
 
-bool SquareCommand::Parse(std::vector<std::string>& args)
+bool SquareCommand::Parse(const std::vector<std::string>& args)
 {
     if (args.size() > 0) {
         std::string cmd = args[0];
@@ -1439,7 +1562,7 @@ void SquareCommand::UpdateTarget()
     }
 }
 
-bool WiggleCommand::Parse(std::vector<std::string>& args)
+bool WiggleCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		wiggle_size_ = 1;
@@ -1694,7 +1817,7 @@ void WiggleCommand::Close()
 //	MavLinkAttitudeTarget _current;
 //	PidController thrust_controller_;
 //public:
-bool AltHoldCommand::Parse(std::vector<std::string>& args)
+bool AltHoldCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		std::string cmd = args[0];
@@ -1844,7 +1967,7 @@ std::string toPX4Path(std::string arg) {
 	return arg;
 }
 
-bool FtpCommand::Parse(std::vector<std::string>& args)
+bool FtpCommand::Parse(const std::vector<std::string>& args)
 {
 	//	"ftp [ls|cd name|get source [target]|put source target]";
 	cmd = none;
@@ -2321,7 +2444,7 @@ void NshCommand::HandleMessage(const MavLinkMessage& msg)
 
 
 
-bool SetMessageIntervalCommand::Parse(std::vector<std::string>& args)
+bool SetMessageIntervalCommand::Parse(const std::vector<std::string>& args)
 {
 	msgid_ = 0;
 	frequency_ = 0;
@@ -2351,7 +2474,7 @@ void SetMessageIntervalCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	com->setMessageInterval(msgid_, frequency_);
 }
 
-bool WaitForAltitudeCommand::Parse(std::vector<std::string>& args)
+bool WaitForAltitudeCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		std::string cmd = args[0];

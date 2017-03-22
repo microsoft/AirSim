@@ -191,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="ConsoleBase.h" />
     <ClInclude Include="UnitTests.h" />
     <ClInclude Include="wifi.h" />
   </ItemGroup>
