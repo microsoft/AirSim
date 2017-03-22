@@ -6,13 +6,13 @@ with AirSim.  This document goes with the [Unreal AirSim Setup Video](https://yo
 First, make sure Unreal 4.15 is installed as per [build instructions](build.md) then make sure the 4.15 version 
 is set as the `current` version in the Epic Games Launcher, like this:
 
-![current version](images\current_version.png)
+![current version](images/current_version.png)
 
 Next from the `Epic Games Launcher` click the Learn tab then scroll down and find `Landscape Mountains`.
 
 Click `Create Project` and download this content.  It is about 2 gigabytes.
 
-![current version](images\landscape_mountains.png)
+![current version](images/landscape_mountains.png)
 
 Now open `LandscapeMountains.uproject`, it should launch the Unreal Editor.
 
