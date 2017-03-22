@@ -317,7 +317,7 @@ namespace MavLinkComGenerator
                 impl.WriteLine("std::string MavLink{0}::toJSon() {{", name);
                 impl.WriteLine("    std::ostringstream ss;");
 
-                impl.WriteLine("    ss << \"{{ \\\"name\\\": \\\"{0}\\\", \\\"id\\\": {1}\";", m.name, id);
+                impl.WriteLine("    ss << \"{{ \\\"name\\\": \\\"{0}\\\", \\\"id\\\": {1}, \\\"timestamp\\\":\" << timestamp << \", \\\"msg\\\": {{\";", m.name, id);
 
                 for (int i = 0; i < length; i++)
                 {
@@ -327,8 +327,14 @@ namespace MavLinkComGenerator
                     {
                         type = "uint8_t";
                     }
-                    impl.Write("    ss << \", \\\"{0}\\\":\" ", field.name);
-
+                    if (i == 0)
+                    {
+                        impl.Write("    ss << \"\\\"{0}\\\":\" ", field.name);
+                    }
+                    else
+                    {
+                        impl.Write("    ss << \", \\\"{0}\\\":\" ", field.name);
+                    }
                     if (field.isArray)
                     {
                         if (type == "char")
@@ -365,7 +371,7 @@ namespace MavLinkComGenerator
 
                     impl.WriteLine(";");
                 }
-                impl.WriteLine("    ss << \"},\";");
+                impl.WriteLine("    ss << \"} },\";");
 
                 impl.WriteLine(" return ss.str();");
                 impl.WriteLine("}");

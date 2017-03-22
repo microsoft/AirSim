@@ -46,6 +46,7 @@ namespace mavlinkcom
 		uint8_t msgid = 0;
 		uint8_t sysid = 0;   ///< ID of message sender system/aircraft
 		uint8_t compid = 0;  ///< ID of the message sender component
+        uint64_t timestamp = 0;
 
 		// unpack the given message
 		void decode(const MavLinkMessage& msg);

@@ -150,18 +150,6 @@ void ConvertLogFileToJson(std::string logFile)
     std::string fullPath = FileSystem::getFullPath(logFile);
     printf("Converting logfile: %s...", fullPath.c_str());
     try {
-
-        //FILE* ptr = fopen(fullPath.c_str(), "rb");
-
-        //int a = fgetc(ptr);
-        //int b = fgetc(ptr);
-        //int c = fgetc(ptr);
-        //int d = fgetc(ptr);
-
-        //printf("0x%02x 0x%02x 0x%02x 0x%02x\n", a, b, c, d);
-
-        //fclose(ptr);
-
         MavLinkMessage msg;
 
         MavLinkLog log;
@@ -173,8 +161,9 @@ void ConvertLogFileToJson(std::string logFile)
         MavLinkLog jsonLog;
         jsonLog.openForWriting(jsonPath.generic_string(), true);
 
-        while (log.read(msg)) {
-            jsonLog.write(msg);
+        uint64_t timestamp;
+        while (log.read(msg, timestamp)) {
+            jsonLog.write(msg, timestamp);
         }
         jsonLog.close();
         printf("done\n");

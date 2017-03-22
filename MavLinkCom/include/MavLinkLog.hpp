@@ -26,8 +26,8 @@ namespace mavlinkcom
 		void openForReading(const std::string& filename);
 		void openForWriting(const std::string& filename, bool json = false);
 		void close();
-		void write(const mavlinkcom::MavLinkMessage& msg);
-		bool read(mavlinkcom::MavLinkMessage& msg);
+		void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0);
+		bool read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp);
 	};
 
 }
