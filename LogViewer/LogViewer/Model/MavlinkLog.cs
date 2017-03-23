@@ -380,7 +380,7 @@ namespace LogViewer.Model
                 this.data = new List<Message>();
             }
 
-            DateTime time = epoch.AddMilliseconds(e.Time / 1000);
+            DateTime time = epoch.AddMilliseconds((double)e.Time / (double)1000);
 
             Message msg = new Model.MavlinkLog.Message()
             {
@@ -480,7 +480,7 @@ namespace LogViewer.Model
         public IEnumerable<string> GetStatusMessages()
         { 
             // compute the min/max servo settings.
-            foreach (var msg in this.data)
+            foreach (Message msg in this.data)
             {
                 if (msg.TypedValue is MAVLink.mavlink_statustext_t)
                 {
