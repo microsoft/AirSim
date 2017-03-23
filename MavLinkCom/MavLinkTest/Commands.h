@@ -668,14 +668,6 @@ public:
 
 class FtpCommand : public Command
 {
-	enum FtpCommandEnum {
-		none, list, cd, get, put, remove
-	};
-	FtpCommandEnum cmd;
-	std::string source;
-	std::string target;
-	std::string cwd;
-	std::shared_ptr<MavLinkFtpClient> client;
 public:
 	FtpCommand() {
 		this->Name = "ls [dir]\ncd name\nget remoteFile [localFile]\nput localFile remoteFile\nrm remoteFile]";
@@ -691,7 +683,27 @@ public:
 
 	virtual void Close();
 private:
+
 	std::string resolve(std::string name);
+	void doList();
+	void doGet();
+	void doPut();
+	void doRemove();
+	void monitor();
+	bool parse(const std::string& name, bool& wildcards) const;
+	bool matches(const std::string& pattern, const std::string& name) const;
+	void startMonitor();
+	void stopMonitor();
+	enum FtpCommandEnum {
+		none, list, cd, get, put, remove
+	};
+	FtpCommandEnum cmd;
+	std::string source;
+	std::string target;
+	std::string cwd;
+	std::shared_ptr<MavLinkFtpClient> client;
+	MavLinkFtpProgress progress;
+	std::thread monitorThread;
 };
 
 class NshCommand : public Command

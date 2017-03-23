@@ -1912,8 +1912,9 @@ bool FtpCommand::Parse(std::vector<std::string>& args)
 		else if (command == "rm") {
 			cmd = remove;
 			if (args.size() > 1) {
-				std::string rel = replaceAll(args[1], '\\', '/'); // PX4 is unix style.
+				std::string rel = normalize(args[1]);
 				target = FileSystem::resolve(cwd, rel);
+				target = toPX4Path(target);
 			}
 			else {
 				cmd = none;
@@ -1924,6 +1925,7 @@ bool FtpCommand::Parse(std::vector<std::string>& args)
 	return (cmd != none);
 }
 
+
 void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
 	if (client == nullptr) {
@@ -1933,72 +1935,43 @@ void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 	if (!client->isSupported()) {
 		printf("ftp commands are not supported by your drone\n");
 	}
-	std::vector<MavLinkFileInfo> files;
-
-	MavLinkFtpProgress progress;
-
 	switch (cmd)
 	{
 	case FtpCommand::list:
-		client->list(progress, toPX4Path(source), files);
-		for (auto iter = files.begin(); iter != files.end(); iter++)
-		{
-			auto info = *iter;
-			if (info.is_directory) {
-				printf("<DIR>    %s\n", info.name.c_str());
-			}
-			else {
-				printf("%8d %s\n", info.size, info.name.c_str());
-			}
-		}
-		if (progress.error != 0) {
-			printf("%s\n", progress.message.c_str());
-		}
-		if (progress.average_rate != 0) {
-			printf("%d msgs received, %f milliseconds per packet, longest delay=%f\n", progress.message_count, progress.average_rate, progress.longest_delay);
-		}
+		doList();
 		break;
 	case FtpCommand::cd:
-		// NOP
+		// already handled by the parse method.
 		break;
 	case FtpCommand::get:
-		client->get(progress, toPX4Path(target), source);
-		if (progress.error != 0) {
-			printf("%s\n", progress.message.c_str());
-			printf("get failed\n");
-		}
-		else {
-			printf("ok\n");
-		}
-		if (progress.average_rate != 0) {
-			printf("%d msgs received, %f milliseconds per packet, longest delay=%f\n", progress.message_count, progress.average_rate, progress.longest_delay);
-		}
+		doGet();
 		break;
 	case FtpCommand::put:
-		client->put(progress, toPX4Path(target), source);
-		if (progress.error != 0) {
-			printf("%s\n", progress.message.c_str());
-			printf("put failed\n");
-		}
-		else {
-			printf("ok\n");
-		}
-		if (progress.average_rate != 0) {
-			printf("%d msgs received, %f milliseconds per packet, longest delay=%f\n", progress.message_count, progress.average_rate, progress.longest_delay);
-		}
+		doPut();
 		break;
 	case FtpCommand::remove:
-		client->remove(progress, toPX4Path(target));
-		if (progress.error != 0) {
-			printf("remove failed\n");
-		}
-		else {
-			printf("ok\n");
-		}
-		break;
+		doRemove();
 		break;
 	default:
 		break;
+	}
+}
+
+void FtpCommand::startMonitor()
+{
+	stopMonitor();
+	progress.complete = false;
+	progress.current = 0;
+	progress.goal = 0;
+	progress.message = "";
+	monitorThread = std::thread{ &FtpCommand::monitor, this };
+}
+
+void FtpCommand::stopMonitor() {
+
+	if (monitorThread.joinable()) {
+		progress.complete = true;
+		monitorThread.join();
 	}
 }
 
@@ -2009,6 +1982,268 @@ void FtpCommand::Close() {
 	}
 }
 
+
+void FtpCommand::doList() {
+
+	std::vector<MavLinkFileInfo> files;
+
+	startMonitor();
+	client->list(progress, toPX4Path(source), files);
+	stopMonitor();
+	printf("\n");
+
+	int count = 0;
+	for (auto iter = files.begin(); iter != files.end(); iter++)
+	{
+		count++;
+		auto info = *iter;
+		if (info.is_directory) {
+			printf("<DIR>    %s\n", info.name.c_str());
+		}
+		else {
+			printf("%8d %s\n", info.size, info.name.c_str());
+		}
+	}
+	if (count == 0) {
+		printf("directory is empty\n");
+	}
+	if (progress.error != 0) {
+		printf("%s\n", progress.message.c_str());
+	}
+	if (progress.average_rate != 0) {
+		printf("%d msgs received, %f milliseconds per packet, longest delay=%f\n", progress.message_count, progress.average_rate, progress.longest_delay);
+	}
+}
+
+void FtpCommand::doGet() {
+	
+	std::string fsTarget = normalize(target);
+	std::string leaf = FileSystem::getFileName(fsTarget);
+	if (leaf.size() > 0 && leaf[0] == '/' || leaf[0] == '\\'){
+		leaf = leaf.substr(1);
+	}
+	bool wildcards;
+	if (!parse(leaf, wildcards)) {
+		printf("wildcard pattern '%s' is too complex\n", leaf.c_str());
+	} else if (wildcards) {
+		std::vector<MavLinkFileInfo> files;		
+		FileSystem::removeLeaf(fsTarget);
+		std::string dir = toPX4Path(fsTarget);
+		printf("getting all files in: %s matching '%s' ", dir.c_str(), leaf.c_str());
+
+		startMonitor();
+		client->list(progress, toPX4Path(dir), files);
+		stopMonitor();
+		printf("\n");
+
+		int count = 0;
+		int matching = 0;
+		for (auto iter = files.begin(); iter != files.end(); iter++)
+		{
+			count++;
+			auto info = *iter;
+			if (!info.is_directory) {
+				if (matches(leaf, info.name))
+				{
+					matching++;
+					printf("Getting %8d %s", info.size, info.name.c_str());
+					std::string sourceFile = FileSystem::combine(source, info.name);
+					std::string targetFile = FileSystem::combine(dir, info.name);
+					startMonitor();
+					client->get(progress, toPX4Path(targetFile), sourceFile);
+					stopMonitor();
+					printf("\n");
+					if (progress.error != 0) {
+						break;
+					}
+				}
+			}
+		}
+		if (progress.error == 0) {
+			if (count == 0) {
+				printf("directory is empty\n");
+			}
+			else if (matching == 0) {
+				printf("no matching files\n");
+			}
+		}
+
+	}
+	else {
+		printf("Getting %s", target.c_str());
+		startMonitor();
+		client->get(progress, toPX4Path(target), source);
+		stopMonitor();
+		printf("\n");
+	}
+	if (progress.error != 0) {
+		printf("%s\n", progress.message.c_str());
+		printf("get failed\n");
+	}
+	else {
+		printf("ok\n");
+	}
+	if (progress.average_rate != 0) {
+		printf("%d msgs received, %f milliseconds per packet, longest delay=%f\n", progress.message_count, progress.average_rate, progress.longest_delay);
+	}
+}
+
+void FtpCommand::doPut() {
+	startMonitor();
+	printf("Writing %s", target.c_str());
+	client->put(progress, toPX4Path(target), source);
+	stopMonitor();
+	printf("\n");
+	if (progress.error != 0) {
+		printf("%s\n", progress.message.c_str());
+		printf("put failed\n");
+	}
+	else {
+		printf("ok\n");
+	}
+	if (progress.average_rate != 0) {
+		printf("%d msgs received, %f milliseconds per packet, longest delay=%f\n", progress.message_count, progress.average_rate, progress.longest_delay);
+	}
+}
+
+void FtpCommand::doRemove() {
+	std::string fsTarget = normalize(target);
+	std::string leaf = FileSystem::getFileName(fsTarget);
+	if (leaf.size() > 0 && leaf[0] == '/' || leaf[0] == '\\') {
+		leaf = leaf.substr(1);
+	}
+	bool wildcards = false;
+	if (!parse(leaf, wildcards)) {
+		printf("wildcard pattern '%s' is too complex\n", leaf.c_str());
+	} else if (wildcards) {
+		std::vector<MavLinkFileInfo> files;
+		FileSystem::removeLeaf(fsTarget);
+		std::string dir = toPX4Path(fsTarget);
+		printf("removing all files in %s matching '%s'\n", dir.c_str(), leaf.c_str());
+		startMonitor();
+		client->list(progress, toPX4Path(dir), files);
+		stopMonitor();
+		printf("\n");
+
+		int count = 0;
+		int matching = 0;
+		for (auto iter = files.begin(); iter != files.end(); iter++)
+		{
+			count++;
+			auto info = *iter;
+			if (!info.is_directory) {
+				if (matches(leaf, info.name)) {
+					matching++;
+					printf("Removing %s ", info.name.c_str());
+					std::string targetFile = FileSystem::combine(normalize(dir), info.name); 
+					startMonitor();
+					client->remove(progress, toPX4Path(targetFile));
+					stopMonitor();
+					printf("\n");
+					if (progress.error != 0) {
+						break;
+					}
+				}
+			}
+		}
+		if (progress.error == 0) {
+			if (count == 0) {
+				printf("directory is empty\n");
+			}
+			else if (matching == 0) {
+				printf("no matching files\n");
+			}
+		}
+
+	}
+	else {
+		printf("Removing %s ", target.c_str());
+		startMonitor();
+		client->remove(progress, toPX4Path(target));
+		stopMonitor();
+		printf("\n");
+	}
+
+	if (progress.error != 0) {
+		printf("remove failed\n");
+	}
+	else {
+		printf("ok\n");
+	}
+}
+
+void FtpCommand::monitor() {
+	std::string msg = progress.message;
+	double percent = 0;
+
+	while (!progress.complete) {
+		if (progress.goal > 0) {
+			double p = static_cast<double>(progress.current) / static_cast<double>(progress.goal);
+			if (static_cast<int>(p * 10) > static_cast<int>(percent * 10)) {
+				printf(".");
+				percent = p;
+			}
+			if (progress.message != "" && progress.message != msg) {
+				msg = progress.message;
+				printf("%s\n", msg.c_str());
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+	}
+}
+
+
+bool FtpCommand::parse(const std::string& name, bool& wildcards) const
+{
+	// we only support very simple patterns for now.
+	// each wildcard must be separated by literal.
+	wildcards = false;
+	size_t wildcardpos = -1;
+	for (size_t i = 0, s = name.size(); i < s; i++)
+	{
+		char ch = name[i];
+		if (ch == '*' || ch == '?') {
+			if (wildcards && wildcardpos + 1 == i) {
+				// back to back wildcards with no literal in between is too complex.
+				return false;
+			}
+			wildcards = true;
+			wildcardpos = i;
+		}
+	}
+	return true;
+}
+
+bool FtpCommand::matches(const std::string& pattern, const std::string& name) const
+{
+	size_t p = 0;
+	size_t ps = pattern.size();
+	// we only support simple matching for now, we can add full regex later if we need it.
+	for (size_t i = 0, s = name.size(); i < s; i++)
+	{
+		if (p >= ps) {
+			return false;
+		}
+		char pc = pattern[p];
+		char ch = name[i];
+		if (pc == '?' || pc == ch) {
+			// yep!
+			p++;
+		}
+		else if (pc != '*') {
+			return false;
+		}
+		else if (p + 1 < ps && pattern[p + 1] == ch) {
+			// '*' is done we found the next matching char
+			p += 2;
+		}
+	}
+	if (p + 1 == ps && pattern[p] == '*') {
+		// this is ok.
+		return true;
+	}
+	return p == ps;
+}
 
 bool NshCommand::Parse(std::vector<std::string>& args)
 {

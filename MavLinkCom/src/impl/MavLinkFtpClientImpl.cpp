@@ -179,6 +179,10 @@ void MavLinkFtpClientImpl::runStateMachine()
 	total_time_ = milliseconds::zero();
 	messages_ = 0;
 
+	if (remote_file_.size() > 47) {
+		throw new std::runtime_error(Utils::stringf("remote file name '%s' is too long, max length is 47", remote_file_.c_str()));
+	}
+
 	progress_->cancel = false;
 	progress_->error = 0;
 	progress_->current = 0;
@@ -262,7 +266,7 @@ void MavLinkFtpClientImpl::removeFile()
 	ftp.target_component = getTargetComponentId();
 	ftp.target_system = getTargetSystemId();
 	payload->opcode = kCmdRemoveFile;
-	strcpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str());
+	strncpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str(), 47);
 	payload->size = static_cast<uint8_t>(remote_file_.size());
 	sendMessage(ftp);
 	recordMessageSent();
@@ -276,7 +280,7 @@ void MavLinkFtpClientImpl::listDirectory()
 	ftp.target_component = getTargetComponentId();
 	ftp.target_system = getTargetSystemId();
 	payload->opcode = kCmdListDirectory;
-	strcpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str());
+	strncpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str(), 47);
 	payload->size = static_cast<uint8_t>(remote_file_.size());
 	payload->offset = file_index_;
 	sendMessage(ftp);
@@ -364,7 +368,7 @@ void MavLinkFtpClientImpl::readFile()
 		ftp.target_component = getTargetComponentId();
 		ftp.target_system = getTargetSystemId();
 		payload->opcode = kCmdOpenFileRO;
-		strcpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str());
+		strncpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str(), 47);
 		payload->size = static_cast<uint8_t>(remote_file_.size());
 		sendMessage(ftp);
 		recordMessageSent();
@@ -486,6 +490,16 @@ void MavLinkFtpClientImpl::handleListResponse()
 	{
 		// todo: error handling here? sequence is out of order...
 		retry();
+		return;
+	}
+
+	if (payload->offset == 0 && payload->size == 0) {
+		// directory must be empty then, can't do nextStep because
+		// it will just loop for ever re-requesting zero offset into
+		// empty directory.
+
+		success_ = true;
+		waiting_ = false;
 		return;
 	}
 
