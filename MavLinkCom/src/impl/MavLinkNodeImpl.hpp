@@ -86,6 +86,7 @@ namespace mavlinkcom_impl {
 		virtual void handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message);
 	private:
 		void sendHeartbeat();
+		AsyncResult<MavLinkParameter> getParameterByIndex(int16_t index);
 		bool inside_handle_message_;
 		std::shared_ptr<MavLinkConnection> connection_;
 		int subscription_ = 0;

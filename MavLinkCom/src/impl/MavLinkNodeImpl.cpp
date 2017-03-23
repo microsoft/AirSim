@@ -302,14 +302,48 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 
 	while (!done) {
 		waiting = true;
-		if (!paramReceived.timed_wait(5000))
+		if (!paramReceived.timed_wait(3000))
 		{
-			con->unsubscribe(subscription);
-			throw std::runtime_error(Utils::stringf("Five second timeout waiting for parameter number %d of %d", paramIndex + 1, paramCount));
+			// timeout, so we'll drop through to the code below which will try and fix this...
+			done = true;
 		}
 		waiting = false;
 	}
 	con->unsubscribe(subscription);
+
+	// note that UDP does not guarantee delivery of messages, so we have to also check if some parameters are missing and get them individually.
+	std::vector<size_t> missing;
+
+	for (size_t i = 0; i < paramCount; i++)
+	{		
+		// nested loop is inefficient, but it is needed because UDP also doesn't guarantee in-order delivery
+		bool found = false;
+		for (auto iter = result.begin(), end = result.end(); iter != end; iter++)
+		{
+			MavLinkParameter p = *iter;
+			if (p.index == i) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			missing.push_back(i);
+		}
+	}
+
+	// ok, now fetch the missing parameters.
+	for (auto iter = missing.begin(), end = missing.end(); iter != end; iter++)
+	{
+		size_t index = *iter;
+		MavLinkParameter r;
+		if (getParameterByIndex(static_cast<int16_t>(*iter)).wait(2000, &r)) {
+			result.push_back(r);
+		}
+		else {
+			Utils::logMessage("Paremter %d does not seem to exist", index);
+		}
+	}
+
 
 	std::sort(result.begin(), result.end(), [&](const MavLinkParameter & p1, const MavLinkParameter & p2) {
 		return p1.name.compare(p2.name) < 0;
@@ -378,6 +412,44 @@ AsyncResult<MavLinkParameter> MavLinkNodeImpl::getParameter(const std::string& n
 	});
 	asyncResult.setState(subscription);
 
+	sendMessage(cmd);
+
+	return asyncResult;
+}
+
+AsyncResult<MavLinkParameter> MavLinkNodeImpl::getParameterByIndex(int16_t index)
+{
+	auto con = ensureConnection();
+	AsyncResult<MavLinkParameter> asyncResult([=](int state) {
+		con->unsubscribe(state);
+	});
+
+	MavLinkParamRequestRead cmd;
+	cmd.param_id[0] = '\0';
+	cmd.param_index = index;
+	cmd.target_component = getTargetComponentId();
+	cmd.target_system = getTargetSystemId();
+
+	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
+		if (message.msgid == MavLinkParamValue::kMessageId)
+		{
+			MavLinkParamValue param;
+			param.decode(message);
+			if (param.param_index == index)
+			{
+				MavLinkParameter  result;
+				char buf[17];
+				std::memset(buf, 0, 17);
+				std::memcpy(buf, param.param_id, 16);
+				result.name = buf;
+				result.type = param.param_type;
+				result.index = param.param_index;
+				result.value = UnpackParameter(param.param_type, param.param_value);
+				asyncResult.setResult(result);
+			}
+		}
+	});
+	asyncResult.setState(subscription);
 	sendMessage(cmd);
 
 	return asyncResult;

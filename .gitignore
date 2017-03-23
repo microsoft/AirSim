@@ -24,6 +24,8 @@ bld/
 [Oo]bj/
 Intermediate/
 Binaries/
+llvm-build/
+llvm-source/
 
 # CMake files
 CMakeFiles/
