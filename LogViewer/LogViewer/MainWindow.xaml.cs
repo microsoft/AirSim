@@ -824,6 +824,7 @@ namespace LogViewer
                 ChartStack.Visibility = Visibility.Visible;
                 ChartStack.UpdateLayout();
                 SimpleLineChart chart = new SimpleLineChart();
+                chart.ClearAllAdornments += OnClearAllAdornments;
                 chart.Margin = defaultChartMargin;
                 chart.Focusable = false;
                 chart.Closed += OnChartClosed;
@@ -895,6 +896,14 @@ namespace LogViewer
                 SystemConsole.Write(sb.ToString());
                 ConsoleButton.IsChecked = true;
                 SystemConsole.Show();
+            }
+        }
+        
+        private void OnClearAllAdornments(object sender, EventArgs e)
+        {
+            foreach (var chart in ChartStack.FindCharts())
+            {
+                chart.ClearAdornments();
             }
         }
 

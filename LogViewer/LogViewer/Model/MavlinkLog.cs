@@ -87,7 +87,7 @@ namespace LogViewer.Model
 
             StringBuilder textBuilder = new StringBuilder();
             var row = msg.TypedValue;
-            if (row != null && row.GetType().Name == rowSchema.Name)
+            if (row != null && row.GetType().Name == rowSchema.Type)
             {
                 // get a time value for this message.
                 FieldInfo fi = row.GetType().GetField(columnSchema.Name, BindingFlags.Public | BindingFlags.Instance);
@@ -191,12 +191,6 @@ namespace LogViewer.Model
             }
             return null;
         }
-
-        private string GetLandedStateNames(byte landed_state)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<DataValue> LiveQuery(LogItemSchema schema, CancellationToken token)
         {
             return new MavlinkQuery(this, schema, token);
@@ -651,7 +645,17 @@ namespace LogViewer.Model
                 return;
             }
 
-            LogItemSchema item = new LogItemSchema() { Name = t.Name, Type = t.Name, ChildItems = new List<LogItemSchema>(), Parent = this.schema };
+            string name = t.Name;
+            if (name.StartsWith("mavlink_"))
+            {
+                name = name.Substring(8);
+            }
+            else if (name.StartsWith("mavlink"))
+            {
+                name = name.Substring(7);
+            }
+
+            LogItemSchema item = new LogItemSchema() { Name = name, Type = t.Name, ChildItems = new List<LogItemSchema>(), Parent = this.schema };
 
             foreach (FieldInfo fi in t.GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -706,14 +710,14 @@ namespace LogViewer.Model
         }
 
         static string[] MavSystemStateNames = {
-            "MAV_STATE_UNINIT - Uninitialized system, state is unknown.",
-            "MAV_STATE_BOOT - System is booting up.",
-            "MAV_STATE_CALIBRATING - System is calibrating and not flight-ready.",
-            "MAV_STATE_STANDBY - System is grounded and on standby. It can be launched any time.",
-            "MAV_STATE_ACTIVE - System is active and might be already airborne. Motors are engaged.",
-            "MAV_STATE_CRITICAL - System is in a non-normal flight mode. It can however still navigate.",
-            "MAV_STATE_EMERGENCY - System is in a non-normal flight mode. It lost control over parts or over the whole airframe. It is in mayday and going down.",
-            "MAV_STATE_POWEROFF - System just initialized its power-down sequence, will shut down now."
+            "MAV_STATE_UNINIT",
+            "MAV_STATE_BOOT",
+            "MAV_STATE_CALIBRATING",
+            "MAV_STATE_STANDBY",
+            "MAV_STATE_ACTIVE",
+            "MAV_STATE_CRITICAL",
+            "MAV_STATE_EMERGENCY",
+            "MAV_STATE_POWEROFF"
         };
 
         enum PX4_CUSTOM_MAIN_MODE
@@ -754,9 +758,9 @@ namespace LogViewer.Model
         };
 
         static string[] MavLandedStateNames = {
-            "MAV_LANDED_STATE_UNDEFINED - state is unknown.",
-            "MAV_LANDED_STATE_ON_GROUND - MAV is landed (on ground).",
-            "MAV_LANDED_STATE_IN_AIR - MAV is in air."
+            "MAV_LANDED_STATE_UNDEFINED",
+            "MAV_LANDED_STATE_ON_GROUND",
+            "MAV_LANDED_STATE_IN_AIR"
         };
 
         static string GetLandedStateName(int value)
@@ -771,11 +775,11 @@ namespace LogViewer.Model
         // Enumeration of VTOL states
         static string[] MavVTOLStateNames =
         {
-            "MAV_VTOL_STATE_UNDEFINED (0) - MAV is not configured as VTOL",
-            "MAV_VTOL_STATE_TRANSITION_TO_FW (1) - VTOL is in transition from multicopter to fixed-wing",
-            "MAV_VTOL_STATE_TRANSITION_TO_MC (2) - VTOL is in transition from fixed-wing to multicopter",
-            "MAV_VTOL_STATE_MC (3) - VTOL is in multicopter state",
-            "MAV_VTOL_STATE_FW (4) - VTOL is in fixed-wing state"
+            "MAV_VTOL_STATE_UNDEFINED",
+            "MAV_VTOL_STATE_TRANSITION_TO_FW",
+            "MAV_VTOL_STATE_TRANSITION_TO_MC",
+            "MAV_VTOL_STATE_MC",
+            "MAV_VTOL_STATE_FW"
         };
 
         static string GetVTolStateName(int value)
@@ -835,13 +839,13 @@ namespace LogViewer.Model
         }
 
         static FlagName[] ModeFlagNames = {
-	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.TEST_ENABLED,          Name = "MAV_MODE_FLAG_TEST_ENABLED - system has a test mode enabled. This flag is intended for temporary system tests and should not be used for stable implementations." },
-	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.AUTO_ENABLED,          Name = "MAV_MODE_FLAG_AUTO_ENABLED - autonomous mode enabled, system finds its own goal positions. Guided flag can be set or not, depends on the actual implementation." },
-	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.GUIDED_ENABLED,        Name = "MAV_MODE_FLAG_GUIDED_ENABLED - guided mode enabled, system flies MISSIONs / mission items." },
-	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.STABILIZE_ENABLED,     Name = "MAV_MODE_FLAG_STABILIZE_ENABLED - system stabilizes electronically its attitude (and optionally position). It needs however further control inputs to move around." },
-	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.HIL_ENABLED,           Name = "MAV_MODE_FLAG_HIL_ENABLED - hardware in the loop simulation. All motors / actuators are blocked, but internal software is full operational." },
-	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.MANUAL_INPUT_ENABLED,  Name = "MAV_MODE_FLAG_MANUAL_INPUT_ENABLED - remote control input is enabled." },
-	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.SAFETY_ARMED,          Name = "MAV_MODE_FLAG_SAFETY_ARMED - MAV safety set to armed. Motors are enabled / running / can start. Ready to fly." }
+	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.TEST_ENABLED,          Name = "MAV_MODE_FLAG_TEST_ENABLED" },
+	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.AUTO_ENABLED,          Name = "MAV_MODE_FLAG_AUTO_ENABLED" },
+	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.GUIDED_ENABLED,        Name = "MAV_MODE_FLAG_GUIDED_ENABLED" },
+	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.STABILIZE_ENABLED,     Name = "MAV_MODE_FLAG_STABILIZE_ENABLED" },
+	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.HIL_ENABLED,           Name = "MAV_MODE_FLAG_HIL_ENABLED" },
+	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.MANUAL_INPUT_ENABLED,  Name = "MAV_MODE_FLAG_MANUAL_INPUT_ENABLED" },
+	        new FlagName() { Flag = (int)MAVLink.MAV_MODE_FLAG.SAFETY_ARMED,          Name = "MAV_MODE_FLAG_SAFETY_ARMED" }
         };
 
     }

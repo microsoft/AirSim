@@ -10,12 +10,13 @@
 
     <Grid x:Name="RootContent" ClipToBounds="True"  Background="Transparent">
         <Grid.ContextMenu>
-            <ContextMenu x:Name="ContextMenu">
+            <ContextMenu x:Name="myContextMenu">
                 <MenuItem x:Name="ScaleIndependentMenuItem" Header="Scale independendently" Click="OnScaleIndependently"/>
                 <MenuItem x:Name="LockTooltipMenuItem" Header="Lock Tooltip" Click="OnLockTooltip" IsEnabled="False"/>
                 <MenuItem x:Name="AddTrendLineMenuItem" Header="Add Trend Line" Click="OnAddTrendLine" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem Header="Clear Adornments" Click="OnClearAdornments"/>
+                <MenuItem Header="Clear All Adornments" Click="OnClearAllAdornments"/>
             </ContextMenu>
         </Grid.ContextMenu>
         <Grid.RowDefinitions>
@@ -28,10 +29,10 @@
             <Path x:Name="Graph" StrokeThickness="5" VerticalAlignment="Top" SnapsToDevicePixels="True" StrokeLineJoin="Bevel">
             </Path>
             <Path x:Name="Pointer" Fill="{StaticResource TooltipForeground}" Data="M0,-5 L 5,0 0,5 -5 0z" Visibility="Collapsed"/>
-            <Border x:Name="PointerBorder"  Visibility="Collapsed" Padding="2" HorizontalAlignment="Left" VerticalAlignment="Top" BorderThickness="1"
+            <local:PointerBorder x:Name="PointerBorder"  Visibility="Collapsed" Padding="2" HorizontalAlignment="Left" VerticalAlignment="Top" BorderThickness="1"
                     CornerRadius="3" BorderBrush="{StaticResource TooltipForeground}" Background="#80303030">
                 <TextBlock x:Name="PointerLabel" Foreground="{StaticResource TooltipForeground}"/>
-            </Border>
+            </local:PointerBorder>
             <Canvas x:Name="AdornerCanvas">
                 
             </Canvas>

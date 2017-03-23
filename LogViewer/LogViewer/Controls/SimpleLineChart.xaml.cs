@@ -59,6 +59,7 @@ namespace LogViewer.Controls
         DataValue currentValue;
         bool liveScrolling;
         double liveScrollingXScale = 1;
+        bool contextMenuOpen;
 
         /// <summary>
         /// Set this property to add the chart to a group of charts.  The group will share the same "scale" information across the 
@@ -72,6 +73,23 @@ namespace LogViewer.Controls
             this.InitializeComponent();
             this.Background = new SolidColorBrush(Colors.Transparent); // ensure we get manipulation events no matter where user presses.
             this.SizeChanged += SimpleLineChart_SizeChanged;
+
+            this.ContextMenuOpening += ContextMenu_ContextMenuOpening;
+            this.ContextMenuClosing += ContextMenu_ContextMenuClosing;
+        }
+
+        private void ContextMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            contextMenuOpen = true;
+        }
+
+        private void ContextMenu_ContextMenuClosing(object sender, ContextMenuEventArgs e)
+        {
+            // tooltips are too quick to restart and lock tooltip picks up the new location before it can lock the original.
+            _delayedUpdates.StartDelayedAction("SlowRestoreTooltips", () =>
+            {
+                contextMenuOpen = false;
+            }, TimeSpan.FromSeconds(1));
         }
 
         void SimpleLineChart_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -200,13 +218,13 @@ namespace LogViewer.Controls
             var info = ComputeScaleSelf(0);
             ApplyScale(info);
 
-            UpdateChart();
+            InvalidateArrange();
         }
 
         internal void ResetZoom()
         {
             zoomTransform = new MatrixTransform();
-            UpdateChart();
+            InvalidateArrange();
         }
         
         public void SetData(DataSeries series)
@@ -538,20 +556,28 @@ namespace LogViewer.Controls
 
         internal void HandleMouseMove(MouseEventArgs e)
         {
-            lastMousePosition = e.GetPosition(this);
-            UpdatePointer(lastMousePosition);
+            if (!contextMenuOpen)
+            {
+                lastMousePosition = e.GetPosition(this);
+                UpdatePointer(lastMousePosition);
+            }
         }
 
         internal void HandleMouseLeave()
         {
-            if (!ContextMenu.IsVisible)
+            if (!contextMenuOpen)
             {
                 HidePointer();
             }
         }
-
+        
         protected override void OnMouseMove(MouseEventArgs e)
         {
+            if (contextMenuOpen)
+            {
+                // don't move tooltip while user is interacting with the menu.
+                return;
+            }
             HandleMouseMove(e);
             base.OnMouseMove(e);
         }
@@ -657,7 +683,7 @@ namespace LogViewer.Controls
                 double offset = Canvas.GetLeft(Graph);
                 double x = scaled.X + offset;
                 double y = availableHeight - scaled.Y;
-                ShowTip(series.Name + " = " + (!string.IsNullOrEmpty(found.Label) ? found.Label : found.Y.ToString()), new Point(x, y));
+                ShowTip(series.Name + " = " + (!string.IsNullOrEmpty(found.Label) ? found.Label : found.Y.ToString()), new Point(x, y), found);
             }
             else
             {
@@ -694,7 +720,7 @@ namespace LogViewer.Controls
             LockTooltipMenuItem.IsEnabled = false;
         }
 
-        void ShowTip(string label, Point pos)
+        void ShowTip(string label, Point pos, DataValue data = null)
         {
             PointerLabel.Text = label;
             PointerBorder.UpdateLayout();
@@ -712,6 +738,7 @@ namespace LogViewer.Controls
             }
             PointerBorder.Margin = new Thickness(tipPositionX, tipPositionY, 0, 0);
             PointerBorder.Visibility = System.Windows.Visibility.Visible;
+            PointerBorder.Data = data;
 
             Point pointerPosition = pos;
             Pointer.RenderTransform = new TranslateTransform(pointerPosition.X, pointerPosition.Y);
@@ -720,12 +747,52 @@ namespace LogViewer.Controls
             LockTooltipMenuItem.IsEnabled = true;
         }
 
+        void RepositionTip(PointerBorder pointer)
+        {
+            DataValue data = pointer.Data;
+
+            double availableHeight = this.ActualHeight;
+            double value = data.Y;
+            Point scaled = scaleTransform.Transform(new Point(data.X, data.Y));
+            scaled = zoomTransform.Transform(scaled);
+            double offset = Canvas.GetLeft(Graph);
+            double x = scaled.X + offset;
+            double y = availableHeight - scaled.Y;
+            double tipPositionX = x;
+            if (tipPositionX + PointerBorder.ActualWidth > this.ActualWidth)
+            {
+                tipPositionX = this.ActualWidth - PointerBorder.ActualWidth;
+            }
+            double tipPositionY = y - PointerLabel.ActualHeight - 4;
+            if (tipPositionY < 0)
+            {
+                tipPositionY = 0;
+            }
+            pointer.Margin = new Thickness(tipPositionX, tipPositionY, 0, 0);
+
+            pointer.Pointer.RenderTransform = new TranslateTransform(x, y);
+        }
+
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
             this.dirty = true;
             DelayedUpdate();
+            HidePointer();
+            _delayedUpdates.StartDelayedAction("RepositionTips", () => { RepositionTips(); }, TimeSpan.FromMilliseconds(30));
             return base.ArrangeOverride(arrangeBounds);
+        }
+
+        private void RepositionTips()
+        {
+            foreach (UIElement child in AdornerCanvas.Children)
+            {
+                PointerBorder pointer = child as PointerBorder;
+                if (pointer != null)
+                {
+                    RepositionTip(pointer);
+                }
+            }
         }
 
         private void OnLockTooltip(object sender, RoutedEventArgs e)
@@ -742,7 +809,7 @@ namespace LogViewer.Controls
                 Fill = Pointer.Fill, Data = Pointer.Data.Clone(), RenderTransform = Pointer.RenderTransform.Clone() };
             AdornerCanvas.Children.Add(ptr);
 
-            Border ptrBorder = new Border()
+            PointerBorder ptrBorder = new PointerBorder()
             {
                 Padding = PointerBorder.Padding,
                 HorizontalAlignment = PointerBorder.HorizontalAlignment,
@@ -751,7 +818,9 @@ namespace LogViewer.Controls
                 CornerRadius = PointerBorder.CornerRadius,
                 BorderBrush = PointerBorder.BorderBrush,
                 Background = PointerBorder.Background,
-                Margin = PointerBorder.Margin
+                Margin = PointerBorder.Margin,
+                Data = PointerBorder.Data,
+                Pointer = ptr,
             };
             ptrBorder.Child = new TextBlock() { Foreground = PointerLabel.Foreground, Text = PointerLabel.Text };
             AdornerCanvas.Children.Add(ptrBorder);
@@ -812,12 +881,26 @@ namespace LogViewer.Controls
             };
 
             AdornerCanvas.Children.Add(endlabel);
-
         }
 
         private void OnClearAdornments(object sender, RoutedEventArgs e)
         {
             AdornerCanvas.Children.Clear();
+        }
+
+        public void ClearAdornments()
+        {
+            AdornerCanvas.Children.Clear();
+        }
+
+        public event EventHandler ClearAllAdornments;
+
+        private void OnClearAllAdornments(object sender, RoutedEventArgs e)
+        {
+            if (ClearAllAdornments != null)
+            {
+                ClearAllAdornments(this, EventArgs.Empty);
+            }
         }
 
         private void OnScaleIndependently(object sender, RoutedEventArgs e)
@@ -849,6 +932,12 @@ namespace LogViewer.Controls
                 }
             }
         }
+
     }
 
+    class PointerBorder : Border
+    {
+        public DataValue Data { get; set; }
+        public Path Pointer { get; set; }
+    }
 }
