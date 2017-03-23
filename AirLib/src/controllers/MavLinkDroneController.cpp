@@ -296,6 +296,7 @@ struct MavLinkDroneController::impl {
         }
 
         connection_ = MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
+        connection_->ignoreMessage(MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mocap messages
         hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
         mav_vehicle_->connect(connection_); // in this case we can use the same connection.
