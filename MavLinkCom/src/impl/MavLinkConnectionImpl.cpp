@@ -163,8 +163,16 @@ uint8_t MavLinkConnectionImpl::getNextSequence()
 	return next_seq++;
 }
 
+void MavLinkConnectionImpl::ignoreMessage(uint8_t message_id)
+{
+    ignored_messageids.insert(message_id);
+}
+
 void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& msg)
 {
+    if (ignored_messageids.find(msg.msgid) != ignored_messageids.end())
+        return;
+
 	if (!closed) {
 		if (sendLog_ != nullptr)
 		{

@@ -148,11 +148,13 @@ AsyncResult<bool> MavLinkVehicleImpl::allowFlightControlOverUsb()
 
 void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg)
 {
-	if (msg.sysid != getTargetSystemId())
-	{
-		// we only care about messages from our intended remote node. 
-		return;
-	}
+    //status messages should usually be only sent by actual PX4. However if someone else is sending it to, we should listen it.
+    //in future it would be good to have ability to add system IDs we are interested in
+	//if (msg.sysid != getTargetSystemId())
+	//{
+	//	// we only care about messages from our intended remote node. 
+	//	return;
+	//}
 
 	switch (msg.msgid) {
     case MavLinkHeartbeat::kMessageId: { // MAVLINK_MSG_ID_HEARTBEAT:
@@ -419,6 +421,19 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
                 vehicle_state_.controls.offboard = true;
             }
         }
+    }
+    case MavLinkAttPosMocap::kMessageId: {
+        MavLinkAttPosMocap mocap;
+        mocap.decode(msg);
+        std::lock_guard<std::mutex> guard(state_mutex_);
+        state_version_++;
+        updateReadStats(msg);
+        vehicle_state_.mocap.pose.pos.x = mocap.x;
+        vehicle_state_.mocap.pose.pos.y = mocap.y;
+        vehicle_state_.mocap.pose.pos.z = mocap.z;
+        Utils::copy(mocap.q, vehicle_state_.mocap.pose.q);
+        vehicle_state_.mocap.updated_on = mocap.time_usec;
+        break;
     }
     default:
         break;

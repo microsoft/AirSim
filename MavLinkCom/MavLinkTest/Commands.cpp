@@ -7,6 +7,7 @@
 #include <math.h>
 #include <iostream>
 #include <string.h>
+#include <thread>
 #include <string>
 #include "MavLinkMessages.hpp"
 #include "FileSystem.hpp"
@@ -378,10 +379,28 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     MavLinkMessage msg;
     std::fill_n(quaternion_, 4, 0.0f);
     quaternion_[0] = 1; //unit quaternion
-    while (log_.read(msg)) {
+    uint64_t log_timestamp, log_start_timestamp = 0;
+    uint64_t playback_timestamp, playback_start_timestamp;
+
+    playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
+
+    while (log_.read(msg, log_timestamp)) {
+        if (log_start_timestamp == 0)
+            log_start_timestamp = log_timestamp;
+
         switch (msg.msgid)
         {
         case MavLinkStatustext::kMessageId: {
+            //sync clocks
+            auto current_timestamp = MavLinkLog::getTimeStamp();
+            long waitMicros = static_cast<long>(log_timestamp - log_start_timestamp) - static_cast<long>(current_timestamp - playback_start_timestamp);
+            if (waitMicros > 0) {
+                if (waitMicros > 1E6) { //1s
+                    printf("synchronizing clocks for %f sec\n", waitMicros / 1E6f);
+                }
+                std::this_thread::sleep_for(std::chrono::microseconds(waitMicros));
+            }
+
             MavLinkStatustext status_msg;
             status_msg.decode(msg);
             if (std::strstr(status_msg.text, kCommandLogPrefix) == status_msg.text) {
@@ -389,7 +408,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
                 auto command = Command::create(line);
                 if (command == nullptr)
                     throw std::runtime_error(std::string("Command for line ") + line + " cannot be found");
-                printf("Executing %s", line.c_str());
+                printf("Executing %s\n", line.c_str());
                 command->Execute(com);
             }
             break;

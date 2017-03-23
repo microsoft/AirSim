@@ -47,6 +47,7 @@ void AVehiclePawnBase::initialize()
 
     initial_state_.start_location = getPosition();
     initial_state_.last_position = initial_state_.start_location;
+    initial_state_.last_debug_position = initial_state_.start_location;
     initial_state_.start_rotation = getOrientation();
 
     initial_state_.tracing_enabled = EnableTrace;
@@ -127,24 +128,16 @@ AVehiclePawnBase::Pose AVehiclePawnBase::getPose() const
     Quaternionr orientation = AVehiclePawnBase::toQuaternionr(this->GetActorRotation().Quaternion(), true);
     return Pose(position, orientation);
 }
-void AVehiclePawnBase::setPose(const Pose& pose)
-{
-    setPose(pose.position, pose.orientation);
-}
-void AVehiclePawnBase::setPose(const Vector3r& position, const Quaternionr& orientation)
+
+void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
 {
     //translate to new AVehiclePawnBase position & orientation from NED to NEU
-    FVector newAVehiclePawnBaseLocation = toNeuUU(position);
+    FVector position = toNeuUU(pose.position);
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
-    FQuat newAVehiclePawnBaseQuat = toFQuat(orientation, true);
+    FQuat orientation = toFQuat(pose.orientation, true);
 
-    //we will try to move to pose asked anyway just in case if that gets us out of collison
-    setPose(newAVehiclePawnBaseLocation, newAVehiclePawnBaseQuat, canTeleportWhileMove());
-}
+    bool enable_teleport = canTeleportWhileMove();
 
-//parameters in NEU frame
-void AVehiclePawnBase::setPose(const FVector& position, const FQuat& orientation, bool enable_teleport)
-{
     //must reset collison before we set pose. Setting pose will immediately call NotifyHit if there was collison
     //if there was no collison than has_collided would remain false, else it will be set so its value can be
     //checked at the start of next tick
@@ -159,6 +152,14 @@ void AVehiclePawnBase::setPose(const FVector& position, const FQuat& orientation
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
         DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, true, -1.0F, 0, 3.0F);
         state_.last_position = position;
+    }
+
+    if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
+        FVector debug_position = toNeuUU(debug_pose.position);
+        if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
+            DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Yellow, true, -1.0F, 0, 3.0F);
+            state_.last_debug_position = debug_position;
+        }
     }
 }
 

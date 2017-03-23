@@ -168,6 +168,11 @@ public: //interface for outside world
     /// get the current local position in NED coordinate (x=North/y=East,z=Down) so z is negative.
     virtual Vector3r getPosition() = 0;
 
+    /// Get debug pose, meaning of which is dependent on application usage. For example,
+    /// this could be pose of real vehicle from log playback. The return value should indicate
+    /// timestamp with 0 indicating not available
+    virtual Pose getDebugPose();
+
 	/// get the current X and Y position
     Vector2r getPositionXY();
 

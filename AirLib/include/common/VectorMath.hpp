@@ -61,6 +61,11 @@ public:
 		{
 			return VectorMathT::subtract(lhs, rhs);
 		}
+
+        static Pose nanPose() {
+            static const Pose nan_pose(VectorMathT::nanVector(), VectorMathT::nanQuaternion());
+            return nan_pose;
+        }
     };
 
     struct Transform {

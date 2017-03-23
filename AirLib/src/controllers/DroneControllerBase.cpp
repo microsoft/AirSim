@@ -702,5 +702,12 @@ vector<uint8_t> DroneControllerBase::getImageForCamera(int camera_id, ImageType 
     return result;
 }
 
+Pose DroneControllerBase::getDebugPose()
+{
+    //by default indicate that we don't have alternative pose info
+    return Pose::nanPose();
+}
+
+
 }} //namespace
 #endif

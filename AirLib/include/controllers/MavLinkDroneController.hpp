@@ -41,10 +41,10 @@ public:
         std::string ip_address = "127.0.0.1";
         int ip_port = 14560;
 
-		// The PX4 SITL app requires receiving drone commands over a different mavlink channel.
-		// So set this to empty string to disable this separate command channel.
-		std::string sitl_ip_address = "127.0.0.1";
-		int sitl_ip_port = 14556;
+        // The PX4 SITL app requires receiving drone commands over a different mavlink channel.
+        // So set this to empty string to disable this separate command channel.
+        std::string sitl_ip_address = "127.0.0.1";
+        int sitl_ip_port = 14556;
 
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
         int logviewer_ip_port = 14388;
@@ -99,6 +99,7 @@ public:
     virtual bool isSimulationMode() override;
     virtual void setOffboardMode(bool is_set) override;
     virtual void setSimulationMode(bool is_set) override;
+    virtual Pose getDebugPose() override;
     //*** End: VehicleControllerBase implementation ***//
 
 
@@ -118,7 +119,7 @@ public:
     bool hover(CancelableBase& cancelable_action) override;
     GeoPoint getHomePoint() override;
     GeoPoint getGpsLocation() override;
-	virtual void reportTelemetry(float renderTime) override;
+    virtual void reportTelemetry(float renderTime) override;
 
     float getCommandPeriod() override;
     float getTakeoffZ() override;

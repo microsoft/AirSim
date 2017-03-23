@@ -67,15 +67,10 @@ namespace mavlinkcom {
 			uint64_t updated_on;
 		} local_est;
 
-		struct GlobalGroundTruthState {
-			uint64_t updated_on = 0;
-			GlobalPosition pos;
-			float q[4] = { 0,0,0,0 }; //qauternion
-			Velocity vel;
-			float roll_rate = 0, yaw_rate = 0, pitch_rate = 0;
-			int xacc = 0, yacc = 0, zacc = 0;
-			int ind_airspeed = 0, true_airspeed = 0;
-		} global_truth;
+        struct MocapState {
+            LocalPose pose;
+            uint64_t updated_on = 0;
+        } mocap;
 
 		struct AltitudeState {
 			uint64_t updated_on = 0;

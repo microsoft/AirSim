@@ -9,6 +9,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <unordered_set>
 #include "MavLinkConnection.hpp"
 #include "MavLinkMessageBase.hpp"
 #include "Semaphore.hpp"
@@ -45,6 +46,7 @@ namespace mavlinkcom_impl {
 		uint8_t getNextSequence();
 		void join(std::shared_ptr<MavLinkConnection> remote, bool subscribeToLeft = true, bool subscribeToRight = true);
 		void getTelemetry(MavLinkTelemetry& result);
+        void ignoreMessage(uint8_t message_id);
 
 	private:
 		static std::shared_ptr<MavLinkConnection> createConnection(const std::string& nodeName, std::shared_ptr<Port> port);
@@ -83,6 +85,7 @@ namespace mavlinkcom_impl {
 		bool waiting_for_msg_ = false;
 		std::mutex telemetry_mutex_;
 		MavLinkTelemetry telemetry_;
+        std::unordered_set<uint8_t> ignored_messageids;
 	};
 }
 

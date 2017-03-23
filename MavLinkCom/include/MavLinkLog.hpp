@@ -6,6 +6,7 @@
 
 #include <string>
 #include <stdio.h>
+#include <cstdint>
 #include "MavLinkMessageBase.hpp"
 
 namespace mavlinkcom
@@ -28,6 +29,7 @@ namespace mavlinkcom
 		void close();
 		void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0);
 		bool read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp);
+        static uint64_t getTimeStamp();
 	};
 
 }

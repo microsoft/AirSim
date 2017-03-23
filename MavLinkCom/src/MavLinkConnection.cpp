@@ -64,6 +64,12 @@ bool MavLinkConnection::isOpen()
     return pImpl->isOpen();
 }
 
+void MavLinkConnection::ignoreMessage(uint8_t message_id)
+{
+    pImpl->ignoreMessage(message_id);
+}
+
+
 std::string MavLinkConnection::getName()
 {
 	return pImpl->getName();

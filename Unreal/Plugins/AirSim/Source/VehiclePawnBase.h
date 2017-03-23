@@ -62,10 +62,7 @@ public: //interface
     //get/set pose
     //parameters in NED frame
     Pose getPose() const;
-    void setPose(const Pose& pose);
-    void setPose(const Vector3r& position, const Quaternionr& orientation);
-    //parameters in NEU frame
-    void setPose(const FVector& position, const FQuat& orientation, bool enable_teleport);
+    void setPose(const Pose& pose, const Pose& debug_pose);
     FVector getPosition() const;
     FRotator getOrientation() const;
 
@@ -96,6 +93,7 @@ private: //vars
         FVector start_location;
         FRotator start_rotation;
         FVector last_position;
+        FVector last_debug_position;
         bool tracing_enabled;
         bool collisons_enabled;
         bool passthrough_enabled;

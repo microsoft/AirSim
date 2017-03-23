@@ -116,6 +116,11 @@ namespace mavlinkcom {
 		// in a mavlink message so you can easily send it to the LogViewer.
 		void getTelemetry(MavLinkTelemetry& result);
 
+        //add the message in to list of ignored messages. These messages will not be sent in the sendMessage() call.
+        //this does not effect reception of message, however. This is typically useful in scenario where many connections
+        //are bridged and you don't want certain connection to read ceratin messages.
+        void ignoreMessage(uint8_t message_id);
+
     protected:
         void startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort);
 

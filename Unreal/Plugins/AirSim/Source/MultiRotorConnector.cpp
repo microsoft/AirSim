@@ -82,7 +82,9 @@ void MultiRotorConnector::updateRenderedState()
     //update ground level
     environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
     //update pose of object in rendering engine
-    vehicle_pawn_->setPose(vehicle_.getPose());
+    Vector3r debug_position;
+    Quaternionr debug_orientation;
+    vehicle_pawn_->setPose(vehicle_.getPose(), vehicle_.getController()->getDebugPose());
 
     //update rotor poses
     for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {

@@ -84,6 +84,11 @@ uint64_t FlipEndianness(uint64_t v)
 	return result;
 }
 
+uint64_t MavLinkLog::getTimeStamp()
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+}
+
 void MavLinkLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp)
 {
 	if (ptr_ != nullptr) {
@@ -101,7 +106,7 @@ void MavLinkLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp
 		}
 		else {
             if (timestamp == 0) {
-                timestamp = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                timestamp = getTimeStamp();
             }
 			// for compatibility with QGroundControl we have to save the time field in big endian.
             timestamp = FlipEndianness(timestamp);

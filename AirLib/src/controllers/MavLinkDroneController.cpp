@@ -128,16 +128,16 @@ struct MavLinkDroneController::impl {
             Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
             connection_->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg){
-				processMavMessages(msg);
-			});
+                processMavMessages(msg);
+            });
 
-			// listen to the other mavlink connection also
-			auto mavcon = mav_vehicle_->getConnection();
-			if (mavcon != connection_) {
-				mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
-					processMavMessages(msg);
-				});
-			}
+            // listen to the other mavlink connection also
+            auto mavcon = mav_vehicle_->getConnection();
+            if (mavcon != connection_) {
+                mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
+                    processMavMessages(msg);
+                });
+            }
         }
     }
 
@@ -262,17 +262,17 @@ struct MavLinkDroneController::impl {
         hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
         hil_node_->connect(connection_);
 
-		if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0) {
-			// bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
-			// as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-			auto sitlconnection = MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);			
-			mav_vehicle_->connect(sitlconnection);
-		}
-		else {
-			mav_vehicle_->connect(connection_);
-		}
+        if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0) {
+            // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
+            // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
+            auto sitlconnection = MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);			
+            mav_vehicle_->connect(sitlconnection);
+        }
+        else {
+            mav_vehicle_->connect(connection_);
+        }
 
-		mav_vehicle_->startHeartbeat();
+        mav_vehicle_->startHeartbeat();
     }
 
     void createMavSerialConnection(const std::string& port_name, int baud_rate)
@@ -298,7 +298,7 @@ struct MavLinkDroneController::impl {
         connection_ = MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
         hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
-		mav_vehicle_->connect(connection_); // in this case we can use the same connection.
+        mav_vehicle_->connect(connection_); // in this case we can use the same connection.
     }
 
     mavlinkcom::MavLinkHilSensor getLastSensorMessage()
@@ -321,16 +321,16 @@ struct MavLinkDroneController::impl {
         }
     }
 
-	void setArmed(bool armed)
-	{
-		is_armed_ = armed;
-		if (!armed) {
-			//reset motor controls
-			for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
-				rotor_controls_[i] = 0;
-			}
-		}
-	}
+    void setArmed(bool armed)
+    {
+        is_armed_ = armed;
+        if (!armed) {
+            //reset motor controls
+            for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
+                rotor_controls_[i] = 0;
+            }
+        }
+    }
 
     void processMavMessages(const MavLinkMessage& msg)
     {
@@ -340,7 +340,7 @@ struct MavLinkDroneController::impl {
             //TODO: have MavLinkNode track armed state so we don't have to re-decode message here again
             HeartbeatMessage.decode(msg);
             bool armed = (HeartbeatMessage.base_mode & static_cast<uint8_t>(MAV_MODE_FLAG::MAV_MODE_FLAG_SAFETY_ARMED)) > 0;
-			setArmed(armed);
+            setArmed(armed);
             if (!is_any_heartbeat_) {
                 is_any_heartbeat_ = true;
                 if (HeartbeatMessage.autopilot == static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_PX4) &&
@@ -611,7 +611,7 @@ struct MavLinkDroneController::impl {
         mocap_pose_message.x = position.x(); mocap_pose_message.y = position.y(); mocap_pose_message.z = position.z();
         mocap_pose_message.q[0] = orientation.w(); mocap_pose_message.q[1] = orientation.x();
         mocap_pose_message.q[2] = orientation.y(); mocap_pose_message.q[3] = orientation.z();
-		mav_vehicle_->sendMessage(mocap_pose_message);
+        mav_vehicle_->sendMessage(mocap_pose_message);
     }
 
     void sendCollison(float normalX, float normalY, float normalZ)
@@ -627,7 +627,7 @@ struct MavLinkDroneController::impl {
         collision.time_to_minimum_delta = normalX;
         collision.altitude_minimum_delta = normalY;
         collision.horizontal_minimum_delta = normalZ;
-		mav_vehicle_->sendMessage(collision);
+        mav_vehicle_->sendMessage(collision);
     }
 
     bool hasVideoRequest()
@@ -649,11 +649,11 @@ struct MavLinkDroneController::impl {
             std::lock_guard<std::mutex> guard(set_mode_mutex_);
             SetModeMessage.target_system = connection_info_.sim_sysid;
             SetModeMessage.base_mode = 0;  //disarm
-			mav_vehicle_->sendMessage(SetModeMessage);
+            mav_vehicle_->sendMessage(SetModeMessage);
 
             mavlinkcom::MavCmdComponentArmDisarm disarm_msg;
             disarm_msg.p1ToArm = 0;
-			mav_vehicle_->sendCommand(disarm_msg);
+            mav_vehicle_->sendCommand(disarm_msg);
 
             is_hil_mode_set_ = false;
         }
@@ -673,7 +673,7 @@ struct MavLinkDroneController::impl {
         std::lock_guard<std::mutex> guard_setmode(set_mode_mutex_);
         SetModeMessage.target_system = connection_info_.sim_sysid;
         SetModeMessage.base_mode = 32;  //HIL + disarm
-		mav_vehicle_->sendMessage(SetModeMessage);
+        mav_vehicle_->sendMessage(SetModeMessage);
         is_hil_mode_set_ = true;
     }
 
@@ -940,16 +940,35 @@ struct MavLinkDroneController::impl {
         return vehicle_params_; //defaults are good for DJI Matrice 100
     }
 
-	void reportTelemetry(float renderTime)
-	{
-		if (logviewer_proxy_ == nullptr || connection_ == nullptr) {
-			return;
-		}
-		MavLinkTelemetry data;
-		connection_->getTelemetry(data);
-		data.renderTime = static_cast<long>(renderTime * 1000000);// microseconds
-		logviewer_proxy_->sendMessage(data);
-	}
+    void reportTelemetry(float renderTime)
+    {
+        if (logviewer_proxy_ == nullptr || connection_ == nullptr) {
+            return;
+        }
+        MavLinkTelemetry data;
+        connection_->getTelemetry(data);
+        data.renderTime = static_cast<long>(renderTime * 1000000);// microseconds
+        logviewer_proxy_->sendMessage(data);
+    }
+
+    Pose getDebugPose()
+    {
+        const auto& state = mav_vehicle_->getVehicleState();
+
+        if (state.mocap.updated_on == 0)
+            return Pose::nanPose();
+
+        Pose pose;
+        pose.position.x() = state.mocap.pose.pos.x;
+        pose.position.y() = state.mocap.pose.pos.y;
+        pose.position.z() = state.mocap.pose.pos.z;
+        pose.orientation.w() = state.mocap.pose.q[0];
+        pose.orientation.x() = state.mocap.pose.q[1];
+        pose.orientation.y() = state.mocap.pose.q[2];
+        pose.orientation.z() = state.mocap.pose.q[3];
+
+        return pose;
+    }
 
     bool startOffboardMode()
     {
@@ -1219,8 +1238,14 @@ const VehicleParams& MavLinkDroneController::getVehicleParams()
 
 void MavLinkDroneController::reportTelemetry(float renderTime)
 {
-	return pimpl_->reportTelemetry(renderTime);
+    return pimpl_->reportTelemetry(renderTime);
 }
+
+Pose MavLinkDroneController::getDebugPose()
+{
+    return pimpl_->getDebugPose();
+}
+
 
 }} //namespace
 #endif
