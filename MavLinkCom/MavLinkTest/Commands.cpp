@@ -2417,7 +2417,7 @@ bool FtpCommand::matches(const std::string& pattern, const std::string& name) co
 	return p == ps;
 }
 
-bool NshCommand::Parse(std::vector<std::string>& args)
+bool NshCommand::Parse(const std::vector<std::string>& args)
 {
 	if (args.size() > 0) {
 		std::string command = args[0];
