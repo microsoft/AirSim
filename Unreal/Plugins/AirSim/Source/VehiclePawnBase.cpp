@@ -159,6 +159,7 @@ void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
             DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Yellow, true, -1.0F, 0, 3.0F);
             state_.last_debug_position = debug_position;
+            UAirBlueprintLib::LogMessage("Debug Pose: ", debug_position.ToCompactString(), LogDebugLevel::Informational);
         }
     }
 }

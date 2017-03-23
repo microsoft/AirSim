@@ -53,6 +53,9 @@ MultiRotorConnector::~MultiRotorConnector()
 
 void MultiRotorConnector::beginPlay()
 {
+    last_pose = Pose::nanPose();
+    last_debug_pose = Pose::nanPose();
+
     //connect to HIL
     try {
 
@@ -81,10 +84,9 @@ void MultiRotorConnector::updateRenderedState()
     vehicle_.setCollisionInfo(vehicle_pawn_->getCollisonInfo());
     //update ground level
     environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
-    //update pose of object in rendering engine
-    Vector3r debug_position;
-    Quaternionr debug_orientation;
-    vehicle_pawn_->setPose(vehicle_.getPose(), vehicle_.getController()->getDebugPose());
+    //update pose of object for rendering engine
+    last_pose = vehicle_.getPose();
+    last_debug_pose = vehicle_.getController()->getDebugPose();
 
     //update rotor poses
     for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
@@ -109,6 +111,10 @@ void MultiRotorConnector::updateRendering(float dt)
 		UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
 	}
 
+    if (!VectorMath::hasNan(last_pose.position)) {
+        vehicle_pawn_->setPose(last_pose, last_debug_pose);
+    }
+    
     //update rotor animations
     for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
         vehicle_pawn_->setRotorSpeed(i, rotor_speeds_[i] * rotor_directions_[i]);

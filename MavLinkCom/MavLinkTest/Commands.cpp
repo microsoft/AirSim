@@ -383,6 +383,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     uint64_t playback_timestamp, playback_start_timestamp;
 
     playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
+    int last_basemode = -1, last_custommode = -1;
 
     while (log_.read(msg, log_timestamp)) {
         if (log_start_timestamp == 0)
@@ -420,7 +421,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
             mocap.x = x = pos_msg.x;
             mocap.y = y = pos_msg.y;
             mocap.z = z = pos_msg.z;
-            std::copy(quaternion_, quaternion_ + 1, mocap.q);
+            std::copy(quaternion_, quaternion_ + 4, mocap.q);
             com->writeMessage(mocap);
             break;
         }
@@ -437,8 +438,21 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
             quaternion_[2] = q_msg.q3; //y
             quaternion_[3] = q_msg.q4; //z
 
-            std::copy(quaternion_, quaternion_ + 1, mocap.q);
+            Utils::copy(quaternion_, mocap.q);
             com->writeMessage(mocap);
+            break;
+        }
+        case MavLinkHeartbeat::kMessageId: {
+            MavLinkHeartbeat heartbeat_msg;
+            heartbeat_msg.decode(msg);
+
+            if (heartbeat_msg.base_mode != last_basemode || heartbeat_msg.custom_mode != last_custommode) {
+                last_basemode = heartbeat_msg.base_mode;
+                last_custommode = heartbeat_msg.custom_mode;
+                //TODO: avoid passing hadcoded HIL flag
+                com->setMode(last_basemode | static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED), last_custommode);
+            }
+
             break;
         }
         default:

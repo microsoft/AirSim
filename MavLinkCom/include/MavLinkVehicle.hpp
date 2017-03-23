@@ -37,6 +37,7 @@ namespace mavlinkcom {
         AsyncResult<bool> setMissionMode();
 		AsyncResult<MavLinkHomePosition> waitForHomePosition();
 		AsyncResult<bool> allowFlightControlOverUsb();
+        AsyncResult<bool>  setMode(int modeFlags, int customMode = 0, int customSubMode = 0);
 
 		// wait for drone to reach specified local z, ensure it is not just blowing past the z location,
 		// wait for it to settle down with dz delta, and dvz delta velocity.

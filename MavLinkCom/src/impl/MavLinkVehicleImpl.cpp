@@ -421,6 +421,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
                 vehicle_state_.controls.offboard = true;
             }
         }
+        break;
     }
     case MavLinkAttPosMocap::kMessageId: {
         MavLinkAttPosMocap mocap;

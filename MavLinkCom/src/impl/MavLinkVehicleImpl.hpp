@@ -39,7 +39,8 @@ namespace mavlinkcom_impl {
 		AsyncResult<MavLinkHomePosition> waitForHomePosition();
 		AsyncResult<bool> allowFlightControlOverUsb();
 		AsyncResult<bool> waitForAltitude(float z, float dz, float dvz);
-		
+        AsyncResult<bool>  setMode(int modeFlags, int customMode = 0, int customSubMode = 0);
+
 		// request OFFBOARD control.  
         void requestControl();
 		// release OFFBOARD control
@@ -75,7 +76,6 @@ namespace mavlinkcom_impl {
 		void updateReadStats(const MavLinkMessage& msg);
 		void checkOffboard();
 		bool getRcSwitch(int channel, float threshold);
-        AsyncResult<bool>  setMode(int modeFlags, int customMode = 0, int customSubMode = 0);
 
 	private:
 		std::mutex state_mutex_;
