@@ -63,7 +63,7 @@ void MultiRotorConnector::beginPlay()
     }
     catch (std::exception ex) {
 
-        UAirBlueprintLib::LogMessage(FString("Vehicle controller cannot be started, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
+        UAirBlueprintLib::LogMessage(FString("Vehicle controller cannot be started, please check your settings.json"), FString(ex.what()), LogDebugLevel::Failure, 180);
         UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 180);
     }
 }

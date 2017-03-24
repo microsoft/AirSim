@@ -54,7 +54,7 @@ struct MavLinkDroneController::impl {
     mavlinkcom::MavLinkHilActuatorControls HilActuatorControlsMessage;
     mavlinkcom::MavLinkCommandLong CommandLongMessage;
     mavlinkcom::MavLinkHilStateQuaternion HilStateQuaternionMessage;
-
+    
     mavlinkcom::MavLinkHilSensor last_sensor_message_;
     mavlinkcom::MavLinkHilGps last_gps_message_;
 
@@ -77,6 +77,7 @@ struct MavLinkDroneController::impl {
     const SensorCollection* sensors_;    //this is optional
     long last_gps_time_;
     bool was_reset_;
+    Pose debug_pose_;
 
     //additional variables required for DroneControllerBase implementation
     //this is optional for methods that might not use vehicle commands
@@ -314,14 +315,6 @@ struct MavLinkDroneController::impl {
         return last_gps_message_;
     }
 
-    void externalSimSubscriber(std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg)
-    {
-        if (msg.msgid == MocapPoseMessage.msgid) {
-            std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
-            MocapPoseMessage.decode(msg); // update current vehicle state.
-        }
-    }
-
     void setArmed(bool armed)
     {
         is_armed_ = armed;
@@ -397,6 +390,11 @@ struct MavLinkDroneController::impl {
                 rotor_controls_[i] = HilActuatorControlsMessage.controls[i];
             }
             normalizeRotorControls();
+        }
+        else if (msg.msgid == MocapPoseMessage.msgid) {
+            std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
+            MocapPoseMessage.decode(msg);
+            getMocapPose(debug_pose_.position, debug_pose_.orientation);
         }
     }
 
@@ -494,6 +492,7 @@ struct MavLinkDroneController::impl {
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
+        debug_pose_ = Pose::nanPose();
     }
 
     //*** Start: VehicleControllerBase implementation ***//
@@ -954,21 +953,8 @@ struct MavLinkDroneController::impl {
 
     Pose getDebugPose()
     {
-        const auto& state = mav_vehicle_->getVehicleState();
-
-        if (state.mocap.updated_on == 0)
-            return Pose::nanPose();
-
-        Pose pose;
-        pose.position.x() = state.mocap.pose.pos.x;
-        pose.position.y() = state.mocap.pose.pos.y;
-        pose.position.z() = state.mocap.pose.pos.z;
-        pose.orientation.w() = state.mocap.pose.q[0];
-        pose.orientation.x() = state.mocap.pose.q[1];
-        pose.orientation.y() = state.mocap.pose.q[2];
-        pose.orientation.z() = state.mocap.pose.q[3];
-
-        return pose;
+        std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
+        return debug_pose_;
     }
 
     bool startOffboardMode()

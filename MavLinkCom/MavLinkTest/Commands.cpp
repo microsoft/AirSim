@@ -421,7 +421,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
             mocap.x = x = pos_msg.x;
             mocap.y = y = pos_msg.y;
             mocap.z = z = pos_msg.z;
-            std::copy(quaternion_, quaternion_ + 4, mocap.q);
+            Utils::copy(quaternion_, mocap.q);
             com->writeMessage(mocap);
             break;
         }
