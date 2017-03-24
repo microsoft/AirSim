@@ -64,7 +64,7 @@ public:
     static Command* create(const std::vector<std::string>& args);
     static std::vector<Command*> const * getAllCommand();
     static void setAllCommand(std::vector<Command*> const * all_commands);
-    static constexpr char* kCommandLogPrefix = "cmd:";
+    static constexpr const char* kCommandLogPrefix = "cmd:";
 protected:
     std::shared_ptr<MavLinkVehicle> vehicle;
 private:

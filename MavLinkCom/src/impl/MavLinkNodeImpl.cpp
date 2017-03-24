@@ -264,8 +264,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 	bool done = false;
 	Semaphore paramReceived;
 	bool waiting = false;
-	int paramCount = 0;
-	int paramIndex = 0;
+	size_t paramCount = 0;
 
 	auto con = ensureConnection();
 	int subscription = con->subscribe([&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
@@ -282,7 +281,6 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 			p.name = buf;
 			p.value = param.param_value;
 			result.push_back(p);
-			paramIndex  = param.param_index;
 			paramCount = param.param_count;
 			if (param.param_index == param.param_count - 1)
 			{
@@ -321,7 +319,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 		for (auto iter = result.begin(), end = result.end(); iter != end; iter++)
 		{
 			MavLinkParameter p = *iter;
-			if (p.index == i) {
+			if (static_cast<size_t>(p.index) == i) {
 				found = true;
 				break;
 			}
