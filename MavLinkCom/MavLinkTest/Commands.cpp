@@ -450,7 +450,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
                 last_basemode = heartbeat_msg.base_mode;
                 last_custommode = heartbeat_msg.custom_mode;
                 //TODO: avoid passing hadcoded HIL flag
-                com->setMode(last_basemode | static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED), last_custommode);
+                //com->setMode(last_basemode | static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED), last_custommode);
             }
 
             break;

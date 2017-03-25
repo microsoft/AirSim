@@ -82,8 +82,6 @@ public:
 
     //TODO: get rid of below methods?
     void sendImage(unsigned char data[], uint32_t length, uint16_t width, uint16_t height);
-    void getMocapPose(Vector3r& position, Quaternionr& orientation);
-    void sendMocapPose(const Vector3r& position, const Quaternionr& orientation);
     bool hasVideoRequest();
 
     //*** Start: VehicleControllerBase implementation ***//

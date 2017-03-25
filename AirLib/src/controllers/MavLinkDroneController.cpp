@@ -164,7 +164,9 @@ struct MavLinkDroneController::impl {
     {
         //set up logviewer proxy
         if (connection_info_.logviewer_ip_address.size() > 0) {
-            logviewer_proxy_ = createProxy("LogViewer", connection_info_.logviewer_ip_address, connection_info_.logviewer_ip_port, connection_info_.local_host_ip);
+            std::shared_ptr<mavlinkcom::MavLinkConnection> connection;
+            createProxy("LogViewer", connection_info_.logviewer_ip_address, connection_info_.logviewer_ip_port, connection_info_.local_host_ip,
+                logviewer_proxy_, connection);
             if (!sendTestMessage(logviewer_proxy_)) {
                 // error talking to log viewer, so don't keep trying, and close the connection also.
                 logviewer_proxy_->getConnection()->close();
@@ -177,27 +179,34 @@ struct MavLinkDroneController::impl {
     bool connectToQGC()
     {
         if (connection_info_.qgc_ip_address.size() > 0) {
-            qgc_proxy_ = createProxy("QGC", connection_info_.qgc_ip_address, connection_info_.qgc_ip_port, connection_info_.local_host_ip);
+            std::shared_ptr<mavlinkcom::MavLinkConnection> connection;
+            createProxy("QGC", connection_info_.qgc_ip_address, connection_info_.qgc_ip_port, connection_info_.local_host_ip, qgc_proxy_, connection);
             if (!sendTestMessage(qgc_proxy_)) {
                 // error talking to QGC, so don't keep trying, and close the connection also.
                 qgc_proxy_->getConnection()->close();
                 qgc_proxy_ = nullptr;
+            }
+            else {
+                connection->subscribe([=](std::shared_ptr<MavLinkConnection> connection_val, const MavLinkMessage& msg){
+                    processQgcMessages(msg);
+                });
             }
         }
         return qgc_proxy_ != nullptr;
     }
 
 
-    std::shared_ptr<mavlinkcom::MavLinkNode> createProxy(std::string name, std::string ip, int port, string local_host_ip)
+    void createProxy(std::string name, std::string ip, int port, string local_host_ip,
+        std::shared_ptr<mavlinkcom::MavLinkNode>& node, std::shared_ptr<mavlinkcom::MavLinkConnection>& connection)
     {
         if (connection_ == nullptr)
             throw std::domain_error("MavLinkDroneController requires connection object to be set before createProxy call");
 
-        auto connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), local_host_ip, ip, port);
+        connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), local_host_ip, ip, port);
 
         // it is ok to reuse the simulator sysid and compid here because this node is only used to send a few messages directly to this endpoint
         // and all other messages are funnelled through from PX4 via the Join method below.
-        auto node = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
+        node = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         node->connect(connection);
 
         // now join the main connection to this one, this causes all PX4 messages to be sent to the proxy and all messages from the proxy will be
@@ -208,8 +217,6 @@ struct MavLinkDroneController::impl {
         if (mavcon != connection_) {
             mavcon->join(connection);
         }
-
-        return node;
     }
 
     static std::string findPixhawk()
@@ -326,6 +333,16 @@ struct MavLinkDroneController::impl {
         }
     }
 
+    void processQgcMessages(const MavLinkMessage& msg)
+    {
+        if (msg.msgid == MocapPoseMessage.msgid) {
+            std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
+            MocapPoseMessage.decode(msg);
+            getMocapPose(debug_pose_.position, debug_pose_.orientation);
+        }
+        //else ignore message
+    }
+
     void processMavMessages(const MavLinkMessage& msg)
     {
         if (msg.msgid == HeartbeatMessage.msgid) {
@@ -391,11 +408,7 @@ struct MavLinkDroneController::impl {
             }
             normalizeRotorControls();
         }
-        else if (msg.msgid == MocapPoseMessage.msgid) {
-            std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
-            MocapPoseMessage.decode(msg);
-            getMocapPose(debug_pose_.position, debug_pose_.orientation);
-        }
+        //else ignore message
     }
 
     void sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt)
@@ -597,21 +610,9 @@ struct MavLinkDroneController::impl {
 
     void getMocapPose(Vector3r& position, Quaternionr& orientation)
     {
-        std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
         position.x() = MocapPoseMessage.x; position.y() = MocapPoseMessage.y; position.z() = MocapPoseMessage.z; 
         orientation.w() = MocapPoseMessage.q[0]; orientation.x() = MocapPoseMessage.q[1]; 
         orientation.y() = MocapPoseMessage.q[2]; orientation.z() = MocapPoseMessage.q[3];
-    }
-
-    void sendMocapPose(const Vector3r& position, const Quaternionr& orientation)
-    {
-        if (mav_vehicle_ == nullptr) return;
-
-        mavlinkcom::MavLinkAttPosMocap mocap_pose_message;
-        mocap_pose_message.x = position.x(); mocap_pose_message.y = position.y(); mocap_pose_message.z = position.z();
-        mocap_pose_message.q[0] = orientation.w(); mocap_pose_message.q[1] = orientation.x();
-        mocap_pose_message.q[2] = orientation.y(); mocap_pose_message.q[3] = orientation.z();
-        mav_vehicle_->sendMessage(mocap_pose_message);
     }
 
     void sendCollison(float normalX, float normalY, float normalZ)
@@ -1041,14 +1042,7 @@ void MavLinkDroneController::sendImage(unsigned char data[], uint32_t length, ui
 {
     pimpl_->sendImage(data, length, width, height);
 }
-void MavLinkDroneController::getMocapPose(Vector3r& position, Quaternionr& orientation)
-{
-    pimpl_->getMocapPose(position, orientation);
-}
-void MavLinkDroneController::sendMocapPose(const Vector3r& position, const Quaternionr& orientation)
-{
-    pimpl_->sendMocapPose(position, orientation);
-}
+
 bool MavLinkDroneController::hasVideoRequest()
 {
     return pimpl_->hasVideoRequest();
