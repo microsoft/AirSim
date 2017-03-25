@@ -32,9 +32,9 @@ protected:
         real_T motor_assembly_weight = 0.052f;  
         real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
 
-        params.rotor_params.C_T = 0.12f;
-        params.rotor_params.C_P = 0.1f;
-        params.rotor_params.max_rpm = 5215;
+        params.rotor_params.C_T = 0.11f;
+        params.rotor_params.C_P = 0.047f;
+        params.rotor_params.max_rpm = 9500;
         params.rotor_params.calculateMaxThrust();
 
         //set up dimensions of core body box or abdomen (not including arms).

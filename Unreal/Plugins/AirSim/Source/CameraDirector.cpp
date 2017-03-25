@@ -49,7 +49,7 @@ void ACameraDirector::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::InputEventFpvView);
     UAirBlueprintLib::BindActionToKey("InputEventFlyWithView", EKeys::RightBracket, this, &ACameraDirector::InputEventFlyWithView);
     UAirBlueprintLib::BindActionToKey("InputEventGroundView", EKeys::Backslash, this, &ACameraDirector::InputEventGroundView);
-    UAirBlueprintLib::BindActionToKey("InputEventManualView", EKeys::Quote, this, &ACameraDirector::InputEventManualView);
+    UAirBlueprintLib::BindActionToKey("InputEventManualView", EKeys::Semicolon, this, &ACameraDirector::InputEventManualView);
 
     left_binding_ = & UAirBlueprintLib::BindAxisToKey("inputManualArrowLeft", EKeys::Left, this, &ACameraDirector::inputManualLeft);
     right_binding_ = & UAirBlueprintLib::BindAxisToKey("inputManualArrowRight", EKeys::Right, this, &ACameraDirector::inputManualRight);
