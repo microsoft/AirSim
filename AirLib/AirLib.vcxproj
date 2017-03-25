@@ -108,8 +108,9 @@
     <ClInclude Include="include\sensors\SensorBase.hpp" />
     <ClInclude Include="include\sensors\SensorCollection.hpp" />
     <ClInclude Include="include\vehicles\configs\BlacksheepQuadX.hpp" />
+    <ClInclude Include="include\vehicles\configs\FlamewheelQuadX.hpp" />
     <ClInclude Include="include\vehicles\configs\PX4ConfigCreator.hpp" />
-    <ClInclude Include="include\vehicles\configs\Px4QuadX.hpp" />
+    <ClInclude Include="include\vehicles\configs\Px4HILQuadX.hpp" />
     <ClInclude Include="include\controllers\ControllerBase.hpp" />
     <ClInclude Include="include\controllers\MotorDirectController.hpp" />
     <ClInclude Include="include\controllers\MotorDirectControllerParams.hpp" />

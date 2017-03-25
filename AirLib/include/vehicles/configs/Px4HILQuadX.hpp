@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_airlib_vehicles_Px4QuadX_hpp
-#define msr_airlib_vehicles_Px4QuadX_hpp
+#ifndef msr_airlib_vehicles_Px4HILQuadX_hpp
+#define msr_airlib_vehicles_Px4HILQuadX_hpp
 
 #include "vehicles/MultiRotorParams.hpp"
 #include "controllers/MavLinkDroneController.hpp"
@@ -11,9 +11,9 @@
 
 namespace msr { namespace airlib {
 
-class Px4QuadX : public MultiRotorParams {
+class Px4HILQuadX : public MultiRotorParams {
 public:
-    Px4QuadX(const MavLinkDroneController::ConnectionInfo& connection_info)
+    Px4HILQuadX(const MavLinkDroneController::ConnectionInfo& connection_info)
         : connection_info_(connection_info)
     {
     }

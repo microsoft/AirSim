@@ -7,8 +7,9 @@
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
 #include "BlacksheepQuadX.hpp"
-#include "PX4QuadX.hpp"
-#include "SimJoyStick/SimJoyStick.h"
+#include "Px4HILQuadX.hpp"
+#include "FlamewheelQuadX.hpp"
+
 
 namespace msr { namespace airlib {
 
@@ -23,12 +24,11 @@ public:
         if (connection_info.model == "Blacksheep") {
             config.reset(new BlacksheepQuadX(connection_info));
         }
-        else {
-            config.reset((new Px4QuadX(connection_info)));
+        else if (connection_info.model == "Flamewheel") {
+            config.reset(new FlamewheelQuadX(connection_info));
         }
-
-        //In SITL mode enable joystick support
-        SimJoyStick::setEnabled(!connection_info.use_serial);
+        else
+            config.reset((new Px4HILQuadX(connection_info)));
 
         return config;
     }
