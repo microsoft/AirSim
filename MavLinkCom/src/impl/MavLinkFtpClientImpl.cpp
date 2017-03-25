@@ -83,7 +83,6 @@ static const char	kDirentFile = 'F';	///< Identifies File returned from List com
 static const char	kDirentDir = 'D';	///< Identifies Directory returned from List command
 static const char	kDirentSkip = 'S';	///< Identifies Skipped entry from List command
 
-
 MavLinkFtpClientImpl::MavLinkFtpClientImpl(int system_id, int component_id)
 	: MavLinkNodeImpl(system_id, component_id)
 {
@@ -318,7 +317,7 @@ bool MavLinkFtpClientImpl::createLocalFile()
 		{
 			// user was lazy, only told us where to put the file, so we borrow the name of the file
 			// from the source.
-			auto remote = FileSystem::getFileName(remote_file_);
+			auto remote = FileSystem::getFileName(normalize(remote_file_));
 			local_file_ = FileSystem::combine(path, remote);
 		}
 		else
@@ -650,8 +649,16 @@ void MavLinkFtpClientImpl::handleResponse(const MavLinkMessage& msg)
 			{
 				success_ = false;
 				if (progress_ != nullptr) {
-					progress_->error = error;
-					progress_->message = Utils::stringf("ftp error %d", error);
+					if (error = kErrFailErrno) {
+						const uint8_t* data = &(payload->data);
+						error = static_cast<int>(data[1]);
+						progress_->error = error;
+						progress_->message = Utils::stringf("ftp kErrFailErrno %d", error);
+					}
+					else {
+						progress_->error = error;
+						progress_->message = Utils::stringf("ftp error %d", error);
+					}
 				}
 			}
 			errorCode_ = error;
@@ -727,4 +734,28 @@ void MavLinkFtpClientImpl::recordMessageReceived()
 	{
 		progress_->longest_delay = static_cast<double>(duration.count());
 	}
+}
+
+
+std::string MavLinkFtpClientImpl::replaceAll(std::string s, char toFind, char toReplace) {
+	size_t pos = s.find_first_of(toFind, 0);
+	while (pos != std::string::npos) {
+		s.replace(pos, 1, 1, toReplace);
+		pos = s.find_first_of(toFind, 0);
+	}
+	return s;
+}
+
+std::string MavLinkFtpClientImpl::normalize(std::string arg) {
+	if (FileSystem::kPathSeparator == '\\') {
+		return replaceAll(arg, '/', '\\'); // make sure user input matches what FileSystem will do when resolving paths.
+	}
+	return arg;
+}
+
+std::string MavLinkFtpClientImpl::toPX4Path(std::string arg) {
+	if (FileSystem::kPathSeparator == '\\') {
+		return replaceAll(arg, '\\', '/'); // PX4 uses '/'
+	}
+	return arg;
 }

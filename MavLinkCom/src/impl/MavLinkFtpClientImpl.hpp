@@ -49,6 +49,9 @@ namespace mavlinkcom_impl {
 		void recordMessageReceived();
 		void runStateMachine();
 		void retry();
+		std::string replaceAll(std::string s, char toFind, char toReplace);
+		std::string normalize(std::string arg);
+		std::string toPX4Path(std::string arg);
 
 		// the following state is needed to implement a restartable state machine for each command
 		// with a watchdog

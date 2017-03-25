@@ -134,6 +134,7 @@ public:
 		size_t size = fullPath.size();
 		size_t pos = fullPath.find_last_of(kPathSeparator);
 		if (pos != std::string::npos) {
+			pos++;
 			return fullPath.substr(pos, size - pos);
 		}
 		return fullPath;

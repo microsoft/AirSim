@@ -291,7 +291,7 @@ public:
 		int readTimeout = -1;
 		int writeTimeout = -1;
 
-		fd = open(portName, O_RDWR | O_NONBLOCK | O_NOCTTY);
+		fd = open(portName, O_RDWR | O_NOCTTY);
 		if (fd == -1)
 		{
 			return -1;

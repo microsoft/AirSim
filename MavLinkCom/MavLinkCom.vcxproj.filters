@@ -135,9 +135,6 @@
     <ClInclude Include="include\MavLinkFtpClient.hpp">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="src\impl\MavLinkFtpClientImpl.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\MavLinkLog.hpp">
       <Filter>include</Filter>
     </ClInclude>
@@ -212,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="common_utils\json.hpp">
       <Filter>common_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\impl\MavLinkFtpClientImpl.hpp">
+      <Filter>src\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

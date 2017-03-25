@@ -2205,9 +2205,6 @@ void FtpCommand::doGet() {
 	
 	std::string fsTarget = normalize(target);
 	std::string leaf = FileSystem::getFileName(fsTarget);
-	if (leaf.size() > 0 && leaf[0] == '/' || leaf[0] == '\\'){
-		leaf = leaf.substr(1);
-	}
 	bool wildcards;
 	if (!parse(leaf, wildcards)) {
 		printf("wildcard pattern '%s' is too complex\n", leaf.c_str());

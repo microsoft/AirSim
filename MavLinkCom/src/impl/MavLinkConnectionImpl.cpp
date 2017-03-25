@@ -271,9 +271,8 @@ void MavLinkConnectionImpl::readPackets()
 
 		int count = safePort->read(buffer, MAXBUFFER);
 		if (count <= 0) {
-			// error, so just try again...
-			std::lock_guard<std::mutex> guard(telemetry_mutex_);
-			telemetry_.crcErrors++;
+			// error? well let's try again, but we should be careful not to spin too fast and kill the CPU
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			continue;
 		}
 		for (int i = 0; i < count; i++)
