@@ -456,6 +456,8 @@ namespace LogViewer.Controls
                 MinLabel.Text = "";
                 MaxLabel.Text = "";
                 AddTrendLineMenuItem.IsEnabled = false;
+                AddMeanLineMenuItem.IsEnabled = false;
+                AddSlidingVarianceMenuItem.IsEnabled = false;
                 return;
             }
             if (liveScrolling && series.Values.Count > this.ActualWidth)
@@ -484,6 +486,8 @@ namespace LogViewer.Controls
 
             UpdatePointer(lastMousePosition);
             AddTrendLineMenuItem.IsEnabled = true;
+            AddMeanLineMenuItem.IsEnabled = true;
+            AddSlidingVarianceMenuItem.IsEnabled = true;
         }
 
         private void AddScaledValues(PathFigure figure, int start, int end)
@@ -933,6 +937,94 @@ namespace LogViewer.Controls
             }
         }
 
+        public event EventHandler<List<DataValue>> ChartGenerated;
+
+        private void OnAddSlidingVariance(object sender, RoutedEventArgs e)
+        {
+            if (ChartGenerated != null)
+            {
+                List<DataValue> result = new List<Model.DataValue>();
+                const int WindowSize = 10;
+                int count = 0;
+                DataValue[] window = new DataValue[WindowSize];
+                foreach (DataValue d in this.series.Values)
+                {
+                    window[count] = d;
+                    count++;
+                    if (count == WindowSize)
+                    {
+                        double variance = MathHelpers.Variance(from s in window select s.Y);
+                        double time = window[0].X;
+                        result.Add(new DataValue() { X = time, Y = variance });
+                        count = 0; // restart the window.
+                    }
+                }
+                ChartGenerated(this, result);
+            }
+        }
+
+        private void OnAddMeanLine(object sender, RoutedEventArgs e)
+        {
+            if (this.series.Values.Count == 0)
+            {
+                return;
+            }
+            List<double> points = new List<double>(from d in this.series.Values select d.Y);
+            double mean = MathHelpers.Mean(points);
+
+            DataValue first = this.series.Values.First();
+            DataValue last = this.series.Values.Last();
+
+            // now scale this line to fit the scaled graph
+            Point start = new Point(first.X, mean);
+            Point end = new Point(last.X, mean);
+
+            double height = this.ActualHeight - 1;
+            double availableHeight = height;
+            double offset = Canvas.GetLeft(Graph);
+
+            // scale start point
+            Point point1 = scaleTransform.Transform(start);
+            point1 = zoomTransform.Transform(point1);
+            double y1 = availableHeight - point1.Y;
+
+            // scale end point
+            Point point2 = scaleTransform.Transform(end);
+            point2 = zoomTransform.Transform(point2);
+            double y2 = availableHeight - point2.Y;
+
+            Line line = new Line()
+            {
+                Stroke = Brushes.White,
+                StrokeThickness = 1,
+                X1 = point1.X,
+                Y1 = y1,
+                X2 = point2.X,
+                Y2 = y2,
+                StrokeDashArray = new DoubleCollection(new double[] { 2, 2 })
+            };
+            AdornerCanvas.Children.Add(line);
+
+            TextBlock startLabel = new TextBlock()
+            {
+                Text = String.Format("{0:N3}", start.Y),
+                Foreground = Brushes.White,
+                Margin = new Thickness(point1.X, y1 + 2, 0, 0)
+            };
+            AdornerCanvas.Children.Add(startLabel);
+
+            TextBlock endlabel = new TextBlock()
+            {
+                Text = String.Format("{0:N3}", end.Y),
+                Foreground = Brushes.White
+            };
+            endlabel.SizeChanged += (s, args) =>
+            {
+                endlabel.Margin = new Thickness(point2.X - args.NewSize.Width - 10, y2 + 2, 0, 0);
+            };
+
+            AdornerCanvas.Children.Add(endlabel);
+        }
     }
 
     class PointerBorder : Border

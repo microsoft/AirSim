@@ -1,5 +1,6 @@
 ﻿using LogViewer.Controls;
 using LogViewer.Model;
+using LogViewer.Model.ULog;
 using LogViewer.Utilities;
 using Microsoft.Maps.MapControl.WPF;
 using Microsoft.Networking.Mavlink;
@@ -314,7 +315,7 @@ namespace LogViewer
             OpenButton.IsEnabled = false;
 
             Microsoft.Win32.OpenFileDialog fo = new Microsoft.Win32.OpenFileDialog();
-            fo.Filter = "PX4 Log Files (*.px4log)|*.px4log|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|mavlink files (*.mavlink)|*.mavlink|JSON files (*.json)|*.json";
+            fo.Filter = "PX4 Log Files (*.px4log)|*.px4log|PX4 ulog Files (*.ulg)|*.ulg|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|mavlink files (*.mavlink)|*.mavlink|JSON files (*.json)|*.json";
             fo.CheckFileExists = true;
             fo.Multiselect = true;
             if (fo.ShowDialog() == true)
@@ -330,6 +331,10 @@ namespace LogViewer
                         case ".bin":
                         case ".px4log":
                             await Task.Run(async () => { await LoadBinaryFile(file); });
+                            break;
+                        case ".ulg":
+                        case ".ulog":
+                            await Task.Run(async () => { await LoadULogFile(file); });
                             break;
                         case ".mavlink":
                             await Task.Run(async () => { await LoadMavlinkFile(file); });
@@ -376,7 +381,38 @@ namespace LogViewer
             UpdateButtons();
         }
 
-    private async Task LoadBinaryFile(string file)
+        private async Task LoadULogFile(string file)
+        {
+            try
+            {
+                UiDispatcher.RunOnUIThread(() =>
+                {
+                    SystemConsole.Show();
+                });
+                AppendMessage("Loading " + file);
+                ShowStatus("Loading " + file);
+
+                Px4ULog data = new Px4ULog();
+                await data.Load(file, progress);
+
+                logs.Add(data);
+                ShowSchema();
+                LoadFlights(data);
+
+                // remember successfully loaded log file.
+                Settings settings = await ((App)App.Current).LoadSettings();
+                settings.LastLogFile = file;
+                await settings.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                AppendMessage("### Error loading log: " + ex.Message);
+            }
+            ShowStatus("Done Loading " + file);
+            UpdateButtons();
+        }
+
+        private async Task LoadBinaryFile(string file)
         {
             try
             {
@@ -816,6 +852,37 @@ namespace LogViewer
 
         Random rand = new Random();
 
+        SimpleLineChart AddChart(LogItemSchema schema, IEnumerable<DataValue> values)
+        {
+            SimpleLineChart chart = new SimpleLineChart();
+            chart.ChartGenerated += OnNewChartGenerated;
+            chart.ClearAllAdornments += OnClearAllAdornments;
+            chart.Margin = defaultChartMargin;
+            chart.Focusable = false;
+            chart.Closed += OnChartClosed;
+            chart.LineColor = GetRandomColor();
+            chart.StrokeThickness = 1;
+            chart.Tag = schema;
+            InitializeChartData(schema, chart, values);
+            if (chart != null)
+            {
+                if (chartGroup != null)
+                {
+                    chartGroup.AddChart(chart);
+                    if (chartGroup.Parent == null)
+                    {
+                        ChartStack.AddChartGroup(chartGroup);
+                    }
+                }
+                else
+                {
+                    ChartStack.AddChart(chart);
+                }
+                LayoutCharts();
+            }
+            return chart;
+        }
+
 
         private void GraphItem(LogItemSchema schema)
         {
@@ -823,19 +890,13 @@ namespace LogViewer
             {
                 ChartStack.Visibility = Visibility.Visible;
                 ChartStack.UpdateLayout();
-                SimpleLineChart chart = new SimpleLineChart();
-                chart.ClearAllAdornments += OnClearAllAdornments;
-                chart.Margin = defaultChartMargin;
-                chart.Focusable = false;
-                chart.Closed += OnChartClosed;
-                chart.LineColor = GetRandomColor();
-                chart.StrokeThickness = 1;
-                chart.Tag = schema;
+
+                SimpleLineChart chart = null;
 
                 if (currentFlightLog != null && schema.Root == currentFlightLog.Schema)
                 {
                     List<DataValue> values = new List<DataValue>(currentFlightLog.GetDataValues(schema, DateTime.MinValue, TimeSpan.MaxValue));
-                    InitializeChartData(schema, chart, values);
+                    chart = AddChart(schema, values);
 
                     // now turn on live scrolling...
                     chart.LiveScrolling = true;
@@ -853,33 +914,12 @@ namespace LogViewer
                 }
                 else
                 {
-                    List<DataValue> values = new List<DataValue>(GetSelectedDataValues(schema));
-                    if (values.Count > 0)
+                    var data = GetSelectedDataValues(schema);
+                    if (data.Count() > 0)
                     {
-                        InitializeChartData(schema, chart, values);
-                    }
-                    else
-                    {
-                        chart = null;
-                    }
-                    ShowStatus(string.Format("Found {0} data values", values.Count));
-                }
-
-                if (chart != null)
-                {
-                    if (chartGroup != null)
-                    {
-                        chartGroup.AddChart(chart);
-                        if (chartGroup.Parent == null)
-                        {
-                            ChartStack.AddChartGroup(chartGroup);
-                        }
-                    }
-                    else
-                    {
-                        ChartStack.AddChart(chart);
-                    }
-                    LayoutCharts();
+                        chart = AddChart(schema, data);
+                    }                                      
+                    ShowStatus(string.Format("Found {0} data values", data.Count()));
                 }
 
                 ConsoleButton.IsChecked = false;
@@ -898,6 +938,12 @@ namespace LogViewer
                 SystemConsole.Show();
             }
         }
+
+        private void OnNewChartGenerated(object sender, List<DataValue> e)
+        {
+            SimpleLineChart chart = (SimpleLineChart)sender;
+            AddChart((LogItemSchema)chart.Tag, e);
+        }
         
         private void OnClearAllAdornments(object sender, EventArgs e)
         {
@@ -906,13 +952,13 @@ namespace LogViewer
                 chart.ClearAdornments();
             }
         }
-
-        private void InitializeChartData(LogItemSchema schema, SimpleLineChart chart, List<DataValue> values)
+        
+        private void InitializeChartData(LogItemSchema schema, SimpleLineChart chart, IEnumerable<DataValue> values)
         {
             chart.SetData(new Model.DataSeries()
             {
                 Name = schema.Name,
-                Values = values
+                Values = new List<DataValue>(values)
             });
         }
 

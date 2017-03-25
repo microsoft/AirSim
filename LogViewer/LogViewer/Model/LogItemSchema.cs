@@ -34,10 +34,11 @@ namespace LogViewer.Model
         {
             get
             {
-                return Type == "sbyte" || Type == "byte" || Type == "SByte" || Type == "Byte" ||
-                    Type == "Int16" || Type == "UInt16" ||
-                    Type == "Int32" || Type == "UInt32" || Type == "Int64" || Type == "UInt64" ||
-                    Type == "Single" || Type == "Double";
+                return Type == "sbyte" || Type == "byte" || Type == "SByte" || Type == "Byte" || Type == "UInt8" || Type == "Int8" ||
+                   Type == "Int16" || Type == "UInt16" ||
+                   Type == "Int32" || Type == "UInt32" || Type == "Int64" || Type == "UInt64" || Type == "Float" ||
+                   Type == "Single" || Type == "Double";
+
             }
         }
 
