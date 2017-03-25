@@ -274,7 +274,6 @@ void MavLinkFtpClientImpl::removeFile()
 
 void MavLinkFtpClientImpl::listDirectory()
 {
-	retries_ = 0;
 	MavLinkFileTransferProtocol ftp;
 	FtpPayload* payload = reinterpret_cast<FtpPayload*>(&ftp.payload[0]);
 	ftp.target_component = getTargetComponentId();
@@ -489,6 +488,7 @@ void MavLinkFtpClientImpl::handleListResponse()
 	if (payload->offset != file_index_)
 	{
 		// todo: error handling here? sequence is out of order...
+		printf("list got offset %d, but expecting file index %d\n", payload->offset, file_index_);
 		retry();
 		return;
 	}

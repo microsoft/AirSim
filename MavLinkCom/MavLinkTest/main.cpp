@@ -1257,7 +1257,6 @@ int main(int argc, const char* argv[])
 	catch (const std::exception& e)
 	{
 		printf("Exception: %s\n", e.what());
-		return 1;
 	}
 
 	CloseLogFiles();
