@@ -1189,7 +1189,11 @@ int console() {
 					}
 					catch (const std::exception& e)
 					{
-						printf("Error: %s\n", e.what());
+						const char* reason = e.what();
+						if (reason == nullptr) {
+							reason = "(unknown)";
+						}
+						printf("Error: %s\n", reason);
 					}
 				}
 				else

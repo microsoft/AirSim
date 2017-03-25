@@ -31,6 +31,18 @@ struct FtpPayload {
 	uint8_t		data;		///< command data, varies by Opcode
 };
 
+void setPayloadFilename(FtpPayload* payload, const char* filename) {
+
+	const size_t maxFileName = 251 - sizeof(FtpPayload);
+	size_t len = strlen(filename);
+	if (len > maxFileName) {
+		len = maxFileName;
+	}
+	strncpy(reinterpret_cast<char*>(&payload->data), filename, len);
+	payload->size = static_cast<uint8_t>(len);
+
+}
+
 /// @brief Command opcodes
 enum Opcode : uint8_t {
 	kCmdNone,		///< ignored, always acked
@@ -179,10 +191,6 @@ void MavLinkFtpClientImpl::runStateMachine()
 	total_time_ = milliseconds::zero();
 	messages_ = 0;
 
-	if (remote_file_.size() > 47) {
-		throw new std::runtime_error(Utils::stringf("remote file name '%s' is too long, max length is 47", remote_file_.c_str()));
-	}
-
 	progress_->cancel = false;
 	progress_->error = 0;
 	progress_->current = 0;
@@ -266,8 +274,7 @@ void MavLinkFtpClientImpl::removeFile()
 	ftp.target_component = getTargetComponentId();
 	ftp.target_system = getTargetSystemId();
 	payload->opcode = kCmdRemoveFile;
-	strncpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str(), 47);
-	payload->size = static_cast<uint8_t>(remote_file_.size());
+	setPayloadFilename(payload, remote_file_.c_str());
 	sendMessage(ftp);
 	recordMessageSent();
 }
@@ -279,8 +286,7 @@ void MavLinkFtpClientImpl::listDirectory()
 	ftp.target_component = getTargetComponentId();
 	ftp.target_system = getTargetSystemId();
 	payload->opcode = kCmdListDirectory;
-	strncpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str(), 47);
-	payload->size = static_cast<uint8_t>(remote_file_.size());
+	setPayloadFilename(payload, remote_file_.c_str());
 	payload->offset = file_index_;
 	sendMessage(ftp);
 	recordMessageSent();
@@ -367,8 +373,7 @@ void MavLinkFtpClientImpl::readFile()
 		ftp.target_component = getTargetComponentId();
 		ftp.target_system = getTargetSystemId();
 		payload->opcode = kCmdOpenFileRO;
-		strncpy(reinterpret_cast<char*>(&payload->data), remote_file_.c_str(), 47);
-		payload->size = static_cast<uint8_t>(remote_file_.size());
+		setPayloadFilename(payload, remote_file_.c_str());
 		sendMessage(ftp);
 		recordMessageSent();
 	}
