@@ -227,11 +227,8 @@ void MavLinkFtpClientImpl::runStateMachine()
 
 		if (before == after)
 		{
-			if (rate == 0) {
-				rate = MAXIMUM_ROUND_TRIP_TIME;
-			}
-			if (totalSleep > (rate * TIMEOUT_INTERVAL)) {
-				// oops, not getting a response, so retry.
+			if (totalSleep > (MAXIMUM_ROUND_TRIP_TIME * TIMEOUT_INTERVAL)) {
+				printf("ftp command timeout, not getting a response, so retrying\n");
 				retry();
 				totalSleep = 0;
 			}
@@ -502,7 +499,7 @@ void MavLinkFtpClientImpl::handleListResponse()
 		// directory must be empty then, can't do nextStep because
 		// it will just loop for ever re-requesting zero offset into
 		// empty directory.
-
+		reset();
 		success_ = true;
 		waiting_ = false;
 		return;
@@ -607,7 +604,7 @@ void MavLinkFtpClientImpl::handleWriteResponse()
 		int seq = static_cast<int>(payload->seq_number);
 		if (seq != sequence_ + 1)
 		{
-			printf("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1);
+			printf("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1); 
 			// perhaps this was a late response after we did a retry, so ignore it.
 			return;
 		}
@@ -708,6 +705,7 @@ void MavLinkFtpClientImpl::MavLinkFtpClientImpl::retry()
 		errorCode_ = kErrRetriesExhausted;
 		success_ = false;
 		waiting_ = false;
+		reset();
 	}
 }
 

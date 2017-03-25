@@ -383,7 +383,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     uint64_t playback_timestamp, playback_start_timestamp;
 
     playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
-    int last_basemode = -1, last_custommode = -1;
+    uint16_t last_basemode = -1, last_custommode = -1;
 
     while (log_.read(msg, log_timestamp)) {
         if (log_start_timestamp == 0)
