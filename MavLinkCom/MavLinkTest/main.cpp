@@ -1009,6 +1009,7 @@ int console() {
 	cmdTable.push_back(new RequestImageCommand());
 	cmdTable.push_back(new FtpCommand());
     cmdTable.push_back(new PlayLogCommand());
+    cmdTable.push_back(new DumpLogCommandsCommand());
 	cmdTable.push_back(nshCommand);
 	// this is advanced command that can get us into trouble on real drone, so remove it for now.
 	//cmdTable.push_back(new AltHoldCommand());
