@@ -50,6 +50,7 @@ public: //modifiable properties
 public: //interface
     //overridden from pawn
     virtual void PostInitializeComponents() override;
+    virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
@@ -82,6 +83,10 @@ public: //interface
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
+
+    //these methods are for future usage
+    void plot(std::istream& s, FColor color, const Vector3r& offset);
+
 
 private: //vars
     FVector ground_trace_end;

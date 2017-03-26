@@ -8,6 +8,11 @@ void AVehiclePawnBase::PostInitializeComponents()
     Super::PostInitializeComponents();
 }
 
+void AVehiclePawnBase::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
 void AVehiclePawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     state_ = initial_state_ = State();
@@ -74,6 +79,17 @@ void AVehiclePawnBase::reset()
     state_ = initial_state_;
     this->SetActorLocation(state_.start_location, false, nullptr, ETeleportType::TeleportPhysics);
     this->SetActorRotation(state_.start_rotation, ETeleportType::TeleportPhysics);
+
+    //TODO: delete below
+    //std::ifstream sim_log("C:\\temp\\mavlogs\\circle\\sim_cmd_006_orbit 5 1.txt.pos.txt");
+    //plot(sim_log, FColor::Purple, Vector3r(0, 0, -3));
+    //std::ifstream real_log("C:\\temp\\mavlogs\\circle\\real_cmd_006_orbit 5 1.txt.pos.txt");
+    //plot(real_log, FColor::Yellow, Vector3r(0, 0, -3));
+
+    //std::ifstream sim_log("C:\\temp\\mavlogs\\square\\sim_cmd_005_square 5 1.txt.pos.txt");
+    //plot(sim_log, FColor::Purple, Vector3r(0, 0, -3));
+    //std::ifstream real_log("C:\\temp\\mavlogs\\square\\real_cmd_012_square 5 1.txt.pos.txt");
+    //plot(real_log, FColor::Yellow, Vector3r(0, 0, -3));
 }
 
 const AVehiclePawnBase::GeoPoint& AVehiclePawnBase::getHomePoint() const
@@ -120,6 +136,27 @@ void AVehiclePawnBase::allowPassthroughToggleInput()
     UAirBlueprintLib::LogMessage("EnablePassthroughOnCollisons: ", FString::FromInt(state_.passthrough_enabled), LogDebugLevel::Informational);
 }
 
+
+void AVehiclePawnBase::plot(std::istream& s, FColor color, const Vector3r& offset)
+{
+    using namespace msr::airlib;
+
+    Vector3r last_point = VectorMath::nanVector();
+    uint64_t timestamp;
+    float heading, x, y, z;
+    while (s >> timestamp >> heading >> x >> y >> z) {
+        std::string discarded_line;
+        std::getline(s, discarded_line);
+
+        Vector3r current_point(x, y, z);
+        current_point += offset;
+        if (!VectorMath::hasNan(last_point)) {
+            DrawDebugLine(this->GetWorld(), toNeuUU(last_point), toNeuUU(current_point), color, true, -1.0F, 0, 3.0F);
+        }
+        last_point = current_point;
+    }
+
+}
 
 //parameters in NED frame
 AVehiclePawnBase::Pose AVehiclePawnBase::getPose() const
