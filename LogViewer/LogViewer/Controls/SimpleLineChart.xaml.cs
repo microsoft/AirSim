@@ -59,7 +59,7 @@ namespace LogViewer.Controls
         DataValue currentValue;
         bool liveScrolling;
         double liveScrollingXScale = 1;
-        bool contextMenuOpen;
+        static bool anyContextMenuOpen;
 
         /// <summary>
         /// Set this property to add the chart to a group of charts.  The group will share the same "scale" information across the 
@@ -80,7 +80,7 @@ namespace LogViewer.Controls
 
         private void ContextMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            contextMenuOpen = true;
+            anyContextMenuOpen = true;
         }
 
         private void ContextMenu_ContextMenuClosing(object sender, ContextMenuEventArgs e)
@@ -88,7 +88,7 @@ namespace LogViewer.Controls
             // tooltips are too quick to restart and lock tooltip picks up the new location before it can lock the original.
             _delayedUpdates.StartDelayedAction("SlowRestoreTooltips", () =>
             {
-                contextMenuOpen = false;
+                anyContextMenuOpen = false;
             }, TimeSpan.FromSeconds(1));
         }
 
@@ -560,7 +560,7 @@ namespace LogViewer.Controls
 
         internal void HandleMouseMove(MouseEventArgs e)
         {
-            if (!contextMenuOpen)
+            if (!anyContextMenuOpen)
             {
                 lastMousePosition = e.GetPosition(this);
                 UpdatePointer(lastMousePosition);
@@ -569,7 +569,7 @@ namespace LogViewer.Controls
 
         internal void HandleMouseLeave()
         {
-            if (!contextMenuOpen)
+            if (!anyContextMenuOpen)
             {
                 HidePointer();
             }
@@ -577,7 +577,7 @@ namespace LogViewer.Controls
         
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (contextMenuOpen)
+            if (anyContextMenuOpen)
             {
                 // don't move tooltip while user is interacting with the menu.
                 return;
@@ -719,7 +719,10 @@ namespace LogViewer.Controls
 
         void HidePointer()
         {
-            PointerBorder.Visibility = System.Windows.Visibility.Hidden;
+            if (PointerBorder.Visibility == Visibility.Visible)
+            {
+                PointerBorder.Visibility = System.Windows.Visibility.Hidden;
+            }
             Pointer.Visibility = System.Windows.Visibility.Hidden;
             LockTooltipMenuItem.IsEnabled = false;
         }
