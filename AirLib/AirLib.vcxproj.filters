@@ -156,9 +156,6 @@
     <ClInclude Include="include\sensors\SensorBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\configs\Px4QuadX.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\vehicles\MultiRotor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -316,6 +313,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\configs\PX4ConfigCreator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\configs\FlamewheelQuadX.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\configs\Px4HILQuadX.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

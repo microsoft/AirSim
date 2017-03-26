@@ -396,6 +396,28 @@ private:
 };
 
 
+class DumpLogCommandsCommand : public Command
+{
+public:
+    DumpLogCommandsCommand() {
+        this->Name = "dumplogcommands log_folder";
+    }
+
+    virtual bool Parse(const std::vector<std::string>& args);
+
+    virtual void PrintHelp() {
+        printf("dumplogcommands log_folder - dump commands for .mavlink file found in log folder output in subfolder.\n");
+    }
+
+    virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
+private:
+    static void processLogCommands(MavLinkLog& log, const std::string& out_folder);
+
+private:
+    std::string log_folder_;
+};
+
+
 class GotoCommand : public Command
 {
 	bool hasLocalPosition;
