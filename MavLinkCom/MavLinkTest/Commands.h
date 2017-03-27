@@ -422,7 +422,6 @@ class GotoCommand : public Command
 {
 	bool hasLocalPosition;
 	bool requestedControl;
-	bool hasControl;
 	bool targetReached;
 	bool targetPosition;
 	bool targetVelocity;	

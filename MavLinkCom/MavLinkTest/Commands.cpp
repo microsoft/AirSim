@@ -1215,7 +1215,6 @@ bool GotoCommand::Parse(const std::vector<std::string>& args) {
 void GotoCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
     this->channel = com;
     this->requestedControl = false;
-    this->hasControl = false;
     this->targetReached = false;
     this->settled = false;
     this->hasLocalPosition = false;
@@ -1874,18 +1873,20 @@ void WiggleCommand::HandleMessage(const MavLinkMessage& message)
         if (!ready_) {
             return;
         }
-        MavLinkLocalPositionNed pos;
-        pos.decode(message);
 
-        if (xaxis_) {
-            wiggleX(pos);
-        }
-        else {
-            wiggleY(pos);
-        }
+		if (vehicle->hasOffboardControl()) {
+			MavLinkLocalPositionNed pos;
+			pos.decode(message);
 
-        meter_.reportMessageRate();
+			if (xaxis_) {
+				wiggleX(pos);
+			}
+			else {
+				wiggleY(pos);
+			}
 
+			meter_.reportMessageRate();
+		}
         break;
     }
     default:
