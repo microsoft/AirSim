@@ -29,7 +29,7 @@ settings also.
 
 4. If you are using SITL mode, please copy the log file that SITL produces when drone is armed.
 Please zip it and attach it to the issue. The SITL terminal will contain the path to the log file,
-it should look something like this ``.
+it should look something like this `INFO  [logger] Opened log file: rootfs/fs/microsd/log/2017-03-27/20_02_49.ulg`.
 
 5. If you are using Pixhawk hardware in HIL mode, then please setthis parameter: SYS_LOGGER=1
 using QGroundControl, then after the experiment, download the log file using QGroundControl
