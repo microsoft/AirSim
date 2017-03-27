@@ -297,7 +297,8 @@ void GetSetParamCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     if (get) {
         try {
-            com->getParameter(name).then([=](MavLinkParameter  p) {
+			MavLinkParameter  p;
+            if (com->getParameter(name).wait(2000, &p)) {
                 if (p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL32) || 
                     p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL64)) {
                     printf("%s=%f\n", p.name.c_str(), p.value);
@@ -305,7 +306,10 @@ void GetSetParamCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
                 else {
                     printf("%s=%d\n", p.name.c_str(), static_cast<int>(p.value));
                 }
-            });
+			}
+			else {
+				printf("timeout, parameter %s not found\n", p.name.c_str());
+			}
         }
         catch (const std::exception& e)
         {
@@ -507,7 +511,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     quaternion_[0] = 1; //unit quaternion
     uint64_t log_timestamp, log_start_timestamp = 0;
     uint64_t playback_timestamp, playback_start_timestamp;
-
+	Command* currentCommand = nullptr;
     playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
     uint16_t last_basemode = -1, last_custommode = -1;
 
@@ -520,23 +524,51 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         case MavLinkStatustext::kMessageId: {
             //sync clocks
             auto current_timestamp = MavLinkLog::getTimeStamp();
-            long waitMicros = static_cast<long>(log_timestamp - log_start_timestamp) - static_cast<long>(current_timestamp - playback_start_timestamp);
+			long logDuration = static_cast<long>(log_timestamp - log_start_timestamp);
+			long realDuration = static_cast<long>(current_timestamp - playback_start_timestamp);
+			long waitMicros = logDuration - realDuration;
             if (waitMicros > 0) {
-                if (waitMicros > 1E6) { //1s
-                    printf("synchronizing clocks for %f sec\n", waitMicros / 1E6f);
-                }
-                std::this_thread::sleep_for(std::chrono::microseconds(waitMicros));
-            }
+				auto state = com->getVehicleState();
+				if (state.controls.landed) {
+					// then we can fast forward the clocks by pushing back our start time so that it appears we are now at this new log time.
+					if (waitMicros > 1E6) { //1s
+						printf("fast forwarding clock by %f sec\n", waitMicros / 1E6f);
+					}
+					playback_start_timestamp -= waitMicros;
+				}
+				else {
+					// drone is flying so we have to stick with real time playback to get proper simulation behavior.
+					if (waitMicros > 1E6) { //1s
+						printf("synchronizing clocks for %f sec\n", waitMicros / 1E6f);
+					}
+					std::this_thread::sleep_for(std::chrono::microseconds(waitMicros));
+				}
+			}
+			else {
+				// our clock fell behind somehow (debug breakpoint?) So fix it by moving our start time forwards by this amount.
+				playback_start_timestamp -= waitMicros;
+			}
 
             MavLinkStatustext status_msg;
             status_msg.decode(msg);
             if (std::strstr(status_msg.text, kCommandLogPrefix) == status_msg.text) {
                 std::string line = std::string(status_msg.text).substr(std::strlen(kCommandLogPrefix));
                 auto command = Command::create(line);
-                if (command == nullptr)
-                    throw std::runtime_error(std::string("Command for line ") + line + " cannot be found");
+				if (command == nullptr) {
+					throw std::runtime_error(std::string("Command for line ") + line + " cannot be found");
+				}
                 printf("Executing %s\n", line.c_str());
-                command->Execute(com);
+				try {
+					if (currentCommand != nullptr) {
+						currentCommand->Close();
+					}
+					currentCommand = command;
+					currentCommand->Execute(com);
+					// give it time to respond to this command and perform appropriate state changes.
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+				} catch (std::exception& e) {
+					printf("Error: %s\n", e.what());
+				}
             }
             break;
         }
@@ -585,6 +617,8 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
             break;
         }
     }
+
+	printf("### Log playback is complete.\n");
 }
 
 void TakeOffCommand::HandleMessage(const MavLinkMessage& msg)

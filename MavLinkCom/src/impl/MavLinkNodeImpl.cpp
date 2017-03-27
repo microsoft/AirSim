@@ -466,33 +466,41 @@ AsyncResult<bool> MavLinkNodeImpl::setParameter(MavLinkParameter  p)
 	AsyncResult<bool> result([=](int state) {
 		con->unsubscribe(state);
 	});
-	getParameter(p.name).then([=](MavLinkParameter q) {		
-		MavLinkParamSet setparam;
-		setparam.target_component = getTargetComponentId();
-		setparam.target_system = getTargetSystemId();
-		std::strncpy(setparam.param_id, p.name.c_str(), size);
-		setparam.param_type = q.type;
-		setparam.param_value = PackParameter(q.type, p.value);
-		sendMessage(setparam);
+	bool gotit = false;
+	MavLinkParameter q;
+	for (size_t i = 0; i < 3; i++)
+	{
+		if (getParameter(p.name).wait(2000, &q)) {
+			gotit = true;
+			break;
+		}
+	}
+	if (!gotit) {
+		throw std::runtime_error(Utils::stringf("Error: parameter name '%s' was not found", p.name.c_str()));
+	}
+	MavLinkParamSet setparam;
+	setparam.target_component = getTargetComponentId();
+	setparam.target_system = getTargetSystemId();
+	std::strncpy(setparam.param_id, p.name.c_str(), size);
+	setparam.param_type = q.type;
+	setparam.param_value = PackParameter(q.type, p.value);
+	sendMessage(setparam);
 
-		// confirmation of the PARAM_SET is to receive the updated PARAM_VALUE.
-		int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
-			if (message.msgid == MavLinkParamValue::kMessageId)
+	// confirmation of the PARAM_SET is to receive the updated PARAM_VALUE.
+	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
+		if (message.msgid == MavLinkParamValue::kMessageId)
+		{
+			MavLinkParamValue param;
+			param.decode(message);
+			if (std::strncmp(param.param_id, setparam.param_id, size) == 0)
 			{
-				MavLinkParamValue param;
-				param.decode(message);
-				if (std::strncmp(param.param_id, setparam.param_id, size) == 0)
-				{
-					bool rc = param.param_value == setparam.param_value;
-					result.setResult(rc);
-				}
+				bool rc = param.param_value == setparam.param_value;
+				result.setResult(rc);
 			}
-		});
-
-		result.setState(subscription);
+		}
 	});
 
-
+	result.setState(subscription);
 	return result;
 }
 
