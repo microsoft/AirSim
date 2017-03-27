@@ -3,7 +3,7 @@
 ## Steps
 
 - Make sure your changes conforms to coding style around it. Please read our [short and sweet coding guidelines](coding_guidelines.md).
-- [File an issue first](https://github.com/Microsoft/AirSim/issues) so we are aware about change you want to make and possibly guide you.
+- [File an issue first](https://github.com/Microsoft/AirSim/issues) so we are aware about change you want to make and possibly guide you.  Please include these [log files](logging.md) when you report an issue.
 - Use [usual steps](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) to make changes just like other GitHub projects.
 - Clean compile your changes on Windows and Linux and test basic simulator operations.
 - When your pull request is created, you might get prompted to one-time sign [Contributor License Agreement (CLA)](https://en.wikipedia.org/wiki/Contributor_License_Agreement) unless changes are minor. It's very simple and takes less than a minute.

@@ -30,3 +30,12 @@ mapping changes.
 
 Yes, Unreal steals the mouse, and we don't draw one.  So to get your mouse back just use Alt+TAB to switch to a different window.
 
+### Build is not working on VS 2017
+
+Known working config is:
+````
+Windows 10 (Education) x64
+VS2015 update 3 (x86) with VC++
+Cmake 3.7 (x86)
+````
+Even though cmake 3.7 says it added support for VS 2017 folks are reporting build issues with that.
