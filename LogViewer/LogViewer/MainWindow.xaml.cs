@@ -347,10 +347,29 @@ namespace LogViewer
                                 "Unsupported file extension", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             break;
                     }
+                    UpdateTitle(System.IO.Path.GetFileName(file));
                 }
                 ShowTotalFlightTime();
             }
             OpenButton.IsEnabled = true;
+        }
+
+        string originalTitle;
+
+        private void UpdateTitle(string caption)
+        {
+            if (originalTitle == null)
+            {
+                originalTitle = this.Title;
+            }
+            if (string.IsNullOrEmpty(caption))
+            {
+                this.Title = originalTitle;
+            }
+            else
+            {
+                this.Title = originalTitle + " - " + caption;
+            }
         }
 
         private async Task LoadJSonFile(string file)
@@ -1083,6 +1102,7 @@ namespace LogViewer
             myMap.Children.Clear();
             ImageViewer.Source = null;
             ShowSchema();
+            UpdateTitle("");
         }
 
         private void OnFlightSelected(object sender, SelectionChangedEventArgs e)
