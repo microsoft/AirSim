@@ -308,3 +308,4 @@ deps/
 /AirLib/include/controllers/html
 /AirLib/include/controllers/latex
 /Eigen3
+/AirLib/lib/libAirLib.a

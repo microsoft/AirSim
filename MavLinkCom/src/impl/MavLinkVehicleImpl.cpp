@@ -186,7 +186,8 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
                     // try and take it back.
                     vehicle_state_.controls.offboard = false;
                     control_requested_ = false;
-                    printf("MavLinkVehicle: detected mode change, will stop trying to do offboard control\n");
+					Utils::logMessage("MavLinkVehicle: detected mode change (mode=%d, submode=%d), will stop trying to do offboard control\n",
+						mode, submode);
                 }
             }
 		}
@@ -571,7 +572,7 @@ void MavLinkVehicleImpl::checkOffboard()
             offboardIdle();
         }
 
-        printf("MavLinkVehicleImpl::checkOffboard: sending MavCmdNavGuidedEnable \n");
+		Utils::logMessage("MavLinkVehicleImpl::checkOffboard: sending MavCmdNavGuidedEnable \n");
         // now the command should succeed.
         bool r = false;
         MavCmdNavGuidedEnable cmd{};
@@ -779,7 +780,8 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
 	msg.x = x; msg.y = y; msg.z = z;
 	msg.coordinate_frame = static_cast<uint8_t>(MAV_FRAME::MAV_FRAME_LOCAL_NED);
 
-	msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
+	msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION | 
+		MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY;
     if (isYaw) {
 		msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
 		msg.yaw = yawOrRate;

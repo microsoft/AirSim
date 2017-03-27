@@ -281,12 +281,10 @@ bool DroneControllerBase::rotateToYaw(float yaw, float margin, CancelableBase& c
 {
     YawMode yaw_mode(false, VectorMath::normalizeAngleDegrees(yaw));
     Waiter waiter(getCommandPeriod());
+	auto start_pos = getPosition();
     bool is_yaw_reached;
     while ((is_yaw_reached = isYawWithinMargin(yaw, margin)) == false) {
-        //DJI has a bug in simulator where getPosition lags behind by as much as 20m which makes below very unsafe
-        //if (!moveToPosition(getPosition(), yaw_mode))
-        //    return false;
-        if (!moveByVelocityZ(0, 0, getZ(), yaw_mode))
+        if (!moveToPosition(start_pos, yaw_mode))
             return false;
 
         if (!waiter.sleep(cancelable_action))
@@ -301,15 +299,12 @@ bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, Cancel
     if (duration <= 0)
         return true;
 
+	auto start_pos = getPosition();
     YawMode yaw_mode(true, yaw_rate);
     Waiter waiter(getCommandPeriod(), duration);
     do {
-        //DJI has a bug in simulator where getPosition lags behind by as much as 20m which makes below very unsafe
-        //if (!moveToPosition(getPosition(), yaw_mode))
-        //    return false;
-        if (!moveByVelocityZ(0, 0, getZ(), yaw_mode))
+        if (!moveToPosition(start_pos, yaw_mode))
             return false;
-
     } while (waiter.sleep(cancelable_action) && !waiter.is_timeout());
 
     return waiter.is_timeout();
