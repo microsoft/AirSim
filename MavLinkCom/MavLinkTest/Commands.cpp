@@ -519,36 +519,26 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         if (log_start_timestamp == 0)
             log_start_timestamp = log_timestamp;
 
+		//sync clocks all the time so that the yellow ribbon also plays back at the right speed.
+		auto current_timestamp = MavLinkLog::getTimeStamp();
+		long logDuration = static_cast<long>(log_timestamp - log_start_timestamp);
+		long realDuration = static_cast<long>(current_timestamp - playback_start_timestamp);
+		long waitMicros = logDuration - realDuration;
+		if (waitMicros > 0) {
+			if (waitMicros > 1E6) { //1s
+				printf("synchronizing clocks for %f sec\n", waitMicros / 1E6f);
+			}
+			std::this_thread::sleep_for(std::chrono::microseconds(waitMicros));
+		}
+		else {
+			// our clock fell behind somehow (debug breakpoint?) So fix it by moving our start time forwards by this amount.
+			playback_start_timestamp -= waitMicros;
+		}
+
         switch (msg.msgid)
         {
         case MavLinkStatustext::kMessageId: {
-            //sync clocks
-            auto current_timestamp = MavLinkLog::getTimeStamp();
-			long logDuration = static_cast<long>(log_timestamp - log_start_timestamp);
-			long realDuration = static_cast<long>(current_timestamp - playback_start_timestamp);
-			long waitMicros = logDuration - realDuration;
-            if (waitMicros > 0) {
-				auto state = com->getVehicleState();
-				if (state.controls.landed) {
-					// then we can fast forward the clocks by pushing back our start time so that it appears we are now at this new log time.
-					if (waitMicros > 1E6) { //1s
-						printf("fast forwarding clock by %f sec\n", waitMicros / 1E6f);
-					}
-					playback_start_timestamp -= waitMicros;
-				}
-				else {
-					// drone is flying so we have to stick with real time playback to get proper simulation behavior.
-					if (waitMicros > 1E6) { //1s
-						printf("synchronizing clocks for %f sec\n", waitMicros / 1E6f);
-					}
-					std::this_thread::sleep_for(std::chrono::microseconds(waitMicros));
-				}
-			}
-			else {
-				// our clock fell behind somehow (debug breakpoint?) So fix it by moving our start time forwards by this amount.
-				playback_start_timestamp -= waitMicros;
-			}
-
+            
             MavLinkStatustext status_msg;
             status_msg.decode(msg);
             if (std::strstr(status_msg.text, kCommandLogPrefix) == status_msg.text) {
@@ -564,8 +554,6 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 					}
 					currentCommand = command;
 					currentCommand->Execute(com);
-					// give it time to respond to this command and perform appropriate state changes.
-					std::this_thread::sleep_for(std::chrono::seconds(1));
 				} catch (std::exception& e) {
 					printf("Error: %s\n", e.what());
 				}

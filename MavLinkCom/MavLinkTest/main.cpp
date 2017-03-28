@@ -140,6 +140,7 @@ std::shared_ptr<MavLinkLog> outLogFile;
 std::thread telemetry_thread;
 bool telemetry = false;
 std::mutex logLock;
+std::stringstream initScript;
 
 #if defined(__cpp_lib_experimental_filesystem)
 
@@ -171,6 +172,19 @@ void ConvertLogFileToJson(std::string logFile)
     catch (std::exception&ex) {
         printf("error: %s\n", ex.what());
     }
+}
+
+void LoadInitScript(std::string fileName) {
+
+	std::ifstream fs;
+	std::string line;
+	FileSystem::openTextFile(fileName, fs);
+	while (!fs.eof()) {
+		std::getline(fs, line);
+		if (line.size() > 0) {
+			initScript << line << std::endl;
+		}
+	}	
 }
 
 void ConvertLogFilesToJson(std::string directory)
@@ -575,6 +589,7 @@ bool ParseCommandLine(int argc, const char* argv[])
 	const char* logformatOption = "logformat";
 	const char* outLogFileOption = "outlogfile";
     const char* wifiOption = "wifi";
+	const char* initOption = "init";
 
 	// parse command line
 	for (int i = 1; i < argc; i++)
@@ -666,6 +681,14 @@ bool ParseCommandLine(int argc, const char* argv[])
             else if (lower == "convertexisting") {
                 convertExisting = true;
             }
+			else if (lower == initOption) {
+
+				if (parts.size() > 1)
+				{
+					std::string fileName(arg + 1 + strlen(initOption) + 1);
+					LoadInitScript(fileName);
+				}
+			}
 			else if (lower == "local")
 			{
 				if (parts.size() > 1)
@@ -981,13 +1004,12 @@ void handleStatus(const MavLinkStatustext& statustext) {
     Utils::logMessage("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), safeText.c_str());
 }
 
-int console() {
+int console(std::stringstream& initScript) {
 
 	std::string line;
 	std::shared_ptr<MavLinkVehicle> mavLinkVehicle = std::make_shared<MavLinkVehicle>(LocalSystemId, LocalComponentId);
 	std::shared_ptr<MavLinkNode> logViewer = nullptr;
 	Command* currentCommand = nullptr;
-	std::stringstream initScript;
 	OrbitCommand* orbit = new OrbitCommand();
 	SendImageCommand* sendImage = nullptr;
 	NshCommand* nshCommand = new NshCommand();
@@ -1257,7 +1279,7 @@ int main(int argc, const char* argv[])
 	}
 
 	try {
-		return console();
+		return console(initScript);
 	}
 	catch (const std::exception& e)
 	{
