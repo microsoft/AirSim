@@ -839,14 +839,31 @@ namespace LogViewer.Controls
             {
                 return;
             }
-            List<Point> points = new List<Point>(from d in this.series.Values select new Point(d.X, d.Y));
+            // only do the visible points we have zoomed into.
+            List<Point> points = new List<Point>();
+
+            DataValue first = null;
+            DataValue last = null;
+
+            foreach (DataValue d in this.series.Values)
+            {
+                Point point = scaleTransform.Transform(new Point(d.X, d.Y));
+                point = zoomTransform.Transform(point);
+                if (point.X >= 0 && point.X <= this.ActualWidth)
+                {
+                    // then it is a visible point.
+                    if (first == null) first = d;
+                    last = d;
+                    points.Add(new Point(d.X, d.Y));
+                }
+            }
+            if (first == null)
+            {
+                return;
+            }
             double a, b; //  y = a + b.x
             MathHelpers.LinearRegression(points, out a, out b);
 
-            DataValue first = this.series.Values.First();
-            DataValue last = this.series.Values.Last();
-
-            // now scale this line to fit the scaled graph
             Point start = new Point(first.X, a + (b * first.X));
             Point end = new Point(last.X, a + (b * last.X));
 
@@ -972,12 +989,30 @@ namespace LogViewer.Controls
             {
                 return;
             }
-            List<double> points = new List<double>(from d in this.series.Values select d.Y);
+            // only do the visible points we have zoomed into.
+            List<double> points = new List<double>();
+
+            DataValue first = null;
+            DataValue last = null;
+
+            foreach (DataValue d in this.series.Values)
+            {
+                Point point = scaleTransform.Transform(new Point(d.X, d.Y));
+                point = zoomTransform.Transform(point);
+                if (point.X >= 0 && point.X <= this.ActualWidth)
+                {
+                    // then it is a visible point.
+                    if (first == null) first = d;
+                    last = d;
+                    points.Add(d.Y);
+                }
+            }
+            if (first == null)
+            {
+                return;
+            }
             double mean = MathHelpers.Mean(points);
-
-            DataValue first = this.series.Values.First();
-            DataValue last = this.series.Values.Last();
-
+            
             // now scale this line to fit the scaled graph
             Point start = new Point(first.X, mean);
             Point end = new Point(last.X, mean);
