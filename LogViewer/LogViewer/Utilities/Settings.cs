@@ -11,6 +11,12 @@ using System.Windows;
 
 namespace LogViewer.Utilities
 { 
+    public enum AppTheme
+    {
+        Light,
+        Dark
+    }
+
     public class Settings : INotifyPropertyChanged
     {
         const string SettingsFileName = "settings.xml";
@@ -18,6 +24,7 @@ namespace LogViewer.Utilities
         Point windowLocation;
         Size windowSize;
         int port = 14550;
+        AppTheme theme = AppTheme.Dark;
 
         static Settings _instance;
 
@@ -64,6 +71,12 @@ namespace LogViewer.Utilities
         {
             get { return this.port; }
             set { this.port = value; }
+        }
+
+        public AppTheme Theme
+        {
+            get { return this.theme; }
+            set { this.theme = value; }
         }
 
         public string LastLogFile

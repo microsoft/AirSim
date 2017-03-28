@@ -872,7 +872,7 @@ namespace LogViewer.Controls
 
             TextBlock startLabel = new TextBlock() {
                 Text = String.Format("{0:N3}", start.Y),
-                Foreground = Graph.Stroke,
+                Foreground = Brushes.White,
                 Margin = new Thickness(point1.X, y1 + 2, 0, 0)
             };
             AdornerCanvas.Children.Add(startLabel);
@@ -880,7 +880,7 @@ namespace LogViewer.Controls
             TextBlock endlabel = new TextBlock()
             {
                 Text = String.Format("{0:N3}", end.Y),
-                Foreground = Graph.Stroke
+                Foreground = Brushes.White
             };
             endlabel.SizeChanged += (s, args) =>
             {
@@ -947,7 +947,7 @@ namespace LogViewer.Controls
             if (ChartGenerated != null)
             {
                 List<DataValue> result = new List<Model.DataValue>();
-                const int WindowSize = 10;
+                const int WindowSize = 30;
                 int count = 0;
                 DataValue[] window = new DataValue[WindowSize];
                 foreach (DataValue d in this.series.Values)

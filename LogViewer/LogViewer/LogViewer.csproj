@@ -110,6 +110,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AppSettings.xaml.cs">
+      <DependentUpon>AppSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ChartGroup.cs" />
     <Compile Include="Controls\CloseBox.xaml.cs">
       <DependentUpon>CloseBox.xaml</DependentUpon>
@@ -161,6 +164,10 @@
     <Compile Include="Utilities\UiDispatcher.cs" />
     <Compile Include="Utilities\XamlExtensions.cs" />
     <Compile Include="Utilities\XmlCsvReader.cs" />
+    <Page Include="Controls\AppSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\CloseBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

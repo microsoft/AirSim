@@ -70,6 +70,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
@@ -97,7 +99,9 @@
             </ToggleButton>
             <Button x:Name="RecordButton" Style="{StaticResource AppBarButtonStyle}" Grid.Column="8" Click="OnRecord">&#xE102;</Button>
 
-            <local:ConnectorControl x:Name="ConnectorControl" Grid.Column="9" Padding="0,15,0,0" Width="48" Height="48" ToolTip="Connection" MouseLeftButtonDown="OnConnectorClick" />
+            <Button x:Name="SettingsButton" Style="{StaticResource AppBarButtonStyle}" Grid.Column="9" Click="OnSettings">&#xE115;</Button>
+            
+            <local:ConnectorControl x:Name="ConnectorControl" Grid.Column="11" Padding="0,15,0,0" Width="48" Height="48" ToolTip="Connection" MouseLeftButtonDown="OnConnectorClick" />
         </Grid>
 
         <ListView x:Name="FlightView" Grid.Row="1" Grid.ColumnSpan="2"
@@ -144,7 +148,10 @@
 
         <local:ChannelSelector x:Name="ConnectionPanel" Grid.Row="2" Grid.Column="1" Width="300" HorizontalAlignment="Right" Visibility="Collapsed">
         </local:ChannelSelector>
-                
+
+        <local:AppSettings x:Name="AppSettingsPanel" Grid.Row="2" Grid.Column="1" Width="300" HorizontalAlignment="Right" Visibility="Collapsed">
+        </local:AppSettings>
+
 
         <Border Grid.ColumnSpan="2" Grid.Row="4" Style="{StaticResource AppStatusBorder}">
             <TextBlock x:Name="StatusText" Text=""  Margin="5" />

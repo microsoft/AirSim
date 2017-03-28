@@ -1344,7 +1344,12 @@ namespace LogViewer
             }
         }
 
-        #endregion 
+        #endregion
+
+        private void OnSettings(object sender, RoutedEventArgs e)
+        {
+            AppSettingsPanel.Visibility = Visibility.Visible;
+        }
     }
 }
 
