@@ -88,11 +88,13 @@ public:
         output_stream << std::fixed;
 
         double last = Utils::getTimeSinceEpoch();
+        bool which_alt = false;
         for(auto j = 0; j < 10; ++j) {
             for (auto i = 0; i < interations_20s; ++i) {
                 const auto& output = baro.getOutput();
                 output_stream << Utils::getTimeSinceEpoch() << "\t";
-                output_stream << output.pressure << "\t" << output.altitude << std::endl;
+                output_stream << output.pressure << "\t" << output.altitude << "\t" << 
+                    environment.getState().geo_point.altitude << std::endl;
 
 
                 std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpoch() - last))); 
@@ -103,7 +105,8 @@ public:
                 baro.update(dt);
             }
 
-            environment.setPosition(Vector3r(0, 0, environment.getState().geo_point.altitude <= 1.0f ? 1.78f : 0));
+            which_alt = !which_alt;
+            environment.setPosition(Vector3r(0, 0, which_alt ? -1.78f : 0));
         }
     }
 

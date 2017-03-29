@@ -26,6 +26,6 @@ int main(int argc, const char *argv[])
     std::ofstream out_file(argv[1]);
     //StandALoneSensors::createStaticData(out_file, period, total_duration);
     //StandALoneSensors::generateBarometerStaticData(out_file, period, total_duration);
-    //StandALoneSensors::generateBarometerDynamicData(out_file, period, total_duration);
-    StandALoneSensors::generateMagnetometerDataLoc(out_file, period, total_duration);
+    StandALoneSensors::generateBarometerDynamicData(out_file, period, total_duration);
+    //StandALoneSensors::generateMagnetometerDataLoc(out_file, period, total_duration);
 }
