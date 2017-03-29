@@ -22,10 +22,10 @@ struct MagnetometerSimpleParams {
     float ref_update_frequency = 0.2f;    //Hz
 
     //use dipole model is there is enough compute power available
-    //bool dynamic_reference_source = true;
-    //ReferenceSource ref_source = ReferenceSource::ReferenceSource_DipoleModel;
-    bool dynamic_reference_source = false;
-    ReferenceSource ref_source = ReferenceSource::ReferenceSource_Constant;
+    bool dynamic_reference_source = true;
+    ReferenceSource ref_source = ReferenceSource::ReferenceSource_DipoleModel;
+    //bool dynamic_reference_source = false;
+    //ReferenceSource ref_source = ReferenceSource::ReferenceSource_Constant;
 };
 
 
