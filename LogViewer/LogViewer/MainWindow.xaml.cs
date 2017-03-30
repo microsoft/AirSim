@@ -57,9 +57,22 @@ namespace LogViewer
             this.SizeChanged += OnWindowSizeChanged;
             this.LocationChanged += OnWindowLocationChanged;
             ChartStack.Visibility = Visibility.Collapsed;
+            ChartStack.ZoomChanged += OnZoomChanged;
             initialAttitude = ModelViewer.ModelAttitude;
             CameraPanel.Visibility = Visibility.Collapsed;
             SystemConsole.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnZoomChanged(object sender, EventArgs e)
+        {
+            double total = 0;
+            double count = 0;
+            foreach (var chart in ChartStack.FindCharts())
+            {
+                total += chart.GetVisibleCount();
+                count++;
+            }
+            ShowStatus(string.Format("zoom shwowing {0} data values", (int)(total / count)));
         }
 
         private void OnWindowLocationChanged(object sender, EventArgs e)
@@ -470,8 +483,9 @@ namespace LogViewer
                 Flight entireLog = new Flight()
                 {
                     Name = "Log " + logs.Count,
-                    StartTime = data.StartTime,
-                    Duration = data.Duration
+                    StartTime = DateTime.MinValue,
+                    Duration = TimeSpan.MaxValue,
+                    Log = data
                 };
                 allFlights.Add(entireLog);
 

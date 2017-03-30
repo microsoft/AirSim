@@ -150,7 +150,13 @@ namespace LogViewer.Controls
             {
                 chart.ZoomTo(x, width);
             }
+            if (ZoomChanged != null)
+            {
+                ZoomChanged(this, EventArgs.Empty);
+            }
         }
+
+        public event EventHandler ZoomChanged;
 
         protected override void OnMouseMove(MouseEventArgs e)
         {

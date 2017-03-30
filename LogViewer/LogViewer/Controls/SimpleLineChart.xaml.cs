@@ -60,6 +60,7 @@ namespace LogViewer.Controls
         bool liveScrolling;
         double liveScrollingXScale = 1;
         static bool anyContextMenuOpen;
+        double visibleCount;
 
         /// <summary>
         /// Set this property to add the chart to a group of charts.  The group will share the same "scale" information across the 
@@ -76,6 +77,11 @@ namespace LogViewer.Controls
 
             this.ContextMenuOpening += ContextMenu_ContextMenuOpening;
             this.ContextMenuClosing += ContextMenu_ContextMenuClosing;
+        }
+
+        internal double GetVisibleCount()
+        {
+            return visibleCount;
         }
 
         private void ContextMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -447,6 +453,7 @@ namespace LogViewer.Controls
             Canvas.SetLeft(Graph, 0);
             scaleIndex = 0;
             updateIndex = 0;
+            visibleCount = 0;
 
             ComputeScale();
 
@@ -512,8 +519,9 @@ namespace LogViewer.Controls
                 double x = point.X;
 
                 double rx = x + offset;
-                if (rx > 0) 
+                if (rx > 0 && rx < width) 
                 {
+                    visibleCount++;
                     Point pt = new Point(x, y);
                     if (!started)
                     {
@@ -812,8 +820,12 @@ namespace LogViewer.Controls
                 <TextBlock x:Name="PointerLabel" Foreground="{StaticResource TooltipForeground}"/>
             </Border>
              */
-            Path ptr = new Path() {
-                Fill = Pointer.Fill, Data = Pointer.Data.Clone(), RenderTransform = Pointer.RenderTransform.Clone() };
+            Path ptr = new Path()
+            {
+                Fill = Pointer.Fill,
+                Data = Pointer.Data.Clone(),
+                RenderTransform = Pointer.RenderTransform.Clone()
+            };
             AdornerCanvas.Children.Add(ptr);
 
             PointerBorder ptrBorder = new PointerBorder()
@@ -833,6 +845,24 @@ namespace LogViewer.Controls
             AdornerCanvas.Children.Add(ptrBorder);
         }
 
+        private IEnumerable<DataValue> GetVisibleDataValues()
+        {
+            double w = this.ActualWidth;
+            if (this.series != null)
+            {
+                foreach (DataValue d in this.series.Values)
+                {
+                    Point point = scaleTransform.Transform(new Point(d.X, d.Y));
+                    point = zoomTransform.Transform(point);
+                    if (point.X >= 0 && point.X <= w)
+                    {
+                        // then it is a visible point.                        
+                        yield return d;
+                    }
+                }
+            }
+        }
+
         private void OnAddTrendLine(object sender, RoutedEventArgs e)
         {
             if (this.series.Values.Count == 0)
@@ -844,12 +874,13 @@ namespace LogViewer.Controls
 
             DataValue first = null;
             DataValue last = null;
+            double w = this.ActualWidth;
 
             foreach (DataValue d in this.series.Values)
             {
                 Point point = scaleTransform.Transform(new Point(d.X, d.Y));
                 point = zoomTransform.Transform(point);
-                if (point.X >= 0 && point.X <= this.ActualWidth)
+                if (point.X >= 0 && point.X <= w)
                 {
                     // then it is a visible point.
                     if (first == null) first = d;
@@ -994,12 +1025,12 @@ namespace LogViewer.Controls
 
             DataValue first = null;
             DataValue last = null;
-
+            double w = this.ActualWidth;
             foreach (DataValue d in this.series.Values)
             {
                 Point point = scaleTransform.Transform(new Point(d.X, d.Y));
                 point = zoomTransform.Transform(point);
-                if (point.X >= 0 && point.X <= this.ActualWidth)
+                if (point.X >= 0 && point.X <= w)
                 {
                     // then it is a visible point.
                     if (first == null) first = d;
@@ -1062,6 +1093,28 @@ namespace LogViewer.Controls
             };
 
             AdornerCanvas.Children.Add(endlabel);
+        }
+
+        private void OnExportCsv(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog fo = new Microsoft.Win32.SaveFileDialog();
+            fo.Filter = "CSV Files (*.csv)|*.csv";
+            fo.CheckPathExists = true;
+            if (fo.ShowDialog() == true)
+            {
+                using (var stream = fo.OpenFile())
+                {
+                    using (System.IO.StreamWriter writer = new System.IO.StreamWriter(stream))
+                    {
+                        if (this.series != null) {
+                            foreach (var d in this.GetVisibleDataValues())
+                            {
+                                writer.WriteLine(d.X + "\t" + d.Y);
+                            }
+                       }
+                    }
+                }
+            }
         }
     }
 

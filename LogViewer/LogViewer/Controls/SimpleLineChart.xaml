@@ -19,6 +19,8 @@
                 <Separator/>
                 <MenuItem Header="Clear Adornments" Click="OnClearAdornments"/>
                 <MenuItem Header="Clear All Adornments" Click="OnClearAllAdornments"/>
+                <Separator/>
+                <MenuItem Header="Export .csv ..." Click="OnExportCsv"/>
             </ContextMenu>
         </Grid.ContextMenu>
         <Grid.RowDefinitions>
