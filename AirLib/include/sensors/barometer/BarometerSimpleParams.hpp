@@ -15,10 +15,10 @@ struct BarometerSimpleParams {
     real_T qnh = EarthUtils::SeaLevelPressure / 100.0f; // hPa
 
     //sea level min,avh,max = 950,1013,1050 ie approx 3.65% variation
-    //regular pressure changes in quite conditions are 1/4th of this
+    //regular pressure changes in quiet conditions are 1/10th of this
     //Mariner's Pressure Atlas, David Burch, 2014
     //https://www.starpath.com/ebooksamples/9780914025382_sample.pdf
-    real_T pressure_factor_sigma = 0.0365f / 2 / 4;
+    real_T pressure_factor_sigma = 0.0365f / 2 / 10;
     real_T pressure_factor_tau = 3600;
 
     /*

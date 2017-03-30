@@ -494,7 +494,8 @@ bool PlayLogCommand::Parse(const std::vector<std::string>& args)
     std::string cmd = args[0];
     if (cmd == "playlog") {
         if (args.size() > 1) {
-            log_.openForReading(args.at(1));
+            _fileName = args.at(1);
+            log_.openForReading(_fileName);
             return true;
         } 
         else {
@@ -512,8 +513,10 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     uint64_t log_timestamp, log_start_timestamp = 0;
     uint64_t playback_timestamp, playback_start_timestamp;
 	Command* currentCommand = nullptr;
+    bool armed = false;
     playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
     uint16_t last_basemode = -1, last_custommode = -1;
+    printf("loading log...\n");
 
     while (log_.read(msg, log_timestamp)) {
         if (log_start_timestamp == 0)
@@ -525,10 +528,16 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 		long realDuration = static_cast<long>(current_timestamp - playback_start_timestamp);
 		long waitMicros = logDuration - realDuration;
 		if (waitMicros > 0) {
-			if (waitMicros > 1E6) { //1s
-				printf("synchronizing clocks for %f sec\n", waitMicros / 1E6f);
-			}
-			std::this_thread::sleep_for(std::chrono::microseconds(waitMicros));
+            if (armed) {
+                if (waitMicros > 1E6) { //1s
+                    printf("synchronizing clocks for %f sec\n", waitMicros / 1E6f);
+                }
+                std::this_thread::sleep_for(std::chrono::microseconds(waitMicros));
+            }
+            else {
+                // we can skip ahead.
+                playback_start_timestamp -= waitMicros;
+            }
 		}
 		else {
 			// our clock fell behind somehow (debug breakpoint?) So fix it by moving our start time forwards by this amount.
@@ -549,6 +558,9 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 				}
                 printf("Executing %s\n", line.c_str());
 				try {
+                    if (Utils::toLower(line) == "arm") {
+                        armed = true;
+                    }
 					if (currentCommand != nullptr) {
 						currentCommand->Close();
 					}

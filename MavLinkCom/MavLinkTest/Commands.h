@@ -393,6 +393,7 @@ private:
     MavLinkLog log_;
     float quaternion_[4];
     float x, y, z;
+    std::string _fileName;
 };
 
 
