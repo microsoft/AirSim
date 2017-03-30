@@ -99,6 +99,9 @@ private: //vars
         FRotator start_rotation;
         FVector last_position;
         FVector last_debug_position;
+        FVector current_position;
+        FVector current_debug_position;
+        FVector debug_position_offset;        
         bool tracing_enabled;
         bool collisons_enabled;
         bool passthrough_enabled;

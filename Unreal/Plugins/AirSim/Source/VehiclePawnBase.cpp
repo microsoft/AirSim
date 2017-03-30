@@ -128,6 +128,10 @@ void AVehiclePawnBase::toggleTrace()
 
     if (!state_.tracing_enabled)
         FlushPersistentDebugLines(this->GetWorld());
+    else {     
+        state_.debug_position_offset = state_.current_debug_position - state_.current_position;
+        state_.last_debug_position = state_.last_position;
+    }
 }
 
 void AVehiclePawnBase::allowPassthroughToggleInput()
@@ -170,6 +174,8 @@ void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
 {
     //translate to new AVehiclePawnBase position & orientation from NED to NEU
     FVector position = toNeuUU(pose.position);
+    state_.current_position = position;
+
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
     FQuat orientation = toFQuat(pose.orientation, true);
 
@@ -187,17 +193,23 @@ void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
         this->SetActorLocationAndRotation(position, orientation, true);
 
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
-        DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, true, -1.0F, 0, 3.0F);
+        DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, true, -1.0F, 0, 10.0F);
         state_.last_position = position;
     }
-
+    else if (!state_.tracing_enabled) {
+        state_.last_position = position;
+    }
+    state_.current_debug_position = toNeuUU(debug_pose.position);
     if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
-        FVector debug_position = toNeuUU(debug_pose.position);
+        FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
-            DrawDebugLine(this->GetWorld(), state_.last_debug_position, debug_position, FColor::Yellow, true, -1.0F, 0, 3.0F);
-            state_.last_debug_position = debug_position;
+            DrawDebugLine(this->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), true, -1.0F, 0, 10.0F);
             UAirBlueprintLib::LogMessage("Debug Pose: ", debug_position.ToCompactString(), LogDebugLevel::Informational);
+            state_.last_debug_position = debug_position;
         }
+    }
+    else if (!state_.tracing_enabled) {
+        state_.last_debug_position = state_.current_debug_position - state_.debug_position_offset;
     }
 }
 
