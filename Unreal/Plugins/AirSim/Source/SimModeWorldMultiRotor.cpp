@@ -14,6 +14,7 @@ void ASimModeWorldMultiRotor::BeginPlay()
         //create its control server
         try {
             fpv_vehicle_connector_->startApiServer();
+			// fpv_vehicle_connector_2_->startApiServer();
         }
         catch (std::exception& ex) {
             UAirBlueprintLib::LogMessage("Cannot start RpcLib Server",  ex.what(), LogDebugLevel::Failure);
@@ -66,6 +67,17 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
                     FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();
                     camera->saveScreenshot(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, imagePathPrefix, record_tick_count);
                 }
+
+				APIPCamera* cam1 = pawn1->getFpvCamera();
+				if (cam1 != nullptr) {
+					FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_Q1_", "", "", false).c_str();
+					cam1->saveScreenshot(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, imagePathPrefix, record_tick_count);
+				}
+				APIPCamera* cam2 = pawn2->getFpvCamera();
+				if (cam2 != nullptr) {
+					FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_Q2_", "", "", false).c_str();
+					cam2->saveScreenshot(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, imagePathPrefix, record_tick_count);
+				}
             }
         }
     }
@@ -77,6 +89,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     if (fpv_vehicle_connector_ != nullptr) {
         fpv_vehicle_connector_->stopApiServer();
+		//fpv_vehicle_connector_2_->stopApiServer();
     }
 
     Super::EndPlay(EndPlayReason);
@@ -108,7 +121,13 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
             if (pawn == fpv_pawn) {
                 fpv_vehicle_connector_ = vehicle;
+				pawn1 = static_cast<AFlyingPawn*>(pawn);
             }
+			else
+			{
+				pawn2 = static_cast<AFlyingPawn*>(pawn);
+			}
+			
         }
         //else we don't have vehicle for this pawn
     }
@@ -117,7 +136,7 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* pawn)
 {
     auto vehicle = std::make_shared<MultiRotorConnector>();
-    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::Pixhawk);
+    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::RosFlight);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

@@ -41,7 +41,7 @@ private: //methods
 	void setStencilIDs();
     void setupInputBindings();
     void detectUsbRc();
-    static float joyStickToRC(int16_t val);
+    static float joyStickToRC(unsigned int id, int16_t val);
 
 private: //variables
 		 //Unreal components

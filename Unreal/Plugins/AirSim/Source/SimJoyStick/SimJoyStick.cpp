@@ -20,7 +20,26 @@ public:
         }
 
         // Simply get the state of the controller from XInput.
-        auto dwResult = XInputGetState(index, &controllers_[index].state);
+        // auto dwResult = XInputGetState(index, &controllers_[index].state);
+
+		DWORD dwResult;
+		for (DWORD i = 0; i< XUSER_MAX_COUNT; i++)
+		{
+			XINPUT_STATE state;
+			ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+			// Simply get the state of the controller from XInput.
+			dwResult = XInputGetState(i, &state);
+
+			if (dwResult == ERROR_SUCCESS)
+			{
+				controllers_[i].bConnected = true;
+			}
+			else
+			{
+				controllers_[i].bConnected = false;
+			}
+		}
 
         if( dwResult == ERROR_SUCCESS )
             controllers_[index].bConnected = true;
