@@ -490,17 +490,32 @@ bool PlayLogCommand::Parse(const std::vector<std::string>& args)
 {
     if (args.size() <= 0)
         return false;
-    
+
+	this->_syncParams = false;
+	this->_fileName = "";
+
     std::string cmd = args[0];
     if (cmd == "playlog") {
-        if (args.size() > 1) {
-            _fileName = args.at(1);
-            log_.openForReading(_fileName);
+		for (size_t i = 1; i < args.size(); i++)
+		{
+			std::string arg = args.at(i);
+			if (arg == "-sync") {
+				this->_syncParams = true;
+			}
+			else if (_fileName == "") {
+				_fileName = args.at(1);
+				log_.openForReading(_fileName);
+			}
+			else {
+				printf("Usage: playlog <mavlink_logfile>\n");
+				return false;
+			}
             return true;
-        } 
-        else {
-            printf("Usage: playlog <mavlink_logfile>\n");
         }
+		if (_fileName == "") {
+			printf("Usage: playlog <mavlink_logfile>\n");
+			return false;
+		}
     }
     return false;
 }
@@ -547,15 +562,16 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
     uint16_t last_basemode = -1, last_custommode = -1;
 
-	printf("Comparing parameters with recorded log...\n");
 	std::vector<MavLinkParameter> params;
-	try {
-		params = com->getParamList();
+	if (this->_syncParams) {
+		printf("Comparing parameters with recorded log...\n");
+		try {
+			params = com->getParamList();
+		}
+		catch (std::exception e) {
+			printf("%s\n", e.what());
+		}
 	}
-	catch (std::exception e) {
-		printf("%s\n", e.what());
-	}
-
     printf("loading log...\n");
 
     while (log_.read(msg, log_timestamp)) {
@@ -655,9 +671,11 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         }
 		case MavLinkParamValue::kMessageId:
 		{
-			MavLinkParamValue param;
-			param.decode(msg);
-			SyncParamValue(com, params, param);
+			if (this->_syncParams) {
+				MavLinkParamValue param;
+				param.decode(msg);
+				SyncParamValue(com, params, param);
+			}
 			break;
 		}
         default:

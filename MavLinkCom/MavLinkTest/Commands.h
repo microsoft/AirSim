@@ -378,7 +378,7 @@ class PlayLogCommand : public Command
 {
 public:
     PlayLogCommand() {
-        this->Name = "playlog filename";
+        this->Name = "playlog filename";		
     }
 
     virtual bool Parse(const std::vector<std::string>& args);
@@ -394,6 +394,7 @@ private:
     float quaternion_[4];
     float x, y, z;
     std::string _fileName;
+	bool _syncParams;
 };
 
 
