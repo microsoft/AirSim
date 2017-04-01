@@ -28,14 +28,16 @@ protected:
         std::vector<real_T> arm_angles(params.rotor_count, 45);
 
         //set up mass
-        params.mass = 1.885f; 
+        params.mass = 1.935f; 
         real_T motor_assembly_weight = 0.052f;  
         real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
 
         params.rotor_params.C_T = 0.11f;
         params.rotor_params.C_P = 0.047f;
-        params.rotor_params.max_rpm = 9500;
+        params.rotor_params.max_rpm = 8500;
         params.rotor_params.calculateMaxThrust();
+		params.linear_drag_coefficient *= 4; // make top speed more real.
+		params.rotor_params.throttle_boost = 0;
 
         //set up dimensions of core body box or abdomen (not including arms).
         params.body_box.x = 0.16f; params.body_box.y = 0.10f; params.body_box.z = 0.14f;

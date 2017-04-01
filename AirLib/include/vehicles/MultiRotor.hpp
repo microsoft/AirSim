@@ -99,12 +99,23 @@ public:
 
         getController()->update(dt);
 
+		float throttle_boost = params_->getParams().rotor_params.throttle_boost;
+
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
-            rotors_.at(rotor_index).setControlSignal(
-                getController()->getVertexControlSignal(rotor_index));
+            rotors_.at(rotor_index).setControlSignal(boost(
+                getController()->getVertexControlSignal(rotor_index), throttle_boost));
         }
     }
+
+	float boost(float signal, float amount) {
+		if (amount > 0 && amount < 0.7) {
+			float top = 1 - amount;
+			return Utils::clip(top * signal + amount, 0.0f, 1.0f);
+		}
+		return signal;
+	}
+
 
     //sensor getter
     const SensorCollection& getSensors() const

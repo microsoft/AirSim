@@ -75,6 +75,7 @@ namespace msr {
                 params.rotor_params.C_P = 0.047;
                 params.rotor_params.max_rpm = 9500;
                 params.rotor_params.calculateMaxThrust();
+				params.rotor_params.throttle_boost = 0;
 
                 //set up dimensions of core body box or abdomen (not including arms).
                 params.body_box.x = 0.20f; params.body_box.y = 0.12f; params.body_box.z = 0.04f;
