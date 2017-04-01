@@ -38,7 +38,7 @@ public:
 
 private:
     void write_motor(uint8_t index, int32_t value);
-    void Mixer::write_servo(uint8_t index, int32_t value);
+    void write_servo(uint8_t index, int32_t value);
 
 private:
     typedef enum

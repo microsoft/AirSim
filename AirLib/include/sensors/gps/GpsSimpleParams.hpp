@@ -15,7 +15,7 @@ struct GpsSimpleParams {
     real_T eph_final = 0.3f, epv_final = 0.4f;
     real_T eph_min_3d = 3.0f, eph_min_2d = 4.0f;
 
-    real_T update_latency = 0.2f;    //sec
+    real_T update_latency = 0.1f;    //sec
     real_T update_frequency = 50;    //Hz
     real_T startup_delay = 1;        //sec
 };
