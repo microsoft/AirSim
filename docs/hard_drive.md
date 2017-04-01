@@ -1,6 +1,7 @@
 # Busy Hard Drive
 
-There is a reason we recommend running your Unreal Environment on a Solid State Drive (SSD).  Between debugging, logging, and Unreal asset loading
+It is not required, but we recommend running your Unreal Environment on a Solid State Drive (SSD). 
+Between debugging, logging, and Unreal asset loading
 the hard drive can become your bottle neck.  It is normal that your hard drive will be slammed while Unreal is loading
 the environment, but if your hard drive performance looks like this while the Unreal game is running
 then you will probably not get a good flying experience.  
