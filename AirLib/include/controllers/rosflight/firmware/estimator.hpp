@@ -53,7 +53,7 @@ private:
     vector_t wbar;
     vector_t wfinal;
     vector_t w_acc;
-    constexpr static vector_t g = {0.0f, 0.0f, -1.0f};
+    vector_t g = {0.0f, 0.0f, -1.0f};
     vector_t b;
     quaternion_t q_tilde;
     quaternion_t q_hat;
