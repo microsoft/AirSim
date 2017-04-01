@@ -102,7 +102,7 @@ public:
         if (index < OutputMotorCount)
             motors_pwm_[index] = value;
         else
-            throw std::exception("cannot write motor output for index > motor count");
+            throw std::runtime_error("cannot write motor output for index > motor count");
     }
 
     virtual void set_led(uint8_t index, bool is_on) override 
@@ -172,12 +172,12 @@ public:
 
     virtual void read_diff_pressure(float& differential_pressure, float& temp, float& velocity) override 
     {
-        throw std::exception("Diff pressure sensor is not available");
+        throw std::runtime_error("Diff pressure sensor is not available");
     }
 
     virtual float read_sonar() override 
     {
-        throw std::exception("Sonar sensor is not available");
+        throw std::runtime_error("Sonar sensor is not available");
     }
 
     virtual void read_mag(int16_t mag_adc[3]) override 
