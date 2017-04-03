@@ -21,10 +21,10 @@ public:
         ImuSimple imu;
         imu.initialize(&kinematics, &environment);
 
-
         float interations = total_duration / period;
 
         output_stream << std::fixed;
+        output_stream << "time\tx-gyro\ty-gyro\tz-gyro\tx-acc\ty-acc\t-z-acc" << std::endl;
 
         double last = Utils::getTimeSinceEpoch();
         for (auto i = 0; i < interations; ++i) {
@@ -42,19 +42,20 @@ public:
         }
     }
 
-    static void generateBarometerStaticData(std::ostream& output_stream, float period, float total_duration)
+    static void generateBarometerStaticData(std::ostream& output_stream, float period, float total_duration, GeoPoint loc)
     {
         auto kinematics = Kinematics::State::zero();
-        msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(), 0);
+        msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
         msr::airlib::Environment environment(initial_environment);
 
         BarometerSimple baro;
         baro.initialize(&kinematics, &environment);
 
-
         float interations = total_duration / period;
 
         output_stream << std::fixed;
+        output_stream << "time\tpressure\taltitude" << std::endl;
+
 
         double last = Utils::getTimeSinceEpoch();
         for (auto i = 0; i < interations; ++i) {
@@ -73,19 +74,19 @@ public:
     }
 
 
-    static void generateBarometerDynamicData(std::ostream& output_stream, float period, float total_duration)
+    static void generateBarometerDynamicData(std::ostream& output_stream, float period, float total_duration, GeoPoint loc)
     {
         auto kinematics = Kinematics::State::zero();
-        msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(), 0);
+        msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
         msr::airlib::Environment environment(initial_environment);
 
         BarometerSimple baro;
         baro.initialize(&kinematics, &environment);
 
-
         float interations_20s = 20.0f / period;
 
         output_stream << std::fixed;
+        output_stream << "time\tpressure\taltitude\tgps_alt" << std::endl;
 
         double last = Utils::getTimeSinceEpoch();
         bool which_alt = false;
@@ -111,9 +112,12 @@ public:
     }
 
 
-    static void generateMagnetometerDataLoc(std::ostream& output_stream, float period, float total_duration)
+    static void generateMagnetometerDataLoc(std::ostream& output_stream, float period, float total_duration, GeoPoint loc)
     {
         output_stream << std::fixed;
+
+        output_stream << "time\tx-mag\ty-mag\tz-mag\tlat\tlon\talt\tw\tx\ty\tz" << std::endl;
+
         float interations = total_duration / period;
         double last = Utils::getTimeSinceEpoch();
         for (float pitch = 0; pitch < 2.1*M_PIf; pitch += M_PIf/2) {
@@ -122,8 +126,7 @@ public:
 
             auto kinematics = Kinematics::State::zero();
             kinematics.pose.orientation = VectorMath::toQuaternion(pitch, roll, yaw);
-            //msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(47.7631699f, -122.0685655f, 111.208f), 0);
-            msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(47.6628040f, -122.1167039f, 7.564f), 0);
+            msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
             msr::airlib::Environment environment(initial_environment);
             MagnetometerSimple mag;
             mag.initialize(&kinematics, &environment);
