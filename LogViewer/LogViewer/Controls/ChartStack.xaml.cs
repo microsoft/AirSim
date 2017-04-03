@@ -75,6 +75,15 @@ namespace LogViewer.Controls
 
         public UIElementCollection Charts {  get { return theStack.Children; } }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                selecting = false;
+                Selection.Visibility = Visibility.Collapsed;
+                e.Handled = true;
+            }
+        }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
@@ -85,6 +94,7 @@ namespace LogViewer.Controls
             Selection.Width = 1;
             Selection.Height = this.ActualHeight;
             Selection.Margin = new Thickness(pos.X, 0, 0, 0);
+            Focus();
             this.CaptureMouse();
             base.OnMouseLeftButtonDown(e);
         }

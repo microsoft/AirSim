@@ -111,12 +111,6 @@ struct MavLinkDroneController::impl {
                 rotor_controls_[i] = (rotor_controls_[i] + 1.0f) / 2.0f;
             }
         }
-        else { // we have 0 to 1
-            //TODO: make normalization vehicle independent?
-            for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
-                rotor_controls_[i] = Utils::clip(0.8f * rotor_controls_[i] + 0.20f, 0.0f, 1.0f);
-            }
-        }
     }
 
     void initializeMavSubscriptions()
@@ -308,6 +302,7 @@ struct MavLinkDroneController::impl {
         hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
         mav_vehicle_->connect(connection_); // in this case we can use the same connection.
+		mav_vehicle_->startHeartbeat();
     }
 
     mavlinkcom::MavLinkHilSensor getLastSensorMessage()

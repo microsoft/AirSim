@@ -626,9 +626,9 @@ namespace LogViewer.Controls
 
         const double TooltipThreshold = 20;
 
-        DataValue FindNearestValue(Point pos, bool ignoreY)
+        int FindNearestValue(Point pos, bool ignoreY)
         {
-            DataValue found = null;
+            int found = -1;
 
             // transform top Graph coordinates (which could be constantly changing because of zoom and scrolling.
             pos = this.TransformToDescendant(Graph).Transform(pos);
@@ -658,7 +658,7 @@ namespace LogViewer.Controls
                             if (distance < minDistance)
                             {
                                 minDistance = distance;
-                                found = d;
+                                found = i;
                             }
                         }
                     }
@@ -674,7 +674,7 @@ namespace LogViewer.Controls
                             if (distance < minDistance)
                             {
                                 minDistance = distance;
-                                found = d;
+                                found = i;
                             }
                         }
                     }
@@ -685,9 +685,10 @@ namespace LogViewer.Controls
 
         void UpdatePointer(Point pos)
         {
-            DataValue found = FindNearestValue(pos, false);
-            if (found != null)
+            int i = FindNearestValue(pos, false);
+            if (i >= 0)
             {
+                DataValue found = series.Values[i];
                 double availableHeight = this.ActualHeight;
                 double value = found.Y;
                 Point scaled = scaleTransform.Transform(new Point(found.X, found.Y));
@@ -709,14 +710,19 @@ namespace LogViewer.Controls
             Point localEndPos = stack.TransformToDescendant(this).Transform(pos);
             if (localEndPos.X >= 0 && localEndPos.Y >= 0 && localEndPos.X < this.ActualWidth && localEndPos.Y < this.ActualHeight)
             {
-                DataValue startData = FindNearestValue(localStartPos, true);
-                DataValue endData = FindNearestValue(localEndPos, true);
-                if (startData != null && endData != null)
+                int s = FindNearestValue(localStartPos, true);
+                int e = FindNearestValue(localEndPos, true);
+                if (s >= 0 && e >= 0)
                 {
+                    DataValue startData = series.Values[s];
+                    DataValue endData = series.Values[e];
                     Point tipPosition = this.TransformToDescendant(Graph).Transform(localEndPos);
                     double microseconds = endData.X - startData.X;
                     TimeSpan span = new TimeSpan((long)microseconds * 10);
-                    ShowTip(span.ToString(), tipPosition);
+                    double seconds = span.TotalSeconds;
+                    double diff = endData.Y - startData.Y;
+                    string msg = string.Format("{0:N3} sec, dist={1:N3}, rate={2:N3}, samples={3:N3}", seconds, diff, diff / seconds, e - s);
+                    ShowTip(msg, tipPosition);
                 }
                 else
                 {

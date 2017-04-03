@@ -75,7 +75,7 @@ public:
         case 2: index_quadx = 3; break;
         case 3: index_quadx = 0; break;
         default:
-            throw std::exception("Rotor index beyond 3 is not supported yet in ROSFlight firmware");
+            throw std::runtime_error("Rotor index beyond 3 is not supported yet in ROSFlight firmware");
         }
 
         auto control_signal = board_->getMotorControlSignal(index_quadx);

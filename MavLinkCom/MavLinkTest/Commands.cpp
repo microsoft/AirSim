@@ -490,19 +490,64 @@ bool PlayLogCommand::Parse(const std::vector<std::string>& args)
 {
     if (args.size() <= 0)
         return false;
-    
+
+	this->_syncParams = false;
+	this->_fileName = "";
+
     std::string cmd = args[0];
     if (cmd == "playlog") {
-        if (args.size() > 1) {
-            _fileName = args.at(1);
-            log_.openForReading(_fileName);
+		for (size_t i = 1; i < args.size(); i++)
+		{
+			std::string arg = args.at(i);
+			if (arg == "-sync") {
+				this->_syncParams = true;
+			}
+			else if (_fileName == "") {
+				_fileName = args.at(1);
+				log_.openForReading(_fileName);
+			}
+			else {
+				printf("Usage: playlog <mavlink_logfile>\n");
+				return false;
+			}
             return true;
-        } 
-        else {
-            printf("Usage: playlog <mavlink_logfile>\n");
         }
+		if (_fileName == "") {
+			printf("Usage: playlog <mavlink_logfile>\n");
+			return false;
+		}
     }
     return false;
+}
+
+void SyncParamValue(std::shared_ptr<MavLinkVehicle> com, std::vector<MavLinkParameter>& params, MavLinkParamValue& param)
+{
+	MavLinkParameter  p;
+	p.index = param.param_index;
+	p.type = param.param_type;
+	char buf[17];
+	std::memset(buf, 0, 17);
+	std::memcpy(buf, param.param_id, 16);
+	p.name = buf;
+	p.value = param.param_value;
+
+	for (auto iter = params.begin(), end = params.end(); iter != end; iter++)
+	{
+		MavLinkParameter q = *iter;
+		if (q.name == p.name) {
+			if (q.value != p.value) {
+				printf("Parameter %s has different value %f, recorded value was %f\n",
+					p.name.c_str(), q.value, p.value);
+				if (p.name.substr(0, 3) == "MC_") {
+					// these PID values are important, so set these to match
+					bool r;
+					if (!com->setParameter(p).wait(1000, &r) || !r) {
+						printf("error setting parameter %s\n", p.name.c_str());
+					}
+				}
+			}
+		}
+	}
 }
 
 void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
@@ -516,6 +561,17 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     bool armed = false;
     playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
     uint16_t last_basemode = -1, last_custommode = -1;
+
+	std::vector<MavLinkParameter> params;
+	if (this->_syncParams) {
+		printf("Comparing parameters with recorded log...\n");
+		try {
+			params = com->getParamList();
+		}
+		catch (std::exception e) {
+			printf("%s\n", e.what());
+		}
+	}
     printf("loading log...\n");
 
     while (log_.read(msg, log_timestamp)) {
@@ -613,6 +669,15 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
             break;
         }
+		case MavLinkParamValue::kMessageId:
+		{
+			if (this->_syncParams) {
+				MavLinkParamValue param;
+				param.decode(msg);
+				SyncParamValue(com, params, param);
+			}
+			break;
+		}
         default:
             break;
         }

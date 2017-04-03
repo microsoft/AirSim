@@ -78,7 +78,7 @@ private:
     vector_t calib_gyro_sum = { 0.0f, 0.0f, 0.0f };
     uint16_t calib_accel_count = 0;
     vector_t calib_accel_sum = { 0.0f, 0.0f, 0.0f };
-    static constexpr vector_t gravity = { 0.0f, 0.0f, 9.80665f };
+    vector_t gravity = { 0.0f, 0.0f, 9.80665f };
     float acc_temp_sum = 0.0f;
 };
 
