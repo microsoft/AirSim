@@ -973,6 +973,14 @@ struct MavLinkDroneController::impl {
 
     void endOffboardMode()
     {
+        // The reason we are releasing control here is because if we stop sending move commands to the
+        // drone every 20ms, the drone will "timeout" and instigate an undefined behavior.  For example, DJI
+        // matrice will just hover, but the PX4 drone will attempt to land, which we don't want.  So if we 
+        // explicitly tell the drone we are done with  commands it will switch back to whatever previous mode was.  
+        // So if you just did a takeoff, the 'previous' mode should be "loiter" or "hover" which is usually a safe 
+        // state to go back to between move commands.  If you do back-to-back move commands then the time between 
+        // this release and the next requestControl will be tiny and the drone should be able to handle that quick
+        // transition gracefully.
         mav_vehicle_->releaseControl();
         ensureSafeMode();
     }

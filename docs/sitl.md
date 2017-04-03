@@ -51,6 +51,32 @@ param set LPE_LON -122.140165
 
 Now close Unreal app, restart `./build_posix_sitl_default/src/firmware/posix/px4` and re-start the unreal app.  
 
+## Check the Home Position
+
+If you are using DroneShell to execute commands (arm, takeoff, etc) then you should wait until the Home position is set.
+You will see the PX4 SITL console output this message:
+
+````
+INFO  [commander] home: 47.6414680, -122.1401672, 119.99
+INFO  [tone_alarm] home_set
+````
+
+Now DroneShell 'pos' command should report this position and the commands should be accepted by PX4.  If you attempt to
+takeoff without a home position you will see the message:
+
+````
+WARN  [commander] Takeoff denied, disarm and re-try
+````
+
+After home position is set check the local position reported by 'pos' command :
+
+````
+Local position: x=-0.0326988, y=0.00656854, z=5.48506
+````
+
+If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL and simulation 
+should fix that problem.
+
 ## Using VirtualBox Ubuntu
 
 If you want to run the above posix_sitl in a `VirtualBox Ubuntu` machine then it will have a different ip address from localhost.

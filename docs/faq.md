@@ -39,3 +39,15 @@ VS2015 update 3 (x86) with VC++
 Cmake 3.7 (x86)
 ````
 Even though cmake 3.7 says it added support for VS 2017 folks are reporting build issues with that.
+
+### WARN  [commander] Takeoff denied, disarm and re-try
+
+This happens if you try and take off when  PX4 still has not computed the home position.  PX4 will report the home
+position once it is happy with the GPS signal, and you will see these messages:
+
+````
+INFO  [commander] home: 47.6414680, -122.1401672, 119.99
+INFO  [tone_alarm] home_set
+````
+
+Up until this point in time, however, the PX4 will reject takeoff commands.
