@@ -93,4 +93,7 @@ We have tried it and gladly switched back to regular RC. But just in case you wa
 4. Go back to settings screen (gears icon), click on Parameters tab, type `COM_RC_IN_MODE` in search box and change its value to either `Joystick/No RC Checks` or `Virtual RC by Joystick`.
 5. You should now see a new tab "Joystick" where you can do the calibration.
 
-A Playstation 3 controller is confirmed to work as an AirSim controller. On Windows, an emulator to make it look like an Xbox 360 controller, is required however. Many different solutions are available online, the [x360ce](https://github.com/x360ce/x360ce) _Xbox 360 Controller Emulator_ is an excellent suggestion to get everything configured easily.
+A Playstation 3 controller is confirmed to work as an AirSim controller. On Windows, an emulator to make it look like an Xbox 360 controller, is required however. Many different solutions are available online.
+
+Note: the [x360ce](https://github.com/x360ce/x360ce) _Xbox 360 Controller Emulator_ conflicts with Unreal and stops xinput from
+working.

@@ -17,6 +17,13 @@ sudo apt-get update
 sudo apt-get install cmake
 ````
 
+If this doesn't work you can install it manually using these commands:
+
+````
+wget https://cmake.org/files/v3.5/cmake-3.5.1-Linux-x86_64.sh
+sh cmake-3.5.1-Linux-x86_64.sh .
+````
+
 Next you need a version of [CLang compiler](http://releases.llvm.org/3.9.0/tools/clang/docs/ReleaseNotes.html) that supports `-std=c++14`.  Version 3.9 or newer should work.   The following commands will get you clang 3.9:
 ````
 sudo apt-get update
@@ -25,12 +32,8 @@ sudo apt-get update
 sudo apt-get install clang-3.9 clang++-3.9
 ````
 
-If that doesn't work then try this (for Ubuntu 16 only):
-````
-sudo apt-get update 
-wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - 
-sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main" 
-sudo apt-get install clang-3.9 clang++-3.9
+If this doesn't work please follow detailed instructions on [http://apt.llvm.org/](http://apt.llvm.org/).
+
 ````
 Now make clang-3.9 your default version of clang with this command:
 ````
