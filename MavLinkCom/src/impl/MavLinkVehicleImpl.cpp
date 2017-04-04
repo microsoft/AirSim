@@ -107,8 +107,8 @@ enum PX4_CUSTOM_SUB_MODE_AUTO {
 #define MAVLINK_MSG_SET_POSITION_TARGET_LOITER			    0x3000
 #define MAVLINK_MSG_SET_POSITION_TARGET_IDLE			    0x4000
 
-MavLinkVehicleImpl::MavLinkVehicleImpl(int system_id, int component_id)
-	: MavLinkNodeImpl(system_id, component_id)
+MavLinkVehicleImpl::MavLinkVehicleImpl(int local_system_id, int local_component_id)
+	: MavLinkNodeImpl(local_system_id, local_component_id)
 {
 }
 

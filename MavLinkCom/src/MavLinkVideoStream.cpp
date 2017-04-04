@@ -9,10 +9,10 @@ using namespace mavlinkcom_impl;
 
 // ============================== CLIENT ============================================
 
-MavLinkVideoClient::MavLinkVideoClient(int system_id, int component_id)
-	: MavLinkNode(system_id, component_id)
+MavLinkVideoClient::MavLinkVideoClient(int local_system_id, int local_component_id)
+	: MavLinkNode(local_system_id, local_component_id)
 {
-	pImpl.reset(new MavLinkVideoClientImpl(system_id, component_id));
+	pImpl.reset(new MavLinkVideoClientImpl(local_system_id, local_component_id));
 }
 
 
