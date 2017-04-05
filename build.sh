@@ -42,11 +42,11 @@ build_dir=build_debug
 echo "putting build in build_debug folder, to clean, just delete the directory..."
 
 # this ensures the cmake files will be built in our $build_dir instead.
-if [[ -f "../cmake/CMakeCache.txt" ]]; then
-    rm "../cmake/CMakeCache.txt"
+if [[ -f "./cmake/CMakeCache.txt" ]]; then
+    rm "./cmake/CMakeCache.txt"
 fi
-if [[ -d "../cmake/CMakeFiles" ]]; then
-    rm -rf "../cmake/CMakeFiles"
+if [[ -d "./cmake/CMakeFiles" ]]; then
+    rm -rf "./cmake/CMakeFiles"
 fi
 
 if [[ ! -d $build_dir ]]; then
