@@ -122,6 +122,11 @@ void MavLinkFtpClientImpl::list(MavLinkFtpProgress& progress, const std::string&
 	files_ = &files;
 	command_ = FtpCommandList;
 	remote_file_ = remotePath;
+    size_t len = remote_file_.size();
+    if (len > 1  && remote_file_[len - 1] == '/') {
+        // must trim trailing slashes so PX4 doesn't hang!
+        remote_file_ = remote_file_.substr(0, len - 1);
+    }
 	file_index_ = 0;
 	runStateMachine();
 	progress.complete = true;
@@ -181,6 +186,37 @@ void MavLinkFtpClientImpl::remove(MavLinkFtpProgress& progress, const std::strin
 	runStateMachine();
 	progress_ = nullptr;
 	progress.complete = true;
+}
+
+
+void MavLinkFtpClientImpl::mkdir(MavLinkFtpProgress& progress, const std::string& remotePath)
+{
+    remote_file_ = remotePath;
+
+    if (waiting_) {
+        cancel();
+    }
+    ensureConnection();
+    progress_ = &progress;
+    command_ = FtpCommandMkdir;
+    runStateMachine();
+    progress_ = nullptr;
+    progress.complete = true;
+}
+
+void MavLinkFtpClientImpl::rmdir(MavLinkFtpProgress& progress, const std::string& remotePath)
+{
+    remote_file_ = remotePath;
+
+    if (waiting_) {
+        cancel();
+    }
+    ensureConnection();
+    progress_ = &progress;
+    command_ = FtpCommandRmdir;
+    runStateMachine();
+    progress_ = nullptr;
+    progress.complete = true;
 }
 
 void MavLinkFtpClientImpl::runStateMachine()
@@ -258,6 +294,12 @@ void MavLinkFtpClientImpl::nextStep()
 	case FtpCommandRemove:
 		removeFile();
 		break;
+    case FtpCommandMkdir:
+        mkdir();
+        break;
+    case FtpCommandRmdir:
+        rmdir();
+        break;        
 	default:
 		break;
 	}
@@ -273,6 +315,30 @@ void MavLinkFtpClientImpl::removeFile()
 	setPayloadFilename(payload, remote_file_.c_str());
 	sendMessage(ftp);
 	recordMessageSent();
+}
+
+void MavLinkFtpClientImpl::mkdir()
+{
+    MavLinkFileTransferProtocol ftp;
+    FtpPayload* payload = reinterpret_cast<FtpPayload*>(&ftp.payload[0]);
+    ftp.target_component = getTargetComponentId();
+    ftp.target_system = getTargetSystemId();
+    payload->opcode = kCmdCreateDirectory;
+    setPayloadFilename(payload, remote_file_.c_str());
+    sendMessage(ftp);
+    recordMessageSent();
+}
+
+void MavLinkFtpClientImpl::rmdir()
+{
+    MavLinkFileTransferProtocol ftp;
+    FtpPayload* payload = reinterpret_cast<FtpPayload*>(&ftp.payload[0]);
+    ftp.target_component = getTargetComponentId();
+    ftp.target_system = getTargetSystemId();
+    payload->opcode = kCmdRemoveDirectory;
+    setPayloadFilename(payload, remote_file_.c_str());
+    sendMessage(ftp);
+    recordMessageSent();
 }
 
 void MavLinkFtpClientImpl::listDirectory()
@@ -623,6 +689,18 @@ void MavLinkFtpClientImpl::handleRemoveResponse()
 	waiting_ = false;
 }
 
+void MavLinkFtpClientImpl::handleRmdirResponse() 
+{
+    success_ = true;
+    waiting_ = false;
+}
+
+void MavLinkFtpClientImpl::handleMkdirResponse()
+{
+    success_ = true;
+    waiting_ = false;
+}
+
 void MavLinkFtpClientImpl::handleResponse(const MavLinkMessage& msg)
 {
 	if (msg.msgid == static_cast<int>(MavLinkMessageIds::MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL)) {
@@ -670,29 +748,35 @@ void MavLinkFtpClientImpl::handleResponse(const MavLinkMessage& msg)
 			if (progress_ != nullptr) {
 				progress_->message_count++;
 			}
-			// success, data should be following...
-			if (payload->req_opcode == kCmdListDirectory)
-			{
-				handleListResponse();
-			}
-			else if (payload->req_opcode == kCmdOpenFileRO || payload->req_opcode == kCmdReadFile) {
-				handleReadResponse();
-			}
-			else if (payload->req_opcode == kCmdOpenFileWO || payload->req_opcode == kCmdWriteFile) {
+            // success, data should be following...
+            switch (payload->req_opcode) {
+            case kCmdListDirectory:
+                handleListResponse();
+                break;
+            case kCmdOpenFileRO:
+            case kCmdReadFile:
+                handleReadResponse();
+                break;
+            case kCmdOpenFileWO:
+            case kCmdWriteFile:
 				handleWriteResponse();
-			}
-			else if (payload->req_opcode == kCmdResetSessions)
-			{
-				// ack on this cmd is expected
-			}
-			else if (payload->req_opcode == kCmdRemoveFile)
-			{
+                break;
+            case kCmdResetSessions:
+                // ack on this cmd is a noop
+                break;
+            case kCmdRemoveFile:
 				handleRemoveResponse();
-			}
-			else
-			{
+                break;
+            case kCmdRemoveDirectory:
+                handleRmdirResponse();
+                break;
+            case kCmdCreateDirectory:
+                handleMkdirResponse();
+                break;
+            default:
 				// todo: how to handle this? For now we ignore it and let the watchdog kick in and do a retry.
-				printf("Unexpected ACK with req_opcode=%d\n", static_cast<int>(payload->req_opcode));
+				Utils::logMessage("Unexpected ACK with req_opcode=%d\n", static_cast<int>(payload->req_opcode));
+                break;
 			}
 		}
 	}

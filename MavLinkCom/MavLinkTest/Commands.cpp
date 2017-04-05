@@ -2308,8 +2308,9 @@ bool FtpCommand::Parse(const std::vector<std::string>& args)
                 // local remote
                 source = args[1];
                 if (args.size() > 2) {
-                    std::string rel = normalize(args[1]);
+                    std::string rel = normalize(args[2]);
                     target = FileSystem::resolve(cwd, rel);
+                    target = toPX4Path(target);
                 }
                 else {
                     cmd = none;
@@ -2331,6 +2332,30 @@ bool FtpCommand::Parse(const std::vector<std::string>& args)
             else {
                 cmd = none;
                 printf("Missing remote file name\n");
+            }
+        }
+        else if (command == "mkdir") {
+            cmd = mkdir;
+            if (args.size() > 1) {
+                std::string rel = normalize(args[1]);
+                target = FileSystem::resolve(cwd, rel);
+                target = toPX4Path(target);
+            }
+            else {
+                cmd = none;
+                printf("Missing remote file path\n");
+            }
+        }
+        else if (command == "rmdir") {
+            cmd = rmdir;
+            if (args.size() > 1) {
+                std::string rel = normalize(args[1]);
+                target = FileSystem::resolve(cwd, rel);
+                target = toPX4Path(target);
+            }
+            else {
+                cmd = none;
+                printf("Missing remote file path\n");
             }
         }
     }
@@ -2363,6 +2388,12 @@ void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         break;
     case FtpCommand::remove:
         doRemove();
+        break;
+    case FtpCommand::mkdir:
+        doMkdir();
+        break;
+    case FtpCommand::rmdir:
+        doRmdir();
         break;
     default:
         break;
@@ -2400,7 +2431,8 @@ void FtpCommand::doList() {
     std::vector<MavLinkFileInfo> files;
 
     startMonitor();
-    client->list(progress, toPX4Path(source), files);
+    std::string dir = toPX4Path(source);
+    client->list(progress, dir, files);
     stopMonitor();
     printf("\n");
 
@@ -2573,6 +2605,35 @@ void FtpCommand::doRemove() {
         printf("\n");
     }
 
+    if (progress.error != 0) {
+        printf("remove failed\n");
+    }
+    else {
+        printf("ok\n");
+    }
+}
+
+
+void FtpCommand::doMkdir() {
+    printf("Creating directory %s ", target.c_str());
+    startMonitor();
+    client->mkdir(progress, target);
+    stopMonitor();
+    printf("\n");
+    if (progress.error != 0) {
+        printf("remove failed\n");
+    }
+    else {
+        printf("ok\n");
+    }
+}
+
+void FtpCommand::doRmdir() {
+    printf("Removing directory %s ", target.c_str());
+    startMonitor();
+    client->rmdir(progress, target);
+    stopMonitor();
+    printf("\n");
     if (progress.error != 0) {
         printf("remove failed\n");
     }

@@ -51,3 +51,15 @@ void MavLinkFtpClient::remove(MavLinkFtpProgress& progress, const std::string& r
 	auto ptr = dynamic_cast<MavLinkFtpClientImpl*>(pImpl.get());
 	ptr->remove(progress, remotePath);
 }
+
+void MavLinkFtpClient::mkdir(MavLinkFtpProgress& progress, const std::string& remotePath)
+{
+    auto ptr = dynamic_cast<MavLinkFtpClientImpl*>(pImpl.get());
+    ptr->mkdir(progress, remotePath);
+}
+
+void MavLinkFtpClient::rmdir(MavLinkFtpProgress& progress, const std::string& remotePath)
+{
+    auto ptr = dynamic_cast<MavLinkFtpClientImpl*>(pImpl.get());
+    ptr->rmdir(progress, remotePath);
+}

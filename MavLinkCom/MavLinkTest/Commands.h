@@ -724,7 +724,7 @@ class FtpCommand : public Command
 {
 public:
 	FtpCommand() {
-		this->Name = "ls [dir]\ncd name\nget remoteFile [localFile]\nput localFile remoteFile\nrm remoteFile]";
+		this->Name = "ls [dir]\ncd name\nget remoteFile [localFile]\nput localFile remoteFile\nrm remoteFile\nmkdir remotepath\nrmdir remotepath]";
 		this->cmd = none;
 	}
 	virtual bool Parse(const std::vector<std::string>& args);
@@ -743,13 +743,15 @@ private:
 	void doGet();
 	void doPut();
 	void doRemove();
+    void doMkdir();
+    void doRmdir();
 	void monitor();
 	bool parse(const std::string& name, bool& wildcards) const;
 	bool matches(const std::string& pattern, const std::string& name) const;
 	void startMonitor();
 	void stopMonitor();
 	enum FtpCommandEnum {
-		none, list, cd, get, put, remove
+		none, list, cd, get, put, remove, mkdir, rmdir
 	};
 	FtpCommandEnum cmd;
 	std::string source;

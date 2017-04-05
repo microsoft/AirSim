@@ -47,6 +47,8 @@ namespace mavlinkcom {
 		void get(MavLinkFtpProgress& progress, const std::string& remotePath, const std::string& localPath);
 		void put(MavLinkFtpProgress& progress, const std::string& remotePath, const std::string& localPath);
 		void remove(MavLinkFtpProgress& progress, const std::string& remotePath);
+        void mkdir(MavLinkFtpProgress& progress, const std::string& remotePath);
+        void rmdir(MavLinkFtpProgress& progress, const std::string& remotePath);
 
 		void cancel(); // cancel any pending operation.
 	};

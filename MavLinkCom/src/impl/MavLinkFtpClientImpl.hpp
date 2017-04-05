@@ -28,6 +28,8 @@ namespace mavlinkcom_impl {
 		void get(MavLinkFtpProgress& progress, const std::string& remotePath, const std::string& localPath);
 		void put(MavLinkFtpProgress& progress, const std::string& remotePath, const std::string& localPath);
 		void remove(MavLinkFtpProgress& progress, const std::string& remotePath);
+        void mkdir(MavLinkFtpProgress& progress, const std::string& remotePath);
+        void rmdir(MavLinkFtpProgress& progress, const std::string& remotePath);
 		void cancel();
 	private:
 		void nextStep();
@@ -35,10 +37,14 @@ namespace mavlinkcom_impl {
 		void removeFile();
 		void readFile();
 		void writeFile();
+        void mkdir();
+        void rmdir();
 		void handleListResponse();
 		void handleReadResponse();
 		void handleWriteResponse();
 		void handleRemoveResponse();
+        void handleRmdirResponse();
+        void handleMkdirResponse();
 		void reset();
 		void handleResponse(const MavLinkMessage& msg);
 		bool createLocalFile();
@@ -56,7 +62,7 @@ namespace mavlinkcom_impl {
 		// the following state is needed to implement a restartable state machine for each command
 		// with a watchdog
 		enum FtpCommandEnum {
-			FtpCommandNone, FtpCommandList, FtpCommandGet, FtpCommandPut, FtpCommandRemove
+			FtpCommandNone, FtpCommandList, FtpCommandGet, FtpCommandPut, FtpCommandRemove, FtpCommandMkdir, FtpCommandRmdir
 		};
 		FtpCommandEnum command_ = FtpCommandNone;
 		std::string local_file_;

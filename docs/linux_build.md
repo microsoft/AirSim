@@ -9,33 +9,39 @@ We need to use `clang compiler` because Unreal engine requires that.
 ## cmake
 
 First you will need at least [cmake version  3.5](https://cmake.org/install/). 
-If you don't have cmake version 3.* (for example, that is not the default on Ubuntu 14) you can run the following:
+If you don't have cmake version 3.5 (for example, 3.2.2 is the default on Ubuntu 14) you can run the following:
 
 ````
-sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
-sudo apt-get update
-sudo apt-get install cmake
-````
-
-If this doesn't work you can install it manually using these commands:
-
-````
+mkdir ~/cmake-3.5.1
+cd ~/cmake-3.5.1
 wget https://cmake.org/files/v3.5/cmake-3.5.1-Linux-x86_64.sh
-sh cmake-3.5.1-Linux-x86_64.sh .
+sh cmake-3.5.1-Linux-x86_64.sh --prefix ~/cmake-3.5.1
+# Answer 'n' to the question about creating another cmake-3.5.1-Linux-x86_64 folder
+sudo update-alternatives --install /usr/bin/cmake cmake ~/cmake-3.5.1/bin/cmake 60
 ````
 
-Next you need a version of [CLang compiler](http://releases.llvm.org/3.9.0/tools/clang/docs/ReleaseNotes.html) that supports `-std=c++14`.  Version 3.9 or newer should work.   The following commands will get you clang 3.9:
+Now type `cmake --version` to make sure your cmake version is 3.5.1.
+
+Next you need a version of [CLang compiler](http://releases.llvm.org/3.9.0/tools/clang/docs/ReleaseNotes.html) that supports `-std=c++14`.  Version 3.9 or newer should work.   The following commands will get you clang 3.9.  First edit `/etc/apt/sources.list` and add these lines:
+
 ````
-sudo apt-get update
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+deb http://apt.llvm.org/precise/ llvm-toolchain-precise main
+deb-src http://apt.llvm.org/precise/ llvm-toolchain-precise main
+deb http://apt.llvm.org/precise/ llvm-toolchain-precise-3.9 main
+deb-src http://apt.llvm.org/precise/ llvm-toolchain-precise-3.9 main
+````
+
+Then run the following:
+
+````
+wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
 sudo apt-get update
 sudo apt-get install clang-3.9 clang++-3.9
 ````
 
-If this doesn't work please follow detailed instructions on [http://apt.llvm.org/](http://apt.llvm.org/).
-
-````
+More detailed instructions are available here: [http://apt.llvm.org/](http://apt.llvm.org/).
 Now make clang-3.9 your default version of clang with this command:
+
 ````
 sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9
 ````

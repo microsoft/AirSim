@@ -226,6 +226,34 @@ void UnitTests::SendImageTest() {
 	return;
 }
 
+void UnitTests::VerifyFile(MavLinkFtpClient& ftp, const std::string& dir, const std::string& name, bool exists, bool isdir)
+{
+    MavLinkFtpProgress progress;
+    std::vector<MavLinkFileInfo> files;
+    ftp.list(progress, dir, files);
+    if (progress.error != 0) {
+        throw std::runtime_error(Utils::stringf("unexpected error %d: '%s' from ftp list '%s' command", 
+            progress.error, progress.message.c_str(), dir.c_str()));
+    }
+
+    bool found = false;
+    for (auto ptr = files.begin(), end = files.end(); ptr != end; ptr++) {
+        MavLinkFileInfo i = *ptr;
+        if (isdir == i.is_directory && i.name == name) {
+            found = true;
+        }
+    }
+    if (!found && exists) {
+        throw std::runtime_error(Utils::stringf("The %s '%s' not found in '%s', but it should be there", 
+            isdir ? "dir" : "file", name.c_str(), dir.c_str()));
+    }
+    else if (found && !exists) {
+        throw std::runtime_error(Utils::stringf("The %s '%s' was found in '%s', but it should not have been",
+            isdir ? "dir" : "file", name.c_str(), dir.c_str()));
+    }
+
+}
+
 void UnitTests::FtpTest() {
 
     std::shared_ptr<MavLinkConnection> connection = MavLinkConnection::connectSerial("px4", com_port_, baud_rate_);
@@ -237,6 +265,9 @@ void UnitTests::FtpTest() {
 
         MavLinkFtpProgress progress;
         std::vector<MavLinkFileInfo> files;
+
+        // ================ ls
+
         ftp.list(progress, "/fs/microsd", files);
         if (progress.error != 0) {
             throw std::runtime_error(Utils::stringf("unexpected error %d: '%s' from ftp list '/fs/microsd' command - does your pixhawk have an sd card?",
@@ -246,6 +277,8 @@ void UnitTests::FtpTest() {
         {
             printf("Found %d files in '/fs/microsd' folder\n", static_cast<int>(files.size()));
         }
+
+        // ================ put file
 
         auto tempPath = FileSystem::getTempFolder();
         tempPath = FileSystem::combine(tempPath, "ftptest.txt");
@@ -280,6 +313,9 @@ void UnitTests::FtpTest() {
 
         FileSystem::remove(tempPath);
 
+        VerifyFile(ftp, "/fs/microsd", "ftptest.txt", true, false);
+
+        // ================ get file
         ftp.get(progress, remotePath, localPath);
 
         if (progress.error != 0) {
@@ -307,6 +343,8 @@ void UnitTests::FtpTest() {
         printf("get succeeded\n");
 
         istream.close();
+
+        // ================ remove file
         FileSystem::remove(tempPath);
 
         ftp.remove(progress, remotePath);
@@ -319,6 +357,27 @@ void UnitTests::FtpTest() {
         {
             printf("remove succeeded\n");
         }
+
+        VerifyFile(ftp, "/fs/microsd", "ftptest.txt", false, false);
+
+        // ================ make directory
+        // D:\px4\src\lovettchris\Firmware\rootfs\fs\microsd
+        ftp.mkdir(progress, "/fs/microsd/testrmdir"); 
+        if (progress.error != 0) {
+            throw std::runtime_error(Utils::stringf("unexpected error %d: '%s' from ftp mkdir '/fs/microsd/testrmdir' command",
+                progress.error, progress.message.c_str()));
+        }
+
+        VerifyFile(ftp, "/fs/microsd", "testrmdir", true, true);
+
+        // ================ remove directory
+        ftp.rmdir(progress, "/fs/microsd/testrmdir");
+        if (progress.error != 0) {
+            throw std::runtime_error(Utils::stringf("unexpected error %d: '%s' from ftp rmdir '/fs/microsd/testrmdir' command",
+                progress.error, progress.message.c_str()));
+        }
+
+        VerifyFile(ftp, "/fs/microsd", "testrmdir", false, true);
 
     }
     catch (...) {
