@@ -77,6 +77,18 @@ Local position: x=-0.0326988, y=0.00656854, z=5.48506
 If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL and simulation 
 should fix that problem.
 
+## No Remote Control
+
+If you plan to fly with no remote control, just using DroneShell commands for example, then you will need to set the
+following parameters to stop the PX4 from triggering "failsafe mode on" every time a move command is finished.
+
+````
+param set NAV_RCL_ACT 0
+param set NAV_DLL_ACT 0
+````
+
+NOTE: Do `NOT` do this on a real drone as it is too dangerous to fly without these failsafe measures.
+
 ## Using VirtualBox Ubuntu
 
 If you want to run the above posix_sitl in a `VirtualBox Ubuntu` machine then it will have a different ip address from localhost.

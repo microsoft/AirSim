@@ -45,6 +45,7 @@ platforms, specifically Matrice, is in works.
 
 ## How to get images from drone?
 Here's a sample code. For more information, please see [DroneControlBase](https://github.com/Microsoft/AirSim/blob/master/AirLib/include/controllers/DroneControllerBase.hpp) class.
+See [Camera Views](camera_views.md) for information on the camera views and how to change them.
 
 ```
 int playWithImages() 
