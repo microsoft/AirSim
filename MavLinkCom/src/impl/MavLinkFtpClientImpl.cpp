@@ -263,7 +263,7 @@ void MavLinkFtpClientImpl::runStateMachine()
 		if (before == after)
 		{
 			if (totalSleep > (MAXIMUM_ROUND_TRIP_TIME * TIMEOUT_INTERVAL)) {
-				printf("ftp command timeout, not getting a response, so retrying\n");
+				Utils::logMessage("ftp command timeout, not getting a response, so retrying\n");
 				retry();
 				totalSleep = 0;
 			}
@@ -555,7 +555,7 @@ void MavLinkFtpClientImpl::handleListResponse()
 	if (payload->offset != file_index_)
 	{
 		// todo: error handling here? sequence is out of order...
-		printf("list got offset %d, but expecting file index %d\n", payload->offset, file_index_);
+		Utils::logMessage("list got offset %d, but expecting file index %d\n", payload->offset, file_index_);
 		retry();
 		return;
 	}
@@ -638,7 +638,7 @@ void MavLinkFtpClientImpl::handleReadResponse()
 		int seq = static_cast<int>(payload->seq_number);
 		if (seq != sequence_ + 1)
 		{
-			printf("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1);
+			Utils::logMessage("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1);
 			// perhaps this was a late response after we did a retry, so ignore it.
 			return;
 		}
@@ -669,7 +669,7 @@ void MavLinkFtpClientImpl::handleWriteResponse()
 		int seq = static_cast<int>(payload->seq_number);
 		if (seq != sequence_ + 1)
 		{
-			printf("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1); 
+			Utils::logMessage("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1); 
 			// perhaps this was a late response after we did a retry, so ignore it.
 			return;
 		}
@@ -787,7 +787,7 @@ void MavLinkFtpClientImpl::MavLinkFtpClientImpl::retry()
 	retries_++;
 	if (retries_ < 10) 
 	{
-		printf("retry %d\n", retries_);
+		Utils::logMessage("retry %d\n", retries_);
 		nextStep();
 	}
 	else 
