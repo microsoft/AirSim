@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              BorderBrush="white" BorderThickness="1"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Background="{StaticResource ControlBackgroundBrush}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -21,27 +21,21 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Style="{StaticResource BackButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Left" Click="OnCloseClicked" Margin="0,4,0,0"></Button>
-            <TextBlock Text="Settings" FontSize="18" Grid.Column="1" VerticalAlignment="Center"/>
+            <Label FontSize="18" Grid.Column="1" VerticalAlignment="Center">Settings</Label>
         </Grid>
 
         <Grid Grid.Row="1" Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="Theme:" />
+            <Label >Theme:</Label>
             <ComboBox x:Name="ThemeSelection" Grid.Row="1">
             </ComboBox>
-            <Grid Grid.Row="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-            </Grid>
-            
+
         </Grid>
     </Grid>
 </UserControl>

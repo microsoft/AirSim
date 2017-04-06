@@ -45,5 +45,6 @@ namespace LogViewer.Controls
                 Settings.Instance.Theme = (AppTheme)e.AddedItems[0];
             }
         }
+
     }
 }

@@ -721,7 +721,15 @@ namespace LogViewer.Controls
                     TimeSpan span = new TimeSpan((long)microseconds * 10);
                     double seconds = span.TotalSeconds;
                     double diff = endData.Y - startData.Y;
-                    string msg = string.Format("{0:N3} sec, dist={1:N3}, rate={2:N3}, samples={3:N3}", seconds, diff, diff / seconds, e - s);
+                    double sum = 0;
+                    double count = e - s;
+                    for (int i = s; i <= e; i++)
+                    {
+                        DataValue d = series.Values[i];
+                        sum += d.Y;
+                    }
+                    double average = sum / count;
+                    string msg = string.Format("{0:N3} sec, avg={1:N4}, dist={2:N3}, rate={3:N3}, samples={4:N3}", seconds, average, diff, diff / seconds, e - s);
                     ShowTip(msg, tipPosition);
                 }
                 else

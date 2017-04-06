@@ -576,10 +576,12 @@ namespace LogViewer
                 CsvDataLog log = new CsvDataLog();
                 await log.Load(file, progress);
 
-                FlightView.ItemsSource = new List<Flight>();
-                logs.Add(log);
-
-                ShowSchema();
+                UiDispatcher.RunOnUIThread(() =>
+                {
+                    FlightView.ItemsSource = new List<Flight>();
+                    logs.Add(log);
+                    ShowSchema();
+                });
 
             }
             catch (Exception ex)
@@ -1363,6 +1365,97 @@ namespace LogViewer
         private void OnSettings(object sender, RoutedEventArgs e)
         {
             AppSettingsPanel.Visibility = Visibility.Visible;
+        }
+
+        private void OnMapTest(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog fo = new Microsoft.Win32.OpenFileDialog();
+            fo.Filter = "CSV Files (*.csv)|*.csv";
+            fo.CheckFileExists = true;
+            fo.Multiselect = false;
+            if (fo.ShowDialog() == true)
+            {
+                LoadMapData(fo.FileName);
+            }
+        }
+
+        private void LoadMapData(string fileName)
+        {
+            // turn data into two lookup tables for easy access.
+            double[,] xmag  = new double[180,360];
+            double[,] ymag = new double[180, 360];
+
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                string line = reader.ReadLine();
+                while (line != null)
+                {
+                    string[] parts = line.Split('\t');
+                    if (parts.Length == 5)
+                    {
+                        double lat, lon, x, y;
+                        if (double.TryParse(parts[0], out lat))
+                        {
+                            lon = double.Parse(parts[1]);
+                            x = double.Parse(parts[2]);
+                            y = double.Parse(parts[3]);
+                            lat += 90;
+                            lon += 180;
+                            xmag[(int)lat, (int)lon] = x;
+                            ymag[(int)lat, (int)lon] = y;
+                        }
+                    }
+
+                    line = reader.ReadLine();
+                }
+            }
+
+            DrawVectors(xmag, ymag);
+        }
+
+        class LocationComparer : IEqualityComparer<Location>
+        {
+            public bool Equals(Location x, Location y)
+            {
+                return x.Altitude == y.Altitude && x.Latitude == y.Latitude && x.Longitude == y.Longitude;
+            }
+
+            public int GetHashCode(Location obj)
+            {
+                return (int)(obj.Altitude + obj.Latitude + obj.Longitude);
+            }
+        }
+
+        private void DrawVectors(double[,] xmag, double[,] ymag)
+        {
+            // find guassian lines in the map and draw them so it looks like this:
+            // https://www.ngdc.noaa.gov/geomag/WMM/data/WMM2015/WMM2015_D_MERC.pdf
+
+
+            for (int i = 0; i < 180; i++)
+            {
+                for (int j = 0; j < 360; j++)
+                {
+                    double x = xmag[i, j];
+                    double y = ymag[i, j];
+
+                    double latitude = i - 90;
+                    double longitude = j - 180;
+
+                    MapPolyline line = new MapPolyline();
+                    line.StrokeThickness = 1;
+                    line.Stroke = new SolidColorBrush(Colors.Red);
+                    LocationCollection points = new LocationCollection();
+                    Location pos = new Location() { Altitude = 0, Latitude = latitude, Longitude = longitude };
+                    points.Add(pos);
+
+                    // ok, we have a winner, pick this one and continue.
+                    pos = new Location() { Latitude = latitude + (x*2), Longitude = longitude + (y*2) };
+                    points.Add(pos);
+                    line.Locations = points;
+                    myMap.Children.Add(line);
+                }
+            }
         }
     }
 }

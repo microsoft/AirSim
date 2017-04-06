@@ -127,6 +127,11 @@
 
         <map:Map x:Name="myMap" Grid.Row="2" Grid.Column="1" Visibility="Collapsed" Mode="AerialWithLabels"
                          CredentialsProvider="VruKH10vX7v1jPmLcmVO~C_GUBuKIpJlWkqyst1nxfA~AqHtLM_1ZkuoKFMCKyhdWjyViiDNWnP54DmROtIGcrzLHfe_edxje0RR3N5OIsqT" >
+            <map:Map.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Test" Click="OnMapTest"/>
+                </ContextMenu>
+            </map:Map.ContextMenu>
         </map:Map>
 
         <local:MeshViewer x:Name="ModelViewer" Grid.Row="2" Grid.Column="1" BorderThickness="0"  Visibility="Collapsed"
