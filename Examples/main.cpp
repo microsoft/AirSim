@@ -23,11 +23,14 @@ int main(int argc, const char *argv[])
 
     using namespace msr::airlib;
 
-    GeoPoint testLocation(47.763160, -122.068534, 120.6f);
+    //GeoPoint testLocation(47.763160, -122.068534, 120.6f);
+
+	GeoPoint testLocation(47.7037051477, -122.1415384809, 9.93f); // 60 acres
+	float yawOffset = static_cast<float>(91.27622  * M_PI / 180.0); // I was aligned with the road...
 
     std::ofstream out_file(argv[1]);
     //StandALoneSensors::createStaticData(out_file, period, total_duration, testLocation);
-    StandALoneSensors::generateBarometerStaticData(out_file, period, total_duration, testLocation);
+    //StandALoneSensors::generateBarometerStaticData(out_file, period, total_duration, testLocation);
     //StandALoneSensors::generateBarometerDynamicData(out_file, period, total_duration, testLocation);
-    //StandALoneSensors::generateMagnetometerDataLoc(out_file, period, total_duration, testLocation);
+    StandALoneSensors::generateMagnetometer2D(out_file, period, total_duration, testLocation, yawOffset, true);
 }

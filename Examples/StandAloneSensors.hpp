@@ -112,20 +112,28 @@ public:
     }
 
 
-    static void generateMagnetometerDataLoc(std::ostream& output_stream, float period, float total_duration, GeoPoint loc)
+    static void generateMagnetometer2D(std::ostream& output_stream, float period, float total_duration, GeoPoint loc, float yawStart, bool ccw = false)
     {
         output_stream << std::fixed;
 
-        output_stream << "time\tx-mag\ty-mag\tz-mag\tlat\tlon\talt\tw\tx\ty\tz" << std::endl;
+        output_stream << "time\tx-mag\ty-mag\tz-mag" << std::endl;
 
         float interations = total_duration / period;
         double last = Utils::getTimeSinceEpoch();
-        for (float pitch = 0; pitch < 2.1*M_PIf; pitch += M_PIf/2) {
-        for (float roll = 0; roll < 2.1*M_PIf; roll += M_PIf/2) {
-        for (float yaw = 0; yaw < 2.1*M_PIf; yaw += M_PIf/2) {
+		for (float direction = 0; direction < 5; direction++) {
+
+			float yaw = yawStart;
+			float yawDelta = (direction * M_PIf / 2.0f);
+			if (ccw) {
+				yaw -= yawDelta;
+			}
+			else
+			{
+				yaw += yawDelta;
+			}
 
             auto kinematics = Kinematics::State::zero();
-            kinematics.pose.orientation = VectorMath::toQuaternion(pitch, roll, yaw);
+            kinematics.pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
             msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
             msr::airlib::Environment environment(initial_environment);
             MagnetometerSimple mag;
@@ -133,12 +141,9 @@ public:
 
             for (auto i = 0; i < interations; ++i) {
                 const auto& output = mag.getOutput();
-                const auto& geo = environment.getState().geo_point;
 
                 output_stream << Utils::getTimeSinceEpoch() << "\t";
                 output_stream << output.magnetic_field_body.x() << "\t" << output.magnetic_field_body.y() <<  "\t" << output.magnetic_field_body.z();
-                output_stream << "\t" << geo.latitude << "\t" << geo.longitude << "\t" << geo.altitude;
-                output_stream << "\t" << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x()<< "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z();
                 output_stream << std::endl;
 
                 std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpoch() - last))); 
@@ -147,8 +152,58 @@ public:
                 environment.update(dt);
                 mag.update(dt);
             }
-        }}}
+        }
     }
+
+
+
+	static void generateMagnetometer3D(std::ostream& output_stream, float period, float total_duration, GeoPoint loc, float yawStart = 0, bool ccw = false)
+	{
+		output_stream << std::fixed;
+
+		output_stream << "time\tx-mag\ty-mag\tz-mag\tlat\tlon\talt\tw\tx\ty\tz" << std::endl;
+
+		float interations = total_duration / period;
+		double last = Utils::getTimeSinceEpoch();
+		for (float pitch = 0; pitch < 2.1*M_PIf; pitch += M_PIf/2) {
+		for (float roll = 0; roll < 2.1*M_PIf; roll += M_PIf/2) {
+		for (float direction = 0; direction < 5; direction++) {
+
+			float yaw = yawStart;
+			float yawDelta = (direction * M_PIf / 2.0f);
+			if (ccw) {
+				yaw -= yawDelta;
+			}
+			else
+			{
+				yaw += yawDelta;
+			}
+
+			auto kinematics = Kinematics::State::zero();
+			kinematics.pose.orientation = VectorMath::toQuaternion(pitch, roll, yaw);
+			msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
+			msr::airlib::Environment environment(initial_environment);
+			MagnetometerSimple mag;
+			mag.initialize(&kinematics, &environment);
+
+			for (auto i = 0; i < interations; ++i) {
+				const auto& output = mag.getOutput();
+				const auto& geo = environment.getState().geo_point;
+
+				output_stream << Utils::getTimeSinceEpoch() << "\t";
+				output_stream << output.magnetic_field_body.x() << "\t" << output.magnetic_field_body.y() << "\t" << output.magnetic_field_body.z();
+				output_stream << "\t" << geo.latitude << "\t" << geo.longitude << "\t" << geo.altitude;
+				output_stream << "\t" << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z();
+				output_stream << std::endl;
+
+				std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpoch() - last)));
+				float dt = static_cast<float>(Utils::getTimeSinceEpoch() - last);
+				last = Utils::getTimeSinceEpoch();
+				environment.update(dt);
+				mag.update(dt);
+			}
+		}}}
+	}
 };
 
 
