@@ -20,6 +20,10 @@ namespace LogViewer.Model
 
         public string Type { get; set; }
 
+        // in case the Name is not unique (as is the case with multi_id formats in px4 logs) 
+        // the IDataLog implementor can use this field instead.
+        public int Id { get; set; }
+
         public List<LogItemSchema> ChildItems { get; set; }
 
         public bool HasChildren

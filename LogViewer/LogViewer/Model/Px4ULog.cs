@@ -32,7 +32,7 @@ namespace LogViewer.Model.ULog
         Char,
         Struct
     };
-    
+
 
     public class MessageField
     {
@@ -52,8 +52,8 @@ namespace LogViewer.Model.ULog
         {
             string[] parts = definition.Split(' ');
             typeName = parts[0];
-            
-            int i = typeName.IndexOf('[');            
+
+            int i = typeName.IndexOf('[');
             if (i > 0)
             {
                 // an array
@@ -63,7 +63,7 @@ namespace LogViewer.Model.ULog
                 {
                     string s = typeName.Substring(i, j - i);
                     arraySize = int.Parse(s);
-                    typeName = typeName.Substring(0, i-1);
+                    typeName = typeName.Substring(0, i - 1);
                 }
                 else
                 {
@@ -153,7 +153,11 @@ namespace LogViewer.Model.ULog
                 {
                     if (!string.IsNullOrWhiteSpace(fs))
                     {
-                        fields.Add(new MessageField(fs));
+                        var field = new MessageField(fs);
+                        if (!field.name.StartsWith("_padding"))
+                        {
+                            fields.Add(field);
+                        }
                     }
                 }
             }
@@ -167,7 +171,7 @@ namespace LogViewer.Model.ULog
             }
         }
     };
-    
+
     class MessageLogging : Message
     {
         byte logLevel;
@@ -183,20 +187,18 @@ namespace LogViewer.Model.ULog
 
     }
 
-    class MessageData: Message
+    class MessageData : Message
     {
-        internal MessageFormat format;
-        internal int multiId;
+        internal MessageSubscription subscription;
         UInt16 msgId;
         byte[] value;
         Dictionary<string, object> values;
 
-        public MessageData(UInt16 msgId, byte[] value, MessageFormat fmt, int multiId)
+        public MessageData(UInt16 msgId, byte[] value, MessageSubscription s)
         {
             this.msgId = msgId;
             this.value = value;
-            this.multiId = multiId;
-            this.format = fmt;
+            this.subscription = s;
         }
 
         internal DataValue GetValue(MessageField field)
@@ -231,7 +233,7 @@ namespace LogViewer.Model.ULog
             values = new Dictionary<string, object>();
             BinaryReader reader = new BinaryReader(new MemoryStream(value));
 
-            foreach (var field in format.fields)
+            foreach (var field in subscription.format.fields)
             {
                 object value = null;
                 if (field.arraySize > 0)
@@ -245,8 +247,8 @@ namespace LogViewer.Model.ULog
                 }
                 else
                 {
-                    value = ReadField(reader, field); 
-                }           
+                    value = ReadField(reader, field);
+                }
                 values[field.name] = value;
             }
         }
@@ -327,7 +329,7 @@ namespace LogViewer.Model.ULog
 
 
     }
-    
+
     class MessageSync : Message
     {
         byte[] magic;
@@ -356,9 +358,11 @@ namespace LogViewer.Model.ULog
     {
         public MessageFormat format;
         public int multiId;
+        public int id;
 
-        public MessageSubscription(MessageFormat fmt, int multiId)
+        public MessageSubscription(int id, MessageFormat fmt, int multiId)
         {
+            this.id = id;
             this.format = fmt;
             this.multiId = multiId;
         }
@@ -410,7 +414,8 @@ namespace LogViewer.Model.ULog
         public IEnumerable<DataValue> GetDataValues(LogItemSchema schema, DateTime startTime, TimeSpan duration)
         {
             List<LogItemSchema> path = new List<Model.LogItemSchema>();
-            while (schema != null) {
+            while (schema != null)
+            {
                 path.Insert(0, schema);
                 schema = schema.Parent;
             }
@@ -421,13 +426,13 @@ namespace LogViewer.Model.ULog
                 if (m is MessageData)
                 {
                     MessageData data = (MessageData)m;
-                    if (data.format.name == root.Name)
+                    if (data.subscription.id == root.Id)
                     {
                         // matching root schema, so drill down if necessary.
                         for (int i = 1, n = path.Count; i < n; i++)
                         {
                             LogItemSchema child = path[i];
-                            foreach (var field in data.format.fields)
+                            foreach (var field in data.subscription.format.fields)
                             {
                                 if (field.name == child.Name)
                                 {
@@ -497,7 +502,7 @@ namespace LogViewer.Model.ULog
                     }
                     this.reader = null;
                 }
-                
+
                 CreateSchema();
             });
             this.duration = lastTime - startTime;
@@ -507,27 +512,27 @@ namespace LogViewer.Model.ULog
         private void CreateSchema()
         {
             LogItemSchema schema = new LogItemSchema() { Name = "Px4ULog", Type = "Root", ChildItems = new List<Model.LogItemSchema>() };
-
             // only need to show formats that we actually have subscriptions on.
             foreach (var sub in this.subscriptions.Values)
             {
-                var element = CreateSchemaItem(sub.format);
+                // we can have "multi_id" subscriptions on the same format.
+                var element = CreateSchemaItem(sub, sub.format);
                 schema.ChildItems.Add(element);
             }
 
             this.schema = schema;
         }
 
-        LogItemSchema CreateSchemaItem(MessageFormat fmt)
+        LogItemSchema CreateSchemaItem(MessageSubscription sub, MessageFormat fmt)
         {
-            LogItemSchema element = new LogItemSchema() { Name = fmt.name, Parent = schema };
+            LogItemSchema element = new LogItemSchema() { Name = fmt.name, Parent = schema, Id = sub.id };
             foreach (var f in fmt.fields)
             {
                 LogItemSchema column = new LogItemSchema() { Name = f.name, Parent = element, Type = f.typeName + (f.arraySize > 0 ? "[" + f.arraySize + "]" : "") };
                 if (f.type == FieldType.Struct)
                 {
                     // nested
-                    var child = CreateSchemaItem(f.structType);
+                    var child = CreateSchemaItem(sub, f.structType);
                     column.ChildItems = child.ChildItems;
                 }
                 if (element.ChildItems == null)
@@ -619,7 +624,7 @@ namespace LogViewer.Model.ULog
 
             MessageSubscription s = null;
             subscriptions.TryGetValue(msgId, out s);
-            MessageData data = new MessageData(msgId, value, s.format, s.multiId);
+            MessageData data = new MessageData(msgId, value, s);
 
             return data;
         }
@@ -657,9 +662,9 @@ namespace LogViewer.Model.ULog
         {
             byte multi_id = reader.ReadByte();
             UInt16 msgId = reader.ReadUInt16();
-            string msgName = reader.ReadAsciiString(len - 3);            
+            string msgName = reader.ReadAsciiString(len - 3);
             MessageFormat fmt = formats[msgName];
-            subscriptions[msgId] = new MessageSubscription(fmt, multi_id);
+            subscriptions[msgId] = new MessageSubscription(msgId, fmt, multi_id);
             return null;
         }
 
