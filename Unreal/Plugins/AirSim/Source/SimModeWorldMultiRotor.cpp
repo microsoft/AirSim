@@ -78,6 +78,11 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 					FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_Q2_", "", "", false).c_str();
 					cam2->saveScreenshot(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, imagePathPrefix, record_tick_count);
 				}
+				APIPCamera* cam3 = pawn3->getFpvCamera();
+				if (cam3 != nullptr) {
+					FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_Q3_", "", "", false).c_str();
+					cam3->saveScreenshot(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, imagePathPrefix, record_tick_count);
+				}
             }
         }
     }
@@ -123,11 +128,14 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
                 fpv_vehicle_connector_ = vehicle;
 				pawn1 = static_cast<AFlyingPawn*>(pawn);
             }
-			else
+			else if(pawn2 == NULL)
 			{
 				pawn2 = static_cast<AFlyingPawn*>(pawn);
 			}
-			
+			else if(pawn2 != NULL && pawn3 == NULL)
+			{
+				pawn3 = static_cast<AFlyingPawn*>(pawn);
+			}
         }
         //else we don't have vehicle for this pawn
     }
@@ -136,7 +144,7 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* pawn)
 {
     auto vehicle = std::make_shared<MultiRotorConnector>();
-    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::RosFlight);
+    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::Pixhawk);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

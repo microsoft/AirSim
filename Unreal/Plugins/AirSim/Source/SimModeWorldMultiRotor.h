@@ -27,6 +27,7 @@ private:
 
 	AFlyingPawn* pawn1;
 	AFlyingPawn* pawn2;
+	AFlyingPawn* pawn3;
     TArray<uint8> image_;
 
 };
