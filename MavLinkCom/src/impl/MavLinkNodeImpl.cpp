@@ -83,6 +83,9 @@ void MavLinkNodeImpl::close()
             heartbeat_thread_.join();
         }
     }
+    if (connection_ != nullptr) {
+        connection_->close();
+    }
 	connection_ = nullptr;
 }
 

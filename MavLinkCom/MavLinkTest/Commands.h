@@ -390,7 +390,7 @@ public:
     virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
 
 private:
-    MavLinkLog log_;
+    MavLinkFileLog log_;
     float quaternion_[4];
     float x, y, z;
     std::string _fileName;
@@ -413,7 +413,7 @@ public:
 
     virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
 private:
-    static void processLogCommands(MavLinkLog& log, const std::string& out_folder);
+    static void processLogCommands(MavLinkFileLog& log, const std::string& out_folder);
 
 private:
     std::string log_folder_;

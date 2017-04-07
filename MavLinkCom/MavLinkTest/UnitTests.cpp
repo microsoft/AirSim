@@ -397,7 +397,7 @@ void UnitTests::JSonLogTest()
 {
     auto connection = MavLinkConnection::connectSerial("px4", com_port_, baud_rate_);
 
-    MavLinkLog log;
+    MavLinkFileLog log;
 
     auto tempPath = FileSystem::getTempFolder();
     tempPath = FileSystem::combine(tempPath, "test.mavlink");

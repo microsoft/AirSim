@@ -139,6 +139,7 @@ void MultiRotorConnector::startApiServer()
 void MultiRotorConnector::stopApiServer()
 {
     if (rpclib_server_ != nullptr) {
+        controller_cancelable_->cancelAllTasks();
         rpclib_server_->stop();
         rpclib_server_.reset(nullptr);
         controller_cancelable_.reset(nullptr);

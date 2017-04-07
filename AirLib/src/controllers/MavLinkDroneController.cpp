@@ -36,8 +36,22 @@ static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID fo
 static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
 static const int RotorControlsCount = 8;
 
+class MavLinkLogViewerLog : public MavLinkLog
+{
+    std::shared_ptr<mavlinkcom::MavLinkNode> proxy_;
+public:
+    MavLinkLogViewerLog(std::shared_ptr<mavlinkcom::MavLinkNode> proxy) {
+        proxy_ = proxy;
+    }
+    void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override {
+        MavLinkMessage copy;
+        ::memcpy(&copy, &msg, sizeof(MavLinkMessage));
+        proxy_->sendMessage(copy);
+    }
+};
+
 struct MavLinkDroneController::impl {
-    std::shared_ptr<mavlinkcom::MavLinkNode> logviewer_proxy_, qgc_proxy_;
+    std::shared_ptr<mavlinkcom::MavLinkNode> logviewer_proxy_, logviewer_out_proxy_, qgc_proxy_;
 
     size_t status_messages_MaxSize = 5000;
     
@@ -81,21 +95,20 @@ struct MavLinkDroneController::impl {
 
     //additional variables required for DroneControllerBase implementation
     //this is optional for methods that might not use vehicle commands
-    std::unique_ptr<mavlinkcom::MavLinkVehicle> mav_vehicle_;
+    std::shared_ptr<mavlinkcom::MavLinkVehicle> mav_vehicle_;
     int state_version_;
     mavlinkcom::VehicleState current_state;
     float target_height_;
     bool is_offboard_mode_;
     bool is_simulation_mode_;
     PidController thrust_controller_;
+    int sitl_message_check_;
 
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
     {
         connection_info_ = connection_info;
         sensors_ = sensors;
         is_simulation_mode_ = is_simulation;
-
-        mav_vehicle_.reset(new mavlinkcom::MavLinkVehicle(connection_info_.vehicle_sysid, connection_info_.vehicle_compid));
     }
 
     ConnectionInfo getMavConnectionInfo()
@@ -165,6 +178,18 @@ struct MavLinkDroneController::impl {
                 // error talking to log viewer, so don't keep trying, and close the connection also.
                 logviewer_proxy_->getConnection()->close();
                 logviewer_proxy_ = nullptr;
+            }
+
+            std::shared_ptr<mavlinkcom::MavLinkConnection> out_connection;
+            createProxy("LogViewerOut", connection_info_.logviewer_ip_address, connection_info_.logviewer_ip_sport, connection_info_.local_host_ip,
+                logviewer_out_proxy_, out_connection);
+            if (!sendTestMessage(logviewer_out_proxy_)) {
+                // error talking to log viewer, so don't keep trying, and close the connection also.
+                logviewer_out_proxy_->getConnection()->close();
+                logviewer_out_proxy_ = nullptr;
+            }
+            else {
+                mav_vehicle_->getConnection()->startLoggingSendMessage(std::make_shared<MavLinkLogViewerLog>(logviewer_out_proxy_));
             }
         }
         return logviewer_proxy_ != nullptr;
@@ -264,10 +289,13 @@ struct MavLinkDroneController::impl {
         hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
         hil_node_->connect(connection_);
 
+        mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
+
         if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0) {
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-            auto sitlconnection = MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);			
+            sitl_message_check_ = 0;
+            auto sitlconnection = MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
             mav_vehicle_->connect(sitlconnection);
         }
         else {
@@ -301,6 +329,8 @@ struct MavLinkDroneController::impl {
         connection_->ignoreMessage(MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mocap messages
         hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
+
+        mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
         mav_vehicle_->connect(connection_); // in this case we can use the same connection.
 		mav_vehicle_->startHeartbeat();
     }
@@ -434,11 +464,6 @@ struct MavLinkDroneController::impl {
             hil_node_->sendMessage(hil_sensor);
         }
 
-        // also forward this message to the log viewer so we can see it there also.
-        if (logviewer_proxy_ != nullptr) {
-            logviewer_proxy_->sendMessage(hil_sensor);
-        }
-
         std::lock_guard<std::mutex> guard(last_message_mutex_);
         last_sensor_message_ = hil_sensor;
     }
@@ -466,10 +491,6 @@ struct MavLinkDroneController::impl {
 
         if (hil_node_ != nullptr) {
             hil_node_->sendMessage(hil_gps);
-        }
-
-        if (logviewer_proxy_ != nullptr) {
-            logviewer_proxy_->sendMessage(hil_gps);
         }
 
         std::lock_guard<std::mutex> guard(last_message_mutex_);
@@ -501,6 +522,7 @@ struct MavLinkDroneController::impl {
         Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
         debug_pose_ = Pose::nanPose();
+        sitl_message_check_ = 0;
     }
 
     //*** Start: VehicleControllerBase implementation ***//
@@ -693,14 +715,20 @@ struct MavLinkDroneController::impl {
             logviewer_proxy_->close();
             logviewer_proxy_ = nullptr;
         }
+
+        if (logviewer_out_proxy_ != nullptr) {
+            mav_vehicle_->getConnection()->stopLoggingSendMessage();
+            logviewer_out_proxy_->close();
+            logviewer_out_proxy_ = nullptr;
+        }
+
         if (qgc_proxy_ != nullptr) {
             qgc_proxy_->close();
             qgc_proxy_ = nullptr;
         }
         if (mav_vehicle_ != nullptr) {
             mav_vehicle_->close();
-            //do not remove reference otherwise we need to recreate when restarting
-            //mav_vehicle_ = nullptr;
+            mav_vehicle_ = nullptr;
         }
     }
 
@@ -798,7 +826,8 @@ struct MavLinkDroneController::impl {
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
     {
         bool rc = false;
-        if (!mav_vehicle_->takeoff(getTakeoffZ(), 0.0f, 0.0f).wait(static_cast<int>(max_wait_seconds * 1000), &rc))
+        float z = getPosition().z() + getTakeoffZ();
+        if (!mav_vehicle_->takeoff(z, 0.0f, 0.0f).wait(static_cast<int>(max_wait_seconds * 1000), &rc))
         {
             throw VehicleMoveException("TakeOff command - timeout waiting for response");
         }
@@ -806,8 +835,9 @@ struct MavLinkDroneController::impl {
             throw VehicleMoveException("TakeOff command rejected by drone");
         }
 
-        bool success = parent_->waitForZ(max_wait_seconds, getTakeoffZ(), getDistanceAccuracy(), cancelable_action);
-        return success;
+        //bool success = parent_->waitForZ(max_wait_seconds, z, getDistanceAccuracy(), cancelable_action);
+        //return success;
+        return true;
     }
 
     bool hover(CancelableBase& cancelable_action)
@@ -943,6 +973,28 @@ struct MavLinkDroneController::impl {
         }
         MavLinkTelemetry data;
         connection_->getTelemetry(data);
+
+        // listen to the other mavlink connection also
+        auto mavcon = mav_vehicle_->getConnection();
+        if (mavcon != connection_) {
+            MavLinkTelemetry sitl;
+            mavcon->getTelemetry(sitl);
+            data.handlerMicroseconds += sitl.handlerMicroseconds;
+            data.messagesHandled += sitl.messagesHandled;
+            data.messagesReceived += sitl.messagesReceived;
+            data.messagesSent += sitl.messagesSent;
+            if (sitl.messagesReceived == 0)
+            {
+                sitl_message_check_++;
+                if (sitl_message_check_ == 100) {
+                    addStatusMessage("not receiving any messages from SITL, please restart your SITL app and try again");
+                }
+            }
+            else {
+                sitl_message_check_ = 0;
+            }
+        }
+
         data.renderTime = static_cast<long>(renderTime * 1000000);// microseconds
         logviewer_proxy_->sendMessage(data);
     }

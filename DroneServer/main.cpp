@@ -50,6 +50,7 @@ int main(int argc, const char* argv[])
 
         connection_info.logviewer_ip_address = child.getString("LogViewerHostIp", connection_info.logviewer_ip_address);
         connection_info.logviewer_ip_port = child.getInt("LogViewerPort", connection_info.logviewer_ip_port);
+        connection_info.logviewer_ip_sport = child.getInt("LogViewerSendPort", connection_info.logviewer_ip_sport);
 
         connection_info.qgc_ip_address = child.getString("QgcHostIp", connection_info.qgc_ip_address);
         connection_info.qgc_ip_port = child.getInt("QgcPort", connection_info.qgc_ip_port);

@@ -140,8 +140,8 @@ bool jsonLogFormat = false;
 bool csvLogFormat = false;
 bool convertExisting = false;
 std::vector<int> filterTypes;
-std::shared_ptr<MavLinkLog> inLogFile;
-std::shared_ptr<MavLinkLog> outLogFile;
+std::shared_ptr<MavLinkFileLog> inLogFile;
+std::shared_ptr<MavLinkFileLog> outLogFile;
 std::thread telemetry_thread;
 bool telemetry = false;
 std::mutex logLock;
@@ -158,13 +158,13 @@ void ConvertLogFileToJson(std::string logFile)
     try {
         MavLinkMessage msg;
 
-        MavLinkLog log;
+        MavLinkFileLog log;
         log.openForReading(fullPath);
 
         path jsonPath(logFile);
         jsonPath.replace_extension(".json");
 
-        MavLinkLog jsonLog;
+        MavLinkFileLog jsonLog;
         jsonLog.openForWriting(jsonPath.generic_string(), true);
 
         uint64_t timestamp;
@@ -224,7 +224,7 @@ void ConvertLogFileToCsv(std::string logFile, int filter)
     try {
         MavLinkMessage msg;
 
-        MavLinkLog log;
+        MavLinkFileLog log;
         log.openForReading(fullPath);
 
         path jsonPath(logFile);
@@ -404,12 +404,12 @@ void OpenLogFiles() {
         const char* ext = jsonLogFormat ? "json" : "mavlink";
         std::string input = Utils::stringf("%02d-%02d-%02d-input.%s", local->tm_hour, local->tm_min, local->tm_sec, ext);
         auto infile = FileSystem::combine(path, input);
-        inLogFile = std::make_shared<MavLinkLog>();
+        inLogFile = std::make_shared<MavLinkFileLog>();
         inLogFile->openForWriting(infile, jsonLogFormat);
 
         std::string output = Utils::stringf("%02d-%02d-%02d-output.%s", local->tm_hour, local->tm_min, local->tm_sec, ext);
         auto outfile = FileSystem::combine(path, output);
-        outLogFile = std::make_shared<MavLinkLog>();
+        outLogFile = std::make_shared<MavLinkFileLog>();
         outLogFile->openForWriting(outfile, jsonLogFormat);
 
     }

@@ -124,8 +124,10 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     path3d.push_back(getPosition());
 
     std::ofstream flog;
-    if (log_to_file)
+    if (log_to_file) {
         common_utils::FileSystem::createLogFile("MoveToPosition", flog);
+        flog << "seg_index\toffset\tx\ty\tz\tgoal_dist\tseg_index\toffset\tx\ty\tz\tlookahead\tlookahead_error\tseg_index\toffset\tx\ty\tz";
+    }
 
     Vector3r point;
     float path_length = 0;
@@ -154,6 +156,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     cur_path_loc.offset = 0;
     cur_path_loc.position = path3d[0];
 
+    float lookahead_error_increasing = 0;
     float lookahead_error = 0;
     Waiter waiter(getCommandPeriod());
 
@@ -223,10 +226,21 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
                                                             //if adaptive lookahead is enabled the calculate lookahead error (see above fig)
             if (adaptive_lookahead) {
                 const Vector3r& actual_on_goal = goal_normalized * goal_dist;
-                lookahead_error = (actual_vect - actual_on_goal).norm() * adaptive_lookahead;
+                float error = (actual_vect - actual_on_goal).norm() * adaptive_lookahead;
+                if (error > lookahead_error) {
+                    lookahead_error_increasing++;
+                    if (lookahead_error_increasing > 100) {
+                        throw std::runtime_error("lookahead error is continually increasing so we do not have safe control, aborting moveOnPath operation");
+                    }
+                }
+                else { 
+                    lookahead_error_increasing = 0; 
+                }
+                lookahead_error = error;
             }
         }
         else {
+            lookahead_error_increasing = 0;
             goal_dist = 0;
             lookahead_error = 0; //this is not really required because we will exit
         }

@@ -8,7 +8,13 @@
 using namespace mavlinkcom;
 using namespace mavlink_utils;
 
-MavLinkLog::MavLinkLog()
+uint64_t MavLinkFileLog::getTimeStamp()
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+}
+
+
+MavLinkFileLog::MavLinkFileLog()
 {
 	ptr_ = nullptr;
 	reading_ = false;
@@ -16,16 +22,16 @@ MavLinkLog::MavLinkLog()
 	json_ = false;
 }
 
-MavLinkLog::~MavLinkLog()
+MavLinkFileLog::~MavLinkFileLog()
 {
 	close();
 }
 
-bool MavLinkLog::isOpen()
+bool MavLinkFileLog::isOpen()
 {
 	return reading_ || writing_;
 }
-void MavLinkLog::openForReading(const std::string& filename)
+void MavLinkFileLog::openForReading(const std::string& filename)
 {
 	close();
 	file_name_ = filename;
@@ -38,7 +44,7 @@ void MavLinkLog::openForReading(const std::string& filename)
 	reading_ = true;
 	writing_ = false;
 }
-void MavLinkLog::openForWriting(const std::string& filename, bool json)
+void MavLinkFileLog::openForWriting(const std::string& filename, bool json)
 {
 	close();
 	json_ = json;
@@ -54,7 +60,7 @@ void MavLinkLog::openForWriting(const std::string& filename, bool json)
 	writing_ = true;
 }
 
-void MavLinkLog::close()
+void MavLinkFileLog::close()
 {
 	FILE* temp = ptr_;
 	if (json_ && ptr_ != nullptr) {
@@ -84,12 +90,7 @@ uint64_t FlipEndianness(uint64_t v)
 	return result;
 }
 
-uint64_t MavLinkLog::getTimeStamp()
-{
-    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-}
-
-void MavLinkLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp)
+void MavLinkFileLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp)
 {
 	if (ptr_ != nullptr) {
 		if (reading_) {
@@ -123,7 +124,7 @@ void MavLinkLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp
 	}
 }
 
-bool MavLinkLog::read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp)
+bool MavLinkFileLog::read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp)
 {
 	if (ptr_ != nullptr) {
 		if (writing_) {

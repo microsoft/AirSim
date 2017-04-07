@@ -21,7 +21,7 @@
 #include <iostream>
 #include <limits>
 #include <queue>
-
+#include "Log.hpp"
 #include "type_utils.hpp"
 
 #ifndef _WIN32
@@ -121,25 +121,38 @@ public:
         return static_cast<float>(radians * 180.0f / M_PI);
     }
 
-    static void logMessage(const char* message, ...) {
+    static void logMessage(const char* format, ...) {
         va_list args;
-        va_start(args, message);
-        
-        vprintf(message, args);
-        printf("\n");
-        fflush (stdout);
-        
+        va_start(args, format);
+
+        auto size = _vscprintf(format, args) + 1U;
+        std::unique_ptr<char[]> buf(new char[size]);
+
+#ifndef _MSC_VER
+        vsnprintf(buf.get(), size, format, args);
+#else
+        vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
+#endif
         va_end(args);
+
+        Log::getLog()->logMessage(buf.get());
     }
-    static void logError(const char* message, ...) {
+
+    static void logError(const char* format, ...) {
         va_list args;
-        va_start(args, message);
-        
-        vfprintf(stderr, message, args);
-        fprintf(stderr, "\n");
-        fflush (stderr);
-        
+        va_start(args, format);
+
+        auto size = _vscprintf(format, args) + 1U;
+        std::unique_ptr<char[]> buf(new char[size]);
+
+#ifndef _MSC_VER
+        vsnprintf(buf.get(), size, format, args);
+#else
+        vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
+#endif
         va_end(args);
+
+        Log::getLog()->logError(buf.get());
     }
 
     template <typename T>

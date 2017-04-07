@@ -389,7 +389,7 @@ bool DumpLogCommandsCommand::Parse(const std::vector<std::string>& args)
     return false;
 }
 
-void DumpLogCommandsCommand::processLogCommands(MavLinkLog& log, const std::string& out_folder)
+void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::string& out_folder)
 {
     MavLinkMessage msg;
     uint64_t log_timestamp, log_start_timestamp = 0, command_start_timestamp;
@@ -473,7 +473,7 @@ void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         if (ext == ".mavlink") {
             auto out_folder = FileSystem::createDirectory(FileSystem::combine(log_folder_, path.filename().stem().generic_string()));
 
-            MavLinkLog log;
+            MavLinkFileLog log;
             log.openForReading(path.generic_string());
             processLogCommands(log, out_folder);
         }
@@ -559,7 +559,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     uint64_t playback_timestamp, playback_start_timestamp;
 	Command* currentCommand = nullptr;
     bool armed = false;
-    playback_timestamp = playback_start_timestamp = MavLinkLog::getTimeStamp();
+    playback_timestamp = playback_start_timestamp = MavLinkFileLog::getTimeStamp();
     uint16_t last_basemode = -1, last_custommode = -1;
 
 	std::vector<MavLinkParameter> params;
@@ -579,7 +579,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
             log_start_timestamp = log_timestamp;
 
 		//sync clocks all the time so that the yellow ribbon also plays back at the right speed.
-		auto current_timestamp = MavLinkLog::getTimeStamp();
+		auto current_timestamp = MavLinkFileLog::getTimeStamp();
 		long logDuration = static_cast<long>(log_timestamp - log_start_timestamp);
 		long realDuration = static_cast<long>(current_timestamp - playback_start_timestamp);
 		long waitMicros = logDuration - realDuration;

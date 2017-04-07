@@ -11,26 +11,33 @@
 
 namespace mavlinkcom
 {
-
-	// This class reads/writes MavLinkMessages to a local file.
+	// This abstract class defines the interface for logging MavLinkMessages.
 	class MavLinkLog
 	{
-		std::string file_name_;
-		FILE* ptr_;
-		bool reading_;
-		bool writing_;
-		bool json_;
 	public:
-		MavLinkLog();
-		~MavLinkLog();
-		bool isOpen();
-		void openForReading(const std::string& filename);
-		void openForWriting(const std::string& filename, bool json = false);
-		void close();
-		void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0);
-		bool read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp);
-        static uint64_t getTimeStamp();
+        virtual void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) = 0;
 	};
+
+    // This implementation of MavLinkLog reads/writes MavLinkMessages to a local file.
+    class MavLinkFileLog : public MavLinkLog
+    {
+        std::string file_name_;
+        FILE* ptr_;
+        bool reading_;
+        bool writing_;
+        bool json_;
+    public:
+        MavLinkFileLog();
+        ~MavLinkFileLog();
+        bool isOpen();
+        void openForReading(const std::string& filename);
+        void openForWriting(const std::string& filename, bool json = false);
+        void close();
+        virtual void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override;
+        bool read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp);
+        static uint64_t getTimeStamp();
+    };
+
 
 }
 

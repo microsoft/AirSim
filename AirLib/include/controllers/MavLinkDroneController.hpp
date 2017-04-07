@@ -48,6 +48,7 @@ public:
 
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
         int logviewer_ip_port = 14388;
+        int logviewer_ip_sport = 14389; // for logging all messages we send to the vehicle.
         std::string logviewer_ip_address = "127.0.0.1";
 
         // The QGroundControl app can be on a different machine, so you can configure it's ip address and port here.

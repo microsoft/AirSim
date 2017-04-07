@@ -5,10 +5,36 @@
 #include "physics/PhysicsBody.hpp"
 #include <memory>
 #include "FlyingPawn.h"
+#include "Logging/MessageLog.h"
+
+#include "common/common_utils/Log.hpp"
+
+using namespace common_utils;
+
+class ASimLog : public Log
+{
+    FMessageLog log;
+
+public:
+    ASimLog() : log("BlueprintLog") {
+    }
+
+    virtual void logMessage(const char* message) override {
+        log.Info(FText::FromString(FString(message)));
+    }
+
+    virtual void logError(const char* message) override {
+        log.Error(FText::FromString(FString(message)));
+    }
+};
+
+static ASimLog GlobalASimLog;
 
 void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
+
+    Log::setLog(&GlobalASimLog);
 
     if (fpv_vehicle_connector_ != nullptr) {
         //create its control server
