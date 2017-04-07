@@ -133,7 +133,7 @@ public:
         return RCData();
     }
 
-    void setRCData(const RCData& rcData)
+    void setRCData(const RCData& rcData) override
     {
         if (rcData.is_connected) {
             board_->setInputChannel(0, angleToPwm(rcData.roll)); //X

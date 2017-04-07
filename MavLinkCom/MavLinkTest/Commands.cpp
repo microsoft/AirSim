@@ -1745,6 +1745,7 @@ bool SquareCommand::Parse(const std::vector<std::string>& args)
                     printf("invalid speed '%f', expecting 0.1 < speed < 10", speed_);
                     return false;
                 }
+				speed_ *= 0.8f; // hack to make it match real drone.
             }
             return true;
         }

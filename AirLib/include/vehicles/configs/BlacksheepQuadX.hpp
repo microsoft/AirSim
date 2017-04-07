@@ -41,19 +41,19 @@ namespace msr {
 
                 // relative to Forward vector in the order (0,3,1,2) required by quad X pattern
                 // http://ardupilot.org/copter/_images/MOTORS_QuadX_QuadPlus.jpg
-                arm_lengths.push_back(0.22);
-                arm_lengths.push_back(0.255);
-                arm_lengths.push_back(0.22);
-                arm_lengths.push_back(0.255);
+                arm_lengths.push_back(0.22f);
+                arm_lengths.push_back(0.255f);
+                arm_lengths.push_back(0.22f);
+                arm_lengths.push_back(0.255f);
 
                 // note: the Forward vector is actually the "x" axis, and the AngleAxisr rotation is pointing down and is left handed, so this means the rotation
                 // is counter clockwise, so the vector (arm_lengths[i], 0) is the X-axis, so the CCW rotations to position each arm correctly are listed below:
                 // See measurements here: http://diydrones.com/profiles/blogs/arducopter-tbs-discovery-style (angles reversed because we are doing CCW rotation)
                 std::vector<real_T> arm_angles;
-                arm_angles.push_back(-55);
-                arm_angles.push_back(125);
-                arm_angles.push_back(55);
-                arm_angles.push_back(-125);
+                arm_angles.push_back(-55.0f);
+                arm_angles.push_back(125.0f);
+                arm_angles.push_back(55.0f);
+                arm_angles.push_back(-125.0f);
 
                 // quad X pattern 
                 std::vector<RotorTurningDirection> rotor_directions;
@@ -71,8 +71,8 @@ namespace msr {
 
                 // the props we are using a E-Prop, which I didn't find in UIUC database, but this one is close:
                 // http://m-selig.ae.illinois.edu/props/volume-2/plots/ef_130x70_static_ctcp.png
-                params.rotor_params.C_T = 0.11;
-                params.rotor_params.C_P = 0.047;
+                params.rotor_params.C_T = 0.11f;
+                params.rotor_params.C_P = 0.047f;
                 params.rotor_params.max_rpm = 9500;
                 params.rotor_params.calculateMaxThrust();
 				params.rotor_params.throttle_boost = 0;

@@ -62,7 +62,7 @@ public:
 
     virtual uint32_t millis() override 
     {
-        return static_cast<uint64_t>(Utils::getTimeSinceEpoch() * 1E3);
+        return static_cast<uint32_t>(Utils::getTimeSinceEpoch() * 1E3);
     }
 
     virtual void init_sensors(uint16_t& acc1G, float& gyro_scale, int boardVersion, const std::function<void(void)>& imu_updated_callback) override 
@@ -196,7 +196,7 @@ public:
 
     virtual void delay_millis(uint32_t ms) override 
     {
-        sleep(ms);
+        sleep(static_cast<float>(ms));
     }
 
     virtual void system_reset(bool toBootloader) override 

@@ -24,7 +24,7 @@ protected:
         //set up arm lengths
         //dimensions are for F450 frame: http://artofcircuits.com/product/quadcopter-frame-hj450-with-power-distribution
         params.rotor_count = 4;
-        std::vector<real_T> arm_lengths(params.rotor_count, 0.225);
+        std::vector<real_T> arm_lengths(params.rotor_count, 0.225f);
         std::vector<real_T> arm_angles(params.rotor_count, 45);
 
         //set up mass

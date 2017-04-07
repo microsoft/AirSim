@@ -68,7 +68,7 @@ private:
     Params* params;
     Board* board;
 
-    constexpr static mixer_t quadcopter_plus_mixing =
+	const mixer_t quadcopter_plus_mixing =
     {
         {M, M, M, M, NONE, NONE, NONE, NONE}, // output_type
 
@@ -79,7 +79,7 @@ private:
     };
 
 
-    constexpr static mixer_t quadcopter_x_mixing =
+	const mixer_t quadcopter_x_mixing =
     {
         {M, M, M, M, NONE, NONE, NONE, NONE}, // output_type
 
@@ -89,7 +89,7 @@ private:
         {-1.0f, 1.0f, 1.0f,-1.0f,  0.0f, 0.0f, 0.0f, 0.0f}  // Z Mix
     };
 
-    constexpr static mixer_t quadcopter_h_mixing =
+	const mixer_t quadcopter_h_mixing =
     {
         {M, M, M, M, NONE, NONE, NONE, NONE}, // output_type
 
@@ -99,7 +99,7 @@ private:
         {-1.0f, 1.0f, 1.0f,-1.0f,  0.0f, 0.0f, 0.0f, 0.0f}  // Z Mix
     };
 
-    constexpr static mixer_t fixedwing_mixing =
+	const mixer_t fixedwing_mixing =
     {
         {S, S, M, S, NONE, NONE, NONE, NONE},
 
@@ -109,7 +109,7 @@ private:
         { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f}  // Z Mix
     };
 
-    constexpr static mixer_t tricopter_mixing =
+	const mixer_t tricopter_mixing =
     {
         {M, M, M, S, NONE, NONE, NONE, NONE},
 
@@ -119,7 +119,7 @@ private:
         { 0.0f,     0.0f,   0.0f,   1.0f, 0.0f, 0.0f, 0.0f, 0.0f}  // Z Mix
     };
 
-    constexpr static mixer_t Y6_mixing =
+	const mixer_t Y6_mixing =
     {
         {M, M, M, M, M, M, NONE, NONE},
         { 1.0f,   1.0f,    1.0f,    1.0f,    1.0f,    1.0f,   0.0f, 0.0f}, // F Mix
@@ -128,7 +128,7 @@ private:
         {-1.0f,   1.0f,    1.0f,    1.0f,   -1.0f,   -1.0f,   0.0f, 0.0f}  // Z Mix
     };
 
-    constexpr static mixer_t const *array_of_mixers[NUM_MIXERS] =
+	const mixer_t *array_of_mixers[NUM_MIXERS] =
     {
         &quadcopter_plus_mixing,
         &quadcopter_x_mixing,
