@@ -39,6 +39,8 @@ sudo apt-get update
 sudo apt-get install clang-3.9 clang++-3.9
 ````
 
+Note: On Ubuntu 16.04 you may be missing libjsoncpp0 which is no longer available in the package manager, you can [download the relevant dpkg here](http://packages.ubuntu.com/trusty/amd64/libjsoncpp0/download) and install with `sudo dpkg -i libjsoncpp0_0.6.0~*.deb`.
+
 More detailed instructions are available here: [http://apt.llvm.org/](http://apt.llvm.org/).
 Now make clang-3.9 your default version of clang with this command:
 
