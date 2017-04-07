@@ -151,8 +151,7 @@ void APIPCamera::refreshCurrentMode()
         setToPIPView();
         break;
     default:
-        UAirBlueprintLib::LogMessageString("Cannot referesh current mode because its value is not recognized", std::to_string(static_cast<uint8>(camera_mode_)), LogDebugLevel::Failure, 60);
-
+        UAirBlueprintLib::LogMessageString("Cannot refresh current mode because its value is not recognized", std::to_string(static_cast<uint8>(camera_mode_)), LogDebugLevel::Failure, 60);
     }
 }
 

@@ -144,7 +144,7 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* pawn)
 {
     auto vehicle = std::make_shared<MultiRotorConnector>();
-    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::Pixhawk);
+    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::RosFlight);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

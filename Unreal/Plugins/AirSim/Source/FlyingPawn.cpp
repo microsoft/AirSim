@@ -26,14 +26,40 @@ void AFlyingPawn::initializeForPlay()
 
 void AFlyingPawn::detectUsbRc()
 {
-	joystick_.getJoyStickState(0, joystick_state_);
+	std::string vehicleName = AFlyingPawn::getVehicleName();
 
-	rc_data_.is_connected = joystick_state_.is_connected;
+	if (vehicleName.compare(std::string("Quad1")) == 0)
+	{
+		joystick_.getJoyStickState(0, joystick_state_);
+		rc_data_.is_connected = joystick_state_.is_connected;
 
-	if (rc_data_.is_connected)
-		UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Detected", LogDebugLevel::Informational);
-	else
-		UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Not detected", LogDebugLevel::Informational);
+		if (rc_data_.is_connected)
+			UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB for vehicle 1: "), "Detected", LogDebugLevel::Informational);
+		else
+			UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Not detected", LogDebugLevel::Informational);
+	}
+
+	if (vehicleName.compare(std::string("Quad2")) == 0)
+	{
+		joystick_.getJoyStickState(1, joystick_state_);
+		rc_data_.is_connected = joystick_state_.is_connected;
+
+		if (rc_data_.is_connected)
+			UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB for vehicle 2: "), "Detected", LogDebugLevel::Informational);
+		else
+			UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Not detected", LogDebugLevel::Informational);
+	}
+
+	if (vehicleName.compare(std::string("Quad3")) == 0)
+	{
+		joystick_.getJoyStickState(2, joystick_state_);
+		rc_data_.is_connected = joystick_state_.is_connected;
+
+		if (rc_data_.is_connected)
+			UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB for vehicle 3: "), "Detected", LogDebugLevel::Informational);
+		else
+			UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB for vehicle 3: "), "Not detected", LogDebugLevel::Informational);
+	}
 }
 
 void AFlyingPawn::setStencilIDs()
@@ -54,7 +80,14 @@ void AFlyingPawn::setStencilIDs()
 
 const AFlyingPawn::RCData& AFlyingPawn::getRCData()
 {
-	joystick_.getJoyStickState(0, joystick_state_);
+	std::string vehicleName = AFlyingPawn::getVehicleName();
+
+	if (vehicleName.compare(std::string("Quad1")) == 0)
+		joystick_.getJoyStickState(0, joystick_state_);
+	else if (vehicleName.compare(std::string("Quad2")) == 0)
+		joystick_.getJoyStickState(1, joystick_state_);
+	else if (vehicleName.compare(std::string("Quad3")) == 0)
+		joystick_.getJoyStickState(2, joystick_state_);
 
 	rc_data_.is_connected = joystick_state_.is_connected;
 
@@ -75,7 +108,7 @@ const AFlyingPawn::RCData& AFlyingPawn::getRCData()
 float AFlyingPawn::joyStickToRC(int16_t val)
 {
 	float valf = static_cast<float>(val);
-	return (valf - Utils::min<int16_t>()) / Utils::max<uint16_t>();
+	return (valf) / (Utils::max<uint16_t>()/2);
 }
 
 void AFlyingPawn::reset()
