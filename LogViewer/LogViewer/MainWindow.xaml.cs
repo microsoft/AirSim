@@ -1457,6 +1457,16 @@ namespace LogViewer
                 }
             }
         }
+
+        private void OnPaste(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (Clipboard.ContainsImage())
+            {
+                var image = Clipboard.GetImage();
+                ImageViewer.Source = image;
+                CameraPanel.Visibility = Visibility.Visible;
+            }
+        }
     }
 }
 

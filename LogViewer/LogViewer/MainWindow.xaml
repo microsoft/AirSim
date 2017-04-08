@@ -41,10 +41,12 @@
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="Open" Executed="OnOpenFileCommand"/>
+        <CommandBinding Command="Paste" Executed="OnPaste"/>
     </Window.CommandBindings>
 
     <Window.InputBindings>
         <KeyBinding Command="Open" Key="O" Modifiers="Control"/>
+        <KeyBinding Command="Paste" Key="V" Modifiers="Control"/>
     </Window.InputBindings>
     <Grid Style="{StaticResource AppGridBackground}">
 
