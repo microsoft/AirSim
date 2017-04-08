@@ -21,7 +21,7 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, MultiRotorConnec
         vehicle_params_.reset(new msr::airlib::RosFlightQuadX());
         break;
     default:
-        throw std::exception("ConfigType is not supported in MultiRotorConnector::initialize");
+        throw std::invalid_argument("ConfigType is not supported in MultiRotorConnector::initialize");
     }
 
     //init physics vehicle

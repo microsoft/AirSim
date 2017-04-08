@@ -12,4 +12,4 @@ using namespace common_utils;
 // default implementation that can be overridden by the user via Log::setLog().
 Log* Log::log_ = new Log();
 
-#endif;
+#endif
