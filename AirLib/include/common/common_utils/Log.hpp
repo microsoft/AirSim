@@ -24,13 +24,13 @@ namespace common_utils {
         }
 
         virtual void logMessage(const char* message) {
-            printf(message);
+            printf("%s", message);
             printf("\n");
             fflush(stdout);
         }
 
         virtual void logError(const char* message) {
-            fprintf(stderr, message);
+            fprintf(stderr, "%s", message);
             printf("\n");
             fflush(stderr);
         }

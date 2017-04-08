@@ -274,8 +274,8 @@ public:
     bool set_param_by_name_float(const char name[PARAMS_NAME_LENGTH], float value);
 
 private:
-    void init_param_int(param_id_t id, char name[PARAMS_NAME_LENGTH], int32_t value);
-    void init_param_float(param_id_t id, char name[PARAMS_NAME_LENGTH], float value);
+    void init_param_int(param_id_t id, const char name[PARAMS_NAME_LENGTH], int32_t value);
+    void init_param_float(param_id_t id, const char name[PARAMS_NAME_LENGTH], float value);
 
 
 private:
@@ -327,14 +327,14 @@ void Params::init(Board* _board, CommLink* _comm_link)
 }
 
 // local function definitions
-void Params::init_param_int(Params::param_id_t id, char name[Params::PARAMS_NAME_LENGTH], int32_t value)
+void Params::init_param_int(Params::param_id_t id, const char name[Params::PARAMS_NAME_LENGTH], int32_t value)
 {
     memcpy(_params.names[id], name, PARAMS_NAME_LENGTH);
     _params.values[id] = value;
     _params.types[id] = PARAM_TYPE_INT32;
 }
 
-void Params::init_param_float(Params::param_id_t id, char name[Params::PARAMS_NAME_LENGTH], float value)
+void Params::init_param_float(Params::param_id_t id, const char name[Params::PARAMS_NAME_LENGTH], float value)
 {
     memcpy(_params.names[id], name, PARAMS_NAME_LENGTH);
     _params.values[id] = *((int32_t *)&value);

@@ -444,7 +444,7 @@ public:
 
     static string to_string(time_point<system_clock> time)
     {
-        return to_string(now(), "%Y-%m-%d-%H-%M-%S");
+        return to_string(time, "%Y-%m-%d-%H-%M-%S");
 
         /* GCC doesn't implement put_time yet
         stringstream ss;
