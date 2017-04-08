@@ -1140,7 +1140,7 @@ int main(int argc, const char *argv[]) {
         return -1;
     }
 
-    CommandContext command_context{ /*RpcClient*/{server_address}, /*AsyncTasker*/ {} };
+	CommandContext command_context{ /*RpcClient*/{server_address}, /*AsyncTasker*/ {} };
 
     command_context.tasker.setErrorHandler([](std::exception& e) {
         try {
@@ -1159,6 +1159,21 @@ int main(int argc, const char *argv[]) {
         Type ? for help.
         Microsoft Research (c) 2016.
     )");
+
+
+	std::cout << "Waiting for drone to report a valid GPS location...";
+	const float pause_time = 1;
+	auto gps = command_context.client.getGpsLocation();
+	while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0)
+	{
+		std::cout << ".";
+		std::this_thread::sleep_for(std::chrono::duration<double>(pause_time)); 
+		gps = command_context.client.getGpsLocation();
+	}
+	
+	cout << std::endl;
+	cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
+	
 
     //Shell callbacks
     // shell.beforeScriptStartCallback(std::bind(&beforeScriptStartCallback, std::placeholders::_1, std::placeholders::_2));
