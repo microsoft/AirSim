@@ -68,12 +68,10 @@ namespace LogViewer.Controls
             bool changed = false;
             ChartScaleInfo combined = null;
 
-            int index = this.scaleIndex;
-
             // make sure they are all up to date.
             foreach (var ptr in FindCharts())
             {
-                ChartScaleInfo info = ptr.ComputeScaleSelf(index);
+                ChartScaleInfo info = ptr.ComputeScaleSelf();
                 if (combined == null)
                 {
                     combined = info;

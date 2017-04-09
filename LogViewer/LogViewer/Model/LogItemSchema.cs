@@ -55,6 +55,52 @@ namespace LogViewer.Model
                 return this.Parent.Root;
             }
         }
+
+        internal void Combine(LogItemSchema s)
+        {
+            Dictionary<string, LogItemSchema> index = new Dictionary<string, Model.LogItemSchema>();
+            if (this.HasChildren)
+            {
+                foreach (var i in this.ChildItems)
+                {
+                    index[i.Name] = i;
+                }
+            }
+            if (s.HasChildren)
+            {
+                foreach (var child in s.ChildItems)
+                {
+                    LogItemSchema found = null;
+                    if (index.TryGetValue(child.Name, out found))
+                    {
+                        found.Combine(child);
+                    }
+                    else
+                    {
+                        LogItemSchema copy = child.Clone();
+                        copy.Parent = this;
+                        this.ChildItems.Add(child);
+                    }
+                }
+            }
+        }
+
+        private LogItemSchema Clone()
+        {
+            LogItemSchema copy = new LogItemSchema() { Id = this.Id, Name = this.Name, Type = this.Type };
+            if (this.HasChildren)
+            {
+                List<LogItemSchema> copyChildren = new List<Model.LogItemSchema>();
+                foreach (var child in this.ChildItems)
+                {
+                    var childClone = child.Clone();
+                    childClone.Parent = copy;
+                    copyChildren.Add(childClone);
+                }
+                copy.ChildItems = copyChildren;
+            }
+            return copy;
+        }
     }
 
 }

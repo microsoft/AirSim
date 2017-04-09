@@ -602,9 +602,17 @@ namespace LogViewer
                 {
                     schema = currentFlightLog.Schema;
                 }
-                else if (this.logs.Count > 0)
+                foreach (var log in this.logs)
                 {
-                    schema = this.logs[0].Schema;
+                    var s = log.Schema;
+                    if (schema == null)
+                    {
+                        schema = s;
+                    }
+                    else
+                    {
+                        schema.Combine(s);
+                    }
                 }
                 if (schema == null || schema.ChildItems == null || schema.ChildItems.Count == 0)
                 {
@@ -612,7 +620,6 @@ namespace LogViewer
                 }
                 else 
                 {
-                    // todo: compute combined schema for selected logs, but for now just show the first one.
                     List<LogItemSchema> list = new List<Model.LogItemSchema>(schema.ChildItems);
                     list.Sort((a, b) => { return string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase); });
                     CategoryList.ItemsSource = list;
@@ -1030,6 +1037,7 @@ namespace LogViewer
         private void LayoutCharts()
         {
             // layout charts to fill the space available.
+            ChartStack.UpdateLayout();
             double height = ChartStack.ActualHeight;
             double count = ChartStack.ChartCount;
             height -= (count * (defaultChartMargin.Top + defaultChartMargin.Bottom)); // remove margins
@@ -1042,20 +1050,27 @@ namespace LogViewer
             }
 
             // give all the charts the same min/max on the X dimension so that the charts are in sync (even when they are not grouped).
-            ChartScaleInfo combined = new ChartScaleInfo();
-            foreach (SimpleLineChart chart in ChartStack.FindCharts())
-            {
-                var info = chart.ComputeScaleSelf(0);
-                combined.Combine(info);
-            }
+            //ChartScaleInfo combined = null;
+            //foreach (SimpleLineChart chart in ChartStack.FindCharts())
+            //{
+            //    var info = chart.ComputeScaleSelf();
+            //    if (combined == null)
+            //    {
+            //        combined = info;
+            //    }
+            //    else
+            //    {
+            //        combined.Combine(info);
+            //    }
+            //}
 
-            // now set the min/max on each chart.
-            foreach (SimpleLineChart chart in ChartStack.FindCharts())
-            {
-                chart.FixMinimumX = combined.minX;
-                chart.FixMaximumX = combined.maxX;
-                chart.InvalidateArrange();
-            }
+            //// now set the min/max on each chart.
+            //foreach (SimpleLineChart chart in ChartStack.FindCharts())
+            //{
+            //    chart.FixMinimumX = combined.minX;
+            //    chart.FixMaximumX = combined.maxX;
+            //    chart.InvalidateArrange();
+            //}
 
             if (!found)
             {

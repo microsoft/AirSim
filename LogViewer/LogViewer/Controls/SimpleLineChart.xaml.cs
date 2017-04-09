@@ -221,7 +221,11 @@ namespace LogViewer.Controls
             mp.Scale(this.ActualWidth / width, 1);
             zoomTransform.Matrix = mp;
 
-            var info = ComputeScaleSelf(0);
+            var range = GetVisibleRange();
+            this.visibleStartIndex = range.Item1;
+            this.visibleEndIndex = range.Item2;
+
+            var info = ComputeScaleSelf();
             ApplyScale(info);
 
             InvalidateArrange();
@@ -229,6 +233,10 @@ namespace LogViewer.Controls
 
         internal void ResetZoom()
         {
+            this.visibleStartIndex = 0;
+            this.visibleEndIndex = -1;
+            this.smoothScrollScaleIndex = 0;
+            this.scaleSelf = new ChartScaleInfo();
             zoomTransform = new MatrixTransform();
             InvalidateArrange();
         }
@@ -246,8 +254,10 @@ namespace LogViewer.Controls
         }
 
         bool dirty;
-        int scaleIndex; // for incremental scale calculation.
-
+        int visibleStartIndex;
+        int visibleEndIndex = -1;
+        int smoothScrollIndex;
+        int smoothScrollScaleIndex;
         double xScale;
         double yScale;
         double minY;
@@ -269,52 +279,55 @@ namespace LogViewer.Controls
             }
             else
             {
-                ChartScaleInfo info = ComputeScaleSelf(this.scaleIndex);
+                ChartScaleInfo info = ComputeScaleSelf();
                 changed = ApplyScale(info);
             }
             return changed;
         }
 
-        public ChartScaleInfo ComputeScaleSelf(int index)
-        {
-            if (scaleSelf == null)
-            {
-                scaleSelf = new ChartScaleInfo();
-            }
 
-            if (!dirty)
+        public ChartScaleInfo ComputeScaleSelf()
+        {
+            int startIndex = this.visibleStartIndex;
+            int endIndex = this.visibleEndIndex;
+
+            if (!dirty && scaleSelf != null)
             {
                 return scaleSelf;
             }
 
-            if (index > 0)
+            if (scaleSelf != null && this.liveScrolling)
             {
-                // this is an incremental update then so we pick up where we left off.
+                // try and do incremental update of the scale for added efficiency!
+                startIndex = this.smoothScrollScaleIndex;
             }
             else
             {
-                // start over
                 scaleSelf = new ChartScaleInfo();
+                this.smoothScrollScaleIndex = 0;
             }
-
             if (series == null)
             {
                 return scaleSelf;
             }
 
             int len = series.Values.Count;
-            if (index < 0) index = 0;
-            
-            for (int i = index; i < len; i++)
+            if (startIndex < 0) startIndex = 0;
+            if (endIndex< 0 || endIndex > len) endIndex = len;
+
+            if (this.ActualHeight == 0)
+            {
+                return scaleSelf;
+            }
+
+            for (int i = startIndex; i < endIndex; i++)
             {
                 DataValue d = series.Values[i];
                 double x = d.X;
                 double y = d.Y;
                 scaleSelf.Add(x, y);
             }
-
-            scaleIndex = len;
-
+            this.smoothScrollScaleIndex = endIndex;
             return scaleSelf;
         }
 
@@ -391,9 +404,6 @@ namespace LogViewer.Controls
             return changed;
         }
 
-        int updateIndex;
-        int startIndex;
-
         private void SmoothScroll(DataValue newValue)
         {
             if (this.series == null)
@@ -424,7 +434,6 @@ namespace LogViewer.Controls
                 this.series.Values.RemoveRange(0, this.series.Values.Count - (int)this.ActualWidth);
                 System.Diagnostics.Debug.WriteLine("Trimming data series {0} back to {1} values", this.series.Name, this.series.Values.Count);
                 dirty = true;
-                updateIndex = 0;
                 redo = true;
             }
 
@@ -435,7 +444,9 @@ namespace LogViewer.Controls
             }
             else
             {
-                AddScaledValues(f, updateIndex, series.Values.Count);
+                this.visibleEndIndex = series.Values.Count;
+                AddScaledValues(f, this.smoothScrollIndex, this.visibleEndIndex);
+                this.smoothScrollIndex = this.series.Values.Count;
             }
 
             double dx = g.Bounds.Width - this.ActualWidth;
@@ -444,16 +455,14 @@ namespace LogViewer.Controls
                 Canvas.SetLeft(Graph, -g.Bounds.Left - dx);
                 UpdatePointer(lastMousePosition);
             }
-            updateIndex = series.Values.Count;
         }
-
 
         void UpdateChart()
         {
             Canvas.SetLeft(Graph, 0);
-            scaleIndex = 0;
-            updateIndex = 0;
             visibleCount = 0;
+            this.smoothScrollIndex = 0;
+            this.smoothScrollScaleIndex = 0;
 
             ComputeScale();
 
@@ -467,16 +476,17 @@ namespace LogViewer.Controls
                 AddSlidingVarianceMenuItem.IsEnabled = false;
                 return;
             }
-            if (liveScrolling && series.Values.Count > this.ActualWidth)
+
+            if (liveScrolling)
             {
                 // just show the tail that fits on screen, since the scaling will not happen on x-axis in this case.
-                updateIndex = series.Values.Count - (int)this.ActualWidth;
-                scaleIndex = updateIndex;
-                startIndex = updateIndex;
+                this.visibleStartIndex = series.Values.Count - (int)this.ActualWidth;
+                this.visibleEndIndex = series.Values.Count;
                 minY = double.MaxValue;
                 maxY = double.MinValue;
                 minX = double.MaxValue;
                 maxX = double.MinValue;
+                this.smoothScrollIndex = this.series.Values.Count;
             }
 
             double count = series.Values.Count;
@@ -484,8 +494,7 @@ namespace LogViewer.Controls
             PathFigure f = new PathFigure();
             g.Figures.Add(f);
 
-            AddScaledValues(f, updateIndex, series.Values.Count);
-            updateIndex = series.Values.Count;
+            AddScaledValues(f, this.visibleStartIndex, this.visibleEndIndex);
 
             Graph.Data = g;
             Graph.Stroke = this.Stroke;
@@ -499,13 +508,10 @@ namespace LogViewer.Controls
 
         private void AddScaledValues(PathFigure figure, int start, int end)
         {
-            double height = this.ActualHeight - 1;
-            double availableHeight = height;
-            double width = this.ActualWidth;
-
-            int len = series.Values.Count;
+            double width = this.ActualWidth;            
             double offset = Canvas.GetLeft(Graph);
-
+            if (end < 0 || end > this.series.Values.Count) end = this.series.Values.Count;
+            if (start < 0) start = 0;
 
             bool started = (figure.Segments.Count > 0);
             for (int i = start; i < end; i++)
@@ -513,16 +519,13 @@ namespace LogViewer.Controls
                 DataValue d = series.Values[i];
 
                 // add graph segment
-                Point point = scaleTransform.Transform(new Point(d.X, d.Y));
-                point = zoomTransform.Transform(point);
-                double y = availableHeight - point.Y;
-                double x = point.X;
+                Point pt = GetScaledValue(d);
 
-                double rx = x + offset;
-                if (rx > 0 && rx < width) 
+                double rx = pt.X + offset;
+
+                if (pt.X > 0 && pt.Y < width)
                 {
                     visibleCount++;
-                    Point pt = new Point(x, y);
                     if (!started)
                     {
                         figure.StartPoint = pt;
@@ -689,13 +692,10 @@ namespace LogViewer.Controls
             if (i >= 0)
             {
                 DataValue found = series.Values[i];
-                double availableHeight = this.ActualHeight;
-                double value = found.Y;
-                Point scaled = scaleTransform.Transform(new Point(found.X, found.Y));
-                scaled = zoomTransform.Transform(scaled);
+                Point pt = GetScaledValue(found);
                 double offset = Canvas.GetLeft(Graph);
-                double x = scaled.X + offset;
-                double y = availableHeight - scaled.Y;
+                double x = pt.X + offset;
+                double y = pt.Y;
                 ShowTip(series.Name + " = " + (!string.IsNullOrEmpty(found.Label) ? found.Label : found.Y.ToString()), new Point(x, y), found);
             }
             else
@@ -753,9 +753,8 @@ namespace LogViewer.Controls
         {
             PointerLabel.Text = label;
             PointerBorder.UpdateLayout();
-
-            double offset = Canvas.GetLeft(Graph);
-            double tipPositionX = pos.X;// + offset;
+            
+            double tipPositionX = pos.X;
             if (tipPositionX + PointerBorder.ActualWidth > this.ActualWidth)
             {
                 tipPositionX = this.ActualWidth - PointerBorder.ActualWidth;
@@ -779,14 +778,10 @@ namespace LogViewer.Controls
         void RepositionTip(PointerBorder pointer)
         {
             DataValue data = pointer.Data;
-
-            double availableHeight = this.ActualHeight;
-            double value = data.Y;
-            Point scaled = scaleTransform.Transform(new Point(data.X, data.Y));
-            scaled = zoomTransform.Transform(scaled);
+            Point pt = GetScaledValue(data);
             double offset = Canvas.GetLeft(Graph);
-            double x = scaled.X + offset;
-            double y = availableHeight - scaled.Y;
+            double x = pt.X + offset;
+            double y = pt.Y;
             double tipPositionX = x;
             if (tipPositionX + PointerBorder.ActualWidth > this.ActualWidth)
             {
@@ -862,6 +857,7 @@ namespace LogViewer.Controls
         private IEnumerable<DataValue> GetVisibleDataValues()
         {
             double w = this.ActualWidth;
+            double offset = Canvas.GetLeft(Graph);
             if (this.series != null)
             {
                 foreach (DataValue d in this.series.Values)
@@ -877,6 +873,65 @@ namespace LogViewer.Controls
             }
         }
 
+        private Point GetScaledValue(DataValue d)
+        {
+            double availableHeight = this.ActualHeight - 1;
+            Point point = scaleTransform.Transform(new Point(d.X, d.Y));
+            point = zoomTransform.Transform(point);
+            return new Point(point.X, availableHeight - point.Y);
+        }
+
+        private IEnumerable<Point> GetVisibleScaledValues()
+        {
+            double offset = Canvas.GetLeft(Graph);
+            double w = this.ActualWidth;
+            if (this.series != null)
+            {
+                foreach (DataValue d in this.series.Values)
+                {
+                    Point point = GetScaledValue(d);
+                    point.X += offset;
+                    if (point.X >= 0 && point.X <= w)
+                    {
+                        // then it is a visible point.                        
+                        yield return point;
+                    }
+                }
+            }
+        }
+
+        private Tuple<int,int> GetVisibleRange()
+        {
+            double offset = Canvas.GetLeft(Graph);
+            double w = this.ActualWidth;
+            int start = 0;
+            bool started = false;
+            int end = 0;
+            Point point;
+            if (this.series != null)
+            {
+                for (int i = 0, length = this.series.Values.Count; i < length; i++)
+                {
+                    DataValue d = this.series.Values[i];
+                    point = GetScaledValue(d);
+                    point.X += offset;
+                    if (point.X >= 0 && point.X <= w)
+                    {
+                        if (started)
+                        {
+                            end = i;
+                        }
+                        else
+                        {
+                            start = i;
+                            started = true;
+                        }
+                    }
+                }
+            }
+            return new Tuple<int, int>(start, end);
+        }
+
         private void OnAddTrendLine(object sender, RoutedEventArgs e)
         {
             if (this.series.Values.Count == 0)
@@ -890,17 +945,12 @@ namespace LogViewer.Controls
             DataValue last = null;
             double w = this.ActualWidth;
 
-            foreach (DataValue d in this.series.Values)
+            foreach (DataValue d in GetVisibleDataValues())
             {
-                Point point = scaleTransform.Transform(new Point(d.X, d.Y));
-                point = zoomTransform.Transform(point);
-                if (point.X >= 0 && point.X <= w)
-                {
-                    // then it is a visible point.
-                    if (first == null) first = d;
-                    last = d;
-                    points.Add(new Point(d.X, d.Y));
-                }
+                // then it is a visible point.
+                if (first == null) first = d;
+                last = d;
+                points.Add(new Point(d.X, d.Y));
             }
             if (first == null)
             {
@@ -914,7 +964,6 @@ namespace LogViewer.Controls
 
             double height = this.ActualHeight - 1;
             double availableHeight = height;
-            double offset = Canvas.GetLeft(Graph);
             
             // scale start point
             Point point1 = scaleTransform.Transform(start);
@@ -1012,7 +1061,7 @@ namespace LogViewer.Controls
                 const int WindowSize = 30;
                 int count = 0;
                 DataValue[] window = new DataValue[WindowSize];
-                foreach (DataValue d in this.series.Values)
+                foreach (DataValue d in this.GetVisibleDataValues())
                 {
                     window[count] = d;
                     count++;
@@ -1039,18 +1088,13 @@ namespace LogViewer.Controls
 
             DataValue first = null;
             DataValue last = null;
-            double w = this.ActualWidth;
-            foreach (DataValue d in this.series.Values)
+
+            foreach (DataValue d in GetVisibleDataValues())
             {
-                Point point = scaleTransform.Transform(new Point(d.X, d.Y));
-                point = zoomTransform.Transform(point);
-                if (point.X >= 0 && point.X <= w)
-                {
-                    // then it is a visible point.
-                    if (first == null) first = d;
-                    last = d;
-                    points.Add(d.Y);
-                }
+                // then it is a visible point.
+                if (first == null) first = d;
+                last = d;
+                points.Add(d.Y);
             }
             if (first == null)
             {
@@ -1064,7 +1108,6 @@ namespace LogViewer.Controls
 
             double height = this.ActualHeight - 1;
             double availableHeight = height;
-            double offset = Canvas.GetLeft(Graph);
 
             // scale start point
             Point point1 = scaleTransform.Transform(start);
@@ -1120,7 +1163,9 @@ namespace LogViewer.Controls
                 {
                     using (System.IO.StreamWriter writer = new System.IO.StreamWriter(stream))
                     {
-                        if (this.series != null) {
+                        if (this.series != null)
+                        {
+                            writer.WriteLine("ticks\t" + this.series.Name);
                             foreach (var d in this.GetVisibleDataValues())
                             {
                                 writer.WriteLine(d.X + "\t" + d.Y);
