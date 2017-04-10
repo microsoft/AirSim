@@ -209,22 +209,20 @@ namespace LogViewer.Controls
         {
             _delayedUpdates.StartDelayedAction("Update", UpdateChart, TimeSpan.FromMilliseconds(30));
         }
-
-        MatrixTransform zoomTransform = new MatrixTransform();
+        
         MatrixTransform scaleTransform = new MatrixTransform();
 
         internal void ZoomTo(double x, double width)
         {
-            // figure out where this is given existing transform.
-            Matrix mp = zoomTransform.Matrix;
-            mp.OffsetX -= x;
-            mp.Scale(this.ActualWidth / width, 1);
-            zoomTransform.Matrix = mp;
-
-            var range = GetVisibleRange();
-            this.visibleStartIndex = range.Item1;
-            this.visibleEndIndex = range.Item2;
-
+            int i = GetIndexFromX(x);
+            if (i == -1)
+            {
+                // hmmmm?
+                return;
+            }
+            this.visibleStartIndex = i;
+            this.visibleEndIndex = GetIndexFromX(x + width);
+            
             var info = ComputeScaleSelf();
             ApplyScale(info);
 
@@ -237,7 +235,6 @@ namespace LogViewer.Controls
             this.visibleEndIndex = -1;
             this.smoothScrollScaleIndex = 0;
             this.scaleSelf = new ChartScaleInfo();
-            zoomTransform = new MatrixTransform();
             InvalidateArrange();
         }
         
@@ -523,7 +520,7 @@ namespace LogViewer.Controls
 
                 double rx = pt.X + offset;
 
-                if (pt.X > 0 && pt.Y < width)
+                if (pt.X > 0 && pt.X < width)
                 {
                     visibleCount++;
                     if (!started)
@@ -626,6 +623,26 @@ namespace LogViewer.Controls
             }
         }
 
+        int GetIndexFromX(double x)
+        {
+            // transform top Graph coordinates (which could be constantly changing because of zoom and scrolling.
+            Point pos = this.TransformToDescendant(Graph).Transform(new Point(x, 0));
+            x = pos.X;
+
+            if (series.Values != null && series.Values.Count > 0)
+            {
+                for (int i = 0; i < series.Values.Count; i++)
+                {
+                    DataValue d = series.Values[i];
+                    Point scaled = GetScaledValue(d);
+                    if (scaled.X >= x)
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
 
         const double TooltipThreshold = 20;
 
@@ -650,8 +667,7 @@ namespace LogViewer.Controls
                 {
                     DataValue d = series.Values[i];
 
-                    Point scaled = scaleTransform.Transform(new Point(d.X, d.Y));
-                    scaled = zoomTransform.Transform(scaled);
+                    Point scaled = GetScaledValue(d);
                     if (ignoreY)
                     {
                         double x = scaled.X;
@@ -668,7 +684,7 @@ namespace LogViewer.Controls
                     else
                     {
                         double x = scaled.X;
-                        double y = availableHeight - scaled.Y;
+                        double y = scaled.Y;
                         double dx = (x - pos.X);
                         double dy = y - pos.Y;
                         double distance = Math.Sqrt((dx * dx) + (dy * dy));
@@ -862,8 +878,7 @@ namespace LogViewer.Controls
             {
                 foreach (DataValue d in this.series.Values)
                 {
-                    Point point = scaleTransform.Transform(new Point(d.X, d.Y));
-                    point = zoomTransform.Transform(point);
+                    Point point = GetScaledValue(d);
                     if (point.X >= 0 && point.X <= w)
                     {
                         // then it is a visible point.                        
@@ -877,7 +892,6 @@ namespace LogViewer.Controls
         {
             double availableHeight = this.ActualHeight - 1;
             Point point = scaleTransform.Transform(new Point(d.X, d.Y));
-            point = zoomTransform.Transform(point);
             return new Point(point.X, availableHeight - point.Y);
         }
 
@@ -967,12 +981,10 @@ namespace LogViewer.Controls
             
             // scale start point
             Point point1 = scaleTransform.Transform(start);
-            point1 = zoomTransform.Transform(point1);
             double y1 = availableHeight - point1.Y;
 
             // scale end point
             Point point2 = scaleTransform.Transform(end);
-            point2 = zoomTransform.Transform(point2);
             double y2 = availableHeight - point2.Y;
 
             Line line = new Line() {
@@ -1111,12 +1123,10 @@ namespace LogViewer.Controls
 
             // scale start point
             Point point1 = scaleTransform.Transform(start);
-            point1 = zoomTransform.Transform(point1);
             double y1 = availableHeight - point1.Y;
 
             // scale end point
             Point point2 = scaleTransform.Transform(end);
-            point2 = zoomTransform.Transform(point2);
             double y2 = availableHeight - point2.Y;
 
             Line line = new Line()

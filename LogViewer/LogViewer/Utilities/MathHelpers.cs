@@ -49,12 +49,14 @@ namespace LogViewer.Utilities
         {
             double mean = Mean(values);
             double variance = 0;
+            double count = 0;
             foreach (double d in values)
             {
                 double diff = (d - mean);
                 variance += (diff * diff);
+                count++;
             }
-            return variance;
+            return variance / count;
         }
 
         /// <summary>

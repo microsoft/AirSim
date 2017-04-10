@@ -768,11 +768,11 @@ namespace LogViewer
                             line.Stroke = new SolidColorBrush(GetRandomColor());
                             LocationCollection points = new LocationCollection();
 
-                            Debug.WriteLine("time,\t\tlat,\t\tlong,\t\t\tnsat,\talt,\thdop,\tfix");
+                            //Debug.WriteLine("time,\t\tlat,\t\tlong,\t\t\tnsat,\talt,\thdop,\tfix");
                             foreach (var row in log.GetRows("GPS", flight.StartTime, flight.Duration))
                             {
                                 LogEntryGPS gps = new LogEntryGPS(row);
-                                Debug.WriteLine("{0},\t{1},\t{2},\t{3},\t\t{4:F2},\t{5},\t{6}", gps.GPSTime,  gps.Lat, gps.Lon, gps.nSat, gps.Alt, gps.EPH, gps.Fix);
+                                //Debug.WriteLine("{0},\t{1},\t{2},\t{3},\t\t{4:F2},\t{5},\t{6}", gps.GPSTime,  gps.Lat, gps.Lon, gps.nSat, gps.Alt, gps.EPH, gps.Fix);
                                 if (!(Math.Floor(gps.Lat) == 0 && Math.Floor(gps.Lon) == 0))
                                 {
                                     var pos = new Location() { Altitude = gps.Alt, Latitude = gps.Lat, Longitude = gps.Lon };
@@ -785,7 +785,7 @@ namespace LogViewer
                                             if (!gpsIsBad)
                                             {
                                                 gpsIsBad = true;
-                                                Debug.WriteLine("{0},\t{1},\t{2},\t{3},\t\t{4:F2},\t{5},\t{6}", gps.GPSTime, gps.Lat, gps.Lon, gps.nSat, gps.Alt, gps.EPH, gps.Fix);
+                                                //Debug.WriteLine("{0},\t{1},\t{2},\t{3},\t\t{4:F2},\t{5},\t{6}", gps.GPSTime, gps.Lat, gps.Lon, gps.nSat, gps.Alt, gps.EPH, gps.Fix);
                                                 Image img = new Image();
                                                 img.Width = 30;
                                                 img.Height = 30;
