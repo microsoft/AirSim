@@ -1,10 +1,18 @@
 # PX4 development
 
 The [PX4 software stack](http://github.com/px4/firmware) is an open source flight controller that runs on various 
-hardware.  There is a terrific website at [px4.dev.io](http://px4.dev.io) that gives you tons of information about the PX4 stack 
+hardware (see below for a list).  There is a terrific website at [px4.dev.io](http://px4.dev.io) that gives you tons of information about the PX4 stack 
 and how to build it.  But the following are the minimal setup steps on a Linux machine (or 
 [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)), and
 these should work on Ubuntu 14 and Ubuntu 16.
+
+The following pixhawk hardware has been tested with AirSim:
+
+1. [3DR Pixhawk v2](https://3dr.com/support/pixhawk/)
+2. [3DR Pixhawk mini](https://store.3dr.com/products/3dr-pixhawk)
+2. [Pixhawk PX4 2.4.8](http://www.banggood.com/Pixhawk-PX4-2_4_8-Flight-Controller-32-Bit-ARM-PX4FMU-PX4IO-Combo-for-Multicopters-p-1040416.html)
+3. [PixFalcon](https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us)
+
 
 ## Source code
 
@@ -151,3 +159,5 @@ in super size-squeezing mode so it can fit all that in a 1 megabyte ROM !!
 
 One nice tid bit is you can plug in your pixhawk USB, and type `make px4fmu-v2_default upload` to flash the
 hardware with these brand new bits, so you don't need to use QGroundControl for that.
+
+

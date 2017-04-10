@@ -51,3 +51,9 @@ INFO  [tone_alarm] home_set
 ````
 
 Up until this point in time, however, the PX4 will reject takeoff commands.
+
+
+## What do the colors mean in the Segmentation View ?
+
+See [Camera Views](camera_views.md) for information on the camera views and how to change them.
+
