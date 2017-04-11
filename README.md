@@ -55,10 +55,11 @@ This will start writing pose and images for each frame.
 If you would like more data logging capabilities and other features, [file a feature request](https://github.com/Microsoft/AirSim/issues) or contribute changes. 
 The data logging code is pretty simple and you can modify it to your heart's desire.
 
-A more complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when 
-you want to log data. See the next section for more details.
+A more complex way to generate training data is by writing client code that uses our APIs. This allows you to be in full control of how, what, where and when you want to log data. See the next section for more details.
 
 For MavLink enabled drones, you can also use our [Log Viewer](docs/log_viewer.md) to visualize the streams of data.
+
+You can also [playback recorded logs](docs/playback.md) for side-by-side comparison between real drone and the simulator.
 
 ## Programmatic control
 The AirSim exposes easy to use APIs in order to retrieve data from the drones that includes ground truth, sensor data as well as various images. It also exposes 
@@ -66,7 +67,7 @@ APIs to control the drones in a platform independent way. This allows you to use
 without making changes as well as without having to learn internal protocols details. 
 
 These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an offboard computer on your vehicle. 
-This way you can write and test your code in simulator and later execute it on the real drones. Transfer learning and related research is one of our focus areas.
+This way you can write and test your code in simulator and later execute it on the real drones. Transfer learning and related research is one of our focus areas.  See [custom drones](docs/custom_drone.md).
 
 [More details](docs/apis.md)
 
