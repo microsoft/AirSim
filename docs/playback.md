@@ -1,6 +1,6 @@
 # Playback
 
-AirSim supports playing back the high level commands in a *.mavlink log file that was recorded using the MavLinkTest app
+AirSim supports playing back the high level commands in a *.mavlink log file that were recorded using the MavLinkTest app
 for the purpose of comparing real and simulated flight.
 The [recording.mavlink](logs/recording.mavlink) is an example of a log file captured using a real drone using the following
 command line:
@@ -32,7 +32,8 @@ PlayLog recording.mavlink
 The same commands you performed on the real drone will now play again in the simulator.  You can then press 't' to see
 the trace, and it will show you the trace of the real drone and the simulated drone.  Every time you press 't' again
 you can reset the lines so they are sync'd to the current position, this way I was able to capture a side-by-side trace of the
-"orbit" command performed in this recording, which shows this side-by-side comparision:
+"orbit" command performed in this recording, which generates the picture below.  The pink line is the simulated
+flight and the red line is the real flight:
 
 ![playback](images/Playback.png)
 
