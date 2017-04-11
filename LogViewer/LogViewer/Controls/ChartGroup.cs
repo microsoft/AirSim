@@ -14,7 +14,6 @@ namespace LogViewer.Controls
     public class ChartGroup : Grid
     {
         private bool scaleIndependently;
-        private int scaleIndex = 0;
 
         public bool ScaleIndependently
         {

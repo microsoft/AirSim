@@ -93,8 +93,12 @@ APIPCamera* AFlyingPawn::getFpvCamera()
 
 void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
 {
-    if (rotor_index >= 0 && rotor_index < rotor_count)
-        rotating_movements_[rotor_index]->RotationRate.Yaw = radsPerSec * 180.0f / M_PIf * RotatorFactor;
+    if (rotor_index >= 0 && rotor_index < rotor_count) {
+        auto comp = rotating_movements_[rotor_index];
+        if (comp != nullptr) {
+            comp->RotationRate.Yaw = radsPerSec * 180.0f / M_PIf * RotatorFactor;
+        }
+    }
 }
 
 std::string AFlyingPawn::getVehicleName()

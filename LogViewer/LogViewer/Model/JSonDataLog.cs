@@ -56,9 +56,9 @@ namespace LogViewer.Model
 
             bool hasStartTime = false;
             this.startTime = DateTime.MinValue;
-            DateTime? gpsStartTime = null;
-            ulong gpsAbsoluteOffset = 0;
-            ulong logStartTime = 0;
+            //DateTime? gpsStartTime = null;
+            //ulong gpsAbsoluteOffset = 0;
+            //ulong logStartTime = 0;
 
             List<LogEntry> rows = new List<LogEntry>();
 

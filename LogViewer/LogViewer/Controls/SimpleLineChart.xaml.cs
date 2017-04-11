@@ -527,7 +527,7 @@ namespace LogViewer.Controls
 
                 double rx = pt.X + offset;
 
-                if (pt.X > 0 && pt.X < width)
+                if (pt.X >= 0 && pt.X < width)
                 {
                     visibleCount++;
                     if (!started)

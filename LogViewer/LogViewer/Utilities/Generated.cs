@@ -56,6 +56,10 @@ namespace LogViewer.Utilities
         public UInt16 N;
         public UInt16 J;
 
+        public LogEntryGPS()
+        {
+        }
+
         public LogEntryGPS(LogEntry entry)
         {
             if (entry.HasField("TimeUS"))
