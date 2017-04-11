@@ -15,6 +15,7 @@
                 <MenuItem x:Name="LockTooltipMenuItem" Header="Lock Tooltip" Click="OnLockTooltip" IsEnabled="False"/>
                 <MenuItem x:Name="AddTrendLineMenuItem" Header="Add Trend Line" Click="OnAddTrendLine" IsEnabled="False"/>
                 <MenuItem x:Name="AddMeanLineMenuItem" Header="Add Mean" Click="OnAddMeanLine" IsEnabled="False"/>
+                <MenuItem x:Name="ShowStatsMenuItem" Header="Show Stats" Click="OnShowStats" IsEnabled="False"/>
                 <MenuItem x:Name="AddSlidingVarianceMenuItem" Header="Add Sliding Variance" Click="OnAddSlidingVariance" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem Header="Clear Adornments" Click="OnClearAdornments"/>

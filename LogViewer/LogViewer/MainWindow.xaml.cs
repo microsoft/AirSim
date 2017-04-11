@@ -899,6 +899,7 @@ namespace LogViewer
             SimpleLineChart chart = new SimpleLineChart();
             chart.ChartGenerated += OnNewChartGenerated;
             chart.ClearAllAdornments += OnClearAllAdornments;
+            chart.DisplayMessage += OnShowMessage;
             chart.Margin = defaultChartMargin;
             chart.Focusable = false;
             chart.Closed += OnChartClosed;
@@ -925,6 +926,12 @@ namespace LogViewer
             return chart;
         }
 
+        private void OnShowMessage(object sender, string message)
+        {
+            SystemConsole.Write(message);
+            ConsoleButton.IsChecked = true;
+            SystemConsole.Show();
+        }
 
         private void GraphItem(LogItemSchema schema)
         {

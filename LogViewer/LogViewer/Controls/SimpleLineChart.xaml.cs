@@ -77,6 +77,8 @@ namespace LogViewer.Controls
 
             this.ContextMenuOpening += ContextMenu_ContextMenuOpening;
             this.ContextMenuClosing += ContextMenu_ContextMenuClosing;
+
+            EnableMenuItems();
         }
 
         internal double GetVisibleCount()
@@ -468,9 +470,7 @@ namespace LogViewer.Controls
                 Graph.Data = null;
                 MinLabel.Text = "";
                 MaxLabel.Text = "";
-                AddTrendLineMenuItem.IsEnabled = false;
-                AddMeanLineMenuItem.IsEnabled = false;
-                AddSlidingVarianceMenuItem.IsEnabled = false;
+                EnableMenuItems();
                 return;
             }
 
@@ -498,9 +498,16 @@ namespace LogViewer.Controls
             Graph.StrokeThickness = this.StrokeThickness;
 
             UpdatePointer(lastMousePosition);
-            AddTrendLineMenuItem.IsEnabled = true;
-            AddMeanLineMenuItem.IsEnabled = true;
-            AddSlidingVarianceMenuItem.IsEnabled = true;
+            EnableMenuItems();
+        }
+
+        private void EnableMenuItems()
+        {
+            bool enabled = this.series != null && this.series.Values.Count > 0;
+            AddTrendLineMenuItem.IsEnabled = enabled;
+            AddMeanLineMenuItem.IsEnabled = enabled;
+            ShowStatsMenuItem.IsEnabled = enabled;
+            AddSlidingVarianceMenuItem.IsEnabled = enabled;
         }
 
         private void AddScaledValues(PathFigure figure, int start, int end)
@@ -1183,6 +1190,39 @@ namespace LogViewer.Controls
                        }
                     }
                 }
+            }
+        }
+
+        public event EventHandler<string> DisplayMessage;
+
+        private void OnShowStats(object sender, RoutedEventArgs e)
+        {
+            // only do the visible points we have zoomed into.
+            List<double> points = new List<double>();
+            double min = double.MaxValue;
+            double max = double.MinValue;
+            int count = 0;
+            foreach (DataValue d in GetVisibleDataValues())
+            {
+                // then it is a visible point.
+                points.Add(d.Y);
+                min = Math.Min(min, d.Y);
+                max = Math.Max(max, d.Y);
+                count++;
+            }
+            double mean = MathHelpers.Mean(points);
+            double variance = MathHelpers.Variance(points);
+            double stddev = MathHelpers.StandardDeviation(points);
+
+            if (DisplayMessage != null)
+            {
+                DisplayMessage(this, string.Format(@"Analyzing {0} data values from '{6}':
+  minimum  {1} ({1:0.####E+0}), 
+  maximum  {2} ({2:0.####E+0})
+  mean     {3} ({3:0.####E+0}), 
+  variance {4} ({4:0.####E+0}),
+  stddev   {5} ({5:0.####E+0})",
+  count, min, max, mean, variance, stddev, this.series.Name));
             }
         }
     }
