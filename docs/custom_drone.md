@@ -1,4 +1,4 @@
-# Custom Drone
+# Airsim on a Real Drone
 
 Parts of the AirSim stack can be used on a real drone.  For example, you can run the MavlinkCom library and MavLinkTest app to test the connection
 between your `big brain` and `little brain`.  For our testing we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB.  The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wifi: 
@@ -25,8 +25,34 @@ orbit 10 2
 This will arm the drone, takeoff ot 5 meters, then do an orbit pattern radius 10 meters, at 2 m/s.
 Type '?' to find all available commands.
 
+When you land the drone you can stop MavLinkTest and copy the *.mavlink log file that was generated.
+
 # DroneServer and DroneShell
 
-One the MavLinkConnection is working, you can also run DroneServer and DroneShell to control the drone that way.
+Once you are happy that the MavLinkTest is working, you can also run DroneServer and DroneShell as follows.  First
+run MavLinkTest with a local proxy to send everything to DroneServer:
 
+````
+MavLinkTest -serial:/dev/ttyACM0,115200 -logdir:. -proxy:127.0.0.1:14560
+````
+Change ~/Documents/AirSim/settings.json to say "serial":false, because we want DroneServer to look for this UDP connection.
+
+````
+DroneServer 0
+````
+
+Lastly, you can now connect DroneShell to this instance of DroneServer and use the DroneShell commands to fly your drone:
+
+````
+DroneShell
+==||=>
+        Welcome to DroneShell 1.0.
+        Type ? for help.
+        Microsoft Research (c) 2016.
+
+Waiting for drone to report a valid GPS location...
+==||=> arm
+==||=> takeoff
+==||=> circlebypath -radius 10 -velocity 2
+````
 

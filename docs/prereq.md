@@ -12,10 +12,9 @@ We have also tested a Futaba 14SG, so if you have one of those already you shoul
 You can also fly without a remote control.  See [alternative to RC](sitl.md).
 
 ### Flight controller
-Our favorite flight controller is [Pixhawk](https://www.amazon.com/Hobbypower-Controller-Absorber-Quadcopter-Multicopter/dp/B01N7ADMYQ/ref=sr_1_8?ie=UTF8&qid=1487146656&sr=8-8&keywords=pixhawk)
-or the [Pixhawk Mini](https://store.3dr.com/products/3dr-pixhawk).  You can also use other variants such as Pixfalcon, or the new Pixhawk clones; however, we
-haven't tested them yet. In theory, you should be able to use any flight controller that supports MavLink protocol.  Our code is tested with the
-[PX4 firmware](https://dev.px4.io/).  We have not tested Arducopter or other mavlink implementations.  Some of the flight API's do use the
+
+Choose from several supported [PX4 flight controllers](px4.md).  Our code is tested with the [PX4 firmware](https://dev.px4.io/).  
+We have not tested Arducopter or other mavlink implementations.  Some of the flight API's do use the
 PX4 custom modes in the MAV_CMD_DO_SET_MODE messages (like PX4_CUSTOM_MAIN_MODE_AUTO)
 
 You can also fly without flight controller hardware.  See [alternative to RC](sitl.md).
