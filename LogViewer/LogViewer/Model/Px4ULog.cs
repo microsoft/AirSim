@@ -38,7 +38,6 @@ namespace LogViewer.Model.ULog
     {
         public FieldType type;
         public string name;
-        public object value;
         public int arraySize;
         public string typeName;
         public MessageFormat structType;
@@ -260,8 +259,48 @@ namespace LogViewer.Model.ULog
             return new DataValue()
             {
                 X = x,
-                Y = y
+                Y = y,
+                UserData = this,
+                Label = GetLabel(field, y)
             };
+        }
+
+
+        static string[] NavStateNames = {
+            "NAVIGATION_STATE_MANUAL",
+            "NAVIGATION_STATE_ALTCTL",
+            "NAVIGATION_STATE_POSCTL",
+            "NAVIGATION_STATE_AUTO_MISSION",
+            "NAVIGATION_STATE_AUTO_LOITER",
+            "NAVIGATION_STATE_AUTO_RTL",
+            "NAVIGATION_STATE_AUTO_RCRECOVER",
+            "NAVIGATION_STATE_AUTO_RTGS",
+            "NAVIGATION_STATE_AUTO_LANDENGFAIL",
+            "NAVIGATION_STATE_AUTO_LANDGPSFAIL",
+            "NAVIGATION_STATE_ACRO",
+            "NAVIGATION_STATE_UNUSED",
+            "NAVIGATION_STATE_DESCEND",
+            "NAVIGATION_STATE_TERMINATION",
+            "NAVIGATION_STATE_OFFBOARD",
+            "NAVIGATION_STATE_STAB",
+            "NAVIGATION_STATE_RATTITUDE",
+            "NAVIGATION_STATE_AUTO_TAKEOFF",
+            "NAVIGATION_STATE_AUTO_LAND",
+            "NAVIGATION_STATE_AUTO_FOLLOW_TARGET",
+            "NAVIGATION_STATE_MAX"
+        };
+
+        string GetLabel(MessageField field, double y)
+        {
+            if (field.name == "nav_state" && this.format.name == "vehicle_status")
+            {
+                int i = (int)y;
+                if (i < NavStateNames.Length)
+                {
+                    return NavStateNames[i];
+                }
+            }
+            return null;
         }
 
         private void ParseValues()
@@ -289,7 +328,6 @@ namespace LogViewer.Model.ULog
                 {
                     value = ReadField(reader, field);
                 }
-                field.value = value;
                 values[field.name] = value;
             }
         }
@@ -363,6 +401,7 @@ namespace LogViewer.Model.ULog
             {
                 if (field.name == fieldName)
                 {
+                    object value = values[fieldName];
                     if (field.arraySize > 0)
                     {
                         // cook up a MessageData just for the array.
@@ -382,7 +421,7 @@ namespace LogViewer.Model.ULog
                             first = false;
                         }
 
-                        Array data = (Array)field.value;
+                        Array data = (Array)value;
                         for (int i = 0; i < field.arraySize; i++)
                         {
                             if (!first)
@@ -399,9 +438,9 @@ namespace LogViewer.Model.ULog
                         array.values = values;
                         return array;
                     }
-                    else if (field.value is MessageData)
+                    else if (value is MessageData)
                     {
-                        return (MessageData)field.value;
+                        return (MessageData)value;
                     }
                     else
                     {

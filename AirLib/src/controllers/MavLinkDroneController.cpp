@@ -291,7 +291,7 @@ struct MavLinkDroneController::impl {
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
 
-        if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0) {
+        if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0 && connection_info_.sitl_ip_port != port) {
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
             sitl_message_check_ = 0;

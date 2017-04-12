@@ -796,7 +796,14 @@ namespace LogViewer.Controls
             Pointer.Visibility = System.Windows.Visibility.Visible;
 
             LockTooltipMenuItem.IsEnabled = true;
+
+            if (PointerMoved != null)
+            {
+                PointerMoved(this, data);
+            }
         }
+
+        public event EventHandler<DataValue> PointerMoved;
 
         void RepositionTip(PointerBorder pointer)
         {

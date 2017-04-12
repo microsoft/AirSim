@@ -740,6 +740,28 @@ namespace LogViewer
             }
         }
 
+        List<LogEntryGPS> mapData = null;
+
+        Pushpin GetOrCreateMapMarker(Location loc)
+        {
+            Pushpin mapMarker = null;
+            foreach (var child in myMap.Children)
+            {
+                if (child is Pushpin)
+                {
+                    mapMarker = (Pushpin)child;
+                    break;
+                }
+            }
+            if (mapMarker == null)
+            {
+                mapMarker = new Pushpin();
+                myMap.Children.Add(mapMarker);
+            }
+            mapMarker.Location = loc;
+            return mapMarker;
+        }
+
         void ShowMap()
         {
             myMap.Children.Clear();
@@ -750,6 +772,7 @@ namespace LogViewer
                 // show everything.
                 selected.Add(new Flight() { StartTime = DateTime.MinValue, Duration = TimeSpan.MaxValue });
             }
+            mapData = new List<Utilities.LogEntryGPS>();
             var glitchIcon = XamlExtensions.LoadImageResource("Assets.GpsGlitchIcon.png");
             var imageLayer = new MapLayer();
             myMap.Children.Add(imageLayer);
@@ -764,6 +787,7 @@ namespace LogViewer
                         if (flight.Log == null || flight.Log == log)
                         {
                             MapPolyline line = new MapPolyline();
+                            line.StrokeLineJoin = PenLineJoin.Round;
                             line.StrokeThickness = 4;
                             line.Stroke = new SolidColorBrush(GetRandomColor());
                             LocationCollection points = new LocationCollection();
@@ -775,6 +799,7 @@ namespace LogViewer
                                 //Debug.WriteLine("{0},\t{1},\t{2},\t{3},\t\t{4:F2},\t{5},\t{6}", gps.GPSTime,  gps.Lat, gps.Lon, gps.nSat, gps.Alt, gps.EPH, gps.Fix);
                                 if (!(Math.Floor(gps.Lat) == 0 && Math.Floor(gps.Lon) == 0))
                                 {
+                                    mapData.Add(gps);
                                     var pos = new Location() { Altitude = gps.Alt, Latitude = gps.Lat, Longitude = gps.Lon };
                                     points.Add(pos);
                                     ulong time = (ulong)gps.GPSTime;
@@ -900,6 +925,7 @@ namespace LogViewer
             chart.ChartGenerated += OnNewChartGenerated;
             chart.ClearAllAdornments += OnClearAllAdornments;
             chart.DisplayMessage += OnShowMessage;
+            chart.PointerMoved += OnPointerMoved;
             chart.Margin = defaultChartMargin;
             chart.Focusable = false;
             chart.Closed += OnChartClosed;
@@ -924,6 +950,36 @@ namespace LogViewer
                 LayoutCharts();
             }
             return chart;
+        }
+
+        private void OnPointerMoved(object sender, DataValue data)
+        {
+            if (data != null && mapData != null && myMap.Visibility == Visibility.Visible)
+            {
+                double time = data.X;
+                double dist = double.MaxValue; 
+                int closest = 0;
+                int i = 0;
+                LogEntryGPS gps = null;
+                // find matching gps location in time.
+                foreach (var item in mapData)
+                {
+                    double t = item.GPSTime;
+                    double d = Math.Abs((double)(t - time));
+                    if (dist == ulong.MaxValue || d < dist)
+                    {
+                        gps = item;
+                        dist = d;
+                        closest = i;
+                    }
+                    i++;
+                }
+                if (dist < 1000000)
+                {
+                    // within 1 second, then show it.
+                    GetOrCreateMapMarker(new Location(gps.Lat, gps.Lon, gps.Alt));
+                }
+            }
         }
 
         private void OnShowMessage(object sender, string message)
