@@ -40,6 +40,7 @@ namespace LogViewer.Utilities
     // Solo FMT GPS, 45, BIHBcLLeeEefI, Status,TimeMS,Week,NSats,HDop,Lat,Lng,RelAlt,Alt,Spd,GCrs,VZ,T
     class LogEntryGPS
     {
+        public UInt64 Timestamp;
         public UInt64 GPSTime;
         public byte Fix;
         public float EPH;
@@ -62,6 +63,8 @@ namespace LogViewer.Utilities
 
         public LogEntryGPS(LogEntry entry)
         {
+            Timestamp = entry.Timestamp;
+
             if (entry.HasField("TimeUS"))
             {
                 // perhaps it is the old format with GWk and TimeUS
@@ -101,7 +104,7 @@ namespace LogViewer.Utilities
             }
             else if (entry.HasField("time_usec"))
             {
-                GPSTime = entry.GetField<UInt64>("time_usec") / 1000;
+                GPSTime = entry.GetField<UInt64>("time_usec");
                 Fix = entry.GetField<byte>("fix_type");
                 EPH = entry.GetField<float>("eph");
                 EPV = entry.GetField<float>("epv");
@@ -117,7 +120,7 @@ namespace LogViewer.Utilities
                 // perhaps it is the old format with GWk and TimeUS
                 // "QBIHBcLLeeEefB"
                 //byte Status = entry.GetField<byte>("Status"); // B
-                GPSTime = entry.GetField<UInt32>("TimeMS"); // I
+                GPSTime = entry.GetField<UInt32>("TimeMS") * 1000; // I
                 ushort GWk = entry.GetField<UInt16>("Week"); // H
                 nSat = entry.GetField<byte>("NSats"); // B
                 EPH = (float)entry.GetField<double>("HDop"); // c

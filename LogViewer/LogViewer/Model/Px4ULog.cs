@@ -936,6 +936,7 @@ namespace LogViewer.Model.ULog
         {
             public vehicleglobal_position(MessageData m)
             {
+                this.Timestamp = m.GetValue<UInt64>("timestamp");
                 SetField("GPSTime", m.GetValue<UInt64>("timestamp"));
                 SetField("EPH", m.GetValue<float>("eph"));
                 SetField("EPV", m.GetValue<float>("epv"));

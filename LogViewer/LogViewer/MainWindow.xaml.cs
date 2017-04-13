@@ -964,7 +964,7 @@ namespace LogViewer
                 // find matching gps location in time.
                 foreach (var item in mapData)
                 {
-                    double t = item.GPSTime;
+                    double t = item.Timestamp;
                     double d = Math.Abs((double)(t - time));
                     if (dist == ulong.MaxValue || d < dist)
                     {
@@ -974,11 +974,7 @@ namespace LogViewer
                     }
                     i++;
                 }
-                if (dist < 1000000)
-                {
-                    // within 1 second, then show it.
-                    GetOrCreateMapMarker(new Location(gps.Lat, gps.Lon, gps.Alt));
-                }
+                GetOrCreateMapMarker(new Location(gps.Lat, gps.Lon, gps.Alt));
             }
         }
 

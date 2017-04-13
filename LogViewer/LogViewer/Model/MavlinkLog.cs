@@ -352,7 +352,7 @@ namespace LogViewer.Model
                         {
                             MAVLink.mavlink_global_position_int_t gps = (MAVLink.mavlink_global_position_int_t)typedValue;
                             LogEntry e = new LogEntry();
-                            e.SetField("GPSTime", (ulong)gps.time_boot_ms);
+                            e.SetField("GPSTime", (ulong)gps.time_boot_ms * 1000); // must be in microseconds.
                             e.SetField("Lat", (double)gps.lat / 1E7);
                             e.SetField("Lon", (double)gps.lon / 1E7);
                             e.SetField("Alt", (float)((double)gps.alt / 1000));

@@ -564,10 +564,14 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngle(pitch, roll, z, yaw, duration);
+            if (!context->client.moveByAngle(pitch, roll, z, yaw, duration)) {
+                throw std::runtime_error("BackForthByAngleCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveByAngle(-pitch, -roll, z, yaw, duration);
+            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)){
+                throw std::runtime_error("BackForthByAngleCommand cancelled");
+            }
         }, iterations);
         
         return false;
@@ -603,12 +607,16 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveToPosition(length, 0, z, velocity, drivetrain,
-                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveToPosition(length, 0, z, velocity, drivetrain,
+                yawMode, lookahead, adaptive_lookahead)) {
+                 throw std::runtime_error("BackForthByPositionCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveToPosition(-length, 0, z, velocity, drivetrain,
-                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveToPosition(-length, 0, z, velocity, drivetrain,
+                yawMode, lookahead, adaptive_lookahead)){
+                throw std::runtime_error("BackForthByPositionCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
         }, iterations);
@@ -643,16 +651,24 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngle(pitch, -roll, z, yaw, duration);
+            if (!context->client.moveByAngle(pitch, -roll, z, yaw, duration)) {
+                throw std::runtime_error("SquareByAngleCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveByAngle(-pitch, -roll, z, yaw, duration);
+            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)) {
+                throw std::runtime_error("SquareByAngleCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveByAngle(-pitch, roll, z, yaw, duration);
+            if (!context->client.moveByAngle(-pitch, roll, z, yaw, duration)) {
+                throw std::runtime_error("SquareByAngleCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveByAngle(-pitch, -roll, z, yaw, duration);
+            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)){
+                throw std::runtime_error("SquareByAngleCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
         }, iterations);
@@ -700,20 +716,28 @@ public:
 		}
 
         context->tasker.execute([=]() {
-            context->client.moveToPosition(x + length, y - length, z, velocity, drivetrain,
-                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveToPosition(x + length, y - length, z, velocity, drivetrain,
+                yawMode, lookahead, adaptive_lookahead)){
+                throw std::runtime_error("SquareByPositionCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveToPosition(x - length, y - length, z, velocity, drivetrain,
-                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveToPosition(x - length, y - length, z, velocity, drivetrain,
+                yawMode, lookahead, adaptive_lookahead)){
+                throw std::runtime_error("SquareByPositionCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveToPosition(x - length, y + length, z, velocity, drivetrain,
-                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveToPosition(x - length, y + length, z, velocity, drivetrain,
+                yawMode, lookahead, adaptive_lookahead)){
+                throw std::runtime_error("SquareByPositionCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
-            context->client.moveToPosition(x + length, y + length, z, velocity, drivetrain,
-                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveToPosition(x + length, y + length, z, velocity, drivetrain,
+                yawMode, lookahead, adaptive_lookahead)){
+                throw std::runtime_error("SquareByPositionCommand cancelled");
+            }
             context->client.hover();
             std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
         }, iterations);
@@ -769,7 +793,9 @@ public:
         }
 
         context->tasker.execute([=]() {
-            context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead)){
+                throw std::runtime_error("SquareByPathCommand cancelled");
+            }
         }, iterations);
 
         return false;
@@ -827,8 +853,10 @@ public:
             for(float seg = 0; seg < seg_count; ++seg) {
                 float x = cx + std::cos(seg_angle * seg) * radius;
                 float y = cy + std::sin(seg_angle * seg) * radius;
-                context->client.moveToPosition(x, y, z, velocity, drivetrain,
-                    yawMode, lookahead, adaptive_lookahead);
+                if (!context->client.moveToPosition(x, y, z, velocity, drivetrain,
+                    yawMode, lookahead, adaptive_lookahead)){
+                    throw std::runtime_error("CircleByPositionCommand cancelled");
+                }
                 context->client.hover();
                 std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
             }
@@ -909,7 +937,9 @@ public:
         }
 
         context->tasker.execute([=]() {
-            context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead)) {
+                throw std::runtime_error("moveOnPath cancelled");
+            }
         }, iterations);
 
         return false;

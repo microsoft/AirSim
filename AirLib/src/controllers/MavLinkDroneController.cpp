@@ -826,8 +826,9 @@ struct MavLinkDroneController::impl {
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
     {
         bool rc = false;
-        float z = getPosition().z() + getTakeoffZ();
-        if (!mav_vehicle_->takeoff(z, 0.0f, 0.0f).wait(static_cast<int>(max_wait_seconds * 1000), &rc))
+        auto vec = getPosition();
+        float z = vec.z() + getTakeoffZ();
+        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, 0.0f /* yaw */).wait(static_cast<int>(max_wait_seconds * 1000), &rc))
         {
             throw VehicleMoveException("TakeOff command - timeout waiting for response");
         }
