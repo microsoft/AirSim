@@ -462,11 +462,9 @@ AsyncResult<bool> MavLinkVehicleImpl::armDisarm(bool arm)
 
 AsyncResult<bool> MavLinkVehicleImpl::takeoff(float z, float pitch, float yaw)
 {
-    // ensure a minimum takeoff altitude.
-    if (z > -3) {
-        z = -3; 
-    }
-	float targetAlt = vehicle_state_.home.global_pos.alt - z;
+    // careful here, we are doing a tricky conversion from local coordinates to global coordinates.
+    float deltaZ = z - vehicle_state_.local_est.pos.z;
+	float targetAlt = vehicle_state_.home.global_pos.alt - deltaZ;
 	Utils::logMessage("Take off to %f", targetAlt);
 	MavCmdNavTakeoff cmd{};
 	cmd.MinimumPitch = pitch;
