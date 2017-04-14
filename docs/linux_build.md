@@ -22,19 +22,22 @@ sudo update-alternatives --install /usr/bin/cmake cmake ~/cmake-3.5.1/bin/cmake 
 
 Now type `cmake --version` to make sure your cmake version is 3.5.1.
 
-Next you need a version of [CLang compiler](http://releases.llvm.org/3.9.0/tools/clang/docs/ReleaseNotes.html) that supports `-std=c++14`.  Version 3.9 or newer should work.   The following commands will get you clang 3.9.  First edit `/etc/apt/sources.list` and add these lines:
+Next you need a version of [CLang compiler](http://releases.llvm.org/3.9.0/tools/clang/docs/ReleaseNotes.html) that supports `-std=c++14`.  Version 3.9 or newer should work.  To install it you first need the archive signature:
+````
+wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+````
 
+If you are using Ubuntu 16.04 (Xenial) then you can simply do this:
 ````
-deb http://apt.llvm.org/precise/ llvm-toolchain-precise main
-deb-src http://apt.llvm.org/precise/ llvm-toolchain-precise main
-deb http://apt.llvm.org/precise/ llvm-toolchain-precise-3.9 main
-deb-src http://apt.llvm.org/precise/ llvm-toolchain-precise-3.9 main
+sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main"
+sudo apt-get update
 ````
+
+For other flavors of Linux, you can get more instructions from [http://apt.llvm.org/](http://apt.llvm.org/).
 
 Then run the following:
 
 ````
-wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
 sudo apt-get update
 sudo apt-get install clang-3.9 clang++-3.9
 ````
