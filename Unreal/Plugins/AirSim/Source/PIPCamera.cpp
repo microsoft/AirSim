@@ -23,6 +23,8 @@ void APIPCamera::PostInitializeComponents()
     camera_ = UAirBlueprintLib::GetActorComponent<UCameraComponent>(this, TEXT("CameraComponent"));
 
     screen_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent"));
+	screen_capture_2_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent2"));
+	screen_capture_3_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent3"));
     depth_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthCaptureComponent"));
     seg_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SegmentationCaptureComponent"));
 }
@@ -103,15 +105,15 @@ USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const EPIPCameraType t
     switch (type) {
     case EPIPCameraType::PIP_CAMERA_TYPE_SCENE:
         if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SCENE)))
-            return screen_capture_;
+            return screen_capture_3_;
         return nullptr;
     case EPIPCameraType::PIP_CAMERA_TYPE_DEPTH:
         if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH)))
-            return depth_capture_;
+            return screen_capture_;
         return nullptr;
     case EPIPCameraType::PIP_CAMERA_TYPE_SEG:
         if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SEG)))
-            return seg_capture_;
+            return screen_capture_2_;
         return nullptr;
     case EPIPCameraType::PIP_CAMERA_TYPE_NONE:
         return nullptr;
@@ -149,8 +151,7 @@ void APIPCamera::refreshCurrentMode()
         setToPIPView();
         break;
     default:
-        UAirBlueprintLib::LogMessageString("Cannot referesh current mode because its value is not recognized", std::to_string(static_cast<uint8>(camera_mode_)), LogDebugLevel::Failure, 60);
-
+        UAirBlueprintLib::LogMessageString("Cannot refresh current mode because its value is not recognized", std::to_string(static_cast<uint8>(camera_mode_)), LogDebugLevel::Failure, 60);
     }
 }
 

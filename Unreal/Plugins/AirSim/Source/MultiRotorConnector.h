@@ -20,8 +20,6 @@ public:
     typedef msr::airlib::MultiRotor MultiRotor;
     typedef msr::airlib::StateReporter StateReporter;
     typedef msr::airlib::UpdatableObject UpdatableObject;
-    typedef msr::airlib::Pose Pose;
-
     
     enum class ConfigType {
         Pixhawk,
@@ -66,6 +64,4 @@ private:
     int rotor_directions_[4];
     real_T rotor_thrusts_[4];
     real_T rotor_controls_filtered_[4];
-
-    Pose last_pose, last_debug_pose;
 };

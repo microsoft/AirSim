@@ -23,6 +23,11 @@ protected:
 
 private:
     std::shared_ptr<VehicleConnectorBase> fpv_vehicle_connector_;
+	std::shared_ptr<VehicleConnectorBase> fpv_vehicle_connector_2_;
+
+	AFlyingPawn* pawn1;
+	AFlyingPawn* pawn2;
+	AFlyingPawn* pawn3;
     TArray<uint8> image_;
 
 };
