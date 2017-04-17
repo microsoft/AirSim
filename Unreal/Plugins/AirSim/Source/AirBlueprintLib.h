@@ -52,7 +52,8 @@ public:
 
     template<class UserClass>
     static FInputActionBinding& BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,
-        typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func);
+        typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func,
+        bool shift_key = false, bool control_key = false, bool alt_key = false, bool command_key = false);
 
     template<class UserClass>
     static FInputAxisBinding& BindAxisToKey(const FName axis_name, const FKey in_key, UserClass* actor,

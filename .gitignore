@@ -294,7 +294,6 @@ deps/
 
 /boost
 /eigen
-/Eigen3
 /build_debug
 /cmake/CPackSourceConfig.cmake
 /cmake/CPackConfig.cmake
@@ -310,5 +309,3 @@ deps/
 /AirLib/include/controllers/latex
 /Eigen3
 /AirLib/lib/libAirLib.a
-
-

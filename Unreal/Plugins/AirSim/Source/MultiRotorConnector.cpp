@@ -53,6 +53,9 @@ MultiRotorConnector::~MultiRotorConnector()
 
 void MultiRotorConnector::beginPlay()
 {
+    last_pose = Pose::nanPose();
+    last_debug_pose = Pose::nanPose();
+
     //connect to HIL
     try {
 
@@ -60,7 +63,7 @@ void MultiRotorConnector::beginPlay()
     }
     catch (std::exception ex) {
 
-        UAirBlueprintLib::LogMessage(FString("Vehicle controller cannot be started, please check your settings.json"), TEXT(""), LogDebugLevel::Failure, 180);
+        UAirBlueprintLib::LogMessage(FString("Vehicle controller cannot be started, please check your settings.json"), FString(ex.what()), LogDebugLevel::Failure, 180);
         UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 180);
     }
 }
@@ -81,8 +84,9 @@ void MultiRotorConnector::updateRenderedState()
     vehicle_.setCollisionInfo(vehicle_pawn_->getCollisonInfo());
     //update ground level
     environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
-    //update pose of object in rendering engine
-    vehicle_pawn_->setPose(vehicle_.getPose());
+    //update pose of object for rendering engine
+    last_pose = vehicle_.getPose();
+    last_debug_pose = vehicle_.getController()->getDebugPose();
 
     //update rotor poses
     for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
@@ -95,8 +99,6 @@ void MultiRotorConnector::updateRenderedState()
 
     vehicle_.getController()->getStatusMessages(controller_messages_);
 
-	std::string lambe = vehicle_pawn_->getVehicleName();
-	
     vehicle_.getController()->setRCData(vehicle_pawn_->getRCData());
 }
 
@@ -109,6 +111,10 @@ void MultiRotorConnector::updateRendering(float dt)
 		UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
 	}
 
+    if (!VectorMath::hasNan(last_pose.position)) {
+        vehicle_pawn_->setPose(last_pose, last_debug_pose);
+    }
+    
     //update rotor animations
     for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
         vehicle_pawn_->setRotorSpeed(i, rotor_speeds_[i] * rotor_directions_[i]);

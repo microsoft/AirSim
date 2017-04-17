@@ -8,6 +8,11 @@ void AVehiclePawnBase::PostInitializeComponents()
     Super::PostInitializeComponents();
 }
 
+void AVehiclePawnBase::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
 void AVehiclePawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     state_ = initial_state_ = State();
@@ -47,6 +52,7 @@ void AVehiclePawnBase::initialize()
 
     initial_state_.start_location = getPosition();
     initial_state_.last_position = initial_state_.start_location;
+    initial_state_.last_debug_position = initial_state_.start_location;
     initial_state_.start_rotation = getOrientation();
 
     initial_state_.tracing_enabled = EnableTrace;
@@ -73,6 +79,17 @@ void AVehiclePawnBase::reset()
     state_ = initial_state_;
     this->SetActorLocation(state_.start_location, false, nullptr, ETeleportType::TeleportPhysics);
     this->SetActorRotation(state_.start_rotation, ETeleportType::TeleportPhysics);
+
+    //TODO: delete below
+    //std::ifstream sim_log("C:\\temp\\mavlogs\\circle\\sim_cmd_006_orbit 5 1.txt.pos.txt");
+    //plot(sim_log, FColor::Purple, Vector3r(0, 0, -3));
+    //std::ifstream real_log("C:\\temp\\mavlogs\\circle\\real_cmd_006_orbit 5 1.txt.pos.txt");
+    //plot(real_log, FColor::Yellow, Vector3r(0, 0, -3));
+
+    //std::ifstream sim_log("C:\\temp\\mavlogs\\square\\sim_cmd_005_square 5 1.txt.pos.txt");
+    //plot(sim_log, FColor::Purple, Vector3r(0, 0, -3));
+    //std::ifstream real_log("C:\\temp\\mavlogs\\square\\real_cmd_012_square 5 1.txt.pos.txt");
+    //plot(real_log, FColor::Yellow, Vector3r(0, 0, -3));
 }
 
 const AVehiclePawnBase::GeoPoint& AVehiclePawnBase::getHomePoint() const
@@ -111,6 +128,10 @@ void AVehiclePawnBase::toggleTrace()
 
     if (!state_.tracing_enabled)
         FlushPersistentDebugLines(this->GetWorld());
+    else {     
+        state_.debug_position_offset = state_.current_debug_position - state_.current_position;
+        state_.last_debug_position = state_.last_position;
+    }
 }
 
 void AVehiclePawnBase::allowPassthroughToggleInput()
@@ -120,6 +141,27 @@ void AVehiclePawnBase::allowPassthroughToggleInput()
 }
 
 
+void AVehiclePawnBase::plot(std::istream& s, FColor color, const Vector3r& offset)
+{
+    using namespace msr::airlib;
+
+    Vector3r last_point = VectorMath::nanVector();
+    uint64_t timestamp;
+    float heading, x, y, z;
+    while (s >> timestamp >> heading >> x >> y >> z) {
+        std::string discarded_line;
+        std::getline(s, discarded_line);
+
+        Vector3r current_point(x, y, z);
+        current_point += offset;
+        if (!VectorMath::hasNan(last_point)) {
+            DrawDebugLine(this->GetWorld(), toNeuUU(last_point), toNeuUU(current_point), color, true, -1.0F, 0, 3.0F);
+        }
+        last_point = current_point;
+    }
+
+}
+
 //parameters in NED frame
 AVehiclePawnBase::Pose AVehiclePawnBase::getPose() const
 {
@@ -127,24 +169,18 @@ AVehiclePawnBase::Pose AVehiclePawnBase::getPose() const
     Quaternionr orientation = AVehiclePawnBase::toQuaternionr(this->GetActorRotation().Quaternion(), true);
     return Pose(position, orientation);
 }
-void AVehiclePawnBase::setPose(const Pose& pose)
-{
-    setPose(pose.position, pose.orientation);
-}
-void AVehiclePawnBase::setPose(const Vector3r& position, const Quaternionr& orientation)
+
+void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
 {
     //translate to new AVehiclePawnBase position & orientation from NED to NEU
-    FVector newAVehiclePawnBaseLocation = toNeuUU(position);
+    FVector position = toNeuUU(pose.position);
+    state_.current_position = position;
+
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
-    FQuat newAVehiclePawnBaseQuat = toFQuat(orientation, true);
+    FQuat orientation = toFQuat(pose.orientation, true);
 
-    //we will try to move to pose asked anyway just in case if that gets us out of collison
-    setPose(newAVehiclePawnBaseLocation, newAVehiclePawnBaseQuat, canTeleportWhileMove());
-}
+    bool enable_teleport = canTeleportWhileMove();
 
-//parameters in NEU frame
-void AVehiclePawnBase::setPose(const FVector& position, const FQuat& orientation, bool enable_teleport)
-{
     //must reset collison before we set pose. Setting pose will immediately call NotifyHit if there was collison
     //if there was no collison than has_collided would remain false, else it will be set so its value can be
     //checked at the start of next tick
@@ -157,8 +193,23 @@ void AVehiclePawnBase::setPose(const FVector& position, const FQuat& orientation
         this->SetActorLocationAndRotation(position, orientation, true);
 
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
-        DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, true, -1.0F, 0, 3.0F);
+        DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, true, -1.0F, 0, 10.0F);
         state_.last_position = position;
+    }
+    else if (!state_.tracing_enabled) {
+        state_.last_position = position;
+    }
+    state_.current_debug_position = toNeuUU(debug_pose.position);
+    if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
+        FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
+        if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
+            DrawDebugLine(this->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), true, -1.0F, 0, 10.0F);
+            UAirBlueprintLib::LogMessage("Debug Pose: ", debug_position.ToCompactString(), LogDebugLevel::Informational);
+            state_.last_debug_position = debug_position;
+        }
+    }
+    else if (!state_.tracing_enabled) {
+        state_.last_debug_position = state_.current_debug_position - state_.debug_position_offset;
     }
 }
 

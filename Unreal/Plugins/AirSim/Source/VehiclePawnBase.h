@@ -50,6 +50,7 @@ public: //modifiable properties
 public: //interface
     //overridden from pawn
     virtual void PostInitializeComponents() override;
+    virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
@@ -62,10 +63,7 @@ public: //interface
     //get/set pose
     //parameters in NED frame
     Pose getPose() const;
-    void setPose(const Pose& pose);
-    void setPose(const Vector3r& position, const Quaternionr& orientation);
-    //parameters in NEU frame
-    void setPose(const FVector& position, const FQuat& orientation, bool enable_teleport);
+    void setPose(const Pose& pose, const Pose& debug_pose);
     FVector getPosition() const;
     FRotator getOrientation() const;
 
@@ -86,6 +84,10 @@ private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
 
+    //these methods are for future usage
+    void plot(std::istream& s, FColor color, const Vector3r& offset);
+
+
 private: //vars
     FVector ground_trace_end;
     FVector ground_margin;
@@ -96,6 +98,10 @@ private: //vars
         FVector start_location;
         FRotator start_rotation;
         FVector last_position;
+        FVector last_debug_position;
+        FVector current_position;
+        FVector current_debug_position;
+        FVector debug_position_offset;        
         bool tracing_enabled;
         bool collisons_enabled;
         bool passthrough_enabled;
