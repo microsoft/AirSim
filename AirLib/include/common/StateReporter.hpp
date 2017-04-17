@@ -54,6 +54,8 @@ public:
     //TODO: need better line end handling
     void startHeading(string heading, uint heading_size, uint columns = 20)
     {
+        heading_size; // avoid warning: unused parameter
+        columns; // avoid warning: unused parameter
         ss_ << "\n";
         ss_ << heading;
     }

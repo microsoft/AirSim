@@ -112,7 +112,7 @@ MavLinkConnection::~MavLinkConnection() {
 }
 void MavLinkConnection::join(std::shared_ptr<MavLinkConnection> remote, bool subscribeToLeft, bool subscribeToRight)
 {
-	pImpl->join(remote);
+	pImpl->join(remote, subscribeToLeft, subscribeToRight);
 }
 
 // get the next telemetry snapshot, then clear the internal counters and start over.  This way each snapshot

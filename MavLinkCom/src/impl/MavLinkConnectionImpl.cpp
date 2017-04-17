@@ -227,12 +227,14 @@ void MavLinkConnectionImpl::unsubscribe(int id)
 
 void MavLinkConnectionImpl::joinLeftSubscriber(std::shared_ptr<MavLinkConnection> remote, std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg)
 {
+    con; // avoid warning: unused parameter
     // forward messages from our connected node to the remote proxy.
     remote->sendMessage(msg);
 }
 
-void MavLinkConnectionImpl::joinRightSubscriber(std::shared_ptr<MavLinkConnection>con, const MavLinkMessage& msg)
+void MavLinkConnectionImpl::joinRightSubscriber(std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg)
 {
+    con; // avoid warning: unused parameter
     // forward messages from remote proxy to local connected node
     this->sendMessage(msg);
 }

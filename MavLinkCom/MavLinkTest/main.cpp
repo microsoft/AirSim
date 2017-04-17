@@ -85,7 +85,9 @@ void DebugOutput(const char* message, ...) {
     va_start(args, message);
 
     std::unique_ptr<char[]> buffer(new char[8000]);
+    IGNORE_FORMAT_STRING_ON
     vsprintf(buffer.get(), message, args);
+    IGNORE_FORMAT_STRING_OFF
     fflush(stdout);
 
     va_end(args);

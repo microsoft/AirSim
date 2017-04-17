@@ -53,6 +53,7 @@ public:
 	virtual bool isClosed();
 
     virtual int getRssi(const char* ifaceName) {
+        ifaceName; // avoid warning: unused parameter
         return 0; // not supported on serial port.
     }
 private:

@@ -143,6 +143,7 @@ public:
     
     static Vector3T rotateVector(const Vector3T& v, const QuaternionT& q, bool assume_unit_quat)
     {
+        assume_unit_quat; // stop warning: unused parameter.
         //More performant method is at http://gamedev.stackexchange.com/a/50545/20758
         //QuaternionT vq(0, v.x(), v.y(), v.z());
         //QuaternionT qi = assume_unit_quat ? q.conjugate() : q.inverse();

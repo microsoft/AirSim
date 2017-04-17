@@ -47,6 +47,7 @@ public:
 
     virtual void update(real_T dt) override
     {
+        dt; // avoid warning: unused parameter
         //nothing to do because next state should be updated 
         //by physics engine. The reason is that final state
         //needs to take in to account state of other objects as well,

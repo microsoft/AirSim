@@ -57,3 +57,7 @@ Up until this point in time, however, the PX4 will reject takeoff commands.
 
 See [Camera Views](camera_views.md) for information on the camera views and how to change them.
 
+## Unreal 4.15 doesn't look as good as 4.14
+
+Unreal 4.15 added the ability for Foliage LOD dithering to be disabled on a case-by-case basis by unchecking the `Dithered LOD Transition` checkbox in the foliage materials. Note that all materials used on all LODs need to have the checkbox checked in order for dithered LOD transitions to work.  When checked the transition of generated foliage will be a lot smoother and will look better than 4.14.
+

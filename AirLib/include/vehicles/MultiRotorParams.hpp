@@ -106,7 +106,6 @@ protected: //static utility functions for derived classes to use
 	static void initializeRotorQuadX(vector<RotorPose>& rotor_poses /* the result we are building */,
 		uint rotor_count /* must be 4 */, 
 		real_T arm_lengths[], 
-		real_T arm_angles[], 
 		real_T rotor_z /* z relative to center of gravity */)
 	{
 		Vector3r unit_z(0, 0, -1);  //NED frame

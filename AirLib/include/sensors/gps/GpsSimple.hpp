@@ -63,6 +63,7 @@ public: //methods
 private:
     void addOutputToDelayLine(real_T eph, real_T epv, real_T dt)
     {
+        dt; // avoid warning: unused parameter
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
 

@@ -56,6 +56,7 @@ void Command::Execute(std::shared_ptr<MavLinkVehicle> com)
     if (subscription == 0)
     {
         subscription = com->getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
+            con; // avoid warning: unused parameter
             try {
                 HandleMessage(msg);
             }
@@ -468,6 +469,7 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
 
 void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
+    com; // avoid warning: unused parameter
 //TODO: make below future proof (i.e. usable by C++17 compiler) - also change same in main.cpp
 #if defined(__cpp_lib_experimental_filesystem)
     using namespace std::experimental::filesystem::v1;
@@ -517,7 +519,6 @@ bool PlayLogCommand::Parse(const std::vector<std::string>& args)
 				printf("Usage: playlog <mavlink_logfile>\n");
 				return false;
 			}
-            return true;
         }
 		if (_fileName == "") {
 			printf("Usage: playlog <mavlink_logfile>\n");
@@ -1125,6 +1126,7 @@ public:
 
 void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
+    com; // avoid warning: unused parameter
     if (logViewer.get() == nullptr)
     {
         printf("sendimage needs a logviewer (use -log on the command line)\n");
@@ -1640,7 +1642,6 @@ void OrbitCommand::MeasureTime(float degrees)
         // degrees just flipped from 359 to 0.
         auto endTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         auto durationMs = endTime - startTime;
-        endTime = endTime;
         printf("Completed orbit %d is %f seconds\n", orbits++, (static_cast<float>(durationMs) / 1000.0f));
         startTime = endTime;
         halfWay = false;

@@ -14,6 +14,7 @@ class FrequencyLimiter : UpdatableObject {
 public:
     FrequencyLimiter(real_T frequency = Utils::max<float>(), real_T startup_delay = 0)
     {
+        startup_delay; // avoid warning: unused parameter
         initialize(frequency);
     }
 

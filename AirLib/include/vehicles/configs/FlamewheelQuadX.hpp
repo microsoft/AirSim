@@ -25,7 +25,6 @@ protected:
         //dimensions are for F450 frame: http://artofcircuits.com/product/quadcopter-frame-hj450-with-power-distribution
         params.rotor_count = 4;
         std::vector<real_T> arm_lengths(params.rotor_count, 0.225f);
-        std::vector<real_T> arm_angles(params.rotor_count, 45);
 
         //set up mass
         params.mass = 1.635f; 
@@ -44,7 +43,7 @@ protected:
         real_T rotor_z = 0.15f;
 
         //computer rotor poses
-        initializeRotorQuadX(params.rotor_poses, params.rotor_count, arm_lengths.data(), arm_angles.data(), rotor_z);
+        initializeRotorQuadX(params.rotor_poses, params.rotor_count, arm_lengths.data(), rotor_z);
         //compute inertia matrix
         computeInertiaMatrix(params.inertia, params.body_box, params.rotor_poses, box_mass, motor_assembly_weight);
         //create sensors

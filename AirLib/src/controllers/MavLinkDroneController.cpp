@@ -44,6 +44,7 @@ public:
         proxy_ = proxy;
     }
     void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override {
+        timestamp; // avoid warning: unused parameter
         MavLinkMessage copy;
         ::memcpy(&copy, &msg, sizeof(MavLinkMessage));
         proxy_->sendMessage(copy);
@@ -136,6 +137,7 @@ struct MavLinkDroneController::impl {
             Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
             connection_->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg){
+                connection; // avoid warning: unused parameter
                 processMavMessages(msg);
             });
 
@@ -143,6 +145,7 @@ struct MavLinkDroneController::impl {
             auto mavcon = mav_vehicle_->getConnection();
             if (mavcon != connection_) {
                 mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
+                    connection; // avoid warning: unused parameter
                     processMavMessages(msg);
                 });
             }
@@ -207,6 +210,7 @@ struct MavLinkDroneController::impl {
             }
             else {
                 connection->subscribe([=](std::shared_ptr<MavLinkConnection> connection_val, const MavLinkMessage& msg){
+                    connection_val; // avoid warning: unused parameter
                     processQgcMessages(msg);
                 });
             }
@@ -552,6 +556,7 @@ struct MavLinkDroneController::impl {
 
     void update(real_T dt)
     {
+        dt; // avoid warning: unused parameter
         if (sensors_ == nullptr || connection_ == nullptr || !connection_->isOpen())
             return;
 
@@ -786,6 +791,7 @@ struct MavLinkDroneController::impl {
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action)
     {
+        cancelable_action; // avoid warning: unused parameter
         bool rc = false;
         mav_vehicle_->armDisarm(arm).wait(10000, &rc);
         return rc;
@@ -825,6 +831,7 @@ struct MavLinkDroneController::impl {
 
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
     {
+        cancelable_action; // avoid warning: unused parameter
         bool rc = false;
         auto vec = getPosition();
         float z = vec.z() + getTakeoffZ();
@@ -890,6 +897,7 @@ struct MavLinkDroneController::impl {
 
     bool goHome(CancelableBase& cancelable_action)
     {
+        cancelable_action; // avoid warning: unused parameter
         bool rc = false;
         if (!mav_vehicle_->returnToHome().wait(10000, &rc)) {
             throw VehicleMoveException("goHome - timeout waiting for response from drone");
@@ -933,11 +941,13 @@ struct MavLinkDroneController::impl {
 
     void setRCData(const RCData& rcData)
     {
+        rcData; // avoid warning: unused parameter
         //TODO: use RC data to control MavLink drone
     }
 
     bool validateRCData(const RCData& rc_data)
     {
+        rc_data; // avoid warning: unused parameter
         return true;
     }
 

@@ -42,12 +42,15 @@ public:
     {
         va_list args;
         va_start(args, format);
-
+        IGNORE_FORMAT_STRING_ON
         auto size = _vscprintf(format, args) + 1U;
+        IGNORE_FORMAT_STRING_OFF
         std::unique_ptr<char[]> buf(new char[size] ); 
 
 #ifndef _MSC_VER
+        IGNORE_FORMAT_STRING_ON
         vsnprintf(buf.get(), size, format, args);
+        IGNORE_FORMAT_STRING_OFF
 #else
         vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
 #endif
@@ -63,8 +66,10 @@ private:
     {
         int retval;
         va_list argcopy;
-        va_copy(argcopy, pargs);
+        va_copy(argcopy, pargs); 
+        IGNORE_FORMAT_STRING_ON
         retval = vsnprintf(NULL, 0, format, argcopy);
+        IGNORE_FORMAT_STRING_OFF
         va_end(argcopy);
         return retval;
     }

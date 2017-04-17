@@ -330,7 +330,7 @@ public:
 
 	int setAttributes(int baudRate, Parity parity, int dataBits, StopBits stopBits, Handshake handshake, int readTimeout, int writeTimeout)
 	{
-
+        writeTimeout; // avoid warning: unused parameter
 		struct termios tty;
 		::memset(&tty, 0, sizeof tty);
 		if (tcgetattr(fd, &tty) != 0)

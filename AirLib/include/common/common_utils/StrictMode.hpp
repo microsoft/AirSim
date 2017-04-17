@@ -9,13 +9,64 @@
 #define STRICT_MODE_ON                                            \
     __pragma(warning(pop))										  
 
+#define IGNORE_FORMAT_STRING_ON
+
+#define IGNORE_FORMAT_STRING_OFF
+
 //TODO: limit scope of below statements required to suppress VC++ warnings
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning(disable:4996)
 #endif
 
+// special way to quiet the warning:  warning: format string is not a string literal
+#ifdef __CLANG__
+#define IGNORE_FORMAT_STRING_ON                                       \
+    _Pragma("clang diagnostic push")                                  \
+    _Pragma("clang diagnostic ignored \"-Wformat-nonliteral\"")        
+
+#define IGNORE_FORMAT_STRING_OFF                                      \
+    _Pragma("clang diagnostic pop")          
+#else
+#ifdef __GNUC__
+#define IGNORE_FORMAT_STRING_ON                                           \
+    _Pragma("gcc diagnostic push")                                  \
+    _Pragma("gcc diagnostic ignored \"-Wformat-nonliteral\"")        
+
+#define IGNORE_FORMAT_STRING_OFF                                      \
+    _Pragma("gcc diagnostic pop")          
+#endif
+#endif
+
 // Please keep this list sorted so it is easier to find stuff, also make sure there 
 // is no whitespace after the traling \, GCC doesn't like that.
+#ifdef __CLANG__
+#define STRICT_MODE_OFF                                           \
+    _Pragma("clang diagnostic push")                                  \
+    _Pragma("clang diagnostic ignored \"-Wctor-dtor-privacy\"")        \
+    _Pragma("clang diagnostic ignored \"-Wdelete-non-virtual-dtor\"") \
+    _Pragma("clang diagnostic ignored \"-Wmissing-field-initializers\"") \
+    _Pragma("clang diagnostic ignored \"-Wold-style-cast\"")          \
+    _Pragma("clang diagnostic ignored \"-Wredundant-decls\"")         \
+    _Pragma("clang diagnostic ignored \"-Wreturn-type\"")             \
+    _Pragma("clang diagnostic ignored \"-Wshadow\"")                  \
+    _Pragma("clang diagnostic ignored \"-Wstrict-overflow\"")         \
+    _Pragma("clang diagnostic ignored \"-Wswitch-default\"")          \
+    _Pragma("clang diagnostic ignored \"-Wundef\"")                   \
+    _Pragma("clang diagnostic ignored \"-Wunused-parameter\"")
+
+/* Addition options that can be enabled
+_Pragma("clang diagnostic ignored \"-Wpedantic\"")                \
+_Pragma("clang diagnostic ignored \"-Wformat=\"")                 \
+_Pragma("clang diagnostic ignored \"-Werror\"")                   \
+_Pragma("clang diagnostic ignored \"-Werror=\"")                  \
+_Pragma("clang diagnostic ignored \"-Wunused-variable\"")         \
+*/
+
+#define STRICT_MODE_ON                                            \
+    _Pragma("clang diagnostic pop")          
+
+
+#else
 #ifdef __GNUC__
 #define STRICT_MODE_OFF                                           \
     _Pragma("GCC diagnostic push")                                  \
@@ -32,17 +83,18 @@
     _Pragma("GCC diagnostic ignored \"-Wundef\"")                   \
     _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")
 
-/* Addition options that can be enabled 
-    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
-    _Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
-    _Pragma("GCC diagnostic ignored \"-Werror\"")                   \
-    _Pragma("GCC diagnostic ignored \"-Werror=\"")                  \
-    _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
+/* Addition options that can be enabled
+_Pragma("GCC diagnostic ignored \"-Wpedantic\"")                \
+_Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
+_Pragma("GCC diagnostic ignored \"-Werror\"")                   \
+_Pragma("GCC diagnostic ignored \"-Werror=\"")                  \
+_Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
 */
 
 #define STRICT_MODE_ON                                            \
     _Pragma("GCC diagnostic pop")          
 #endif
 
+#endif
 
 #endif

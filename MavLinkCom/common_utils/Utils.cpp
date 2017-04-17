@@ -8,7 +8,9 @@ static int _vscprintf(const char * format, va_list pargs)
     int retval;
     va_list argcopy;
     va_copy(argcopy, pargs);
+    IGNORE_FORMAT_STRING_ON
     retval = vsnprintf(NULL, 0, format, argcopy);
+    IGNORE_FORMAT_STRING_OFF
     va_end(argcopy);
     return retval;
 }
@@ -24,11 +26,15 @@ void Utils::logMessage(const char* message, ...) {
     va_list args;
     va_start(args, message);
 
+    IGNORE_FORMAT_STRING_ON
     int size = _vscprintf(message, args) + 1;
+    IGNORE_FORMAT_STRING_OFF
     std::unique_ptr<char[]> buf(new char[size]);
 
 #ifndef _MSC_VER
+    IGNORE_FORMAT_STRING_ON
     vsnprintf(buf.get(), size, message, args);
+    IGNORE_FORMAT_STRING_OFF
 #else
     vsnprintf_s(buf.get(), size, _TRUNCATE, message, args);
 #endif
@@ -46,11 +52,15 @@ void Utils::logError(const char* message, ...) {
     va_list args;
     va_start(args, message);
 
+    IGNORE_FORMAT_STRING_ON
     int size = _vscprintf(message, args) + 1;
+    IGNORE_FORMAT_STRING_OFF
     std::unique_ptr<char[]> buf(new char[size]);
 
 #ifndef _MSC_VER
+    IGNORE_FORMAT_STRING_ON
     vsnprintf(buf.get(), size, message, args);
+    IGNORE_FORMAT_STRING_OFF
 #else
     vsnprintf_s(buf.get(), size, _TRUNCATE, message, args);
 #endif
@@ -73,7 +83,9 @@ string Utils::stringf(const char* format, ...)
     std::unique_ptr<char[]> buf(new char[size] ); 
 
     #ifndef _MSC_VER
+        IGNORE_FORMAT_STRING_ON
         vsnprintf(buf.get(), size, format, args);
+        IGNORE_FORMAT_STRING_OFF
     #else
         vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
     #endif

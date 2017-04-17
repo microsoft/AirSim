@@ -30,6 +30,7 @@ float DroneControllerBase::getAutoLookahead(float velocity, float adaptive_looka
 
 float DroneControllerBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel)
 {
+    risk_dist; // avoid warning: unused parameter
     return max_obs_avoidance_vel;
 }
 
@@ -605,6 +606,8 @@ void DroneControllerBase::adjustYaw(float x, float y, DrivetrainType drivetrain,
 
 void DroneControllerBase::moveToPathPosition(const Vector3r& dest, float velocity, DrivetrainType drivetrain, /* pass by value */ YawMode yaw_mode, float last_z)
 {
+    last_z; // avoid warning: unused parameter
+
     //validate dest
     if (dest.hasNaN())
         throw std::invalid_argument(VectorMath::toString(dest,"dest vector cannot have NaN: "));

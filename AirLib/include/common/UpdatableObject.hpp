@@ -17,6 +17,7 @@ public:
 
     virtual void reportState(StateReporter& reporter)
     {
+        reporter; // avoid warning: unused parameter
         //default implementation doesn't do anything
     }
 
