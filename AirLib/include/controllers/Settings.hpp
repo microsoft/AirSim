@@ -35,7 +35,7 @@ namespace msr {
             static Settings& loadJSonFile(std::string fileName)
             {
                 std::string path = getFullPath(fileName);
-                settings_.file_ = path;
+                settings_.file_ = fileName;
 
                 settings_.load_success_ = false;
 

@@ -111,7 +111,7 @@ private:
             // only write to the file if we have new values to save.
 			if (changed) {
 				settings.setChild(connection_info.vehicle_name, child);
-				settings.saveJSonFile("settings.json");
+				settings.saveJSonFile(settings.getFileName());
 			}
         }
 

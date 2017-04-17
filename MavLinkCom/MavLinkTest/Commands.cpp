@@ -338,12 +338,16 @@ bool TakeOffCommand::Parse(const std::vector<std::string>& args)
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "takeoff") {
-            altitude = 5; // default
+			altitude = 0;
             if (args.size() > 1)
             {
                 altitude = static_cast<float>(atof(args[1].c_str()));
+				if (altitude > 0) {
+					return true;
+				}
             }
-            return true;
+			printf("Please provide a positive number, meters above current altitude\n");
+			return false;
         }
     }
     return false;
@@ -358,7 +362,10 @@ void TakeOffCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     reached = false;
     offground = false;
     bool rc = false;
-    if (com->takeoff(-altitude).wait(3000, &rc)) {
+	// convert target altitude to a 'z' coordinate (in NED coordinates).
+	auto state = com->getVehicleState();
+	float targetZ = state.local_est.pos.z - altitude;
+    if (com->takeoff(targetZ).wait(3000, &rc)) {
         if (rc) {
             printf("ok\n");
         }

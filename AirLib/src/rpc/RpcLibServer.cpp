@@ -106,6 +106,7 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
 RpcLibServer::~RpcLibServer()
 {
 	stop();
+	drone_ = nullptr;
 }
 
 void RpcLibServer::start(bool block)

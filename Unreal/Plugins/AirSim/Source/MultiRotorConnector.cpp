@@ -128,12 +128,20 @@ void MultiRotorConnector::updateRendering(float dt)
 
 void MultiRotorConnector::startApiServer()
 {
-    //TODO: remove static up cast from below?
-    controller_cancelable_.reset(new msr::airlib::DroneControllerCancelable(
-        vehicle_.getController()));
-    api_server_address_ = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
-    rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
-    rpclib_server_->start();
+	auto settings = Settings::singleton();
+	bool rpcEnabled = settings.getBool("RpcEnabled", false);
+	if (settings.setBool("RpcEnabled", rpcEnabled) && settings.isLoadSuccess()) {
+		// update settings file so it knows about this new boolean switch
+		settings.saveJSonFile(settings.getFileName()); 
+	}
+
+	if (rpcEnabled) {
+		controller_cancelable_.reset(new msr::airlib::DroneControllerCancelable(
+			vehicle_.getController()));
+		api_server_address_ = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
+		rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
+		rpclib_server_->start();
+	}
 
 }
 void MultiRotorConnector::stopApiServer()
