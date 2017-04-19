@@ -893,6 +893,7 @@ bool ParseCommandLine(int argc, const char* argv[])
                     }
                 }
             }
+#if defined(__cpp_lib_experimental_filesystem)
             else if (lower == initOption) {
 
                 if (parts.size() > 1)
@@ -901,6 +902,7 @@ bool ParseCommandLine(int argc, const char* argv[])
                     LoadInitScript(fileName);
                 }
             }
+#endif
             else if (lower == "local")
             {
                 if (parts.size() > 1)
