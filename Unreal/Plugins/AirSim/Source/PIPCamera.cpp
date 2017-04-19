@@ -69,12 +69,12 @@ void APIPCamera::activateCaptureComponent(const EPIPCameraType type)
 {
     USceneCaptureComponent2D* capture = getCaptureComponent(type, true);
     if (capture != nullptr) {
-        capture->TextureTarget = getTexureRenderTarget(type, false);
+        capture->TextureTarget = getTextureRenderTarget(type, false);
         capture->Activate();
     }
 }
 
-UTextureRenderTarget2D* APIPCamera::getTexureRenderTarget(const EPIPCameraType type, bool if_active)
+UTextureRenderTarget2D* APIPCamera::getTextureRenderTarget(const EPIPCameraType type, bool if_active)
 {
     switch (type) {
     case EPIPCameraType::PIP_CAMERA_TYPE_SCENE:
