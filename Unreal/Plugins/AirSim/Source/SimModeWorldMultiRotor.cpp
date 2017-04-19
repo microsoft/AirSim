@@ -79,21 +79,19 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
         }
 
         if (isRecording() && record_file.is_open()) {
-            auto physics_body = static_cast<msr::airlib::PhysicsBody*>(fpv_vehicle_connector_->getPhysicsBody());
-            auto kinematics = physics_body->getKinematics();
-
-            record_file << msr::airlib::Utils::getTimeSinceEpochMillis() << "\t";    //TODO: maintain simulation timer instead
-            record_file << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z()  << "\t";
-            record_file << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z()  << "\t";
-            record_file << "\n";
-            if (CameraDirector != nullptr) {
-                APIPCamera* camera = CameraDirector->getCamera(0);
-                if (camera != nullptr) {
-                    FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();
-                    camera->saveScreenshot(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, imagePathPrefix, record_tick_count);
-                }
-            }
+			if (!isLoggingStarted)
+			{
+				FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();
+				FRecordingThread::ThreadInit(imagePathPrefix, this);
+				isLoggingStarted = true;
+			}
         }
+
+		if (!isRecording() && isLoggingStarted)
+		{
+			FRecordingThread::Shutdown();
+			isLoggingStarted = false;
+		}
     }
 
     Super::Tick(DeltaSeconds);
@@ -104,6 +102,12 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     if (fpv_vehicle_connector_ != nullptr) {
         fpv_vehicle_connector_->stopApiServer();
     }
+
+	if (isLoggingStarted)
+	{
+		FRecordingThread::Shutdown();
+		isLoggingStarted = false;
+	}
 
     Super::EndPlay(EndPlayReason);
 }
