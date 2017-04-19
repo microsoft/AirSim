@@ -52,6 +52,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Cameras")
     EPIPCameraMode getCameraMode();
 
+	USceneCaptureComponent2D* getCaptureComponent(const EPIPCameraType type, bool if_active);
+
     bool getScreenshot(EPIPCameraType camera_type, TArray<uint8>& compressedPng, float& width, float& height);
     void saveScreenshot(EPIPCameraType camera_type, FString fileSavePathPrefix, int fileSuffix);
 
@@ -76,7 +78,5 @@ private:
     void deactivateMain();
     void deactivatePIP();
     void refreshCurrentMode();
-    USceneCaptureComponent2D* getCaptureComponent(const EPIPCameraType type, bool if_active);
-    UTextureRenderTarget2D* getTexureRenderTarget(const EPIPCameraType type, bool if_active);
-
+    UTextureRenderTarget2D* getTextureRenderTarget(const EPIPCameraType type, bool if_active);
 };
