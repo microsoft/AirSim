@@ -884,6 +884,8 @@ struct MavLinkDroneController::impl {
             throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
         }
 
+        /*
+        // better control if this is decoupled (e.g. user might want to change their mind on the way down).
         float max_wait = 60;
         if (!parent_->waitForFunction([&]() {
             updateState();
@@ -891,7 +893,7 @@ struct MavLinkDroneController::impl {
         }, max_wait, cancelable_action))
         {
             throw VehicleMoveException("Drone hasn't reported a landing state");
-        }
+        }*/
         return true;
     }
 

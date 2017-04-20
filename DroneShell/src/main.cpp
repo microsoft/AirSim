@@ -919,6 +919,7 @@ public:
         const Vector3r origin = plane != "xy" && plane != "yx" ? Vector3r(cx, cy, z_path + radius) : Vector3r(cx, cy, z_path);
 
         std::vector<Vector3r> path;
+        path.reserve(path_rep * seg_count);
         for(int i = 0; i < path_rep; ++i) {
             for(float seg = 0; seg < seg_count; ++seg) {
                 float x = std::cos(seg_angle * seg) * radius;

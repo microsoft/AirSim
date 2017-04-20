@@ -182,6 +182,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 			bool isOffboard = (mode == PX4_CUSTOM_MAIN_MODE_OFFBOARD);
 			if (vehicle_state_.controls.offboard != isOffboard) {
 				vehicle_state_.controls.offboard = isOffboard;
+                Utils::logMessage("MavLinkVehicle: is no longer in offboard mode\n");
 			}
             if (!isOffboard && (requested_mode_ != custom) && (custom != previous_mode_)) {
                 if (control_request_sent_) {

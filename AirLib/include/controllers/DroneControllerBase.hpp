@@ -144,7 +144,9 @@ public: //interface for outside world
 	/// Positive z is under ground.  Instead of moving to the yaw before starting, the drone will move to the yaw position 
 	/// smoothly as it goes, which means for short paths it may not reach that target heading until it has already
 	/// reached the end point at which time the drone will continue rotating until it reaches the desired heading.
-	/// bugbug: why is there a lookahead on this method?
+	/// The lookahead argument will smooth the path that moves the drone from it's current position to the target
+    /// postion by looking ahead from current location by a given number of meters, it keeps doing this iteratively 
+    /// until it reaches the target position.  This ensures a smoother flight.
     virtual bool moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
         const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
 
