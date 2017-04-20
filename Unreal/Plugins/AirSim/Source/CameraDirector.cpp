@@ -44,7 +44,7 @@ void ACameraDirector::setMode(ECameraDirectorMode mode)
 
 void ACameraDirector::setupInputBindings()
 {
-    this->EnableInput(this->GetWorld()->GetFirstPlayerController());
+    UAirBlueprintLib::EnableInput(this);
 
     UAirBlueprintLib::BindActionToKey("InputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::InputEventFpvView);
     UAirBlueprintLib::BindActionToKey("InputEventFlyWithView", EKeys::RightBracket, this, &ACameraDirector::InputEventFlyWithView);

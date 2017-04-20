@@ -67,7 +67,7 @@ FString ASimModeBase::getReportBP()
 
 void ASimModeBase::setupInputBindings()
 {
-    this->EnableInput(this->GetWorld()->GetFirstPlayerController());
+    UAirBlueprintLib::EnableInput(this);
 }
 
 bool ASimModeBase::isRecording()

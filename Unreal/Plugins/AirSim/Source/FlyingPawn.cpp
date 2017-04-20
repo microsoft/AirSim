@@ -3,7 +3,6 @@
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
 #include "MultiRotorConnector.h"
-#include "SimJoyStick/SimJoyStick.h"
 #include "common/Common.hpp"
 
 void AFlyingPawn::initialize()
@@ -11,6 +10,7 @@ void AFlyingPawn::initialize()
     Super::initialize();
 }
 
+//this gets called from Blueprint
 void AFlyingPawn::initializeForPlay()
 {
     //get references of components so we can use later
@@ -119,11 +119,5 @@ void AFlyingPawn::setupComponentReferences()
 
 void AFlyingPawn::setupInputBindings()
 {
-    //this->EnableInput(this->GetWorld()->GetFirstPlayerController());
-
-    //UAirBlueprintLib::BindAxisToKey("InputEventThrottle", EKeys::Gamepad_LeftY, this, &AFlyingPawn::inputEventThrottle);
-    //UAirBlueprintLib::BindAxisToKey("InputEventYaw", EKeys::Gamepad_LeftX, this, &AFlyingPawn::inputEventYaw);
-    //UAirBlueprintLib::BindAxisToKey("InputEventPitch", EKeys::Gamepad_RightY, this, &AFlyingPawn::inputEventPitch);
-    //UAirBlueprintLib::BindAxisToKey("InputEventRoll", EKeys::Gamepad_RightX, this, &AFlyingPawn::inputEventRoll);
-    //UAirBlueprintLib::BindActionToKey("InputEventArmDisArm", EKeys::Gamepad_LeftTrigger, this, &AFlyingPawn::inputEventArmDisArm);
+    //UAirBlueprintLib::EnableInput(this);
 }

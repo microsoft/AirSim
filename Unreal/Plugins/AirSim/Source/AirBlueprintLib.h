@@ -58,5 +58,7 @@ public:
     template<class UserClass>
     static FInputAxisBinding& BindAxisToKey(const FName axis_name, const FKey in_key, UserClass* actor,
         typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func);
+
+    static void EnableInput(AActor* actor);
 };
 

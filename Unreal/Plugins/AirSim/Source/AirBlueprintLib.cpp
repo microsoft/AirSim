@@ -199,3 +199,8 @@ FInputAxisBinding& UAirBlueprintLib::BindAxisToKey(const FName axis_name, const 
     return controller->InputComponent->
         BindAxis(axis_name, actor, func);
 }
+
+void UAirBlueprintLib::EnableInput(AActor* actor)
+{
+    actor->EnableInput(actor->GetWorld()->GetFirstPlayerController());
+}

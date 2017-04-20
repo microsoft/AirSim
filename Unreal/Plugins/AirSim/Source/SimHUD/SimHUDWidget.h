@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SimModeBase.h"
+#include "SimMode/SimModeBase.h"
 #include "Blueprint/UserWidget.h"
 #include "SimHUDWidget.generated.h"
 

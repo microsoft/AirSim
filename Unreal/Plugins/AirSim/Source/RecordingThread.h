@@ -5,11 +5,11 @@
 #include "ImageUtils.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
-#include "SimModeWorldMultirotor.h"
+#include "SimMode/SimModeWorldMultirotor.h"
 #include "CameraDirector.h"
 #include "PIPCamera.h"
 #include "MultiRotorConnector.h"
-#include "SimModeWorldBase.h"
+#include "SimMode/SimModeWorldBase.h"
 
 class FRecordingThread : public FRunnable
 {
