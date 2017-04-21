@@ -11,6 +11,9 @@ ASimModeBase::ASimModeBase()
 void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
+
+    initializeSettings();
+
     is_recording = false;
     record_tick_count = 0;
     setupInputBindings();
@@ -26,7 +29,10 @@ void ASimModeBase::BeginPlay()
             "Upgrade instructions are at https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md")));
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
+}
 
+void ASimModeBase::initializeSettings()
+{
     //TODO: should this be done somewhere else?
     //load settings file if found
     typedef msr::airlib::Settings Settings;

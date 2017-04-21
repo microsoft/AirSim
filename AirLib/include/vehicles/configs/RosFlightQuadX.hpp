@@ -4,16 +4,21 @@
 #ifndef msr_airlib_vehicles_RosFlightQuadX_hpp
 #define msr_airlib_vehicles_RosFlightQuadX_hpp
 
-#include "vehicles/MultiRotorParams.hpp"
 #include "controllers/rosflight/RosFlightDroneController.hpp"
+#include "vehicles/MultiRotorParams.hpp"
 
 
 namespace msr { namespace airlib {
 
 class RosFlightQuadX : public MultiRotorParams {
 public:
-    void initializePhysics(const Environment* environment, const Kinematics::State* kinematics)
+    RosFlightQuadX(Settings& settings)
     {
+    }
+
+    virtual void initializePhysics(const Environment* environment, const Kinematics::State* kinematics) override
+    {
+        //supply this to controller so it can use physics ground truth instead of state estimation (because ROSFlight doesn't have state estimation)
         static_cast<RosFlightDroneController*>(getController())->initializePhysics(environment_, kinematics_);
     }
 

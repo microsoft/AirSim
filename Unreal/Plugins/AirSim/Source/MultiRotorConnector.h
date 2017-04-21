@@ -22,18 +22,13 @@ public:
     typedef msr::airlib::UpdatableObject UpdatableObject;
     typedef msr::airlib::Pose Pose;
 
-    
-    enum class ConfigType {
-        Pixhawk,
-        RosFlight
-    };
 
 public:
 	virtual ~MultiRotorConnector();
 
     //VehicleConnectorBase interface
     //implements game interface to update pawn
-    void initialize(AFlyingPawn* vehicle_pawn, ConfigType type);
+    void initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params);
     virtual void beginPlay() override;
     virtual void endPlay() override;
     virtual void updateRenderedState() override;
@@ -58,7 +53,7 @@ private:
     AFlyingPawn* vehicle_pawn_;
     std::string api_server_address_;
 
-    std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
+    msr::airlib::MultiRotorParams* vehicle_params_;
     std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;
     std::unique_ptr<msr::airlib::RpcLibServer> rpclib_server_;
 

@@ -43,4 +43,8 @@ protected:
     virtual void setupInputBindings();
     bool is_recording;
     int record_tick_count;
+
+private:
+    void initializeSettings();
+
 };

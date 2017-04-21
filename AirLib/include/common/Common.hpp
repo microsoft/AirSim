@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <iostream>
+#include <cstdint>
 #include "common/common_utils/Utils.hpp"
 #include "common_utils/RandomGenerator.hpp"
 #include "VectorMath.hpp"
@@ -22,8 +23,9 @@ namespace msr { namespace airlib {
 
 //numericals
 typedef float real_T;
-typedef unsigned int int32_T;
-typedef bool boolean_T;
+//this is not required for most compilers
+typedef unsigned int uint;
+typedef unsigned long ulong;
 
 //well known types
 typedef msr::airlib::VectorMathf VectorMath;
@@ -43,11 +45,6 @@ typedef VectorMath::RandomVectorGaussianT RandomVectorGaussianR;
 typedef VectorMath::RandomVectorT RandomVectorR;
 
 
-//this is not required for most compilers
-typedef unsigned int uint;
-typedef unsigned long ulong;
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
 
 template <typename T>
 using vector = std::vector<T>;

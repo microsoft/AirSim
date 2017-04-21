@@ -30,13 +30,12 @@ int main(int argc, const char* argv[])
         std::cout << "WARNING: This is not simulation!" << std::endl;
 
     MavLinkDroneController::ConnectionInfo connection_info;
-    connection_info.vehicle_name = "Pixhawk";
-
+    
     // read settings and override defaults
     Settings& settings = Settings::singleton().loadJSonFile("settings.json");
     Settings child;
     if (settings.isLoadSuccess()) {
-        settings.getChild(connection_info.vehicle_name, child);
+        settings.getChild("Pixhawk", child);
 
         // allow json overrides on a per-vehicle basis.
         connection_info.sim_sysid = static_cast<msr::airlib::uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));
@@ -75,29 +74,17 @@ int main(int argc, const char* argv[])
 
     MavLinkDroneController mav_drone;
     mav_drone.initialize(connection_info, nullptr, is_simulation);
-    try {
-        mav_drone.start();
-    }
-    catch (std::exception& e) {
-        std::cout << "MavLinkDroneController failed: " << e.what() << std::endl;
-        return 4;
-    }
+    mav_drone.start();
 
     DroneControllerCancelable server_wrapper(&mav_drone);
     msr::airlib::RpcLibServer server(&server_wrapper, connection_info.local_host_ip);
-
+    
     auto v = std::vector<msr::airlib::uint8_t>{ 5, 4, 3 };
     server_wrapper.setImageForCamera(3, DroneControllerBase::ImageType::Depth, v);
     server_wrapper.setImageForCamera(4, DroneControllerBase::ImageType::Scene, std::vector<msr::airlib::uint8_t>{6, 5, 4, 3, 2});
-
+    
     //start server in async mode
-    try {
-        server.start(false);
-    }
-    catch (std::exception& e) {
-        std::cout << "RpcLibServer failed: " << e.what() << std::endl;
-        return 5;
-    }
+    server.start(false);
 
     std::cout << "Server connected to MavLink endpoint at " << connection_info.local_host_ip << ":" << connection_info.ip_port << std::endl;
     std::cout << "Hit Ctrl+C to terminate." << std::endl;

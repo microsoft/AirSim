@@ -2,6 +2,7 @@
 
 #include "common/Common.hpp"
 #include "MultiRotorConnector.h"
+#include "vehicles/MultiRotorParams.hpp"
 #include "SimModeWorldBase.h"
 #include "SimModeWorldMultiRotor.generated.h"
 
@@ -24,5 +25,6 @@ protected:
 
 private:    
     TArray<uint8> image_;
+    std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
 	bool isLoggingStarted;
 };

@@ -1,28 +1,17 @@
 #include "AirSim.h"
 #include "MultiRotorConnector.h"
-#include "vehicles/configs/PX4ConfigCreator.hpp"
-#include "vehicles/configs/RosFlightQuadX.hpp"
 #include "AirBlueprintLib.h"
+#include "controllers/Settings.hpp"
 #include <exception>
 
 using namespace msr::airlib;
 
-void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, MultiRotorConnector::ConfigType type)
+void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params)
 {
     vehicle_pawn_ = vehicle_pawn;
     vehicle_pawn_->initialize();
 
-    //create controller
-	switch (type) {
-	case ConfigType::Pixhawk:
-        vehicle_params_ = PX4ConfigCreator::createConfig(vehicle_pawn->getVehicleName());
-        break;
-    case ConfigType::RosFlight:
-        vehicle_params_.reset(new msr::airlib::RosFlightQuadX());
-        break;
-    default:
-        throw std::invalid_argument("ConfigType is not supported in MultiRotorConnector::initialize");
-    }
+    vehicle_params_ = vehicle_params;
 
     //init physics vehicle
     auto initial_kinematics = Kinematics::State::zero();
@@ -34,16 +23,10 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, MultiRotorConnec
     environment_.initialize(initial_environment);
 
     vehicle_params_->initialize();
-    vehicle_.initialize(vehicle_params_.get(), initial_kinematics, &environment_);
+    vehicle_.initialize(vehicle_params_, initial_kinematics, &environment_);
 
-    //pass ground truth to some controllers
-    switch (type) {
-    case ConfigType::RosFlight:
-        static_cast<RosFlightQuadX*>(vehicle_params_.get())->initializePhysics(&environment_, &vehicle_.getKinematics());
-        break;
-    default: //no additional initializations needed
-        break;
-    }
+    //pass ground truth to some controllers who needs it (usually the ones without state estimation capabilities)
+    vehicle_params_->initializePhysics(&environment_, &vehicle_.getKinematics());
 }
 
 MultiRotorConnector::~MultiRotorConnector()

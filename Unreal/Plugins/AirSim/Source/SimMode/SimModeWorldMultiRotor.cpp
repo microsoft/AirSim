@@ -6,7 +6,7 @@
 #include <memory>
 #include "FlyingPawn.h"
 #include "Logging/MessageLog.h"
-
+#include "vehicles/MultiRotorParamsFactory.hpp"
 #include "common/common_utils/Log.hpp"
 
 using namespace common_utils;
@@ -73,25 +73,25 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
                     float width, height;
                     image_.Empty();
                     camera->getScreenshot(pip_type, image_, width, height);
-                    controller->setImageForCamera(0, camera_type, std::vector<msr::airlib::uint8_t>(image_.GetData(), image_.GetData() + image_.Num()));
+                    controller->setImageForCamera(0, camera_type, std::vector<uint8_t>(image_.GetData(), image_.GetData() + image_.Num()));
                 }
             }
         }
 
         if (isRecording() && record_file.is_open()) {
-			if (!isLoggingStarted)
-			{
-				FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();
-				FRecordingThread::ThreadInit(imagePathPrefix, this);
-				isLoggingStarted = true;
-			}
+            if (!isLoggingStarted)
+            {
+                FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();
+                FRecordingThread::ThreadInit(imagePathPrefix, this);
+                isLoggingStarted = true;
+            }
         }
 
-		if (!isRecording() && isLoggingStarted)
-		{
-			FRecordingThread::Shutdown();
-			isLoggingStarted = false;
-		}
+        if (!isRecording() && isLoggingStarted)
+        {
+            FRecordingThread::Shutdown();
+            isLoggingStarted = false;
+        }
     }
 
     Super::Tick(DeltaSeconds);
@@ -103,11 +103,11 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
         fpv_vehicle_connector_->stopApiServer();
     }
 
-	if (isLoggingStarted)
-	{
-		FRecordingThread::Shutdown();
-		isLoggingStarted = false;
-	}
+    if (isLoggingStarted)
+    {
+        FRecordingThread::Shutdown();
+        isLoggingStarted = false;
+    }
 
     Super::EndPlay(EndPlayReason);
 }
@@ -146,8 +146,10 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* pawn)
 {
+    vehicle_params_ = MultiRotorParamsFactory::createConfig(pawn->getVehicleName());
+
     auto vehicle = std::make_shared<MultiRotorConnector>();
-    vehicle->initialize(pawn, MultiRotorConnector::ConfigType::RosFlight);
+    vehicle->initialize(pawn, vehicle_params_.get());
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

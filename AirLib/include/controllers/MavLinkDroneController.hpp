@@ -31,7 +31,6 @@ public:
     struct ConnectionInfo {
         /* Default values are requires so uninitialized instance doesn't have random values */
 
-        std::string vehicle_name = "Pixhawk";
         bool use_serial = true; // false means use UDP instead
         //Used to connect via HITL: needed only if use_serial = true
         std::string serial_port = "*";
