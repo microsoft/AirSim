@@ -31,7 +31,7 @@ int main(int argc, const char* argv[])
 
     MavLinkDroneController::ConnectionInfo connection_info;
     connection_info.vehicle_name = "Pixhawk";
-    
+
     // read settings and override defaults
     Settings& settings = Settings::singleton().loadJSonFile("settings.json");
     Settings child;
@@ -75,17 +75,29 @@ int main(int argc, const char* argv[])
 
     MavLinkDroneController mav_drone;
     mav_drone.initialize(connection_info, nullptr, is_simulation);
-    mav_drone.start();
+    try {
+        mav_drone.start();
+    }
+    catch (std::exception& e) {
+        std::cout << "MavLinkDroneController failed: " << e.what() << std::endl;
+        return 4;
+    }
 
     DroneControllerCancelable server_wrapper(&mav_drone);
     msr::airlib::RpcLibServer server(&server_wrapper, connection_info.local_host_ip);
-    
+
     auto v = std::vector<msr::airlib::uint8_t>{ 5, 4, 3 };
     server_wrapper.setImageForCamera(3, DroneControllerBase::ImageType::Depth, v);
     server_wrapper.setImageForCamera(4, DroneControllerBase::ImageType::Scene, std::vector<msr::airlib::uint8_t>{6, 5, 4, 3, 2});
-    
+
     //start server in async mode
-    server.start(false);
+    try {
+        server.start(false);
+    }
+    catch (std::exception& e) {
+        std::cout << "RpcLibServer failed: " << e.what() << std::endl;
+        return 5;
+    }
 
     std::cout << "Server connected to MavLink endpoint at " << connection_info.local_host_ip << ":" << connection_info.ip_port << std::endl;
     std::cout << "Hit Ctrl+C to terminate." << std::endl;
