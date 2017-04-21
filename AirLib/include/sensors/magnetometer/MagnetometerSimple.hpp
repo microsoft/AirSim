@@ -58,7 +58,6 @@ private: //methods
     }
     void updateOutput(real_T dt)
     {
-        dt; // avoid warning: unused parameter
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
 

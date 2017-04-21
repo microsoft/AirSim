@@ -107,7 +107,6 @@ void MavLinkFtpClientImpl::subscribe()
 {
 	if (subscription_ == 0) {
 		subscription_ = getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
-            con; // avoid warning: unused parameter
 			handleResponse(msg);
 		});
 	}

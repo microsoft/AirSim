@@ -56,7 +56,6 @@ void Command::Execute(std::shared_ptr<MavLinkVehicle> com)
     if (subscription == 0)
     {
         subscription = com->getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
-            con; // avoid warning: unused parameter
             try {
                 HandleMessage(msg);
             }
@@ -469,7 +468,6 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
 
 void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
-    com; // avoid warning: unused parameter
 //TODO: make below future proof (i.e. usable by C++17 compiler) - also change same in main.cpp
 #if defined(__cpp_lib_experimental_filesystem)
     using namespace std::experimental::filesystem::v1;
@@ -1126,7 +1124,6 @@ public:
 
 void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
-    com; // avoid warning: unused parameter
     if (logViewer.get() == nullptr)
     {
         printf("sendimage needs a logviewer (use -log on the command line)\n");

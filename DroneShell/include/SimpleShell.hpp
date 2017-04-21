@@ -121,7 +121,6 @@ public:
     private:
         ShellCommand(){}
         ShellCommand(ShellCommand& other){
-            other; // avoid warning: unused parameter
         }
     };
 
@@ -197,7 +196,6 @@ public: //default commands
 
         bool execute(const ShellCommandParameters& params) 
         {
-            params; // avoid warning: unused parameter
             return false;
         }
     };
@@ -212,7 +210,6 @@ public: //default commands
 
         bool execute(const ShellCommandParameters& params) 
         {
-            params; // avoid warning: unused parameter
             return true;
         }
     };

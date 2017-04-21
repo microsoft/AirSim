@@ -86,8 +86,6 @@ public:
 private:
     static void updateState(State& state, real_T dt, const EarthUtils::HomeGeoPoint& home_geo_point)
     {
-        dt; // avoid warning: unused parameter
-
         state.geo_point = EarthUtils::nedToGeodetic(state.position, home_geo_point);
 
         real_T geo_pot = EarthUtils::getGeopotential(state.geo_point.altitude / 1000.0f);

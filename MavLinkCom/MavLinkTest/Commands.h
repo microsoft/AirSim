@@ -58,7 +58,6 @@ public:
 	// you must call this method if you want HandleMessage to be called subsequently.
 	virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
 	virtual void HandleMessage(const MavLinkMessage& msg) {
-        msg; // avoid warning: unused parameter
     }
 
     static std::vector<std::string> parseArgs(std::string s);

@@ -178,8 +178,6 @@ private: //methods
 
     void updateSensors(MultiRotorParams& params, const Kinematics::State& state, const Environment& environment, real_T dt)
     {
-        state; // avoid warning: unused parameter
-        environment; // avoid warning: unused parameter
         params.getSensors().update(dt);
     }
 

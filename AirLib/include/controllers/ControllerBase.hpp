@@ -30,7 +30,6 @@ public:
     
     virtual void getStatusMessages(std::vector<std::string>& messages)
     {
-        messages; // avoid warning: unused parameter
         //default implementation
     }
 
@@ -47,7 +46,6 @@ public:
 
     virtual void reportTelemetry(float renderTime)
     {
-        renderTime; // avoid warning: unused parameter
         //no default action
     }
 

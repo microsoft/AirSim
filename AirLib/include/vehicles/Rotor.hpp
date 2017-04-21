@@ -106,7 +106,6 @@ public: //methods
 protected:
     virtual void setWrench(Wrench& wrench, real_T dt) override
     {
-        dt; // avoid warning: unused parameter
         Vector3r normal = getNormal();
         //forces and torques are proportional to air density: http://physics.stackexchange.com/a/32013/14061
         wrench.force = normal * output_.thrust * air_density_ratio_;
@@ -116,7 +115,6 @@ protected:
 private: //methods
     static void setOutput(Output& output, const RotorParams& params, const FirstOrderFilter<real_T>& control_signal_filter, RotorTurningDirection turning_direction, real_T dt)
     {
-        dt; // avoid warning: unused parameter
         output.control_signal_input = control_signal_filter.getInput();
         output.control_signal_filtered = control_signal_filter.getOutput();
         //see relationship of rotation speed with thrust: http://physics.stackexchange.com/a/32013/14061

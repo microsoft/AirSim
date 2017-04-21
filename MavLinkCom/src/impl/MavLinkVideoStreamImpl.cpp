@@ -25,7 +25,6 @@ MavLinkVideoClientImpl::~MavLinkVideoClientImpl()
 
 void MavLinkVideoClientImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message)
 {
-    connection; // avoid warning: unused parameter
 	switch (message.msgid)
 	{
     case MavLinkDataTransmissionHandshake::kMessageId: //MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE:
@@ -122,7 +121,6 @@ MavLinkVideoServerImpl::~MavLinkVideoServerImpl()
 
 void MavLinkVideoServerImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message)
 {
-    connection; // avoid warning: unused parameter
 	switch (message.msgid)
 	{
 	case MavLinkCommandLong::kMessageId:
