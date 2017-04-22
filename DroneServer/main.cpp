@@ -38,13 +38,13 @@ int main(int argc, const char* argv[])
         settings.getChild("Pixhawk", child);
 
         // allow json overrides on a per-vehicle basis.
-        connection_info.sim_sysid = static_cast<msr::airlib::uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));
+        connection_info.sim_sysid = static_cast<uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));
         connection_info.sim_compid = child.getInt("SimCompID", connection_info.sim_compid);
 
-        connection_info.vehicle_sysid = static_cast<msr::airlib::uint8_t>(child.getInt("VehicleSysID", connection_info.vehicle_sysid));
+        connection_info.vehicle_sysid = static_cast<uint8_t>(child.getInt("VehicleSysID", connection_info.vehicle_sysid));
         connection_info.vehicle_compid = child.getInt("VehicleCompID", connection_info.vehicle_compid);
 
-        connection_info.offboard_sysid = static_cast<msr::airlib::uint8_t>(child.getInt("OffboardSysID", connection_info.offboard_sysid));
+        connection_info.offboard_sysid = static_cast<uint8_t>(child.getInt("OffboardSysID", connection_info.offboard_sysid));
         connection_info.offboard_compid = child.getInt("OffboardCompID", connection_info.offboard_compid);
 
         connection_info.logviewer_ip_address = child.getString("LogViewerHostIp", connection_info.logviewer_ip_address);
@@ -79,9 +79,9 @@ int main(int argc, const char* argv[])
     DroneControllerCancelable server_wrapper(&mav_drone);
     msr::airlib::RpcLibServer server(&server_wrapper, connection_info.local_host_ip);
     
-    auto v = std::vector<msr::airlib::uint8_t>{ 5, 4, 3 };
+    auto v = std::vector<uint8_t>{ 5, 4, 3 };
     server_wrapper.setImageForCamera(3, DroneControllerBase::ImageType::Depth, v);
-    server_wrapper.setImageForCamera(4, DroneControllerBase::ImageType::Scene, std::vector<msr::airlib::uint8_t>{6, 5, 4, 3, 2});
+    server_wrapper.setImageForCamera(4, DroneControllerBase::ImageType::Scene, std::vector<uint8_t>{6, 5, 4, 3, 2});
     
     //start server in async mode
     server.start(false);

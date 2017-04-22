@@ -6,6 +6,7 @@
 
 #include "controllers/rosflight/RosFlightDroneController.hpp"
 #include "vehicles/MultiRotorParams.hpp"
+#include "controllers/Settings.hpp"
 
 
 namespace msr { namespace airlib {
