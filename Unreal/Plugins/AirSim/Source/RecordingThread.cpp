@@ -92,7 +92,7 @@ uint32 FRecordingThread::Run()
 			RenderStatus = TGraphTask<FNullGraphTask>::CreateTask(NULL).ConstructAndDispatchWhenReady(GET_STATID(STAT_FNullGraphTask_CheckRenderStatus), ENamedThreads::RenderThread);
 		}				
 
-		if (bReadPixelsStarted && !RenderStatus.GetReference() || RenderStatus->IsComplete()) {
+		if (imageColor.Num() > 0 && bReadPixelsStarted && !RenderStatus.GetReference() || RenderStatus->IsComplete()) {
 			bReadPixelsStarted = false;
 			RenderStatus = NULL;
 
