@@ -7,7 +7,7 @@
 #include "vehicles/configs/RosFlightQuadX.hpp"
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
-#include "vehicles/configs/PX4QuadX.hpp"
+#include "vehicles/configs/Px4QuadX.hpp"
 
 
 namespace msr { namespace airlib {
