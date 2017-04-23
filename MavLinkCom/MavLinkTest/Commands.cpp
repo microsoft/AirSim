@@ -2556,7 +2556,7 @@ void FtpCommand::doPut() {
 void FtpCommand::doRemove() {
     std::string fsTarget = normalize(target);
     std::string leaf = FileSystem::getFileName(fsTarget);
-    if (leaf.size() > 0 && leaf[0] == '/' || leaf[0] == '\\') {
+    if (leaf.size() > 0 && (leaf[0] == '/' || leaf[0] == '\\')) {
         leaf = leaf.substr(1);
     }
     bool wildcards = false;

@@ -727,7 +727,7 @@ void MavLinkFtpClientImpl::handleResponse(const MavLinkMessage& msg)
 			{
 				success_ = false;
 				if (progress_ != nullptr) {
-					if (error = kErrFailErrno) {
+					if (error == kErrFailErrno) {
 						const uint8_t* data = &(payload->data);
 						error = static_cast<int>(data[1]);
 						progress_->error = error;
