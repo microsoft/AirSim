@@ -31,6 +31,4 @@ add_executable(MavLinkTest
 			${AIRSIM_ROOT}/MavLinkCom/MavLinkTest/main.cpp
 			)
 			
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(${PROJECT_NAME} MavLinkCom)
-target_link_libraries(${PROJECT_NAME} ${CXX_EXP_LIB})
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} MavLinkCom c++abi ${CXX_EXP_LIB})

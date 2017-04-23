@@ -35,7 +35,4 @@ add_executable(DroneServer
 			${AIRSIM_ROOT}/DroneServer/main.cpp
 			)
 			
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(${PROJECT_NAME} AirLib)
-target_link_libraries(${PROJECT_NAME} MavLinkCom)
-target_link_libraries(${PROJECT_NAME} ${RPC_LIB})
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} AirLib MavLinkCom c++abi ${RPC_LIB})
