@@ -48,11 +48,16 @@ install:
       docker exec xenial apt-get -y --allow-unauthenticated install clang-3.9 lldb-3.9;
       docker exec xenial update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9;
       docker exec xenial wget https://launchpad.net/ubuntu/+source/libc++/3.9.1-2/+build/11842034/+files/libc++-dev_3.9.1-2_amd64.deb;
+	  docker exec xenial dpkg -i libc++-dev_3.9.1-2_amd64.deb
       docker exec xenial wget https://launchpad.net/ubuntu/+source/libc++/3.9.1-2/+build/11842034/+files/libc++-helpers_3.9.1-2_all.deb;
+	  docker exec xenial dpkg -i libc++-helpers_3.9.1-2_all.deb 
       docker exec xenial wget https://launchpad.net/ubuntu/+source/libc++/3.9.1-2/+build/11842034/+files/libc++1_3.9.1-2_amd64.deb;
-      docker exec xenial wget https://launchpad.net/ubuntu/+source/libc++/3.9.1-2/+build/11842034/+files/libc++abi-dev_3.9.1-2_amd64.deb;
+	  docker exec xenial dpkg -i libc++1_3.9.1-2_amd64.deb 
       docker exec xenial wget https://launchpad.net/ubuntu/+source/libc++/3.9.1-2/+build/11842034/+files/libc++abi1_3.9.1-2_amd64.deb;
-      docker exec xenial dpkg -i libc++1_3.9.1-2_amd64.deb libc++abi1_3.9.1-2_amd64.deb libc++-dev_3.9.1-2_amd64.deb libc++-helpers_3.9.1-2_all.deb;
+	  docker exec xenial dpkg -i libc++abi1_3.9.1-2_amd64.deb 
+      docker exec xenial wget https://launchpad.net/ubuntu/+source/libc++/3.9.1-2/+build/11842034/+files/libc++abi-dev_3.9.1-2_amd64.deb;      
+      docker exec xenial dpkg -i libc++abi-dev_3.9.1-2_amd64.deb;
+      
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
       echo "No install osx actions--using repo eigen";
     fi
