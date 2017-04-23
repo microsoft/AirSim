@@ -71,7 +71,7 @@ before_install:
 #docker exec xenial /bin/sh -c "export EIGEN3_INCLUDE_DIR=/build/eigen/eigen3 && cd /build/cmake && sh ./build.sh && cmake . && make";
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      /build/build.sh;
+      docker exec -t --privileged xenial /build/build.sh;
     elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       git submodule update --init --recursive;
       ./build.sh;
