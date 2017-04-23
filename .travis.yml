@@ -7,9 +7,7 @@ fast_finish: false
 
 matrix:
   allow_failures:
-    - os: osx
-    - os: linux
-    env: ALLOW_FAILURES=true
+    - env: ALLOW_FAILURES=true
 
   include:
     # linux version have unique dependencies, so we set them up individually
