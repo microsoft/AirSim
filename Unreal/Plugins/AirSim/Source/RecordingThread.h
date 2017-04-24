@@ -5,7 +5,7 @@
 #include "ImageUtils.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
-#include "SimMode/SimModeWorldMultirotor.h"
+#include "SimMode/SimModeWorldMultiRotor.h"
 #include "CameraDirector.h"
 #include "PIPCamera.h"
 #include "MultiRotorConnector.h"
