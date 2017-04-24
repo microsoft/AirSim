@@ -97,12 +97,5 @@ set the  LocalIpAddress to the address of your host machine running the Unreal e
 
 ## Using Joystick/Gamepad (Alternative to RC)
 Why do you need RC for simulator? Because usual joysticks are not very accurate and in fact very "noisy" for flying! 
-We have tried it and gladly switched back to regular RC. But just in case you want to try it as well, here are the instructions.
-
-1. Connect Joystick/Gamepad such as XBox 360 controller to PC. Start QGroundControl.
-2. Click on the purple "Q" icon on left in tool bar to reveal the Preferences panel.
-3. Go to General tab and check the Virtual Joystick checkbox.
-4. Go back to settings screen (gears icon), click on Parameters tab, type `COM_RC_IN_MODE` in search box and change its value to either `Joystick/No RC Checks` or `Virtual RC by Joystick`.
-5. You should now see a new tab "Joystick" where you can do the calibration.
-
-A Playstation 3 controller is confirmed to work as an AirSim controller. On Windows, an emulator to make it look like an Xbox 360 controller, is required however. Many different solutions are available online, for example [x360ce Xbox 360 Controller Emulator](https://github.com/x360ce/x360ce).  `Note:` don't use x360ce if you have a real XBox controller.
+We have tried it and gladly switched back to regular RC. But just in case you want to try it as well, 
+see [xbox controller](xbox_controller.md) for details.

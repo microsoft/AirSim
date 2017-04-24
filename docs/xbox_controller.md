@@ -6,21 +6,7 @@ To use an XBox controller with AirSim follow these steps:
 
 ![Gamecontrollers](images/game_controllers.png)
 
-2. Connect to Pixhawk serial port using MavLinkTest.exe like this:
-````
-MavLinkTest.exe -serial:*,115200 -proxy:127.0.0.1:14550 -server:127.0.0.1:14570
-````
-
-3. Run AirSim Unreal simulator with these `~/Documents/AirSim/settings.json` settings:
-````
-    "SitlIp": "",
-    "SitlPort": 14560,
-    "UdpIp": "127.0.0.1",
-    "UdpPort": 14570,
-    "UseSerial": false,
-````
-
-4. Launch QGroundControl and you should see a new Joystick tab under stettings:
+2. Launch QGroundControl and you should see a new Joystick tab under stettings:
 
 ![Gamecontrollers](images/qgc_joystick.png)
 
@@ -34,3 +20,27 @@ QGroundControl will find your Pixhawk via the UDP proxy port 14550 setup by MavL
 AirSim will find your Pixhawk via the other UDP server port 14570 also setup by MavLinkTest above.
 You can also use all the QGroundControl controls for autonomous flying at this point too.
 
+
+3. Connect to Pixhawk serial port using MavLinkTest.exe like this:
+````
+MavLinkTest.exe -serial:*,115200 -proxy:127.0.0.1:14550 -server:127.0.0.1:14570
+````
+
+4. Run AirSim Unreal simulator with these `~/Documents/AirSim/settings.json` settings:
+````
+    "SitlIp": "",
+    "SitlPort": 14560,
+    "UdpIp": "127.0.0.1",
+    "UdpPort": 14570,
+    "UseSerial": false,
+````
+
+## Advanced
+
+If the Joystick tab doesn't show up in QGroundControl then Click on the purple "Q" icon on left in tool bar to reveal the Preferences panel.
+Go to General tab and check the Virtual Joystick checkbox.  Go back to settings screen (gears icon), click on Parameters tab,
+type `COM_RC_IN_MODE` in search box and change its value to either `Joystick/No RC Checks` or `Virtual RC by Joystick`.
+
+## Playstation 3 controller
+
+A Playstation 3 controller is confirmed to work as an AirSim controller. On Windows, an emulator to make it look like an Xbox 360 controller, is required however. Many different solutions are available online, for example [x360ce Xbox 360 Controller Emulator](https://github.com/x360ce/x360ce).  `Note:` don't use x360ce if you have a real XBox controller.
