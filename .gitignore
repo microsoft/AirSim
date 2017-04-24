@@ -309,3 +309,6 @@ deps/
 /AirLib/include/controllers/latex
 /Eigen3
 /AirLib/lib/libAirLib.a
+/cmake-3.7.2-win64-x64
+/cmake-3.7.2-win64-x64.zip
+/3.3.2.zip
