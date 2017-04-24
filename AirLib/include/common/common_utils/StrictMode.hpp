@@ -9,9 +9,6 @@
 #define STRICT_MODE_ON                                            \
     __pragma(warning(pop))										  
 
-#define IGNORE_FORMAT_STRING_ON
-
-#define IGNORE_FORMAT_STRING_OFF
 
 //TODO: limit scope of below statements required to suppress VC++ warnings
 #define _CRT_SECURE_NO_WARNINGS 1
@@ -27,14 +24,8 @@
 #define IGNORE_FORMAT_STRING_OFF                                      \
     _Pragma("clang diagnostic pop")          
 #else
-#ifdef __GNUC__
-#define IGNORE_FORMAT_STRING_ON                                           \
-    _Pragma("gcc diagnostic push")                                  \
-    _Pragma("gcc diagnostic ignored \"-Wformat-nonliteral\"")        
-
-#define IGNORE_FORMAT_STRING_OFF                                      \
-    _Pragma("gcc diagnostic pop")          
-#endif
+#define IGNORE_FORMAT_STRING_ON
+#define IGNORE_FORMAT_STRING_OFF  
 #endif
 
 // Please keep this list sorted so it is easier to find stuff, also make sure there 

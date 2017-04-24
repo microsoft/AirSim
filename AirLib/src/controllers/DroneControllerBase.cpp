@@ -295,7 +295,7 @@ bool DroneControllerBase::rotateToYaw(float yaw, float margin, CancelableBase& c
 {
     YawMode yaw_mode(false, VectorMath::normalizeAngleDegrees(yaw));
     Waiter waiter(getCommandPeriod());
-	auto start_pos = getPosition();
+    auto start_pos = getPosition();
     bool is_yaw_reached;
     while ((is_yaw_reached = isYawWithinMargin(yaw, margin)) == false) {
         if (!moveToPosition(start_pos, yaw_mode))
@@ -313,7 +313,7 @@ bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, Cancel
     if (duration <= 0)
         return true;
 
-	auto start_pos = getPosition();
+    auto start_pos = getPosition();
     YawMode yaw_mode(true, yaw_rate);
     Waiter waiter(getCommandPeriod(), duration);
     do {
