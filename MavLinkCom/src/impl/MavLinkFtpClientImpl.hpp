@@ -20,7 +20,7 @@ namespace mavlinkcom_impl {
 	class MavLinkFtpClientImpl : public MavLinkNodeImpl
 	{
 	public:
-		MavLinkFtpClientImpl(int local_system_id, int local_component_id);
+		MavLinkFtpClientImpl(int localSystemId, int localComponentId);
 		~MavLinkFtpClientImpl();
 
 		bool isSupported();

@@ -7,10 +7,10 @@
 using namespace mavlinkcom;
 using namespace mavlinkcom_impl;
 
-MavLinkFtpClient::MavLinkFtpClient(int local_system_id, int local_component_id)
-	: MavLinkNode(local_system_id, local_component_id)
+MavLinkFtpClient::MavLinkFtpClient(int localSystemId, int localComponentId)
+	: MavLinkNode(localSystemId, localComponentId)
 {
-	pImpl.reset(new MavLinkFtpClientImpl(local_system_id, local_component_id));
+	pImpl.reset(new MavLinkFtpClientImpl(localSystemId, localComponentId));
 }
 
 MavLinkFtpClient::~MavLinkFtpClient()

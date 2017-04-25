@@ -83,8 +83,8 @@ static const char	kDirentFile = 'F';	///< Identifies File returned from List com
 static const char	kDirentDir = 'D';	///< Identifies Directory returned from List command
 static const char	kDirentSkip = 'S';	///< Identifies Skipped entry from List command
 
-MavLinkFtpClientImpl::MavLinkFtpClientImpl(int local_system_id, int local_component_id)
-	: MavLinkNodeImpl(local_system_id, local_component_id)
+MavLinkFtpClientImpl::MavLinkFtpClientImpl(int localSystemId, int localComponentId)
+	: MavLinkNodeImpl(localSystemId, localComponentId)
 {
 }
 

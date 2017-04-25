@@ -24,7 +24,7 @@ using namespace mavlinkcom;
 namespace mavlinkcom_impl {
 	class MavLinkVehicleImpl : public MavLinkNodeImpl {
 	public:
-		MavLinkVehicleImpl(int local_system_id, int local_component_id);
+		MavLinkVehicleImpl(int localSystemId, int localComponentId);
 		~MavLinkVehicleImpl();
 	public:
 		AsyncResult<bool> armDisarm(bool arm);

@@ -20,7 +20,7 @@ namespace mavlinkcom {
 	class MavLinkVideoClient : public MavLinkNode
 	{
 	public:
-		MavLinkVideoClient(int local_system_id, int local_component_id);
+		MavLinkVideoClient(int localSystemId, int localComponentId);
 		~MavLinkVideoClient();
 
 		struct MavLinkVideoFrame {
@@ -43,7 +43,7 @@ namespace mavlinkcom {
 	class MavLinkVideoServer : public MavLinkNode
 	{
 	public:
-		MavLinkVideoServer(int local_system_id, int local_component_id);
+		MavLinkVideoServer(int localSystemId, int localComponentId);
 		~MavLinkVideoServer();
 
 		struct MavLinkVideoRequest {

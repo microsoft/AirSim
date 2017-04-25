@@ -8,9 +8,9 @@
 using namespace mavlinkcom;
 using namespace mavlinkcom_impl;
 
-MavLinkVehicle::MavLinkVehicle(int local_system_id, int local_component_id)
+MavLinkVehicle::MavLinkVehicle(int localSystemId, int localComponentId)
 {
-	pImpl.reset(new MavLinkVehicleImpl(local_system_id, local_component_id));
+	pImpl.reset(new MavLinkVehicleImpl(localSystemId, localComponentId));
 }
 
 MavLinkVehicle::MavLinkVehicle(){

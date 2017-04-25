@@ -8,8 +8,8 @@
 using namespace mavlinkcom;
 using namespace mavlinkcom_impl;
 
-MavLinkNode::MavLinkNode(int local_system_id, int local_component_id)
-	: pImpl{ new MavLinkNodeImpl(local_system_id, local_component_id) }
+MavLinkNode::MavLinkNode(int localSystemId, int localComponentId)
+	: pImpl{ new MavLinkNodeImpl(localSystemId, localComponentId) }
 {
 }
 

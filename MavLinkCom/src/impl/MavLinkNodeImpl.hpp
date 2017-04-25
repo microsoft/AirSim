@@ -14,7 +14,7 @@ namespace mavlinkcom_impl {
 	class MavLinkNodeImpl
 	{
 	public:
-		MavLinkNodeImpl(int local_system_id, int local_component_id);
+		MavLinkNodeImpl(int localSystemId, int localComponentId);
 		~MavLinkNodeImpl();
 
 		void connect(std::shared_ptr<MavLinkConnection> connection);

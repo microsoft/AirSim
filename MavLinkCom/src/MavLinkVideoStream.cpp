@@ -9,10 +9,10 @@ using namespace mavlinkcom_impl;
 
 // ============================== CLIENT ============================================
 
-MavLinkVideoClient::MavLinkVideoClient(int local_system_id, int local_component_id)
-	: MavLinkNode(local_system_id, local_component_id)
+MavLinkVideoClient::MavLinkVideoClient(int localSystemId, int localComponentId)
+	: MavLinkNode(localSystemId, localComponentId)
 {
-	pImpl.reset(new MavLinkVideoClientImpl(local_system_id, local_component_id));
+	pImpl.reset(new MavLinkVideoClientImpl(localSystemId, localComponentId));
 }
 
 
@@ -39,10 +39,10 @@ bool MavLinkVideoClient::readNextFrame(MavLinkVideoFrame& image)
 
 // ============================== SERVER ============================================
 
-MavLinkVideoServer::MavLinkVideoServer(int local_system_id, int local_component_id)
-	: MavLinkNode(local_system_id, local_component_id)
+MavLinkVideoServer::MavLinkVideoServer(int localSystemId, int localComponentId)
+	: MavLinkNode(localSystemId, localComponentId)
 {
-	pImpl.reset(new MavLinkVideoServerImpl(local_system_id, local_component_id));
+	pImpl.reset(new MavLinkVideoServerImpl(localSystemId, localComponentId));
 }
 
 

@@ -22,7 +22,7 @@ namespace mavlinkcom {
     // All x,y,z coordinates are in the NED coordinate system.
 	class MavLinkVehicle : public MavLinkNode {
 	public:
-		MavLinkVehicle(int local_system_id, int local_component_id);
+		MavLinkVehicle(int localSystemId, int localComponentId);
 
 		// Send command to arm or disarm the drone.  Drone will not fly until it is armed successfully.
 		// It returns false if the command is rejected.

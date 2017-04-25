@@ -34,7 +34,7 @@ namespace mavlinkcom {
 	class MavLinkNode
 	{
 	public:
-		MavLinkNode(int local_system_id, int local_component_id);
+		MavLinkNode(int localSystemId, int localComponentId);
 		~MavLinkNode();
 
 		// start listening to this connection
