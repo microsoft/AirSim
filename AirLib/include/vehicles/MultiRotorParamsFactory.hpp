@@ -18,9 +18,6 @@ public:
     {
         //read settings and override defaults
         Settings& settings = Settings::singleton();
-        if (!settings.isLoadSuccess())
-            throw std::runtime_error("Cannot load settings.json");
-
         Settings child;
         settings.getChild(vehicle_name, child);
 

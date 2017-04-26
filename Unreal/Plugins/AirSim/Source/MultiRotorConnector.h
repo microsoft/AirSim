@@ -28,7 +28,7 @@ public:
 
     //VehicleConnectorBase interface
     //implements game interface to update pawn
-    void initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params);
+    void initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, bool enable_rpc, std::string api_server_address);
     virtual void beginPlay() override;
     virtual void endPlay() override;
     virtual void updateRenderedState() override;
@@ -51,7 +51,6 @@ private:
     std::vector<std::string> controller_messages_;
     msr::airlib::Environment environment_;
     AFlyingPawn* vehicle_pawn_;
-    std::string api_server_address_;
 
     msr::airlib::MultiRotorParams* vehicle_params_;
     std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;
@@ -63,4 +62,7 @@ private:
     real_T rotor_controls_filtered_[4];
 
     Pose last_pose, last_debug_pose;
+
+    bool enable_rpc_;
+    std::string api_server_address_;
 };

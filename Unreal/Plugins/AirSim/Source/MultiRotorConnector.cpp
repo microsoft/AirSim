@@ -1,13 +1,14 @@
 #include "AirSim.h"
 #include "MultiRotorConnector.h"
 #include "AirBlueprintLib.h"
-#include "controllers/Settings.hpp"
 #include <exception>
 
 using namespace msr::airlib;
 
-void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params)
+void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, bool enable_rpc, std::string api_server_address)
 {
+    enable_rpc_ = enable_rpc;
+    api_server_address_ = api_server_address;
     vehicle_pawn_ = vehicle_pawn;
     vehicle_pawn_->initialize();
 
@@ -111,17 +112,9 @@ void MultiRotorConnector::updateRendering(float dt)
 
 void MultiRotorConnector::startApiServer()
 {
-	auto settings = Settings::singleton();
-	bool rpcEnabled = settings.getBool("RpcEnabled", false);
-	if (settings.setBool("RpcEnabled", rpcEnabled) && settings.isLoadSuccess()) {
-		// update settings file so it knows about this new boolean switch
-		settings.saveJSonFile(settings.getFileName()); 
-	}
-
-	if (rpcEnabled) {
+	if (enable_rpc_) {
 		controller_cancelable_.reset(new msr::airlib::DroneControllerCancelable(
 			vehicle_.getController()));
-		api_server_address_ = Settings::singleton().getString("LocalHostIp", "127.0.0.1");
 		rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
 		rpclib_server_->start();
 	}

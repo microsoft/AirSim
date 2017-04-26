@@ -2,6 +2,7 @@
 #include "SimModeBase.h"
 #include "AirBlueprintLib.h"
 #include "Runtime/Launch/Resources/Version.h"
+#include "controllers/Settings.hpp"
 
 ASimModeBase::ASimModeBase()
 {
@@ -39,8 +40,21 @@ void ASimModeBase::initializeSettings()
     try {
         Settings& settings = Settings::loadJSonFile("settings.json");
         auto settings_filename = Settings::singleton().getFileName();
-        std::string msg = "Loading settings from " + settings_filename;
-        UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Informational, 30);
+        if (settings.isLoadSuccess()) {
+            std::string msg = "Loaded settings from " + settings_filename;
+            UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Informational);
+
+            enable_rpc = settings.getBool("RpcEnabled", true);
+            api_server_address = settings.getString("LocalHostIp", "127.0.0.1");
+        }
+        else {
+            //write some settings in new file otherwise the string "null" is written if all settigs are empty
+            enable_rpc = settings.setBool("RpcEnabled", true);
+            settings.setString("LocalHostIp", "127.0.0.1");
+            settings.saveJSonFile(settings_filename);
+            std::string msg = "Settings file " + settings_filename + " is created.";
+            UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT("See docs at https://git.io/v9mYY"), LogDebugLevel::Informational);
+        }
     }
     catch (std::exception ex) {
         UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), TEXT(""), LogDebugLevel::Failure, 30);

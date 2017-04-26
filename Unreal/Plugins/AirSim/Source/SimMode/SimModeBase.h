@@ -43,6 +43,8 @@ protected:
     virtual void setupInputBindings();
     bool is_recording;
     int record_tick_count;
+    bool enable_rpc;
+    std::string api_server_address;
 
 private:
     void initializeSettings();

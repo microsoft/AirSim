@@ -149,7 +149,7 @@ ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn
     vehicle_params_ = MultiRotorParamsFactory::createConfig(pawn->getVehicleName());
 
     auto vehicle = std::make_shared<MultiRotorConnector>();
-    vehicle->initialize(pawn, vehicle_params_.get());
+    vehicle->initialize(pawn, vehicle_params_.get(), enable_rpc, api_server_address);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 
