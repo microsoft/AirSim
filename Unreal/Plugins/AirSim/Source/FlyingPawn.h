@@ -27,7 +27,7 @@ public: //blueprint
 
 	//HIL settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HIL")
-		FString VehicleName = "RosFlight";
+		FString VehicleName = "Pixhawk";
 
     UFUNCTION(BlueprintCallable, Category = "Init")
         void initializeForPlay();
