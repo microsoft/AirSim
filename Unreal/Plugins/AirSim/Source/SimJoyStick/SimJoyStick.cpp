@@ -14,7 +14,7 @@ struct SimJoyStick::impl {
 public:
     void getJoyStickState(unsigned int index, SimJoyStick::State& state)
     {
-        if (!initialized_success_ || !SimJoyStick::enabled_ || index >= kMaxControllers) {
+        if (!initialized_success_ || index >= kMaxControllers) {
             state.is_connected = false;
             return;
         }
@@ -67,17 +67,8 @@ public:
 
 #endif
 
-bool SimJoyStick::enabled_ = false;
 bool SimJoyStick::initialized_success_ = false;
 
-void SimJoyStick::setEnabled(bool enabled)
-{
-    enabled_ = enabled;
-}
-bool SimJoyStick::isEnabled()
-{
-    return enabled_;
-}
 void SimJoyStick::setInitializedSuccess(bool success)
 {
     initialized_success_ = success;

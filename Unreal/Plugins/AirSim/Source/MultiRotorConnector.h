@@ -47,6 +47,11 @@ public:
     virtual UpdatableObject* getPhysicsBody() override;
 
 private:
+    void detectUsbRc();
+    static float joyStickToRC(int16_t val);
+    const msr::airlib::RCData& getRCData();
+
+private:
     MultiRotor vehicle_;
     std::vector<std::string> controller_messages_;
     msr::airlib::Environment environment_;
@@ -65,4 +70,9 @@ private:
 
     bool enable_rpc_;
     std::string api_server_address_;
+    msr::airlib::DroneControllerBase* controller_;
+
+    SimJoyStick joystick_;
+    SimJoyStick::State joystick_state_;
+    msr::airlib::RCData rc_data_;
 };

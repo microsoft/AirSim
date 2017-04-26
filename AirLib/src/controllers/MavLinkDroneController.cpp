@@ -332,7 +332,7 @@ struct MavLinkDroneController::impl {
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
         mav_vehicle_->connect(connection_); // in this case we can use the same connection.
-		mav_vehicle_->startHeartbeat();
+        mav_vehicle_->startHeartbeat();
     }
 
     mavlinkcom::MavLinkHilSensor getLastSensorMessage()
@@ -1037,12 +1037,12 @@ struct MavLinkDroneController::impl {
             return;
         }
 
-		// bugbug: there is a problem with this logic.  ensureSafeMode is called after a move* operation is compeleted,
-		// but that might be because another move operation just started.  The code below will kick us out of offboard
-		// mode and that will cause the next move operation to fail because the mode change is asynchronous so it will
-		// switch to loiter right after we try and start the next move operation which will look like the PX4 cancelled
-		// offbaord, when in fact it was us.  So we need to rethink this logic.  It should be possible to do back to
-		// back move operations without having to loiter in between.
+        // bugbug: there is a problem with this logic.  ensureSafeMode is called after a move* operation is compeleted,
+        // but that might be because another move operation just started.  The code below will kick us out of offboard
+        // mode and that will cause the next move operation to fail because the mode change is asynchronous so it will
+        // switch to loiter right after we try and start the next move operation which will look like the PX4 cancelled
+        // offbaord, when in fact it was us.  So we need to rethink this logic.  It should be possible to do back to
+        // back move operations without having to loiter in between.
 
         // bool r = false;
         // ok, we are flying, so let's try and hover where we are at.

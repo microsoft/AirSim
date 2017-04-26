@@ -20,20 +20,6 @@ void AFlyingPawn::initializeForPlay()
     setStencilIDs();
 
     setupInputBindings();
-
-    detectUsbRc();
-}
-
-void AFlyingPawn::detectUsbRc()
-{
-    joystick_.getJoyStickState(0, joystick_state_);
-
-    rc_data_.is_connected = joystick_state_.is_connected;
-
-    if (rc_data_.is_connected)
-        UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Detected", LogDebugLevel::Informational);
-    else
-        UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Not detected", LogDebugLevel::Informational);
 }
 
 void AFlyingPawn::setStencilIDs()
@@ -52,37 +38,9 @@ void AFlyingPawn::setStencilIDs()
     }
 }
 
-const AFlyingPawn::RCData& AFlyingPawn::getRCData()
-{
-    joystick_.getJoyStickState(0, joystick_state_);
-
-    rc_data_.is_connected = joystick_state_.is_connected;
-
-    if (rc_data_.is_connected) {
-        rc_data_.throttle = joyStickToRC(joystick_state_.left_y);
-        rc_data_.yaw = joyStickToRC(joystick_state_.left_x);
-        rc_data_.roll = joyStickToRC(joystick_state_.right_x);
-        rc_data_.pitch = joyStickToRC(joystick_state_.right_y);
-
-        rc_data_.switch1 = joystick_state_.left_trigger ? 1 : 0;
-        rc_data_.switch2 = joystick_state_.right_trigger ? 1 : 0;
-    }
-    //else don't waste time
-    
-    return rc_data_;
-}
-
-float AFlyingPawn::joyStickToRC(int16_t val)
-{
-    float valf = static_cast<float>(val);
-    return (valf - Utils::min<int16_t>()) / Utils::max<uint16_t>();
-}
-
 void AFlyingPawn::reset()
 {
     Super::reset();
-
-    rc_data_ = RCData();
 }
 
 

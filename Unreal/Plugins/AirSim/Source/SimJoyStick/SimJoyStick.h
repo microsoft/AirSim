@@ -16,8 +16,6 @@ public:
         bool is_connected;
     };
 
-    static void setEnabled(bool enabled);
-    static bool isEnabled();
     static void setInitializedSuccess(bool success);
     static bool isInitializedSuccess();
 
@@ -26,7 +24,6 @@ public:
     SimJoyStick();
     ~SimJoyStick();    //required for pimpl
 private:
-    static bool enabled_;
     static bool initialized_success_;
     
     struct impl;

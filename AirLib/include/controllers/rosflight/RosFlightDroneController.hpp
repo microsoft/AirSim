@@ -12,6 +12,7 @@
 #include "common/Common.hpp"
 #include "AirSimRosFlightBoard.hpp"
 #include "AirSimRosFlightCommLink.hpp"
+#include "controllers/Settings.hpp"
 
 STRICT_MODE_OFF
 #include "firmware/firmware.hpp"
@@ -31,6 +32,10 @@ public:
         comm_link_.reset(new AirSimRosFlightCommLink());
         firmware_.reset(new rosflight::Firmware(board_.get(), comm_link_.get()));
         firmware_->setup();
+
+        Settings child;
+        Settings::singleton().getChild("RosFlight", child);
+        remote_control_id_ = child.getInt("RemoteControlID", 0);
     }
 
     void initializePhysics(const Environment* environment, const Kinematics::State* kinematics)
@@ -128,6 +133,11 @@ public:
         return kinematics_->pose.orientation;
     }
 
+    virtual int getRemoteControlID()  override
+    { 
+        return remote_control_id_;
+    }
+    
     RCData getRCData() override
     {
         return RCData();
@@ -260,6 +270,8 @@ private:
     const Kinematics::State* kinematics_;
     const Environment* environment_;
     const SensorCollection* sensors_;
+
+    int remote_control_id_ = 0;
 
     unique_ptr<AirSimRosFlightBoard> board_;
     unique_ptr<AirSimRosFlightCommLink> comm_link_;

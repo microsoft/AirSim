@@ -124,7 +124,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     path3d.push_back(getPosition());
 
     std::ofstream flog;
-    if (log_to_file) {
+    if (log_to_file_) {
         common_utils::FileSystem::createLogFile("MoveToPosition", flog);
         flog << "seg_index\toffset\tx\ty\tz\tgoal_dist\tseg_index\toffset\tx\ty\tz\tlookahead\tlookahead_error\tseg_index\toffset\tx\ty\tz";
     }
@@ -249,7 +249,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         //     VectorMath::toString(getPosition()).c_str(), goal_dist, VectorMath::toString(cur_path_loc.position).c_str(),
         //     VectorMath::toString(next_path_loc.position).c_str(), lookahead_error);
 
-        if (log_to_file)
+        if (log_to_file_)
             flog << cur_path_loc.seg_index << "\t" << cur_path_loc.offset << "\t" << cur_path_loc.position.x() << "\t" << cur_path_loc.position.y() << "\t" << cur_path_loc.position.z() << "\t" << goal_dist << "\t";
 
         //if drone moved backward, we don't want goal to move backward as well
@@ -266,7 +266,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         //compute next target on path
         setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
 
-        if (log_to_file) {
+        if (log_to_file_) {
             flog << cur_path_loc.seg_index << "\t" << cur_path_loc.offset << "\t" << cur_path_loc.position.x() << "\t" << cur_path_loc.position.y() << "\t" << cur_path_loc.position.z() << "\t" << lookahead  << "\t" << lookahead_error  << "\t";
             flog << next_path_loc.seg_index << "\t" << next_path_loc.offset << "\t" << next_path_loc.position.x() << "\t" << next_path_loc.position.y() << "\t" << next_path_loc.position.z() << std::endl;
         }

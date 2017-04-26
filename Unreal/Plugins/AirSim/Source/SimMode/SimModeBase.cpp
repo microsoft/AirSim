@@ -51,6 +51,10 @@ void ASimModeBase::initializeSettings()
             //write some settings in new file otherwise the string "null" is written if all settigs are empty
             enable_rpc = settings.setBool("RpcEnabled", true);
             settings.setString("LocalHostIp", "127.0.0.1");
+            Settings rosflight_child;
+            rosflight_child.setInt("RemoteControlID", 0);
+            settings.setChild("RosFlight", rosflight_child);
+
             settings.saveJSonFile(settings_filename);
             std::string msg = "Settings file " + settings_filename + " is created.";
             UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT("See docs at https://git.io/v9mYY"), LogDebugLevel::Informational);
