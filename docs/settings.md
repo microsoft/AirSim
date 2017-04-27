@@ -5,26 +5,34 @@ Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
 
 ```
 {
-  "AirControlCompID": 1,
-  "AirControlSysID": 134,
-  "ExtRendererCompID": 1,
-  "ExtRendererSysID": 167,
-  "ExternalSimPort": 14588,
   "LocalHostIp": "127.0.0.1",
-  "LogViewerHostIp": "127.0.0.1",
-  "LogViewerPort": 14388,
+  "RosFlight": {
+    "RemoteControlID": 0
+  },
   "Pixhawk": {
+    "LogViewerHostIp": "127.0.0.1",
+    "LogViewerPort": 14388,
+    "LogViewerSendPort": 14389,
+    "Model": "Generic",
+    "OffboardCompID": 1,
+    "OffboardSysID": 134,
+    "QgcHostIp": "127.0.0.1",
+    "QgcPort": 14550,
     "SerialBaudRate": 115200,
     "SerialPort": "*",
+    "SimCompID": 42,
+    "SimSysID": 142,
+    "SitlIp": "127.0.0.1",
+    "SitlPort": 14556,
     "UdpIp": "127.0.0.1",
     "UdpPort": 14560,
-    "UseSerial": true
+    "UseSerial": true,
+    "VehicleCompID": 1,
+    "VehicleSysID": 135
   },
-  "QgcHostIp": "127.0.0.1",
-  "QgcPort": 14550,
-  "SimCompID": 42,
-  "SimSysID": 142
+  "RpcEnabled": true
 }
+
 
 ```
 
