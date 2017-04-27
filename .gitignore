@@ -284,6 +284,7 @@ ModelManifest.xml
 /cmake/HelloDrone/HelloDrone
 /cmake/DroneShell/DroneShell
 /cmake/DroneServer/DroneServer
+cmake/AirLibUnitTests/Makefile
 external/
 deps/
 
