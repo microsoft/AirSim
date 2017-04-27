@@ -52,7 +52,7 @@ public:
             John H Wall, 2007, eq 2.5, pg 13, http://etd.auburn.edu/handle/10415/945
         */
 
-        double dt = clock()->updateSince(last_time_);
+        TTimeDelta dt = clock()->updateSince(last_time_);
 
         double alpha = exp(-dt / tau_);
         output_ = static_cast<real_T>(alpha * output_ + (1 - alpha) * getNextRandom() * sigma_);

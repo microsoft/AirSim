@@ -77,23 +77,23 @@ public:
     //*** End: UpdatableState implementation ***//
 
 
-    ulong getTimestamp() const
+    ulong getTimestamp()
     {
         //convert to millies
         return static_cast<ulong>(clock()->nowNanos() / 1E6);
     }
 
-    real_T getElapsedTotalSec() const
+    TTimeDelta getElapsedTotalSec() const
     {
         return elapsed_total_sec_;
     }
 
-    real_T getElapsedIntervalSec() const
+    TTimeDelta getElapsedIntervalSec() const
     {
         return elapsed_interval_sec_;
     }
 
-    real_T getLastElapsedIntervalSec() const
+    TTimeDelta getLastElapsedIntervalSec() const
     {
         return last_elapsed_interval_sec_;
     }
@@ -115,9 +115,9 @@ public:
 
 private:
     real_T interval_size_sec_;
-    double elapsed_total_sec_;
-    double elapsed_interval_sec_;
-    real_T last_elapsed_interval_sec_;
+    TTimeDelta elapsed_total_sec_;
+    TTimeDelta elapsed_interval_sec_;
+    TTimeDelta last_elapsed_interval_sec_;
     ulong start_timestamp_ms_;
     uint update_count_;
     real_T frequency_;

@@ -48,7 +48,7 @@ public:
 
     virtual void update() override
     {
-        double dt = clock()->updateSince(last_time_);
+        TTimeDelta dt = clock()->updateSince(last_time_);
 
         if (enabled_) {
             dt_stats_.insert(dt);

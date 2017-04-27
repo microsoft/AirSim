@@ -38,7 +38,7 @@ public: //methods
         eph_filter.reset();
         epv_filter.reset();
 
-        addOutputToDelayLine(eph_filter.getOutput(), epv_filter.getOutput(), 0);
+        addOutputToDelayLine(eph_filter.getOutput(), epv_filter.getOutput());
     }
 
     virtual void update() override
@@ -48,7 +48,7 @@ public: //methods
         epv_filter.update();
 
         if (freq_limiter_.isWaitComplete()) {   //update output
-            addOutputToDelayLine(eph_filter.getOutput(), epv_filter.getOutput(), freq_limiter_.getLastElapsedIntervalSec());
+            addOutputToDelayLine(eph_filter.getOutput(), epv_filter.getOutput());
         }
 
         delay_line_.update();
@@ -61,7 +61,7 @@ public: //methods
 
     virtual ~GpsSimple() = default;
 private:
-    void addOutputToDelayLine(real_T eph, real_T epv, real_T dt)
+    void addOutputToDelayLine(real_T eph, real_T epv)
     {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();

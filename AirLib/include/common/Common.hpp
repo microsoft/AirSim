@@ -44,6 +44,7 @@ typedef common_utils::Utils Utils;
 typedef VectorMath::RandomVectorGaussianT RandomVectorGaussianR;
 typedef VectorMath::RandomVectorT RandomVectorR;
 typedef unsigned long TTimePoint;
+typedef double TTimeDelta;
 
 
 template <typename T>

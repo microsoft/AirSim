@@ -63,12 +63,12 @@ private: //methods
 
     void addNoise(Vector3r& linear_acceleration, Vector3r& angular_velocity)
     {
-        double dt = clock()->updateSince(last_time_);
+        TTimeDelta dt = clock()->updateSince(last_time_);
 
         //ref: An introduction to inertial navigation, Oliver J. Woodman, Sec 3.2, pp 10-12
         //https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-696.pdf
 
-        real_T sqrt_dt = static_cast<real_T>(sqrt(std::max<double>(dt, params_.min_sample_time)));
+        real_T sqrt_dt = static_cast<real_T>(sqrt(std::max<TTimeDelta>(dt, params_.min_sample_time)));
 
         // Gyrosocpe
         //convert arw to stddev

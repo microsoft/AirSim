@@ -27,7 +27,7 @@ namespace msr {
 				output_stream << std::fixed;
 				output_stream << "time\tx-gyro\ty-gyro\tz-gyro\tx-acc\ty-acc\t-z-acc" << std::endl;
 
-				double last = Utils::getTimeSinceEpochSecs();
+                TTimeDelta last = Utils::getTimeSinceEpochSecs();
 				for (auto i = 0; i < interations; ++i) {
 					const auto& output = imu.getOutput();
 					output_stream << Utils::getTimeSinceEpochSecs() << "\t";
@@ -36,10 +36,9 @@ namespace msr {
 
 					std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpochSecs() - last)));
 
-					float dt = static_cast<float>(Utils::getTimeSinceEpochSecs() - last);
 					last = Utils::getTimeSinceEpochSecs();
-					environment.update(dt);
-					imu.update(dt);
+					environment.update();
+					imu.update();
 				}
 			}
 
@@ -58,7 +57,7 @@ namespace msr {
 				output_stream << "time\tpressure\taltitude" << std::endl;
 
 
-				double last = Utils::getTimeSinceEpochSecs();
+                TTimeDelta last = Utils::getTimeSinceEpochSecs();
 				for (auto i = 0; i < interations; ++i) {
 					const auto& output = baro.getOutput();
 					output_stream << Utils::getTimeSinceEpochSecs() << "\t";
@@ -67,10 +66,9 @@ namespace msr {
 
 					std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpochSecs() - last)));
 
-					float dt = static_cast<float>(Utils::getTimeSinceEpochSecs() - last);
 					last = Utils::getTimeSinceEpochSecs();
-					environment.update(dt);
-					baro.update(dt);
+					environment.update();
+					baro.update();
 				}
 			}
 
@@ -89,7 +87,7 @@ namespace msr {
 				output_stream << std::fixed;
 				output_stream << "time\tpressure\taltitude\tgps_alt" << std::endl;
 
-				double last = Utils::getTimeSinceEpochSecs();
+                TTimeDelta last = Utils::getTimeSinceEpochSecs();
 				bool which_alt = false;
 				for (auto j = 0; j < 10; ++j) {
 					for (auto i = 0; i < interations_20s; ++i) {
@@ -101,10 +99,9 @@ namespace msr {
 
 						std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpochSecs() - last)));
 
-						float dt = static_cast<float>(Utils::getTimeSinceEpochSecs() - last);
 						last = Utils::getTimeSinceEpochSecs();
-						environment.update(dt);
-						baro.update(dt);
+						environment.update();
+						baro.update();
 					}
 
 					which_alt = !which_alt;
@@ -120,7 +117,7 @@ namespace msr {
 				output_stream << "time\tx-mag\ty-mag\tz-mag" << std::endl;
 
 				float interations = total_duration / period;
-				double last = Utils::getTimeSinceEpochSecs();
+                TTimeDelta last = Utils::getTimeSinceEpochSecs();
 				for (float direction = 0; direction < 5; direction++) {
 
 					float yaw = yawStart;
@@ -148,10 +145,9 @@ namespace msr {
 						output_stream << std::endl;
 
 						std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpochSecs() - last)));
-						float dt = static_cast<float>(Utils::getTimeSinceEpochSecs() - last);
 						last = Utils::getTimeSinceEpochSecs();
-						environment.update(dt);
-						mag.update(dt);
+						environment.update();
+						mag.update();
 					}
 				}
 			}
@@ -165,7 +161,7 @@ namespace msr {
 				output_stream << "time\tx-mag\ty-mag\tz-mag\tlat\tlon\talt\tw\tx\ty\tz" << std::endl;
 
 				float interations = total_duration / period;
-				double last = Utils::getTimeSinceEpochSecs();
+                TTimeDelta last = Utils::getTimeSinceEpochSecs();
 				for (float pitch = 0; pitch < 2.1*M_PIf; pitch += M_PIf / 2) {
 					for (float roll = 0; roll < 2.1*M_PIf; roll += M_PIf / 2) {
 						for (float direction = 0; direction < 5; direction++) {
@@ -198,10 +194,9 @@ namespace msr {
 								output_stream << std::endl;
 
 								std::this_thread::sleep_for(std::chrono::duration<double>(period - (Utils::getTimeSinceEpochSecs() - last)));
-								float dt = static_cast<float>(Utils::getTimeSinceEpochSecs() - last);
 								last = Utils::getTimeSinceEpochSecs();
-								environment.update(dt);
-								mag.update(dt);
+								environment.update();
+								mag.update();
 							}
 						}
 					}
@@ -220,14 +215,13 @@ namespace msr {
 				msr::airlib::Environment environment(initial_environment);
 				MagnetometerSimple mag;
 				mag.initialize(&kinematics, &environment);
-				real_T dt = 0;
 
 				for (float lat = -90; lat < 90; lat++)
 				{
 					for (float lon = -180; lon < 180; lon++)
 					{
 						environment.getState().geo_point = GeoPoint(lat, lon, 0);
-						mag.update(dt++);
+						mag.update();
 						const auto& output = mag.getOutput();
 
 						output_stream << lat << "\t" << lon << "\t";

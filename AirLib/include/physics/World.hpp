@@ -92,7 +92,7 @@ public:
     //async updater thread
     void startAsyncUpdator(real_T period)
     {
-        executor_.initialize(std::bind(&World::worldUpdatorAsync, this, std::placeholders::_1), period);
+        executor_.initialize(std::bind(&World::worldUpdatorAsync, this), period);
         executor_.start();
     }
     void stopAsyncUpdator()
@@ -109,10 +109,10 @@ public:
     }
 
 private:
-    bool worldUpdatorAsync(double dt)
+    bool worldUpdatorAsync()
     {
         try {
-            update(static_cast<real_T>(dt));
+            update();
         }
         catch(const std::exception& ex) {
             Utils::logError("Exception occurred while updating world: %s", ex.what());

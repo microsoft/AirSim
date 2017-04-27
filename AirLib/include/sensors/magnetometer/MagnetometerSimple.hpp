@@ -29,7 +29,7 @@ public:
         //Ground truth is reset before sensors are reset
         updateReference(getGroundTruth());
         noise_vec_.reset();
-        updateOutput(0);
+        updateOutput();
     }
 
     virtual void update() override

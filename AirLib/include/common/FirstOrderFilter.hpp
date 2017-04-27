@@ -52,7 +52,7 @@ public:
 
     virtual void update() override
     {
-        double dt = clock()->updateSince(last_time_);
+        TTimeDelta dt = clock()->updateSince(last_time_);
 
         //lower the weight for previous value if its been long time
         //TODO: minimize use of exp

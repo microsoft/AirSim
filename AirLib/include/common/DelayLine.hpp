@@ -15,16 +15,16 @@ class DelayLine : UpdatableObject {
 public:
     DelayLine()
     {}
-    DelayLine(double delay) //in seconds
+    DelayLine(TTimeDelta delay) //in seconds
     {
         initialize(delay);
     }
-    void initialize(double delay)  //in seconds
+    void initialize(TTimeDelta delay)  //in seconds
     {
         setDelay(delay);
         DelayLine::reset();
     }
-    void setDelay(double delay)
+    void setDelay(TTimeDelta delay)
     {
         delay_ = delay;
     }
@@ -66,7 +66,7 @@ public:
         return last_time_;
     }
 
-    void push_back(const T& val, double time_offset = 0)
+    void push_back(const T& val, TTimePoint time_offset = 0)
     {
         values_.push_back(val);
         times_.push_back(clock()->nowNanos() + time_offset);
@@ -78,7 +78,7 @@ private:
 
     list<T> values_;
     list<TTimePoint> times_;
-    double delay_;
+    TTimeDelta delay_;
 
     T last_value_;
     TTimePoint last_time_;

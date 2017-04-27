@@ -414,7 +414,7 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
     do {
 
         RCData rc_data = getRCData();
-        double age = timestampNow() - rc_data.timestamp;
+        TTimeDelta age = timestampNow() - rc_data.timestamp;
         if (age <= kMaxMessageAge) {
             rc_data.subtract(rc_data_trims);
 

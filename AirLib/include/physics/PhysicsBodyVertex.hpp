@@ -44,7 +44,7 @@ public:
 
     virtual void update() override
     {
-        double dt = clock()->updateSince(last_time_);
+        TTimeDelta dt = clock()->updateSince(last_time_);
         
         setWrench(current_wrench_);
     }
