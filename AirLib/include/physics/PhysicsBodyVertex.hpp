@@ -12,7 +12,7 @@ namespace msr { namespace airlib {
 
 class PhysicsBodyVertex : public UpdatableObject {
 protected:
-    virtual void setWrench(Wrench& wrench, real_T dt) = 0;
+    virtual void setWrench(Wrench& wrench) = 0;
 public:
     PhysicsBodyVertex()
     {
@@ -34,15 +34,19 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        last_time_ = clock()->nowNanos();
+        
         position_ = initial_position_;
         normal_ = initial_normal_;
 
         current_wrench_ = Wrench::zero();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
-        setWrench(current_wrench_, dt);
+        double dt = clock()->updateSince(last_time_);
+        
+        setWrench(current_wrench_);
     }
     //*** End: UpdatableState implementation ***//
 
@@ -77,6 +81,7 @@ private:
     Vector3r initial_position_, position_;
     Vector3r initial_normal_, normal_;
     Wrench current_wrench_;
+    TTimePoint last_time_;
 };
 
 }} //namespace

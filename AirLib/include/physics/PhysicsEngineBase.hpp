@@ -14,7 +14,7 @@ class PhysicsEngineBase : public UpdatableContainer<PhysicsBody*> {
 public:
     //force derived classes to define this
     virtual void reset() override = 0;
-    virtual void update(real_T dt) override = 0;
+    virtual void update() override = 0;
 
     virtual void reportState(StateReporter& reporter) override
     {

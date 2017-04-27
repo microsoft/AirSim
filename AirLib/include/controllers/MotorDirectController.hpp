@@ -35,7 +35,7 @@ public:
         motor_control_signals_.assign(params_.rotor_count, 0);
     }
 
-	virtual void update(real_T dt) override
+	virtual void update() override
 	{
 		//nothing to update in direct motor control
 	}

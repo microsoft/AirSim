@@ -44,14 +44,14 @@ public:
             physics_engine_->reset();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         //first update our objects
-        UpdatableContainer::update(dt);
+        UpdatableContainer::update();
 
         //now update kinematics state
         if (physics_engine_)
-            physics_engine_->update(dt);
+            physics_engine_->update();
     }
 
     virtual void reportState(StateReporter& reporter) override

@@ -86,7 +86,7 @@ public:
 
     //*** Start: VehicleControllerBase implementation ***//
     virtual void reset() override;
-    virtual void update(real_T dt) override;
+    virtual void update() override;
     virtual void start() override;
     virtual void stop() override;
     virtual size_t getVertexCount() override;

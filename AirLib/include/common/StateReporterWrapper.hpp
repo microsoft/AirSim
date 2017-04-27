@@ -40,16 +40,19 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        last_time_ = clock()->nowNanos();
         clearReport();
         dt_stats_.clear();
         report_freq_.reset();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
+        double dt = clock()->updateSince(last_time_);
+
         if (enabled_) {
             dt_stats_.insert(dt);
-            report_freq_.update(dt);
+            report_freq_.update();
             is_wait_complete = is_wait_complete || report_freq_.isWaitComplete();
         }
     }
@@ -109,6 +112,8 @@ private:
     FrequencyLimiter report_freq_;
     bool enabled_;
     bool is_wait_complete = false;
+    TTimePoint last_time_;
+
 };
 
 }} //namespace

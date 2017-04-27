@@ -37,10 +37,10 @@ public:
             member->reset();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         for (TUpdatableObjectPtr& member : members_)
-            member->update(dt);
+            member->update();
     }
 
     virtual void reportState(StateReporter& reporter) override

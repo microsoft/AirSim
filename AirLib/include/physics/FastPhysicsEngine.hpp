@@ -24,12 +24,15 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
-        //nothing to do yet
+        for (PhysicsBody* body_ptr : *this) {
+            body_ptr->last_kinematics_time = clock()->nowNanos();
+        }
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         for (PhysicsBody* body_ptr : *this) {
+            double dt = clock()->updateSince(body.last_kinematics_time);
             updatePhysics(dt, *body_ptr);
         }
     }
@@ -47,7 +50,7 @@ public:
     //*** End: UpdatableState implementation ***//
 
 private:
-    void updatePhysics(real_T dt, PhysicsBody& body)
+    void updatePhysics(double dt, PhysicsBody& body)
     {
         //get current kinematics state of the body - this state existed since last dt seconds
         const Kinematics::State& current = body.getKinematics();
@@ -61,10 +64,10 @@ private:
         
         body.setKinematics(next);
         body.setWrench(next_wrench);
-        body.kinematicsUpdated(dt);
+        body.kinematicsUpdated();
     }
 
-    bool getNextKinematicsOnCollison(real_T dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+    bool getNextKinematicsOnCollison(double dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
     {
         static constexpr uint kCollisionResponseCycles = 1;
 

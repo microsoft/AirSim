@@ -24,22 +24,24 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        last_time_ = clock()->nowNanos();
+
         state_.gyroscope_bias = params_.gyro.turn_on_bias;
         state_.accelerometer_bias = params_.accel.turn_on_bias;
         gauss_dist.reset();
-        updateOutput(0);
+        updateOutput();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
-        updateOutput(dt);
+        updateOutput();
     }
     //*** End: UpdatableState implementation ***//
 
     virtual ~ImuSimple() = default;
 
 private: //methods
-    void updateOutput(real_T dt)
+    void updateOutput()
     {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
@@ -53,18 +55,20 @@ private: //methods
             ground_truth.kinematics->pose.orientation, true);
 
         //add noise
-        addNoise(output.linear_acceleration, output.angular_velocity, dt);
+        addNoise(output.linear_acceleration, output.angular_velocity);
         // TODO: Add noise in orientation?
 
         setOutput(output);
     }
 
-    void addNoise(Vector3r& linear_acceleration, Vector3r& angular_velocity, float dt)
+    void addNoise(Vector3r& linear_acceleration, Vector3r& angular_velocity)
     {
+        double dt = clock()->updateSince(last_time_);
+
         //ref: An introduction to inertial navigation, Oliver J. Woodman, Sec 3.2, pp 10-12
         //https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-696.pdf
 
-        real_T sqrt_dt = sqrt(std::max(dt, params_.min_sample_time));
+        real_T sqrt_dt = static_cast<real_T>(sqrt(std::max<double>(dt, params_.min_sample_time)));
 
         // Gyrosocpe
         //convert arw to stddev
@@ -95,6 +99,8 @@ private: //fields
         Vector3r gyroscope_bias;
         Vector3r accelerometer_bias;
     } state_;
+
+    TTimePoint last_time_;
 };
 
 

@@ -33,7 +33,7 @@ public:
         motor_control_signals_.assign(params_.rotor_count, 0);
 	}
 
-	virtual void update(real_T dt) override
+	virtual void update() override
 	{
 		real_T throttle_speed = scale(throttle_, 1.0f / params_.throttle_scale);
 		real_T roll_speed = scale(roll_, throttle_speed / params_.roll_scale);

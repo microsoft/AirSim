@@ -22,7 +22,7 @@ class ControllerBase : public UpdatableObject {
 public:
     //reset any state in the controller
 	virtual void reset() override = 0;
-	virtual void update(real_T dt) override = 0;
+	virtual void update() override = 0;
 
     //return 0 to 1 (corresponds to zero to full thrust)
 	virtual real_T getVertexControlSignal(unsigned int rotor_index) = 0;

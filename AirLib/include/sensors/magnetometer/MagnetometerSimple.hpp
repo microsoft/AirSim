@@ -32,9 +32,9 @@ public:
         updateOutput(0);
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
-        updateOutput(dt);
+        updateOutput();
     }
     //*** End: UpdatableObject implementation ***//
 
@@ -56,7 +56,7 @@ private: //methods
             throw std::invalid_argument("magnetic reference source type is not recognized");
         }
     }
-    void updateOutput(real_T dt)
+    void updateOutput()
     {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();

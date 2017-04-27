@@ -41,17 +41,17 @@ public: //methods
         addOutputToDelayLine(eph_filter.getOutput(), epv_filter.getOutput(), 0);
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
-        freq_limiter_.update(dt);
-        eph_filter.update(dt);
-        epv_filter.update(dt);
+        freq_limiter_.update();
+        eph_filter.update();
+        epv_filter.update();
 
         if (freq_limiter_.isWaitComplete()) {   //update output
             addOutputToDelayLine(eph_filter.getOutput(), epv_filter.getOutput(), freq_limiter_.getLastElapsedIntervalSec());
         }
 
-        delay_line_.update(dt);
+        delay_line_.update();
 
         if (freq_limiter_.isWaitComplete())
             setOutput(delay_line_.getOutput());

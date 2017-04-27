@@ -43,7 +43,7 @@ typedef std::string string;
 typedef common_utils::Utils Utils;
 typedef VectorMath::RandomVectorGaussianT RandomVectorGaussianR;
 typedef VectorMath::RandomVectorT RandomVectorR;
-
+typedef unsigned long TTimePoint;
 
 
 template <typename T>

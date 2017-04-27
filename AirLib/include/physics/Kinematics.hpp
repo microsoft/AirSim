@@ -45,7 +45,7 @@ public:
         current_ = initial_;
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         //nothing to do because next state should be updated 
         //by physics engine. The reason is that final state

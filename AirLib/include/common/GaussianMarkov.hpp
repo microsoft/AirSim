@@ -36,11 +36,12 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        last_time_ = clock()->nowNanos();
         output_ = initial_output_;
         rand_.reset();
     }
     
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         /*
         Ref:
@@ -50,8 +51,11 @@ public:
             A Study of the Effects of Stochastic Inertial Sensor Errors in Dead-Reckoning Navigation
             John H Wall, 2007, eq 2.5, pg 13, http://etd.auburn.edu/handle/10415/945
         */
-        real_T alpha = exp(-dt / tau_);
-        output_ = alpha * output_ + (1 - alpha) * getNextRandom() * sigma_;
+
+        double dt = clock()->updateSince(last_time_);
+
+        double alpha = exp(-dt / tau_);
+        output_ = static_cast<real_T>(alpha * output_ + (1 - alpha) * getNextRandom() * sigma_);
     }
     //*** End: UpdatableState implementation ***//
 
@@ -70,6 +74,8 @@ private:
     RandomGeneratorGausianR rand_;
     real_T tau_, sigma_;
     real_T output_, initial_output_;
+    TTimePoint last_time_;
+
 };
 
 

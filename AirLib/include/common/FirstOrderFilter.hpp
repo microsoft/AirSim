@@ -25,10 +25,6 @@ class FirstOrderFilter : UpdatableObject {
     discretized system (ZoH):
     x(k+1) = exp(samplingTime*(-1/tau))*x(k) + (1 - exp(samplingTime*(-1/tau))) * u(k)
     */
-private:
-    float timeConstant_;
-    T output_, input_;
-    T initial_output_, initial_input_;
 public:
     FirstOrderFilter()
     {
@@ -49,17 +45,20 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        last_time_ = clock()->nowNanos();
         input_ = initial_input_;
         output_ = initial_output_;
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
+        double dt = clock()->updateSince(last_time_);
+
         //lower the weight for previous value if its been long time
         //TODO: minimize use of exp
-        float alpha = expf(-dt / timeConstant_);
+        double alpha = exp(-dt / timeConstant_);
         // x(k+1) = Ad*x(k) + Bd*u(k)
-        output_ = output_ * alpha + input_ * (1 - alpha);
+        output_ = static_cast<real_T>(output_ * alpha + input_ * (1 - alpha));
     }
     //*** End: UpdatableState implementation ***//
 
@@ -77,6 +76,12 @@ public:
     {
         return output_;
     }
+
+private:
+    float timeConstant_;
+    T output_, input_;
+    T initial_output_, initial_input_;
+    TTimePoint last_time_;
 };
 
 }} //namespace

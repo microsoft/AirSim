@@ -47,7 +47,7 @@ public:
 
         home_geo_point_ = EarthUtils::HomeGeoPoint(initial_.geo_point);
 
-        updateState(initial_, 0.0f, home_geo_point_);
+        updateState(initial_, home_geo_point_);
 
         Environment::reset();
     }
@@ -77,14 +77,14 @@ public:
         current_ = initial_;
     }
 
-    virtual void update(real_T dt)
+    virtual void update()
     {
-        updateState(current_, dt, home_geo_point_);
+        updateState(current_, home_geo_point_);
     }
     //*** End: UpdatableState implementation ***//
 
 private:
-    static void updateState(State& state, real_T dt, const EarthUtils::HomeGeoPoint& home_geo_point)
+    static void updateState(State& state, const EarthUtils::HomeGeoPoint& home_geo_point)
     {
         state.geo_point = EarthUtils::nedToGeodetic(state.position, home_geo_point);
 

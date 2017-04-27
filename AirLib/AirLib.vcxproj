@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\common\ClockBase.hpp" />
     <ClInclude Include="include\common\Common.hpp" />
     <ClInclude Include="include\common\CommonStructs.hpp" />
     <ClInclude Include="include\common\common_utils\ctpl_stl.h" />
@@ -45,6 +46,7 @@
     <ClInclude Include="include\common\GaussianMarkov.hpp" />
     <ClInclude Include="include\common\GeodeticConverter.hpp" />
     <ClInclude Include="include\common\LogFileWriter.hpp" />
+    <ClInclude Include="include\common\SimClock.hpp" />
     <ClInclude Include="include\common\StateReporter.hpp" />
     <ClInclude Include="include\common\StateReporterWrapper.hpp" />
     <ClInclude Include="include\common\UpdatableContainer.hpp" />

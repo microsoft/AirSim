@@ -28,22 +28,22 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
-        updateOutput(0);
+        updateOutput();
         pressure_factor.reset();
         correlated_noise.reset();
         uncorrelated_noise.reset();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
-        updateOutput(dt);
+        updateOutput();
     }
     //*** End: UpdatableState implementation ***//
 
     virtual ~BarometerSimple() = default;
 
 private: //methods
-    void updateOutput(real_T dt)
+    void updateOutput()
     {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
@@ -51,7 +51,7 @@ private: //methods
         auto altitude = ground_truth.environment->getState().geo_point.altitude;
         auto pressure = EarthUtils::getStandardPressure(altitude);
         //add drift in pressure
-        pressure_factor.update(dt);
+        pressure_factor.update();
         pressure += pressure * pressure_factor.getOutput();
         //add user specified offset
         pressure += EarthUtils::SeaLevelPressure - params_.qnh*100.0f;

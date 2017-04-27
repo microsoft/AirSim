@@ -73,22 +73,22 @@ public: //methods
 
         control_signal_filter_.reset();
 
-        setOutput(output_, params_, control_signal_filter_, turning_direction_, 0);
+        setOutput(output_, params_, control_signal_filter_, turning_direction_);
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         //update environmental factors before we call base
         updateEnvironmentalFactors();
 
         //this will in turn call setWrench
-        PhysicsBodyVertex::update(dt);
+        PhysicsBodyVertex::update();
 
         //update our state
-        setOutput(output_, params_, control_signal_filter_, turning_direction_, dt);
+        setOutput(output_, params_, control_signal_filter_, turning_direction_);
 
         //update filter - this should be after so that first output is same as initial
-        control_signal_filter_.update(dt);
+        control_signal_filter_.update();
     }
 
     virtual void reportState(StateReporter& reporter) override
@@ -104,7 +104,7 @@ public: //methods
 
 
 protected:
-    virtual void setWrench(Wrench& wrench, real_T dt) override
+    virtual void setWrench(Wrench& wrench) override
     {
         Vector3r normal = getNormal();
         //forces and torques are proportional to air density: http://physics.stackexchange.com/a/32013/14061
@@ -113,7 +113,7 @@ protected:
     }
 
 private: //methods
-    static void setOutput(Output& output, const RotorParams& params, const FirstOrderFilter<real_T>& control_signal_filter, RotorTurningDirection turning_direction, real_T dt)
+    static void setOutput(Output& output, const RotorParams& params, const FirstOrderFilter<real_T>& control_signal_filter, RotorTurningDirection turning_direction)
     {
         output.control_signal_input = control_signal_filter.getInput();
         output.control_signal_filtered = control_signal_filter.getOutput();

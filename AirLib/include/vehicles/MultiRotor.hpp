@@ -67,12 +67,12 @@ public:
         resetSensors();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         updateDragFactors();
 
         //update forces and environment as a result of last dt
-        PhysicsBody::update(dt);
+        PhysicsBody::update();
     }
     virtual void reportState(StateReporter& reporter) override
     {
@@ -93,11 +93,11 @@ public:
 
 
     //implement abstract methods from PhysicsBody
-    virtual void kinematicsUpdated(real_T dt) override
+    virtual void kinematicsUpdated() override
     {
-        updateSensors(*params_, getKinematics(), getEnvironment(), dt);
+        updateSensors(*params_, getKinematics(), getEnvironment());
 
-        getController()->update(dt);
+        getController()->update();
 
 		float throttle_boost = params_->getParams().rotor_params.throttle_boost;
 
@@ -176,9 +176,9 @@ private: //methods
         params.getSensors().reportState(reporter);
     }
 
-    void updateSensors(MultiRotorParams& params, const Kinematics::State& state, const Environment& environment, real_T dt)
+    void updateSensors(MultiRotorParams& params, const Kinematics::State& state, const Environment& environment)
     {
-        params.getSensors().update(dt);
+        params.getSensors().update();
     }
 
     void initSensors(MultiRotorParams& params, const Kinematics::State& state, const Environment& environment)

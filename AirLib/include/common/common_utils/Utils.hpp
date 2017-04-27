@@ -489,10 +489,15 @@ public:
         return static_cast<unsigned long>(millies);
     }
     //high precision time in seconds since epoch
-    static double getTimeSinceEpoch(std::chrono::high_resolution_clock::time_point* t = nullptr)
+    static double getTimeSinceEpochSecs(std::chrono::high_resolution_clock::time_point* t = nullptr)
     {
         using Clock = std::chrono::high_resolution_clock;
         return std::chrono::duration<double>((t != nullptr ? *t : Clock::now() ).time_since_epoch()).count();
+    }
+    static unsigned long getTimeSinceEpochNanos(std::chrono::high_resolution_clock::time_point* t = nullptr)
+    {
+        using Clock = std::chrono::high_resolution_clock;
+        return static_cast<unsigned long>((t != nullptr ? *t : Clock::now() ).time_since_epoch().count());
     }
 
     template<typename T>

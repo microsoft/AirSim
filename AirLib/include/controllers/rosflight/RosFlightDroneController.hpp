@@ -51,7 +51,7 @@ public:
         board_->system_reset(false);
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         board_->notifySensorUpdated(rosflight::Board::SensorType::Imu);
         firmware_->loop();
@@ -161,7 +161,7 @@ public:
     
     double timestampNow() override
     {
-        return Utils::getTimeSinceEpoch();
+        return Utils::getTimeSinceEpochSecs();
     }
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override

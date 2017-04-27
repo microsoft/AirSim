@@ -38,17 +38,14 @@ public:
     {
         values_.clear();
         times_.clear();
-        time_now = 0;
-        last_time_ = -1;
+        last_time_ = 0;
         last_value_ = T();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
-        time_now += dt;
-
         if (!times_.empty() && 
-            time_now - times_.front() >= delay_) {
+            ClockBase::elapsedBetween(clock()->nowNanos(), times_.front()) >= delay_) {
 
             last_value_ = values_.front();
             last_time_ = times_.front();
@@ -72,7 +69,7 @@ public:
     void push_back(const T& val, double time_offset = 0)
     {
         values_.push_back(val);
-        times_.push_back(time_now + time_offset);
+        times_.push_back(clock()->nowNanos() + time_offset);
     }
 
 private:
@@ -80,12 +77,11 @@ private:
     using list = std::list<TItem>;
 
     list<T> values_;
-    list<double> times_;
+    list<TTimePoint> times_;
     double delay_;
 
     T last_value_;
-    double last_time_ = -1;
-    double time_now = 0;
+    TTimePoint last_time_;
 };
 
 }} //namespace

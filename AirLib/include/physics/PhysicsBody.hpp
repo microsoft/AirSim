@@ -19,7 +19,7 @@ public: //abstract interface
     virtual Vector3r getLinearDragFactor() const = 0;
     virtual Vector3r getAngularDragFactor() const = 0;
     virtual uint vertexCount() const = 0;
-    virtual void kinematicsUpdated(real_T dt) = 0;
+    virtual void kinematicsUpdated() = 0;
     virtual real_T getRestitution() const = 0;
     virtual real_T getFriction() const = 0;
     //derived class may return covariant type
@@ -65,17 +65,17 @@ public: //methods
         wrench_ = Wrench::zero();
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         //update position from kinematics so we have latest position after physics update
         environment_->setPosition(getKinematics().pose.position);
-        environment_->update(dt);
+        environment_->update();
 
-        kinematics_.update(dt);
+        kinematics_.update();
 
         //update individual vertices
         for (uint vertex_index = 0; vertex_index < vertexCount(); ++vertex_index) {
-            getVertex(vertex_index).update(dt);
+            getVertex(vertex_index).update();
         }
     }
     virtual void reportState(StateReporter& reporter) override
@@ -158,6 +158,10 @@ public: //methods
     {
         collison_info_ = collison_info;
     }
+
+public:
+    //for use in physics angine: //TODO: use getter/setter or friend method?
+    TTimePoint last_kinematics_time;
 
 private:
     real_T mass_;

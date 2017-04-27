@@ -318,6 +318,12 @@
     <ClInclude Include="include\vehicles\configs\Px4QuadX.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\common\ClockBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\SimClock.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp">

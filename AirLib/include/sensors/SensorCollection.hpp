@@ -77,10 +77,10 @@ public:
         }
     }
 
-    virtual void update(real_T dt) override
+    virtual void update() override
     {
         for (auto& pair : sensors_) {
-            pair.second->update(dt);
+            pair.second->update();
         }
     }
 
