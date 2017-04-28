@@ -110,7 +110,8 @@
     <PostBuildEvent>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>echo BOOST_ROOT=$(BOOST_ROOT)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -144,7 +145,8 @@
     <PostBuildEvent>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>echo BOOST_ROOT=$(BOOST_ROOT)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <Lib>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
@@ -181,7 +183,8 @@
     <PostBuildEvent>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>echo BOOST_ROOT=$(BOOST_ROOT)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <Lib>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
@@ -216,7 +219,8 @@
     <PostBuildEvent>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>echo BOOST_ROOT=$(BOOST_ROOT)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>

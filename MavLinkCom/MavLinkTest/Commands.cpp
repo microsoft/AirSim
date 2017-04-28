@@ -996,11 +996,11 @@ bool HilCommand::Parse(const std::vector<std::string>& args)
     return false;
 }
 
-void HilCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+void HilCommand::Execute(std::shared_ptr<MavLinkVehicle> mav)
 {
     // note: we do not reset com when Close() is called because we want to keep running.
     // user has to invoke "hil stop" to stop the hil thread.
-    this->com = com;
+    this->com = mav;
 
     MavLinkSetMode setModeMessage;
     setModeMessage.target_system = com->getTargetSystemId();

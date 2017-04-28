@@ -365,7 +365,7 @@ public:
         printf("hil [start|stop] - start stop simple hil simulation mode to generate fake GPS input.\n");
     }
 
-    virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
+    virtual void Execute(std::shared_ptr<MavLinkVehicle> mav);
 
     void HilThread();
 

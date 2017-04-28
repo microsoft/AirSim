@@ -191,9 +191,9 @@ class CsvWriter {
     bool begin;
     std::string delimiter;
 public:
-    CsvWriter(std::string fileName, std::string delimiter) {
+    CsvWriter(std::string fileName, std::string tabDelimiter) {
         csvFile.open(fileName.c_str());
-        this->delimiter = delimiter;
+        this->delimiter = tabDelimiter;
     }
     ~CsvWriter() {
         csvFile.close();
@@ -884,12 +884,12 @@ bool ParseCommandLine(int argc, const char* argv[])
                 if (parts.size() > 1)
                 {
                     std::string filters(arg + 1 + strlen(filterOption) + 1);
-                    std::vector<std::string> parts = Utils::split(filters, ",", 1);
-                    for (auto ptr = parts.begin(), end = parts.end(); ptr != end; ptr++) {
+                    std::vector<std::string> fparts = Utils::split(filters, ",", 1);
+                    for (auto ptr = fparts.begin(), end = fparts.end(); ptr != end; ptr++) {
                         std::string f = *ptr;
                         try {
-                            long i = std::stol(f);
-                            filterTypes.push_back(i);
+                            long ft = std::stol(f);
+                            filterTypes.push_back(ft);
                         }
                         catch (std::exception&) {
                             printf("expecting integer filter messagid, but found %s\n", f.c_str());
@@ -1007,7 +1007,7 @@ void HexDump(uint8_t *buffer, uint len)
     }
 }
 
-std::shared_ptr<MavLinkConnection> connectProxy(std::shared_ptr<MavLinkConnection> droneConnection, const PortAddress& endPoint, std::string name)
+std::shared_ptr<MavLinkConnection> connectProxy(const PortAddress& endPoint, std::string name)
 {
     printf("Connecting to UDP Proxy address %s:%d\n", endPoint.addr.c_str(), endPoint.port);
 
@@ -1164,7 +1164,7 @@ bool connect()
         if (logViewerEndPoint.addr == "") {
             logViewerEndPoint.addr = defaultLocalAddress;
         }
-        logConnection = connectProxy(droneConnection, logViewerEndPoint, "log");
+        logConnection = connectProxy(logViewerEndPoint, "log");
         usedPorts.push_back(logViewerEndPoint);
         if (serial && telemetry) {
             startTelemetry();
@@ -1187,7 +1187,7 @@ bool connect()
             }
         }
         usedPorts.push_back(proxyEndPoint);
-        connectProxy(droneConnection, proxyEndPoint, "proxy");
+        connectProxy(proxyEndPoint, "proxy");
     }
 
 
@@ -1220,7 +1220,7 @@ void handleStatus(const MavLinkStatustext& statustext) {
     Utils::logMessage("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), safeText.c_str());
 }
 
-int console(std::stringstream& initScript) {
+int console(std::stringstream& script) {
 
     std::string line;
     mavLinkVehicle = std::make_shared<MavLinkVehicle>(LocalSystemId, LocalComponentId);
@@ -1352,12 +1352,12 @@ int console(std::stringstream& initScript) {
 
 
     printf("Ready...\n");
-    initScript << "status\n";
+    script << "status\n";
 
     while (!std::cin.eof()) {
 
-        if (!initScript.eof()) {
-            std::getline(initScript, line);
+        if (!script.eof()) {
+            std::getline(script, line);
         }
         else {
             std::getline(std::cin, line);
