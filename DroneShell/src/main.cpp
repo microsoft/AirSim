@@ -1183,6 +1183,7 @@ int main(int argc, const char *argv[]) {
         }
     });
 
+
     SimpleShell<CommandContext> shell("==||=> ");
 
     shell.showMessage(R"(
@@ -1191,13 +1192,17 @@ int main(int argc, const char *argv[]) {
         Microsoft Research (c) 2016.
     )");
 
+    // make sure we can talk to the DroneServer
+    std::cout << "Contacting DroneServer..." << std::flush;
+    command_context.client.ping();
+    std::cout << "DroneServer is responding." << std::endl;
 
-	std::cout << "Waiting for drone to report a valid GPS location...";
+	std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
 	const float pause_time = 1;
 	auto gps = command_context.client.getGpsLocation();
 	while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0)
 	{
-		std::cout << ".";
+		std::cout << "." << std::flush;
 		std::this_thread::sleep_for(std::chrono::duration<double>(pause_time)); 
 		gps = command_context.client.getGpsLocation();
 	}

@@ -102,6 +102,7 @@ struct MavLinkDroneController::impl {
     bool is_offboard_mode_;
     bool is_simulation_mode_;
     PidController thrust_controller_;
+    int hil_message_check_;
     int sitl_message_check_;
 
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
@@ -257,6 +258,8 @@ struct MavLinkDroneController::impl {
 
     void connect()
     {
+        hil_message_check_ = 0;
+        sitl_message_check_ = 0;
         createMavConnection(connection_info_);
         initializeMavSubscriptions();
     }
@@ -294,7 +297,6 @@ struct MavLinkDroneController::impl {
         if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0 && connection_info_.sitl_ip_port != port) {
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-            sitl_message_check_ = 0;
             auto sitlconnection = MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
             mav_vehicle_->connect(sitlconnection);
         }
@@ -522,6 +524,7 @@ struct MavLinkDroneController::impl {
         Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
         debug_pose_ = Pose::nanPose();
+        hil_message_check_ = 0;
         sitl_message_check_ = 0;
     }
 
@@ -976,12 +979,21 @@ struct MavLinkDroneController::impl {
         }
         MavLinkTelemetry data;
         connection_->getTelemetry(data);
+        if (data.messagesReceived == 0) {
+            hil_message_check_++;
+            if (hil_message_check_ == 100) {
+                addStatusMessage("not receiving any messages from HIL, please restart your HIL node and try again");
+            }
+        } else {
+            hil_message_check_ = 0;
+        }
 
         // listen to the other mavlink connection also
         auto mavcon = mav_vehicle_->getConnection();
         if (mavcon != connection_) {
             MavLinkTelemetry sitl;
             mavcon->getTelemetry(sitl);
+
             data.handlerMicroseconds += sitl.handlerMicroseconds;
             data.messagesHandled += sitl.messagesHandled;
             data.messagesReceived += sitl.messagesReceived;

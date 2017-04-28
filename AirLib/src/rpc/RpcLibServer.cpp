@@ -41,6 +41,7 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
         : drone_(drone)
 {
     pimpl_.reset(new impl(server_address, port));
+    pimpl_->server.bind("ping", [&]() -> bool { return true; });
     pimpl_->server.bind("armDisarm", [&](bool arm) -> bool { return drone_->armDisarm(arm); });
     pimpl_->server.bind("setOffboardMode", [&](bool is_set) -> void { drone_->setOffboardMode(is_set); });
     pimpl_->server.bind("setSimulationMode", [&](bool is_set) -> void { drone_->setSimulationMode(is_set); });

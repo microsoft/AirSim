@@ -16,6 +16,7 @@ namespace msr { namespace airlib {
 class RpcLibClient {
 public:
     RpcLibClient(const string& ip_address = "127.0.0.1", uint16_t port = 41451);
+    bool ping();
     bool armDisarm(bool arm);
     void setOffboardMode(bool is_set);
     void setSimulationMode(bool is_set);

@@ -97,10 +97,12 @@ int main(int argc, const char* argv[])
             for (const auto& message : messages) {
                 std::cout << message << std::endl;
             }
-        }
+        }        
 
         constexpr static std::chrono::milliseconds MessageCheckDurationMillis(100);
         std::this_thread::sleep_for(MessageCheckDurationMillis);
+
+        mav_drone.reportTelemetry(100);
     }
 
     return 0;
