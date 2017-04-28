@@ -171,8 +171,7 @@ public: //interface for outside world
     virtual Vector3r getPosition() = 0;
 
     /// Get debug pose, meaning of which is dependent on application usage. For example,
-    /// this could be pose of real vehicle from log playback. The return value should indicate
-    /// timestamp with 0 indicating not available
+    /// this could be pose of real vehicle from log playback.
     virtual Pose getDebugPose();
 
     /// get the current X and Y position
@@ -196,10 +195,6 @@ public: //interface for outside world
 
     /// Set the RC data that should be used by flight controller
     virtual void setRCData(const RCData& rcData) = 0;
-
-    /// Get a timestamp - mainly used to figure out if any data read from API is stale
-    /// currently only supported by RCData class
-    virtual double timestampNow() = 0;
 
     /// Get the home point (where drone was armed before takeoff).  This is the location the drone 
     /// will return to if you call goHome().

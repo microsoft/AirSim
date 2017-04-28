@@ -158,11 +158,6 @@ public:
         }
         //else we don't have RC data
     }
-    
-    double timestampNow() override
-    {
-        return Utils::getTimeSinceEpochSecs();
-    }
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override
     {

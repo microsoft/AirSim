@@ -112,7 +112,7 @@ public:
     };
 
     struct RCData {
-        double timestamp = common_utils::Utils::nan<double>();
+        unsigned long timestamp = 0;
         float pitch = 0, roll = 0, throttle = 0, yaw = 0;
         unsigned int switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, switch5 = 0;
 

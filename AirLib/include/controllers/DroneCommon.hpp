@@ -61,7 +61,7 @@ struct VehicleParams {
 };    
 
 struct RCData {
-    double timestamp;
+    TTimePoint timestamp = 0;
     //pitch, roll, yaw should be in range -1 to 1
     //switches should be integer value indicating its state, 0=on, 1=off for example.
     float pitch = 0, roll = 0, throttle = 0, yaw = 0;

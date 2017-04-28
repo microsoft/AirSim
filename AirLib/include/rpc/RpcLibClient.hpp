@@ -46,7 +46,7 @@ public:
     Vector3r getVelocity();
     Quaternionr getOrientation();
     RCData getRCData();
-    double timestampNow();
+    TTimePoint timestampNow();
     GeoPoint getHomePoint();
     GeoPoint getGpsLocation();
     bool isOffboardMode();

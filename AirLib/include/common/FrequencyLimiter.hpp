@@ -77,12 +77,6 @@ public:
     //*** End: UpdatableState implementation ***//
 
 
-    ulong getTimestamp()
-    {
-        //convert to millies
-        return static_cast<ulong>(clock()->nowNanos() / 1E6);
-    }
-
     TTimeDelta getElapsedTotalSec() const
     {
         return elapsed_total_sec_;

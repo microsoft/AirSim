@@ -155,11 +155,10 @@ public:
         return controller_->getRCData();
     }
 
-    double timestampNow()
+    TTimePoint timestampNow()
     {
-        return controller_->timestampNow();
+        return controller_->clock()->nowNanos();
     }
-
     GeoPoint getHomePoint()
     {
         return controller_->getHomePoint();

@@ -108,7 +108,6 @@ public:
     Quaternionr getOrientation() override;
     RCData getRCData() override;
     void setRCData(const RCData& rcData) override;
-    double timestampNow() override;
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override;
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override;

@@ -34,8 +34,6 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
-        last_time_ = clock()->nowNanos();
-        
         position_ = initial_position_;
         normal_ = initial_normal_;
 
@@ -44,8 +42,6 @@ public:
 
     virtual void update() override
     {
-        TTimeDelta dt = clock()->updateSince(last_time_);
-        
         setWrench(current_wrench_);
     }
     //*** End: UpdatableState implementation ***//
@@ -81,7 +77,6 @@ private:
     Vector3r initial_position_, position_;
     Vector3r initial_normal_, normal_;
     Wrench current_wrench_;
-    TTimePoint last_time_;
 };
 
 }} //namespace

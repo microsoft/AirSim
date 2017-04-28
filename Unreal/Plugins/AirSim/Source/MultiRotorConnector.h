@@ -24,7 +24,7 @@ public:
 
 
 public:
-	virtual ~MultiRotorConnector();
+    virtual ~MultiRotorConnector();
 
     //VehicleConnectorBase interface
     //implements game interface to update pawn

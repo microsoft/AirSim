@@ -166,9 +166,9 @@ RCData RpcLibClient::getRCData()
     return pimpl_->client.call("getRCData").as<RpcLibAdapators::RCData>().to();
 }
 
-double RpcLibClient::timestampNow()
+TTimePoint RpcLibClient::timestampNow()
 {
-    return pimpl_->client.call("timestampNow").as<double>();
+    return pimpl_->client.call("timestampNow").as<TTimePoint>();
 }
 
 GeoPoint RpcLibClient::getHomePoint()
