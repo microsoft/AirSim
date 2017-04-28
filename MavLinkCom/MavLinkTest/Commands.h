@@ -350,6 +350,28 @@ public:
 
 };
 
+class HilCommand : public Command
+{
+    bool started = false;
+    std::thread hil_thread;
+    std::shared_ptr<MavLinkVehicle> com;
+public:
+    HilCommand() {
+        this->Name = "hil [start|stop]";
+    }
+    virtual bool Parse(const std::vector<std::string>& args);
+
+    virtual void PrintHelp() {
+        printf("hil [start|stop] - start stop simple hil simulation mode to generate fake GPS input.\n");
+    }
+
+    virtual void Execute(std::shared_ptr<MavLinkVehicle> com);
+
+    void HilThread();
+
+    float addNoise(float x, float scale);
+};
+
 class SendImageCommand : public Command
 {
 	std::shared_ptr<MavLinkNode> logViewer;

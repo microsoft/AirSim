@@ -966,6 +966,112 @@ void PositionCommand::HandleMessage(const MavLinkMessage& message)
     }
 }
 
+bool HilCommand::Parse(const std::vector<std::string>& args)
+{
+    started = false;
+    if (args.size() > 0) {
+        std::string cmd = args[0];
+        if (cmd == "hil") {
+            if (args.size() > 1)
+            {
+                std::string arg = args[1];
+                if (arg == "start") {
+                    started = true;
+                    hil_thread = std::thread(&HilCommand::HilThread, this);
+                }
+                else if (arg == "stop") {
+                    started = false;
+                    if (hil_thread.joinable()) {
+                        hil_thread.join();
+                    }
+                }
+                else {
+                    printf("hil [start|stop] - start stop simple hil simulation mode to generate fake GPS input.\n");
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+void HilCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
+    // note: we do not reset com when Close() is called because we want to keep running.
+    // user has to invoke "hil stop" to stop the hil thread.
+    this->com = com;
+
+    MavLinkSetMode setModeMessage;
+    setModeMessage.target_system = com->getTargetSystemId();
+    setModeMessage.base_mode = 32;  //HIL
+    com->sendMessage(setModeMessage);
+}
+
+float HilCommand::addNoise(float x, float scale)
+{
+    // generate random between 0 and 1
+    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); 
+    // move to range -1 to 1
+    r = (r * 2) - 1;
+    // scale it
+    r *= scale;
+    // apply iy
+    return x + r;
+}
+
+void HilCommand::HilThread()
+{
+    int slices = 0;
+    while (started) {
+        slices++;
+
+        uint64_t usec = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+        MavLinkHilSensor hil_sensor;
+        hil_sensor.time_usec = usec;
+        hil_sensor.xacc = addNoise(0, 0.1f);
+        hil_sensor.yacc = addNoise(0, 0.1f);
+        hil_sensor.zacc = addNoise(-9.8f, 0.1f); // gravity
+        hil_sensor.xgyro = addNoise(0, 0.01f);
+        hil_sensor.ygyro = addNoise(0, 0.01f);
+        hil_sensor.zgyro = addNoise(0, 0.01f);
+        hil_sensor.xmag = addNoise(0.2f, 0.1f);
+        hil_sensor.ymag = addNoise(-0.7f, 0.1f);
+        hil_sensor.zmag = addNoise(0.45f, 0.1f);
+        hil_sensor.pressure_alt = addNoise(122, 1);
+        hil_sensor.fields_updated = 1 << 31;
+
+        if (com != nullptr) {
+            com->sendMessage(hil_sensor);
+        }
+
+        if (slices == 10) {
+            slices = 0;
+            // gps is much slower frequency than IMU.
+            MavLinkHilGps gps;
+            gps.time_usec = usec;
+            gps.alt = static_cast<int32_t>(addNoise(122.0f,1) * 1E3);
+            gps.lat = static_cast<int32_t>(addNoise(47.642406f,0.000001f) * 1E7);
+            gps.lon = static_cast<int32_t>(addNoise(-122.140977f,0.000001f) * 1E7);
+            gps.eph = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
+            gps.epv = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
+            gps.fix_type = 3;
+            gps.satellites_visible = 10;
+            gps.vd = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
+            gps.ve = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
+            gps.vn = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
+            gps.vel = static_cast<int16_t>(addNoise(0, 0.2f) * 100);// cm/s
+            gps.cog = static_cast<int16_t>(addNoise(0, 0.3f) * 100); // degrees * 100
+            if (com != nullptr) {
+                com->sendMessage(gps);
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
 bool BatteryCommand::Parse(const std::vector<std::string>& args) {
     if (args.size() > 0) {
         std::string cmd = args[0];

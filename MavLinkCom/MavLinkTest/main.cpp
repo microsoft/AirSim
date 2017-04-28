@@ -149,6 +149,11 @@ bool telemetry = false;
 std::mutex logLock;
 std::stringstream initScript;
 
+std::shared_ptr<MavLinkConnection> droneConnection;
+std::shared_ptr<MavLinkConnection> logConnection;
+std::shared_ptr<MavLinkVehicle> mavLinkVehicle;
+
+
 #if defined(__cpp_lib_experimental_filesystem)
 
 using namespace std::experimental::filesystem::v1;
@@ -1057,9 +1062,6 @@ std::shared_ptr<MavLinkConnection> connectServer(const PortAddress& endPoint, st
     return serverConnection;
 }
 
-std::shared_ptr<MavLinkConnection> droneConnection;
-std::shared_ptr<MavLinkConnection> logConnection;
-
 void runTelemetry() {
     while (telemetry) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -1087,7 +1089,7 @@ void stopTelemetry() {
     }
 }
 
-bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
+bool connect()
 {
     if (offboard && serial)
     {
@@ -1192,7 +1194,7 @@ bool connect(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
     return true;
 }
 
-void checkPulse(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
+void checkPulse()
 {
     MavLinkHeartbeat heartbeat;
     if (!mavLinkVehicle->waitForHeartbeat().wait(100000, &heartbeat)) {
@@ -1221,7 +1223,7 @@ void handleStatus(const MavLinkStatustext& statustext) {
 int console(std::stringstream& initScript) {
 
     std::string line;
-    std::shared_ptr<MavLinkVehicle> mavLinkVehicle = std::make_shared<MavLinkVehicle>(LocalSystemId, LocalComponentId);
+    mavLinkVehicle = std::make_shared<MavLinkVehicle>(LocalSystemId, LocalComponentId);
     std::shared_ptr<MavLinkNode> logViewer = nullptr;
     Command* currentCommand = nullptr;
     OrbitCommand* orbit = new OrbitCommand();
@@ -1242,6 +1244,7 @@ int console(std::stringstream& initScript) {
     cmdTable.push_back(new GetSetParamCommand());
     cmdTable.push_back(new StatusCommand());
     cmdTable.push_back(new PositionCommand());
+    cmdTable.push_back(new HilCommand());
     cmdTable.push_back(new RequestImageCommand());
     cmdTable.push_back(new FtpCommand());
     cmdTable.push_back(new PlayLogCommand());
@@ -1254,7 +1257,7 @@ int console(std::stringstream& initScript) {
     cmdTable.push_back(new BatteryCommand());
     cmdTable.push_back(new WaitForAltitudeCommand());
 
-    if (!connect(mavLinkVehicle)) {
+    if (!connect()) {
         return 1;
     }
 
@@ -1300,7 +1303,7 @@ int console(std::stringstream& initScript) {
     }
 
     // this stops us from being able to connect to SITL mode PX4.
-    //checkPulse(mavLinkVehicle);
+    //checkPulse();
 
     int retries = 0;
     while (retries++ < 5) {
@@ -1382,7 +1385,7 @@ int console(std::stringstream& initScript) {
             }
             else if (cmd == "connect")
             {
-                connect(mavLinkVehicle);
+                connect();
             }
             else if (cmd == "?" || cmd == "help")
             {
@@ -1448,7 +1451,7 @@ int console(std::stringstream& initScript) {
     logViewer = nullptr;
     droneConnection = nullptr;
     logConnection = nullptr;
-
+    mavLinkVehicle = nullptr;
     CloseLogFiles();
     return 0;
 }
