@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include "StateReporter.hpp"
-#include "SimClock.hpp"
+#include "ClockFactory.hpp"
 
 namespace msr { namespace airlib {
 
@@ -28,11 +28,8 @@ public:
 
     virtual ClockBase* clock()
     {
-        return &clock_;
+        return ClockFactory::get();
     }
-
-private:
-    SimClock clock_;
 };
 
 }} //namespace

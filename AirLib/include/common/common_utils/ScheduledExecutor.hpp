@@ -68,23 +68,6 @@ public:
         return sleep_time_avg_;
     }
 
-    static void sleep_for(double dt)
-    {
-        /*
-            This is spin loop implementation which may be suitable for sub-millisecond resolution.
-            //TODO: investigate below alternatives
-            On Windows we can use multimedia timers however this requires including entire Win32 header.
-            On Linux we can use nanosleep however below 2ms delays in real-time scheduler settings this 
-                probbaly does spin loop anyway.
-            
-        */
-        static constexpr duration<double> MinSleepDuration(0);
-        clock::time_point start = clock::now();
-        while (duration<double>(clock::now() - start).count() < dt) {
-            std::this_thread::sleep_for(MinSleepDuration);
-        }
-    }
-
     unsigned long getPeriodCount()
     {
         return period_count_;
@@ -103,6 +86,23 @@ private:
     typedef std::chrono::high_resolution_clock clock;
     template <typename T>
     using duration = std::chrono::duration<T>;
+
+    static void sleep_for(double dt)
+    {
+        /*
+        This is spin loop implementation which may be suitable for sub-millisecond resolution.
+        //TODO: investigate below alternatives
+        On Windows we can use multimedia timers however this requires including entire Win32 header.
+        On Linux we can use nanosleep however below 2ms delays in real-time scheduler settings this 
+        probbaly does spin loop anyway.
+
+        */
+        static constexpr duration<double> MinSleepDuration(0);
+        clock::time_point start = clock::now();
+        while (duration<double>(clock::now() - start).count() < dt) {
+            std::this_thread::sleep_for(MinSleepDuration);
+        }
+    }
 
     void executorLoop()
     {

@@ -9,6 +9,7 @@
 #include "common/Common.hpp"
 #include "vehicles/MultiRotorParams.hpp"
 #include "sensors/SensorCollection.hpp"
+#include "common/ClockFactory.hpp"
 
 //sensors
 #include "sensors/barometer/BarometerSimple.hpp"
@@ -57,12 +58,12 @@ public:
 
     virtual uint64_t micros() override 
     {
-        return static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1.0E3);
+        return static_cast<uint64_t>(clock_->nowNanos() / 1.0E3);
     }
 
     virtual uint32_t millis() override 
     {
-        return static_cast<uint32_t>(Utils::getTimeSinceEpochNanos() / 1.0E6);
+        return static_cast<uint32_t>(clock_->nowNanos() / 1.0E6);
     }
 
     virtual void init_sensors(uint16_t& acc1G, float& gyro_scale, int boardVersion, const std::function<void(void)>& imu_updated_callback) override 
@@ -220,32 +221,13 @@ private:
         //for MPU6050
         return static_cast<int16_t>((temperature - 36.53f) * 340.0f);
     }
-    void sleep(float msec)
+    void sleep(double msec)
     {
-        if (msec <= 0)
-            return;
-
-        //if duration is too small, use spin wait otherwise use spin wait
-        if (msec >= 5) {
-            static constexpr duration<double> MinSleepDuration(0);
-            clock::time_point start = clock::now();
-            double dt = msec * 1000;
-            //spin wait
-            while (duration<double>(clock::now() - start).count() < dt) {
-                std::this_thread::sleep_for(MinSleepDuration);
-            }
-        }
-        else {
-            std::this_thread::sleep_for(duration<double>(msec * 1000));
-        }
+        clock_->sleep_for(msec * 1000.0);
     }
 
 
 private: //types and consts
-    typedef std::chrono::high_resolution_clock clock;
-    template <typename T>
-    using duration = std::chrono::duration<T>;
-
     const MultiRotorParams::EnabledSensors* enabled_sensors_;
     const SensorCollection* sensors_;
     const ImuBase* imu_;
@@ -263,6 +245,8 @@ private: //types and consts
     static constexpr uint InputChannelCount = 16;
 
 private:
+    ClockBase* clock_ = ClockFactory::get();
+
     //motor outputs
     uint16_t motors_pwm_[OutputMotorCount];
     uint16_t input_channels_[InputChannelCount];

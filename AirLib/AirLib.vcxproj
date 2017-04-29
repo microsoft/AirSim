@@ -22,6 +22,7 @@
     <ClInclude Include="include\common\ClockBase.hpp" />
     <ClInclude Include="include\common\Common.hpp" />
     <ClInclude Include="include\common\CommonStructs.hpp" />
+    <ClInclude Include="include\common\ClockFactory.hpp" />
     <ClInclude Include="include\common\common_utils\ctpl_stl.h" />
     <ClInclude Include="include\common\common_utils\EnumFlags.hpp" />
     <ClInclude Include="include\common\common_utils\ExceptionUtils.hpp" />

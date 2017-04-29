@@ -17,6 +17,7 @@
 #include "controllers/DroneCommon.hpp"
 #include "controllers/DroneControllerBase.hpp"
 #include "safety/SafetyEval.hpp"
+#include "common/ClockFactory.hpp"
 
 
 namespace msr { namespace airlib {
@@ -26,8 +27,21 @@ using namespace common_utils;
 
 struct CommandContext {
 public:
+    CommandContext(const std::string& server_address = "127.0.0.1")
+        : client(server_address)
+    {
+    }
+
     RpcLibClient client;
     AsyncTasker tasker;
+
+    void sleep_for(TTimeDelta wall_clock_dt)
+    {
+        clock_->sleep_for(wall_clock_dt);
+    }
+
+private:
+    ClockBase* clock_ = ClockFactory::get();
 };
 
 using DroneCommandParameters = SimpleShell<CommandContext>::ShellCommandParameters;
@@ -568,7 +582,7 @@ public:
                 throw std::runtime_error("BackForthByAngleCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)){
                 throw std::runtime_error("BackForthByAngleCommand cancelled");
             }
@@ -612,13 +626,13 @@ public:
                  throw std::runtime_error("BackForthByPositionCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveToPosition(-length, 0, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("BackForthByPositionCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
         }, iterations);
 
         return false;
@@ -655,22 +669,22 @@ public:
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveByAngle(-pitch, roll, z, yaw, duration)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)){
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
         }, iterations);
 
         return false;
@@ -721,25 +735,25 @@ public:
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveToPosition(x - length, y - length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveToPosition(x - length, y + length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
             if (!context->client.moveToPosition(x + length, y + length, z, velocity, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
             context->client.hover();
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
         }, iterations);
 
         return false;
@@ -858,7 +872,7 @@ public:
                     throw std::runtime_error("CircleByPositionCommand cancelled");
                 }
                 context->client.hover();
-                std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+                context->sleep_for(pause_time);
             }
         }, iterations);
 
@@ -1056,14 +1070,16 @@ public:
         for (int i = 0; i < iterations; i++) {
 
             context->client.setImageTypeForCamera(0, imageType);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // give it time to generate image.
+            //TODO: we shouldn't have wait like this!
+            // give it time to generate image.
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             auto image = context->client.getImageForCamera(0, imageType);            
             // turn it off again so simulator doesn't choke...
             context->client.setImageTypeForCamera(0, DroneControllerBase::ImageType::None);
 
             // size 1 is a trick we had to do to keep RPCLIB happy...
             if (image.size() <= 1) {
-                cout << "error getting image, check sim for error messages" << endl;
+                std::cout << "error getting image, check sim for error messages" << endl;
                 return;
             }
 
@@ -1075,9 +1091,9 @@ public:
             file.write(reinterpret_cast<const char*>(image.data()), image.size());
             file.close();
 
-            cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << endl;
+            std::cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << endl;
 
-            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
+            context->sleep_for(pause_time);
         }
 
     }
@@ -1171,7 +1187,7 @@ int main(int argc, const char *argv[]) {
         return -1;
     }
 
-	CommandContext command_context{ /*RpcClient*/{server_address}, /*AsyncTasker*/ {} };
+	CommandContext command_context(server_address);
 
     command_context.tasker.setErrorHandler([](std::exception& e) {
         try {
@@ -1204,12 +1220,12 @@ int main(int argc, const char *argv[]) {
 	while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0)
 	{
 		std::cout << "." << std::flush;
-		std::this_thread::sleep_for(std::chrono::duration<double>(pause_time)); 
+        command_context.sleep_for(pause_time); 
 		gps = command_context.client.getGpsLocation();
 	}
 	
-	cout << std::endl;
-	cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
+	std::cout << std::endl;
+    std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
 	
 
     //Shell callbacks
