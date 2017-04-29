@@ -90,7 +90,7 @@ public:
     }
 
     //async updater thread
-    void startAsyncUpdator(real_T period)
+    void startAsyncUpdator(double period)
     {
         executor_.initialize(std::bind(&World::worldUpdatorAsync, this), period);
         executor_.start();

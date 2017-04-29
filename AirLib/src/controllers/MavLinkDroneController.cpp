@@ -444,7 +444,7 @@ struct MavLinkDroneController::impl {
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
 
         mavlinkcom::MavLinkHilSensor hil_sensor;
-        hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochMillis() * 1000);
+        hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
         hil_sensor.zacc = acceleration.z();
@@ -477,7 +477,7 @@ struct MavLinkDroneController::impl {
             throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
 
         mavlinkcom::MavLinkHilGps hil_gps;
-        hil_gps.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochMillis() * 1000);
+        hil_gps.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
         hil_gps.lat = static_cast<int32_t>(geo_point.latitude * 1E7);
         hil_gps.lon = static_cast<int32_t>(geo_point.longitude* 1E7);
         hil_gps.alt = static_cast<int32_t>(geo_point.altitude * 1000);

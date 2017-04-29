@@ -481,8 +481,7 @@ public:
         return ptr ? ptr : "";
     }
 
-    //Unix timestamp
-    static unsigned long getTimeSinceEpochMillis(std::time_t* t = nullptr)
+    static unsigned long getUnixTimeStamp(std::time_t* t = nullptr)
     {
         std::time_t st = std::time(t);
         auto millies = static_cast<std::chrono::milliseconds>(st).count();

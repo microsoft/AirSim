@@ -183,7 +183,7 @@ public:
     std::string getServerDebugInfo()
     {
         //for now this method just allows to see if server was started
-        return std::to_string(Utils::getTimeSinceEpochMillis());
+        return std::to_string(Utils::getUnixTimeStamp());
     }
 
     void getStatusMessages(std::vector<std::string>& messages)

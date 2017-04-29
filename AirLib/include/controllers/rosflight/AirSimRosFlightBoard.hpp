@@ -57,12 +57,12 @@ public:
 
     virtual uint64_t micros() override 
     {
-        return static_cast<uint64_t>(Utils::getTimeSinceEpochSecs() * 1E6);
+        return static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1.0E3);
     }
 
     virtual uint32_t millis() override 
     {
-        return static_cast<uint32_t>(Utils::getTimeSinceEpochSecs() * 1E3);
+        return static_cast<uint32_t>(Utils::getTimeSinceEpochNanos() / 1.0E6);
     }
 
     virtual void init_sensors(uint16_t& acc1G, float& gyro_scale, int boardVersion, const std::function<void(void)>& imu_updated_callback) override 

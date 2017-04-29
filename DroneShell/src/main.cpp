@@ -559,7 +559,7 @@ public:
         float z = getSwitch("-z").toFloat();
         float duration = getSwitch("-duration").toFloat();
         float yaw = getSwitch("-yaw").toFloat();
-        float pause_time = getSwitch("-pause_time").toFloat();
+        TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
 		int iterations = getSwitch("-iterations").toInt();
         CommandContext* context = params.context;
 
@@ -598,7 +598,7 @@ public:
         float length = getSwitch("-length").toFloat();
         float z = getSwitch("-z").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
-        float pause_time = getSwitch("-pause_time").toFloat();
+        TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
         int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
@@ -646,7 +646,7 @@ public:
         float z = getSwitch("-z").toFloat();
         float duration = getSwitch("-duration").toFloat();
         float yaw = getSwitch("-yaw").toFloat();
-        float pause_time = getSwitch("-pause_time").toFloat();
+        TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
 		int iterations = getSwitch("-iterations").toInt();
         CommandContext* context = params.context;
 
@@ -700,7 +700,7 @@ public:
         float length = getSwitch("-length").toFloat();
         float z = getSwitch("-z").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
-        float pause_time = getSwitch("-pause_time").toFloat();
+        TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
 		int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
@@ -768,7 +768,7 @@ public:
         float length = getSwitch("-length").toFloat();
         float z = getSwitch("-z").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
-        //float pause_time = getSwitch("-pause_time").toFloat();
+        //TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
 		int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
@@ -827,7 +827,7 @@ public:
         float radius = getSwitch("-radius").toFloat();
         float z = getSwitch("-z").toFloat();
         float seg_length = getSwitch("-seg_length").toFloat();
-        float pause_time = getSwitch("-pause_time").toFloat();
+        TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
         float velocity = getSwitch("-velocity").toFloat();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
@@ -1047,7 +1047,7 @@ public:
         this->addSwitch({ "-pause_time", "100", "pause time between each image in milliseconds (default 100)" });
     }
 
-    void getImages(CommandContext* context, DroneControllerBase::ImageType imageType, std::string baseName, int iterations, int pause_time)
+    void getImages(CommandContext* context, DroneControllerBase::ImageType imageType, std::string baseName, int iterations, TTimeDelta pause_time)
     {
         // group the images by the current date.
         std::string folderName = Utils::to_string(Utils::now(), "%Y-%m-%d");
@@ -1077,7 +1077,7 @@ public:
 
             cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << endl;
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(pause_time));
+            std::this_thread::sleep_for(std::chrono::duration<double>(pause_time));
         }
 
     }
@@ -1087,7 +1087,7 @@ public:
         std::string type = getSwitch("-type").value;
         std::string name = getSwitch("-name").value;
         int iterations = std::stoi(getSwitch("-iterations").value);
-        int pause_time = std::stoi(getSwitch("-pause_time").value);
+        TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
         CommandContext* context = params.context;
 
         DroneControllerBase::ImageType imageType;
@@ -1198,7 +1198,8 @@ int main(int argc, const char *argv[]) {
     std::cout << "DroneServer is responding." << std::endl;
 
 	std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
-	const float pause_time = 1;
+	const TTimeDelta pause_time = 1;
+
 	auto gps = command_context.client.getGpsLocation();
 	while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0)
 	{

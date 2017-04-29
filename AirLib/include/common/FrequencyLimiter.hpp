@@ -39,7 +39,6 @@ public:
         elapsed_total_sec_ = 0;
         elapsed_interval_sec_ = 0;
         last_elapsed_interval_sec_ = 0;
-        start_timestamp_ms_ = Utils::getTimeSinceEpochMillis();
         update_count_ = 0;
         interval_complete_ = false;
         startup_complete_ = false;
@@ -112,7 +111,6 @@ private:
     TTimeDelta elapsed_total_sec_;
     TTimeDelta elapsed_interval_sec_;
     TTimeDelta last_elapsed_interval_sec_;
-    ulong start_timestamp_ms_;
     uint update_count_;
     real_T frequency_;
     real_T startup_delay_;

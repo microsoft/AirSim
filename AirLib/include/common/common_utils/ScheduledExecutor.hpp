@@ -46,9 +46,9 @@ public:
         if (keep_running_) {
             keep_running_ = false;
             try {
-				if (th_.joinable()) {
-					th_.join();
-				}
+                if (th_.joinable()) {
+                    th_.join();
+                }
             }
             catch(const std::system_error& /* e */)
             { }
@@ -113,9 +113,9 @@ private:
             
             if (period_count_ > 0) {
                 bool result = callback_(since_last_call.count());
-				if (!result) {
-					keep_running_ = result;
-				}
+                if (!result) {
+                    keep_running_ = result;
+                }
             }
             
             call_end = clock::now();
