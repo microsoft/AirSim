@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#include "../MavLinkConnectionImpl.hpp"
+#include "MavLinkConnection.hpp"
 #include <Windows.h>
 #include <ObjIdl.h>
 #include <SetupAPI.h>
 #include <Cfgmgr32.h>
 #include <propkey.h>
+#include <string>
 
 using namespace mavlinkcom;
 using namespace mavlinkcom_impl;
@@ -58,7 +59,7 @@ void parseDisplayName(std::wstring displayName, SerialPortInfo* info)
 }
 
 
-std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int pid)
+std::vector<SerialPortInfo> MavLinkConnection::findSerialPorts(int vid, int pid)
 {
     bool debug = false;
     std::vector<SerialPortInfo> result;

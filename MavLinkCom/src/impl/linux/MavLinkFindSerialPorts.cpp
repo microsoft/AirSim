@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#include "../MavLinkConnectionImpl.hpp"
+#include "MavLinkConnection.hpp"
 
 using namespace mavlinkcom;
 using namespace mavlinkcom_impl;
 
-std::vector<SerialPortInfo> MavLinkConnectionImpl::findSerialPorts(int vid, int pid)
+std::vector<SerialPortInfo> MavLinkConnection::findSerialPorts(int vid, int pid)
 {
     vid; // avoid warning: unused parameter
     pid; // avoid warning: unused parameter

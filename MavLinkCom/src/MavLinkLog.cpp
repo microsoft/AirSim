@@ -110,6 +110,7 @@ void MavLinkFileLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t times
                 timestamp = getTimeStamp();
             }
 			// for compatibility with QGroundControl we have to save the time field in big endian.
+            // todo: mavlink2 support?
             timestamp = FlipEndianness(timestamp);
 			fwrite(&timestamp, sizeof(uint64_t), 1, ptr_);
 			fwrite(&msg.magic, 1, 1, ptr_);
@@ -117,7 +118,8 @@ void MavLinkFileLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t times
 			fwrite(&msg.seq, 1, 1, ptr_);
 			fwrite(&msg.sysid, 1, 1, ptr_);
 			fwrite(&msg.compid, 1, 1, ptr_);
-			fwrite(&msg.msgid, 1, 1, ptr_);
+            uint8_t msgid = msg.msgid & 0xff; // truncate to mavlink1 msgid
+			fwrite(&msgid, 1, 1, ptr_);
 			fwrite(&msg.payload64, 1, msg.len, ptr_);
 			fwrite(&msg.checksum, sizeof(uint16_t), 1, ptr_);
 		}
@@ -160,7 +162,9 @@ bool MavLinkFileLog::read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp)
 		if (s == 0) {
 			return false;
 		}
-		s = fread(&msg.msgid, 1, 1, ptr_);
+        uint8_t msgid = 0;
+		s = fread(&msgid, 1, 1, ptr_);
+        msg.msgid = msgid;
 		if (s < 1) {
 			return false;
 		}

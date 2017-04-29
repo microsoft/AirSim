@@ -121,6 +121,10 @@ namespace mavlinkcom {
         //are bridged and you don't want certain connection to read ceratin messages.
         void ignoreMessage(uint8_t message_id);
 
+        // Compute crc checksums, and pack according to mavlink1 or mavlink2 (depending on what target node supports) and do optional 
+        // message signing according to the target node we are communicating with, and return the message length.
+        int prepareForSending(MavLinkMessage& msg);
+
     protected:
         void startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort);
 

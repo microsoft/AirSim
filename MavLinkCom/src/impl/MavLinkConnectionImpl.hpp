@@ -14,6 +14,14 @@
 #include "MavLinkMessageBase.hpp"
 #include "Semaphore.hpp"
 #include "../serial_com/TcpClientPort.hpp"
+#include "StrictMode.hpp"
+#define MAVLINK_PACKED
+
+STRICT_MODE_OFF
+#include "../mavlink/common/mavlink.h"
+#include "../mavlink/mavlink_helpers.h"
+#include "../mavlink/mavlink_types.h"
+STRICT_MODE_ON
 
 using namespace mavlinkcom;
 
@@ -24,7 +32,6 @@ namespace mavlinkcom_impl {
 	{
 	public:
 		MavLinkConnectionImpl();
-		static std::vector<SerialPortInfo> findSerialPorts(int vid, int pid);
 		static std::shared_ptr<MavLinkConnection>  connectSerial(const std::string& nodeName, std::string portName, int baudrate = 115200, const std::string initString = "");
 		static std::shared_ptr<MavLinkConnection>  connectLocalUdp(const std::string& nodeName, std::string localAddr, int localPort);
 		static std::shared_ptr<MavLinkConnection>  connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort);
@@ -47,7 +54,7 @@ namespace mavlinkcom_impl {
 		void join(std::shared_ptr<MavLinkConnection> remote, bool subscribeToLeft = true, bool subscribeToRight = true);
 		void getTelemetry(MavLinkTelemetry& result);
         void ignoreMessage(uint8_t message_id);
-
+        int prepareForSending(MavLinkMessage& msg);
 	private:
 		static std::shared_ptr<MavLinkConnection> createConnection(const std::string& nodeName, std::shared_ptr<Port> port);
         void joinLeftSubscriber(std::shared_ptr<MavLinkConnection> remote, std::shared_ptr<MavLinkConnection>con, const MavLinkMessage& msg);
@@ -75,7 +82,7 @@ namespace mavlinkcom_impl {
 		std::vector<MessageHandlerEntry> snapshot;
 		bool snapshot_stale;
 		std::mutex listener_mutex;
-		uint8_t message_buf[300];
+		uint8_t message_buf[300]; // must be bigger than sizeof(mavlink_message_t), which is currently 292.
 		std::mutex buffer_mutex;
 		bool closed;
 		std::thread publish_thread_;
@@ -83,7 +90,11 @@ namespace mavlinkcom_impl {
 		std::mutex msg_queue_mutex_;
 		mavlink_utils::Semaphore msg_available_;
 		bool waiting_for_msg_ = false;
-		std::mutex telemetry_mutex_;
+        bool supports_mavlink2_ = false;
+        bool signing_ = false;
+        mavlink_status_t mavlink_intermediate_status_;
+        mavlink_status_t mavlink_status_;
+        std::mutex telemetry_mutex_;
 		MavLinkTelemetry telemetry_;
         std::unordered_set<uint8_t> ignored_messageids;
 	};

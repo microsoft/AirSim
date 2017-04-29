@@ -64,3 +64,12 @@ Unreal 4.15 added the ability for Foliage LOD dithering to be disabled on a case
 
 ### Can I use an xbox controller to fly?
 Yes, see [xbox controller](xbox_controller.md) for details.
+
+### When I tell the drone to do something it always lands
+
+For example, you use DroneShell `moveToPosition -z -20 -x 50 -y 0` which it does, but when it gets to the target location the
+drone starts to land.  This is the default behavior of PX4 when offboard mode completes.  To set the drone to hover instead
+set this PX4 parameter:
+````
+param set COM_OBL_ACT 1
+````

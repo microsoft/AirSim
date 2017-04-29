@@ -101,8 +101,8 @@ This is a handy mode that lets you edit the game content in the Unreal Editor an
 Make sure your ~/Documents/AirSim/settings.json looks like this
 ````
 {
+  "LocalHostIp": "127.0.0.1",
   "Pixhawk": {
-    "LocalHostIp": "127.0.0.1",
     "LogViewerHostIp": "127.0.0.1",
     "LogViewerPort": 14388,
     "OffboardCompID": 1,

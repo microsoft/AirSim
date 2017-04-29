@@ -1410,8 +1410,9 @@ int console(std::stringstream& script) {
                     auto str = std::string(Command::kCommandLogPrefix) + line;
                     MavLinkStatustext st;
                     strncpy(st.text, str.c_str(), 50);
-                    MavLinkMessage m;
-                    st.encode(m, 0);
+                    MavLinkMessage m; 
+                    st.encode(m);
+                    droneConnection->prepareForSending(m);
                     std::lock_guard<std::mutex> lock(logLock);
                     inLogFile->write(m);
                 }

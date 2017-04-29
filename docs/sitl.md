@@ -49,6 +49,12 @@ param set LPE_LAT 47.641468
 param set LPE_LON -122.140165
 ````
 
+You might also want to set this one so that the drone automatically hovers after each offboard control command
+(the default setting is to land)
+````
+param set COM_OBL_ACT 1
+````
+
 Now close Unreal app, restart `./build_posix_sitl_default/src/firmware/posix/px4` and re-start the unreal app.  
 
 ## Check the Home Position

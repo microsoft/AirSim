@@ -16,6 +16,8 @@ namespace mavlinkcom
 {
 	class MavLinkConnection;
 
+#define PayloadSize ((255 + 2 + 7) / 8)
+
 	// This is the raw undecoded message, use the msgid field to figure out which strongly typed
 	// MavLinkMessageBase subclass can be used to decode this message.  For example, a heartbeat:
 	// MavLinkMessage msg;
@@ -26,17 +28,18 @@ namespace mavlinkcom
 	// }
 	class MavLinkMessage {
 	public:
-		// These are the raw packet message fields.
-		// See MavLinkMessage subclasses for the nice unpacked strongly typed fields.
-		uint16_t checksum; ///< sent at end of packet
-		uint8_t magic;   ///< protocol magic marker
-		uint8_t len;     ///< Length of payload
-		uint8_t seq;     ///< Sequence of packet
-		uint8_t sysid;   ///< ID of message sender system/aircraft
-		uint8_t compid;  ///< ID of the message sender component
-		uint8_t msgid;   ///< ID of message in payload
-		uint64_t payload64[(255 + 2 + 7) / 8];
-
+        uint16_t checksum;      ///< sent at end of packet
+        uint8_t magic;          ///< protocol magic marker
+        uint8_t len;            ///< Length of payload
+        uint8_t incompat_flags; ///< flags that must be understood
+        uint8_t compat_flags;   ///< flags that can be ignored if not understood
+        uint8_t seq;            ///< Sequence of packet
+        uint8_t sysid;          ///< ID of message sender system/aircraft
+        uint8_t compid;         ///< ID of the message sender component
+        uint32_t msgid : 24;      ///< ID of message in payload
+        uint64_t payload64[PayloadSize];
+        uint8_t ck[2];          ///< incoming checksum bytes
+        uint8_t signature[13];
 	};
 
 	// This is the base class for all the strongly typed messages define in MavLinkMessages.hpp
@@ -50,9 +53,8 @@ namespace mavlinkcom
 
 		// unpack the given message
 		void decode(const MavLinkMessage& msg);
-
-		// encode this message into given message buffer
-		void encode(MavLinkMessage& msg, int seq) const;
+        // pack this message into given message buffer 
+        void encode(MavLinkMessage& msg) const;
 
 		// find what type of message this is and decode it on the heap (call delete when you are done with it).
 		static MavLinkMessageBase* lookup(const MavLinkMessage& msg);
@@ -100,7 +102,7 @@ namespace mavlinkcom
 		std::string int16_t_array_tostring(int len, const int16_t* field);
 		std::string uint16_t_array_tostring(int len, const uint16_t* field);
 		std::string float_array_tostring(int len, const float* field);
-		std::string float_tostring(float value);
+		std::string float_tostring(float value); 
 	};
 
 	// Base class for all strongly typed MavLinkCommand classes defined in MavLinkMessages.hpp
@@ -120,6 +122,7 @@ namespace mavlinkcom
 		float param7 = 0;
 
 		friend class mavlinkcom_impl::MavLinkNodeImpl;
+        friend class mavlinkcom_impl::MavLinkConnectionImpl;
 	};
 
 

@@ -8,13 +8,6 @@
 #include "../serial_com/SerialPort.hpp"
 #include "../serial_com/UdpClientPort.hpp"
 #include "../serial_com/TcpClientPort.hpp"
-#define MAVLINK_PACKED
-
-STRICT_MODE_OFF
-#include "../mavlink/common/mavlink.h"
-#include "../mavlink/mavlink_helpers.h"
-#include "../mavlink/mavlink_types.h"
-STRICT_MODE_ON
 
 using namespace mavlink_utils;
 using namespace mavlinkcom_impl;
@@ -29,6 +22,10 @@ MavLinkConnectionImpl::MavLinkConnectionImpl()
     telemetry_.messagesSent = 0;
     telemetry_.renderTime = 0;
     closed = true;
+    ::memset(&mavlink_intermediate_status_, 0, sizeof(mavlink_status_t));
+    ::memset(&mavlink_status_, 0, sizeof(mavlink_status_t));
+    // todo: if we support signing then initialize
+    // mavlink_intermediate_status_.signing callbacks
 }
 std::string MavLinkConnectionImpl::getName() {
     return name;
@@ -168,38 +165,146 @@ void MavLinkConnectionImpl::ignoreMessage(uint8_t message_id)
     ignored_messageids.insert(message_id);
 }
 
-void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& msg)
+void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& m)
 {
-    if (ignored_messageids.find(msg.msgid) != ignored_messageids.end())
+    if (ignored_messageids.find(m.msgid) != ignored_messageids.end())
         return;
 
-    if (!closed) {
+    if (closed) {
+        return;
+    }
+
+    {
+        MavLinkMessage msg;
+        ::memcpy(&msg, &m, sizeof(MavLinkMessage));
+        prepareForSending(msg);
+
         if (sendLog_ != nullptr)
         {
             sendLog_->write(msg);
         }
-        {
-            const mavlink_message_t& m = reinterpret_cast<const mavlink_message_t&>(msg);
-            std::lock_guard<std::mutex> guard(buffer_mutex);
-            unsigned len = mavlink_msg_to_send_buffer(message_buf, &m);
-            try {
-                port->write(message_buf, len);
-            }
-            catch (std::exception& e) {
-                throw std::runtime_error(Utils::stringf("MavLinkConnectionImpl: Error sending message on connection '%s', details: %s", name.c_str(), e.what()));
-            }
+
+        mavlink_message_t message;
+        message.compid = msg.compid;
+        message.sysid = msg.sysid;
+        message.len = msg.len;
+        message.checksum = msg.checksum;
+        message.magic = msg.magic;
+        message.incompat_flags = msg.incompat_flags;
+        message.compat_flags = msg.compat_flags;
+        message.seq = msg.seq;
+        message.msgid = msg.msgid;
+        ::memcpy(message.signature, msg.signature, 13);
+        ::memcpy(message.payload64, msg.payload64, PayloadSize * sizeof(uint64_t));
+        
+        std::lock_guard<std::mutex> guard(buffer_mutex);
+        unsigned len = mavlink_msg_to_send_buffer(message_buf, &message);
+
+        try {
+            port->write(message_buf, len);
         }
-        {
-            std::lock_guard<std::mutex> guard(telemetry_mutex_);
-            telemetry_.messagesSent++;
+        catch (std::exception& e) {
+            throw std::runtime_error(Utils::stringf("MavLinkConnectionImpl: Error sending message on connection '%s', details: %s", name.c_str(), e.what()));
         }
     }
+    {
+        std::lock_guard<std::mutex> guard(telemetry_mutex_);
+        telemetry_.messagesSent++;
+    }
+
+}
+
+int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
+{
+    // as per  https://github.com/mavlink/mavlink/blob/master/doc/MAVLink2.md
+    int seqno = getNextSequence();
+
+    bool mavlink1 = !supports_mavlink2_;
+    bool signing = !mavlink1 && mavlink_status_.signing && (mavlink_status_.signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
+    uint8_t signature_len = signing ? MAVLINK_SIGNATURE_BLOCK_LEN : 0;
+
+    uint8_t header_len = MAVLINK_CORE_HEADER_LEN + 1;
+    uint8_t buf[MAVLINK_CORE_HEADER_LEN + 1];
+    if (mavlink1) {
+        msg.magic = MAVLINK_STX_MAVLINK1;
+        header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN + 1;
+    }
+    else {
+        msg.magic = MAVLINK_STX;
+    }
+
+    msg.seq = seqno;
+    msg.incompat_flags = 0;
+    if (signing_) {
+        msg.incompat_flags |= MAVLINK_IFLAG_SIGNED;
+    }
+    msg.compat_flags = 0;
+
+    // pack the payload buffer.
+    char* payload = reinterpret_cast<char*>(&msg.payload64[0]);
+    int len = msg.len;
+
+    // calculate checksum
+    const mavlink_msg_entry_t* entry = mavlink_get_msg_entry(msg.msgid);
+    uint8_t crc_extra = 0;
+    int msglen = 0;
+    if (entry != nullptr) {
+        crc_extra = entry->crc_extra;
+        msglen = entry->msg_len;
+    }
+    if (msg.msgid == MavLinkTelemetry::kMessageId) {
+        msglen = 28; // mavlink doesn't know about our custom telemetry message.
+    }
+    if (len != msglen) {
+        throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
+    }
+    msg.len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
+
+    // form the header as a byte array for the crc
+    buf[0] = msg.magic;
+    buf[1] = msg.len;
+    if (mavlink1) {
+        buf[2] = msg.seq;
+        buf[3] = msg.sysid;
+        buf[4] = msg.compid;
+        buf[5] = msg.msgid & 0xFF;
+    }
+    else {
+        buf[2] = msg.incompat_flags;
+        buf[3] = msg.compat_flags;
+        buf[4] = msg.seq;
+        buf[5] = msg.sysid;
+        buf[6] = msg.compid;
+        buf[7] = msg.msgid & 0xFF;
+        buf[8] = (msg.msgid >> 8) & 0xFF;
+        buf[9] = (msg.msgid >> 16) & 0xFF;
+    }
+
+    msg.checksum = crc_calculate(&buf[1], header_len - 1);
+    crc_accumulate_buffer(&msg.checksum, payload, msg.len);
+    crc_accumulate(crc_extra, &msg.checksum);
+
+    // these macros use old style cast.
+    STRICT_MODE_OFF
+    mavlink_ck_a(&msg) = (uint8_t)(msg.checksum & 0xFF);
+    mavlink_ck_b(&msg) = (uint8_t)(msg.checksum >> 8);
+    STRICT_MODE_ON
+
+    if (signing_) {
+        mavlink_sign_packet(mavlink_status_.signing,
+            reinterpret_cast<uint8_t *>(msg.signature),
+            reinterpret_cast<const uint8_t *>(message_buf), header_len,
+            reinterpret_cast<const uint8_t *>(payload), msg.len,
+            reinterpret_cast<const uint8_t *>(payload) + msg.len);
+    }
+
+    return msg.len + header_len + 2 + signature_len;
 }
 
 void MavLinkConnectionImpl::sendMessage(const MavLinkMessageBase& msg)
 {
     MavLinkMessage m;
-    msg.encode(m, getNextSequence());
+    msg.encode(m);
     sendMessage(m);
 }
 
@@ -251,12 +356,10 @@ void MavLinkConnectionImpl::readPackets()
     CurrentThread::setMaximumPriority();
     std::shared_ptr<Port> safePort = this->port;
     mavlink_message_t msg;
-    mavlink_status_t status;
-    mavlink_status_t statusBuffer; // intermediate state
     mavlink_message_t msgBuffer; // intermediate state.
     const int MAXBUFFER = 512;
     uint8_t* buffer = new uint8_t[MAXBUFFER];
-    statusBuffer.parse_state = MAVLINK_PARSE_STATE_IDLE;
+    mavlink_intermediate_status_.parse_state = MAVLINK_PARSE_STATE_IDLE;
     int channel = 0;
     int hr = 0;
     while (hr == 0 && con_ != nullptr && !closed)
@@ -277,7 +380,7 @@ void MavLinkConnectionImpl::readPackets()
         }
         for (int i = 0; i < count; i++)
         {
-            uint8_t frame_state = mavlink_frame_char_buffer(&msgBuffer, &statusBuffer, buffer[i], &msg, &status);
+            uint8_t frame_state = mavlink_frame_char_buffer(&msgBuffer, &mavlink_intermediate_status_, buffer[i], &msg, &mavlink_status_);
 
             if (frame_state == MAVLINK_FRAMING_INCOMPLETE) {
                 continue;
@@ -296,6 +399,14 @@ void MavLinkConnectionImpl::readPackets()
                     other_component_id = msg.compid;
                 }
 
+                if (mavlink_intermediate_status_.flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
+                {
+                    // then this is a mavlink 1 message
+                } else {
+                    // then this mavlink sender supports mavlink 2
+                    supports_mavlink2_ = true;
+                }
+
                 if (con_ != nullptr && !closed)
                 {
                     {
@@ -305,7 +416,18 @@ void MavLinkConnectionImpl::readPackets()
                     // queue event for publishing.
                     {
                         std::lock_guard<std::mutex> guard(msg_queue_mutex_);
-                        MavLinkMessage& message = reinterpret_cast<MavLinkMessage&>(msg);
+                        MavLinkMessage message;
+                        message.compid = msg.compid;
+                        message.sysid = msg.sysid;
+                        message.len = msg.len;
+                        message.checksum = msg.checksum;
+                        message.magic = msg.magic;
+                        message.incompat_flags = msg.incompat_flags;
+                        message.compat_flags = msg.compat_flags;
+                        message.seq = msg.seq;
+                        message.msgid = msg.msgid;
+                        ::memcpy(message.signature, msg.signature, 13);
+                        ::memcpy(message.payload64, msg.payload64, PayloadSize * sizeof(uint64_t));
                         msg_queue_.push(message);
                     }
                     if (waiting_for_msg_) {
