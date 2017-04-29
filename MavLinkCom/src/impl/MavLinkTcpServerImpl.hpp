@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <vector>
-#include <thread>
 #include <string>
 #include "MavLinkTcpServer.hpp"
 

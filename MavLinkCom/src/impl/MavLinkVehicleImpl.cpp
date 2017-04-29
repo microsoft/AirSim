@@ -8,7 +8,6 @@
 #include "../serial_com/UdpClientPort.hpp"
 #include <exception>
 #include <cstring>
-#include <thread>
 using namespace mavlink_utils;
 
 using namespace mavlinkcom_impl;
