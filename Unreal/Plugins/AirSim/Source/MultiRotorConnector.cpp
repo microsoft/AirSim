@@ -192,10 +192,10 @@ void MultiRotorConnector::reset()
     vehicle_.reset();
 }
 
-void MultiRotorConnector::update(real_T dt)
+void MultiRotorConnector::update()
 {
     //this is high frequency physics tick, flier gets ticked at rendering frame rate
-    vehicle_.update(dt);
+    vehicle_.update();
 }
 
 void MultiRotorConnector::reportState(StateReporter& reporter)

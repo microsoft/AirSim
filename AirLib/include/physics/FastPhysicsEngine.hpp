@@ -32,8 +32,7 @@ public:
     virtual void update() override
     {
         for (PhysicsBody* body_ptr : *this) {
-            TTimeDelta dt = clock()->updateSince(body.last_kinematics_time);
-            updatePhysics(dt, *body_ptr);
+            updatePhysics(*body_ptr);
         }
     }
     virtual void reportState(StateReporter& reporter) override
@@ -50,8 +49,10 @@ public:
     //*** End: UpdatableState implementation ***//
 
 private:
-    void updatePhysics(TTimeDelta dt, PhysicsBody& body)
+    void updatePhysics(PhysicsBody& body)
     {
+        TTimeDelta dt = clock()->updateSince(body.last_kinematics_time);
+
         //get current kinematics state of the body - this state existed since last dt seconds
         const Kinematics::State& current = body.getKinematics();
         Kinematics::State next;
