@@ -1,0 +1,1 @@
+C:\git\AirSim\MavLinkCom\MavLinkTest\build\x64\Debug\MavLinkTest.exe -serial:*,115200 -logdir:c:\temp\logs 

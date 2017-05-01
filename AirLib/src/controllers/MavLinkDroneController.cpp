@@ -666,15 +666,16 @@ struct MavLinkDroneController::impl {
     void setNormalMode()
     {
         if (is_hil_mode_set_ && mav_vehicle_ != nullptr && connection_ != nullptr) {
-            //TODO: this is depricated message, add support for MAV_CMD_DO_SET_MODE
-            std::lock_guard<std::mutex> guard(set_mode_mutex_);
-            SetModeMessage.target_system = connection_info_.sim_sysid;
-            SetModeMessage.base_mode = 0;  //disarm
-            mav_vehicle_->sendMessage(SetModeMessage);
 
-            mavlinkcom::MavCmdComponentArmDisarm disarm_msg;
-            disarm_msg.p1ToArm = 0;
-            mav_vehicle_->sendCommand(disarm_msg);
+            // remove MAV_MODE_FLAG_HIL_ENABLED flag from current mode 
+            std::lock_guard<std::mutex> guard(set_mode_mutex_);
+            int mode = mav_vehicle_->getVehicleState().mode;
+            mode &= ~static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
+
+            MavCmdDoSetMode cmd;
+            cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
+            cmd.Mode = static_cast<float>(mode);
+            mav_vehicle_->sendCommand(cmd);
 
             is_hil_mode_set_ = false;
         }
@@ -690,11 +691,18 @@ struct MavLinkDroneController::impl {
             return;
         }
 
-        //TODO: this is depricated message, add support for MAV_CMD_DO_SET_MODE
         std::lock_guard<std::mutex> guard_setmode(set_mode_mutex_);
-        SetModeMessage.target_system = connection_info_.sim_sysid;
-        SetModeMessage.base_mode = 32;  //HIL + disarm
-        mav_vehicle_->sendMessage(SetModeMessage);
+
+        // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode 
+        std::lock_guard<std::mutex> guard(set_mode_mutex_);
+        int mode = mav_vehicle_->getVehicleState().mode;
+        mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
+
+        MavCmdDoSetMode cmd;
+        cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
+        cmd.Mode = static_cast<float>(mode);
+        mav_vehicle_->sendCommand(cmd);
+
         is_hil_mode_set_ = true;
     }
 
