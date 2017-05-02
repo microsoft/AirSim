@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);InvokeRpcLibBuild;InvokeEigenBuild</PrepareForBuildDependsOn>
-    <EIGEN_ROOT Condition="'$(EIGEN_ROOT)'==''">$(MSBuildThisFileDirectory)\..\..</EIGEN_ROOT>
+    <EIGEN_ROOT Condition="'$(EIGEN_ROOT)'==''">$(MSBuildThisFileDirectory)\..\..\eigen</EIGEN_ROOT>
   </PropertyGroup>
 
   <Target Name="InvokeRpcLibBuild"
