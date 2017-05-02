@@ -89,7 +89,7 @@ struct MavLinkDroneController::impl {
     int hil_state_freq_;
     bool actuators_message_supported_;
     const SensorCollection* sensors_;    //this is optional
-    long last_gps_time_;
+    uint64_t last_gps_time_;
     bool was_reset_;
     Pose debug_pose_;
 
@@ -1013,7 +1013,7 @@ struct MavLinkDroneController::impl {
             }
         }
 
-        data.renderTime = static_cast<long>(renderTime * 1000000);// microseconds
+        data.renderTime = static_cast<int64_t>(renderTime * 1000000);// microseconds
         logviewer_proxy_->sendMessage(data);
     }
 

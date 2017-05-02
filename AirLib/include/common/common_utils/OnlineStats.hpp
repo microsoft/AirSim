@@ -25,7 +25,7 @@ public:
     {
         double delta, delta_n, delta_n2, term1;
 
-        long long n1 = n;
+        int64_t n1 = n;
         n++;
         delta = x - m1;
         delta_n = delta / n;
@@ -37,7 +37,7 @@ public:
         m2 += term1;
     }
 
-    long size() const
+    int64_t size() const
     {
         return n;
     }
@@ -103,7 +103,7 @@ public:
     }
 
 private:
-    long n; //don't declare as unsigned because we do n-k and if n = 0, we get large number
+    int64_t n; //don't declare as unsigned because we do n-k and if n = 0, we get large number
     double m1, m2, m3, m4;
 
 }; //class

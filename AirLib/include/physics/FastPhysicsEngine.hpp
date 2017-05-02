@@ -25,8 +25,15 @@ public:
     virtual void reset() override
     {
         for (PhysicsBody* body_ptr : *this) {
-            body_ptr->last_kinematics_time = clock()->nowNanos();
+            initPhysicsBody(body_ptr);
         }
+    }
+
+    virtual void insert(PhysicsBody* body_ptr) override
+    {
+        PhysicsEngineBase::insert(body_ptr);
+
+        initPhysicsBody(body_ptr);
     }
 
     virtual void update() override
@@ -49,6 +56,11 @@ public:
     //*** End: UpdatableState implementation ***//
 
 private:
+    void initPhysicsBody(PhysicsBody* body_ptr)
+    {
+        body_ptr->last_kinematics_time = clock()->nowNanos();
+    }
+
     void updatePhysics(PhysicsBody& body)
     {
         TTimeDelta dt = clock()->updateSince(body.last_kinematics_time);

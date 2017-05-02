@@ -74,7 +74,7 @@ public: //types
         real_T eph, epv;    //GPS HDOP/VDOP horizontal/vertical dilution of position (unitless), 0-100%
         Vector3r velocity;
         GnssFixType fix_type;
-        long time_utc = 0;
+        uint64_t time_utc = 0;
     };
 
     struct NavSatFix {

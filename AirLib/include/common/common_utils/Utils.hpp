@@ -89,7 +89,6 @@ private:
     typedef std::stringstream stringstream;
     //this is not required for most compilers
     typedef unsigned int uint;
-    typedef unsigned long ulong;
     template <typename T>
     using time_point = std::chrono::time_point<T>;    
 
@@ -481,11 +480,11 @@ public:
         return ptr ? ptr : "";
     }
 
-    static unsigned long getUnixTimeStamp(std::time_t* t = nullptr)
+    static uint64_t getUnixTimeStamp(std::time_t* t = nullptr)
     {
         std::time_t st = std::time(t);
         auto millies = static_cast<std::chrono::milliseconds>(st).count();
-        return static_cast<unsigned long>(millies);
+        return static_cast<uint64_t>(millies);
     }
     //high precision time in seconds since epoch
     static double getTimeSinceEpochSecs(std::chrono::high_resolution_clock::time_point* t = nullptr)
@@ -493,10 +492,10 @@ public:
         using Clock = std::chrono::high_resolution_clock;
         return std::chrono::duration<double>((t != nullptr ? *t : Clock::now() ).time_since_epoch()).count();
     }
-    static unsigned long getTimeSinceEpochNanos(std::chrono::high_resolution_clock::time_point* t = nullptr)
+    static uint64_t getTimeSinceEpochNanos(std::chrono::high_resolution_clock::time_point* t = nullptr)
     {
         using Clock = std::chrono::high_resolution_clock;
-        return static_cast<unsigned long>((t != nullptr ? *t : Clock::now() ).time_since_epoch().count());
+        return static_cast<uint64_t>((t != nullptr ? *t : Clock::now() ).time_since_epoch().count());
     }
 
     template<typename T>

@@ -378,7 +378,7 @@ bool DroneControllerBase::setSafety(SafetyEval::SafetyViolationType enable_reaso
 
 bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration, CancelableBase& cancelable_action)
 {
-    const float kMaxMessageAge = 10 * 1E6 /* 10 ms */, kMaxVelocity = 2, trim_duration = 1, kMinCountForTrim = 10, kMaxTrim = 100, kMaxRCValue = 10000;
+    const float kMaxMessageAge = 0.1f /* 0.1 sec */, kMaxVelocity = 2, trim_duration = 1, kMinCountForTrim = 10, kMaxTrim = 100, kMaxRCValue = 10000;
 
     if (duration <= 0)
         return true;
@@ -414,7 +414,7 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
     do {
 
         RCData rc_data = getRCData();
-        TTimeDelta age = clock()->nowNanos() - rc_data.timestamp;
+        TTimeDelta age = clock()->elapsedSince(rc_data.timestamp);
         if (age <= kMaxMessageAge) {
             rc_data.subtract(rc_data_trims);
 

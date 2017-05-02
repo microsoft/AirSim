@@ -68,7 +68,7 @@ public:
         return sleep_time_avg_;
     }
 
-    unsigned long getPeriodCount()
+    uint64_t getPeriodCount()
     {
         return period_count_;
     }
@@ -145,7 +145,7 @@ private:
     static constexpr double MinSleepTime = 1E-6;
 
     double sleep_time_avg_;
-    unsigned long period_count_;
+    uint64_t period_count_;
 
     std::mutex mutex_;
 };

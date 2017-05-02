@@ -25,7 +25,6 @@ namespace msr { namespace airlib {
 typedef float real_T;
 //this is not required for most compilers
 typedef unsigned int uint;
-typedef unsigned long ulong;
 
 //well known types
 typedef msr::airlib::VectorMathf VectorMath;
@@ -43,7 +42,7 @@ typedef std::string string;
 typedef common_utils::Utils Utils;
 typedef VectorMath::RandomVectorGaussianT RandomVectorGaussianR;
 typedef VectorMath::RandomVectorT RandomVectorR;
-typedef unsigned long TTimePoint;
+typedef uint64_t TTimePoint;
 typedef double TTimeDelta;
 
 

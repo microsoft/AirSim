@@ -110,7 +110,7 @@ uint32 FRecordingThread::Run()
                 auto physics_body = static_cast<msr::airlib::PhysicsBody*>(GameThread->fpv_vehicle_connector_->getPhysicsBody());
                 auto kinematics = physics_body->getKinematics();
 
-                unsigned long timestamp_millis = static_cast<unsigned long>(clock_->nowNanos() / 1.0E6);
+                uint64_t timestamp_millis = static_cast<uint64_t>(clock_->nowNanos() / 1.0E6);
 
                 GameThread->record_file << timestamp_millis << "\t";    
                 GameThread->record_file << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
