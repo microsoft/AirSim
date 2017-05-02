@@ -545,8 +545,13 @@ void MavLinkVehicleImpl::requestControl()
     // (which is not the default behavior for px4, so we set that here)
     MavLinkParameter p;
     p.name = "COM_OBL_ACT";
-    p.value = 1; // loiter (see px4 state_machine_helper.cpp, line 904)
+    p.value = 1; // loiter (see px4 state_machine_helper.cpp, line 904-ish)
     setParameter(p);
+
+    p.name = "COM_OBL_RC_ACT";
+    p.value = 5; // loiter (see px4 state_machine_helper.cpp, line 878-ish)
+    setParameter(p);
+    
 }
 
 // return true if user calls requestControl and has not called releaseControl.
