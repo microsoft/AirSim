@@ -540,6 +540,13 @@ void MavLinkVehicleImpl::requestControl()
     // PX4 expects the move commands to happen IMMEDIATELY after this call, so we don't actually request control here
     // until the move commands start happening.
     control_requested_ = true;
+
+    // we expect the caller to occasionally stop sending offboard control messages, and in this case we want the drone to loiter 
+    // (which is not the default behavior for px4, so we set that here)
+    MavLinkParameter p;
+    p.name = "COM_OBL_ACT";
+    p.value = 1; // loiter (see px4 state_machine_helper.cpp, line 904)
+    setParameter(p);
 }
 
 // return true if user calls requestControl and has not called releaseControl.

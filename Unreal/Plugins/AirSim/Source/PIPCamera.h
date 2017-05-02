@@ -30,7 +30,7 @@ class AIRSIM_API APIPCamera : public ACameraActor
     
     
 public:
-    static constexpr EPIPCameraType DefaultEnabledCameras = EPIPCameraType::PIP_CAMERA_TYPE_ALL;
+    static constexpr EPIPCameraType DefaultEnabledCameras = EPIPCameraType::PIP_CAMERA_TYPE_NONE;
     static constexpr EPIPCameraMode DefaultCameraMode = EPIPCameraMode::PIP_CAMERA_MODE_NONE;
 
     APIPCamera();
