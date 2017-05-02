@@ -131,14 +131,14 @@ namespace mavlinkcom
 	public:
 		const static uint8_t kMessageId = 204; // in the user range 180-229.
 		MavLinkTelemetry() { msgid = kMessageId; }
-		long messagesSent;		 // number of messages sent since the last telemetry message
-		long messagesReceived;	 // number of messages received since the last telemetry message
-		long messagesHandled;	 // number of messages handled since the last telemetry message
-		long crcErrors;			 // # crc errors detected in mavlink stream since the last telemetry message
-		long handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
-		long renderTime;         // total time spent rendering frames since the last telemetry message
+		uint32_t messagesSent;		 // number of messages sent since the last telemetry message
+		uint32_t messagesReceived;	 // number of messages received since the last telemetry message
+		uint32_t messagesHandled;	 // number of messages handled since the last telemetry message
+		uint32_t crcErrors;			 // # crc errors detected in mavlink stream since the last telemetry message
+		uint32_t handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
+		uint32_t renderTime;         // total time spent rendering frames since the last telemetry message
         const char* wifiInterfaceName; // the name of the wifi interface we are measuring RSSI on.
-        int wifiRssi;            // if this device is communicating over wifi this is the signal strength.
+        int32_t wifiRssi;            // if this device is communicating over wifi this is the signal strength.
 		virtual std::string toJSon() {
 
 			std::ostringstream result;
