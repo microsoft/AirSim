@@ -350,6 +350,30 @@ public:
 
 };
 
+class FakeGpsCommand : public Command
+{
+    bool started = false;
+    std::thread hil_thread;
+    std::shared_ptr<MavLinkVehicle> com;
+public:
+    FakeGpsCommand() {
+        this->Name = "fakegps [start|stop]";
+    }
+    virtual bool Parse(const std::vector<std::string>& args);
+
+    virtual void PrintHelp() {
+        printf("fakegps [start|stop] - start stop simple generation of fake GPS input.\n");
+    }
+
+    virtual void Execute(std::shared_ptr<MavLinkVehicle> mav);
+
+    void GpsThread();
+
+    float addNoise(float x, float scale);
+    void stop();
+    void start();
+};
+
 class HilCommand : public Command
 {
     bool started = false;
@@ -370,6 +394,8 @@ public:
     void HilThread();
 
     float addNoise(float x, float scale);
+    void stop();
+    void start();
 };
 
 class SendImageCommand : public Command

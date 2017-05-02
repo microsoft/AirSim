@@ -966,6 +966,116 @@ void PositionCommand::HandleMessage(const MavLinkMessage& message)
     }
 }
 
+bool FakeGpsCommand::Parse(const std::vector<std::string>& args)
+{
+    started = false;
+    if (args.size() > 0) {
+        std::string cmd = args[0];
+        if (cmd == "fakegps") {
+            if (args.size() > 1)
+            {
+                std::string arg = args[1];
+                if (arg == "start") {
+                    start();
+                }
+                else if (arg == "stop") {
+                    stop();
+                }
+                else {
+                    printf("fakegps [start|stop] - start stop simple generation of fake GPS input.\n");
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+void FakeGpsCommand::stop() {
+    started = false;
+    if (hil_thread.joinable()) {
+        hil_thread.join();
+    }
+}
+
+void FakeGpsCommand::start() {
+    stop();
+    started = true;
+    hil_thread = std::thread(&FakeGpsCommand::GpsThread, this);
+}
+
+void FakeGpsCommand::Execute(std::shared_ptr<MavLinkVehicle> mav)
+{
+    // note: we do not reset com when Close() is called because we want to keep running.
+    // user has to invoke "hil stop" to stop the hil thread.
+    this->com = mav;
+}
+
+float FakeGpsCommand::addNoise(float x, float scale)
+{
+    // generate random between 0 and 1
+    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); 
+    // move to range -1 to 1
+    r = (r * 2) - 1;
+    // scale it
+    r *= scale;
+    // apply iy
+    return x + r;
+}
+
+void FakeGpsCommand::GpsThread()
+{
+    // wait for the Execute method to be called.
+    while (started && this->com == nullptr) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    MavLinkParameter  p;
+    p.name = "MAV_USEHILGPS";
+    p.index = -1;
+    p.value = 1;
+    bool r = false;
+    if (!com->setParameter(p).wait(2000, &r) || !r) {
+        printf("Error setting parameter: MAV_USEHILGPS");
+    }
+
+    while (started) {
+
+        uint64_t usec = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+        // gps is much slower frequency than IMU.
+        // MAVLINK_MSG_ID_HIL_GPS
+        MavLinkHilGps gps;
+        gps.time_usec = usec;
+        gps.alt = static_cast<int32_t>(addNoise(122.0f,1) * 1E3);
+        gps.lat = static_cast<int32_t>(addNoise(47.642406f,0.000001f) * 1E7);
+        gps.lon = static_cast<int32_t>(addNoise(-122.140977f,0.000001f) * 1E7);
+        gps.eph = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
+        gps.epv = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
+        gps.fix_type = 3;
+        gps.satellites_visible = 10;
+        gps.vd = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
+        gps.ve = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
+        gps.vn = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
+        gps.vel = static_cast<uint16_t>(abs(addNoise(0, 0.1f) * 100));// cm/s
+        gps.cog = static_cast<int16_t>(addNoise(0, 0.3f) * 100); // degrees * 100
+        if (com != nullptr) {
+            com->sendMessage(gps);
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // disable MAV_USEHILGPS
+    p.name = "MAV_USEHILGPS";
+    p.index = -1;
+    p.value = 0;
+    if (!com->setParameter(p).wait(2000, &r) || !r) {
+        printf("Error clearing parameter: MAV_USEHILGPS");
+    }
+}
+
 bool HilCommand::Parse(const std::vector<std::string>& args)
 {
     started = false;
@@ -976,14 +1086,10 @@ bool HilCommand::Parse(const std::vector<std::string>& args)
             {
                 std::string arg = args[1];
                 if (arg == "start") {
-                    started = true;
-                    hil_thread = std::thread(&HilCommand::HilThread, this);
+                    start();
                 }
                 else if (arg == "stop") {
-                    started = false;
-                    if (hil_thread.joinable()) {
-                        hil_thread.join();
-                    }
+                    stop();
                 }
                 else {
                     printf("hil [start|stop] - start stop simple hil simulation mode to generate fake GPS input.\n");
@@ -996,22 +1102,31 @@ bool HilCommand::Parse(const std::vector<std::string>& args)
     return false;
 }
 
+void HilCommand::stop() {
+
+    started = false;
+    if (hil_thread.joinable()) {
+        hil_thread.join();
+    }
+}
+
+void HilCommand::start() {
+    stop();
+    started = true;
+    hil_thread = std::thread(&HilCommand::HilThread, this);
+}
+
 void HilCommand::Execute(std::shared_ptr<MavLinkVehicle> mav)
 {
     // note: we do not reset com when Close() is called because we want to keep running.
     // user has to invoke "hil stop" to stop the hil thread.
     this->com = mav;
-
-    MavLinkSetMode setModeMessage;
-    setModeMessage.target_system = com->getTargetSystemId();
-    setModeMessage.base_mode = 32;  //HIL
-    com->sendMessage(setModeMessage);
 }
 
 float HilCommand::addNoise(float x, float scale)
 {
     // generate random between 0 and 1
-    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); 
+    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     // move to range -1 to 1
     r = (r * 2) - 1;
     // scale it
@@ -1023,6 +1138,21 @@ float HilCommand::addNoise(float x, float scale)
 void HilCommand::HilThread()
 {
     int slices = 0;
+
+    // wait for the Execute method to be called.
+    while (started && this->com == nullptr) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode 
+    int mode = com->getVehicleState().mode;
+    mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
+    MavCmdDoSetMode cmd;
+    cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
+    cmd.Mode = static_cast<float>(mode);
+    com->sendCommand(cmd);
+
+
     while (started) {
         slices++;
 
@@ -1041,7 +1171,6 @@ void HilCommand::HilThread()
         hil_sensor.zmag = addNoise(0.45f, 0.1f);
         hil_sensor.pressure_alt = addNoise(122, 1);
         hil_sensor.fields_updated = 1 << 31;
-
         if (com != nullptr) {
             com->sendMessage(hil_sensor);
         }
@@ -1049,11 +1178,12 @@ void HilCommand::HilThread()
         if (slices == 10) {
             slices = 0;
             // gps is much slower frequency than IMU.
+            // MAVLINK_MSG_ID_HIL_GPS
             MavLinkHilGps gps;
             gps.time_usec = usec;
-            gps.alt = static_cast<int32_t>(addNoise(122.0f,1) * 1E3);
-            gps.lat = static_cast<int32_t>(addNoise(47.642406f,0.000001f) * 1E7);
-            gps.lon = static_cast<int32_t>(addNoise(-122.140977f,0.000001f) * 1E7);
+            gps.alt = static_cast<int32_t>(addNoise(122.0f, 1) * 1E3);
+            gps.lat = static_cast<int32_t>(addNoise(47.642406f, 0.000001f) * 1E7);
+            gps.lon = static_cast<int32_t>(addNoise(-122.140977f, 0.000001f) * 1E7);
             gps.eph = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
             gps.epv = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
             gps.fix_type = 3;
@@ -1061,7 +1191,7 @@ void HilCommand::HilThread()
             gps.vd = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
             gps.ve = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
             gps.vn = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
-            gps.vel = static_cast<int16_t>(addNoise(0, 0.2f) * 100);// cm/s
+            gps.vel = static_cast<uint16_t>(abs(addNoise(0, 0.1f) * 100));// cm/s
             gps.cog = static_cast<int16_t>(addNoise(0, 0.3f) * 100); // degrees * 100
             if (com != nullptr) {
                 com->sendMessage(gps);
@@ -1070,6 +1200,13 @@ void HilCommand::HilThread()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
+
+    // disable HIL mode
+    mode = com->getVehicleState().mode;
+    mode &= ~static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
+    cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
+    cmd.Mode = static_cast<float>(mode);
+    com->sendCommand(cmd);
 }
 
 bool BatteryCommand::Parse(const std::vector<std::string>& args) {

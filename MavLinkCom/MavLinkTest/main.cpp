@@ -1245,6 +1245,7 @@ int console(std::stringstream& script) {
     cmdTable.push_back(new StatusCommand());
     cmdTable.push_back(new PositionCommand());
     cmdTable.push_back(new HilCommand());
+    cmdTable.push_back(new FakeGpsCommand());
     cmdTable.push_back(new RequestImageCommand());
     cmdTable.push_back(new FtpCommand());
     cmdTable.push_back(new PlayLogCommand());
