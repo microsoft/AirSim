@@ -61,14 +61,14 @@ namespace LogViewer.Model
             Dictionary<string, LogItemSchema> index = new Dictionary<string, Model.LogItemSchema>();
             if (this.HasChildren)
             {
-                foreach (var i in this.ChildItems)
+                foreach (var i in this.ChildItems.ToArray())
                 {
                     index[i.Name] = i;
                 }
             }
             if (s.HasChildren)
             {
-                foreach (var child in s.ChildItems)
+                foreach (var child in s.ChildItems.ToArray())
                 {
                     LogItemSchema found = null;
                     if (index.TryGetValue(child.Name, out found))
@@ -91,7 +91,7 @@ namespace LogViewer.Model
             if (this.HasChildren)
             {
                 List<LogItemSchema> copyChildren = new List<Model.LogItemSchema>();
-                foreach (var child in this.ChildItems)
+                foreach (var child in this.ChildItems.ToArray())
                 {
                     var childClone = child.Clone();
                     childClone.Parent = copy;

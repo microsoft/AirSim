@@ -691,8 +691,6 @@ struct MavLinkDroneController::impl {
             return;
         }
 
-        std::lock_guard<std::mutex> guard_setmode(set_mode_mutex_);
-
         // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode 
         std::lock_guard<std::mutex> guard(set_mode_mutex_);
         int mode = mav_vehicle_->getVehicleState().mode;
