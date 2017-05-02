@@ -79,7 +79,6 @@ private:
         params.rotor_params.max_rpm = 9500;
         params.rotor_params.calculateMaxThrust();
         params.linear_drag_coefficient *= 4; // make top speed more real.
-        params.rotor_params.throttle_boost = 0.01f;
 
         //set up dimensions of core body box or abdomen (not including arms).
         params.body_box.x = 0.16f; params.body_box.y = 0.10f; params.body_box.z = 0.14f;
@@ -148,7 +147,6 @@ private:
         params.rotor_params.C_P = 0.047f;
         params.rotor_params.max_rpm = 9500;
         params.rotor_params.calculateMaxThrust();
-        params.rotor_params.throttle_boost = 0.01f;
 
         //set up dimensions of core body box or abdomen (not including arms).
         params.body_box.x = 0.20f; params.body_box.y = 0.12f; params.body_box.z = 0.04f;

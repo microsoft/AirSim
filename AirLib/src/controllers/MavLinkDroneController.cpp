@@ -119,10 +119,19 @@ struct MavLinkDroneController::impl {
 
     void normalizeRotorControls()
     {
+        //if rotor controls are in not in 0-1 range then they are in -1 to 1 range in which case
+        //we normalize them to 0 to 1 for PX4
         if (!is_controls_0_1_) {
             // change -1 to 1 to 0 to 1.
             for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
                 rotor_controls_[i] = (rotor_controls_[i] + 1.0f) / 2.0f;
+            }
+        }
+        else {
+            //this applies to PX4 and may work differently on other firmwares. 
+            //We use 0.2 as idle rotors which leaves out range of 0.8
+            for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
+                rotor_controls_[i] = Utils::clip(0.8f * rotor_controls_[i] + 0.20f, 0.0f, 1.0f);
             }
         }
     }

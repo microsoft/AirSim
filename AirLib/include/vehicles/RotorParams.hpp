@@ -46,9 +46,6 @@ namespace msr {
             real_T max_thrust = 4.179446268f; //computed from above formula for the given constants
             real_T max_torque = 0.055562f; //computed from above formula
 
-			// set this to zero for more accurate simulation to match playback from real drone.
-			real_T throttle_boost = 0.2f; // boost the normal throttle control signal to make it more fun to fly 
-
             // call this method to recaculate thrust if you want to use different numbers for C_T, C_P, max_rpm, etc.
             void calculateMaxThrust() {
                 revolutions_per_second = max_rpm / 60;

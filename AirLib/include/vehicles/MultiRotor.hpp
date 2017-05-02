@@ -25,9 +25,9 @@ public:
     {
         initialize(params, initial_kinematic_state, environment);
     }
-	void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
-	{
-		params_ = params;
+    void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    {
+        params_ = params;
 
         PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
 
@@ -35,11 +35,11 @@ public:
 
         initSensors(*params_, getKinematics(), getEnvironment());
 
-		//setup drag factors (must come after createRotors).
-		setupDragFactors();
+        //setup drag factors (must come after createRotors).
+        setupDragFactors();
 
         MultiRotor::reset();
-	}
+    }
 
     DroneControllerBase* getController()
     {
@@ -99,23 +99,12 @@ public:
 
         getController()->update();
 
-		float throttle_boost = params_->getParams().rotor_params.throttle_boost;
-
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
-            rotors_.at(rotor_index).setControlSignal(boost(
-                getController()->getVertexControlSignal(rotor_index), throttle_boost));
+            rotors_.at(rotor_index).setControlSignal(
+                getController()->getVertexControlSignal(rotor_index));
         }
     }
-
-	float boost(float signal, float amount) {
-		if (amount > 0 && amount < 0.7) {
-			float top = 1 - amount;
-			return Utils::clip(top * signal + amount, 0.0f, 1.0f);
-		}
-		return signal;
-	}
-
 
     //sensor getter
     const SensorCollection& getSensors() const
