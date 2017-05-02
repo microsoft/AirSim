@@ -46,6 +46,12 @@ void ASimModeBase::initializeSettings()
 
             enable_rpc = settings.getBool("RpcEnabled", true);
             api_server_address = settings.getString("LocalHostIp", "127.0.0.1");
+
+            //do not save this default in json as this will change in near future
+            fpv_vehicle_name = settings.getString("FpvVehicleName", "Pixhawk");
+
+            UAirBlueprintLib::LogMessage("Vehicle name: ", fpv_vehicle_name.c_str(), LogDebugLevel::Informational);
+
         }
         else {
             //write some settings in new file otherwise the string "null" is written if all settigs are empty

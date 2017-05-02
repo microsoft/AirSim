@@ -59,11 +59,6 @@ void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
     }
 }
 
-std::string AFlyingPawn::getVehicleName()
-{
-    return std::string(TCHAR_TO_UTF8(*VehicleName));
-}
-
 void AFlyingPawn::setupComponentReferences()
 {
     fpv_camera_ = Cast<APIPCamera>(

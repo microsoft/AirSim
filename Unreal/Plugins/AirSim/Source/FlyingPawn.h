@@ -25,10 +25,6 @@ public: //blueprint
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
 		float RotatorFactor = 1.0f;
 
-	//HIL settings
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HIL")
-		FString VehicleName = "Pixhawk";
-
     UFUNCTION(BlueprintCallable, Category = "Init")
         void initializeForPlay();
 

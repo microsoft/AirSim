@@ -45,6 +45,8 @@ protected:
     int record_tick_count;
     bool enable_rpc;
     std::string api_server_address;
+    std::string fpv_vehicle_name;
+
 
 private:
     void initializeSettings();
