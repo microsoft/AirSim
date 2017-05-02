@@ -81,7 +81,7 @@ rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 echo ""
 echo "============================================================"
 echo "Now copy the Unreal/Plugins directory to the Unreal project:"
-echo "rsync -t -r Unreal/plugins <unreal project_root>"
+echo "rsync -t -r Unreal/Plugins <unreal project_root>"
 echo "  (<unreal project_root> contains a file named <project>.uproject)"
 echo "============================================================"
 echo "And do (required for building the Unreal plugin):"
