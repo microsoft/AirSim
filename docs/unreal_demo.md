@@ -98,7 +98,7 @@ See [px4.md](px4.md) or [sitl.md](sitl.md) for PX4 instructions.
 Press `F5` to `run`.   This will run the Visual Studio debugger, and it you should see the `Unreal Editor` loading.  The unreal game is not running yet.
 This is a handy mode that lets you edit the game content in the Unreal Editor and debug the game using Visual Studio debugger.
 
-Make sure your ~/Documents/AirSim/settings.json looks like this
+When you click Play AirSim will create a settings file in ~/Documents/AirSim/settings.json.  Make sure it looks like this:
 ````
 {
   "LocalHostIp": "127.0.0.1",
