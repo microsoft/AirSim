@@ -30,6 +30,7 @@ public:
     
     virtual void getStatusMessages(std::vector<std::string>& messages)
     {
+        unused(messages);
         //default implementation
     }
 
@@ -46,6 +47,7 @@ public:
 
     virtual void reportTelemetry(float renderTime)
     {
+        unused(renderTime);
         //no default action
     }
 

@@ -54,6 +54,8 @@ public:
     //TODO: need better line end handling
     void startHeading(string heading, uint heading_size, uint columns = 20)
     {
+        unused(heading_size);
+        unused(columns);
         ss_ << "\n";
         ss_ << heading;
     }

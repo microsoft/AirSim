@@ -36,18 +36,24 @@ public: // implement CommLink interface
 
     virtual void set_sys_id(int32_t sys_id)
     {
+        unused(sys_id);
     }
 
     virtual void set_streaming_rate(uint16_t param_id, int32_t rate)
     {
+        unused(param_id);
+        unused(rate);
     }
 
     virtual void notify_param_change(uint16_t param_id, int32_t value)
     {
+        unused(param_id);
+        unused(value);
     }
 
     virtual void log_message(const char* message, uint8_t error_level)
     {
+        unused(error_level);
         messages_.push_back(std::string(message));
     }
 

@@ -94,6 +94,8 @@ public: //interface
     //below method is needed to support firmwares without state estimation. In future, we should probably remove this support.
     virtual void initializePhysics(const Environment* environment, const Kinematics::State* kinematics)
     {
+        unused(environment);
+        unused(kinematics);
         //by default don't use it. If derived class needs this, it should override.
     }
 
