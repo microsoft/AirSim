@@ -6,6 +6,11 @@ but make sure you are `not` using a `Visual Studio Command Prompt` because we do
 
 We need to use `clang compiler` because Unreal engine requires that.  
 
+First you will need the usual build essentials, this will get you 'make' amongst other things:
+````
+sudo apt-get install build-essential
+````
+
 ## cmake
 
 First you will need at least [cmake version  3.5](https://cmake.org/install/). 
@@ -15,8 +20,14 @@ If you don't have cmake version 3.5 (for example, 3.2.2 is the default on Ubuntu
 mkdir ~/cmake-3.5.1
 cd ~/cmake-3.5.1
 wget https://cmake.org/files/v3.5/cmake-3.5.1-Linux-x86_64.sh
+````
+Now you have to run this command by itself (it is interactive)
+````
 sh cmake-3.5.1-Linux-x86_64.sh --prefix ~/cmake-3.5.1
-# Answer 'n' to the question about creating another cmake-3.5.1-Linux-x86_64 folder
+````
+Answer 'n' to the question about creating another cmake-3.5.1-Linux-x86_64 folder.
+Then 
+````
 sudo update-alternatives --install /usr/bin/cmake cmake ~/cmake-3.5.1/bin/cmake 60
 ````
 

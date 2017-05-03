@@ -15,17 +15,23 @@
 
 ## Install Dependencies
 AirSim code has two external dependencies:
-  1. If you don't have already, [install Eigen](install_eigen.md).
+  1. We use [install Eigen](install_eigen.md).  But the build.cmd script will install it for you, so you don't have to do anything special here.  But after build.cmd has finished, you need to set an EIGEN_ROOT environment variable
   2. We use [rpclib](https://github.com/rpclib/rpclib.git) which is included as a git submodule.  So you don't have any setup to do for this one.
 
 ## Get the Code and Build
+
+### Windows
+
   1. You need Visual Studio 2015 Update 3 (make sure to install VC++). Other versions haven't been tested.
   2. Start VS2015 x64 Native Tools Command Prompt. Create a folder for repo and run
   `git clone https://github.com/Microsoft/AirSim.git`
-  3. Install [cmake](https://cmake.org/download/) which is used to build the rpclib.
+  3. Install [cmake](https://cmake.org/download/) which is used to build the rpclib submodule.
   4. Run `build.cmd` from the command line. If everything goes ok, it will copy all the binaries that you need to Unreal/Plugins folder in your repo. 
   This Plugins folder can then be simply copied to your Unreal environment.
-  5. [Linux build](linux_build.md) is coming... stay tuned.
+
+### Linux
+
+  1. See [Linux build](linux_build.md).
   
 ## Create Unreal Environment Project
 
