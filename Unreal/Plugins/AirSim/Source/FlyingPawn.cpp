@@ -64,7 +64,7 @@ void AFlyingPawn::setupComponentReferences()
     fpv_camera_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("LeftPIPCamera")))->GetChildActor());
 
-    for (auto i = 0; i < 4; ++i) {
+    for (auto i = 0; i < rotor_count; ++i) {
         rotating_movements_[i] = UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i));
     }
 }
