@@ -489,7 +489,7 @@ void Params::set_param_defaults(void)
     /*** ARMING SETUP ***/
     /********************/
     init_param_int(PARAM_ARM_STICKS, "ARM_STICKS", false); // use RC sticks to arm vehicle (disables arm RC switch if enabled) | 0 | 1
-    init_param_int(PARAM_ARM_CHANNEL, "ARM_CHANNEL", 8); // RC switch mapped to arm/disarm [0 -indexed] | 4 | 7
+    init_param_int(PARAM_ARM_CHANNEL, "ARM_CHANNEL", 4); // RC switch mapped to arm/disarm [0 -indexed] | 4 | 7
     init_param_int(PARAM_ARM_THRESHOLD, "ARM_THRESHOLD", 150); // RC deviation from max/min in yaw and throttle for arming and disarming check (us) | 0 | 500
 }
 

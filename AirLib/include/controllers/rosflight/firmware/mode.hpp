@@ -58,9 +58,10 @@ void Mode::init(Board* _board, CommLink* _comm_link, CommonState* _common_state,
 bool Mode::arm(void)
 {
     bool success = false;
-    if (!started_gyro_calibration && common_state->is_disarmed())
+    if (!started_gyro_calibration)
     {
-        comm_link->log_message("Cannot arm because gyro calibration is not complete", 1);
+        if (common_state->is_disarmed())
+            comm_link->log_message("Cannot arm because gyro calibration is not complete", 1);
         
         sensors->start_gyro_calibration();
         started_gyro_calibration = true;
@@ -125,7 +126,7 @@ void Mode::updateCommLinkArmStatus()
     if (common_state->is_armed())
         comm_link->log_message("Vehicle is now armed", 0);
     else if (common_state->is_disarmed())
-        comm_link->log_message("Vehicle is now armed", 0);
+        comm_link->log_message("Vehicle is now disarmed", 0);
     else
         comm_link->log_message("Attempt to arm or disarm failed", 0);
 
@@ -192,11 +193,12 @@ bool Mode::check_mode(uint64_t now)
         {
             if (rc->rc_switch(params->get_param_int(Params::PARAM_ARM_CHANNEL)))
             {
-                if (common_state->get_armed_state() == CommonState::DISARMED)
+                if (common_state->is_disarmed())
                     arm();
             } else
             {
-                disarm();
+                if (common_state->is_armed())
+                    disarm();
             }
         }
     }
