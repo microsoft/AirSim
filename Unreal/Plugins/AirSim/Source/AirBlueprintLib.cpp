@@ -33,7 +33,7 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
 
     FColor color;
     switch (level) {
-    case LogDebugLevel::Informational: color = FColor::Blue; break;
+    case LogDebugLevel::Informational: color = FColor(5, 5, 100);; break;
     case LogDebugLevel::Success: color = FColor::Green; break;
     case LogDebugLevel::Failure: color = FColor::Red; break;
     case LogDebugLevel::Unimportant: color = FColor::Silver; break;

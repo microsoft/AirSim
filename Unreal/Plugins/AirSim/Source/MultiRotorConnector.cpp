@@ -93,13 +93,19 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
 
         rc_data_.switch1 = joystick_state_.left_trigger ? 1 : 0;
         rc_data_.switch2 = joystick_state_.right_trigger ? 1 : 0;
-
+        rc_data_.switch3 = joystick_state_.buttons & 0x100 ? 1 : 0; //front-upper-left
+        rc_data_.switch4 = joystick_state_.buttons & 0x200 ? 1 : 0; //front-upper-right
+        rc_data_.switch5 = joystick_state_.buttons & 0x1000 ? 1 : 0; //top-left-right
+        rc_data_.switch6 = joystick_state_.buttons & 0x2000 ? 1 : 0; //top-right-right
+        rc_data_.switch7 = joystick_state_.buttons & 0x4000 ? 1 : 0; //top-left-left
+        rc_data_.switch8 = joystick_state_.buttons & 0x8000 ? 1 : 0; //top-right-left
+        
         UAirBlueprintLib::LogMessage(FString("Joystick (T,R,P,Y): "), 
             FString::SanitizeFloat(rc_data_.throttle) + ", " + FString::SanitizeFloat(rc_data_.roll) + ", " + FString::SanitizeFloat(rc_data_.pitch) + ", " + FString::SanitizeFloat(rc_data_.yaw), 
             LogDebugLevel::Informational);
         UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " + 
             FString::FromInt(rc_data_.switch1) + ", " + FString::FromInt(rc_data_.switch2) + ", " + FString::FromInt(rc_data_.switch3) + ", " + FString::FromInt(rc_data_.switch4)
-            + ", " + FString::FromInt(rc_data_.switch5),
+            + ", " + FString::FromInt(rc_data_.switch5)+ ", " + FString::FromInt(rc_data_.switch6)+ ", " + FString::FromInt(rc_data_.switch7)+ ", " + FString::FromInt(rc_data_.switch8),
             LogDebugLevel::Informational);
     }
     //else don't waste time

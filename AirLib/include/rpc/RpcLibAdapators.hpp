@@ -114,9 +114,10 @@ public:
     struct RCData {
         uint64_t timestamp = 0;
         float pitch = 0, roll = 0, throttle = 0, yaw = 0;
-        unsigned int switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, switch5 = 0;
+        unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, 
+            switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
 
-        MSGPACK_DEFINE_ARRAY(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5);
+        MSGPACK_DEFINE_ARRAY(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8);
 
         RCData()
         {}
@@ -133,6 +134,10 @@ public:
             switch3 = s.switch3;
             switch4 = s.switch4;
             switch5 = s.switch5;
+            switch6 = s.switch6;
+            switch7 = s.switch7;
+            switch8 = s.switch8;
+
         }
         msr::airlib::RCData to() const
         {
@@ -147,7 +152,10 @@ public:
             d.switch3 = switch3;
             d.switch4 = switch4;
             d.switch5 = switch5;
-
+            d.switch6 = switch6;
+            d.switch7 = switch7;
+            d.switch8 = switch8;
+            
             return d;
         }
     };
