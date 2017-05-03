@@ -1,7 +1,7 @@
 # Install Eigen
 
-Eigen is install by the [build process](build.md) into your AirSim folder, so after the build completes
-you will have ~/AirSim/eigen/eigen3.  The build is downloading eigen from [Eigen 3.3.2 zip file](http://bitbucket.org/eigen/eigen/get/3.3.2.zip) 
+Eigen is installed by the [build process](build.md) into your AirSim folder, so after the build completes
+you will have ~/AirSim/eigen.  The build is downloading eigen from [Eigen 3.3.2 zip file](http://bitbucket.org/eigen/eigen/get/3.3.2.zip) 
 
 But your Unreal Projects will also need to be able to find this location and for that we set an EIGEN_ROOT environment variable.
 That variable needs to point to the eigen folder (not the eigen3 subfolder)
