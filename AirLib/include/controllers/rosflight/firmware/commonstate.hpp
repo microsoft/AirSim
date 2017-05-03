@@ -31,11 +31,11 @@ public:
     }
     void set_disarm()
     {
-        _armed_state = armed_state_t::DISARMED;
+        setArmedState(armed_state_t::DISARMED);
     }
     void set_arm()
     {
-        _armed_state = armed_state_t::ARMED;
+        setArmedState(armed_state_t::ARMED);
     }
 
     static std::string stringf(const char* format, ...)

@@ -154,7 +154,7 @@ public:
             board_->setInputChannel(5, switchToPwm(rcData.switch2));
             board_->setInputChannel(6, switchToPwm(rcData.switch3));
             board_->setInputChannel(7, switchToPwm(rcData.switch4));
-            board_->setInputChannel(8, switchToPwm(rcData.switch5));
+            board_->setInputChannel(8, switchToPwm(rcData.switch5)); //arm/disarm
         }
         //else we don't have RC data
     }
