@@ -15,7 +15,7 @@
 
 ## Install Dependencies
 AirSim code has two external dependencies:
-  1. We use [install Eigen](install_eigen.md).  But the build.cmd script will install it for you, so you don't have to do anything special here.  But after build.cmd has finished, you need to set an EIGEN_ROOT environment variable
+  1. We use [Eigen](install_eigen.md).  
   2. We use [rpclib](https://github.com/rpclib/rpclib.git) which is included as a git submodule.  So you don't have any setup to do for this one.
 
 ## Get the Code and Build
