@@ -52,7 +52,7 @@ public:
 
     //write APIs - heading
     //TODO: need better line end handling
-    void startHeading(string heading, uint heading_size, uint columns = 20)
+    void startHeading(string heading, uint /*heading_size*/, uint /*columns*/ = 20)
     {
         ss_ << "\n";
         ss_ << heading;

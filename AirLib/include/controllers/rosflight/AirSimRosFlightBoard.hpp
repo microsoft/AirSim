@@ -84,7 +84,7 @@ public:
         }
     }
 
-    virtual void pwmInit(bool useCPPM, bool usePwmFilter, bool fastPWM, uint32_t motorPwmRate, uint16_t idlePulseUsec) override 
+    virtual void pwmInit(bool /*useCPPM*/, bool /*usePwmFilter*/, bool /*fastPWM*/, uint32_t /*motorPwmRate*/, uint16_t /*idlePulseUsec*/) override
     {
         for (uint i = 0; i < OutputMotorCount; ++i)
             motors_pwm_[i] = 1000;
@@ -106,12 +106,12 @@ public:
             throw std::runtime_error("cannot write motor output for index > motor count");
     }
 
-    virtual void set_led(uint8_t index, bool is_on) override 
+    virtual void set_led(uint8_t /*index*/, bool /*is_on*/) override
     {
         //ignored for now
     }
 
-    virtual void toggle_led(uint8_t index) override 
+    virtual void toggle_led(uint8_t /*index*/) override
     {
         //ignored for now
     }
@@ -126,12 +126,12 @@ public:
         return false;
     }
 
-    virtual bool write_params(bool blink_led) override 
+    virtual bool write_params(bool /*blink_led*/) override
     {
         return false;
     }
 
-    virtual void init_imu(uint16_t& acc1G, float& gyroScale, int boardVersion) override 
+    virtual void init_imu(uint16_t& acc1G, float& gyroScale, int /*boardVersion*/) override
     {
         //same as mpu6050_init
         acc1G = kAccelAdcBits;
@@ -171,7 +171,7 @@ public:
         temperature = 25.0f;
     }
 
-    virtual void read_diff_pressure(float& differential_pressure, float& temp, float& velocity) override 
+    virtual void read_diff_pressure(float& /*differential_pressure*/, float& /*temp*/, float& /*velocity*/) override
     {
         throw std::runtime_error("Diff pressure sensor is not available");
     }
@@ -200,7 +200,7 @@ public:
         sleep(static_cast<float>(ms));
     }
 
-    virtual void system_reset(bool toBootloader) override 
+    virtual void system_reset(bool /*toBootloader*/) override
     {
         //no internal state to reset
     }

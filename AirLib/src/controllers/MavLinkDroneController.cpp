@@ -43,7 +43,7 @@ public:
     MavLinkLogViewerLog(std::shared_ptr<mavlinkcom::MavLinkNode> proxy) {
         proxy_ = proxy;
     }
-    void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override {
+    void write(const mavlinkcom::MavLinkMessage& msg, uint64_t /*timestamp*/ = 0) override {
         MavLinkMessage copy;
         ::memcpy(&copy, &msg, sizeof(MavLinkMessage));
         proxy_->sendMessage(copy);
@@ -145,14 +145,14 @@ struct MavLinkDroneController::impl {
             is_controls_0_1_ = true;
             Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
-            connection_->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg){
+            connection_->subscribe([=](std::shared_ptr<MavLinkConnection> /*connection*/, const MavLinkMessage& msg){
                 processMavMessages(msg);
             });
 
             // listen to the other mavlink connection also
             auto mavcon = mav_vehicle_->getConnection();
             if (mavcon != connection_) {
-                mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
+                mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> /*connection*/, const MavLinkMessage& msg) {
                     processMavMessages(msg);
                 });
             }
@@ -216,7 +216,7 @@ struct MavLinkDroneController::impl {
                 qgc_proxy_ = nullptr;
             }
             else {
-                connection->subscribe([=](std::shared_ptr<MavLinkConnection> connection_val, const MavLinkMessage& msg){
+                connection->subscribe([=](std::shared_ptr<MavLinkConnection> /*connection_val*/, const MavLinkMessage& msg){
                     processQgcMessages(msg);
                 });
             }
@@ -797,7 +797,7 @@ struct MavLinkDroneController::impl {
 
     //administrative
 
-    bool armDisarm(bool arm, CancelableBase& cancelable_action)
+    bool armDisarm(bool arm, CancelableBase& /*cancelable_action*/)
     {
         bool rc = false;
         mav_vehicle_->armDisarm(arm).wait(10000, &rc);
@@ -836,7 +836,7 @@ struct MavLinkDroneController::impl {
         is_simulation_mode_ = is_set;
     }
 
-    bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
+    bool takeoff(float max_wait_seconds, CancelableBase& /*cancelable_action*/)
     {
         bool rc = false;
         auto vec = getPosition();
@@ -869,7 +869,7 @@ struct MavLinkDroneController::impl {
         return rc;
     }
 
-    bool land(CancelableBase& cancelable_action)
+    bool land(CancelableBase& /*cancelable_action*/)
     {
         // bugbug: really need a downward pointing distance to ground sensor to do this properly, for now
         // we assume the ground is relatively flat an we are landing roughly at the home altitude.
@@ -903,7 +903,7 @@ struct MavLinkDroneController::impl {
         return true;
     }
 
-    bool goHome(CancelableBase& cancelable_action)
+    bool goHome(CancelableBase& /*cancelable_action*/)
     {
         bool rc = false;
         if (!mav_vehicle_->returnToHome().wait(10000, &rc)) {
@@ -946,12 +946,12 @@ struct MavLinkDroneController::impl {
         throw VehicleCommandNotImplementedException("getRCData() function is not yet implemented");
     }
 
-    void setRCData(const RCData& rcData)
+    void setRCData(const RCData& /*rcData*/)
     {
         //TODO: use RC data to control MavLink drone
     }
 
-    bool validateRCData(const RCData& rc_data)
+    bool validateRCData(const RCData& /*rc_data*/)
     {
         return true;
     }

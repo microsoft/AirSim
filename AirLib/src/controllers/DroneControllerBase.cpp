@@ -28,7 +28,7 @@ float DroneControllerBase::getAutoLookahead(float velocity, float adaptive_looka
     return lookahead;
 }
 
-float DroneControllerBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel)
+float DroneControllerBase::getObsAvoidanceVelocity(float /*risk_dist*/, float max_obs_avoidance_vel)
 {
     return max_obs_avoidance_vel;
 }
@@ -603,7 +603,7 @@ void DroneControllerBase::adjustYaw(float x, float y, DrivetrainType drivetrain,
     adjustYaw(Vector3r(x, y, 0), drivetrain, yaw_mode);
 }
 
-void DroneControllerBase::moveToPathPosition(const Vector3r& dest, float velocity, DrivetrainType drivetrain, /* pass by value */ YawMode yaw_mode, float last_z)
+void DroneControllerBase::moveToPathPosition(const Vector3r& dest, float velocity, DrivetrainType drivetrain, /* pass by value */ YawMode yaw_mode, float /*last_z*/)
 {
     //validate dest
     if (dest.hasNaN())
