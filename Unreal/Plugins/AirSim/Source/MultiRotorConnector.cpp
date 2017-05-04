@@ -33,10 +33,16 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
 
     if (controller_->getRemoteControlID() >= 0)
         detectUsbRc();
+
+    rotor_count_ = vehicle_.vertexCount();
+    rotor_info_ = new RotorInfo[rotor_count_];
+    memset(rotor_info_, 0, sizeof(RotorInfo) * rotor_count_);
 }
 
 MultiRotorConnector::~MultiRotorConnector()
 {
+    delete[] rotor_info_;
+    rotor_info_ = nullptr;
     stopApiServer();
 }
 
@@ -99,13 +105,13 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
         rc_data_.switch6 = joystick_state_.buttons & 0x2000 ? 1 : 0; //top-right-right
         rc_data_.switch7 = joystick_state_.buttons & 0x4000 ? 1 : 0; //top-left-left
         rc_data_.switch8 = joystick_state_.buttons & 0x8000 ? 1 : 0; //top-right-left
-        
-        UAirBlueprintLib::LogMessage(FString("Joystick (T,R,P,Y): "), 
-            FString::SanitizeFloat(rc_data_.throttle) + ", " + FString::SanitizeFloat(rc_data_.roll) + ", " + FString::SanitizeFloat(rc_data_.pitch) + ", " + FString::SanitizeFloat(rc_data_.yaw), 
+
+        UAirBlueprintLib::LogMessage(FString("Joystick (T,R,P,Y): "),
+            FString::SanitizeFloat(rc_data_.throttle) + ", " + FString::SanitizeFloat(rc_data_.roll) + ", " + FString::SanitizeFloat(rc_data_.pitch) + ", " + FString::SanitizeFloat(rc_data_.yaw),
             LogDebugLevel::Informational);
-        UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " + 
+        UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " +
             FString::FromInt(rc_data_.switch1) + ", " + FString::FromInt(rc_data_.switch2) + ", " + FString::FromInt(rc_data_.switch3) + ", " + FString::FromInt(rc_data_.switch4)
-            + ", " + FString::FromInt(rc_data_.switch5)+ ", " + FString::FromInt(rc_data_.switch6)+ ", " + FString::FromInt(rc_data_.switch7)+ ", " + FString::FromInt(rc_data_.switch8),
+            + ", " + FString::FromInt(rc_data_.switch5) + ", " + FString::FromInt(rc_data_.switch6) + ", " + FString::FromInt(rc_data_.switch7) + ", " + FString::FromInt(rc_data_.switch8),
             LogDebugLevel::Informational);
     }
     //else don't waste time
@@ -131,12 +137,13 @@ void MultiRotorConnector::updateRenderedState()
     last_debug_pose = controller_->getDebugPose();
 
     //update rotor poses
-    for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
+    for (unsigned int i = 0; i < rotor_count_; ++i) {
         const auto& rotor_output = vehicle_.getRotorOutput(i);
-        rotor_speeds_[i] = rotor_output.speed;
-        rotor_directions_[i] = static_cast<int>(rotor_output.turning_direction);
-        rotor_thrusts_[i] = rotor_output.thrust;
-        rotor_controls_filtered_[i] = rotor_output.control_signal_filtered;
+        RotorInfo* info = &rotor_info_[i];
+        info->rotor_speed = rotor_output.speed;
+        info->rotor_direction = static_cast<int>(rotor_output.turning_direction);
+        info->rotor_thrust = rotor_output.thrust;
+        info->rotor_control_filtered = rotor_output.control_signal_filtered;
     }
 
     controller_->getStatusMessages(controller_messages_);
@@ -157,10 +164,11 @@ void MultiRotorConnector::updateRendering(float dt)
     if (!VectorMath::hasNan(last_pose.position)) {
         vehicle_pawn_->setPose(last_pose, last_debug_pose);
     }
-    
+
     //update rotor animations
-    for (unsigned int i = 0; i < vehicle_.vertexCount(); ++i) {
-        vehicle_pawn_->setRotorSpeed(i, rotor_speeds_[i] * rotor_directions_[i]);
+    for (unsigned int i = 0; i < rotor_count_; ++i) {
+        RotorInfo* info = &rotor_info_[i];
+        vehicle_pawn_->setRotorSpeed(i, info->rotor_speed * info->rotor_direction);
     }
 
     for (auto i = 0; i < controller_messages_.size(); ++i) {

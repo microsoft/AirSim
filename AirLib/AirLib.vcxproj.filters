@@ -315,9 +315,6 @@
     <ClInclude Include="include\vehicles\MultiRotorParamsFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\configs\Px4QuadX.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\common\ClockBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -325,6 +322,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\common\ClockFactory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\configs\Px4MultiRotor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

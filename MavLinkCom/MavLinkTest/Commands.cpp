@@ -1285,7 +1285,8 @@ void StatusCommand::HandleMessage(const MavLinkMessage& message)
         status.decode(message);
 
         int ls = static_cast<int>(status.landed_state);
-        if (ls < static_cast<int>(sizeof(MAV_LANDED_STATE_NAMES))) {
+        int max = static_cast<int>(sizeof(MAV_LANDED_STATE_NAMES) / sizeof(char*));
+        if (ls < max) {
             printf("    landed_state=%s\n", MAV_LANDED_STATE_NAMES[ls]);
         }
         printf("    vtol_state=%d\n", static_cast<int>(status.vtol_state));

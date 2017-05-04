@@ -7,7 +7,7 @@
 #include "vehicles/configs/RosFlightQuadX.hpp"
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
-#include "vehicles/configs/Px4QuadX.hpp"
+#include "vehicles/configs/Px4MultiRotor.hpp"
 
 
 namespace msr { namespace airlib {
@@ -24,7 +24,7 @@ public:
         std::unique_ptr<MultiRotorParams> config;
 
         if (vehicle_name == "Pixhawk") {
-            config.reset(new Px4QuadX(child));
+            config.reset(new Px4MultiRotor(child));
         } else if (vehicle_name == "RosFlight") {
             config.reset(new RosFlightQuadX(child));
         } else

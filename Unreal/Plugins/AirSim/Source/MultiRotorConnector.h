@@ -61,10 +61,14 @@ private:
     std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;
     std::unique_ptr<msr::airlib::RpcLibServer> rpclib_server_;
 
-    real_T rotor_speeds_[4];
-    int rotor_directions_[4];
-    real_T rotor_thrusts_[4];
-    real_T rotor_controls_filtered_[4];
+    struct RotorInfo {
+        real_T rotor_speed;
+        int rotor_direction;
+        real_T rotor_thrust;
+        real_T rotor_control_filtered;
+    };
+    unsigned int rotor_count_;
+    RotorInfo* rotor_info_;
 
     Pose last_pose, last_debug_pose;
 
