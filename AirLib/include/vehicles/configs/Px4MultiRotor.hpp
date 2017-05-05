@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_airlib_vehicles_Px4QuadX_hpp
-#define msr_airlib_vehicles_Px4QuadX_hpp
+#ifndef msr_airlib_vehicles_Px4MultiRotor_hpp
+#define msr_airlib_vehicles_Px4MultiRotor_hpp
 
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"

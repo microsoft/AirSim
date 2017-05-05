@@ -73,3 +73,7 @@ set this PX4 parameter:
 ````
 param set COM_OBL_ACT 1
 ````
+
+### Can I build a hexacopter with AirSim?
+
+Definitely, see [how to build a hexacopter](hexacopter.md).

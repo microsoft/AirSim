@@ -105,16 +105,16 @@ static void initializeRotorHexX(vector<RotorPose>& rotor_poses /* the result we 
 ````
 
 Now the Vector3r parameters above may need some explanation.  The first motor labelled (0) above is on the y-axis, so it's
-vector is obvious `Vector3r(0, arm_lengths[0], rotor_z)` shoing 0 on the x-axis and the arm length on the y-axis.  
+vector is obvious `Vector3r(0, arm_lengths[0], rotor_z)` showing 0 on the x-axis and the arm length on the y-axis.  
 The second motor labelled (1) is also obvious.  But what about motor (2). 
 `
 VectorMath::rotateVector(Vector3r(arm_lengths[2], 0, rotor_z), quadx_rot, true)
 `
 This has x-axis set to armlength and y-axis set to zero, which means it starts out pointing straight up in the above picture.
 Then we apply a rotation of pi/6.  But the rotation is using the left handed rotation rule
-on a NED (z is down) mode, so hold your left hand out, with thumb pointing down, bend your fingers, this is the direction of rotation,
+on a NED coordinate system where z is down, so hold your left hand out, with thumb pointing down, bend your fingers, this is the direction of rotation,
 namely, counter clockwise.  So the arm pointing up, rotates into the position shown for motor (2).  Same for the other arms
-and now our physics is correctly setup for flying hexacopter.
+and now our physics is correctly setup for flying hexacopter.  Of course you can also increase the mass, and tweak the motor thrust parameters if needed.
 
 # Rendering
 
