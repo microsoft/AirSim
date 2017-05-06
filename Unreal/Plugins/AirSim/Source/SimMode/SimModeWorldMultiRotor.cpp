@@ -30,6 +30,16 @@ public:
 
 static ASimLog GlobalASimLog;
 
+ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
+{
+    static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
+    static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
+    camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
+    static ConstructorHelpers::FClassFinder<AVehiclePawnBase> vehicle_pawn_class(TEXT("Blueprint'/AirSim/Blueprints/BP_FlyingPawn'"));
+    vehicle_pawn_class_ = vehicle_pawn_class.Succeeded() ? vehicle_pawn_class.Class : nullptr;
+}
+
 void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
@@ -46,6 +56,53 @@ void ASimModeWorldMultiRotor::BeginPlay()
             UAirBlueprintLib::LogMessage("Cannot start RpcLib Server",  ex.what(), LogDebugLevel::Failure);
         }
     }
+}
+
+void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
+{
+    APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
+    FTransform actor_transform = controller->GetActorTransform();
+    //put camera little bit above vehicle
+    FTransform camera_transform(actor_transform.GetLocation() + FVector(-300, 0, 200));
+
+    //find all BP camera directors in the environment
+    {
+        TArray<AActor*> camera_dirs;
+        UAirBlueprintLib::FindAllActor<ACameraDirector>(this, camera_dirs);
+        if (camera_dirs.Num() == 0) {
+            //create director
+            FActorSpawnParameters camera_spawn_params;
+            camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+            CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
+            spawned_actors_.Add(CameraDirector);
+
+            //create external camera required for the director
+            CameraDirector->ExternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
+            spawned_actors_.Add(CameraDirector->ExternalCamera);
+        }
+        else {
+            CameraDirector = static_cast<ACameraDirector*>(camera_dirs[0]);
+        }
+    }
+
+    {
+        //find all vehicle pawns
+        TArray<AActor*> pawns;
+        UAirBlueprintLib::FindAllActor<AVehiclePawnBase>(this, pawns);
+        if (pawns.Num() == 0) {
+            //create vehicle pawn
+            FActorSpawnParameters pawn_spawn_params;
+            pawn_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+            CameraDirector->TargetPawn = this->GetWorld()->SpawnActor<AVehiclePawnBase>(vehicle_pawn_class_, actor_transform, pawn_spawn_params);
+            spawned_actors_.Add(CameraDirector->TargetPawn);
+        }
+        else {
+            CameraDirector->TargetPawn = static_cast<AVehiclePawnBase*>(pawns[0]);
+        }
+    }
+
+    CameraDirector->TargetPawn->initializeForBeginPlay();
+    CameraDirector->initializeForBeginPlay();
 }
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
@@ -110,6 +167,16 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
         isLoggingStarted = false;
     }
 
+    for (AActor* actor : spawned_actors_) {
+        actor->Destroy();
+    }
+    if (CameraDirector != nullptr) {
+        CameraDirector->TargetPawn = nullptr;
+        CameraDirector->ExternalCamera = nullptr;
+        CameraDirector = nullptr;
+    }
+    spawned_actors_.Empty();
+
     Super::EndPlay(EndPlayReason);
 }
 
@@ -123,13 +190,17 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
     if (!checkConnection())
         return;
 
+    //find vehicles and cameras available in environment
+    //if none available then we will create one
+    setupVehiclesAndCamera();
+
     //get FPV drone
     AActor* fpv_pawn = nullptr;
     if (CameraDirector != nullptr) {
         fpv_pawn = CameraDirector->TargetPawn;
     }
 
-    //detect vehicles in the project and add them in simulation
+    //detect vehicles in the project and create connector for it
     TArray<AActor*> pawns;
     UAirBlueprintLib::FindAllActor<AFlyingPawn>(this, pawns);
     for (AActor* pawn : pawns) {

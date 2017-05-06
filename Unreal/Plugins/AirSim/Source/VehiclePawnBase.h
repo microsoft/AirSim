@@ -46,19 +46,23 @@ public: //modifiable properties
     UFUNCTION(BlueprintCallable, Category = "Debugging")
     void toggleTrace();
 
-
 public: //interface
+    AVehiclePawnBase();
+
     //overridden from pawn
     virtual void PostInitializeComponents() override;
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-    virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+    virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
+        bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
     //interface - derived class should override these as needed
-    virtual void initialize();
+    virtual void initialize(); //called at contruction time
+    virtual void initializeForBeginPlay();
     virtual void reset();
     UFUNCTION(BlueprintCallable, Category = "Camera")
     virtual APIPCamera* getFpvCamera();
+    virtual void displayCollisonEffect(FVector hit_location, const FHitResult& hit);
 
     //get/set pose
     //parameters in NED frame
@@ -79,6 +83,10 @@ public: //interface
     static Quaternionr toQuaternionr(const FQuat& q, bool convert_to_ned);
     Vector3r toNedMeters(const FVector& position) const;
     FVector  toNeuUU(const Vector3r& position) const;
+
+protected:
+    UPROPERTY(VisibleAnywhere)
+        UParticleSystem* collison_display_template;
 
 private: //methods
     bool canTeleportWhileMove()  const;

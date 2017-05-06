@@ -3,6 +3,15 @@
 #include "AirBlueprintLib.h"
 
 
+AVehiclePawnBase::AVehiclePawnBase()
+{
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> collison_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
+    if (!collison_display.Succeeded())
+        collison_display_template = collison_display.Object;
+    else
+        collison_display_template = nullptr;
+}
+
 void AVehiclePawnBase::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
@@ -37,6 +46,14 @@ void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
     UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(state_.collison_info.collison_count), LogDebugLevel::Failure);
 }
 
+void AVehiclePawnBase::displayCollisonEffect(FVector hit_location, const FHitResult& hit)
+{
+    if (collison_display_template != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
+        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), collison_display_template, hit_location);
+        particles->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
+    }
+}
+
 void AVehiclePawnBase::initialize()
 {
     //set up key variables
@@ -67,6 +84,12 @@ void AVehiclePawnBase::initialize()
 
     reset();
 }
+
+void AVehiclePawnBase::initializeForBeginPlay()
+{
+    //nothing to do in base
+}
+
 
 APIPCamera* AVehiclePawnBase::getFpvCamera()
 {

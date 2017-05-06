@@ -9,10 +9,10 @@
 UCLASS()
 class AIRSIM_API AFlyingPawn : public AVehiclePawnBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public: //interface
-	void setRotorSpeed(int rotor_index, float radsPerSec);
+    void setRotorSpeed(int rotor_index, float radsPerSec);
     std::string getVehicleName();
 
 public:
@@ -22,20 +22,19 @@ public:
     virtual void reset() override;
 
 public: //blueprint
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
-		float RotatorFactor = 1.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
+        float RotatorFactor = 1.0f;
 
-    UFUNCTION(BlueprintCallable, Category = "Init")
-        void initializeForPlay();
+    virtual void initializeForBeginPlay() override;
 
 private: //methods
-	void setupComponentReferences();
-	void setStencilIDs();
+    void setupComponentReferences();
+    void setStencilIDs();
     void setupInputBindings();
 
 private: //variables
-		 //Unreal components
-	static constexpr size_t rotor_count = 4;
-	UPROPERTY() APIPCamera* fpv_camera_;
-	UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
+         //Unreal components
+    static constexpr size_t rotor_count = 4;
+    UPROPERTY() APIPCamera* fpv_camera_;
+    UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
 };

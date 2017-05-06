@@ -22,11 +22,27 @@ void ACameraDirector::Tick( float DeltaTime )
     if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
         ExternalCamera->SetActorLocationAndRotation(camera_location_manual_, camera_rotation_manual_);
     }
+    else {
+        UAirBlueprintLib::FollowActor(ExternalCamera, TargetPawn, initial_ground_obs_offset_, ext_obs_fixed_z_);
+    }
 }
 
 ECameraDirectorMode ACameraDirector::getMode()
 {
     return mode_;
+}
+
+void ACameraDirector::initializeForBeginPlay()
+{
+    camera_start_location_ = this->GetActorLocation();
+    camera_start_rotation_ = this->GetActorRotation();
+    initial_ground_obs_offset_ = camera_start_location_ - TargetPawn->GetActorLocation();
+
+    //set initial view mode
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
+    this->getCamera()->setToPIPView();
+    ExternalCamera->setToMainView();
+    ext_obs_fixed_z_ = false;
 }
 
 void ACameraDirector::setMode(ECameraDirectorMode mode)
@@ -46,10 +62,10 @@ void ACameraDirector::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
 
-    UAirBlueprintLib::BindActionToKey("InputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::InputEventFpvView);
-    UAirBlueprintLib::BindActionToKey("InputEventFlyWithView", EKeys::RightBracket, this, &ACameraDirector::InputEventFlyWithView);
-    UAirBlueprintLib::BindActionToKey("InputEventGroundView", EKeys::Backslash, this, &ACameraDirector::InputEventGroundView);
-    UAirBlueprintLib::BindActionToKey("InputEventManualView", EKeys::Semicolon, this, &ACameraDirector::InputEventManualView);
+    UAirBlueprintLib::BindActionToKey("inputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::inputEventFpvView);
+    UAirBlueprintLib::BindActionToKey("inputEventFlyWithView", EKeys::RightBracket, this, &ACameraDirector::inputEventFlyWithView);
+    UAirBlueprintLib::BindActionToKey("inputEventGroundView", EKeys::Backslash, this, &ACameraDirector::inputEventGroundView);
+    UAirBlueprintLib::BindActionToKey("inputEventManualView", EKeys::Semicolon, this, &ACameraDirector::inputEventManualView);
 
     left_binding_ = & UAirBlueprintLib::BindAxisToKey("inputManualArrowLeft", EKeys::Left, this, &ACameraDirector::inputManualLeft);
     right_binding_ = & UAirBlueprintLib::BindAxisToKey("inputManualArrowRight", EKeys::Right, this, &ACameraDirector::inputManualRight);
@@ -69,6 +85,35 @@ void ACameraDirector::enableManualBindings(bool enable)
     forward_binding_->bConsumeInput = backward_binding_->bConsumeInput = left_yaw_binding_->bConsumeInput = up_pitch_binding_->bConsumeInput = enable;
     right_yaw_binding_->bConsumeInput = down_pitch_binding_->bConsumeInput = enable;
 }
+
+void ACameraDirector::inputEventFpvView()
+{
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV);
+    ExternalCamera->setToPIPView();
+    getCamera()->setToMainView();
+}
+
+void ACameraDirector::inputEventGroundView()
+{
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER);
+    ExternalCamera->setToMainView();
+    getCamera()->setToPIPView();
+    ext_obs_fixed_z_ = true;
+}
+
+void ACameraDirector::inputEventManualView()
+{
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL);
+}
+
+void ACameraDirector::inputEventFlyWithView()
+{
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
+    ExternalCamera->setToMainView();
+    getCamera()->setToPIPView();
+    ext_obs_fixed_z_ = false;
+}
+
 
 void ACameraDirector::inputManualLeft(float val)
 {

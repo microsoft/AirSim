@@ -17,9 +17,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
     bool EnableReport = false;
 
-    UFUNCTION(BlueprintCallable, Category = "Debugging")
-    FString getReportBP();
-
     UFUNCTION(BlueprintCallable, Category = "Recording")
     bool toggleRecording();
 
@@ -37,7 +34,7 @@ public:
     virtual bool isRecording();
     FString getRecordingPath();
 
-	std::ofstream record_file;
+    std::ofstream record_file;
     std::string record_filename = "airsim_rec";    
 protected:
     virtual void setupInputBindings();

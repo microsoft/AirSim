@@ -22,7 +22,7 @@ void ASimModeWorldBase::BeginPlay()
     HP Z840 desktop high-end config seems to be able to go up to 500Hz.
     To increase freq with limited CPU power, switch Barometer to constant ref mode.
     */
-    world_.startAsyncUpdator(1/300.0);
+    world_.startAsyncUpdator(3000000LL);
 }
 
 void ASimModeWorldBase::createWorld()

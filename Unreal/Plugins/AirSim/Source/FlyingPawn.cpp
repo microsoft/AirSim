@@ -10,9 +10,10 @@ void AFlyingPawn::initialize()
     Super::initialize();
 }
 
-//this gets called from Blueprint
-void AFlyingPawn::initializeForPlay()
+void AFlyingPawn::initializeForBeginPlay()
 {
+    Super::initializeForBeginPlay();
+
     //get references of components so we can use later
     setupComponentReferences();
 

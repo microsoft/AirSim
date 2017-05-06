@@ -90,9 +90,9 @@ public:
     }
 
     //async updater thread
-    void startAsyncUpdator(double period)
+    void startAsyncUpdator(long long period)
     {
-        executor_.initialize(std::bind(&World::worldUpdatorAsync, this), period);
+        executor_.initialize(std::bind(&World::worldUpdatorAsync, this, std::placeholders::_1), period);
         executor_.start();
     }
     void stopAsyncUpdator()
@@ -109,7 +109,7 @@ public:
     }
 
 private:
-    bool worldUpdatorAsync()
+    bool worldUpdatorAsync(long long dt_nanos)
     {
         try {
             update();

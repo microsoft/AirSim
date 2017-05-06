@@ -86,13 +86,9 @@ void ASimModeBase::reset()
 
 std::string ASimModeBase::getReport()
 {
+    static const std::string empty_string = std::string();
     //Should be overridden by derived classes
-    return std::string();
-}
-
-FString ASimModeBase::getReportBP()
-{
-    return FString(getReport().c_str());
+    return empty_string;
 }
 
 void ASimModeBase::setupInputBindings()

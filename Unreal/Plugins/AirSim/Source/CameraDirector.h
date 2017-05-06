@@ -27,14 +27,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
     APIPCamera* ExternalCamera;
 
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventFpvView"))
-    void InputEventFpvView();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventGroundView"))
-    void InputEventGroundView();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventManualView"))
-    void InputEventManualView();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventFlyWithView"))
-    void InputEventFlyWithView();
+    void inputEventFpvView();
+    void inputEventGroundView();
+    void inputEventManualView();
+    void inputEventFlyWithView();
 
     UFUNCTION(BlueprintCallable, Category = "PIP")
     bool togglePIPScene();
@@ -57,6 +53,8 @@ public:
     ECameraDirectorMode getMode();
     UFUNCTION(BlueprintCallable, Category = "Modes")
     void setMode(ECameraDirectorMode mode);
+
+    void initializeForBeginPlay();
 
 private:
     void setupInputBindings();	
@@ -82,4 +80,9 @@ private:
 
     FVector camera_location_manual_;
     FRotator camera_rotation_manual_;
+
+    FVector camera_start_location_;
+    FVector initial_ground_obs_offset_;
+    FRotator camera_start_rotation_;
+    bool ext_obs_fixed_z_;
 };

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "GameFramework/HUD.h"
+#include "SimHUDWidget.h"
+#include "SimMode/SimModeBase.h"
 #include "SimHUD.generated.h"
 
 
@@ -16,23 +18,30 @@ class AIRSIM_API ASimHUD : public AHUD
     GENERATED_BODY()
 
 public:
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventToggleReport"))
-    void InputEventToggleReport();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventToggleHelp"))
-    void InputEventToggleHelp();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventToggleTrace"))
-    void InputEventToggleTrace();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventTogglePIPScene"))
-    void InputEventTogglePIPScene();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventTogglePIPDepth"))
-    void InputEventTogglePIPDepth();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventTogglePIPSeg"))
-    void InputEventTogglePIPSeg();
-    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InputEventToggleAll"))
-    void InputEventToggleAll();
+    void inputEventToggleReport();
+    void inputEventToggleHelp();
+    void inputEventToggleTrace();
+    void inputEventTogglePIPScene();
+    void inputEventTogglePIPDepth();
+    void inputEventTogglePIPSeg();
+    void inputEventToggleAll();
 
+    ASimHUD();
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void Tick( float DeltaSeconds ) override;
 
 protected:
     virtual void setupInputBindings();
+    std::string reportRefreshHandler();
+    void toggleRecordHandler();
+
+private:
+    UClass* widget_class_;
+
+    UPROPERTY()
+    USimHUDWidget* widget_;
+    UPROPERTY()
+    ASimModeBase* simmode_;
+
 };
