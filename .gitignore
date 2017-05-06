@@ -48,7 +48,7 @@ obj/
 *.opensdf
 *.sdf
 *.suo
-*.suo
+*_BuiltData.uasset
 
 # Visual Studio 2015 cache/options directory
 .vs/
