@@ -34,7 +34,8 @@ void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
 
-    Log::setLog(&GlobalASimLog);
+    // bugbug: this is corrupting memory after a while, seems Unreal doesn't like us continually writing to the BlueprintLog.
+    //Log::setLog(&GlobalASimLog);
 
     if (fpv_vehicle_connector_ != nullptr) {
         //create its control server
