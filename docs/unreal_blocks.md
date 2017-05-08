@@ -1,5 +1,7 @@
 # Setting up Blocks Unreal environment for AirSim
 
+Blocks environment comes with the repo and is designed to be lightweight in size. That means its very basic but fast.
+
 Here are quick steps to get our build-in Blocks environment up and running:
 
 1. Make sure you have [built the AirSim](build.md), have [setup your Pixhawk](prereq.md) and connected to USB port.
@@ -10,4 +12,4 @@ Here are quick steps to get our build-in Blocks environment up and running:
 6. Make sure `Blocks` project is the startup project and press F5 to run.
 7. You might get some errors/warnings like "_BuitData" file is missing which you can ignore. Press the Play button in Unreal Editor and you will see something like below.
 
-[![Blocks Demo Video](docs/images/blocks_video.png)](https://www.youtube.com/watch?v=-r_QGaxMT4A)
+[![Blocks Demo Video](images/blocks_video.png)](https://www.youtube.com/watch?v=-r_QGaxMT4A)
