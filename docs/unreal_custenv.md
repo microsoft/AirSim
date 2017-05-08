@@ -166,7 +166,7 @@ You are all ready to go now!
 1. Right click on the Unreal project .uproject file, then Generate Visual Studio Project files. 
 2. Double click on .sln file to open the solution. 
 3. Hit F5.
-4. After Unreal Editor comes up, go to the World settings and select Game Mode = SimGameMode.
+4. After Unreal Editor comes up, go to the World settings and select Game Mode = AirSimGameMode.
 5. Make sure your environment has a Player Start component or add one. This is where the quadrotor will be placed.
 6. Hit Play button.
 
