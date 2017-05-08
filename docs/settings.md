@@ -3,17 +3,12 @@
 The AirSim Unreal plugin can use a settings.json file in the AirSim folder in your Documents folder if it exists.
 Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
 
-```
+````
 {
   "LocalHostIp": "127.0.0.1",
-  "RosFlight": {
-    "RemoteControlID": 0
-  },
   "Pixhawk": {
     "LogViewerHostIp": "127.0.0.1",
     "LogViewerPort": 14388,
-    "LogViewerSendPort": 14389,
-    "Model": "Generic",
     "OffboardCompID": 1,
     "OffboardSysID": 134,
     "QgcHostIp": "127.0.0.1",
@@ -29,12 +24,9 @@ Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
     "UseSerial": true,
     "VehicleCompID": 1,
     "VehicleSysID": 135
-  },
-  "RpcEnabled": true
+  }
 }
-
-
-```
+````
 
 These settings define the Mavlink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for an optional external renderer (ExtRendererSysID, ExtRendererCompID)
 and the node that allows remote control of the drone from another app this is called the Air Control node (AirControlSysID, AirControlCompID).

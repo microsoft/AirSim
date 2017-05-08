@@ -1,5 +1,7 @@
 # Upgrading Unreal Engine Version
 
+If you are using old version of AirSim with Unreal Engine 4.14 or earlier, please use below steps to upgrade to 4.15.
+
 1. Windows + S and type Epic Games Launcher.
 2. Switch to Library tab on the right.
 3. Click on Add Version in Engine Versions section and select 4.15.
