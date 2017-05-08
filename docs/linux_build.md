@@ -64,7 +64,8 @@ sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --
 Next you will need the latest version of libc++ library, which you can get by running this:
 
 ````
-./cmake/getlibcxx.sh
+cd ~/AirSim/cmake
+./getlibcxx.sh
 ````
 
 Now you can run the build.sh at the root level of the AirSim repo:
