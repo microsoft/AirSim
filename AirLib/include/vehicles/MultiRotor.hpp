@@ -165,7 +165,7 @@ private: //methods
         params.getSensors().reportState(reporter);
     }
 
-    void updateSensors(MultiRotorParams& params, const Kinematics::State& state, const Environment& environment)
+    void updateSensors(MultiRotorParams& params, const Kinematics::State& /*state*/, const Environment& /*environment*/)
     {
         params.getSensors().update();
     }

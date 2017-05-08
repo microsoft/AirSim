@@ -16,7 +16,7 @@ public:
     virtual void update() = 0;
     virtual ~UpdatableObject() = default;
 
-    virtual void reportState(StateReporter& reporter)
+    virtual void reportState(StateReporter& /*reporter*/)
     {
         //default implementation doesn't do anything
     }

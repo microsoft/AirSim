@@ -28,7 +28,7 @@ public:
 	virtual real_T getVertexControlSignal(unsigned int rotor_index) = 0;
     virtual size_t getVertexCount() = 0;
     
-    virtual void getStatusMessages(std::vector<std::string>& messages)
+    virtual void getStatusMessages(std::vector<std::string>& /*messages*/)
     {
         //default implementation
     }
@@ -44,7 +44,7 @@ public:
         //clean up any resources
     }
 
-    virtual void reportTelemetry(float renderTime)
+    virtual void reportTelemetry(float /*renderTime*/)
     {
         //no default action
     }

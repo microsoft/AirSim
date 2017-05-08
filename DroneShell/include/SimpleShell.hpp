@@ -128,7 +128,7 @@ public:
         virtual bool execute(const ShellCommandParameters&) { return false; };
     private:
         ShellCommand(){}
-        ShellCommand(ShellCommand& other){
+        ShellCommand(ShellCommand& /*other*/){
         }
     };
 
@@ -202,7 +202,7 @@ public: //default commands
         {
         }
 
-        bool execute(const ShellCommandParameters& params) 
+        bool execute(const ShellCommandParameters& /*params*/)
         {
             return false;
         }
@@ -216,7 +216,7 @@ public: //default commands
         {
         }
 
-        bool execute(const ShellCommandParameters& params) 
+        bool execute(const ShellCommandParameters& /*params*/) 
         {
             return true;
         }
