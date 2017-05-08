@@ -61,11 +61,15 @@ Now make clang-3.9 your default version of clang with this command:
 ````
 sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9
 ````
-Next you will need the latest version of libc++ library, which you can get by running this:
+Next you will need the latest version of libc++ library from llvm. You can get that by running the following script which
+you will find in the `cmake` folder that is included in your AirSim repo:
 
 ````
-./cmake/getlibcxx.sh
+getlibcxx.sh
 ````
+This will clone the llvm-source and
+build it in an llvm-build folder, then it will install the built libraries.  This ensures you have the right version
+of llvm for your platform.
 
 Now you can run the build.sh at the root level of the AirSim repo:
 
