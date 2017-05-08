@@ -44,6 +44,7 @@ public:
         proxy_ = proxy;
     }
     void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override {
+        unused(timestamp);
         MavLinkMessage copy;
         ::memcpy(&copy, &msg, sizeof(MavLinkMessage));
         proxy_->sendMessage(copy);
@@ -146,6 +147,7 @@ struct MavLinkDroneController::impl {
             Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
             connection_->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg){
+                unused(connection);
                 processMavMessages(msg);
             });
 
@@ -153,6 +155,7 @@ struct MavLinkDroneController::impl {
             auto mavcon = mav_vehicle_->getConnection();
             if (mavcon != connection_) {
                 mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
+                    unused(connection);
                     processMavMessages(msg);
                 });
             }
@@ -217,6 +220,7 @@ struct MavLinkDroneController::impl {
             }
             else {
                 connection->subscribe([=](std::shared_ptr<MavLinkConnection> connection_val, const MavLinkMessage& msg){
+                    unused(connection_val);
                     processQgcMessages(msg);
                 });
             }
@@ -799,6 +803,8 @@ struct MavLinkDroneController::impl {
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action)
     {
+        unused(arm);
+        unused(cancelable_action);
         bool rc = false;
         mav_vehicle_->armDisarm(arm).wait(10000, &rc);
         return rc;
@@ -838,6 +844,8 @@ struct MavLinkDroneController::impl {
 
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
     {
+        unused(cancelable_action);
+        
         bool rc = false;
         auto vec = getPosition();
         float z = vec.z() + getTakeoffZ();
@@ -871,6 +879,7 @@ struct MavLinkDroneController::impl {
 
     bool land(CancelableBase& cancelable_action)
     {
+        unused(cancelable_action);
         // bugbug: really need a downward pointing distance to ground sensor to do this properly, for now
         // we assume the ground is relatively flat an we are landing roughly at the home altitude.
         updateState();
@@ -905,6 +914,7 @@ struct MavLinkDroneController::impl {
 
     bool goHome(CancelableBase& cancelable_action)
     {
+        unused(cancelable_action);
         bool rc = false;
         if (!mav_vehicle_->returnToHome().wait(10000, &rc)) {
             throw VehicleMoveException("goHome - timeout waiting for response from drone");
@@ -948,11 +958,13 @@ struct MavLinkDroneController::impl {
 
     void setRCData(const RCData& rcData)
     {
+        unused(rcData);
         //TODO: use RC data to control MavLink drone
     }
 
     bool validateRCData(const RCData& rc_data)
     {
+        unused(rc_data);
         return true;
     }
 

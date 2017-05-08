@@ -86,6 +86,11 @@ public:
 
     virtual void pwmInit(bool useCPPM, bool usePwmFilter, bool fastPWM, uint32_t motorPwmRate, uint16_t idlePulseUsec) override 
     {
+        unused(useCPPM);
+        unused(usePwmFilter);
+        unused(fastPWM);
+        unused(motorPwmRate);
+        unused(idlePulseUsec);
         for (uint i = 0; i < OutputMotorCount; ++i)
             motors_pwm_[i] = 1000;
         for (uint i = 0; i < InputChannelCount; ++i)
@@ -109,11 +114,14 @@ public:
     virtual void set_led(uint8_t index, bool is_on) override 
     {
         //ignored for now
+        unused(index);
+        unused(is_on);
     }
 
     virtual void toggle_led(uint8_t index) override 
     {
         //ignored for now
+        unused(index);
     }
 
     virtual void init_params() override 
@@ -128,11 +136,13 @@ public:
 
     virtual bool write_params(bool blink_led) override 
     {
+        unused(blink_led);
         return false;
     }
 
     virtual void init_imu(uint16_t& acc1G, float& gyroScale, int boardVersion) override 
     {
+        unused(boardVersion);
         //same as mpu6050_init
         acc1G = kAccelAdcBits;
         gyroScale = kGyroScale;
@@ -173,6 +183,9 @@ public:
 
     virtual void read_diff_pressure(float& differential_pressure, float& temp, float& velocity) override 
     {
+        unused(differential_pressure);
+        unused(temp);
+        unused(velocity);
         throw std::runtime_error("Diff pressure sensor is not available");
     }
 
@@ -202,6 +215,7 @@ public:
 
     virtual void system_reset(bool toBootloader) override 
     {
+        unused(toBootloader);
         //no internal state to reset
     }
 

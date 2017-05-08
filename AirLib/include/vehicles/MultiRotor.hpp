@@ -167,6 +167,8 @@ private: //methods
 
     void updateSensors(MultiRotorParams& params, const Kinematics::State& state, const Environment& environment)
     {
+        unused(state);
+        unused(environment);
         params.getSensors().update();
     }
 
