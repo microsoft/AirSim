@@ -316,6 +316,80 @@ public:
 	}
 };
 
+class MoveOnPathCommand : public DroneCommand {
+public:
+
+    MoveOnPathCommand() : DroneCommand("MoveOnPath", "Move along the given series of x,y,z coordinates with the specified velocity")
+    {
+        this->addSwitch({ "-path", "", "a series of x,y,z cordinates separated by commas, e.g. 0,0,-10,100,0,-10,100,100,-10,0,100,-10,0,0,-10 will fly a square box pattern" });
+        this->addSwitch({ "-velocity", "2.5", "the velocity in meters per second (default 2.5)" });
+        addYawModeSwitches();
+        addDriveTrainSwitch();
+        addLookaheadSwitches();
+        addRelativeSwitch();
+    }
+
+    bool execute(const DroneCommandParameters& params)
+    {
+        CommandContext* context = params.context;
+        std::string points = getSwitch("-path").value;
+
+        vector<Vector3r> path;
+        size_t start = 0;
+        int count = 0;
+        float x = 0, y = 0, z = 0;
+        for (size_t i = 0, n = points.size(); i < n; i++) {
+            char c = points[i];
+            if (c == ',' || i + 1 == n) {
+                if (i > start) {
+                    if (i + 1 == n) i++;
+                    std::string number = points.substr(start, i - start);
+                    real_T v = static_cast<real_T>(atof(number.c_str()));
+                    switch (count++) {
+                    case 0:
+                        x = v;
+                        break;
+                    case 1:
+                        y = v;
+                        break;
+                    case 2:
+                        z = v;
+                        count = 0;
+                        path.push_back(Vector3r(x,y,z));
+                        break;
+                    }
+                    start = i + 1;
+                }
+            }
+        }
+        if (path.size() == 0) {
+            std::cout << "incomplete path, please provide at least 3 numbers defining a 3d point" << endl;
+            return false;
+        }
+
+        auto pos = context->client.getPosition();
+        if (getSwitch("-r").toInt() == 1) {
+            for (size_t i = 0, n = path.size(); i < n; i++) {
+                Vector3r v = path[i];
+                path[i] = Vector3r(v.x() + pos.x(), v.y() + pos.y(), v.z() + pos.z());
+            }
+        }
+
+        float velocity = getSwitch("-velocity").toFloat();
+        float lookahead = getSwitch("-lookahead").toFloat();
+        float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
+        auto drivetrain = getDriveTrain();
+        auto yawMode = getYawMode();
+
+        context->tasker.execute([=]() {
+            context->client.moveOnPath(path, velocity,
+                drivetrain, yawMode, lookahead, adaptive_lookahead);
+        });
+
+        return false;
+    }
+};
+
 class MoveToPositionCommand : public DroneCommand {
 public:
     MoveToPositionCommand() : DroneCommand("MoveToPosition", "Move to x,y,z with specified velocity")
@@ -1209,9 +1283,9 @@ int main(int argc, const char *argv[]) {
     )");
 
     // make sure we can talk to the DroneServer
-    std::cout << "Contacting DroneServer..." << std::flush;
-    command_context.client.ping();
-    std::cout << "DroneServer is responding." << std::endl;
+    //std::cout << "Contacting DroneServer..." << std::flush;
+    //command_context.client.ping();
+    //std::cout << "DroneServer is responding." << std::endl;
 
 	std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
 	const TTimeDelta pause_time = 1;
@@ -1254,6 +1328,7 @@ int main(int argc, const char *argv[]) {
     MoveByAngleCommand moveByAngle;
     MoveByVelocityCommand moveByVelocity;
     MoveByVelocityZCommand moveByVelocityZ;
+    MoveOnPathCommand moveOnPath;
     SetSafetyCommand setSafety;
     BackForthByAngleCommand backForthByAngle;
     BackForthByPositionCommand backForthByPosition;
@@ -1285,6 +1360,7 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(moveByAngle);
     shell.addCommand(moveByVelocity);
     shell.addCommand(moveByVelocityZ);
+    shell.addCommand(moveOnPath);
     shell.addCommand(setSafety);
     shell.addCommand(backForthByAngle);
     shell.addCommand(backForthByPosition);
