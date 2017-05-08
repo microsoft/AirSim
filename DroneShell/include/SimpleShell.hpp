@@ -129,6 +129,7 @@ public:
     private:
         ShellCommand(){}
         ShellCommand(ShellCommand& other){
+            unused(other);
         }
     };
 
@@ -204,6 +205,7 @@ public: //default commands
 
         bool execute(const ShellCommandParameters& params) 
         {
+            unused(params);
             return false;
         }
     };
@@ -218,6 +220,7 @@ public: //default commands
 
         bool execute(const ShellCommandParameters& params) 
         {
+            unused(params);
             return true;
         }
     };

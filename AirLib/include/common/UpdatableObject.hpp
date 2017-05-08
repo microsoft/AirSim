@@ -18,6 +18,7 @@ public:
 
     virtual void reportState(StateReporter& reporter)
     {
+        unused(reporter);
         //default implementation doesn't do anything
     }
 

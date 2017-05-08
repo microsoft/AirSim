@@ -79,6 +79,10 @@ static int _vscprintf(const char * format, va_list pargs)
 }
 #endif
 
+// Call this on a function parameter to suppress the unused paramter warning
+template <class T> inline 
+void unused(T const & result) { static_cast<void>(result); }
+
 namespace common_utils {
 
 class Utils {
