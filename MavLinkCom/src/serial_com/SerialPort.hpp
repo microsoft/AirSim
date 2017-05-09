@@ -7,6 +7,7 @@
 #include <string>
 #include <memory>
 #include "Port.h"
+#include "Utils.hpp"
 
 enum Parity {
 	Parity_None = (0x0100),
@@ -53,6 +54,7 @@ public:
 	virtual bool isClosed();
 
     virtual int getRssi(const char* ifaceName) {
+        unused(ifaceName);
         return 0; // not supported on serial port.
     }
 private:

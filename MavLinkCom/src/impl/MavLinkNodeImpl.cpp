@@ -66,6 +66,8 @@ void MavLinkNodeImpl::sendHeartbeat()
 // this is called for all messages received on the connection.
 void MavLinkNodeImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg)
 {
+    unused(connection);
+    unused(msg);
 	// this is for the subclasses to play with.  We put nothing here so we are not dependent on the 
 	// subclasses remembering to call this base implementation.
 }
@@ -93,6 +95,7 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
 {
 	if (has_cap_) {
 		AsyncResult<MavLinkAutopilotVersion> nowait([=](int state) {
+            unused(state);
         });
 		nowait.setResult(cap_);
 		return nowait;
@@ -105,6 +108,7 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
 	});
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
+        unused(connection);
 		if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION))
 		{
 			cap_.decode(m);
@@ -136,6 +140,7 @@ AsyncResult<MavLinkHeartbeat>  MavLinkNodeImpl::waitForHeartbeat()
 	});
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
+        unused(connection);
 		if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HEARTBEAT))
 		{
 			MavLinkHeartbeat heartbeat;
@@ -272,6 +277,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 
 	auto con = ensureConnection();
 	int subscription = con->subscribe([&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
+        unused(connection);
 		if (message.msgid == MavLinkParamValue::kMessageId)
 		{
 			MavLinkParamValue param;
@@ -397,6 +403,7 @@ AsyncResult<MavLinkParameter> MavLinkNodeImpl::getParameter(const std::string& n
 	cmd.target_system = getTargetSystemId();
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
+        unused(connection);
 		if (message.msgid == MavLinkParamValue::kMessageId)
 		{
 			MavLinkParamValue param;
@@ -433,6 +440,7 @@ AsyncResult<MavLinkParameter> MavLinkNodeImpl::getParameterByIndex(int16_t index
 	cmd.target_system = getTargetSystemId();
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
+        unused(connection);
 		if (message.msgid == MavLinkParamValue::kMessageId)
 		{
 			MavLinkParamValue param;
@@ -492,6 +500,7 @@ AsyncResult<bool> MavLinkNodeImpl::setParameter(MavLinkParameter  p)
 
 	// confirmation of the PARAM_SET is to receive the updated PARAM_VALUE.
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
+        unused(connection);
 		if (message.msgid == MavLinkParamValue::kMessageId)
 		{
 			MavLinkParamValue param;
@@ -556,6 +565,7 @@ AsyncResult<bool> MavLinkNodeImpl::sendCommandAndWaitForAck(MavLinkCommand& comm
 	uint16_t cmd = command.command;
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage&  message) {
+        unused(connection);
 		if (message.msgid == MavLinkCommandAck::kMessageId)
 		{
 			MavLinkCommandAck ack;

@@ -8,7 +8,7 @@
 #include <Wbemidl.h>
 #include <string>
 #include "Windows.h"
-
+#include "Utils.hpp"
 #pragma comment(lib, "wbemuuid.lib")
 
 class SerialPort::serialport_impl
@@ -330,6 +330,7 @@ public:
 
 	int setAttributes(int baudRate, Parity parity, int dataBits, StopBits stopBits, Handshake handshake, int readTimeout, int writeTimeout)
 	{
+        unused(writeTimeout);
 		struct termios tty;
 		::memset(&tty, 0, sizeof tty);
 		if (tcgetattr(fd, &tty) != 0)

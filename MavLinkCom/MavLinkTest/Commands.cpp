@@ -55,7 +55,8 @@ void Command::Execute(std::shared_ptr<MavLinkVehicle> com)
     
     if (subscription == 0)
     {
-        subscription = com->getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
+        subscription = com->getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
+            unused(connection);
             try {
                 HandleMessage(msg);
             }
@@ -468,6 +469,7 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
 
 void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
+    unused(com);
 //TODO: make below future proof (i.e. usable by C++17 compiler) - also change same in main.cpp
 #if defined(__cpp_lib_experimental_filesystem)
     using namespace std::experimental::filesystem::v1;
@@ -1368,6 +1370,7 @@ public:
 
 void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
+    unused(com);
     if (logViewer.get() == nullptr)
     {
         printf("sendimage needs a logviewer (use -log on the command line)\n");

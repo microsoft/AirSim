@@ -127,6 +127,7 @@ AsyncResult<MavLinkHomePosition> MavLinkVehicleImpl::waitForHomePosition()
 	this->setMessageInterval(static_cast<int>(MavLinkMessageIds::MAVLINK_MSG_ID_HOME_POSITION), 1);
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
+        unused(connection);
         if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HOME_POSITION)) {
 			MavLinkHomePosition pos;
 			pos.decode(m);
@@ -147,6 +148,7 @@ AsyncResult<bool> MavLinkVehicleImpl::allowFlightControlOverUsb()
 
 void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg)
 {
+    unused(connection);
     //status messages should usually be only sent by actual PX4. However if someone else is sending it to, we should listen it.
     //in future it would be good to have ability to add system IDs we are interested in
 	//if (msg.sysid != getTargetSystemId())
@@ -483,6 +485,7 @@ AsyncResult<bool> MavLinkVehicleImpl::waitForAltitude(float z, float dz, float d
 	});
 
 	int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
+        unused(connection);
 		if (m.msgid == static_cast<uint8_t>(MavLinkLocalPositionNed::kMessageId)) {
 			MavLinkLocalPositionNed pos;
 			pos.decode(m);

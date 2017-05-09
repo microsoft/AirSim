@@ -60,6 +60,10 @@ using std::experimental::optional;
 */
 
 
+// Call this on a function parameter to suppress the unused paramter warning
+template <class T> inline
+void unused(T const & result) { static_cast<void>(result); }
+
 namespace mavlink_utils {
 
 class Utils {
