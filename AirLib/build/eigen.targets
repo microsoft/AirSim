@@ -38,6 +38,7 @@
       <Using Namespace="System.IO.Compression" />
       <Code Type="Fragment" Language="cs">
         <![CDATA[
+        Directory.CreateDirectory(TargetDirectory);
         var client = new System.Net.Http.HttpClient();
         Log.LogMessage(MessageImportance.High, "Downloading Eigen from " + EigenSourceUrl);
         var stream = client.GetStreamAsync(new System.Uri(EigenSourceUrl)).Result;

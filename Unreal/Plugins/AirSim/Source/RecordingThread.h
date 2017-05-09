@@ -23,7 +23,6 @@ class FRecordingThread : public FRunnable
     TArray<FColor> imageColor;
     float width = 1280;
     float height = 720;
-    bool bReadPixelsStarted = false;
     FRenderCommandFence ReadPixelFence;
     FString imagePath;
 
@@ -37,12 +36,14 @@ private:
     virtual bool Init();
     virtual uint32 Run();
     virtual void Stop();
+    void SaveImage();
 
     void ReadPixelsNonBlocking(TArray<FColor>& bmp);
     void EnsureCompletion();
 
     unsigned int imagesSaved = 0;
     FGraphEventRef RenderStatus;
+    FGraphEventRef CompletionStatus;
 
     msr::airlib::ClockBase* clock_ = msr::airlib::ClockFactory::get();
 };

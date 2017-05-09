@@ -1,6 +1,7 @@
 
 #include <AirSim.h>
 #include "RecordingThread.h"
+#include "TaskGraphInterfaces.h"
 
 FRecordingThread* FRecordingThread::Runnable = NULL;
 
@@ -81,53 +82,70 @@ uint32 FRecordingThread::Run()
 {
     while (StopTaskCounter.GetValue() == 0)
     {
-        if (!bReadPixelsStarted)
+        ReadPixelsNonBlocking(imageColor);
+
+        // Declare task graph 'RenderStatus' in order to check on the status of the queued up render command
+        DECLARE_CYCLE_STAT(TEXT("FNullGraphTask.CheckRenderStatus"), STAT_FNullGraphTask_CheckRenderStatus, STATGROUP_TaskGraphTasks);
+        RenderStatus = TGraphTask<FNullGraphTask>::CreateTask(NULL).ConstructAndDispatchWhenReady(GET_STATID(STAT_FNullGraphTask_CheckRenderStatus), ENamedThreads::RenderThread);
+
+        // Now queue a dependent task to run when the rendering operation is complete.
+        CompletionStatus = FSimpleDelegateGraphTask::CreateAndDispatchWhenReady(
+            FSimpleDelegateGraphTask::FDelegate::CreateLambda([=]()
         {
-            ReadPixelsNonBlocking(imageColor);
-            bReadPixelsStarted = true;
-
-            // Declare task graph 'RenderStatus' in order to check on the status of the queued up render command
-
-            DECLARE_CYCLE_STAT(TEXT("FNullGraphTask.CheckRenderStatus"), STAT_FNullGraphTask_CheckRenderStatus, STATGROUP_TaskGraphTasks);
-            RenderStatus = TGraphTask<FNullGraphTask>::CreateTask(NULL).ConstructAndDispatchWhenReady(GET_STATID(STAT_FNullGraphTask_CheckRenderStatus), ENamedThreads::RenderThread);
-        }				
-
-        if (imageColor.Num() > 0 && bReadPixelsStarted && !RenderStatus.GetReference() || RenderStatus->IsComplete()) {
-            bReadPixelsStarted = false;
-            RenderStatus = NULL;
-
-            TArray<uint8> compressedPng;
-            FIntPoint dest(width, height);
-            FImageUtils::CompressImageArray(dest.X, dest.Y, imageColor, compressedPng);
-            FString filePath = imagePath + FString::FromInt(imagesSaved) + ".png";
-            bool imageSavedOk = FFileHelper::SaveArrayToFile(compressedPng, *filePath);
-
-            // If render command is complete, save image along with position and orientation
-
-            if (!imageSavedOk)
-                UAirBlueprintLib::LogMessage(TEXT("File save failed to:"), filePath, LogDebugLevel::Failure);
-            else {
-                auto physics_body = static_cast<msr::airlib::PhysicsBody*>(GameThread->fpv_vehicle_connector_->getPhysicsBody());
-                auto kinematics = physics_body->getKinematics();
-
-                uint64_t timestamp_millis = static_cast<uint64_t>(clock_->nowNanos() / 1.0E6);
-
-                GameThread->record_file << timestamp_millis << "\t";    
-                GameThread->record_file << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
-                GameThread->record_file << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
-                GameThread->record_file << "\n";
-
-                UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
-                imagesSaved++;
+            if (StopTaskCounter.GetValue() == 0) {
+                FRecordingThread::SaveImage();
             }
-        }		
+        }),
+            TStatId(),
+            RenderStatus
+            );
+
+        // wait for both tasks to complete.
+        FTaskGraphInterface::Get().WaitUntilTaskCompletes(CompletionStatus);
     }
+
     return 0;
+}
+
+void FRecordingThread::SaveImage()
+{
+    bool complete = (RenderStatus.GetReference() && RenderStatus->IsComplete());
+
+    if (imageColor.Num() > 0 && complete) {
+        RenderStatus = NULL;
+
+        TArray<uint8> compressedPng;
+        FIntPoint dest(width, height);
+        FImageUtils::CompressImageArray(dest.X, dest.Y, imageColor, compressedPng);
+        FString filePath = imagePath + FString::FromInt(imagesSaved) + ".png";
+        bool imageSavedOk = FFileHelper::SaveArrayToFile(compressedPng, *filePath);
+
+        // If render command is complete, save image along with position and orientation
+
+        if (!imageSavedOk)
+            UAirBlueprintLib::LogMessage(TEXT("FAILED to save screenshot to:"), filePath, LogDebugLevel::Failure);
+        else {
+            auto physics_body = static_cast<msr::airlib::PhysicsBody*>(GameThread->fpv_vehicle_connector_->getPhysicsBody());
+            auto kinematics = physics_body->getKinematics();
+
+            uint64_t timestamp_millis = static_cast<uint64_t>(clock_->nowNanos() / 1.0E6);
+
+            GameThread->record_file << timestamp_millis << "\t";
+            GameThread->record_file << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
+            GameThread->record_file << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
+            GameThread->record_file << "\n";
+
+            UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
+            imagesSaved++;
+        }
+    }
 }
 
 void FRecordingThread::Stop()
 {
     StopTaskCounter.Increment();
+    CompletionStatus = NULL;
+    RenderStatus = NULL;
 }
 
 FRecordingThread* FRecordingThread::ThreadInit(FString path, ASimModeWorldMultiRotor* AirSim)
