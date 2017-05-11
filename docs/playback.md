@@ -47,7 +47,7 @@ wait a long time before disarming (COM_DISARM_LAND) and to turn off the safety s
 (`don't` do that on a real drone).
 
 ````
-param MPC_XY_CRUISE 2d
+param MPC_XY_CRUISE 2
 param MPC_XY_VEL_MAX 2
 param MPC_TKO_SPEED 1
 param COM_DISARM_LAND 60

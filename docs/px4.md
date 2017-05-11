@@ -2,9 +2,7 @@
 
 The [PX4 software stack](http://github.com/px4/firmware) is an open source flight controller that runs on various 
 hardware (see below for a list).  There is a terrific website at [px4.dev.io](http://px4.dev.io) that gives you tons of information about the PX4 stack 
-and how to build it.  But the following are the minimal setup steps on a Linux machine (or 
-[BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)), and
-these should work on Ubuntu 14 and Ubuntu 16.
+and how to build it.
 
 The following pixhawk hardware has been tested with AirSim:
 
@@ -12,7 +10,9 @@ The following pixhawk hardware has been tested with AirSim:
 2. [3DR Pixhawk mini](https://store.3dr.com/products/3dr-pixhawk)
 2. [Pixhawk PX4 2.4.8](http://www.banggood.com/Pixhawk-PX4-2_4_8-Flight-Controller-32-Bit-ARM-PX4FMU-PX4IO-Combo-for-Multicopters-p-1040416.html)
 3. [PixFalcon](https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us)
+4. [PixRacer](https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&utm_medium=cpc_ods&utm_content=starr&utm_campaign=Smlrfpv-ds-FPVracer&gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB)
 
+The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash with the latest firmware.
 
 ## Source code
 
@@ -34,7 +34,10 @@ Now to build it you will need the right tools.
 ## PX4 Build tools
 
 The full instructions are available on the [dev.px4.io](http://dev.px4.io/starting-installing-linux.html) website,
-but we've copied the relevant subset of those instructions here for your convenience:
+but we've copied the relevant subset of those instructions here for your convenience.
+
+(Note that [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)) can be used to build
+the SITL version, but not the ARM firmware for pixhawk harddware).
 
 First run this command to cache your admin credentials:
 ````
@@ -110,7 +113,7 @@ If you plan to build the PX4 firmware for real Pixhawk hardware then you will ne
 for ARM Cortex-M4 chipset.  You can find out what version, if any, you may already have by typing this
 command `arm-none-eabi-gcc --version`.  Note: you do not need this to build the SITL version of PX4.
 
-Note: This does not work in BashOnWindows because the arm-none-eabi-gcc tool is a 32-bit app which
+Note: This does `not` work in BashOnWindows because the arm-none-eabi-gcc tool is a 32-bit app which
 BashOnWindows cannot run.  There is a more involved set of steps to get a 64 bit version of the 
 arm-none-eabi-gcc comp[iler which you will have to find online.
 
@@ -161,3 +164,25 @@ One nice tid bit is you can plug in your pixhawk USB, and type `make px4fmu-v2_d
 hardware with these brand new bits, so you don't need to use QGroundControl for that.
 
 
+## Some Useful Parameters
+
+PX4 has many customizable parameters (over 700 of them, in fact) and to get best results with AirSim we have
+found the following parameters are handy:
+````
+// be sure to enable the new position estimator module:
+param set SYS_MC_EST_GROUP 2
+
+// increase default limits on cruise speed so you can move around a large map more quickly.
+param MPC_XY_CRUISE 10             
+param MPC_XY_VEL_MAX 10
+param MPC_Z_VEL_MAX_DN 2
+
+// increase timeout for auto-disarm on landing so that any long running app doesn't have to worry about it
+param COM_DISARM_LAND 60
+
+// make it possible to fly without radio control attached (do NOT do this one on a real drone)
+param NAV_RCL_ACT 0
+
+// enable new syslogger to get more information from PX4 logs
+param set SYS_LOGGER 1
+````
