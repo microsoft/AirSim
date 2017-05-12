@@ -10,8 +10,9 @@ ACameraDirector::ACameraDirector()
 
 void ACameraDirector::BeginPlay()
 {
-    setupInputBindings();
-
+    if (left_binding_ == nullptr) {
+        setupInputBindings();
+    }
     Super::BeginPlay();
 }
 
@@ -34,6 +35,8 @@ ECameraDirectorMode ACameraDirector::getMode()
 
 void ACameraDirector::initializeForBeginPlay()
 {
+    setupInputBindings();
+
     camera_start_location_ = this->GetActorLocation();
     camera_start_rotation_ = this->GetActorRotation();
     initial_ground_obs_offset_ = camera_start_location_ - TargetPawn->GetActorLocation();
@@ -48,7 +51,6 @@ void ACameraDirector::initializeForBeginPlay()
 void ACameraDirector::setMode(ECameraDirectorMode mode)
 {
     mode_ = mode;
-
     if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
         camera_location_manual_ = ExternalCamera->GetActorLocation();
         camera_rotation_manual_ = ExternalCamera->GetActorRotation();
