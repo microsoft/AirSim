@@ -113,9 +113,7 @@ If you plan to build the PX4 firmware for real Pixhawk hardware then you will ne
 for ARM Cortex-M4 chipset.  You can find out what version, if any, you may already have by typing this
 command `arm-none-eabi-gcc --version`.  Note: you do not need this to build the SITL version of PX4.
 
-Note: This does `not` work in BashOnWindows because the arm-none-eabi-gcc tool is a 32-bit app which
-BashOnWindows cannot run.  There is a more involved set of steps to get a 64 bit version of the 
-arm-none-eabi-gcc comp[iler which you will have to find online.
+Note: This does not work in BashOnWindows because the arm-none-eabi-gcc tool is a 32-bit app which BashOnWindows cannot run.  See [installing arm-none-eabi-gcc on BashOnWindows](./px4.md#installing-arm-none-eabi-gcc-in-bashonwindows) at the bottom of this page.
 
 Anyway, first we make sure to remove any old version of arm-none-eabi-gcc: 
 
@@ -163,7 +161,6 @@ in super size-squeezing mode so it can fit all that in a 1 megabyte ROM !!
 One nice tid bit is you can plug in your pixhawk USB, and type `make px4fmu-v2_default upload` to flash the
 hardware with these brand new bits, so you don't need to use QGroundControl for that.
 
-
 ## Some Useful Parameters
 
 PX4 has many customizable parameters (over 700 of them, in fact) and to get best results with AirSim we have
@@ -186,3 +183,22 @@ param NAV_RCL_ACT 0
 // enable new syslogger to get more information from PX4 logs
 param set SYS_LOGGER 1
 ````
+
+## Installing arm-none-eabi-gcc in BashOnWindows
+
+`SolinGuo` built a 64 bit  version of `gcc-arm-none-eabi` so that it will run inside `BashOnWindows`.
+See [gcc-arm-none-eabi-5_4-2017q2-20170512-linux.tar.bz2 ](https://github.com/SolinGuo/arm-none-eabi-bash-on-win10-/blob/master/gcc-arm-none-eabi-5_4-2017q2-20170512-linux.tar.bz2).
+If you download the *.tar.bz2 file to your machine and unpack it using this command line in BashOnWindows console:
+
+````
+tar -xvf gcc-arm-none-eabi-5_4-2017q2-20170512-linux.tar.bz2
+````
+
+you will get the following folder which contains the arm gcc cross-compiler:
+
+````
+gcc-arm-none-eabi-5_4-2017q2/bin
+````
+
+If you add this folder to your PATH using the usual `export PATH=...` trick then the PX4 build will be able to find
+and run this compiler.  After that, you can run `make px4fmu-v2_default` in BashOnWindows.
