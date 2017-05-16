@@ -17,6 +17,7 @@
 #include "MavLinkNode.hpp"
 #include "MavLinkVideoStream.hpp"
 #include "MavLinkVehicle.hpp"
+#include "common/common_utils/Timer.hpp"
 
 //sensors
 #include "sensors/barometer/BarometerBase.hpp"
@@ -28,6 +29,7 @@ namespace msr { namespace airlib {
 
 
 using namespace mavlinkcom;
+using namespace common_utils;
 
 static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
 static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
@@ -35,6 +37,7 @@ static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 
 static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
 static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
 static const int RotorControlsCount = 8;
+static const int messageReceivedTimeout = 10; ///< Seconds 
 
 class MavLinkLogViewerLog : public MavLinkLog
 {
@@ -103,8 +106,8 @@ struct MavLinkDroneController::impl {
     bool is_offboard_mode_;
     bool is_simulation_mode_;
     PidController thrust_controller_;
-    int hil_message_check_;
-    int sitl_message_check_;
+    Timer hil_message_timer_;
+    Timer sitl_message_timer_;
 
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
     {
@@ -270,9 +273,7 @@ struct MavLinkDroneController::impl {
     }
 
     void connect()
-    {
-        hil_message_check_ = 0;
-        sitl_message_check_ = 0;
+    {        
         createMavConnection(connection_info_);
         initializeMavSubscriptions();
     }
@@ -537,8 +538,6 @@ struct MavLinkDroneController::impl {
         Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
         debug_pose_ = Pose::nanPose();
-        hil_message_check_ = 0;
-        sitl_message_check_ = 0;
     }
 
     //*** Start: VehicleControllerBase implementation ***//
@@ -1002,12 +1001,13 @@ struct MavLinkDroneController::impl {
         MavLinkTelemetry data;
         connection_->getTelemetry(data);
         if (data.messagesReceived == 0) {
-            hil_message_check_++;
-            if (hil_message_check_ == 100) {
+            if (!hil_message_timer_.started()) {
+                hil_message_timer_.start();
+            } else if (hil_message_timer_.seconds() > messageReceivedTimeout) {
                 addStatusMessage("not receiving any messages from HIL, please restart your HIL node and try again");
             }
         } else {
-            hil_message_check_ = 0;
+            hil_message_timer_.stop();
         }
 
         // listen to the other mavlink connection also
@@ -1020,15 +1020,18 @@ struct MavLinkDroneController::impl {
             data.messagesHandled += sitl.messagesHandled;
             data.messagesReceived += sitl.messagesReceived;
             data.messagesSent += sitl.messagesSent;
+
             if (sitl.messagesReceived == 0)
             {
-                sitl_message_check_++;
-                if (sitl_message_check_ == 100) {
-                    addStatusMessage("not receiving any messages from SITL, please restart your SITL app and try again");
+                if (!sitl_message_timer_.started()) {
+                    sitl_message_timer_.start();
+                }
+                else if (sitl_message_timer_.seconds() > messageReceivedTimeout) {
+                    addStatusMessage("not receiving any messages from SITL, please restart your SITL node and try again");
                 }
             }
             else {
-                sitl_message_check_ = 0;
+                sitl_message_timer_.stop();
             }
         }
 

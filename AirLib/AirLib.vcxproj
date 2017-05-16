@@ -38,6 +38,7 @@
     <ClInclude Include="include\common\common_utils\ScheduledExecutor.hpp" />
     <ClInclude Include="include\common\common_utils\sincos.hpp" />
     <ClInclude Include="include\common\common_utils\StrictMode.hpp" />
+    <ClInclude Include="include\common\common_utils\Timer.hpp" />
     <ClInclude Include="include\common\common_utils\type_utils.hpp" />
     <ClInclude Include="include\common\common_utils\Utils.hpp" />
     <ClInclude Include="include\common\DelayLine.hpp" />
