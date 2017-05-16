@@ -73,14 +73,13 @@ This way you can write and test your code in simulator and later execute it on t
 
 # Participate
 ## Paper
-You can get additional technical details in [our paper (work in progress)](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/02/aerial-informatics-robotics-TR.pdf). Please cite this as:
+You can get additional technical details in [our paper (preprint)](https://arxiv.org/abs/1705.05065). Please cite this as:
 ```
-@techreport{MSR-TR-2017-9,
-     title = {{A}erial {I}nformatics and {R}obotics Platform},
-     author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
-     year = {2017},
-     institution = {Microsoft Research},
-     number = {{M}{S}{R}-{T}{R}-2017-9}}
+@misc{1705.05065,
+Author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
+Title = {AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles},
+Year = {2017},
+Eprint = {arXiv:1705.05065},
 }
 ```
 
