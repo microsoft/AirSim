@@ -201,4 +201,6 @@ gcc-arm-none-eabi-5_4-2017q2/bin
 ````
 
 If you add this folder to your PATH using the usual `export PATH=...` trick then the PX4 build will be able to find
-and run this compiler.  After that, you can run `make px4fmu-v2_default` in BashOnWindows.
+and run this compiler.  After that, you can run `make px4fmu-v2_default` in BashOnWindows and the firmware will appear
+here: `build_px4fmu-v2_default/src/firmware/nuttx/px4fmu-v2_default.px4`.  You can then flash this new firmware on your 
+Pixhawk using QGroundControl.

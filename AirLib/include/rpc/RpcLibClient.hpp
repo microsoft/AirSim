@@ -28,13 +28,13 @@ public:
     bool moveByAngle(float pitch, float roll, float z, float yaw, float duration);
 
     bool moveByVelocity(float vx, float vy, float vz, float duration, 
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode());
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
     bool moveByVelocityZ(float vx, float vy, float z, float duration,
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode());
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
     bool moveOnPath(const vector<Vector3r>& path, float velocity, 
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
     bool moveToPosition(float x, float y, float z, float velocity, 
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedome, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
     bool moveToZ(float z, float velocity, 
         const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
     bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration);

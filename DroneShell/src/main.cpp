@@ -1114,7 +1114,7 @@ See RecordPose for information about log file format")
                     VectorMath::toEulerianAngle(quaternion, pitch, roll, yaw);
 
                     context->client.moveToPosition(local_point.x(), local_point.y(), local_point.z(), velocity, 
-                        DrivetrainType::MaxDegreeOfFreedome, YawMode(false, yaw), lookahead, adaptive_lookahead);
+                        DrivetrainType::MaxDegreeOfFreedom, YawMode(false, yaw), lookahead, adaptive_lookahead);
                 }
             }
         });

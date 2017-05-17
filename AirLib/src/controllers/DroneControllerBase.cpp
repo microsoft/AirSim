@@ -288,7 +288,7 @@ bool DroneControllerBase::moveToZ(float z, float velocity, const YawMode& yaw_mo
 {
     Vector2r cur_xy = getPositionXY();
     vector<Vector3r> path { Vector3r(cur_xy.x(), cur_xy.y(), z) };
-    return moveOnPath(path, velocity, DrivetrainType::MaxDegreeOfFreedome, yaw_mode, lookahead, adaptive_lookahead,
+    return moveOnPath(path, velocity, DrivetrainType::MaxDegreeOfFreedom, yaw_mode, lookahead, adaptive_lookahead,
         cancelable_action);
 }
 

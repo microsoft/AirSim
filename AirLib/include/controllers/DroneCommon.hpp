@@ -8,7 +8,7 @@ namespace msr { namespace airlib {
 
 
 enum class DrivetrainType {
-    MaxDegreeOfFreedome = 0,
+    MaxDegreeOfFreedom = 0,
     ForwardOnly
 };
 
