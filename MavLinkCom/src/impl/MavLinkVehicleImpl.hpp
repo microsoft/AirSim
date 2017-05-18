@@ -81,6 +81,7 @@ namespace mavlinkcom_impl {
 		std::mutex state_mutex_;
 		int state_version_ = 0;
         bool control_requested_ = false;
+        bool set_failsafe_modes = false;
 		bool control_request_sent_ = false;
         int requested_mode_ = 0;
 		int previous_mode_ = 0;

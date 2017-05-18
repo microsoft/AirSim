@@ -863,16 +863,9 @@ struct MavLinkDroneController::impl {
 
     bool hover(CancelableBase& cancelable_action)
     {
-        bool rc = false;
         AsyncResult<bool> result = mav_vehicle_->loiter();
-        auto start_time = std::chrono::system_clock::now();
-        while (!cancelable_action.isCancelled())
-        {
-            if (result.wait(100, &rc))
-            {
-                break;
-            }
-        }
+        bool rc = false;
+        result.wait(5000, &rc);
         return rc;
     }
 
@@ -898,16 +891,6 @@ struct MavLinkDroneController::impl {
             throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
         }
 
-        /*
-        // better control if this is decoupled (e.g. user might want to change their mind on the way down).
-        float max_wait = 60;
-        if (!parent_->waitForFunction([&]() {
-            updateState();
-            return current_state.controls.landed;
-        }, max_wait, cancelable_action))
-        {
-            throw VehicleMoveException("Drone hasn't reported a landing state");
-        }*/
         return true;
     }
 
@@ -1051,7 +1034,6 @@ struct MavLinkDroneController::impl {
             mav_vehicle_->requestControl();
         }
         catch (std::exception& ex) {
-            ensureSafeMode();
             addStatusMessage(std::string("Request control failed: ") + ex.what());
             return false;
         }
@@ -1064,43 +1046,6 @@ struct MavLinkDroneController::impl {
         // The side effect of this is that with some drones (e.g. PX4 based) the drone itself will timeout
         // when you stop sending move commands and the behavior on timeout is then determined by the drone itself.
         // mav_vehicle_->releaseControl();
-        ensureSafeMode();
-    }
-
-    void ensureSafeMode() 
-    {
-        const VehicleState& state = mav_vehicle_->getVehicleState();
-        if (state.controls.landed || !state.controls.armed) {
-            return;
-        }
-
-        // bugbug: there is a problem with this logic.  ensureSafeMode is called after a move* operation is compeleted,
-        // but that might be because another move operation just started.  The code below will kick us out of offboard
-        // mode and that will cause the next move operation to fail because the mode change is asynchronous so it will
-        // switch to loiter right after we try and start the next move operation which will look like the PX4 cancelled
-        // offbaord, when in fact it was us.  So we need to rethink this logic.  It should be possible to do back to
-        // back move operations without having to loiter in between.
-
-        // bool r = false;
-        // ok, we are flying, so let's try and hover where we are at.
-        //addStatusMessage("Auto entering loiter mode for safety reasons");
-        //if (!mav_vehicle_->loiter().wait(500, &r) || !r)
-        //{
-        //    addStatusMessage("Loiter command failed, trying to enter position hold for safety reasons");
-        //    if (!mav_vehicle_->loiter().wait(500, &r) || !r) //TODO: replace this with below position hold command
-        //    //if (!mav_vehicle_->setPositionHoldMode().wait(500, &r) || !r)
-        //    {
-        //        addStatusMessage("Position hold failed, trying to land for safety reasons");
-        //        bool rc = false;
-        //        if (!mav_vehicle_->land(state.global_est.heading, state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt).wait(500, &rc) || !r) {
-        //            addStatusMessage("Landing failed, trying to return to home for safety reasons");
-        //            if (!mav_vehicle_->returnToHome().wait(500, &r) || !r)
-        //            {
-        //                addStatusMessage("Argh, everything we tried has failed!");
-        //            }
-        //        }
-        //    }
-        //}
     }
 
     bool loopCommandPre()

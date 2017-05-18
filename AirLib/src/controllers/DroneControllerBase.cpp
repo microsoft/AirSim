@@ -87,7 +87,6 @@ bool DroneControllerBase::moveByVelocityZ(float vx, float vy, float z, float dur
     return !waitForFunction([&]() {
         return !moveByVelocityZ(vx, vy, z, adj_yaw_mode);
     }, duration, cancelable_action);
-
 }
 
 bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
@@ -133,7 +132,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     Vector3r point;
     float path_length = 0;
     //append the input path and compute segments
-    for(uint i = 0; i < path.size(); ++i) {
+    for (uint i = 0; i < path.size(); ++i) {
         point = path.at(i);
         PathSegment path_seg(path3d.at(i), point, velocity, path_length);
         path_length += path_seg.seg_length;
@@ -164,7 +163,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     //initialize next path position
     setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
 
-    while (next_path_loc.seg_index < path_segs.size()-1 || //until we are at the end of the path (last seg is always zero size)
+    while (next_path_loc.seg_index < path_segs.size() - 1 || //until we are at the end of the path (last seg is always zero size)
         ((next_path_loc.position - getPosition()).norm() > getDistanceAccuracy())) { //current position is approximately at the last end point
 
         float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
@@ -175,7 +174,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         }
 
         //send drone command to get to next lookahead
-        moveToPathPosition(next_path_loc.position, seg_velocity, drivetrain, 
+        moveToPathPosition(next_path_loc.position, seg_velocity, drivetrain,
             yaw_mode, path_segs.at(cur_path_loc.seg_index).start_z);
 
         //sleep for rest of the cycle
@@ -197,7 +196,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
 
         Note that PC could be at any angle relative to PN, including 0 or -ve. We increase lookahead distance
         by the amount of |PC|. For this, we project PC on to PN to get vector PC' and length of
-        CC'is our adaptive lookahead error by which we will increase lookahead distance. 
+        CC'is our adaptive lookahead error by which we will increase lookahead distance.
 
         For next iteration, we first update our current position by goal_dist and then
         set next goal by the amount lookahead + lookahead_error.
@@ -221,7 +220,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
             const Vector3r& actual_vect = getPosition() - cur_path_loc.position;
 
             //project actual vector on goal vector
-            const Vector3r& goal_normalized = goal_vect.normalized();    
+            const Vector3r& goal_normalized = goal_vect.normalized();
             goal_dist = actual_vect.dot(goal_normalized); //dist could be -ve if drone moves away from goal
 
                                                             //if adaptive lookahead is enabled the calculate lookahead error (see above fig)
@@ -234,8 +233,8 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
                         throw std::runtime_error("lookahead error is continually increasing so we do not have safe control, aborting moveOnPath operation");
                     }
                 }
-                else { 
-                    lookahead_error_increasing = 0; 
+                else {
+                    lookahead_error_increasing = 0;
                 }
                 lookahead_error = error;
             }
@@ -268,11 +267,10 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
 
         if (log_to_file_) {
-            flog << cur_path_loc.seg_index << "\t" << cur_path_loc.offset << "\t" << cur_path_loc.position.x() << "\t" << cur_path_loc.position.y() << "\t" << cur_path_loc.position.z() << "\t" << lookahead  << "\t" << lookahead_error  << "\t";
+            flog << cur_path_loc.seg_index << "\t" << cur_path_loc.offset << "\t" << cur_path_loc.position.x() << "\t" << cur_path_loc.position.y() << "\t" << cur_path_loc.position.z() << "\t" << lookahead << "\t" << lookahead_error << "\t";
             flog << next_path_loc.seg_index << "\t" << next_path_loc.offset << "\t" << next_path_loc.position.x() << "\t" << next_path_loc.position.y() << "\t" << next_path_loc.position.z() << std::endl;
         }
     }
-
     return true;
 }
 
@@ -305,7 +303,6 @@ bool DroneControllerBase::rotateToYaw(float yaw, float margin, CancelableBase& c
         if (!waiter.sleep(cancelable_action))
             return false;
     }
-
     return true;
 }
 
@@ -323,6 +320,7 @@ bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, Cancel
     } while (waiter.sleep(cancelable_action) && !waiter.is_timeout());
 
     return waiter.is_timeout();
+
 }
 
 bool DroneControllerBase::hover(CancelableBase& cancelable_action)
@@ -420,12 +418,12 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
             rc_data.subtract(rc_data_trims);
 
             //convert RC commands to velocity vector
-            const Vector3r vel_word(rc_data.pitch * vy_max/kMaxRCValue, rc_data.roll  * vx_max/kMaxRCValue, 0);
+            const Vector3r vel_word(rc_data.pitch * vy_max / kMaxRCValue, rc_data.roll  * vx_max / kMaxRCValue, 0);
             Vector3r vel_body = VectorMath::transformToBodyFrame(vel_word, starting_quaternion, true);
 
             //find yaw as per terrain and remote setting
             YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
-            adj_yaw_mode.yaw_or_rate += rc_data.yaw * 100.0f/kMaxRCValue;
+            adj_yaw_mode.yaw_or_rate += rc_data.yaw * 100.0f / kMaxRCValue;
             adjustYaw(vel_body, drivetrain, adj_yaw_mode);
 
             //execute command
@@ -433,7 +431,7 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
                 float vz = (rc_data.throttle / kMaxRCValue) * z_min + getZ();
                 moveByVelocityZ(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
             }
-            catch(const DroneControllerBase::UnsafeMoveException& ex) {
+            catch (const DroneControllerBase::UnsafeMoveException& ex) {
                 Utils::logError("Safety violation: %s", ex.result.message.c_str());
             }
         }

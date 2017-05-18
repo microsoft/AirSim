@@ -11,6 +11,7 @@
 #include "common/CommonStructs.hpp"
 #include "VehicleControllerBase.hpp"
 #include "DroneCommon.hpp"
+#include <future>
 
 namespace msr { namespace airlib {
 
@@ -18,7 +19,7 @@ namespace msr { namespace airlib {
 /// All control methods return a boolean where true means the command was completed successfully, and
 /// false means the command was cancelled.  
 /// 
-/// Cancellable actions: all commands return a CancelableBase& cancelable_action object.
+/// Cancellable actions: all long running commands take a CancelableBase& cancelable_action object.
 /// These objects can be used to cancel the command, or find out if the command has
 /// been cancelled.  Only one command can be active at a time, so the next command you
 /// send will automatically and immediately cancel any previous command that is in progress.
@@ -70,6 +71,7 @@ public: //types
     typedef common_utils::EnumFlags<ImageType>  ImageTypeFlags;
 
 public: //interface for outside world
+
     /// The drone must be armed before it will fly.  Set arm to true to arm the drone.  
     /// On some drones arming may cause the motors to spin on low throttle, this is normal.
     /// Set arm to false to disarm the drone.  This will disable the motors, so don't do that

@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <atomic>
 #include "common/Common.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "common/ClockFactory.hpp"
@@ -14,9 +15,24 @@ namespace msr { namespace airlib {
 
 class CancelableBase {
 public:
-    virtual bool isCancelled() = 0;
-    virtual void cancelAllTasks() = 0;
-    virtual bool sleep(double secs)
+    CancelableBase(std::atomic_bool* token) {
+        cancelled_ = token;
+    }
+    // it is handy if this object is copyable so we can pass it safely to async lambdas with [=] copy semantics.
+    // async lamdas with move semantics [&] are a headache...
+    CancelableBase(CancelableBase& other) {
+        cancelled_ = other.cancelled_;
+    }
+    void operator=(CancelableBase& other) {
+        cancelled_ = other.cancelled_;
+    }
+    virtual void complete() {
+        // long running tasks must call this to notify when they are done.
+    }
+    bool isCancelled() const {
+        return *cancelled_;
+    }
+    bool sleep(double secs) const
     {
         //We can pass duration directly to sleep_for however it is known that on 
         //some systems, sleep_for makes system call anyway even if passed duration 
@@ -34,7 +50,8 @@ public:
         return !isCancelled();
     }
 
-    virtual ~CancelableBase() = default;
+private:
+    std::atomic_bool* cancelled_;
 };
 
 class Waiter {
