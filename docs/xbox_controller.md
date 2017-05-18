@@ -48,10 +48,15 @@ __Note:__ It is imporant to check the ~/Documents/AirSim/settings.json file and 
 
 
 5. Launch QGroundControl and follow the following steps
+
 i. Click the white/purple Q in the top right to open the settings.
+
 ii. Add a UDP comm link on port 14540 with the localhost ip (127.0.0.1)
+
 iii. Connect using that link. You should see at the top the sattelite count become valid and the battery voltage too. If you don't see this, then stop now because the Mavlink connection is invalid.
+
 iv. Click the gears icon next to the Q icon and you should get a bunch of menus including the joystick configuration menu as shown below.
+
 v. Under the joystick mode, click calibrate and follow the instructions on the screen.
 
 ![Gamecontrollers](images/qgc_joystick.png)
