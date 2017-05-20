@@ -866,7 +866,7 @@ struct MavLinkDroneController::impl {
 
         return parent_->waitForZ(max_wait_seconds, z, getDistanceAccuracy(), cancelable_action);        
     }
-
+     
     bool hover(CancelableBase& cancelable_action)
     {
         bool rc = false;

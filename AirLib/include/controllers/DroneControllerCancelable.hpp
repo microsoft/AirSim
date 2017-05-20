@@ -467,8 +467,8 @@ private:// types
             this->vy_max_ = vy_max;
             this->z_min_ = z_min;
             this->yaw_mode_ = yaw_mode;
-            this->drivetrain_ = drivetrain_;
-            this->duration_ = duration_;
+            this->drivetrain_ = drivetrain;
+            this->duration_ = duration;
         }
         virtual void executeImpl(DroneControllerBase* controller, CancelableBase& cancelable) override {
             controller->moveByManual(vx_max_, vy_max_, z_min_, duration_, drivetrain_, yaw_mode_, cancelable);
