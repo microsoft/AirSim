@@ -23,7 +23,7 @@ public:
     void start();
     void stop();
     bool takeoff(float max_wait_ms = 15);
-    bool land();
+    bool land(float max_wait_seconds = 60);
     bool goHome();
     bool moveByAngle(float pitch, float roll, float z, float yaw, float duration);
 
@@ -31,20 +31,21 @@ public:
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
     bool moveByVelocityZ(float vx, float vy, float z, float duration,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
-    bool moveOnPath(const vector<Vector3r>& path, float velocity, 
+    bool moveOnPath(const vector<Vector3r>& path, float velocity, float max_wait_seconds = 60,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveToPosition(float x, float y, float z, float velocity, 
+    bool moveToPosition(float x, float y, float z, float velocity, float max_wait_seconds = 60,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveToZ(float z, float velocity, 
+    bool moveToZ(float z, float velocity, float max_wait_seconds = 60,
         const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration);
-    bool rotateToYaw(float yaw, float margin = 5);
+    bool moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
+    bool rotateToYaw(float yaw, float max_wait_seconds = 60, float margin = 5);
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
 
     Vector3r getPosition();
     Vector3r getVelocity();
     Quaternionr getOrientation();
+    DroneControllerBase::LandedState getLandedState();
     RCData getRCData();
     TTimePoint timestampNow();
     GeoPoint getHomePoint();

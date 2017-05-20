@@ -33,6 +33,8 @@ struct RpcLibClient::impl {
     impl(const string&  ip_address, uint16_t port)
         : client(ip_address, port)
     {
+        // some long flight path commands can take a while, so we give it up to 1 hour max.
+        client.set_timeout(3600*1000);
     }
 
     rpc::client client;
@@ -68,9 +70,9 @@ bool RpcLibClient::takeoff(float max_wait_seconds)
 {
     return pimpl_->client.call("takeoff", max_wait_seconds).as<bool>();
 }
-bool RpcLibClient::land()
+bool RpcLibClient::land(float max_wait_seconds)
 {
-    return pimpl_->client.call("land").as<bool>();
+    return pimpl_->client.call("land", max_wait_seconds).as<bool>();
 }
 bool RpcLibClient::goHome()
 {
@@ -101,31 +103,31 @@ bool RpcLibClient::moveByVelocityZ(float vx, float vy, float z, float duration, 
     return pimpl_->client.call("moveByVelocityZ", vx, vy, z, duration, drivetrain, RpcLibAdapators::YawMode(yaw_mode)).as<bool>();
 }
 
-bool RpcLibClient::moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
+bool RpcLibClient::moveOnPath(const vector<Vector3r>& path, float velocity, float max_wait_seconds, DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {
     vector<RpcLibAdapators::Vector3r> conv_path;
     RpcLibAdapators::from(path, conv_path);
-    return pimpl_->client.call("moveOnPath", conv_path, velocity, drivetrain, RpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();
+    return pimpl_->client.call("moveOnPath", conv_path, velocity, max_wait_seconds, drivetrain, RpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();
 }
 
-bool RpcLibClient::moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
+bool RpcLibClient::moveToPosition(float x, float y, float z, float velocity, float max_wait_seconds, DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {
-    return pimpl_->client.call("moveToPosition", x, y, z, velocity, drivetrain, RpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();
+    return pimpl_->client.call("moveToPosition", x, y, z, velocity, max_wait_seconds, drivetrain, RpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();
 }
 
-bool RpcLibClient::moveToZ(float z, float velocity, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
+bool RpcLibClient::moveToZ(float z, float velocity, float max_wait_seconds, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {
-    return pimpl_->client.call("moveToZ", z, velocity, RpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();
+    return pimpl_->client.call("moveToZ", z, velocity, max_wait_seconds, RpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();
 }
 
-bool RpcLibClient::moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration)
+bool RpcLibClient::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
-    return pimpl_->client.call("moveByManual", vx_max, vy_max, z_min, drivetrain, RpcLibAdapators::YawMode(yaw_mode), duration).as<bool>();
+    return pimpl_->client.call("moveByManual", vx_max, vy_max, z_min, duration, drivetrain, RpcLibAdapators::YawMode(yaw_mode)).as<bool>();
 }
 
-bool RpcLibClient::rotateToYaw(float yaw, float margin)
+bool RpcLibClient::rotateToYaw(float yaw, float max_wait_seconds, float margin)
 {
-    return pimpl_->client.call("rotateToYaw", yaw, margin).as<bool>();
+    return pimpl_->client.call("rotateToYaw", yaw, max_wait_seconds, margin).as<bool>();
 }
 
 bool RpcLibClient::rotateByYawRate(float yaw_rate, float duration)
@@ -159,6 +161,12 @@ Vector3r RpcLibClient::getVelocity()
 Quaternionr RpcLibClient::getOrientation()
 {
     return pimpl_->client.call("getOrientation").as<RpcLibAdapators::Quaternionr>().to();
+}
+
+DroneControllerBase::LandedState RpcLibClient::getLandedState()
+{
+    int result = pimpl_->client.call("getLandedState").as<int>();
+    return static_cast<DroneControllerBase::LandedState>(result);
 }
 
 RCData RpcLibClient::getRCData()

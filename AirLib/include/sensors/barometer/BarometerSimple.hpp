@@ -52,10 +52,10 @@ private: //methods
         auto pressure = EarthUtils::getStandardPressure(altitude);
         //add drift in pressure
         pressure_factor.update();
-        pressure += pressure * pressure_factor.getOutput();
+        //pressure += pressure * pressure_factor.getOutput();
         //add user specified offset
         pressure += EarthUtils::SeaLevelPressure - params_.qnh*100.0f;
-        pressure += uncorrelated_noise.next();
+        //pressure += uncorrelated_noise.next();
 
         output.pressure = pressure;
         //apply altimeter formula

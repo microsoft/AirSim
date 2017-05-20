@@ -189,7 +189,8 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
                     vehicle_state_.controls.offboard = false;
                     control_requested_ = false;
 					control_request_sent_ = false;
-					Utils::logMessage("MavLinkVehicle: detected mode change (mode=%d, submode=%d), will stop trying to do offboard control\n",
+
+                    Utils::logMessage("MavLinkVehicle: detected mode change (mode=%d, submode=%d), will stop trying to do offboard control\n",
 						mode, submode);
                 }
             }
@@ -543,18 +544,6 @@ void MavLinkVehicleImpl::requestControl()
     // PX4 expects the move commands to happen IMMEDIATELY after this call, so we don't actually request control here
     // until the move commands start happening.
     control_requested_ = true;
-
-    // we expect the caller to occasionally stop sending offboard control messages, and in this case we want the drone to loiter 
-    // (which is not the default behavior for px4, so we set that here)
-    MavLinkParameter p;
-    p.name = "COM_OBL_ACT";
-    p.value = 1; // loiter (see px4 state_machine_helper.cpp, line 904-ish)
-    setParameter(p);
-
-    p.name = "COM_OBL_RC_ACT";
-    p.value = 5; // loiter (see px4 state_machine_helper.cpp, line 878-ish)
-    setParameter(p);
-    
 }
 
 // return true if user calls requestControl and has not called releaseControl.

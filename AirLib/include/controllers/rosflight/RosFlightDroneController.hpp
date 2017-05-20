@@ -133,6 +133,12 @@ public:
         return kinematics_->pose.orientation;
     }
 
+    LandedState getLandedState() override
+    {
+        // todo: implement this
+        return LandedState::Landed;
+    }
+
     virtual int getRemoteControlID()  override
     { 
         return remote_control_id_;
@@ -172,7 +178,7 @@ public:
         return true;
     }
 
-    bool land(CancelableBase& cancelable_action) override
+    bool land(float max_wait_seconds, CancelableBase& cancelable_action) override
     {
         return true;
     }

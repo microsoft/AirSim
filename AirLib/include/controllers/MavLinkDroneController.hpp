@@ -106,12 +106,13 @@ public:
     Vector3r getPosition() override;
     Vector3r getVelocity() override;
     Quaternionr getOrientation() override;
+    LandedState getLandedState() override;
     RCData getRCData() override;
     void setRCData(const RCData& rcData) override;
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override;
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override;
-    bool land(CancelableBase& cancelable_action) override;
+    bool land(float max_wait_seconds, CancelableBase& cancelable_action) override;
     bool goHome(CancelableBase& cancelable_action) override; 
     bool hover(CancelableBase& cancelable_action) override;
     GeoPoint getHomePoint() override;

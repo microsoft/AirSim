@@ -41,6 +41,7 @@
     <ClInclude Include="include\common\common_utils\Timer.hpp" />
     <ClInclude Include="include\common\common_utils\type_utils.hpp" />
     <ClInclude Include="include\common\common_utils\Utils.hpp" />
+    <ClInclude Include="include\common\common_utils\WorkerThread.hpp" />
     <ClInclude Include="include\common\DelayLine.hpp" />
     <ClInclude Include="include\common\EarthUtils.hpp" />
     <ClInclude Include="include\common\FirstOrderFilter.hpp" />

@@ -46,7 +46,7 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
     pimpl_->server.bind("setOffboardMode", [&](bool is_set) -> void { drone_->setOffboardMode(is_set); });
     pimpl_->server.bind("setSimulationMode", [&](bool is_set) -> void { drone_->setSimulationMode(is_set); });
     pimpl_->server.bind("takeoff", [&](float max_wait_seconds) -> bool { return drone_->takeoff(max_wait_seconds); });
-    pimpl_->server.bind("land", [&]() -> bool { return drone_->land(); });
+    pimpl_->server.bind("land", [&](float max_wait_seconds) -> bool { return drone_->land(max_wait_seconds); });
     pimpl_->server.bind("goHome", [&]() -> bool { return drone_->goHome(); });
     pimpl_->server.bind("start", [&]() -> void { drone_->start(); });
     pimpl_->server.bind("stop", [&]() -> void { drone_->stop(); });
@@ -58,23 +58,23 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
         bool { return drone_->moveByVelocity(vx, vy, vz, duration, drivetrain, yaw_mode.to()); });
     pimpl_->server.bind("moveByVelocityZ", [&](float vx, float vy, float z, float duration, DrivetrainType drivetrain, const RpcLibAdapators::YawMode& yaw_mode) -> 
         bool { return drone_->moveByVelocityZ(vx, vy, z, duration, drivetrain, yaw_mode.to()); });
-    pimpl_->server.bind("moveOnPath", [&](const vector<RpcLibAdapators::Vector3r>& path, float velocity, DrivetrainType drivetrain, const RpcLibAdapators::YawMode& yaw_mode,
+    pimpl_->server.bind("moveOnPath", [&](const vector<RpcLibAdapators::Vector3r>& path, float velocity, float max_wait_seconds, DrivetrainType drivetrain, const RpcLibAdapators::YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead) ->
         bool { 
             vector<Vector3r> conv_path;
             RpcLibAdapators::to(path, conv_path);
-            return drone_->moveOnPath(conv_path, velocity, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); 
+            return drone_->moveOnPath(conv_path, velocity, max_wait_seconds, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead);
         });
-    pimpl_->server.bind("moveToPosition", [&](float x, float y, float z, float velocity, DrivetrainType drivetrain,
+    pimpl_->server.bind("moveToPosition", [&](float x, float y, float z, float velocity, float max_wait_seconds, DrivetrainType drivetrain,
         const RpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) -> 
-        bool { return drone_->moveToPosition(x, y, z, velocity, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); });
-    pimpl_->server.bind("moveToZ", [&](float z, float velocity, const RpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) -> 
-        bool { return drone_->moveToZ(z, velocity, yaw_mode.to(), lookahead, adaptive_lookahead); });
-    pimpl_->server.bind("moveByManual", [&](float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const RpcLibAdapators::YawMode& yaw_mode, float duration) -> 
-        bool { return drone_->moveByManual(vx_max, vy_max, z_min, drivetrain, yaw_mode.to(), duration); });
+        bool { return drone_->moveToPosition(x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); });
+    pimpl_->server.bind("moveToZ", [&](float z, float velocity, float max_wait_seconds, const RpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) ->
+        bool { return drone_->moveToZ(z, velocity, max_wait_seconds, yaw_mode.to(), lookahead, adaptive_lookahead); });
+    pimpl_->server.bind("moveByManual", [&](float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const RpcLibAdapators::YawMode& yaw_mode) ->
+        bool { return drone_->moveByManual(vx_max, vy_max, z_min, duration, drivetrain, yaw_mode.to()); });
 
-    pimpl_->server.bind("rotateToYaw", [&](float yaw, float margin) -> 
-        bool { return drone_->rotateToYaw(yaw, margin); });
+    pimpl_->server.bind("rotateToYaw", [&](float yaw, float max_wait_seconds, float margin) ->
+        bool { return drone_->rotateToYaw(yaw, max_wait_seconds, margin); });
     pimpl_->server.bind("rotateByYawRate", [&](float yaw_rate, float duration) -> 
         bool { return drone_->rotateByYawRate(yaw_rate, duration); });
     pimpl_->server.bind("hover", [&]() -> bool { return drone_->hover(); });
@@ -92,6 +92,7 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
     pimpl_->server.bind("getPosition", [&]() -> RpcLibAdapators::Vector3r { return drone_->getPosition(); });
     pimpl_->server.bind("getVelocity", [&]() -> RpcLibAdapators::Vector3r { return drone_->getVelocity(); });
     pimpl_->server.bind("getOrientation", [&]() -> RpcLibAdapators::Quaternionr { return drone_->getOrientation(); });
+    pimpl_->server.bind("getLandedState", [&]() -> int { return static_cast<int>(drone_->getLandedState()); });
     pimpl_->server.bind("getRCData", [&]() -> RpcLibAdapators::RCData { return drone_->getRCData(); });
     pimpl_->server.bind("timestampNow", [&]() -> TTimePoint { return drone_->timestampNow(); });
     pimpl_->server.bind("getHomePoint", [&]() -> RpcLibAdapators::GeoPoint { return drone_->getHomePoint(); });

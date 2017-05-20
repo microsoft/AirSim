@@ -11,6 +11,7 @@
 #include "common/CommonStructs.hpp"
 #include "VehicleControllerBase.hpp"
 #include "DroneCommon.hpp"
+#include "common/common_utils/WorkerThread.hpp"
 
 namespace msr { namespace airlib {
 
@@ -69,6 +70,11 @@ public: //types
     };
     typedef common_utils::EnumFlags<ImageType>  ImageTypeFlags;
 
+    enum class LandedState : uint {
+        Landed = 0,
+        Flying = 1
+    };
+
 public: //interface for outside world
     /// The drone must be armed before it will fly.  Set arm to true to arm the drone.  
     /// On some drones arming may cause the motors to spin on low throttle, this is normal.
@@ -80,15 +86,19 @@ public: //interface for outside world
 
     /// When armed you can tell the drone to takeoff.  This will fly to a preset altitude (like 2.5 meters)
     /// above the home position.  Once the drone is safely in the air you can use other commands to fly from there.
-    /// If the drone is already flying takeoff will be ignored.
+    /// If the drone is already flying takeoff will be ignored.  Pass non-zer max_wait_seconds if you want the
+    /// method to also wait until the takeoff altitude is achieved.
     virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) = 0;
 
     /// At any point this command will disable offboard control and land the drone at the current GPS location.
     /// How quickly the drone descends is up to the drone.  Some models will descend slowly if they have no 
     /// lidar telling them how far it is to the ground, while others that can see the ground will descend more
     /// quickly until they get near the ground.  None of that behavior is defined in this API because it is 
-    /// depends on what kind of hardware the drone has onboard.
-    virtual bool land(CancelableBase& cancelable_action) = 0;
+    /// depends on what kind of hardware the drone has onboard.  Pass non-zer max_wait_seconds if you want the
+    /// method to also wait until the drone reports it has landed, the timeout here is a bit tricky, depends
+    /// on how high you are and what the drone's configured descent velocity is.  If you don't want to wait
+    /// pass zero.  You can also periodically check getLandedState to see if it has landed.
+    virtual bool land(float max_wait_seconds, CancelableBase& cancelable_action) = 0;
 
     /// This command is a safety measure, at any point this command will cancel offboard control and send the
     /// drone back to the launch point (or home position).  Most drones are also configured to climb to a safe
@@ -154,7 +164,7 @@ public: //interface for outside world
     virtual bool moveToZ(float z, float velocity, const YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
 
-    virtual bool moveByManual(float vx_max, float vy_max, float z_min, DrivetrainType drivetrain, const YawMode& yaw_mode, float duration, CancelableBase& cancelable_action);
+    virtual bool moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode, CancelableBase& cancelable_action);
 
     /// Rotate the drone to the specified fixed heading (yaw) while remaining stationery at the current x, y, and z.
     virtual bool rotateToYaw(float yaw, float margin, CancelableBase& cancelable_action);
@@ -185,6 +195,9 @@ public: //interface for outside world
 
     /// Get the current orientation (or attitude) of the drone as a Quaternion.
     virtual Quaternionr getOrientation() = 0;
+
+    /// Get current state of the drone, is it landed or in the air
+    virtual LandedState getLandedState() = 0;
 
     /// Assigned remote control to use for this controller, 
     /// -1 = onboard RC, 0+ = joystick ID available on OS

@@ -9,33 +9,11 @@
 #include "common/Common.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "common/ClockFactory.hpp"
+#include "common/common_utils/WorkerThread.hpp"
+
+using namespace msr::airlib;
 
 namespace msr { namespace airlib {
-
-class CancelableBase {
-public:
-    virtual bool isCancelled() = 0;
-    virtual void cancelAllTasks() = 0;
-    virtual bool sleep(double secs)
-    {
-        //We can pass duration directly to sleep_for however it is known that on 
-        //some systems, sleep_for makes system call anyway even if passed duration 
-        //is <= 0. This can cause 50us of delay due to context switch.
-        if (isCancelled()) {
-            Utils::logMessage("Sleep was prempted");
-            return false;
-        }
-
-        if (secs > 0)
-            std::this_thread::sleep_for(std::chrono::duration<double>(secs));
-        else
-            Utils::logMessage("Missed sleep: %f ms", secs*1000);
-
-        return !isCancelled();
-    }
-
-    virtual ~CancelableBase() = default;
-};
 
 class Waiter {
 private:

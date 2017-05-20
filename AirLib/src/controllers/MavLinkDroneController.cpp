@@ -798,6 +798,12 @@ struct MavLinkDroneController::impl {
         return VectorMath::toQuaternion(current_state.attitude.pitch, current_state.attitude.roll, current_state.attitude.yaw);
     }
 
+    LandedState getLandedState()
+    {
+        updateState();
+        return current_state.controls.landed ? LandedState::Landed : LandedState::Flying;
+    }
+
     //administrative
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action)
@@ -855,10 +861,10 @@ struct MavLinkDroneController::impl {
         if (!rc) {
             throw VehicleMoveException("TakeOff command rejected by drone");
         }
+        if (max_wait_seconds <= 0)
+            return true; // client doesn't want to wait.
 
-        //bool success = parent_->waitForZ(max_wait_seconds, z, getDistanceAccuracy(), cancelable_action);
-        //return success;
-        return true;
+        return parent_->waitForZ(max_wait_seconds, z, getDistanceAccuracy(), cancelable_action);        
     }
 
     bool hover(CancelableBase& cancelable_action)
@@ -876,7 +882,7 @@ struct MavLinkDroneController::impl {
         return rc;
     }
 
-    bool land(CancelableBase& cancelable_action)
+    bool land(float max_wait_seconds, CancelableBase& cancelable_action)
     {
         unused(cancelable_action);
         // bugbug: really need a downward pointing distance to ground sensor to do this properly, for now
@@ -898,16 +904,14 @@ struct MavLinkDroneController::impl {
             throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
         }
 
-        /*
-        // better control if this is decoupled (e.g. user might want to change their mind on the way down).
-        float max_wait = 60;
+        // Wait for landed state (or user cancelation)
         if (!parent_->waitForFunction([&]() {
             updateState();
             return current_state.controls.landed;
-        }, max_wait, cancelable_action))
+        }, max_wait_seconds, cancelable_action))
         {
             throw VehicleMoveException("Drone hasn't reported a landing state");
-        }*/
+        }
         return true;
     }
 
@@ -1208,6 +1212,10 @@ Quaternionr MavLinkDroneController::getOrientation()
     return pimpl_->getOrientation();
 }
 
+DroneControllerBase::LandedState MavLinkDroneController::getLandedState()
+{
+    return pimpl_->getLandedState();
+}
 //administrative
 
 bool MavLinkDroneController::armDisarm(bool arm, CancelableBase& cancelable_action)
@@ -1243,9 +1251,9 @@ bool MavLinkDroneController::hover(CancelableBase& cancelable_action)
     return pimpl_->hover(cancelable_action);
 }
 
-bool MavLinkDroneController::land(CancelableBase& cancelable_action)
+bool MavLinkDroneController::land(float max_wait_seconds, CancelableBase& cancelable_action)
 {
-    return pimpl_->land(cancelable_action);
+    return pimpl_->land(max_wait_seconds, cancelable_action);
 }
 
 bool MavLinkDroneController::goHome(CancelableBase& cancelable_action)

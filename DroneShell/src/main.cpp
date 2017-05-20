@@ -213,6 +213,7 @@ public:
     {
         this->addSwitch({"-z", "-2.5", "Move to specified z above launch position (default -2.5 meters)" });
         this->addSwitch({"-velocity", "0.5", "Velocity to move at (default 0.5 meters per second)" });
+        this->addSwitch({ "-duration", "10", "maximum time to wait to reach altitude (default 5 seconds)" });
         addYawModeSwitches();
         addLookaheadSwitches();
     }
@@ -220,13 +221,14 @@ public:
     bool execute(const DroneCommandParameters& params) 
     {
 		float z = getSwitch("-z").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveToZ(z, velocity, getYawMode(), lookahead, adaptive_lookahead);
+            context->client.moveToZ(z, velocity, duration, getYawMode(), lookahead, adaptive_lookahead);
         });
 
         return false;
@@ -261,16 +263,18 @@ public:
     {
         this->addSwitch({"-yaw_margin", "5", "how accurate to be (default within 5 degrees)" });
         this->addSwitch({"-yaw", "0", "degrees (default 0)" });
+        this->addSwitch({ "-duration", "10", "maximum time to wait to reach given yaw (default 5 seconds)" });
     }
 
     bool execute(const DroneCommandParameters& params) 
     {
         float yaw = getSwitch("-yaw").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         float margin = getSwitch("-yaw_margin").toFloat();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.rotateToYaw(yaw, margin);
+            context->client.rotateToYaw(yaw, duration, margin);
         });
 
         return false;
@@ -323,6 +327,7 @@ public:
     {
         this->addSwitch({ "-path", "", "a series of x,y,z cordinates separated by commas, e.g. 0,0,-10,100,0,-10,100,100,-10,0,100,-10,0,0,-10 will fly a square box pattern" });
         this->addSwitch({ "-velocity", "2.5", "the velocity in meters per second (default 2.5)" });
+        this->addSwitch({ "-duration", "0", "maximum time to wait to reach end of path (default no wait)" });
         addYawModeSwitches();
         addDriveTrainSwitch();
         addLookaheadSwitches();
@@ -357,6 +362,8 @@ public:
                         count = 0;
                         path.push_back(Vector3r(x,y,z));
                         break;
+                    default:
+                        break;
                     }
                     start = i + 1;
                 }
@@ -376,13 +383,14 @@ public:
         }
 
         float velocity = getSwitch("-velocity").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto drivetrain = getDriveTrain();
         auto yawMode = getYawMode();
 
         context->tasker.execute([=]() {
-            context->client.moveOnPath(path, velocity,
+            context->client.moveOnPath(path, velocity, duration,
                 drivetrain, yawMode, lookahead, adaptive_lookahead);
         });
 
@@ -398,15 +406,16 @@ public:
         this->addSwitch({"-y", "0", "y position in meters (default 0)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
         this->addSwitch({"-velocity", "2.5", "the velocity to approach the position in meters per second (default 2.5)" });
+        this->addSwitch({ "-duration", "0", "maximum time to wait to reach position (default no wait)" });
         addYawModeSwitches();
         addDriveTrainSwitch();
         addLookaheadSwitches();
 		addRelativeSwitch();
     }
 
-    void MoveToPosition(CommandContext* context, float x, float y, float z, float velocity, DrivetrainType drivetrain, YawMode yawMode, float lookahead, float adaptive_lookahead)
+    void MoveToPosition(CommandContext* context, float x, float y, float z, float velocity, float duration, DrivetrainType drivetrain, YawMode yawMode, float lookahead, float adaptive_lookahead)
     {
-        context->client.moveToPosition(x, y, z, velocity,
+        context->client.moveToPosition(x, y, z, velocity, duration,
             drivetrain, yawMode, lookahead, adaptive_lookahead);
     }
 
@@ -425,13 +434,14 @@ public:
 		}
 
         float velocity = getSwitch("-velocity").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto drivetrain = getDriveTrain();
         auto yawMode = getYawMode();
 
         context->tasker.execute([=]() {
-            MoveToPosition(context, x, y, z, velocity,
+            MoveToPosition(context, x, y, z, velocity, duration,
                 drivetrain, yawMode, lookahead, adaptive_lookahead);
         });
 
@@ -446,7 +456,7 @@ public:
         this->addSwitch({"-vx", "0", "velocity in x direction in meters per second (default 0)" });
         this->addSwitch({"-vy", "0", "velocity in y direction in meters per second (default 0)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
-        this->addSwitch({"-duration", "5", "the duration of this command in seconds (default 5)" });
+        this->addSwitch({"-duration", "0", "the duration of this command in seconds (default no wait)" });
 
         addDriveTrainSwitch();
         addLookaheadSwitches();
@@ -464,7 +474,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByManual(vx, vy, z, drivetrain, yawMode, duration);
+            context->client.moveByManual(vx, vy, z, duration, drivetrain, yawMode);
         });
 
         return false;
@@ -695,13 +705,13 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            if (!context->client.moveToPosition(length, 0, z, velocity, drivetrain,
+            if (!context->client.moveToPosition(length, 0, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)) {
                  throw std::runtime_error("BackForthByPositionCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(-length, 0, z, velocity, drivetrain,
+            if (!context->client.moveToPosition(-length, 0, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("BackForthByPositionCommand cancelled");
             }
@@ -721,7 +731,6 @@ public:
         this->addSwitch({"-pitch", "0", "pitch angle in degrees (default 0)" });
         this->addSwitch({"-roll", "0", "roll angle in degrees (default 0)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
-        this->addSwitch({"-duration", "5", "the duration of this command in seconds (default 5)" });
         this->addSwitch({"-yaw", "0", "target yaw angle in degrees (default is 0)" });
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
@@ -732,29 +741,28 @@ public:
         float pitch = getSwitch("-pitch").toFloat();
         float roll = getSwitch("-roll").toFloat();
         float z = getSwitch("-z").toFloat();
-        float duration = getSwitch("-duration").toFloat();
         float yaw = getSwitch("-yaw").toFloat();
         TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
 		int iterations = getSwitch("-iterations").toInt();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            if (!context->client.moveByAngle(pitch, -roll, z, yaw, duration)) {
+            if (!context->client.moveByAngle(pitch, -roll, z, yaw, 0)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)) {
+            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, 0)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngle(-pitch, roll, z, yaw, duration)) {
+            if (!context->client.moveByAngle(-pitch, roll, z, yaw, 0)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)){
+            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, 0)){
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
@@ -772,7 +780,6 @@ public:
         this->addSwitch({"-length", "2.5", "length of each side (default 2.5)" });
         this->addSwitch({"-velocity", "0.5", "velocity in meters per second (default 0.5)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
-        this->addSwitch({"-duration", "5", "the duration of this command in seconds (default 5)" });
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
 		addRelativeSwitch();
@@ -804,25 +811,25 @@ public:
 		}
 
         context->tasker.execute([=]() {
-            if (!context->client.moveToPosition(x + length, y - length, z, velocity, drivetrain,
+            if (!context->client.moveToPosition(x + length, y - length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(x - length, y - length, z, velocity, drivetrain,
+            if (!context->client.moveToPosition(x - length, y - length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(x - length, y + length, z, velocity, drivetrain,
+            if (!context->client.moveToPosition(x - length, y + length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(x + length, y + length, z, velocity, drivetrain,
+            if (!context->client.moveToPosition(x + length, y + length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPositionCommand cancelled");
             }
@@ -841,7 +848,7 @@ public:
         this->addSwitch({"-length", "2.5", "length of each side (default 2.5)" });
         this->addSwitch({"-velocity", "0.5", "velocity in meters per second (default 0.5)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
-        this->addSwitch({"-duration", "5", "the duration of this command in seconds (default 5)" });
+        this->addSwitch({"-duration", "60", "the total duration of this command in seconds (default 60)" });
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
         this->addSwitch({"-path_rep", "1000", "number of times around the square (default 1000)" });
@@ -856,7 +863,7 @@ public:
         float length = getSwitch("-length").toFloat();
         float z = getSwitch("-z").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
-        //TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
+        float duration = getSwitch("-duration").toFloat();
 		int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
@@ -880,14 +887,22 @@ public:
             path.push_back(Vector3r(x + length, y + length, z));
         }
 
+        timer.start();
+
         context->tasker.execute([=]() {
-            if (!context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead)){
+            if (timer.seconds() > duration) {
+                context->client.hover();
+                throw std::runtime_error("SquareByPathCommand -duration reached");
+            }
+            if (!context->client.moveOnPath(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead)){
                 throw std::runtime_error("SquareByPathCommand cancelled");
             }
         }, iterations);
 
         return false;
     }
+
+    Timer timer;
 };
 
 
@@ -899,7 +914,7 @@ public:
         this->addSwitch({"-velocity", "0.5", "velocity in meters per second (default 0.5)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
         this->addSwitch({"-seg_length", "0.2", "circle is approximated using strait segments (default length .2 meters)" });
-        this->addSwitch({"-duration", "5", "the duration of this command in seconds (default 5)" });
+        this->addSwitch({"-duration", "0", "the duration of this command in seconds (default no wait)" });
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
 
@@ -917,6 +932,7 @@ public:
         float seg_length = getSwitch("-seg_length").toFloat();
         TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
         float velocity = getSwitch("-velocity").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
@@ -941,7 +957,7 @@ public:
             for(float seg = 0; seg < seg_count; ++seg) {
                 float x = cx + std::cos(seg_angle * seg) * radius;
                 float y = cy + std::sin(seg_angle * seg) * radius;
-                if (!context->client.moveToPosition(x, y, z, velocity, drivetrain,
+                if (!context->client.moveToPosition(x, y, z, velocity, duration, drivetrain,
                     yawMode, lookahead, adaptive_lookahead)){
                     throw std::runtime_error("CircleByPositionCommand cancelled");
                 }
@@ -961,7 +977,7 @@ public:
         this->addSwitch({"-radius", "2.5", "radius of circle (default 2.5)" });
         this->addSwitch({"-velocity", "0.5", "velocity in meters per second (default 0.5)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
-        this->addSwitch({"-duration", "5", "the duration of this command in seconds (default 5)" });
+        this->addSwitch({"-duration", "60", "the total duration of this command in seconds (default 60)" });
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
         this->addSwitch({"-path_rep", "1000", "number of times around the square (default 1000)" });
@@ -981,6 +997,7 @@ public:
         float z_path = getSwitch("-z").toFloat();
         float seg_length = getSwitch("-seg_length").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
+        float duration = getSwitch("-duration").toFloat();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto drivetrain = getDriveTrain();
@@ -1024,20 +1041,25 @@ public:
                 path.push_back(Vector3r(x, y, z) + origin);
             }
         }
-
+        timer.start();
         context->tasker.execute([=]() {
-            if (!context->client.moveOnPath(path, velocity, drivetrain, yawMode, lookahead, adaptive_lookahead)) {
-                throw std::runtime_error("moveOnPath cancelled");
+            if (timer.seconds() > duration) {
+                context->client.hover();
+                throw std::runtime_error("CircleByPath -duration reached");
+            }
+            if (!context->client.moveOnPath(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead)) {
+                throw std::runtime_error("CircleByPath cancelled");
             }
         }, iterations);
 
         return false;
     }
+    Timer timer;
 };
 
 class RecordPoseCommand : public DroneCommand {
 public:
-    RecordPoseCommand() : DroneCommand("CircleByPath", "Append a single pose snapshot to a log file named 'rec_pos.log' in your $HOME folder\n\
+    RecordPoseCommand() : DroneCommand("RecordPose", "Append a single pose snapshot to a log file named 'rec_pos.log' in your $HOME folder\n\
 Each record is tab separated floating point numbers containing GPS lat,lon,alt,z,health, position x,y,z, and quaternion w,x,y,z")
     {
     }
@@ -1113,7 +1135,7 @@ See RecordPose for information about log file format")
                     Vector3r local_point = EarthUtils::GeodeticToNedFast(gps_point, home_point);
                     VectorMath::toEulerianAngle(quaternion, pitch, roll, yaw);
 
-                    context->client.moveToPosition(local_point.x(), local_point.y(), local_point.z(), velocity, 
+                    context->client.moveToPosition(local_point.x(), local_point.y(), local_point.z(), velocity, 0,
                         DrivetrainType::MaxDegreeOfFreedom, YawMode(false, yaw), lookahead, adaptive_lookahead);
                 }
             }
@@ -1269,7 +1291,7 @@ int main(int argc, const char *argv[]) {
             std::cerr << "Async RPC Error: " << rpc_ex.get_error().as<std::string>() << std::endl;
         } 
         catch (...) {
-            std::cerr << "Async Error occurred: " << e.what() << std::endl;
+            std::cerr << "Error occurred: " << e.what() << std::endl;
         }
     });
 
@@ -1286,7 +1308,7 @@ int main(int argc, const char *argv[]) {
     //std::cout << "Contacting DroneServer..." << std::flush;
     //command_context.client.ping();
     //std::cout << "DroneServer is responding." << std::endl;
-
+    
 	std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
 	const TTimeDelta pause_time = 1;
 

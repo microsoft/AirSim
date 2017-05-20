@@ -26,5 +26,8 @@
     <ClInclude Include="TestVehicles.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WorkerThreadTest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
