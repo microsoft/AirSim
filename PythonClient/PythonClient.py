@@ -50,7 +50,7 @@ class AirSimClient:
             return self.client.call('hover')
 
         
-        # query position of drone, these are NOT async sync they are usually very quick.
+        # query position of drone
         def getPosition(self):
             return self.client.call('getPosition')
         def getVelocity(self):
@@ -91,6 +91,7 @@ class AirSimClient:
         def getImageForCamera(self, camera_id, image_type):
             return self.client.call('getImageForCamera', camera_id, image_type)
 
+        # helper method for converting getOrientation to roll/pitch/yaw
         # https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
         def toEulerianAngle(self, q):
             x = q[0]
