@@ -12,7 +12,7 @@ If you discover any issues during setup, please [let us know](https://github.com
 Please include these [log files](logging.md) when you report an issue.
 
 
-## Using Joystick/Gamepad (Alternative to RC)
+## Remote Controllers
 
-You can also use an xbox controller, it just won't be as precise as a real RC controller.
-See [xbox controller](xbox_controller.md) for details.
+See [remote control options](remote_control.md) for information on how to setup a remote control for flying the 
+simulated drone.

@@ -6,10 +6,11 @@ Intel Core i7 or equivalent PC with 32GB of RAM and a a very fast GPU with at le
 The typical computer hardware we use for development purposes usually have 6 to 12 cores and graphics card such as NVidia TitanX or NVidia GTX 1080 with 32GB to 64GB RAM and a [fast hard drive](hard_drive.md).
 
 ### RC Transmitter and Receiver
+
 This is the remote control that you usually use for real RC vehicles such as quadrotors. Our favorite is [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) because it has built-in USB ports. 
 We have also tested a Futaba 14SG, so if you have one of those already you should be fine.
-
-You can also fly without a remote control.  See [alternative to RC](sitl.md).
+You can also fly without a remote control.  See [flying SITL mode software in the loop flight controller](sitl.md).
+See also [more information about remote control options](remote_controls.md) 
 
 ### Flight controller
 

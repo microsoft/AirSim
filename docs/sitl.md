@@ -101,7 +101,10 @@ If you want to run the above posix_sitl in a `VirtualBox Ubuntu` machine then it
 So in this case you need to edit the [settings file](settings.md) and change the UdpIp and SitlIp to the ip address of your virtual machine
 set the  LocalIpAddress to the address of your host machine running the Unreal engine. 
 
-## Using Joystick/Gamepad (Alternative to RC)
-Why do you need RC for simulator? Because usual joysticks are not very accurate and in fact very "noisy" for flying! 
-We have tried it and gladly switched back to regular RC. But just in case you want to try it as well, 
-see [xbox controller](xbox_controller.md) for details.
+## Remote Controller
+
+There are several options for flying the simulated drone using a remote control or joystick like xbox gamepad.
+See [remote controllers](remote_controls.md)
+
+
+
