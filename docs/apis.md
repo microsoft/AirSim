@@ -2,7 +2,8 @@
 This project includes a self-contained cross-platform library to retrieve data from the quadrotor and send the control commands. You can use this library for a simulated drone in Unreal engine or on a real quadrotor such as a MavLink based vehicle platform (and very soon DJI quadrotors such as Matrice).
 
 ## Hello Drone
-Here's the taste of how you can use our APIs:
+Here's the taste of how you can use our APIs in C++:
+See also [Python API](python.md).
 
 ```
 #include <iostream>
@@ -67,5 +68,6 @@ This module then can talk to the flight controllers such as Pixhawk using exact 
 The code you write for testing in the simulator remains unchanged! We will post more detailed guide on how to do this soon.
 
 ## What else is in works?
-We are working on enabling other RPC stack such as ZeroMQ over protobufs so we can enable more languages such as Python. 
+
+You can also program AirSim using [Python](python.md).
 We also hope to release ROS adapters for our APIs with Linux builds.

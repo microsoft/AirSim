@@ -35,7 +35,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PythonClient.py" />
-    <Compile Include="test.py">
+    <Compile Include="takeoff.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
