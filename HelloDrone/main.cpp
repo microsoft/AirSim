@@ -39,7 +39,7 @@ int main()
         client.armDisarm(true);
 
         cout << "Press Enter to takeoff" << endl; cin.get();
-        float takeoffTimeout = 10; 
+        float takeoffTimeout = 5; 
         client.takeoff(takeoffTimeout);
 
         // switch to explicit hover mode so that this is the fallback when 
@@ -47,24 +47,29 @@ int main()
         std::this_thread::sleep_for(std::chrono::duration<double>(5));
         client.hover();
 
-        cout << "Press Enter to request offboard control" << endl; cin.get();
-        client.setOffboardMode(true);
 
         cout << "Press Enter to fly in a 10m box pattern at 1 m/s velocity" << endl; cin.get();
-
+        // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
+        client.setOffboardMode(true); 
         auto position = client.getPosition();
-        float z = position.z() - 5.0f; // 5 meters above current position (NED coordinate system).  
+        float z = position.z(); // current position (NED coordinate system).  
         const float speed = 1.0f;
         const float size = 10.0f; 
         const float duration = size / speed;
+        DrivetrainType driveTrain = DrivetrainType::ForwardOnly;
+        YawMode yaw(false, 0);
         cout << "moveByVelocityZ(" << speed << ", 0, " << z << "," << duration << ")" << endl;
-        client.moveByVelocityZ(speed, 0, z, duration);
+        client.moveByVelocityZ(speed, 0, z, duration, driveTrain, yaw);
+        std::this_thread::sleep_for(std::chrono::duration<double>(duration));
         cout << "moveByVelocityZ(0, " << speed << "," << z << "," << duration << ")" << endl;
-        client.moveByVelocityZ(0, speed, z, duration);
+        client.moveByVelocityZ(0, speed, z, duration, driveTrain, yaw);
+        std::this_thread::sleep_for(std::chrono::duration<double>(duration));
         cout << "moveByVelocityZ(" << -speed << ", 0, " << z << "," << duration << ")" << endl;
-        client.moveByVelocityZ(-speed, 0, z, duration);
+        client.moveByVelocityZ(-speed, 0, z, duration, driveTrain, yaw);
+        std::this_thread::sleep_for(std::chrono::duration<double>(duration));
         cout << "moveByVelocityZ(0, " << -speed << "," << z << "," << duration << ")" << endl;
-        client.moveByVelocityZ(0, -speed, z, duration);
+        client.moveByVelocityZ(0, -speed, z, duration, driveTrain, yaw);
+        std::this_thread::sleep_for(std::chrono::duration<double>(duration));
 
         client.hover();
 
