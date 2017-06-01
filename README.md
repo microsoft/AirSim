@@ -28,9 +28,10 @@ There are two ways to get AirSim working on your machine. Click on below links a
 2.  [Use the precompiled binaries](docs/use_precompiled.md)
 
 ## Linux
-Good news! Several people have reported that they have been running in Linux as well as OSX successfully. Please check [conversations on Linux](https://github.com/microsoft/airsim/issues?utf8=%E2%9C%93&q=linux). 
-You can find our experimental [Linux build instruction here](docs/linux_build.md). We are still in process of making this little bit nicer and release official Linux build soon! 
-AirSim code is designed to be cross platform and we would love to make AirSim available on other platforms as well. 
+Kerry Snyder has created [Docker container for AirSim](https://github.com/kersny/airsim_nvidia_docker)! If you are using Linux, give it a try.
+
+Several people have reported that they have been running in Linux as well as OSX successfully. Please check [conversations on Linux](https://github.com/microsoft/airsim/issues?utf8=%E2%9C%93&q=linux). 
+You can find our experimental [Linux build instruction here](docs/linux_build.md). Our official binary release for Ubuntu 16.04 is now just around the corner. 
 
 # How to Use It
 
