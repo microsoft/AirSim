@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include "controllers/DroneControllerBase.hpp"
+#include "controllers/VehicleCamera.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
 namespace msr { namespace airlib {
@@ -651,66 +652,23 @@ bool DroneControllerBase::isYawWithinMargin(float yaw_target, float margin)
     return std::abs(yaw_current - yaw_target) <= margin;
 }    
 
-void DroneControllerBase::setImageTypeForCamera(int camera_id, ImageType type)
+void DroneControllerBase::addCamera(std::shared_ptr<VehicleCamera> camera)
 {
     StatusLock lock(this);
-
-    if (type == ImageType::None)
-        enabled_images.erase(camera_id);
-    else
-        enabled_images[camera_id] = type;
-}
-
-DroneControllerBase::ImageType DroneControllerBase::getImageTypeForCamera(int camera_id)
-{
-    StatusLock lock(this);
-
-    auto it = enabled_images.find(camera_id);
-    if (it != enabled_images.end())
-        return it->second;
-    return ImageType::None;
-}
-
-void DroneControllerBase::setImageForCamera(int camera_id, ImageType type, const vector<uint8_t>& image)
-{
-    StatusLock lock(this);
-
-    //TODO: perf work
-    auto it = images.find(camera_id);
-    if (it != images.end())
-        (it->second)[type] = image;
-    
-    auto new_list = EnumClassUnorderedMap<ImageType, vector<uint8_t>>();
-    new_list[type] = image;
-    images[camera_id] = new_list;
+    enabled_cameras[camera->getId()] = camera;
 }
 
 vector<uint8_t> DroneControllerBase::getImageForCamera(int camera_id, ImageType type)
 {
     StatusLock lock(this);
-
-    //TODO: bug: MSGPACK bombs out if vector if of 0 size
-    static vector<uint8_t> empty_vec(1);
-
-    vector<uint8_t> result;
+    vector<uint8_t> png;
 
     //TODO: perf work
-    auto it = images.find(camera_id);
-    if (it != images.end()) {
-        auto it2 = it->second.find(type);
-        if (it2 != it->second.end())
-            result = it2->second;
-        else
-            result = empty_vec;
-
-    } else
-        result = empty_vec;
-
-    if (result.size() == 0) {
-        result = empty_vec;
-    }
-
-    return result;
+    auto it = enabled_cameras.find(camera_id);
+    if (it != enabled_cameras.end()) {
+        it->second->getScreenShot(type, png);
+    } 
+    return png;
 }
 
 Pose DroneControllerBase::getDebugPose()

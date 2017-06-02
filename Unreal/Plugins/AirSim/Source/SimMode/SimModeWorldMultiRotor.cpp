@@ -109,33 +109,6 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
     if (fpv_vehicle_connector_ != nullptr && fpv_vehicle_connector_->isApiServerStarted() && getVehicleCount() > 0) {
 
-        using namespace msr::airlib;
-        auto controller = static_cast<DroneControllerBase*>(fpv_vehicle_connector_->getController());
-        auto camera_type = controller->getImageTypeForCamera(0);
-        if (camera_type != DroneControllerBase::ImageType::None) { 
-            if (CameraDirector != nullptr) {
-                APIPCamera* camera = CameraDirector->getCamera(0);
-                EPIPCameraType pip_type;
-                if (camera != nullptr) {
-                    //TODO: merge these two different types?
-                    switch (camera_type) {
-                    case DroneControllerBase::ImageType::Scene:
-                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SCENE; break;
-                    case DroneControllerBase::ImageType::Depth:
-                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_DEPTH; break;
-                    case DroneControllerBase::ImageType::Segmentation:
-                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SEG; break;
-                    default:
-                        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_NONE;
-                    }
-                    float width, height;
-                    image_.Empty();
-                    camera->getScreenshot(pip_type, image_, width, height);
-                    controller->setImageForCamera(0, camera_type, std::vector<uint8_t>(image_.GetData(), image_.GetData() + image_.Num()));
-                }
-            }
-        }
-
         if (isRecording() && record_file.is_open()) {
             if (!isLoggingStarted)
             {

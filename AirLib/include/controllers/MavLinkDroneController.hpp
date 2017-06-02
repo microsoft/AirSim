@@ -133,7 +133,7 @@ protected:
     const VehicleParams& getVehicleParams() override;
     //*** End: DroneControllerBase implementation ***//
 
-public: //pimpl
+private: //pimpl
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };

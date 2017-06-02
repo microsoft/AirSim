@@ -85,13 +85,25 @@ namespace msr {
             void wait(_Predicate cancel)
             {
                 // wait for signal or cancel predicate
-                std::unique_lock<std::mutex> lock(mutex_);
                 while (!signaled_) {
+                    std::unique_lock<std::mutex> lock(mutex_);
                     cv_.wait_for(lock, std::chrono::milliseconds(1), [this, cancel] {
                         return cancel();
                     });
                 }
                 signaled_ = false;
+            }
+
+            bool waitFor(double max_wait_seconds)
+            {
+                // wait for signal or timeout or cancel predicate
+                while (!signaled_) {
+                    std::unique_lock<std::mutex> lock(mutex_);
+                    cv_.wait_for(lock, std::chrono::milliseconds(
+                        static_cast<long long>(max_wait_seconds * 1000)));
+                }
+                signaled_ = false;
+                return true;
             }
 
         };

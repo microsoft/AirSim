@@ -75,6 +75,7 @@
     <ClInclude Include="include\controllers\rosflight\firmware\turbotrig\turbotrig.h" />
     <ClInclude Include="include\controllers\rosflight\firmware\turbotrig\turbovec.h" />
     <ClInclude Include="include\controllers\rosflight\RosFlightDroneController.hpp" />
+    <ClInclude Include="include\controllers\VehicleCamera.hpp" />
     <ClInclude Include="include\rpc\ControlServerBase.hpp" />
     <ClInclude Include="include\safety\CubeGeoFence.hpp" />
     <ClInclude Include="include\controllers\DroneCommon.hpp" />

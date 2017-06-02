@@ -230,21 +230,7 @@ public:
         controller_->getStatusMessages(messages);
     }
 
-
-    //request image
-    void setImageTypeForCamera(int camera_id, DroneControllerBase::ImageType type)
-    {
-        controller_->setImageTypeForCamera(camera_id, type);
-    }
-    DroneControllerBase::ImageType getImageTypeForCamera(int camera_id)
-    {
-        return controller_->getImageTypeForCamera(camera_id);
-    }
-    //get/set image
-    void setImageForCamera(int camera_id, DroneControllerBase::ImageType type, const vector<uint8_t>& image)
-    {
-        return controller_->setImageForCamera(camera_id, type, image);
-    }
+    //get image
     vector<uint8_t> getImageForCamera(int camera_id, DroneControllerBase::ImageType type)
     {
         return controller_->getImageForCamera(camera_id, type);
