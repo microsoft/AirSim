@@ -157,7 +157,11 @@ public:
 		}
 
 		socklen_t addrlen = sizeof(sockaddr_in);
+		#if defined (__APPLE__)
+		int hr = ::write(sock, reinterpret_cast<const char*>(ptr), count);
+		#else
 		int hr = sendto(sock, reinterpret_cast<const char*>(ptr), count, 0, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen);
+		#endif
 		if (hr == SOCKET_ERROR)
 		{
 			hr = WSAGetLastError();
@@ -175,18 +179,22 @@ public:
 
 		int bytesRead = 0;
 		// try and receive something, up until port is closed anyway.
-		
+
 		while (!closed_)
 		{
 			socklen_t addrlen = sizeof(sockaddr_in);
+			#if defined (__APPLE__)
+			int rc = ::read(sock, reinterpret_cast<char*>(result), bytesToRead);
+			#else
 			int rc = recvfrom(sock, reinterpret_cast<char*>(result), bytesToRead, 0, reinterpret_cast<sockaddr*>(&other), &addrlen);
+			#endif
 			if (rc < 0)
 			{
 				int hr = WSAGetLastError();
 #ifdef _WIN32
 				if (hr == WSAEMSGSIZE)
 				{
-					// message was too large for the buffer, no problem, return what we have.					
+					// message was too large for the buffer, no problem, return what we have.
 				}
 				else if (hr == WSAECONNRESET || hr == ERROR_IO_PENDING)
 				{
