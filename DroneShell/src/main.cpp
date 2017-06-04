@@ -1173,7 +1173,7 @@ public:
                 return;
             }
 
-            char* typeName = "";
+            const char* typeName = "";
             switch (imageType)
             {
             case msr::airlib::DroneControllerBase::ImageType::Scene:
@@ -1184,6 +1184,10 @@ public:
                 break;
             case msr::airlib::DroneControllerBase::ImageType::Segmentation:
                 typeName = "seg";
+                break;
+            case msr::airlib::DroneControllerBase::ImageType::None:
+            case msr::airlib::DroneControllerBase::ImageType::All:
+            default:
                 break;
             }
 

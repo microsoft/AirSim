@@ -9,9 +9,12 @@
 #include <linux/wireless.h>
 #include <stdlib.h>
 #include <string.h>
+#include "common_utils/Utils.hpp"
 
 int getWifiRssi(int socket, const char* ifaceName)
 {
+    unused(socket);
+    unused(ifaceName);
     return 0;
 // This has not been properly tested
 //    struct iw_statistics stats;
