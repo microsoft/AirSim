@@ -1167,13 +1167,12 @@ public:
 
             auto image = context->client.getImageForCamera(0, imageType);  
 
-            // size 1 is a trick we had to do to keep RPCLIB happy...
-            if (image.size() <= 1) {
+            if (image.size() == 0) {
                 std::cout << "error getting image, check sim for error messages" << endl;
                 return;
             }
 
-            char* typeName = "";
+            const char* typeName = "";
             switch (imageType)
             {
             case msr::airlib::DroneControllerBase::ImageType::Scene:
@@ -1184,6 +1183,10 @@ public:
                 break;
             case msr::airlib::DroneControllerBase::ImageType::Segmentation:
                 typeName = "seg";
+                break;
+            case msr::airlib::DroneControllerBase::ImageType::None:
+            case msr::airlib::DroneControllerBase::ImageType::All:
+            default:
                 break;
             }
 
@@ -1197,7 +1200,7 @@ public:
 
             std::cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << endl;
 
-            context->sleep_for(pause_time);
+            context->sleep_for(pause_time / 1000);
         }
 
     }

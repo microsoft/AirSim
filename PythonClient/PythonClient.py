@@ -77,6 +77,8 @@ class AirSimClient:
             return self.client.call('moveOnPath', path, velocity, max_wait_seconds, drivetrain, (yaw_mode.is_rate, yaw_mode.yaw_or_rate), lookahead, adaptive_lookahead)
         def moveToZ(self, z, velocity, max_wait_seconds, yaw_mode, lookahead, adaptive_lookahead):
             return self.client.call('moveToZ', z, velocity, max_wait_seconds, (yaw_mode.is_rate, yaw_mode.yaw_or_rate), lookahead, adaptive_lookahead)
+        def moveToPosition(self, x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode, lookahead, adaptive_lookahead):
+            return self.client.call('moveToPosition', x, y, z, velocity, max_wait_seconds, drivetrain, (yaw_mode.is_rate, yaw_mode.yaw_or_rate), lookahead, adaptive_lookahead)
         def rotateToYaw(self, yaw, max_wait_seconds, margin):
             return self.client.call('rotateToYaw', yaw, max_wait_seconds, margin)
         def rotateByYawRate(self, yaw_rate, duration):

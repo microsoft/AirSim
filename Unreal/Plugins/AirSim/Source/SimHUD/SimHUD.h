@@ -26,11 +26,18 @@ public:
     void inputEventTogglePIPSeg();
     void inputEventToggleAll();
 
+    bool isPIPSceneVisible();
+    bool isPIPDepthVisible();
+    bool isPIPSegVisible();
+
     ASimHUD();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick( float DeltaSeconds ) override;
 
+    static ASimHUD* GetInstance() {
+        return instance_;
+    }
 protected:
     virtual void setupInputBindings();
     std::string reportRefreshHandler();
@@ -44,4 +51,5 @@ private:
     UPROPERTY()
     ASimModeBase* simmode_;
 
+    static ASimHUD* instance_;
 };

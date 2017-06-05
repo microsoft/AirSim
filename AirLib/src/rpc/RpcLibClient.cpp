@@ -207,7 +207,12 @@ std::string RpcLibClient::getDebugInfo()
 //get/set image
 vector<uint8_t> RpcLibClient::getImageForCamera(int camera_id, DroneControllerBase::ImageType type)
 {
-    return pimpl_->client.call("getImageForCamera", camera_id, type).as<vector<uint8_t>>();
+    vector<uint8_t> result = pimpl_->client.call("getImageForCamera", camera_id, type).as<vector<uint8_t>>();
+    if (result.size() == 1) {
+        // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
+        result.clear();
+    }
+    return result;
 }
 
 

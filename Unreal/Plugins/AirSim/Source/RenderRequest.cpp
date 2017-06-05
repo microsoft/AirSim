@@ -25,8 +25,8 @@ void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<u
 
     //make sure we are not on the rendering thread
     CheckNotBlockedOnRenderThread();
-    // Queue up the task of rendering the scene in the render thread
 
+    // Queue up the task of rendering the scene in the render thread
     TGraphTask<RenderRequest>::CreateTask().ConstructAndDispatchWhenReady(*this);
 
     // wait for this task to complete
