@@ -1167,8 +1167,7 @@ public:
 
             auto image = context->client.getImageForCamera(0, imageType);  
 
-            // size 1 is a trick we had to do to keep RPCLIB happy...
-            if (image.size() <= 1) {
+            if (image.size() == 0) {
                 std::cout << "error getting image, check sim for error messages" << endl;
                 return;
             }
