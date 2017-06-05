@@ -2,6 +2,7 @@
 #include <AirSim.h>
 #include "RecordingThread.h"
 #include "TaskGraphInterfaces.h"
+#include "RenderRequest.h"
 
 FRecordingThread* FRecordingThread::Runnable = NULL;
 
@@ -28,95 +29,33 @@ bool FRecordingThread::Init()
     return true;
 }
 
-void FRecordingThread::ReadPixelsNonBlocking(TArray<FColor>& bmp)
-{
-    // Obtain reference to game camera and its associated capture component
-    
-    APIPCamera* cam = GameThread->CameraDirector->getCamera(0);	
-    USceneCaptureComponent2D* capture = cam->getCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, true);
-
-    if (capture != nullptr) {
-        if (capture->TextureTarget != nullptr) {
-            FTextureRenderTargetResource* RenderResource = capture->TextureTarget->GetRenderTargetResource();
-            if (RenderResource != nullptr) {
-                width = capture->TextureTarget->GetSurfaceWidth();
-                height = capture->TextureTarget->GetSurfaceHeight();
-
-                // Read the render target surface data back.	
-                struct FReadSurfaceContext
-                {
-                    FRenderTarget* SrcRenderTarget;
-                    TArray<FColor>* OutData;
-                    FIntRect Rect;
-                    FReadSurfaceDataFlags Flags;
-                };
-
-                bmp.Reset();
-                FReadSurfaceContext ReadSurfaceContext =
-                {
-                    RenderResource,
-                    &bmp,
-                    FIntRect(0, 0, RenderResource->GetSizeXY().X, RenderResource->GetSizeXY().Y),
-                    FReadSurfaceDataFlags(RCM_UNorm, CubeFace_MAX)
-                };
-
-                // Queue up the task of rendering the scene in the render thread
-
-                ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
-                    ReadSurfaceCommand,
-                    FReadSurfaceContext, Context, ReadSurfaceContext,
-                    {
-                        RHICmdList.ReadSurfaceData(
-                            Context.SrcRenderTarget->GetRenderTargetTexture(),
-                            Context.Rect,
-                            *Context.OutData,
-                            Context.Flags
-                        );
-                    });
-            }
-        }
-    }
-}
-
 uint32 FRecordingThread::Run()
 {
     while (StopTaskCounter.GetValue() == 0)
     {
-        ReadPixelsNonBlocking(imageColor);
-
-        // Declare task graph 'RenderStatus' in order to check on the status of the queued up render command
-        DECLARE_CYCLE_STAT(TEXT("FNullGraphTask.CheckRenderStatus"), STAT_FNullGraphTask_CheckRenderStatus, STATGROUP_TaskGraphTasks);
-        RenderStatus = TGraphTask<FNullGraphTask>::CreateTask(NULL).ConstructAndDispatchWhenReady(GET_STATID(STAT_FNullGraphTask_CheckRenderStatus), ENamedThreads::RenderThread);
-
-        // Now queue a dependent task to run when the rendering operation is complete.
-        CompletionStatus = FSimpleDelegateGraphTask::CreateAndDispatchWhenReady(
-            FSimpleDelegateGraphTask::FDelegate::CreateLambda([=]()
+        APIPCamera* cam = GameThread->CameraDirector->getCamera(0);
+        if (cam != nullptr)
         {
-            if (StopTaskCounter.GetValue() == 0) {
-                FRecordingThread::SaveImage();
+            // todo: should we go as fast as possible, or should we limit this to a particular number of
+            // frames per second?
+            USceneCaptureComponent2D* capture = cam->getCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, true);
+            if (capture != nullptr) {
+                UTextureRenderTarget2D* renderTarget = capture->TextureTarget;
+                if (renderTarget != nullptr) {
+                    TArray<uint8> png;
+                    RenderRequest request;
+                    request.getScreenshot(renderTarget, png);
+                    SaveImage(png);
+                }
             }
-        }),
-            TStatId(),
-            RenderStatus
-            );
-
-        // wait for both tasks to complete.
-        FTaskGraphInterface::Get().WaitUntilTaskCompletes(CompletionStatus);
+        }
     }
-
     return 0;
 }
 
-void FRecordingThread::SaveImage()
+void FRecordingThread::SaveImage(TArray<uint8>& compressedPng)
 {
-    bool complete = (RenderStatus.GetReference() && RenderStatus->IsComplete());
-
-    if (imageColor.Num() > 0 && complete) {
-        RenderStatus = NULL;
-
-        TArray<uint8> compressedPng;
-        FIntPoint dest(width, height);
-        FImageUtils::CompressImageArray(dest.X, dest.Y, imageColor, compressedPng);
+    if (compressedPng.Num() > 0) {
         FString filePath = imagePath + FString::FromInt(imagesSaved) + ".png";
         bool imageSavedOk = FFileHelper::SaveArrayToFile(compressedPng, *filePath);
 
@@ -144,8 +83,6 @@ void FRecordingThread::SaveImage()
 void FRecordingThread::Stop()
 {
     StopTaskCounter.Increment();
-    CompletionStatus = NULL;
-    RenderStatus = NULL;
 }
 
 FRecordingThread* FRecordingThread::ThreadInit(FString path, ASimModeWorldMultiRotor* AirSim)

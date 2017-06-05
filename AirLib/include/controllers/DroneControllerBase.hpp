@@ -15,6 +15,8 @@
 
 namespace msr { namespace airlib {
 
+    class VehicleCamera;
+
 /// DroneControllerBase represents a generic drone that can be controlled and queried for current state.
 /// All control methods return a boolean where true means the command was completed successfully, and
 /// false means the command was cancelled.  
@@ -222,20 +224,12 @@ public: //interface for outside world
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
     virtual const VehicleParams& getVehicleParams() = 0;
 
-
-    /// Call this method when you want to start requesting certain types of images for a given camera.  Camera id's start at 0
-    /// and increment from there.  The number of cameras you can configure depends on the drone (or simulator).
-    virtual void setImageTypeForCamera(int camera_id, ImageType type);
-
-    /// Get the image type that is configured for the given camera id.
-    virtual ImageType getImageTypeForCamera(int camera_id);
-
-    /// After calling setImageTypeForCamera you can tghen request the actual images using this method.
-    /// The image is return in the .png format.  
+    /// Request an image of specific type from the specified camera.  Currently AirSim is configured with only 2 cameras which
+    /// have id of 0 and 1.  Camera 0 is setup to be an FPV camera view and camera 1 is setup as a 3rd person view that chases the drone.
+    /// The image is return in the .png format.  This call will block until the render is complete.  
     virtual vector<uint8_t> getImageForCamera(int camera_id, ImageType type);
 
-    /// bugbug: what is this doing here?  This should be a private implementation detail of the particular drone implementation.
-    virtual void setImageForCamera(int camera_id, ImageType type, const vector<uint8_t>& image);
+    virtual void addCamera(std::shared_ptr<VehicleCamera> camera);
 
     //*********************************common pre & post for move commands***************************************************
     //TODO: make these protected
@@ -263,8 +257,7 @@ protected: //must implement interface by derived class
     virtual float getDistanceAccuracy() = 0; 
 
     //naked variables for derived class access
-    unordered_map<int, ImageType> enabled_images;
-
+    unordered_map<int, std::shared_ptr<VehicleCamera>> enabled_cameras;
     struct EnumClassHash
     {
         template <typename T>

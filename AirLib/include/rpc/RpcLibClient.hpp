@@ -55,9 +55,6 @@ public:
     std::string getDebugInfo();
 
     //request image
-    void setImageTypeForCamera(int camera_id, DroneControllerBase::ImageType type);
-    DroneControllerBase::ImageType getImageTypeForCamera(int camera_id);
-    //get/set image
     vector<uint8_t> getImageForCamera(int camera_id, DroneControllerBase::ImageType type);
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,

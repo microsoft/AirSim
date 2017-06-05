@@ -142,7 +142,7 @@ struct MavLinkDroneController::impl {
 
     void initializeMavSubscriptions()
     {
-        if (connection_ != nullptr) {
+        if (connection_ != nullptr && mav_vehicle_ != nullptr) {
             is_any_heartbeat_ = false;
             is_hil_mode_set_ = false;
             is_armed_ = false;
@@ -204,7 +204,7 @@ struct MavLinkDroneController::impl {
                 logviewer_out_proxy_->getConnection()->close();
                 logviewer_out_proxy_ = nullptr;
             }
-            else {
+            else if (mav_vehicle_ != nullptr) {
                 mav_vehicle_->getConnection()->startLoggingSendMessage(std::make_shared<MavLinkLogViewerLog>(logviewer_out_proxy_));
             }
         }
@@ -649,7 +649,7 @@ struct MavLinkDroneController::impl {
 
     void sendCollison(float normalX, float normalY, float normalZ)
     {
-        if (mav_vehicle_ == nullptr) return;
+        checkVehicle();
 
         MavLinkCollision collision{};
         collision.src = 1;	//provider of data is MavLink system in id field
@@ -677,7 +677,7 @@ struct MavLinkDroneController::impl {
 
     void setNormalMode()
     {
-        if (is_hil_mode_set_ && mav_vehicle_ != nullptr && connection_ != nullptr) {
+        if (is_hil_mode_set_ && connection_ != nullptr && mav_vehicle_ != nullptr) {
 
             // remove MAV_MODE_FLAG_HIL_ENABLED flag from current mode 
             std::lock_guard<std::mutex> guard(set_mode_mutex_);
@@ -699,9 +699,7 @@ struct MavLinkDroneController::impl {
             throw std::logic_error("Attempt to set device in HIL mode while not in simulation mode");
 
 
-        if (mav_vehicle_ == nullptr) {
-            return;
-        }
+        checkVehicle();
 
         // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode 
         std::lock_guard<std::mutex> guard(set_mode_mutex_);
@@ -738,7 +736,9 @@ struct MavLinkDroneController::impl {
         }
 
         if (logviewer_out_proxy_ != nullptr) {
-            mav_vehicle_->getConnection()->stopLoggingSendMessage();
+            if (mav_vehicle_ != nullptr) {
+                mav_vehicle_->getConnection()->stopLoggingSendMessage();
+            }
             logviewer_out_proxy_->close();
             logviewer_out_proxy_ = nullptr;
         }
@@ -757,11 +757,13 @@ struct MavLinkDroneController::impl {
     void updateState()
     {
         StatusLock lock(parent_);
-        int version = mav_vehicle_->getVehicleStateVersion();
-        if (version != state_version_)
-        {
-            current_state = mav_vehicle_->getVehicleState();
-            state_version_ = version;
+        if (mav_vehicle_ != nullptr) {
+            int version = mav_vehicle_->getVehicleStateVersion();
+            if (version != state_version_)
+            {
+                current_state = mav_vehicle_->getVehicleState();
+                state_version_ = version;
+            }
         }
     }
 
@@ -810,6 +812,7 @@ struct MavLinkDroneController::impl {
     {
         unused(arm);
         unused(cancelable_action);
+        checkVehicle();
         bool rc = false;
         mav_vehicle_->armDisarm(arm).wait(10000, &rc);
         return rc;
@@ -827,6 +830,7 @@ struct MavLinkDroneController::impl {
 
     void setOffboardMode(bool is_set)
     {
+        checkVehicle();
         if (is_set) {
             mav_vehicle_->requestControl();
             is_offboard_mode_ = true;
@@ -850,6 +854,7 @@ struct MavLinkDroneController::impl {
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
     {
         unused(cancelable_action);
+        checkVehicle();
         
         bool rc = false;
         auto vec = getPosition();
@@ -870,6 +875,7 @@ struct MavLinkDroneController::impl {
     bool hover(CancelableBase& cancelable_action)
     {
         bool rc = false;
+        checkVehicle();
         AsyncResult<bool> result = mav_vehicle_->loiter();
         auto start_time = std::chrono::system_clock::now();
         while (!cancelable_action.isCancelled())
@@ -888,6 +894,7 @@ struct MavLinkDroneController::impl {
         // bugbug: really need a downward pointing distance to ground sensor to do this properly, for now
         // we assume the ground is relatively flat an we are landing roughly at the home altitude.
         updateState();
+        checkVehicle();
         if (current_state.home.is_set)
         {
             bool rc = false;
@@ -918,8 +925,9 @@ struct MavLinkDroneController::impl {
     bool goHome(CancelableBase& cancelable_action)
     {
         unused(cancelable_action);
+        checkVehicle();
         bool rc = false;
-        if (!mav_vehicle_->returnToHome().wait(10000, &rc)) {
+        if (mav_vehicle_ != nullptr && !mav_vehicle_->returnToHome().wait(10000, &rc)) {
             throw VehicleMoveException("goHome - timeout waiting for response from drone");
         }
         return rc;
@@ -934,22 +942,26 @@ struct MavLinkDroneController::impl {
             thrust_controller_.setPoint(-z, .05f, .005f, 0.09f);
             target_height_ = -z;
         }
+        checkVehicle();
         auto state = mav_vehicle_->getVehicleState();
         float thrust = 0.21f + thrust_controller_.control(-state.local_est.pos.z);
         mav_vehicle_->moveByAttitude(roll, pitch, yaw, 0, 0, 0, thrust);
     }
     void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode)
     {
+        checkVehicle();
         float yaw = yaw_mode.yaw_or_rate * M_PIf / 180;
         mav_vehicle_->moveByLocalVelocity(vx, vy, vz, !yaw_mode.is_rate, yaw);
     }
     void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode)
     {
+        checkVehicle();
         float yaw = yaw_mode.yaw_or_rate * M_PIf / 180;
         mav_vehicle_->moveByLocalVelocityWithAltHold(vx, vy, z, !yaw_mode.is_rate, yaw);
     }
     void commandPosition(float x, float y, float z, const YawMode& yaw_mode)
     {
+        checkVehicle();
         float yaw = yaw_mode.yaw_or_rate * M_PIf / 180;
         mav_vehicle_->moveToLocalPosition(x, y, z, !yaw_mode.is_rate, yaw);
     }
@@ -999,7 +1011,7 @@ struct MavLinkDroneController::impl {
 
     void reportTelemetry(float renderTime)
     {
-        if (logviewer_proxy_ == nullptr || connection_ == nullptr) {
+        if (logviewer_proxy_ == nullptr || connection_ == nullptr || mav_vehicle_ == nullptr) {
             return;
         }
         MavLinkTelemetry data;
@@ -1051,6 +1063,7 @@ struct MavLinkDroneController::impl {
 
     bool startOffboardMode()
     {
+        checkVehicle();
         try {
             mav_vehicle_->requestControl();
         }
@@ -1073,38 +1086,12 @@ struct MavLinkDroneController::impl {
 
     void ensureSafeMode() 
     {
-        const VehicleState& state = mav_vehicle_->getVehicleState();
-        if (state.controls.landed || !state.controls.armed) {
-            return;
+        if (mav_vehicle_ != nullptr) {
+            const VehicleState& state = mav_vehicle_->getVehicleState();
+            if (state.controls.landed || !state.controls.armed) {
+                return;
+            }
         }
-
-        // bugbug: there is a problem with this logic.  ensureSafeMode is called after a move* operation is compeleted,
-        // but that might be because another move operation just started.  The code below will kick us out of offboard
-        // mode and that will cause the next move operation to fail because the mode change is asynchronous so it will
-        // switch to loiter right after we try and start the next move operation which will look like the PX4 cancelled
-        // offbaord, when in fact it was us.  So we need to rethink this logic.  It should be possible to do back to
-        // back move operations without having to loiter in between.
-
-        // bool r = false;
-        // ok, we are flying, so let's try and hover where we are at.
-        //addStatusMessage("Auto entering loiter mode for safety reasons");
-        //if (!mav_vehicle_->loiter().wait(500, &r) || !r)
-        //{
-        //    addStatusMessage("Loiter command failed, trying to enter position hold for safety reasons");
-        //    if (!mav_vehicle_->loiter().wait(500, &r) || !r) //TODO: replace this with below position hold command
-        //    //if (!mav_vehicle_->setPositionHoldMode().wait(500, &r) || !r)
-        //    {
-        //        addStatusMessage("Position hold failed, trying to land for safety reasons");
-        //        bool rc = false;
-        //        if (!mav_vehicle_->land(state.global_est.heading, state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt).wait(500, &rc) || !r) {
-        //            addStatusMessage("Landing failed, trying to return to home for safety reasons");
-        //            if (!mav_vehicle_->returnToHome().wait(500, &r) || !r)
-        //            {
-        //                addStatusMessage("Argh, everything we tried has failed!");
-        //            }
-        //        }
-        //    }
-        //}
     }
 
     bool loopCommandPre()
@@ -1115,6 +1102,12 @@ struct MavLinkDroneController::impl {
     void loopCommandPost()
     {
         endOffboardMode();
+    }
+
+    void checkVehicle() {
+        if (mav_vehicle_ == nullptr) {
+            throw std::logic_error("Cannot perform operation when no vehicle is connected");
+        }
     }
 }; //impl
 

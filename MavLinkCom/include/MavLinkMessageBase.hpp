@@ -130,7 +130,7 @@ namespace mavlinkcom
 	class MavLinkTelemetry : public MavLinkMessageBase {
 	public:
 		const static uint8_t kMessageId = 204; // in the user range 180-229.
-		MavLinkTelemetry() { msgid = kMessageId; }
+		MavLinkTelemetry() : wifiInterfaceName(nullptr) { msgid = kMessageId; }
 		uint32_t messagesSent;		 // number of messages sent since the last telemetry message
 		uint32_t messagesReceived;	 // number of messages received since the last telemetry message
 		uint32_t messagesHandled;	 // number of messages handled since the last telemetry message

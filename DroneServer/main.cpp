@@ -79,10 +79,6 @@ int main(int argc, const char* argv[])
     DroneControllerCancelable server_wrapper(&mav_drone);
     msr::airlib::RpcLibServer server(&server_wrapper, connection_info.local_host_ip);
     
-    auto v = std::vector<uint8_t>{ 5, 4, 3 };
-    server_wrapper.setImageForCamera(3, DroneControllerBase::ImageType::Depth, v);
-    server_wrapper.setImageForCamera(4, DroneControllerBase::ImageType::Scene, std::vector<uint8_t>{6, 5, 4, 3, 2});
-    
     //start server in async mode
     server.start(false);
 

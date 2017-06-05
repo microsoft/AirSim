@@ -204,16 +204,6 @@ std::string RpcLibClient::getDebugInfo()
     return pimpl_->client.call("getDebugInfo").as<std::string>();
 }
 
-void RpcLibClient::setImageTypeForCamera(int camera_id, DroneControllerBase::ImageType type)
-{
-    pimpl_->client.call("setImageTypeForCamera", camera_id, type);
-}
-
-DroneControllerBase::ImageType RpcLibClient::getImageTypeForCamera(int camera_id)
-{
-    return pimpl_->client.call("getImageTypeForCamera", camera_id).as<DroneControllerBase::ImageType>();
-}
-
 //get/set image
 vector<uint8_t> RpcLibClient::getImageForCamera(int camera_id, DroneControllerBase::ImageType type)
 {

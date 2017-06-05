@@ -96,13 +96,6 @@ int imageExample()
 
     msr::airlib::RpcLibClient client;
 
-    client.setImageTypeForCamera(4, DroneControllerBase::ImageType::Depth);
-
-    //cout << (int) client.getImageTypeForCamera(4) <<endl;
-    //cout << (int) client.getImageTypeForCamera(3) <<endl;
-    //client.setImageTypeForCamera(3, DroneControllerBase::ImageType::Segmentation);
-    //cout << (int) client.getImageTypeForCamera(3) <<endl;
-
     auto i1 = client.getImageForCamera(0, DroneControllerBase::ImageType::Depth);
     cout << i1.size() << endl;
 
@@ -112,17 +105,6 @@ int imageExample()
     auto i3 = client.getImageForCamera(4, DroneControllerBase::ImageType::Scene);
     cout << i3.size() << " " << (i3.size() > 0 ? i3[0] : -1) << endl;
 
-    /*
-    cout << "Press Enter to enable retrival of depth images" << endl; cin.get();
-    client.setImageTypeForCamera(0, DroneControllerBase::ImageType::Segmentation);
-    cout << "Press Enter to get depth image" << endl; cin.get();
-    auto image = client.getImageForCamera(0, DroneControllerBase::ImageType::Segmentation);
-    cout << "PNG images received bytes: " << image.size() << endl;
-    cout << "Press Enter to save image" << endl; cin.get();
-    ofstream file("c:\\temp\\depth.png", ios::binary);
-    file.write((char*) image.data(), image.size());
-    file.close();
-    */
 
     return 0;
 }

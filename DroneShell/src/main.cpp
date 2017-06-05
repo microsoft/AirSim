@@ -1165,13 +1165,7 @@ public:
         
         for (int i = 0; i < iterations; i++) {
 
-            context->client.setImageTypeForCamera(0, imageType);
-            //TODO: we shouldn't have wait like this!
-            // give it time to generate image.
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            auto image = context->client.getImageForCamera(0, imageType);            
-            // turn it off again so simulator doesn't choke...
-            context->client.setImageTypeForCamera(0, DroneControllerBase::ImageType::None);
+            auto image = context->client.getImageForCamera(0, imageType);  
 
             // size 1 is a trick we had to do to keep RPCLIB happy...
             if (image.size() <= 1) {
@@ -1179,7 +1173,21 @@ public:
                 return;
             }
 
-            std::string imageName = Utils::stringf("%s%d.png", baseName.c_str(), image_index_++);
+            char* typeName = "";
+            switch (imageType)
+            {
+            case msr::airlib::DroneControllerBase::ImageType::Scene:
+                typeName = "scene";
+                break;
+            case msr::airlib::DroneControllerBase::ImageType::Depth:
+                typeName = "depth";
+                break;
+            case msr::airlib::DroneControllerBase::ImageType::Segmentation:
+                typeName = "seg";
+                break;
+            }
+
+            std::string imageName = Utils::stringf("%s_%s%d.png", baseName.c_str(), typeName, image_index_++);
             std::string file_path_name = FileSystem::combine(path, imageName);
 
             ofstream file;

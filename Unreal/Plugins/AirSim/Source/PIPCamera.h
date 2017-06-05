@@ -54,9 +54,6 @@ public:
 
 	USceneCaptureComponent2D* getCaptureComponent(const EPIPCameraType type, bool if_active);
 
-    bool getScreenshot(EPIPCameraType camera_type, TArray<uint8>& compressedPng, float& width, float& height);
-    void saveScreenshot(EPIPCameraType camera_type, FString fileSavePathPrefix, int fileSuffix);
-
 private:
     UPROPERTY() USceneCaptureComponent2D* screen_capture_;
     UPROPERTY() USceneCaptureComponent2D* depth_capture_;

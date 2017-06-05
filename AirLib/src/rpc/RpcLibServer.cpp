@@ -83,9 +83,15 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
         float obs_avoidance_vel, const RpcLibAdapators::Vector3r& origin, float xy_length, float max_z, float min_z) -> 
         bool { return drone_->setSafety(SafetyEval::SafetyViolationType(enable_reasons), obs_clearance, obs_startegy,
             obs_avoidance_vel, origin.to(), xy_length, max_z, min_z); });
-    pimpl_->server.bind("setImageTypeForCamera", [&](int camera_id, DroneControllerBase::ImageType type) -> void { drone_->setImageTypeForCamera(camera_id, type); });
-    pimpl_->server.bind("getImageTypeForCamera", [&](int camera_id) -> DroneControllerBase::ImageType { return drone_->getImageTypeForCamera(camera_id); });
-    pimpl_->server.bind("getImageForCamera", [&](int camera_id, DroneControllerBase::ImageType type) -> vector<uint8_t> { return drone_->getImageForCamera(camera_id, type); });
+
+    pimpl_->server.bind("getImageForCamera", [&](int camera_id, DroneControllerBase::ImageType type) -> vector<uint8_t> { 
+        auto result = drone_->getImageForCamera(camera_id, type); 
+        if (result.size() == 0) {
+            // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
+            result.push_back(0);
+        }
+        return result;
+    });
 
 
     //getters
