@@ -1201,7 +1201,7 @@ public:
 
             std::cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << endl;
 
-            context->sleep_for(pause_time);
+            context->sleep_for(pause_time / 1000);
         }
 
     }

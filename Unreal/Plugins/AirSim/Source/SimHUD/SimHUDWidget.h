@@ -37,9 +37,15 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setPIPSceneVisibility(bool is_viisble);
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
+        bool getPIPSceneVisibility();
+    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setPIPDepthVisibility(bool is_viisble);
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
+        bool getPIPDepthVisibility();
+    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setPIPSegVisibility(bool is_viisble);
+    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
+        bool getPIPSegVisibility();
 
 protected:
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")

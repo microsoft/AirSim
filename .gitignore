@@ -234,6 +234,9 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 
+# compiled python files
+*.pyc
+
 # LightSwitch generated files
 GeneratedArtifacts/
 _Pvt_Extensions/
@@ -313,3 +316,4 @@ deps/
 /cmake-3.7.2-win64-x64
 /cmake-3.7.2-win64-x64.zip
 /3.3.2.zip
+

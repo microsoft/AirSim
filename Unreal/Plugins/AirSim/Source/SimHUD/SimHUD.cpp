@@ -3,10 +3,13 @@
 #include "SimMode/SimModeWorldMultiRotor.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+ASimHUD* ASimHUD::instance_ = nullptr;
+
 ASimHUD::ASimHUD()
 {
     static ConstructorHelpers::FClassFinder<UUserWidget> hud_widget_class(TEXT("WidgetBlueprint'/AirSim/Blueprints/BP_SimHUDWidget'"));
     widget_class_ = hud_widget_class.Succeeded() ? hud_widget_class.Class : nullptr;
+    instance_ = this;
 }
 
 void ASimHUD::BeginPlay()
@@ -80,6 +83,23 @@ void ASimHUD::inputEventToggleTrace()
 {
     simmode_->CameraDirector->TargetPawn->toggleTrace();
 }
+
+
+bool ASimHUD::isPIPSceneVisible()
+{
+    return widget_->getPIPSceneVisibility();
+}
+
+bool ASimHUD::isPIPDepthVisible()
+{
+    return widget_->getPIPDepthVisibility();
+}
+
+bool ASimHUD::isPIPSegVisible()
+{
+    return widget_->getPIPSegVisibility();
+}
+
 
 void ASimHUD::inputEventTogglePIPScene()
 {
