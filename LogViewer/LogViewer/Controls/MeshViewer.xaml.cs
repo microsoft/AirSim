@@ -1,9 +1,11 @@
 ﻿using LogViewer.Gestures;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -139,6 +141,9 @@ namespace LogViewer.Controls
         {
             MeshGeometry3D mymesh = new MeshGeometry3D();
 
+            // this resolves problems with handling of '.' versus ',' as decimal separator in the the loaded mesh.
+            CultureInfo usCulture = new CultureInfo("en-US");
+
             using (var stream = this.GetType().Assembly.GetManifestResourceStream("LogViewer.Assets.Mesh.txt"))
             {
                 using (var reader = new StreamReader(stream))
@@ -155,9 +160,9 @@ namespace LogViewer.Controls
                             string b = line.Substring(i + 1, j - i - 1);
                             string c = line.Substring(j + 1);
 
-                            double x = double.Parse(a);
-                            double y = double.Parse(b);
-                            double z = double.Parse(c);
+                            double x = double.Parse(a, usCulture);
+                            double y = double.Parse(b, usCulture);
+                            double z = double.Parse(c, usCulture);
 
                             mymesh.Positions.Add(new Point3D(x, y, z));
                         }
