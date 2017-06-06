@@ -17,7 +17,7 @@ enum class LogDebugLevel : uint8 {
 };
 
 /**
- *
+ * 
  */
 UCLASS()
 class UAirBlueprintLib : public UBlueprintFunctionLibrary
@@ -29,7 +29,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Utilities")
     static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
-
+    
     UFUNCTION(BlueprintCallable, Category = "Utilities")
     static float GetWorldToMetersScale(const AActor* context);
 
@@ -61,3 +61,4 @@ public:
 
     static void EnableInput(AActor* actor);
 };
+

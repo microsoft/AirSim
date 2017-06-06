@@ -20,7 +20,7 @@ UCLASS()
 class AIRSIM_API ACameraDirector : public AActor
 {
     GENERATED_BODY()
-
+    
 public:
     //below should be set by SimMode BP
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
@@ -46,7 +46,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PIP")
     APIPCamera* getCamera(int id = 0);
 
-public:
+public:	
     ACameraDirector();
     virtual void BeginPlay() override;
     virtual void Tick( float DeltaSeconds ) override;
