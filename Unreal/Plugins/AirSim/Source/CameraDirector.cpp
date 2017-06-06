@@ -2,7 +2,6 @@
 #include "CameraDirector.h"
 #include "AirBlueprintLib.h"
 
-
 ACameraDirector::ACameraDirector()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -23,8 +22,9 @@ void ACameraDirector::Tick( float DeltaTime )
     if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
         ExternalCamera->SetActorLocationAndRotation(camera_location_manual_, camera_rotation_manual_);
     }
-    else {
-        UAirBlueprintLib::FollowActor(ExternalCamera, TargetPawn, initial_ground_obs_offset_, ext_obs_fixed_z_);
+    else
+	{
+        UAirBlueprintLib::FollowActor(ExternalCamera, TargetPawn, initial_ground_obs_offset_, ext_obs_fixed_z_, ext_obs_fixed_xy_);
     }
 }
 
@@ -46,6 +46,7 @@ void ACameraDirector::initializeForBeginPlay()
     this->getCamera()->setToPIPView();
     ExternalCamera->setToMainView();
     ext_obs_fixed_z_ = false;
+	ext_obs_fixed_xy_ = false;
 }
 
 void ACameraDirector::setMode(ECameraDirectorMode mode)
@@ -66,8 +67,9 @@ void ACameraDirector::setupInputBindings()
 
     UAirBlueprintLib::BindActionToKey("inputEventFpvView", EKeys::LeftBracket, this, &ACameraDirector::inputEventFpvView);
     UAirBlueprintLib::BindActionToKey("inputEventFlyWithView", EKeys::RightBracket, this, &ACameraDirector::inputEventFlyWithView);
-    UAirBlueprintLib::BindActionToKey("inputEventGroundView", EKeys::Backslash, this, &ACameraDirector::inputEventGroundView);
+    UAirBlueprintLib::BindActionToKey("inputEventGroundView", EKeys::SpaceBar, this, &ACameraDirector::inputEventGroundView);
     UAirBlueprintLib::BindActionToKey("inputEventManualView", EKeys::Semicolon, this, &ACameraDirector::inputEventManualView);
+	UAirBlueprintLib::BindActionToKey("inputEventPilotView", EKeys::RightShift, this, &ACameraDirector::inputEventPilotView);
 
     left_binding_ = & UAirBlueprintLib::BindAxisToKey("inputManualArrowLeft", EKeys::Left, this, &ACameraDirector::inputManualLeft);
     right_binding_ = & UAirBlueprintLib::BindAxisToKey("inputManualArrowRight", EKeys::Right, this, &ACameraDirector::inputManualRight);
@@ -93,6 +95,7 @@ void ACameraDirector::inputEventFpvView()
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV);
     ExternalCamera->setToPIPView();
     getCamera()->setToMainView();
+	ext_obs_fixed_xy_ = false;
 }
 
 void ACameraDirector::inputEventGroundView()
@@ -101,6 +104,7 @@ void ACameraDirector::inputEventGroundView()
     ExternalCamera->setToMainView();
     getCamera()->setToPIPView();
     ext_obs_fixed_z_ = true;
+	ext_obs_fixed_xy_ = false;
 }
 
 void ACameraDirector::inputEventManualView()
@@ -114,8 +118,17 @@ void ACameraDirector::inputEventFlyWithView()
     ExternalCamera->setToMainView();
     getCamera()->setToPIPView();
     ext_obs_fixed_z_ = false;
+	ext_obs_fixed_xy_ = false;
 }
 
+void ACameraDirector::inputEventPilotView()
+{
+	setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_PILOT);
+	ExternalCamera->SetActorLocation(camera_start_location_);
+	ExternalCamera->setToMainView();
+	getCamera()->setToPIPView();
+	ext_obs_fixed_xy_ = true;
+}
 
 void ACameraDirector::inputManualLeft(float val)
 {

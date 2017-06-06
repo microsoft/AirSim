@@ -48,7 +48,7 @@ public:
     static bool GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collison_channel = ECC_Visibility);
 
     UFUNCTION(BlueprintCallable, Category = "Utilities")
-    static void FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z = false, float fixed_z_val = 2.0f);
+    static void FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z = false, bool fixed_xy = false, float fixed_z_val = 2.0f);
 
     template<class UserClass>
     static FInputActionBinding& BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,

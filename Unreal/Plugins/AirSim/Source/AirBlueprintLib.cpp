@@ -139,7 +139,7 @@ bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVecto
     return has_hit;
 }
 
-void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z, float fixed_z_val)
+void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z, bool fixed_xy, float fixed_z_val)
 {
     //can we see followee?
     FHitResult hit;
@@ -164,12 +164,16 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
     float offset_dist = offset.Size();
     float dist_offset = (dist - offset_dist) / offset_dist;
     float lerp_alpha = Utils::clip((dist_offset*dist_offset) * 0.01f + 0.01f, 0.0f, 1.0f);
-    next_location = FMath::Lerp(follower->GetActorLocation(), next_location, lerp_alpha);
-    follower->SetActorLocation(next_location);
+
+	// In Pilot mode (fixed_xy == true), we keep the location fixed to the camera director starting point
+	if (!fixed_xy) {
+		next_location = FMath::Lerp(follower->GetActorLocation(), next_location, lerp_alpha);
+		follower->SetActorLocation(next_location);
+	}
 
     FRotator next_rot = UKismetMathLibrary::FindLookAtRotation(follower->GetActorLocation(), followee->GetActorLocation());
     next_rot = FMath::Lerp(follower->GetActorRotation(), next_rot, 0.5f);
-    follower->SetActorRotation(next_rot);
+	follower->SetActorRotation(next_rot);
 }
 
 template<class UserClass>
