@@ -100,7 +100,7 @@ void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& fou
     UGameplayStatics::GetAllActorsOfClass(context == nullptr ? GEngine : context, T::StaticClass(), foundActors);
 }
 
-bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collison_channel) 
+bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collison_channel)
 {
     FCollisionQueryParams trace_params;
     trace_params.AddIgnoredActor(actor);
@@ -110,7 +110,7 @@ bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, co
     return actor->GetWorld()->LineTraceTestByChannel(start, end, collison_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collison_channel) 
+bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collison_channel)
 {
     hit = FHitResult(ForceInit);
 
@@ -122,7 +122,7 @@ bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, co
     return actor->GetWorld()->LineTraceSingleByChannel(hit, start, end, collison_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collison_channel) 
+bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collison_channel)
 {
     TArray<FHitResult> hits;
 
@@ -139,7 +139,7 @@ bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVecto
     return has_hit;
 }
 
-void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z, float fixed_z_val)
+void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z, bool fixed_xy, float fixed_z_val)
 {
     //can we see followee?
     FHitResult hit;
@@ -164,21 +164,25 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
     float offset_dist = offset.Size();
     float dist_offset = (dist - offset_dist) / offset_dist;
     float lerp_alpha = Utils::clip((dist_offset*dist_offset) * 0.01f + 0.01f, 0.0f, 1.0f);
-    next_location = FMath::Lerp(follower->GetActorLocation(), next_location, lerp_alpha);
-    follower->SetActorLocation(next_location);
+
+	// In Pilot mode (fixed_xy == true), we keep the location fixed to the camera director starting point
+	if (!fixed_xy) {
+		next_location = FMath::Lerp(follower->GetActorLocation(), next_location, lerp_alpha);
+		follower->SetActorLocation(next_location);
+	}
 
     FRotator next_rot = UKismetMathLibrary::FindLookAtRotation(follower->GetActorLocation(), followee->GetActorLocation());
     next_rot = FMath::Lerp(follower->GetActorRotation(), next_rot, 0.5f);
-    follower->SetActorRotation(next_rot);
+	follower->SetActorRotation(next_rot);
 }
 
 template<class UserClass>
-FInputActionBinding& UAirBlueprintLib::BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor, 
+FInputActionBinding& UAirBlueprintLib::BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,
     typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func,
     bool shift_key, bool control_key, bool alt_key, bool command_key)
 {
     FInputActionKeyMapping action(action_name, in_key, shift_key, control_key, alt_key, command_key);
-    
+
     APlayerController* controller = actor->GetWorld()->GetFirstPlayerController();
 
     controller->PlayerInput->AddActionMapping(action);
@@ -188,7 +192,7 @@ FInputActionBinding& UAirBlueprintLib::BindActionToKey(const FName action_name, 
 
 
 template<class UserClass>
-FInputAxisBinding& UAirBlueprintLib::BindAxisToKey(const FName axis_name, const FKey in_key, UserClass* actor, 
+FInputAxisBinding& UAirBlueprintLib::BindAxisToKey(const FName axis_name, const FKey in_key, UserClass* actor,
     typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
 {
     FInputAxisKeyMapping axis(axis_name, in_key);

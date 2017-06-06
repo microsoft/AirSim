@@ -9,17 +9,18 @@
 UENUM(BlueprintType)
 enum class ECameraDirectorMode : uint8
 {
-    CAMERA_DIRECTOR_MODE_FPV = 1	UMETA(DisplayName="FPV"),
+    CAMERA_DIRECTOR_MODE_FPV = 1				UMETA(DisplayName="FPV"),
     CAMERA_DIRECTOR_MODE_GROUND_OBSERVER = 2	UMETA(DisplayName="GroundObserver"),
-    CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3	UMETA(DisplayName="FlyWithMe"),
-    CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName="Manual")
+    CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3		UMETA(DisplayName="FlyWithMe"),
+    CAMERA_DIRECTOR_MODE_MANUAL = 4				UMETA(DisplayName="Manual"),
+	CAMERA_DIRECTOR_MODE_PILOT = 5				UMETA(DisplayName="Pilot")
 };
 
 UCLASS()
 class AIRSIM_API ACameraDirector : public AActor
 {
     GENERATED_BODY()
-    
+
 public:
     //below should be set by SimMode BP
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
@@ -31,6 +32,7 @@ public:
     void inputEventGroundView();
     void inputEventManualView();
     void inputEventFlyWithView();
+	void inputEventPilotView();
 
     UFUNCTION(BlueprintCallable, Category = "PIP")
     bool togglePIPScene();
@@ -44,7 +46,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "PIP")
     APIPCamera* getCamera(int id = 0);
 
-public:	
+public:
     ACameraDirector();
     virtual void BeginPlay() override;
     virtual void Tick( float DeltaSeconds ) override;
@@ -57,7 +59,7 @@ public:
     void initializeForBeginPlay();
 
 private:
-    void setupInputBindings();	
+    void setupInputBindings();
     bool checkCameraRefs();
     void enableManualBindings(bool enable);
 
@@ -85,4 +87,5 @@ private:
     FVector initial_ground_obs_offset_;
     FRotator camera_start_rotation_;
     bool ext_obs_fixed_z_;
+	bool ext_obs_fixed_xy_;
 };
