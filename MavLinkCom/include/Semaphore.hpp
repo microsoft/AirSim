@@ -9,6 +9,8 @@
 #include <semaphore.h>
 #endif
 
+class semaphore_impl;
+
 namespace mavlink_utils
 {
 	/*
@@ -35,7 +37,6 @@ namespace mavlink_utils
 		// wait will block.  Throws exception if an error occurs.
 		bool timed_wait(int milliseconds);
 	private:
-		class semaphore_impl;
 		std::unique_ptr<semaphore_impl> impl_;
 	};
 }
