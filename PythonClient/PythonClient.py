@@ -85,13 +85,14 @@ class AirSimClient:
             return self.client.call('rotateByYawRate', yaw_rate, duration)
 
         # camera control
+        # getImageForCamera returns compressed png in array of bytes
         # image_type uses one of the AirSimImageType members
-        def setImageTypeForCamera(self, camera_id, image_type):
-            return self.client.call('setImageTypeForCamera', camera_id, image_type)
-        def getImageTypeForCamera(self, camera_id):
-            return self.client.call('getImageTypeForCamera', camera_id)
         def getImageForCamera(self, camera_id, image_type):
-            return self.client.call('getImageForCamera', camera_id, image_type)
+            # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
+            result = self.client.call('getImageForCamera', camera_id, image_type)
+            if (result == "" or result == "\0"):
+                return None
+            return np.fromstring(result, np.int8)
 
         # helper method for converting getOrientation to roll/pitch/yaw
         # https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
