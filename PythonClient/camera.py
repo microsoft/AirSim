@@ -5,6 +5,27 @@ import cv2
 import time
 import sys
 
+def printUsage():
+   print("Usage: python camera.py [depth|segmentation|scene]")
+
+cameraType = "depth"
+
+for arg in sys.argv[1:]:
+  cameraType = arg.lower()
+
+cameraTypeMap = { 
+ "depth": AirSimImageType.Depth,
+ "segmentation": AirSimImageType.Segmentation,
+ "seg": AirSimImageType.Segmentation,
+ "scene": AirSimImageType.Scene,
+}
+
+if (not cameraType in cameraTypeMap):
+  printUsage()
+  sys.exit(0)
+
+print cameraTypeMap[cameraType]
+
 client = AirSimClient('127.0.0.1')
 
 help = False
@@ -21,11 +42,10 @@ fps = 0
 
 while True:
     # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-    result = client.getImageForCamera(0, AirSimImageType.Depth)
+    result = client.getImageForCamera(0, cameraTypeMap[cameraType])
     if (result == "\0"):
-        if (not help):
-            help = True
-            print("Please press '1' in the AirSim view to enable the Depth camera view")
+        print("Camera is not returning image, please check airsim for error messages")
+        sys.exit(0)
     else:
         rawImage = np.fromstring(result, np.int8)
         png = cv2.imdecode(rawImage, cv2.IMREAD_UNCHANGED)

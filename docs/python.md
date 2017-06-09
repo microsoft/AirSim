@@ -81,7 +81,7 @@ The drone should now be flying fast along the specified path.
 
 ### Camera
 
-While the drone if flying you might want to capture some camera images.
+While the drone is flying you might want to capture some camera images.
 See  [camera.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/camera.py) in the PythonClient folder.
 This program is capturing the Depth camera view from AirSim and displaying it in an OpenCV window.
 
