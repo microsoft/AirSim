@@ -16,8 +16,9 @@ def savePointCloud(image, fileName):
    f = open(fileName, "w")
    for x in xrange(image.shape[0]):
      for y in xrange(image.shape[1]):
-        x,y,z = image[x,y]
-        f.write("%f %f %f %s\n" % (x, y, z, rgb))
+        pt = image[x,y]
+        print pt
+        f.write("%f %f %f %s\n" % (pt[0], pt[1], pt[2], rgb))
    f.close()
 
 for arg in sys.argv[1:]:
@@ -32,7 +33,7 @@ while True:
         sys.exit(0)
     else:
         png = cv2.imdecode(rawImage, cv2.IMREAD_UNCHANGED)
-        savePointCloud(pnf, outputFile)
+        savePointCloud(png, outputFile)
         print("saved " + outputFile)
         sys.exit(0)
 
