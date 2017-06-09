@@ -42,14 +42,12 @@ fps = 0
 
 while True:
     # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-    result = client.getImageForCamera(0, cameraTypeMap[cameraType])
-    if (result == "\0"):
+    rawImage = client.getImageForCamera(0, cameraTypeMap[cameraType])
+    if (rawImage == None):
         print("Camera is not returning image, please check airsim for error messages")
         sys.exit(0)
     else:
-        rawImage = np.fromstring(result, np.int8)
         png = cv2.imdecode(rawImage, cv2.IMREAD_UNCHANGED)
-        
         cv2.putText(png,'FPS ' + str(fps),textOrg, fontFace, fontScale,(255,0,255),thickness)
         cv2.imshow("Depth", png)
 
