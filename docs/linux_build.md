@@ -2,7 +2,7 @@
 
 These are the instructions to build AirSim on a Linux machine.
 Note: you can also do this from [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)
-but make sure you are `not` using a `Visual Studio Command Prompt` because we don't want cmake to accodemtally find VC++ and try and use that.
+but make sure you are `not` using a `Visual Studio Command Prompt` because we don't want cmake to accidentally find VC++ and try and use that.
 
 We need to use `clang compiler` because Unreal engine requires that.  
 
