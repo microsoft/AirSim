@@ -139,7 +139,21 @@ public:
 		dcb.BaudRate = baudRate;
 		dcb.Parity = (byte)parity;
 		dcb.ByteSize = (byte)dataBits;
-		dcb.StopBits = (BYTE)bits;
+
+        switch (bits)
+        {
+        case StopBits_10:
+            dcb.StopBits = ONESTOPBIT;
+            break;
+        case StopBits_15:
+            dcb.StopBits = ONE5STOPBITS;
+            break;
+        case StopBits_20:
+            dcb.StopBits = TWOSTOPBITS;
+            break;
+        default:
+            break;
+        }
 
 		// Clear Handshake flags
 		dcb.fOutxCtsFlow = 0;
