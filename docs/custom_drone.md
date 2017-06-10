@@ -1,6 +1,6 @@
-# Airsim on a Real Drone
+# AirLib on a Real Drone
 
-Parts of the AirSim stack can be used on a real drone.  For example, you can run the MavlinkCom library and MavLinkTest app to test the connection
+Parts of the AirLib stack can be used on a real drone.  For example, you can run the MavlinkCom library and MavLinkTest app to test the connection
 between your `big brain` and `little brain`.  For our testing we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB.  The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wifi: 
 
 ![Flamewheel](images/Flamewheel.png)
