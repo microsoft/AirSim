@@ -1,5 +1,5 @@
 # This script is for building AirSim with GCC-6
-# You should NOT use this with Unreal.  
+# You should NOT use this with Unreal.
 # If you want bits that work in Unreal you need to use ../build.sh
 # For pre-requisite tools needed to run this script see
 # https://github.com/Microsoft/AirSim/blob/master/docs/linux_build.md
@@ -12,7 +12,7 @@ pushd $SCRIPTPATH
 
 # update the rpclib git submodule
 pushd ..
-git submodule update --init --recursive 
+git submodule update --init --recursive
 
 if [[ ! -d "$EIGEN_ROOT" ]]; then
         if [[ ! -d eigen ]]; then
@@ -30,7 +30,7 @@ fi
 popd
 
 if [ -f "CMakeCache.txt" ]; then
-rm CMakeCache.txt 
+rm CMakeCache.txt
 fi
 
 if [ -d "CMakeFiles" ]; then
@@ -39,8 +39,10 @@ fi
 
 GCCARGS="-D CMAKE_BUILD_TYPE=Debug"
 
-GCCARGS="$GCCARGS -D CMAKE_C_COMPILER=gcc-6 -D CMAKE_CXX_COMPILER=g++-6"
-
+GCCVERSION=$(gcc -v 2>&1 | sed -n "/^gcc version/p" | sed -e "s/^gcc version \([0-9]\)/\1/g" | cut -d"." -f1)
+if [ $GCCVERSION -lt 5 ]; then
+    GCCARGS="$GCCARGS -D CMAKE_C_COMPILER=gcc-6 -D CMAKE_CXX_COMPILER=g++-6"
+fi
 cmake $GCCARGS CMakeLists.txt
 
 make
