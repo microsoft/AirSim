@@ -17,7 +17,8 @@ public:
     virtual TTimePoint nowNanos() = 0;
     //converts time interval for wall clock to current clock
     //For example, if implementation is scaled clock simulating 5X spped then below
-    //will retun dt*5
+    //will retun dt*5. This functions are required to translate time to operating system
+    //which only has concept of wall clock. For example, to make thread sleep for specific duration.
     virtual TTimeDelta fromWallDelta(TTimeDelta dt) = 0;
     virtual TTimeDelta toWallDelta(TTimeDelta dt) = 0;
 

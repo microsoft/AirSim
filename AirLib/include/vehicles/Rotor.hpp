@@ -62,7 +62,8 @@ public: //methods
     {
         return output_;
     }
-    
+
+       
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {

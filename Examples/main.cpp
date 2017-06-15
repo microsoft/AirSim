@@ -1,8 +1,9 @@
 #include "StandAloneSensors.hpp"
+#include "StandAlonePhysics.hpp"
 #include <iostream>
 #include <string>
 
-int main(int argc, const char *argv[])
+int runStandAloneSensors(int argc, const char *argv[])
 {
     if (argc < 2) {
         std::cout << "Usage: " << argv[0] << " <out_file_name> <period_ms> <total_duration_sec>" << std::endl;
@@ -36,4 +37,21 @@ int main(int argc, const char *argv[])
     //StandALoneSensors::generateBarometerDynamicData(out_file, period, total_duration, testLocation);
     StandALoneSensors::generateMagnetometer2D(out_file, period, total_duration, testLocation, yawOffset, true);
 	//StandALoneSensors::generateMagnetometerMap(out_file);
+
+    return 0;
 }
+
+int runStandAlonePhysics(int argc, const char *argv[])
+{
+    using namespace msr::airlib;
+
+    StandAlonePhysics::testCollison();
+
+    return 0;
+}
+
+int main(int argc, const char *argv[])
+{
+    runStandAlonePhysics(argc, argv);
+}
+

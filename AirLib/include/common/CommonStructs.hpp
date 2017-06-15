@@ -75,6 +75,25 @@ struct Wrench {
     }
 };
 
+struct Momentums {
+    Vector3r linear;
+    Vector3r angular;
+
+    Momentums()
+    {}
+
+    Momentums(const Vector3r& linear_val, const Vector3r& angular_val)
+        : linear(linear_val), angular(angular_val)
+    {
+    }
+
+    static const Momentums zero()
+    {
+        static const Momentums zero_val(Vector3r::Zero(), Vector3r::Zero());
+        return zero_val;
+    }
+};
+
 struct Accelerations {
     Vector3r linear;
     Vector3r angular;
@@ -89,14 +108,14 @@ struct Accelerations {
 
     static const Accelerations zero()
     {
-        static const Accelerations zero_accelerations(Vector3r::Zero(), Vector3r::Zero());
-        return zero_accelerations;
+        static const Accelerations zero_val(Vector3r::Zero(), Vector3r::Zero());
+        return zero_val;
     }
 };
 
 struct PoseWithCovariance {
-	VectorMath::Pose pose;
-	vector<real_T> covariance;	//36 elements, 6x6 matrix
+    VectorMath::Pose pose;
+    vector<real_T> covariance;	//36 elements, 6x6 matrix
 
     PoseWithCovariance()
         : covariance(36, 0)
@@ -104,12 +123,12 @@ struct PoseWithCovariance {
 };
 
 struct PowerSupply {
-	vector<real_T> voltage, current;
+    vector<real_T> voltage, current;
 };
 
 struct TwistWithCovariance {
-	Twist twist;
-	vector<real_T> covariance;	//36 elements, 6x6 matrix
+    Twist twist;
+    vector<real_T> covariance;	//36 elements, 6x6 matrix
 
     TwistWithCovariance()
         : covariance(36, 0)
@@ -117,13 +136,13 @@ struct TwistWithCovariance {
 };
 
 struct Joystick {
-	vector<float> axes;
-	vector<int> buttons;
+    vector<float> axes;
+    vector<int> buttons;
 };
 
 struct Odometry {
-	PoseWithCovariance pose;
-	TwistWithCovariance twist;
+    PoseWithCovariance pose;
+    TwistWithCovariance twist;
 };
 
 struct GeoPoint {
@@ -163,9 +182,9 @@ struct CollisionInfo {
 };
 
 struct GeoPose {
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-	Quaternionr orientation;
-	GeoPoint position;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Quaternionr orientation;
+    GeoPoint position;
 };
 
 

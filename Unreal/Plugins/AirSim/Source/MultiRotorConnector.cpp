@@ -35,7 +35,7 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
     if (controller_->getRemoteControlID() >= 0)
         detectUsbRc();
 
-    rotor_count_ = vehicle_.vertexCount();
+    rotor_count_ = vehicle_.wrenchVertexCount();
     rotor_info_ = new RotorInfo[rotor_count_];
     memset(rotor_info_, 0, sizeof(RotorInfo) * rotor_count_);
 

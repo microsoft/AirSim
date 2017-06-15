@@ -62,9 +62,15 @@ public:
 			return VectorMathT::subtract(lhs, rhs);
 		}
 
-        static Pose nanPose() {
+        static Pose nanPose() 
+        {
             static const Pose nan_pose(VectorMathT::nanVector(), VectorMathT::nanQuaternion());
             return nan_pose;
+        }
+        static Pose zero()
+        {
+            static const Pose zero_pose(Vector3T::Zero(), QuaternionT(1, 0, 0, 0));
+            return zero_pose;
         }
     };
 
@@ -164,17 +170,17 @@ public:
             return q.conjugate()._transformVector(v);
     }    
 
-    static Vector3T transformToBodyFrame(const Vector3T& v_world, const QuaternionT& q, bool assume_unit_quat)
+    static Vector3T transformToBodyFrame(const Vector3T& v_world, const QuaternionT& q, bool assume_unit_quat = true)
     {
         return rotateVectorReverse(v_world, q, assume_unit_quat);
     }
 
-    static Vector3T transformToWorldFrame(const Vector3T& v_body, const QuaternionT& q, bool assume_unit_quat)
+    static Vector3T transformToWorldFrame(const Vector3T& v_body, const QuaternionT& q, bool assume_unit_quat = true)
     {
         return rotateVector(v_body, q, assume_unit_quat);
     }
 
-    static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& pose, bool assume_unit_quat)
+    static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& pose, bool assume_unit_quat = true)
     {
         //translate
         Vector3T translated = v_body + pose.position;
@@ -265,6 +271,12 @@ public:
         return std::isnan(q.x()) || std::isnan(q.y()) || std::isnan(q.z()) || std::isnan(q.w());
     }
 
+    static QuaternionT addAngularVelocity(const QuaternionT& orientation, const Vector3T& angular_vel, RealT dt)
+    {
+        QuaternionT dq_unit = QuaternionT(0, angular_vel.x() * 0.5f, angular_vel.y() * 0.5f, angular_vel.z() * 0.5f) * orientation;
+        QuaternionT net_q(dq_unit.coeffs() * dt + orientation.coeffs());
+        return net_q.normalized();
+    }
     static QuaternionT toQuaternion(RealT pitch, RealT roll, RealT yaw)
     {
         QuaternionT q;

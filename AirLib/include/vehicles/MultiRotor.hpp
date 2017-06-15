@@ -32,11 +32,9 @@ public:
         PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
 
         createRotors(*params_, rotors_, environment);
+        createDragVertices();
 
         initSensors(*params_, getKinematics(), getEnvironment());
-
-        //setup drag factors (must come after createRotors).
-        setupDragFactors();
 
         MultiRotor::reset();
     }
@@ -56,9 +54,6 @@ public:
         //reset rotors, kinematics and environment
         PhysicsBody::reset();
 
-        //update drag factors after environment and kinematics is reset
-        updateDragFactors();
-
         //reset rotors after environment is reset
         for (Rotor& rotor : rotors_)
             rotor.reset();
@@ -69,8 +64,6 @@ public:
 
     virtual void update() override
     {
-        updateDragFactors();
-
         //update forces and environment as a result of last dt
         PhysicsBody::update();
     }
@@ -112,27 +105,33 @@ public:
         return params_->getSensors();
     }
 
-    //physics body abstract interface
-    virtual Vector3r getLinearDragFactor() const override
-    {
-        return linear_drag_factor_;
-    }
-    virtual Vector3r getAngularDragFactor() const override
-    {
-        return angular_drag_factor_;
-    }
-    virtual uint vertexCount() const  override
+    //physics body interface
+    virtual uint wrenchVertexCount() const  override
     {
         return params_->getParams().rotor_count;
     }
-    virtual PhysicsBodyVertex& getVertex(uint index)  override
+    virtual PhysicsBodyVertex& getWrenchVertex(uint index)  override
     {
         return rotors_.at(index);
     }
-    virtual const PhysicsBodyVertex& getVertex(uint index) const override
+    virtual const PhysicsBodyVertex& getWrenchVertex(uint index) const override
     {
         return rotors_.at(index);
     }
+
+    virtual uint dragVertexCount() const override
+    {
+        return static_cast<uint>(drag_vertices_.size());
+    }
+    virtual PhysicsBodyVertex& getDragVertex(uint index)  override
+    {
+        return drag_vertices_.at(index);
+    }
+    virtual const PhysicsBodyVertex& getDragVertex(uint index) const override
+    {
+        return drag_vertices_.at(index);
+    }
+
     virtual real_T getRestitution() const override
     {
         return params_->getParams().restitution;
@@ -182,92 +181,42 @@ private: //methods
         params_->getSensors().reset();
     }
 
-    real_T getAngDragIntOverFaceXY(real_T x, real_T y, real_T z)
-    {
-        /* Integral: 2 * integral_0^(y/2) integral_0^(x/2) (3/4 (a^2 + b^2) z + z^3/8) da db = 1/64 x y z (x^2 + y^2 + 2 z^2)
-        https://www.wolframalpha.com/input/?i=integral_0%5E(y%2F2)+integral_0%5E(x%2F2)+(3%2F4)*(a%5E2+%2B+b%5E2)*z+%2B+z%5E3%2F8+da+db
-        we multiply by 2 for l=-x/2 to 0 and l = 0 to x/2
-        */
-        return 2.0f * 1.0f/64 * (x * y * z * (x*x + y*y + 2*z*z));
-    }
-
-    void setupDragFactors()
+    void createDragVertices()
     {
         const auto& params = params_->getParams();
 
-        /************* Linear drag *****************/
-        //we use box as approximate size with dimensions x, y, z plus the area of propellers when they rotate
+        //Drone is seen as central body that is connected to propellers via arm. We approximate central body as box of size x, y, z.
+        //The drag depends on area exposed so we also add area of propellers to approximate drag they may introduce due to their area.
         //while moving along any axis, we find area that will be exposed in that direction
         real_T propeller_area = M_PIf * params.rotor_params.propeller_diameter * params.rotor_params.propeller_diameter;
         real_T propeller_xsection = M_PIf * params.rotor_params.propeller_diameter * params.rotor_params.propeller_height;
-        {
-            real_T top_bottom_area = params.body_box.x * params.body_box.y;
-            real_T left_right_area = params.body_box.x * params.body_box.z;
-            real_T front_back_area = params.body_box.y * params.body_box.z;
-            linear_drag_factor_unit_ = Vector3r(
-                front_back_area + rotors_.size() * propeller_xsection, 
-                left_right_area + rotors_.size() * propeller_xsection, 
-                top_bottom_area) 
-                * params.linear_drag_coefficient / 2; 
-        }
 
-        /************* Angular drag ******************************************************************
-        Ref: http://physics.stackexchange.com/a/305020/14061
-        We will ignore drag due to shear stress. Drag due to angular friction is modelled for 
-        square body + cylinderical area of rotating propeller. For square box of dimension x,y,z
-        consider each face, for example, x-y face. The drag torque T_d is generated due to velocity 
-        vector at each point on body which produces dynamic pressure P_d.
-        T_d = F_d X r = F_d * r (because both are perpendicular)
-        F_d = C * integrate(P_d) over area
-        P_d = 1/2 * rho * v^2
-        v = r X w = r * w (because both are perpendicular)
-        Thus we get (y is just width of face, torque summed over width),
-        T_d = C * integrate(1/2 * rho * (r*w)^2 * r) * y
-        T_d = 1/2 * rho * C * * w^2 * y * integrate(r^3) over length x
-        Now r = sqrt(a^2 + b^2 + (z/2)^2) for a = -x/2 to x/2, b = -y/2 to y/2
-        Now we have to integrate r^(3/2) which is difficult. So instead we do taylor expansion
-        of (a^2 + b^2 + (z/2)^2)^3/2 and taking only first order terms we get
-        (a^2 + b^2 + (z/2)^2)^(3/2) ~ (z^3) / 8 + (3/4) *(a^2 + b^2) * z
-        Integral: 2 * integral_0^(y/2) integral_0^(x/2) (3/4 (a^2 + b^2) z + z^3/8) da db = 1/64 x y z (x^2 + y^2 + 2 z^2)
-        https://www.wolframalpha.com/input/?i=integral_0%5E(y%2F2)+integral_0%5E(x%2F2)+(3%2F4)*(a%5E2+%2B+b%5E2)*z+%2B+z%5E3%2F8+da+db
+        real_T top_bottom_area = params.body_box.x() * params.body_box.y();
+        real_T left_right_area = params.body_box.x() * params.body_box.z();
+        real_T front_back_area = params.body_box.y() * params.body_box.z();
+        Vector3r drag_factor_unit = Vector3r(
+            front_back_area + rotors_.size() * propeller_xsection, 
+            left_right_area + rotors_.size() * propeller_xsection, 
+            top_bottom_area + rotors_.size() * propeller_area) 
+            * params.linear_drag_coefficient / 2; 
 
-        For propellers, we assume that arm length >> propeller radius so that we can simply multiply
-        (omega * r)^2 * r with area or cross section of rotating propeller
-        *********************************************************************************************/
-        {
-            real_T arm_length_cube_sum = 0.0f;
-            for (uint i = 0; i < params.rotor_poses.size(); ++i)
-                arm_length_cube_sum += pow(params.rotor_poses.at(i).position.norm(), 3.0f);
+        //add six drag vertices representing 6 sides
+        drag_vertices_.clear();
+        drag_vertices_.emplace_back(Vector3r(0, 0, -params.body_box.z()), Vector3r(0, 0, -1), drag_factor_unit.z());
+        drag_vertices_.emplace_back(Vector3r(0, 0,  params.body_box.z()), Vector3r(0, 0,  1), drag_factor_unit.z());
+        drag_vertices_.emplace_back(Vector3r(0, -params.body_box.y(), 0), Vector3r(0, -1, 0), drag_factor_unit.y());
+        drag_vertices_.emplace_back(Vector3r(0,  params.body_box.y(), 0), Vector3r(0,  1, 0), drag_factor_unit.y());
+        drag_vertices_.emplace_back(Vector3r(-params.body_box.x(), 0, 0), Vector3r(-1, 0, 0), drag_factor_unit.x());
+        drag_vertices_.emplace_back(Vector3r( params.body_box.x(), 0, 0), Vector3r( 1, 0, 0), drag_factor_unit.x());
 
-            real_T top_bottom_area = getAngDragIntOverFaceXY(params.body_box.x, params.body_box.y, params.body_box.z);
-            real_T left_right_area = getAngDragIntOverFaceXY(params.body_box.z, params.body_box.x, params.body_box.y); 
-            real_T front_back_area = getAngDragIntOverFaceXY(params.body_box.y, params.body_box.z, params.body_box.x); 
-            angular_drag_factor_unit_ = Vector3r(
-                2 * (top_bottom_area + front_back_area) + arm_length_cube_sum * propeller_area,
-                2 * (top_bottom_area + left_right_area) + arm_length_cube_sum * propeller_area,
-                2 * (left_right_area + front_back_area) + arm_length_cube_sum * propeller_xsection)
-                * params.angular_drag_coefficient / 2;
-        }
     }
-
-    void updateDragFactors()
-    {
-        //update drag factors
-        real_T air_density = hasEnvironment() ? getEnvironment().getState().air_density : EarthUtils::SeaLevelAirDensity;
-        linear_drag_factor_ = linear_drag_factor_unit_ * air_density;
-        angular_drag_factor_ = angular_drag_factor_unit_ * air_density;
-    }
-
 
 private: //fields
     MultiRotorParams* params_;
 
     //let us be the owner of rotors object
     vector<Rotor> rotors_;
-
-    //drag
-    Vector3r linear_drag_factor_unit_, angular_drag_factor_unit_;
-    Vector3r linear_drag_factor_, angular_drag_factor_;
+    vector<PhysicsBodyVertex> drag_vertices_;
 };
 
 }} //namespace

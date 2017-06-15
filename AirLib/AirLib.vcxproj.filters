@@ -336,6 +336,12 @@
     <ClInclude Include="include\controllers\VehicleCamera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\common\DebugClock.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\DebugPhysicsBody.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp">

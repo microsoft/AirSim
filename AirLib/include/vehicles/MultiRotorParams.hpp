@@ -43,18 +43,13 @@ public: //types
         bool barometer = true;
     };
 
-    //TODO: support arbitrary shapes for cor body via interfaces
-    struct BoxDimensions {
-        real_T x, y, z; //box in the center with dimensions x, y and z
-    };
-
     struct Params {
         /*********** required parameters ***********/
         uint rotor_count;
         vector<RotorPose> rotor_poses;
         real_T mass;
         Matrix3x3r inertia;
-        BoxDimensions body_box;
+        Vector3r body_box;
 
         /*********** optional parameters with defaults ***********/
         real_T linear_drag_coefficient = 1.3f / 4.0f; 
@@ -202,15 +197,15 @@ protected: //static utility functions for derived classes to use
         }
     }
 
-    static void computeInertiaMatrix(Matrix3x3r& inertia, const BoxDimensions& body_box, const vector<RotorPose>& rotor_poses,
+    static void computeInertiaMatrix(Matrix3x3r& inertia, const Vector3r& body_box, const vector<RotorPose>& rotor_poses,
         real_T box_mass, real_T motor_assembly_weight)
     {
         inertia = Matrix3x3r::Zero();
 
         //http://farside.ph.utexas.edu/teaching/336k/Newtonhtml/node64.html
-        inertia(0, 0) = box_mass / 12.0f * (body_box.y*body_box.y + body_box.z*body_box.z); 
-        inertia(1, 1) = box_mass / 12.0f * (body_box.x*body_box.x + body_box.z*body_box.z); 
-        inertia(2, 2) = box_mass / 12.0f * (body_box.x*body_box.x + body_box.y*body_box.y); 
+        inertia(0, 0) = box_mass / 12.0f * (body_box.y()*body_box.y() + body_box.z()*body_box.z()); 
+        inertia(1, 1) = box_mass / 12.0f * (body_box.x()*body_box.x() + body_box.z()*body_box.z()); 
+        inertia(2, 2) = box_mass / 12.0f * (body_box.x()*body_box.x() + body_box.y()*body_box.y()); 
 
         for (size_t i = 0; i < rotor_poses.size(); ++i) {
             const auto& pos = rotor_poses.at(i).position;

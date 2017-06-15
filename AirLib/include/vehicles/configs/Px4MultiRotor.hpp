@@ -55,7 +55,7 @@ private:
         params.rotor_params.calculateMaxThrust();
 
         //set up dimensions of core body box or abdomen (not including arms).
-        params.body_box.x = 0.180f; params.body_box.y = 0.11f; params.body_box.z = 0.040f;
+        params.body_box.x() = 0.180f; params.body_box.y() = 0.11f; params.body_box.z() = 0.040f;
         real_T rotor_z = 2.5f / 100;
 
         //computer rotor poses
@@ -82,7 +82,7 @@ private:
         params.rotor_params.calculateMaxThrust();
 
         //set up dimensions of core body box or abdomen (not including arms).
-        params.body_box.x = 0.180f; params.body_box.y = 0.11f; params.body_box.z = 0.040f;
+        params.body_box.x() = 0.180f; params.body_box.y() = 0.11f; params.body_box.z() = 0.040f;
         real_T rotor_z = 2.5f / 100;
 
         //computer rotor poses
@@ -111,7 +111,7 @@ private:
         params.linear_drag_coefficient *= 4; // make top speed more real.
 
         //set up dimensions of core body box or abdomen (not including arms).
-        params.body_box.x = 0.16f; params.body_box.y = 0.10f; params.body_box.z = 0.14f;
+        params.body_box.x() = 0.16f; params.body_box.y() = 0.10f; params.body_box.z() = 0.14f;
         real_T rotor_z = 0.15f;
 
         //computer rotor poses
@@ -179,7 +179,7 @@ private:
         params.rotor_params.calculateMaxThrust();
 
         //set up dimensions of core body box or abdomen (not including arms).
-        params.body_box.x = 0.20f; params.body_box.y = 0.12f; params.body_box.z = 0.04f;
+        params.body_box.x() = 0.20f; params.body_box.y() = 0.12f; params.body_box.z() = 0.04f;
         real_T rotor_z = 2.5f / 100;
 
         //computer rotor poses

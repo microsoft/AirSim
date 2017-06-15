@@ -37,7 +37,7 @@ protected:
         real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
 
         //set up dimensions of core body box
-        params.body_box.x = 0.35f; params.body_box.y = 0.20f; params.body_box.z = 0.22f;
+        params.body_box.x() = 0.35f; params.body_box.y() = 0.20f; params.body_box.z() = 0.22f;
 
         //TODO: support ground effects https://github.com/byu-magicc/fcu_sim/blob/RC1.0/fcu_sim/agents/mikey/mikey.yaml
 

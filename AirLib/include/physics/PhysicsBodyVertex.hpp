@@ -11,21 +11,35 @@
 namespace msr { namespace airlib {
 
 class PhysicsBodyVertex : public UpdatableObject {
-protected:
-    virtual void setWrench(Wrench& wrench) = 0;
+protected: 
+    virtual void setWrench(Wrench& wrench)
+    {
+        //derived class should override if this is force/torque 
+        //generating vertex
+    }
 public:
+    real_T getDragFactor() const
+    {
+        return drag_factor_;
+    }
+    real_T setDragFactor(real_T val)
+    {
+        drag_factor_ = val;
+    }
+
     PhysicsBodyVertex()
     {
         //allow default constructor with later call for initialize
     }
-    PhysicsBodyVertex(const Vector3r& position, const Vector3r& normal)
+    PhysicsBodyVertex(const Vector3r& position, const Vector3r& normal, real_T drag_factor = 0)
     {
-        initialize(position, normal);
+        initialize(position, normal, drag_factor);
     }
-    void initialize(const Vector3r& position, const Vector3r& normal)
+    void initialize(const Vector3r& position, const Vector3r& normal, real_T drag_factor = 0)
     {
         initial_position_ = position;
         initial_normal_ = normal;
+        drag_factor_ = drag_factor;
 
         PhysicsBodyVertex::reset();
     }
@@ -77,6 +91,7 @@ private:
     Vector3r initial_position_, position_;
     Vector3r initial_normal_, normal_;
     Wrench current_wrench_;
+    real_T drag_factor_;
 };
 
 }} //namespace

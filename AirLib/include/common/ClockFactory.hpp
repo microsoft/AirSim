@@ -5,16 +5,24 @@
 #define airsim_core_ClockFactory_hpp
 
 #include "SimClock.hpp"
+#include <memory>
 
 namespace msr { namespace airlib {
 
 class ClockFactory {
 public:
-    static ClockBase* get()
+    //output of this function should not be stored as pointer might change
+    static ClockBase* get(std::shared_ptr<ClockBase> val = nullptr)
     {
-        static SimClock clock;
-        
-        return &clock;
+        static std::shared_ptr<ClockBase> clock;
+
+        if (val != nullptr)
+            clock = val;
+
+        if (clock == nullptr)
+            clock = std::make_shared<SimClock>();
+
+        return clock.get();
     }
 
     //don't allow multiple instances of this class
