@@ -11,4 +11,6 @@ using namespace msr::airlib;
 
 Settings Settings::settings_;
 
+std::mutex Settings::file_access_;
+
 #endif

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <string>
-
+#include <mutex>
 #include "common/common_utils/Utils.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
@@ -19,6 +19,7 @@ namespace msr {
             std::string file_;
             nlohmann::json doc_;
             bool load_success_ = false;
+            static std::mutex file_access_;
         public:
             static Settings& singleton() {
                 return settings_;
@@ -28,12 +29,14 @@ namespace msr {
 
             static std::string getFullPath(std::string fileName)
             {
+                std::lock_guard<std::mutex> guard(file_access_);
                 std::string path = common_utils::FileSystem::getAppDataFolder();
                 return common_utils::FileSystem::combine(path, fileName);
             }
 
             static Settings& loadJSonFile(std::string fileName)
             {
+                std::lock_guard<std::mutex> guard(file_access_);
                 std::string path = getFullPath(fileName);
                 settings_.file_ = fileName;
 
@@ -60,6 +63,7 @@ namespace msr {
 
             void saveJSonFile(std::string fileName)
             {
+                std::lock_guard<std::mutex> guard(file_access_);
                 std::string path = getFullPath(fileName);
                 std::ofstream s;
                 common_utils::FileSystem::createTextFile(path, s);
