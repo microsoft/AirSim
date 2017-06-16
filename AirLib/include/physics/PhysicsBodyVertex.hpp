@@ -22,7 +22,7 @@ public:
     {
         return drag_factor_;
     }
-    real_T setDragFactor(real_T val)
+    void setDragFactor(real_T val)
     {
         drag_factor_ = val;
     }
