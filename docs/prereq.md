@@ -2,7 +2,7 @@
 
 ## What hardware do you need?
 ### Computer
-Intel Core i7 or equivalent PC with 32GB of RAM and a a very fast GPU with at least 4GB of RAM. Large environments in Unreal requires a lot of RAM and a beefy GPU card. 
+Intel Core i7 or equivalent PC with 32GB of RAM and a very fast GPU with at least 4GB of RAM. Large environments in Unreal require a lot of RAM and a beefy GPU card. 
 The typical computer hardware we use for development purposes usually have 6 to 12 cores and graphics card such as NVidia TitanX or NVidia GTX 1080 with 32GB to 64GB RAM and a [fast hard drive](hard_drive.md).
 
 ### RC Transmitter and Receiver
