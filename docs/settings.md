@@ -6,6 +6,14 @@ Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
 ````
 {
   "LocalHostIp": "127.0.0.1",
+  "RecordUIVisible": true,
+  "LogMessagesVisible": true,
+  "ViewMode": "FlyWithMe",
+  "FpvVehicleName": "Pixhawk",
+  "RpcEnabled": true,
+  "RosFlight": {
+    "RemoteControlID": 0
+  },
   "Pixhawk": {
     "LogViewerHostIp": "127.0.0.1",
     "LogViewerPort": 14388,
