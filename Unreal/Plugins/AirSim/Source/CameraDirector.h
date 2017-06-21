@@ -54,7 +54,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Modes")
     void setMode(ECameraDirectorMode mode);
 
-    void initializeForBeginPlay();
+    void initializeForBeginPlay(ECameraDirectorMode view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
 
 private:
     void setupInputBindings();	

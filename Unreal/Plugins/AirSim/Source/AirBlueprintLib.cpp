@@ -16,6 +16,8 @@ parameters -> camel_case
 
 typedef common_utils::Utils Utils;
 
+bool UAirBlueprintLib::log_messages_hidden = false;
+
 void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec)
 {
     LogMessage(FString(prefix.c_str()), FString(suffix.c_str()), level, persist_sec);
@@ -23,8 +25,12 @@ void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::st
 
 void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
 {
+    if (log_messages_hidden)
+        return;
+
     static TMap<FString, int> loggingKeys;
     static int counter = 1;
+
     int key = loggingKeys.FindOrAdd(prefix);
     if (key == 0) {
         key = counter++;

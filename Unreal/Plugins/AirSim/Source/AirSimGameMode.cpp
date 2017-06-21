@@ -64,6 +64,8 @@ void AAirSimGameMode::initializeSettings()
         Settings& settings = Settings::loadJSonFile("settings.json");
         auto settings_filename = Settings::singleton().getFileName();
         if (settings.isLoadSuccess()) {
+            UAirBlueprintLib::setLogMessagesHidden(! settings.getBool("LogMessagesVisible", true));
+
             std::string msg = "Loaded settings from " + settings_filename;
             UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Informational);
         }

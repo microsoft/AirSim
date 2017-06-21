@@ -32,6 +32,9 @@ public:
     virtual void startRecording();
     virtual void stopRecording();
     virtual bool isRecording();
+    virtual bool isRecordUIVisible();
+    virtual ECameraDirectorMode getInitialViewMode();
+
     FString getRecordingPath();
 
     std::ofstream record_file;
@@ -39,6 +42,8 @@ public:
 protected:
     virtual void setupInputBindings();
     bool is_recording;
+    bool is_record_ui_visible;
+    ECameraDirectorMode initial_view_mode;
     int record_tick_count;
     bool enable_rpc;
     std::string api_server_address;

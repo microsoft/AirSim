@@ -60,5 +60,17 @@ public:
         typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func);
 
     static void EnableInput(AActor* actor);
+
+    static bool getLogMessagesHidden()
+    {
+        return log_messages_hidden;
+    }
+    static void setLogMessagesHidden(bool is_hidden)
+    {
+        log_messages_hidden = is_hidden;
+    }
+
+private:
+    static bool log_messages_hidden;
 };
 

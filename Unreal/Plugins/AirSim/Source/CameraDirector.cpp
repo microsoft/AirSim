@@ -33,7 +33,7 @@ ECameraDirectorMode ACameraDirector::getMode()
     return mode_;
 }
 
-void ACameraDirector::initializeForBeginPlay()
+void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode)
 {
     setupInputBindings();
 
@@ -42,10 +42,14 @@ void ACameraDirector::initializeForBeginPlay()
     initial_ground_obs_offset_ = camera_start_location_ - TargetPawn->GetActorLocation();
 
     //set initial view mode
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
-    this->getCamera()->setToPIPView();
-    ExternalCamera->setToMainView();
-    ext_obs_fixed_z_ = false;
+    switch (view_mode) {
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME: inputEventFlyWithView(); break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV: inputEventFpvView(); break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER: inputEventGroundView(); break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL: inputEventManualView(); break;
+    default:
+        throw std::out_of_range("Unknown view mode specified in CameraDirector::initializeForBeginPlay");
+    }
 }
 
 void ACameraDirector::setMode(ECameraDirectorMode mode)
@@ -120,23 +124,23 @@ void ACameraDirector::inputEventFlyWithView()
 void ACameraDirector::inputManualLeft(float val)
 {
     if (!FMath::IsNearlyEqual(val, 0.f)) {
-		camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(0,-val*10,0));
+        camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(0,-val*10,0));
     }
 }
 void ACameraDirector::inputManualRight(float val)
 {
     if (!FMath::IsNearlyEqual(val, 0.f))
-		camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(0, val * 10, 0));
+        camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(0, val * 10, 0));
 }
 void ACameraDirector::inputManualForward(float val)
 {
     if (!FMath::IsNearlyEqual(val, 0.f))
-		camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(val * 10, 0, 0));
+        camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(val * 10, 0, 0));
 }
 void ACameraDirector::inputManualBackward(float val)
 {
     if (!FMath::IsNearlyEqual(val, 0.f))
-	camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(-val * 10, 0, 0));
+    camera_location_manual_ += camera_rotation_manual_.RotateVector(FVector(-val * 10, 0, 0));
 }
 void ACameraDirector::inputManualMoveUp(float val)
 {

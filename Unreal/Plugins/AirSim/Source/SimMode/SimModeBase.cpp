@@ -34,6 +34,17 @@ void ASimModeBase::BeginPlay()
     Settings& settings = Settings::singleton();
     enable_rpc = settings.getBool("RpcEnabled", true);
     api_server_address = settings.getString("LocalHostIp", "127.0.0.1");
+    is_record_ui_visible = settings.getBool("RecordUIVisible", true);
+
+    std::string view_mode_string = settings.getString("ViewMode", "FlyWithMe");
+    if (view_mode_string == "FlyWithMe")
+        initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
+    else if (view_mode_string == "Fpv")
+        initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV;
+    else if (view_mode_string == "Manual")
+        initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL;
+    else if (view_mode_string == "GroundObserver")
+        initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
 
     //do not save this default in json as this will change in near future
     fpv_vehicle_name = settings.getString("FpvVehicleName", "Pixhawk");
@@ -68,6 +79,16 @@ void ASimModeBase::setupInputBindings()
 bool ASimModeBase::isRecording()
 {
     return is_recording;
+}
+
+bool ASimModeBase::isRecordUIVisible()
+{
+    return is_record_ui_visible;
+}
+
+ECameraDirectorMode ASimModeBase::getInitialViewMode()
+{
+    return initial_view_mode;
 }
 
 void ASimModeBase::startRecording()

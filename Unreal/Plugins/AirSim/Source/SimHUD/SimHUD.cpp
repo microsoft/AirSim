@@ -41,6 +41,7 @@ void ASimHUD::BeginPlay()
     widget_->setReportVisible(simmode_->EnableReport);
     widget_->refreshPIPVisibility(simmode_->CameraDirector->getCamera());
     widget_->setOnToggleRecordingHandler(std::bind(&ASimHUD::toggleRecordHandler, this));
+    widget_->setRecordButtonVisibility(simmode_->isRecordUIVisible());
 }
 
 void ASimHUD::Tick( float DeltaSeconds )
