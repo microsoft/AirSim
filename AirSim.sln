@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AirSim", "AirSim", "{6B6941
 		Unreal\Plugins\AirSim\Source\AirSim.Build.cs = Unreal\Plugins\AirSim\Source\AirSim.Build.cs
 		Unreal\Plugins\AirSim\Source\AirSim.cpp = Unreal\Plugins\AirSim\Source\AirSim.cpp
 		Unreal\Plugins\AirSim\Source\AirSim.h = Unreal\Plugins\AirSim\Source\AirSim.h
+		Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp = Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp
+		Unreal\Plugins\AirSim\Source\AirSimGameMode.h = Unreal\Plugins\AirSim\Source\AirSimGameMode.h
 		Unreal\Plugins\AirSim\Source\CameraDirector.cpp = Unreal\Plugins\AirSim\Source\CameraDirector.cpp
 		Unreal\Plugins\AirSim\Source\CameraDirector.h = Unreal\Plugins\AirSim\Source\CameraDirector.h
 		Unreal\Plugins\AirSim\Source\FlyingPawn.cpp = Unreal\Plugins\AirSim\Source\FlyingPawn.cpp
@@ -65,6 +67,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimHUD", "SimHUD", "{95E2FE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimMode", "SimMode", "{6175579D-2920-406D-A36B-2A0A56AA7892}"
 	ProjectSection(SolutionItems) = preProject
+		Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp = Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp
+		Unreal\Plugins\AirSim\Source\AirSimGameMode.h = Unreal\Plugins\AirSim\Source\AirSimGameMode.h
 		Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.cpp = Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.cpp
 		Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.h = Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.h
 		Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldBase.cpp = Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldBase.cpp

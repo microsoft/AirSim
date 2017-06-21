@@ -29,7 +29,6 @@ namespace msr {
 
             static std::string getFullPath(std::string fileName)
             {
-                std::lock_guard<std::mutex> guard(file_access_);
                 std::string path = common_utils::FileSystem::getAppDataFolder();
                 return common_utils::FileSystem::combine(path, fileName);
             }

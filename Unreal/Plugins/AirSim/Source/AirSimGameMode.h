@@ -17,4 +17,6 @@ class AIRSIM_API AAirSimGameMode : public AGameModeBase
     
     AAirSimGameMode(const FObjectInitializer& ObjectInitializer);
     
+private:
+    void initializeSettings();
 };

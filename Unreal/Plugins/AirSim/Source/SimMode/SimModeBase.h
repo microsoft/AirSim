@@ -44,8 +44,4 @@ protected:
     std::string api_server_address;
     std::string fpv_vehicle_name;
 
-
-private:
-    void initializeSettings();
-
 };
