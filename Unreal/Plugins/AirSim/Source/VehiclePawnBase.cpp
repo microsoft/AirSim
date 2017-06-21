@@ -1,7 +1,7 @@
 #include "AirSim.h"
 #include "VehiclePawnBase.h"
 #include "AirBlueprintLib.h"
-
+#include "common/ClockFactory.hpp"
 
 AVehiclePawnBase::AVehiclePawnBase()
 {
@@ -37,13 +37,11 @@ void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
     //SetActorRotation(FQuat::Slerp(CurrentRotation.Quaternion(), HitNormal.ToOrientationQuat(), 0.025f));
 
     state_.collison_info.has_collided = true;
-    ++state_.collison_info.collison_count;
     state_.collison_info.normal = AVehiclePawnBase::toVector3r(Hit.ImpactNormal, 1, true);
     state_.collison_info.impact_point = toNedMeters(Hit.ImpactPoint);
     state_.collison_info.position = toNedMeters(getPosition());
     state_.collison_info.penetration_depth = Hit.PenetrationDepth / world_to_meters;
-
-    UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(state_.collison_info.collison_count), LogDebugLevel::Failure);
+    state_.collison_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
 }
 
 void AVehiclePawnBase::displayCollisonEffect(FVector hit_location, const FHitResult& hit)

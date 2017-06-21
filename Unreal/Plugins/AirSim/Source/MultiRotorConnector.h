@@ -72,6 +72,8 @@ private:
 
     Pose last_pose, last_debug_pose;
 
+    CollisonResponseInfo collision_response_info;
+
     bool enable_rpc_;
     std::string api_server_address_;
     msr::airlib::DroneControllerBase* controller_;

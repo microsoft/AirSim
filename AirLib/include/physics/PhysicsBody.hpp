@@ -85,9 +85,12 @@ public: //methods
     virtual void reset() override
     {
         kinematics_.reset();
+
         if (environment_)
             environment_->reset();
         wrench_ = Wrench::zero();
+        collison_info_ = CollisionInfo();
+        collison_response_info_ = CollisonResponseInfo();
     }
 
     virtual void update() override
@@ -174,6 +177,7 @@ public: //methods
     {
         return wrench_;
     }
+
     const CollisionInfo& getCollisionInfo() const
     {
         return collison_info_;
@@ -183,6 +187,16 @@ public: //methods
     {
         collison_info_ = collison_info;
     }
+
+    const CollisonResponseInfo& getCollisionResponseInfo() const
+    {
+        return collison_response_info_;
+    }
+    CollisonResponseInfo& getCollisionResponseInfo()
+    {
+        return collison_response_info_;
+    }
+
 
 public:
     //for use in physics angine: //TODO: use getter/setter or friend method?
@@ -195,10 +209,10 @@ private:
     Kinematics kinematics_;
 
     //force is in world frame but torque is not
-    //TODO: make torque in world frame too
     Wrench wrench_;
 
     CollisionInfo collison_info_;
+    CollisonResponseInfo collison_response_info_;
 
     Environment* environment_ = nullptr;
 };

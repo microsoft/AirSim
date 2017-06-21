@@ -41,7 +41,7 @@ struct Wrench {
     }
 
     //support basic arithmatic 
-    Wrench operator+(const Wrench& other)
+    Wrench operator+(const Wrench& other) const
     {
         Wrench result;
         result.force = this->force + other.force;
@@ -54,7 +54,7 @@ struct Wrench {
         torque += other.torque;
         return *this;
     }
-    Wrench operator-(const Wrench& other)
+    Wrench operator-(const Wrench& other) const
     {
         Wrench result;
         result.force = this->force - other.force;
@@ -174,11 +174,17 @@ struct GeoPoint {
 
 struct CollisionInfo {
     bool has_collided = false;
-    int collison_count = 0;
     Vector3r normal = Vector3r::Zero();
     Vector3r impact_point = Vector3r::Zero();
     Vector3r position = Vector3r::Zero();
     real_T penetration_depth = 0;
+    TTimePoint time_stamp = 0;
+};
+
+struct CollisonResponseInfo {
+    unsigned int collison_count_raw = 0;
+    unsigned int collison_count_non_resting = 0;
+    TTimePoint collision_time_stamp = 0;
 };
 
 struct GeoPose {

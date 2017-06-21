@@ -96,7 +96,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
 {
     //validate path size
     if (path.size() == 0) {
-        Utils::logMessage("moveOnPath terminated because path has no points");
+        Utils::log("moveOnPath terminated because path has no points");
         return true;
     }
 
@@ -117,7 +117,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     else {
         //if auto mode requested for lookahead then calculate based on velocity
         lookahead = getAutoLookahead(velocity, adaptive_lookahead);
-        Utils::logMessage("lookahead = %f, adaptive_lookahead = %f", lookahead, adaptive_lookahead);        
+        Utils::log(Utils::stringf("lookahead = %f, adaptive_lookahead = %f", lookahead, adaptive_lookahead));        
     }
 
     //add current position as starting point
@@ -260,7 +260,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         if (goal_dist >= 0) {
             float overshoot = setNextPathPosition(path3d, path_segs, cur_path_loc, goal_dist, cur_path_loc);
             if (overshoot)
-                Utils::logMessage("overshoot=%f", overshoot);
+                Utils::log(Utils::stringf("overshoot=%f", overshoot));
         }
         //else
         //    Utils::logMessage("goal_dist was negative: %f", goal_dist);
@@ -373,7 +373,7 @@ bool DroneControllerBase::setSafety(SafetyEval::SafetyViolationType enable_reaso
     safety_eval_ptr_->setSafety(enable_reasons, obs_clearance, obs_startegy, origin, xy_length, max_z, min_z);
 
     obs_avoidance_vel_ = obs_avoidance_vel;
-    Utils::logMessage("obs_avoidance_vel: %f", obs_avoidance_vel_);
+    Utils::log(Utils::stringf("obs_avoidance_vel: %f", obs_avoidance_vel_));
 
     return true;
 }
@@ -410,7 +410,7 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
     if (rc_data_trims.isAnyMoreThan(kMaxTrim))
         throw VehicleMoveException(Utils::stringf("RC trims does not seem to be valid: %s", rc_data_trims.toString().c_str()));
 
-    Utils::logMessage("RCData Trims: %s", rc_data_trims.toString().c_str());
+    Utils::log(Utils::stringf("RCData Trims: %s", rc_data_trims.toString().c_str()));
 
     Waiter waiter(getCommandPeriod(), duration);
     do {
@@ -435,11 +435,11 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
                 moveByVelocityZ(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
             }
             catch(const DroneControllerBase::UnsafeMoveException& ex) {
-                Utils::logError("Safety violation: %s", ex.result.message.c_str());
+                Utils::log(Utils::stringf("Safety violation: %s", ex.result.message.c_str()));
             }
         }
         else
-            Utils::logMessage("RCData had too old timestamp: %f", age);
+            Utils::log(Utils::stringf("RCData had too old timestamp: %f", age));
 
     } while (waiter.sleep(cancelable_action) && !waiter.is_timeout());
 
@@ -548,9 +548,9 @@ void DroneControllerBase::logHomePoint()
 {
     GeoPoint homepoint = getHomePoint();
     if (std::isnan(homepoint.longitude))
-        Utils::logError("Home point is not set!");
+        Utils::log("Home point is not set!");
     else
-        Utils::logMessage(homepoint.to_string().c_str());
+        Utils::log(homepoint.to_string().c_str());
 }
 
 float DroneControllerBase::setNextPathPosition(const vector<Vector3r>& path, const vector<PathSegment>& path_segs,
@@ -574,7 +574,7 @@ float DroneControllerBase::setNextPathPosition(const vector<Vector3r>& path, con
         offset = 0;
 
         if (&cur_path_loc == &next_path_loc)
-            Utils::logMessage("segment %d done: x=%f, y=%f, z=%f", i, path.at(i).x(), path.at(i).z(), path.at(i).z());
+            Utils::log(Utils::stringf("segment %d done: x=%f, y=%f, z=%f", i, path.at(i).x(), path.at(i).z(), path.at(i).z()));
 
         ++i;
     }
@@ -634,7 +634,7 @@ void DroneControllerBase::moveToPathPosition(const Vector3r& dest, float velocit
     else { //cur dest is too close than the distance we would travel
             //generate velocity vector that is same size as cur_dest_norm / command period
             //this velocity vect when executed for command period would yield cur_dest_norm
-        Utils::logMessage("Too close dest: cur_dest_norm=%f, expected_dist=%f", cur_dest_norm, expected_dist);
+        Utils::log(Utils::stringf("Too close dest: cur_dest_norm=%f, expected_dist=%f", cur_dest_norm, expected_dist));
         velocity_vect = (cur_dest / cur_dest_norm) * (cur_dest_norm / getCommandPeriod());   
     }
 

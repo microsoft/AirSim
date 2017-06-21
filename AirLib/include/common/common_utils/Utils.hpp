@@ -21,7 +21,6 @@
 #include <iostream>
 #include <limits>
 #include <queue>
-#include "Log.hpp"
 #include "type_utils.hpp"
 
 #ifndef _WIN32
@@ -98,7 +97,17 @@ private:
 
 
 public:
- 
+    class Logger {
+    public:
+        virtual void log(int level, const std::string& message)
+        {
+            if (level >= 0)
+                std::cout << message;
+            else
+                std::cerr << message;
+        }
+    };
+    
     static void enableImmediateConsoleFlush() {
         //disable buffering
         setbuf(stdout, NULL);
@@ -126,42 +135,22 @@ public:
         return static_cast<float>(radians * 180.0f / M_PI);
     }
 
-    static void logMessage(const char* format, ...) {
-        va_list args;
-        va_start(args, format);
+    static Logger* getSetLogger(Logger* logger = nullptr)
+    {
+        static Logger logger_default_;
+        static Logger* logger_;
 
-        auto size = _vscprintf(format, args) + 1U;
-        std::unique_ptr<char[]> buf(new char[size]);
+        if (logger != nullptr)
+            logger_ = logger;
+        else if (logger_ == nullptr)
+            logger_ = &logger_default_;
 
-#ifndef _MSC_VER
-        IGNORE_FORMAT_STRING_ON
-        vsnprintf(buf.get(), size, format, args);
-        IGNORE_FORMAT_STRING_OFF
-#else
-        vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
-#endif
-        va_end(args);
-
-        Log::getLog()->logMessage(buf.get());
+        return logger_;
     }
 
-    static void logError(const char* format, ...) {
-        va_list args;
-        va_start(args, format);
-
-        auto size = _vscprintf(format, args) + 1U;
-        std::unique_ptr<char[]> buf(new char[size]);
-
-#ifndef _MSC_VER
-        IGNORE_FORMAT_STRING_ON
-        vsnprintf(buf.get(), size, format, args);
-        IGNORE_FORMAT_STRING_OFF
-#else
-        vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
-#endif
-        va_end(args);
-
-        Log::getLog()->logError(buf.get());
+    static void log(std::string message, int level = 0)
+    {
+        getSetLogger()->log(level, message);
     }
 
     template <typename T>

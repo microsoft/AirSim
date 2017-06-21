@@ -216,7 +216,7 @@ namespace msr {
                             pending->execute();
                         }
                         catch (std::exception& e) {
-                            common_utils::Utils::logMessage("WorkerThread caught unhandled exception: %s", e.what());
+                            Utils::log(Utils::stringf("WorkerThread caught unhandled exception: %s", e.what()));
                         }
                         // we use cancel here to communicate to enqueueAndWait that the task is complete.
                         pending->complete();

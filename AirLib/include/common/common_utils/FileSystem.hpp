@@ -22,12 +22,12 @@ class FileSystem
 
 public:
 
-	// please use the combine() method instead.
-	static const char kPathSeparator =
+    // please use the combine() method instead.
+    static const char kPathSeparator =
 #ifdef _WIN32
-		'\\';
+        '\\';
 #else
-		'/';
+        '/';
 #endif
 
     static std::string createDirectory(std::string fullPath);
@@ -69,13 +69,13 @@ public:
         return parentFolder + kPathSeparator + child;
     }
 
-	static void removeLeaf(std::string& path) {
-		size_t size = path.size();
-		size_t pos = path.find_last_of('/');
-		if (pos != std::string::npos) {
-			path.erase(pos, size - pos);
-		}
-	}
+    static void removeLeaf(std::string& path) {
+        size_t size = path.size();
+        size_t pos = path.find_last_of('/');
+        if (pos != std::string::npos) {
+            path.erase(pos, size - pos);
+        }
+    }
 
 
     static std::string getFileExtension(const std::string str)
@@ -148,7 +148,7 @@ public:
         std::string filepath = getLogFileNamePath("log_", suffix, ".tsv", true);
         createTextFile(filepath, flog);
 
-        Utils::logMessage("log file started: %s", filepath.c_str());
+        Utils::log(Utils::stringf("log file started: %s", filepath.c_str()));
         flog.exceptions(flog.exceptions() | std::ios::failbit | std::ifstream::badbit);
         return filepath;
     }

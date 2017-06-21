@@ -28,7 +28,6 @@
     <ClInclude Include="include\common\common_utils\ExceptionUtils.hpp" />
     <ClInclude Include="include\common\common_utils\FileSystem.hpp" />
     <ClInclude Include="include\common\common_utils\json.hpp" />
-    <ClInclude Include="include\common\common_utils\Log.hpp" />
     <ClInclude Include="include\common\common_utils\MedianFilter.hpp" />
     <ClInclude Include="include\common\common_utils\OnlineStats.hpp" />
     <ClInclude Include="include\common\common_utils\optional.hpp" />
@@ -131,7 +130,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
-    <ClCompile Include="src\controllers\Log.cpp" />
     <ClCompile Include="src\controllers\MavLinkDroneController.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\rpc\RpcLibClient.cpp" />

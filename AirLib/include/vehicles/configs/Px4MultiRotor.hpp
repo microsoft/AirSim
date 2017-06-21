@@ -28,7 +28,7 @@ public:
         else if (connection_info_.model == "Hexacopter") {
             setupFrameGenericHex(params);
         }
-        else
+        else //Generic
             setupFrameGenericQuad(params);
 
         //create sensors

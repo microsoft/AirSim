@@ -11,6 +11,12 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
     enable_rpc_ = enable_rpc;
     api_server_address_ = api_server_address;
     vehicle_pawn_ = vehicle_pawn;
+
+    //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
+    FRotator rotation = vehicle_pawn_->GetActorRotation();
+    rotation.Roll = rotation.Pitch = 0;
+    vehicle_pawn_->SetActorRotation(rotation);
+    
     vehicle_pawn_->initialize();
 
     vehicle_params_ = vehicle_params;
@@ -138,6 +144,7 @@ void MultiRotorConnector::updateRenderedState()
     environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
     //update pose of object for rendering engine
     last_pose = vehicle_.getPose();
+    collision_response_info = vehicle_.getCollisionResponseInfo();
     last_debug_pose = controller_->getDebugPose();
 
     //update rotor poses
@@ -178,6 +185,9 @@ void MultiRotorConnector::updateRendering(float dt)
     for (auto i = 0; i < controller_messages_.size(); ++i) {
         UAirBlueprintLib::LogMessage(FString(controller_messages_[i].c_str()), TEXT(""), LogDebugLevel::Success, 30);
     }
+
+    //UAirBlueprintLib::LogMessage(TEXT("Collison (raw) Count:"), FString::FromInt(collision_response_info.collison_count_raw), LogDebugLevel::Unimportant);
+    UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(collision_response_info.collison_count_non_resting), LogDebugLevel::Failure);
 }
 
 

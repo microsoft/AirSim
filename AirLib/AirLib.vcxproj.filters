@@ -309,9 +309,6 @@
     <ClInclude Include="include\vehicles\configs\RosFlightQuadX.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\common\common_utils\Log.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\vehicles\MultiRotorParamsFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -366,9 +363,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\controllers\FileSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\controllers\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

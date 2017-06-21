@@ -19,7 +19,7 @@ namespace msr { namespace airlib {
 SafetyEval::SafetyEval(VehicleParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy_ptr)
     : vehicle_params_(vehicle_params), fence_ptr_(fence_ptr), obs_xy_ptr_(obs_xy_ptr)
 { 
-    Utils::logMessage("enable_reasons: %X, obs_strategy=%X", uint(enable_reasons_), uint(obs_strategy_));
+    Utils::log(Utils::stringf("enable_reasons: %X, obs_strategy=%X", uint(enable_reasons_), uint(obs_strategy_)));
 }
 
 void SafetyEval::checkFence(const Vector3r& dest_pos, const Vector3r& cur_pos, SafetyEval::EvalResult& appendToResult)
@@ -132,8 +132,8 @@ void SafetyEval::isSafeDestination(const Vector3r& dest_pos, const Vector3r& cur
         //look for each surrounding tick to see if we have obstacle free angle
         setSuggestedVelocity(result, quaternion);
 
-        Utils::logMessage("isSafeDestination: cur_dest_norm=%f, result=%s, quaternion=%s", 
-            cur_dest_norm, result.toString().c_str(), VectorMath::toString(quaternion, true).c_str());
+        Utils::log(Utils::stringf("isSafeDestination: cur_dest_norm=%f, result=%s, quaternion=%s", 
+            cur_dest_norm, result.toString().c_str(), VectorMath::toString(quaternion, true).c_str()));
     }
     //else no suggestions required
 }
@@ -143,7 +143,7 @@ float SafetyEval::adjustClearanceForPrStl(float base_clearance, float obs_confid
     //3.2 comes from inverse CDF for epsilone = 0.05 (i.e. 95% confidence), author: akapoor
     float additional_clearance = (1 - obs_confidence) * 3.2f;   
     if (additional_clearance != 0)
-        Utils::logMessage("additional_clearance=%f", additional_clearance);
+        Utils::log(Utils::stringf("additional_clearance=%f", additional_clearance));
 
     return base_clearance + additional_clearance;
 }
@@ -182,7 +182,7 @@ void SafetyEval::setSuggestedVelocity(SafetyEval::EvalResult& result, const Quat
             const Vector3r suggested_body = Vector3r(std::cos(suggested_angle), std::sin(suggested_angle), 0).normalized();
             result.suggested_vec = VectorMath::transformToWorldFrame(suggested_body, quaternion, true);
 
-            Utils::logMessage("right_risk_dist=%f, left_risk_dist=%f, suggested_tick=%i, suggested_angle=%f", right_risk_dist, left_risk_dist, suggested_tick, suggested_angle, suggested_angle);
+            Utils::log(Utils::stringf("right_risk_dist=%f, left_risk_dist=%f, suggested_tick=%i, suggested_angle=%f", right_risk_dist, left_risk_dist, suggested_tick, suggested_angle, suggested_angle));
 
             break; //if none found then suggested_vec is left as zero vec, meaning enter hover mode
         }      
@@ -239,12 +239,12 @@ void SafetyEval::setSafety(SafetyViolationType enable_reasons, float obs_clearan
     enable_reasons_ = enable_reasons;
     setObsAvoidanceStrategy(obs_strategy);
 
-    Utils::logMessage("enable_reasons: %X", uint(enable_reasons));
+    Utils::log(Utils::stringf("enable_reasons: %X", uint(enable_reasons)));
 }
 void SafetyEval::setObsAvoidanceStrategy(SafetyEval::ObsAvoidanceStrategy obs_strategy)
 {
     obs_strategy_ = obs_strategy;
-    Utils::logMessage("obs_strategy=%X", uint(obs_strategy));
+    Utils::log(Utils::stringf("obs_strategy=%X", uint(obs_strategy)));
 }
 SafetyEval::ObsAvoidanceStrategy SafetyEval::getObsAvoidanceStrategy()
 {
