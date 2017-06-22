@@ -86,7 +86,7 @@ public: //interface
         return controller_.get();
     }
 
-    //below method is needed to support firmwares without state estimation. In future, we should probably remove this support.
+    //TODO: below method is needed to support firmwares without state estimation. In future, we should probably remove this support.
     virtual void initializePhysics(const Environment* environment, const Kinematics::State* kinematics)
     {
         unused(environment);

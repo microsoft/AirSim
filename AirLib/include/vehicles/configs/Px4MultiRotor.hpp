@@ -141,8 +141,8 @@ private:
 
         Vector3r unit_z(0, 0, -1);  //NED frame
 
-                                    // relative to Forward vector in the order (0,3,1,2) required by quad X pattern
-                                    // http://ardupilot.org/copter/_images/MOTORS_QuadX_QuadPlus.jpg
+        // relative to Forward vector in the order (0,3,1,2) required by quad X pattern
+        // http://ardupilot.org/copter/_images/MOTORS_QuadX_QuadPlus.jpg
         arm_lengths.push_back(0.22f);
         arm_lengths.push_back(0.255f);
         arm_lengths.push_back(0.22f);

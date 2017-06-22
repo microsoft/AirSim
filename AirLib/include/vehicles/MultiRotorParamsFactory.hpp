@@ -5,6 +5,7 @@
 #define msr_airlib_vehicles_MultiRotorParamsFactory_hpp
 
 #include "vehicles/configs/RosFlightQuadX.hpp"
+#include "vehicles/configs/SimpleFlightQuadX.hpp"
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
 #include "vehicles/configs/Px4MultiRotor.hpp"
@@ -27,6 +28,8 @@ public:
             config.reset(new Px4MultiRotor(child));
         } else if (vehicle_name == "RosFlight") {
             config.reset(new RosFlightQuadX(child));
+        } else if (vehicle_name == "SimpleFlight") {
+            config.reset(new SimpleFlightQuadX(child));
         } else
             throw std::runtime_error(Utils::stringf("Cannot create vehicle config because vehicle name '%s' is not recognized", vehicle_name.c_str()));
 

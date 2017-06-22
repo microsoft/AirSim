@@ -14,16 +14,16 @@ class ClockBase {
 public:
     //returns value indicating nanoseconds elapsed since some reference timepoint in history
     //typically nanoseconds from Unix epoch
-    virtual TTimePoint nowNanos() = 0;
+    virtual TTimePoint nowNanos() const = 0;
     //converts time interval for wall clock to current clock
     //For example, if implementation is scaled clock simulating 5X spped then below
     //will retun dt*5. This functions are required to translate time to operating system
     //which only has concept of wall clock. For example, to make thread sleep for specific duration.
-    virtual TTimeDelta fromWallDelta(TTimeDelta dt) = 0;
-    virtual TTimeDelta toWallDelta(TTimeDelta dt) = 0;
+    virtual TTimeDelta fromWallDelta(TTimeDelta dt) const = 0;
+    virtual TTimeDelta toWallDelta(TTimeDelta dt) const = 0;
 
 
-    TTimeDelta elapsedSince(TTimePoint since)
+    TTimeDelta elapsedSince(TTimePoint since) const
     {
         return elapsedBetween(nowNanos(), since);
     }
@@ -31,7 +31,7 @@ public:
     {
         return (second - first) / 1.0E9;
     }
-    TTimeDelta updateSince(TTimePoint& since)
+    TTimeDelta updateSince(TTimePoint& since) const
     {
         TTimePoint cur = nowNanos();
         double elapsed = elapsedBetween(cur, since);

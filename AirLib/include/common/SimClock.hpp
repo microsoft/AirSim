@@ -17,7 +17,7 @@ public:
         offset_ = latency * (scale_ - 1);
     }
 
-    virtual TTimePoint nowNanos() override
+    virtual TTimePoint nowNanos() const override
     {
         if (offset_ == 0 && scale_ == 1) //optimized normal route
             return Utils::getTimeSinceEpochNanos();
@@ -33,11 +33,11 @@ public:
         }
     }
 
-    virtual TTimeDelta fromWallDelta(TTimeDelta dt) override
+    virtual TTimeDelta fromWallDelta(TTimeDelta dt) const override
     {
         return dt * scale_;
     }
-    virtual TTimeDelta toWallDelta(TTimeDelta dt)  override
+    virtual TTimeDelta toWallDelta(TTimeDelta dt) const  override
     {
         return dt / scale_;
     }
