@@ -27,16 +27,16 @@ public:
         current_ += step_;
     }
 
-    virtual TTimePoint nowNanos() override
+    virtual TTimePoint nowNanos() const override
     {
         return current_;
     }
 
-    virtual TTimeDelta fromWallDelta(TTimeDelta dt) override
+    virtual TTimeDelta fromWallDelta(TTimeDelta dt) const override
     {
         return dt;
     }
-    virtual TTimeDelta toWallDelta(TTimeDelta dt)  override
+    virtual TTimeDelta toWallDelta(TTimeDelta dt) const  override
     {
         return dt;
     }
