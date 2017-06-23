@@ -13,7 +13,7 @@
 #include "AirSimSimpleFlightBoard.hpp"
 #include "AirSimSimpleFlightCommLink.hpp"
 #include "controllers/Settings.hpp"
-#include "firmware/firmware.hpp"
+#include "firmware/Firmware.hpp"
 
 
 namespace msr { namespace airlib {
