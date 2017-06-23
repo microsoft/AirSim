@@ -33,13 +33,13 @@ public:
     real_T getMotorControlSignal(uint index) const
     {
         //convert PWM to scalled 0 to 1 control signal
-        return (motors_pwm_[index] - params_->min_pwm) / static_cast<float>(params_->max_pwm - params_->min_pwm);
+        return static_cast<float>(motor_output_[index]);
     }
 
     //set current RC stick status
-    void setInputChannel(uint channel, uint16_t val)
+    void setInputChannel(uint index, real_T val)
     {
-        input_channels_[channel] = val;
+        input_channels_[index] = static_cast<float>(val);
     }
 
 public:
@@ -55,17 +55,14 @@ public:
         return clock()->nowNanos() / 1000000;
     }
 
-    virtual uint16_t readChannel(int16_t channel) const override 
+    virtual float readChannel(uint8_t index) const override 
     {
-        return static_cast<uint16_t>(input_channels_[channel]);
+        return input_channels_[index];
     }
 
-    virtual void writeOutput(uint8_t index, uint16_t value) override 
+    virtual void writeOutput(uint8_t index, float value) override 
     {
-        if (index < params_->motor_count)
-            motors_pwm_[index] = value;
-        else
-            throw std::runtime_error("cannot write motor output for index > motor count");
+        motor_output_[index] = value;
     }
 
     virtual void setLed(uint8_t index, int32_t color) override 
@@ -103,7 +100,7 @@ public:
 
     virtual void reset() override 
     {
-        motors_pwm_.assign(params_->motor_count, 1000);
+        motor_output_.assign(params_->motor_count, 1000);
         input_channels_.assign(params_->rc_channel_count, 1000);
     }
 
@@ -130,8 +127,8 @@ private:
 
 private:
     //motor outputs
-    std::vector<uint16_t> motors_pwm_;
-    std::vector<uint16_t> input_channels_;
+    std::vector<float> motor_output_;
+    std::vector<float> input_channels_;
 
     const simple_flight::Params* params_;
     const Kinematics::State* kinematics_;

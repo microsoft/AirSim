@@ -11,10 +11,12 @@ public:
     int16_t rc_roll_channel = 0;
     int16_t rc_yaw_channel = 1;
 
-
+    //this should match up with target board
+    //simulation board should respect possible values
     uint16_t motor_count = 16;
-    uint16_t min_pwm = 1000;
-    uint16_t max_pwm = 2000;
+    float min_motor_output = 0;
+    float max_motor_output = 1;
+    float min_armed_output = 0.05f;
 };
 
 

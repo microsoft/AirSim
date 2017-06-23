@@ -360,6 +360,24 @@
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightCommLink.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\Params.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\PidController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\RemoteControl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\Stabilizer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\CommonStructs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\Mixer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp">

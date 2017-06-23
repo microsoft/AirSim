@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include "Board.hpp"
+#include "CommonStructs.hpp"
 
 namespace simple_flight {
 
@@ -11,16 +12,15 @@ public:
     RemoteControl(const Board* board, const Params* params)
         : board_(board), params_(params)
     {
-        pwm_range = params_->max_pwm - params_->min_pwm;
     }
 
     void reset()
     {
         rc_channels_.assign(params_->rc_channel_count, 0);
         last_rec_read_ = 0;
+        controls_ = Controls();
     }
-
-
+    
     void update()
     {
         uint64_t time = board_->millis();
@@ -35,27 +35,26 @@ public:
         for (int channel = 0; channel < params_->rc_channel_count; ++channel)
             rc_channels_[channel] = board_->readChannel(channel);
 
-        thrust = normalizePwm(rc_channels_[params_->rc_thrust_channel]);
-        pitch = normalizePwm(rc_channels_[params_->rc_pitch_channel]);
-        roll = normalizePwm(rc_channels_[params_->rc_roll_channel]);
-        yaw = normalizePwm(rc_channels_[params_->rc_yaw_channel]);
+        controls_.thrust = rc_channels_[params_->rc_thrust_channel];
+        controls_.pitch = rc_channels_[params_->rc_pitch_channel];
+        controls_.roll = rc_channels_[params_->rc_roll_channel];
+        controls_.yaw = rc_channels_[params_->rc_yaw_channel];
     }
 
-
-private:
-    float normalizePwm(uint16_t pwm)
+    const Controls& getDesiredRates() const 
     {
-        return (pwm - params_->min_pwm) / pwm_range;
+        return controls_;
     }
+
+
 private:
     const Board* board_;
     const Params* params_;
 
-    std::vector<uint16_t> rc_channels_;
-    uint64_t last_rec_read_;
-    float thrust, pitch, roll, yaw;
+    Controls controls_;
 
-    float pwm_range;
+    std::vector<float> rc_channels_;
+    uint64_t last_rec_read_;
 };
 
 

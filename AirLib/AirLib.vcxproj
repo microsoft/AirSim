@@ -79,7 +79,13 @@
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightCommLink.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\Board.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\CommLink.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\CommonStructs.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\Firmware.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\Mixer.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\Params.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\PidController.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\RemoteControl.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\Stabilizer.hpp" />
     <ClInclude Include="include\controllers\simple_flight\SimpleFlightDroneController.hpp" />
     <ClInclude Include="include\controllers\VehicleCamera.hpp" />
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />
