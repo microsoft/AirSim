@@ -18,11 +18,11 @@ public:
     {
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index) {
             if (controls.throttle > 0) {
-                motor_outputs[motor_index] = 
-                    controls.throttle * mixerQuadX[motor_index].throttle +
-                    controls.pitch * mixerQuadX[motor_index].pitch +
-                    controls.roll * mixerQuadX[motor_index].roll +
-                    controls.yaw * mixerQuadX[motor_index].yaw;
+                motor_outputs[motor_index] =
+                    controls.throttle * mixerQuadX[motor_index].throttle
+                    + controls.pitch * mixerQuadX[motor_index].pitch
+                    + controls.roll * mixerQuadX[motor_index].roll
+                    - controls.yaw * mixerQuadX[motor_index].yaw;
             } 
             else {
                 motor_outputs[motor_index] = params_->min_armed_output;

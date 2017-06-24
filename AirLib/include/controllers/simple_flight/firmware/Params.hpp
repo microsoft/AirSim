@@ -16,13 +16,13 @@ public:
     uint16_t motor_count = 4;
     float min_motor_output = 0;
     float max_motor_output = 1;
-    float min_armed_output = 0.05f;
+    float min_armed_output = 0.2f;
 
     //in radians/sec
-    float max_pitch_rate = 3, max_roll_rate = 3, max_yaw_rate = 3;
+    float max_pitch_rate = 1, max_roll_rate = 1, max_yaw_rate = 3;
 
     //stabilizer params
-    float p_pitch_rate = 0.3f, p_roll_rate = 0.3f, p_yaw_rate = 0.3f;
+    float p_pitch_rate = 0.01f, p_roll_rate = 0.01f, p_yaw_rate = 0.001f;
 };
 
 

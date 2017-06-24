@@ -28,11 +28,11 @@ public:
         output_controls_.roll = params_->p_roll_rate * (goal_rate_controls_.roll - measured_rate_controls_.roll);
         output_controls_.yaw = params_->p_yaw_rate * (goal_rate_controls_.yaw - measured_rate_controls_.yaw);
 
-        common_utils::Utils::log(
-        common_utils::Utils::stringf("(%f, %f, %f) - (%f, %f, %f)", 
-            goal_rate_controls_.pitch, goal_rate_controls_.roll, goal_rate_controls_.yaw,
-            measured_rate_controls_.pitch, measured_rate_controls_.roll, measured_rate_controls_.yaw
-            ));
+        //common_utils::Utils::log(
+        //common_utils::Utils::stringf("(%f, %f, %f) - (%f, %f, %f)", 
+        //    goal_rate_controls_.pitch, goal_rate_controls_.roll, goal_rate_controls_.yaw,
+        //    measured_rate_controls_.pitch, measured_rate_controls_.roll, measured_rate_controls_.yaw
+        //    ));
     }
 
     void setGoalRateControls(const Controls& controls)

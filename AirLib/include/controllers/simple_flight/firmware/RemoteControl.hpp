@@ -36,9 +36,9 @@ public:
             rc_channels_[channel] = board_->readChannel(channel);
 
         rate_controls_.throttle = rc_channels_[params_->rc_thrust_channel];
-        rate_controls_.pitch = 0; // 0.000001f; // params_->max_pitch_rate * rc_channels_[params_->rc_pitch_channel];
-        rate_controls_.roll = 0; // params_->max_roll_rate * rc_channels_[params_->rc_roll_channel];
-        rate_controls_.yaw = 0; // params_->max_yaw_rate * rc_channels_[params_->rc_yaw_channel];
+        rate_controls_.pitch = params_->max_pitch_rate * rc_channels_[params_->rc_pitch_channel];
+        rate_controls_.roll = params_->max_roll_rate * rc_channels_[params_->rc_roll_channel];
+        rate_controls_.yaw = params_->max_yaw_rate * rc_channels_[params_->rc_yaw_channel];
     }
 
     const Controls& getGoalRateControls() const 

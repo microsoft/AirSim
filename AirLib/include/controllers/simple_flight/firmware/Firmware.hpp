@@ -43,8 +43,8 @@ public:
 
         //update measured controls
         board_->readGyro(gyro_readout);
-        measured_rate_controls_.pitch = gyro_readout[0];
-        measured_rate_controls_.roll = gyro_readout[1];
+        measured_rate_controls_.pitch = gyro_readout[1];
+        measured_rate_controls_.roll = gyro_readout[0];
         measured_rate_controls_.yaw = gyro_readout[2];
         stabilizer_.setMeasuredRateControls(measured_rate_controls_);
 
