@@ -13,10 +13,16 @@ public:
 
     //this should match up with target board
     //simulation board should respect possible values
-    uint16_t motor_count = 16;
+    uint16_t motor_count = 4;
     float min_motor_output = 0;
     float max_motor_output = 1;
     float min_armed_output = 0.05f;
+
+    //in radians/sec
+    float max_pitch_rate = 3, max_roll_rate = 3, max_yaw_rate = 3;
+
+    //stabilizer params
+    float p_pitch_rate = 0.3f, p_roll_rate = 0.3f, p_yaw_rate = 0.3f;
 };
 
 

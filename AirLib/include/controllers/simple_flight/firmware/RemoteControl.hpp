@@ -18,7 +18,7 @@ public:
     {
         rc_channels_.assign(params_->rc_channel_count, 0);
         last_rec_read_ = 0;
-        controls_ = Controls();
+        rate_controls_ = Controls();
     }
     
     void update()
@@ -35,15 +35,15 @@ public:
         for (int channel = 0; channel < params_->rc_channel_count; ++channel)
             rc_channels_[channel] = board_->readChannel(channel);
 
-        controls_.thrust = rc_channels_[params_->rc_thrust_channel];
-        controls_.pitch = rc_channels_[params_->rc_pitch_channel];
-        controls_.roll = rc_channels_[params_->rc_roll_channel];
-        controls_.yaw = rc_channels_[params_->rc_yaw_channel];
+        rate_controls_.throttle = rc_channels_[params_->rc_thrust_channel];
+        rate_controls_.pitch = 0; // 0.000001f; // params_->max_pitch_rate * rc_channels_[params_->rc_pitch_channel];
+        rate_controls_.roll = 0; // params_->max_roll_rate * rc_channels_[params_->rc_roll_channel];
+        rate_controls_.yaw = 0; // params_->max_yaw_rate * rc_channels_[params_->rc_yaw_channel];
     }
 
-    const Controls& getDesiredRates() const 
+    const Controls& getGoalRateControls() const 
     {
-        return controls_;
+        return rate_controls_;
     }
 
 
@@ -51,7 +51,7 @@ private:
     const Board* board_;
     const Params* params_;
 
-    Controls controls_;
+    Controls rate_controls_;
 
     std::vector<float> rc_channels_;
     uint64_t last_rec_read_;

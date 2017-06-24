@@ -100,8 +100,8 @@ public:
 
     virtual void reset() override 
     {
-        motor_output_.assign(params_->motor_count, 1000);
-        input_channels_.assign(params_->rc_channel_count, 1000);
+        motor_output_.assign(params_->motor_count, 0);
+        input_channels_.assign(params_->rc_channel_count, 0);
     }
 
     virtual void update() override

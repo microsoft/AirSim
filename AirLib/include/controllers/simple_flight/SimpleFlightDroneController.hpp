@@ -42,7 +42,6 @@ public:
     {
         environment_ = environment;
         kinematics_ = kinematics;
-
         board_->setKinematics(kinematics_);
     }
 
@@ -154,18 +153,18 @@ public:
     void setRCData(const RCData& rcData) override
     {
         if (rcData.is_connected) {
-            board_->setInputChannel(0, angleToPwm(rcData.roll)); //X
-            board_->setInputChannel(1, angleToPwm(rcData.yaw)); //Y
-            board_->setInputChannel(2, thrustToPwm(rcData.throttle)); //F
-            board_->setInputChannel(3, angleToPwm(-rcData.pitch)); //Z
-            board_->setInputChannel(4, switchToPwm(rcData.switch1));
-            board_->setInputChannel(5, switchToPwm(rcData.switch2));
-            board_->setInputChannel(6, switchToPwm(rcData.switch3));
-            board_->setInputChannel(7, switchToPwm(rcData.switch4));
-            board_->setInputChannel(8, switchToPwm(rcData.switch5)); 
-            board_->setInputChannel(9, switchToPwm(rcData.switch6)); 
-            board_->setInputChannel(10, switchToPwm(rcData.switch7)); 
-            board_->setInputChannel(11, switchToPwm(rcData.switch8)); 
+            board_->setInputChannel(0, rcData.roll); //X
+            board_->setInputChannel(1, rcData.yaw); //Y
+            board_->setInputChannel(2, rcData.throttle); //F
+            board_->setInputChannel(3, -rcData.pitch); //Z
+            board_->setInputChannel(4, rcData.switch1);
+            board_->setInputChannel(5, rcData.switch2);
+            board_->setInputChannel(6, rcData.switch3);
+            board_->setInputChannel(7, rcData.switch4);
+            board_->setInputChannel(8, rcData.switch5); 
+            board_->setInputChannel(9, rcData.switch6); 
+            board_->setInputChannel(10, rcData.switch7); 
+            board_->setInputChannel(11, rcData.switch8); 
         }
         //else we don't have RC data
     }
@@ -266,7 +265,7 @@ private:
     {
         return static_cast<uint16_t>((thrust < 0 ? 0 : thrust) * 1000.0f + 1000.0f);
     }
-    static uint16_t switchToPwm(uint switchVal, uint maxSwitchVal = 1)
+    static uint16_t switchTopwm(float switchVal, uint maxSwitchVal = 1)
     {
         return static_cast<uint16_t>(1000.0f * switchVal / maxSwitchVal + 1000.0f);
     }

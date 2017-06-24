@@ -50,9 +50,10 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
 
 void AAirSimGameMode::StartPlay() 
 {
-    Super::StartPlay();
-
+    //needs to be done before we call base class
     initializeSettings();
+
+    Super::StartPlay();
 }
 
 void AAirSimGameMode::initializeSettings()

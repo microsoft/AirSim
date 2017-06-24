@@ -17,11 +17,11 @@ public:
     void getMotorOutput(const Controls& controls, std::vector<float>& motor_outputs) const
     {
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index) {
-            if (controls.thrust > 0) {
+            if (controls.throttle > 0) {
                 motor_outputs[motor_index] = 
-                    controls.thrust * mixerQuadX[motor_index].thrust +
+                    controls.throttle * mixerQuadX[motor_index].throttle +
                     controls.pitch * mixerQuadX[motor_index].pitch +
-                    controls.roll * mixerQuadX[motor_index].roll -
+                    controls.roll * mixerQuadX[motor_index].roll +
                     controls.yaw * mixerQuadX[motor_index].yaw;
             } 
             else {
@@ -45,6 +45,11 @@ public:
 
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index)
             motor_outputs[motor_index] = std::max(params_->min_motor_output, std::min(motor_outputs[motor_index], params_->max_motor_output));
+
+        common_utils::Utils::log(
+            common_utils::Utils::stringf("(%f, %f, %f, %f)", 
+                motor_outputs[0], motor_outputs[1], motor_outputs[2], motor_outputs[3]
+            ));
     }
 
 private:
@@ -54,18 +59,18 @@ private:
 
     // Custom mixer data per motor
     typedef struct motorMixer_t {
-        float thrust;
+        float throttle;
         float roll;
         float pitch;
         float yaw;
     } motorMixer_t;
 
     //only thing that this matrix does is change the sign
-    static constexpr motorMixer_t mixerQuadX[] = {
-        { 1.0f, -1.0f, -1.0f,  1.0f },          // FRONT_R
-        { 1.0f,  1.0f,  1.0f,  1.0f },          // REAR_L
-        { 1.0f, -1.0f,  1.0f, -1.0f },          // REAR_R
-        { 1.0f,  1.0f, -1.0f, -1.0f },          // FRONT_L
+    static constexpr motorMixer_t mixerQuadX[] = { //QuadX config
+        { 1.0f, 1.0f, -1.0f,  1.0f },          // FRONT_R
+        { 1.0f, -1.0f, 1.0f,  1.0f },          // REAR_L
+        { 1.0f, -1.0f, -1.0f, -1.0f },          // FRONT_L
+        { 1.0f, 1.0f, 1.0f, -1.0f },          // REAR_R
     };
 
 };

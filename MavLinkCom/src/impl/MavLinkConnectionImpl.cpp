@@ -355,7 +355,7 @@ void MavLinkConnectionImpl::join(std::shared_ptr<MavLinkConnection> remote, bool
 
 void MavLinkConnectionImpl::readPackets()
 {
-    CurrentThread::setMaximumPriority();
+    //CurrentThread::setMaximumPriority();
     std::shared_ptr<Port> safePort = this->port;
     mavlink_message_t msg;
     mavlink_message_t msgBuffer; // intermediate state.
@@ -507,7 +507,7 @@ void MavLinkConnectionImpl::drainQueue()
 
 void MavLinkConnectionImpl::publishPackets()
 {
-    CurrentThread::setMaximumPriority();
+    //CurrentThread::setMaximumPriority();
     while (!closed) {
 
         drainQueue();
