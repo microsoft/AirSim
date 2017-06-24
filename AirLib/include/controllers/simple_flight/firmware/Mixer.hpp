@@ -22,7 +22,8 @@ public:
                     controls.throttle * mixerQuadX[motor_index].throttle
                     + controls.pitch * mixerQuadX[motor_index].pitch
                     + controls.roll * mixerQuadX[motor_index].roll
-                    - controls.yaw * mixerQuadX[motor_index].yaw;
+                    - controls.yaw * mixerQuadX[motor_index].yaw
+                    ;
             } 
             else {
                 motor_outputs[motor_index] = params_->min_armed_output;
@@ -67,10 +68,10 @@ private:
 
     //only thing that this matrix does is change the sign
     static constexpr motorMixer_t mixerQuadX[] = { //QuadX config
-        { 1.0f, 1.0f, -1.0f,  1.0f },          // FRONT_R
-        { 1.0f, -1.0f, 1.0f,  1.0f },          // REAR_L
-        { 1.0f, -1.0f, -1.0f, -1.0f },          // FRONT_L
-        { 1.0f, 1.0f, 1.0f, -1.0f },          // REAR_R
+        { 1.0f, 1.0f, 1.0f,  1.0f },          // FRONT_R
+        { 1.0f, -1.0f, -1.0f,  1.0f },          // REAR_L
+        { 1.0f, -1.0f, 1.0f, -1.0f },          // FRONT_L
+        { 1.0f, 1.0f, -1.0f, -1.0f },          // REAR_R
     };
 
 };

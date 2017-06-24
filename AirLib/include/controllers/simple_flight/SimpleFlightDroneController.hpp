@@ -72,20 +72,7 @@ public:
 
     virtual real_T getVertexControlSignal(unsigned int rotor_index) override
     {
-        //convert counter clockwise index to ArduCopter's QuadX style index
-        unsigned int index_quadx;
-        switch (rotor_index)
-        {
-        case 0: index_quadx = 1; break;
-        case 1: index_quadx = 2; break;
-        case 2: index_quadx = 3; break;
-        case 3: index_quadx = 0; break;
-        default:
-            throw std::runtime_error("Rotor index beyond 3 is not supported yet in ROSFlight firmware");
-        }
-
-        auto control_signal = board_->getMotorControlSignal(index_quadx);
-
+        auto control_signal = board_->getMotorControlSignal(rotor_index);
         return control_signal;
     }
 
@@ -157,14 +144,14 @@ public:
             board_->setInputChannel(1, rcData.yaw); //Y
             board_->setInputChannel(2, rcData.throttle); //F
             board_->setInputChannel(3, -rcData.pitch); //Z
-            board_->setInputChannel(4, rcData.switch1);
-            board_->setInputChannel(5, rcData.switch2);
-            board_->setInputChannel(6, rcData.switch3);
-            board_->setInputChannel(7, rcData.switch4);
-            board_->setInputChannel(8, rcData.switch5); 
-            board_->setInputChannel(9, rcData.switch6); 
-            board_->setInputChannel(10, rcData.switch7); 
-            board_->setInputChannel(11, rcData.switch8); 
+            board_->setInputChannel(4, static_cast<float>(rcData.switch1));
+            board_->setInputChannel(5, static_cast<float>(rcData.switch2));
+            board_->setInputChannel(6, static_cast<float>(rcData.switch3));
+            board_->setInputChannel(7, static_cast<float>(rcData.switch4));
+            board_->setInputChannel(8, static_cast<float>(rcData.switch5)); 
+            board_->setInputChannel(9, static_cast<float>(rcData.switch6)); 
+            board_->setInputChannel(10, static_cast<float>(rcData.switch7)); 
+            board_->setInputChannel(11, static_cast<float>(rcData.switch8)); 
         }
         //else we don't have RC data
     }
