@@ -88,16 +88,6 @@ public:
         gyro[2] = angula_vel.z();
     }
 
-    virtual void delayMicros(uint32_t us) override 
-    {
-        sleep(us * 1E3f);
-    }
-
-    virtual void delayMillis(uint32_t ms) override 
-    {
-        sleep(static_cast<float>(ms));
-    }
-
     virtual void reset() override 
     {
         motor_output_.assign(params_->motor_count, 0);

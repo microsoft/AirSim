@@ -15,7 +15,7 @@ class Firmware {
 public:
     Firmware(Board* board, CommLink* comm_link, const Params* params)
         : board_(board), comm_link_(comm_link), params_(params), 
-          rc_(board, params), mixer_(params), stabilizer_(params)
+          rc_(params, board, board), mixer_(params), stabilizer_(params, board)
     {
     }
 

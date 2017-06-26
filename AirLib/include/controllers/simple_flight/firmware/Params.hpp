@@ -19,7 +19,7 @@ public:
     float min_armed_output = 0.2f;
 
     //in radians/sec
-    float max_pitch_rate = 0.1, max_roll_rate = 0.1, max_yaw_rate = 3;
+    float max_pitch_rate = 0.1f, max_roll_rate = 0.1f, max_yaw_rate = 3;
 
     //stabilizer params
     float p_pitch_rate = 0.01f, p_roll_rate = 0.01f, p_yaw_rate = 0.01f;
