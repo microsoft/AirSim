@@ -306,6 +306,20 @@ private:
         next.twist.linear = current.twist.linear + (current.accelerations.linear + next.accelerations.linear) * (0.5f * dt_real);
         next.twist.angular = current.twist.angular + (current.accelerations.angular + next.accelerations.angular) * (0.5f * dt_real);
 
+        //if controller has bug, velocities can increase idenfinitely 
+        //so we need to clip this or everything will turn in to infinity/nans
+
+        if (next.twist.linear.squaredNorm() > EarthUtils::SpeedOfLight * EarthUtils::SpeedOfLight) { //speed of light
+            next.twist.linear /= (next.twist.linear.norm() / EarthUtils::SpeedOfLight);
+            next.accelerations.linear = Vector3r::Zero();
+        }
+        //
+        //for disc of 1m radius which angular velocity translates to speed of light on tangent?
+        if (next.twist.angular.squaredNorm() > EarthUtils::SpeedOfLight * EarthUtils::SpeedOfLight) { //speed of light
+            next.twist.angular /= (next.twist.angular.norm() / EarthUtils::SpeedOfLight);
+            next.accelerations.angular = Vector3r::Zero();
+        }
+
         computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
     }
 

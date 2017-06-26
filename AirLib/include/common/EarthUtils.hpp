@@ -352,7 +352,7 @@ public: //consts
     static constexpr float SeaLevelAirDensity = 1.225f; //kg/m^3
     static constexpr float Gravity = 9.80665f;    //m/s^2
     static constexpr float Radius = EARTH_RADIUS; //m
-
+    static constexpr float SpeedOfLight = 299792458.0f; //m
 
 private:
     /* magnetic field */

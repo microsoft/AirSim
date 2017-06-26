@@ -68,10 +68,10 @@ private:
 
     //only thing that this matrix does is change the sign
     static constexpr motorMixer_t mixerQuadX[] = { //QuadX config
-        { 1.0f, 1.0f, 1.0f,  1.0f },          // FRONT_R
-        { 1.0f, -1.0f, -1.0f,  1.0f },          // REAR_L
-        { 1.0f, -1.0f, 1.0f, -1.0f },          // FRONT_L
-        { 1.0f, 1.0f, -1.0f, -1.0f },          // REAR_R
+        { 1.0f, -1.0f, 1.0f,  1.0f },          // FRONT_R
+        { 1.0f, 1.0f, -1.0f,  1.0f },          // REAR_L
+        { 1.0f, 1.0f, 1.0f, -1.0f },          // FRONT_L
+        { 1.0f, -1.0f, -1.0f, -1.0f },          // REAR_R
     };
 
 };
