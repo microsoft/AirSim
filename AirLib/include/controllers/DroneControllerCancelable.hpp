@@ -189,6 +189,11 @@ public:
         return controller_->getLandedState();
     }
 
+    CollisionInfo getCollisionInfo()
+    {
+        return controller_->getCollisionInfo();
+    }
+
     RCData getRCData()
     {
         return controller_->getRCData();

@@ -52,7 +52,7 @@ public:
     };
 
     struct Vector3r {
-        msr::airlib::real_T x_, y_, z_;
+        msr::airlib::real_T x_ = 0, y_ = 0, z_ = 0;
         MSGPACK_DEFINE_ARRAY(x_, y_, z_);
 
         Vector3r()
@@ -70,6 +70,35 @@ public:
         }
     };
 
+    struct CollisionInfo {
+        bool has_collided = false;
+        Vector3r normal;
+        Vector3r impact_point;
+        Vector3r position;
+        msr::airlib::real_T penetration_depth = 0;
+        msr::airlib::TTimePoint time_stamp = 0;
+
+        MSGPACK_DEFINE_ARRAY(has_collided, penetration_depth, time_stamp, normal, impact_point, position);
+        
+        CollisionInfo()
+        {}
+
+        CollisionInfo(const msr::airlib::CollisionInfo& s)
+        {
+            has_collided = s.has_collided;
+            penetration_depth = s.penetration_depth;
+            time_stamp = s.time_stamp;
+            normal = s.normal;
+            impact_point = s.impact_point;
+            position = s.position;
+        }
+
+        msr::airlib::CollisionInfo to() const
+        {
+            return msr::airlib::CollisionInfo(has_collided, normal.to(), impact_point.to(), position.to(),
+                penetration_depth, time_stamp);
+        }
+    };
 
     struct Quaternionr {
         msr::airlib::real_T w_, x_, y_, z_;

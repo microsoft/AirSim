@@ -182,8 +182,8 @@ public: //methods
     {
         return collison_info_;
     }
-    //ability to get reference so individual fields can be modified
-    void setCollisionInfo(const CollisionInfo& collison_info)
+    
+    virtual void setCollisionInfo(const CollisionInfo& collison_info)
     {
         collison_info_ = collison_info;
     }

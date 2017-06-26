@@ -677,6 +677,14 @@ Pose DroneControllerBase::getDebugPose()
     return Pose::nanPose();
 }
 
+CollisionInfo DroneControllerBase::getCollisionInfo()
+{
+    return collision_info_;
+}
+void DroneControllerBase::setCollisionInfo(const CollisionInfo& collision_info)
+{
+    collision_info_ = collision_info;
+}
 
 }} //namespace
 #endif

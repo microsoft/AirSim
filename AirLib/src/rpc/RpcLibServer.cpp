@@ -106,6 +106,7 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
     pimpl_->server.bind("isOffboardMode", [&]() -> bool { return drone_->isOffboardMode(); });
     pimpl_->server.bind("isSimulationMode", [&]() -> bool { return drone_->isSimulationMode(); });
     pimpl_->server.bind("getServerDebugInfo", [&]() -> std::string { return drone_->getServerDebugInfo(); });
+    pimpl_->server.bind("getCollisionInfo", [&]() -> RpcLibAdapators::CollisionInfo { return drone_->getCollisionInfo(); });
 
     pimpl_->server.suppress_exceptions(true);
 }

@@ -179,6 +179,18 @@ struct CollisionInfo {
     Vector3r position = Vector3r::Zero();
     real_T penetration_depth = 0;
     TTimePoint time_stamp = 0;
+
+    CollisionInfo()
+    {}
+
+    CollisionInfo(bool has_collided_val, const Vector3r& normal_val, 
+        const Vector3r& impact_point_val, const Vector3r& position_val, 
+        real_T penetration_depth_val, TTimePoint time_stamp_val)
+        : has_collided(has_collided_val), normal(normal_val),
+        impact_point(impact_point), position(position_val),
+        penetration_depth(penetration_depth_val), time_stamp(time_stamp_val)
+    {
+    }
 };
 
 struct CollisonResponseInfo {

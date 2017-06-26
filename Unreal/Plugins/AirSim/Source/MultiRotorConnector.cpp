@@ -139,7 +139,9 @@ float MultiRotorConnector::joyStickToRC(int16_t val)
 void MultiRotorConnector::updateRenderedState()
 {
     //move collison info from rendering engine to vehicle
-    vehicle_.setCollisionInfo(vehicle_pawn_->getCollisonInfo());
+    const CollisionInfo& collision_info = vehicle_pawn_->getCollisonInfo();
+    vehicle_.setCollisionInfo(collision_info);
+
     //update ground level
     environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
     //update pose of object for rendering engine

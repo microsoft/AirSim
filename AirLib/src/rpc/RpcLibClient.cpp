@@ -152,12 +152,10 @@ Vector3r RpcLibClient::getPosition()
 {
     return pimpl_->client.call("getPosition").as<RpcLibAdapators::Vector3r>().to();
 }
-
 Vector3r RpcLibClient::getVelocity()
 {
     return pimpl_->client.call("getVelocity").as<RpcLibAdapators::Vector3r>().to();
 }
-
 Quaternionr RpcLibClient::getOrientation()
 {
     return pimpl_->client.call("getOrientation").as<RpcLibAdapators::Quaternionr>().to();
@@ -172,6 +170,11 @@ DroneControllerBase::LandedState RpcLibClient::getLandedState()
 RCData RpcLibClient::getRCData()
 {
     return pimpl_->client.call("getRCData").as<RpcLibAdapators::RCData>().to();
+}
+
+CollisionInfo RpcLibClient::getCollisionInfo()
+{
+    return pimpl_->client.call("getCollisionInfo").as<RpcLibAdapators::CollisionInfo>().to();
 }
 
 TTimePoint RpcLibClient::timestampNow()

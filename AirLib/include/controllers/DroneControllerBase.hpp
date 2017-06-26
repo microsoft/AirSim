@@ -218,6 +218,12 @@ public: //interface for outside world
     /// Get the current GPS location of the drone.
     virtual GeoPoint getGpsLocation() = 0;
 
+    //below are for passing information from simulator to API layer
+    //in non simulation mode default would be no collison unless
+    //controller implements otherwise.
+    virtual CollisionInfo getCollisionInfo();
+    virtual void setCollisionInfo(const CollisionInfo& collision_info);
+
     //safety settings
     virtual void setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr);
     virtual bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
@@ -369,6 +375,7 @@ private:// vars
     shared_ptr<SafetyEval> safety_eval_ptr_;
     float obs_avoidance_vel_ = 0.5f;
     bool log_to_file_ = false;
+    CollisionInfo collision_info_;
 
     // we make this recursive so that DroneControllerBase subclass can grab StatusLock then call a 
     // base class method on DroneControllerBase that also grabs the StatusLock.

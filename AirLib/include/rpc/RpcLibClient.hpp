@@ -43,6 +43,7 @@ public:
     bool hover();
 
     Vector3r getPosition();
+    CollisionInfo getCollisionInfo();
     Vector3r getVelocity();
     Quaternionr getOrientation();
     DroneControllerBase::LandedState getLandedState();
