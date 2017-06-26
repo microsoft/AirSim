@@ -279,9 +279,19 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
 
 		break;
 	}
-
     case MavLinkVfrHud::kMessageId: { // MAVLINK_MSG_ID_VFR_HUD:
 		// Metrics typically displayed on a HUD for fixed wing aircraft
+		MavLinkVfrHud vfrhud;
+		vfrhud.decode(msg);
+		std::lock_guard<std::mutex> guard(state_mutex_);
+		state_version_++;
+		updateReadStats(msg);
+		vehicle_state_.vfrhud.true_airspeed = vfrhud.airspeed;
+		vehicle_state_.vfrhud.groundspeed = vfrhud.groundspeed;
+		vehicle_state_.vfrhud.altitude = vfrhud.alt;
+		vehicle_state_.vfrhud.climb_rate = vfrhud.climb;
+		vehicle_state_.vfrhud.heading = vfrhud.heading;
+		vehicle_state_.vfrhud.throttle = vfrhud.throttle;
 		break;
 	}
     case MavLinkHighresImu::kMessageId: { // MAVLINK_MSG_ID_HIGHRES_IMU:

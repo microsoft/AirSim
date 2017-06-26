@@ -78,6 +78,15 @@ namespace mavlinkcom {
 			float altitude_local = 0, altitude_relative = 0, bottom_clearance = 0;
 		} altitude;
 
+		struct VfrHud {
+			float true_airspeed = 0; // in m/s
+			float groundspeed = 0; // in m/s
+			float altitude = 0; // MSL altitude in meters
+			float climb_rate = 0; // in m/s
+			int16_t heading = 0; // in degrees w.r.t. north
+			uint16_t throttle = 0; // in percent, 0 to 100
+		} vfrhud;
+
 		struct HomeState {
 			GlobalPosition global_pos;
 			LocalPose local_pose;
