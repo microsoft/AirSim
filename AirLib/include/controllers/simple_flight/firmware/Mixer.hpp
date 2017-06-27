@@ -22,7 +22,7 @@ public:
                     controls.throttle * mixerQuadX[motor_index].throttle
                     + controls.pitch * mixerQuadX[motor_index].pitch
                     + controls.roll * mixerQuadX[motor_index].roll
-                    - controls.yaw * mixerQuadX[motor_index].yaw
+                    + controls.yaw * mixerQuadX[motor_index].yaw
                     ;
             } 
             else {
@@ -47,10 +47,10 @@ public:
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index)
             motor_outputs[motor_index] = std::max(params_->min_motor_output, std::min(motor_outputs[motor_index], params_->max_motor_output));
 
-        common_utils::Utils::log(
-            common_utils::Utils::stringf("(%f, %f, %f, %f)", 
-                motor_outputs[0], motor_outputs[1], motor_outputs[2], motor_outputs[3]
-            ));
+        //common_utils::Utils::log(
+        //    common_utils::Utils::stringf("(%f, %f, %f, %f)", 
+        //        motor_outputs[0], motor_outputs[1], motor_outputs[2], motor_outputs[3]
+        //    ));
     }
 
 private:

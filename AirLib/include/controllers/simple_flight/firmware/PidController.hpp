@@ -10,7 +10,7 @@ template<class T>
 class PidController {
 public:
     struct Config {
-        Config(float kp_val = 0.01f, float ki_val = 0.001f, float kd_val = 0.002f,
+        Config(float kp_val = 0.01f, float ki_val = 0.0f, float kd_val = 0.0f,
             float min_output_val = -1.0f, float max_output_val = 1.0f,
             float time_scale_val = 1.0f / 1000,
             bool enabled_val = true)
@@ -35,10 +35,18 @@ public:
     {
         goal_ = goal;
     }
+    const T& getGoal() const
+    {
+        return goal_;
+    }
 
     void setMeasured(const T& measured)
     {
         measured_ = measured;
+    }
+    const T& getMeasured() const
+    {
+        return measured_;
     }
 
     const Config& getConfig() const

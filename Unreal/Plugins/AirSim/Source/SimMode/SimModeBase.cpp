@@ -8,7 +8,7 @@ ASimModeBase::ASimModeBase()
 {
     PrimaryActorTick.bCanEverTick = true;
 }
-
+ 
 void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();

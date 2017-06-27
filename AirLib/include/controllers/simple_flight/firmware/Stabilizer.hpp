@@ -13,11 +13,11 @@ public:
     Stabilizer(const Params* params, const IBoardClock* clock = nullptr)
         : params_(params), 
           pid_rate_pitch_(clock, 
-              PidController<float>::Config(params_->p_pitch_rate, 0, 0)), 
+              PidController<float>::Config(params->p_pitch_rate, 0, 0)), 
           pid_rate_roll_(clock, 
-              PidController<float>::Config(params_->p_roll_rate, 0, 0)), 
+              PidController<float>::Config(params->p_roll_rate, 0, 0)), 
           pid_rate_yaw_(clock, 
-              PidController<float>::Config(params_->p_yaw_rate, 0, 0))
+              PidController<float>::Config(params->p_yaw_rate, 0, 0))
     {
     }
 
@@ -39,11 +39,12 @@ public:
         output_controls_.roll = pid_rate_roll_.getOutput();
         output_controls_.yaw = pid_rate_yaw_.getOutput();
 
-        //common_utils::Utils::log(
-        //common_utils::Utils::stringf("(%f, %f, %f) - (%f, %f, %f)", 
-        //    goal_rate_controls_.pitch, goal_rate_controls_.roll, goal_rate_controls_.yaw,
-        //    measured_rate_controls_.pitch, measured_rate_controls_.roll, measured_rate_controls_.yaw
-        //    ));
+        common_utils::Utils::log(
+        common_utils::Utils::stringf("(%f, %f, %f) - (%f, %f, %f) - (%f, %f, %f)", 
+            pid_rate_pitch_.getGoal(), pid_rate_roll_.getGoal(), pid_rate_yaw_.getGoal(),
+            pid_rate_pitch_.getMeasured(), pid_rate_roll_.getMeasured(), pid_rate_yaw_.getMeasured(),
+            pid_rate_pitch_.getOutput(), pid_rate_roll_.getOutput(), pid_rate_yaw_.getOutput()
+            ));
     }
 
     void setGoalRateControls(const Controls& controls)

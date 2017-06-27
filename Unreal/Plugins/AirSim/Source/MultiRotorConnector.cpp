@@ -103,7 +103,9 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
 
     if (rc_data_.is_connected) {
         rc_data_.throttle = joyStickToRC(joystick_state_.left_y);
-        rc_data_.yaw = joyStickToRC(joystick_state_.left_x) * 2 - 1;
+
+        //convert 0 to 1 -> -1 to 1
+        rc_data_.yaw = - (joyStickToRC(joystick_state_.left_x) * 2 - 1); 
         rc_data_.roll = joyStickToRC(joystick_state_.right_x) * 2 - 1;
         rc_data_.pitch = joyStickToRC(joystick_state_.right_y) * 2 - 1;
 
@@ -129,10 +131,11 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
     return rc_data_;
 }
 
+//return 0 to 1
 float MultiRotorConnector::joyStickToRC(int16_t val)
 {
     float valf = static_cast<float>(val);
-    return (valf - Utils::min<int16_t>() + 1) / Utils::max<uint16_t>();
+    return (valf - Utils::min<int16_t>()) / Utils::max<uint16_t>();
 }
 
 

@@ -26,7 +26,7 @@ public:
         else {
             UE_LOG(LogAirSim, Error, TEXT("%s"), *FString(message.c_str()));
         }
-
+    
 //#ifdef _MSC_VER
 //        //print to VS output window
 //        OutputDebugString(std::wstring(message.begin(), message.end()).c_str());
