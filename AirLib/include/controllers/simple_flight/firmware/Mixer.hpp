@@ -19,10 +19,10 @@ public:
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index) {
             if (controls.throttle > 0) {
                 motor_outputs[motor_index] =
-                    controls.throttle * Mixer::mixerQuadX[motor_index].throttle
-                    + controls.angles.pitch * Mixer::mixerQuadX[motor_index].pitch
-                    + controls.angles.roll * Mixer::mixerQuadX[motor_index].roll
-                    + controls.angles.yaw * Mixer::mixerQuadX[motor_index].yaw
+                    controls.throttle * mixerQuadX[motor_index].throttle
+                    + controls.angles.pitch * mixerQuadX[motor_index].pitch
+                    + controls.angles.roll * mixerQuadX[motor_index].roll
+                    + controls.angles.yaw * mixerQuadX[motor_index].yaw
                     ;
             } 
             else {
@@ -67,7 +67,7 @@ private:
     } motorMixer_t;
 
     //only thing that this matrix does is change the sign
-    static constexpr motorMixer_t mixerQuadX[] = { //QuadX config
+    const motorMixer_t mixerQuadX[4] = { //QuadX config
         { 1.0f, -1.0f, 1.0f,  1.0f },          // FRONT_R
         { 1.0f, 1.0f, -1.0f,  1.0f },          // REAR_L
         { 1.0f, 1.0f, 1.0f, -1.0f },          // FRONT_L
