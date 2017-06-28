@@ -29,6 +29,10 @@ struct RpcLibServer::impl {
         : server(server_address, port)
     {}
 
+    impl(uint16_t port)
+        : server(port)
+    {}
+
     ~impl() {
     }
 
@@ -40,7 +44,10 @@ typedef msr::airlib_rpclib::RpcLibAdapators RpcLibAdapators;
 RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_address, uint16_t port)
         : drone_(drone)
 {
-    pimpl_.reset(new impl(server_address, port));
+    if (server_address == "")
+        pimpl_.reset(new impl(port));
+    else
+        pimpl_.reset(new impl(server_address, port));
     pimpl_->server.bind("ping", [&]() -> bool { return true; });
     pimpl_->server.bind("armDisarm", [&](bool arm) -> bool { return drone_->armDisarm(arm); });
     pimpl_->server.bind("setOffboardMode", [&](bool is_set) -> void { drone_->setOffboardMode(is_set); });

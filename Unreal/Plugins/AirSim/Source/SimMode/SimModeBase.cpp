@@ -33,7 +33,10 @@ void ASimModeBase::BeginPlay()
 
     Settings& settings = Settings::singleton();
     enable_rpc = settings.getBool("RpcEnabled", true);
-    api_server_address = settings.getString("LocalHostIp", "127.0.0.1");
+    //by default we spawn server at local endpoint. Do not use 127.0.0.1 as default below
+    //because for docker container default is 0.0.0.0 and people get really confused why things
+    //don't work
+    api_server_address = settings.getString("LocalHostIp", "");
     is_record_ui_visible = settings.getBool("RecordUIVisible", true);
 
     std::string view_mode_string = settings.getString("ViewMode", "FlyWithMe");

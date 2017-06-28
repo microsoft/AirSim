@@ -207,7 +207,10 @@ void MultiRotorConnector::startApiServer()
             vehicle_.getController()));
         rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
         rpclib_server_->start();
+        UAirBlueprintLib::LogMessageString("API server started at ", api_server_address_, LogDebugLevel::Informational);
     }
+    else
+        UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
 
 }
 void MultiRotorConnector::stopApiServer()

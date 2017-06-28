@@ -27,7 +27,7 @@ using namespace common_utils;
 
 struct CommandContext {
 public:
-    CommandContext(const std::string& server_address = "127.0.0.1")
+    CommandContext(const std::string& server_address = "localhost")
         : client(server_address)
     {
     }
@@ -1312,25 +1312,32 @@ int main(int argc, const char *argv[]) {
     shell.showMessage(R"(
         Welcome to DroneShell 1.0.
         Type ? for help.
-        Microsoft Research (c) 2016.
+        Microsoft Research (c) 2017.
     )");
 
     // make sure we can talk to the DroneServer
     //std::cout << "Contacting DroneServer..." << std::flush;
     //command_context.client.ping();
     //std::cout << "DroneServer is responding." << std::endl;
+
+    std::cout << "Waiting for connection--" << std::flush;
+    const TTimeDelta pause_time = 1;
+    while (command_context.client.getConnectionState() != RpcLibClient::ConnectionState::Connected)
+    {
+        std::cout << "X" << std::flush;
+        command_context.sleep_for(pause_time); 
+    }
+    std::cout << "Connected!" << std::endl;
     
 	std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
-	const TTimeDelta pause_time = 1;
-
 	auto gps = command_context.client.getGpsLocation();
-	while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0)
+    int count = 0;
+	while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0 && count++ < 10)
 	{
 		std::cout << "." << std::flush;
         command_context.sleep_for(pause_time); 
 		gps = command_context.client.getGpsLocation();
 	}
-	
 	std::cout << std::endl;
     std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
 	

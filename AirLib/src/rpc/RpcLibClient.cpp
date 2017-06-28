@@ -54,6 +54,17 @@ bool RpcLibClient::ping()
 {
     return pimpl_->client.call("ping").as<bool>();
 }
+RpcLibClient::ConnectionState RpcLibClient::getConnectionState()
+{
+    switch (pimpl_->client.get_connection_state()) {
+    case rpc::client::connection_state::connected: return ConnectionState::Connected;
+    case rpc::client::connection_state::disconnected: return ConnectionState::Disconnected;
+    case rpc::client::connection_state::initial: return ConnectionState::Initial;
+    case rpc::client::connection_state::reset: return ConnectionState::Reset;
+    default:
+        return ConnectionState::Unknown;
+    }
+}
 bool RpcLibClient::armDisarm(bool arm)
 {
     return pimpl_->client.call("armDisarm", arm).as<bool>();
