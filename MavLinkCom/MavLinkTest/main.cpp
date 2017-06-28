@@ -34,7 +34,9 @@ STRICT_MODE_ON
 
 /* enable math defines on Windows */
 
+#ifndef M_PI_2
 #define M_PI_2     1.57079632679489661923   // pi/2
+#endif
 
 static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
 static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board

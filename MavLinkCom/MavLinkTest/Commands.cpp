@@ -1060,7 +1060,7 @@ void FakeGpsCommand::GpsThread()
         gps.vd = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
         gps.ve = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
         gps.vn = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
-        gps.vel = static_cast<uint16_t>(abs(addNoise(0, 0.1f) * 100));// cm/s
+        gps.vel = static_cast<uint16_t>(std::abs(addNoise(0, 0.1f) * 100));// cm/s
         gps.cog = static_cast<int16_t>(addNoise(0, 0.3f) * 100); // degrees * 100
         if (com != nullptr) {
             com->sendMessage(gps);
@@ -1193,7 +1193,7 @@ void HilCommand::HilThread()
             gps.vd = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
             gps.ve = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
             gps.vn = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
-            gps.vel = static_cast<uint16_t>(abs(addNoise(0, 0.1f) * 100));// cm/s
+            gps.vel = static_cast<uint16_t>(std::abs(addNoise(0, 0.1f) * 100));// cm/s
             gps.cog = static_cast<int16_t>(addNoise(0, 0.3f) * 100); // degrees * 100
             if (com != nullptr) {
                 com->sendMessage(gps);
@@ -1500,15 +1500,15 @@ bool GotoCommand::Parse(const std::vector<std::string>& args) {
                 if (tz > 0) {
                     tz = -tz; // probably mean negative, since we are using NED coordinates.
                 }
-                if (fabs(tx) > 100) {
+                if (std::fabs(tx) > 100) {
                     printf("### invalid -100 < x < 100 \n");
                     return false;
                 }
-                if (fabs(ty) > 100) {
+                if (std::fabs(ty) > 100) {
                     printf("### invalid -100 < y < 100 \n");
                     return false;
                 }
-                if (fabs(tz) > 100) {
+                if (std::fabs(tz) > 100) {
                     printf("### invalid -100 < z < 100 \n");
                     return false;
                 }
@@ -1602,11 +1602,11 @@ void GotoCommand::HandleMessage(const MavLinkMessage& message)
             channel->moveToLocalPosition(tx, ty, tz, is_yaw, static_cast<float>(theading * M_PI / 180));
             
             if (this->hasLocalPosition) {
-                if (!targetReached && fabsf(x - tx) < nearDelta && fabsf(y - ty) < nearDelta)
+                if (!targetReached && std::fabsf(x - tx) < nearDelta && std::fabsf(y - ty) < nearDelta)
                 {
                     targetReached = true;
                 }
-                if (targetReached && !settled && (fabs(this->vx) + fabsf(this->vy) + fabsf(this->vz) < almostStationery)) {
+                if (targetReached && !settled && (fabs(this->vx) + std::fabsf(this->vy) + std::fabsf(this->vz) < almostStationery)) {
                     settled = true;
                     // ok, now we can safely switch to loiter.
                     TargetReached();
@@ -1815,7 +1815,7 @@ void OrbitCommand::UpdateTarget()
         float correction = (radius - actualRadius) / radius;
         if (previousCorrection != 0)
         {
-            if (fabs(correction) > fabs(previousCorrection)) {
+            if (std::fabs(correction) > std::fabs(previousCorrection)) {
                 if (correctionFactor < 30) {
                     correctionFactor++;
                 }
@@ -1877,7 +1877,7 @@ void OrbitCommand::MeasureTime(float degrees)
         startAngle = degrees;
         startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
-    else if (!halfWay && fabs(startAngle - degrees) >= 180)
+    else if (!halfWay && std::fabs(startAngle - degrees) >= 180)
     {
         halfWay = true;
     }
@@ -2076,7 +2076,7 @@ void SquareCommand::UpdateTarget()
         float dy = ty - y;
         float dist = sqrtf((dx*dx) + (dy*dy));
 
-        if (fabsf(dx) < near && fabsf(dy) < near)
+        if (std::fabsf(dx) < near && std::fabsf(dy) < near)
         {
             leg_++;
             if (leg_ == 4) leg_ = 0;
@@ -2223,7 +2223,7 @@ void WiggleCommand::wiggleX(const MavLinkLocalPositionNed& pos)
     double z = pos.z;
 
     // the amount of pitch should depend on our speed in that direction.
-    double speed = fabs(pos.vx);
+    double speed = std::fabs(pos.vx);
 
     float ctrl = thrust_controller_.control(static_cast<float>(-z));
 
@@ -2287,7 +2287,7 @@ void WiggleCommand::wiggleY(const MavLinkLocalPositionNed& pos)
     double z = pos.z;
 
     // the amount of roll should depend on our speed in that direction.
-    double speed = fabs(pos.vy);
+    double speed = std::fabs(pos.vy);
 
     float ctrl = thrust_controller_.control(static_cast<float>(-z));
 
