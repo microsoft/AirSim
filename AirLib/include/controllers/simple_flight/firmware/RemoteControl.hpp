@@ -18,7 +18,8 @@ public:
     {
         rc_channels_.assign(params_->rc_channel_count, 0);
         last_rec_read_ = 0;
-        rate_controls_ = Controls();
+        controls_ = Controls();
+        control_mode_ = params_->default_control_mode;
     }
     
     void update()
@@ -35,15 +36,33 @@ public:
         for (int channel = 0; channel < params_->rc_channel_count; ++channel)
             rc_channels_[channel] = board_inputs_->readChannel(channel);
 
-        rate_controls_.throttle = rc_channels_[params_->rc_thrust_channel];
-        rate_controls_.pitch = params_->max_pitch_rate * rc_channels_[params_->rc_pitch_channel];
-        rate_controls_.roll = params_->max_roll_rate * rc_channels_[params_->rc_roll_channel];
-        rate_controls_.yaw = params_->max_yaw_rate * rc_channels_[params_->rc_yaw_channel];
+        controls_.throttle = rc_channels_[params_->rc_thrust_channel];
+        if (rc_channels_[params_->rc_rate_angle_channel] < 0.1f) { //approximately 0
+            control_mode_ = ControlMode::Angle;
+
+            //we are in control-by-angles mode
+            controls_.angles.pitch = params_->max_pitch_angle * rc_channels_[params_->rc_pitch_channel];
+            controls_.angles.roll = params_->max_roll_angle * rc_channels_[params_->rc_roll_channel];
+            controls_.angles.yaw = params_->max_yaw_angle * rc_channels_[params_->rc_yaw_channel];
+        }
+        else { //we are in control-by-rate mode
+            control_mode_ = ControlMode::Rate;
+
+            controls_.angles.pitch = params_->max_pitch_rate * rc_channels_[params_->rc_pitch_channel];
+            controls_.angles.roll = params_->max_roll_rate * rc_channels_[params_->rc_roll_channel];
+            controls_.angles.yaw = params_->max_yaw_rate * rc_channels_[params_->rc_yaw_channel];
+        }
+
     }
 
-    const Controls& getGoalRateControls() const 
+    ControlMode getControlMode() const
     {
-        return rate_controls_;
+        return control_mode_;
+    }
+
+    const Controls& getControls() const 
+    {
+        return controls_;
     }
 
 
@@ -52,7 +71,8 @@ private:
     const IBoardInputPins* board_inputs_;
     const Params* params_;
 
-    Controls rate_controls_;
+    ControlMode control_mode_;
+    Controls controls_;
 
     std::vector<float> rc_channels_;
     uint64_t last_rec_read_;

@@ -121,10 +121,14 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
         UAirBlueprintLib::LogMessage(FString("Joystick (T,R,P,Y): "),
             FString::SanitizeFloat(rc_data_.throttle) + ", " + FString::SanitizeFloat(rc_data_.roll) + ", " + FString::SanitizeFloat(rc_data_.pitch) + ", " + FString::SanitizeFloat(rc_data_.yaw),
             LogDebugLevel::Informational);
-        UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " +
-            FString::FromInt(rc_data_.switch1) + ", " + FString::FromInt(rc_data_.switch2) + ", " + FString::FromInt(rc_data_.switch3) + ", " + FString::FromInt(rc_data_.switch4)
-            + ", " + FString::FromInt(rc_data_.switch5) + ", " + FString::FromInt(rc_data_.switch6) + ", " + FString::FromInt(rc_data_.switch7) + ", " + FString::FromInt(rc_data_.switch8),
-            LogDebugLevel::Informational);
+
+        //TODO: should below be at controller level info?
+        UAirBlueprintLib::LogMessageString("RC Mode: ", rc_data_.switch3 == 0 ? "Angle" : "Rate", LogDebugLevel::Informational);
+
+        //UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " +
+        //    FString::FromInt(rc_data_.switch1) + ", " + FString::FromInt(rc_data_.switch2) + ", " + FString::FromInt(rc_data_.switch3) + ", " + FString::FromInt(rc_data_.switch4)
+        //    + ", " + FString::FromInt(rc_data_.switch5) + ", " + FString::FromInt(rc_data_.switch6) + ", " + FString::FromInt(rc_data_.switch7) + ", " + FString::FromInt(rc_data_.switch8),
+        //    LogDebugLevel::Informational);
     }
     //else don't waste time
 

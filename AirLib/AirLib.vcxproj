@@ -77,6 +77,8 @@
     <ClInclude Include="include\controllers\ros_flight\RosFlightDroneController.hpp" />
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightBoard.hpp" />
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightCommLink.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightEstimator.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\AngleStabilizer.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\Board.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\CommLink.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\CommonStructs.hpp" />
@@ -85,6 +87,7 @@
     <ClInclude Include="include\controllers\simple_flight\firmware\Params.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\PidController.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\RemoteControl.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\RateStabilizer.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\Stabilizer.hpp" />
     <ClInclude Include="include\controllers\simple_flight\SimpleFlightDroneController.hpp" />
     <ClInclude Include="include\controllers\VehicleCamera.hpp" />

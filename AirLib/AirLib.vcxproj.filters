@@ -369,13 +369,22 @@
     <ClInclude Include="include\controllers\simple_flight\firmware\RemoteControl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\simple_flight\firmware\Stabilizer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\firmware\CommonStructs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\firmware\Mixer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightEstimator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\Stabilizer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\AngleStabilizer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\RateStabilizer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

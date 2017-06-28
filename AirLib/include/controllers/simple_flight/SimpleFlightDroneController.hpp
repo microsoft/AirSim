@@ -10,10 +10,11 @@
 #include "physics/Kinematics.hpp"
 #include "vehicles/MultiRotorParams.hpp"
 #include "common/Common.hpp"
-#include "AirSimSimpleFlightBoard.hpp"
-#include "AirSimSimpleFlightCommLink.hpp"
 #include "controllers/Settings.hpp"
 #include "firmware/Firmware.hpp"
+#include "AirSimSimpleFlightBoard.hpp"
+#include "AirSimSimpleFlightCommLink.hpp"
+#include "AirSimSimpleFlightEstimator.hpp"
 
 
 namespace msr { namespace airlib {
@@ -27,9 +28,10 @@ public:
         //create sim implementations of board and commlink
         board_.reset(new AirSimSimpleFlightBoard(&params_));
         comm_link_.reset(new AirSimSimpleFlightCommLink());
+        estimator_.reset(new AirSimSimpleFlightEstimator());
 
         //create firmware
-        firmware_.reset(new simple_flight::Firmware(board_.get(), comm_link_.get(), &params_));
+        firmware_.reset(new simple_flight::Firmware(board_.get(), comm_link_.get(), estimator_.get(), &params_));
         firmware_->reset();
 
         //find out which RC we should use
@@ -43,6 +45,7 @@ public:
         environment_ = environment;
         kinematics_ = kinematics;
         board_->setKinematics(kinematics_);
+        estimator_->setKinematics(kinematics_);
     }
 
 public:
@@ -267,6 +270,7 @@ private:
 
     unique_ptr<AirSimSimpleFlightBoard> board_;
     unique_ptr<AirSimSimpleFlightCommLink> comm_link_;
+    unique_ptr<AirSimSimpleFlightEstimator> estimator_;
     unique_ptr<simple_flight::Firmware> firmware_;
 };
 

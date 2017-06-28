@@ -1,21 +1,22 @@
 #pragma once
 
 #include <vector>
+#include "CommonStructs.hpp"
 #include "Board.hpp"
 #include "CommLink.hpp"
 #include "Params.hpp"
 #include "RemoteControl.hpp"
-#include "Stabilizer.hpp"
-#include "CommonStructs.hpp"
 #include "Mixer.hpp"
+#include "Stabilizer.hpp"
+
 
 namespace simple_flight {
 
 class Firmware {
 public:
-    Firmware(Board* board, CommLink* comm_link, const Params* params)
+    Firmware(Board* board, CommLink* comm_link, IAngleEstimator* angle_estimator, const Params* params)
         : board_(board), comm_link_(comm_link), params_(params), 
-          rc_(params, board, board), mixer_(params), stabilizer_(params, board)
+          rc_(params, board, board), mixer_(params), stabilizer_(params, board, board, angle_estimator)
     {
     }
 
@@ -37,22 +38,13 @@ public:
         //get latest from RC
         rc_.update();
 
-        //use RC values as set point for stabilizer
-        const auto& goal_rate_controls = rc_.getGoalRateControls();
-        stabilizer_.setGoalRateControls(goal_rate_controls);
-
-        //update measured controls
-        board_->readGyro(gyro_readout);
-        measured_rate_controls_.pitch = gyro_readout[1];
-        measured_rate_controls_.roll = gyro_readout[0];
-        measured_rate_controls_.yaw = gyro_readout[2];
-        stabilizer_.setMeasuredRateControls(measured_rate_controls_);
-
-        //stabilizer computes the output from error in goal vs measured
+        stabilizer_.setControlMode(rc_.getControlMode());
+        stabilizer_.setGoal(rc_.getControls());
         stabilizer_.update();
-        const auto& output_controls = stabilizer_.getOutputControls();
 
-        //convert stabilizer output in to motor outputs
+        const Controls& output_controls = stabilizer_.getOutput();
+
+        //convert rate_stabilizer output in to motor outputs
         mixer_.getMotorOutput(output_controls, motor_outputs_);
 
         //finally write the motor outputs
@@ -65,14 +57,12 @@ private:
     Board* board_;
     CommLink* comm_link_;
 
-    float gyro_readout[3];
-    Controls measured_rate_controls_;
     std::vector<float> motor_outputs_;
 
     const Params* params_;
     RemoteControl rc_;
-    Stabilizer stabilizer_;
     Mixer mixer_;
+    Stabilizer stabilizer_;
 };
 
 

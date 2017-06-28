@@ -20,9 +20,9 @@ public:
             if (controls.throttle > 0) {
                 motor_outputs[motor_index] =
                     controls.throttle * mixerQuadX[motor_index].throttle
-                    + controls.pitch * mixerQuadX[motor_index].pitch
-                    + controls.roll * mixerQuadX[motor_index].roll
-                    + controls.yaw * mixerQuadX[motor_index].yaw
+                    + controls.angles.pitch * mixerQuadX[motor_index].pitch
+                    + controls.angles.roll * mixerQuadX[motor_index].roll
+                    + controls.angles.yaw * mixerQuadX[motor_index].yaw
                     ;
             } 
             else {
