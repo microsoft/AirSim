@@ -28,33 +28,33 @@
 namespace msr { namespace airlib {
 
 
-using namespace mavlinkcom;
-using namespace common_utils;
-
-static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
-static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
-static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
-static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
-static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
-static const int RotorControlsCount = 8;
-static const int messageReceivedTimeout = 10; ///< Seconds 
-
-class MavLinkLogViewerLog : public MavLinkLog
+class MavLinkLogViewerLog : public mavlinkcom::MavLinkLog
 {
-    std::shared_ptr<mavlinkcom::MavLinkNode> proxy_;
 public:
     MavLinkLogViewerLog(std::shared_ptr<mavlinkcom::MavLinkNode> proxy) {
         proxy_ = proxy;
     }
     void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override {
         unused(timestamp);
-        MavLinkMessage copy;
-        ::memcpy(&copy, &msg, sizeof(MavLinkMessage));
+        mavlinkcom::MavLinkMessage copy;
+        ::memcpy(&copy, &msg, sizeof(mavlinkcom::MavLinkMessage));
         proxy_->sendMessage(copy);
     }
+
+private:
+    std::shared_ptr<mavlinkcom::MavLinkNode> proxy_;
 };
 
 struct MavLinkDroneController::impl {
+public:
+    static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
+    static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
+    static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
+    static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
+    static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
+    static const int RotorControlsCount = 8;
+    static const int messageReceivedTimeout = 10; ///< Seconds 
+
     std::shared_ptr<mavlinkcom::MavLinkNode> logviewer_proxy_, logviewer_out_proxy_, qgc_proxy_;
 
     size_t status_messages_MaxSize = 5000;
@@ -106,8 +106,8 @@ struct MavLinkDroneController::impl {
     bool is_offboard_mode_;
     bool is_simulation_mode_;
     PidController thrust_controller_;
-    Timer hil_message_timer_;
-    Timer sitl_message_timer_;
+    common_utils::Timer hil_message_timer_;
+    common_utils::Timer sitl_message_timer_;
 
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
     {
@@ -149,7 +149,7 @@ struct MavLinkDroneController::impl {
             is_controls_0_1_ = true;
             Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
-            connection_->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg){
+            connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg){
                 unused(connection);
                 processMavMessages(msg);
             });
@@ -157,7 +157,7 @@ struct MavLinkDroneController::impl {
             // listen to the other mavlink connection also
             auto mavcon = mav_vehicle_->getConnection();
             if (mavcon != connection_) {
-                mavcon->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
+                mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                     unused(connection);
                     processMavMessages(msg);
                 });
@@ -165,12 +165,12 @@ struct MavLinkDroneController::impl {
         }
     }
 
-    bool sendTestMessage(std::shared_ptr<MavLinkNode> node) {
+    bool sendTestMessage(std::shared_ptr<mavlinkcom::MavLinkNode> node) {
         try {
             // try and send a test message.
-            MavLinkHeartbeat test;
-            test.autopilot = static_cast<int>(MAV_AUTOPILOT::MAV_AUTOPILOT_PX4);
-            test.type = static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_GCS);
+            mavlinkcom::MavLinkHeartbeat test;
+            test.autopilot = static_cast<int>(mavlinkcom::MAV_AUTOPILOT::MAV_AUTOPILOT_PX4);
+            test.type = static_cast<uint8_t>(mavlinkcom::MAV_TYPE::MAV_TYPE_GCS);
             test.base_mode = 0;
             test.custom_mode = 0;
             test.mavlink_version = 3;
@@ -222,7 +222,7 @@ struct MavLinkDroneController::impl {
                 qgc_proxy_ = nullptr;
             }
             else {
-                connection->subscribe([=](std::shared_ptr<MavLinkConnection> connection_val, const MavLinkMessage& msg){
+                connection->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection_val, const mavlinkcom::MavLinkMessage& msg){
                     unused(connection_val);
                     processQgcMessages(msg);
                 });
@@ -238,11 +238,11 @@ struct MavLinkDroneController::impl {
         if (connection_ == nullptr)
             throw std::domain_error("MavLinkDroneController requires connection object to be set before createProxy call");
 
-        connection = MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), local_host_ip, ip, port);
+        connection = mavlinkcom::MavLinkConnection::connectRemoteUdp("Proxy to: " + name + " at " + ip + ":" + std::to_string(port), local_host_ip, ip, port);
 
         // it is ok to reuse the simulator sysid and compid here because this node is only used to send a few messages directly to this endpoint
         // and all other messages are funnelled through from PX4 via the Join method below.
-        node = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
+        node = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         node->connect(connection);
 
         // now join the main connection to this one, this causes all PX4 messages to be sent to the proxy and all messages from the proxy will be
@@ -257,10 +257,10 @@ struct MavLinkDroneController::impl {
 
     static std::string findPixhawk()
     {
-        auto result = MavLinkConnection::findSerialPorts(0, 0);
+        auto result = mavlinkcom::MavLinkConnection::findSerialPorts(0, 0);
         for (auto iter = result.begin(); iter != result.end(); iter++)
         {
-            SerialPortInfo info = *iter;
+            mavlinkcom::SerialPortInfo info = *iter;
             if (info.vid == pixhawkVendorId) {
                 if (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
                 {
@@ -302,8 +302,8 @@ struct MavLinkDroneController::impl {
             throw std::invalid_argument("UdpPort setting has an invalid value.");
         }
 
-        connection_ = MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
-        hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
+        connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
+        hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
         hil_node_->connect(connection_);
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
@@ -311,7 +311,7 @@ struct MavLinkDroneController::impl {
         if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0 && connection_info_.sitl_ip_port != port) {
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-            auto sitlconnection = MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
+            auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
             mav_vehicle_->connect(sitlconnection);
         }
         else {
@@ -341,9 +341,9 @@ struct MavLinkDroneController::impl {
             throw std::invalid_argument("SerialBaudRate has an invalid value");
         }
 
-        connection_ = MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
-        connection_->ignoreMessage(MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mocap messages
-        hil_node_ = std::make_shared<MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
+        connection_ = mavlinkcom::MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
+        connection_->ignoreMessage(mavlinkcom::MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mocap messages
+        hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
@@ -374,7 +374,7 @@ struct MavLinkDroneController::impl {
         }
     }
 
-    void processQgcMessages(const MavLinkMessage& msg)
+    void processQgcMessages(const mavlinkcom::MavLinkMessage& msg)
     {
         if (msg.msgid == MocapPoseMessage.msgid) {
             std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
@@ -384,19 +384,19 @@ struct MavLinkDroneController::impl {
         //else ignore message
     }
 
-    void processMavMessages(const MavLinkMessage& msg)
+    void processMavMessages(const mavlinkcom::MavLinkMessage& msg)
     {
         if (msg.msgid == HeartbeatMessage.msgid) {
             std::lock_guard<std::mutex> guard_heartbeat(heartbeat_mutex_);
 
             //TODO: have MavLinkNode track armed state so we don't have to re-decode message here again
             HeartbeatMessage.decode(msg);
-            bool armed = (HeartbeatMessage.base_mode & static_cast<uint8_t>(MAV_MODE_FLAG::MAV_MODE_FLAG_SAFETY_ARMED)) > 0;
+            bool armed = (HeartbeatMessage.base_mode & static_cast<uint8_t>(mavlinkcom::MAV_MODE_FLAG::MAV_MODE_FLAG_SAFETY_ARMED)) > 0;
             setArmed(armed);
             if (!is_any_heartbeat_) {
                 is_any_heartbeat_ = true;
-                if (HeartbeatMessage.autopilot == static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_PX4) &&
-                    HeartbeatMessage.type == static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_FIXED_WING)) {
+                if (HeartbeatMessage.autopilot == static_cast<uint8_t>(mavlinkcom::MAV_AUTOPILOT::MAV_AUTOPILOT_PX4) &&
+                    HeartbeatMessage.type == static_cast<uint8_t>(mavlinkcom::MAV_TYPE::MAV_TYPE_FIXED_WING)) {
                     // PX4 will scale fixed wing servo outputs to -1 to 1
                     // and it scales multi rotor servo outpus to 0 to 1.
                     is_controls_0_1_ = false;
@@ -413,7 +413,7 @@ struct MavLinkDroneController::impl {
             status_messages_.push(std::string(StatusTextMessage.text));
         } else if (msg.msgid == CommandLongMessage.msgid) {
             CommandLongMessage.decode(msg);
-            if (CommandLongMessage.command == static_cast<int>(MAV_CMD::MAV_CMD_SET_MESSAGE_INTERVAL)) {
+            if (CommandLongMessage.command == static_cast<int>(mavlinkcom::MAV_CMD::MAV_CMD_SET_MESSAGE_INTERVAL)) {
                 int msg_id = static_cast<int>(CommandLongMessage.param1 + 0.5);
                 if (msg_id == 115) { //HIL_STATE_QUATERNION
                     hil_state_freq_ = static_cast<int>(CommandLongMessage.param2 + 0.5);
@@ -651,11 +651,11 @@ struct MavLinkDroneController::impl {
     {
         checkVehicle();
 
-        MavLinkCollision collision{};
+        mavlinkcom::MavLinkCollision collision{};
         collision.src = 1;	//provider of data is MavLink system in id field
         collision.id = mav_vehicle_->getLocalSystemId();
-        collision.action = static_cast<uint8_t>(MAV_COLLISION_ACTION::MAV_COLLISION_ACTION_REPORT);
-        collision.threat_level = static_cast<uint8_t>(MAV_COLLISION_THREAT_LEVEL::MAV_COLLISION_THREAT_LEVEL_NONE);
+        collision.action = static_cast<uint8_t>(mavlinkcom::MAV_COLLISION_ACTION::MAV_COLLISION_ACTION_REPORT);
+        collision.threat_level = static_cast<uint8_t>(mavlinkcom::MAV_COLLISION_THREAT_LEVEL::MAV_COLLISION_THREAT_LEVEL_NONE);
         // we are abusing these fields, passing the angle of the object we hit, so that jMAVSim knows how to bounce off.
         collision.time_to_minimum_delta = normalX;
         collision.altitude_minimum_delta = normalY;
@@ -665,7 +665,7 @@ struct MavLinkDroneController::impl {
 
     bool hasVideoRequest()
     {
-        MavLinkVideoServer::MavLinkVideoRequest image_req;
+        mavlinkcom::MavLinkVideoServer::MavLinkVideoRequest image_req;
         return video_server_->hasVideoRequest(image_req);
     }
 
@@ -682,10 +682,10 @@ struct MavLinkDroneController::impl {
             // remove MAV_MODE_FLAG_HIL_ENABLED flag from current mode 
             std::lock_guard<std::mutex> guard(set_mode_mutex_);
             int mode = mav_vehicle_->getVehicleState().mode;
-            mode &= ~static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
+            mode &= ~static_cast<int>(mavlinkcom::MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
 
-            MavCmdDoSetMode cmd;
-            cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
+            mavlinkcom::MavCmdDoSetMode cmd;
+            cmd.command = static_cast<uint16_t>(mavlinkcom::MAV_CMD::MAV_CMD_DO_SET_MODE);
             cmd.Mode = static_cast<float>(mode);
             mav_vehicle_->sendCommand(cmd);
 
@@ -704,10 +704,10 @@ struct MavLinkDroneController::impl {
         // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode 
         std::lock_guard<std::mutex> guard(set_mode_mutex_);
         int mode = mav_vehicle_->getVehicleState().mode;
-        mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
+        mode |= static_cast<int>(mavlinkcom::MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
 
-        MavCmdDoSetMode cmd;
-        cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
+        mavlinkcom::MavCmdDoSetMode cmd;
+        cmd.command = static_cast<uint16_t>(mavlinkcom::MAV_CMD::MAV_CMD_DO_SET_MODE);
         cmd.Mode = static_cast<float>(mode);
         mav_vehicle_->sendCommand(cmd);
 
@@ -876,7 +876,7 @@ struct MavLinkDroneController::impl {
     {
         bool rc = false;
         checkVehicle();
-        AsyncResult<bool> result = mav_vehicle_->loiter();
+        mavlinkcom::AsyncResult<bool> result = mav_vehicle_->loiter();
         auto start_time = std::chrono::system_clock::now();
         while (!cancelable_action.isCancelled())
         {
@@ -1014,7 +1014,7 @@ struct MavLinkDroneController::impl {
         if (logviewer_proxy_ == nullptr || connection_ == nullptr || mav_vehicle_ == nullptr) {
             return;
         }
-        MavLinkTelemetry data;
+        mavlinkcom::MavLinkTelemetry data;
         connection_->getTelemetry(data);
         if (data.messagesReceived == 0) {
             if (!hil_message_timer_.started()) {
@@ -1029,7 +1029,7 @@ struct MavLinkDroneController::impl {
         // listen to the other mavlink connection also
         auto mavcon = mav_vehicle_->getConnection();
         if (mavcon != connection_) {
-            MavLinkTelemetry sitl;
+            mavlinkcom::MavLinkTelemetry sitl;
             mavcon->getTelemetry(sitl);
 
             data.handlerMicroseconds += sitl.handlerMicroseconds;
@@ -1087,7 +1087,7 @@ struct MavLinkDroneController::impl {
     void ensureSafeMode() 
     {
         if (mav_vehicle_ != nullptr) {
-            const VehicleState& state = mav_vehicle_->getVehicleState();
+            const mavlinkcom::VehicleState& state = mav_vehicle_->getVehicleState();
             if (state.controls.landed || !state.controls.armed) {
                 return;
             }
@@ -1161,7 +1161,7 @@ real_T MavLinkDroneController::getVertexControlSignal(unsigned int rotor_index)
 }
 size_t MavLinkDroneController::getVertexCount()
 {
-    return RotorControlsCount;
+    return impl::RotorControlsCount;
 }
 void MavLinkDroneController::start()
 {
