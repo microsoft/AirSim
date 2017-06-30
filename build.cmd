@@ -1,15 +1,19 @@
 @echo off
+REM //---------- set up variable ----------
 setlocal
 set ROOT_DIR=%CD%
 
+REM //---------- make sure we have got all sub modules ----------
 chdir /d %ROOT_DIR% 
 git submodule update --init --recursive
 
+REM //---------- if cmake doesn't exist then install it ----------
 WHERE cmake >nul 2>nul
 IF %ERRORLEVEL% NEQ 0 (
 	call :installcmake
 )
 
+REM //---------- compile rpclib that we got from git submodule ----------
 IF NOT EXIST external\rpclib\build mkdir external\rpclib\build
 cd external\rpclib\build
 cmake -G"Visual Studio 14 2015 Win64" ..
@@ -18,32 +22,33 @@ cmake --build . --config Release
 if ERRORLEVEL 1 goto :buildfailed
 chdir /d %ROOT_DIR% 
 
+REM //---------- copy rpclib binaries and include folder inside AirLib folder ----------
 set RPCLIB_TARGET_LIB=AirLib\deps\rpclib\lib\x64
 if NOT exist %RPCLIB_TARGET_LIB% mkdir %RPCLIB_TARGET_LIB%
-
 set RPCLIB_TARGET_INCLUDE=AirLib\deps\rpclib\include
 if NOT exist %RPCLIB_TARGET_INCLUDE% mkdir %RPCLIB_TARGET_INCLUDE%
-
 robocopy /MIR external\rpclib\include %RPCLIB_TARGET_INCLUDE%
 robocopy /MIR external\rpclib\build\output\lib %RPCLIB_TARGET_LIB%
 
-
+REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
 msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
 if ERRORLEVEL 1 goto :buildfailed
 msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln 
 if ERRORLEVEL 1 goto :buildfailed
 
+REM //---------- copy binaries and include for MavLinkCom in deps ----------
 set MAVLINK_TARGET_LIB=AirLib\deps\MavLinkCom\lib
 if NOT exist %MAVLINK_TARGET_LIB% mkdir %MAVLINK_TARGET_LIB%
-
 set MAVLINK_TARGET_INCLUDE=AirLib\deps\MavLinkCom\include
 if NOT exist %MAVLINK_TARGET_INCLUDE% mkdir %MAVLINK_TARGET_INCLUDE%
-
-if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
-
 robocopy /MIR MavLinkCom\include %MAVLINK_TARGET_INCLUDE%
 robocopy /MIR MavLinkCom\lib %MAVLINK_TARGET_LIB%
+
+REM //---------- all our output goes to Unreal/Plugin folder ----------
+if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
 robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp
+
+REM //---------- done building ----------
 goto :eof
 
 :buildfailed

@@ -1,13 +1,15 @@
 #! /bin/bash
 
+# get path of current script: https://stackoverflow.com/a/39340259/207661
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
 
 set -e
 
-# update the rpclib git submodule
+# update any git submodules, currently rpclib
 git submodule update --init --recursive 
 
+# check for clang compiler, if not installed then instruct user to install it
 #!/bin/bash
 if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
 	echo "ERROR: clang++ 3.9 is necessary to compile AirSim and run it in Unreal"
@@ -21,9 +23,11 @@ if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
 	exit 1
 fi
 
+# set up paths of clang compiler
 export CC=/usr/bin/clang
 export CXX=/usr/bin/clang++
 
+# if eigen env var not found then install eigen in current directory
 if [[ ! -d "$EIGEN_ROOT" ]]; then 
 	if [[ ! -d eigen ]]; then
 		echo "downloading eigen..."
@@ -38,6 +42,7 @@ if [[ ! -d "$EIGEN_ROOT" ]]; then
 	export EIGEN_ROOT="$(pwd)/eigen"
 fi
 
+# variable for build output
 build_dir=build_debug
 echo "putting build in build_debug folder, to clean, just delete the directory..."
 

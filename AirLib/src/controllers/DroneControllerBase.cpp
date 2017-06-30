@@ -14,7 +14,6 @@
 #include <iostream>
 #include <fstream>
 #include "controllers/DroneControllerBase.hpp"
-#include "controllers/VehicleCamera.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
 namespace msr { namespace airlib {
@@ -658,7 +657,7 @@ void DroneControllerBase::addCamera(std::shared_ptr<VehicleCamera> camera)
     enabled_cameras[camera->getId()] = camera;
 }
 
-vector<uint8_t> DroneControllerBase::getImageForCamera(int camera_id, ImageType type)
+vector<uint8_t> DroneControllerBase::getImageForCamera(int camera_id, VehicleCamera::ImageType type)
 {
     StatusLock lock(this);
     vector<uint8_t> png;

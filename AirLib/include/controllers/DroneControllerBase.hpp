@@ -6,12 +6,13 @@
 
 
 #include "common/Common.hpp"
+#include "VehicleControllerBase.hpp"
+#include "common/common_utils/WorkerThread.hpp"
+#include "controllers/VehicleCamera.hpp"
 #include "Waiter.hpp"
 #include "safety/SafetyEval.hpp"
 #include "common/CommonStructs.hpp"
-#include "VehicleControllerBase.hpp"
 #include "DroneCommon.hpp"
-#include "common/common_utils/WorkerThread.hpp"
 
 namespace msr { namespace airlib {
 
@@ -62,15 +63,6 @@ public: //types
         DroneControllerBase* drone_;
         std::lock_guard<std::recursive_mutex> lock_;
     };
-
-    enum class ImageType : uint {
-        None = 0,
-        Scene = 1, 
-        Depth = 2, 
-        Segmentation = 4,
-        All = 255
-    };
-    typedef common_utils::EnumFlags<ImageType>  ImageTypeFlags;
 
     enum class LandedState : uint {
         Landed = 0,
@@ -233,7 +225,7 @@ public: //interface for outside world
     /// Request an image of specific type from the specified camera.  Currently AirSim is configured with only 2 cameras which
     /// have id of 0 and 1.  Camera 0 is setup to be an FPV camera view and camera 1 is setup as a 3rd person view that chases the drone.
     /// The image is return in the .png format.  This call will block until the render is complete.  
-    virtual vector<uint8_t> getImageForCamera(int camera_id, ImageType type);
+    virtual vector<uint8_t> getImageForCamera(int camera_id, VehicleCamera::ImageType type);
 
     virtual void addCamera(std::shared_ptr<VehicleCamera> camera);
 
@@ -280,7 +272,7 @@ protected: //must implement interface by derived class
     template <typename Key, typename T>
     using EnumClassUnorderedMap = std::unordered_map<Key, T, EnumClassHashType<Key>>;
 
-    unordered_map<int, EnumClassUnorderedMap<ImageType, vector<uint8_t>>> images;
+    unordered_map<int, EnumClassUnorderedMap<VehicleCamera::ImageType, vector<uint8_t>>> images;
 
 protected: //optional oveerides recommanded for any drones, default implementation may work
     virtual float getAutoLookahead(float velocity, float adaptive_lookahead,

@@ -96,13 +96,13 @@ int imageExample()
 
     msr::airlib::RpcLibClient client;
 
-    auto i1 = client.getImageForCamera(0, DroneControllerBase::ImageType::Depth);
+    auto i1 = client.getImageForCamera(0, VehicleCamera::ImageType::Depth);
     cout << i1.size() << endl;
 
-    auto i2 = client.getImageForCamera(3, DroneControllerBase::ImageType::Depth);
+    auto i2 = client.getImageForCamera(3, VehicleCamera::ImageType::Depth);
     cout << i2.size() << " " << (i2.size() > 0 ? i2[0] : -1) << endl;
 
-    auto i3 = client.getImageForCamera(4, DroneControllerBase::ImageType::Scene);
+    auto i3 = client.getImageForCamera(4, VehicleCamera::ImageType::Scene);
     cout << i3.size() << " " << (i3.size() > 0 ? i3[0] : -1) << endl;
 
 

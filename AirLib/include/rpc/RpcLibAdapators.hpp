@@ -195,7 +195,7 @@ public:
 MSGPACK_ADD_ENUM(msr::airlib::DrivetrainType);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::SafetyViolationType_);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::ObsAvoidanceStrategy);
-MSGPACK_ADD_ENUM(msr::airlib::DroneControllerBase::ImageType);
+MSGPACK_ADD_ENUM(msr::airlib::VehicleCamera::ImageType);
 
 
 #endif

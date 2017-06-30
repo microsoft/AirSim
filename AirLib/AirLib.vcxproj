@@ -146,7 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
-    <ClCompile Include="src\controllers\MavLinkDroneController.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\rpc\RpcLibClient.cpp" />
     <ClCompile Include="src\rpc\RpcLibServer.cpp" />

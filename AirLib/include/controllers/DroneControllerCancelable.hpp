@@ -236,7 +236,7 @@ public:
     }
 
     //get image
-    vector<uint8_t> getImageForCamera(int camera_id, DroneControllerBase::ImageType type)
+    vector<uint8_t> getImageForCamera(int camera_id, VehicleCamera::ImageType type)
     {
         return controller_->getImageForCamera(camera_id, type);
     }

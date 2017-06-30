@@ -1157,7 +1157,7 @@ public:
         this->addSwitch({ "-pause_time", "100", "pause time between each image in milliseconds (default 100)" });
     }
 
-    void getImages(CommandContext* context, DroneControllerBase::ImageType imageType, std::string baseName, int iterations, TTimeDelta pause_time)
+    void getImages(CommandContext* context, VehicleCamera::ImageType imageType, std::string baseName, int iterations, TTimeDelta pause_time)
     {
         // group the images by the current date.
         std::string folderName = Utils::to_string(Utils::now(), "%Y-%m-%d");
@@ -1175,17 +1175,17 @@ public:
             const char* typeName = "";
             switch (imageType)
             {
-            case msr::airlib::DroneControllerBase::ImageType::Scene:
+            case msr::airlib::VehicleCamera::ImageType::Scene:
                 typeName = "scene";
                 break;
-            case msr::airlib::DroneControllerBase::ImageType::Depth:
+            case msr::airlib::VehicleCamera::ImageType::Depth:
                 typeName = "depth";
                 break;
-            case msr::airlib::DroneControllerBase::ImageType::Segmentation:
+            case msr::airlib::VehicleCamera::ImageType::Segmentation:
                 typeName = "seg";
                 break;
-            case msr::airlib::DroneControllerBase::ImageType::None:
-            case msr::airlib::DroneControllerBase::ImageType::All:
+            case msr::airlib::VehicleCamera::ImageType::None:
+            case msr::airlib::VehicleCamera::ImageType::All:
             default:
                 break;
             }
@@ -1213,14 +1213,14 @@ public:
         TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
         CommandContext* context = params.context;
 
-        DroneControllerBase::ImageType imageType;
+        VehicleCamera::ImageType imageType;
 
         if (type == "depth") {
-            imageType = DroneControllerBase::ImageType::Depth;
+            imageType = VehicleCamera::ImageType::Depth;
         } else if (type == "scene") {
-            imageType = DroneControllerBase::ImageType::Scene;
+            imageType = VehicleCamera::ImageType::Scene;
         } else if (type == "segmentation") {
-            imageType = DroneControllerBase::ImageType::Segmentation;
+            imageType = VehicleCamera::ImageType::Segmentation;
         } else {
             cout << "Error: Invalid image type '" << type << "', expecting either 'depth', 'scene' or 'segmentation'" << endl;
             return true;
