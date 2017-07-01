@@ -23,8 +23,8 @@ You can also fly without flight controller hardware.  See [alternative to RC](si
 ## Setup steps
 1. Make sure your RC receiver is bound with its RC transmitter. Connect the RC trasmitter to the flight controller's RC port.
 2. Download [QGroundControl](http://qgroundcontrol.com/), launch it and connect your flight controller to the USB port.
-3. Install the PX4 firmware v1.6.0 from [github](https://github.com/PX4/Firmware/releases/tag/v1.6.0rc1). 
-See this [initial firmware setup video](https://dev.px4.io/starting-initial-config.html) that shows up to install new firmware.
+3. Install the PX4 firmware v1.5.5 from [github](https://github.com/PX4/Firmware/releases/tag/v1.5.5). 
+See this [initial firmware setup video](https://dev.px4.io/starting-initial-config.html) that shows up to install new firmware. Note that later releases of PX4 has [issue](https://github.com/PX4/Firmware/issues/7516) where vehicle doesn't takeoff after arming.
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected. You might also want to use QGroundControl to calibrate your RC and set up Flight Mode switch among other things (see below) so everything is green.
 
 See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0) and  [Unreal AirSim Setup  Video](https://youtu.be/1oY8Qu5maQQ) that shows you all the setup steps in this document.

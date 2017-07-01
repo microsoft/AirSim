@@ -1,88 +1,48 @@
 # Linux Build
 
-These are the instructions to build AirSim on a Linux machine.
-Note: you can also do this from [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)
-but make sure you are `not` using a `Visual Studio Command Prompt` because we don't want cmake to accidentally find VC++ and try and use that.
+These are the instructions to build AirSim on **Ubuntu 16.04 LTS**. Theoratically you can build on other distros and versions as well but we haven't tested it (and 
+mostly likely there are extra steps).
 
-We need to use `clang compiler` because Unreal engine requires that.  
+## Install Linux Pre-requisites
+### cmake
+First you will need at least [cmake version  3.5](https://cmake.org/install/). If you are using Ubuntu 16.04 LTS, you likely already have it. You can check this by command `cmake --version`.
+If you don't have it then follow [these instructions](cmake.md).
 
-First you will need the usual build essentials, this will get you 'make' amongst other things:
+### Clang compiler
+Unreal engine requires clang compiler 3.9 or higher. To install it use following commands. For other flavors of Linux and more info, please see [http://apt.llvm.org/](http://apt.llvm.org/).
 ````
 sudo apt-get install build-essential
-````
-
-## cmake
-
-First you will need at least [cmake version  3.5](https://cmake.org/install/). 
-If you don't have cmake version 3.5 (for example, 3.2.2 is the default on Ubuntu 14) you can run the following:
-
-````
-mkdir ~/cmake-3.5.1
-cd ~/cmake-3.5.1
-wget https://cmake.org/files/v3.5/cmake-3.5.1-Linux-x86_64.sh
-````
-Now you have to run this command by itself (it is interactive)
-````
-sh cmake-3.5.1-Linux-x86_64.sh --prefix ~/cmake-3.5.1
-````
-Answer 'n' to the question about creating another cmake-3.5.1-Linux-x86_64 folder.
-Then 
-````
-sudo update-alternatives --install /usr/bin/cmake cmake ~/cmake-3.5.1/bin/cmake 60
-````
-
-Now type `cmake --version` to make sure your cmake version is 3.5.1.
-
-Next you need a version of [CLang compiler](http://releases.llvm.org/3.9.0/tools/clang/docs/ReleaseNotes.html) that supports `-std=c++14`.  Version 3.9 or newer should work.  To install it you first need the archive signature:
-````
 wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-````
-
-If you are using Ubuntu 16.04 (Xenial) then you can simply do this:
-````
-sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main"
 sudo apt-get update
+sudo apt-get install clang-3.9 clang++-3.9 clang-3.9-doc libclang-common-3.9-dev libclang-3.9-dev libclang1-3.9 libclang1-3.9-dbg libllvm-3.9-ocaml-dev libllvm3.9 libllvm3.9-dbg lldb-3.9 llvm-3.9 llvm-3.9-dev llvm-3.9-doc llvm-3.9-examples llvm-3.9-runtime clang-format-3.9 python-clang-3.9 libfuzzer-3.9-dev
 ````
 
-For other flavors of Linux, you can get more instructions from [http://apt.llvm.org/](http://apt.llvm.org/).
-
-Then run the following:
-
-````
-sudo apt-get update
-sudo apt-get install clang-3.9 clang++-3.9
-````
-
-Note: On Ubuntu 16.04 you may be missing libjsoncpp0 which is no longer available in the package manager, you can [download the relevant dpkg here](http://packages.ubuntu.com/trusty/amd64/libjsoncpp0/download) and install with `sudo dpkg -i libjsoncpp0_0.6.0~*.deb`.
-
-More detailed instructions are available here: [http://apt.llvm.org/](http://apt.llvm.org/).
-Now make clang-3.9 your default version of clang with this command:
-
+Then set v3.9 as default,
 ````
 sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9
 ````
-Next you will need the latest version of libc++ library from llvm. You can get that by running the following script which
-you will find in the `cmake` folder that is included in your AirSim repo:
+
+### libc++ library
+Navigate to AirSim/cmake folder and run
+````
+bash getlibcxx.sh
+````
+
+## Building AirSim
+Navigate to AirSim folder and type,
 
 ````
-getlibcxx.sh
-````
-This will clone the llvm-source and
-build it in an llvm-build folder, then it will install the built libraries.  This ensures you have the right version
-of llvm for your platform.
-
-Now you can run the build.sh at the root level of the AirSim repo:
-
-````
-./build.sh
+bash build.sh
 ````
 This will create a `build_debug` folder containing the build output and the cmake generated make files.
 
-## Reset build
-
-If for any reason you need to re-run cmake to regenerate new make files just deete the `build_debug` folder.
+## Clean (or reset) the build
+To clean the build, just delete the `build_debug` folder.
 
 ## Running Unreal on Linux
-
 Now you are ready to follow these instructions to get [Unreal working on Linux](https://wiki.unrealengine.com/Building_On_Linux#Clang) but note that everywhere
 you see Clang3.5 in the Unreal documentation replace that with clang3.9.
+
+## BashOnWindows
+You can also compile from [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)
+but make sure you are `not` using a `Visual Studio Command Prompt` because we don't want cmake to accidentally find VC++ and try and use that!
