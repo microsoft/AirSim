@@ -43,47 +43,47 @@ void VehicleCameraConnector::addScreenCaptureHandler(UWorld *world)
 }
 
 
-bool VehicleCameraConnector::getScreenShot(DroneControllerBase::ImageType imageType, std::vector<uint8_t>& compressedPng)
+bool VehicleCameraConnector::getScreenShot(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng)
 {
 
     if (this->camera == nullptr) {
         return false;
     }
-    if (imageType == DroneControllerBase::ImageType::None) {
+    if (imageType == VehicleCamera::ImageType::None) {
         return false;
     }
 
     return getScreenshotSceneCapture(imageType, compressedPng);
 }
 
-bool VehicleCameraConnector::getScreenshotScreen(DroneControllerBase::ImageType imageType, std::vector<uint8_t>& compressedPng)
+bool VehicleCameraConnector::getScreenshotScreen(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng)
 {
     FScreenshotRequest::RequestScreenshot(false); // This is an async operation
     return true;
 }
 
-bool VehicleCameraConnector::getScreenshotSceneCapture(DroneControllerBase::ImageType imageType, std::vector<uint8_t>& compressedPng)
+bool VehicleCameraConnector::getScreenshotSceneCapture(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng)
 {
     ASimHUD* hud = ASimHUD::GetInstance();
     EPIPCameraType pip_type;
     bool visibilityChanged = false;
     //TODO: merge these two different types?
     switch (imageType) {
-    case DroneControllerBase::ImageType::Scene:
+    case VehicleCamera::ImageType::Scene:
         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SCENE; 
         if (!hud->isPIPSceneVisible()) {
             hud->inputEventTogglePIPScene();
             visibilityChanged = true;
         }
         break;
-    case DroneControllerBase::ImageType::Depth:
+    case VehicleCamera::ImageType::Depth:
         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_DEPTH;
         if (!hud->isPIPDepthVisible()) {
             hud->inputEventTogglePIPDepth();
             visibilityChanged = true;
         }
         break;
-    case DroneControllerBase::ImageType::Segmentation:
+    case VehicleCamera::ImageType::Segmentation:
         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SEG;
         if (!hud->isPIPSegVisible()) {
             hud->inputEventTogglePIPSeg();

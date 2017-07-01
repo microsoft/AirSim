@@ -50,11 +50,12 @@ private: //methods
 
         auto altitude = ground_truth.environment->getState().geo_point.altitude;
         auto pressure = EarthUtils::getStandardPressure(altitude);
+
         //add drift in pressure
         pressure_factor.update();
         pressure += pressure * pressure_factor.getOutput();
         //add user specified offset
-        pressure += EarthUtils::SeaLevelPressure - params_.qnh*100.0f;
+        //pressure += EarthUtils::SeaLevelPressure - params_.qnh*100.0f;
         pressure += uncorrelated_noise.next();
 
         output.pressure = pressure;

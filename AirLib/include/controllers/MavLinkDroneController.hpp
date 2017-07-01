@@ -636,6 +636,9 @@ public:
             hil_node_->sendMessage(hil_gps);
         }
 
+        if (hil_gps.lat < 0.1f && hil_gps.lat > -0.1f)
+            Utils::DebugBreak();
+
         std::lock_guard<std::mutex> guard(last_message_mutex_);
         last_gps_message_ = hil_gps;
     }
