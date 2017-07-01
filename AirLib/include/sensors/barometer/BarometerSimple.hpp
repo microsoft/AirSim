@@ -51,11 +51,12 @@ private: //methods
         auto altitude = ground_truth.environment->getState().geo_point.altitude;
         auto pressure = EarthUtils::getStandardPressure(altitude);
 
+        //TODO: below drift is producing big swings of +/- 5 meters in 1 ms, need to reevaluate params
         //add drift in pressure
-        pressure_factor.update();
-        pressure += pressure * pressure_factor.getOutput();
+        //pressure_factor.update();
+        //pressure += pressure * pressure_factor.getOutput();
         //add user specified offset
-        //pressure += EarthUtils::SeaLevelPressure - params_.qnh*100.0f;
+        //pressure -= params_.qnh*100.0f;
         pressure += uncorrelated_noise.next();
 
         output.pressure = pressure;
@@ -67,7 +68,7 @@ private: //methods
 
         setOutput(output);
     }
-
+    
 private:
     BarometerSimpleParams params_;
 

@@ -35,7 +35,9 @@ struct BarometerSimpleParams {
 
     //Experiments for MEAS MS56112 sensor shows 0.021mbar, datasheet has resoultion of 0.027mbar @ 1024
     //http://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5611-01BA03&DocType=Data+Sheet&DocLang=English
-    real_T unnorrelated_noise_sigma = 0.027f * 100;
+    //real_T unnorrelated_noise_sigma = 0.027f * 100;
+    //TODO: above seems to be too high noise - need to reevaluate experimentally
+    real_T unnorrelated_noise_sigma = 0.1f;
 
 };
 
