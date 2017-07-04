@@ -15,7 +15,6 @@ STRICT_MODE_ON
 
 int main() 
 {
-    using namespace std;
     using namespace msr::airlib;
 
 
@@ -24,21 +23,25 @@ int main()
     msr::airlib::RpcLibClient client;
 
     try {
-        cout << "Waiting for drone to get a GPS position..." << endl;
-        GeoPoint pos = client.getGpsLocation();
-        while (pos.altitude == 0 && pos.latitude == 0 && pos.longitude == 0)
-        {
-            std::this_thread::sleep_for(std::chrono::duration<double>(1)); 
-            pos = client.getGpsLocation();
+        client.confirmConnection();
+
+        std::cout << "Press Enter to get FPV image" << std::endl; std::cin.get();
+        auto image = client.getImageForCamera(0, VehicleCamera::ImageType::Scene);
+        std::cout << "PNG images recieved bytes: " << image.size() << std::endl;
+        std::cout << "Enter file name to save image (leave empty for no save)" << std::endl; 
+        std::string filename;
+        std::getline(std::cin, filename);
+
+        if (filename != "") {
+            std::ofstream file(filename, std::ios::binary);
+            file.write((char*) image.data(), image.size());
+            file.close();
         }
-        
-        cout << "Great, we have a GPS position: lat=" << pos.latitude << ", lon=" << pos.longitude << ", alt=" << pos.altitude << endl;
 
-
-        cout << "Press Enter to arm the drone" << endl; cin.get();
+        std::cout << "Press Enter to arm the drone" << std::endl; std::cin.get();
         client.armDisarm(true);
 
-        cout << "Press Enter to takeoff" << endl; cin.get();
+        std::cout << "Press Enter to takeoff" << std::endl; std::cin.get();
         float takeoffTimeout = 5; 
         client.takeoff(takeoffTimeout);
 
@@ -47,8 +50,7 @@ int main()
         std::this_thread::sleep_for(std::chrono::duration<double>(5));
         client.hover();
 
-
-        cout << "Press Enter to fly in a 10m box pattern at 1 m/s velocity" << endl; cin.get();
+        std::cout << "Press Enter to fly in a 10m box pattern at 1 m/s velocity" << std::endl; std::cin.get();
         // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
         client.setOffboardMode(true); 
         auto position = client.getPosition();
@@ -58,31 +60,31 @@ int main()
         const float duration = size / speed;
         DrivetrainType driveTrain = DrivetrainType::ForwardOnly;
         YawMode yaw(false, 0);
-        cout << "moveByVelocityZ(" << speed << ", 0, " << z << "," << duration << ")" << endl;
+        std::cout << "moveByVelocityZ(" << speed << ", 0, " << z << "," << duration << ")" << std::endl;
         client.moveByVelocityZ(speed, 0, z, duration, driveTrain, yaw);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
-        cout << "moveByVelocityZ(0, " << speed << "," << z << "," << duration << ")" << endl;
+        std::cout << "moveByVelocityZ(0, " << speed << "," << z << "," << duration << ")" << std::endl;
         client.moveByVelocityZ(0, speed, z, duration, driveTrain, yaw);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
-        cout << "moveByVelocityZ(" << -speed << ", 0, " << z << "," << duration << ")" << endl;
+        std::cout << "moveByVelocityZ(" << -speed << ", 0, " << z << "," << duration << ")" << std::endl;
         client.moveByVelocityZ(-speed, 0, z, duration, driveTrain, yaw);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
-        cout << "moveByVelocityZ(0, " << -speed << "," << z << "," << duration << ")" << endl;
+        std::cout << "moveByVelocityZ(0, " << -speed << "," << z << "," << duration << ")" << std::endl;
         client.moveByVelocityZ(0, -speed, z, duration, driveTrain, yaw);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
 
         client.hover();
 
-        cout << "Press Enter to land" << endl; cin.get();
+        std::cout << "Press Enter to land" << std::endl; std::cin.get();
         client.land();
 
-        cout << "Press Enter to disarm" << endl; cin.get();
+        std::cout << "Press Enter to disarm" << std::endl; std::cin.get();
         client.armDisarm(false);
 
     }
     catch (rpc::rpc_error&  e) {
         std::string msg = e.get_error().as<std::string>();
-        cout << "Exception raised by the API, something went wrong." << endl << msg << endl;
+        std::cout << "Exception raised by the API, something went wrong." << std::endl << msg << std::endl;
     }
 
     return 0;
@@ -97,13 +99,13 @@ int imageExample()
     msr::airlib::RpcLibClient client;
 
     auto i1 = client.getImageForCamera(0, VehicleCamera::ImageType::Depth);
-    cout << i1.size() << endl;
+    std::cout << i1.size() << std::endl;
 
     auto i2 = client.getImageForCamera(3, VehicleCamera::ImageType::Depth);
-    cout << i2.size() << " " << (i2.size() > 0 ? i2[0] : -1) << endl;
+    std::cout << i2.size() << " " << (i2.size() > 0 ? i2[0] : -1) << std::endl;
 
     auto i3 = client.getImageForCamera(4, VehicleCamera::ImageType::Scene);
-    cout << i3.size() << " " << (i3.size() > 0 ? i3[0] : -1) << endl;
+    std::cout << i3.size() << " " << (i3.size() > 0 ? i3[0] : -1) << std::endl;
 
 
     return 0;

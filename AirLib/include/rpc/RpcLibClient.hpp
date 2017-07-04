@@ -59,6 +59,8 @@ public:
     bool isOffboardMode();
     bool isSimulationMode();
     std::string getDebugInfo();
+    void confirmConnection();
+
 
     //request image
     vector<uint8_t> getImageForCamera(int camera_id, VehicleCamera::ImageType type);

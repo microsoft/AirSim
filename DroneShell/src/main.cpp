@@ -78,9 +78,9 @@ public:
         this->addSwitch({"-adaptive_lookahead", "1", "Whether to apply adaptive lookahead (1=yes, 0=no) (default 1)" });
     }
 
-	void addRelativeSwitch() {
-		this->addSwitch({ "-r", "0", "specify x,y,z is relative to current position rather than home position, 0 means absolute, 1 means relative" });
-	}
+    void addRelativeSwitch() {
+        this->addSwitch({ "-r", "0", "specify x,y,z is relative to current position rather than home position, 0 means absolute, 1 means relative" });
+    }
 
     DrivetrainType getDriveTrain() {            
         int drivetrain = getSwitch("-drivetrain").toInt();
@@ -220,7 +220,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-		float z = getSwitch("-z").toFloat();
+        float z = getSwitch("-z").toFloat();
         float duration = getSwitch("-duration").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
         float lookahead = getSwitch("-lookahead").toFloat();
@@ -300,24 +300,24 @@ public:
 
 class GetPositionCommand : public DroneCommand {
 public:
-	GetPositionCommand() : DroneCommand("Pos", "Get the current position")
-	{
-	}
+    GetPositionCommand() : DroneCommand("Pos", "Get the current position")
+    {
+    }
 
-	bool execute(const DroneCommandParameters& params)
-	{
-		CommandContext* context = params.context;
-		context->tasker.execute([=]() {
-			auto pos = context->client.getPosition();
-			auto gps = context->client.getGpsLocation();
+    bool execute(const DroneCommandParameters& params)
+    {
+        CommandContext* context = params.context;
+        context->tasker.execute([=]() {
+            auto pos = context->client.getPosition();
+            auto gps = context->client.getGpsLocation();
 
-			std::cout << "Local position: x=" << pos.x() << ", y=" << pos.y() << ", z=" << pos.z() << std::endl;
-			std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
+            std::cout << "Local position: x=" << pos.x() << ", y=" << pos.y() << ", z=" << pos.z() << std::endl;
+            std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
 
-		});
+        });
 
-		return false;
-	}
+        return false;
+    }
 };
 
 class MoveOnPathCommand : public DroneCommand {
@@ -410,7 +410,7 @@ public:
         addYawModeSwitches();
         addDriveTrainSwitch();
         addLookaheadSwitches();
-		addRelativeSwitch();
+        addRelativeSwitch();
     }
 
     void MoveToPosition(CommandContext* context, float x, float y, float z, float velocity, float duration, DrivetrainType drivetrain, YawMode yawMode, float lookahead, float adaptive_lookahead)
@@ -421,17 +421,17 @@ public:
 
     bool execute(const DroneCommandParameters& params)
     {
-		CommandContext* context = params.context;
+        CommandContext* context = params.context;
         float x = getSwitch("-x").toFloat();
         float y = getSwitch("-y").toFloat();
         float z = getSwitch("-z").toFloat();
 
-		if (getSwitch("-r").toInt() == 1) {
-			auto pos = context->client.getPosition();
-			x += pos.x();
-			y += pos.y();
-			z += pos.z();
-		}
+        if (getSwitch("-r").toInt() == 1) {
+            auto pos = context->client.getPosition();
+            x += pos.x();
+            y += pos.y();
+            z += pos.z();
+        }
 
         float velocity = getSwitch("-velocity").toFloat();
         float duration = getSwitch("-duration").toFloat();
@@ -587,7 +587,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-		int safety_flags_switch = getSwitch("-safety_flags").toInt();
+        int safety_flags_switch = getSwitch("-safety_flags").toInt();
         float obs_clearance = getSwitch("-obs_clearance").toFloat();
         float obs_avoidance_vel = getSwitch("-obs_avoidance_vel").toFloat();
         uint obs_strategy = std::stoi(getSwitch("-obs_strategy").value);
@@ -602,17 +602,17 @@ public:
 
         std::string s_xy_length = getSwitch("-xy_length").value;
         if (!s_xy_length.empty()){
-			xy_length = getSwitch("-xy_length").toFloat();
+            xy_length = getSwitch("-xy_length").toFloat();
         }
 
         std::string s_min_z = getSwitch("-min_z").value;
         if (!s_min_z.empty()){
-			min_z = getSwitch("-min_z").toFloat();
+            min_z = getSwitch("-min_z").toFloat();
         }
 
         std::string s_max_z = getSwitch("-max_z").value;
         if (!s_max_z.empty()){
-			max_z = getSwitch("-max_z").toFloat();
+            max_z = getSwitch("-max_z").toFloat();
         }
 
         std::string s_origin = getSwitch("-origin").value;
@@ -652,13 +652,13 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-		float pitch = getSwitch("-pitch").toFloat();
+        float pitch = getSwitch("-pitch").toFloat();
         float roll = getSwitch("-roll").toFloat();
         float z = getSwitch("-z").toFloat();
         float duration = getSwitch("-duration").toFloat();
         float yaw = getSwitch("-yaw").toFloat();
         TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
-		int iterations = getSwitch("-iterations").toInt();
+        int iterations = getSwitch("-iterations").toInt();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -743,7 +743,7 @@ public:
         float z = getSwitch("-z").toFloat();
         float yaw = getSwitch("-yaw").toFloat();
         TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
-		int iterations = getSwitch("-iterations").toInt();
+        int iterations = getSwitch("-iterations").toInt();
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
@@ -782,7 +782,7 @@ public:
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
-		addRelativeSwitch();
+        addRelativeSwitch();
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
@@ -790,25 +790,25 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-		CommandContext* context = params.context;
+        CommandContext* context = params.context;
 
         float length = getSwitch("-length").toFloat();
         float z = getSwitch("-z").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
         TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
-		int iterations = getSwitch("-iterations").toInt();
+        int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         auto yawMode = getYawMode();
 
-		float x = 0, y = 0;
-		if (getSwitch("-r").toInt() == 1) {
-			auto pos = context->client.getPosition();
-			x += pos.x();
-			y += pos.y();
-			z += pos.z();
-		}
+        float x = 0, y = 0;
+        if (getSwitch("-r").toInt() == 1) {
+            auto pos = context->client.getPosition();
+            x += pos.x();
+            y += pos.y();
+            z += pos.z();
+        }
 
         context->tasker.execute([=]() {
             if (!context->client.moveToPosition(x + length, y - length, z, velocity, 0, drivetrain,
@@ -852,7 +852,7 @@ public:
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
         this->addSwitch({"-path_rep", "1000", "number of times around the square (default 1000)" });
-		addRelativeSwitch();
+        addRelativeSwitch();
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
@@ -864,20 +864,20 @@ public:
         float z = getSwitch("-z").toFloat();
         float velocity = getSwitch("-velocity").toFloat();
         float duration = getSwitch("-duration").toFloat();
-		int iterations = getSwitch("-iterations").toInt();
+        int iterations = getSwitch("-iterations").toInt();
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
         int path_rep = std::stoi(getSwitch("-path_rep").value);
         auto yawMode = getYawMode();
-		float x = 0, y = 0;
+        float x = 0, y = 0;
         CommandContext* context = params.context;
-		if (getSwitch("-r").toInt() == 1) {
-			auto pos = context->client.getPosition();
-			x += pos.x();
-			y += pos.y();
-			z += pos.z();
-		}
+        if (getSwitch("-r").toInt() == 1) {
+            auto pos = context->client.getPosition();
+            x += pos.x();
+            y += pos.y();
+            z += pos.z();
+        }
 
         std::vector<Vector3r> path;
         for(int i = 0; i < path_rep; ++i) {
@@ -918,7 +918,7 @@ public:
         this->addSwitch({"-pause_time", "0", "pause time between each run back and forth in seconds (default 0)" });
         this->addSwitch({"-iterations", "10000", "number of times to repeat the task (default 10000)" });
 
-		addRelativeSwitch();
+        addRelativeSwitch();
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
@@ -926,7 +926,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-		CommandContext* context = params.context;
+        CommandContext* context = params.context;
         float radius = getSwitch("-radius").toFloat();
         float z = getSwitch("-z").toFloat();
         float seg_length = getSwitch("-seg_length").toFloat();
@@ -936,15 +936,15 @@ public:
         auto drivetrain = getDriveTrain();
         float lookahead = getSwitch("-lookahead").toFloat();
         float adaptive_lookahead = getSwitch("-adaptive_lookahead").toFloat();
-		int iterations = getSwitch("-iterations").toInt();
+        int iterations = getSwitch("-iterations").toInt();
         auto yawMode = getYawMode();
-		float cx = 0, cy = 0;
-		if (getSwitch("-r").toInt() == 1) {
-			auto pos = context->client.getPosition();
-			cx += pos.x();
-			cy += pos.y();
-			z += pos.z();
-		}
+        float cx = 0, cy = 0;
+        if (getSwitch("-r").toInt() == 1) {
+            auto pos = context->client.getPosition();
+            cx += pos.x();
+            cy += pos.y();
+            z += pos.z();
+        }
 
 
         float angle = std::acos(1 - (seg_length*seg_length / (2 * radius*radius)));
@@ -986,7 +986,7 @@ public:
         addLookaheadSwitches();
         addDriveTrainSwitch();
         addYawModeSwitches();
-		addRelativeSwitch();
+        addRelativeSwitch();
     }
 
     bool execute(const DroneCommandParameters& params) 
@@ -1006,13 +1006,13 @@ public:
         string plane = getSwitch("-plane").value;
         auto yawMode = getYawMode();
         CommandContext* context = params.context;
-		float cx = 0, cy = 0;
-		if (getSwitch("-r").toInt() == 1) {
-			auto pos = context->client.getPosition();
-			cx += pos.x();
-			cy += pos.y();
-			z_path += pos.z();
-		}
+        float cx = 0, cy = 0;
+        if (getSwitch("-r").toInt() == 1) {
+            auto pos = context->client.getPosition();
+            cx += pos.x();
+            cy += pos.y();
+            z_path += pos.z();
+        }
 
 
         float angle = std::acos(1 - (seg_length*seg_length / (2 * radius*radius)));
@@ -1294,7 +1294,7 @@ int main(int argc, const char *argv[]) {
         return -1;
     }
 
-	CommandContext command_context(server_address);
+    CommandContext command_context(server_address);
 
     command_context.tasker.setErrorHandler([](std::exception& e) {
         try {
@@ -1315,33 +1315,8 @@ int main(int argc, const char *argv[]) {
         Microsoft Research (c) 2017.
     )");
 
-    // make sure we can talk to the DroneServer
-    //std::cout << "Contacting DroneServer..." << std::flush;
-    //command_context.client.ping();
-    //std::cout << "DroneServer is responding." << std::endl;
-
-    std::cout << "Waiting for connection--" << std::flush;
-    const TTimeDelta pause_time = 1;
-    while (command_context.client.getConnectionState() != RpcLibClient::ConnectionState::Connected)
-    {
-        std::cout << "X" << std::flush;
-        command_context.sleep_for(pause_time); 
-    }
-    std::cout << "Connected!" << std::endl;
+    command_context.client.confirmConnection();
     
-	std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
-	auto gps = command_context.client.getGpsLocation();
-    int count = 0;
-	while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0 && count++ < 10)
-	{
-		std::cout << "." << std::flush;
-        command_context.sleep_for(pause_time); 
-		gps = command_context.client.getGpsLocation();
-	}
-	std::cout << std::endl;
-    std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
-	
-
     //Shell callbacks
     // shell.beforeScriptStartCallback(std::bind(&beforeScriptStartCallback, std::placeholders::_1, std::placeholders::_2));
     // shell.afterScriptEndCallback(std::bind(&afterScriptEndCallback, std::placeholders::_1, std::placeholders::_2));
@@ -1363,7 +1338,7 @@ int main(int argc, const char *argv[]) {
     RotateToYawCommand rotateToYaw;
     HoverCommand hover;
     MoveToPositionCommand moveToPosition;
-	GetPositionCommand getPosition;
+    GetPositionCommand getPosition;
     MoveByManualCommand moveByManual;
     MoveByAngleCommand moveByAngle;
     MoveByVelocityCommand moveByVelocity;
@@ -1388,7 +1363,7 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(releaseControl);
     shell.addCommand(takeOff);
     shell.addCommand(land);
-	shell.addCommand(getPosition);
+    shell.addCommand(getPosition);
     shell.addCommand(goHome);
     shell.addCommand(getHomePoint);
     shell.addCommand(moveToZ);

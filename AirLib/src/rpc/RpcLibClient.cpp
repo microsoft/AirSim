@@ -218,6 +218,37 @@ std::string RpcLibClient::getDebugInfo()
     return pimpl_->client.call("getDebugInfo").as<std::string>();
 }
 
+void RpcLibClient::confirmConnection()
+{
+    ClockBase* clock = ClockFactory::get();
+
+    // make sure we can talk to the DroneServer
+    //std::cout << "Contacting DroneServer..." << std::flush;
+    //command_context.client.ping();
+    //std::cout << "DroneServer is responding." << std::endl;
+
+    std::cout << "Waiting for connection - " << std::flush;
+    const TTimeDelta pause_time = 1;
+    while (getConnectionState() != RpcLibClient::ConnectionState::Connected)
+    {
+        std::cout << "X" << std::flush;
+        clock->sleep_for(pause_time); 
+    }
+    std::cout << "Connected!" << std::endl;
+
+    std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
+    auto gps = getGpsLocation();
+    int count = 0;
+    while (gps.latitude == 0 && gps.longitude == 0 && gps.altitude == 0 && count++ < 10)
+    {
+        std::cout << "." << std::flush;
+        clock->sleep_for(pause_time); 
+        gps = getGpsLocation();
+    }
+    std::cout << std::endl;
+    std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
+}
+
 //get/set image
 vector<uint8_t> RpcLibClient::getImageForCamera(int camera_id, VehicleCamera::ImageType type)
 {
