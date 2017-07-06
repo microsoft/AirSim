@@ -35,6 +35,10 @@ public:
     virtual bool isRecordUIVisible();
     virtual ECameraDirectorMode getInitialViewMode();
 
+    //must be implemented by derived class
+    //can't use pure virtual because of restriction with Unreal
+    virtual AVehiclePawnBase* getFpvVehiclePawn();
+
     FString getRecordingPath();
 
     std::ofstream record_file;

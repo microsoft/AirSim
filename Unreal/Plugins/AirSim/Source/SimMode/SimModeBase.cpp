@@ -67,6 +67,13 @@ void ASimModeBase::reset()
     //Should be overridden by derived classes
 }
 
+AVehiclePawnBase* ASimModeBase::getFpvVehiclePawn()
+{
+    //Should be overridden by derived classes
+    return nullptr;
+}
+
+
 std::string ASimModeBase::getReport()
 {
     static const std::string empty_string = std::string();

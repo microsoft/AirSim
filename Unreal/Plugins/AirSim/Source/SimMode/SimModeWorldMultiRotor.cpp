@@ -34,12 +34,19 @@ void ASimModeWorldMultiRotor::BeginPlay()
     }
 }
 
+AVehiclePawnBase* ASimModeWorldMultiRotor::getFpvVehiclePawn()
+{
+    return fpv_vehicle_pawn_;
+}
+
 void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
 {
     APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
     FTransform actor_transform = controller->GetActorTransform();
     //put camera little bit above vehicle
     FTransform camera_transform(actor_transform.GetLocation() + FVector(-300, 0, 200));
+
+    APIPCamera* external_camera;
 
     //find all BP camera directors in the environment
     {
@@ -53,11 +60,12 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
             spawned_actors_.Add(CameraDirector);
 
             //create external camera required for the director
-            CameraDirector->ExternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
-            spawned_actors_.Add(CameraDirector->ExternalCamera);
+            external_camera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
+            spawned_actors_.Add(external_camera);
         }
         else {
             CameraDirector = static_cast<ACameraDirector*>(camera_dirs[0]);
+            external_camera = CameraDirector->getExternalCamera();
         }
     }
 
@@ -69,15 +77,16 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
             //create vehicle pawn
             FActorSpawnParameters pawn_spawn_params;
             pawn_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-            CameraDirector->TargetPawn = this->GetWorld()->SpawnActor<AVehiclePawnBase>(vehicle_pawn_class_, actor_transform, pawn_spawn_params);
-            spawned_actors_.Add(CameraDirector->TargetPawn);
+            fpv_vehicle_pawn_ = this->GetWorld()->SpawnActor<AVehiclePawnBase>(vehicle_pawn_class_, actor_transform, pawn_spawn_params);
+            spawned_actors_.Add(fpv_vehicle_pawn_);
         }
         else {
-            CameraDirector->TargetPawn = static_cast<AVehiclePawnBase*>(pawns[0]);
+            fpv_vehicle_pawn_ = static_cast<AVehiclePawnBase*>(pawns[0]);
         }
     }
 
-    CameraDirector->TargetPawn->initializeForBeginPlay();
+    fpv_vehicle_pawn_->initializeForBeginPlay();
+    CameraDirector->setCameras(external_camera, fpv_vehicle_pawn_);
     CameraDirector->initializeForBeginPlay(getInitialViewMode());
 }
 
@@ -89,7 +98,7 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
             if (!isLoggingStarted)
             {
                 FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();
-                FRecordingThread::ThreadInit(imagePathPrefix, this);
+                FRecordingThread::ThreadInit(imagePathPrefix, this, static_cast<msr::airlib::PhysicsBody*>(fpv_vehicle_connector_->getPhysicsBody()));
                 isLoggingStarted = true;
             }
         }
@@ -120,8 +129,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
         actor->Destroy();
     }
     if (CameraDirector != nullptr) {
-        CameraDirector->TargetPawn = nullptr;
-        CameraDirector->ExternalCamera = nullptr;
+        fpv_vehicle_connector_ = nullptr;
         CameraDirector = nullptr;
     }
     spawned_actors_.Empty();
@@ -143,12 +151,6 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
     //if none available then we will create one
     setupVehiclesAndCamera();
 
-    //get FPV drone
-    AActor* fpv_pawn = nullptr;
-    if (CameraDirector != nullptr) {
-        fpv_pawn = CameraDirector->TargetPawn;
-    }
-
     //detect vehicles in the project and create connector for it
     TArray<AActor*> pawns;
     UAirBlueprintLib::FindAllActor<AFlyingPawn>(this, pawns);
@@ -157,7 +159,7 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
         if (vehicle != nullptr) {
             vehicles.push_back(vehicle);
 
-            if (pawn == fpv_pawn) {
+            if (pawn == fpv_vehicle_pawn_) {
                 fpv_vehicle_connector_ = vehicle;
             }
         }

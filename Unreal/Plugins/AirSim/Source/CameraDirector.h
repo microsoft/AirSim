@@ -21,32 +21,15 @@ class AIRSIM_API ACameraDirector : public AActor
     GENERATED_BODY()
     
 public:
-    //below should be set by SimMode BP
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
-    AVehiclePawnBase* TargetPawn;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
-    APIPCamera* ExternalCamera;
-
     void inputEventFpvView();
     void inputEventGroundView();
     void inputEventManualView();
     void inputEventFlyWithView();
 
-    UFUNCTION(BlueprintCallable, Category = "PIP")
-    bool togglePIPScene();
-    UFUNCTION(BlueprintCallable, Category = "PIP")
-    bool togglePIPDepth();
-    UFUNCTION(BlueprintCallable, Category = "PIP")
-    bool togglePIPSeg();
-    UFUNCTION(BlueprintCallable, Category = "PIP")
-    bool togglePIPAll();
-
-    UFUNCTION(BlueprintCallable, Category = "PIP")
-    APIPCamera* getCamera(int id = 0);
-
 public:	
     ACameraDirector();
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick( float DeltaSeconds ) override;
 
     UFUNCTION(BlueprintCallable, Category = "Modes")
@@ -55,6 +38,10 @@ public:
     void setMode(ECameraDirectorMode mode);
 
     void initializeForBeginPlay(ECameraDirectorMode view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
+
+    void setCameras(APIPCamera* external_camera, AVehiclePawnBase* vehicle);
+    APIPCamera* getFpvCamera() const;
+    APIPCamera* getExternalCamera() const;
 
 private:
     void setupInputBindings();	
@@ -73,6 +60,10 @@ private:
     void inputManualDownPitch(float val);
 
 private:
+    APIPCamera* fpv_camera_;
+    APIPCamera* external_camera_;
+    const AActor* follow_actor_;
+
     ECameraDirectorMode mode_;
     FInputAxisBinding *left_binding_, *right_binding_, *up_binding_, *down_binding_;
     FInputAxisBinding *forward_binding_, *backward_binding_, *left_yaw_binding_, *up_pitch_binding_;

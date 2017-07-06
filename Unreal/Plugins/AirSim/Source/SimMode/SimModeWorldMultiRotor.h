@@ -18,7 +18,8 @@ public:
 
     virtual void Tick( float DeltaSeconds ) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	std::shared_ptr<VehicleConnectorBase> fpv_vehicle_connector_;
+    std::shared_ptr<VehicleConnectorBase> fpv_vehicle_connector_;
+    AVehiclePawnBase* getFpvVehiclePawn() override;
 
 protected:
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
@@ -31,11 +32,13 @@ private:
 private:    
     TArray<uint8> image_;
     std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
-	bool isLoggingStarted;
+    bool isLoggingStarted;
 
     UClass* external_camera_class_;
     UClass* camera_director_class_;
     UClass* vehicle_pawn_class_;
 
     TArray<AActor*> spawned_actors_;
+
+    AVehiclePawnBase* fpv_vehicle_pawn_;
 };

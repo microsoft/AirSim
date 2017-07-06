@@ -4,18 +4,6 @@
 #include "ImageUtils.h"
 #include <string>
 
-APIPCamera::APIPCamera()
-{
-    static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> scene_render_target_finder(TEXT("TextureRenderTarget2D'/AirSim/HUDAssets/FpvRenderTarget.FpvRenderTarget'"));
-    scene_render_target_ = scene_render_target_finder.Object;
-
-    static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> depth_render_target_finder(TEXT("TextureRenderTarget2D'/AirSim/HUDAssets/DepthRenderTarget.DepthRenderTarget'"));
-    depth_render_target_ = depth_render_target_finder.Object;
-
-    static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> seg_render_target_finder(TEXT("TextureRenderTarget2D'/AirSim/HUDAssets/SegmentationRenderTarget.SegmentationRenderTarget'"));
-    seg_render_target_ = seg_render_target_finder.Object;
-}
-
 void APIPCamera::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
@@ -27,54 +15,78 @@ void APIPCamera::PostInitializeComponents()
     seg_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SegmentationCaptureComponent"));
 }
 
-void APIPCamera::setToMainView()
+void APIPCamera::BeginPlay()
+{
+    Super::BeginPlay();
+
+    scene_render_target_ = NewObject<UTextureRenderTarget2D>();
+    scene_render_target_->InitAutoFormat(256, 144);
+    scene_render_target_->bHDR = false;
+    scene_render_target_->TargetGamma = 1.05f; // GEngine->GetDisplayGamma();
+
+    depth_render_target_ = NewObject<UTextureRenderTarget2D>();
+    depth_render_target_->InitAutoFormat(256, 144);
+    seg_render_target_ = NewObject<UTextureRenderTarget2D>();
+    seg_render_target_->InitAutoFormat(256, 144);
+}
+
+void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    scene_render_target_ = nullptr;
+    depth_render_target_ = nullptr;
+    seg_render_target_ = nullptr;
+}
+
+void APIPCamera::showToScreen()
 {
     camera_->Activate();
     APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
     controller->SetViewTarget(this);
-    deactivatePIP();
-
-    camera_mode_ = EPIPCameraMode::PIP_CAMERA_MODE_MAIN;
-}
-
-void APIPCamera::setToPIPView()
-{
-    deactivateMain();
-
-    activateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE);
-    activateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH);
-    activateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SEG);
-
-    camera_mode_ = EPIPCameraMode::PIP_CAMERA_MODE_PIP;
 }
 
 void APIPCamera::disableAll()
 {
-    deactivateMain();
-    deactivatePIP();
-
-    camera_mode_ = EPIPCameraMode::PIP_CAMERA_MODE_NONE;
+    disableMain();
+    disableAllPIP();
 }
 
-void APIPCamera::deactivateCaptureComponent(const EPIPCameraType type)
+
+EPIPCameraType APIPCamera::toggleEnableCameraTypes(EPIPCameraType types)
+{
+    setEnableCameraTypes(getEnableCameraTypes() ^ types);
+    return getEnableCameraTypes() & types;
+}
+
+EPIPCameraType APIPCamera::getEnableCameraTypes()
+{
+    return enabled_camera_types_;
+}
+
+void APIPCamera::setEnableCameraTypes(EPIPCameraType types)
+{
+    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH, (types & EPIPCameraType::PIP_CAMERA_TYPE_DEPTH) != EPIPCameraType::PIP_CAMERA_TYPE_NONE);
+    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, (types & EPIPCameraType::PIP_CAMERA_TYPE_SCENE) != EPIPCameraType::PIP_CAMERA_TYPE_NONE);
+    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SEG, (types & EPIPCameraType::PIP_CAMERA_TYPE_SEG) != EPIPCameraType::PIP_CAMERA_TYPE_NONE);
+    enabled_camera_types_ = types;
+}
+
+void APIPCamera::enableCaptureComponent(const EPIPCameraType type, bool is_enabled)
 {
     USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
     if (capture != nullptr) {
-        capture->Deactivate();
-        capture->TextureTarget = nullptr;
+        if (is_enabled) {
+            capture->TextureTarget = getRenderTarget(type, false);
+            capture->Activate();
+        }
+        else {
+            capture->Deactivate();
+            capture->TextureTarget = nullptr;
+        }
     }
+    //else nothing to enable
 }
 
-void APIPCamera::activateCaptureComponent(const EPIPCameraType type)
-{
-    USceneCaptureComponent2D* capture = getCaptureComponent(type, true);
-    if (capture != nullptr) {
-        capture->TextureTarget = getTextureRenderTarget(type, false);
-        capture->Activate();
-    }
-}
-
-UTextureRenderTarget2D* APIPCamera::getTextureRenderTarget(const EPIPCameraType type, bool if_active)
+UTextureRenderTarget2D* APIPCamera::getRenderTarget(const EPIPCameraType type, bool if_active)
 {
     switch (type) {
     case EPIPCameraType::PIP_CAMERA_TYPE_SCENE:
@@ -123,57 +135,19 @@ USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const EPIPCameraType t
 }
 
 
-void APIPCamera::deactivatePIP()
+void APIPCamera::disableAllPIP()
 {
-    deactivateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE);
-    deactivateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH);
-    deactivateCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SEG);
+    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, false);
+    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH, false);
+    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SEG, false);
 }
 
 
-void APIPCamera::deactivateMain()
+void APIPCamera::disableMain()
 {
     camera_->Deactivate();
 }
 
-void APIPCamera::refreshCurrentMode()
-{
-    switch (camera_mode_) {
-    case EPIPCameraMode::PIP_CAMERA_MODE_NONE:
-        disableAll();
-        break;
-    case EPIPCameraMode::PIP_CAMERA_MODE_MAIN:
-        setToMainView();
-        break;
-    case EPIPCameraMode::PIP_CAMERA_MODE_PIP:
-        setToPIPView();
-        break;
-    default:
-        UAirBlueprintLib::LogMessageString("Cannot referesh current mode because its value is not recognized", std::to_string(static_cast<uint8>(camera_mode_)), LogDebugLevel::Failure, 60);
 
-    }
-}
 
-EPIPCameraMode APIPCamera::getCameraMode()
-{
-    return camera_mode_;
-}
 
-EPIPCameraType APIPCamera::toggleEnableCameraTypes(EPIPCameraType types)
-{
-    enabled_camera_types_ = enabled_camera_types_ ^ types;
-    deactivatePIP();
-    refreshCurrentMode();
-
-    return enabled_camera_types_ & types;
-}
-
-EPIPCameraType APIPCamera::getEnableCameraTypes()
-{
-    return enabled_camera_types_;
-}
-
-void APIPCamera::setEnableCameraTypes(EPIPCameraType types)
-{
-    enabled_camera_types_ = types;
-}

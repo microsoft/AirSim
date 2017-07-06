@@ -71,27 +71,22 @@ bool VehicleCameraConnector::getScreenshotSceneCapture(VehicleCamera::ImageType 
     switch (imageType) {
     case VehicleCamera::ImageType::Scene:
         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SCENE; 
-        if (!hud->isPIPSceneVisible()) {
-            hud->inputEventTogglePIPScene();
-            visibilityChanged = true;
-        }
         break;
     case VehicleCamera::ImageType::Depth:
         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_DEPTH;
-        if (!hud->isPIPDepthVisible()) {
-            hud->inputEventTogglePIPDepth();
-            visibilityChanged = true;
-        }
         break;
     case VehicleCamera::ImageType::Segmentation:
         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SEG;
-        if (!hud->isPIPSegVisible()) {
-            hud->inputEventTogglePIPSeg();
-            visibilityChanged = true;
-        }
         break;
     default:
         pip_type = EPIPCameraType::PIP_CAMERA_TYPE_NONE;
+        break;
+    }
+
+    if ((camera->getEnableCameraTypes() & pip_type) == EPIPCameraType::PIP_CAMERA_TYPE_NONE
+        && (pip_type != EPIPCameraType::PIP_CAMERA_TYPE_NONE)) {
+        camera->setEnableCameraTypes(pip_type);
+        visibilityChanged = true;
     }
 
     if (visibilityChanged) {
@@ -104,9 +99,9 @@ bool VehicleCameraConnector::getScreenshotSceneCapture(VehicleCamera::ImageType 
     }
 
     using namespace msr::airlib;
-    USceneCaptureComponent2D* capture = camera->getCaptureComponent(pip_type, true);
+    USceneCaptureComponent2D* capture = camera->getCaptureComponent(pip_type, false);
     if (capture == nullptr) {
-        UAirBlueprintLib::LogMessage(TEXT("Can't take screenshot because eithercamera type is not active"), TEXT(""), LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessage(TEXT("Can't take screenshot because none camera type is not active"), TEXT(""), LogDebugLevel::Failure);
         return false;
     }
 

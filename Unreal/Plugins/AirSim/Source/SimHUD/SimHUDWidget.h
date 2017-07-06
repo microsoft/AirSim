@@ -25,7 +25,6 @@ public:
     void updateReport(const std::string& text);
     void setReportVisible(bool is_visible);
     void toggleHelpVisibility();
-    void refreshPIPVisibility(APIPCamera* camera);
 
     void setOnToggleRecordingHandler(OnToggleRecording handler);
 
@@ -35,30 +34,28 @@ public:
     //bool even when not needed because of Unreal quirk that if return value
     //is not there then below are treated as events instead of overridable functions
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
-        bool setPIPSceneVisibility(bool is_viisble);
+        bool setSubwindowVisibility(int window_index, bool is_visible, UTextureRenderTarget2D* render_target);
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
-        bool getPIPSceneVisibility();
-    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
-        bool setPIPDepthVisibility(bool is_viisble);
-    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
-        bool getPIPDepthVisibility();
-    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
-        bool setPIPSegVisibility(bool is_viisble);
-    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
-        bool getPIPSegVisibility();
+        int getSubwindowVisibility(int window_index);
+
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setRecordButtonVisibility(bool is_visible);
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool getRecordButtonVisibility();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
+        bool initializeForPlay();
 protected:
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setReportContainerVisibility(bool is_visible);
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool getReportContainerVisibility();
+
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setHelpContainerVisibility(bool is_visible);
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool getHelpContainerVisibility();
+
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setReportText(const FString& text);
 

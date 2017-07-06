@@ -14,18 +14,20 @@
 
 class FRecordingThread : public FRunnable
 {
+private:
     static FRecordingThread* Runnable;
-    FRunnableThread* Thread;
-    ASimModeWorldMultiRotor* GameThread;
+    FRunnableThread* thread_;
+    ASimModeBase* sim_mode_;
+    const msr::airlib::PhysicsBody* fpv_physics_body_;
 
-    FThreadSafeCounter StopTaskCounter;
-    FRenderCommandFence ReadPixelFence;
-    FString imagePath;
+    FThreadSafeCounter stop_task_counter_;
+    FRenderCommandFence read_pixel_fence_;
+    FString image_path_;
 
 public:
-    FRecordingThread(FString imagePath, ASimModeWorldMultiRotor* GameThread);
+    FRecordingThread(FString imagePath, ASimModeBase* sim_mode, const msr::airlib::PhysicsBody* fpv_physics_body);
     virtual ~FRecordingThread();
-    static FRecordingThread* ThreadInit(FString path, ASimModeWorldMultiRotor* GameThread);
+    static FRecordingThread* ThreadInit(FString path, ASimModeBase* sim_mode, const msr::airlib::PhysicsBody* fpv_physics_body);
     static void Shutdown();
 
 private:
@@ -36,7 +38,7 @@ private:
 
     void EnsureCompletion();
 
-    unsigned int imagesSaved = 0;
+    unsigned int images_saved_ = 0;
 
     msr::airlib::ClockBase* clock_ = msr::airlib::ClockFactory::get();
 };
