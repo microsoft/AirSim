@@ -52,7 +52,8 @@ uint32 FRecordingThread::Run()
                 if (renderTarget != nullptr) {
                     TArray<uint8> image_data;
                     RenderRequest request;
-                    request.getScreenshot(renderTarget, image_data);
+                    int width, height;
+                    request.getScreenshot(renderTarget, image_data, false, true, width, height);
                     SaveImage(image_data);
                 }
             }

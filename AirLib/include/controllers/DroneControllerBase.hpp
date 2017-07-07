@@ -65,14 +65,18 @@ public: //types
     struct ImageRequest {
         uint8_t camera_id;
         VehicleCameraBase::ImageType image_type;
+        bool pixels_as_float;
+        bool compress;
 
         ImageRequest()
         {}
 
-        ImageRequest(uint8_t camera_id_val, VehicleCameraBase::ImageType image_type_val)
+        ImageRequest(uint8_t camera_id_val, VehicleCameraBase::ImageType image_type_val, bool pixels_as_float_val = false, bool compress_val = true)
         {
             camera_id = camera_id_val;
             image_type = image_type_val;
+            pixels_as_float = pixels_as_float_val;
+            compress = compress_val;
         }
     };
 

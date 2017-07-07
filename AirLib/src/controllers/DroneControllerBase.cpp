@@ -355,7 +355,7 @@ vector<VehicleCameraBase::ImageResponse> DroneControllerBase::simGetImages(const
 
     for (const auto& item : request) {
         VehicleCameraBase* camera = simGetCamera(item.camera_id);
-        const auto& item_response = camera->getImage(item.image_type);
+        const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
         response.push_back(item_response);
     }
 

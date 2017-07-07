@@ -27,10 +27,13 @@ namespace msr { namespace airlib {
                 Quaternionr camera_orientation = Quaternionr::Identity();
                 TTimePoint time_stamp = 0;
                 std::string message;
+                bool pixels_as_float;
+                bool compress;
+                int width, height;
             };
 
         public: //methods
-            virtual ImageResponse getImage(ImageType image_type) = 0;
+            virtual ImageResponse getImage(ImageType image_type, bool pixels_as_float, bool compress) = 0;
         };
 
 

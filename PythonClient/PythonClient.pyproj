@@ -28,6 +28,9 @@
     <Compile Include="camera.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="generate_stereo_data.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="navigate.py">
       <SubType>Code</SubType>
     </Compile>

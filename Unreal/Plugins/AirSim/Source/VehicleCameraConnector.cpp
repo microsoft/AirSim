@@ -1,18 +1,18 @@
 #include "AirSim.h"
 #include "RenderRequest.h"
 #include "ImageUtils.h"
-#include <chrono>
+#include "common/ClockFactory.hpp"
+#include "NedTransform.h"
 
 
 VehicleCameraConnector::VehicleCameraConnector(APIPCamera* camera) 
+    : camera_(camera)
 {
-    camera_ = camera;
-    
     //TODO: explore screenshot option
     //addScreenCaptureHandler(camera->GetWorld());
 }
 
-msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(VehicleCameraConnector::ImageType image_type)
+msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(VehicleCameraConnector::ImageType image_type, bool pixels_as_float, bool compress)
 {
 
     if (camera_== nullptr) {
@@ -26,10 +26,10 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(V
         return response;
     }
 
-    return getSceneCaptureImage(image_type);
+    return getSceneCaptureImage(image_type, pixels_as_float, compress);
 }
 
-msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCaptureImage(VehicleCameraConnector::ImageType image_type)
+msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCaptureImage(VehicleCameraConnector::ImageType image_type, bool pixels_as_float, bool compress)
 {
     bool visibilityChanged = false;
     if ((camera_->getEnableCameraTypes() & image_type) == ImageType_::None
@@ -65,10 +65,19 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCa
 
     TArray<uint8> image;
     RenderRequest request;
-    request.getScreenshot(textureTarget, image);
+    int width, height;
+    request.getScreenshot(textureTarget, image, pixels_as_float, compress, width, height);
 
     ImageResponse response;
+    response.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
     response.image_data = std::vector<uint8_t>(image.GetData(), image.GetData() + image.Num());
+    response.camera_position = NedTransform::toNedMeters(capture->GetComponentLocation());
+    response.camera_orientation = NedTransform::toQuaternionr(capture->GetComponentRotation().Quaternion(), true);
+    response.pixels_as_float = pixels_as_float;
+    response.compress = compress;
+    response.width = width;
+    response.height = height;
+
     return response;
 }
 

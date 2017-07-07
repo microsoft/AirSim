@@ -20,14 +20,17 @@ void APIPCamera::BeginPlay()
     Super::BeginPlay();
 
     scene_render_target_ = NewObject<UTextureRenderTarget2D>();
-    scene_render_target_->InitAutoFormat(256, 144);
-    scene_render_target_->bHDR = false;
-    scene_render_target_->TargetGamma = 1.05f; // GEngine->GetDisplayGamma();
+    scene_render_target_->InitAutoFormat(960, 540); //256 X 144, X 480
+    //scene_render_target_->bHDR = false;
+    scene_render_target_->TargetGamma = 1.0f; // GEngine->GetDisplayGamma();
 
     depth_render_target_ = NewObject<UTextureRenderTarget2D>();
-    depth_render_target_->InitAutoFormat(256, 144);
+    depth_render_target_->InitAutoFormat(960, 540);
+    depth_render_target_->TargetGamma = 1.0f;
+
     seg_render_target_ = NewObject<UTextureRenderTarget2D>();
-    seg_render_target_->InitAutoFormat(256, 144);
+    seg_render_target_->InitAutoFormat(960, 540);
+    seg_render_target_->TargetGamma = 1.0f;
 }
 
 void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)

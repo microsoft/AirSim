@@ -18,10 +18,14 @@ RenderRequest::~RenderRequest()
 
 // read pixels from render target using render thread, then compress the result into PNG
 // argument on the thread that calls this method.
-void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<uint8>& compressedPng)
+void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<uint8>& image_data, 
+    bool pixels_as_float, bool compress, int& width, int& height)
 {
     data->render_target = renderTarget;
     data->bmp.Reset();
+    data->bmp_float.Reset();
+    data->pixels_as_float = pixels_as_float;
+    data->compress = compress;
 
     //make sure we are not on the rendering thread
     CheckNotBlockedOnRenderThread();
@@ -33,9 +37,31 @@ void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<u
     if (!data->signal.waitFor(5)) {
         throw std::runtime_error("timeout waiting for screenshot");
     }
+    
+    width = data->width;
+    height = data->height;
 
-    if (data->width != 0 && data->height != 0) {
-        FImageUtils::CompressImageArray(data->width, data->height, data->bmp, compressedPng);
+    if (!pixels_as_float) {
+        if (data->width != 0 && data->height != 0) {
+            if (data->compress)
+                FImageUtils::CompressImageArray(data->width, data->height, data->bmp, image_data);
+            else {
+                for (const auto& item : data->bmp) {
+                    image_data.Add(item.R);
+                    image_data.Add(item.G);
+                    image_data.Add(item.B);
+                    image_data.Add(item.A);
+                }
+            }
+        }
+    }
+    else {
+        for (const auto& item : data->bmp_float) {
+            float fval = item.R.GetFloat();
+            const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&fval);
+            for (int i = 0; i < sizeof(float); ++i)
+                image_data.Add(*(bytes + i));
+        }
     }
 }
 
@@ -51,12 +77,25 @@ void RenderRequest::ExecuteTask()
                 auto size = resource->GetSizeXY();
                 data->width = size.X;
                 data->height = size.Y;
-                RHICmdList.ReadSurfaceData(
-                    textureRef,
-                    FIntRect(0, 0, size.X, size.Y),
-                    data->bmp,
-                    FReadSurfaceDataFlags(RCM_UNorm, CubeFace_MAX)
-                );
+                FReadSurfaceDataFlags flags(RCM_UNorm, CubeFace_MAX);
+                flags.SetLinearToGamma(false);
+
+                if (!data->pixels_as_float) {
+                    RHICmdList.ReadSurfaceData(
+                        textureRef,
+                        FIntRect(0, 0, size.X, size.Y),
+                        data->bmp,
+                        flags
+                    );
+                }
+                else {
+                    RHICmdList.ReadSurfaceFloatData(
+                        textureRef,
+                        FIntRect(0, 0, size.X, size.Y),
+                        data->bmp_float,
+                        CubeFace_PosX, 0, 0
+                    );
+                }
             }
         }
         catch (std::exception& e) {

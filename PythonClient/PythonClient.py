@@ -85,11 +85,11 @@ class AirSimClient:
             return self.client.call('rotateByYawRate', yaw_rate, duration)
 
         # camera control
-        # getImageForCamera returns compressed png in array of bytes
+        # simGetImage returns compressed png in array of bytes
         # image_type uses one of the AirSimImageType members
-        def getImageForCamera(self, camera_id, image_type):
+        def simGetImage(self, camera_id, image_type):
             # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-            result = self.client.call('getImageForCamera', camera_id, image_type)
+            result = self.client.call('simGetImage', camera_id, image_type)
             if (result == "" or result == "\0"):
                 return None
             return np.fromstring(result, np.int8)

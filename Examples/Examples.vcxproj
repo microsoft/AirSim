@@ -187,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="StandAlonePhysics.hpp" />
     <ClInclude Include="StandAloneSensors.hpp" />
+    <ClInclude Include="StereoImageGenerator.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildThisFileDirectory)\..\AirLib\build\eigen.targets" />

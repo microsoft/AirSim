@@ -193,8 +193,10 @@ public:
     struct ImageRequest {
         uint8_t camera_id;
         msr::airlib::VehicleCameraBase::ImageType_ image_type;
+        bool pixels_as_float;
+        bool compress;
 
-        MSGPACK_DEFINE_ARRAY(camera_id, image_type);
+        MSGPACK_DEFINE_ARRAY(camera_id, image_type, pixels_as_float, compress);
 
         ImageRequest()
         {}
@@ -203,6 +205,8 @@ public:
         {
             camera_id = s.camera_id;
             image_type = s.image_type.toEnum();
+            pixels_as_float = s.pixels_as_float;
+            compress = s.compress;
         }
 
         msr::airlib::DroneControllerBase::ImageRequest to() const
@@ -210,6 +214,8 @@ public:
             msr::airlib::DroneControllerBase::ImageRequest d;
             d.camera_id = camera_id;
             d.image_type = image_type;
+            d.pixels_as_float = pixels_as_float;
+            d.compress = compress;
 
             return d;
         }
@@ -240,8 +246,11 @@ public:
         Quaternionr camera_orientation;
         msr::airlib::TTimePoint time_stamp;
         std::string message;
+        bool pixels_as_float;
+        bool compress;
+        int width, height;
 
-        MSGPACK_DEFINE_ARRAY(image_data, camera_position, camera_orientation, time_stamp, message);
+        MSGPACK_DEFINE_ARRAY(image_data, camera_position, camera_orientation, time_stamp, message, pixels_as_float, compress, width, height);
 
         ImageResponse()
         {}
@@ -253,6 +262,10 @@ public:
             camera_orientation = Quaternionr(s.camera_orientation);
             time_stamp = s.time_stamp;
             message = s.message;
+            pixels_as_float = s.pixels_as_float;
+            compress = s.compress;
+            width = s.width;
+            height = s.height;
         }
 
         msr::airlib::VehicleCameraBase::ImageResponse to() const
@@ -264,6 +277,10 @@ public:
             d.camera_orientation = camera_orientation.to();
             d.time_stamp = time_stamp;
             d.message = message;
+            d.pixels_as_float = pixels_as_float;
+            d.compress = compress;
+            d.width = width;
+            d.height = height;
 
             return d;
         }
