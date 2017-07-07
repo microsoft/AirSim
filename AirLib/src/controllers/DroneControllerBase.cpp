@@ -330,6 +330,15 @@ bool DroneControllerBase::hover(CancelableBase& cancelable_action)
     return moveToZ(getZ(), 0.5f, YawMode{ true,0 }, 1.0f, false, cancelable_action);
 }
 
+void DroneControllerBase::simSetPosition(const Vector3r& position)
+{
+    //derived flight controller class should provide implementation if they support exclusive sim*** methods
+}
+void DroneControllerBase::simSetOrientation(const Quaternionr& orientation)
+{
+    //derived flight controller class should provide implementation if they support exclusive sim*** methods
+}
+
 bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, const YawMode& yaw_mode)
 {
     if (safetyCheckVelocity(Vector3r(vx, vy, vz)))

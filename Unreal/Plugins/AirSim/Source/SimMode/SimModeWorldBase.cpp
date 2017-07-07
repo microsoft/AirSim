@@ -6,6 +6,7 @@ void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    manual_pose_controller = NewObject<UManualPoseController>();
     setupInputBindings();
 
     //call virtual method in derived class
@@ -22,12 +23,26 @@ void ASimModeWorldBase::BeginPlay()
     HP Z840 desktop high-end config seems to be able to go up to 500Hz.
     To increase freq with limited CPU power, switch Barometer to constant ref mode.
     */
-    world_.startAsyncUpdator(3000000LL);
+    if (usage_scenario != kUsageScenarioComputerVision)
+        world_.startAsyncUpdator(3000000LL);
+    else {
+        manual_pose_controller->initializeForPlay();
+        manual_pose_controller->setActor(getFpvVehiclePawn());
+    }
 }
 
 void ASimModeWorldBase::createWorld()
 {
-    world_.initialize(&physics_engine_);
+    if (physics_engine_name == "" || usage_scenario == kUsageScenarioComputerVision)
+        physics_engine_.release(); //no physics engine
+    else if (physics_engine_name == "FastPhysicsEngine")
+        physics_engine_.reset(new msr::airlib::FastPhysicsEngine());
+    else {
+        physics_engine_.release();
+        UAirBlueprintLib::LogMessageString("Unrecognized physics engine name: ",  physics_engine_name, LogDebugLevel::Failure);
+    }
+
+    world_.initialize(physics_engine_.get());
     reporter_.initialize(false);
 
     //add default objects to world
@@ -58,6 +73,9 @@ void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ASimModeWorldBase::Tick(float DeltaSeconds)
 {
     world_.lock();
+
+    if (usage_scenario == kUsageScenarioComputerVision)
+        manual_pose_controller->updateActorPose();
 
     for (auto& vehicle : vehicles_)
         vehicle->updateRenderedState();

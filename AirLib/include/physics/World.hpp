@@ -27,10 +27,10 @@ public:
     {
         World::clear();
 
-        if (physics_engine) {
-            physics_engine_ = physics_engine;
+        physics_engine_ = physics_engine;
+        if (physics_engine)
             physics_engine_->clear();
-        }
+
         World::reset();
     }
 

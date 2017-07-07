@@ -18,12 +18,6 @@ public:
         unused(settings);
     }
 
-    virtual void initializePhysics(const Environment* environment, const Kinematics::State* kinematics) override
-    {
-        //supply this to controller so it can use physics ground truth instead of state estimation (because ROSFlight doesn't have state estimation)
-        static_cast<SimpleFlightDroneController*>(getController())->initializePhysics(environment, kinematics);
-    }
-
 protected:
     virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) override
     {

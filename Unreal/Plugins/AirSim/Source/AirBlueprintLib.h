@@ -56,8 +56,13 @@ public:
         bool shift_key = false, bool control_key = false, bool alt_key = false, bool command_key = false);
 
     template<class UserClass>
-    static FInputAxisBinding& BindAxisToKey(const FName axis_name, const FKey in_key, UserClass* actor,
+    static FInputAxisBinding& BindAxisToKey(const FName axis_name, const FKey in_key, AActor* actor, UserClass* obj,
         typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func);
+    template<class UserClass>
+    static FInputAxisBinding& BindAxisToKey(const FInputAxisKeyMapping& axis, AActor* actor, UserClass* obj,
+        typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func);
+
+    static int RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInputAxisBinding* axis_binding, AActor* actor);
 
     static void EnableInput(AActor* actor);
 

@@ -3,6 +3,7 @@
 #include "VehiclePawnBase.h"
 #include "PIPCamera.h"
 #include "GameFramework/Actor.h"
+#include "ManualPoseController.h"
 #include "CameraDirector.generated.h"
 
 
@@ -37,7 +38,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Modes")
     void setMode(ECameraDirectorMode mode);
 
-    void initializeForBeginPlay(ECameraDirectorMode view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
+    void initializeForBeginPlay(ECameraDirectorMode view_mode, AVehiclePawnBase* vehicle, APIPCamera* external_camera);
 
     void setCameras(APIPCamera* external_camera, AVehiclePawnBase* vehicle);
     APIPCamera* getFpvCamera() const;
@@ -45,32 +46,14 @@ public:
 
 private:
     void setupInputBindings();	
-    bool checkCameraRefs();
-    void enableManualBindings(bool enable);
-
-    void inputManualLeft(float val);
-    void inputManualRight(float val);
-    void inputManualForward(float val);
-    void inputManualBackward(float val);
-    void inputManualMoveUp(float val);
-    void inputManualDown(float val);
-    void inputManualLeftYaw(float val);
-    void inputManualUpPitch(float val);
-    void inputManualRightYaw(float val);
-    void inputManualDownPitch(float val);
 
 private:
     APIPCamera* fpv_camera_;
     APIPCamera* external_camera_;
-    const AActor* follow_actor_;
+    AActor* follow_actor_;
 
     ECameraDirectorMode mode_;
-    FInputAxisBinding *left_binding_, *right_binding_, *up_binding_, *down_binding_;
-    FInputAxisBinding *forward_binding_, *backward_binding_, *left_yaw_binding_, *up_pitch_binding_;
-    FInputAxisBinding *right_yaw_binding_, *down_pitch_binding_;
-
-    FVector camera_location_manual_;
-    FRotator camera_rotation_manual_;
+    UPROPERTY() UManualPoseController* manual_pose_controller_;
 
     FVector camera_start_location_;
     FVector initial_ground_obs_offset_;

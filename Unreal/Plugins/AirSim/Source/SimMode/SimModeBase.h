@@ -3,6 +3,7 @@
 #include <string>
 #include "CameraDirector.h"
 #include "GameFramework/Actor.h"
+#include "ManualPoseController.h"
 #include "SimModeBase.generated.h"
 
 UCLASS()
@@ -52,5 +53,6 @@ protected:
     bool enable_rpc;
     std::string api_server_address;
     std::string fpv_vehicle_name;
-
+    std::string physics_engine_name;
+    std::string usage_scenario;
 };

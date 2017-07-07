@@ -52,6 +52,9 @@ void ASimModeBase::BeginPlay()
     //do not save this default in json as this will change in near future
     fpv_vehicle_name = settings.getString("FpvVehicleName", "Pixhawk");
 
+    physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
+    usage_scenario = settings.getString("UsageScenario", "");
+
     UAirBlueprintLib::LogMessage("Vehicle name: ", fpv_vehicle_name.c_str(), LogDebugLevel::Informational);
 }
 

@@ -38,10 +38,10 @@ public:
         remote_control_id_ = child.getInt("RemoteControlID", 0);
     }
 
-    void initializePhysics(const Environment* environment, const Kinematics::State* kinematics)
+    void initializePhysics(PhysicsBody* physics_body) override
     {
-        environment_ = environment;
-        kinematics_ = kinematics;
+        environment_ = & physics_body->getEnvironment();
+        kinematics_ = & physics_body->getKinematics();
     }
 
 public:

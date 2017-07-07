@@ -29,7 +29,7 @@ void ASimModeWorldMultiRotor::BeginPlay()
             fpv_vehicle_connector_->startApiServer();
         }
         catch (std::exception& ex) {
-            UAirBlueprintLib::LogMessage("Cannot start RpcLib Server",  ex.what(), LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server",  ex.what(), LogDebugLevel::Failure);
         }
     }
 }
@@ -86,8 +86,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
     }
 
     fpv_vehicle_pawn_->initializeForBeginPlay();
-    CameraDirector->setCameras(external_camera, fpv_vehicle_pawn_);
-    CameraDirector->initializeForBeginPlay(getInitialViewMode());
+    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_, external_camera);
 }
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
@@ -171,7 +170,7 @@ ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn
 {
     vehicle_params_ = MultiRotorParamsFactory::createConfig(fpv_vehicle_name);
     auto vehicle = std::make_shared<MultiRotorConnector>();
-    vehicle->initialize(pawn, vehicle_params_.get(), enable_rpc, api_server_address);
+    vehicle->initialize(pawn, vehicle_params_.get(), enable_rpc, api_server_address, manual_pose_controller);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

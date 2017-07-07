@@ -100,6 +100,9 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
         return result;
     });
 
+    //sim only
+    pimpl_->server.bind("simSetPosition", [&](RpcLibAdapators::Vector3r position) -> void { drone_->simSetPosition(position.to()); });
+    pimpl_->server.bind("simSetOrientation", [&](RpcLibAdapators::Quaternionr orientation) -> void { drone_->simSetOrientation(orientation.to()); });
 
     //getters
     pimpl_->server.bind("getPosition", [&]() -> RpcLibAdapators::Vector3r { return drone_->getPosition(); });

@@ -5,6 +5,7 @@
 #define msr_airlib_VehicleControllerBase_hpp
 
 #include "controllers/ControllerBase.hpp"
+#include "physics/PhysicsBody.hpp"
 #include <exception>
 #include <string>
 
@@ -20,6 +21,13 @@ public:
     virtual void setSimulationMode(bool is_set) = 0;
     virtual bool isOffboardMode() = 0;
     virtual bool isSimulationMode() = 0;
+
+    //TODO: below method is needed to support firmwares without state estimation. In future, we should probably remove this support.
+    virtual void initializePhysics(PhysicsBody* physics_body)
+    {
+        unused(physics_body);
+        //by default don't use it. If derived class needs this, it should override.
+    }
 };
 
 class VehicleControllerException : public ControllerException {

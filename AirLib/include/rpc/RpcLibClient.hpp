@@ -47,6 +47,9 @@ public:
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
 
+    void simSetPosition(const Vector3r& position);
+    void simSetOrientation(const Quaternionr& orientation);
+    
     Vector3r getPosition();
     CollisionInfo getCollisionInfo();
     Vector3r getVelocity();

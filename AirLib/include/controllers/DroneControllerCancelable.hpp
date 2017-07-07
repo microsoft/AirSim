@@ -180,6 +180,15 @@ public:
         return controller_->getVelocity();
     }
 
+    void simSetPosition(const Vector3r& position)
+    {
+        controller_->simSetPosition(position);
+    }
+    void simSetOrientation(const Quaternionr& orientation)
+    {
+        controller_->simSetOrientation(orientation);
+    }
+
     Quaternionr getOrientation()
     {
         return controller_->getOrientation();

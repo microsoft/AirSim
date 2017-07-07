@@ -229,6 +229,10 @@ public: //interface for outside world
 
     virtual void addCamera(std::shared_ptr<VehicleCamera> camera);
 
+    //TODO: methods that are only valid for simulation mode should be prefixed with "sim"
+    virtual void simSetPosition(const Vector3r& position);
+    virtual void simSetOrientation(const Quaternionr& orientation);
+    
     //*********************************common pre & post for move commands***************************************************
     //TODO: make these protected
     virtual bool loopCommandPre();

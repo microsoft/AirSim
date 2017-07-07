@@ -32,12 +32,15 @@ protected:
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
     size_t getVehicleCount() const;
 
+    static constexpr char* kUsageScenarioComputerVision = "ComputerVision";
+    UPROPERTY() UManualPoseController* manual_pose_controller;
+
 private:
     void createWorld();
 
 private:
     msr::airlib::World world_;
-    msr::airlib::FastPhysicsEngine physics_engine_;
+    std::unique_ptr<msr::airlib::PhysicsEngineBase> physics_engine_;
 
     std::vector<VehiclePtr> vehicles_;
     msr::airlib::StateReporterWrapper reporter_;

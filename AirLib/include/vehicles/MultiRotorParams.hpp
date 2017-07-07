@@ -15,9 +15,6 @@
 #include "sensors/gps/GpsSimple.hpp"
 #include "sensors/magnetometer/MagnetometerSimple.hpp"
 
-//below includes are because of setPhysicsGroundTruth methog
-#include "physics/Environment.hpp"
-#include "physics/Kinematics.hpp"
 
 namespace msr { namespace airlib {
 
@@ -84,14 +81,6 @@ public: //interface
     DroneControllerBase* getController()
     {
         return controller_.get();
-    }
-
-    //TODO: below method is needed to support firmwares without state estimation. In future, we should probably remove this support.
-    virtual void initializePhysics(const Environment* environment, const Kinematics::State* kinematics)
-    {
-        unused(environment);
-        unused(kinematics);
-        //by default don't use it. If derived class needs this, it should override.
     }
 
 protected: //must override by derived class

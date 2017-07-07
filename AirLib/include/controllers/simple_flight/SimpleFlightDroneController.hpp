@@ -40,12 +40,12 @@ public:
         remote_control_id_ = child.getInt("RemoteControlID", 0);
     }
 
-    void initializePhysics(const Environment* environment, const Kinematics::State* kinematics)
+    void initializePhysics(PhysicsBody* physics_body) override
     {
-        environment_ = environment;
-        kinematics_ = kinematics;
-        board_->setKinematics(kinematics_);
-        estimator_->setKinematics(kinematics_);
+        physics_body_ = physics_body;
+
+        board_->setKinematics(& physics_body_->getKinematics());
+        estimator_->setKinematics(& physics_body_->getKinematics());
     }
 
 public:
@@ -243,6 +243,21 @@ protected:
         static const VehicleParams safety_params;
         return safety_params;
     }
+
+
+    void simSetPosition(const Vector3r& position) override
+    {
+        auto kinematics = physics_body_->getKinematics();
+        kinematics.pose.position = position;
+        physics_body_->setKinematics(kinematics);
+    }
+    void simSetOrientation(const Quaternionr& orientation) override
+    {
+        auto kinematics = physics_body_->getKinematics();
+        kinematics.pose.orientation = orientation;
+        physics_body_->setKinematics(kinematics);
+    }
+
     //*** End: DroneControllerBase implementation ***//
 
 private:
@@ -264,6 +279,7 @@ private:
     const MultiRotorParams* vehicle_params_;
     const Kinematics::State* kinematics_;
     const Environment* environment_;
+    PhysicsBody* physics_body_;
 
     int remote_control_id_ = 0;
     simple_flight::Params params_;

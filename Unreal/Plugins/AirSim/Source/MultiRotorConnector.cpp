@@ -6,11 +6,13 @@
 
 using namespace msr::airlib;
 
-void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, bool enable_rpc, std::string api_server_address)
+void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
+    bool enable_rpc, std::string api_server_address, const UManualPoseController* manual_pose_controller)
 {
     enable_rpc_ = enable_rpc;
     api_server_address_ = api_server_address;
     vehicle_pawn_ = vehicle_pawn;
+    manual_pose_controller_ = manual_pose_controller;
 
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     FRotator rotation = vehicle_pawn_->GetActorRotation();
@@ -33,10 +35,8 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
     vehicle_params_->initialize();
     vehicle_.initialize(vehicle_params_, initial_kinematics, &environment_);
 
-    //pass ground truth to some controllers who needs it (usually the ones without state estimation capabilities)
-    vehicle_params_->initializePhysics(&environment_, &vehicle_.getKinematics());
-
     controller_ = static_cast<msr::airlib::DroneControllerBase*>(vehicle_.getController());
+    controller_->initializePhysics(&vehicle_);
 
     if (controller_->getRemoteControlID() >= 0)
         detectUsbRc();
@@ -151,8 +151,11 @@ void MultiRotorConnector::updateRenderedState()
 
     //update ground level
     environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
-    //update pose of object for rendering engine
+    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_)
+        vehicle_.setPose(vehicle_pawn_->getPose());
+
     last_pose = vehicle_.getPose();
+    
     collision_response_info = vehicle_.getCollisionResponseInfo();
     last_debug_pose = controller_->getDebugPose();
 

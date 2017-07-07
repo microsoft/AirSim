@@ -158,6 +158,16 @@ bool RpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_reasons, flo
         obs_avoidance_vel, RpcLibAdapators::Vector3r(origin), xy_length, max_z, min_z).as<bool>();
 }
 
+//sim only
+void RpcLibClient::simSetPosition(const Vector3r& position)
+{
+    pimpl_->client.call("simSetPosition", RpcLibAdapators::Vector3r(position));
+}
+void RpcLibClient::simSetOrientation(const Quaternionr& orientation)
+{
+    pimpl_->client.call("simSetOrientation", RpcLibAdapators::Quaternionr(orientation));
+}
+
 //status getters
 Vector3r RpcLibClient::getPosition()
 {
