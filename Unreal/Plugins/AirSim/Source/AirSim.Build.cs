@@ -56,6 +56,10 @@ public class AirSim : ModuleRules
 
     public AirSim(TargetInfo Target)
     {
+        // Disable IWYU option for UE 4.15.3 or later, which will cause compiling error.
+        // More detail please visit https://forums.unrealengine.com/showthread.php?137015-4-15-C-Transition-Guide
+        bEnforceIWYU = false;
+        
         UEBuildConfiguration.bForceEnableExceptions = true;
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore", "RHI" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
