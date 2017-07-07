@@ -21,21 +21,31 @@ int main()
     // This assumes you are running DroneServer already on the same machine.
     // DroneServer must be running first.
     msr::airlib::RpcLibClient client;
-
+    typedef DroneControllerBase::ImageRequest ImageRequest;
+    typedef VehicleCameraBase::ImageResponse ImageResponse;
+    typedef VehicleCameraBase::ImageType_ ImageType_;
+    
     try {
         client.confirmConnection();
 
         std::cout << "Press Enter to get FPV image" << std::endl; std::cin.get();
-        auto image = client.getImageForCamera(0, VehicleCamera::ImageType::Scene);
-        std::cout << "PNG images recieved bytes: " << image.size() << std::endl;
-        std::cout << "Enter file name to save image (leave empty for no save)" << std::endl; 
-        std::string filename;
-        std::getline(std::cin, filename);
+        vector<ImageRequest> request = { ImageRequest(0, ImageType_::Scene), ImageRequest(1, ImageType_::Scene) };
+        const vector<ImageResponse>& response = client.simGetImages(request);
+        std::cout << "# of images recieved: " << response.size() << std::endl;
 
-        if (filename != "") {
-            std::ofstream file(filename, std::ios::binary);
-            file.write((char*) image.data(), image.size());
-            file.close();
+        if (response.size() > 0) {
+            std::cout << "Enter path with ending separator to save images (leave empty for no save)" << std::endl; 
+            std::string path;
+            std::getline(std::cin, path);
+
+            for (const ImageResponse& image_info : response) {
+                std::cout << "Image size: " << image_info.image_data.size() << std::endl;
+                if (path != "") {
+                    std::ofstream file(path + std::to_string(image_info.time_stamp) , std::ios::binary);
+                    file.write((char*) image_info.image_data.data(), image_info.image_data.size());
+                    file.close();
+                }
+            }
         }
 
         std::cout << "Press Enter to arm the drone" << std::endl; std::cin.get();
@@ -86,27 +96,6 @@ int main()
         std::string msg = e.get_error().as<std::string>();
         std::cout << "Exception raised by the API, something went wrong." << std::endl << msg << std::endl;
     }
-
-    return 0;
-}
-
-
-int imageExample()
-{
-    using namespace std;
-    using namespace msr::airlib;
-
-    msr::airlib::RpcLibClient client;
-
-    auto i1 = client.getImageForCamera(0, VehicleCamera::ImageType::Depth);
-    std::cout << i1.size() << std::endl;
-
-    auto i2 = client.getImageForCamera(3, VehicleCamera::ImageType::Depth);
-    std::cout << i2.size() << " " << (i2.size() > 0 ? i2[0] : -1) << std::endl;
-
-    auto i3 = client.getImageForCamera(4, VehicleCamera::ImageType::Scene);
-    std::cout << i3.size() << " " << (i3.size() > 0 ? i3[0] : -1) << std::endl;
-
 
     return 0;
 }

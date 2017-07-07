@@ -49,24 +49,23 @@ public:
 
     void simSetPosition(const Vector3r& position);
     void simSetOrientation(const Quaternionr& orientation);
+    vector<VehicleCameraBase::ImageResponse> simGetImages(vector<DroneControllerBase::ImageRequest> request);
+    vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
     
     Vector3r getPosition();
     CollisionInfo getCollisionInfo();
     Vector3r getVelocity();
     Quaternionr getOrientation();
-    DroneControllerBase::LandedState getLandedState();
     RCData getRCData();
-    TTimePoint timestampNow();
-    GeoPoint getHomePoint();
     GeoPoint getGpsLocation();
+
     bool isOffboardMode();
     bool isSimulationMode();
     std::string getDebugInfo();
     void confirmConnection();
-
-
-    //request image
-    vector<uint8_t> getImageForCamera(int camera_id, VehicleCamera::ImageType type);
+    DroneControllerBase::LandedState getLandedState();
+    TTimePoint timestampNow();
+    GeoPoint getHomePoint();
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);

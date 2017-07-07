@@ -188,6 +188,19 @@ public:
     {
         controller_->simSetOrientation(orientation);
     }
+    vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<DroneControllerBase::ImageRequest>& request)
+    {
+        return controller_->simGetImages(request);
+    }
+    vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type)
+    {
+        vector<DroneControllerBase::ImageRequest> request = { DroneControllerBase::ImageRequest(camera_id, image_type)};
+        const vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
+        if (response.size() > 0)
+            return response.at(0).image_data;
+        else 
+            return vector<uint8_t>();
+    }
 
     Quaternionr getOrientation()
     {
@@ -242,12 +255,6 @@ public:
     void getStatusMessages(std::vector<std::string>& messages)
     {
         controller_->getStatusMessages(messages);
-    }
-
-    //get image
-    vector<uint8_t> getImageForCamera(int camera_id, VehicleCamera::ImageType type)
-    {
-        return controller_->getImageForCamera(camera_id, type);
     }
 
 

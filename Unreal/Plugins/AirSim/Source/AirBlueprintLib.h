@@ -26,11 +26,7 @@ class UAirBlueprintLib : public UBlueprintFunctionLibrary
 
 public:
     static void LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec = 60);
-
-    UFUNCTION(BlueprintCallable, Category = "Utilities")
     static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
-    
-    UFUNCTION(BlueprintCallable, Category = "Utilities")
     static float GetWorldToMetersScale(const AActor* context);
 
     template<typename T>
@@ -39,15 +35,9 @@ public:
     static T* FindActor(const UObject* context, FString name);
     template<typename T>
     static void FindAllActor(const UObject* context, TArray<AActor*>& foundActors);
-
-    UFUNCTION(BlueprintCallable, Category = "Utilities")
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor = nullptr, ECollisionChannel collison_channel = ECC_Visibility);
-    UFUNCTION(BlueprintCallable, Category = "Utilities")
     static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collison_channel = ECC_Visibility);
-    UFUNCTION(BlueprintCallable, Category = "Utilities")
     static bool GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collison_channel = ECC_Visibility);
-
-    UFUNCTION(BlueprintCallable, Category = "Utilities")
     static void FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z = false, float fixed_z_val = 2.0f);
 
     template<class UserClass>

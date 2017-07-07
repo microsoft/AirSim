@@ -33,10 +33,10 @@ void ASimHUD::BeginPlay()
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
 
-    subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawn()->getFpvCamera();
-    subwindow_camera_types_[0] = EPIPCameraType::PIP_CAMERA_TYPE_DEPTH;
-    subwindow_camera_types_[1] = EPIPCameraType::PIP_CAMERA_TYPE_SEG;
-    subwindow_camera_types_[2] = EPIPCameraType::PIP_CAMERA_TYPE_SCENE;
+    subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawn()->getCamera();
+    subwindow_camera_types_[0] = ImageType_::Depth;
+    subwindow_camera_types_[1] = ImageType_::Segmentation;
+    subwindow_camera_types_[2] = ImageType_::Scene;
     subwindow_visible_[0] = subwindow_visible_[1] = subwindow_visible_[2] = false;
 
     setupInputBindings();
@@ -92,11 +92,11 @@ void ASimHUD::inputEventToggleTrace()
     simmode_->getFpvVehiclePawn()->toggleTrace();
 }
 
-EPIPCameraType ASimHUD::getSubwindowCameraType(int window_index)
+ASimHUD::ImageType ASimHUD::getSubwindowCameraType(int window_index)
 {
     return subwindow_camera_types_[window_index]; //TODO: index check
 }
-void ASimHUD::setSubwindowCameraType(int window_index, EPIPCameraType type)
+void ASimHUD::setSubwindowCameraType(int window_index, ImageType type)
 {
     subwindow_camera_types_[window_index] = type;
     updateWidgetSubwindowVisibility();
@@ -127,10 +127,10 @@ void ASimHUD::updateWidgetSubwindowVisibility()
 {
     for (int window_index = 0; window_index < kSubwindowCount; ++window_index) {
         APIPCamera* camera = subwindow_cameras_[window_index];
-        EPIPCameraType camera_type = subwindow_camera_types_[window_index];
+        ImageType camera_type = subwindow_camera_types_[window_index];
 
         bool is_visible = subwindow_visible_[window_index] && camera != nullptr &&
-            camera_type != EPIPCameraType::PIP_CAMERA_TYPE_NONE;
+            camera_type != ImageType_::None;
 
         if (camera != nullptr) {
             if (is_visible)

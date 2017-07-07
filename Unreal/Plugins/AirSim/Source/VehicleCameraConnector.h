@@ -1,24 +1,25 @@
 #pragma once
 
-#include "controllers/VehicleCamera.hpp"
+#include "controllers/VehicleCameraBase.hpp"
 #include "PIPCamera.h"
 
 
-class VehicleCameraConnector : public VehicleCamera
+class VehicleCameraConnector : public VehicleCameraBase
 {
 public:
-    VehicleCameraConnector(APIPCamera* camera, int id);
-    int getId() override;
-    bool getScreenShot(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng) override;
+    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
 
+    VehicleCameraConnector(APIPCamera* camera);
+    virtual ImageResponse getImage(ImageType image_type) override;
 
 private:
-    bool getScreenshotScreen(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng);
-    bool getScreenshotSceneCapture(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng);
+    msr::airlib::VehicleCameraBase::ImageResponse getSceneCaptureImage(ImageType image_type);
+
     void addScreenCaptureHandler(UWorld *world);
+    bool getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng);
 
 private:
-    APIPCamera* camera;
-    int id;
+    APIPCamera* camera_;
     std::vector<uint8_t> last_compressed_png_;
 };

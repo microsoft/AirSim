@@ -1,21 +1,82 @@
 #include "AirSim.h"
 #include "RenderRequest.h"
-#include "SimHUD/SimHUD.h"
 #include "ImageUtils.h"
 #include <chrono>
 
 
-VehicleCameraConnector::VehicleCameraConnector(APIPCamera* camera, int id) 
+VehicleCameraConnector::VehicleCameraConnector(APIPCamera* camera) 
 {
-    this->camera = camera;
-    this->id = id;
-
-    addScreenCaptureHandler(camera->GetWorld());
+    camera_ = camera;
+    
+    //TODO: explore screenshot option
+    //addScreenCaptureHandler(camera->GetWorld());
 }
 
-int VehicleCameraConnector::getId() 
+msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(VehicleCameraConnector::ImageType image_type)
 {
-    return id;
+
+    if (camera_== nullptr) {
+        ImageResponse response;
+        response.message = "camera is not set";
+        return response;
+    }
+    if (image_type == ImageType_::None) {
+        ImageResponse response;
+        response.message = "ImageType was None";
+        return response;
+    }
+
+    return getSceneCaptureImage(image_type);
+}
+
+msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCaptureImage(VehicleCameraConnector::ImageType image_type)
+{
+    bool visibilityChanged = false;
+    if ((camera_->getEnableCameraTypes() & image_type) == ImageType_::None
+        && (image_type != ImageType_::None)) {
+        camera_->setEnableCameraTypes(image_type);
+        visibilityChanged = true;
+    }
+
+    if (visibilityChanged) {
+        // Wait for render so that view is ready for capture
+        std::this_thread::sleep_for(std::chrono::duration<double>(0.2));
+        // not sure why this doesn't work.
+        //DECLARE_CYCLE_STAT(TEXT("FNullGraphTask.CheckRenderStatus"), STAT_FNullGraphTask_CheckRenderStatus, STATGROUP_TaskGraphTasks);
+        //auto renderStatus = TGraphTask<FNullGraphTask>::CreateTask(NULL).ConstructAndDispatchWhenReady(GET_STATID(STAT_FNullGraphTask_CheckRenderStatus), ENamedThreads::RenderThread);
+        //FTaskGraphInterface::Get().WaitUntilTaskCompletes(renderStatus);
+    }
+
+    using namespace msr::airlib;
+    USceneCaptureComponent2D* capture = camera_->getCaptureComponent(image_type, false);
+    if (capture == nullptr) {
+        ImageResponse response;
+        response.message = "Can't take screenshot because none camera type is not active";
+        return response;
+    }
+
+    if (capture->TextureTarget == nullptr) {
+        ImageResponse response;
+        response.message = "Can't take screenshot because texture target is null";
+        return response;
+    }
+
+    UTextureRenderTarget2D* textureTarget = capture->TextureTarget;
+
+    TArray<uint8> image;
+    RenderRequest request;
+    request.getScreenshot(textureTarget, image);
+
+    ImageResponse response;
+    response.image_data = std::vector<uint8_t>(image.GetData(), image.GetData() + image.Num());
+    return response;
+}
+
+
+bool VehicleCameraConnector::getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng)
+{
+    FScreenshotRequest::RequestScreenshot(false); // This is an async operation
+    return true;
 }
 
 void VehicleCameraConnector::addScreenCaptureHandler(UWorld *world)
@@ -40,84 +101,4 @@ void VehicleCameraConnector::addScreenCaptureHandler(UWorld *world)
 
         is_installed = true;
     }
-}
-
-
-bool VehicleCameraConnector::getScreenShot(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng)
-{
-
-    if (this->camera == nullptr) {
-        return false;
-    }
-    if (imageType == VehicleCamera::ImageType::None) {
-        return false;
-    }
-
-    return getScreenshotSceneCapture(imageType, compressedPng);
-}
-
-bool VehicleCameraConnector::getScreenshotScreen(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng)
-{
-    FScreenshotRequest::RequestScreenshot(false); // This is an async operation
-    return true;
-}
-
-bool VehicleCameraConnector::getScreenshotSceneCapture(VehicleCamera::ImageType imageType, std::vector<uint8_t>& compressedPng)
-{
-    ASimHUD* hud = ASimHUD::GetInstance();
-    EPIPCameraType pip_type;
-    bool visibilityChanged = false;
-    //TODO: merge these two different types?
-    switch (imageType) {
-    case VehicleCamera::ImageType::Scene:
-        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SCENE; 
-        break;
-    case VehicleCamera::ImageType::Depth:
-        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_DEPTH;
-        break;
-    case VehicleCamera::ImageType::Segmentation:
-        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_SEG;
-        break;
-    default:
-        pip_type = EPIPCameraType::PIP_CAMERA_TYPE_NONE;
-        break;
-    }
-
-    if ((camera->getEnableCameraTypes() & pip_type) == EPIPCameraType::PIP_CAMERA_TYPE_NONE
-        && (pip_type != EPIPCameraType::PIP_CAMERA_TYPE_NONE)) {
-        camera->setEnableCameraTypes(pip_type);
-        visibilityChanged = true;
-    }
-
-    if (visibilityChanged) {
-        // Wait for render so that view is ready for capture
-        std::this_thread::sleep_for(std::chrono::duration<double>(0.2));
-        // not sure why this doesn't work.
-        //DECLARE_CYCLE_STAT(TEXT("FNullGraphTask.CheckRenderStatus"), STAT_FNullGraphTask_CheckRenderStatus, STATGROUP_TaskGraphTasks);
-        //auto renderStatus = TGraphTask<FNullGraphTask>::CreateTask(NULL).ConstructAndDispatchWhenReady(GET_STATID(STAT_FNullGraphTask_CheckRenderStatus), ENamedThreads::RenderThread);
-        //FTaskGraphInterface::Get().WaitUntilTaskCompletes(renderStatus);
-    }
-
-    using namespace msr::airlib;
-    USceneCaptureComponent2D* capture = camera->getCaptureComponent(pip_type, false);
-    if (capture == nullptr) {
-        UAirBlueprintLib::LogMessage(TEXT("Can't take screenshot because none camera type is not active"), TEXT(""), LogDebugLevel::Failure);
-        return false;
-    }
-
-    if (capture->TextureTarget == nullptr) {
-        UAirBlueprintLib::LogMessage(TEXT("Can't take screenshot because texture target is null"), TEXT(""), LogDebugLevel::Failure);
-        return false;
-    }
-
-    UTextureRenderTarget2D* textureTarget = capture->TextureTarget;
-
-    TArray<uint8> image;
-    RenderRequest request;
-    request.getScreenshot(textureTarget, image);
-
-    // copy data across to std::vector.
-    compressedPng = std::vector<uint8_t>(image.GetData(), image.GetData() + image.Num());
-
-    return true;
 }

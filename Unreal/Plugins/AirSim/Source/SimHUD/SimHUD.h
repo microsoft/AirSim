@@ -19,6 +19,10 @@ class AIRSIM_API ASimHUD : public AHUD
     GENERATED_BODY()
 
 public:
+    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
+
+public:
     void inputEventToggleReport();
     void inputEventToggleHelp();
     void inputEventToggleTrace();
@@ -28,8 +32,8 @@ public:
     void inputEventToggleAll();
 
 
-    EPIPCameraType getSubwindowCameraType(int window_index);
-    void setSubwindowCameraType(int window_index, EPIPCameraType type);
+    ImageType getSubwindowCameraType(int window_index);
+    void setSubwindowCameraType(int window_index, ImageType type);
     APIPCamera* getSubwindowCamera(int window_index);
     void setSubwindowCamera(int window_index, APIPCamera* camera);
     bool getSubwindowVisible(int window_index);
@@ -57,7 +61,7 @@ private:
 
     static constexpr int kSubwindowCount = 3; //must be >= 3 for now
     APIPCamera* subwindow_cameras_[kSubwindowCount];
-    EPIPCameraType subwindow_camera_types_[kSubwindowCount];
+    ImageType subwindow_camera_types_[kSubwindowCount];
     bool subwindow_visible_[kSubwindowCount];
 
     static ASimHUD* instance_;

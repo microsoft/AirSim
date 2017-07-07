@@ -91,18 +91,21 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
         bool { return drone_->setSafety(SafetyEval::SafetyViolationType(enable_reasons), obs_clearance, obs_startegy,
             obs_avoidance_vel, origin.to(), xy_length, max_z, min_z); });
 
-    pimpl_->server.bind("getImageForCamera", [&](int camera_id, VehicleCamera::ImageType type) -> vector<uint8_t> { 
-        auto result = drone_->getImageForCamera(camera_id, type); 
+    //sim only
+    pimpl_->server.bind("simSetPosition", [&](RpcLibAdapators::Vector3r position) -> void { drone_->simSetPosition(position.to()); });
+    pimpl_->server.bind("simSetOrientation", [&](RpcLibAdapators::Quaternionr orientation) -> void { drone_->simSetOrientation(orientation.to()); });
+    pimpl_->server.bind("simGetImages", [&](std::vector<RpcLibAdapators::ImageRequest> request_adapter) -> vector<RpcLibAdapators::ImageResponse> { 
+        const auto& response = drone_->simGetImages(RpcLibAdapators::ImageRequest::to(request_adapter)); 
+        return RpcLibAdapators::ImageResponse::from(response);
+    });
+    pimpl_->server.bind("simGetImage", [&](uint8_t camera_id, VehicleCameraBase::ImageType_ type) -> vector<uint8_t> { 
+        auto result = drone_->simGetImage(camera_id, type); 
         if (result.size() == 0) {
             // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
             result.push_back(0);
         }
         return result;
     });
-
-    //sim only
-    pimpl_->server.bind("simSetPosition", [&](RpcLibAdapators::Vector3r position) -> void { drone_->simSetPosition(position.to()); });
-    pimpl_->server.bind("simSetOrientation", [&](RpcLibAdapators::Quaternionr orientation) -> void { drone_->simSetOrientation(orientation.to()); });
 
     //getters
     pimpl_->server.bind("getPosition", [&]() -> RpcLibAdapators::Vector3r { return drone_->getPosition(); });

@@ -41,19 +41,19 @@ uint32 FRecordingThread::Run()
 {
     while (stop_task_counter_.GetValue() == 0)
     {
-        APIPCamera* cam = sim_mode_->CameraDirector->getFpvCamera();
+        APIPCamera* cam = sim_mode_->getFpvVehiclePawn()->getCamera();
         if (cam != nullptr)
         {
             // todo: should we go as fast as possible, or should we limit this to a particular number of
             // frames per second?
-            USceneCaptureComponent2D* capture = cam->getCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, false);
+            USceneCaptureComponent2D* capture = cam->getCaptureComponent(msr::airlib::VehicleCameraBase::ImageType_::Scene, false);
             if (capture != nullptr) {
                 UTextureRenderTarget2D* renderTarget = capture->TextureTarget;
                 if (renderTarget != nullptr) {
-                    TArray<uint8> png;
+                    TArray<uint8> image_data;
                     RenderRequest request;
-                    request.getScreenshot(renderTarget, png);
-                    SaveImage(png);
+                    request.getScreenshot(renderTarget, image_data);
+                    SaveImage(image_data);
                 }
             }
         }

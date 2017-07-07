@@ -45,9 +45,20 @@ void AFlyingPawn::reset()
 }
 
 
-APIPCamera* AFlyingPawn::getFpvCamera()
+APIPCamera* AFlyingPawn::getCamera(int index)
 {
-    return fpv_camera_;
+    switch (index) {
+    case 0: return fpv_camera_right_; 
+    case 1: return fpv_camera_left_; 
+    default:
+        UAirBlueprintLib::LogMessageString("FlyingPawn doesn't have camera with index = ", std::to_string(index), LogDebugLevel::Failure);
+        return fpv_camera_right_;
+    }
+}
+
+int AFlyingPawn::getCameraCount()
+{
+    return 2;
 }
 
 void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
@@ -62,7 +73,9 @@ void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
 
 void AFlyingPawn::setupComponentReferences()
 {
-    fpv_camera_ = Cast<APIPCamera>(
+    fpv_camera_right_ = Cast<APIPCamera>(
+        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("RightPIPCamera")))->GetChildActor());
+    fpv_camera_left_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("LeftPIPCamera")))->GetChildActor());
 
     for (auto i = 0; i < rotor_count; ++i) {

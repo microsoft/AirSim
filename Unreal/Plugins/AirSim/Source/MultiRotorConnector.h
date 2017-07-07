@@ -8,6 +8,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "VehicleConnectorBase.h"
+#include "VehicleCameraConnector.h"
 #include "ManualPoseController.h"
 #include "FlyingPawn.h"
 #include <chrono>
@@ -75,6 +76,8 @@ private:
     Pose last_pose, last_debug_pose;
 
     CollisonResponseInfo collision_response_info;
+
+    vector<shared_ptr<VehicleCameraConnector>> camera_connectors_;
 
     bool enable_rpc_;
     std::string api_server_address_;

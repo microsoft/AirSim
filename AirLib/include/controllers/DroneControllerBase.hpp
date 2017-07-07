@@ -8,15 +8,13 @@
 #include "common/Common.hpp"
 #include "VehicleControllerBase.hpp"
 #include "common/common_utils/WorkerThread.hpp"
-#include "controllers/VehicleCamera.hpp"
+#include "controllers/VehicleCameraBase.hpp"
 #include "Waiter.hpp"
 #include "safety/SafetyEval.hpp"
 #include "common/CommonStructs.hpp"
 #include "DroneCommon.hpp"
 
 namespace msr { namespace airlib {
-
-    class VehicleCamera;
 
 /// DroneControllerBase represents a generic drone that can be controlled and queried for current state.
 /// All control methods return a boolean where true means the command was completed successfully, and
@@ -62,6 +60,20 @@ public: //types
     private:
         DroneControllerBase* drone_;
         std::lock_guard<std::recursive_mutex> lock_;
+    };
+
+    struct ImageRequest {
+        uint8_t camera_id;
+        VehicleCameraBase::ImageType image_type;
+
+        ImageRequest()
+        {}
+
+        ImageRequest(uint8_t camera_id_val, VehicleCameraBase::ImageType image_type_val)
+        {
+            camera_id = camera_id_val;
+            image_type = image_type_val;
+        }
     };
 
     enum class LandedState : uint {
@@ -222,17 +234,17 @@ public: //interface for outside world
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
     virtual const VehicleParams& getVehicleParams() = 0;
 
-    /// Request an image of specific type from the specified camera.  Currently AirSim is configured with only 2 cameras which
-    /// have id of 0 and 1.  Camera 0 is setup to be an FPV camera view and camera 1 is setup as a 3rd person view that chases the drone.
-    /// The image is return in the .png format.  This call will block until the render is complete.  
-    virtual vector<uint8_t> getImageForCamera(int camera_id, VehicleCamera::ImageType type);
-
-    virtual void addCamera(std::shared_ptr<VehicleCamera> camera);
 
     //TODO: methods that are only valid for simulation mode should be prefixed with "sim"
     virtual void simSetPosition(const Vector3r& position);
     virtual void simSetOrientation(const Quaternionr& orientation);
-    
+    /// Request an image of specific type from the specified camera.  Currently default pawn is configured with only 2 cameras which
+    /// have id of 0 and 1, right and left respectively.  Camera 0 is is always FPV camera view
+    /// The image is return in the .png format.  This call will block until the render is complete.  
+    virtual vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<ImageRequest>& request);
+    void simAddCamera(VehicleCameraBase* camera);
+    VehicleCameraBase* simGetCamera(int index);
+
     //*********************************common pre & post for move commands***************************************************
     //TODO: make these protected
     virtual bool loopCommandPre();
@@ -257,26 +269,6 @@ protected: //must implement interface by derived class
                                       //noise in difference of two position coordinates. This is not GPS or position accuracy which can be very low such as 1m.
                                       //the difference between two position cancels out transitional errors. Typically this would be 0.1m or lower.
     virtual float getDistanceAccuracy() = 0; 
-
-    //naked variables for derived class access
-    unordered_map<int, std::shared_ptr<VehicleCamera>> enabled_cameras;
-    struct EnumClassHash
-    {
-        template <typename T>
-        std::size_t operator()(T t) const
-        {
-            return static_cast<std::size_t>(t);
-        }
-    };
-
-    // this is a work around for GCC compile error to do with enum classes as unordered_map key.
-    // see http://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
-    template <typename Key>
-    using EnumClassHashType = typename std::conditional<std::is_enum<Key>::value, EnumClassHash, std::hash<Key>>::type;
-    template <typename Key, typename T>
-    using EnumClassUnorderedMap = std::unordered_map<Key, T, EnumClassHashType<Key>>;
-
-    unordered_map<int, EnumClassUnorderedMap<VehicleCamera::ImageType, vector<uint8_t>>> images;
 
 protected: //optional oveerides recommanded for any drones, default implementation may work
     virtual float getAutoLookahead(float velocity, float adaptive_lookahead,
@@ -372,6 +364,7 @@ private:// vars
     float obs_avoidance_vel_ = 0.5f;
     bool log_to_file_ = false;
     CollisionInfo collision_info_;
+    vector<VehicleCameraBase*> cameras_;
 
     // we make this recursive so that DroneControllerBase subclass can grab StatusLock then call a 
     // base class method on DroneControllerBase that also grabs the StatusLock.

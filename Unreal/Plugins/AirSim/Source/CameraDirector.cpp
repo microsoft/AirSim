@@ -47,7 +47,7 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, AVeh
 void ACameraDirector::setCameras(APIPCamera* external_camera, AVehiclePawnBase* vehicle)
 {
     external_camera_ = external_camera;
-    fpv_camera_ = vehicle->getFpvCamera();
+    fpv_camera_ = vehicle->getCamera();
     follow_actor_ = vehicle;
 
     manual_pose_controller_->setActor(external_camera_, false);

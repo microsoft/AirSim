@@ -111,17 +111,17 @@ public:
 public:
     Vector3r getPosition() override
     {
-        return kinematics_->pose.position;
+        return physics_body_->getKinematics().pose.position;
     }
 
     Vector3r getVelocity() override
     {
-        return kinematics_->twist.linear;
+        return physics_body_->getKinematics().twist.linear;
     }
 
     Quaternionr getOrientation() override
     {
-        return kinematics_->pose.orientation;
+        return physics_body_->getKinematics().pose.orientation;
     }
 
     LandedState getLandedState() override
@@ -186,12 +186,12 @@ public:
 
     GeoPoint getHomePoint() override
     {
-        return environment_->getInitialState().geo_point;
+        return physics_body_->getEnvironment().getInitialState().geo_point;
     }
 
     GeoPoint getGpsLocation() override
     {
-        return environment_->getState().geo_point;
+        return physics_body_->getEnvironment().getState().geo_point;
     }
 
     virtual void reportTelemetry(float renderTime) override
@@ -277,8 +277,6 @@ private:
 
 private:
     const MultiRotorParams* vehicle_params_;
-    const Kinematics::State* kinematics_;
-    const Environment* environment_;
     PhysicsBody* physics_body_;
 
     int remote_control_id_ = 0;

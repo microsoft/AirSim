@@ -17,7 +17,9 @@ public: //interface
 
 public:
     //overrides from VehiclePawnBase
-    virtual APIPCamera* getFpvCamera() override;
+    virtual APIPCamera* getCamera(int index = 0) override;
+    virtual int AFlyingPawn::getCameraCount() override;
+
     virtual void initialize() override;
     virtual void reset() override;
 
@@ -35,6 +37,7 @@ private: //methods
 private: //variables
          //Unreal components
     static constexpr size_t rotor_count = 4;
-    UPROPERTY() APIPCamera* fpv_camera_;
+    UPROPERTY() APIPCamera* fpv_camera_left_;
+    UPROPERTY() APIPCamera* fpv_camera_right_;
     UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
 };

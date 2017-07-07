@@ -273,9 +273,6 @@
     <ClInclude Include="include\common\common_utils\WorkerThread.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\VehicleCamera.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\common\DebugClock.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -385,6 +382,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\firmware\RateStabilizer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\VehicleCameraBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

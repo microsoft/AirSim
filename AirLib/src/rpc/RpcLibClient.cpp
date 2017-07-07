@@ -167,6 +167,23 @@ void RpcLibClient::simSetOrientation(const Quaternionr& orientation)
 {
     pimpl_->client.call("simSetOrientation", RpcLibAdapators::Quaternionr(orientation));
 }
+vector<VehicleCameraBase::ImageResponse> RpcLibClient::simGetImages(vector<DroneControllerBase::ImageRequest> request)
+{
+    const auto& response_adaptor = pimpl_->client.call("simGetImages", 
+        RpcLibAdapators::ImageRequest::from(request))
+        .as<vector<RpcLibAdapators::ImageResponse>>();
+
+    return RpcLibAdapators::ImageResponse::to(response_adaptor);
+}
+vector<uint8_t> RpcLibClient::simGetImage(int camera_id, VehicleCameraBase::ImageType type)
+{
+    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type.toEnum()).as<vector<uint8_t>>();
+    if (result.size() == 1) {
+        // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
+        result.clear();
+    }
+    return result;
+}
 
 //status getters
 Vector3r RpcLibClient::getPosition()
@@ -257,17 +274,6 @@ void RpcLibClient::confirmConnection()
     }
     std::cout << std::endl;
     std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
-}
-
-//get/set image
-vector<uint8_t> RpcLibClient::getImageForCamera(int camera_id, VehicleCamera::ImageType type)
-{
-    vector<uint8_t> result = pimpl_->client.call("getImageForCamera", camera_id, type).as<vector<uint8_t>>();
-    if (result.size() == 1) {
-        // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-        result.clear();
-    }
-    return result;
 }
 
 

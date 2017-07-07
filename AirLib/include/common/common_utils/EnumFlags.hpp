@@ -30,15 +30,31 @@ public:
         flags_ |= static_cast<TUnderlying>(add_value); 
         return *this; 
     }
+    EnumFlags& operator |=(EnumFlags add_value)
+    { 
+        flags_ |= add_value.flags_; 
+        return *this; 
+    }
     EnumFlags operator |(TEnum add_value) const
     {
         EnumFlags result(*this); 
         result |= add_value; 
         return result;
     }
+    EnumFlags operator |(EnumFlags add_value) const
+    {
+        EnumFlags result(*this); 
+        result |= add_value.flags_; 
+        return result;
+    }
     EnumFlags& operator &=(TEnum mask_value)
     { 
         flags_ &= static_cast<TUnderlying>(mask_value);
+        return *this;
+    }
+    EnumFlags& operator &=(EnumFlags mask_value)
+    { 
+        flags_ &= mask_value.flags_;
         return *this;
     }
     EnumFlags operator &(TEnum mask_value) const
@@ -47,28 +63,51 @@ public:
         result &= mask_value;
         return result; 
     }
-    // EnumFlags& operator ~=(TEnum mask_value)
-    // { 
-    //     flags_ ~= mask_value;
-    //     return *this;
-    // }
+    EnumFlags operator &(EnumFlags mask_value) const
+    { 
+        EnumFlags result(*this);
+        result &= mask_value.flags_;
+        return result; 
+    }    
     EnumFlags operator ~() const
     { 
         EnumFlags result(*this);
         result.flags_ = ~result.flags_;
         return result;
     }
-    // EnumFlags& operator ^=(TEnum mask_value)
-    // { 
-    //     flags_ ^= mask_value;
-    //     return *this;
-    // }
-    // EnumFlags operator ^(TEnum mask_value) const
-    // { 
-    //     EnumFlags result(*this);
-    //     result.flags_ ^= mask_value;
-    //     return result;
-    // }    
+     EnumFlags& operator ^=(TEnum mask_value)
+     { 
+         flags_ ^= mask_value;
+         return *this;
+     }
+     EnumFlags& operator ^=(EnumFlags mask_value)
+     { 
+         flags_ ^= mask_value.flags_;
+         return *this;
+     }
+     EnumFlags operator ^(TEnum mask_value) const
+     { 
+         EnumFlags result(*this);
+         result.flags_ ^= mask_value;
+         return result;
+     } 
+     EnumFlags operator ^(EnumFlags mask_value) const
+     { 
+         EnumFlags result(*this);
+         result.flags_ ^= mask_value.flags_;
+         return result;
+     }
+
+     //EnumFlags& operator ~=(TEnum mask_value)
+     //{ 
+     //    flags_ ~= static_cast<TUnderlying>(mask_value);
+     //    return *this;
+     //}
+     //EnumFlags& operator ~=(EnumFlags mask_value)
+     //{ 
+     //    flags_ ~= mask_value.flags_;
+     //    return *this;
+     //}
 
     //equality operators
     bool operator==(const EnumFlags& rhs) const
@@ -90,7 +129,11 @@ public:
     {
         return flags_;
     }
- 
+    
+    TEnum toEnum() const
+    {
+        return static_cast<TEnum>(flags_);
+    }
 };
 
 }   //namespace

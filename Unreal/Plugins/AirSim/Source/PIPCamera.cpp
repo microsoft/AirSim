@@ -51,26 +51,26 @@ void APIPCamera::disableAll()
 }
 
 
-EPIPCameraType APIPCamera::toggleEnableCameraTypes(EPIPCameraType types)
+APIPCamera::ImageType APIPCamera::toggleEnableCameraTypes(APIPCamera::ImageType types)
 {
-    setEnableCameraTypes(getEnableCameraTypes() ^ types);
-    return getEnableCameraTypes() & types;
+    setEnableCameraTypes(types ^ getEnableCameraTypes());
+    return types ^ getEnableCameraTypes();
 }
 
-EPIPCameraType APIPCamera::getEnableCameraTypes()
+APIPCamera::ImageType APIPCamera::getEnableCameraTypes()
 {
     return enabled_camera_types_;
 }
 
-void APIPCamera::setEnableCameraTypes(EPIPCameraType types)
+void APIPCamera::setEnableCameraTypes(APIPCamera::ImageType types)
 {
-    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH, (types & EPIPCameraType::PIP_CAMERA_TYPE_DEPTH) != EPIPCameraType::PIP_CAMERA_TYPE_NONE);
-    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, (types & EPIPCameraType::PIP_CAMERA_TYPE_SCENE) != EPIPCameraType::PIP_CAMERA_TYPE_NONE);
-    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SEG, (types & EPIPCameraType::PIP_CAMERA_TYPE_SEG) != EPIPCameraType::PIP_CAMERA_TYPE_NONE);
+    enableCaptureComponent(ImageType_::Depth, (types & ImageType_::Depth));
+    enableCaptureComponent(ImageType_::Scene, (types & ImageType_::Scene));
+    enableCaptureComponent(ImageType_::Segmentation, (types & ImageType_::Segmentation));
     enabled_camera_types_ = types;
 }
 
-void APIPCamera::enableCaptureComponent(const EPIPCameraType type, bool is_enabled)
+void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool is_enabled)
 {
     USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
     if (capture != nullptr) {
@@ -86,50 +86,50 @@ void APIPCamera::enableCaptureComponent(const EPIPCameraType type, bool is_enabl
     //else nothing to enable
 }
 
-UTextureRenderTarget2D* APIPCamera::getRenderTarget(const EPIPCameraType type, bool if_active)
+UTextureRenderTarget2D* APIPCamera::getRenderTarget(const APIPCamera::ImageType type, bool if_active)
 {
-    switch (type) {
-    case EPIPCameraType::PIP_CAMERA_TYPE_SCENE:
-        if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SCENE)))
+    switch (type.toEnum()) {
+    case ImageType_::Scene:
+        if (!if_active || (enabled_camera_types_ & ImageType_::Scene))
             return scene_render_target_;
         return nullptr;
-    case EPIPCameraType::PIP_CAMERA_TYPE_DEPTH:
-        if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH)))
+    case ImageType_::Depth:
+        if (!if_active || (enabled_camera_types_ & ImageType_::Depth))
             return depth_render_target_;
         return nullptr;
-    case EPIPCameraType::PIP_CAMERA_TYPE_SEG:
-        if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SEG)))
+    case ImageType_::Segmentation:
+        if (!if_active || (enabled_camera_types_ & ImageType_::Segmentation))
             return seg_render_target_;
         return nullptr;
-    case EPIPCameraType::PIP_CAMERA_TYPE_NONE:
+    case ImageType_::None:
         return nullptr;
     default:
         return nullptr;
-        UAirBlueprintLib::LogMessageString("Cannot get render target because camera type is not recognized", std::to_string(static_cast<uint8>(type)), LogDebugLevel::Failure, 60);
+        UAirBlueprintLib::LogMessageString("Cannot get render target because camera type is not recognized", std::to_string(type), LogDebugLevel::Failure);
     }
 
 }
 
-USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const EPIPCameraType type, bool if_active)
+USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const APIPCamera::ImageType type, bool if_active)
 {
-    switch (type) {
-    case EPIPCameraType::PIP_CAMERA_TYPE_SCENE:
-        if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SCENE)))
+    switch (type.toEnum()) {
+    case ImageType_::Scene:
+        if (!if_active || (enabled_camera_types_ & ImageType_::Scene))
             return screen_capture_;
         return nullptr;
-    case EPIPCameraType::PIP_CAMERA_TYPE_DEPTH:
-        if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH)))
+    case ImageType_::Depth:
+        if (!if_active || (enabled_camera_types_ & ImageType_::Depth))
             return depth_capture_;
         return nullptr;
-    case EPIPCameraType::PIP_CAMERA_TYPE_SEG:
-        if (!if_active || (static_cast<uint8>(enabled_camera_types_) & static_cast<uint8>(EPIPCameraType::PIP_CAMERA_TYPE_SEG)))
+    case ImageType_::Segmentation:
+        if (!if_active || (enabled_camera_types_ & ImageType_::Segmentation))
             return seg_capture_;
         return nullptr;
-    case EPIPCameraType::PIP_CAMERA_TYPE_NONE:
+    case ImageType_::None:
         return nullptr;
     default:
         return nullptr;
-        UAirBlueprintLib::LogMessageString("Cannot get capture component because camera type is not recognized", std::to_string(static_cast<uint8>(type)), LogDebugLevel::Failure, 60);
+        UAirBlueprintLib::LogMessageString("Cannot get capture component because camera type is not recognized", std::to_string(static_cast<uint8>(type.toEnum())), LogDebugLevel::Failure, 60);
     }
 
 }
@@ -137,9 +137,9 @@ USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const EPIPCameraType t
 
 void APIPCamera::disableAllPIP()
 {
-    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SCENE, false);
-    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_DEPTH, false);
-    enableCaptureComponent(EPIPCameraType::PIP_CAMERA_TYPE_SEG, false);
+    enableCaptureComponent(ImageType_::Scene, false);
+    enableCaptureComponent(ImageType_::Depth, false);
+    enableCaptureComponent(ImageType_::Segmentation, false);
 }
 
 

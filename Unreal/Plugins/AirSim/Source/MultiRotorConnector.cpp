@@ -1,7 +1,7 @@
 #include "AirSim.h"
 #include "MultiRotorConnector.h"
 #include "AirBlueprintLib.h"
-#include "VehicleCameraConnector.h"
+#include "NedTransform.h"
 #include <exception>
 
 using namespace msr::airlib;
@@ -38,15 +38,17 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
     controller_ = static_cast<msr::airlib::DroneControllerBase*>(vehicle_.getController());
     controller_->initializePhysics(&vehicle_);
 
+    for (int camera_index = 0; camera_index < vehicle_pawn->getCameraCount(); ++camera_index) {
+        camera_connectors_.push_back(std::make_shared<VehicleCameraConnector>(vehicle_pawn->getCamera(camera_index)));
+        controller_->simAddCamera(camera_connectors_.at(camera_index).get());
+    }
+
     if (controller_->getRemoteControlID() >= 0)
         detectUsbRc();
 
     rotor_count_ = vehicle_.wrenchVertexCount();
     rotor_info_ = new RotorInfo[rotor_count_];
     memset(rotor_info_, 0, sizeof(RotorInfo) * rotor_count_);
-
-    // add cameras, should allow Pawn to customize this, right now we only support 1 camera.
-    controller_->addCamera(std::make_shared<VehicleCameraConnector>(vehicle_pawn_->getFpvCamera(), 0));
 }
 
 MultiRotorConnector::~MultiRotorConnector()
@@ -250,7 +252,7 @@ void MultiRotorConnector::reportState(StateReporter& reporter)
     // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
     if (vehicle_pawn_ != nullptr) {
         FVector unrealPosition = vehicle_pawn_->getPosition();
-        reporter.writeValue("unreal pos", AVehiclePawnBase::toVector3r(unrealPosition, 1.0f, false));
+        reporter.writeValue("unreal pos", NedTransform::toVector3r(unrealPosition, 1.0f, false));
         vehicle_.reportState(reporter);
     }
 }

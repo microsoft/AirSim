@@ -338,6 +338,30 @@ void DroneControllerBase::simSetOrientation(const Quaternionr& orientation)
 {
     //derived flight controller class should provide implementation if they support exclusive sim*** methods
 }
+void DroneControllerBase::simAddCamera(VehicleCameraBase* camera)
+{
+    cameras_.push_back(camera);
+}
+
+VehicleCameraBase* DroneControllerBase::simGetCamera(int index)
+{
+    return cameras_.at(index);
+}
+vector<VehicleCameraBase::ImageResponse> DroneControllerBase::simGetImages(const vector<DroneControllerBase::ImageRequest>& request)
+{
+    StatusLock lock(this);
+
+    vector<VehicleCameraBase::ImageResponse> response;
+
+    for (const auto& item : request) {
+        VehicleCameraBase* camera = simGetCamera(item.camera_id);
+        const auto& item_response = camera->getImage(item.image_type);
+        response.push_back(item_response);
+    }
+
+    return response;
+}
+
 
 bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, const YawMode& yaw_mode)
 {
@@ -659,25 +683,6 @@ bool DroneControllerBase::isYawWithinMargin(float yaw_target, float margin)
     const float yaw_current = VectorMath::getYaw(getOrientation()) * 180 / M_PIf;
     return std::abs(yaw_current - yaw_target) <= margin;
 }    
-
-void DroneControllerBase::addCamera(std::shared_ptr<VehicleCamera> camera)
-{
-    StatusLock lock(this);
-    enabled_cameras[camera->getId()] = camera;
-}
-
-vector<uint8_t> DroneControllerBase::getImageForCamera(int camera_id, VehicleCamera::ImageType type)
-{
-    StatusLock lock(this);
-    vector<uint8_t> png;
-
-    //TODO: perf work
-    auto it = enabled_cameras.find(camera_id);
-    if (it != enabled_cameras.end()) {
-        it->second->getScreenShot(type, png);
-    } 
-    return png;
-}
 
 Pose DroneControllerBase::getDebugPose()
 {

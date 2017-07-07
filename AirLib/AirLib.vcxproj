@@ -93,7 +93,7 @@
     <ClInclude Include="include\controllers\simple_flight\firmware\RateStabilizer.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\Stabilizer.hpp" />
     <ClInclude Include="include\controllers\simple_flight\SimpleFlightDroneController.hpp" />
-    <ClInclude Include="include\controllers\VehicleCamera.hpp" />
+    <ClInclude Include="include\controllers\VehicleCameraBase.hpp" />
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />
     <ClInclude Include="include\rpc\ControlServerBase.hpp" />
     <ClInclude Include="include\safety\CubeGeoFence.hpp" />

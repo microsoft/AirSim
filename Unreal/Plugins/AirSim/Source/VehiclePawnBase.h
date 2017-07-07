@@ -61,7 +61,8 @@ public: //interface
     virtual void initializeForBeginPlay();
     virtual void reset();
     UFUNCTION(BlueprintCallable, Category = "Camera")
-    virtual APIPCamera* getFpvCamera();
+    virtual APIPCamera* getCamera(int index = 0);
+    virtual int getCameraCount();
     virtual void displayCollisonEffect(FVector hit_location, const FHitResult& hit);
 
     //get/set pose
@@ -75,14 +76,6 @@ public: //interface
     real_T getMinZOverGround() const;
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisonInfo() const;
-
-    //utility methods
-    static FVector toFVector(const Vector3r& vec, float scale, bool convert_from_ned);
-    static FQuat toFQuat(const Quaternionr& q, bool convert_from_ned);
-    static Vector3r toVector3r(const FVector& vec, float scale, bool convert_to_ned);
-    static Quaternionr toQuaternionr(const FQuat& q, bool convert_to_ned);
-    Vector3r toNedMeters(const FVector& position) const;
-    FVector  toNeuUU(const Vector3r& position) const;
 
 protected:
     UPROPERTY(VisibleAnywhere)
@@ -99,7 +92,6 @@ private: //methods
 private: //vars
     FVector ground_trace_end;
     FVector ground_margin;
-    float world_to_meters;
     GeoPoint home_point;
 
     struct State {

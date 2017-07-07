@@ -1,19 +1,8 @@
 #pragma once
 
 #include "Camera/CameraActor.h"
+#include "controllers/VehicleCameraBase.hpp"
 #include "PIPCamera.generated.h"
-
-
-UENUM(BlueprintType, meta=(Bitflags))
-enum class EPIPCameraType : uint8
-{
-    PIP_CAMERA_TYPE_NONE = 0	UMETA(DisplayName="None"),
-    PIP_CAMERA_TYPE_SCENE = 1	UMETA(DisplayName="Scene"),
-    PIP_CAMERA_TYPE_DEPTH = 2	UMETA(DisplayName="Depth"),
-    PIP_CAMERA_TYPE_SEG = 4 	UMETA(DisplayName="Segmentation"),
-    PIP_CAMERA_TYPE_ALL = 127     UMETA(DisplayName="All")
-};
-ENUM_CLASS_FLAGS(EPIPCameraType)
 
 
 UCLASS()
@@ -23,7 +12,11 @@ class AIRSIM_API APIPCamera : public ACameraActor
     
     
 public:
-    static constexpr EPIPCameraType DefaultEnabledCameras = EPIPCameraType::PIP_CAMERA_TYPE_NONE;
+    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
+
+
+    const ImageType DefaultEnabledCameras = ImageType_::None;
 
     virtual void PostInitializeComponents() override;
     virtual void BeginPlay() override;
@@ -34,12 +27,12 @@ public:
     void disableAllPIP();
     void disableMain();
 
-    EPIPCameraType toggleEnableCameraTypes(EPIPCameraType types);
-    void setEnableCameraTypes(EPIPCameraType types);
-    EPIPCameraType getEnableCameraTypes();
+    ImageType toggleEnableCameraTypes(ImageType types);
+    void setEnableCameraTypes(ImageType types);
+    ImageType getEnableCameraTypes();
 
-    USceneCaptureComponent2D* getCaptureComponent(const EPIPCameraType type, bool if_active);
-    UTextureRenderTarget2D* getRenderTarget(const EPIPCameraType type, bool if_active);
+    USceneCaptureComponent2D* getCaptureComponent(const ImageType type, bool if_active);
+    UTextureRenderTarget2D* getRenderTarget(const ImageType type, bool if_active);
 
 private:
     UPROPERTY() USceneCaptureComponent2D* screen_capture_;
@@ -50,8 +43,8 @@ private:
     UPROPERTY() UTextureRenderTarget2D* depth_render_target_;
     UPROPERTY() UTextureRenderTarget2D* seg_render_target_;
 
-    EPIPCameraType enabled_camera_types_ = DefaultEnabledCameras;
+    ImageType enabled_camera_types_ = DefaultEnabledCameras;
 
 private:
-    void enableCaptureComponent(const EPIPCameraType type, bool is_enabled);
+    void enableCaptureComponent(const ImageType type, bool is_enabled);
 };
