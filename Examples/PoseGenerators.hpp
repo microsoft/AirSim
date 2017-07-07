@@ -15,7 +15,7 @@ class RandomPointPoseGenerator {
 public:
     RandomPointPoseGenerator(msr::airlib::RpcLibClient* client)
         : client_(client), 
-        rand_xy_(-500.0f, 500.0f), rand_z_(-10.0f, -1.0f), rand_pitch_(-M_PIf / 8, M_PIf / 8),
+        rand_xy_(-500.0f, 500.0f), rand_z_(-10.0f, -1.0f), rand_pitch_(-M_PIf / 2, M_PIf / 2),
         rand_yaw_(-M_PIf, M_PIf)
     {
     }
@@ -39,7 +39,7 @@ public:
             pitch = rand_pitch_.next();
             yaw = rand_yaw_.next();
 
-            orientation = VectorMath::toQuaternion(pitch, roll, yaw);
+            orientation = VectorMath::toQuaternion(pitch, 0, yaw);
         }
 
         client_->simSetPosition(position);

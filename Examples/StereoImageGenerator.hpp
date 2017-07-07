@@ -40,6 +40,7 @@ public:
             if (collision_info.has_collided) {
                 std::cout << "Collison. Moving to next pose." << std::endl;
                 pose_generator.next();
+                --i;
                 continue;
             }
 
@@ -60,9 +61,9 @@ public:
             std::string right_file_name = Utils::stringf("right_%06d.png", i);
             std::string disparity_file_name  = Utils::stringf("disparity_%06d.pfm", i);
             saveImageToFile(response.at(0).image_data, 
-                FileSystem::combine(storage_dir_, left_file_name));
-            saveImageToFile(response.at(1).image_data, 
                 FileSystem::combine(storage_dir_, right_file_name));
+            saveImageToFile(response.at(1).image_data, 
+                FileSystem::combine(storage_dir_, left_file_name));
 
             std::vector<float> depth_data;
             const auto& depth_raw = response.at(2).image_data;

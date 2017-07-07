@@ -51,14 +51,14 @@ int runStandAlonePhysics(int argc, const char *argv[])
     return 0;
 }
 
-void runSteroImageGenerator()
+void runSteroImageGenerator(int num_samples)
 {
     StereoImageGenerator gen("c:\\temp\\stig");
-    gen.generate(100);
+    gen.generate(num_samples);
 }
 
 int main(int argc, const char *argv[])
 {
-    runSteroImageGenerator();
+    runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]));
 }
 
