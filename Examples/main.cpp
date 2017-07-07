@@ -54,7 +54,7 @@ int runStandAlonePhysics(int argc, const char *argv[])
 void runSteroImageGenerator()
 {
     StereoImageGenerator gen("c:\\temp\\stig");
-    gen.generate(1);
+    gen.generate(100);
 }
 
 int main(int argc, const char *argv[])

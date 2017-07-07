@@ -11,6 +11,8 @@ namespace common_utils {
 template<typename TReturn, typename TDistribution, unsigned int Seed=42>
 class RandomGenerator {
 public:
+    //for uniform distribution supply min and max (inclusive)
+    //for gaussian distribution supply mean and sigma
     template<typename... DistArgs>
     RandomGenerator(DistArgs... dist_args)
         : dist_(dist_args...), rand_(Seed)

@@ -31,7 +31,7 @@ public:
     //VehicleConnectorBase interface
     //implements game interface to update pawn
     void initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
-        bool enable_rpc, std::string api_server_address, const UManualPoseController* manual_pose_controller);
+        bool enable_rpc, std::string api_server_address, UManualPoseController* manual_pose_controller);
     virtual void beginPlay() override;
     virtual void endPlay() override;
     virtual void updateRenderedState() override;
@@ -82,7 +82,7 @@ private:
     bool enable_rpc_;
     std::string api_server_address_;
     msr::airlib::DroneControllerBase* controller_;
-    const UManualPoseController* manual_pose_controller_;
+    UManualPoseController* manual_pose_controller_;
 
     SimJoyStick joystick_;
     SimJoyStick::State joystick_state_;

@@ -14,6 +14,7 @@ public:
     void updateActorPose();
     void restoreLastActor();
     void enableBindings(bool enable);
+    void getActorDeltaPose(FVector& delta_position, FRotator& delta_rotation, bool reset_delta);
 
 private:
     void inputManualLeft(float val);
@@ -41,7 +42,7 @@ private:
     FInputAxisKeyMapping right_yaw_mapping_, down_pitch_mapping_;
 
 
-    FVector delta_location_;
+    FVector delta_position_;
     FRotator delta_rotation_;
 
     AActor *actor_, *last_actor_;

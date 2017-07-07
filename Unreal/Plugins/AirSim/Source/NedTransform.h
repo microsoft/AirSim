@@ -14,7 +14,7 @@ public:
 public:
     static void initialize(const AActor* pivot);
     static bool isInitialized();
-    static Vector3r toNedMeters(const FVector& position);
+    static Vector3r toNedMeters(const FVector& position, bool use_offset = true);
     static FVector toNeuUU(const Vector3r& position);
     static FQuat toFQuat(const Quaternionr& q, bool convert_from_ned);
     static Quaternionr toQuaternionr(const FQuat& q, bool convert_to_ned);

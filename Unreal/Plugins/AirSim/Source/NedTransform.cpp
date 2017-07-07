@@ -30,9 +30,9 @@ float NedTransform::toNedMeters(float length)
     return length / world_to_meters_;
 }
 
-NedTransform::Vector3r NedTransform::toNedMeters(const FVector& position)
+NedTransform::Vector3r NedTransform::toNedMeters(const FVector& position, bool use_offset)
 {
-    return NedTransform::toVector3r(position - offset_, 1 / world_to_meters_, true);
+    return NedTransform::toVector3r(position - (use_offset ? offset_ : FVector::ZeroVector), 1 / world_to_meters_, true);
 }
 
 FVector NedTransform::toNeuUU(const NedTransform::Vector3r& position)

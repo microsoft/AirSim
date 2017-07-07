@@ -7,7 +7,7 @@
 using namespace msr::airlib;
 
 void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
-    bool enable_rpc, std::string api_server_address, const UManualPoseController* manual_pose_controller)
+    bool enable_rpc, std::string api_server_address, UManualPoseController* manual_pose_controller)
 {
     enable_rpc_ = enable_rpc;
     api_server_address_ = api_server_address;
@@ -153,8 +153,21 @@ void MultiRotorConnector::updateRenderedState()
 
     //update ground level
     environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
-    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_)
-        vehicle_.setPose(vehicle_pawn_->getPose());
+    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_) {
+        FVector delta_position;
+        FRotator delta_rotation;
+
+        manual_pose_controller_->getActorDeltaPose(delta_position, delta_rotation, true);
+        Vector3r delta_position_ned = NedTransform::toNedMeters(delta_position, false);
+        Quaternionr delta_rotation_ned = NedTransform::toQuaternionr(delta_rotation.Quaternion(), true);
+
+        auto pose = vehicle_.getPose();
+        pose.position += delta_position_ned;
+        pose.orientation = pose.orientation * delta_rotation_ned;
+        pose.orientation.normalize();
+
+        vehicle_.setPose(pose);
+    }
 
     last_pose = vehicle_.getPose();
     

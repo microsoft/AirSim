@@ -261,7 +261,7 @@ void RpcLibClient::confirmConnection()
         std::cout << "X" << std::flush;
         clock->sleep_for(pause_time); 
     }
-    std::cout << "Connected!" << std::endl;
+    std::cout << std::endl << "Connected!" << std::endl;
 
     std::cout << "Waiting for drone to report a valid GPS location..." << std::flush;
     auto gps = getGpsLocation();
