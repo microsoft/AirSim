@@ -51,7 +51,7 @@ uint32 FRecordingThread::Run()
                 UTextureRenderTarget2D* renderTarget = capture->TextureTarget;
                 if (renderTarget != nullptr) {
                     TArray<uint8> image_data;
-                    RenderRequest request;
+                    RenderRequest request(false);
                     int width, height;
                     request.getScreenshot(renderTarget, image_data, false, true, width, height);
                     SaveImage(image_data);

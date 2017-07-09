@@ -68,8 +68,11 @@ public:
             const std::vector<ImageResponse>& response = client.simGetImages(request);
             if (response.size() != 3) {
                 std::cout << "Images were not recieved!" << std::endl;
+                start_nanos = clock->nowNanos();
                 continue;
             }
+
+            auto render_time = clock->elapsedSince(start_nanos);
 
             std::string left_file_name = Utils::stringf("left_%06d.png", sample);
             std::string right_file_name = Utils::stringf("right_%06d.png", sample);
@@ -98,7 +101,10 @@ public:
 
             file_list << left_file_name << "," << right_file_name << "," << disparity_file_name << std::endl;
 
-            std::cout << "Image #" << sample << " done in " << (clock->nowNanos() - start_nanos) / 1.0E6f << "ms" << std::endl;
+            std::cout << "Image #" << sample 
+                << " done in " << (clock->elapsedSince(start_nanos)) * 1E3f << "ms" 
+                << " render time " << render_time * 1E3f << " ms"
+                << std::endl;
 
             pose_generator.next();
         }

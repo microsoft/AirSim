@@ -16,8 +16,16 @@ void ASimHUD::BeginPlay()
 {
     Super::BeginPlay();
 
+    //TODO: should we only do below on SceneCapture2D components and cameras?
+    //avoid motion blur so capture images don't get
+    GetWorld()->GetGameViewport()->GetEngineShowFlags()->SetMotionBlur(false);
+
     //Equivalent to enabling Custom Stencil in Project > Settings > Rendering > Postprocessing
     UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), FString("r.CustomDepth 3"));
+
+    //above is not working so below is alternate method
+    static const auto custom_depth_var = IConsoleManager::Get().FindConsoleVariable(TEXT("r.CustomDepth"));
+    custom_depth_var->Set(3);
 
     //create main widget
     if (widget_class_ != nullptr) {

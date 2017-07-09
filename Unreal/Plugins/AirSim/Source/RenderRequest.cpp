@@ -3,12 +3,10 @@
 #include "ImageUtils.h"
 #include "RenderRequest.h"
 
-RenderRequest::RenderRequest()
+RenderRequest::RenderRequest(bool use_safe_method)
 {
     data = std::make_shared<RenderRequestInfo>();
-}
-RenderRequest::RenderRequest(RenderRequest& other) {
-    data = other.data;
+    data->use_safe_method = use_safe_method;
 }
 RenderRequest::~RenderRequest()
 {
@@ -30,12 +28,31 @@ void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<u
     //make sure we are not on the rendering thread
     CheckNotBlockedOnRenderThread();
 
-    // Queue up the task of rendering the scene in the render thread
-    TGraphTask<RenderRequest>::CreateTask().ConstructAndDispatchWhenReady(*this);
+    if (data->use_safe_method) {
+        //TODO: below doesn't work right now because it must be running in game thread
+        FIntPoint size;
+        if (!data->pixels_as_float) {
+            //below is documented method but more expensive because it forces flush
+            FTextureRenderTargetResource* rt_resource = data->render_target->GameThread_GetRenderTargetResource();
+            auto flags = setupRenderResource(rt_resource, data.get(), size);
+            rt_resource->ReadPixels(data->bmp, flags);
+        }
+        else {
+            FTextureRenderTargetResource* rt_resource = data->render_target->GetRenderTargetResource();
+            setupRenderResource(rt_resource, data.get(), size);
+            rt_resource->ReadFloat16Pixels(data->bmp_float);
+        }
+    }
+    else {
+        //wait for render thread to pick up our task
 
-    // wait for this task to complete
-    if (!data->signal.waitFor(5)) {
-        throw std::runtime_error("timeout waiting for screenshot");
+        // Queue up the task of rendering the scene in the render thread
+        TGraphTask<RenderRequest>::CreateTask().ConstructAndDispatchWhenReady(*this);
+
+        // wait for this task to complete
+        if (!data->signal.waitFor(5)) {
+            throw std::runtime_error("timeout waiting for screenshot");
+        }
     }
     
     width = data->width;
@@ -65,32 +82,40 @@ void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<u
     }
 }
 
+FReadSurfaceDataFlags RenderRequest::setupRenderResource(FTextureRenderTargetResource* rt_resource, RenderRequestInfo* data, FIntPoint& size)
+{
+    size = rt_resource->GetSizeXY();
+    data->width = size.X;
+    data->height = size.Y;
+    FReadSurfaceDataFlags flags(RCM_UNorm, CubeFace_MAX);
+    flags.SetLinearToGamma(false);
+
+    return flags;
+}
+
 void RenderRequest::ExecuteTask()
 {
     if (data != nullptr)
     {
         try {
             FRHICommandListImmediate& RHICmdList = GetImmediateCommandList_ForRenderCommand();
-            auto resource = data->render_target->GetRenderTargetResource();
-            if (resource != nullptr) {
-                const FTexture2DRHIRef& textureRef = resource->GetRenderTargetTexture();
-                auto size = resource->GetSizeXY();
-                data->width = size.X;
-                data->height = size.Y;
-                FReadSurfaceDataFlags flags(RCM_UNorm, CubeFace_MAX);
-                flags.SetLinearToGamma(false);
+            auto rt_resource = data->render_target->GetRenderTargetResource();
+            if (rt_resource != nullptr) {
+                const FTexture2DRHIRef& rhi_texture = rt_resource->GetRenderTargetTexture();
+                FIntPoint size;
+                auto flags = setupRenderResource(rt_resource, data.get(), size);
 
                 if (!data->pixels_as_float) {
+                    //below is undocumented method that avoids flushing, but it seems to segfault every 2000 or so calls
                     RHICmdList.ReadSurfaceData(
-                        textureRef,
+                        rhi_texture,
                         FIntRect(0, 0, size.X, size.Y),
                         data->bmp,
-                        flags
-                    );
+                        flags);
                 }
                 else {
                     RHICmdList.ReadSurfaceFloatData(
-                        textureRef,
+                        rhi_texture,
                         FIntRect(0, 0, size.X, size.Y),
                         data->bmp_float,
                         CubeFace_PosX, 0, 0
@@ -99,6 +124,7 @@ void RenderRequest::ExecuteTask()
             }
         }
         catch (std::exception& e) {
+            //TODO: use this!
             unused(e);
         }
         data->signal.signal();

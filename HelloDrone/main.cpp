@@ -5,6 +5,7 @@
 #include <chrono>
 #include "rpc/RpcLibClient.hpp"
 #include "controllers/DroneControllerBase.hpp"
+#include "common/common_utils/FileSystem.hpp"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
 #define RPCLIB_MSGPACK clmdep_msgpack
@@ -24,12 +25,13 @@ int main()
     typedef DroneControllerBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType_ ImageType_;
+    typedef common_utils::FileSystem FileSystem;
     
     try {
         client.confirmConnection();
 
         std::cout << "Press Enter to get FPV image" << std::endl; std::cin.get();
-        vector<ImageRequest> request = { ImageRequest(0, ImageType_::Scene), ImageRequest(1, ImageType_::Scene) };
+        vector<ImageRequest> request = { ImageRequest(0, ImageType_::Scene), ImageRequest(1, ImageType_::Depth) };
         const vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images recieved: " << response.size() << std::endl;
 
@@ -41,7 +43,7 @@ int main()
             for (const ImageResponse& image_info : response) {
                 std::cout << "Image size: " << image_info.image_data.size() << std::endl;
                 if (path != "") {
-                    std::ofstream file(path + std::to_string(image_info.time_stamp) , std::ios::binary);
+                    std::ofstream file(FileSystem::combine(path, std::to_string(image_info.time_stamp) + ".png"), std::ios::binary);
                     file.write((char*) image_info.image_data.data(), image_info.image_data.size());
                     file.close();
                 }

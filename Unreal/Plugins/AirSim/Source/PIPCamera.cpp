@@ -19,6 +19,10 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
 
+    screen_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
+    depth_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
+    seg_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
+    
     scene_render_target_ = NewObject<UTextureRenderTarget2D>();
     scene_render_target_->InitAutoFormat(960, 540); //256 X 144, X 480
     //scene_render_target_->bHDR = false;

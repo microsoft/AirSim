@@ -4,6 +4,7 @@
 
 class RenderRequest : public FRenderCommand
 {
+private:
     struct RenderRequestInfo {
         TArray<FColor> bmp;
         TArray<FFloat16Color> bmp_float;
@@ -14,11 +15,15 @@ class RenderRequest : public FRenderCommand
         msr::airlib::WorkerThreadSignal signal;
         bool pixels_as_float;
         bool compress;
+        bool use_safe_method;
     };
     std::shared_ptr<RenderRequestInfo> data;
+
+private:
+    static FReadSurfaceDataFlags RenderRequest::setupRenderResource(FTextureRenderTargetResource* rt_resource, RenderRequestInfo* data, FIntPoint& size);
+
 public:
-    RenderRequest();
-    RenderRequest(RenderRequest& other);
+    RenderRequest(bool use_safe_method);
     ~RenderRequest();
 
     void DoTask(ENamedThreads::Type CurrentThread, const FGraphEventRef& MyCompletionGraphEvent)
