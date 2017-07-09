@@ -1,12 +1,10 @@
 # Camera Views
 
-The camera views that are shown on screen are the camera views you can fetch via the DroneControllerBase::getImageTypeForCamera API.
-Note that getImageForCamera returns .png compressed images.
+The camera views that are shown on screen are the camera views you can fetch via the [simGetImage API](apis.md).
 
 ![Cameras](images/cameras.png)
 
-From left to right is the depth view, segmentation view and the FPV view.  These views must be visible in order for
-getImageForCamera to work.  In fact getImageForCamera will make them visible if they are not already.
+From left to right is the depth view, segmentation view and the FPV view.
 
 ## Depth View
 
@@ -30,7 +28,7 @@ main game view if the user presses '[' or ']'.
 
 ## Performance
 
-Now rendering these views does impact the FPS performance of the game, since this is additional work for the GPU.  The following shows the impact on FPS when you open these views.  The impact is higher when fetching the images via python calling getImageForCamera because this is an additional render request for each frame.
+Now rendering these views does impact the FPS performance of the game, since this is additional work for the GPU.  The following shows the impact on FPS when you open these views.
 
 ![fps](images/fps_views.png)
 

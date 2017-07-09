@@ -29,20 +29,34 @@ public:
         client.confirmConnection();
     }
 
-    void generate(int num_samples)
+    int generate(int num_samples)
     {
         msr::airlib::ClockBase* clock = msr::airlib::ClockFactory::get();
-        RandomPointPoseGenerator pose_generator(& client);
-        std::ofstream file_list(FileSystem::combine(storage_dir_, "files_list.txt"));
+        RandomPointPoseGenerator pose_generator(& client, static_cast<int>(clock->nowNanos()));
+        std::fstream file_list(FileSystem::combine(storage_dir_, "files_list.txt"), 
+            std::ios::out | std::ios::in | std::ios_base::app);
 
-        for (int i = 0; i < num_samples; ++i) {
+        int sample = 0;
+        std::string line;
+        while (std::getline(file_list, line))
+            ++sample;
+        if (file_list.eof())
+            file_list.clear();  //otherwise we can't do any further I/O
+        else if (file_list.bad()) {
+            std::cout << "Error occured while reading files_list.txt";
+            return 1;
+        }
+
+        while(sample < num_samples) {
             const auto& collision_info = client.getCollisionInfo();
             if (collision_info.has_collided) {
-                std::cout << "Collison. Moving to next pose." << std::endl;
+                std::cout << "Collison at " << VectorMath::toString(collision_info.position)
+                    << "Moving to next pose." << std::endl;
+
                 pose_generator.next();
-                --i;
                 continue;
             }
+            ++sample;
 
             auto start_nanos = clock->nowNanos();
 
@@ -57,9 +71,9 @@ public:
                 continue;
             }
 
-            std::string left_file_name = Utils::stringf("left_%06d.png", i);
-            std::string right_file_name = Utils::stringf("right_%06d.png", i);
-            std::string disparity_file_name  = Utils::stringf("disparity_%06d.pfm", i);
+            std::string left_file_name = Utils::stringf("left_%06d.png", sample);
+            std::string right_file_name = Utils::stringf("right_%06d.png", sample);
+            std::string disparity_file_name  = Utils::stringf("disparity_%06d.pfm", sample);
             saveImageToFile(response.at(0).image_data, 
                 FileSystem::combine(storage_dir_, right_file_name));
             saveImageToFile(response.at(1).image_data, 
@@ -84,10 +98,12 @@ public:
 
             file_list << left_file_name << "," << right_file_name << "," << disparity_file_name << std::endl;
 
-            std::cout << "Image #" << i << " done in " << (clock->nowNanos() - start_nanos) / 1.0E6f << "ms" << std::endl;
+            std::cout << "Image #" << sample << " done in " << (clock->nowNanos() - start_nanos) / 1.0E6f << "ms" << std::endl;
 
             pose_generator.next();
         }
+
+        return 0;
     }
 
 private:

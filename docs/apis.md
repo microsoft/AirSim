@@ -62,8 +62,7 @@ Note: We would not recommend interrupting takeoff/land on a real drone, of cours
 
 
 ## How to get images from drone?
-Here's a sample code. For more information, please see [DroneControlBase](https://github.com/Microsoft/AirSim/blob/master/AirLib/include/controllers/DroneControllerBase.hpp) class.
-See [Camera Views](camera_views.md) for information on the camera views and how to change them.
+Here's a sample code to get a single image:
 
 ```
 int playWithImages() 
@@ -73,10 +72,30 @@ int playWithImages()
     
     msr::airlib::RpcLibClient client;
 
-    vector<uint8_t> image = client.getImageForCamera(0, DroneControlBase::ImageType::Depth);
+    vector<uint8_t> image = client.simGetImage(0, DroneControlBase::ImageType::Depth);
     //do something with images
 }
 ```
+
+You can also get multiple images using API `simGetImages` which is slighly more complex to use than `simGetImage`. For example, you can get left camera view, right camera view and depth image from left camera - all at once! For sample code please see [sample code in HelloDrone project](https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp). We also have [complete code](https://github.com/Microsoft/AirSim/blob/master/Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to pfm format.
+
+Unlike `simGetImage`, the `simGetImages` API also allows you to get uncompressed images as well as floating point single channel images (instead of 3 channel (RGB), each 8 bit).
+
+You can also use Python to get images. For sample code please see [PythonClient project](https://github.com/Microsoft/AirSim/tree/master/PythonClient) and [Python example doc](python.md).
+
+Furthermore, if your work involves computer vision experiments and if you don't care about drone dynamics then you can use our so called "ComputerVision" mode. Please see next section for the details.
+
+## Can I use AirSim just for computer vision? I don't care about drones, physics etc.
+Yes, now you can! Simply go to settings.json that you can find in your Documents\AirSim folder (or ~/Documents/AirSim on Linux). Add following setting at root level:
+
+```
+{
+  "FpvVehicleName": "SimpleFlight",
+  "UsageScenario": "ComputerVision"
+}
+```
+
+Now when you start AirSim, you won't be able to move drone using remote control, there is no drone dynamics and physics engine is disabled in this mode. Think of this mode as that justs you move around cameras, not drone. You can use keyboard to move around (use F1 to see help on keys) and call APIs to get images. You can also use two additional APIs `simSetPosition` and `simGetPosition` to set position of drone programatically. Then use can image APIs as described in above section to get images for your desired pose. Please see [complete code](https://github.com/Microsoft/AirSim/blob/master/Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to pfm format in this mode.
 
 ## Can I run above code on real quadrotors as well?
 Absolutely! The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. 

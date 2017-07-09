@@ -22,7 +22,7 @@ help = False
 
 while True:
     # this will return png width= 256, height= 144
-    result = client.getImageForCamera(0, AirSimImageType.Depth)
+    result = client.simGetImage(0, AirSimImageType.Depth)
     if (result == "\0"):
         if (not help):
             help = True

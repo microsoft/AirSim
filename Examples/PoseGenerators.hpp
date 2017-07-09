@@ -13,40 +13,38 @@ STRICT_MODE_ON
 
 class RandomPointPoseGenerator {
 public:
-    RandomPointPoseGenerator(msr::airlib::RpcLibClient* client)
+    RandomPointPoseGenerator(msr::airlib::RpcLibClient* client, int random_seed)
         : client_(client), 
-        rand_xy_(-500.0f, 500.0f), rand_z_(-10.0f, -1.0f), rand_pitch_(-M_PIf / 2, M_PIf / 2),
-        rand_yaw_(-M_PIf, M_PIf)
+        rand_xy_(0.0f, 150.0f), rand_z_(2.0f, 3.0f), rand_pitch_(0.0f, M_PIf / 2),
+        rand_yaw_(0.0f, M_PIf)
     {
+        rand_xy_.seed(random_seed);
+        rand_z_.seed(random_seed);
+        rand_pitch_.seed(random_seed);
+        rand_yaw_.seed(random_seed);
     }
 
     void next()
     {
-        const auto& collision_info = client_->getCollisionInfo();
-        auto position = client_->getPosition();
-        auto orientation = client_->getOrientation();
+        Vector3r position;
+        Quaternionr orientation;
 
-        if (collision_info.has_collided) {
-            position = collision_info.position + collision_info.normal*2 + collision_info.normal * collision_info.penetration_depth * 2;
-        }
-        else {
-            position.x() = rand_xy_.next();
-            position.y() = rand_xy_.next();
-            position.z() = rand_z_.next();
+        position.x() = rand_xy_.next();
+        position.y() = rand_xy_.next();
+        position.z() = Utils::clip(rand_z_.next(), -10.0f, 0.0f);
 
-            float pitch, roll, yaw;
-            VectorMath::toEulerianAngle(orientation, pitch, roll, yaw);
-            pitch = rand_pitch_.next();
-            yaw = rand_yaw_.next();
+        float pitch, roll, yaw;
+        VectorMath::toEulerianAngle(orientation, pitch, roll, yaw);
+        pitch = rand_pitch_.next();
+        yaw = rand_yaw_.next();
 
-            orientation = VectorMath::toQuaternion(pitch, 0, yaw);
-        }
-
+        orientation = VectorMath::toQuaternion(pitch, 0, yaw);
+        
         client_->simSetPosition(position);
         client_->simSetOrientation(orientation);
     }
 private:
-    typedef common_utils::RandomGeneratorF RandomGeneratorF;
+    typedef common_utils::RandomGeneratorGaussianF RandomGeneratorGaussianF;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Quaternionr Quaternionr;
     typedef common_utils::Utils Utils;
@@ -54,7 +52,7 @@ private:
 
 
     msr::airlib::RpcLibClient* client_;
-    RandomGeneratorF rand_xy_, rand_z_, rand_pitch_, rand_yaw_;
+    RandomGeneratorGaussianF rand_xy_, rand_z_, rand_pitch_, rand_yaw_;
 };
 
 class RandomWalkPoseGenerator {

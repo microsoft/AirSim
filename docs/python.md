@@ -103,7 +103,7 @@ help = False
 
 while True:
     # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-    result = client.getImageForCamera(0, AirSimImageType.Depth)
+    result = client.simGetImage(0, AirSimImageType.Depth)
     if (result == "\0"):
         if (not help):
             help = True

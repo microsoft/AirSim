@@ -19,6 +19,11 @@ public:
     {
     }
 
+    void seed(int val)
+    {
+        rand_.seed(val);
+    }
+
     TReturn next()
     {
         return dist_(rand_);
