@@ -71,18 +71,18 @@ int main()
         const float size = 10.0f; 
         const float duration = size / speed;
         DrivetrainType driveTrain = DrivetrainType::ForwardOnly;
-        YawMode yaw(false, 0);
+        YawMode yaw_mode(false, 0);
         std::cout << "moveByVelocityZ(" << speed << ", 0, " << z << "," << duration << ")" << std::endl;
-        client.moveByVelocityZ(speed, 0, z, duration, driveTrain, yaw);
+        client.moveByVelocityZ(speed, 0, z, duration, driveTrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
         std::cout << "moveByVelocityZ(0, " << speed << "," << z << "," << duration << ")" << std::endl;
-        client.moveByVelocityZ(0, speed, z, duration, driveTrain, yaw);
+        client.moveByVelocityZ(0, speed, z, duration, driveTrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
         std::cout << "moveByVelocityZ(" << -speed << ", 0, " << z << "," << duration << ")" << std::endl;
-        client.moveByVelocityZ(-speed, 0, z, duration, driveTrain, yaw);
+        client.moveByVelocityZ(-speed, 0, z, duration, driveTrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
         std::cout << "moveByVelocityZ(0, " << -speed << "," << z << "," << duration << ")" << std::endl;
-        client.moveByVelocityZ(0, -speed, z, duration, driveTrain, yaw);
+        client.moveByVelocityZ(0, -speed, z, duration, driveTrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
 
         client.hover();

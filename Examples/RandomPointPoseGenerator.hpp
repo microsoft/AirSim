@@ -19,8 +19,11 @@ public:
 public:
     RandomPointPoseGenerator(int random_seed)
         :
-        rand_xy_(0.0f, 150.0f), rand_z_(2.0f, 3.0f), rand_pitch_(0.0f, M_PIf / 2),
-        rand_yaw_(0.0f, M_PIf)
+        //settings are for neighbourhood environement
+        //sigma = desired_max / 2 so 95% of the times we in desired
+        rand_xy_(0.0f, 75.0f), rand_z_(2.0f, 1.0f), 
+        rand_pitch_(0.0f, M_PIf / 8), rand_roll_(0.0f, M_PIf / 16),
+        rand_yaw_(0.0f, M_PIf / 2)
     {
         rand_xy_.seed(random_seed);
         rand_z_.seed(random_seed);
@@ -32,15 +35,14 @@ public:
     {
         position.x() = rand_xy_.next();
         position.y() = rand_xy_.next();
-        position.z() = Utils::clip(rand_z_.next(), -10.0f, 0.0f);
+        position.z() = Utils::clip(rand_z_.next(), -10.0f, -1.0f);
 
-        float pitch, roll, yaw;
-        VectorMath::toEulerianAngle(orientation, pitch, roll, yaw);
-        pitch = rand_pitch_.next();
-        yaw = rand_yaw_.next();
+        float pitch = Utils::clip(rand_pitch_.next(), -M_PIf / 2, M_PIf / 2);
+        float roll = Utils::clip(rand_pitch_.next(), -M_PIf / 4, M_PIf / 4);
+        float yaw = Utils::clip(rand_yaw_.next(), -M_PIf, M_PIf);
 
-        orientation = VectorMath::toQuaternion(pitch, 0, yaw);
+        orientation = VectorMath::toQuaternion(pitch, roll, yaw);
     }
 private:
-    RandomGeneratorGaussianF rand_xy_, rand_z_, rand_pitch_, rand_yaw_;
+    RandomGeneratorGaussianF rand_xy_, rand_z_, rand_pitch_, rand_yaw_, rand_roll_;
 };
