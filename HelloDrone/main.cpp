@@ -44,7 +44,7 @@ int main()
                 std::cout << "Image size: " << image_info.image_data.size() << std::endl;
                 if (path != "") {
                     std::ofstream file(FileSystem::combine(path, std::to_string(image_info.time_stamp) + ".png"), std::ios::binary);
-                    file.write((char*) image_info.image_data.data(), image_info.image_data.size());
+                    file.write(reinterpret_cast<const char*>(image_info.image_data.data()), image_info.image_data.size());
                     file.close();
                 }
             }

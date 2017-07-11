@@ -6,8 +6,8 @@ namespace simple_flight {
 
 struct Params {
 public:
-    int16_t rc_channel_count = 12;
-    int16_t rc_read_interval_ms = 10;
+    uint16_t rc_channel_count = 12;
+    uint16_t rc_read_interval_ms = 10;
     int16_t rc_thrust_channel = 2;
     int16_t rc_pitch_channel = 3;
     int16_t rc_roll_channel = 0;

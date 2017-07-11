@@ -67,8 +67,8 @@ public:
 
 private:
     Angles output_;
-    PidController<float> pid_angle_pitch_, pid_angle_roll_, pid_angle_yaw_;
     const Params* params_;
+    PidController<float> pid_angle_pitch_, pid_angle_roll_, pid_angle_yaw_;
 };
 
 

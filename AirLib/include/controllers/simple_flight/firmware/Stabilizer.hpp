@@ -9,8 +9,8 @@ class Stabilizer {
 public:
     Stabilizer(const Params* params, const IBoardSensors* sensors, const IBoardClock* clock, const IAngleEstimator* angle_estimator)
         : params_(params), clock_(clock), sensors_(sensors),
-          rate_stabilizer_(params, clock), angle_stabilizer_(params, clock),
-          angle_estimator_(angle_estimator)
+          angle_estimator_(angle_estimator),
+          rate_stabilizer_(params, clock), angle_stabilizer_(params, clock)
     {
     }
 
@@ -83,9 +83,9 @@ private:
 
     Controls output_controls_;
     
-    const IBoardSensors* sensors_;
-    const IBoardClock* clock_;
     const Params* params_;
+    const IBoardClock* clock_;
+    const IBoardSensors* sensors_;
     const IAngleEstimator* angle_estimator_;
 
     float gyro_readout[3];

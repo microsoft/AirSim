@@ -332,6 +332,8 @@ bool DroneControllerBase::hover(CancelableBase& cancelable_action)
 
 void DroneControllerBase::simSetPose(const Vector3r& position, const Quaternionr& orientation)
 {
+    unused(position);
+    unused(orientation);
     //derived flight controller class should provide implementation if they support exclusive sim*** methods
 }
 void DroneControllerBase::simAddCamera(VehicleCameraBase* camera)

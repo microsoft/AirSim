@@ -25,7 +25,6 @@ include_directories(
 
 add_library(AirLib STATIC
   ${AIRSIM_ROOT}/AirLib/src/controllers/DroneControllerBase.cpp
-  ${AIRSIM_ROOT}/AirLib/src/controllers/Settings.cpp  
   ${AIRSIM_ROOT}/AirLib/src/controllers/FileSystem.cpp  
   ${AIRSIM_ROOT}/AirLib/src/safety/ObstacleMap.cpp
   ${AIRSIM_ROOT}/AirLib/src/safety/SafetyEval.cpp

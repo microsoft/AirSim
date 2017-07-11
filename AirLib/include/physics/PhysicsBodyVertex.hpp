@@ -14,6 +14,7 @@ class PhysicsBodyVertex : public UpdatableObject {
 protected: 
     virtual void setWrench(Wrench& wrench)
     {
+        unused(wrench);
         //derived class should override if this is force/torque 
         //generating vertex
     }

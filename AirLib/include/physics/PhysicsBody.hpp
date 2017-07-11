@@ -27,10 +27,12 @@ public: //interface
     }
     virtual PhysicsBodyVertex& getWrenchVertex(uint index)
     {
+        unused(index);
         throw std::out_of_range("no physics vertex are available");
     }
     virtual const PhysicsBodyVertex& getWrenchVertex(uint index) const
     {
+        unused(index);
         throw std::out_of_range("no physics vertex are available");
     }
 
@@ -40,10 +42,12 @@ public: //interface
     }
     virtual PhysicsBodyVertex& getDragVertex(uint index)
     {
+        unused(index);
         throw std::out_of_range("no physics vertex are available");
     }
     virtual const PhysicsBodyVertex& getDragVertex(uint index) const
     {
+        unused(index);
         throw std::out_of_range("no physics vertex are available");
     }
     void setWrench(const Wrench&  wrench)
