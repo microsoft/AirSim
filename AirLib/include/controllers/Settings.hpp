@@ -15,14 +15,21 @@ namespace msr {
         class Settings
         {
         private:
-            static Settings settings_;
             std::string file_;
             nlohmann::json doc_;
             bool load_success_ = false;
-            static std::mutex file_access_;
+
+        private:
+            static std::mutex& getFileAccessMutex()
+            {
+                static std::mutex file_access;
+                return file_access;
+            }
+
         public:
             static Settings& singleton() {
-                return settings_;
+                static Settings instance;
+                return instance;
             }
 
             std::string getFileName() { return file_; }
@@ -35,17 +42,17 @@ namespace msr {
 
             static Settings& loadJSonFile(std::string fileName)
             {
-                std::lock_guard<std::mutex> guard(file_access_);
+                std::lock_guard<std::mutex> guard(getFileAccessMutex());
                 std::string path = getFullPath(fileName);
-                settings_.file_ = fileName;
+                singleton().file_ = fileName;
 
-                settings_.load_success_ = false;
+                singleton().load_success_ = false;
 
                 std::ifstream s;
                 common_utils::FileSystem::openTextFile(path, s);
                 if (!s.fail()) {
-                    s >> settings_.doc_;
-                    settings_.load_success_ = true;
+                    s >> singleton().doc_;
+                    singleton().load_success_ = true;
                 }
 
                 return singleton();
@@ -62,7 +69,7 @@ namespace msr {
 
             void saveJSonFile(std::string fileName)
             {
-                std::lock_guard<std::mutex> guard(file_access_);
+                std::lock_guard<std::mutex> guard(getFileAccessMutex());
                 std::string path = getFullPath(fileName);
                 std::ofstream s;
                 common_utils::FileSystem::createTextFile(path, s);

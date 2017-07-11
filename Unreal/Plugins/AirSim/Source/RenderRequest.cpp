@@ -106,6 +106,8 @@ void RenderRequest::ExecuteTask()
             FIntPoint size;
             auto flags = setupRenderResource(rt_resource, data.get(), size);
 
+            //should we be using ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER which was in original commit by @saihv
+            //https://github.com/Microsoft/AirSim/pull/162/commits/63e80c43812300a8570b04ed42714a3f6949e63f#diff-56b790f9394f7ca1949ddbb320d8456fR64
             if (!data->pixels_as_float) {
                 //below is undocumented method that avoids flushing, but it seems to segfault every 2000 or so calls
                 RHICmdList.ReadSurfaceData(
