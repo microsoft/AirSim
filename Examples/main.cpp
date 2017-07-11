@@ -61,6 +61,6 @@ void runSteroImageGenerator(int num_samples, std::string storage_path)
 
 int main(int argc, const char *argv[])
 {
-    runSteroImageGenerator(argc < 2 ? 20000 : std::stoi(argv[1]), argc < 3 ? "c:\\temp\\stg_blocks" : std::string(argv[2]));
+    runSteroImageGenerator(argc < 2 ? 20000 : std::stoi(argv[1]), argc < 3 ? "c:\\temp\\stig2" : std::string(argv[2]));
 }
 

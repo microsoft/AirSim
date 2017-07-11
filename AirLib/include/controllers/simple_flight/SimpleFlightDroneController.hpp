@@ -254,17 +254,18 @@ protected:
     void simNotifyRender() override
     {
         std::unique_lock<std::mutex> render_wait_lock(render_mutex_);
+        if (!is_pose_update_done_) {
+            auto kinematics = physics_body_->getKinematics();
+            if (! VectorMath::hasNan(pending_pose_.position))
+                kinematics.pose.position = pending_pose_.position;
+            if (! VectorMath::hasNan(pending_pose_.orientation))
+                kinematics.pose.orientation = pending_pose_.orientation;
+            physics_body_->setKinematics(kinematics);
 
-        auto kinematics = physics_body_->getKinematics();
-        if (! VectorMath::hasNan(pending_pose_.position))
-            kinematics.pose.position = pending_pose_.position;
-        if (! VectorMath::hasNan(pending_pose_.orientation))
-            kinematics.pose.orientation = pending_pose_.orientation;
-        physics_body_->setKinematics(kinematics);
-
-        is_pose_update_done_ = true;
-        render_wait_lock.unlock();
-        render_cond_.notify_all();
+            is_pose_update_done_ = true;
+            render_wait_lock.unlock();
+            render_cond_.notify_all();
+        }
     }
 
     //*** End: DroneControllerBase implementation ***//
