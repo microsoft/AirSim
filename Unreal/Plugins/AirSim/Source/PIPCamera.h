@@ -12,7 +12,7 @@ class AIRSIM_API APIPCamera : public ACameraActor
     
 public:
     struct CaptureSettings {
-        unsigned int width = 960, height = 540;
+        unsigned int width = 256, height = 144; //960 X 540
         float fov_degrees = 90;
         float auto_exposure_speed = 100.0f;
         float motion_blur_amount = 0.0f;
