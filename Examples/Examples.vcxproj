@@ -185,7 +185,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PoseGenerators.hpp" />
+    <ClInclude Include="RandomPointPoseGenerator.hpp" />
     <ClInclude Include="StandAlonePhysics.hpp" />
     <ClInclude Include="StandAloneSensors.hpp" />
     <ClInclude Include="StereoImageGenerator.hpp" />

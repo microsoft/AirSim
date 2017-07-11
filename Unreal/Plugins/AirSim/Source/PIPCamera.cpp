@@ -74,7 +74,6 @@ void APIPCamera::setEnableCameraTypes(APIPCamera::ImageType types)
     enableCaptureComponent(ImageType_::Depth, (types & ImageType_::Depth));
     enableCaptureComponent(ImageType_::Scene, (types & ImageType_::Scene));
     enableCaptureComponent(ImageType_::Segmentation, (types & ImageType_::Segmentation));
-    enabled_camera_types_ = types;
 }
 
 void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool is_enabled)
@@ -82,12 +81,19 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
     USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
     if (capture != nullptr) {
         if (is_enabled) {
-            capture->TextureTarget = getRenderTarget(type, false);
-            capture->Activate();
+            //do not make unnecessory calls to Activate() which otherwise causes crash in Unreal
+            if (!capture->IsActive() || capture->TextureTarget == nullptr) {
+                capture->TextureTarget = getRenderTarget(type, false);
+                capture->Activate();
+            }
+            enabled_camera_types_ |= type;
         }
         else {
-            capture->Deactivate();
-            capture->TextureTarget = nullptr;
+            if (capture->IsActive() || capture->TextureTarget != nullptr) {
+                capture->Deactivate();
+                capture->TextureTarget = nullptr;
+            }
+            enabled_camera_types_ &= ~type;
         }
     }
     //else nothing to enable

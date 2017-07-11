@@ -34,7 +34,7 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCa
     bool visibilityChanged = false;
     if ((camera_->getEnableCameraTypes() & image_type) == ImageType_::None
         && (image_type != ImageType_::None)) {
-        camera_->setEnableCameraTypes(image_type);
+        camera_->setEnableCameraTypes(camera_->getEnableCameraTypes() | image_type);
         visibilityChanged = true;
     }
 

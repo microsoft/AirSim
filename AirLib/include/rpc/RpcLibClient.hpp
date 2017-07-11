@@ -19,7 +19,7 @@ public:
         Initial, Connected, Disconnected, Reset, Unknown
     };
 public:
-    RpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451);
+    RpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
     ConnectionState getConnectionState();
     bool ping();
     bool armDisarm(bool arm);
@@ -47,8 +47,7 @@ public:
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
 
-    void simSetPosition(const Vector3r& position);
-    void simSetOrientation(const Quaternionr& orientation);
+    void simSetPose(const Vector3r& position, const Quaternionr& orientation);
     vector<VehicleCameraBase::ImageResponse> simGetImages(vector<DroneControllerBase::ImageRequest> request);
     vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
     

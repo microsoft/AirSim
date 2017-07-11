@@ -20,8 +20,10 @@ void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<u
     bool pixels_as_float, bool compress, int& width, int& height)
 {
     data->render_target = renderTarget;
-    data->bmp.Reset();
-    data->bmp_float.Reset();
+    if (!pixels_as_float)
+        data->bmp.Reset();
+    else
+        data->bmp_float.Reset();
     data->pixels_as_float = pixels_as_float;
     data->compress = compress;
 
@@ -97,36 +99,31 @@ void RenderRequest::ExecuteTask()
 {
     if (data != nullptr)
     {
-        try {
-            FRHICommandListImmediate& RHICmdList = GetImmediateCommandList_ForRenderCommand();
-            auto rt_resource = data->render_target->GetRenderTargetResource();
-            if (rt_resource != nullptr) {
-                const FTexture2DRHIRef& rhi_texture = rt_resource->GetRenderTargetTexture();
-                FIntPoint size;
-                auto flags = setupRenderResource(rt_resource, data.get(), size);
+        FRHICommandListImmediate& RHICmdList = GetImmediateCommandList_ForRenderCommand();
+        auto rt_resource = data->render_target->GetRenderTargetResource();
+        if (rt_resource != nullptr) {
+            const FTexture2DRHIRef& rhi_texture = rt_resource->GetRenderTargetTexture();
+            FIntPoint size;
+            auto flags = setupRenderResource(rt_resource, data.get(), size);
 
-                if (!data->pixels_as_float) {
-                    //below is undocumented method that avoids flushing, but it seems to segfault every 2000 or so calls
-                    RHICmdList.ReadSurfaceData(
-                        rhi_texture,
-                        FIntRect(0, 0, size.X, size.Y),
-                        data->bmp,
-                        flags);
-                }
-                else {
-                    RHICmdList.ReadSurfaceFloatData(
-                        rhi_texture,
-                        FIntRect(0, 0, size.X, size.Y),
-                        data->bmp_float,
-                        CubeFace_PosX, 0, 0
-                    );
-                }
+            if (!data->pixels_as_float) {
+                //below is undocumented method that avoids flushing, but it seems to segfault every 2000 or so calls
+                RHICmdList.ReadSurfaceData(
+                    rhi_texture,
+                    FIntRect(0, 0, size.X, size.Y),
+                    data->bmp,
+                    flags);
+            }
+            else {
+                RHICmdList.ReadSurfaceFloatData(
+                    rhi_texture,
+                    FIntRect(0, 0, size.X, size.Y),
+                    data->bmp_float,
+                    CubeFace_PosX, 0, 0
+                );
             }
         }
-        catch (std::exception& e) {
-            //TODO: use this!
-            unused(e);
-        }
+
         data->signal.signal();
     }
 }

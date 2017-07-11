@@ -245,22 +245,38 @@ protected:
     }
 
 
-    void simSetPosition(const Vector3r& position) override
+    void simSetPose(const Vector3r& position, const Quaternionr& orientation) override
     {
-        auto kinematics = physics_body_->getKinematics();
-        kinematics.pose.position = position;
-        physics_body_->setKinematics(kinematics);
+        pending_pose_ = Pose(position, orientation);
+        waitForRender();
     }
-    void simSetOrientation(const Quaternionr& orientation) override
+
+    void simNotifyRender() override
     {
+        std::unique_lock<std::mutex> render_wait_lock(render_mutex_);
+
         auto kinematics = physics_body_->getKinematics();
-        kinematics.pose.orientation = orientation;
+        if (! VectorMath::hasNan(pending_pose_.position))
+            kinematics.pose.position = pending_pose_.position;
+        if (! VectorMath::hasNan(pending_pose_.orientation))
+            kinematics.pose.orientation = pending_pose_.orientation;
         physics_body_->setKinematics(kinematics);
+
+        is_pose_update_done_ = true;
+        render_wait_lock.unlock();
+        render_cond_.notify_all();
     }
 
     //*** End: DroneControllerBase implementation ***//
 
 private:
+    void waitForRender()
+    {
+        std::unique_lock<std::mutex> render_wait_lock(render_mutex_);
+        is_pose_update_done_ = false;
+        render_cond_.wait(render_wait_lock, [this]{return is_pose_update_done_;});
+    }
+
     //convert pitch, roll, yaw from -1 to 1 to PWM
     static uint16_t angleToPwm(float angle)
     {
@@ -286,6 +302,12 @@ private:
     unique_ptr<AirSimSimpleFlightCommLink> comm_link_;
     unique_ptr<AirSimSimpleFlightEstimator> estimator_;
     unique_ptr<simple_flight::Firmware> firmware_;
+
+    std::mutex render_mutex_;
+    std::condition_variable render_cond_;
+    bool is_pose_update_done_;
+    Pose pending_pose_;
+
 };
 
 }} //namespace

@@ -180,13 +180,9 @@ public:
         return controller_->getVelocity();
     }
 
-    void simSetPosition(const Vector3r& position)
+    void simSetPose(const Vector3r& position, const Quaternionr& orientation)
     {
-        controller_->simSetPosition(position);
-    }
-    void simSetOrientation(const Quaternionr& orientation)
-    {
-        controller_->simSetOrientation(orientation);
+        controller_->simSetPose(position, orientation);
     }
     vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<DroneControllerBase::ImageRequest>& request)
     {

@@ -37,6 +37,7 @@
     <Compile Include="path.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="pfm.py" />
     <Compile Include="PythonClient.py" />
     <Compile Include="takeoff.py">
       <SubType>Code</SubType>

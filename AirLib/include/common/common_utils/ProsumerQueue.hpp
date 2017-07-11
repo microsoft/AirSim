@@ -6,6 +6,7 @@
 
 #include <queue>
 #include <thread>
+#include <atomic>
 #include <mutex>
 #include <condition_variable>
 
@@ -33,7 +34,10 @@ template <typename T>
 class ProsumerQueue
 {
 public:
-    ProsumerQueue()=default;
+    ProsumerQueue()
+    {
+        is_done_ = false;
+    }
 
     T pop() 
     {
@@ -86,6 +90,18 @@ public:
         cond_.notify_one();
     }
     
+    //is_done_ flag is just convinience flag for external use
+    //its not used by this class
+    bool getIsDone()
+    {
+        return is_done_;
+    }
+    void setIsDone(bool val)
+    {
+        is_done_ = val;
+    }
+
+
     // non-copiable
     ProsumerQueue(const ProsumerQueue&) = delete;            
     ProsumerQueue& operator=(const ProsumerQueue&) = delete; 
@@ -94,6 +110,7 @@ private:
     std::queue<T> queue_;
     std::mutex mutex_;
     std::condition_variable cond_;
+    std::atomic<bool> is_done_;
 };
 
 }

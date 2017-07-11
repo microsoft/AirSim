@@ -29,7 +29,7 @@
     <ClInclude Include="StereoImageGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PoseGenerators.hpp">
+    <ClInclude Include="RandomPointPoseGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,11 +30,11 @@ __pragma(warning( disable : 4239))
 namespace msr { namespace airlib {
 
 struct RpcLibClient::impl {
-    impl(const string&  ip_address, uint16_t port)
+    impl(const string&  ip_address, uint16_t port, uint timeout_ms)
         : client(ip_address, port)
     {
         // some long flight path commands can take a while, so we give it up to 1 hour max.
-        client.set_timeout(3600*1000);
+        client.set_timeout(timeout_ms);
     }
 
     rpc::client client;
@@ -42,9 +42,9 @@ struct RpcLibClient::impl {
 
 typedef msr::airlib_rpclib::RpcLibAdapators RpcLibAdapators;
 
-RpcLibClient::RpcLibClient(const string&  ip_address, uint16_t port)
+RpcLibClient::RpcLibClient(const string&  ip_address, uint16_t port, uint timeout_ms)
 {
-    pimpl_.reset(new impl(ip_address, port));
+    pimpl_.reset(new impl(ip_address, port, timeout_ms));
 }
 
 RpcLibClient::~RpcLibClient()
@@ -159,13 +159,9 @@ bool RpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_reasons, flo
 }
 
 //sim only
-void RpcLibClient::simSetPosition(const Vector3r& position)
+void RpcLibClient::simSetPose(const Vector3r& position, const Quaternionr& orientation)
 {
-    pimpl_->client.call("simSetPosition", RpcLibAdapators::Vector3r(position));
-}
-void RpcLibClient::simSetOrientation(const Quaternionr& orientation)
-{
-    pimpl_->client.call("simSetOrientation", RpcLibAdapators::Quaternionr(orientation));
+    pimpl_->client.call("simSetPose", RpcLibAdapators::Vector3r(position), RpcLibAdapators::Quaternionr(orientation));
 }
 vector<VehicleCameraBase::ImageResponse> RpcLibClient::simGetImages(vector<DroneControllerBase::ImageRequest> request)
 {

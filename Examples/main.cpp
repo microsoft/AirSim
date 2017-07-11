@@ -25,19 +25,21 @@ int runStandAloneSensors(int argc, const char *argv[])
 
     using namespace msr::airlib;
 
-    //GeoPoint testLocation(47.763160, -122.068534, 120.6f);
+    //60 acres park:
+    //GeoPoint testLocation(47.7037051477, -122.1415384809, 9.93f); 
 
-    //GeoPoint testLocation(47.7037051477, -122.1415384809, 9.93f); // 60 acres
-    //GeoPoint testLocation(47.662804385, -122.1167039875, 9.93f); // marymoore
+    //marymoore park
+    //GeoPoint testLocation(47.662804385, -122.1167039875, 9.93f);
+
     GeoPoint testLocation(47.7631699747, -122.0685655406, 9.93f); // woodinville
     float yawOffset = 0;// static_cast<float>(91.27622  * M_PI / 180.0); // I was aligned with the road...
 
     std::ofstream out_file(argv[1]);
-    //StandALoneSensors::createStaticData(out_file, period, total_duration, testLocation);
-    //StandALoneSensors::generateBarometerStaticData(out_file, period, total_duration, testLocation);
-    //StandALoneSensors::generateBarometerDynamicData(out_file, period, total_duration, testLocation);
+    StandALoneSensors::generateImuStaticData(out_file, period, total_duration);
+    StandALoneSensors::generateBarometerStaticData(out_file, period, total_duration, testLocation);
+    StandALoneSensors::generateBarometerDynamicData(out_file, period, total_duration, testLocation);
     StandALoneSensors::generateMagnetometer2D(out_file, period, total_duration, testLocation, yawOffset, true);
-    //StandALoneSensors::generateMagnetometerMap(out_file);
+    StandALoneSensors::generateMagnetometerMap(out_file);
 
     return 0;
 }
@@ -59,6 +61,6 @@ void runSteroImageGenerator(int num_samples, std::string storage_path)
 
 int main(int argc, const char *argv[])
 {
-    runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ? "c:\\temp\\stig" : std::string(argv[2]));
+    runSteroImageGenerator(argc < 2 ? 20000 : std::stoi(argv[1]), argc < 3 ? "c:\\temp\\stg_blocks" : std::string(argv[2]));
 }
 

@@ -1,20 +1,19 @@
 {
     "FileVersion" : 3,
-    "Version" : "0.8.10",
-    "VersionName": "0.8.10",
-    "FriendlyName": "AIR Simulator",
-    "Description": "Aerial Informatics and Robotics Simulator for Unreal Engine",
+    "Version" : "0.9.8",
+    "VersionName": "0.9.8",
+    "FriendlyName": "AirSim",
+    "Description": "AirSim - Autonomous Aerial Vehicles Simulator Plugin",
     "Category" : "Science",
     "CreatedBy": "Shital Shah",
     "CreatedByURL": "http://github.com/Microsoft/AirSim",
-    "DocsURL" : "",
+    "DocsURL" : "https://github.com/Microsoft/AirSim/blob/master/README.md",
     "MarketplaceURL" : "",
-    "SupportURL" : "",
+    "SupportURL" : "https://github.com/Microsoft/AirSim/issues",
     "EnabledByDefault" : true,
     "CanContainContent": true,
     "IsBetaVersion" : true,
     "Installed": true,
-    "EngineVersion": "4.15.0",
     "Modules" :
     [
         {

@@ -192,6 +192,9 @@ void MultiRotorConnector::updateRenderedState()
 
 void MultiRotorConnector::updateRendering(float dt)
 {
+    //this must be the first call so controller can change the state before anything else we do
+    controller_->simNotifyRender();
+
     try {
         controller_->reportTelemetry(dt);
     }

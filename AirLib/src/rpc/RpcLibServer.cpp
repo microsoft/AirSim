@@ -86,15 +86,15 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
         bool { return drone_->rotateByYawRate(yaw_rate, duration); });
     pimpl_->server.bind("hover", [&]() -> bool { return drone_->hover(); });
 
-    pimpl_->server.bind("setSafety", [&](uint enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
+    pimpl_->server.bind("setSafety", [&](uint enable_reasons, float obs_clearance, const SafetyEval::ObsAvoidanceStrategy& obs_startegy,
         float obs_avoidance_vel, const RpcLibAdapators::Vector3r& origin, float xy_length, float max_z, float min_z) -> 
         bool { return drone_->setSafety(SafetyEval::SafetyViolationType(enable_reasons), obs_clearance, obs_startegy,
             obs_avoidance_vel, origin.to(), xy_length, max_z, min_z); });
 
     //sim only
-    pimpl_->server.bind("simSetPosition", [&](RpcLibAdapators::Vector3r position) -> void { drone_->simSetPosition(position.to()); });
-    pimpl_->server.bind("simSetOrientation", [&](RpcLibAdapators::Quaternionr orientation) -> void { drone_->simSetOrientation(orientation.to()); });
-    pimpl_->server.bind("simGetImages", [&](std::vector<RpcLibAdapators::ImageRequest> request_adapter) -> vector<RpcLibAdapators::ImageResponse> { 
+    pimpl_->server.bind("simSetPose", [&](const RpcLibAdapators::Vector3r &position, const RpcLibAdapators::Quaternionr& orientation) -> 
+        void { drone_->simSetPose(position.to(), orientation.to()); });
+    pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapators::ImageRequest>& request_adapter) -> vector<RpcLibAdapators::ImageResponse> { 
         const auto& response = drone_->simGetImages(RpcLibAdapators::ImageRequest::to(request_adapter)); 
         return RpcLibAdapators::ImageResponse::from(response);
     });

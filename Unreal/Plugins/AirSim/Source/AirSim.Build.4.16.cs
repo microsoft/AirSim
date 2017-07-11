@@ -26,7 +26,7 @@ public class AirSim : ModuleRules
         CppCompileWithRpc
     }
 
-    private void SetupCompileMode(CompileMode mode, TargetInfo Target)
+    private void SetupCompileMode(CompileMode mode, ReadOnlyTargetRules Target)
     {
         switch (mode)
         {
@@ -54,12 +54,10 @@ public class AirSim : ModuleRules
 
     }
 
-    public AirSim(TargetInfo Target)
+    public AirSim(ReadOnlyTargetRules Target) : base(Target)
     {
-        bEnforceIWYU = false; //to support 4.16
-        //below is no longer supported in 4.16
+		 bEnforceIWYU = false;
         //UEBuildConfiguration.bForceEnableExceptions = true;
-
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore", "RHI" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
@@ -86,7 +84,7 @@ public class AirSim : ModuleRules
         PrivateIncludePaths.Add(Path.Combine(eigenPath, "eigen3"));
     }
 
-    private void AddOSLibDependencies(TargetInfo Target)
+    private void AddOSLibDependencies(ReadOnlyTargetRules Target)
     {
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
@@ -102,13 +100,13 @@ public class AirSim : ModuleRules
         }
     }
 
-    private bool LoadAirSimDependency(TargetInfo Target, string LibName, string LibFileName)
+    private bool LoadAirSimDependency(ReadOnlyTargetRules Target, string LibName, string LibFileName)
     {
         string LibrariesPath = Path.Combine(AirSimPath, "deps", LibName, "lib");
         return AddLibDependency(LibName, LibrariesPath, LibFileName, Target, true);
     }
 
-    private bool AddLibDependency(string LibName, string LibPath, string LibFileName, TargetInfo Target, bool IsAddLibInclude)
+    private bool AddLibDependency(string LibName, string LibPath, string LibFileName, ReadOnlyTargetRules Target, bool IsAddLibInclude)
     {
         string PlatformString = (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Mac) ? "x64" : "x86";
         string ConfigurationString = (Target.Configuration == UnrealTargetConfiguration.Debug) ? "Debug" : "Release";

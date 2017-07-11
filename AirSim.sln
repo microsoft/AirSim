@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AirSim", "AirSim", "{6B6941
 		Unreal\Plugins\AirSim\Source\AirSim.Build.cs = Unreal\Plugins\AirSim\Source\AirSim.Build.cs
 		Unreal\Plugins\AirSim\Source\AirSim.cpp = Unreal\Plugins\AirSim\Source\AirSim.cpp
 		Unreal\Plugins\AirSim\Source\AirSim.h = Unreal\Plugins\AirSim\Source\AirSim.h
+		Unreal\Plugins\AirSim\AirSim.uplugin = Unreal\Plugins\AirSim\AirSim.uplugin
 		Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp = Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp
 		Unreal\Plugins\AirSim\Source\AirSimGameMode.h = Unreal\Plugins\AirSim\Source\AirSimGameMode.h
 		Unreal\Plugins\AirSim\Source\CameraDirector.cpp = Unreal\Plugins\AirSim\Source\CameraDirector.cpp
