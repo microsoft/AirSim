@@ -4,6 +4,7 @@
 #include "common/ClockFactory.hpp"
 #include "NedTransform.h"
 
+
 AVehiclePawnBase::AVehiclePawnBase()
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collison_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
@@ -21,6 +22,41 @@ void AVehiclePawnBase::PostInitializeComponents()
 void AVehiclePawnBase::BeginPlay()
 {
     Super::BeginPlay();
+}
+
+void AVehiclePawnBase::setupCamerasFromSettings()
+{
+    typedef msr::airlib::Settings Settings;
+    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
+
+    Settings& settings = Settings::singleton();
+    Settings scene_settings_child, depth_settings_child, seg_settings_child;
+    APIPCamera::CaptureSettings scene_settings, depth_settings, seg_settings;
+    if (settings.getChild("SceneCaptureSettings", scene_settings_child))
+        createCaptureSettings(scene_settings_child, scene_settings);
+    if (settings.getChild("DepthCaptureSettings", depth_settings_child))
+        createCaptureSettings(depth_settings_child, depth_settings);
+    if (settings.getChild("SegCaptureSettings", seg_settings_child))
+        createCaptureSettings(seg_settings_child, seg_settings);
+
+
+    for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
+        APIPCamera* camera = getCamera(camera_index);
+        camera->setCaptureSettings(ImageType_::Scene, scene_settings);
+        camera->setCaptureSettings(ImageType_::Depth, depth_settings);
+        camera->setCaptureSettings(ImageType_::Segmentation, seg_settings);
+    }
+}
+
+void AVehiclePawnBase::createCaptureSettings(const msr::airlib::Settings& settings, APIPCamera::CaptureSettings& capture_settings)
+{
+    typedef msr::airlib::Settings Settings;
+
+    capture_settings.width = settings.getInt("Width", capture_settings.width);
+    capture_settings.height = settings.getInt("Height", capture_settings.height);
+    capture_settings.fov_degrees = settings.getFloat("FOV_Degrees", capture_settings.fov_degrees);
+    capture_settings.auto_exposure_speed = settings.getFloat("AutoExposureSpeed", capture_settings.auto_exposure_speed);
+    capture_settings.motion_blur_amount = settings.getFloat("MotionBlurAmount", capture_settings.motion_blur_amount);
 }
 
 void AVehiclePawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)

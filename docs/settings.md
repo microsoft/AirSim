@@ -1,7 +1,12 @@
-# settings.json
+# AirSim Settings
 
-The AirSim Unreal plugin can use a settings.json file in the AirSim folder in your Documents folder if it exists.
-Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
+## Where are Settings Stored?
+AirSim configuration is specified in `settings.json` file located in `Documents\AirSim` folder on Windows (`~/Documents/AirSim` folder on Linux). The file is in usual [json format](](https://en.wikipedia.org/wiki/JSON). 
+
+On first startup AirSim would create `settings.json` file with no settings. To avoid problems, always use ASCII format to save json file.
+
+## Available Settings and Their Defaults
+Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. 
 
 ````
 {
@@ -10,8 +15,33 @@ Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
   "LogMessagesVisible": true,
   "ViewMode": "FlyWithMe",
   "FpvVehicleName": "Pixhawk",
+  "UsageScenario": "",
   "RpcEnabled": true,
   "RosFlight": {
+    "RemoteControlID": 0
+  },
+  "SceneCaptureSettings" : {
+    "Width": 256,
+	  "Height": 144,
+    "FOV_Degrees": 90,
+    "AutoExposureSpeed": 100,
+    "MotionBlurAmount": 0
+  },  
+  "DepthCaptureSettings" : {
+    "Width": 256,
+	  "Height": 144,
+    "FOV_Degrees": 90,
+    "AutoExposureSpeed": 100,
+    "MotionBlurAmount": 0
+  },  
+  "SegCaptureSettings" : {
+    "Width": 256,
+	  "Height": 144,
+    "FOV_Degrees": 90,
+    "AutoExposureSpeed": 100,
+    "MotionBlurAmount": 0
+  },  
+  "SimpleFlight": {
     "RemoteControlID": 0
   },
   "Pixhawk": {
@@ -36,6 +66,13 @@ Here's a [sample json file](https://en.wikipedia.org/wiki/JSON) file:
 }
 ````
 
+## Image Capture Settings
+The `SceneCaptureSettings`, `DepthCaptureSettings` and `SegCaptureSettings` determines how scene view, depth view and segmentation views are captures. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images.
+
+## Changing Flight Controller
+The `FpvVehicleName` decides which vehicle will be your primary vehicle with FPV view. By default its Pixhawk and we have RosFlight and SimpleFlight in development, both of which are designed so you don't have to do separate HITL or SITL setups. For ["Computer Vision" mode](image_apis.md), use SimpleFlight as described in doc.
+
+## Pixhawk and MavLink Related Settings
 These settings define the Mavlink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for an optional external renderer (ExtRendererSysID, ExtRendererCompID)
 and the node that allows remote control of the drone from another app this is called the Air Control node (AirControlSysID, AirControlCompID).
 
@@ -50,8 +87,7 @@ You can change this name from the Unreal Editor when you add a new BP_FlyingPawn
 to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false and set the appropriate bard rate.  The default
 of 115200 works with Pixhawk version 2 over USB.
 
-### LocalHostIp
-
+### LocalHostIp Setting
 Now when connecting to remote machines you may need to pick a specific ethernet adapter to reach those machines, for example, it might be
 over ethernet or over wifi, or some other special virtual adapter or a VPN.  Your PC may have multiple networks, and those networks might not
 be allowed to talk to each other, in which case the UDP messages from one network will not get through to the others.

@@ -4,6 +4,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"
+#include "controllers/Settings.hpp"
 #include "GameFramework/Pawn.h"
 #include "VehiclePawnBase.generated.h"
 
@@ -81,12 +82,15 @@ protected:
     UPROPERTY(VisibleAnywhere)
         UParticleSystem* collison_display_template;
 
+    void setupCamerasFromSettings();
+
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
+    void createCaptureSettings(const msr::airlib::Settings& settings, APIPCamera::CaptureSettings& capture_settings);
 
 
 private: //vars

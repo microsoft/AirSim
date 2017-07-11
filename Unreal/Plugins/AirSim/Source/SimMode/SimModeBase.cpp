@@ -29,6 +29,11 @@ void ASimModeBase::BeginPlay()
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
+    readSettings();
+}
+
+void ASimModeBase::readSettings()
+{
     typedef msr::airlib::Settings Settings;
 
     Settings& settings = Settings::singleton();

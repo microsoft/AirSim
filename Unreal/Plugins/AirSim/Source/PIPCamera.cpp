@@ -1,8 +1,9 @@
 #include "AirSim.h"
+#include <string>
+#include <exception>
 #include "PIPCamera.h"
 #include "AirBlueprintLib.h"
 #include "ImageUtils.h"
-#include <string>
 
 void APIPCamera::PostInitializeComponents()
 {
@@ -24,17 +25,20 @@ void APIPCamera::BeginPlay()
     seg_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
     
     scene_render_target_ = NewObject<UTextureRenderTarget2D>();
-    scene_render_target_->InitAutoFormat(960, 540); //256 X 144, X 480
-    //scene_render_target_->bHDR = false;
+    setCaptureSettings(ImageType_::Scene, scene_capture_settings_);
     scene_render_target_->TargetGamma = 1.0f; // GEngine->GetDisplayGamma();
+    //scene_render_target_->bHDR = false;
+    //scene_render_target_->InitAutoFormat(960, 540); //256 X 144, X 480
 
     depth_render_target_ = NewObject<UTextureRenderTarget2D>();
-    depth_render_target_->InitAutoFormat(960, 540);
+    setCaptureSettings(ImageType_::Depth, depth_capture_settings_);
     depth_render_target_->TargetGamma = 1.0f;
+    //depth_render_target_->InitAutoFormat(960, 540);
 
     seg_render_target_ = NewObject<UTextureRenderTarget2D>();
-    seg_render_target_->InitAutoFormat(960, 540);
+    setCaptureSettings(ImageType_::Segmentation, seg_capture_settings_);
     seg_render_target_->TargetGamma = 1.0f;
+    //seg_render_target_->InitAutoFormat(960, 540);
 }
 
 void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -74,6 +78,56 @@ void APIPCamera::setEnableCameraTypes(APIPCamera::ImageType types)
     enableCaptureComponent(ImageType_::Depth, (types & ImageType_::Depth));
     enableCaptureComponent(ImageType_::Scene, (types & ImageType_::Scene));
     enableCaptureComponent(ImageType_::Segmentation, (types & ImageType_::Segmentation));
+}
+
+APIPCamera::CaptureSettings APIPCamera::getCaptureSettings(ImageType_ type)
+{
+    switch (type)
+    {
+    case ImageType_::Scene: return scene_capture_settings_;
+    case ImageType_::Depth: return depth_capture_settings_;
+    case ImageType_::Segmentation: return seg_capture_settings_;
+    default:
+        throw std::invalid_argument("the ImageType specified for getCaptureSettings is not recognized");
+    }
+}
+
+void APIPCamera::setCaptureSettings(APIPCamera::ImageType_ type, const APIPCamera::CaptureSettings& settings)
+{
+    switch (type)
+    {
+    case ImageType_::Scene: {
+        scene_capture_settings_ = settings; 
+        updateCaptureComponentSettings(screen_capture_, scene_render_target_, scene_capture_settings_);
+        break;
+    }
+    case ImageType_::Depth: {
+        depth_capture_settings_ = settings;
+        updateCaptureComponentSettings(depth_capture_, depth_render_target_, depth_capture_settings_);
+        break;
+    }
+    case ImageType_::Segmentation: {
+        seg_capture_settings_ = settings;
+        updateCaptureComponentSettings(seg_capture_, seg_render_target_, seg_capture_settings_);
+        break;
+    }
+    default:
+        throw std::invalid_argument("the ImageType specified for setCaptureSettings is not recognized");
+    }
+}
+
+void APIPCamera::updateCaptureComponentSettings(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSettings& settings)
+{
+    if (render_target)
+        render_target->InitAutoFormat(settings.width, settings.height); //256 X 144, X 480
+    //else we will set this after this components get created
+
+    if (capture) {
+        capture->FOVAngle = settings.fov_degrees;
+        capture->PostProcessSettings.AutoExposureSpeedDown = capture->PostProcessSettings.AutoExposureSpeedUp = settings.auto_exposure_speed;
+        capture->PostProcessSettings.MotionBlurAmount = settings.motion_blur_amount;
+    }
+    //else we will set this after this components get created
 }
 
 void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool is_enabled)

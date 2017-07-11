@@ -1,11 +1,9 @@
 ## Introduction
-This project includes a self-contained cross-platform library to retrieve data from the quadrotor and send the control commands. 
-You can use this library for a simulated drone in Unreal engine or on a real quadrotor such as a MavLink based vehicle platform
-(and very soon DJI quadrotors such as Matrice).
+AirSim offers APIs to interact with vehicles. You can use these APIs to retrieve images, get state, command the vehicle and so on. The APIs use [msgpack-rpc protocol](https://github.com/msgpack-rpc/msgpack-rpc) which has bindings available in variety of languages including C++, C#, Python, Java etc.
 
 ## Hello Drone
-Here's the taste of how you can use our APIs in C++:
-See also [Python API](python.md) if you prefer that language.
+Here's very quick overview of how to use AirSim APIs using C++ (see also [Python doc](python.md)):
+See also  if you prefer that language.
 
 ```
 #include <iostream>
@@ -37,78 +35,29 @@ int main()
 
 ```
 
-You can find a ready to run project in HelloDrone folder in the repository.
+You can find a ready to run project in HelloDrone folder in the repository. Read more about [Hello Drone](hello_drone.md).
 
-## How does Hello Drone work?
-Hello Drone uses the RPC client to connect to the RPC server that is automatically started by the AirSim. 
-The RPC server routes all the commands to a class that implements [DroneControlBase](https://github.com/Microsoft/AirSim/blob/master/AirLib/include/controllers/DroneControllerBase.hpp). 
-In essence, DroneControlBase defines our abstract interface for getting data from the quadrotor and sending back commands. 
-We currently have concrete implementation for DroneControlBase for MavLink based vehicles. The implementation for DJI drone 
-platforms, specifically Matrice, is in works.
+## Image / Computer Vision and Collision APIs
+AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collison state. In addition, AirSim also includes complete examples of how to generate stereo images along with ground truth depth images.
 
-## Timing
+More on [image APIs](image_apis.md).
 
-Notice each method of DroneControlBase API takes one of two possible parameters: `float duration` or: `float max_wait_seconds`.
+## Note on Timing Related Parameters
 
-Methods that take `float duration`, like moveByVelocity return control immediately. So you can therefore choose to sleep for this duration, or you can change their mind and call something else which will automatically cancel the moveByVelocity.
+Many API methods has parameters named `float duration` or: `float max_wait_seconds`.
 
-Methods that take `float max_wait_seconds`, like takeoff, land, moveOnPath, moveToPosition, moveToZ, and so will block this amount of time waiting for command to be successfully completed. If the command
-completes before the max_wait_seconds they will return True, otherwise
-if the max_wait_seconds times out they will return False. 
+Methods that take `float duration`, like `moveByVelocit`y return control immediately. So you can therefore choose to sleep for this duration, or you can change their mind and call something else which will automatically cancel the `moveByVelocity`.
 
-If you want to wait for ever pass a big number. But if you want to be able to interrupt even these commands pass 0 and you can do something else or sleep in a loop while checking the drone position, etc. 
+Methods that take `float max_wait_seconds`, like `takeoff`, `land`, `moveOnPath`, `moveToPosition`, `moveToZ`, and so will block this amount of time waiting for command to be successfully completed. If the command completes before the max_wait_seconds they will return True, otherwise
+if the `max_wait_seconds` times out they will return `false`.  If you want to wait for ever pass a big number. But if you want to be able to interrupt even these commands pass 0 and you can do something else or sleep in a loop while checking the drone position, etc. We would not recommend interrupting takeoff/land on a real drone, of course, as the results may be unpredictable.
 
-Note: We would not recommend interrupting takeoff/land on a real drone, of course, as the results may be unpredictable.
-
-
-## How to get images from drone?
-Here's a sample code to get a single image:
-
-```
-int playWithImages() 
-{
-    using namespace std;
-    using namespace msr::airlib;
-    
-    msr::airlib::RpcLibClient client;
-
-    vector<uint8_t> image = client.simGetImage(0, DroneControlBase::ImageType::Depth);
-    //do something with images
-}
-```
-
-You can also get multiple images using API `simGetImages` which is slighly more complex to use than `simGetImage`. For example, you can get left camera view, right camera view and depth image from left camera - all at once! For sample code please see [sample code in HelloDrone project](https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp). We also have [complete code](https://github.com/Microsoft/AirSim/blob/master/Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to pfm format.
-
-Unlike `simGetImage`, the `simGetImages` API also allows you to get uncompressed images as well as floating point single channel images (instead of 3 channel (RGB), each 8 bit).
-
-You can also use Python to get images. For sample code please see [PythonClient project](https://github.com/Microsoft/AirSim/tree/master/PythonClient) and [Python example doc](python.md).
-
-Furthermore, if your work involves computer vision experiments and if you don't care about drone dynamics then you can use our so called "ComputerVision" mode. Please see next section for the details.
-
-## Can I use AirSim just for computer vision? I don't care about drones, physics etc.
-Yes, now you can! Simply go to settings.json that you can find in your Documents\AirSim folder (or ~/Documents/AirSim on Linux). Add following setting at root level:
-
-```
-{
-  "FpvVehicleName": "SimpleFlight",
-  "UsageScenario": "ComputerVision"
-}
-```
-
-Now when you start AirSim, you won't be able to move drone using remote control, there is no drone dynamics and physics engine is disabled in this mode. Think of this mode as that justs you move around cameras, not drone. You can use keyboard to move around (use F1 to see help on keys) and call APIs to get images. You can also use two additional APIs `simSetPose` to set position and orientation of drone programatically (use nan to specify no change). Then use can image APIs as described in above section to get images for your desired pose. Please see [complete code](https://github.com/Microsoft/AirSim/blob/master/Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to pfm format in this mode.
-
-## Can I run above code on real quadrotors as well?
-Absolutely! The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. 
-This module then can talk to the flight controllers such as Pixhawk using exact same code and MavLink protocol (or DJI protocol). 
-The code you write for testing in the simulator remains unchanged! 
+## Using APIs on Real Vehicles
+We want to be able to run *same code* that runs in simulation as on real vehicle. The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as Pixhawk using exact same code and MavLink protocol (or DJI protocol). The code you write for testing in the simulator remains unchanged! 
 See [AirLib on custom drones](https://github.com/Microsoft/AirSim/blob/master/docs/custom_drone.md).
 
-## What else can I do ?
+## References and Examples
 
-You can also program AirSim using [Python](python.md).
-
-See [move on path](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo) demo showing video of fast flight through Modular Neighborhood environment.
-
-See [building a hexacopter](https://github.com/Microsoft/AirSim/wiki/hexacopter).
-
-See [building point clouds](https://github.com/Microsoft/AirSim/wiki/Point-Clouds).
+* AirSim APIs using [Python](python.md)
+* [move on path](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo) demo showing video of fast flight through Modular Neighborhood environment
+* [building a hexacopter](https://github.com/Microsoft/AirSim/wiki/hexacopter)
+* [building point clouds](https://github.com/Microsoft/AirSim/wiki/Point-Clouds)

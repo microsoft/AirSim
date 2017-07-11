@@ -21,6 +21,8 @@ void AFlyingPawn::initializeForBeginPlay()
     setStencilIDs();
 
     setupInputBindings();
+
+    setupCamerasFromSettings();
 }
 
 void AFlyingPawn::setStencilIDs()

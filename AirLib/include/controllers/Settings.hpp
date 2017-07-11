@@ -105,6 +105,16 @@ namespace msr {
                 }
             }
 
+            double getFloat(std::string name, float defaultValue) const
+            {
+                if (doc_.count(name) == 1) {
+                    return doc_[name].get<float>();
+                }
+                else {
+                    return defaultValue;
+                }
+            }
+
             bool getBool(std::string name, bool defaultValue) const
             {
                 if (doc_.count(name) == 1) {
