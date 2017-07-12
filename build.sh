@@ -29,6 +29,7 @@ export CXX=/usr/bin/clang++
 
 # if eigen env var not found then install eigen in current directory
 if [[ ! -d "$EIGEN_ROOT" ]]; then 
+	echo "EIGEN_ROOT variable is not set."
 	if [[ ! -d eigen ]]; then
 		echo "downloading eigen..."
 		wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
@@ -40,6 +41,7 @@ if [[ ! -d "$EIGEN_ROOT" ]]; then
 		rm 3.3.2.zip
 	fi
 	export EIGEN_ROOT="$(pwd)/eigen"
+	echo "export EIGEN_ROOT=\"$(pwd)/eigen\"" >> ~/.bashrc
 fi
 
 # variable for build output
@@ -82,13 +84,18 @@ rsync -a --delete external/rpclib/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 
+rsync -a --delete Unreal/Plugins Unreal/Environments/Blocks
 
 echo ""
-echo "============================================================"
-echo "Now copy the Unreal/Plugins directory to the Unreal project:"
-echo "rsync -t -r Unreal/Plugins <unreal project_root>"
-echo "  (<unreal project_root> contains a file named <project>.uproject)"
-echo "============================================================"
-echo "And do (required for building the Unreal plugin):"
+echo "=================================================================="
+echo " AirSim plugin is build! Here's how to build Unreal project."
+echo "=================================================================="
+echo "If you are using Blocks environment, its already updated."
+echo "If you are using your own environment, update blugin with this:"
+echo "rsync -t -r Unreal/Plugins path/to/MyUnrealProject"
+echo ""
+echo "Make sure EIGEN_ROOT variable is set! (.bashrc should have it now)"
 echo "export EIGEN_ROOT=\"$EIGEN_ROOT\""
+echo "=================================================================="
+
 

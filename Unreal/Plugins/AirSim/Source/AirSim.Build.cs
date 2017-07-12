@@ -58,7 +58,7 @@ public class AirSim : ModuleRules
     {
         bEnforceIWYU = false; //to support 4.16
         //below is no longer supported in 4.16
-        //UEBuildConfiguration.bForceEnableExceptions = true;
+        bEnableExceptions = true;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore", "RHI" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
@@ -118,9 +118,9 @@ public class AirSim : ModuleRules
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             isLibrarySupported = true;
-
             PublicAdditionalLibraries.Add(Path.Combine(LibPath, PlatformString, ConfigurationString, LibFileName + ".lib"));
         } else if (Target.Platform == UnrealTargetPlatform.Linux || Target.Platform == UnrealTargetPlatform.Mac) {
+            isLibrarySupported = true;
             PublicAdditionalLibraries.Add(Path.Combine(LibPath, "lib" + LibFileName + ".a"));
         }
 

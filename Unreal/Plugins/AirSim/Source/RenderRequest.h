@@ -20,7 +20,7 @@ private:
     std::shared_ptr<RenderRequestInfo> data;
 
 private:
-    static FReadSurfaceDataFlags RenderRequest::setupRenderResource(FTextureRenderTargetResource* rt_resource, RenderRequestInfo* data, FIntPoint& size);
+    static FReadSurfaceDataFlags setupRenderResource(FTextureRenderTargetResource* rt_resource, RenderRequestInfo* data, FIntPoint& size);
 
 public:
     RenderRequest(bool use_safe_method);

@@ -15,14 +15,15 @@
 class FRecordingThread : public FRunnable
 {
 private:
-    static FRecordingThread* Runnable;
-    FRunnableThread* thread_;
+    FString image_path_;
     ASimModeBase* sim_mode_;
     const msr::airlib::PhysicsBody* fpv_physics_body_;
 
+    static FRecordingThread* Runnable;
+    FRunnableThread* thread_;
+
     FThreadSafeCounter stop_task_counter_;
     FRenderCommandFence read_pixel_fence_;
-    FString image_path_;
 
 public:
     FRecordingThread(FString imagePath, ASimModeBase* sim_mode, const msr::airlib::PhysicsBody* fpv_physics_body);

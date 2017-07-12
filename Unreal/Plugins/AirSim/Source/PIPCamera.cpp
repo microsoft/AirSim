@@ -172,7 +172,7 @@ UTextureRenderTarget2D* APIPCamera::getRenderTarget(const APIPCamera::ImageType 
         return nullptr;
     default:
         return nullptr;
-        UAirBlueprintLib::LogMessageString("Cannot get render target because camera type is not recognized", std::to_string(type), LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessageString("Cannot get render target because camera type is not recognized", std::to_string(static_cast<uint8>(type.toEnum())), LogDebugLevel::Failure);
     }
 
 }
@@ -196,7 +196,7 @@ USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const APIPCamera::Imag
         return nullptr;
     default:
         return nullptr;
-        UAirBlueprintLib::LogMessageString("Cannot get capture component because camera type is not recognized", std::to_string(static_cast<uint8>(type.toEnum())), LogDebugLevel::Failure, 60);
+        UAirBlueprintLib::LogMessageString("Cannot get capture component because camera type is not recognized", std::to_string(static_cast<uint8>(type.toEnum())), LogDebugLevel::Failure);
     }
 
 }

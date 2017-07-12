@@ -18,7 +18,7 @@ public: //interface
 public:
     //overrides from VehiclePawnBase
     virtual APIPCamera* getCamera(int index = 0) override;
-    virtual int AFlyingPawn::getCameraCount() override;
+    virtual int getCameraCount() override;
 
     virtual void initialize() override;
     virtual void reset() override;

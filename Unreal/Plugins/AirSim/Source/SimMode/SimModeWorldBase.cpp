@@ -2,6 +2,8 @@
 #include "SimModeWorldBase.h"
 
 
+constexpr char ASimModeWorldBase::kUsageScenarioComputerVision[];
+
 void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();

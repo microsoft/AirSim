@@ -1,6 +1,5 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.15",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -10,13 +9,13 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"AirSim"
-			]			
+			]
 		}
 	],
 	"Plugins": [
-	    {
-		"Name": "AirSim",
-		"Enabled": true
+		{
+			"Name": "AirSim",
+			"Enabled": true
 		}
 	]
 }
