@@ -45,8 +45,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AirSim", "AirSim", "{6B6941
 		Unreal\Plugins\AirSim\Source\NedTransform.h = Unreal\Plugins\AirSim\Source\NedTransform.h
 		Unreal\Plugins\AirSim\Source\PIPCamera.cpp = Unreal\Plugins\AirSim\Source\PIPCamera.cpp
 		Unreal\Plugins\AirSim\Source\PIPCamera.h = Unreal\Plugins\AirSim\Source\PIPCamera.h
-		Unreal\Plugins\AirSim\Source\RecordingThread.cpp = Unreal\Plugins\AirSim\Source\RecordingThread.cpp
-		Unreal\Plugins\AirSim\Source\RecordingThread.h = Unreal\Plugins\AirSim\Source\RecordingThread.h
 		Unreal\Plugins\AirSim\Source\RenderRequest.cpp = Unreal\Plugins\AirSim\Source\RenderRequest.cpp
 		Unreal\Plugins\AirSim\Source\RenderRequest.h = Unreal\Plugins\AirSim\Source\RenderRequest.h
 		Unreal\Plugins\AirSim\Source\VehicleCameraConnector.cpp = Unreal\Plugins\AirSim\Source\VehicleCameraConnector.cpp
@@ -82,6 +80,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimMode", "SimMode", "{6175
 	EndProjectSection
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonClient", "PythonClient\PythonClient.pyproj", "{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Recording", "Recording", "{66DAD5E7-6925-4266-8E04-91F19052623A}"
+	ProjectSection(SolutionItems) = preProject
+		Unreal\Plugins\AirSim\Source\Recording\RecordingFile.cpp = Unreal\Plugins\AirSim\Source\Recording\RecordingFile.cpp
+		Unreal\Plugins\AirSim\Source\Recording\RecordingFile.h = Unreal\Plugins\AirSim\Source\Recording\RecordingFile.h
+		Unreal\Plugins\AirSim\Source\Recording\RecordingThread.cpp = Unreal\Plugins\AirSim\Source\Recording\RecordingThread.cpp
+		Unreal\Plugins\AirSim\Source\Recording\RecordingThread.h = Unreal\Plugins\AirSim\Source\Recording\RecordingThread.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -189,5 +195,6 @@ Global
 		{275DB4C1-B933-4D75-85B3-18D3F93439F3} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
 		{95E2FEEF-3F34-4255-BB56-EF77466EFE7C} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
 		{6175579D-2920-406D-A36B-2A0A56AA7892} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
+		{66DAD5E7-6925-4266-8E04-91F19052623A} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
 	EndGlobalSection
 EndGlobal
