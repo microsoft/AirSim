@@ -2,7 +2,7 @@
 #include "SimModeWorldBase.h"
 
 
-constexpr char ASimModeWorldBase::kUsageScenarioComputerVision[];
+const char ASimModeWorldBase::kUsageScenarioComputerVision[] = "ComputerVision";
 
 void ASimModeWorldBase::BeginPlay()
 {

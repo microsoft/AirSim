@@ -1,16 +1,9 @@
 #pragma once
-#include <AirSim.h>
-#include <thread>
-#include <mutex>
-#include "ImageUtils.h"
-#include "common/Common.hpp"
+
 #include "AirBlueprintLib.h"
-#include "SimMode/SimModeWorldMultiRotor.h"
-#include "CameraDirector.h"
-#include "PIPCamera.h"
-#include "MultiRotorConnector.h"
-#include "SimMode/SimModeWorldBase.h"
-#include "common/ClockFactory.hpp"
+#include "SimMode/SimModeBase.h"
+#include "physics/PhysicsBody.hpp"
+
 
 class FRecordingThread : public FRunnable
 {
@@ -35,11 +28,7 @@ private:
     virtual bool Init();
     virtual uint32 Run();
     virtual void Stop();
-    void SaveImage(TArray<uint8>& compressedPng);
+    void SaveImage(TArray<uint8>& image_data);
 
     void EnsureCompletion();
-
-    unsigned int images_saved_ = 0;
-
-    msr::airlib::ClockBase* clock_ = msr::airlib::ClockFactory::get();
 };

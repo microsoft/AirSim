@@ -32,7 +32,7 @@ protected:
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
     size_t getVehicleCount() const;
 
-    static constexpr char kUsageScenarioComputerVision[] = "ComputerVision";
+    static const char kUsageScenarioComputerVision[];
     UPROPERTY() UManualPoseController* manual_pose_controller;
 
 private:

@@ -95,7 +95,7 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
     if (fpv_vehicle_connector_ != nullptr && fpv_vehicle_connector_->isApiServerStarted() && getVehicleCount() > 0) {
 
-        if (isRecording() && record_file.is_open()) {
+        if (isRecording() && getRecordingFile().isRecording()) {
             if (!isLoggingStarted)
             {
                 FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();

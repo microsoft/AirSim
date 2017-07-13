@@ -4,7 +4,9 @@
 #include "CameraDirector.h"
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
+#include "Recording/RecordingFile.h"
 #include "SimModeBase.generated.h"
+
 
 UCLASS()
 class AIRSIM_API ASimModeBase : public AActor
@@ -40,13 +42,10 @@ public:
     //can't use pure virtual because of restriction with Unreal
     virtual AVehiclePawnBase* getFpvVehiclePawn();
 
-    FString getRecordingPath();
+    RecordingFile& getRecordingFile();
 
-    std::ofstream record_file;
-    std::string record_filename = "airsim_rec";    
 protected:
     virtual void setupInputBindings();
-    bool is_recording;
     bool is_record_ui_visible;
     ECameraDirectorMode initial_view_mode;
     int record_tick_count;
@@ -58,4 +57,7 @@ protected:
 
 private:
     void readSettings();
+
+private:
+    RecordingFile recording_file_;
 };

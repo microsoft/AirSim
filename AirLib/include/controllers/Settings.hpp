@@ -40,6 +40,29 @@ namespace msr {
                 return common_utils::FileSystem::combine(path, fileName);
             }
 
+            static Settings& loadJSonString(const std::string& json_str)
+            {
+                singleton().file_ = "(loaded from string)";
+                singleton().load_success_ = false;
+
+                if (json_str.length() > 0) {
+                    std::stringstream ss;
+                    ss << json_str;
+                    ss >> singleton().doc_;
+                    singleton().load_success_ = true;
+                }
+
+                return singleton();
+            }
+            std::string saveJSonString()
+            {
+                std::lock_guard<std::mutex> guard(getFileAccessMutex());
+                std::stringstream ss;
+                ss << std::setw(2) << singleton().doc_ << std::endl;
+
+                return ss.str();
+            }
+            
             static Settings& loadJSonFile(std::string fileName)
             {
                 std::lock_guard<std::mutex> guard(getFileAccessMutex());
@@ -57,6 +80,7 @@ namespace msr {
 
                 return singleton();
             }
+
             bool isLoadSuccess()
             {
                 return load_success_;

@@ -13,7 +13,7 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    is_recording = false;
+    recording_file_.initializeForPlay();
     record_tick_count = 0;
     setupInputBindings();
 
@@ -65,7 +65,7 @@ void ASimModeBase::readSettings()
 
 void ASimModeBase::Tick(float DeltaSeconds)
 {
-    if (is_recording)
+    if (recording_file_.isRecording())
         ++record_tick_count;
     Super::Tick(DeltaSeconds);
 }
@@ -96,7 +96,7 @@ void ASimModeBase::setupInputBindings()
 
 bool ASimModeBase::isRecording()
 {
-    return is_recording;
+    return recording_file_.isRecording();
 }
 
 bool ASimModeBase::isRecordUIVisible()
@@ -111,21 +111,7 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode()
 
 void ASimModeBase::startRecording()
 {
-    if (record_file.is_open()) {
-        record_file.close();
-        UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was already open"), LogDebugLevel::Failure);
-    }
-
-    std::string fullPath = common_utils::FileSystem::getLogFileNamePath(record_filename, "", ".txt", true);
-    common_utils::FileSystem::createTextFile(fullPath, record_file);
-
-    if (record_file.is_open()) {
-        is_recording = true;
-
-        UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
-    }
-    else
-        UAirBlueprintLib::LogMessage("Error creating log file", fullPath.c_str(), LogDebugLevel::Failure);
+    recording_file_.startRecording();
 }
 
 bool ASimModeBase::toggleRecording()
@@ -140,12 +126,10 @@ bool ASimModeBase::toggleRecording()
 
 void ASimModeBase::stopRecording()
 {
-    is_recording = false;
-    if (!record_file.is_open()) {
-        UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was not open"), LogDebugLevel::Failure);
-    }
-    else
-        record_file.close();
-    
-    UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Stopped"), LogDebugLevel::Success);
+    recording_file_.stopRecording();
+}
+
+RecordingFile& ASimModeBase::getRecordingFile()
+{
+    return recording_file_;
 }

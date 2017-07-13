@@ -62,27 +62,40 @@ void AAirSimGameMode::initializeSettings()
     //load settings file if found
     typedef msr::airlib::Settings Settings;
     try {
-        Settings& settings = Settings::loadJSonFile("settings.json");
-        auto settings_filename = Settings::singleton().getFileName();
-        if (settings.isLoadSuccess()) {
-            UAirBlueprintLib::setLogMessagesHidden(! settings.getBool("LogMessagesVisible", true));
 
-            std::string msg = "Loaded settings from " + settings_filename;
-            UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT(""), LogDebugLevel::Informational);
+        /******** CAUSION: Do not use std file/IO function. They cause segfault in Linux! ******************/
+
+        FString settings_filename = FString(Settings::getFullPath("settings.json").c_str());
+        FString json_fstring;
+        bool load_success = false;
+        bool file_found = FPaths::FileExists(settings_filename);
+        if (file_found) {
+            bool read_sucess = FFileHelper::LoadFileToString(json_fstring, * settings_filename);
+            if (read_sucess) {
+                Settings& settings = Settings::loadJSonString(TCHAR_TO_UTF8(*json_fstring));
+                if (settings.isLoadSuccess()) {
+                    UAirBlueprintLib::setLogMessagesHidden(! settings.getBool("LogMessagesVisible", true));
+                    UAirBlueprintLib::LogMessageString("Loaded settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
+                    load_success = true;
+                }
+                else
+                    UAirBlueprintLib::LogMessageString("Possibly invalid json string in ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
+            }
+            else
+                UAirBlueprintLib::LogMessageString("Cannot read settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
         }
-        else {
+
+        if (!load_success) {
+            //create default settings
+            Settings& settings = Settings::loadJSonString("{}");
             //write some settings in new file otherwise the string "null" is written if all settigs are empty
             settings.setString("see_docs_at", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
 
-            //settings.setBool("RpcEnabled", true);
-            //settings.setString("LocalHostIp", "127.0.0.1");
-            //Settings rosflight_child;
-            //rosflight_child.setInt("RemoteControlID", 0);
-            //settings.setChild("RosFlight", rosflight_child);
-
-            settings.saveJSonFile(settings_filename);
-            std::string msg = "Settings file " + settings_filename + " is created.";
-            UAirBlueprintLib::LogMessage(FString(msg.c_str()), TEXT("See docs at https://git.io/v9mYY"), LogDebugLevel::Informational);
+            if (!file_found) {
+                json_fstring = FString(settings.saveJSonString().c_str());
+                FFileHelper::SaveStringToFile(json_fstring, * settings_filename);
+                UAirBlueprintLib::LogMessageString("Created settings file at ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
+            }
         }
     }
     catch (std::exception ex) {
