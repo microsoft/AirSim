@@ -61,6 +61,9 @@ void runSteroImageGenerator(int num_samples, std::string storage_path)
 
 int main(int argc, const char *argv[])
 {
-    runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ? "D:\\stig2" : std::string(argv[2]));
+    runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ? 
+        common_utils::FileSystem::combine(
+            common_utils::FileSystem::getAppDataFolder(), "stereo_gen")
+        : std::string(argv[2]));
 }
 
