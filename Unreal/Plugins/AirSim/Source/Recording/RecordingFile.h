@@ -25,7 +25,7 @@ public:
 private:
     void createFile(const std::string& file_path);
     void closeFile();
-    void writeLine(const std::string& line);
+    void writeString(const std::string& line);
     bool isFileOpen();
 
 

@@ -98,8 +98,7 @@ void AAirSimGameMode::initializeSettings()
             }
         }
     }
-    catch (std::exception ex) {
-        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), TEXT(""), LogDebugLevel::Failure, 30);
-        UAirBlueprintLib::LogMessage(FString(ex.what()), TEXT(""), LogDebugLevel::Failure, 30);
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), FString(ex.what(), LogDebugLevel::Failure, 30);
     }
 }

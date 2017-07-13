@@ -22,16 +22,17 @@ private:
     void EnsureCompletion();
 
 private:
-    FString image_path_;
+    FThreadSafeCounter stop_task_counter_;
+    FRenderCommandFence read_pixel_fence_;
+
     msr::airlib::VehicleCameraBase* camera_;
     RecordingFile* recording_file_;
     const msr::airlib::PhysicsBody* fpv_physics_body_;
 
+    FString image_path_;
+
     static FRecordingThread* instance_;
     FRunnableThread* thread_;
-
-    FThreadSafeCounter stop_task_counter_;
-    FRenderCommandFence read_pixel_fence_;
 
     RecordingSettings settings_;
 

@@ -61,11 +61,11 @@ public:
         {
             return VectorMathT::subtract(lhs, rhs);
         }
-        static friend bool operator==(const Pose& lhs, const Pose& rhs)
+        friend bool operator==(const Pose& lhs, const Pose& rhs)
         {
             return lhs.position == rhs.position && lhs.orientation.coeffs() == rhs.orientation.coeffs();
         }
-        static friend bool operator!=(const Pose& lhs, const Pose& rhs)
+        friend bool operator!=(const Pose& lhs, const Pose& rhs)
         {
             return  !(lhs == rhs);;
         }

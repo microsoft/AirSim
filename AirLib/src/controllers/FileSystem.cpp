@@ -6,8 +6,11 @@
 #endif
 
 #include "common/common_utils/FileSystem.hpp"
+#include "common/common_utils/Utils.hpp"
 #include <codecvt>
 #include <fstream>
+#include <cstdio>
+#include <string>
 
 #ifdef _WIN32
 #include <Shlobj.h>
@@ -18,6 +21,8 @@
 #include <unistd.h>
 #include <sys/param.h> // MAXPATHLEN definition
 #include <sys/stat.h> // get mkdir.
+#include <sys/types.h>
+#include <errno.h>
 #endif
 
 using namespace common_utils;
@@ -37,7 +42,9 @@ std::string FileSystem::createDirectory(std::string fullPath) {
         }
     }
 #else
-    mkdir(fullPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    int success = mkdir(fullPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    if (success != 0)
+        throw std::ios_base::failure(Utils::stringf("mkdir failed for path %s with errorno %i and message %s", fullPath.c_str(), errno, strerror(errno)).c_str());
 #endif
     return fullPath;
 }
