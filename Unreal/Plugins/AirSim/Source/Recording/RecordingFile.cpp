@@ -1,15 +1,22 @@
 #include <AirSim.h>
+#include <sstream>
 #include "ImageUtils.h"
 #include "common/ClockFactory.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
-void RecordingFile::appendRecord(FString image_path, TArray<uint8>& compressedPng, const msr::airlib::PhysicsBody* physics_body)
+RecordingFile::RecordingFile()
+    : image_path_(FString(common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str())),
+    log_file_handle_(nullptr)
 {
-    if (compressedPng.Num() == 0)
+}
+
+void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::PhysicsBody* physics_body)
+{
+    if (image_data.Num() == 0)
         return;
 
-    FString filePath = image_path + FString::FromInt(images_saved_) + ".png";
-    bool imageSavedOk = FFileHelper::SaveArrayToFile(compressedPng, *filePath);
+    FString filePath = image_path_ + FString::FromInt(images_saved_) + ".png";
+    bool imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *filePath);
 
     // If render command is complete, save image along with position and orientation
 
@@ -20,27 +27,56 @@ void RecordingFile::appendRecord(FString image_path, TArray<uint8>& compressedPn
 
         uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
-        record_file << timestamp_millis << "\t";
-        record_file << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
-        record_file << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
-        record_file << "\n";
+        std::stringstream ss;
+        ss << timestamp_millis << "\t";
+        ss << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
+        ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
+        ss << "\n";
+
+        writeLine(ss.str());
 
         UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
     }
 }
 
+void RecordingFile::createFile(const std::string& file_path)
+{
+    closeFile();
+
+    IPlatformFile& platform_file = FPlatformFileManager::Get().GetPlatformFile();
+    log_file_handle_ = platform_file.OpenWrite(*FString(file_path.c_str()));
+}
+
+bool RecordingFile::isFileOpen()
+{
+    return log_file_handle_ != nullptr;
+}
+
+void RecordingFile::closeFile()
+{
+    if (isFileOpen())
+        delete log_file_handle_;
+
+    log_file_handle_ = nullptr;
+}
+
+void RecordingFile::writeLine(const std::string& line)
+{
+
+}
+
+RecordingFile::~RecordingFile()
+{
+    closeFile();
+}
+
 void RecordingFile::startRecording()
 {
-    if (record_file.is_open()) {
-        record_file.close();
-        UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was already open"), LogDebugLevel::Failure);
-    }
-
     std::string fullPath = common_utils::FileSystem::getLogFileNamePath(record_filename, "", ".txt", true);
-    common_utils::FileSystem::createTextFile(fullPath, record_file);
+    createFile(fullPath);
 
-    if (record_file.is_open()) {
+    if (isFileOpen()) {
         is_recording_ = true;
 
         UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
@@ -52,11 +88,11 @@ void RecordingFile::startRecording()
 void RecordingFile::stopRecording()
 {
     is_recording_ = false;
-    if (!record_file.is_open()) {
+    if (isFileOpen()) {
         UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was not open"), LogDebugLevel::Failure);
     }
     else
-        record_file.close();
+        closeFile();
 
     UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Stopped"), LogDebugLevel::Success);
 }

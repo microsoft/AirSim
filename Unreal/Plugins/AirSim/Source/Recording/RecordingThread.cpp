@@ -8,22 +8,31 @@
 #include "PIPCamera.h"
 
 
-FRecordingThread* FRecordingThread::Runnable = NULL;
+FRecordingThread* FRecordingThread::instance_ = NULL;
 
-FRecordingThread::FRecordingThread(FString path, ASimModeBase* sim_mode, const msr::airlib::PhysicsBody* fpv_physics_body)
-    : image_path_(path), sim_mode_(sim_mode), fpv_physics_body_(fpv_physics_body), stop_task_counter_(0)
+FRecordingThread::FRecordingThread()
+    : stop_task_counter_(0), camera_(nullptr), recording_file_(nullptr), fpv_physics_body_(nullptr), is_ready_(false)
 {
     thread_ = FRunnableThread::Create(this, TEXT("FRecordingThread"), 0, TPri_BelowNormal); // Windows default, possible to specify more priority
 }
 
 
-FRecordingThread* FRecordingThread::ThreadInit(FString path, ASimModeBase* sim_mode, const msr::airlib::PhysicsBody* fpv_physics_body)
+FRecordingThread* FRecordingThread::ThreadInit(msr::airlib::VehicleCameraBase* camera, RecordingFile* recording_file, const msr::airlib::PhysicsBody* fpv_physics_body, const RecordingSettings& settings)
 {
-    if (!Runnable && FPlatformProcess::SupportsMultithreading())
+    if (!instance_ && FPlatformProcess::SupportsMultithreading())
     {
-        Runnable = new FRecordingThread(path, sim_mode, fpv_physics_body);
+        instance_ = new FRecordingThread();
+        instance_->camera_ = camera;
+        instance_->recording_file_ = recording_file;
+        instance_->fpv_physics_body_ = fpv_physics_body;
+        instance_->settings_ = settings;
+
+        instance_->last_screenshot_on_ = 0;
+        instance_->last_pose_ = msr::airlib::Pose();
+
+        instance_->is_ready_ = true;
     }
-    return Runnable;
+    return instance_;
 }
 
 FRecordingThread::~FRecordingThread()
@@ -34,7 +43,7 @@ FRecordingThread::~FRecordingThread()
 
 bool FRecordingThread::Init()
 {
-    if (sim_mode_)
+    if (camera_ && recording_file_)
     {
         UAirBlueprintLib::LogMessage(TEXT("Initiated recording thread"), TEXT(""), LogDebugLevel::Success);
     }
@@ -45,31 +54,27 @@ uint32 FRecordingThread::Run()
 {
     while (stop_task_counter_.GetValue() == 0)
     {
-        APIPCamera* cam = sim_mode_->getFpvVehiclePawn()->getCamera();
-        if (cam != nullptr)
-        {
-            // todo: should we go as fast as possible, or should we limit this to a particular number of
-            // frames per second?
-            USceneCaptureComponent2D* capture = cam->getCaptureComponent(msr::airlib::VehicleCameraBase::ImageType_::Scene, false);
-            if (capture != nullptr) {
-                UTextureRenderTarget2D* renderTarget = capture->TextureTarget;
-                if (renderTarget != nullptr) {
-                    TArray<uint8> image_data;
-                    RenderRequest request(false);
-                    int width, height;
-                    request.getScreenshot(renderTarget, image_data, false, true, width, height);
-                    SaveImage(image_data);
-                }
+        //make sire all vars are set up
+        if (is_ready_) {
+            bool interval_elapsed = msr::airlib::ClockFactory::get()->elapsedSince(last_screenshot_on_) > settings_.record_interval;
+            bool is_pose_unequal = fpv_physics_body_ && last_pose_ != fpv_physics_body_->getKinematics().pose;
+            if (interval_elapsed && (!settings_.record_on_move || is_pose_unequal))
+            {
+                last_screenshot_on_ = msr::airlib::ClockFactory::get()->nowNanos();
+                last_pose_ = fpv_physics_body_->getKinematics().pose;
+
+                // todo: should we go as fast as possible, or should we limit this to a particular number of
+                // frames per second?
+                auto response = camera_->getImage(msr::airlib::VehicleCameraBase::ImageType_::Scene, false, true);
+                TArray<uint8_t> image_data;
+                image_data.Append(response.image_data.data(), response.image_data.size());
+                recording_file_->appendRecord(image_data, fpv_physics_body_);
             }
         }
     }
     return 0;
 }
 
-void FRecordingThread::SaveImage(TArray<uint8>& image_data)
-{
-    sim_mode_->getRecordingFile().appendRecord(image_path_, image_data, fpv_physics_body_);
-}
 
 void FRecordingThread::Stop()
 {
@@ -86,10 +91,10 @@ void FRecordingThread::EnsureCompletion()
 
 void FRecordingThread::Shutdown()
 {
-    if (Runnable)
+    if (instance_)
     {
-        Runnable->EnsureCompletion();
-        delete Runnable;
-        Runnable = NULL;
+        instance_->EnsureCompletion();
+        delete instance_;
+        instance_ = NULL;
     }
 }

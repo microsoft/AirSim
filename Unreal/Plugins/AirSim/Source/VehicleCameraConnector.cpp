@@ -29,7 +29,8 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(V
     return getSceneCaptureImage(image_type, pixels_as_float, compress, false);
 }
 
-msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCaptureImage(VehicleCameraConnector::ImageType image_type, bool pixels_as_float, bool compress, bool use_safe_method)
+msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCaptureImage(VehicleCameraConnector::ImageType image_type, 
+    bool pixels_as_float, bool compress, bool use_safe_method)
 {
     bool visibilityChanged = false;
     if ((camera_->getEnableCameraTypes() & image_type) == ImageType_::None
@@ -63,9 +64,9 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCa
 
     UTextureRenderTarget2D* textureTarget = capture->TextureTarget;
 
-    TArray<uint8> image;
     RenderRequest request(use_safe_method);
     int width, height;
+    TArray<uint8> image;
     request.getScreenshot(textureTarget, image, pixels_as_float, compress, width, height);
 
     ImageResponse response;

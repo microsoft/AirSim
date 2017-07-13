@@ -26,4 +26,5 @@ public:
     virtual void stopApiServer() = 0;
     virtual bool isApiServerStarted() = 0;
     virtual msr::airlib::VehicleControllerBase* getController() = 0;
+    virtual msr::airlib::VehicleCameraBase* getCamera(unsigned int index = 0) = 0;
 };

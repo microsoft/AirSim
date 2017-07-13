@@ -12,10 +12,16 @@ class AIRSIM_API APIPCamera : public ACameraActor
     
 public:
     struct CaptureSettings {
+        static constexpr float kSceneTargetGamma = 1.4f;
+
         unsigned int width = 256, height = 144; //960 X 540
         float fov_degrees = 90;
         float auto_exposure_speed = 100.0f;
+        float auto_exposure_bias = 1.0f;
+        float auto_exposure_max_brightness = 1.0f;
+        float auto_exposure_min_brightness = 1.0f;
         float motion_blur_amount = 0.0f;
+        float target_gamma = 1.0f; //should be defaulted to kSceneTargetGamma for scene
     };
 
 public:

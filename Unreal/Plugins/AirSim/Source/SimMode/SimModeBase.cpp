@@ -60,6 +60,12 @@ void ASimModeBase::readSettings()
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
     usage_scenario = settings.getString("UsageScenario", "");
 
+    Settings record_settings;
+    if (settings.getChild("Recording", record_settings)) {
+        recording_settings.record_on_move = record_settings.getBool("RecordOnMove", recording_settings.record_on_move);
+        recording_settings.record_interval = record_settings.getFloat("RecordInterval", recording_settings.record_interval);
+    }
+    
     UAirBlueprintLib::LogMessage("Vehicle name: ", fpv_vehicle_name.c_str(), LogDebugLevel::Informational);
 }
 

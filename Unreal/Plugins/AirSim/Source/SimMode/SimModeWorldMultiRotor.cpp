@@ -98,8 +98,8 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
         if (isRecording() && getRecordingFile().isRecording()) {
             if (!isLoggingStarted)
             {
-                FString imagePathPrefix = common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str();
-                FRecordingThread::ThreadInit(imagePathPrefix, this, static_cast<msr::airlib::PhysicsBody*>(fpv_vehicle_connector_->getPhysicsBody()));
+                FRecordingThread::ThreadInit(fpv_vehicle_connector_->getCamera(), & getRecordingFile(), 
+                    static_cast<msr::airlib::PhysicsBody*>(fpv_vehicle_connector_->getPhysicsBody()), recording_settings);
                 isLoggingStarted = true;
             }
         }

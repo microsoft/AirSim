@@ -51,6 +51,11 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
     memset(rotor_info_, 0, sizeof(RotorInfo) * rotor_count_);
 }
 
+msr::airlib::VehicleCameraBase* MultiRotorConnector::getCamera(unsigned int index)
+{
+    return camera_connectors_.at(index).get();
+}
+
 MultiRotorConnector::~MultiRotorConnector()
 {
     delete[] rotor_info_;

@@ -49,6 +49,8 @@ public:
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
 
+    virtual msr::airlib::VehicleCameraBase* getCamera(unsigned int index = 0) override;
+
 private:
     void detectUsbRc();
     static float joyStickToRC(int16_t val);

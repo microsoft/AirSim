@@ -14,6 +14,9 @@ void APIPCamera::PostInitializeComponents()
     screen_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent"));
     depth_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthCaptureComponent"));
     seg_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SegmentationCaptureComponent"));
+
+    //set default for brigher images
+    scene_capture_settings_.target_gamma = CaptureSettings::kSceneTargetGamma;
 }
 
 void APIPCamera::BeginPlay()
@@ -26,19 +29,13 @@ void APIPCamera::BeginPlay()
     
     scene_render_target_ = NewObject<UTextureRenderTarget2D>();
     setCaptureSettings(ImageType_::Scene, scene_capture_settings_);
-    scene_render_target_->TargetGamma = 1.0f; // GEngine->GetDisplayGamma();
     //scene_render_target_->bHDR = false;
-    //scene_render_target_->InitAutoFormat(960, 540); //256 X 144, X 480
 
     depth_render_target_ = NewObject<UTextureRenderTarget2D>();
     setCaptureSettings(ImageType_::Depth, depth_capture_settings_);
-    depth_render_target_->TargetGamma = 1.0f;
-    //depth_render_target_->InitAutoFormat(960, 540);
 
     seg_render_target_ = NewObject<UTextureRenderTarget2D>();
     setCaptureSettings(ImageType_::Segmentation, seg_capture_settings_);
-    seg_render_target_->TargetGamma = 1.0f;
-    //seg_render_target_->InitAutoFormat(960, 540);
 }
 
 void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -118,13 +115,17 @@ void APIPCamera::setCaptureSettings(APIPCamera::ImageType_ type, const APIPCamer
 
 void APIPCamera::updateCaptureComponentSettings(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSettings& settings)
 {
-    if (render_target)
+    if (render_target) {
         render_target->InitAutoFormat(settings.width, settings.height); //256 X 144, X 480
+        render_target->TargetGamma = settings.target_gamma;
+    }
     //else we will set this after this components get created
 
     if (capture) {
         capture->FOVAngle = settings.fov_degrees;
         capture->PostProcessSettings.AutoExposureSpeedDown = capture->PostProcessSettings.AutoExposureSpeedUp = settings.auto_exposure_speed;
+        capture->PostProcessSettings.AutoExposureMaxBrightness = capture->PostProcessSettings.AutoExposureMinBrightness = 1.0f;
+        capture->PostProcessSettings.AutoExposureBias = 1.0f;
         capture->PostProcessSettings.MotionBlurAmount = settings.motion_blur_amount;
     }
     //else we will set this after this components get created

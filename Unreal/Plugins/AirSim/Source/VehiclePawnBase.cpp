@@ -32,6 +32,7 @@ void AVehiclePawnBase::setupCamerasFromSettings()
     Settings& settings = Settings::singleton();
     Settings scene_settings_child, depth_settings_child, seg_settings_child;
     APIPCamera::CaptureSettings scene_settings, depth_settings, seg_settings;
+    scene_settings.target_gamma = APIPCamera::CaptureSettings::kSceneTargetGamma;
     if (settings.getChild("SceneCaptureSettings", scene_settings_child))
         createCaptureSettings(scene_settings_child, scene_settings);
     if (settings.getChild("DepthCaptureSettings", depth_settings_child))
@@ -56,7 +57,11 @@ void AVehiclePawnBase::createCaptureSettings(const msr::airlib::Settings& settin
     capture_settings.height = settings.getInt("Height", capture_settings.height);
     capture_settings.fov_degrees = settings.getFloat("FOV_Degrees", capture_settings.fov_degrees);
     capture_settings.auto_exposure_speed = settings.getFloat("AutoExposureSpeed", capture_settings.auto_exposure_speed);
+    capture_settings.auto_exposure_bias = settings.getFloat("AutoExposureBias", capture_settings.auto_exposure_bias);
+    capture_settings.auto_exposure_max_brightness = settings.getFloat("AutoExposureMaxBrightness", capture_settings.auto_exposure_max_brightness);
+    capture_settings.auto_exposure_min_brightness = settings.getFloat("AutoExposureMinBrightness", capture_settings.auto_exposure_min_brightness);
     capture_settings.motion_blur_amount = settings.getFloat("MotionBlurAmount", capture_settings.motion_blur_amount);
+    capture_settings.target_gamma = settings.getFloat("TargetGamma", capture_settings.target_gamma);
 }
 
 void AVehiclePawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
