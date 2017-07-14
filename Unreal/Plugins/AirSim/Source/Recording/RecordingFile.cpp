@@ -90,18 +90,39 @@ RecordingFile::~RecordingFile()
     closeFile();
 }
 
+std::string RecordingFile::getLogFileFullPath()
+{
+    try {
+        return common_utils::FileSystem::getLogFileNamePath(record_filename, "", ".txt", true);
+    }
+    catch(std::exception& ex) {
+        UAirBlueprintLib::LogMessageString(std::string("getLogFileFullPath failed: "), ex.what(), LogDebugLevel::Failure); 
+        return "";  
+    }
+}
+
 void RecordingFile::startRecording()
 {
-    std::string fullPath = common_utils::FileSystem::getLogFileNamePath(record_filename, "", ".txt", true);
-    createFile(fullPath);
+    try {
+        std::string fullPath = getLogFileFullPath();
+        if (fullPath != "")
+            createFile(fullPath);
+        else {
+            UAirBlueprintLib::LogMessageString("Cannot start recording because path for log file is not available", "", LogDebugLevel::Failure);
+            return;
+        }
 
-    if (isFileOpen()) {
-        is_recording_ = true;
+        if (isFileOpen()) {
+            is_recording_ = true;
 
-        UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
+            UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
+        }
+        else
+            UAirBlueprintLib::LogMessageString("Error creating log file", fullPath.c_str(), LogDebugLevel::Failure);
     }
-    else
-        UAirBlueprintLib::LogMessage("Error creating log file", fullPath.c_str(), LogDebugLevel::Failure);
+    catch(...) {
+        UAirBlueprintLib::LogMessageString("Error in startRecording", "", LogDebugLevel::Failure);
+    }
 }
 
 void RecordingFile::stopRecording()

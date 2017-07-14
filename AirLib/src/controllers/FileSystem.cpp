@@ -43,7 +43,7 @@ std::string FileSystem::createDirectory(std::string fullPath) {
     }
 #else
     int success = mkdir(fullPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    if (success != 0)
+    if (success != 0 && errno != EEXIST)
         throw std::ios_base::failure(Utils::stringf("mkdir failed for path %s with errorno %i and message %s", fullPath.c_str(), errno, strerror(errno)).c_str());
 #endif
     return fullPath;

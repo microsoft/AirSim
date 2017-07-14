@@ -20,12 +20,11 @@ void ASimHUD::BeginPlay()
     //avoid motion blur so capture images don't get
     GetWorld()->GetGameViewport()->GetEngineShowFlags()->SetMotionBlur(false);
 
-    //Equivalent to enabling Custom Stencil in Project > Settings > Rendering > Postprocessing
-    UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), FString("r.CustomDepth 3"));
-
-    //above is not working so below is alternate method
+    //use two different methods to set console var because sometime it doesn't seem to work
     static const auto custom_depth_var = IConsoleManager::Get().FindConsoleVariable(TEXT("r.CustomDepth"));
     custom_depth_var->Set(3);
+    //Equivalent to enabling Custom Stencil in Project > Settings > Rendering > Postprocessing
+    UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), FString("r.CustomDepth 3"));
 
     //create main widget
     if (widget_class_ != nullptr) {

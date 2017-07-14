@@ -27,10 +27,11 @@ private:
     void closeFile();
     void writeString(const std::string& line);
     bool isFileOpen();
+    std::string getLogFileFullPath();
 
 
 private:
-    std::string record_filename = "airsim_rec";
+    std::string record_filename = "airsim_rec";     
     unsigned int images_saved_ = 0;
     FString image_path_;
     bool is_recording_;
