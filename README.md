@@ -76,7 +76,7 @@ This way you can write and test your code in simulator and later execute it on t
 ## Paper
 You can get additional technical details in [our paper (preprint)](https://arxiv.org/abs/1705.05065). Please cite this as:
 ```
-@misc{1705.05065,
+@misc{AirSim2017arxive,
 Author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
 Title = {AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles},
 Year = {2017},
