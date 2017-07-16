@@ -74,7 +74,7 @@
 	
 	\begin{figure}[htbp]
 		\centering
-		\includegraphics[width=\textwidth]{drone_depth_materials.PNG}
+		\includegraphics[width=\textwidth]{drone_depth_materials.png}
 		\caption{A snapshot from AirSim shows an aerial vehicle flying in an urban environment. The inset shows depth, object segmentation and front camera streams generated in real time.}
 		\label{drone_depth_materials}
 	\end{figure}
@@ -99,7 +99,7 @@
 	Our simulator follows a modular design with an emphasis on extensibility. The core components includes environment model, vehicle model, physics engine, sensor models, rendering interface, public API layer and an interface layer for vehicle firmware as depicted in Figure~\ref{fig:arch}.
 	
 	\begin{figure}[ttbp]
-		\includegraphics[width=\textwidth]{overview.PNG}
+		\includegraphics[width=\textwidth]{overview.png}
 		\caption{The architecture of the system that depicts the core components and their interactions.}
 		\label{fig:arch}
 	\end{figure}
@@ -121,7 +121,7 @@
 	Formally, a vehicle is defined as a collection of $K$ vertices placed at positions $\{{\bf r}_1, .., {\bf r}_k\}$ and normals $\{{\bf n}_1, .., {\bf n}_k\}$, each of which experience a unitless vehicle specific scaler control input $\{u_1, .., u_k\}$. The forces and torques from these vertices are assumed to be generated in the direction of their normals. However note that the positions as well as normals are allowed to change during the simulation.
 	
 	\begin{figure}[ttbp]
-		\includegraphics[width=0.93\textwidth]{forces.PNG}
+		\includegraphics[width=0.93\textwidth]{forces.png}
 		\caption{Vehicle model for the quadrotor. The four blue vertices experience the controls $u_1, .. u_4$, which in turn results in the forces ${\bf F}_1, .., {\bf F}_4$ and the torques ${\bf \tau}_1, .., {\bf \tau}_4$.}
 		\label{fig:quad}
 	\end{figure}
