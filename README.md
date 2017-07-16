@@ -76,11 +76,13 @@ This way you can write and test your code in simulator and later execute it on t
 ## Paper
 You can get additional technical details in [our paper (preprint)](https://arxiv.org/abs/1705.05065). Please cite this as:
 ```
-@misc{AirSim2017arxive,
-Author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
-Title = {AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles},
-Year = {2017},
-Eprint = {arXiv:1705.05065},
+@inproceedings{airsim2017fsr,
+  author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
+  title = {AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles},
+  year = {2017},
+  booktitle = {Field and Service Robotics},
+  eprint = {arXiv:1705.05065},
+  url = {https://arxiv.org/abs/1705.05065}
 }
 ```
 
