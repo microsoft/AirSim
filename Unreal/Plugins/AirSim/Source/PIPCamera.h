@@ -2,6 +2,7 @@
 
 #include "Camera/CameraActor.h"
 #include "controllers/VehicleCameraBase.hpp"
+#include "common/common_utils/Utils.hpp"
 #include "PIPCamera.generated.h"
 
 
@@ -12,17 +13,26 @@ class AIRSIM_API APIPCamera : public ACameraActor
     
 public:
     struct CaptureSettings {
-        static constexpr float kSceneTargetGamma = 1.4f;
+        //below settinsg are obtained by using Unreal console command (press ~):
+        // ShowFlag.VisualizeHDR 1.
+        //to replicate camera settings to SceneCapture2D, except motion blur
+        typedef msr::airlib::Utils Utils;
+        static constexpr float kSceneTargetGamma = Utils::nan<float>(); //1.0f;
 
         unsigned int width = 256, height = 144; //960 X 540
-        float fov_degrees = 90;
+        float fov_degrees = Utils::nan<float>(); //90.0f
         float auto_exposure_speed = 100.0f;
-        float auto_exposure_bias = 1.0f;
-        float auto_exposure_max_brightness = 1.0f;
-        float auto_exposure_min_brightness = 1.0f;
-        float motion_blur_amount = 0.0f;
-        float target_gamma = 1.0f; //should be defaulted to kSceneTargetGamma for scene
+        float auto_exposure_bias = 0;
+        float auto_exposure_max_brightness = 0.64f;
+        float auto_exposure_min_brightness = 0.03f;
+        float auto_exposure_low_percent = 80.0f;
+        float auto_exposure_high_percent = 98.3f;      
+        float auto_exposure_histogram_log_min = -8;
+        float auto_exposure_histogram_log_max = 4;
+        float motion_blur_amount = 0;
+        float target_gamma = Utils::nan<float>(); //1.0f; //should be defaulted to kSceneTargetGamma for scene
     };
+
 
 public:
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;

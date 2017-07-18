@@ -122,11 +122,29 @@ void APIPCamera::updateCaptureComponentSettings(USceneCaptureComponent2D* captur
     //else we will set this after this components get created
 
     if (capture) {
-        capture->FOVAngle = settings.fov_degrees;
-        capture->PostProcessSettings.AutoExposureSpeedDown = capture->PostProcessSettings.AutoExposureSpeedUp = settings.auto_exposure_speed;
-        capture->PostProcessSettings.AutoExposureMaxBrightness = capture->PostProcessSettings.AutoExposureMinBrightness = 1.0f;
-        capture->PostProcessSettings.AutoExposureBias = 1.0f;
-        capture->PostProcessSettings.MotionBlurAmount = settings.motion_blur_amount;
+        if (!std::isnan(settings.fov_degrees))
+            capture->FOVAngle = settings.fov_degrees;
+        if (!std::isnan(settings.motion_blur_amount))
+            capture->PostProcessSettings.MotionBlurAmount = settings.motion_blur_amount;
+
+        capture->PostProcessSettings.AutoExposureMethod = EAutoExposureMethod::AEM_Histogram;        
+        if (!std::isnan(settings.auto_exposure_speed))
+            capture->PostProcessSettings.AutoExposureSpeedDown = capture->PostProcessSettings.AutoExposureSpeedUp = settings.auto_exposure_speed;
+        if (!std::isnan(settings.auto_exposure_max_brightness))
+            capture->PostProcessSettings.AutoExposureMaxBrightness = settings.auto_exposure_max_brightness;
+        if (!std::isnan(settings.auto_exposure_min_brightness))
+            capture->PostProcessSettings.AutoExposureMinBrightness = settings.auto_exposure_min_brightness;
+        if (!std::isnan(settings.auto_exposure_bias))
+            capture->PostProcessSettings.AutoExposureBias = settings.auto_exposure_bias;
+        if (!std::isnan(settings.auto_exposure_low_percent))
+            capture->PostProcessSettings.AutoExposureLowPercent = settings.auto_exposure_low_percent;        
+        if (!std::isnan(settings.auto_exposure_high_percent))
+            capture->PostProcessSettings.AutoExposureHighPercent = settings.auto_exposure_high_percent;    
+        if (!std::isnan(settings.auto_exposure_histogram_log_min))
+            capture->PostProcessSettings.HistogramLogMin = settings.auto_exposure_histogram_log_min;    
+        if (!std::isnan(settings.auto_exposure_histogram_log_max))
+            capture->PostProcessSettings.HistogramLogMax = settings.auto_exposure_histogram_log_max;    
+
     }
     //else we will set this after this components get created
 }

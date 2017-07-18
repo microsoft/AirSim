@@ -10,9 +10,9 @@ pushd "$SCRIPT_DIR"
 cd ..
 
 # Checkout LLVM sources
-# git clone --depth=1 -b release_39  https://github.com/llvm-mirror/llvm.git llvm-source
-# git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxx.git llvm-source/projects/libcxx
-# git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxxabi.git llvm-source/projects/libcxxabi
+git clone --depth=1 -b release_39  https://github.com/llvm-mirror/llvm.git llvm-source
+git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxx.git llvm-source/projects/libcxx
+git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxxabi.git llvm-source/projects/libcxxabi
 
 # Build and install libc++ 
 rm -rf llvm-build
