@@ -23,6 +23,7 @@ macro(CommonSetup)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__CLANG__")
         else ()
             ##TODO: Werror removed temporarily. It should be added back after Linux build is stable
+            # other flags used in Unreal: -funwind-tables  -fdiagnostics-format=msvc -fno-inline  -fno-omit-frame-pointer  -fstack-protector -O2
             set(CMAKE_CXX_FLAGS "-std=c++14 -ggdb  -Wall -Wextra -Wstrict-aliasing -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option ${MAVLINK_OVERRIDES} ${AIRLIB_OVERRIDES} ${RPC_LIB_DEFINES} ${CMAKE_CXX_FLAGS}")
 
             if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")

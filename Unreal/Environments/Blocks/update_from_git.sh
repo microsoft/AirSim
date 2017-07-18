@@ -1,6 +1,13 @@
-scr_dir=`realpath $0`
-rsync -a --delete ../../Plugins/AirSim Plugins/AirSim
-robocopy /MIR ..\..\Plugins\AirSim Plugins\AirSim /XD temp *. /njh /njs /ndl /np
-robocopy /MIR ..\..\..\AirLib Plugins\AirSim\Source\AirLib /XD temp *. /njh /njs /ndl /np
+#! /bin/bash
 
-pause
+# get path of current script: https://stackoverflow.com/a/39340259/207661
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+pushd "$SCRIPT_DIR"
+
+set -e
+set +x
+
+rsync -a  --exclude 'temp' --delete ../../Plugins/AirSim Plugins/AirSim
+rsync -a  --exclude 'temp' --delete ../../../AirLib Plugins/AirSim/Source/AirLib
+
+popd
