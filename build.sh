@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"
 
 set -e
-set +x
+set -x
 
 # update any git submodules, currently rpclib
 git submodule update --init --recursive 
@@ -78,15 +78,19 @@ rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 Unreal/Environments/Blocks/clean.sh
 rsync -a --delete Unreal/Plugins Unreal/Environments/Blocks
 
+set +x
+
+echo ""
 echo ""
 echo "=================================================================="
 echo " AirSim plugin is build! Here's how to build Unreal project."
 echo "=================================================================="
 echo "If you are using Blocks environment, its already updated."
-echo "If you are using your own environment, update blugin with this:"
+echo "If you are using your own environment, update plugin using,"
 echo "rsync -t -r Unreal/Plugins path/to/MyUnrealProject"
 echo ""
-echo "For help see https://github.com/Microsoft/AirSim/blob/master/docs/linux_build.md"
+echo "For help see:"
+echo "https://github.com/Microsoft/AirSim/blob/master/docs/linux_build.md"
 echo "=================================================================="
 
 

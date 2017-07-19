@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set +x
+set -x
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -27,7 +27,7 @@ else
 fi
 
 #build libc++
-rm -rf llvm-build
+sudo rm -rf llvm-build
 mkdir llvm-build && cd llvm-build
 
 export C_COMPILER=clang-3.9
@@ -44,7 +44,7 @@ make cxx
 sudo make install-libcxx install-libcxxabi 
 
 #install EIGEN library
-if [[ -z "${EIGEN_ROOT}" ]]; then 
+if [[ -z "${EIGEN_ROOT}" ]] || [[ ! -d eigen ]]; then 
 	echo "EIGEN_ROOT variable is not set"
 	if [[ ! -d eigen ]]; then
 		echo "downloading eigen..."
@@ -60,4 +60,8 @@ fi
 
 popd
 
-
+set +x
+echo ""
+echo "************************************"
+echo "AirSim setup completed successfully!"
+echo "************************************"
