@@ -19,6 +19,7 @@ public:
         pid_angle_yaw_(clock, 
             PidController<float>::Config(params->p_yaw_angle, 0, 0))
     {
+        unused(params_);
     }
 
     void reset()

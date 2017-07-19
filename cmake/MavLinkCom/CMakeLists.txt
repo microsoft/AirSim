@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2.2)
+cmake_minimum_required(VERSION 3.5.0)
 project(MavLinkCom)
 
 add_subdirectory("MavLinkTest")
@@ -7,14 +7,6 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake-modules")
 INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../cmake-modules/CommonSetup.cmake")
 CommonSetup()
 
-
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-# include_directories(include)
 include_directories(
   ${AIRSIM_ROOT}/MavLinkCom
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
@@ -55,7 +47,5 @@ ENDIF()
 
 add_library(MavLinkCom STATIC ${MAVLINK_SOURCES})
 
-## Add these to your app that links this library:			
-# find_package(Threads REQUIRED)
-# target_link_libraries (${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT})
+CommonTargetLink()
 

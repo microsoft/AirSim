@@ -42,7 +42,7 @@ static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 
 static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
 static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
 static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
-static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
+//static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
 
 #define MAV_AUTOPILOT_ENUM_END (static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_ASLUAV)+1)
 #define MAV_TYPE_ENUM_END (static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_ADSB)+1)
@@ -771,7 +771,7 @@ bool ParseCommandLine(int argc, const char* argv[])
 {
     const char* logDirOption = "logdir";
     const char* logformatOption = "logformat";
-    const char* outLogFileOption = "outlogfile";
+    //const char* outLogFileOption = "outlogfile";
     const char* wifiOption = "wifi";
     const char* initOption = "init";
     const char* filterOption = "filter";

@@ -75,6 +75,9 @@ private:
 
 void Estimator::init(Params* _params, bool use_matrix_exponential, bool use_quadratic_integration, bool use_accelerometer)
 {
+    unused(board);
+    unused(_adaptive_gyro_bias);
+    
     params = _params;
 
     mat_exp = use_matrix_exponential;

@@ -2,47 +2,35 @@
 
 # get path of current script: https://stackoverflow.com/a/39340259/207661
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$SCRIPT_DIR"
+pushd "$SCRIPT_DIR"
 
 set -e
+set +x
 
 # update any git submodules, currently rpclib
 git submodule update --init --recursive 
 
-# check for clang compiler, if not installed then instruct user to install it
-#!/bin/bash
-if [[ !(-f "/usr/bin/clang") || !(-f "/usr/bin/clang++") ]]; then
-	echo "ERROR: clang++ 3.9 is necessary to compile AirSim and run it in Unreal"
-	echo "       please run : sudo apt-get install clang++-3.9"
-	echo "       followed by: sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.9 60 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-3.9 "
-
-  echo "       We need to use clang because the Unreal Engine is built with clang as well and"
-  echo "       there are some symbol inconsistencies in the C++ library with regard to C++11"
-  echo "       (see GCC Dual ABI: # https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)"
-
+# check for libc++
+if [[ !(-d "./llvm-build/output/lib") ]]; then
+	echo "ERROR: clang++ 3.9 and libc++ is necessary to compile AirSim and run it in Unreal 4.15"
+	echo "please run setup.sh first."
 	exit 1
 fi
 
 # set up paths of clang compiler
-export CC=/usr/bin/clang
-export CXX=/usr/bin/clang++
+export CC=/usr/bin/clang-3.9
+export CXX=/usr/bin/clang++-3.9
 
-# if eigen env var not found then install eigen in current directory
-if [[ ! -d "$EIGEN_ROOT" ]]; then 
-	echo "EIGEN_ROOT variable is not set."
+#install EIGEN library
+if [[ -z "${EIGEN_ROOT}" ]]; then 
+	echo "EIGEN_ROOT variable is not set"
 	if [[ ! -d eigen ]]; then
-		echo "downloading eigen..."
-		wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
-		unzip 3.3.2.zip -d eigen
-		pushd eigen
-		mv eigen* eigen3
-		echo "3.3.2" > version
-		popd &>/dev/null
-		rm 3.3.2.zip
+		echo "eigen is not installed. Please run setup.sh first."
+		exit 1
 	fi
 	export EIGEN_ROOT="$(pwd)/eigen"
-	echo "export EIGEN_ROOT=\"$(pwd)/eigen\"" >> ~/.bashrc
 fi
+
 
 # variable for build output
 build_dir=build_debug
@@ -79,11 +67,15 @@ mkdir -p AirLib/deps/MavLinkCom/lib
 cp $build_dir/output/lib/libAirLib.a AirLib/lib
 cp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
 cp $build_dir/output/lib/libAirSim-rpclib.a AirLib/deps/rpclib/lib/librpc.a
+
+# Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
 rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug
 rsync -a --delete external/rpclib/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 
+# Update Blocks project
+Unreal/Environments/Blocks/clean.sh
 rsync -a --delete Unreal/Plugins Unreal/Environments/Blocks
 
 echo ""
@@ -94,8 +86,8 @@ echo "If you are using Blocks environment, its already updated."
 echo "If you are using your own environment, update blugin with this:"
 echo "rsync -t -r Unreal/Plugins path/to/MyUnrealProject"
 echo ""
-echo "Make sure EIGEN_ROOT variable is set! (.bashrc should have it now)"
-echo "export EIGEN_ROOT=\"$EIGEN_ROOT\""
+echo "For help see https://github.com/Microsoft/AirSim/blob/master/docs/linux_build.md"
 echo "=================================================================="
 
 
+popd

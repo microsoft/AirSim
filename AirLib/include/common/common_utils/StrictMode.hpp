@@ -43,6 +43,7 @@
     _Pragma("clang diagnostic ignored \"-Wstrict-overflow\"")         \
     _Pragma("clang diagnostic ignored \"-Wswitch-default\"")          \
     _Pragma("clang diagnostic ignored \"-Wundef\"")                   \
+    _Pragma("clang diagnostic ignored \"-Wunused-variable\"")         \
     _Pragma("clang diagnostic ignored \"-Wunused-parameter\"")
 
 /* Addition options that can be enabled
@@ -72,6 +73,7 @@ _Pragma("clang diagnostic ignored \"-Wunused-variable\"")         \
     _Pragma("GCC diagnostic ignored \"-Wstrict-overflow\"")         \
     _Pragma("GCC diagnostic ignored \"-Wswitch-default\"")          \
     _Pragma("GCC diagnostic ignored \"-Wundef\"")                   \
+    _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
     _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")
 
 /* Addition options that can be enabled

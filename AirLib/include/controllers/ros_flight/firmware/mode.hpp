@@ -45,6 +45,8 @@ private:
 /************************************************** Implementation ***************************************************************/
 void Mode::init(Board* _board, CommLink* _comm_link, CommonState* _common_state, Sensors* _sensors, RC* _rc, Params* _params)
 {
+    unused(_error_state);
+
     board = _board;
     comm_link = _comm_link;
     params = _params;

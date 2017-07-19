@@ -88,6 +88,10 @@ private:
 
 void Sensors::init(CommonState* _common_state, Board* _board, Estimator* _estimator, Params* _params, CommLink* _comm_link)
 {
+    unused(accel_status);
+    unused(gyro_status);
+    unused(temp_status);
+
     common_state = _common_state;
     estimator = _estimator;
     params = _params;

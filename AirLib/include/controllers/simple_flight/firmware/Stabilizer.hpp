@@ -12,6 +12,7 @@ public:
           angle_estimator_(angle_estimator),
           rate_stabilizer_(params, clock), angle_stabilizer_(params, clock)
     {
+        unused(clock_);
     }
 
     void reset()

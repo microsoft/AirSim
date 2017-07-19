@@ -28,7 +28,7 @@ protected:
         //set up mass
         params.mass = 2.856f;
         real_T motor_assembly_weight = 0.0800f;  //weight for MT2212 motor for F450 frame
-        real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
+        //real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
 
         //set up dimensions of core body box
         params.body_box.x() = 0.35f; params.body_box.y() = 0.20f; params.body_box.z() = 0.22f;

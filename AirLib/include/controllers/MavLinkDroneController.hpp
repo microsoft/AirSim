@@ -1007,7 +1007,7 @@ public:
         bool rc = false;
         checkVehicle();
         mavlinkcom::AsyncResult<bool> result = mav_vehicle_->loiter();
-        auto start_time = std::chrono::system_clock::now();
+        //auto start_time = std::chrono::system_clock::now();
         while (!cancelable_action.isCancelled())
         {
             if (result.wait(100, &rc))

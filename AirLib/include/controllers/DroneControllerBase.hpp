@@ -55,6 +55,7 @@ public: //types
         StatusLock(DroneControllerBase* drone)
             : drone_(drone), lock_(drone->status_mutex_)
         {
+            unused(drone_);
         }
 
     private:

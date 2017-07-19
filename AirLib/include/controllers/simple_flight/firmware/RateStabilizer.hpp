@@ -19,6 +19,7 @@ public:
           pid_rate_yaw_(clock, 
               PidController<float>::Config(params->p_yaw_rate, 0, 0))
     {
+        unused(params_);
     }
 
     void reset()

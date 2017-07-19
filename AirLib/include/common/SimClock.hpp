@@ -15,6 +15,7 @@ public:
         : scale_(scale), latency_(latency)
     {
         offset_ = latency * (scale_ - 1);
+        unused(latency_);
     }
 
     virtual TTimePoint nowNanos() const override
