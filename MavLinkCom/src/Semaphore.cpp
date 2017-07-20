@@ -1,6 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#ifdef _WIN32
+#include <Windows.h>
+
 #include "Semaphore.hpp"
 #include "Utils.hpp"
 
@@ -8,12 +11,8 @@ using namespace mavlink_utils;
 
 #ifdef __APPLE__
 #include <signal.h> //SIGALRM
-
-
+#include <semaphore.h>
 #endif
-
-#ifdef _WIN32
-#include <Windows.h>
 
 class Semaphore::semaphore_impl
 {

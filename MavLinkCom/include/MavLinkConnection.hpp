@@ -50,10 +50,10 @@ namespace mavlinkcom {
     public:
         MavLinkConnection();
 
-		// Find available serial ports for the given vendor id/product id pair.  If a matching port is found it returns the
-		// SerialPortInfo of that port, the portName can then be used connectSerial.  Pass 0 for vid and pid to find all 
+        // Find available serial ports for the given vendor id/product id pair.  If a matching port is found it returns the
+        // SerialPortInfo of that port, the portName can then be used connectSerial.  Pass 0 for vid and pid to find all 
         // available serial ports.
-		static std::vector<SerialPortInfo> findSerialPorts(int vid, int pid);
+        static std::vector<SerialPortInfo> findSerialPorts(int vid, int pid);
 
         // create connection over serial port (e.g. /dev/ttyACM0 or on windows "com5").
         // pass initial string to write to the port, which can be used to configure the port.
@@ -90,13 +90,13 @@ namespace mavlinkcom {
         bool isOpen();
         void close();
 
-		// provide a callback function that will be called for every message "received" from the remote mavlink node.
+        // provide a callback function that will be called for every message "received" from the remote mavlink node.
         int subscribe(MessageHandler handler);
         void unsubscribe(int id);
 
-		// log every message that is "sent" using sendMessage.
-		void startLoggingSendMessage(std::shared_ptr<MavLinkLog> log);
-		void stopLoggingSendMessage();
+        // log every message that is "sent" using sendMessage.
+        void startLoggingSendMessage(std::shared_ptr<MavLinkLog> log);
+        void stopLoggingSendMessage();
 
         uint8_t getNextSequence();
 
@@ -111,10 +111,10 @@ namespace mavlinkcom {
         // Send the given already encoded message, assuming the compid and sysid have been set by the caller.
         void sendMessage(const MavLinkMessage& msg);
 
-		// get the next telemetry snapshot, then clear the internal counters and start over.  This way each snapshot
-		// gives you a picture of what happened in whatever timeslice you decide to call this method.  This is packaged
-		// in a mavlink message so you can easily send it to the LogViewer.
-		void getTelemetry(MavLinkTelemetry& result);
+        // get the next telemetry snapshot, then clear the internal counters and start over.  This way each snapshot
+        // gives you a picture of what happened in whatever timeslice you decide to call this method.  This is packaged
+        // in a mavlink message so you can easily send it to the LogViewer.
+        void getTelemetry(MavLinkTelemetry& result);
 
         //add the message in to list of ignored messages. These messages will not be sent in the sendMessage() call.
         //this does not effect reception of message, however. This is typically useful in scenario where many connections

@@ -115,10 +115,10 @@ private:
             update();
         }
         catch(const std::exception& ex) {
-            Utils::log(Utils::stringf("Exception occurred while updating world: %s", ex.what()));
+            Utils::log(Utils::stringf("Exception occurred while updating world: %s", ex.what()), Utils::kLogLevelError);
         }
         catch(...) {
-            Utils::log("Exception occurred while updating world");
+            Utils::log("Exception occurred while updating world", Utils::kLogLevelError);
         }
         return true;
     }

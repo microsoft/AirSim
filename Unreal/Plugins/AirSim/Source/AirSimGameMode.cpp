@@ -17,14 +17,14 @@ class AUnrealLog : public msr::airlib::Utils::Logger
 public:
     virtual void log(int level, const std::string& message) override 
     {
-        if (level == 0) {
-            UE_LOG(LogAirSim, Log, TEXT("%s"), *FString(message.c_str()));
+        if (level == msr::airlib::Utils::kLogLevelError) {
+            UE_LOG(LogAirSim, Error, TEXT("%s"), *FString(message.c_str()));
         }
-        else if (level > 0) {
+        else if (level == msr::airlib::Utils::kLogLevelWarn) {
             UE_LOG(LogAirSim, Warning, TEXT("%s"), *FString(message.c_str()));
         }
         else {
-            UE_LOG(LogAirSim, Error, TEXT("%s"), *FString(message.c_str()));
+            UE_LOG(LogAirSim, Log, TEXT("%s"), *FString(message.c_str()));
         }
   
 //#ifdef _MSC_VER

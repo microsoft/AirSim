@@ -95,7 +95,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
 {
     //validate path size
     if (path.size() == 0) {
-        Utils::log("moveOnPath terminated because path has no points");
+        Utils::log("moveOnPath terminated because path has no points", Utils::kLogLevelWarn);
         return true;
     }
 
@@ -468,7 +468,7 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
                 moveByVelocityZ(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
             }
             catch(const DroneControllerBase::UnsafeMoveException& ex) {
-                Utils::log(Utils::stringf("Safety violation: %s", ex.result.message.c_str()));
+                Utils::log(Utils::stringf("Safety violation: %s", ex.result.message.c_str()), Utils::kLogLevelWarn);
             }
         }
         else
@@ -581,7 +581,7 @@ void DroneControllerBase::logHomePoint()
 {
     GeoPoint homepoint = getHomePoint();
     if (std::isnan(homepoint.longitude))
-        Utils::log("Home point is not set!");
+        Utils::log("Home point is not set!", Utils::kLogLevelWarn);
     else
         Utils::log(homepoint.to_string().c_str());
 }

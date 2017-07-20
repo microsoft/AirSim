@@ -643,7 +643,7 @@ void PrintCustomMode(const MavLinkHeartbeat& heartbeat)
         PrintEnum(CustomSubModeNames, submode);
     }
     else {
-        Utils::logMessage("    Custom mode=%x", heartbeat.custom_mode);
+        Utils::log(Utils::stringf("    Custom mode=%x", heartbeat.custom_mode));
     }
 }
 
@@ -652,28 +652,28 @@ void PrintHeartbeat(const MavLinkMessage& msg) {
     MavLinkHeartbeat heartbeat;
     heartbeat.decode(msg);
 
-    Utils::logMessage("Connected:");
-    Utils::logMessage("    Version=%d", static_cast<int>(heartbeat.mavlink_version));
+    Utils::log("Connected:");
+    Utils::log(Utils::stringf("    Version=%d", static_cast<int>(heartbeat.mavlink_version)));
 
     if (heartbeat.type < MAV_TYPE_ENUM_END) {
-        Utils::logMessage("    Type=%s", MavTypeNames[heartbeat.type]);
+        Utils::log(Utils::stringf("    Type=%s", MavTypeNames[heartbeat.type]));
     }
 
     if (heartbeat.autopilot < MAV_AUTOPILOT_ENUM_END) {
-        Utils::logMessage("    Autopilot=%s", AutoPilotNames[heartbeat.autopilot]);
+        Utils::log(Utils::stringf("    Autopilot=%s", AutoPilotNames[heartbeat.autopilot]));
     }
 
     if (heartbeat.system_status < MAV_STATE_ENUM_END) {
-        Utils::logMessage("    State=%s", MavStateNames[heartbeat.system_status]);
+        Utils::log(Utils::stringf("    State=%s", MavStateNames[heartbeat.system_status]));
     }
 
-    Utils::logMessage("    Base mode:");
+    Utils::log("    Base mode:");
     PrintFlags(ModeFlagNames, heartbeat.base_mode);
 
     PrintCustomMode(heartbeat);
 
-    Utils::logMessage("    VEHICLE SYSTEM ID: %i", msg.sysid);
-    Utils::logMessage("    VEHICLE COMPONENT ID: %i", msg.compid);
+    Utils::log(Utils::stringf("    VEHICLE SYSTEM ID: %i", msg.sysid));
+    Utils::log(Utils::stringf("    VEHICLE COMPONENT ID: %i", msg.compid));
 
 }
 
@@ -1081,6 +1081,7 @@ void runTelemetry() {
 }
 
 void startTelemetry() {
+    Utils::cleanupThread(telemetry_thread);
     telemetry_thread = std::thread(&runTelemetry);
 }
 
@@ -1219,7 +1220,7 @@ void handleStatus(const MavLinkStatustext& statustext) {
     }
 
     std::string safeText(statustext.text, 50);
-    Utils::logMessage("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), safeText.c_str());
+    Utils::log(Utils::stringf("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), safeText.c_str()));
 }
 
 int console(std::stringstream& script) {

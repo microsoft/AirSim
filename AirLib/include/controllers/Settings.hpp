@@ -1,13 +1,14 @@
 ﻿#pragma once
-#include <string>
-#include <mutex>
-#include "common/common_utils/Utils.hpp"
-#include "common/common_utils/FileSystem.hpp"
 
 STRICT_MODE_OFF
 // this json library is not strict clean
 #include "common/common_utils/json.hpp"
 STRICT_MODE_ON
+
+#include <string>
+#include <mutex>
+#include "common/common_utils/Utils.hpp"
+#include "common/common_utils/FileSystem.hpp"
 
 namespace msr {
     namespace airlib {

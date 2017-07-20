@@ -264,7 +264,7 @@ void MavLinkFtpClientImpl::runStateMachine()
 		if (before == after)
 		{
 			if (totalSleep > (MAXIMUM_ROUND_TRIP_TIME * TIMEOUT_INTERVAL)) {
-				Utils::logMessage("ftp command timeout, not getting a response, so retrying\n");
+				Utils::log("ftp command timeout, not getting a response, so retrying\n", Utils::kLogLevelWarn);
 				retry();
 				totalSleep = 0;
 			}
@@ -556,7 +556,7 @@ void MavLinkFtpClientImpl::handleListResponse()
 	if (payload->offset != file_index_)
 	{
 		// todo: error handling here? sequence is out of order...
-		Utils::logMessage("list got offset %d, but expecting file index %d\n", payload->offset, file_index_);
+        Utils::log(Utils::stringf("list got offset %d, but expecting file index %d\n", payload->offset, file_index_), Utils::kLogLevelError);
 		retry();
 		return;
 	}
@@ -639,7 +639,7 @@ void MavLinkFtpClientImpl::handleReadResponse()
 		int seq = static_cast<int>(payload->seq_number);
 		if (seq != sequence_ + 1)
 		{
-			Utils::logMessage("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1);
+            Utils::log(Utils::stringf("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1), Utils::kLogLevelError);
 			// perhaps this was a late response after we did a retry, so ignore it.
 			return;
 		}
@@ -670,7 +670,7 @@ void MavLinkFtpClientImpl::handleWriteResponse()
 		int seq = static_cast<int>(payload->seq_number);
 		if (seq != sequence_ + 1)
 		{
-			Utils::logMessage("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1); 
+            Utils::log(Utils::stringf("packet %d is out of sequence, expecting number %d\n", seq, sequence_ + 1), Utils::kLogLevelError); 
 			// perhaps this was a late response after we did a retry, so ignore it.
 			return;
 		}
@@ -776,7 +776,7 @@ void MavLinkFtpClientImpl::handleResponse(const MavLinkMessage& msg)
                 break;
             default:
 				// todo: how to handle this? For now we ignore it and let the watchdog kick in and do a retry.
-				Utils::logMessage("Unexpected ACK with req_opcode=%d\n", static_cast<int>(payload->req_opcode));
+                Utils::log(Utils::stringf("Unexpected ACK with req_opcode=%d\n", static_cast<int>(payload->req_opcode)), Utils::kLogLevelWarn);
                 break;
 			}
 		}
@@ -788,7 +788,7 @@ void MavLinkFtpClientImpl::MavLinkFtpClientImpl::retry()
 	retries_++;
 	if (retries_ < 10) 
 	{
-		Utils::logMessage("retry %d\n", retries_);
+        Utils::log(Utils::stringf("retry %d\n", retries_), Utils::kLogLevelWarn);
 		nextStep();
 	}
 	else 

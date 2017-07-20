@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#include "MavLinkConnectionImpl.hpp"
 #include "Utils.hpp"
 #include "ThreadUtils.hpp"
-#include "MavLinkConnectionImpl.hpp"
 #include "../serial_com/Port.h"
 #include "../serial_com/SerialPort.hpp"
 #include "../serial_com/UdpClientPort.hpp"
@@ -107,7 +107,10 @@ void MavLinkConnectionImpl::startListening(std::shared_ptr<MavLinkConnection> pa
     close();
     closed = false;
     port = connectedPort;
+
+    Utils::cleanupThread(read_thread);
     read_thread = std::thread{ &MavLinkConnectionImpl::readPackets, this };
+    Utils::cleanupThread(publish_thread_);
     publish_thread_ = std::thread{ &MavLinkConnectionImpl::publishPackets, this };
 }
 
@@ -489,8 +492,8 @@ void MavLinkConnectionImpl::drainQueue()
                 (*ptr).handler(sharedPtr, message);
             }
             catch (std::exception& e) {
-                Utils::logError("MavLinkConnectionImpl: Error handling message %d on connection '%s', details: %s",
-                    message.msgid, name.c_str(), e.what());
+                Utils::log(Utils::stringf("MavLinkConnectionImpl: Error handling message %d on connection '%s', details: %s",
+                    message.msgid, name.c_str(), e.what()), Utils::kLogLevelError);
             }
         }
 

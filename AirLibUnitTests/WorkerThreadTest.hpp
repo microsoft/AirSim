@@ -1,10 +1,10 @@
 #ifndef msr_AirLibUnitTests_WorkerThreadThreadTest_hpp
 #define msr_AirLibUnitTests_WorkerThreadThreadTest_hpp
 
-#include <chrono>
-#include <cassert>
 #include "common/common_utils/WorkerThread.hpp"
 #include "common/common_utils/Timer.hpp"
+#include <chrono>
+#include <cassert>
 
 using namespace msr::airlib;
 using namespace common_utils;

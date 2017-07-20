@@ -67,9 +67,6 @@
     <ClCompile Include="src\serial_com\SocketInit.cpp">
       <Filter>serial_com</Filter>
     </ClCompile>
-    <ClCompile Include="common_utils\Utils.cpp">
-      <Filter>common_utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\Semaphore.cpp">
       <Filter>src</Filter>
     </ClCompile>

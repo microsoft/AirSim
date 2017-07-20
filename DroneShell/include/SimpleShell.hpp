@@ -4,16 +4,7 @@
 #ifndef air_SimpleShell_hpp
 #define air_SimpleShell_hpp
 
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <vector>
-#include <functional>
-#include <unordered_map>
-#include <algorithm>
-#include <fstream>
-#include "common/common_utils/Utils.hpp"
-//better handle below dependency
+#include "common/common_utils/StrictMode.hpp"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
 #define RPCLIB_MSGPACK clmdep_msgpack
@@ -25,6 +16,17 @@ STRICT_MODE_ON
 STRICT_MODE_OFF
 #include "linenoise.hpp"
 STRICT_MODE_ON
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <functional>
+#include <unordered_map>
+#include <algorithm>
+#include <fstream>
+#include "common/common_utils/Utils.hpp"
+#include "common/ClockBase.hpp"
 
 namespace msr { namespace airlib {
 
@@ -60,14 +62,14 @@ public:
             help = other.help;
             value = other.value;
         }
-		float toFloat() {
-			try {
-				return std::stof(value);
-			}
-			catch (std::exception&) {
-				throw std::invalid_argument(Utils::stringf("expecting float value for switch '%s', but found '%s'", name.c_str(), value.c_str()));
-			}
-		}
+        float toFloat() {
+            try {
+                return std::stof(value);
+            }
+            catch (std::exception&) {
+                throw std::invalid_argument(Utils::stringf("expecting float value for switch '%s', but found '%s'", name.c_str(), value.c_str()));
+            }
+        }
         TTimeDelta toTimeDelta() {
             try {
                 return std::stod(value);
@@ -76,14 +78,14 @@ public:
                 throw std::invalid_argument(Utils::stringf("expecting TTimeDelta value for switch '%s', but found '%s'", name.c_str(), value.c_str()));
             }
         }
-		int toInt() {
-			try {
-				return std::stoi(value);
-			}
-			catch (std::exception&) {
-				throw std::invalid_argument(Utils::stringf("expecting integer value for switch '%s', but found '%s'", name.c_str(), value.c_str()));
-			}
-		}
+        int toInt() {
+            try {
+                return std::stoi(value);
+            }
+            catch (std::exception&) {
+                throw std::invalid_argument(Utils::stringf("expecting integer value for switch '%s', but found '%s'", name.c_str(), value.c_str()));
+            }
+        }
     };
 
     class ShellCommand {
@@ -247,25 +249,25 @@ public: //default commands
 
     bool helpMethod(const ShellCommandParameters& params)
     {
-		std::string name;
+        std::string name;
 
-		if (params.args.size() > 0) {
-			if (params.args[0] == "help" || params.args[0] == "?") {
-				if (params.args.size() > 1) {
-					// syntax: help movetoposition
-					name = params.args[1];
-				}
-			}
-			else {
-				// syntax: movetoposition -?
-				name = params.args[0];
-			}
-		}
+        if (params.args.size() > 0) {
+            if (params.args[0] == "help" || params.args[0] == "?") {
+                if (params.args.size() > 1) {
+                    // syntax: help movetoposition
+                    name = params.args[1];
+                }
+            }
+            else {
+                // syntax: movetoposition -?
+                name = params.args[0];
+            }
+        }
 
 
         if (name.size() > 0)
         {
-			name = Utils::toLower(name);
+            name = Utils::toLower(name);
 
             if (command_infos_.find(name) != command_infos_.end()) {
                 ShellCommand& command = command_infos_.at(name);
@@ -293,7 +295,7 @@ public: //default commands
             }
         }
 
-		// show general help on all commands.
+        // show general help on all commands.
         size_t longest = 0;
         for(auto kv : command_infos_) {
             size_t len = kv.first.size();
@@ -358,34 +360,34 @@ private:
     std::string prompt_;
 private:
     void commandCompletitionCallBack(const char* editBuffer, VectorString& completions) {
-		std::vector<string> words = Utils::tokenize(string(editBuffer), " \t", 2);
-		if (words.size() > 0) {
-			string cmd = Utils::toLower(words[0]);
-			for (auto kv : command_infos_) {
-				std::string first = kv.first;
-				if (first == cmd && words.size() > 1) {
-					// then we can do some argument help on the last argument!
-					string prefix;
-					for (size_t i = 0; i < words.size() - 1; i++) {
-						if (prefix.size() > 0) prefix += " ";
-						prefix += words[i];
-					}
-					string last_arg = words[words.size() - 1];
-					ShellCommand& info = kv.second;
-					auto arg_list = info.getSwitches();
-					for (auto ptr = arg_list.begin(); ptr != arg_list.end(); ptr++) {
-						string switch_name = *ptr;
-						if (switch_name.find(last_arg.c_str() == 0)) { // starts-with
-							completions.push_back(prefix + " " + switch_name);
-						}
-					}
-					return;
-				}
-				else if (first.find(cmd.c_str()) == 0) { // starts-with
-					completions.push_back(kv.first);					
-				}
-			}
-		}
+        std::vector<string> words = Utils::tokenize(string(editBuffer), " \t", 2);
+        if (words.size() > 0) {
+            string cmd = Utils::toLower(words[0]);
+            for (auto kv : command_infos_) {
+                std::string first = kv.first;
+                if (first == cmd && words.size() > 1) {
+                    // then we can do some argument help on the last argument!
+                    string prefix;
+                    for (size_t i = 0; i < words.size() - 1; i++) {
+                        if (prefix.size() > 0) prefix += " ";
+                        prefix += words[i];
+                    }
+                    string last_arg = words[words.size() - 1];
+                    ShellCommand& info = kv.second;
+                    auto arg_list = info.getSwitches();
+                    for (auto ptr = arg_list.begin(); ptr != arg_list.end(); ptr++) {
+                        string switch_name = *ptr;
+                        if (switch_name.find(last_arg.c_str() == 0)) { // starts-with
+                            completions.push_back(prefix + " " + switch_name);
+                        }
+                    }
+                    return;
+                }
+                else if (first.find(cmd.c_str()) == 0) { // starts-with
+                    completions.push_back(kv.first);					
+                }
+            }
+        }
     }
 public:
     SimpleShell(std::string prompt = "> ")
@@ -484,14 +486,14 @@ public:
 
             const std::vector<std::string>& args = params.args;
             int len = static_cast<int>(args.size());
-			bool help = false;
+            bool help = false;
             for(int i = 0; i < len; i++) {
                 std::string arg = args.at(i);
                 if (!arg.empty() && (arg.at(0) == '-' || arg.at(0) == '/')) {
-					std::string option = "-" + arg.substr(1);
-					if (option == "-?" || option == "-help" || option == "-h") {
-						help = true;
-					}
+                    std::string option = "-" + arg.substr(1);
+                    if (option == "-?" || option == "-help" || option == "-h") {
+                        help = true;
+                    }
                     else if (i + 1 < len) {
                         cmd->getSwitch(arg).value = args.at(i + 1);
                         ++i;
@@ -505,14 +507,14 @@ public:
                 }
             }
 
-			ShellCommandParameters execParams{ nonSwitchArgs, params.context, params.command_line, this };
+            ShellCommandParameters execParams{ nonSwitchArgs, params.context, params.command_line, this };
 
-			if (help) {
-				return helpCommand.execute(execParams);
-			}
-			else {
-				return cmd->execute(execParams);
-			}
+            if (help) {
+                return helpCommand.execute(execParams);
+            }
+            else {
+                return cmd->execute(execParams);
+            }
         }
         return false;
     }
@@ -520,7 +522,7 @@ public:
     bool execute(const std::string& command_line, ExecContext* const context) {
 
         //parse arguments
-		VectorString args = Utils::tokenize(command_line, " \t", 2);
+        VectorString args = Utils::tokenize(command_line, " \t", 2);
         
         auto params = ShellCommandParameters{args, context, command_line, this};
         

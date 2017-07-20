@@ -5,10 +5,6 @@
 #define common_utils_Semaphore_hpp
 #include <memory>
 
-#ifdef __APPLE__
-#include <semaphore.h>
-#endif
-
 namespace mavlink_utils
 {
 	/*

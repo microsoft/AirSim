@@ -11,12 +11,12 @@
 
 namespace mavlinkcom
 {
-	// This abstract class defines the interface for logging MavLinkMessages.
-	class MavLinkLog
-	{
-	public:
+    // This abstract class defines the interface for logging MavLinkMessages.
+    class MavLinkLog
+    {
+    public:
         virtual void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) = 0;
-	};
+    };
 
     // This implementation of MavLinkLog reads/writes MavLinkMessages to a local file.
     class MavLinkFileLog : public MavLinkLog

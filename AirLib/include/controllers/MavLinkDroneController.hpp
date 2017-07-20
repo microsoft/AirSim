@@ -4,6 +4,12 @@
 #ifndef msr_airlib_MavLinkDroneController_hpp
 #define msr_airlib_MavLinkDroneController_hpp
 
+#include "MavLinkVehicle.hpp"
+#include "MavLinkConnection.hpp"
+#include "MavLinkMessages.hpp"
+#include "MavLinkNode.hpp"
+#include "MavLinkVideoStream.hpp"
+
 #include <queue>
 #include <mutex>
 #include <string>
@@ -18,11 +24,6 @@
 #include "vehicles/MultiRotor.hpp"
 #include "controllers/DroneControllerBase.hpp"
 #include "controllers/PidController.hpp"
-#include "MavLinkConnection.hpp"
-#include "MavLinkMessages.hpp"
-#include "MavLinkNode.hpp"
-#include "MavLinkVideoStream.hpp"
-#include "MavLinkVehicle.hpp"
 
 //sensors
 #include "sensors/barometer/BarometerBase.hpp"

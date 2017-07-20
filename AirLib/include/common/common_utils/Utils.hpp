@@ -148,7 +148,10 @@ public:
         return logger_;
     }
 
-    static void log(std::string message, int level = 0)
+    static constexpr int kLogLevelInfo = 0;
+    static constexpr int kLogLevelWarn = -1;
+    static constexpr int kLogLevelError = -2;
+    static void log(std::string message, int level = kLogLevelInfo)
     {
         getSetLogger()->log(level, message);
     }
@@ -195,6 +198,20 @@ public:
 
         ss << suffix;
         return ss.str();         
+    }
+
+    static std::string getFileExtension(const string& str)
+    {
+        int len = static_cast<int>(str.size());
+        const char* ptr = str.c_str();
+        int i = 0;
+        for (i = len - 1; i >= 0; i--)
+        {
+            if (ptr[i] == '.')
+                break;
+        }
+        if (i < 0) return "";
+        return str.substr(i, len - i);
     }
 
     static string formatNumber(double number, int digits_after_decimal = -1, int digits_before_decimal = -1, bool sign_always = false)
@@ -370,6 +387,14 @@ public:
             & (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount));
     }
 
+    static void cleanupThread(std::thread& th)
+    {
+        if (th.joinable()) {
+            Utils::log("thread was cleaned up!", kLogLevelWarn);
+            th.detach();
+        }
+    }
+
     static inline int floorToInt(float x)
     {
         return static_cast<int> (std::floor(x));
@@ -466,6 +491,10 @@ public:
     static string getLogFileTimeStamp()
     {
         return to_string(now(), "%Y%m%d%H%M%S");
+    }
+    static int to_integer(std::string s)
+    {
+        return atoi(s.c_str());
     }
     static string getEnv(const string& var)
     {

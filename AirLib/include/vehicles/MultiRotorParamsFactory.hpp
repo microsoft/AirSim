@@ -4,11 +4,11 @@
 #ifndef msr_airlib_vehicles_MultiRotorParamsFactory_hpp
 #define msr_airlib_vehicles_MultiRotorParamsFactory_hpp
 
+#include "vehicles/configs/Px4MultiRotor.hpp"
+#include "controllers/MavLinkDroneController.hpp"
 #include "vehicles/configs/RosFlightQuadX.hpp"
 #include "vehicles/configs/SimpleFlightQuadX.hpp"
-#include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
-#include "vehicles/configs/Px4MultiRotor.hpp"
 
 
 namespace msr { namespace airlib {

@@ -38,6 +38,7 @@ public:
         keep_running_ = true;
         sleep_time_avg_ = 0;
         period_count_ = 0;
+        Utils::cleanupThread(th_);
         th_ = std::thread(&ScheduledExecutor::executorLoop, this);
     }
 

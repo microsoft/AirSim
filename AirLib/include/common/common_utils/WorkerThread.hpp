@@ -12,8 +12,8 @@
 #include <exception>
 #include <future>
 #include <mutex>
-#include "Utils.hpp"
 #include "Timer.hpp"
+#include "Utils.hpp"
 
 namespace msr {
     namespace airlib {
@@ -195,6 +195,7 @@ namespace msr {
                         }
                     }
                     thread_stopped_ = false;
+                    Utils::cleanupThread(thread_);
                     thread_ = std::thread(&WorkerThread::run, this);
                     thread_started_.wait([this] { return static_cast<bool>(thread_stopped_); });
                 }
@@ -216,7 +217,7 @@ namespace msr {
                             pending->execute();
                         }
                         catch (std::exception& e) {
-                            Utils::log(Utils::stringf("WorkerThread caught unhandled exception: %s", e.what()));
+                            Utils::log(Utils::stringf("WorkerThread caught unhandled exception: %s", e.what()), Utils::kLogLevelError);
                         }
                         // we use cancel here to communicate to enqueueAndWait that the task is complete.
                         pending->complete();

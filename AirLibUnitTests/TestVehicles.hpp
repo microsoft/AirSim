@@ -2,9 +2,9 @@
 #ifndef msr_AirLibUnitTests_TestVehicles_hpp
 #define msr_AirLibUnitTests_TestVehicles_hpp
 
+#include "vehicles/MultiRotorParamsFactory.hpp"
 #include <chrono>
 #include <cassert>
-#include "vehicles/MultiRotorParamsFactory.hpp"
 
 using namespace msr::airlib;
 
