@@ -14,7 +14,6 @@ include_directories(
 )
 
 
-LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/common_utils/Utils.cpp")
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/common_utils/FileSystem.cpp")
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/common_utils/ThreadUtils.cpp")
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/MavLinkConnection.cpp") 

@@ -5,6 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"
 
 set -e
+set +x
 
 rm -rf build_debug
 rm -rf build_release
