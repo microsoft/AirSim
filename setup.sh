@@ -4,7 +4,7 @@ set -x
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-pushd "$SCRIPT_DIR"
+pushd "$SCRIPT_DIR" >/dev/null
 
 #get sub modules
 git submodule update --init --recursive
@@ -28,7 +28,8 @@ fi
 
 #build libc++
 sudo rm -rf llvm-build
-mkdir llvm-build && cd llvm-build
+mkdir -p llvm-build
+pushd llvm-build >/dev/null
 
 export C_COMPILER=clang-3.9
 export COMPILER=clang++-3.9
@@ -43,6 +44,8 @@ make cxx
 #install libc++ locally in output folder
 sudo make install-libcxx install-libcxxabi 
 
+popd >/dev/null
+
 #install EIGEN library
 if [[ -z "${EIGEN_ROOT}" ]] || [[ ! -d eigen ]]; then 
 	echo "EIGEN_ROOT variable is not set"
@@ -50,15 +53,15 @@ if [[ -z "${EIGEN_ROOT}" ]] || [[ ! -d eigen ]]; then
 		echo "downloading eigen..."
 		wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
 		unzip 3.3.2.zip -d eigen
-		pushd eigen
+		pushd eigen >/dev/null
 		mv eigen* eigen3
 		echo "3.3.2" > version
-		popd &>/dev/null
+		popd >/dev/null
 		rm 3.3.2.zip
 	fi
 fi
 
-popd
+popd >/dev/null
 
 set +x
 echo ""

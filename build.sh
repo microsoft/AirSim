@@ -2,7 +2,7 @@
 
 # get path of current script: https://stackoverflow.com/a/39340259/207661
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-pushd "$SCRIPT_DIR"
+pushd "$SCRIPT_DIR"  >/dev/null
 
 set -e
 set -x
@@ -46,19 +46,19 @@ fi
 
 if [[ ! -d $build_dir ]]; then
 	mkdir -p $build_dir
-	pushd $build_dir
+	pushd $build_dir  >/dev/null
 
 	cmake ../cmake -DCMAKE_BUILD_TYPE=Debug \
-		|| (cd .. && rm -r $build_dir && exit 1)
-	popd &>/dev/null
+		|| (popd && rm -r $build_dir && exit 1)
+	popd >/dev/null
 fi
 
-pushd $build_dir
+pushd $build_dir  >/dev/null
 # final linking of the binaries can fail due to a missing libc++abi library
 # (happens on Fedora, see https://bugzilla.redhat.com/show_bug.cgi?id=1332306).
 # So we only build the libraries here for now
 make 
-popd &>/dev/null
+popd >/dev/null
 
 
 mkdir -p AirLib/lib/x64/Debug
@@ -94,4 +94,4 @@ echo "https://github.com/Microsoft/AirSim/blob/master/docs/linux_build.md"
 echo "=================================================================="
 
 
-popd
+popd >/dev/null

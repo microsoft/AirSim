@@ -71,12 +71,12 @@ macro(CommonSetup)
             if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
                 # make sure to match the compiler flags with which the Unreal
                 # Engine is built with
-                set(CMAKE_EXE_LINKER_FLAGS "\
-                    ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc -lgcc_s -lgcc -ldl \
-                    -Wl,-rpath,${LIBCXX_LIB_PATH}")
                 set(CMAKE_CXX_FLAGS "\
                     -nostdinc++ -isystem ${LIBCXX_INC_PATH} \
                     -D__CLANG__ ${CMAKE_CXX_FLAGS}")
+                set(CMAKE_EXE_LINKER_FLAGS "\
+                    ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc -lgcc_s -lgcc -ldl \
+                    -L ${LIBCXX_LIB_PATH}")
                 set(CXX_EXP_LIB "-lc++experimental")
 
                 if("${BUILD_TYPE}" STREQUAL "debug")
