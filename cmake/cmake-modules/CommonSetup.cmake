@@ -77,7 +77,9 @@ macro(CommonSetup)
                 set(CMAKE_EXE_LINKER_FLAGS "\
                     ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc -lgcc_s -lgcc -ldl \
                     -L ${LIBCXX_LIB_PATH}")
-                set(CXX_EXP_LIB "-lc++experimental")
+                
+                #do not use experimental as it might potentially cause ABI issues
+                #set(CXX_EXP_LIB "-lc++experimental")
 
                 if("${BUILD_TYPE}" STREQUAL "debug")
                     # set same options that Unreal sets in debug builds

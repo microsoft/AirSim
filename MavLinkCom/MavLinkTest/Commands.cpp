@@ -11,14 +11,11 @@
 #include "FileSystem.hpp"
 #include "Utils.hpp"
 
-#if defined(_WIN32)
+#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
 #include <filesystem>
-// for some unknown reason, VC++ doesn't define this handy macro...
-#define __cpp_lib_experimental_filesystem 201406
+#define USE_CPP_FILESYSTEM
 #else
-#if __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-#endif
+#undef USE_CPP_FILESYSTEM
 #endif
 
 
@@ -470,8 +467,8 @@ void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     unused(com);
 //TODO: make below future proof (i.e. usable by C++17 compiler) - also change same in main.cpp
-#if defined(__cpp_lib_experimental_filesystem)
-    using namespace std::experimental::filesystem::v1;
+#if defined(USE_CPP_FILESYSTEM)
+    using namespace std::filesystem;
     path dirPath(log_folder_);
 
     for (directory_iterator next(dirPath), end; next != end; ++next) {

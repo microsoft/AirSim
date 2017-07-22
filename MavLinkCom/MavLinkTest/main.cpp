@@ -22,14 +22,11 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 #include "UnitTests.h"
 
-#if defined(_WIN32)
+#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
 #include <filesystem>
-// for some unknown reason, VC++ doesn't define this handy macro...
-#define __cpp_lib_experimental_filesystem 201406
+#define USE_CPP_FILESYSTEM
 #else
-#if __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-#endif
+#undef USE_CPP_FILESYSTEM
 #endif
 
 /* enable math defines on Windows */
@@ -156,9 +153,9 @@ std::shared_ptr<MavLinkConnection> logConnection;
 std::shared_ptr<MavLinkVehicle> mavLinkVehicle;
 
 
-#if defined(__cpp_lib_experimental_filesystem)
+#if defined(USE_CPP_FILESYSTEM)
 
-using namespace std::experimental::filesystem::v1;
+using namespace std::filesystem;
 
 void ConvertLogFileToJson(std::string logFile)
 {
@@ -900,7 +897,7 @@ bool ParseCommandLine(int argc, const char* argv[])
                     }
                 }
             }
-#if defined(__cpp_lib_experimental_filesystem)
+#if defined(USE_CPP_FILESYSTEM)
             else if (lower == initOption) {
 
                 if (parts.size() > 1)
@@ -1473,7 +1470,7 @@ int main(int argc, const char* argv[])
         return 1;
     }
 
-#if defined(__cpp_lib_experimental_filesystem)
+#if defined(USE_CPP_FILESYSTEM)
     if (convertExisting) {
         if (jsonLogFormat) {
             ConvertLogFilesToJson(logDirectory);
