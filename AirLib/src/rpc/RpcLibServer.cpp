@@ -10,6 +10,9 @@
 #include "AirSim.h"
 #endif
 
+//Unreal defines this macro that interferes with msgpack
+#undef check
+
 #include "common/Common.hpp"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK

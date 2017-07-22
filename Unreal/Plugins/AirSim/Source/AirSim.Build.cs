@@ -72,7 +72,7 @@ public class AirSim : ModuleRules
         AddOSLibDependencies(Target);
         LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
 
-        SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
+        SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
     }
 
     private void AddEigenDependency()

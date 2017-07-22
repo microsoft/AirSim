@@ -10,6 +10,8 @@
 #include "AirSim.h"
 #endif
 
+//Unreal defines this macro that interferes with msgpack
+#undef check
 
 #include "common/Common.hpp"
 #include <thread>
