@@ -221,8 +221,13 @@ void MultiRotorConnector::updateRendering(float dt)
         UAirBlueprintLib::LogMessage(FString(controller_messages_[i].c_str()), TEXT(""), LogDebugLevel::Success, 30);
     }
 
-    //UAirBlueprintLib::LogMessage(TEXT("Collison (raw) Count:"), FString::FromInt(collision_response_info.collison_count_raw), LogDebugLevel::Unimportant);
-    UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(collision_response_info.collison_count_non_resting), LogDebugLevel::Failure);
+    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_) {
+        UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(vehicle_pawn_->getCollisonInfo().collison_count), LogDebugLevel::Failure);
+    }
+    else {
+        //UAirBlueprintLib::LogMessage(TEXT("Collison (raw) Count:"), FString::FromInt(collision_response_info.collison_count_raw), LogDebugLevel::Unimportant);
+        UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(collision_response_info.collison_count_non_resting), LogDebugLevel::Failure);
+    }
 }
 
 

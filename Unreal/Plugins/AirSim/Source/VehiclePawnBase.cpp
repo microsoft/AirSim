@@ -84,6 +84,7 @@ void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
     state_.collison_info.position = NedTransform::toNedMeters(getPosition());
     state_.collison_info.penetration_depth = NedTransform::toNedMeters(Hit.PenetrationDepth);
     state_.collison_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
+    ++state_.collison_info.collison_count;
 }
 
 void AVehiclePawnBase::displayCollisonEffect(FVector hit_location, const FHitResult& hit)

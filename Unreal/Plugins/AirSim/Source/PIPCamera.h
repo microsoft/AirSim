@@ -21,14 +21,14 @@ public:
 
         unsigned int width = 256, height = 144; //960 X 540
         float fov_degrees = Utils::nan<float>(); //90.0f
-        float auto_exposure_speed = 100.0f;
-        float auto_exposure_bias = 0;
-        float auto_exposure_max_brightness = 0.64f;
-        float auto_exposure_min_brightness = 0.03f;
-        float auto_exposure_low_percent = 80.0f;
-        float auto_exposure_high_percent = 98.3f;      
-        float auto_exposure_histogram_log_min = -8;
-        float auto_exposure_histogram_log_max = 4;
+        float auto_exposure_speed = Utils::nan<float>(); // 100.0f;
+        float auto_exposure_bias = Utils::nan<float>(); // 0;
+        float auto_exposure_max_brightness = Utils::nan<float>(); // 0.64f;
+        float auto_exposure_min_brightness = Utils::nan<float>(); // 0.03f;
+        float auto_exposure_low_percent = Utils::nan<float>(); // 80.0f;
+        float auto_exposure_high_percent = Utils::nan<float>(); // 98.3f;
+        float auto_exposure_histogram_log_min = Utils::nan<float>(); // -8;
+        float auto_exposure_histogram_log_max = Utils::nan<float>(); // 4;
         float motion_blur_amount = 0;
         float target_gamma = Utils::nan<float>(); //1.0f; //should be defaulted to kSceneTargetGamma for scene
     };

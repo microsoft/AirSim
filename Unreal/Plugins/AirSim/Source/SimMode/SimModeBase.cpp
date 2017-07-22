@@ -59,6 +59,7 @@ void ASimModeBase::readSettings()
 
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
     usage_scenario = settings.getString("UsageScenario", "");
+    enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
 
     Settings record_settings;
     if (settings.getChild("Recording", record_settings)) {

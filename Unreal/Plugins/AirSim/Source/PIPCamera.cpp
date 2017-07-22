@@ -47,6 +47,7 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void APIPCamera::showToScreen()
 {
+    camera_->SetVisibility(true);
     camera_->Activate();
     APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
     controller->SetViewTarget(this);
@@ -232,6 +233,7 @@ void APIPCamera::disableAllPIP()
 void APIPCamera::disableMain()
 {
     camera_->Deactivate();
+    camera_->SetVisibility(false);
 }
 
 

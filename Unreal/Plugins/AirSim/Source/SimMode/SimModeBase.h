@@ -54,6 +54,7 @@ protected:
     std::string fpv_vehicle_name;
     std::string physics_engine_name;
     std::string usage_scenario;
+    bool enable_collision_passthrough;
     RecordingSettings recording_settings;
 
 private:

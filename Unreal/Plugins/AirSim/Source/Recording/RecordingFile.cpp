@@ -19,7 +19,7 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::P
     try {    
         FString image_path = FString(common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str());
         filePath = image_path + FString::FromInt(images_saved_) + ".png";
-        bool imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *filePath);
+        imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *filePath);
     }
     catch(std::exception& ex) {
         UAirBlueprintLib::LogMessage(TEXT("Image file save failed"), FString(ex.what()), LogDebugLevel::Failure);        

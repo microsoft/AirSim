@@ -85,7 +85,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
         }
     }
 
-    if (usage_scenario == kUsageScenarioComputerVision)
+    if (enable_collision_passthrough)
         fpv_vehicle_pawn_->EnablePassthroughOnCollisons = true;
     fpv_vehicle_pawn_->initializeForBeginPlay();
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_, external_camera);

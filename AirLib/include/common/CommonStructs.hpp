@@ -179,6 +179,7 @@ struct CollisionInfo {
     Vector3r position = Vector3r::Zero();
     real_T penetration_depth = 0;
     TTimePoint time_stamp = 0;
+    unsigned int collison_count = 0;
 
     CollisionInfo()
     {}
