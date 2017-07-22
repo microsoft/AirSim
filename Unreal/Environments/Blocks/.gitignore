@@ -4,6 +4,15 @@ Plugins/
 # don't check-in generated files
 *.sln
 *_BuiltData.uasset
+/.kdev/
+/*.kdev4
+/*.pro
+/*.workspace
+/*CodeCompletionFolders.txt
+/*CodeLitePreProcessor.txt
+/*.pri
+/CMakeLists.txt
+/Makefile
 
 # avoid checking uproject because this is usually just version change
 *.uproject
