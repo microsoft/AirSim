@@ -155,7 +155,12 @@ std::shared_ptr<MavLinkVehicle> mavLinkVehicle;
 
 #if defined(USE_CPP_FILESYSTEM)
 
+//can't use experimental stuff on Linux because of potential ABI issues
+#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus < 201700L))
+using namespace std::experimental::filesystem;
+#else
 using namespace std::filesystem;
+#endif
 
 void ConvertLogFileToJson(std::string logFile)
 {
