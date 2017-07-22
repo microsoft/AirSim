@@ -92,7 +92,14 @@ void AAirSimGameMode::initializeSettings()
             settings.setString("see_docs_at", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
 
             if (!file_found) {
-                json_fstring = FString(settings.saveJSonString().c_str());
+                std::string json_content;
+//TODO: there is a crash in Linux due to settings.saveJSonString(). Remove this workaround after we know the reason.
+#ifdef _WIN32
+                json_content = settings.saveJSonString();
+#else
+                json_content = "{  \"see_docs_at\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
+#endif
+                json_fstring = FString(json_content.c_str());
                 FFileHelper::SaveStringToFile(json_fstring, * settings_filename);
                 UAirBlueprintLib::LogMessageString("Created settings file at ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
             }

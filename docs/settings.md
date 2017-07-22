@@ -17,29 +17,48 @@ Below are complete list of settings available along with their default values. I
   "FpvVehicleName": "Pixhawk",
   "UsageScenario": "",
   "RpcEnabled": true,
+  "PhysicsEngineName": "FastPhysicsEngine",
+  "EnableCollisionPassthrogh": false,
+  "LogMessagesVisible": true,
   "RosFlight": {
     "RemoteControlID": 0
+  },
+  "Recording": {
+    "RecordOnMove": false,
+    "RecordInterval": 0.05f
   },
   "SceneCaptureSettings" : {
     "Width": 256,
 	  "Height": 144,
     "FOV_Degrees": 90,
     "AutoExposureSpeed": 100,
-    "MotionBlurAmount": 0
+    "AutoExposureBias": 0,
+    "AutoExposureMaxBrightness": 0.64f,
+    "AutoExposureMinBrightness": 0.03f,
+    "MotionBlurAmount": 0,
+    "TargetGamma": 1.0f
   },  
   "DepthCaptureSettings" : {
     "Width": 256,
 	  "Height": 144,
     "FOV_Degrees": 90,
     "AutoExposureSpeed": 100,
-    "MotionBlurAmount": 0
+    "AutoExposureBias": 0,
+    "AutoExposureMaxBrightness": 0.64f,
+    "AutoExposureMinBrightness": 0.03f,
+    "MotionBlurAmount": 0,
+    "TargetGamma": 1.0f
   },  
   "SegCaptureSettings" : {
     "Width": 256,
 	  "Height": 144,
     "FOV_Degrees": 90,
     "AutoExposureSpeed": 100,
-    "MotionBlurAmount": 0
+    "AutoExposureBias": 0,
+    "AutoExposureMaxBrightness": 0.64f,
+    "AutoExposureMinBrightness": 0.03f,
+    "MotionBlurAmount": 0,
+    "TargetGamma": 1.0f
   },  
   "SimpleFlight": {
     "RemoteControlID": 0
@@ -67,7 +86,7 @@ Below are complete list of settings available along with their default values. I
 ````
 
 ## Image Capture Settings
-The `SceneCaptureSettings`, `DepthCaptureSettings` and `SegCaptureSettings` determines how scene view, depth view and segmentation views are captures. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images.
+The `SceneCaptureSettings`, `DepthCaptureSettings` and `SegCaptureSettings` determines how scene view, depth view and segmentation views are captures. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images. For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/).
 
 ## Changing Flight Controller
 The `FpvVehicleName` decides which vehicle will be your primary vehicle with FPV view. By default its Pixhawk and we have RosFlight and SimpleFlight in development, both of which are designed so you don't have to do separate HITL or SITL setups. For ["Computer Vision" mode](image_apis.md), use SimpleFlight as described in doc.
