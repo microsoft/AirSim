@@ -1,7 +1,7 @@
 # AirSim Settings
 
 ## Where are Settings Stored?
-AirSim configuration is specified in `settings.json` file located in `Documents\AirSim` folder on Windows (`~/Documents/AirSim` folder on Linux). The file is in usual [json format](](https://en.wikipedia.org/wiki/JSON). 
+AirSim configuration is specified in `settings.json` file located in `Documents\AirSim` folder on Windows (`~/Documents/AirSim` folder on Linux). The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). 
 
 On first startup AirSim would create `settings.json` file with no settings. To avoid problems, always use ASCII format to save json file.
 
