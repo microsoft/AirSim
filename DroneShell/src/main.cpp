@@ -12,7 +12,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include "common/common_utils/AsyncTasker.hpp"
-#include "rpc/RpcLibClient.hpp"
+#include "api/RpcLibClient.hpp"
 #include "common/EarthUtils.hpp"
 #include "controllers/DroneCommon.hpp"
 #include "controllers/DroneControllerBase.hpp"

@@ -9,7 +9,7 @@
 #include "common/common_utils/ProsumerQueue.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include "common/ClockFactory.hpp"
-#include "rpc/RpcLibClient.hpp"
+#include "api/RpcLibClient.hpp"
 #include "controllers/DroneControllerBase.hpp"
 #include "RandomPointPoseGenerator.hpp"
 STRICT_MODE_OFF

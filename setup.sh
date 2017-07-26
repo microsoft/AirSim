@@ -9,57 +9,27 @@ pushd "$SCRIPT_DIR" >/dev/null
 #get sub modules
 git submodule update --init --recursive
 
-#get clang 3.9
+#TODO: below is probably not needed any longer
 sudo apt-get install -y build-essential
-wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-sudo apt-get update
-sudo apt-get install -y clang-3.9 clang++-3.9
-#other packages
-#sudo apt-get install -y clang-3.9-doc libclang-common-3.9-dev libclang-3.9-dev libclang1-3.9 libclang1-3.9-dbg libllvm-3.9-ocaml-dev libllvm3.9 libllvm3.9-dbg lldb-3.9 llvm-3.9 llvm-3.9-dev llvm-3.9-doc llvm-3.9-examples llvm-3.9-runtime clang-format-3.9 python-clang-3.9 libfuzzer-3.9-dev
 
-#get libc++ source
-if [[ ! -d "llvm-source" ]]; then 
-	git clone --depth=1 -b release_39  https://github.com/llvm-mirror/llvm.git llvm-source
-	git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxx.git llvm-source/projects/libcxx
-	git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxxabi.git llvm-source/projects/libcxxabi
-else
-	echo "folder llvm-source already exists, skipping git clone..."
-fi
-
-#build libc++
+# get clang, libc++
 sudo rm -rf llvm-build
+# for other OS, please see http://releases.llvm.org/download.html#3.9.1
+wget http://releases.llvm.org/3.9.1/clang+llvm-3.9.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz
 mkdir -p llvm-build
-pushd llvm-build >/dev/null
-
-export C_COMPILER=clang-3.9
-export COMPILER=clang++-3.9
-
-cmake -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
-      -LIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF -DLIBCXX_INSTALL_EXPERIMENTAL_LIBRARY=OFF \
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=./output \
-            ../llvm-source
-
-make cxx
-
-#install libc++ locally in output folder
-sudo make install-libcxx install-libcxxabi 
-
-popd >/dev/null
+tar -xf "clang+llvm-3.9.1-x86_64-linux-gnu-debian8.tar.xz" -C llvm-build
+rm "clang+llvm-3.9.1-x86_64-linux-gnu-debian8.tar.xz"
+mv ./llvm-build/clang* ./llvm-build/output
 
 #install EIGEN library
-if [[ -z "${EIGEN_ROOT}" ]] || [[ ! -d eigen ]]; then 
-	echo "EIGEN_ROOT variable is not set"
-	if [[ ! -d eigen ]]; then
-		echo "downloading eigen..."
-		wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
-		unzip 3.3.2.zip -d eigen
-		pushd eigen >/dev/null
-		mv eigen* eigen3
-		echo "3.3.2" > version
-		popd >/dev/null
-		rm 3.3.2.zip
-	fi
-fi
+sudo rm -rf ./AirLib/deps/eigen3/Eigen
+echo "downloading eigen..."
+wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
+unzip 3.3.2.zip -d temp_eigen
+mkdir -p AirLib/deps/eigen3
+mv temp_eigen/eigen*/Eigen AirLib/deps/eigen3
+rm -rf temp_eigen
+rm 3.3.2.zip
 
 popd >/dev/null
 

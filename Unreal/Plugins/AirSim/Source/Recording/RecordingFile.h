@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include <string>
 #include "AirBlueprintLib.h"
 #include "physics/PhysicsBody.hpp"

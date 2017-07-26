@@ -1,4 +1,4 @@
-#include "AirSim.h"
+#include "VehicleCameraConnector.h"
 #include "RenderRequest.h"
 #include "ImageUtils.h"
 #include "common/ClockFactory.hpp"

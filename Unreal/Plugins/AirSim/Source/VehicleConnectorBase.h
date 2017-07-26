@@ -1,8 +1,9 @@
 #pragma once
 
+#include "controllers/VehicleCameraBase.hpp"
 #include "common/UpdatableObject.hpp"
 #include "controllers/VehicleControllerBase.hpp"
-#include "rpc/ControlServerBase.hpp"
+#include "api/ControlServerBase.hpp"
 
 
 class VehicleConnectorBase : public msr::airlib::UpdatableObject

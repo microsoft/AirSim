@@ -6,8 +6,7 @@ macro(CommonTargetLink)
 endmacro(CommonTargetLink)
 
 macro(IncludeEigen)
-    find_package(Eigen3 3 REQUIRED)
-    include_directories(${EIGEN3_INCLUDE_DIR})
+    include_directories(${AIRSIM_ROOT}/AirLib/deps/eigen3)
 endmacro(IncludeEigen)
 
 macro(AddExecutableSource)

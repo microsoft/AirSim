@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
@@ -22,6 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\api\DebugApiServer.hpp" />
     <ClInclude Include="include\common\ClockBase.hpp" />
     <ClInclude Include="include\common\Common.hpp" />
     <ClInclude Include="include\common\CommonStructs.hpp" />
@@ -95,7 +96,7 @@
     <ClInclude Include="include\controllers\simple_flight\SimpleFlightDroneController.hpp" />
     <ClInclude Include="include\controllers\VehicleCameraBase.hpp" />
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />
-    <ClInclude Include="include\rpc\ControlServerBase.hpp" />
+    <ClInclude Include="include\api\ControlServerBase.hpp" />
     <ClInclude Include="include\safety\CubeGeoFence.hpp" />
     <ClInclude Include="include\controllers\DroneCommon.hpp" />
     <ClInclude Include="include\controllers\DroneControllerBase.hpp" />
@@ -103,9 +104,9 @@
     <ClInclude Include="include\controllers\MavLinkDroneController.hpp" />
     <ClInclude Include="include\safety\ObstacleMap.hpp" />
     <ClInclude Include="include\controllers\PidController.hpp" />
-    <ClInclude Include="include\rpc\RpcLibAdapators.hpp" />
-    <ClInclude Include="include\rpc\RpcLibClient.hpp" />
-    <ClInclude Include="include\rpc\RpcLibServer.hpp" />
+    <ClInclude Include="include\api\RpcLibAdapators.hpp" />
+    <ClInclude Include="include\api\RpcLibClient.hpp" />
+    <ClInclude Include="include\api\RpcLibServer.hpp" />
     <ClInclude Include="include\safety\SafetyEval.hpp" />
     <ClInclude Include="include\controllers\DroneControllerCancelable.hpp" />
     <ClInclude Include="include\controllers\Settings.hpp" />
@@ -150,8 +151,8 @@
   <ItemGroup>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
-    <ClCompile Include="src\rpc\RpcLibClient.cpp" />
-    <ClCompile Include="src\rpc\RpcLibServer.cpp" />
+    <ClCompile Include="src\api\RpcLibClient.cpp" />
+    <ClCompile Include="src\api\RpcLibServer.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />
     <ClCompile Include="src\controllers\FileSystem.cpp" />
   </ItemGroup>
@@ -238,7 +239,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;deps\eigen3;deps\rpclib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -262,7 +263,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;deps\eigen3;deps\rpclib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4505;4820;4464;4514;4710;4571;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -289,7 +290,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;deps\eigen3;deps\rpclib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -317,7 +318,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;$(EIGEN_ROOT)\Eigen3;deps\rpclib\include;..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;deps\eigen3;deps\rpclib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -337,7 +338,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)\build\eigen.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

@@ -3,10 +3,6 @@
 
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
-//if using Unreal Build system then include precompiled header file first
-#ifdef AIRLIB_PCH
-#include "AirSim.h"
-#endif
 
 #include "safety/SafetyEval.hpp"
 
@@ -15,6 +11,8 @@
 
 namespace msr { namespace airlib {
 
+//TODO: something defines max macro which interfears with code here
+#undef max
 
 SafetyEval::SafetyEval(VehicleParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy_ptr)
     : vehicle_params_(vehicle_params), fence_ptr_(fence_ptr), obs_xy_ptr_(obs_xy_ptr)

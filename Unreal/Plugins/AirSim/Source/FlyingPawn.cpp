@@ -1,5 +1,5 @@
-#include "AirSim.h"
 #include "FlyingPawn.h"
+#include "Components/StaticMeshComponent.h"
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
 #include "MultiRotorConnector.h"

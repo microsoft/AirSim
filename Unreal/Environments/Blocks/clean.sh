@@ -14,5 +14,7 @@ rm -rf Saved
 rm -rf Plugins/AirSim/Binaries
 rm -rf Plugins/AirSim/Intermediate
 rm -rf Plugins/AirSim/Saved
+rm -f CMakeLists.txt
+rm -f Makefile
 
 popd >/dev/null

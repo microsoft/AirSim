@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Engine.h"
+#include "CoreMinimal.h"
 
 DECLARE_STATS_GROUP(TEXT("AirSim"), STATGROUP_AirSim, STATCAT_Advanced);
 

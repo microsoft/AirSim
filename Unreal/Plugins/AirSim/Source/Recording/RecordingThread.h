@@ -1,6 +1,8 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "AirBlueprintLib.h"
+#include "HAL/Runnable.h"
 #include "VehicleCameraConnector.h"
 #include "Recording/RecordingFile.h"
 #include "physics/PhysicsBody.hpp"

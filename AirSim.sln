@@ -1,24 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DroneShell", "DroneShell\DroneShell.vcxproj", "{9FE9234B-373A-4D5A-AD6B-FB0B593312DD}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AirLib", "AirLib\AirLib.vcxproj", "{4BFB7231-077A-4671-BD21-D3ADE3EA36E7}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloDrone", "HelloDrone\HelloDrone.vcxproj", "{98BB426F-6FB5-4754-81BC-BB481900E135}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MavLinkCom", "MavLinkCom\MavLinkCom.vcxproj", "{8510C7A4-BF63-41D2-94F6-D8731D137A5A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DroneServer", "DroneServer\DroneServer.vcxproj", "{A050F015-87E2-498F-866A-2E5AF65AF7AC}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MavLinkTest", "MavLinkCom\MavLinkTest\MavLinkTest.vcxproj", "{25EB67BE-468A-4AA5-910F-07EFD58C5516}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Examples", "Examples\Examples.vcxproj", "{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AirLibUnitTests", "AirLibUnitTests\AirLibUnitTests.vcxproj", "{2A61ED54-2B66-4B9B-99FA-299DD0EF57CD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unreal", "Unreal", "{04B515C0-07BC-4CE8-8A16-F0D70E86C7C9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{A3E13CC1-566C-46BD-B46C-45FC31CF12CF}"
@@ -79,14 +63,63 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimMode", "SimMode", "{6175
 		Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldMultiRotor.h = Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldMultiRotor.h
 	EndProjectSection
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonClient", "PythonClient\PythonClient.pyproj", "{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Recording", "Recording", "{66DAD5E7-6925-4266-8E04-91F19052623A}"
 	ProjectSection(SolutionItems) = preProject
 		Unreal\Plugins\AirSim\Source\Recording\RecordingFile.cpp = Unreal\Plugins\AirSim\Source\Recording\RecordingFile.cpp
 		Unreal\Plugins\AirSim\Source\Recording\RecordingFile.h = Unreal\Plugins\AirSim\Source\Recording\RecordingFile.h
 		Unreal\Plugins\AirSim\Source\Recording\RecordingThread.cpp = Unreal\Plugins\AirSim\Source\Recording\RecordingThread.cpp
 		Unreal\Plugins\AirSim\Source\Recording\RecordingThread.h = Unreal\Plugins\AirSim\Source\Recording\RecordingThread.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DroneShell", "DroneShell\DroneShell.vcxproj", "{9FE9234B-373A-4D5A-AD6B-FB0B593312DD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AirLib", "AirLib\AirLib.vcxproj", "{4BFB7231-077A-4671-BD21-D3ADE3EA36E7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloDrone", "HelloDrone\HelloDrone.vcxproj", "{98BB426F-6FB5-4754-81BC-BB481900E135}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MavLinkCom", "MavLinkCom\MavLinkCom.vcxproj", "{8510C7A4-BF63-41D2-94F6-D8731D137A5A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DroneServer", "DroneServer\DroneServer.vcxproj", "{A050F015-87E2-498F-866A-2E5AF65AF7AC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MavLinkTest", "MavLinkCom\MavLinkTest\MavLinkTest.vcxproj", "{25EB67BE-468A-4AA5-910F-07EFD58C5516}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Examples", "Examples\Examples.vcxproj", "{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AirLibUnitTests", "AirLibUnitTests\AirLibUnitTests.vcxproj", "{2A61ED54-2B66-4B9B-99FA-299DD0EF57CD}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonClient", "PythonClient\PythonClient.pyproj", "{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11C1B3C5-35A0-46EA-B532-100A14FDAAC6}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.gitmodules = .gitmodules
+		.travis.yml = .travis.yml
+		build.cmd = build.cmd
+		build.sh = build.sh
+		clean.cmd = clean.cmd
+		clean.sh = clean.sh
+		LICENSE = LICENSE
+		README.md = README.md
+		setup.sh = setup.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Environments", "Environments", "{00D55ED5-8214-4EC6-8828-5146D757BE46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blocks", "Blocks", "{C7F74F18-FD02-4044-98AB-F771DF882A2F}"
+	ProjectSection(SolutionItems) = preProject
+		Unreal\Environments\Blocks\.gitignore = Unreal\Environments\Blocks\.gitignore
+		Unreal\Environments\Blocks\Blocks.uproject = Unreal\Environments\Blocks\Blocks.uproject
+		Unreal\Environments\Blocks\clean.bat = Unreal\Environments\Blocks\clean.bat
+		Unreal\Environments\Blocks\clean.sh = Unreal\Environments\Blocks\clean.sh
+		Unreal\Environments\Blocks\update_from_git.bat = Unreal\Environments\Blocks\update_from_git.bat
+		Unreal\Environments\Blocks\update_from_git.sh = Unreal\Environments\Blocks\update_from_git.sh
+		Unreal\Environments\Blocks\update_to_git.bat = Unreal\Environments\Blocks\update_to_git.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{7F07A6E9-396C-47F7-A18D-DE1A3A84BC8E}"
+	ProjectSection(SolutionItems) = preProject
+		Unreal\Environments\Blocks\Source\Blocks.Target.cs = Unreal\Environments\Blocks\Source\Blocks.Target.cs
+		Unreal\Environments\Blocks\Source\BlocksEditor.Target.cs = Unreal\Environments\Blocks\Source\BlocksEditor.Target.cs
 	EndProjectSection
 EndProject
 Global
@@ -196,5 +229,8 @@ Global
 		{95E2FEEF-3F34-4255-BB56-EF77466EFE7C} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
 		{6175579D-2920-406D-A36B-2A0A56AA7892} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
 		{66DAD5E7-6925-4266-8E04-91F19052623A} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
+		{00D55ED5-8214-4EC6-8828-5146D757BE46} = {04B515C0-07BC-4CE8-8A16-F0D70E86C7C9}
+		{C7F74F18-FD02-4044-98AB-F771DF882A2F} = {00D55ED5-8214-4EC6-8828-5146D757BE46}
+		{7F07A6E9-396C-47F7-A18D-DE1A3A84BC8E} = {C7F74F18-FD02-4044-98AB-F771DF882A2F}
 	EndGlobalSection
 EndGlobal

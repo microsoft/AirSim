@@ -1,4 +1,3 @@
-#include "AirSim.h"
 #include "SimHUDWidget.h"
 
 void USimHUDWidget::updateReport(const std::string& text)

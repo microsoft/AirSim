@@ -2,6 +2,9 @@
 
 STRICT_MODE_OFF
 // this json library is not strict clean
+//TODO: HACK!! below are added temporariliy because something is defining min, max macros
+//#undef max
+#undef min
 #include "common/common_utils/json.hpp"
 STRICT_MODE_ON
 

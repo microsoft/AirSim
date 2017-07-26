@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "SimHUDWidget.h"
 #include "SimMode/SimModeBase.h"

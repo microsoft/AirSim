@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "VehicleConnectorBase.h"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"

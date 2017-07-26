@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "AirSim.h"
+#include "Misc/Paths.h"
 #include "SimJoyStick/SimJoyStick.h"
 
 DEFINE_LOG_CATEGORY(LogAirSim);

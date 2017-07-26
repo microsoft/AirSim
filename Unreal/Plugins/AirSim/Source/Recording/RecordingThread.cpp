@@ -1,8 +1,7 @@
-
-#include <AirSim.h>
+#include "RecordingThread.h"
+#include "HAL/RunnableThread.h"
 #include <thread>
 #include <mutex>
-#include "Recording/RecordingThread.h"
 #include "TaskGraphInterfaces.h"
 #include "RenderRequest.h"
 #include "PIPCamera.h"

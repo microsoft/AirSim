@@ -1,7 +1,8 @@
-#include <AirSim.h>
+#include "RenderRequest.h"
+#include "TextureResource.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "TaskGraphInterfaces.h"
 #include "ImageUtils.h"
-#include "RenderRequest.h"
 
 RenderRequest::RenderRequest(bool use_safe_method)
 {

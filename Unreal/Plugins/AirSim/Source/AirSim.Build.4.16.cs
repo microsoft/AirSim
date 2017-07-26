@@ -28,6 +28,8 @@ public class AirSim : ModuleRules
 
     private void SetupCompileMode(CompileMode mode, ReadOnlyTargetRules Target)
     {
+        LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
+
         switch (mode)
         {
             case CompileMode.HeaderOnlyNoRpc:
@@ -45,7 +47,6 @@ public class AirSim : ModuleRules
                 Definitions.Add("AIRLIB_NO_RPC=1");
                 break;
             case CompileMode.CppCompileWithRpc:
-                LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
             default:
@@ -56,7 +57,8 @@ public class AirSim : ModuleRules
 
     public AirSim(ReadOnlyTargetRules Target) : base(Target)
     {
-        bEnforceIWYU = false; //to support 4.16
+        //bEnforceIWYU = true; //to support 4.16
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         //below is no longer supported in 4.16
         bEnableExceptions = true;
 
@@ -67,23 +69,11 @@ public class AirSim : ModuleRules
         Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
         Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
 
-        AddEigenDependency();
         PrivateIncludePaths.Add(Path.Combine(AirSimPath, "include"));
+        PrivateIncludePaths.Add(Path.Combine(AirSimPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
-        LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
 
-        SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
-    }
-
-    private void AddEigenDependency()
-    {
-        string eigenPath = System.Environment.GetEnvironmentVariable("EIGEN_ROOT");
-        if (string.IsNullOrEmpty(eigenPath) || !System.IO.Directory.Exists(eigenPath) || !System.IO.Directory.Exists(Path.Combine(eigenPath, "eigen3")))
-        {
-            throw new System.Exception("EIGEN_ROOT is not defined, or points to a non-existant directory, please set this environment variable.  " +
-                "See readme: " + readmurl);
-        }
-        PrivateIncludePaths.Add(Path.Combine(eigenPath, "eigen3"));
+        SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
     }
 
     private void AddOSLibDependencies(ReadOnlyTargetRules Target)

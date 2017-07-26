@@ -3,10 +3,6 @@
 
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
-//if using Unreal Build system then include precompiled header file first
-#ifdef AIRLIB_PCH
-#include "AirSim.h"
-#endif
 
 #include <thread>
 #include "safety/ObstacleMap.hpp"

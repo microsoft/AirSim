@@ -1,5 +1,6 @@
-#include "AirSim.h"
 #include "SimModeBase.h"
+#include "Misc/MessageDialog.h"
+#include "Misc/EngineVersion.h"
 #include "AirBlueprintLib.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "controllers/Settings.hpp"

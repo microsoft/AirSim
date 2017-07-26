@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "Camera/CameraActor.h"
 #include "controllers/VehicleCameraBase.hpp"
 #include "common/common_utils/Utils.hpp"

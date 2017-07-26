@@ -26,7 +26,7 @@ public:
 
     TReturn next()
     {
-        return dist_(rand_);
+        return static_cast<TReturn>(dist_(rand_));
     }
 
     void reset()
@@ -43,7 +43,8 @@ private:
 typedef RandomGenerator<double, std::uniform_real_distribution<double>> RandomGeneratorD;
 typedef RandomGenerator<float, std::uniform_real_distribution<float>> RandomGeneratorF;
 typedef RandomGenerator<int, std::uniform_int_distribution<int>> RandomGeneratorI;
-typedef RandomGenerator<float, std::normal_distribution<float>> RandomGeneratorGaussianF;
+//TODO: below we should have float instead of double but VC++2017 has a bug :(
+typedef RandomGenerator<float, std::normal_distribution<double>> RandomGeneratorGaussianF;
 typedef RandomGenerator<double, std::normal_distribution<double>> RandomGeneratorGaussianD;
 
 }

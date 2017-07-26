@@ -1,7 +1,9 @@
-#include "AirSim.h"
+#include "PIPCamera.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Camera/CameraComponent.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include <string>
 #include <exception>
-#include "PIPCamera.h"
 #include "AirBlueprintLib.h"
 #include "ImageUtils.h"
 

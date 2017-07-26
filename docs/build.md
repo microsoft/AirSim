@@ -13,11 +13,6 @@
  
   ![Epic launcher install](images/epic_launcher_install.png).
 
-## Install Dependencies
-AirSim code has two external dependencies:
-  1. We use [Eigen](install_eigen.md).  
-  2. We use [rpclib](https://github.com/rpclib/rpclib.git) which is included as a git submodule.  So you don't have any setup to do for this one.
-
 ## Get the Code and Build
 
 ### Windows

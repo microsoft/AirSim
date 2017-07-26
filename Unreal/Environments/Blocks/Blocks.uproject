@@ -17,5 +17,6 @@
 			"Name": "AirSim",
 			"Enabled": true
 		}
-	]
+	],
+	"EngineAssociation": "4.15"
 }

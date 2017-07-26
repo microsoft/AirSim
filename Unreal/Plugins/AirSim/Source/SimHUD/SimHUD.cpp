@@ -1,5 +1,5 @@
-#include "AirSim.h"
 #include "SimHUD.h"
+#include "ConstructorHelpers.h"
 #include "SimMode/SimModeWorldMultiRotor.h"
 #include "Kismet/KismetSystemLibrary.h"
 

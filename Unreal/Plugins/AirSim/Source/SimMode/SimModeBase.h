@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include <string>
 #include "CameraDirector.h"
 #include "GameFramework/Actor.h"

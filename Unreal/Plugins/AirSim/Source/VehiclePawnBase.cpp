@@ -1,5 +1,8 @@
-#include "AirSim.h"
 #include "VehiclePawnBase.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "ConstructorHelpers.h"
 #include "AirBlueprintLib.h"
 #include "common/ClockFactory.hpp"
 #include "NedTransform.h"
@@ -188,7 +191,7 @@ void AVehiclePawnBase::toggleTrace()
     state_.tracing_enabled = !state_.tracing_enabled;
 
     if (!state_.tracing_enabled)
-        FlushPersistentDebugLines(this->GetWorld());
+        UKismetSystemLibrary::FlushPersistentDebugLines(this->GetWorld());
     else {     
         state_.debug_position_offset = state_.current_debug_position - state_.current_position;
         state_.last_debug_position = state_.last_position;
@@ -216,7 +219,7 @@ void AVehiclePawnBase::plot(std::istream& s, FColor color, const Vector3r& offse
         Vector3r current_point(x, y, z);
         current_point += offset;
         if (!VectorMath::hasNan(last_point)) {
-            DrawDebugLine(this->GetWorld(), NedTransform::toNeuUU(last_point), NedTransform::toNeuUU(current_point), color, true, -1.0F, 0, 3.0F);
+            UKismetSystemLibrary::DrawDebugLine(this->GetWorld(), NedTransform::toNeuUU(last_point), NedTransform::toNeuUU(current_point), color, 0, 3.0F);
         }
         last_point = current_point;
     }
@@ -254,7 +257,7 @@ void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
         this->SetActorLocationAndRotation(position, orientation, true);
 
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
-        DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, true, -1.0F, 0, 10.0F);
+        UKismetSystemLibrary::DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, 0.0f, 3.0f);
         state_.last_position = position;
     }
     else if (!state_.tracing_enabled) {
@@ -264,7 +267,7 @@ void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
     if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
         FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
-            DrawDebugLine(this->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), true, -1.0F, 0, 10.0F);
+            UKismetSystemLibrary::DrawDebugLine(this->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), 0, 10.0F);
             UAirBlueprintLib::LogMessage("Debug Pose: ", debug_position.ToCompactString(), LogDebugLevel::Informational);
             state_.last_debug_position = debug_position;
         }

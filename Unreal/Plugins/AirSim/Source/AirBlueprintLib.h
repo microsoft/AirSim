@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "Components/InputComponent.h"
+#include "GameFramework/PlayerInput.h"
 #include <string>
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"

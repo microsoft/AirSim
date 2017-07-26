@@ -1,8 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#include "AirSim.h"
 #include "AirBlueprintLib.h"
+#include "GameFramework/WorldSettings.h"
+#include "Engine/Engine.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/RotatingMovementComponent.h"
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 

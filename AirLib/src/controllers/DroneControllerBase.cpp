@@ -3,17 +3,13 @@
 
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
-//if using Unreal Build system then include precompiled header file first
-#ifdef AIRLIB_PCH
-#include "AirSim.h"
-#endif
 
+#include "controllers/DroneControllerBase.hpp"
 #include <functional>
 #include <exception>
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "controllers/DroneControllerBase.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
 namespace msr { namespace airlib {

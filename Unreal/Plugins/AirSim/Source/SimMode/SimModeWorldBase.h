@@ -1,12 +1,13 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include <memory>
 #include <vector>
 #include "VehicleConnectorBase.h"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/World.hpp"
 #include "common/StateReporterWrapper.hpp"
-#include "rpc/ControlServerBase.hpp"
+#include "api/ControlServerBase.hpp"
 #include "SimModeBase.h"
 #include "SimModeWorldBase.generated.h"
 

@@ -9,7 +9,7 @@ STRICT_MODE_OFF
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
-#include "rpc/RpcLibClient.hpp"
+#include "api/RpcLibClient.hpp"
 #include "controllers/DroneControllerBase.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include <iostream>

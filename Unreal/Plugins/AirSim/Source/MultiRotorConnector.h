@@ -1,7 +1,8 @@
 #pragma once
 
+#include "CoreMinimal.h"
+#include "FlyingPawn.h"
 #include "controllers/DroneControllerCancelable.hpp"
-#include "rpc/RpcLibServer.hpp"
 #include "vehicles/MultiRotor.hpp"
 #include "vehicles/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
@@ -10,8 +11,9 @@
 #include "VehicleConnectorBase.h"
 #include "VehicleCameraConnector.h"
 #include "ManualPoseController.h"
-#include "FlyingPawn.h"
 #include <chrono>
+#include "api/ControlServerBase.hpp"
+
 
 class MultiRotorConnector : public VehicleConnectorBase
 {
@@ -64,7 +66,7 @@ private:
 
     msr::airlib::MultiRotorParams* vehicle_params_;
     std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;
-    std::unique_ptr<msr::airlib::RpcLibServer> rpclib_server_;
+    std::unique_ptr<msr::airlib::ControlServerBase> rpclib_server_;
 
     struct RotorInfo {
         real_T rotor_speed;

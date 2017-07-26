@@ -1,4 +1,3 @@
-#include "AirSim.h"
 #include "SimModeWorldBase.h"
 
 

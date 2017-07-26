@@ -1,5 +1,6 @@
 #pragma once
-#include <AirSim.h>
+
+#include "CoreMinimal.h"
 #include "common/common_utils/WorkerThread.hpp"
 
 class RenderRequest : public FRenderCommand

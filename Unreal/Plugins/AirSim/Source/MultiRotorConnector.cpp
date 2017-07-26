@@ -1,5 +1,9 @@
-#include "AirSim.h"
 #include "MultiRotorConnector.h"
+#ifdef AIRLIB_NO_RPC
+#include "api/DebugApiServer.hpp"
+#else
+#include "api/RpcLibServer.hpp"
+#endif
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
 #include <exception>
@@ -236,7 +240,13 @@ void MultiRotorConnector::startApiServer()
     if (enable_rpc_) {
         controller_cancelable_.reset(new msr::airlib::DroneControllerCancelable(
             vehicle_.getController()));
-        rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
+
+#ifdef AIRLIB_NO_RPC
+    rpclib_server_.reset(new msr::airlib::DebugApiServer());
+#else
+    rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
+#endif
+
         rpclib_server_->start();
         UAirBlueprintLib::LogMessageString("API server started at ", api_server_address_, LogDebugLevel::Informational);
     }

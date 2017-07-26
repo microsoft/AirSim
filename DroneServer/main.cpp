@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include "rpc/RpcLibServer.hpp"
+#include "api/RpcLibServer.hpp"
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
 

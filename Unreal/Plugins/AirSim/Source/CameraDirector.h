@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "VehiclePawnBase.h"
 #include "PIPCamera.h"
 #include "GameFramework/Actor.h"

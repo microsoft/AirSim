@@ -1,7 +1,8 @@
 #pragma once
 
-#include "controllers/VehicleCameraBase.hpp"
+#include "CoreMinimal.h"
 #include "PIPCamera.h"
+#include "controllers/VehicleCameraBase.hpp"
 
 
 class VehicleCameraConnector : public VehicleCameraBase
