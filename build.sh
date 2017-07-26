@@ -11,7 +11,7 @@ set -x
 git submodule update --init --recursive 
 
 # check for libc++
-if [[ !(-d "./llvm-build/output/bin") ]]; then
+if [[ !(-d "./llvm-build/output/lib") ]]; then
     echo "ERROR: clang++ and libc++ is necessary to compile AirSim and run it in Unreal engine"
     echo "please run setup.sh first."
     exit 1

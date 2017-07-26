@@ -47,7 +47,7 @@ cmake -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
 make cxx
 
 #install libc++ locally in output folder
-sudo make install-cxx install-cxxabi 
+sudo make install-libcxx install-libcxxabi 
 
 popd >/dev/null
 
