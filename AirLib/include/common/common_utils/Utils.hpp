@@ -23,22 +23,6 @@
 #include <queue>
 #include "type_utils.hpp"
 
-#ifndef _WIN32
-#include <limits.h> // needed for CHAR_BIT used below
-#endif
-
-//Stubs for C++17 optional type
-#if (defined __cplusplus) && (__cplusplus >= 201700L)
-#include <optional>
-#else
-#include "optional.hpp"
-#endif
-
-#if (defined __cplusplus) && (__cplusplus >= 201700L)
-using std::optional;
-#else
-using std::experimental::optional;
-#endif
 
 #define _USE_MATH_DEFINES
 #include <cmath>

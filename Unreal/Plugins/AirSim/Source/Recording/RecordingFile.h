@@ -29,6 +29,7 @@ private:
     void writeString(const std::string& line);
     bool isFileOpen();
     std::string getLogFileFullPath();
+    std::string getLine(const msr::airlib::Kinematics::State& kinematics);
 
 
 private:

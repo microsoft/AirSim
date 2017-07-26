@@ -99,9 +99,23 @@ public:
         std::string logfolder = Utils::to_string(Utils::now(), "%Y-%m-%d");
         std::string fullPath = combine(getAppDataFolder(), logfolder);
         std::string timestamp = add_timestamp ? Utils::to_string(Utils::now()) : "";
-        std::stringstream filename_ss;
-        filename_ss << ensureFolder(fullPath) << kPathSeparator << prefix << suffix << timestamp << extension;
-        return filename_ss.str();
+
+        //TODO: because this bug we are using alternative code with stringstream
+        //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
+
+        std::string filename;
+        filename.append(ensureFolder(fullPath))
+            .push_back(kPathSeparator);
+        filename.append(prefix)
+            .append(suffix)
+            .append(timestamp)
+            .append(extension);
+
+        return filename;
+
+        //std::stringstream filename_ss;
+        //filename_ss << ensureFolder(fullPath) << kPathSeparator << prefix << suffix << timestamp << extension;
+        //return filename_ss.str();
     }
 
     static void openTextFile(std::string filepath, std::ifstream& file){
