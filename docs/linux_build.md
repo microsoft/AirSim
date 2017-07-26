@@ -6,10 +6,10 @@ Our current recommanded and tested environment is **Ubuntu 16.04 LTS**. Theorati
 It's super simple 1-2-3!
 
 1. Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required so you can get Unreal engine's source code.
-2. Clone Unreal in your favorite folder and run setup.sh (this may take a while!)
+2. Clone Unreal in your favorite folder and run setup.sh (this may take a while!). Note: We only support Unreal 4.16 and newer.
 ```
      mkdir -p GitHubSrc && cd GitHubSrc
-     git clone -b 4.15 https://github.com/EpicGames/UnrealEngine.git
+     git clone -b 4.16 https://github.com/EpicGames/UnrealEngine.git
      cd UnrealEngine
      ./Setup.sh
      ./GenerateProjectFiles.sh
@@ -57,7 +57,7 @@ You can use Qt or CodeLite. Instructions for Qt Creator is [available here](http
 Yes, you can but we haven't tested it. You can find [instructions here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html).
 
 #### What compiler and stdlib AirSim uses?
-We use same compiler that Unreal uses which is Clang 3.9 for Unreal 4.15 nd Clang 4.0 for Unreal 4.16. AirSim's `setup.sh` will automatically download Clang 3.9. We also need to use libc++ that Unreal uses. The libc++ code is cloned by AirSim's `setup.sh` in to `llvm-source` folder and built in `llvm-build` folder. The cmake is the instructed to use libc++ from `llvm-build` folder. For other flavors of Linux and more info, please see [http://apt.llvm.org/](http://apt.llvm.org/).
+We use same compiler that Unreal uses which is Clang 3.9. AirSim's `setup.sh` will automatically download Clang 3.9. We also need to use libc++ that Unreal uses. The libc++ code is cloned by AirSim's `setup.sh` in to `llvm-source` folder and built in `llvm-build` folder. The cmake is the instructed to use libc++ from `llvm-build` folder. For other flavors of Linux and more info, please see [http://apt.llvm.org/](http://apt.llvm.org/).
 
 #### Can use AirSim with Unreal 4.16?
 Yes! The `*.Build.cs` files are, however, no longer compatible (you will get compile error). You can find files for 4.16 as `*.Build.4.16.cs` so just rename those. 

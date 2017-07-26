@@ -2,17 +2,12 @@
 **Make sure you have read the [prerequisites](prereq.md).**
 
 ## Install Unreal Engine
-  1. Download the Unreal 4 engine from [unreal.com](https://www.unrealengine.com/dashboard). While the Unreal Engine is open source, cross platform and free to download, registration is still required as of this writing. 
-  You need version 4.15. To get version 4.15 you may need to expand "Add versions" as shown below:
+  1. Download Epic Games Launcher from [unreal.com](https://www.unrealengine.com/download). While the Unreal Engine is open source, cross platform and free to download, registration is still required. Run Epic Games Launcher, switch to Library tab on the left, click on the "Add Versions" which should show the option to download Unreal 4.16 as shown below.
+
+  **Note**: Older versions of Unreal is not supported. Some tips to upgrade your projects can be found [here](unreal_upgrade.md).
 
   ![Unreal Versions](images/unreal_versions.png)
-
-  **Note for 4.14 users**: If you had been using 4.14 or lower version with AirSim then upgrade is [simple and straight forward](unreal_upgrade.md).
   
-  2. After the download, run the Epic Game Launcher and click the big yellow "Install" button under the Unreal Engine tab. 
- 
-  ![Epic launcher install](images/epic_launcher_install.png).
-
 ## Get the Code and Build
 
 ### Windows

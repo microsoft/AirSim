@@ -3,7 +3,7 @@
 This page contains the complete instructions start to finish for setting up a free downloadable unreal environment
 with AirSim.  This document goes with the [Unreal AirSim Setup Video](https://youtu.be/1oY8Qu5maQQ).
 
-First, make sure Unreal 4.15 is installed as per [build instructions](build.md) then make sure the 4.15 version 
+First, make sure Unreal is installed as per [build instructions](build.md) then make sure the 4.16 version 
 is set as the `current` version in the Epic Games Launcher, like this:
 
 ![current version](images/current_version.png)
@@ -50,7 +50,7 @@ Now edit the `LandscapeMountains.uproject` so that it looks like this
 ````
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.15",
+	"EngineAssociation": "4.16",
 	"Category": "Samples",
 	"Description": "",
 	"Modules": [

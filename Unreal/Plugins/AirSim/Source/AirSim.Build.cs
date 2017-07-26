@@ -26,7 +26,7 @@ public class AirSim : ModuleRules
         CppCompileWithRpc
     }
 
-    private void SetupCompileMode(CompileMode mode, TargetInfo Target)
+    private void SetupCompileMode(CompileMode mode, ReadOnlyTargetRules Target)
     {
         LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
 
@@ -47,7 +47,6 @@ public class AirSim : ModuleRules
                 Definitions.Add("AIRLIB_NO_RPC=1");
                 break;
             case CompileMode.CppCompileWithRpc:
-                LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
             default:
@@ -56,10 +55,11 @@ public class AirSim : ModuleRules
 
     }
 
-    public AirSim(TargetInfo Target)
+    public AirSim(ReadOnlyTargetRules Target) : base(Target)
     {
-        bEnforceIWYU = false;
+        //bEnforceIWYU = true; //to support 4.16
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        //below is no longer supported in 4.16
         bEnableExceptions = true;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore", "RHI" });
@@ -73,10 +73,10 @@ public class AirSim : ModuleRules
         PrivateIncludePaths.Add(Path.Combine(AirSimPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
 
-        SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
+        SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
     }
 
-    private void AddOSLibDependencies(TargetInfo Target)
+    private void AddOSLibDependencies(ReadOnlyTargetRules Target)
     {
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
@@ -92,13 +92,13 @@ public class AirSim : ModuleRules
         }
     }
 
-    private bool LoadAirSimDependency(TargetInfo Target, string LibName, string LibFileName)
+    private bool LoadAirSimDependency(ReadOnlyTargetRules Target, string LibName, string LibFileName)
     {
         string LibrariesPath = Path.Combine(AirSimPath, "deps", LibName, "lib");
         return AddLibDependency(LibName, LibrariesPath, LibFileName, Target, true);
     }
 
-    private bool AddLibDependency(string LibName, string LibPath, string LibFileName, TargetInfo Target, bool IsAddLibInclude)
+    private bool AddLibDependency(string LibName, string LibPath, string LibFileName, ReadOnlyTargetRules Target, bool IsAddLibInclude)
     {
         string PlatformString = (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Mac) ? "x64" : "x86";
         string ConfigurationString = (Target.Configuration == UnrealTargetConfiguration.Debug) ? "Debug" : "Release";
@@ -108,6 +108,7 @@ public class AirSim : ModuleRules
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             isLibrarySupported = true;
+
             PublicAdditionalLibraries.Add(Path.Combine(LibPath, PlatformString, ConfigurationString, LibFileName + ".lib"));
         } else if (Target.Platform == UnrealTargetPlatform.Linux || Target.Platform == UnrealTargetPlatform.Mac) {
             isLibrarySupported = true;

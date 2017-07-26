@@ -5,21 +5,9 @@ using System.Collections.Generic;
 
 public class BlocksEditorTarget : TargetRules
 {
-	public BlocksEditorTarget(TargetInfo Target)
+	public BlocksEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-	}
-
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("Blocks");
+		ExtraModuleNames.AddRange(new string[] { "Blocks" });
 	}
 }
