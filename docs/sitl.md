@@ -19,8 +19,11 @@ out own copy of the [PX4 setup instructions](px4.md) which is a bit more concise
 
 3. Get the PX4 source code and build the posix SITL version of PX4:
 ```
+mkdir -p PX4
+cd PX4
 git clone https://github.com/PX4/Firmware.git
 cd Firmware
+git checkout tags/v1.5.5 -b v1.5.5
 make posix_sitl_default
 ```
 4. Use following command to start PX4 firmware in SITL mode:

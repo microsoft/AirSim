@@ -5,6 +5,8 @@ Our current recommanded and tested environment is **Ubuntu 16.04 LTS**. Theorati
 ## Install and Build
 It's super simple 1-2-3!
 
+**Note:** You can either use Unreal 4.16 or 4.17, but not the older versions. Both versions have some known issues. Please see FAQ later in this doc.
+
 1. Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required so you can get Unreal engine's source code.
 2. Clone Unreal in your favorite folder and run setup.sh (this may take a while!). Note: We only support Unreal 4.16 and newer.
 ```
@@ -46,6 +48,12 @@ rsync -a --delete Unreal/Plugins path/to/MyUnrealProject
 You can also copy `clean.sh` from `AirSim/Unreal/Environments/Blocks` folder to your Unreal project folder.
 
 ## FAQ
+
+#### What are the known issues with Unreal 4.16?
+One of the major issue is [this bug in Unreal](https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html). We have done a workaround for some parts of the code but we haven't tested if everything is covered. Another known issue is that when clicking "End" button causes Unreal to crash. A final knowm issue is that report function (when you press `R` key), also causes crash because of above reasons.
+
+#### What are the known issues with Unreal 4.17?
+At the time of writing (July, 2017), version 4.17 is still in "preview" stage and is unstable. We have seen some rare but random crashes during startup. You might get warning that AirSim plugin is incompatible which you can ignore. Also, when clicking on "End" button freezes the Unreal Editor requiring to manual kill of its process. 
 
 #### Unreal crashed! How do I know what went wrong?
 First go to folder `MyUnrealProject/Saved/Crashes` and then search directories for MyProject.log file. At the end of this file you will see stack trace and message. Also see `Diagnostics.txt` file.

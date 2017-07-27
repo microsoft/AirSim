@@ -92,7 +92,8 @@ void AAirSimGameMode::initializeSettings()
 
             if (!file_found) {
                 std::string json_content;
-//TODO: there is a crash in Linux due to settings.saveJSonString(). Remove this workaround after we know the reason.
+//TODO: there is a crash in Linux due to settings.saveJSonString(). Remove this workaround after we only support Unreal 4.17
+//https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
 #ifdef _WIN32
                 json_content = settings.saveJSonString();
 #else

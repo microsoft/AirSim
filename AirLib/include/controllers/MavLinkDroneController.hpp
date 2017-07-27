@@ -389,12 +389,18 @@ public:
         for (auto iter = result.begin(); iter != result.end(); iter++)
         {
             mavlinkcom::SerialPortInfo info = *iter;
-            if (info.vid == pixhawkVendorId) {
-                if (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
-                {
-                    // printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
-                    return std::string(info.portName.begin(), info.portName.end());
-                }
+            if (
+                    (
+                        (info.vid == pixhawkVendorId) &&
+                        (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
+                    ) ||
+                    (
+                        (info.displayName.find(L"PX4_") != std::string::npos)
+                    )
+                )
+            {
+                // printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
+                return std::string(info.portName.begin(), info.portName.end());
             }
         }
         return "";
@@ -457,16 +463,16 @@ public:
         if (port_name_auto == "" || port_name_auto == "*") {
             port_name_auto = findPixhawk();
             if (port_name_auto == "") {
-                throw std::domain_error("Could not find a connected PX4 flight controller");
+                throw std::domain_error("Could not detect a connected PX4 flight controller on any USB ports. You can specify USB port in settings.json.");
             }
         }
 
         if (port_name_auto == "") {
-            throw std::invalid_argument("SerialPort setting has an invalid value.");
+            throw std::invalid_argument("USB port for PX4 flight controller is empty. Please set it in settings.json.");
         }
 
         if (baud_rate == 0) {
-            throw std::invalid_argument("SerialBaudRate has an invalid value");
+            throw std::invalid_argument("Baud rate specified in settings.json is 0 which is invalid");
         }
 
         connection_ = mavlinkcom::MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);

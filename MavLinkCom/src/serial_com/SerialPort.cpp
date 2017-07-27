@@ -310,7 +310,8 @@ public:
 		{
 			return -1;
 		}
-		setAttributes(baudRate, parity, dataBits, sb, hs, readTimeout, writeTimeout);
+		if (setAttributes(baudRate, parity, dataBits, sb, hs, readTimeout, writeTimeout) != 0)
+			return -1;
 
 		closed_ = false;
 		return 0;
