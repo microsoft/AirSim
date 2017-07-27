@@ -1,6 +1,5 @@
 
 # Upgrading Unreal Engine Version
-# Upgrading to Unreal 4.16
 
 If you are using old version of AirSim with Unreal Engine 4.15 or earlier, here are some notes. More complete details are at [Unreal forum post](https://forums.unrealengine.com/showthread.php?145757-C-4-16-Transition-Guide).
 
