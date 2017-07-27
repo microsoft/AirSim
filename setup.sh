@@ -9,6 +9,10 @@ pushd "$SCRIPT_DIR" >/dev/null
 #get sub modules
 git submodule update --init --recursive
 
+#give user perms to access USB port - this is not needed if not using PX4 HIL
+sudo adduser $USER dialout
+sudo usermod -a -G dialout $USER
+
 # get clang, libc++
 # sudo rm -rf llvm-build
 # mkdir -p llvm-build/output
@@ -24,11 +28,11 @@ sudo apt-get install -y clang-3.9 clang++-3.9
 
 #get libc++ source
 if [[ ! -d "llvm-source-39" ]]; then 
-	git clone --depth=1 -b release_39  https://github.com/llvm-mirror/llvm.git llvm-source-39
-	git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxx.git llvm-source-39/projects/libcxx
-	git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxxabi.git llvm-source-39/projects/libcxxabi
+    git clone --depth=1 -b release_39  https://github.com/llvm-mirror/llvm.git llvm-source-39
+    git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxx.git llvm-source-39/projects/libcxx
+    git clone --depth=1 -b release_39  https://github.com/llvm-mirror/libcxxabi.git llvm-source-39/projects/libcxxabi
 else
-	echo "folder llvm-source already exists, skipping git clone..."
+    echo "folder llvm-source already exists, skipping git clone..."
 fi
 
 #build libc++
