@@ -2,8 +2,10 @@
 
 ## What hardware do you need?
 ### Computer
-Intel Core i7 or equivalent PC with 32GB of RAM and a very fast GPU with at least 4GB of RAM. Large environments in Unreal require a lot of RAM and a beefy GPU card. 
-The typical computer hardware we use for development purposes usually have 6 to 12 cores and graphics card such as NVidia TitanX or NVidia GTX 1080 with 32GB to 64GB RAM and a [fast hard drive](hard_drive.md).
+It depends on how big your Unreal Envionment is. The Blocks environment that comes with AirSim is very basic and works on typical laptops. The [Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) that we use ourselves for research requires GPUs with at least 4GB of RAM. The [Open World environment](https://www.unrealengine.com/marketplace/open-world-demo-collection) needs GPU with 8GB RAM. Our typical development machines have 32GB of RAM and NVidia TitanX and a [fast hard drive](hard_drive.md).
+
+### Using AirSim Without PX4
+Yes, now its possible to use AirSim without PX4. Please see the [instructions here](image_apis.md) for how to use so-called "Computer Vision" mode. If you don't need vehicle physics, we highly recommand to use this mode because setting up PX4 had been pain, unstable and unreliable (and you can skip rest of the instructions on this page!). Due to bugs [such as this](https://github.com/PX4/Firmware/issues/7516) things haven't been working after PX4 release 1.5.5. Even when its working, you may see wobbly drone randomly. We are in process to integrate [ROSFlight](https://github.com/rosflight/firmware) to replace PX4 as our default flight controller. We are also making more head ways to develop our own [simple_flight](https://github.com/Microsoft/AirSim/tree/master/AirLib/include/controllers/simple_flight) which would be useful for folks working on re-inforcement learning.
 
 ### RC Transmitter and Receiver
 
