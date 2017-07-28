@@ -74,7 +74,7 @@ public:
 
     virtual void readAccel(float accel[3]) const override 
     {
-        const auto& linear_accel = kinematics_->accelerations.linear;
+        const auto& linear_accel = VectorMath::transformToBodyFrame(kinematics_->accelerations.linear, kinematics_->pose.orientation);
         accel[0] = linear_accel.x();
         accel[1] = linear_accel.y();
         accel[2] = linear_accel.z();
@@ -82,10 +82,10 @@ public:
 
     virtual void readGyro(float gyro[3]) const override 
     {
-        const auto& angula_vel = kinematics_->twist.angular;
-        gyro[0] = angula_vel.x();
-        gyro[1] = angula_vel.y();
-        gyro[2] = angula_vel.z();
+        const auto angular_vel = kinematics_->twist.angular; //angular velocity is already in body frame
+        gyro[0] = angular_vel.x();
+        gyro[1] = angular_vel.y();
+        gyro[2] = angular_vel.z();
     }
 
     virtual void reset() override 

@@ -40,7 +40,7 @@ public:
         output_.yaw = pid_rate_yaw_.getOutput();
 
         //common_utils::Utils::log(
-        //common_utils::Utils::stringf("(%f, %f, %f) - (%f, %f, %f) - (%f, %f, %f)", 
+        //common_utils::Utils::stringf("RAT (%f, %f, %f) - (%f, %f, %f) - (%f, %f, %f)", 
         //    pid_rate_pitch_.getGoal(), pid_rate_roll_.getGoal(), pid_rate_yaw_.getGoal(),
         //    pid_rate_pitch_.getMeasured(), pid_rate_roll_.getMeasured(), pid_rate_yaw_.getMeasured(),
         //    pid_rate_pitch_.getOutput(), pid_rate_roll_.getOutput(), pid_rate_yaw_.getOutput()

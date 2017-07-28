@@ -116,7 +116,7 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
         rc_data_.throttle = joyStickToRC(joystick_state_.left_y);
 
         //convert 0 to 1 -> -1 to 1
-        rc_data_.yaw = - (joyStickToRC(joystick_state_.left_x) * 2 - 1); 
+        rc_data_.yaw = joyStickToRC(joystick_state_.left_x) * 2 - 1; 
         rc_data_.roll = joyStickToRC(joystick_state_.right_x) * 2 - 1;
         rc_data_.pitch = joyStickToRC(joystick_state_.right_y) * 2 - 1;
 

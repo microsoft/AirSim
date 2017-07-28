@@ -20,6 +20,7 @@ sudo usermod -a -G dialout $USER
 # tar -xf "clang+llvm-4.0.1-x86_64-linux-gnu-debian8.tar.xz" -C llvm-build/output
 
 sudo apt-get install -y build-essential
+sudo apt-get install cmake
 wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
 sudo apt-get update
 sudo apt-get install -y clang-3.9 clang++-3.9

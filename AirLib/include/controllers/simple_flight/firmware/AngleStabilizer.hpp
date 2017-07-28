@@ -40,7 +40,7 @@ public:
         output_.yaw = pid_angle_yaw_.getOutput();
 
         //common_utils::Utils::log(
-        //common_utils::Utils::stringf("(%f, %f, %f) - (%f, %f, %f) - (%f, %f, %f)", 
+        //common_utils::Utils::stringf("ANG (%f, %f, %f) - (%f, %f, %f) - (%f, %f, %f)", 
         //    pid_angle_pitch_.getGoal(), pid_angle_roll_.getGoal(), pid_angle_yaw_.getGoal(),
         //    pid_angle_pitch_.getMeasured(), pid_angle_roll_.getMeasured(), pid_angle_yaw_.getMeasured(),
         //    pid_angle_pitch_.getOutput(), pid_angle_roll_.getOutput(), pid_angle_yaw_.getOutput()

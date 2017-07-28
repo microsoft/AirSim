@@ -10,7 +10,7 @@ It's super simple 1-2-3!
 1. Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required so you can get Unreal engine's source code.
 2. Clone Unreal in your favorite folder and run setup.sh (this may take a while!). Note: We only support Unreal 4.16 and newer.
 ```
-     mkdir -p GitHubSrc && cd GitHubSrc
+     # go to folder where you clone GitHub projects
      git clone -b 4.16 https://github.com/EpicGames/UnrealEngine.git
      cd UnrealEngine
      ./Setup.sh
@@ -19,6 +19,7 @@ It's super simple 1-2-3!
 ```
 3. Clone AirSim and run setup.sh:
 ```
+     # go to folder where you clone GitHub projects
      git clone https://github.com/Microsoft/AirSim.git
      cd AirSim
      ./setup.sh
@@ -32,7 +33,7 @@ cd Unreal/Engine/Binaries/Linux
 UE4Editor
 ```
 
-On first start you might not see any projects in UE4 editor. Click on Projects tab, Browse button and then select `AirSim/Unreal/Environments/Blocks/Blocks.uproject`. You will be then prompted by message "The following modules are missing or built with a different engine versions...". Click Yes. Now it might take a while so go get some coffee :).
+On first start you might not see any projects in UE4 editor. Click on Projects tab, Browse button and then navigate to `AirSim/Unreal/Environments/Blocks/Blocks.uproject`. You will be then prompted by message "The following modules are missing or built with a different engine versions...". Click Yes. Now it might take a while so go get some coffee :).
 
 ## Changing Code and Rebuilding
 1. After making code changes in AirSim, run `./build.sh` to rebuild. This step also copies the binary output to Blocks sample project. To clean and completely rebuild, first use `./clean.sh`.
@@ -75,6 +76,9 @@ Yes! The `*.Build.cs` files are, however, no longer compatible (you will get com
 
 #### Can I compile AirSim in BashOnWindows?
 Yes, however you can't run Unreal from BashOnWindows. So this is kind of useful to check Linux compile, not for end-to-end run. See [BashOnWindows install guide](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide). Make sure to have latest version (Windows 10 Creators Edition) as previous versions had various issues. Also don't invoke `bash` from `Visual Studio Command Prompt` otherwise cmake might find VC++ and try and use that!
+
+#### I made change in Visual Studio but there is no effect
+Sometime Unreal + VS build system don't do recompile if you change only header file. So try making some cpp file dirty.
 
 #### Where can I find more info on running Unreal on Linux?
 * [Start here - Unreal on Linux](https://docs.unrealengine.com/latest/INT/Platforms/Linux/index.html)

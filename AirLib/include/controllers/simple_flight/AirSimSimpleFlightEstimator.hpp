@@ -22,7 +22,7 @@ public:
     virtual simple_flight::Angles getAngles() const override
     {
         simple_flight::Angles angles;
-        VectorMath::toEulerianAngle(kinematics_->pose.orientation,
+        VectorMath::toEulerianAngle(kinematics_->pose.orientation.conjugate(),
             angles.pitch, angles.roll, angles.yaw);
 
         return angles;
