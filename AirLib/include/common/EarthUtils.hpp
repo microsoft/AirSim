@@ -143,7 +143,8 @@ public:
         //Above 51km: http://www.braeunig.us/space/atmmodel.htm
         //Validation data: https://www.avs.org/AVS/files/c7/c7edaedb-95b2-438f-adfb-36de54f87b9e.pdf
         if (geopot_height <= 11)
-            return  101325 * powf(288.15f / std_temperature, -5.255877f);
+            //at alt 0, return sea level pressure
+            return  SeaLevelPressure * powf(288.15f / std_temperature, -5.255877f);
         else if (geopot_height <= 20)
             return 22632.06f * expf(-0.1577f * (geopot_height - 11));
         else if (geopot_height <= 32)

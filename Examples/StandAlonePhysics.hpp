@@ -34,7 +34,7 @@ public:
         //run
         unsigned int i = 0;
         while (true) {
-            clock->stepNext();
+            clock->step();
 
             environment.update();
             body.update();

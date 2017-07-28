@@ -21,6 +21,10 @@ public:
     {
         noise_vec_ = RandomVectorGaussianR(Vector3r::Zero(), params_.noise_sigma);
         bias_vec_ = RandomVectorR(-params_.noise_bias, params_.noise_bias).next();
+
+        //initialize frequency limiter
+        freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
+        delay_line_.initialize(params_.update_latency);
     }
 
     //*** Start: UpdatableObject implementation ***//
@@ -29,12 +33,25 @@ public:
         //Ground truth is reset before sensors are reset
         updateReference(getGroundTruth());
         noise_vec_.reset();
-        updateOutput();
+
+        freq_limiter_.reset();
+        delay_line_.reset();
+
+        delay_line_.push_back(getOutputInternal());
     }
 
     virtual void update() override
     {
-        updateOutput();
+        freq_limiter_.update();
+
+        if (freq_limiter_.isWaitComplete()) { 
+            delay_line_.push_back(getOutputInternal());
+        }
+
+        delay_line_.update();
+
+        if (freq_limiter_.isWaitComplete())
+            setOutput(delay_line_.getOutput());
     }
     //*** End: UpdatableObject implementation ***//
 
@@ -56,7 +73,7 @@ private: //methods
             throw std::invalid_argument("magnetic reference source type is not recognized");
         }
     }
-    void updateOutput()
+    Output getOutputInternal()
     {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
@@ -71,7 +88,7 @@ private: //methods
             + noise_vec_.next()
             + bias_vec_;
 
-        setOutput(output);
+        return output;
     }
 
 private:
@@ -80,6 +97,10 @@ private:
 
     Vector3r magnetic_field_true_;
     MagnetometerSimpleParams params_;
+
+
+    FrequencyLimiter freq_limiter_;
+    DelayLine<Output> delay_line_;
 };
 
 }} //namespace

@@ -32,5 +32,8 @@
     <ClInclude Include="RandomPointPoseGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GaussianMarkovTest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

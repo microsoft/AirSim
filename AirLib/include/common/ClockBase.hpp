@@ -31,6 +31,10 @@ public:
     {
         return (second - first) / 1.0E9;
     }
+    TTimePoint addTo(TTimePoint t, TTimeDelta dt)
+    {
+        return static_cast<TTimePoint>(t + dt * 1.0E9);
+    }
     TTimeDelta updateSince(TTimePoint& since) const
     {
         TTimePoint cur = nowNanos();

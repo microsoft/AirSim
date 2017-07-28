@@ -11,20 +11,26 @@ namespace msr { namespace airlib {
 
 class DebugClock : public ClockBase {
 public:
-    DebugClock(TTimePoint start = 1000, TTimePoint step = 20E6)
+    //Debug clock allows to advance the clock manually in arbitrary way
+    //TTimePoint is nano seconds passed since some fixed point in time
+    //step is how much we would advance the clock by default when calling step()
+    //by default we advance by 20ms
+    DebugClock(TTimeDelta step = 20E-3f, TTimePoint start = 1000)
         : current_(start), step_(step)
     {
         current_ = start;
     }
 
-    void add(TTimePoint amount)
+    TTimePoint step(TTimeDelta amount)
     {
-        current_ += amount;
+        current_ = addTo(current_, amount);
+        return current_;
     }
 
-    void stepNext()
+    TTimePoint step()
     {
-        current_ += step_;
+        current_ = addTo(current_, step_);
+        return current_;
     }
 
     virtual TTimePoint nowNanos() const override
@@ -32,6 +38,9 @@ public:
         return current_;
     }
 
+    //convert wall clock interval to this clock interval
+    //below functions should normally be used in things like thread.sleep 
+    //which usually requires wall time (i.e. clock used by system)
     virtual TTimeDelta fromWallDelta(TTimeDelta dt) const override
     {
         return dt;
@@ -43,7 +52,8 @@ public:
 
 
 private:
-    TTimePoint current_, step_;
+    TTimePoint current_;
+    TTimeDelta step_;
 };
 
 }} //namespace

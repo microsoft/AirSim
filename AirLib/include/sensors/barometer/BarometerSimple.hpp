@@ -10,6 +10,8 @@
 #include "BarometerSimpleParams.hpp"
 #include "BarometerBase.hpp"
 #include "common/GaussianMarkov.hpp"
+#include "common/DelayLine.hpp"
+#include "common/FrequencyLimiter.hpp"
 
 
 namespace msr { namespace airlib {
@@ -19,31 +21,49 @@ public:
     BarometerSimple(const BarometerSimpleParams& params = BarometerSimpleParams())
         : params_(params)
     {
-        pressure_factor.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, Utils::nan<real_T>());
+        //GM process that would do random walk for pressure factor
+        pressure_factor_.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, 0);
 
-        uncorrelated_noise = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
-        //correlated_noise.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
+        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
+        //correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
+
+        //initialize frequency limiter
+        freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
+        delay_line_.initialize(params_.update_latency);
     }
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
-        updateOutput();
-        pressure_factor.reset();
-        correlated_noise.reset();
-        uncorrelated_noise.reset();
+        pressure_factor_.reset();
+        correlated_noise_.reset();
+        uncorrelated_noise_.reset();
+
+        freq_limiter_.reset();
+        delay_line_.reset();
+
+        delay_line_.push_back(getOutputInternal());
     }
 
     virtual void update() override
     {
-        updateOutput();
+        freq_limiter_.update();
+
+        if (freq_limiter_.isWaitComplete()) { 
+            delay_line_.push_back(getOutputInternal());
+        }
+
+        delay_line_.update();
+
+        if (freq_limiter_.isWaitComplete())
+            setOutput(delay_line_.getOutput());
     }
     //*** End: UpdatableState implementation ***//
 
     virtual ~BarometerSimple() = default;
 
 private: //methods
-    void updateOutput()
+    Output getOutputInternal()
     {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
@@ -51,30 +71,33 @@ private: //methods
         auto altitude = ground_truth.environment->getState().geo_point.altitude;
         auto pressure = EarthUtils::getStandardPressure(altitude);
 
-        //TODO: below drift is producing big swings of +/- 5 meters in 1 ms, need to reevaluate params
-        //add drift in pressure
-        //pressure_factor.update();
-        //pressure += pressure * pressure_factor.getOutput();
-        //add user specified offset
-        //pressure -= params_.qnh*100.0f;
-        pressure += uncorrelated_noise.next();
+        //add drift in pressure, about 10m change per hour
+        pressure_factor_.update();
+        pressure += pressure * pressure_factor_.getOutput();
 
-        output.pressure = pressure;
+        //add noise in pressure (about 0.2m sigma)
+        pressure += uncorrelated_noise_.next();
+
+        output.pressure = pressure - EarthUtils::SeaLevelPressure + params_.qnh*100.0f;
+
         //apply altimeter formula
         //https://en.wikipedia.org/wiki/Pressure_altitude
         //TODO: use same formula as in driver code?
         output.altitude = (1 - pow(pressure / EarthUtils::SeaLevelPressure, 0.190284f)) * 145366.45f * 0.3048f;
         output.qnh = params_.qnh;
 
-        setOutput(output);
+        return output;
     }
     
 private:
     BarometerSimpleParams params_;
 
-    GaussianMarkov pressure_factor;
-    GaussianMarkov correlated_noise;
-    RandomGeneratorGausianR uncorrelated_noise;
+    GaussianMarkov pressure_factor_;
+    GaussianMarkov correlated_noise_;
+    RandomGeneratorGausianR uncorrelated_noise_;
+
+    FrequencyLimiter freq_limiter_;
+    DelayLine<Output> delay_line_;
 };
 
 }} //namespace

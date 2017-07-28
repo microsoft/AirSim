@@ -185,6 +185,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GaussianMarkovTest.hpp" />
     <ClInclude Include="RandomPointPoseGenerator.hpp" />
     <ClInclude Include="StandAlonePhysics.hpp" />
     <ClInclude Include="StandAloneSensors.hpp" />

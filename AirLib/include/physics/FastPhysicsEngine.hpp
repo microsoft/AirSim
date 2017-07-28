@@ -122,12 +122,17 @@ private:
 
         //see if impact is straight at body's surface (assuming its box)
         const Vector3r normal_body = VectorMath::transformToBodyFrame(collison_info.normal, current.pose.orientation);
-        if (Utils::isApproximatelyEqual(std::abs(normal_body.x()), 1.0f, kAxisTolerance) 
-            || Utils::isApproximatelyEqual(std::abs(normal_body.y()), 1.0f, kAxisTolerance)
-            || Utils::isApproximatelyEqual(std::abs(normal_body.z()), 1.0f, kAxisTolerance)) {
-
+        const bool is_ground_normal = Utils::isApproximatelyEqual(std::abs(normal_body.z()), 1.0f, kAxisTolerance);
+        bool ground_lock = false;
+        if (is_ground_normal
+            || Utils::isApproximatelyEqual(std::abs(normal_body.x()), 1.0f, kAxisTolerance) 
+            || Utils::isApproximatelyEqual(std::abs(normal_body.y()), 1.0f, kAxisTolerance) 
+           ) {
             //think of collison occured along the surface, not at point
             r = Vector3r::Zero();
+
+            //we have collided with ground straight on, we will fix orientation later
+            ground_lock = is_ground_normal;
         }
 
         //velocity at contact point
@@ -174,7 +179,13 @@ private:
         next.accelerations.angular = Vector3r::Zero();
  
         next.pose = current.pose;
-        //overwrite position, keep the orientation
+        if (ground_lock) {
+            float pitch, roll, yaw;
+            VectorMath::toEulerianAngle(next.pose.orientation, pitch, roll, yaw);
+            pitch = roll = 0;
+            next.pose.orientation = VectorMath::toQuaternion(pitch, roll, yaw);
+        }
+        //else keep the orientation
         next.pose.position = collison_info.position + (collison_info.normal * collison_info.penetration_depth) + next.twist.linear * (dt_real * kCollisionResponseCycles);
 
 
@@ -363,7 +374,7 @@ private:
 
 private:
     static constexpr uint kCollisionResponseCycles = 1;
-    static constexpr float kAxisTolerance = 0.05f;
+    static constexpr float kAxisTolerance = 0.25f;
     static constexpr float kRestingVelocityMax = 0.1f;
     static constexpr float kDragMinVelocity = 0.1f;
 

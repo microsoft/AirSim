@@ -1,6 +1,7 @@
 #include "StandAloneSensors.hpp"
 #include "StandAlonePhysics.hpp"
 #include "StereoImageGenerator.hpp"
+#include "GaussianMarkovTest.hpp"
 #include <iostream>
 #include <string>
 
@@ -59,11 +60,19 @@ void runSteroImageGenerator(int num_samples, std::string storage_path)
     gen.generate(num_samples);
 }
 
-int main(int argc, const char *argv[])
+void runSteroImageGenerator(int argc, const char *argv[])
 {
     runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ? 
         common_utils::FileSystem::combine(
             common_utils::FileSystem::getAppDataFolder(), "stereo_gen")
         : std::string(argv[2]));
+}
+
+int main(int argc, const char *argv[])
+{
+    using namespace msr::airlib;
+
+    GaussianMarkovTest test;
+    test.run();
 }
 

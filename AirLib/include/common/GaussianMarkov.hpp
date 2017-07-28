@@ -15,11 +15,11 @@ class GaussianMarkov : UpdatableObject {
 public:
     GaussianMarkov()
     {}
-    GaussianMarkov(real_T tau, real_T sigma, real_T initial_output) //in seconds
+    GaussianMarkov(real_T tau, real_T sigma, real_T initial_output = 0) //in seconds
     {
         initialize(tau, sigma, initial_output);
     }
-    void initialize(real_T tau, real_T sigma, real_T initial_output)  //in seconds
+    void initialize(real_T tau, real_T sigma, real_T initial_output = 0)  //in seconds
     {
         tau_ = tau;
         sigma_ = sigma;
