@@ -15,7 +15,8 @@ namespace msr { namespace airlib {
 
 class FastPhysicsEngine : public PhysicsEngineBase {
 public:
-    FastPhysicsEngine()
+    FastPhysicsEngine(bool enable_ground_lock = true)
+        : enable_ground_lock_(enable_ground_lock)
     { 
         FastPhysicsEngine::reset();
     }
@@ -79,7 +80,8 @@ private:
         CollisonResponseInfo& collison_response_info = body.getCollisionResponseInfo();
         //if collision was already responsed then do not respond to it until we get updated information
         if (collison_info.has_collided && collison_response_info.collision_time_stamp != collison_info.time_stamp) {
-            bool is_collison_response = getNextKinematicsOnCollison(dt, collison_info, body, current, next, next_wrench);
+            bool is_collison_response = getNextKinematicsOnCollison(dt, collison_info, body, 
+                current, next, next_wrench, enable_ground_lock_);
             updateCollisonResponseInfo(collison_info, next, is_collison_response, collison_response_info);
         }
 
@@ -101,7 +103,7 @@ private:
 
     //return value indicates if collison response was generated
     static bool getNextKinematicsOnCollison(TTimeDelta dt, const CollisionInfo& collison_info, const PhysicsBody& body, 
-        const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+        const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench, bool enable_ground_lock)
     {
         /************************* Collison response ************************/
         const real_T dt_real = static_cast<real_T>(dt);
@@ -179,7 +181,7 @@ private:
         next.accelerations.angular = Vector3r::Zero();
  
         next.pose = current.pose;
-        if (ground_lock) {
+        if (enable_ground_lock && ground_lock) {
             float pitch, roll, yaw;
             VectorMath::toEulerianAngle(next.pose.orientation, pitch, roll, yaw);
             pitch = roll = 0;
@@ -380,6 +382,8 @@ private:
 
     std::stringstream debug_string_;
     int grounded_;
+    bool enable_ground_lock_;
+
 };
 
 }} //namespace

@@ -39,8 +39,20 @@ void ASimModeWorldBase::createWorld()
 {
     if (physics_engine_name == "" || usage_scenario == kUsageScenarioComputerVision)
         physics_engine_.release(); //no physics engine
-    else if (physics_engine_name == "FastPhysicsEngine")
-        physics_engine_.reset(new msr::airlib::FastPhysicsEngine());
+    else if (physics_engine_name == "FastPhysicsEngine") {
+        msr::airlib::Settings fast_phys_settings;
+        if (msr::airlib::Settings::singleton().getChild("FastPhysicsEngine", fast_phys_settings)) {
+            physics_engine_.reset(
+                new msr::airlib::FastPhysicsEngine(fast_phys_settings.getBool("EnableGroundLock", true))
+            );
+        }
+        else {
+            physics_engine_.reset(
+                new msr::airlib::FastPhysicsEngine()
+            );
+        }
+
+    }
     else {
         physics_engine_.release();
         UAirBlueprintLib::LogMessageString("Unrecognized physics engine name: ",  physics_engine_name, LogDebugLevel::Failure);
