@@ -436,17 +436,25 @@ public:
             throw std::invalid_argument("UdpPort setting has an invalid value.");
         }
 
+        addStatusMessage(Utils::stringf("Connecting to UDP port %d, local IP %s, remote IP...", port, connection_info_.local_host_ip, ip));
         connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
         hil_node_->connect(connection_);
+        addStatusMessage(std::string("Connected over UDP."));
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
 
         if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0 && connection_info_.sitl_ip_port != port) {
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-            auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl", connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
+            addStatusMessage(Utils::stringf("Connecting to PX4 SITL UDP port %d, local IP %s, remote IP...", 
+                connection_info_.sitl_ip_port, connection_info_.local_host_ip, connection_info_.sitl_ip_address));
+
+            auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl", 
+                connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
             mav_vehicle_->connect(sitlconnection);
+
+            addStatusMessage(std::string("Connected to SITL over UDP."));
         }
         else {
             mav_vehicle_->connect(connection_);
@@ -475,10 +483,12 @@ public:
             throw std::invalid_argument("Baud rate specified in settings.json is 0 which is invalid");
         }
 
+        addStatusMessage(Utils::stringf("Connecting to PX4 over serial port: %s, baud rate %d ....", port_name_auto, baud_rate));
         connection_ = mavlinkcom::MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
         connection_->ignoreMessage(mavlinkcom::MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mocap messages
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
+        addStatusMessage(Utils::stringf("Connected to PX4 over serial port", port_name_auto, baud_rate));
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
         mav_vehicle_->connect(connection_); // in this case we can use the same connection.
@@ -518,6 +528,15 @@ public:
         //else ignore message
     }
 
+    void addStatusMessage(const std::string& message)
+    {
+        std::lock_guard<std::mutex> guard_status(status_text_mutex_);
+        //if queue became too large, clear it first
+        if (status_messages_.size() > status_messages_MaxSize)
+            Utils::clear(status_messages_, status_messages_MaxSize - status_messages_.size());
+        status_messages_.push(message);
+    }
+
     void processMavMessages(const mavlinkcom::MavLinkMessage& msg)
     {
         if (msg.msgid == HeartbeatMessage.msgid) {
@@ -539,12 +558,9 @@ public:
                 setHILMode();
             }
         } else if (msg.msgid == StatusTextMessage.msgid) {
-            std::lock_guard<std::mutex> guard_status(status_text_mutex_);
             StatusTextMessage.decode(msg);
-            //if queue became too large, clear it first
-            if (status_messages_.size() > status_messages_MaxSize)
-                Utils::clear(status_messages_, status_messages_MaxSize - status_messages_.size());
-            status_messages_.push(std::string(StatusTextMessage.text));
+            //lock is established by below method
+            addStatusMessage(std::string(StatusTextMessage.text));
         } else if (msg.msgid == CommandLongMessage.msgid) {
             CommandLongMessage.decode(msg);
             if (CommandLongMessage.command == static_cast<int>(mavlinkcom::MAV_CMD::MAV_CMD_SET_MESSAGE_INTERVAL)) {
@@ -754,11 +770,6 @@ public:
             messages.push_back(status_messages_.front());
             status_messages_.pop();
         }
-    }
-
-    void addStatusMessage(const std::string& message) {
-        std::lock_guard<std::mutex> guard(status_text_mutex_);
-        status_messages_.push(message);
     }
 
     void start()

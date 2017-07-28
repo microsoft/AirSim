@@ -248,7 +248,8 @@ void MultiRotorConnector::startApiServer()
 #endif
 
         rpclib_server_->start();
-        UAirBlueprintLib::LogMessageString("API server started at ", api_server_address_, LogDebugLevel::Informational);
+        UAirBlueprintLib::LogMessageString("API server started at ", 
+            api_server_address_ == "" ? "(default)" : api_server_address_.c_str(), LogDebugLevel::Informational);
     }
     else
         UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
