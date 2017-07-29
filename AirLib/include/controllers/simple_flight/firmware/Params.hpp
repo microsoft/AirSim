@@ -21,6 +21,7 @@ public:
     uint16_t motor_count = 4;
     float min_motor_output = 0;
     float max_motor_output = 1;
+    //if min_armed_output too low then noise in pitch/roll can destabilize quad copter when throttle is zero
     float min_armed_output = 0.2f;
 
     static constexpr float pi = 3.14159265359f; //180-degrees
@@ -41,7 +42,7 @@ public:
     static constexpr float kPAngleDefault = 2.5f;
     float p_pitch_angle = kPAngleDefault, p_roll_angle = kPAngleDefault, p_yaw_angle = kPAngleDefault;
 
-    ControlMode default_control_mode = ControlMode::Angle;
+    ControlMode default_control_mode = ControlMode::getStandardAngleMode();
 };
 
 

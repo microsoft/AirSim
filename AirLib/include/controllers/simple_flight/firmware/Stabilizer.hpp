@@ -19,8 +19,7 @@ public:
     {
         control_mode_ = params_->default_control_mode;
         output_controls_ = Controls();
-        goal_rates_ = measured_rates_ = Angles();
-        goal_angles_ = measured_angles_ = Angles();
+        goal_input_ = goal_rates_ = measured_rates_ = Angles();
         goal_throttle_ = 0;
         rate_stabilizer_.reset();
         angle_stabilizer_.reset();
@@ -28,18 +27,22 @@ public:
 
     void update()
     {
-        if (control_mode_ == ControlMode::Angle) {
-            angle_stabilizer_.setGoalAngles(goal_angles_);
-            angle_stabilizer_.setMeasuredAngles(angle_estimator_->getAngles());
+        angle_stabilizer_.setGoalAngles(goal_input_);
+        angle_stabilizer_.setMeasuredAngles(angle_estimator_->getAngles());
 
-            angle_stabilizer_.update();
+        angle_stabilizer_.update();
 
-            goal_rates_ = angle_stabilizer_.getOutput();
-            goal_rates_.pitch *= params_->max_pitch_rate;
-            goal_rates_.roll *= params_->max_roll_rate;
-            goal_rates_.yaw *= params_->max_yaw_rate;
-        }
+        //Output is from -1 to 1 so we need to renormalize to max range
+        goal_from_angles_ = angle_stabilizer_.getOutput();
+        goal_from_angles_.pitch *= params_->max_pitch_rate;
+        goal_from_angles_.roll *= params_->max_roll_rate;
+        goal_from_angles_.yaw *= params_->max_yaw_rate;
 
+        //figure out how each axis is controller. By angle or rate?
+        goal_rates_.pitch = control_mode_.PitchByRate ? goal_input_.pitch : goal_from_angles_.pitch;
+        goal_rates_.roll = control_mode_.RollByRate ? goal_input_.roll : goal_from_angles_.roll;
+        goal_rates_.yaw = control_mode_.YawByRate ? goal_input_.yaw : goal_from_angles_.yaw;
+        
         rate_stabilizer_.setGoalRate(goal_rates_);
 
         //update measured controls
@@ -55,7 +58,7 @@ public:
         output_controls_.throttle = goal_throttle_;
     }
 
-    void setControlMode(ControlMode control_mode)
+    void setControlMode(const ControlMode& control_mode)
     {
         control_mode_ = control_mode;
     }
@@ -67,11 +70,7 @@ public:
     void setGoal(const Controls& controls)
     {
         goal_throttle_ = controls.throttle;
-
-        if (control_mode_ == ControlMode::Angle)
-            goal_angles_ = controls.angles;
-        else
-            goal_rates_ = controls.angles;
+        goal_input_ = controls.angles;
     }
 
     const Controls& getOutput() const
@@ -90,8 +89,8 @@ private:
     const IAngleEstimator* angle_estimator_;
 
     float gyro_readout[3];
-    Angles goal_rates_, measured_rates_;
-    Angles goal_angles_, measured_angles_;
+    Angles goal_input_, goal_from_angles_, goal_rates_;
+    Angles measured_angles_, measured_rates_;
     float goal_throttle_;
 
     RateStabilizer rate_stabilizer_;

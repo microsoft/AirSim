@@ -2,9 +2,25 @@
 
 namespace simple_flight {
 
-enum class ControlMode {
-    Rate,
-    Angle
+
+struct ControlMode {
+    bool PitchByRate = false;
+    bool RollByRate = false;
+    bool YawByRate = true;
+
+    static ControlMode getStandardAngleMode()
+    {
+        return ControlMode();
+    }
+
+    static ControlMode getAllRateMode()
+    {
+        ControlMode c;
+        c.PitchByRate = true;
+        c.RollByRate = true;
+        c.YawByRate = true;
+    }
+
 };
 
 struct Angles {

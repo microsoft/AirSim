@@ -16,18 +16,15 @@ public:
 
     void getMotorOutput(const Controls& controls, std::vector<float>& motor_outputs) const
     {
+        float throttle = std::max(params_->min_armed_output, controls.throttle);
+
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index) {
-            if (controls.throttle > 0) {
-                motor_outputs[motor_index] =
-                    controls.throttle * mixerQuadX[motor_index].throttle
-                    + controls.angles.pitch * mixerQuadX[motor_index].pitch
-                    + controls.angles.roll * mixerQuadX[motor_index].roll
-                    + controls.angles.yaw * mixerQuadX[motor_index].yaw
-                    ;
-            } 
-            else {
-                motor_outputs[motor_index] = params_->min_armed_output;
-            }
+            motor_outputs[motor_index] =
+                throttle * mixerQuadX[motor_index].throttle
+                + controls.angles.pitch * mixerQuadX[motor_index].pitch
+                + controls.angles.roll * mixerQuadX[motor_index].roll
+                + controls.angles.yaw * mixerQuadX[motor_index].yaw
+                ;
         }
 
         float min_motor = *std::min_element(motor_outputs.begin(), motor_outputs.begin() + kMotorCount);

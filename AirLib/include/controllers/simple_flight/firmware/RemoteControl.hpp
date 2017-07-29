@@ -38,7 +38,7 @@ public:
 
         controls_.throttle = rc_channels_[params_->rc_thrust_channel];
         if (rc_channels_[params_->rc_rate_angle_channel] < 0.1f) { //approximately 0
-            control_mode_ = ControlMode::Angle;
+            control_mode_ = ControlMode::getStandardAngleMode();
 
             //we are in control-by-angles mode
             controls_.angles.pitch = params_->max_pitch_angle * rc_channels_[params_->rc_pitch_channel];
@@ -46,7 +46,7 @@ public:
             controls_.angles.yaw = params_->max_yaw_angle * rc_channels_[params_->rc_yaw_channel];
         }
         else { //we are in control-by-rate mode
-            control_mode_ = ControlMode::Rate;
+            control_mode_ = ControlMode::getAllRateMode();
 
             controls_.angles.pitch = params_->max_pitch_rate * rc_channels_[params_->rc_pitch_channel];
             controls_.angles.roll = params_->max_roll_rate * rc_channels_[params_->rc_roll_channel];
