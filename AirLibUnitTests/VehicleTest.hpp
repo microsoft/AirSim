@@ -1,18 +1,17 @@
 
-#ifndef msr_AirLibUnitTests_TestVehicles_hpp
-#define msr_AirLibUnitTests_TestVehicles_hpp
+#ifndef msr_AirLibUnitTests_VehicleTest_hpp
+#define msr_AirLibUnitTests_VehicleTest_hpp
 
 #include "vehicles/MultiRotorParamsFactory.hpp"
-#include <chrono>
-#include <cassert>
+#include "TestBase.hpp"
 
-using namespace msr::airlib;
+namespace msr { namespace airlib {
 
-class TestVehicles
+class VehicleTest : public TestBase
 {
 public:
-    void Run() {
-
+    virtual void run() override
+    {
         auto rosFlight = MultiRotorParamsFactory::createConfig("RosFlight");
         rosFlight->initialize();
 
@@ -21,15 +20,14 @@ public:
         pixhawk->initialize();
         
         DroneControllerBase* controller = pixhawk->getController();
-        assert(controller != nullptr);
+        testAssert(controller != nullptr, "Couldn't get pixhawk controller");
         
         controller->start();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         controller->stop();
-
-
-        return;
     }
 };
 
+
+}}
 #endif

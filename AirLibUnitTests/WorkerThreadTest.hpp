@@ -4,24 +4,18 @@
 #include "common/common_utils/WorkerThread.hpp"
 #include "common/common_utils/Timer.hpp"
 #include <chrono>
-#include <cassert>
+#include "TestBase.hpp"
 
-using namespace msr::airlib;
-using namespace common_utils;
+namespace msr { namespace airlib {
 
-void testAssert(bool condition, std::string message) {
-    if (!condition) {
-        throw std::runtime_error(message.c_str());
-    }
-}
 
-class WorkerThreadTest {
+class WorkerThreadTest : public TestBase {
     class WorkItem : public CancelableBase {
     public:
         double runTime = 2; // seconds
 
         virtual void execute() {
-            Timer timer;
+            common_utils::Timer timer;
             timer.start();
             while (!this->isCancelled())
             {
@@ -42,8 +36,9 @@ class WorkerThreadTest {
     private:
         uint64_t counter_;
     };
+
 public:
-    void Run()
+    virtual void run() override
     {
         WorkerThread thread;
 
@@ -94,7 +89,7 @@ public:
         item1->reset();
         item1->runTime = 2; // two seconds
         
-        Timer timer;
+        common_utils::Timer timer;
         timer.start();
         thread.enqueueAndWait(item1, 0.5);
         double elapsed = timer.seconds();
@@ -110,4 +105,5 @@ public:
 };
 
 
+}}
 #endif

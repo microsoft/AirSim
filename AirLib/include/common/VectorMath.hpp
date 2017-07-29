@@ -222,20 +222,23 @@ public:
     static void toEulerianAngle(const QuaternionT& q
         , RealT& pitch, RealT& roll, RealT& yaw)
     {
-        // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
         RealT ysqr = q.y() * q.y();
-        RealT t0 = -2.0f * (ysqr + q.z() * q.z()) + 1.0f;
-        RealT t1 = +2.0f * (q.x() * q.y() + q.w() * q.z());
-        roll = std::atan2(t1, t0);
 
-        RealT t2 = -2.0f * (q.x() * q.z() - q.w() * q.y());
-        t2 = t2 > 1.0f ? 1.0f : t2;
-        t2 = t2 < -1.0f ? -1.0f : t2;
-        pitch = std::asin(t2);
+        // roll (x-axis rotation)
+        RealT t0 = +2.0f * (q.w() * q.x() + q.y() * q.z());
+        RealT t1 = +1.0f - 2.0f * (q.x() * q.x() + ysqr);
+        roll = std::atan2f(t0, t1);
 
-        RealT t3 = +2.0f * (q.y() * q.z() + q.w() * q.x());
-        RealT t4 = -2.0f * (q.x() * q.x() + ysqr) + 1.0f;
-        yaw = std::atan2(t3, t4);
+        // pitch (y-axis rotation)
+        RealT t2 = +2.0f * (q.w() * q.y() - q.z() * q.x());
+        t2 = ((t2 > 1.0f) ? 1.0f : t2);
+        t2 = ((t2 < -1.0f) ? -1.0f : t2);
+        pitch = std::asinf(t2);
+
+        // yaw (z-axis rotation)
+        RealT t3 = +2.0f * (q.w() * q.z() + q.x() * q.y());
+        RealT t4 = +1.0f - 2.0f * (ysqr + q.z() * q.z());  
+        yaw = std::atan2f(t3, t4);
     }
 
     static Vector3T toAngularVelocity(const QuaternionT& start, const QuaternionT& end, RealT delta_sec)

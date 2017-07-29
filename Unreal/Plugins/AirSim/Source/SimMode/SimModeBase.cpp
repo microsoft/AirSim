@@ -4,6 +4,7 @@
 #include "AirBlueprintLib.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "controllers/Settings.hpp"
+#include "SimJoyStick/SimJoyStick.h"
 
 ASimModeBase::ASimModeBase()
 {
@@ -14,23 +15,90 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    //load xinput DLL
+#if defined _WIN32 || defined _WIN64
+    FString filePath = *FPaths::GamePluginsDir() + FString("AirSim/Dependencies/x360ce/xinput9_1_0.dll");
+    xinput_dllHandle = FPlatformProcess::GetDllHandle(*filePath); // Retrieve the DLL.
+    SimJoyStick::setInitializedSuccess(xinput_dllHandle != NULL);
+#endif
+
+    //needs to be done before we call base class
+    initializeSettings();
+
     recording_file_.initializeForPlay();
     record_tick_count = 0;
     setupInputBindings();
 
-    //check engine version
-    uint16 min_major = 4, min_minor = 15;
-    if ((FEngineVersion::Current().GetMajor() == min_major && FEngineVersion::Current().GetMinor() < min_minor) || 
-        (FEngineVersion::Current().GetMajor() < min_major && FEngineVersion::Current().GetMajor() != 0))
-        FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT(
-            "Your Unreal Engine version is older and not supported."
-            "If you keep running anyway, you may see some weired behaviour!\n"
-            "Please upgrade to version 4.15.\n" 
-            "Upgrade instructions are at https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md")));
-
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
     readSettings();
+}
+
+void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+#if defined _WIN32 || defined _WIN64
+    SimJoyStick::setInitializedSuccess(false);
+    FPlatformProcess::FreeDllHandle(xinput_dllHandle);
+    xinput_dllHandle = NULL;
+#endif
+
+    Super::EndPlay(EndPlayReason);
+}
+
+
+void ASimModeBase::initializeSettings()
+{
+    //TODO: should this be done somewhere else?
+    //load settings file if found
+    typedef msr::airlib::Settings Settings;
+    try {
+
+        /******** CAUSION: Do not use std file/IO function. They cause segfault in Linux! ******************/
+
+        FString settings_filename = FString(Settings::getFullPath("settings.json").c_str());
+        FString json_fstring;
+        bool load_success = false;
+        bool file_found = FPaths::FileExists(settings_filename);
+        if (file_found) {
+            bool read_sucess = FFileHelper::LoadFileToString(json_fstring, * settings_filename);
+            if (read_sucess) {
+                Settings& settings = Settings::loadJSonString(TCHAR_TO_UTF8(*json_fstring));
+                if (settings.isLoadSuccess()) {
+                    UAirBlueprintLib::setLogMessagesHidden(! settings.getBool("LogMessagesVisible", true));
+                    UAirBlueprintLib::LogMessageString("Loaded settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
+                    load_success = true;
+                }
+                else
+                    UAirBlueprintLib::LogMessageString("Possibly invalid json string in ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
+            }
+            else
+                UAirBlueprintLib::LogMessageString("Cannot read settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
+        }
+
+        if (!load_success) {
+            //create default settings
+            Settings& settings = Settings::loadJSonString("{}");
+            //write some settings in new file otherwise the string "null" is written if all settigs are empty
+            settings.setString("see_docs_at", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
+
+            if (!file_found) {
+                std::string json_content;
+                //TODO: there is a crash in Linux due to settings.saveJSonString(). Remove this workaround after we only support Unreal 4.17
+                //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
+#ifdef _WIN32
+                json_content = settings.saveJSonString();
+#else
+                json_content = "{  \"see_docs_at\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
+#endif
+                json_fstring = FString(json_content.c_str());
+                FFileHelper::SaveStringToFile(json_fstring, * settings_filename);
+                UAirBlueprintLib::LogMessageString("Created settings file at ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
+            }
+        }
+    }
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), FString(ex.what()), LogDebugLevel::Failure, 30);
+    }
 }
 
 void ASimModeBase::readSettings()

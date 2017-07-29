@@ -152,7 +152,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AirLibUnitTests.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AirLib\AirLib.vcxproj">
@@ -163,8 +163,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="QuaternionTest.hpp" />
+    <ClInclude Include="TestBase.hpp" />
     <ClInclude Include="WorkerThreadTest.hpp" />
-    <ClInclude Include="TestVehicles.hpp" />
+    <ClInclude Include="VehicleTest.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

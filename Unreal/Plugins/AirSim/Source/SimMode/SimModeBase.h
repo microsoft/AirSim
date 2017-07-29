@@ -28,6 +28,7 @@ public:
     // Sets default values for this actor's properties
     ASimModeBase();
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick( float DeltaSeconds ) override;
 
     //additional overridable methods
@@ -47,6 +48,8 @@ public:
 
 protected:
     virtual void setupInputBindings();
+
+protected: //settings
     bool is_record_ui_visible;
     ECameraDirectorMode initial_view_mode;
     int record_tick_count;
@@ -60,7 +63,10 @@ protected:
 
 private:
     void readSettings();
+    void initializeSettings();
 
 private:
     RecordingFile recording_file_;
+    void *xinput_dllHandle;
+
 };
