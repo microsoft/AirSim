@@ -186,6 +186,9 @@ private:
             VectorMath::toEulerianAngle(next.pose.orientation, pitch, roll, yaw);
             pitch = roll = 0;
             next.pose.orientation = VectorMath::toQuaternion(pitch, roll, yaw);
+
+            //there is a lot of random angular velocity when vehicle is on the ground
+            next.twist.angular = Vector3r::Zero();
         }
         //else keep the orientation
         next.pose.position = collison_info.position + (collison_info.normal * collison_info.penetration_depth) + next.twist.linear * (dt_real * kCollisionResponseCycles);

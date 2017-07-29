@@ -24,12 +24,12 @@ public:
     float min_armed_output = 0.2f;
 
     static constexpr float pi = 3.14159265359f; //180-degrees
-    float max_pitch_rate = 1.5f, max_roll_rate = 1.5f, max_yaw_rate = 1.5f; //in radians/sec
+    float max_pitch_rate = 2.0f, max_roll_rate = 2.0f, max_yaw_rate = 2.0f; //in radians/sec
     float max_pitch_angle = pi / 6, max_roll_angle = pi / 6, max_yaw_angle = pi; // in radians
 
     //stabilizer params
     float p_pitch_rate = 0.5f, p_roll_rate = 0.5f, p_yaw_rate = 0.5f;
-    float p_pitch_angle = 0.5f, p_roll_angle = 0.5f, p_yaw_angle = 0.5f;
+    float p_pitch_angle = 1.5f, p_roll_angle = 1.5f, p_yaw_angle = 1.5f;
 
     ControlMode default_control_mode = ControlMode::Angle;
 };
