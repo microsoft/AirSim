@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 #include <algorithm>
-#include "CommonStructs.hpp"
+#include "interfaces/CommonStructs.hpp"
 
 namespace simple_flight {
 

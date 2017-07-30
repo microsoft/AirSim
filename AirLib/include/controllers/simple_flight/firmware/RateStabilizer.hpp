@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "CommonStructs.hpp"
+#include "interfaces/CommonStructs.hpp"
 #include "Params.hpp"
 #include "PidController.hpp"
 //#include "common/common_utils/Utils.hpp"

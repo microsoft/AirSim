@@ -5,14 +5,14 @@
 #define msr_airlib_AirSimSimpleFlightCommLink_hpp
 
 #include <exception>
-#include "firmware/CommLink.hpp"
+#include "firmware/interfaces/ICommLink.hpp"
 #include "common/Common.hpp"
 
 
 namespace msr { namespace airlib {
 
 
-class AirSimSimpleFlightCommLink : public simple_flight::CommLink {
+class AirSimSimpleFlightCommLink : public simple_flight::ICommLink {
 public: // derived class specific methods
     void getStatusMessages(std::vector<std::string>& messages)
     {

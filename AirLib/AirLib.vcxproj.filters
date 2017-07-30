@@ -327,9 +327,6 @@
     <ClInclude Include="include\controllers\ros_flight\RosFlightDroneController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\simple_flight\firmware\Board.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\firmware\Firmware.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -337,9 +334,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\SimpleFlightDroneController.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\simple_flight\firmware\CommLink.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightCommLink.hpp">
@@ -352,9 +346,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\firmware\RemoteControl.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\simple_flight\firmware\CommonStructs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\firmware\Mixer.hpp">
@@ -388,6 +379,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\api\DebugApiServer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IBoard.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IBoardClock.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IBoardInputPins.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IBoardOutputPins.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IBoardSensors.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IStateEstimator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\CommonStructs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IUpdatable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\ICommLink.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

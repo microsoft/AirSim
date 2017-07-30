@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommonStructs.hpp"
+#include "interfaces/CommonStructs.hpp"
 
 namespace simple_flight {
 
@@ -31,7 +31,7 @@ public:
     float max_pitch_rate = kMaxRate, max_roll_rate = kMaxRate, max_yaw_rate = kMaxRate; //in radians/sec
 
     //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremeities of controls
-    float max_pitch_angle = pi / 5.5, max_roll_angle = pi / 5.5, max_yaw_angle = pi; // in radians
+    float max_pitch_angle = pi / 5.5f, max_roll_angle = pi / 5.5f, max_yaw_angle = pi; // in radians
 
     //stabilizer params
     //p_xxx_rate params are sensetive to gyro noise. Values higher than 0.5 would require 

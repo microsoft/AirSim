@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <cstdint>
-#include "Board.hpp"
-#include "CommonStructs.hpp"
+#include "interfaces/IBoard.hpp"
+#include "interfaces/CommonStructs.hpp"
 
 namespace simple_flight {
 

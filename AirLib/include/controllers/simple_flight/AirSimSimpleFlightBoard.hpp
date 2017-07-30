@@ -6,7 +6,7 @@
 
 #include <exception>
 #include <vector>
-#include "firmware/Board.hpp"
+#include "firmware/interfaces/IBoard.hpp"
 #include "firmware/Params.hpp"
 #include "common/Common.hpp"
 #include "common/ClockFactory.hpp"
@@ -15,7 +15,7 @@
 
 namespace msr { namespace airlib {
 
-class AirSimSimpleFlightBoard : public simple_flight::Board {
+class AirSimSimpleFlightBoard : public simple_flight::IBoard {
 public:
     AirSimSimpleFlightBoard(const simple_flight::Params* params)
         : params_(params)

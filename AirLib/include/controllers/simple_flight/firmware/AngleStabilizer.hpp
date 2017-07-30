@@ -1,14 +1,16 @@
 
 #pragma once
 
-#include "CommonStructs.hpp"
+#include "interfaces/IUpdatable.hpp"
+#include "interfaces/IBoardClock.hpp"
+#include "interfaces/CommonStructs.hpp"
 #include "Params.hpp"
 #include "PidController.hpp"
 //#include "common/common_utils/Utils.hpp"
 
 namespace simple_flight {
 
-class AngleStabilizer {
+class AngleStabilizer : public IUpdatable {
 public:
     AngleStabilizer(const Params* params, const IBoardClock* clock = nullptr)
         : params_(params), 
@@ -22,14 +24,14 @@ public:
         unused(params_);
     }
 
-    void reset()
+    virtual void reset() override
     {
         pid_angle_pitch_.reset();
         pid_angle_roll_.reset();
         pid_angle_yaw_.reset();
     }
 
-    void update()
+    virtual void update() override
     {
         pid_angle_pitch_.update();
         pid_angle_roll_.update();

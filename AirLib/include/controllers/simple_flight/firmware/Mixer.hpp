@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include "Params.hpp"
-#include "CommonStructs.hpp"
+#include "interfaces/CommonStructs.hpp"
 
 namespace simple_flight {
 

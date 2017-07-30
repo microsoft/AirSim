@@ -1,9 +1,10 @@
 #pragma once
 
 #include <vector>
-#include "CommonStructs.hpp"
-#include "Board.hpp"
-#include "CommLink.hpp"
+#include "interfaces/CommonStructs.hpp"
+#include "interfaces/IBoard.hpp"
+#include "interfaces/ICommLink.hpp"
+#include "interfaces/IStateEstimator.hpp"
 #include "Params.hpp"
 #include "RemoteControl.hpp"
 #include "Mixer.hpp"
@@ -14,9 +15,9 @@ namespace simple_flight {
 
 class Firmware {
 public:
-    Firmware(Board* board, CommLink* comm_link, IAngleEstimator* angle_estimator, const Params* params)
+    Firmware(IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator, const Params* params)
         : board_(board), comm_link_(comm_link), params_(params), 
-          rc_(params, board, board), mixer_(params), stabilizer_(params, board, board, angle_estimator)
+          rc_(params, board, board), mixer_(params), stabilizer_(params, board, board, state_estimator)
     {
     }
 
@@ -54,8 +55,8 @@ public:
 
 private:
     //objects we use
-    Board* board_;
-    CommLink* comm_link_;
+    IBoard* board_;
+    ICommLink* comm_link_;
 
     std::vector<float> motor_outputs_;
 

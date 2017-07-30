@@ -7,9 +7,9 @@ namespace simple_flight {
 
 class Stabilizer {
 public:
-    Stabilizer(const Params* params, const IBoardSensors* sensors, const IBoardClock* clock, const IAngleEstimator* angle_estimator)
+    Stabilizer(const Params* params, const IBoardSensors* sensors, const IBoardClock* clock, const IStateEstimator* state_estimator)
         : params_(params), clock_(clock), sensors_(sensors),
-          angle_estimator_(angle_estimator),
+          state_estimator_(state_estimator),
           rate_stabilizer_(params, clock), angle_stabilizer_(params, clock)
     {
         unused(clock_);
@@ -28,7 +28,7 @@ public:
     void update()
     {
         angle_stabilizer_.setGoalAngles(goal_input_);
-        angle_stabilizer_.setMeasuredAngles(angle_estimator_->getAngles());
+        angle_stabilizer_.setMeasuredAngles(state_estimator_->getAngles());
 
         angle_stabilizer_.update();
 
@@ -86,7 +86,7 @@ private:
     const Params* params_;
     const IBoardClock* clock_;
     const IBoardSensors* sensors_;
-    const IAngleEstimator* angle_estimator_;
+    const IStateEstimator* state_estimator_;
 
     float gyro_readout[3];
     Angles goal_input_, goal_from_angles_, goal_rates_;

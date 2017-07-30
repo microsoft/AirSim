@@ -11,8 +11,8 @@ class QuaternionTest : public TestBase
 public:
     virtual void run() override
     {
-        RandomGeneratorR r(-1000, 1000);
-        RandomGeneratorR rw(0, 2000);
+        RandomGeneratorR r(-1000.0f, 1000.0f);
+        RandomGeneratorR rw(-1000.0f, 1000.0f);
         for (auto i = 0; i < 1000; ++i) {
             Quaternionr q(rw.next(), r.next(), r.next(), r.next());
             q.normalize();

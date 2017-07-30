@@ -4,14 +4,14 @@
 #ifndef msr_airlib_AirSimSimpleFlightEstimator_hpp
 #define msr_airlib_AirSimSimpleFlightEstimator_hpp
 
-#include "firmware/CommonStructs.hpp"
+#include "firmware/interfaces/CommonStructs.hpp"
 #include "physics/Kinematics.hpp"
 #include "common/Common.hpp"
 
 namespace msr { namespace airlib {
 
 
-class AirSimSimpleFlightEstimator : public simple_flight::IAngleEstimator {
+class AirSimSimpleFlightEstimator : public simple_flight::IStateEstimator {
 public:
     //for now we don't do any state estimation and use ground truth (i.e. assume perfect sensors)
     void setKinematics(const Kinematics::State* kinematics)
