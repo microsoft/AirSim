@@ -40,8 +40,6 @@ public:
         //we will be setting goal for rate controller so we need these two things
         rate_mode_  = GoalMode::getUnknown();
         rate_mode_[axis] = GoalModeType::AngleRate;
-
-        AngleLevelController::reset();
     }
 
     virtual void reset() override

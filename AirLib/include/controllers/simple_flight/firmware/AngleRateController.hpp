@@ -26,8 +26,6 @@ public:
 
         pid_.reset(new PidController<float>(clock_,
             PidController<float>::Config(params_->pid_p_angle_rate[axis], 0, 0)));
-
-        AngleRateController::reset();
     }
 
     virtual void reset() override

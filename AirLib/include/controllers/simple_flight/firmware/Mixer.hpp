@@ -16,11 +16,18 @@ public:
 
     void getMotorOutput(const Axis4r& controls, std::vector<float>& motor_outputs) const
     {
-        float throttle = std::max(params_->min_armed_output, controls.throttle);
+        //if throttle is too low then set all motors to same value as throttle because
+        //otherwise values in pitch/roll/yaw would get clipped randomly and can produce random results
+        //in other words: we can't do angling if throttle is too low
+        if (controls.throttle < params_->min_armed_output) {
+            motor_outputs.assign(params_->motor_count, controls.throttle);
+            return;
+        }
+
 
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index) {
             motor_outputs[motor_index] =
-                throttle * mixerQuadX[motor_index].throttle
+                controls.throttle * mixerQuadX[motor_index].throttle
                 + controls.axis3.pitch() * mixerQuadX[motor_index].pitch
                 + controls.axis3.roll() * mixerQuadX[motor_index].roll
                 + controls.axis3.yaw() * mixerQuadX[motor_index].yaw

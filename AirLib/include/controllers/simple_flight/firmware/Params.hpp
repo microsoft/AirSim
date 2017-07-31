@@ -22,7 +22,7 @@ public:
     float min_motor_output = 0;
     float max_motor_output = 1;
     //if min_armed_output too low then noise in pitch/roll can destabilize quad copter when throttle is zero
-    float min_armed_output = 0.2f;
+    float min_armed_output = 0.1f;
 
     const float pi = 3.14159265359f; //180-degrees
 

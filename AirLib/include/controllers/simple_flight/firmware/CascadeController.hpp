@@ -23,8 +23,6 @@ public:
         goal_input_ = goal_input;
         state_estimator_ = state_estimator;
         last_goal_mode_ = GoalMode::getUnknown();
-
-        CascadeController::reset();
     }
 
     virtual void reset() override
