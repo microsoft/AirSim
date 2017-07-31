@@ -58,12 +58,12 @@ public:
 
     }
 
-    virtual const Axis4r& getGoal() const
+    virtual const Axis4r& getGoal() const override
     {
         return goal_;
     }
 
-    virtual const GoalMode& getGoalMode() const
+    virtual const GoalMode& getGoalMode() const override
     {
         return goal_mode_;
     }

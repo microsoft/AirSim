@@ -24,10 +24,10 @@ public:
     //if min_armed_output too low then noise in pitch/roll can destabilize quad copter when throttle is zero
     float min_armed_output = 0.2f;
 
-    static constexpr float pi = 3.14159265359f; //180-degrees
+    const float pi = 3.14159265359f; //180-degrees
 
     //max_xxx_rate > 5 would introduce wobble/oscillations
-    static constexpr float kMaxAngleRateDefault = 2.5f;
+    const float kMaxAngleRateDefault = 2.5f;
     Axis3r max_angle_rate = Axis3r(kMaxAngleRateDefault, kMaxAngleRateDefault, kMaxAngleRateDefault); //roll, pitch, yaw - in radians/sec
 
     //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremeities of controls
@@ -36,10 +36,10 @@ public:
     //stabilizer params
     //p_xxx_rate params are sensetive to gyro noise. Values higher than 0.5 would require 
     //noise filteration
-    static constexpr float kPidPAngleRateDefault = 0.5f;
+    const float kPidPAngleRateDefault = 0.5f;
     Axis3r pid_p_angle_rate = Axis3r(kPidPAngleRateDefault, kPidPAngleRateDefault, kPidPAngleRateDefault);
     
-    static constexpr float kPidPAngleLevelDefault = 2.5f;
+    const float kPidPAngleLevelDefault = 2.5f;
     Axis3r pid_p_angle_level = Axis3r(kPidPAngleLevelDefault, kPidPAngleLevelDefault, kPidPAngleLevelDefault);
 
     GoalMode default_goal_mode = GoalMode::getStandardAngleMode();

@@ -436,7 +436,7 @@ public:
             throw std::invalid_argument("UdpPort setting has an invalid value.");
         }
 
-        addStatusMessage(Utils::stringf("Connecting to UDP port %d, local IP %s, remote IP...", port, connection_info_.local_host_ip, ip));
+        addStatusMessage(Utils::stringf("Connecting to UDP port %d, local IP %s, remote IP...", port, connection_info_.local_host_ip.c_str(), ip.c_str()));
         connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
         hil_node_->connect(connection_);
@@ -448,7 +448,7 @@ public:
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
             addStatusMessage(Utils::stringf("Connecting to PX4 SITL UDP port %d, local IP %s, remote IP...", 
-                connection_info_.sitl_ip_port, connection_info_.local_host_ip, connection_info_.sitl_ip_address));
+                connection_info_.sitl_ip_port, connection_info_.local_host_ip.c_str(), connection_info_.sitl_ip_address.c_str()));
 
             auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl", 
                 connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
@@ -483,12 +483,12 @@ public:
             throw std::invalid_argument("Baud rate specified in settings.json is 0 which is invalid");
         }
 
-        addStatusMessage(Utils::stringf("Connecting to PX4 over serial port: %s, baud rate %d ....", port_name_auto, baud_rate));
+        addStatusMessage(Utils::stringf("Connecting to PX4 over serial port: %s, baud rate %d ....", port_name_auto.c_str(), baud_rate));
         connection_ = mavlinkcom::MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
         connection_->ignoreMessage(mavlinkcom::MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mocap messages
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
-        addStatusMessage(Utils::stringf("Connected to PX4 over serial port", port_name_auto, baud_rate));
+        addStatusMessage("Connected to PX4 over serial port.");
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
         mav_vehicle_->connect(connection_); // in this case we can use the same connection.

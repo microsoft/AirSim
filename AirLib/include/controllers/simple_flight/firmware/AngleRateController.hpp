@@ -18,7 +18,7 @@ public:
     {
     }
 
-    virtual void initialize(unsigned int axis, const IGoalInput* goal_input, const IStateEstimator* state_estimator)
+    virtual void initialize(unsigned int axis, const IGoalInput* goal_input, const IStateEstimator* state_estimator) override
     {
         axis_ = axis;
         goal_input_ = goal_input;
