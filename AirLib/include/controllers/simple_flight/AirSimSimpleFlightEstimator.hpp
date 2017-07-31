@@ -19,9 +19,9 @@ public:
         kinematics_ = kinematics;
     }
 
-    virtual simple_flight::Angles getAngles() const override
+    virtual simple_flight::Axis3r getAngles() const override
     {
-        simple_flight::Angles angles;
+        simple_flight::Axis3r angles;
         VectorMath::toEulerianAngle(kinematics_->pose.orientation,
             angles.pitch(), angles.roll(), angles.yaw());
 

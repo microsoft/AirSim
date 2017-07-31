@@ -38,7 +38,7 @@ public:
         rate_controller_->initialize(axis, this, state_estimator_);
 
         //we will be setting goal for rate controller so we need these two things
-        rate_mode_  = GoalMode::getUnknow();
+        rate_mode_  = GoalMode::getUnknown();
         rate_mode_[axis] = GoalModeType::AngleRate;
 
         AngleLevelController::reset();
@@ -48,6 +48,8 @@ public:
     {
         pid_->reset();
         rate_controller_->reset();
+        rate_goal_ = Axis4r();
+        output_ = TReal();
     }
 
     virtual void update() override

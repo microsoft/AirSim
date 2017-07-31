@@ -55,12 +55,12 @@ public:
         return clock()->nowNanos() / 1000000;
     }
 
-    virtual float readChannel(uint8_t index) const override 
+    virtual float readChannel(uint16_t index) const override 
     {
         return input_channels_[index];
     }
 
-    virtual void writeOutput(uint8_t index, float value) override 
+    virtual void writeOutput(uint16_t index, float value) override 
     {
         motor_output_[index] = value;
     }

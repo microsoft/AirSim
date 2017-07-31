@@ -43,7 +43,6 @@ private:
     T vals_[kAxisCount];
 };
 typedef Axis3<TReal> Axis3r;
-typedef Axis3r Angles;
 
 struct Axis4r {
     TReal throttle = 0;
@@ -76,7 +75,7 @@ public:
         return GoalMode(GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::AngleRate);
     }
 
-    static GoalMode getUnknow()
+    static GoalMode getUnknown()
     {
         return GoalMode(GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown);
     }

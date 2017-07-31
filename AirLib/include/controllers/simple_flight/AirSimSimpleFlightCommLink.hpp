@@ -32,9 +32,9 @@ public: // implement CommLink interface
     {
     }
 
-    virtual void log(const char* message, int32_t error_level)
+    virtual void log(const std::string& message, int32_t log_level)
     {
-        unused(error_level);
+        unused(log_level);
         messages_.push_back(std::string(message));
     }
 

@@ -4,6 +4,7 @@
 #include <exception>
 #include "interfaces/IController.hpp"
 #include "interfaces/IStateEstimator.hpp"
+#include "interfaces/ICommLink.hpp"
 #include "interfaces/IGoalInput.hpp"
 #include "AngleRateController.hpp"
 #include "AngleLevelController.hpp"
@@ -12,8 +13,8 @@ namespace simple_flight {
 
 class CascadeController : public IController {
 public:
-    CascadeController(const Params* params, const IBoardClock* clock)
-        : params_(params), clock_(clock)
+    CascadeController(const Params* params, const IBoardClock* clock, ICommLink* comm_link)
+        : params_(params), clock_(clock), comm_link_(comm_link)
     {
     }
 
@@ -21,14 +22,20 @@ public:
     {
         goal_input_ = goal_input;
         state_estimator_ = state_estimator;
+        last_goal_mode_ = GoalMode::getUnknown();
 
         CascadeController::reset();
     }
 
     virtual void reset() override
     {
-        last_goal_mode_ = GoalMode::getUnknow();
         output_ = Axis4r();
+
+        for (unsigned int axis = 0; axis < 3; ++axis) {
+            if (axis_controllers_[axis] != nullptr)
+                axis_controllers_[axis]->reset();
+        }
+
     }
 
     virtual void update() override
@@ -63,8 +70,7 @@ public:
                 output_.axis3[axis] = axis_controllers_[axis]->getOutput();
             }
             else
-                throw std::invalid_argument("Axis controller type is not set for axis " 
-                    + std::to_string(axis));
+                comm_link_->log(std::string("Axis controller type is not set for axis ").append(std::to_string(axis)), ICommLink::kLogLevelError);
         }
     }
 
@@ -80,6 +86,7 @@ private:
 
     const IGoalInput* goal_input_;
     const IStateEstimator* state_estimator_;
+    ICommLink* comm_link_;
 
     Axis4r output_;
 

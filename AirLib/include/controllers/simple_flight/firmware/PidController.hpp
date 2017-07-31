@@ -138,12 +138,12 @@ private:
 private:
     T goal_, measured_;
     T output_;
-    const IBoardClock* clock_;
-    Config config_;
     uint64_t last_time_;
-    float min_dt_;
+    const IBoardClock* clock_;
     float iterm_int_;
     float last_goal_;
+    float min_dt_;
+    Config config_;
 };
 
 

@@ -33,6 +33,7 @@ public:
     virtual void reset() override
     {
         pid_->reset();
+        output_ = TReal();
     }
 
     virtual void update() override

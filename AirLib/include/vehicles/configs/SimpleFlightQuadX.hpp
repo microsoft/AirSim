@@ -56,6 +56,7 @@ protected:
 private:
     void createController(unique_ptr<DroneControllerBase>& controller, SensorCollection& sensors)
     {
+        unused(sensors);
         controller.reset(new SimpleFlightDroneController(this));
     }
 

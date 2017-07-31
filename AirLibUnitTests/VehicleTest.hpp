@@ -12,10 +12,13 @@ class VehicleTest : public TestBase
 public:
     virtual void run() override
     {
+        auto simpleFlight = MultiRotorParamsFactory::createConfig("SimpleFlight");
+        simpleFlight->initialize();
+
         auto rosFlight = MultiRotorParamsFactory::createConfig("RosFlight");
         rosFlight->initialize();
 
-        // Test PX4 based drones
+        //Test PX4 based drones
         auto pixhawk = MultiRotorParamsFactory::createConfig("Pixhawk");	
         pixhawk->initialize();
         

@@ -97,6 +97,7 @@ public:
 
     virtual void setOffboardMode(bool is_set) override
     {
+        unused(is_set);
         //TODO: implement this
     }
 
@@ -161,26 +162,34 @@ public:
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override
     {
+        unused(arm);
+        unused(cancelable_action);
         return true;
     }
 
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override
     {
+        unused(max_wait_seconds);
+        unused(cancelable_action);
         return true;
     }
 
     bool land(float max_wait_seconds, CancelableBase& cancelable_action) override
     {
+        unused(max_wait_seconds);
+        unused(cancelable_action);
         return true;
     }
 
     bool goHome(CancelableBase& cancelable_action) override
     {
+        unused(cancelable_action);
         return true;
     }
 
     bool hover(CancelableBase& cancelable_action) override
     {
+        unused(cancelable_action);
         return true;
     }
 
@@ -196,6 +205,7 @@ public:
 
     virtual void reportTelemetry(float renderTime) override
     {
+        unused(renderTime);
         //TODO: implement this
     }
 
@@ -219,21 +229,41 @@ public:
 protected: 
     void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
+        unused(pitch);
+        unused(roll);
+        unused(z);
+        unused(yaw);
+
         //TODO: implement this
     }
 
     void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
+        unused(vx);
+        unused(vy);
+        unused(vz);
+        unused(yaw_mode);
+
         //TODO: implement this
     }
 
     void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
+        unused(vx);
+        unused(vy);
+        unused(z);
+        unused(yaw_mode);
+
         //TODO: implement this
     }
 
     void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
+        unused(x);
+        unused(y);
+        unused(z);
+        unused(yaw_mode);
+
         //TODO: implement this
     }
 

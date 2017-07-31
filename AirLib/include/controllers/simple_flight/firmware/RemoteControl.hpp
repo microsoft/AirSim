@@ -36,7 +36,7 @@ public:
         last_rec_read_ = time;
 
         //read rc
-        for (int channel = 0; channel < params_->rc_channel_count; ++channel)
+        for (uint16_t channel = 0; channel < params_->rc_channel_count; ++channel)
             rc_channels_[channel] = board_inputs_->readChannel(channel);
 
         goal_.throttle = rc_channels_[params_->rc_thrust_channel];
