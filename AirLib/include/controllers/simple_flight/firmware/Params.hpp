@@ -27,22 +27,22 @@ public:
     static constexpr float pi = 3.14159265359f; //180-degrees
 
     //max_xxx_rate > 5 would introduce wobble/oscillations
-    static constexpr float kMaxRate = 2.5f;
-    float max_pitch_rate = kMaxRate, max_roll_rate = kMaxRate, max_yaw_rate = kMaxRate; //in radians/sec
+    static constexpr float kMaxAngleRateDefault = 2.5f;
+    Axis3r max_angle_rate = Axis3r(kMaxAngleRateDefault, kMaxAngleRateDefault, kMaxAngleRateDefault); //roll, pitch, yaw - in radians/sec
 
     //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremeities of controls
-    float max_pitch_angle = pi / 5.5f, max_roll_angle = pi / 5.5f, max_yaw_angle = pi; // in radians
+    Axis3r max_angle_level = Axis3r(pi / 5.5f, pi / 5.5f, pi); //roll, pitch, yaw - in radians/sec
 
     //stabilizer params
     //p_xxx_rate params are sensetive to gyro noise. Values higher than 0.5 would require 
     //noise filteration
-    static constexpr float kPRateDefault = 0.5f;
-    float p_pitch_rate = kPRateDefault, p_roll_rate = kPRateDefault, p_yaw_rate = kPRateDefault;
+    static constexpr float kPidPAngleRateDefault = 0.5f;
+    Axis3r pid_p_angle_rate = Axis3r(kPidPAngleRateDefault, kPidPAngleRateDefault, kPidPAngleRateDefault);
     
-    static constexpr float kPAngleDefault = 2.5f;
-    float p_pitch_angle = kPAngleDefault, p_roll_angle = kPAngleDefault, p_yaw_angle = kPAngleDefault;
+    static constexpr float kPidPAngleLevelDefault = 2.5f;
+    Axis3r pid_p_angle_level = Axis3r(kPidPAngleLevelDefault, kPidPAngleLevelDefault, kPidPAngleLevelDefault);
 
-    ControlMode default_control_mode = ControlMode::getStandardAngleMode();
+    GoalMode default_goal_mode = GoalMode::getStandardAngleMode();
 };
 
 

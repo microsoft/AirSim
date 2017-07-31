@@ -23,12 +23,23 @@ public:
     {
         simple_flight::Angles angles;
         VectorMath::toEulerianAngle(kinematics_->pose.orientation,
-            angles.pitch, angles.roll, angles.yaw);
+            angles.pitch(), angles.roll(), angles.yaw());
 
-        //Utils::log(Utils::stringf("Ang Est:\t(%f, %f, %f)", angles.pitch, angles.roll, angles.yaw));
+        //Utils::log(Utils::stringf("Ang Est:\t(%f, %f, %f)", angles.pitch(), angles.roll(), angles.yaw()));
 
         return angles;
     }
+
+    virtual simple_flight::Axis3r getAngulerVelocity() const override
+    {
+        const auto& anguler = kinematics_->twist.angular;
+
+        simple_flight::Axis3r angular_vel;
+        angular_vel.x() = anguler.x(); angular_vel.y() = anguler.y(); angular_vel.z() = anguler.z();
+
+        return angular_vel;
+    }
+
 
 private:
     const Kinematics::State* kinematics_;

@@ -2,27 +2,30 @@
 
 #include <vector>
 #include <cstdint>
-#include "interfaces/IBoard.hpp"
+#include "interfaces/IBoardClock.hpp"
+#include "interfaces/IBoardInputPins.hpp"
+#include "interfaces/IGoalInput.hpp"
 #include "interfaces/CommonStructs.hpp"
 
 namespace simple_flight {
 
-class RemoteControl {
+class RemoteControl : public IGoalInput {
 public:
     RemoteControl(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs)
         : clock_(clock), board_inputs_(board_inputs), params_(params)
     {
     }
 
-    void reset()
+    virtual void reset() override
     {
         rc_channels_.assign(params_->rc_channel_count, 0);
         last_rec_read_ = 0;
-        controls_ = Controls();
-        control_mode_ = params_->default_control_mode;
+
+        goal_ = Axis4r();
+        goal_mode_ = params_->default_goal_mode;
     }
     
-    void update()
+    virtual void update() override
     {
         uint64_t time = clock_->millis();
 
@@ -36,33 +39,33 @@ public:
         for (int channel = 0; channel < params_->rc_channel_count; ++channel)
             rc_channels_[channel] = board_inputs_->readChannel(channel);
 
-        controls_.throttle = rc_channels_[params_->rc_thrust_channel];
+        goal_.throttle = rc_channels_[params_->rc_thrust_channel];
         if (rc_channels_[params_->rc_rate_angle_channel] < 0.1f) { //approximately 0
-            control_mode_ = ControlMode::getStandardAngleMode();
+            goal_mode_ = GoalMode::getStandardAngleMode();
 
             //we are in control-by-angles mode
-            controls_.angles.pitch = params_->max_pitch_angle * rc_channels_[params_->rc_pitch_channel];
-            controls_.angles.roll = params_->max_roll_angle * rc_channels_[params_->rc_roll_channel];
-            controls_.angles.yaw = params_->max_yaw_angle * rc_channels_[params_->rc_yaw_channel];
+            goal_.axis3.pitch() = params_->max_angle_level.pitch() * rc_channels_[params_->rc_pitch_channel];
+            goal_.axis3.roll() = params_->max_angle_level.roll() * rc_channels_[params_->rc_roll_channel];
+            goal_.axis3.yaw() = params_->max_angle_level.yaw() * rc_channels_[params_->rc_yaw_channel];
         }
         else { //we are in control-by-rate mode
-            control_mode_ = ControlMode::getAllRateMode();
+            goal_mode_ = GoalMode::getAllRateMode();
 
-            controls_.angles.pitch = params_->max_pitch_rate * rc_channels_[params_->rc_pitch_channel];
-            controls_.angles.roll = params_->max_roll_rate * rc_channels_[params_->rc_roll_channel];
-            controls_.angles.yaw = params_->max_yaw_rate * rc_channels_[params_->rc_yaw_channel];
+            goal_.axis3.pitch() = params_->max_angle_rate.pitch() * rc_channels_[params_->rc_pitch_channel];
+            goal_.axis3.roll() = params_->max_angle_rate.roll() * rc_channels_[params_->rc_roll_channel];
+            goal_.axis3.yaw() = params_->max_angle_rate.yaw() * rc_channels_[params_->rc_yaw_channel];
         }
 
     }
 
-    ControlMode getControlMode() const
+    virtual const Axis4r& getGoal() const
     {
-        return control_mode_;
+        return goal_;
     }
 
-    const Controls& getControls() const 
+    virtual const GoalMode& getGoalMode() const
     {
-        return controls_;
+        return goal_mode_;
     }
 
 
@@ -71,8 +74,8 @@ private:
     const IBoardInputPins* board_inputs_;
     const Params* params_;
 
-    ControlMode control_mode_;
-    Controls controls_;
+    Axis4r goal_;
+    GoalMode goal_mode_;
 
     std::vector<float> rc_channels_;
     uint64_t last_rec_read_;

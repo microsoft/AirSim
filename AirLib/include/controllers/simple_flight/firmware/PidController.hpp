@@ -7,8 +7,9 @@
 namespace simple_flight {
 
 template<class T>
-class PidController {
+class PidController : public IUpdatable {
 public:
+    //config params for PID controller
     struct Config {
         Config(float kp_val = 0.01f, float ki_val = 0.0f, float kd_val = 0.0f,
             float min_output_val = -1.0f, float max_output_val = 1.0f,
@@ -77,7 +78,7 @@ public:
         iterm_int_ = T();
     }
 
-    void reset()
+    virtual void reset() override
     {
         goal_ = T();
         measured_ = T();
@@ -87,7 +88,7 @@ public:
         min_dt_ = config_.time_scale * config_.time_scale;
     }
 
-    void update()
+    virtual void update() override
     {
         if (!config_.enabled)
             return;

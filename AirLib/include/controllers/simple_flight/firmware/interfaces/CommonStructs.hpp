@@ -2,34 +2,84 @@
 
 namespace simple_flight {
 
-struct ControlMode {
-    bool PitchByRate = false;
-    bool RollByRate = false;
-    bool YawByRate = true;
+typedef float TReal;
+static constexpr unsigned int kAxisCount = 3;
 
-    static ControlMode getStandardAngleMode()
+template<typename T>
+class Axis3 {
+public:
+    Axis3(const T& x_val = T(), const T& y_val = T(), const T& z_val = T())
+        : vals_ {x_val, y_val, z_val}
     {
-        return ControlMode();
     }
 
-    static ControlMode getAllRateMode()
+    //access by index
+    T& operator[] (unsigned int index)
     {
-        ControlMode c;
-        c.PitchByRate = true;
-        c.RollByRate = true;
-        c.YawByRate = true;
-
-        return c;
+        return vals_[index];
     }
+    const T& operator[] (unsigned int index) const
+    {
+        return vals_[index];
+    }
+
+    //access as axis
+    const T& x() const { return vals_[0]; }
+    const T& y() const { return vals_[1]; }
+    const T& z() const { return vals_[2]; }
+    T& x() { return vals_[0]; }
+    T& y() { return vals_[1]; }
+    T& z() { return vals_[2]; }
+
+    //access as angles
+    const T& roll() const { return vals_[0]; }
+    const T& pitch() const { return vals_[1]; }
+    const T& yaw() const { return vals_[2]; }
+    T& roll() { return vals_[0]; }
+    T& pitch() { return vals_[1]; }
+    T& yaw() { return vals_[2]; }
+
+private:
+    T vals_[kAxisCount];
+};
+typedef Axis3<TReal> Axis3r;
+typedef Axis3r Angles;
+
+struct Axis4r {
+    TReal throttle = 0;
+    Axis3r axis3;
 };
 
-struct Angles {
-    float pitch = 0, roll = 0, yaw = 0;
+enum class GoalModeType {
+    AngleLevel,
+    AngleRate,
+    VelocityWorld,
+    PositionWorld,
+    Unknown
 };
 
-struct Controls {
-    float throttle = 0;
-    Angles angles;
+class GoalMode : public Axis3<GoalModeType> {
+public:
+    GoalMode(GoalModeType x_val = GoalModeType::AngleLevel, GoalModeType y_val = GoalModeType::AngleLevel, 
+        GoalModeType z_val = GoalModeType::AngleRate)
+    : Axis3<GoalModeType>(x_val, y_val, z_val)    
+    {
+    }
+
+    static GoalMode getStandardAngleMode()
+    {
+        return GoalMode();
+    }
+
+    static GoalMode getAllRateMode()
+    {
+        return GoalMode(GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::AngleRate);
+    }
+
+    static GoalMode getUnknow()
+    {
+        return GoalMode(GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown);
+    }
 };
 
 } //namespace

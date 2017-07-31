@@ -8,7 +8,7 @@
 #include "Params.hpp"
 #include "RemoteControl.hpp"
 #include "Mixer.hpp"
-#include "Stabilizer.hpp"
+#include "CascadeController.hpp"
 
 
 namespace simple_flight {
@@ -17,8 +17,9 @@ class Firmware {
 public:
     Firmware(IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator, const Params* params)
         : board_(board), comm_link_(comm_link), params_(params), 
-          rc_(params, board, board), mixer_(params), stabilizer_(params, board, board, state_estimator)
+          rc_(params, board, board), mixer_(params), controller_(params, board)
     {
+        controller_.initialize(&rc_, state_estimator);
     }
 
     void reset()
@@ -26,7 +27,7 @@ public:
         board_->reset();
         comm_link_->reset();
         rc_.reset();
-        stabilizer_.reset();
+        controller_.reset();
 
         motor_outputs_.assign(params_->motor_count, 0);
     }
@@ -38,12 +39,9 @@ public:
 
         //get latest from RC
         rc_.update();
+        controller_.update();
 
-        stabilizer_.setControlMode(rc_.getControlMode());
-        stabilizer_.setGoal(rc_.getControls());
-        stabilizer_.update();
-
-        const Controls& output_controls = stabilizer_.getOutput();
+        const Axis4r& output_controls = controller_.getOutput();
 
         //convert rate_stabilizer output in to motor outputs
         mixer_.getMotorOutput(output_controls, motor_outputs_);
@@ -63,7 +61,7 @@ private:
     const Params* params_;
     RemoteControl rc_;
     Mixer mixer_;
-    Stabilizer stabilizer_;
+    CascadeController controller_;
 };
 
 

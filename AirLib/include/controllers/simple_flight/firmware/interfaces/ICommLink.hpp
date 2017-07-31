@@ -9,5 +9,4 @@ public:
     virtual void log(const char* message, int32_t error_level) = 0;
 };
 
-
 } //namespace

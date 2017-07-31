@@ -354,15 +354,6 @@
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightEstimator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\simple_flight\firmware\Stabilizer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\simple_flight\firmware\AngleStabilizer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\simple_flight\firmware\RateStabilizer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\controllers\VehicleCameraBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -406,6 +397,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\ICommLink.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\AngleLevelController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\AngleRateController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IGoalInput.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IAxisController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\CascadeController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
