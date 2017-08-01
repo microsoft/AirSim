@@ -20,11 +20,10 @@ public:
     {
         IGoalInput::reset();
 
-        rc_channels_.assign(params_->rc_channel_count, 0);
-        last_rec_read_ = 0;
-
         goal_ = Axis4r();
         goal_mode_ = params_->default_goal_mode;
+        channel_vals_.assign(params_->rc.channel_count, 0);
+        last_rec_read_ = 0;
     }
     
     virtual void update() override
@@ -34,30 +33,30 @@ public:
         uint64_t time = clock_->millis();
 
         //don't keep reading if not updated
-        if (time - last_rec_read_ <= params_->rc_read_interval_ms)
+        if (time - last_rec_read_ <= params_->rc.read_interval_ms)
             return;
 
         last_rec_read_ = time;
 
         //read rc
-        for (uint16_t channel = 0; channel < params_->rc_channel_count; ++channel)
-            rc_channels_[channel] = board_inputs_->readChannel(channel);
+        for (uint16_t channel = 0; channel < params_->rc.channel_count; ++channel)
+            channel_vals_[channel] = board_inputs_->readChannel(channel);
 
-        goal_.throttle = rc_channels_[params_->rc_thrust_channel];
-        if (rc_channels_[params_->rc_rate_angle_channel] < 0.1f) { //approximately 0
+        goal_.throttle = channel_vals_[params_->rc.channels.throttle];
+        if (channel_vals_[params_->rc.rate_level_mode_channel] < 0.1f) { //approximately 0
             goal_mode_ = GoalMode::getStandardAngleMode();
 
             //we are in control-by-angles mode
-            goal_.axis3.pitch() = params_->max_angle_level.pitch() * rc_channels_[params_->rc_pitch_channel];
-            goal_.axis3.roll() = params_->max_angle_level.roll() * rc_channels_[params_->rc_roll_channel];
-            goal_.axis3.yaw() = params_->max_angle_level.yaw() * rc_channels_[params_->rc_yaw_channel];
+            goal_.axis3.pitch() = params_->max_angle_level.pitch() * channel_vals_[params_->rc.channels.axis3.pitch()];
+            goal_.axis3.roll() = params_->max_angle_level.roll() * channel_vals_[params_->rc_roll_channel];
+            goal_.axis3.yaw() = params_->max_angle_level.yaw() * channel_vals_[params_->rc_yaw_channel];
         }
         else { //we are in control-by-rate mode
             goal_mode_ = GoalMode::getAllRateMode();
 
-            goal_.axis3.pitch() = params_->max_angle_rate.pitch() * rc_channels_[params_->rc_pitch_channel];
-            goal_.axis3.roll() = params_->max_angle_rate.roll() * rc_channels_[params_->rc_roll_channel];
-            goal_.axis3.yaw() = params_->max_angle_rate.yaw() * rc_channels_[params_->rc_yaw_channel];
+            goal_.axis3.pitch() = params_->max_angle_rate.pitch() * channel_vals_[params_->rc_pitch_channel];
+            goal_.axis3.roll() = params_->max_angle_rate.roll() * channel_vals_[params_->rc_roll_channel];
+            goal_.axis3.yaw() = params_->max_angle_rate.yaw() * channel_vals_[params_->rc_yaw_channel];
         }
 
     }
@@ -72,6 +71,15 @@ public:
         return goal_mode_;
     }
 
+private:
+    enum class RcRequestType {
+        None, ArmRequest, DisarmRequest
+    };
+
+    RcRequestType getRcRequest()
+    {
+
+    }
 
 private:
     const IBoardClock* clock_;
@@ -81,7 +89,7 @@ private:
     Axis4r goal_;
     GoalMode goal_mode_;
 
-    std::vector<float> rc_channels_;
+    std::vector<float> channel_vals_;
     uint64_t last_rec_read_;
 };
 

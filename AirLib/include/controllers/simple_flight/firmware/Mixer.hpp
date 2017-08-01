@@ -20,7 +20,7 @@ public:
         //otherwise values in pitch/roll/yaw would get clipped randomly and can produce random results
         //in other words: we can't do angling if throttle is too low
         if (controls.throttle < params_->min_armed_output) {
-            motor_outputs.assign(params_->motor_count, controls.throttle);
+            motor_outputs.assign(params_->motor_count, params_->min_armed_output);
             return;
         }
 

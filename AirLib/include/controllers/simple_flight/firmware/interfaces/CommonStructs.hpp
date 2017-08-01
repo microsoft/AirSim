@@ -44,10 +44,18 @@ private:
 };
 typedef Axis3<TReal> Axis3r;
 
-struct Axis4r {
-    TReal throttle = 0;
-    Axis3r axis3;
+template<typename T>
+struct Axis4 {
+    T throttle = 0;
+    Axis3<T> axis3;
+
+    Axis4(const T& throttle_val = T(), const T& x_val = T(), const T& y_val = T(), const T& z_val = T())
+        : throttle(throttle_val), axis(x_val, y_val, z_val)
+    {
+    }
 };
+typedef Axis4<TReal> Axis4r;
+
 
 enum class GoalModeType {
     AngleLevel,
