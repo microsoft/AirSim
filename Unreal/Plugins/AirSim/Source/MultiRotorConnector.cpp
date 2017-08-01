@@ -273,6 +273,11 @@ bool MultiRotorConnector::isApiServerStarted()
 //*** Start: UpdatableState implementation ***//
 void MultiRotorConnector::reset()
 {
+    VehicleConnectorBase::reset();
+
+    //TODO: should this be done in MultiRotor.hpp
+    //controller_->reset();
+
     rc_data_ = RCData();
     vehicle_pawn_->reset();    //we do flier resetPose so that flier is placed back without collisons
     vehicle_.reset();
@@ -280,6 +285,8 @@ void MultiRotorConnector::reset()
 
 void MultiRotorConnector::update()
 {
+    VehicleConnectorBase::update();
+
     //this is high frequency physics tick, flier gets ticked at rendering frame rate
     vehicle_.update();
 }

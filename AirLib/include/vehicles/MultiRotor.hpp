@@ -35,8 +35,6 @@ public:
         createDragVertices();
 
         initSensors(*params_, getKinematics(), getEnvironment());
-
-        MultiRotor::reset();
     }
 
     DroneControllerBase* getController()
@@ -47,16 +45,12 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
-        //reset inputs
-        if (getController())
-            getController()->reset();
-
         //reset rotors, kinematics and environment
         PhysicsBody::reset();
 
-        //reset rotors after environment is reset
-        for (Rotor& rotor : rotors_)
-            rotor.reset();
+        //reset inputs
+        if (getController())
+            getController()->reset();
 
         //reset sensors last after their ground truth has been reset
         resetSensors();
@@ -66,6 +60,8 @@ public:
     {
         //update forces and environment as a result of last dt
         PhysicsBody::update();
+
+        //Note that controller gets updated after kinematics gets updated in kinematicsUpdated
     }
     virtual void reportState(StateReporter& reporter) override
     {

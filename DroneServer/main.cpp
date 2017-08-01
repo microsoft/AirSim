@@ -74,6 +74,7 @@ int main(int argc, const char* argv[])
 
     MavLinkDroneController mav_drone;
     mav_drone.initialize(connection_info, nullptr, is_simulation);
+    mav_drone.reset();
     mav_drone.start();
 
     DroneControllerCancelable server_wrapper(&mav_drone);

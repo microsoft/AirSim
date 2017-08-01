@@ -32,6 +32,8 @@ public: //methods
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        GpsBase::reset();
+
         freq_limiter_.reset();
         delay_line_.reset();
 
@@ -43,6 +45,8 @@ public: //methods
 
     virtual void update() override
     {
+        GpsBase::update();
+
         freq_limiter_.update();
         eph_filter.update();
         epv_filter.update();

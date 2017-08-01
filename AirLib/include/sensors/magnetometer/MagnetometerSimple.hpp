@@ -30,6 +30,8 @@ public:
     //*** Start: UpdatableObject implementation ***//
     virtual void reset() override
     {
+        MagnetometerBase::reset();
+
         //Ground truth is reset before sensors are reset
         updateReference(getGroundTruth());
         noise_vec_.reset();
@@ -42,6 +44,8 @@ public:
 
     virtual void update() override
     {
+        MagnetometerBase::update();
+
         freq_limiter_.update();
 
         if (freq_limiter_.isWaitComplete()) { 

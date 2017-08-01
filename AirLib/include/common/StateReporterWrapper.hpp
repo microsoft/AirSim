@@ -28,7 +28,6 @@ public:
         enabled_ = enabled;
         report_.initialize(float_precision, is_scientific_notation);
         report_freq_.initialize(DefaultReportFreq);
-        StateReporterWrapper::reset();
     }
 
     void clearReport()
@@ -40,6 +39,8 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         last_time_ = clock()->nowNanos();
         clearReport();
         dt_stats_.clear();
@@ -48,6 +49,8 @@ public:
 
     virtual void update() override
     {
+        UpdatableObject::update();
+        
         TTimeDelta dt = clock()->updateSince(last_time_);
 
         if (enabled_) {

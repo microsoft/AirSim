@@ -39,12 +39,13 @@ public:
         timeConstant_ = timeConstant;
         initial_input_ = initial_input;
         initial_output_ = initial_output;
-        FirstOrderFilter::reset();
     }
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         last_time_ = clock()->nowNanos();
         input_ = initial_input_;
         output_ = initial_output_;
@@ -52,6 +53,8 @@ public:
 
     virtual void update() override
     {
+        UpdatableObject::update();
+
         TTimeDelta dt = clock()->updateSince(last_time_);
 
         //lower the weight for previous value if its been long time

@@ -18,6 +18,8 @@ public:
 
     virtual void reset() override
     {
+        IGoalInput::reset();
+
         rc_channels_.assign(params_->rc_channel_count, 0);
         last_rec_read_ = 0;
 
@@ -27,6 +29,8 @@ public:
     
     virtual void update() override
     {
+        IGoalInput::update();
+
         uint64_t time = clock_->millis();
 
         //don't keep reading if not updated

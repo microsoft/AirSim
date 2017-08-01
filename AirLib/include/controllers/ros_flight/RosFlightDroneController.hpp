@@ -48,20 +48,26 @@ public:
     //*** Start: VehicleControllerBase implementation ***//
     virtual void reset() override
     {
+        DroneControllerBase::reset();
+
         board_->system_reset(false);
     }
 
     virtual void update() override
     {
+        DroneControllerBase::update();
+
         board_->notifySensorUpdated(ros_flight::Board::SensorType::Imu);
         firmware_->loop();
     }
 
     virtual void start() override
     {
+        DroneControllerBase::start();
     }
     virtual void stop() override
     {
+        DroneControllerBase::stop();
     }
 
     virtual size_t getVertexCount() override

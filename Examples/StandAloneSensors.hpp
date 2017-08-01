@@ -16,9 +16,11 @@ namespace msr {
                 auto kinematics = Kinematics::State::zero();
                 msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(), 0);
                 msr::airlib::Environment environment(initial_environment);
+                environment.reset();
 
                 ImuSimple imu;
                 imu.initialize(&kinematics, &environment);
+                imu.reset();
 
                 float interations = total_duration / period;
 
@@ -45,9 +47,11 @@ namespace msr {
                 auto kinematics = Kinematics::State::zero();
                 msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
                 msr::airlib::Environment environment(initial_environment);
+                environment.reset();
 
                 BarometerSimple baro;
                 baro.initialize(&kinematics, &environment);
+                baro.reset();
 
                 float interations = total_duration / period;
 
@@ -76,9 +80,11 @@ namespace msr {
                 auto kinematics = Kinematics::State::zero();
                 msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
                 msr::airlib::Environment environment(initial_environment);
+                environment.reset();
 
                 BarometerSimple baro;
                 baro.initialize(&kinematics, &environment);
+                baro.reset();
 
                 float interations_20s = 20.0f / period;
 
@@ -132,8 +138,11 @@ namespace msr {
                     kinematics.pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
                     msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
                     msr::airlib::Environment environment(initial_environment);
+                    environment.reset();
+
                     MagnetometerSimple mag;
                     mag.initialize(&kinematics, &environment);
+                    mag.reset();
 
                     for (auto i = 0; i < interations; ++i) {
                         const auto& output = mag.getOutput();
@@ -178,8 +187,11 @@ namespace msr {
                             kinematics.pose.orientation = VectorMath::toQuaternion(pitch, roll, yaw);
                             msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
                             msr::airlib::Environment environment(initial_environment);
+                            environment.reset();
+
                             MagnetometerSimple mag;
                             mag.initialize(&kinematics, &environment);
+                            mag.reset();
 
                             for (auto i = 0; i < interations; ++i) {
                                 const auto& output = mag.getOutput();
@@ -211,8 +223,11 @@ namespace msr {
                 kinematics.pose.orientation = VectorMath::toQuaternion(0, 0, 0);
                 msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(), 0);
                 msr::airlib::Environment environment(initial_environment);
+                environment.reset();
+
                 MagnetometerSimple mag;
                 mag.initialize(&kinematics, &environment);
+                mag.reset();
 
                 for (float lat = -90; lat < 90; lat++)
                 {

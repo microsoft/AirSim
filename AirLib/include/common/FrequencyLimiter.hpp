@@ -21,13 +21,13 @@ public:
     {
         frequency_ = frequency;
         startup_delay_ = startup_delay;
-        reset();
-
     }
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         last_time_ = clock()->nowNanos();
         first_time_ = last_time_;
 
@@ -46,6 +46,8 @@ public:
 
     virtual void update() override
     {
+        UpdatableObject::update();
+
         elapsed_total_sec_ = clock()->elapsedSince(first_time_);
         elapsed_interval_sec_ = clock()->elapsedSince(last_time_);
         ++update_count_;

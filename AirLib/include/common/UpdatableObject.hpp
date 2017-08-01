@@ -12,8 +12,20 @@ namespace msr { namespace airlib {
 
 class UpdatableObject {
 public:
-    virtual void reset() = 0;
-    virtual void update() = 0;
+    virtual void reset()
+    {
+        if (reset_called && !update_called)
+            throw std::runtime_error("Multiple reset() calls detected without call to update()");
+
+        reset_called = true;
+    }
+    virtual void update()
+    {
+        if (!reset_called)
+            throw std::runtime_error("reset() must be called first before update()");
+        update_called = true;
+    }
+
     virtual ~UpdatableObject() = default;
 
     virtual void reportState(StateReporter& reporter)
@@ -31,6 +43,10 @@ public:
     {
         return ClockFactory::get();
     }
+
+private:
+    bool reset_called = false;
+    bool update_called = false;
 };
 
 }} //namespace

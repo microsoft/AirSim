@@ -122,12 +122,12 @@ void AVehiclePawnBase::initialize()
     initial_state_.collisons_enabled = EnableCollisons;
     initial_state_.passthrough_enabled = EnablePassthroughOnCollisons;
 
-
     initial_state_.collison_info = CollisionInfo();
 
     initial_state_.was_last_move_teleport = false;
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
 
+    //call derived class reset which in turn should call base class reset
     reset();
 }
 

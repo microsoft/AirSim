@@ -27,6 +27,8 @@ public:
 
     virtual void reset() override
     {
+        IController::reset();
+
         output_ = Axis4r();
 
         for (unsigned int axis = 0; axis < 3; ++axis) {
@@ -38,6 +40,8 @@ public:
 
     virtual void update() override
     {
+        IController::update();
+
         const auto& goal_mode = goal_input_->getGoalMode();
 
         //for now we set throttle to same as goal
@@ -60,6 +64,7 @@ public:
 
                 //initialize axis controller
                 axis_controllers_[axis]->initialize(axis, goal_input_, state_estimator_);
+                axis_controllers_[axis]->reset();
             }
 
             //update axis controller

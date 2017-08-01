@@ -29,8 +29,6 @@ public:
     {
         ground_truth_.kinematics = kinematics;
         ground_truth_.environment = environment;
-
-        reset();
     }
 
     const GroundTruth& getGroundTruth() const

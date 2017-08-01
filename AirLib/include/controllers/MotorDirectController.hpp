@@ -25,20 +25,23 @@ public:
     {
         params_ = params;
         motor_control_signals_.resize(params_.rotor_count);
-        MotorDirectController::reset();
     }
 
 
     //*** Start ControllerBase implementation ****//
     virtual void reset() override
     {
+        ControllerBase::reset();
+
         motor_control_signals_.assign(params_.rotor_count, 0);
     }
 
-	virtual void update() override
-	{
-		//nothing to update in direct motor control
-	}
+    virtual void update() override
+    {
+        ControllerBase::update();
+
+        //nothing to update in direct motor control
+    }
 
     virtual real_T getVertexControlSignal(unsigned int rotor_index) override
     {

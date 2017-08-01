@@ -25,11 +25,14 @@ public: // derived class specific methods
 public: // implement CommLink interface
     virtual void reset()
     {
+        simple_flight::ICommLink::reset();
+
         messages_.clear();
     }
 
     virtual void update()
     {
+        simple_flight::ICommLink::update();
     }
 
     virtual void log(const std::string& message, int32_t log_level)

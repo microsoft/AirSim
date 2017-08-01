@@ -22,7 +22,6 @@ public:
     void initialize(TTimeDelta delay)  //in seconds
     {
         setDelay(delay);
-        DelayLine::reset();
     }
     void setDelay(TTimeDelta delay)
     {
@@ -36,6 +35,8 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         values_.clear();
         times_.clear();
         last_time_ = 0;
@@ -44,6 +45,8 @@ public:
 
     virtual void update() override
     {
+        UpdatableObject::update();
+
         if (!times_.empty() && 
             ClockBase::elapsedBetween(clock()->nowNanos(), times_.front()) >= delay_) {
 

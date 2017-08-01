@@ -32,7 +32,6 @@ public:
 
         //create firmware
         firmware_.reset(new simple_flight::Firmware(board_.get(), comm_link_.get(), estimator_.get(), &params_));
-        firmware_->reset();
 
         //find out which RC we should use
         Settings child;
@@ -52,20 +51,26 @@ public:
     //*** Start: VehicleControllerBase implementation ***//
     virtual void reset() override
     {
+        DroneControllerBase::reset();
+
         firmware_->reset();
     }
 
     virtual void update() override
     {
+        DroneControllerBase::update();
+
         firmware_->update();
     }
 
     virtual void start() override
     {
+        DroneControllerBase::start();
     }
 
     virtual void stop() override
     {
+        DroneControllerBase::stop();
     }
 
     virtual size_t getVertexCount() override

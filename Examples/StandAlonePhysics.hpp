@@ -25,11 +25,12 @@ public:
 
         DebugPhysicsBody body;
         body.initialize(initial_kinematics, &environment);
+        body.reset();
 
         //create physics engine
         FastPhysicsEngine physics;
         physics.insert(&body);
-
+        physics.reset();
 
         //run
         unsigned int i = 0;

@@ -24,27 +24,30 @@ public:
 
         if (params_.rotor_count != 4)
             throw std::invalid_argument(Utils::stringf("Rotor count of %d is not supported yet", params_.rotor_count));
-        RpyDirectController::reset();
     }
 
     //*** Start ControllerBase implementation ****//
-	virtual void reset() override
-	{
-        motor_control_signals_.assign(params_.rotor_count, 0);
-	}
+    virtual void reset() override
+    {
+        ControllerBase::reset();
 
-	virtual void update() override
-	{
-		real_T throttle_speed = scale(throttle_, 1.0f / params_.throttle_scale);
-		real_T roll_speed = scale(roll_, throttle_speed / params_.roll_scale);
-		real_T pitch_speed = scale(pitch_, throttle_speed / params_.pitch_scale);
-		real_T yaw_speed = scale(yaw_, throttle_speed / params_.yaw_scale);
+        motor_control_signals_.assign(params_.rotor_count, 0);
+    }
+
+    virtual void update() override
+    {
+        ControllerBase::update();
+
+        real_T throttle_speed = scale(throttle_, 1.0f / params_.throttle_scale);
+        real_T roll_speed = scale(roll_, throttle_speed / params_.roll_scale);
+        real_T pitch_speed = scale(pitch_, throttle_speed / params_.pitch_scale);
+        real_T yaw_speed = scale(yaw_, throttle_speed / params_.yaw_scale);
 
         motor_control_signals_[0] = Utils::clip(throttle_speed - pitch_speed + roll_speed + yaw_speed, 0.0f, 1.0f);
         motor_control_signals_[1] = Utils::clip(throttle_speed + pitch_speed + roll_speed - yaw_speed, 0.0f, 1.0f);
         motor_control_signals_[2] = Utils::clip(throttle_speed + pitch_speed - roll_speed + yaw_speed, 0.0f, 1.0f);
         motor_control_signals_[3] = Utils::clip(throttle_speed - pitch_speed - roll_speed - yaw_speed, 0.0f, 1.0f);
-	}
+    }
 
     virtual real_T getVertexControlSignal(unsigned int rotor_index) override
     {
@@ -66,11 +69,11 @@ public:
     virtual ~RpyDirectController() = default;
 
 private:
-	//input between -1 to 1
-	real_T scale(real_T input, real_T factor)
-	{
-		return input * factor;
-	}
+    //input between -1 to 1
+    real_T scale(real_T input, real_T factor)
+    {
+        return input * factor;
+    }
 
 private:
     real_T roll_ = 0, pitch_ = 0, yaw_ = 0, throttle_ = 0;

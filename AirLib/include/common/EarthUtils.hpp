@@ -142,6 +142,9 @@ public:
         //Below 51km: Practical Meteorology by Roland Stull, pg 12
         //Above 51km: http://www.braeunig.us/space/atmmodel.htm
         //Validation data: https://www.avs.org/AVS/files/c7/c7edaedb-95b2-438f-adfb-36de54f87b9e.pdf
+
+        //TODO: handle -ve altitude better (shouldn't grow indefinitely!)
+
         if (geopot_height <= 11)
             //at alt 0, return sea level pressure
             return  SeaLevelPressure * powf(288.15f / std_temperature, -5.255877f);

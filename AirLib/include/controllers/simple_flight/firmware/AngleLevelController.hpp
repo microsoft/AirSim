@@ -44,6 +44,9 @@ public:
 
     virtual void reset() override
     {
+        IAxisController::reset();
+        IGoalInput::reset();
+
         pid_->reset();
         rate_controller_->reset();
         rate_goal_ = Axis4r();
@@ -52,6 +55,9 @@ public:
 
     virtual void update() override
     {
+        IAxisController::update();
+        IGoalInput::update();
+
         //get response of level PID
         const auto& level_goal = goal_input_->getGoal();
         pid_->setGoal(level_goal.axis3[axis_]);

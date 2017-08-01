@@ -74,8 +74,6 @@ public: //methods
         inertia_ = inertia;
         inertia_inv_ = inertia_.inverse();
         environment_ = environment;
-
-        PhysicsBody::reset();
     }
 
     //enable physics body detection
@@ -88,6 +86,8 @@ public: //methods
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         kinematics_.reset();
 
         if (environment_)
@@ -95,10 +95,20 @@ public: //methods
         wrench_ = Wrench::zero();
         collison_info_ = CollisionInfo();
         collison_response_info_ = CollisonResponseInfo();
+
+        //update individual vertices
+        for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
+            getWrenchVertex(vertex_index).reset();
+        }
+        for (uint vertex_index = 0; vertex_index < dragVertexCount(); ++vertex_index) {
+            getDragVertex(vertex_index).reset();
+        }
     }
 
     virtual void update() override
     {
+        UpdatableObject::update();
+
         //update position from kinematics so we have latest position after physics update
         environment_->setPosition(getKinematics().pose.position);
         environment_->update();
@@ -108,6 +118,9 @@ public: //methods
         //update individual vertices
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
             getWrenchVertex(vertex_index).update();
+
+            //TODO: should we enable update on drag vertices?
+            //getDragVertex(vertex_index).update();
         }
     }
     virtual void reportState(StateReporter& reporter) override
@@ -163,6 +176,9 @@ public: //methods
     }
     void setKinematics(const Kinematics::State& state)
     {
+        if (VectorMath::hasNan(state.twist.linear))
+            Utils::DebugBreak();
+
         kinematics_.setState(state);
     }
     const Kinematics::State& getInitialKinematics() const

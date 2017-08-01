@@ -10,6 +10,7 @@
 #include "PhysicsEngineBase.hpp"
 #include "PhysicsBody.hpp"
 #include "common/common_utils/ScheduledExecutor.hpp"
+//#include "common/DebugClock.hpp"
 
 namespace msr { namespace airlib {
 
@@ -27,11 +28,12 @@ public:
     {
         World::clear();
 
+        //clock_ = std::make_shared<msr::airlib::DebugClock>(3E-3f);
+        //msr::airlib::ClockFactory::get(clock_);
+
         physics_engine_ = physics_engine;
         if (physics_engine)
             physics_engine_->clear();
-
-        World::reset();
     }
 
     //override updatable interface so we can synchronize physics engine
@@ -46,6 +48,9 @@ public:
 
     virtual void update() override
     {
+        //if (clock_)
+        //    clock_->step();
+
         //first update our objects
         UpdatableContainer::update();
 
@@ -115,17 +120,20 @@ private:
             update();
         }
         catch(const std::exception& ex) {
+            Utils::DebugBreak();
             Utils::log(Utils::stringf("Exception occurred while updating world: %s", ex.what()), Utils::kLogLevelError);
         }
         catch(...) {
+            Utils::DebugBreak();
             Utils::log("Exception occurred while updating world", Utils::kLogLevelError);
         }
+
         return true;
     }
 
 private:
     PhysicsEngineBase* physics_engine_ = nullptr;
-
+    //std::shared_ptr<msr::airlib::DebugClock> clock_;
     common_utils::ScheduledExecutor executor_;
 };
 

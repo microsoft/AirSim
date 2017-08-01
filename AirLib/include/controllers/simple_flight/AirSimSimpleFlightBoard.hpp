@@ -90,12 +90,16 @@ public:
 
     virtual void reset() override 
     {
+        IBoard::reset();
+
         motor_output_.assign(params_->motor_count, 0);
         input_channels_.assign(params_->rc_channel_count, 0);
     }
 
     virtual void update() override
     {
+        IBoard::update();
+
         //no op for now
     }
 

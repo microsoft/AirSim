@@ -29,13 +29,13 @@ public:
             initial_output_ = getNextRandom() * sigma_;
         else
             initial_output_ = initial_output;
-
-        GaussianMarkov::reset();
     }
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         last_time_ = clock()->nowNanos();
         output_ = initial_output_;
         rand_.reset();
@@ -52,6 +52,8 @@ public:
             John H Wall, 2007, eq 2.5, pg 13, http://etd.auburn.edu/handle/10415/945
         */
 
+        UpdatableObject::update();
+        
         TTimeDelta dt = clock()->updateSince(last_time_);
 
         double alpha = exp(-dt / tau_);

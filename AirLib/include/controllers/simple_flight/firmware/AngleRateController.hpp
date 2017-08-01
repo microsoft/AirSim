@@ -30,12 +30,16 @@ public:
 
     virtual void reset() override
     {
+        IAxisController::reset();
+
         pid_->reset();
         output_ = TReal();
     }
 
     virtual void update() override
     {
+        IAxisController::update();
+
         pid_->setGoal(goal_input_->getGoal().axis3[axis_]);
         pid_->setMeasured(state_estimator_->getAngulerVelocity()[axis_]);
         pid_->update();

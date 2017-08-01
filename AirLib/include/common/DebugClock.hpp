@@ -6,6 +6,7 @@
 
 #include "ClockBase.hpp"
 #include "Common.hpp"
+#include <atomic>
 
 namespace msr { namespace airlib {
 
@@ -52,7 +53,7 @@ public:
 
 
 private:
-    TTimePoint current_;
+    std::atomic<TTimePoint> current_;
     TTimeDelta step_;
 };
 

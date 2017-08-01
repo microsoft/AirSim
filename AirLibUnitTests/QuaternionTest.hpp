@@ -21,7 +21,7 @@ public:
             VectorMath::toEulerianAngle(q, pitch, roll, yaw);
 
             Quaternionr qd = VectorMath::toQuaternion(pitch, roll, yaw);
-            if (qd.w() < 0) {
+            if (std::signbit(qd.w()) != std::signbit(q.w())) {
                 qd.coeffs() = - qd.coeffs();
             }
 

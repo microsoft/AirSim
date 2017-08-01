@@ -41,14 +41,14 @@ public:
         initial_position_ = position;
         initial_normal_ = normal;
         drag_factor_ = drag_factor;
-
-        PhysicsBodyVertex::reset();
     }
 
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         position_ = initial_position_;
         normal_ = initial_normal_;
 
@@ -57,6 +57,8 @@ public:
 
     virtual void update() override
     {
+        UpdatableObject::update();
+
         setWrench(current_wrench_);
     }
     //*** End: UpdatableState implementation ***//

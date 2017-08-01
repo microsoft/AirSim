@@ -1297,10 +1297,12 @@ std::string MavLinkDroneController::findPixhawk()
 //*** Start: VehicleControllerBase implementation ***//
 void MavLinkDroneController::reset()
 {
+    DroneControllerBase::reset();
     pimpl_->reset();
 }
 void MavLinkDroneController::update()
 {
+    DroneControllerBase::update();
     pimpl_->update();
 }
 real_T MavLinkDroneController::getVertexControlSignal(unsigned int rotor_index)

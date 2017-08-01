@@ -35,6 +35,8 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        BarometerBase::reset();
+
         pressure_factor_.reset();
         correlated_noise_.reset();
         uncorrelated_noise_.reset();
@@ -47,6 +49,8 @@ public:
 
     virtual void update() override
     {
+        BarometerBase::update();
+
         freq_limiter_.update();
 
         if (freq_limiter_.isWaitComplete()) { 

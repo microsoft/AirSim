@@ -33,12 +33,16 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        UpdatableObject::reset();
+
         for (TUpdatableObjectPtr& member : members_)
             member->reset();
     }
 
     virtual void update() override
     {
+        UpdatableObject::update();
+
         for (TUpdatableObjectPtr& member : members_)
             member->update();
     }

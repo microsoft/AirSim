@@ -1,6 +1,5 @@
 #include "SimModeWorldBase.h"
 
-
 const char ASimModeWorldBase::kUsageScenarioComputerVision[] = "ComputerVision";
 
 void ASimModeWorldBase::BeginPlay()
@@ -51,7 +50,6 @@ void ASimModeWorldBase::createWorld()
                 new msr::airlib::FastPhysicsEngine()
             );
         }
-
     }
     else {
         physics_engine_.release();
@@ -59,12 +57,14 @@ void ASimModeWorldBase::createWorld()
     }
 
     world_.initialize(physics_engine_.get());
-    reporter_.initialize(false);
 
-    //add default objects to world
+    reporter_.initialize(false);
     world_.insert(&reporter_);
+
     for(size_t vi = 0; vi < vehicles_.size(); vi++)
         world_.insert(vehicles_.at(vi).get());
+
+    world_.reset();
 
     for (auto& vehicle : vehicles_)
         vehicle->beginPlay();

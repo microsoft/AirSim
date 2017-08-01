@@ -80,6 +80,8 @@ public:
 
     virtual void reset() override
     {
+        IUpdatable::reset();
+
         goal_ = T();
         measured_ = T();
         last_time_ = clock_ == nullptr ? 0 : clock_->millis();
@@ -90,6 +92,8 @@ public:
 
     virtual void update() override
     {
+        IUpdatable::update();
+
         if (!config_.enabled)
             return;
 

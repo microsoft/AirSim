@@ -48,8 +48,6 @@ public: //methods
         control_signal_filter_.initialize(params_.control_signal_filter_tc, 0, 0);
         
         PhysicsBodyVertex::initialize(position, normal);   //call base initializer
-
-        Rotor::reset();
     }
     
     //0 to 1 - will be scalled to 0 to max_speed
@@ -67,10 +65,10 @@ public: //methods
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        PhysicsBodyVertex::reset();
+
         //update environmental factors before we call base
         updateEnvironmentalFactors();
-
-        PhysicsBodyVertex::reset();
 
         control_signal_filter_.reset();
 

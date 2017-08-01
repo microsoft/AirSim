@@ -48,8 +48,6 @@ public:
         home_geo_point_ = EarthUtils::HomeGeoPoint(initial_.geo_point);
 
         updateState(initial_, home_geo_point_);
-
-        Environment::reset();
     }
     
     //in local NED coordinates
