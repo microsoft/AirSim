@@ -75,7 +75,7 @@ public:
             comm_link_->log(std::string("State:\t ").append("Being armed"));
 
             //start the motors
-            goal_.throttle = params_->Params::min_armed_throttle;
+            goal_.throttle = params_->Params::min_armed_throttle();
             goal_.axis3 = Axis3r::zero(); //neural activation while still being armed
             
             //we must wait until sticks are at neutral or we will have random behaviour

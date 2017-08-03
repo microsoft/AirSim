@@ -6,7 +6,11 @@ namespace simple_flight {
 
 struct Params {
 public:
-    static constexpr float min_armed_throttle = 0.1f;
+    static float min_armed_throttle()
+    {
+        static float val = 0.1f;
+        return val;
+    }
 
     //this should match up with target board
     //simulation board should respect possible values
@@ -15,7 +19,7 @@ public:
         float min_motor_output = 0;
         float max_motor_output = 1;
         //if min_armed_output too low then noise in pitch/roll can destabilize quad copter when throttle is zero
-        float min_angling_throttle = Params::min_armed_throttle / 2;
+        float min_angling_throttle = Params::min_armed_throttle() / 2;
     } motor;
 
     struct Rc {
@@ -37,7 +41,7 @@ public:
         TReal max_angle_level_switch = 0.3f;
 
         //should be >= motor.min_angling_throttle
-        float min_angling_throttle = Params::min_armed_throttle / 1.5f;
+        float min_angling_throttle = Params::min_armed_throttle() / 1.5f;
     } rc;
 
     struct AngleRatePid {

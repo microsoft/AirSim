@@ -16,7 +16,7 @@ namespace simple_flight {
 class Firmware {
 public:
     Firmware(const Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator)
-        : board_(board), comm_link_(comm_link), params_(params), 
+        : params_(params), board_(board), comm_link_(comm_link),
           rc_(params, board, board, comm_link), mixer_(params), controller_(params, board, comm_link)
     {
         controller_.initialize(&rc_, state_estimator);
