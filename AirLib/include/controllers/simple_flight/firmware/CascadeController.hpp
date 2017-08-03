@@ -22,13 +22,13 @@ public:
     {
         goal_input_ = goal_input;
         state_estimator_ = state_estimator;
-        last_goal_mode_ = GoalMode::getUnknown();
     }
 
     virtual void reset() override
     {
         IController::reset();
 
+        last_goal_mode_ = GoalMode::getUnknown();
         output_ = Axis4r();
 
         for (unsigned int axis = 0; axis < 3; ++axis) {

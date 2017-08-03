@@ -118,11 +118,12 @@ public: //methods
         //update individual vertices
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
             getWrenchVertex(vertex_index).update();
-
-            //TODO: should we enable update on drag vertices?
-            //getDragVertex(vertex_index).update();
+        }
+        for (uint vertex_index = 0; vertex_index < dragVertexCount(); ++vertex_index) {
+            getDragVertex(vertex_index).update();
         }
     }
+
     virtual void reportState(StateReporter& reporter) override
     {
         //call base

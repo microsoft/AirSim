@@ -17,7 +17,7 @@ class Firmware {
 public:
     Firmware(IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator, const Params* params)
         : board_(board), comm_link_(comm_link), params_(params), 
-          rc_(params, board, board), mixer_(params), controller_(params, board, comm_link)
+          rc_(params, board, board, comm_link), mixer_(params), controller_(params, board, comm_link)
     {
         controller_.initialize(&rc_, state_estimator);
     }
@@ -29,7 +29,7 @@ public:
         rc_.reset();
         controller_.reset();
 
-        motor_outputs_.assign(params_->motor_count, 0);
+        motor_outputs_.assign(params_->motor.motor_count, 0);
     }
 
     void update()
@@ -48,7 +48,7 @@ public:
         mixer_.getMotorOutput(output_controls, motor_outputs_);
 
         //finally write the motor outputs
-        for (uint16_t motor_index = 0; motor_index < params_->motor_count; ++motor_index)
+        for (uint16_t motor_index = 0; motor_index < params_->motor.motor_count; ++motor_index)
             board_->writeOutput(motor_index, motor_outputs_.at(motor_index));
     }
 

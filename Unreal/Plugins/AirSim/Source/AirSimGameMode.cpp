@@ -10,7 +10,7 @@
 //#define WIN32_LEAN_AND_MEAN
 //#include <windows.h>
 //#endif
-
+ 
 class AUnrealLog : public msr::airlib::Utils::Logger
 {
 public:

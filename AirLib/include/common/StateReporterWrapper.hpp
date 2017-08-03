@@ -39,6 +39,9 @@ public:
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
+        //disable checks for reset/update sequence because
+        //this object may get created but not used
+        clearResetUpdateAsserts();  
         UpdatableObject::reset();
 
         last_time_ = clock()->nowNanos();

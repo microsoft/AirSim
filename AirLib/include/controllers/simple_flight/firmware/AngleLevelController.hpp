@@ -31,7 +31,7 @@ public:
 
         //initialize level PID
         pid_.reset(new PidController<float>(clock_,
-            PidController<float>::Config(params_->pid_p_angle_level[axis], 0, 0)));
+            PidController<float>::Config(params_->angle_level_pid.p[axis], 0, 0)));
 
         //initialize rate controller
         rate_controller_.reset(new AngleRateController(params_, clock_));
@@ -66,7 +66,7 @@ public:
 
         //use this to drive rate controller
         rate_goal_.throttle = level_goal.throttle;
-        rate_goal_.axis3[axis_] = pid_->getOutput() * params_->max_angle_rate[axis_];
+        rate_goal_.axis3[axis_] = pid_->getOutput() * params_->angle_rate_pid.max_limit[axis_];
         rate_controller_->update();
 
         //rate controller's output is final output

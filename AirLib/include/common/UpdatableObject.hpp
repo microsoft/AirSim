@@ -44,6 +44,14 @@ public:
         return ClockFactory::get();
     }
 
+
+protected:
+    void clearResetUpdateAsserts()
+    {
+        reset_called = false;
+        update_called = false;
+    }
+
 private:
     bool reset_called = false;
     bool update_called = false;

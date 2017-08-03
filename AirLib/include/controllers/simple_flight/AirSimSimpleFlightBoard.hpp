@@ -92,8 +92,8 @@ public:
     {
         IBoard::reset();
 
-        motor_output_.assign(params_->motor_count, 0);
-        input_channels_.assign(params_->rc_channel_count, 0);
+        motor_output_.assign(params_->motor.motor_count, 0);
+        input_channels_.assign(params_->rc.channel_count, 0);
     }
 
     virtual void update() override

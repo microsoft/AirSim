@@ -35,7 +35,7 @@ public: // implement CommLink interface
         simple_flight::ICommLink::update();
     }
 
-    virtual void log(const std::string& message, int32_t log_level)
+    virtual void log(const std::string& message, int32_t log_level = ICommLink::kLogLevelInfo)
     {
         unused(log_level);
         messages_.push_back(std::string(message));
