@@ -9,7 +9,9 @@
 
 namespace simple_flight {
 
-class RemoteControl : public IGoalInput {
+class RemoteControl : 
+    public IGoalInput,
+    public IUpdatable {
 public:
     RemoteControl(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, ICommLink* comm_link)
         : params_(params), clock_(clock), board_inputs_(board_inputs), comm_link_(comm_link)
@@ -18,7 +20,7 @@ public:
 
     virtual void reset() override
     {
-        IGoalInput::reset();
+        IUpdatable::reset();
 
         goal_ = Axis4r::zero();
         goal_mode_ = params_->default_goal_mode;
@@ -32,8 +34,8 @@ public:
     
     virtual void update() override
     {
-        IGoalInput::update();
-
+        IUpdatable::update();
+        
         uint64_t time = clock_->millis();
 
         //don't keep reading if not updated

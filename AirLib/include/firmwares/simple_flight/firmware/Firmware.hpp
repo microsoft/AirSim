@@ -5,6 +5,7 @@
 #include "interfaces/IBoard.hpp"
 #include "interfaces/ICommLink.hpp"
 #include "interfaces/IStateEstimator.hpp"
+#include "interfaces/IFirmware.hpp"
 #include "Params.hpp"
 #include "RemoteControl.hpp"
 #include "Mixer.hpp"
@@ -13,7 +14,7 @@
 
 namespace simple_flight {
 
-class Firmware {
+class Firmware : public IFirmware {
 public:
     Firmware(const Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator)
         : params_(params), board_(board), comm_link_(comm_link),

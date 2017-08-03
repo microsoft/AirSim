@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IUpdatable.hpp"
 #include <cstdint>
 
 namespace simple_flight {
