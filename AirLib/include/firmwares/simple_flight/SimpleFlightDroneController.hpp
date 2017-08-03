@@ -31,7 +31,7 @@ public:
         estimator_.reset(new AirSimSimpleFlightEstimator());
 
         //create firmware
-        firmware_.reset(new simple_flight::Firmware(board_.get(), comm_link_.get(), estimator_.get(), &params_));
+        firmware_.reset(new simple_flight::Firmware(&params_, board_.get(), comm_link_.get(), estimator_.get()));
 
         //find out which RC we should use
         Settings child;

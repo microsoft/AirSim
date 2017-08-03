@@ -223,9 +223,9 @@ private:
     }
 
 private:
+    const Params* params_;
     const IBoardClock* clock_;
     const IBoardInputPins* board_inputs_;
-    const Params* params_;
     ICommLink* comm_link_;
 
     Axis4r goal_;

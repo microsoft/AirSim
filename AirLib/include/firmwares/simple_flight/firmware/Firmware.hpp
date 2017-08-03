@@ -15,7 +15,7 @@ namespace simple_flight {
 
 class Firmware {
 public:
-    Firmware(IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator, const Params* params)
+    Firmware(const Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator)
         : board_(board), comm_link_(comm_link), params_(params), 
           rc_(params, board, board, comm_link), mixer_(params), controller_(params, board, comm_link)
     {
@@ -54,16 +54,15 @@ public:
 
 private:
     //objects we use
+    const Params* params_;
     IBoard* board_;
     ICommLink* comm_link_;
 
     RemoteControl rc_;
+    Mixer mixer_;
     CascadeController controller_;
 
     std::vector<float> motor_outputs_;
-    Mixer mixer_;
-
-    const Params* params_;
 };
 
 
