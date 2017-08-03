@@ -83,6 +83,7 @@
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightCommLink.hpp" />
     <ClInclude Include="include\controllers\simple_flight\AirSimSimpleFlightEstimator.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\AngleLevelController.hpp" />
+    <ClInclude Include="include\controllers\simple_flight\firmware\CombinedGoalInput.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IAxisController.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\IBoard.hpp" />
     <ClInclude Include="include\controllers\simple_flight\firmware\interfaces\ICommLink.hpp" />

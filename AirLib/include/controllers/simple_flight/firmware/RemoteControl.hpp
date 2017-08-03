@@ -22,6 +22,7 @@ public:
 
         goal_ = Axis4r::zero();
         goal_mode_ = params_->default_goal_mode;
+        allow_api_control_ = params_->default_allow_api_control;
         last_rec_read_ = 0;
         last_angle_mode_ = std::numeric_limits<TReal>::min();
         request_duration_ = 0;
@@ -49,6 +50,7 @@ public:
 
         //set goal mode as per the switch position on RC
         updateGoalMode();
+        updateAllowApiControl();
 
         //get any special action being requested by user such as arm/disarm
         RcRequestType rc_action = getActionRequest(channels);
@@ -136,6 +138,11 @@ public:
         return goal_mode_;
     }
 
+    bool allowApiControl()
+    {
+        return allow_api_control_;
+    }
+
 private:
     enum class RcRequestType {
         None, ArmRequest, DisarmRequest, NeutralRequest
@@ -154,6 +161,16 @@ private:
 
             last_angle_mode_ = angle_mode_;
         }
+    }
+
+    void updateAllowApiControl()
+    {
+        bool allow = board_inputs_->readChannel(params_->rc.allow_api_control_channel) > 0.1f;
+
+        if (allow_api_control_ != allow)
+            comm_link_->log(std::string("API control enabled:\t").append(std::to_string(allow_api_control_)));
+
+        allow_api_control_ = allow;
     }
 
     void updateGoal(const Axis4r& channels)
@@ -216,6 +233,7 @@ private:
 
     uint64_t last_rec_read_;
     TReal angle_mode_, last_angle_mode_;
+    bool allow_api_control_;
 
     uint64_t request_duration_;
 

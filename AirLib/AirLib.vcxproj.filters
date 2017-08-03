@@ -417,6 +417,9 @@
     <ClInclude Include="include\controllers\simple_flight\firmware\CascadeController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\controllers\simple_flight\firmware\CombinedGoalInput.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\safety\ObstacleMap.cpp">
