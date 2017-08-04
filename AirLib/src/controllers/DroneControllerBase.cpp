@@ -575,7 +575,7 @@ bool DroneControllerBase::safetyCheckDestination(const Vector3r& dest_pos)
 
 void DroneControllerBase::logHomePoint()
 {
-    GeoPoint homepoint = getHomePoint();
+    GeoPoint homepoint = getHomeGeoPoint();
     if (std::isnan(homepoint.longitude))
         Utils::log("Home point is not set!", Utils::kLogLevelWarn);
     else

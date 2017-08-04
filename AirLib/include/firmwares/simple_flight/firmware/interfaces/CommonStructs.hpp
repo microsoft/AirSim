@@ -125,7 +125,7 @@ public:
         state_ = state;
     }
 
-    const GeoPoint& getHomePoint() const
+    const GeoPoint& getHomeGeoPoint() const
     {
         return home_point_;
     }

@@ -211,7 +211,7 @@ public:
         return true;
     }
 
-    GeoPoint getHomePoint() override
+    GeoPoint getHomeGeoPoint() override
     {
         return environment_->getInitialState().geo_point;
     }

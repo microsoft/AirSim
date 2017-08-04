@@ -16,7 +16,7 @@ namespace msr { namespace airlib {
 class AirSimSimpleFlightEstimator : public simple_flight::IStateEstimator {
 public:
     //for now we don't do any state estimation and use ground truth (i.e. assume perfect sensors)
-    void setKinematics(const Kinematics::State* kinematics, const Environment* environment)
+    void setKinematics(const Kinematics::State* kinematics, Environment* environment)
     {
         kinematics_ = kinematics;
         environment_ = environment;
@@ -45,40 +45,44 @@ public:
 
     virtual simple_flight::Axis3r getPosition() const override
     {
-        return AirSimSimpleFlightCommon::vector3rToAxis3r(kinematics_->pose.position);
+        return AirSimSimpleFlightCommon::toAxis3r(kinematics_->pose.position);
     }
 
     virtual simple_flight::Axis3r transformToBodyFrame(const simple_flight::Axis3r& world_frame_val) const override
     {
-        const Vector3r& vec = AirSimSimpleFlightCommon::axis3rToVector3r(world_frame_val);
+        const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
         const Vector3r& trans = VectorMath::transformToBodyFrame(vec, kinematics_->pose.orientation);
-        return AirSimSimpleFlightCommon::vector3rToAxis3r(trans);
+        return AirSimSimpleFlightCommon::toAxis3r(trans);
     }
 
     virtual simple_flight::Axis3r getLinearVelocity() const override
     {
-        return AirSimSimpleFlightCommon::vector3rToAxis3r(kinematics_->twist.linear);
+        return AirSimSimpleFlightCommon::toAxis3r(kinematics_->twist.linear);
     }
 
     virtual simple_flight::Axis4r getOrientation() const override
     {
-        return AirSimSimpleFlightCommon::quaternion3rToAxis4r(kinematics_->pose.orientation);
+        return AirSimSimpleFlightCommon::toAxis4r(kinematics_->pose.orientation);
     }
 
     virtual simple_flight::GeoPoint getGeoPoint() const override
     {
-        const auto& geo_point = environment_->getState().geo_point;
-        simple_flight::GeoPoint conv;
-        conv.latitude = geo_point.latitude;
-        conv.longitude = geo_point.longitude;
-        conv.altiude = geo_point.altitude;
+        return AirSimSimpleFlightCommon::toSimpleFlightGeoPoint(environment_->getState().geo_point);
+    }
 
-        return conv;
+    virtual void setHomeGeoPoint(const simple_flight::GeoPoint& geo_point) override
+    {
+        environment_->setHomeGeoPoint(AirSimSimpleFlightCommon::toGeoPoint(geo_point));
+    }
+
+    virtual simple_flight::GeoPoint getHomeGeoPoint() const override
+    {
+        return AirSimSimpleFlightCommon::toSimpleFlightGeoPoint(environment_->getHomeGeoPoint());
     }
 
 private:
     const Kinematics::State* kinematics_;
-    const Environment* environment_;
+    Environment* environment_;
 };
 
 

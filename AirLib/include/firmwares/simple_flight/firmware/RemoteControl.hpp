@@ -14,7 +14,7 @@ class RemoteControl :
     public IUpdatable {
 public:
     RemoteControl(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs,
-        VehicleState* vehicle_state, const IStateEstimator* state_estimator, ICommLink* comm_link)
+        VehicleState* vehicle_state, IStateEstimator* state_estimator, ICommLink* comm_link)
         : params_(params), clock_(clock), board_inputs_(board_inputs), 
         vehicle_state_(vehicle_state), state_estimator_(state_estimator), comm_link_(comm_link)
     {
@@ -85,7 +85,8 @@ public:
                 request_duration_ += dt;
 
                 if (request_duration_ > params_->rc.neutral_duration) {
-                    vehicle_state_->setState(VehicleStateType::Armed, state_estimator_->getGeoPoint());
+                    state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
+                    vehicle_state_->setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
                     comm_link_->log(std::string("State:\t ").append("Armed"));
                     request_duration_ = 0;
                 }
@@ -229,7 +230,7 @@ private:
     const IBoardClock* clock_;
     const IBoardInputPins* board_inputs_;
     VehicleState* vehicle_state_;
-    const IStateEstimator* state_estimator_;
+    IStateEstimator* state_estimator_;
     ICommLink* comm_link_;
 
     Axis4r goal_;

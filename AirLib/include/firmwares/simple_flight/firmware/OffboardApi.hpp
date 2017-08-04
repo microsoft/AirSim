@@ -16,7 +16,7 @@ class OffboardApi :
     public IOffboardApi {
 public:
     OffboardApi(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, 
-        const IStateEstimator* state_estimator, ICommLink* comm_link)
+        IStateEstimator* state_estimator, ICommLink* comm_link)
         : params_(params), rc_(params, clock, board_inputs, &vehicle_state_, state_estimator, comm_link), 
           state_estimator_(state_estimator), comm_link_(comm_link)
     {
@@ -109,7 +109,8 @@ public:
             || vehicle_state_.getState() == VehicleStateType::Disarmed
             || vehicle_state_.getState() == VehicleStateType::BeingDisarmed)) {
 
-            vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getGeoPoint());
+            state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
+            vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
             goal_ = goal;
             goal_mode_ = goal_mode;
 
@@ -155,11 +156,17 @@ public:
         return *state_estimator_;
     }
 
-    virtual GeoPoint getHomePoint() const override
+    virtual GeoPoint getHomeGeoPoint() const override
     {
-        return vehicle_state_.getHomePoint();
+        return state_estimator_->getHomeGeoPoint();
     }
     
+    virtual GeoPoint getGeoPoint() const override
+    {
+        return state_estimator_->getGeoPoint();
+    }
+
+
 private:
     void updateGoalFromRc()
     {
@@ -170,7 +177,7 @@ private:
 private:
     const Params* params_;
     RemoteControl rc_;
-    const IStateEstimator* state_estimator_;
+    IStateEstimator* state_estimator_;
     ICommLink* comm_link_;
 
     VehicleState vehicle_state_;

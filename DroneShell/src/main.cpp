@@ -194,7 +194,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        auto homepoint = params.context->client.getHomePoint();
+        auto homepoint = params.context->client.getHomeGeoPoint();
         if (std::isnan(homepoint.longitude))
             params.shell_ptr->showMessage("Home point is not set!");
         else
@@ -1131,7 +1131,7 @@ See RecordPose for information about log file format")
                     params.shell_ptr->showMessage(VectorMath::toString(position));
                     params.shell_ptr->showMessage(VectorMath::toString(quaternion));
 
-                    GeoPoint home_point = context->client.getHomePoint();
+                    GeoPoint home_point = context->client.getHomeGeoPoint();
                     Vector3r local_point = EarthUtils::GeodeticToNedFast(gps_point, home_point);
                     VectorMath::toEulerianAngle(quaternion, pitch, roll, yaw);
 

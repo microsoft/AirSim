@@ -45,11 +45,21 @@ public:
     {
         initial_ = initial;
 
-        home_geo_point_ = EarthUtils::HomeGeoPoint(initial_.geo_point);
+        setHomeGeoPoint(initial_.geo_point);
 
         updateState(initial_, home_geo_point_);
     }
     
+    void setHomeGeoPoint(const GeoPoint& home_point)
+    {
+        home_geo_point_ = EarthUtils::HomeGeoPoint(home_point);
+    }
+
+    GeoPoint getHomeGeoPoint() const
+    {
+        return home_geo_point_.home_point;
+    }
+
     //in local NED coordinates
     void setPosition(const Vector3r& position)
     {

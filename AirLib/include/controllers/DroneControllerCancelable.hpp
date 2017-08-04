@@ -221,9 +221,9 @@ public:
     {
         return controller_->clock()->nowNanos();
     }
-    GeoPoint getHomePoint()
+    GeoPoint getHomeGeoPoint()
     {
-        return controller_->getHomePoint();
+        return controller_->getHomeGeoPoint();
     }
 
     //TODO: add GPS health, accuracy in API

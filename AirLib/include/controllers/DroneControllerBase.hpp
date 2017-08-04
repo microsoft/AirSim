@@ -92,7 +92,7 @@ public: //interface for outside world
     /// Set arm to false to disarm the drone.  This will disable the motors, so don't do that
     /// unless the drone is on the ground!  Arming the drone also sets the "home position"
     /// This home position is local position x=0,y=0,z=0.  You can also query what GPS location
-    /// that is via getHomePoint.  
+    /// that is via getHomeGeoPoint.  
     virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) = 0;
 
     /// When armed you can tell the drone to takeoff.  This will fly to a preset altitude (like 2.5 meters)
@@ -222,7 +222,7 @@ public: //interface for outside world
 
     /// Get the home point (where drone was armed before takeoff).  This is the location the drone 
     /// will return to if you call goHome().
-    virtual GeoPoint getHomePoint() = 0;
+    virtual GeoPoint getHomeGeoPoint() = 0;
 
     /// Get the current GPS location of the drone.
     virtual GeoPoint getGpsLocation() = 0;

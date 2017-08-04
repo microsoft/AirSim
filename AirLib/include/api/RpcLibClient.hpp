@@ -64,7 +64,7 @@ public:
     void confirmConnection();
     DroneControllerBase::LandedState getLandedState();
     TTimePoint timestampNow();
-    GeoPoint getHomePoint();
+    GeoPoint getHomeGeoPoint();
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);

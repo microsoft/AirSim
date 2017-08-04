@@ -116,7 +116,7 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
     pimpl_->server.bind("getLandedState", [&]() -> int { return static_cast<int>(drone_->getLandedState()); });
     pimpl_->server.bind("getRCData", [&]() -> RpcLibAdapators::RCData { return drone_->getRCData(); });
     pimpl_->server.bind("timestampNow", [&]() -> TTimePoint { return drone_->timestampNow(); });
-    pimpl_->server.bind("getHomePoint", [&]() -> RpcLibAdapators::GeoPoint { return drone_->getHomePoint(); });
+    pimpl_->server.bind("getHomeGeoPoint", [&]() -> RpcLibAdapators::GeoPoint { return drone_->getHomeGeoPoint(); });
     pimpl_->server.bind("getGpsLocation", [&]() -> RpcLibAdapators::GeoPoint { return drone_->getGpsLocation(); });
     pimpl_->server.bind("isOffboardMode", [&]() -> bool { return drone_->isOffboardMode(); });
     pimpl_->server.bind("isSimulationMode", [&]() -> bool { return drone_->isSimulationMode(); });

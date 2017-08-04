@@ -124,19 +124,19 @@ public:
     Vector3r getPosition() override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getPosition();
-        return AirSimSimpleFlightCommon::axis3rToVector3r(val);
+        return AirSimSimpleFlightCommon::toVector3r(val);
     }
 
     Vector3r getVelocity() override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getLinearVelocity();
-        return AirSimSimpleFlightCommon::axis3rToVector3r(val);
+        return AirSimSimpleFlightCommon::toVector3r(val);
     }
 
     Quaternionr getOrientation() override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getOrientation();
-        return AirSimSimpleFlightCommon::axis4rToQuaternionr(val);    
+        return AirSimSimpleFlightCommon::toQuaternion(val);    
     }
 
     LandedState getLandedState() override
@@ -211,14 +211,14 @@ public:
         return true;
     }
 
-    GeoPoint getHomePoint() override
+    GeoPoint getHomeGeoPoint() override
     {
-        return physics_body_->getEnvironment().getInitialState().geo_point;
+        return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getHomeGeoPoint());
     }
 
     GeoPoint getGpsLocation() override
     {
-        return physics_body_->getEnvironment().getState().geo_point;
+        return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getGeoPoint());
     }
 
     virtual void reportTelemetry(float renderTime) override

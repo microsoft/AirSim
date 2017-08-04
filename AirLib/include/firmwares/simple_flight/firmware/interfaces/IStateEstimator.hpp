@@ -13,6 +13,9 @@ public:
     virtual Axis4r getOrientation() const = 0;
     virtual Axis3r transformToBodyFrame(const Axis3r& world_frame_val) const = 0;
     virtual GeoPoint getGeoPoint() const = 0;
+
+    virtual void setHomeGeoPoint(const GeoPoint& geo_point) = 0;
+    virtual GeoPoint getHomeGeoPoint() const = 0;
 };
 
 }

@@ -132,7 +132,7 @@ public:
     bool land(float max_wait_seconds, CancelableBase& cancelable_action) override;
     bool goHome(CancelableBase& cancelable_action) override; 
     bool hover(CancelableBase& cancelable_action) override;
-    GeoPoint getHomePoint() override;
+    GeoPoint getHomeGeoPoint() override;
     GeoPoint getGpsLocation() override;
     virtual void reportTelemetry(float renderTime) override;
 
@@ -927,7 +927,7 @@ public:
         return Vector3r(current_state.local_est.vel.vx, current_state.local_est.vel.vy, current_state.local_est.vel.vz);
     }
 
-    GeoPoint getHomePoint()
+    GeoPoint getHomeGeoPoint()
     {
         updateState();
         if (current_state.home.is_set)
@@ -1340,9 +1340,9 @@ Vector3r MavLinkDroneController::getVelocity()
     return pimpl_->getVelocity();
 }
 
-GeoPoint MavLinkDroneController::getHomePoint()
+GeoPoint MavLinkDroneController::getHomeGeoPoint()
 {
-    return pimpl_->getHomePoint();
+    return pimpl_->getHomeGeoPoint();
 }
 
 GeoPoint MavLinkDroneController::getGpsLocation()

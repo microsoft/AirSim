@@ -190,6 +190,10 @@ public: //methods
     {
         return *environment_;
     }
+    Environment& getEnvironment()
+    {
+        return *environment_;
+    }
     bool hasEnvironment() const
     {
         return environment_ != nullptr;

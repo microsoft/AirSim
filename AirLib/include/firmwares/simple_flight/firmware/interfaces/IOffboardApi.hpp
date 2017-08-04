@@ -21,7 +21,8 @@ public:
     virtual VehicleStateType getVehicleState() const = 0;
 
     virtual const IStateEstimator& getStateEstimator() = 0;
-    virtual GeoPoint getHomePoint() const = 0;
+    virtual GeoPoint getHomeGeoPoint() const = 0;
+    virtual GeoPoint getGeoPoint() const = 0;
 };
 
 } //namespace

@@ -213,9 +213,9 @@ TTimePoint RpcLibClient::timestampNow()
     return pimpl_->client.call("timestampNow").as<TTimePoint>();
 }
 
-GeoPoint RpcLibClient::getHomePoint()
+GeoPoint RpcLibClient::getHomeGeoPoint()
 {
-    return pimpl_->client.call("getHomePoint").as<RpcLibAdapators::GeoPoint>().to();
+    return pimpl_->client.call("getHomeGeoPoint").as<RpcLibAdapators::GeoPoint>().to();
 }
 
 GeoPoint RpcLibClient::getGpsLocation()
