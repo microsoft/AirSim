@@ -98,6 +98,7 @@
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\ICommLink.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IController.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IFirmware.hpp" />
+    <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IGoal.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IGoalInput.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IStateEstimator.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IUpdatable.hpp" />

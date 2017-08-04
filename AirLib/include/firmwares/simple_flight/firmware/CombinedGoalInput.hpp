@@ -2,33 +2,47 @@
 
 #include <cstdint>
 #include "interfaces/ICommLink.hpp"
+#include "interfaces/IGoal.hpp"
 #include "interfaces/IGoalInput.hpp"
+#include "interfaces/IUpdatable.hpp"
 #include "interfaces/CommonStructs.hpp"
 #include "RemoteControl.hpp"
 #include "Params.hpp"
 
 namespace simple_flight {
 
-class CombinedGoalInput : public IGoalInput {
+class CombinedGoalInput : 
+    public IUpdatable,
+    public IGoalInput {
 public:
-    CombinedGoalInput(const Params* params, ICommLink* comm_link, RemoteControl* rc)
-        : params_(params), comm_link_(comm_link), rc_(rc)
+    CombinedGoalInput(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, ICommLink* comm_link)
+        : params_(params), rc_(params, clock, board_inputs, comm_link), comm_link_(comm_link)
     {
     }
 
     virtual void reset() override
     {
-        IGoalInput::reset();
+        IUpdatable::reset();
 
         has_api_control_ = false;
+        rc_.reset();
+        updateGoalFromRc();
     }
 
     virtual void update() override
     {
-        IGoalInput::update();
+        IUpdatable::update();
+
+        if (! has_api_control_) {
+            rc_.update();
+            updateGoalFromRc();
+        }
+        //else leave the goal set by IGoalInput API
     }
 
-    virtual const Axis4r& getGoal() const override
+    /**************** IGoalInput ********************/
+
+    virtual const Axis4r& getGoalValue() const override
     {
         return goal_;
     }
@@ -39,37 +53,36 @@ public:
     }
 
 
-    bool canRequestApiControl(std::string& message)
+    virtual bool canRequestApiControl(std::string& message) override
     {
-        if (rc_->allowApiControl)
+        if (rc_.allowApiControl())
             return true;
         else {
             message = "RemoteControl switch position disallows API control";
             return false;
         }
     }
-    bool hasApiControl()
+    virtual bool hasApiControl() override
     {
         return has_api_control_;
     }
-    bool requestApiControl(std::string& message)
+    virtual bool requestApiControl(std::string& message) override
     {
         if (canRequestApiControl(message)) {
             has_api_control_ = true;
 
             //initial value from RC for smooth transition
-            goal_ = rc_->getGoal();
-            goal_mode_ = rc_->getGoalMode();
+            updateGoalFromRc();
 
             return true;
         }
         return false;
     }
-    void releaseApiControl()
+    virtual void releaseApiControl() override
     {
         has_api_control_ = false;
     }
-    bool setGoalAndMode(const Axis4r* goal, const GoalMode* goal_mode, std::string& message)
+    virtual bool setGoalAndMode(const Axis4r* goal, const GoalMode* goal_mode, std::string& message) override
     {
         if (has_api_control_) {
             if (goal != nullptr)
@@ -86,10 +99,16 @@ public:
     }
 
 private:
-    const Params* params_;
-    ICommLink* comm_link_;
+    void updateGoalFromRc()
+    {
+        goal_ = rc_.getGoalValue();
+        goal_mode_ = rc_.getGoalMode();
+    }
 
-    RemoteControl* rc_;
+private:
+    const Params* params_;
+    RemoteControl rc_;
+    ICommLink* comm_link_;
 
     Axis4r goal_;
     GoalMode goal_mode_;

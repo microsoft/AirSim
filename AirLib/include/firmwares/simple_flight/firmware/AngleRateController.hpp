@@ -18,10 +18,10 @@ public:
     {
     }
 
-    virtual void initialize(unsigned int axis, const IGoalInput* goal_input, const IStateEstimator* state_estimator) override
+    virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
         axis_ = axis;
-        goal_input_ = goal_input;
+        goal_ = goal;
         state_estimator_ = state_estimator;
 
         pid_.reset(new PidController<float>(clock_,
@@ -40,7 +40,7 @@ public:
     {
         IAxisController::update();
 
-        pid_->setGoal(goal_input_->getGoal().axis3[axis_]);
+        pid_->setGoal(goal_->getGoalValue().axis3[axis_]);
         pid_->setMeasured(state_estimator_->getAngulerVelocity()[axis_]);
         pid_->update();
 
@@ -54,7 +54,7 @@ public:
 
 private:
     unsigned int axis_;
-    const IGoalInput* goal_input_;
+    const IGoal* goal_;
     const IStateEstimator* state_estimator_;
 
     TReal output_;

@@ -5,7 +5,7 @@
 #include "interfaces/IController.hpp"
 #include "interfaces/IStateEstimator.hpp"
 #include "interfaces/ICommLink.hpp"
-#include "interfaces/IGoalInput.hpp"
+#include "interfaces/IGoal.hpp"
 #include "AngleRateController.hpp"
 #include "AngleLevelController.hpp"
 
@@ -18,9 +18,9 @@ public:
     {
     }
 
-    virtual void initialize(const IGoalInput* goal_input, const IStateEstimator* state_estimator) override
+    virtual void initialize(const IGoal* goal, const IStateEstimator* state_estimator) override
     {
-        goal_input_ = goal_input;
+        goal_ = goal;
         state_estimator_ = state_estimator;
     }
 
@@ -42,10 +42,10 @@ public:
     {
         IController::update();
 
-        const auto& goal_mode = goal_input_->getGoalMode();
+        const auto& goal_mode = goal_->getGoalMode();
 
         //for now we set throttle to same as goal
-        output_.throttle = goal_input_->getGoal().throttle;
+        output_.throttle = goal_->getGoalValue().throttle;
 
         for (unsigned int axis = 0; axis < 3; ++axis) {
             //re-create axis controllers if goal mode was changed since last time
@@ -63,7 +63,7 @@ public:
                 }
 
                 //initialize axis controller
-                axis_controllers_[axis]->initialize(axis, goal_input_, state_estimator_);
+                axis_controllers_[axis]->initialize(axis, goal_, state_estimator_);
                 axis_controllers_[axis]->reset();
             }
 
@@ -87,7 +87,7 @@ private:
     const Params* params_;
     const IBoardClock* clock_;
 
-    const IGoalInput* goal_input_;
+    const IGoal* goal_;
     const IStateEstimator* state_estimator_;
     ICommLink* comm_link_;
 

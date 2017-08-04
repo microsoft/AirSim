@@ -2,7 +2,7 @@
 #pragma once
 
 #include "interfaces/IUpdatable.hpp"
-#include "interfaces/IGoalInput.hpp"
+#include "interfaces/IGoal.hpp"
 #include "interfaces/IBoardClock.hpp"
 #include "interfaces/CommonStructs.hpp"
 #include "interfaces/IAxisController.hpp"
@@ -15,7 +15,7 @@ namespace simple_flight {
 
 class AngleLevelController : 
     public IAxisController,
-    public IGoalInput  //for internal rate controller
+    public IGoal  //for internal rate controller
 {
 public:
     AngleLevelController(const Params* params, const IBoardClock* clock = nullptr)
@@ -23,10 +23,10 @@ public:
     {
     }
 
-    virtual void initialize(unsigned int axis, const IGoalInput* goal_input, const IStateEstimator* state_estimator) override
+    virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
         axis_ = axis;
-        goal_input_ = goal_input;
+        goal_ = goal;
         state_estimator_ = state_estimator;
 
         //initialize level PID
@@ -57,7 +57,7 @@ public:
         IAxisController::update();
 
         //get response of level PID
-        const auto& level_goal = goal_input_->getGoal();
+        const auto& level_goal = goal_->getGoalValue();
         pid_->setGoal(level_goal.axis3[axis_]);
         pid_->setMeasured(state_estimator_->getAngles()[axis_]);
         pid_->update();
@@ -76,8 +76,8 @@ public:
         return output_;
     }
 
-    /********************  IGoalInput ********************/
-    virtual const Axis4r& getGoal() const override
+    /********************  IGoal ********************/
+    virtual const Axis4r& getGoalValue() const override
     {
         return rate_goal_;
     }
@@ -89,7 +89,7 @@ public:
 
 private:
     unsigned int axis_;
-    const IGoalInput* goal_input_;
+    const IGoal* goal_;
     const IStateEstimator* state_estimator_;
 
     GoalMode rate_mode_;

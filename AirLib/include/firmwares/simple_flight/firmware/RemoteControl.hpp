@@ -4,13 +4,13 @@
 #include <cstdint>
 #include "interfaces/IBoardClock.hpp"
 #include "interfaces/IBoardInputPins.hpp"
-#include "interfaces/IGoalInput.hpp"
+#include "interfaces/IGoal.hpp"
 #include "interfaces/CommonStructs.hpp"
 
 namespace simple_flight {
 
 class RemoteControl : 
-    public IGoalInput,
+    public IGoal,
     public IUpdatable {
 public:
     RemoteControl(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, ICommLink* comm_link)
@@ -130,7 +130,7 @@ public:
         }
     }
 
-    virtual const Axis4r& getGoal() const override
+    virtual const Axis4r& getGoalValue() const override
     {
         return goal_;
     }

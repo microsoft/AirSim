@@ -337,7 +337,7 @@ private:
     unique_ptr<AirSimSimpleFlightBoard> board_;
     unique_ptr<AirSimSimpleFlightCommLink> comm_link_;
     unique_ptr<AirSimSimpleFlightEstimator> estimator_;
-    unique_ptr<simple_flight::Firmware> firmware_;
+    unique_ptr<simple_flight::IFirmware> firmware_;
 
     std::mutex render_mutex_;
     std::condition_variable render_cond_;

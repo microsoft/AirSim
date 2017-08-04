@@ -372,9 +372,6 @@
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IGoalInput.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IStateEstimator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -421,6 +418,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IFirmware.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IGoal.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IGoalInput.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
