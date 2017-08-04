@@ -79,6 +79,9 @@ public:
 
         const float kP = 0.5f;
         Axis3r p = Axis3r(kP, kP, kP);
+
+        //we keep min throttle higher so that if we are angling a lot, its still supported
+        float min_throttle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);
     } velocity_pid;
 
     GoalMode default_goal_mode = GoalMode::getStandardAngleMode();

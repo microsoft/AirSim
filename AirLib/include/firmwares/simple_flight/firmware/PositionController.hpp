@@ -29,7 +29,7 @@ public:
         goal_ = goal;
         state_estimator_ = state_estimator;
 
-        //initialize velocity PID
+        //initialize parent PID
         pid_.reset(new PidController<float>(clock_,
             PidController<float>::Config(params_->position_pid.p[axis], 0, 0)));
 

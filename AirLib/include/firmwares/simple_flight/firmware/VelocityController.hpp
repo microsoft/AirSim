@@ -29,17 +29,30 @@ public:
         goal_ = goal;
         state_estimator_ = state_estimator;
 
-        //initialize level PID
+        //initialize parent PID
         pid_.reset(new PidController<float>(clock_,
             PidController<float>::Config(params_->velocity_pid.p[axis], 0, 0)));
 
-        //initialize child controller
-        level_controller_.reset(new AngleLevelController(params_, clock_));
-        level_controller_->initialize(axis, this, state_estimator_);
-
         //we will be setting goal for child controller so we need these two things
-        level_mode_  = GoalMode::getUnknown();
-        level_mode_[axis] = GoalModeType::AngleLevel;
+        child_mode_  = GoalMode::getUnknown();
+        switch (axis_) {
+        case 0:
+            child_controller_.reset(new AngleLevelController(params_, clock_));
+            child_mode_[1] = GoalModeType::AngleLevel;
+            break;
+        case 1:
+            child_controller_.reset(new AngleLevelController(params_, clock_));
+            child_mode_[0] = GoalModeType::AngleLevel;
+            break;
+        case 2:
+            //we control throttle directly from parent PID output
+            break;
+        default:
+            throw std::invalid_argument("axis must be 0 to 2");
+        }
+
+        //initialize child controller
+        child_controller_->initialize(axis, this, state_estimator_);
     }
 
     virtual void reset() override
@@ -47,8 +60,8 @@ public:
         IAxisController::reset();
 
         pid_->reset();
-        level_controller_->reset();
-        level_goal_ = Axis4r();
+        child_controller_->reset();
+        child_goal_ = Axis4r();
         output_ = TReal();
     }
 
@@ -56,6 +69,7 @@ public:
     {
         IAxisController::update();
 
+        //First get PID output
         const Axis4r& goal_velocity_world = goal_->getGoalValue();
         const Axis3r& goal_velocity_local = state_estimator_->transformToBodyFrame(goal_velocity_world.axis3);
         pid_->setGoal(goal_velocity_local[axis_]);
@@ -66,12 +80,25 @@ public:
         pid_->update();
 
         //use this to drive child controller
-        level_goal_.throttle() = goal_velocity_world.throttle();
-        level_goal_.axis3[axis_] = pid_->getOutput() * params_->angle_level_pid.max_limit[axis_];
-        level_controller_->update();
-
-        //final output
-        output_ = level_controller_->getOutput();
+        switch (axis_)
+        {
+        case 0: //+vx is -ve pitch
+            child_goal_.throttle() = goal_velocity_world.throttle();
+            child_goal_.axis3.pitch() = -pid_->getOutput() * params_->angle_level_pid.max_limit.pitch();
+            child_controller_->update();
+            output_ = child_controller_->getOutput();
+            break;
+        case 1: //+vy is +ve roll
+            child_goal_.throttle() = goal_velocity_world.throttle();
+            child_goal_.axis3.roll() = pid_->getOutput() * params_->angle_level_pid.max_limit.roll();
+            output_ = child_controller_->getOutput();
+            break;
+        case 2: //+vz is -ve throttle (NED coordinates)
+            output_ = (-pid_->getOutput() + 1) / 2; //-1 to 1 --> 1 to 0
+            output_ = std::max(output_, params_->velocity_pid.min_throttle);
+        default:
+            throw std::invalid_argument("axis must be 0 to 2");
+        }
     }
 
     virtual TReal getOutput() override
@@ -82,12 +109,12 @@ public:
     /********************  IGoal ********************/
     virtual const Axis4r& getGoalValue() const override
     {
-        return level_goal_;
+        return child_goal_;
     }
 
     virtual const GoalMode& getGoalMode() const  override
     {
-        return level_mode_;
+        return child_mode_;
     }
 
 private:
@@ -95,15 +122,15 @@ private:
     const IGoal* goal_;
     const IStateEstimator* state_estimator_;
 
-    GoalMode level_mode_;
-    Axis4r level_goal_;
+    GoalMode child_mode_;
+    Axis4r child_goal_;
 
     TReal output_;
 
     const Params* params_;
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
-    std::unique_ptr<AngleLevelController> level_controller_;
+    std::unique_ptr<AngleLevelController> child_controller_;
 
 };
 
