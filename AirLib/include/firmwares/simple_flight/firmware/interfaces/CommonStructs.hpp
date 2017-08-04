@@ -62,12 +62,21 @@ typedef Axis3<TReal> Axis3r;
 
 template<typename T>
 struct Axis4 {
-    T throttle = 0;
+    T val4 = 0;
     Axis3<T> axis3;
 
-    Axis4(const T& throttle_val = T(), const T& x_val = T(), const T& y_val = T(), const T& z_val = T())
-        : throttle(throttle_val), axis3(x_val, y_val, z_val)
+    Axis4(const T& val4_val = T(), const T& x_val = T(), const T& y_val = T(), const T& z_val = T())
+        : val4(val4_val), axis3(x_val, y_val, z_val)
     {
+    }
+
+    T& throttle()
+    {
+        return val4;
+    }
+    const T& throttle() const
+    {
+        return val4;
     }
 
     static const Axis4<T>& zero()
@@ -78,6 +87,17 @@ struct Axis4 {
 };
 typedef Axis4<TReal> Axis4r;
 
+struct GeoPoint {
+    double latitude = std::numeric_limits<double>::quiet_NaN(); 
+    double longitude = std::numeric_limits<double>::quiet_NaN(); 
+    float altiude = std::numeric_limits<float>::quiet_NaN();
+
+    static const GeoPoint& nan()
+    {
+        const static GeoPoint val;
+        return val;
+    }
+};
 
 enum class GoalModeType {
     AngleLevel,
@@ -87,10 +107,33 @@ enum class GoalModeType {
     Unknown
 };
 
-enum class VehicleState {
-    Inactive, BeingArmed, Armed, Active, BeingDisarmed, Disarmed
+enum class VehicleStateType {
+    Unknown, Inactive, BeingArmed, Armed, Active, BeingDisarmed, Disarmed
 };
 
+class VehicleState {
+public:
+    VehicleStateType getState() const
+    {
+        return state_;
+    }
+    void setState(VehicleStateType state, const GeoPoint& home_point = GeoPoint::nan())
+    {
+        if (state == VehicleStateType::Armed && std::isnan(home_point.latitude))
+            throw std::invalid_argument("home_point must be supplied to set armed state");
+
+        state_ = state;
+    }
+
+    const GeoPoint& getHomePoint() const
+    {
+        return home_point_;
+    }
+
+private:
+    VehicleStateType state_ = VehicleStateType::Unknown;
+    GeoPoint home_point_;
+};
 
 class GoalMode : public Axis3<GoalModeType> {
 public:

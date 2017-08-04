@@ -15,6 +15,7 @@
 #include "AirSimSimpleFlightBoard.hpp"
 #include "AirSimSimpleFlightCommLink.hpp"
 #include "AirSimSimpleFlightEstimator.hpp"
+#include "AirSimSimpleFlightCommon.hpp"
 
 
 namespace msr { namespace airlib {
@@ -44,7 +45,7 @@ public:
         physics_body_ = physics_body;
 
         board_->setKinematics(& physics_body_->getKinematics());
-        estimator_->setKinematics(& physics_body_->getKinematics());
+        estimator_->setKinematics(& physics_body_->getKinematics(), & physics_body_->getEnvironment());
     }
 
 public:
@@ -91,19 +92,24 @@ public:
 
     virtual bool isOffboardMode() override
     {
-        //TODO: support offboard mode
-        return false;
+        return firmware_->offboardApi().hasApiControl();
     }
 
     virtual bool isSimulationMode() override
     {
+        //TODO: after we get real board implementation, change this
         return true;
     }
 
     virtual void setOffboardMode(bool is_set) override
     {
-        unused(is_set);
-        //TODO: implement this
+        if (is_set) {
+            //comm_link should print message so no extra handling for errors
+            std::string message;
+            firmware_->offboardApi().requestApiControl(message);
+        }
+        else
+            firmware_->offboardApi().releaseApiControl();
     }
 
     virtual void setSimulationMode(bool is_set) override
@@ -117,17 +123,20 @@ public:
 public:
     Vector3r getPosition() override
     {
-        return physics_body_->getKinematics().pose.position;
+        const auto& val = firmware_->offboardApi().getStateEstimator().getPosition();
+        return AirSimSimpleFlightCommon::axis3rToVector3r(val);
     }
 
     Vector3r getVelocity() override
     {
-        return physics_body_->getKinematics().twist.linear;
+        const auto& val = firmware_->offboardApi().getStateEstimator().getLinearVelocity();
+        return AirSimSimpleFlightCommon::axis3rToVector3r(val);
     }
 
     Quaternionr getOrientation() override
     {
-        return physics_body_->getKinematics().pose.orientation;
+        const auto& val = firmware_->offboardApi().getStateEstimator().getOrientation();
+        return AirSimSimpleFlightCommon::axis4rToQuaternionr(val);    
     }
 
     LandedState getLandedState() override
@@ -167,9 +176,13 @@ public:
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override
     {
-        unused(arm);
         unused(cancelable_action);
-        return true;
+
+        std::string message;
+        if (arm)
+            return firmware_->offboardApi().arm(message);
+        else
+            return firmware_->offboardApi().disarm(message);
     }
 
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override

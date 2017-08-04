@@ -63,7 +63,7 @@ public:
         pid_->update();
 
         //use this to drive rate controller
-        rate_goal_.throttle = level_goal.throttle;
+        rate_goal_.throttle() = level_goal.throttle();
         rate_goal_.axis3[axis_] = pid_->getOutput() * params_->angle_rate_pid.max_limit[axis_];
         rate_controller_->update();
 

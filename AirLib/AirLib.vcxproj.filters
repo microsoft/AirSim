@@ -387,9 +387,6 @@
     <ClInclude Include="include\firmwares\simple_flight\firmware\CascadeController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\firmwares\simple_flight\firmware\CombinedGoalInput.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\firmwares\simple_flight\firmware\Firmware.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -423,7 +420,19 @@
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IGoal.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IGoalInput.hpp">
+    <ClInclude Include="include\firmwares\simple_flight\firmware\PositionController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\firmware\VelocityController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\AirSimSimpleFlightCommon.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IOffboardApi.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\firmware\OffboardApi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

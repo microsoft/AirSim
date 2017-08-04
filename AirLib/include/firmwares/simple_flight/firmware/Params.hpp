@@ -65,9 +65,25 @@ public:
         Axis3r p = Axis3r(kP, kP, kP);
     } angle_level_pid;
 
+    struct PositionPid {
+        const float kMaxLimit = 1E20f; //some big number
+        Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //x, y, z in meters
+
+        const float kP = 0.5f;
+        Axis3r p = Axis3r(kP, kP, kP);
+    } position_pid;
+
+    struct VelocityPid {
+        const float kMaxLimit = 6.0f; //some big number
+        Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //x, y, z in meters
+
+        const float kP = 0.5f;
+        Axis3r p = Axis3r(kP, kP, kP);
+    } velocity_pid;
+
     GoalMode default_goal_mode = GoalMode::getStandardAngleMode();
     bool default_allow_api_control = false;
-    VehicleState default_vehicle_state = VehicleState::Inactive;
+    VehicleStateType default_vehicle_state = VehicleStateType::Inactive;
 };
 
 

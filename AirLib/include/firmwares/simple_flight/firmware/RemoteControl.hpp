@@ -13,8 +13,10 @@ class RemoteControl :
     public IGoal,
     public IUpdatable {
 public:
-    RemoteControl(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, ICommLink* comm_link)
-        : params_(params), clock_(clock), board_inputs_(board_inputs), comm_link_(comm_link)
+    RemoteControl(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs,
+        VehicleState* vehicle_state, const IStateEstimator* state_estimator, ICommLink* comm_link)
+        : params_(params), clock_(clock), board_inputs_(board_inputs), 
+        vehicle_state_(vehicle_state), state_estimator_(state_estimator), comm_link_(comm_link)
     {
     }
 
@@ -28,8 +30,6 @@ public:
         last_rec_read_ = 0;
         last_angle_mode_ = std::numeric_limits<TReal>::min();
         request_duration_ = 0;
-
-        vehicle_state_ = params_->default_vehicle_state;
     }
     
     virtual void update() override
@@ -48,7 +48,7 @@ public:
         Axis4r channels;
         for (unsigned int axis = 0; axis < 3; ++axis)
             channels.axis3[axis] = board_inputs_->readChannel(params_->rc.channels.axis3[axis]);
-        channels.throttle = board_inputs_->readChannel(params_->rc.channels.throttle);
+        channels.throttle() = board_inputs_->readChannel(params_->rc.channels.throttle());
 
         //set goal mode as per the switch position on RC
         updateGoalMode();
@@ -58,8 +58,8 @@ public:
         RcRequestType rc_action = getActionRequest(channels);
 
         //state machine
-        switch (vehicle_state_) {
-        case VehicleState::Inactive:
+        switch (vehicle_state_->getState()) {
+        case VehicleStateType::Inactive:
             comm_link_->log(std::string("State:\t ").append("Inactive state"));
 
             if (rc_action == RcRequestType::ArmRequest) {
@@ -67,17 +67,17 @@ public:
                 request_duration_ += dt;
 
                 if (request_duration_ > params_->rc.arm_duration) {
-                    vehicle_state_ = VehicleState::BeingArmed;
+                    vehicle_state_->setState(VehicleStateType::BeingArmed);
                     request_duration_ = 0;
                 }
             }
             //else ignore
             break;
-        case VehicleState::BeingArmed:
+        case VehicleStateType::BeingArmed:
             comm_link_->log(std::string("State:\t ").append("Being armed"));
 
             //start the motors
-            goal_.throttle = params_->Params::min_armed_throttle();
+            goal_.throttle() = params_->Params::min_armed_throttle();
             goal_.axis3 = Axis3r::zero(); //neural activation while still being armed
             
             //we must wait until sticks are at neutral or we will have random behaviour
@@ -85,21 +85,21 @@ public:
                 request_duration_ += dt;
 
                 if (request_duration_ > params_->rc.neutral_duration) {
-                    vehicle_state_ = VehicleState::Armed;
+                    vehicle_state_->setState(VehicleStateType::Armed, state_estimator_->getGeoPoint());
                     comm_link_->log(std::string("State:\t ").append("Armed"));
                     request_duration_ = 0;
                 }
             }
             //else ignore
             break;
-        case VehicleState::Armed:
+        case VehicleStateType::Armed:
             //unless diarm is being requested, set goal from stick position
             if (rc_action == RcRequestType::DisarmRequest) {
                 comm_link_->log(std::string("State:\t ").append("Armed state, disarm request recieved"));
                 request_duration_ += dt;
 
                 if (request_duration_ > params_->rc.disarm_duration) {
-                    vehicle_state_ = VehicleState::BeingDisarmed;
+                    vehicle_state_->setState(VehicleStateType::BeingDisarmed);
                     request_duration_ = 0;
                 }
             }
@@ -108,25 +108,25 @@ public:
                 updateGoal(channels);
             }
             break;
-        case VehicleState::BeingDisarmed:
+        case VehicleStateType::BeingDisarmed:
             comm_link_->log(std::string("State:\t ").append("Being state"));
 
             goal_.axis3 = Axis3r::zero(); //neutral activation while being disarmed
-            vehicle_state_ = VehicleState::Disarmed;
+            vehicle_state_->setState(VehicleStateType::Disarmed);
             request_duration_ = 0;
 
             break;
-        case VehicleState::Disarmed:
+        case VehicleStateType::Disarmed:
             comm_link_->log(std::string("State:\t ").append("Disarmed"));
 
-            goal_.throttle = 0;
+            goal_.throttle() = 0;
             goal_.axis3 = Axis3r::zero(); //neutral activation while being disarmed
-            vehicle_state_ = VehicleState::Inactive;
+            vehicle_state_->setState(VehicleStateType::Inactive);
             request_duration_ = 0;
 
             break;
         default:
-            throw std::runtime_error("VehicleState has unknown value for RemoteControl::update()");
+            throw std::runtime_error("VehicleStateType has unknown value for RemoteControl::update()");
         }
     }
 
@@ -180,10 +180,10 @@ private:
         //if throttle is too low then set all motors to same value as throttle because
         //otherwise values in pitch/roll/yaw would get clipped randomly and can produce random results
         //in other words: we can't do angling if throttle is too low
-        if (channels.throttle <= params_->rc.min_angling_throttle)
-            goal_.throttle = params_->rc.min_angling_throttle;
+        if (channels.throttle() <= params_->rc.min_angling_throttle)
+            goal_.throttle() = params_->rc.min_angling_throttle;
         else
-            goal_.throttle = channels.throttle;
+            goal_.throttle() = channels.throttle();
 
         if (angle_mode_ < params_->rc.max_angle_level_switch) { //for 3 way switch, 1/3 value for each position
             goal_.axis3 = params_->angle_level_pid.max_limit.colWiseMultiply(channels.axis3); //we are in control-by-level mode
@@ -205,7 +205,7 @@ private:
 
         bool yaw_action_positive = channels.axis3.yaw() >= stick_min;
         bool yaw_action_negative = channels.axis3.yaw() <= -stick_min;
-        bool throttle_action = channels.throttle <= tolerance;
+        bool throttle_action = channels.throttle() <= tolerance;
 
         bool roll_action_positive = channels.axis3.roll() >= stick_min;
         bool roll_action_negative = channels.axis3.roll() <= -stick_min;
@@ -228,6 +228,8 @@ private:
     const Params* params_;
     const IBoardClock* clock_;
     const IBoardInputPins* board_inputs_;
+    VehicleState* vehicle_state_;
+    const IStateEstimator* state_estimator_;
     ICommLink* comm_link_;
 
     Axis4r goal_;
@@ -239,7 +241,6 @@ private:
 
     uint64_t request_duration_;
 
-    VehicleState vehicle_state_;
 };
 
 

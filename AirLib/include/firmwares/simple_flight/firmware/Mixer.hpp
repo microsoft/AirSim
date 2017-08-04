@@ -16,14 +16,14 @@ public:
 
     void getMotorOutput(const Axis4r& controls, std::vector<float>& motor_outputs) const
     {
-        if (controls.throttle < params_->motor.min_angling_throttle) {
-            motor_outputs.assign(params_->motor.motor_count, controls.throttle);
+        if (controls.throttle() < params_->motor.min_angling_throttle) {
+            motor_outputs.assign(params_->motor.motor_count, controls.throttle());
             return;
         }
         
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index) {
             motor_outputs[motor_index] =
-                controls.throttle * mixerQuadX[motor_index].throttle
+                controls.throttle() * mixerQuadX[motor_index].throttle
                 + controls.axis3.pitch() * mixerQuadX[motor_index].pitch
                 + controls.axis3.roll() * mixerQuadX[motor_index].roll
                 + controls.axis3.yaw() * mixerQuadX[motor_index].yaw

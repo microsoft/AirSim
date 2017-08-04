@@ -8,7 +8,7 @@
 #include "interfaces/IFirmware.hpp"
 #include "Params.hpp"
 #include "RemoteControl.hpp"
-#include "CombinedGoalInput.hpp"
+#include "OffboardApi.hpp"
 #include "Mixer.hpp"
 #include "CascadeController.hpp"
 
@@ -19,9 +19,10 @@ class Firmware : public IFirmware {
 public:
     Firmware(const Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator)
         : params_(params), board_(board), comm_link_(comm_link), state_estimator_(state_estimator),
-          combined_goal_input_(params, board, board, comm_link), mixer_(params), controller_(params, board, comm_link)
+          offboard_api_(params, board, board, state_estimator, comm_link), mixer_(params), 
+          controller_(params, board, comm_link)
     {
-        controller_.initialize(&combined_goal_input_, state_estimator_);
+        controller_.initialize(&offboard_api_, state_estimator_);
     }
 
     virtual void reset() override
@@ -31,7 +32,7 @@ public:
         board_->reset();
         comm_link_->reset();
         controller_.reset();
-        combined_goal_input_.reset();
+        offboard_api_.reset();
 
         motor_outputs_.assign(params_->motor.motor_count, 0);
     }
@@ -41,7 +42,7 @@ public:
         IFirmware::update();
 
         board_->update();
-        combined_goal_input_.update();
+        offboard_api_.update();
         controller_.update();
 
         const Axis4r& output_controls = controller_.getOutput();
@@ -56,15 +57,11 @@ public:
         comm_link_->update();
     }
 
-    virtual IGoalInput& getGoalInput() override
+    virtual IOffboardApi& offboardApi() override
     {
-        return combined_goal_input_;
+        return offboard_api_;
     }
 
-    virtual const IStateEstimator& getStateEstimator() override
-    {
-        return *state_estimator_;
-    }
 
 private:
     //objects we use
@@ -73,7 +70,7 @@ private:
     ICommLink* comm_link_;
     IStateEstimator* state_estimator_;
 
-    CombinedGoalInput combined_goal_input_;
+    OffboardApi offboard_api_;
     Mixer mixer_;
     CascadeController controller_;
 

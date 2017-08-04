@@ -8,6 +8,10 @@
 #include "interfaces/IGoal.hpp"
 #include "AngleRateController.hpp"
 #include "AngleLevelController.hpp"
+#include "VelocityController.hpp"
+#include "PositionController.hpp"
+
+
 
 namespace simple_flight {
 
@@ -45,7 +49,7 @@ public:
         const auto& goal_mode = goal_->getGoalMode();
 
         //for now we set throttle to same as goal
-        output_.throttle = goal_->getGoalValue().throttle;
+        output_.throttle() = goal_->getGoalValue().throttle();
 
         for (unsigned int axis = 0; axis < 3; ++axis) {
             //re-create axis controllers if goal mode was changed since last time
@@ -56,6 +60,12 @@ public:
                     break;
                 case GoalModeType::AngleLevel:
                     axis_controllers_[axis].reset(new AngleLevelController(params_, clock_));
+                    break;
+                case GoalModeType::VelocityWorld:
+                    axis_controllers_[axis].reset(new VelocityController(params_, clock_));
+                    break;
+                case GoalModeType::PositionWorld:
+                    axis_controllers_[axis].reset(new PositionController(params_, clock_));
                     break;
                 default:
                     throw std::invalid_argument("Axis controller type is not yet implemented for axis " 
