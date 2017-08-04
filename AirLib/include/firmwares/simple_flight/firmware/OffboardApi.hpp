@@ -155,7 +155,7 @@ public:
         return *state_estimator_;
     }
 
-    virtual GeoPoint getHomePoint() const
+    virtual GeoPoint getHomePoint() const override
     {
         return vehicle_state_.getHomePoint();
     }
