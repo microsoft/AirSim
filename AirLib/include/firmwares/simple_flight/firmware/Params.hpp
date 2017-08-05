@@ -36,7 +36,7 @@ public:
         uint64_t disarm_duration = 100; 
         uint64_t neutral_duration = 100;
         
-        Axis4<int16_t> channels = Axis4<int16_t>(2, 0, 3, 1);
+        Axis4<int16_t> channels = Axis4<int16_t>(0, 3, 1, 2);
 
         TReal max_angle_level_switch = 0.3f;
 
@@ -52,33 +52,33 @@ public:
         //p_xxx_rate params are sensetive to gyro noise. Values higher than 0.5 would require 
         //noise filteration
         const float kP = 0.5f;
-        Axis3r p = Axis3r(kP, kP, kP);
+        Axis4r p = Axis4r(kP, kP, kP, 1.0f);
     } angle_rate_pid;
 
     struct AngleLevelPid {
         const float pi = 3.14159265359f; //180-degrees
         
         //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremeities of controls
-        Axis3r max_limit = Axis3r(pi / 5.5f, pi / 5.5f, pi); //roll, pitch, yaw - in radians/sec
+        Axis4r max_limit = Axis4r(pi / 5.5f, pi / 5.5f, pi, 1.0f); //roll, pitch, yaw - in radians/sec
 
         const float kP = 2.5f;
-        Axis3r p = Axis3r(kP, kP, kP);
+        Axis4r p = Axis4r(kP, kP, kP, 1.0f);
     } angle_level_pid;
 
     struct PositionPid {
         const float kMaxLimit = 1E20f; //some big number
-        Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //x, y, z in meters
+        Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, kMaxLimit, 1.0f); //x, y, z in meters
 
         const float kP = 0.5f;
-        Axis3r p = Axis3r(kP, kP, kP);
+        Axis4r p = Axis4r(kP, kP, kP, 1.0f);
     } position_pid;
 
     struct VelocityPid {
         const float kMaxLimit = 6.0f; //some big number
-        Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //x, y, z in meters
+        Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, kMaxLimit, 1.0f); //x, y, z in meters
 
         const float kP = 0.5f;
-        Axis3r p = Axis3r(kP, kP, kP);
+        Axis4r p = Axis4r(kP, kP, kP, 1.0f);
 
         //we keep min throttle higher so that if we are angling a lot, its still supported
         float min_throttle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);

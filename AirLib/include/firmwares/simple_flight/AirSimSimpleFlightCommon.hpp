@@ -30,8 +30,8 @@ public:
     static simple_flight::Axis4r toAxis4r(const Quaternionr& q)
     {
         simple_flight::Axis4r conv;
-        conv.axis3.x() = q.x(); conv.axis3.y() = q.y(); conv.axis3.z() = q.z();
-        conv.val4 = q.w();
+        conv.x() = q.x(); conv.y() = q.y(); conv.z() = q.z();
+        conv.val4() = q.w();
 
         return conv;
     }
@@ -39,8 +39,8 @@ public:
     static Quaternionr toQuaternion(const simple_flight::Axis4r& q)
     {
         Quaternionr conv;
-        conv.x() = q.axis3.x(); conv.y() = q.axis3.y(); conv.z() = q.axis3.z();
-        conv.w() = q.val4;
+        conv.x() = q.x(); conv.y() = q.y(); conv.z() = q.z();
+        conv.w() = q.val4();
         return conv;
     }
 
@@ -62,6 +62,15 @@ public:
         conv.altitude = geo_point.altiude;
 
         return conv;
+    }
+
+    template<typename T> const T& makeConstant(T& _) 
+    { 
+        return const_cast<const T&>(_); 
+    } 
+    template<typename T> T& makeVariable(const T& _) 
+    { 
+        return const_cast<T&>(_); 
     }
 };
 

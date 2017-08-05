@@ -435,6 +435,12 @@
     <ClInclude Include="include\firmwares\simple_flight\firmware\OffboardApi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\firmware\PassthroughController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\firmwares\simple_flight\firmware\ConstantOutputController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\safety\ObstacleMap.cpp">

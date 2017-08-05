@@ -87,6 +87,7 @@
     <ClInclude Include="include\firmwares\simple_flight\firmware\AngleLevelController.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\AngleRateController.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\CascadeController.hpp" />
+    <ClInclude Include="include\firmwares\simple_flight\firmware\ConstantOutputController.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\OffboardApi.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\Firmware.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\CommonStructs.hpp" />
@@ -105,6 +106,7 @@
     <ClInclude Include="include\firmwares\simple_flight\firmware\interfaces\IUpdatable.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\Mixer.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\Params.hpp" />
+    <ClInclude Include="include\firmwares\simple_flight\firmware\PassthroughController.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\PidController.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\PositionController.hpp" />
     <ClInclude Include="include\firmwares\simple_flight\firmware\RemoteControl.hpp" />

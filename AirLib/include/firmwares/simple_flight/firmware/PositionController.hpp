@@ -25,6 +25,9 @@ public:
 
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
+        if (axis_ == 2)
+            throw std::invalid_argument("PositionController does not support yaw axis i.e. " + std::to_string(axis));
+
         axis_ = axis;
         goal_ = goal;
         state_estimator_ = state_estimator;
@@ -57,14 +60,14 @@ public:
         IAxisController::update();
 
         const Axis4r& goal_position_world = goal_->getGoalValue();
-        pid_->setGoal(goal_position_world.axis3[axis_]);
+        pid_->setGoal(goal_position_world[axis_]);
         const Axis3r& measured_position_world = state_estimator_->getPosition();
         pid_->setMeasured(measured_position_world[axis_]);
         pid_->update();
 
         //use this to drive child controller
         velocity_goal_.throttle() = goal_position_world.throttle();
-        velocity_goal_.axis3[axis_] = pid_->getOutput() * params_->velocity_pid.max_limit[axis_];
+        velocity_goal_[axis_] = pid_->getOutput() * params_->velocity_pid.max_limit[axis_];
         velocity_controller_->update();
 
         //final output

@@ -10,6 +10,9 @@
 #include "Params.hpp"
 #include "PidController.hpp"
 #include "common/common_utils/Utils.hpp"
+#include <string>
+#include <exception>
+
 
 namespace simple_flight {
 
@@ -25,6 +28,9 @@ public:
 
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
+        if (axis > 2)
+            throw std::invalid_argument("AngleLevelController only supports axis 0-2 but it was " + std::to_string(axis));
+
         axis_ = axis;
         goal_ = goal;
         state_estimator_ = state_estimator;
@@ -58,13 +64,12 @@ public:
 
         //get response of level PID
         const auto& level_goal = goal_->getGoalValue();
-        pid_->setGoal(level_goal.axis3[axis_]);
+        pid_->setGoal(level_goal[axis_]);
         pid_->setMeasured(state_estimator_->getAngles()[axis_]);
         pid_->update();
 
         //use this to drive rate controller
-        rate_goal_.throttle() = level_goal.throttle();
-        rate_goal_.axis3[axis_] = pid_->getOutput() * params_->angle_rate_pid.max_limit[axis_];
+        rate_goal_[axis_] = pid_->getOutput() * params_->angle_rate_pid.max_limit[axis_];
         rate_controller_->update();
 
         //rate controller's output is final output

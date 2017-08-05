@@ -321,6 +321,21 @@ bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, Cancel
     return waiter.is_timeout();
 }
 
+bool DroneControllerBase::takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
+{
+    return moveToPosition(0, 0, -6, 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1, cancelable_action);
+}
+
+bool DroneControllerBase::goHome(CancelableBase& cancelable_action)
+{
+    return moveToPosition(0, 0, 0, 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1, cancelable_action);
+}
+
+bool DroneControllerBase::land(float max_wait_seconds, CancelableBase& cancelable_action)
+{
+    return moveByVelocity(0, 0, 0.2f, 3600, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), cancelable_action);
+}
+
 bool DroneControllerBase::hover(CancelableBase& cancelable_action)
 {
     return moveToZ(getZ(), 0.5f, YawMode{ true,0 }, 1.0f, false, cancelable_action);

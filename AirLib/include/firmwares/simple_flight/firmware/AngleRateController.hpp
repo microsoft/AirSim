@@ -8,6 +8,9 @@
 #include "PidController.hpp"
 #include "common/common_utils/Utils.hpp"
 #include <memory>
+#include <string>
+#include <exception>
+
 
 namespace simple_flight {
 
@@ -20,6 +23,9 @@ public:
 
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
+        if (axis > 2)
+            throw std::invalid_argument("AngleRateController only supports axis 0-2 but it was " + std::to_string(axis));
+
         axis_ = axis;
         goal_ = goal;
         state_estimator_ = state_estimator;
@@ -40,7 +46,7 @@ public:
     {
         IAxisController::update();
 
-        pid_->setGoal(goal_->getGoalValue().axis3[axis_]);
+        pid_->setGoal(goal_->getGoalValue()[axis_]);
         pid_->setMeasured(state_estimator_->getAngulerVelocity()[axis_]);
         pid_->update();
 

@@ -99,7 +99,7 @@ public: //interface for outside world
     /// above the home position.  Once the drone is safely in the air you can use other commands to fly from there.
     /// If the drone is already flying takeoff will be ignored.  Pass non-zer max_wait_seconds if you want the
     /// method to also wait until the takeoff altitude is achieved.
-    virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) = 0;
+    virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action);
 
     /// At any point this command will disable offboard control and land the drone at the current GPS location.
     /// How quickly the drone descends is up to the drone.  Some models will descend slowly if they have no 
@@ -109,12 +109,12 @@ public: //interface for outside world
     /// method to also wait until the drone reports it has landed, the timeout here is a bit tricky, depends
     /// on how high you are and what the drone's configured descent velocity is.  If you don't want to wait
     /// pass zero.  You can also periodically check getLandedState to see if it has landed.
-    virtual bool land(float max_wait_seconds, CancelableBase& cancelable_action) = 0;
+    virtual bool land(float max_wait_seconds, CancelableBase& cancelable_action);
 
     /// This command is a safety measure, at any point this command will cancel offboard control and send the
     /// drone back to the launch point (or home position).  Most drones are also configured to climb to a safe
     /// altitude before doing that so they don't run into a tree on the way home.
-    virtual bool goHome(CancelableBase& cancelable_action) = 0;
+    virtual bool goHome(CancelableBase& cancelable_action);
 
     /// Move the drone by controlling the angles (or attitude) of the drone, if you set pitch, roll to zero
     /// and z to the current z value then it is equivalent to a hover command.  A little bit of pitch can

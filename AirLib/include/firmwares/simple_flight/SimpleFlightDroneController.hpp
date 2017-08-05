@@ -185,32 +185,6 @@ public:
             return firmware_->offboardApi().disarm(message);
     }
 
-    bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override
-    {
-        unused(max_wait_seconds);
-        unused(cancelable_action);
-        return true;
-    }
-
-    bool land(float max_wait_seconds, CancelableBase& cancelable_action) override
-    {
-        unused(max_wait_seconds);
-        unused(cancelable_action);
-        return true;
-    }
-
-    bool goHome(CancelableBase& cancelable_action) override
-    {
-        unused(cancelable_action);
-        return true;
-    }
-
-    bool hover(CancelableBase& cancelable_action) override
-    {
-        unused(cancelable_action);
-        return true;
-    }
-
     GeoPoint getHomeGeoPoint() override
     {
         return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getHomeGeoPoint());
@@ -247,42 +221,52 @@ public:
 protected: 
     void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
-        unused(pitch);
-        unused(roll);
-        unused(z);
-        unused(yaw);
+        typedef simple_flight::GoalModeType GoalModeType;
+        static simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
 
-        //TODO: implement this
+        simple_flight::Axis4r goal(roll, pitch, yaw, z);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
     void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
-        unused(vx);
-        unused(vy);
-        unused(vz);
-        unused(yaw_mode);
+        typedef simple_flight::GoalModeType GoalModeType;
+        static simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+            GoalModeType::VelocityWorld);
 
-        //TODO: implement this
+        simple_flight::Axis4r goal(vx, vy, yaw_mode.yaw_or_rate, vz);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
     void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
-        unused(vx);
-        unused(vy);
-        unused(z);
-        unused(yaw_mode);
+        typedef simple_flight::GoalModeType GoalModeType;
+        static simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+            GoalModeType::PositionWorld);
 
-        //TODO: implement this
+        simple_flight::Axis4r goal(vx, vy, yaw_mode.yaw_or_rate, z);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
     void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
-        unused(x);
-        unused(y);
-        unused(z);
-        unused(yaw_mode);
+        typedef simple_flight::GoalModeType GoalModeType;
+        static simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+            GoalModeType::PositionWorld);
 
-        //TODO: implement this
+        simple_flight::Axis4r goal(x, y, yaw_mode.yaw_or_rate, z);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
     const VehicleParams& getVehicleParams() override
