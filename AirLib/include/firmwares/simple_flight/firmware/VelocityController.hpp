@@ -51,6 +51,7 @@ public:
         case 3:
             child_controller_.reset(new PassthroughController());
             child_mode_.throttle() = GoalModeType::Passthrough; //vx = roll
+            break;
         default:
             throw std::invalid_argument("axis must be 0 to 2");
         }

@@ -78,13 +78,19 @@ public:
             //initial value from RC for smooth transition
             updateGoalFromRc();
 
+            comm_link_->log("requestApiControl was successful", ICommLink::kLogLevelInfo);
+            
             return true;
         }
-        return false;
+        else {
+            comm_link_->log("requestApiControl failed", ICommLink::kLogLevelError);
+            return false;
+        }
     }
     virtual void releaseApiControl() override
     {
         has_api_control_ = false;
+        comm_link_->log("releaseApiControl was sucessful", ICommLink::kLogLevelInfo);
     }
     virtual bool setGoalAndMode(const Axis4r* goal, const GoalMode* goal_mode, std::string& message) override
     {
@@ -103,7 +109,7 @@ public:
 
     }
 
-    virtual bool arm(std::string& message, const Axis4r& goal, const GoalMode& goal_mode) override
+    virtual bool arm(std::string& message) override
     {
         if (has_api_control_ && (vehicle_state_.getState() == VehicleStateType::Inactive
             || vehicle_state_.getState() == VehicleStateType::Disarmed
@@ -111,8 +117,8 @@ public:
 
             state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
             vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
-            goal_ = goal;
-            goal_mode_ = goal_mode;
+            goal_ = Axis4r(0, 0, 0, params_->rc.min_angling_throttle);
+            goal_mode_ = GoalMode::getAllRateMode();
 
             message = "Vehicle is armed";
             comm_link_->log(message, ICommLink::kLogLevelInfo);
@@ -125,15 +131,15 @@ public:
         }
     }
 
-    virtual bool disarm(std::string& message, const Axis4r& goal, const GoalMode& goal_mode) override
+    virtual bool disarm(std::string& message) override
     {
         if (has_api_control_ && (vehicle_state_.getState() == VehicleStateType::Active
             || vehicle_state_.getState() == VehicleStateType::Armed
             || vehicle_state_.getState() == VehicleStateType::BeingArmed)) {
 
             vehicle_state_.setState(VehicleStateType::Disarmed);
-            goal_ = goal;
-            goal_mode_ = goal_mode;
+            goal_ = Axis4r(0, 0, 0, 0);
+            goal_mode_ = GoalMode::getAllRateMode();
 
             message = "Vehicle is disarmed";
             comm_link_->log(message, ICommLink::kLogLevelInfo);

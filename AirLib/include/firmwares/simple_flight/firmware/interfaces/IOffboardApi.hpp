@@ -14,10 +14,8 @@ public:
     virtual void releaseApiControl() = 0;
     virtual bool setGoalAndMode(const Axis4r* goal, const GoalMode* goal_mode, std::string& message) = 0;
 
-    virtual bool arm(std::string& message, const Axis4r& goal = Axis4r(), 
-        const GoalMode& goal_mode = GoalMode::getStandardAngleMode()) = 0;
-    virtual bool disarm(std::string& message, const Axis4r& goal = Axis4r(), 
-        const GoalMode& goal_mode = GoalMode::getStandardAngleMode()) = 0;
+    virtual bool arm(std::string& message) = 0;
+    virtual bool disarm(std::string& message) = 0;
     virtual VehicleStateType getVehicleState() const = 0;
 
     virtual const IStateEstimator& getStateEstimator() = 0;

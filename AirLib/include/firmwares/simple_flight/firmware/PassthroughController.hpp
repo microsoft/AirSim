@@ -12,10 +12,6 @@ namespace simple_flight {
 
 class PassthroughController : public IAxisController {
 public:
-    PassthroughController()
-    {
-    }
-
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
         axis_ = axis;
