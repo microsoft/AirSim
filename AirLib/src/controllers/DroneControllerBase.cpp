@@ -323,6 +323,7 @@ bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, Cancel
 
 bool DroneControllerBase::takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
 {
+    unused(max_wait_seconds);
     return moveToPosition(0, 0, -6, 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1, cancelable_action);
 }
 
@@ -333,6 +334,7 @@ bool DroneControllerBase::goHome(CancelableBase& cancelable_action)
 
 bool DroneControllerBase::land(float max_wait_seconds, CancelableBase& cancelable_action)
 {
+    unused(max_wait_seconds);
     return moveByVelocity(0, 0, 0.2f, 3600, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), cancelable_action);
 }
 
