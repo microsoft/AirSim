@@ -51,8 +51,7 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
         detectUsbRc();
 
     rotor_count_ = vehicle_.wrenchVertexCount();
-    rotor_info_ = new RotorInfo[rotor_count_];
-    memset(rotor_info_, 0, sizeof(RotorInfo) * rotor_count_);
+    rotor_info_.assign(rotor_count_, RotorInfo());
 }
 
 msr::airlib::VehicleCameraBase* MultiRotorConnector::getCamera(unsigned int index)
@@ -62,8 +61,6 @@ msr::airlib::VehicleCameraBase* MultiRotorConnector::getCamera(unsigned int inde
 
 MultiRotorConnector::~MultiRotorConnector()
 {
-    delete[] rotor_info_;
-    rotor_info_ = nullptr;
     stopApiServer();
 }
 

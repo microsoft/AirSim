@@ -69,13 +69,13 @@ private:
     std::unique_ptr<msr::airlib::ControlServerBase> rpclib_server_;
 
     struct RotorInfo {
-        real_T rotor_speed;
-        int rotor_direction;
-        real_T rotor_thrust;
-        real_T rotor_control_filtered;
+        real_T rotor_speed = 0;
+        int rotor_direction = 0;
+        real_T rotor_thrust = 0;
+        real_T rotor_control_filtered = 0;
     };
     unsigned int rotor_count_;
-    RotorInfo* rotor_info_;
+    std::vector<RotorInfo> rotor_info_;
 
     Pose last_pose, last_debug_pose;
 
