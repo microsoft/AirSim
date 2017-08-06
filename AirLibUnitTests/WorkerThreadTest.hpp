@@ -26,15 +26,18 @@ class WorkerThreadTest : public TestBase {
                 }
             }
         }
-        void reset() {
+        void reset(bool reset_counter = true) {
             // reset for next test
+            if (reset_counter)
+                counter_ = 0;
             is_cancelled_ = false;
+            is_complete_ = false;
         }
-        uint64_t getCount() {
+        unsigned int getCount() {
             return counter_;
         }
     private:
-        uint64_t counter_;
+        std::atomic<unsigned int> counter_;
     };
 
 public:
@@ -47,43 +50,47 @@ public:
 
         thread.enqueue(item1);
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        uint64_t item1count = item1->getCount();
+        unsigned int item1count = item1->getCount();
 
         // cancel item1 and switch to item2
         thread.enqueue(item2);
+        unsigned int item1count2 = item1->getCount();
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        uint64_t item1count2 = item1->getCount();
-        uint64_t item2count = item2->getCount();
+        unsigned int item1count3 = item1->getCount();
+        unsigned int item2count = item2->getCount();
 
-        testAssert(item1count > 20, "item1 call count is too low");
-        testAssert(item1count2 < 10 + item1count, "canceling item1 took too long");
-        testAssert(item2count > 20, "item2 call count is too low");
+        testAssert(item1count2 == item1count3, "enqueue operation did not cancelled previous task");
+        testAssert(item1count > 1, "item1 call count is too low");
+        testAssert(item2count > 1, "item2 call count is too low");
 
         // make sure we can cancel.
         thread.cancel();
-        uint64_t item2count2 = item2->getCount();
-        testAssert(item2count2 < 10 + item2count, "item2 is not canceling");
+        unsigned int item2count2 = item2->getCount();
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        item2count = item2->getCount();
+
+        testAssert(item2count2 == item2count, "cancel operation did not worked");
 
         // now stress the thread switching...(this found threading bugs in CallLock!)
         for (size_t i = 0; i < 100; i++)
         {
-            item1->reset();
+            item1->reset(false);
             thread.enqueue(item1);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            item2->reset();
+            item2->reset(false);
             thread.enqueue(item2);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
-        uint64_t item1count3 = item1->getCount();
-        uint64_t item2count3 = item2->getCount();
+        unsigned int item1count4 = item1->getCount();
+        unsigned int item2count4 = item2->getCount();
 
-        testAssert(item1count3 > item1count2 + 50, "item1 is getting starved");
-        testAssert(item2count3 > item2count2 + 50, "item2 is getting starved");
+        testAssert(item1count4 > item1count2 + 50, "item1 is getting starved");
+        testAssert(item2count4 > item2count2 + 50, "item2 is getting starved");
 
         // test that enqueueAndWait works.
         item1->reset();
@@ -93,14 +100,16 @@ public:
         timer.start();
         thread.enqueueAndWait(item1, 0.5);
         double elapsed = timer.seconds();
-        testAssert(elapsed >= 0.5 && elapsed < 1 && !item1->isCancelled(), "enqueueAndWait waited too long, should have timed out");
+        testAssert(elapsed >= 0.5 && elapsed < 1 && item1->isCancelled() && !item1->isComplete(), 
+            "enqueueAndWait waited too long, should have timed out");
 
         item2->reset();
         item2->runTime = 0.5; // half a second
         timer.start();
         thread.enqueueAndWait(item2, 2);
         elapsed = timer.seconds();
-        testAssert(elapsed >= 0.5 && elapsed < 1 && item2->isCancelled(), "enqueueAndWait waited too long, task should have completed in 0.5 seconds");
+        testAssert(elapsed >= 0.5 && elapsed < 1 && !item2->isCancelled() && item2->isComplete(), 
+            "enqueueAndWait waited too long, task should have completed in 0.5 seconds");
     }
 };
 

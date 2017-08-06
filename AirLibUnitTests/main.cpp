@@ -1,7 +1,8 @@
-// AirLibUnitTests.cpp : Defines the entry point for the console application.
-//
 
-#include "VehicleTest.hpp"
+#include "SettingsTest.hpp"
+#include "RosFlightTest.hpp"
+#include "PixhawkTest.hpp"
+#include "SimpleFlightTest.hpp"
 #include "WorkerThreadTest.hpp"
 #include "QuaternionTest.hpp"
 
@@ -9,18 +10,18 @@ int main()
 {
     using namespace msr::airlib;
 
-    QuaternionTest quaterion_test;
-    quaterion_test.run();
+    std::unique_ptr<TestBase> tests[] = {
+        std::unique_ptr<TestBase>(new SettingsTest()),
+        std::unique_ptr<TestBase>(new PixhawkTest()),
+        std::unique_ptr<TestBase>(new SimpleFlightTest()),
+        std::unique_ptr<TestBase>(new RosFlightTest()),
+        std::unique_ptr<TestBase>(new QuaternionTest()),
+        std::unique_ptr<TestBase>(new WorkerThreadTest())
+    };
 
-    Settings& settings = Settings::loadJSonFile("settings.json");
-    unused(settings);
+    for (auto& test : tests)
+        test->run();
 
-    VehicleTest test1;
-    test1.run();
-
-    WorkerThreadTest test2;
-    test2.run();
-    
     return 0;
 }
 

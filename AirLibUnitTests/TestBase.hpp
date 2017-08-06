@@ -3,11 +3,11 @@
 
 #include <string>
 #include <exception>
+#include "common/common_utils/Utils.hpp"
 
 namespace msr { namespace airlib {
 
-class TestBase
-{
+class TestBase {
 public:
     virtual void run() = 0;
 
@@ -17,12 +17,12 @@ public:
 
     void testAssert(bool condition, const std::string& message) {
         if (!condition) {
-            Utils::DebugBreak();
+            common_utils::Utils::DebugBreak();
             throw std::runtime_error(message.c_str());
         }
     }
 };
 
-} }
 
+}}
 #endif

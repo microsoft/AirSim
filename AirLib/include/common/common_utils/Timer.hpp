@@ -1,31 +1,40 @@
 #ifndef CommonUtils_Timer_hpp
 #define CommonUtils_Timer_hpp
 #include <chrono>
+#include "Utils.hpp"
 
 namespace common_utils {
     class Timer {
     public:
-        Timer() {
+        Timer() 
+        {
             started_ = false;
         }
-        void start() {
+        void start() 
+        {
             started_ = true;
             start_ = now();
         }
-        void stop() {
+        void stop() 
+        {
             started_ = false;
             end_ = now();
         }
-        double seconds() {
-            return static_cast<double>(end() - start_) / 1000000.0;
+        double seconds() 
+        {
+            auto diff = static_cast<double>(end() - start_);
+            return  diff / 1000000.0;
         }
-        double milliseconds() {
+        double milliseconds() 
+        {
             return static_cast<double>(end() - start_) / 1000.0;
         }
-        double microseconds() {
+        double microseconds() 
+        {
             return static_cast<double>(end() - start_);
         }
-        bool started() {
+        bool started() 
+        {
             return started_;
         }
     private:

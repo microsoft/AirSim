@@ -74,82 +74,102 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IntDir>$(ProjectDir)temp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\Include;$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\AirLib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>rpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\AirLib\deps\MavLinkCom\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\deps\rpclib\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\Include;$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\AirLib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4100;4505;4820;4464;4514;4710;4571;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\AirLib\deps\MavLinkCom\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\deps\rpclib\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\Include;$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\AirLib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\AirLib\deps\MavLinkCom\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\deps\rpclib\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\Include;$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\AirLib\include;$(ProjectDir)..\MavLinkCom\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/w34263 /w34266 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\AirLib\deps\MavLinkCom\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\deps\rpclib\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -168,9 +188,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QuaternionTest.hpp" />
+    <ClInclude Include="RosFlightTest.hpp" />
+    <ClInclude Include="SettingsTest.hpp" />
+    <ClInclude Include="SimpleFlightTest.hpp" />
     <ClInclude Include="TestBase.hpp" />
     <ClInclude Include="WorkerThreadTest.hpp" />
-    <ClInclude Include="VehicleTest.hpp" />
+    <ClInclude Include="PixhawkTest.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

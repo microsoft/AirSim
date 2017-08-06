@@ -24,10 +24,19 @@
     <ClInclude Include="QuaternionTest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VehicleTest.hpp">
+    <ClInclude Include="TestBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestBase.hpp">
+    <ClInclude Include="PixhawkTest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RosFlightTest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleFlightTest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsTest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
