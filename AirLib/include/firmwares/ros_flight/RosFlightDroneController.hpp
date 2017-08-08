@@ -68,6 +68,7 @@ public:
 
     virtual bool isAvailable(std::string& message) override
     {
+        unused(message);
         return true;
     }
 
