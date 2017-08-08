@@ -40,7 +40,7 @@ On first start you might not see any projects in UE4 editor. Click on Projects t
 2. Start UE4Editor as described in previous section and double click on Blocks project. This will rebuild Unreal binaries as well.
 
 ## Using AirSim Your Own Unreal Project
-To setup your own Unreal environment [see these instructions](unreal_custenv,md).
+To setup your own Unreal environment [see these instructions](unreal_custenv.md).
 
 To update your project with AirSim, simply copy the `AirSim/Unreal/Plugins` folder in to your project. You can use this handy command line:
 ```
