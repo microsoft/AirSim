@@ -198,35 +198,37 @@ private:
 
         next_wrench = Wrench::zero();
 
+        Utils::log(string("COL: ").append(VectorMath::toString(next.twist.linear)));
+
         return true;
     }
 
-    bool getNextKinematicsOnGround(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
-    {
-        /************************* reset state if we have hit the ground ************************/
-        real_T min_z_over_ground = body.getEnvironment().getState().min_z_over_ground;
-        grounded_ = 0;
-        if (min_z_over_ground <= next.pose.position.z()) {
-            grounded_ = 1;
-            next.pose.position.z() = min_z_over_ground;
+    //bool getNextKinematicsOnGround(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+    //{
+    //    /************************* reset state if we have hit the ground ************************/
+    //    real_T min_z_over_ground = body.getEnvironment().getState().min_z_over_ground;
+    //    grounded_ = 0;
+    //    if (min_z_over_ground <= next.pose.position.z()) {
+    //        grounded_ = 1;
+    //        next.pose.position.z() = min_z_over_ground;
 
-            real_T z_proj = static_cast<real_T>(next.twist.linear.z() + next.accelerations.linear.z() * dt);
-            if (Utils::isDefinitelyLessThan(0.0f, z_proj)) {
-                grounded_ = 2;
-                next.twist = Twist::zero();
-                next.accelerations.linear = Vector3r::Zero();
-                next.accelerations.angular = Vector3r::Zero();
-                //reset roll/pitch - px4 seems to have issue with this
-                real_T r, p, y;
-                VectorMath::toEulerianAngle(current.pose.orientation, p, r, y);
-                next.pose.orientation = VectorMath::toQuaternion(0, 0, y);
+    //        real_T z_proj = static_cast<real_T>(next.twist.linear.z() + next.accelerations.linear.z() * dt);
+    //        if (Utils::isDefinitelyLessThan(0.0f, z_proj)) {
+    //            grounded_ = 2;
+    //            next.twist = Twist::zero();
+    //            next.accelerations.linear = Vector3r::Zero();
+    //            next.accelerations.angular = Vector3r::Zero();
+    //            //reset roll/pitch - px4 seems to have issue with this
+    //            real_T r, p, y;
+    //            VectorMath::toEulerianAngle(current.pose.orientation, p, r, y);
+    //            next.pose.orientation = VectorMath::toQuaternion(0, 0, y);
 
-                next_wrench = Wrench::zero();
-            }
-        }
+    //            next_wrench = Wrench::zero();
+    //        }
+    //    }
 
-        return grounded_ != 0;
-    }
+    //    return grounded_ != 0;
+    //}
 
     static Wrench getDragWrench(const PhysicsBody& body, const Quaternionr& orientation, 
         const Vector3r& linear_vel, const Vector3r& angular_vel_body)
@@ -339,6 +341,8 @@ private:
         }
 
         computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
+
+        Utils::log(string("REG: ").append(VectorMath::toString(next.twist.linear)));
     }
 
     static void computeNextPose(TTimeDelta dt, const Pose& current_pose, const Vector3r& avg_linear, const Vector3r& avg_angular, Kinematics::State& next)

@@ -57,18 +57,6 @@ public:
         pending_ = std::make_shared<DirectCancelableBase>();
         controller_->setSimulationMode(is_set);
     }
-    void start()
-    {
-        CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
-        pending_ = std::make_shared<DirectCancelableBase>();
-        controller_->start();
-    }
-    void stop()
-    {
-        CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
-        pending_ = std::make_shared<DirectCancelableBase>();
-        controller_->stop();
-    }
 
     bool takeoff(float max_wait_seconds)
     {

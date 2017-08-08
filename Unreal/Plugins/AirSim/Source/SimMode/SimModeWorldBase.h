@@ -6,6 +6,7 @@
 #include "VehicleConnectorBase.h"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/World.hpp"
+#include "physics/PhysicsWorld.hpp"
 #include "common/StateReporterWrapper.hpp"
 #include "api/ControlServerBase.hpp"
 #include "SimModeBase.h"
@@ -36,13 +37,21 @@ protected:
     static const char kUsageScenarioComputerVision[];
     UPROPERTY() UManualPoseController* manual_pose_controller;
 
-private:
-    void createWorld();
+    void startAsyncUpdator();
+    void stopAsyncUpdator();
 
 private:
-    msr::airlib::World world_;
-    std::unique_ptr<msr::airlib::PhysicsEngineBase> physics_engine_;
+    typedef msr::airlib::UpdatableObject UpdatableObject;
+    typedef msr::airlib::PhysicsEngineBase PhysicsEngineBase;
+
+    PhysicsEngineBase* createPhysicsEngine();
+    static std::vector<UpdatableObject*> toUpdatableObjects(const std::vector<VehiclePtr>& vehicles);
+    long long getPhysicsLoopPeriod();
+
+private:
+    std::unique_ptr<msr::airlib::PhysicsWorld> physics_world_;
+    
+    std::unique_ptr<PhysicsEngineBase> physics_engine_;
 
     std::vector<VehiclePtr> vehicles_;
-    msr::airlib::StateReporterWrapper reporter_;
 };

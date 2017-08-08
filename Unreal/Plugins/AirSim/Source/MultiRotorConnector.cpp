@@ -10,7 +10,7 @@
 
 using namespace msr::airlib;
 
-void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
+MultiRotorConnector::MultiRotorConnector(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
     bool enable_rpc, std::string api_server_address, UManualPoseController* manual_pose_controller)
 {
     enable_rpc_ = enable_rpc;
@@ -27,20 +27,10 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
 
     vehicle_params_ = vehicle_params;
 
-    //init physics vehicle
-    auto initial_kinematics = Kinematics::State::zero();
-    initial_kinematics.pose = vehicle_pawn_->getPose();
-    msr::airlib::Environment::State initial_environment;
-    initial_environment.position = initial_kinematics.pose.position;
-    initial_environment.geo_point = vehicle_pawn_->getHomePoint();
-    initial_environment.min_z_over_ground = vehicle_pawn_->getMinZOverGround();
-    environment_.initialize(initial_environment);
-
-    vehicle_params_->initialize();
-    vehicle_.initialize(vehicle_params_, initial_kinematics, &environment_);
+    vehicle_.initialize(vehicle_params_, vehicle_pawn_->getPose(), 
+        vehicle_pawn_->getHomePoint(), environment_);
 
     controller_ = static_cast<msr::airlib::DroneControllerBase*>(vehicle_.getController());
-    controller_->initializePhysics(&vehicle_);
 
     for (int camera_index = 0; camera_index < vehicle_pawn->getCameraCount(); ++camera_index) {
         camera_connectors_.push_back(std::make_shared<VehicleCameraConnector>(vehicle_pawn->getCamera(camera_index)));
@@ -52,6 +42,15 @@ void MultiRotorConnector::initialize(AFlyingPawn* vehicle_pawn, msr::airlib::Mul
 
     rotor_count_ = vehicle_.wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
+
+    last_pose = Pose::nanPose();
+    last_debug_pose = Pose::nanPose();
+
+    std::string message;
+    if (!vehicle_.getController()->isAvailable(message)) {
+        UAirBlueprintLib::LogMessage(FString("Vehicle was not initialized: "), FString(message.c_str()), LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
+    }
 }
 
 msr::airlib::VehicleCameraBase* MultiRotorConnector::getCamera(unsigned int index)
@@ -64,32 +63,11 @@ MultiRotorConnector::~MultiRotorConnector()
     stopApiServer();
 }
 
-void MultiRotorConnector::beginPlay()
-{
-    last_pose = Pose::nanPose();
-    last_debug_pose = Pose::nanPose();
-
-    //connect to HIL
-    try {
-
-        controller_->start();
-    }
-    catch (std::exception& ex) {
-
-        UAirBlueprintLib::LogMessage(FString("Vehicle controller cannot be started: "), FString(ex.what()), LogDebugLevel::Failure);
-        UAirBlueprintLib::LogMessage("Tip: check settings.json: ", FString(ex.what()), LogDebugLevel::Informational);
-    }
-}
-
 msr::airlib::VehicleControllerBase* MultiRotorConnector::getController()
 {
     return controller_;
 }
 
-void MultiRotorConnector::endPlay()
-{
-    controller_->stop();
-}
 
 void MultiRotorConnector::detectUsbRc()
 {
@@ -158,7 +136,6 @@ void MultiRotorConnector::updateRenderedState()
     vehicle_.setCollisionInfo(collision_info);
 
     //update ground level
-    environment_.getState().min_z_over_ground = vehicle_pawn_->getMinZOverGround();
     if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_) {
         FVector delta_position;
         FRotator delta_rotation;

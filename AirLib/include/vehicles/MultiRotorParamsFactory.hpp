@@ -33,6 +33,8 @@ public:
         } else
             throw std::runtime_error(Utils::stringf("Cannot create vehicle config because vehicle name '%s' is not recognized", vehicle_name.c_str()));
 
+        config->initialize();
+        
         return config;
     }
 };

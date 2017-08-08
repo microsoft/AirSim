@@ -20,6 +20,7 @@ public: //interface
     virtual void kinematicsUpdated() = 0;
     virtual real_T getRestitution() const = 0;
     virtual real_T getFriction() const = 0;
+
     //derived class may return covariant type
     virtual uint wrenchVertexCount() const
     {
@@ -50,9 +51,9 @@ public: //interface
         unused(index);
         throw std::out_of_range("no physics vertex are available");
     }
-    void setWrench(const Wrench&  wrench)
+    virtual void setCollisionInfo(const CollisionInfo& collison_info)
     {
-        wrench_ = wrench;
+        collison_info_ = collison_info;
     }
 
 public: //methods
@@ -202,15 +203,13 @@ public: //methods
     {
         return wrench_;
     }
-
+    void setWrench(const Wrench&  wrench)
+    {
+        wrench_ = wrench;
+    }
     const CollisionInfo& getCollisionInfo() const
     {
         return collison_info_;
-    }
-    
-    virtual void setCollisionInfo(const CollisionInfo& collison_info)
-    {
-        collison_info_ = collison_info;
     }
 
     const CollisonResponseInfo& getCollisionResponseInfo() const

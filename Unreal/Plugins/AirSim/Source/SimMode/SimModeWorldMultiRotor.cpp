@@ -34,6 +34,33 @@ void ASimModeWorldMultiRotor::BeginPlay()
     }
 }
 
+void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    //stop physics thread before we dismental
+    stopAsyncUpdator();
+
+    if (fpv_vehicle_connector_ != nullptr) {
+        fpv_vehicle_connector_->stopApiServer();
+    }
+
+    if (isLoggingStarted)
+    {
+        FRecordingThread::Shutdown();
+        isLoggingStarted = false;
+    }
+
+    //for (AActor* actor : spawned_actors_) {
+    //    actor->Destroy();
+    //}
+    spawned_actors_.Empty();
+    if (CameraDirector != nullptr) {
+        fpv_vehicle_connector_ = nullptr;
+        CameraDirector = nullptr;
+    }
+
+    Super::EndPlay(EndPlayReason);
+}
+
 AVehiclePawnBase* ASimModeWorldMultiRotor::getFpvVehiclePawn()
 {
     return fpv_vehicle_pawn_;
@@ -114,30 +141,6 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
-void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-    if (fpv_vehicle_connector_ != nullptr) {
-        fpv_vehicle_connector_->stopApiServer();
-    }
-
-    if (isLoggingStarted)
-    {
-        FRecordingThread::Shutdown();
-        isLoggingStarted = false;
-    }
-
-    for (AActor* actor : spawned_actors_) {
-        actor->Destroy();
-    }
-    if (CameraDirector != nullptr) {
-        fpv_vehicle_connector_ = nullptr;
-        CameraDirector = nullptr;
-    }
-    spawned_actors_.Empty();
-
-    Super::EndPlay(EndPlayReason);
-}
-
 bool ASimModeWorldMultiRotor::checkConnection()
 {
     return true;
@@ -171,8 +174,9 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* pawn)
 {
     vehicle_params_ = MultiRotorParamsFactory::createConfig(fpv_vehicle_name);
-    auto vehicle = std::make_shared<MultiRotorConnector>();
-    vehicle->initialize(pawn, vehicle_params_.get(), enable_rpc, api_server_address, manual_pose_controller);
+
+    auto vehicle = std::make_shared<MultiRotorConnector>(
+        pawn, vehicle_params_.get(), enable_rpc, api_server_address, manual_pose_controller);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

@@ -15,7 +15,7 @@ namespace msr { namespace airlib {
     sensor values as inputs and return control signals for various vertices on physics body as output. The update()
     method should be used to process the sensor inputs from vehicle as needed (the implementor should have vehicle object
     possibly through initialization). The getVertexControlSignal() is called to retrieve the value of control signal to be applied
-    to physics body vertex. In addition, start() and stop() method might be used for purposes like setting up connection to vehicle. 
+    to physics body vertex.
     While reset() may be called at any time, all other methods should be expected be called after start() and before stop().
 */
 class ControllerBase : public UpdatableObject {
@@ -28,17 +28,6 @@ public:
     {
         unused(messages);
         //default implementation
-    }
-
-    virtual void start()
-    {
-        //default implementation
-        //potentially open any serial/TCP connections or allocate resources
-    }
-    virtual void stop()
-    {
-        //default implementation
-        //clean up any resources
     }
 
     virtual void reportTelemetry(float renderTime)

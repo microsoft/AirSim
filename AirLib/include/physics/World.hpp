@@ -113,6 +113,11 @@ public:
         executor_.unlock();
     }
 
+    virtual ~World()
+    {
+        executor_.stop();
+    }
+
 private:
     bool worldUpdatorAsync(long long dt_nanos)
     {

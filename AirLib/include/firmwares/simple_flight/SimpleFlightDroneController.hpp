@@ -40,7 +40,7 @@ public:
         remote_control_id_ = child.getInt("RemoteControlID", 0);
     }
 
-    void initializePhysics(PhysicsBody* physics_body) override
+    void setGroundTruth(PhysicsBody* physics_body) override
     {
         physics_body_ = physics_body;
 
@@ -64,19 +64,14 @@ public:
         firmware_->update();
     }
 
-    virtual void start() override
-    {
-        DroneControllerBase::start();
-    }
-
-    virtual void stop() override
-    {
-        DroneControllerBase::stop();
-    }
-
     virtual size_t getVertexCount() override
     {
         return vehicle_params_->getParams().rotor_count;
+    }
+
+    virtual bool isAvailable(std::string& message) override
+    {
+        return true;
     }
 
     virtual real_T getVertexControlSignal(unsigned int rotor_index) override

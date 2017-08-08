@@ -66,7 +66,7 @@ private:
     void initializeSettings();
 
 private:
-    RecordingFile recording_file_;
+    std::unique_ptr<RecordingFile> recording_file_;
     void *xinput_dllHandle;
 
 };
