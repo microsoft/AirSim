@@ -18,9 +18,7 @@ public:
         DroneControllerBase* controller = simpleFlight->getController();
         testAssert(controller != nullptr, "Couldn't get controller");
 
-        controller->start();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        controller->stop();
     }
 };
 

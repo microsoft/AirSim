@@ -115,6 +115,7 @@
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />
     <ClInclude Include="include\api\ControlServerBase.hpp" />
     <ClInclude Include="include\physics\PhysicsBodyWorld.hpp" />
+    <ClInclude Include="include\physics\PhysicsWorld.hpp" />
     <ClInclude Include="include\safety\CubeGeoFence.hpp" />
     <ClInclude Include="include\controllers\DroneCommon.hpp" />
     <ClInclude Include="include\controllers\DroneControllerBase.hpp" />
