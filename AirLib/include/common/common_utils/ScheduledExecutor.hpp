@@ -10,7 +10,7 @@
 #include <atomic>
 #include <system_error>
 #include <mutex>
-
+#include <cstdint>
 
 namespace common_utils {
 
@@ -18,7 +18,7 @@ class ScheduledExecutor {
 public:
     ScheduledExecutor()
     {}
-    ScheduledExecutor(const std::function<bool(long long)>& callback, long long period_nanos)
+    ScheduledExecutor(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         initialize(callback, period_nanos);
     }
@@ -26,7 +26,7 @@ public:
     {
         stop();
     }
-    void initialize(const std::function<bool(long long)>& callback, long long period_nanos)
+    void initialize(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         callback_ = callback;
         period_nanos_ = period_nanos;
@@ -85,8 +85,8 @@ public:
 
 private:
     typedef std::chrono::high_resolution_clock clock;
-    typedef long long TTimePoint;
-    typedef long long TTimeDelta;
+    typedef uint64_t TTimePoint;
+    typedef uint64_t TTimeDelta;
     template <typename T>
     using duration = std::chrono::duration<T>;
 
@@ -149,9 +149,9 @@ private:
     }
 
 private:
-    long long period_nanos_;
+    uint64_t period_nanos_;
     std::thread th_;
-    std::function<bool(long long)> callback_;
+    std::function<bool(uint64_t)> callback_;
     std::atomic_bool started_;
 
     double sleep_time_avg_;

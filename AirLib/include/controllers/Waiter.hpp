@@ -33,7 +33,7 @@ public:
         // So this can be used to "throttle" any loop to check something every sleep_duration_ seconds.
         TTimeDelta running_time = clock()->elapsedSince(loop_start_);
         double remaining = sleep_duration_ - running_time;
-        bool completed = cancelable_action.sleep(clock()->toWallDelta(remaining));
+        bool completed = cancelable_action.sleep(remaining);
         loop_start_ = clock()->nowNanos();
         return completed;
     }

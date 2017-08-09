@@ -16,12 +16,13 @@ namespace msr { namespace airlib {
 class PhysicsWorld {
 public:
     PhysicsWorld(PhysicsEngineBase* physics_engine, const std::vector<UpdatableObject*>& bodies,
-            long long update_period_us = 3000000LL, bool state_reporter_enabled = false,
+            uint64_t update_period_nanos = 3000000LL, bool state_reporter_enabled = false,
             bool start_async_updator = true
         )
+        : world_(physics_engine)
     {
         enableStateReport(state_reporter_enabled);
-        update_period_us_ = update_period_us;
+        update_period_nanos_ = update_period_nanos;
         initializeWorld(physics_engine, bodies, start_async_updator);
     }
 
@@ -42,9 +43,14 @@ public:
         unlock();
     }
 
+    uint64_t getUpdatePeriodNanos() const
+    {
+        return update_period_nanos_;
+    }
+
     void startAsyncUpdator()
     {
-        world_.startAsyncUpdator(update_period_us_);
+        world_.startAsyncUpdator(update_period_nanos_);
     }
     void stopAsyncUpdator()
     {
@@ -74,8 +80,6 @@ private:
     void initializeWorld(PhysicsEngineBase* physics_engine, 
         const std::vector<UpdatableObject*>& bodies, bool start_async_updator)
     {
-        world_.initialize(physics_engine);
-
         reporter_.initialize(false);
         world_.insert(&reporter_);
 
@@ -85,14 +89,14 @@ private:
         world_.reset();
 
         if (start_async_updator)
-            world_.startAsyncUpdator(update_period_us_);
+            world_.startAsyncUpdator(update_period_nanos_);
     }
 
 private:
     std::vector<UpdatableObject*> bodies_;
     StateReporterWrapper reporter_;
     World world_;
-    long long update_period_us_;
+    uint64_t update_period_nanos_;
 };
 
 

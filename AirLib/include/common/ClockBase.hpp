@@ -15,13 +15,6 @@ public:
     //returns value indicating nanoseconds elapsed since some reference timepoint in history
     //typically nanoseconds from Unix epoch
     virtual TTimePoint nowNanos() const = 0;
-    //converts time interval for wall clock to current clock
-    //For example, if implementation is scaled clock simulating 5X spped then below
-    //will retun dt*5. This functions are required to translate time to operating system
-    //which only has concept of wall clock. For example, to make thread sleep for specific duration.
-    virtual TTimeDelta fromWallDelta(TTimeDelta dt) const = 0;
-    virtual TTimeDelta toWallDelta(TTimeDelta dt) const = 0;
-
 
     TTimeDelta elapsedSince(TTimePoint since) const
     {
@@ -43,28 +36,28 @@ public:
         return elapsed;
     }
 
-    void sleep_for(TTimeDelta wall_clock_dt)
+    virtual TTimePoint step()
     {
-        TTimeDelta dt = fromWallDelta(wall_clock_dt);
+        //by default step doesn't do anything
+        //for steppeble clock, this would advance to next tick
+        //for wall clocks, step() is no-op
 
+        return nowNanos();
+    }
+
+    virtual void sleep_for(TTimeDelta dt)
+    {
         if (dt <= 0)
             return;
 
-        //for intervals > 2ms just sleep otherwise do spilling otherwise delay won't be accurate
-        if (dt > 2.0/1000)  
-            std::this_thread::sleep_for(duration<double>(dt));
-        else {
-            static constexpr std::chrono::duration<double> MinSleepDuration(0);
-            clock::time_point start = clock::now();
-            //spin wait
-            while (duration<double>(clock::now() - start).count() < dt) {
-                std::this_thread::sleep_for(MinSleepDuration);
-            }
-        }
+        static constexpr std::chrono::duration<double> MinSleepDuration(0);
+        TTimePoint start = nowNanos();
+        //spin wait
+        while (updateSince(start) < dt)
+            std::this_thread::sleep_for(MinSleepDuration);
     }
 
 private:
-    typedef std::chrono::high_resolution_clock clock;
     template <typename T>
     using duration = std::chrono::duration<T>;
 };

@@ -256,7 +256,7 @@ private:// types
     class DirectCancelableBase : public CancelableBase
     {
     public:
-        void execute() {};
+        virtual void execute() override {};
     };
     struct CallLock {
         CallLock(DroneControllerBase* controller, std::mutex& mtx, std::mutex& cancel_mutex, std::shared_ptr<CancelableBase> pending, bool is_loop_command = false)

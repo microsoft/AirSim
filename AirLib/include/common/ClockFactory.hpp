@@ -4,7 +4,7 @@
 #ifndef airsim_core_ClockFactory_hpp
 #define airsim_core_ClockFactory_hpp
 
-#include "SimClock.hpp"
+#include "ScalableClock.hpp"
 #include <memory>
 
 namespace msr { namespace airlib {
@@ -20,7 +20,7 @@ public:
             clock = val;
 
         if (clock == nullptr)
-            clock = std::make_shared<SimClock>();
+            clock = std::make_shared<ScalableClock>();
 
         return clock.get();
     }

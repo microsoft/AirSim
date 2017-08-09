@@ -13,7 +13,6 @@ public:
     {
         //Test PX4 based drones
         auto pixhawk = MultiRotorParamsFactory::createConfig("Pixhawk");	
-        pixhawk->initialize();
         
         DroneControllerBase* controller = pixhawk->getController();
         testAssert(controller != nullptr, "Couldn't get pixhawk controller");

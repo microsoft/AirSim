@@ -246,9 +246,6 @@
     <ClInclude Include="include\common\ClockBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\common\SimClock.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\common\ClockFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -259,9 +256,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\common\common_utils\WorkerThread.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\common\DebugClock.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp">
@@ -445,6 +439,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\physics\PhysicsWorld.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\SteppableClock.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\ScalableClock.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

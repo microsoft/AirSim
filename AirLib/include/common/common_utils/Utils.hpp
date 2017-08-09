@@ -86,9 +86,9 @@ public:
         virtual void log(int level, const std::string& message)
         {
             if (level >= 0)
-                std::cout << message;
+                std::cout << message << std::endl;
             else
-                std::cerr << message;
+                std::cerr << message << std::endl;
         }
     };
     
