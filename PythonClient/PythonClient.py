@@ -114,7 +114,7 @@ class AirSimClient:
                 t2 = 1
             if (t2 < -1.0):
                 t2 = -1.0
-            pitch = math.sin(t2)
+            pitch = math.asin(t2)
 
             # yaw (z-axis rotation)
             t3 = +2.0* (y * z + w * x);
