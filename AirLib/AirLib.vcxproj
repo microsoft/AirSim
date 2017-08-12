@@ -23,6 +23,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\api\DebugApiServer.hpp" />
+    <ClInclude Include="include\automobile\Automobile.hpp" />
+    <ClInclude Include="include\automobile\AutomobileBrake.hpp" />
+    <ClInclude Include="include\automobile\AutomobileBrakeParameters.hpp" />
+    <ClInclude Include="include\automobile\AutomobileControllerBase.hpp" />
+    <ClInclude Include="include\automobile\AutomobileEngine.hpp" />
+    <ClInclude Include="include\automobile\AutomobileEngineParameters.hpp" />
+    <ClInclude Include="include\automobile\AutomobileHardCodedBrake.hpp" />
+    <ClInclude Include="include\automobile\AutomobileHardCodedEngine.hpp" />
+    <ClInclude Include="include\automobile\AutomobileSedan.hpp" />
+    <ClInclude Include="include\automobile\AutomobileState.hpp" />
+    <ClInclude Include="include\automobile\AutomobileStaticParams.hpp" />
+    <ClInclude Include="include\automobile\GamepadAutomobileController.hpp" />
+    <ClInclude Include="include\automobile\MagicFormulaWheel.hpp" />
+    <ClInclude Include="include\automobile\TirFileWheelParameters.hpp" />
+    <ClInclude Include="include\automobile\BrushWheel.hpp" />
+    <ClInclude Include="include\automobile\BrushWheelParameters.hpp" />
+    <ClInclude Include="include\automobile\PneumaticWheel.hpp" />
+    <ClInclude Include="include\automobile\WheelParameters.hpp" />
     <ClInclude Include="include\common\ClockBase.hpp" />
     <ClInclude Include="include\common\Common.hpp" />
     <ClInclude Include="include\common\CommonStructs.hpp" />
@@ -114,6 +132,7 @@
     <ClInclude Include="include\firmwares\simple_flight\SimpleFlightDroneController.hpp" />
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />
     <ClInclude Include="include\api\ControlServerBase.hpp" />
+    <ClInclude Include="include\physics\FreeBodyMotionAlgorithmType.hpp" />
     <ClInclude Include="include\safety\CubeGeoFence.hpp" />
     <ClInclude Include="include\controllers\DroneCommon.hpp" />
     <ClInclude Include="include\controllers\DroneControllerBase.hpp" />
@@ -124,6 +143,7 @@
     <ClInclude Include="include\api\RpcLibAdapators.hpp" />
     <ClInclude Include="include\api\RpcLibClient.hpp" />
     <ClInclude Include="include\api\RpcLibServer.hpp" />
+	<ClInclude Include="include\rpc\RpcLibAutomobileServer.hpp" />
     <ClInclude Include="include\safety\SafetyEval.hpp" />
     <ClInclude Include="include\controllers\DroneControllerCancelable.hpp" />
     <ClInclude Include="include\controllers\Settings.hpp" />
@@ -157,6 +177,7 @@
     <ClInclude Include="include\controllers\MotorDirectControllerParams.hpp" />
     <ClInclude Include="include\controllers\RpyDirectController.hpp" />
     <ClInclude Include="include\controllers\RpyDirectControllerParams.hpp" />
+	<ClInclude Include="include\controllers\AutomobileSedanController.hpp" />
     <ClInclude Include="include\vehicles\configs\RosFlightQuadX.hpp" />
     <ClInclude Include="include\vehicles\configs\SimpleFlightQuadX.hpp" />
     <ClInclude Include="include\vehicles\MultiRotor.hpp" />
@@ -166,10 +187,15 @@
     <ClInclude Include="include\vehicles\RotorParams.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\automobile\AutomobileSedan.cpp" />
+    <ClCompile Include="src\automobile\BrushWheel.cpp" />
+    <ClCompile Include="src\automobile\MagicFormulaWheel.cpp" />
+    <ClCompile Include="src\automobile\PneumaticWheel.cpp" />
     <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\api\RpcLibClient.cpp" />
     <ClCompile Include="src\api\RpcLibServer.cpp" />
+	<ClCompile Include="src\rpc\RpcLibAutomobileServer.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />
     <ClCompile Include="src\controllers\FileSystem.cpp" />
   </ItemGroup>
@@ -177,6 +203,17 @@
     <ProjectReference Include="..\MavLinkCom\MavLinkCom.vcxproj">
       <Project>{8510c7a4-bf63-41d2-94f6-d8731d137a5a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="include\test.brush">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="include\test.tir">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="include\VI_Racer_front_tire.tir">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4BFB7231-077A-4671-BD21-D3ADE3EA36E7}</ProjectGuid>

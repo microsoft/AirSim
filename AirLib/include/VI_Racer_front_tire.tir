@@ -1,0 +1,192 @@
+$---------------------------------------------------------------------MDI_HEADER
+[MDI_HEADER]
+ FILE_TYPE            = 'tir'
+ FILE_VERSION         =  7.1
+ FILE_FORMAT          = 'ASCII'
+$--------------------------------------------------------------------------UNITS
+[UNITS]
+ LENGTH               = 'meter'
+ ANGLE                = 'radian'
+ FORCE                = 'newton'
+ MASS                 = 'kg'
+ TIME                 = 'second'
+$--------------------------------------------------------------------------MODEL
+[MODEL]
+ PROPERTY_FILE_FORMAT = 'MF_05'
+ FUNCTION_NAME        = 'TYR901'
+ USE_MODE             = 14
+ TYPE                 = 'CAR'
+ FITTYP               = 6                    $typarr(   2)
+ MFSAFE1              = 1133                 $typarr(   3)
+ MFSAFE2              = 1133                 $typarr(   4)
+ MFSAFE3              =                      $typarr(   5)
+ VXLOW                = 1                    $typarr(  29)
+ LONGVL               = 16.667               $typarr(   6)
+ TYRESIDE             = 'LEFT'
+$----------------------------------------------------------------------DIMENSION
+[DIMENSION]
+ UNLOADED_RADIUS      = 2.540000E-001
+ WIDTH                = 1.570000E-001
+ RIM_RADIUS           = 1.770000E-001
+ RIM_WIDTH            = 1.590000E-001
+$--------------------------------------------------------------------------SHAPE
+[SHAPE]
+{radial width}
+ 1.0    0.0
+ 1.0    0.4
+ 1.0    0.9
+ 0.9    1.0
+$-----------------------------------------------------------------------VERTICAL
+[VERTICAL]
+ VERTICAL_STIFFNESS   = 1.550000E+005
+ VERTICAL_DAMPING     = 1.800000E+002
+ BREFF                = 5.000000E+000
+ DREFF                = 4.000000E-001
+ FREFF                = 1.000000E-002
+ FNOMIN               = 4.120000E+003
+$----------------------------------------------------------------LONG_SLIP_RANGE
+[LONG_SLIP_RANGE]
+ KPUMIN               = -1.000000E+000
+ KPUMAX               =  1.000000E+000
+$---------------------------------------------------------------SLIP_ANGLE_RANGE
+[SLIP_ANGLE_RANGE]
+ ALPMIN               = -1.570800E+000
+ ALPMAX               =  1.570800E+000
+$--------------------------------------------------------INCLINATION_ANGLE_RANGE
+[INCLINATION_ANGLE_RANGE]
+ CAMMIN               = -2.619000E-001
+ CAMMAX               =  2.619000E-001
+$-----------------------------------------------------------VERTICAL_FORCE_RANGE
+[VERTICAL_FORCE_RANGE]
+ FZMIN                = 2.000000E+002
+ FZMAX                = 1.000000E+004
+$-----------------------------------------------------------SCALING_COEFFICIENTS
+[SCALING_COEFFICIENTS]
+ LFZO                 = 1.000000E+000
+ LCX                  = 1.000000E+000
+ LMUX                 = 1.50000E+000
+ LEX                  = 1.000000E+000
+ LKX                  = 1.000000E+000
+ LHX                  = 1.000000E+000
+ LVX                  = 1.000000E+000
+ LCY                  = 1.000000E+000
+ LMUY                 = 1.500000E+000
+ LEY                  = 1.000000E+000
+ LKY                  = 1.000000E+000
+ LHY                  = 1.000000E+000
+ LVY                  = 1.000000E+000
+ LGAY                 = 1.000000E+000
+ LTR                  = 1.000000E+000
+ LRES                 = 1.000000E+000
+ LGAZ                 = 1.000000E+000
+ LXAL                 = 1.000000E+000
+ LYKA                 = 1.000000E+000
+ LVYKA                = 1.000000E+000
+ LS                   = 1.000000E+000
+ LSGKP                = 1.000000E+000
+ LSGAL                = 1.000000E+000
+ LGYR                 = 1.000000E+000
+ LMX                  = 1.000000E+000
+ LMY                  = 1.000000E+000
+$------------------------------------------------------LONGITUDINAL_COEFFICIENTS
+[LONGITUDINAL_COEFFICIENTS]
+ PCX1                 =  1.637400E+000
+ PDX1                 =  1.044200E+000
+ PDX2                 = -4.961200E-002
+ PEX1                 =  5.784200E-001
+ PEX2                 = -4.915800E-002
+ PEX3                 =  5.985800E-002
+ PEX4                 =  0.000000E+000
+ PKX1                 =  2.016900E+001
+ PKX2                 = -3.138200E-001
+ PKX3                 =  2.821000E-001
+ PHX1                 = -1.692700E-003
+ PHX2                 =  4.280000E-004
+ PVX1                 =  0.000000E+000
+ PVX2                 =  0.000000E+000
+ RBX1                 =  7.043100E+000
+ RBX2                 = -8.610700E+000
+ RCX1                 =  1.132700E+000
+ RHX1                 = -3.030900E-002
+ PTX1                 =  1.962400E+000
+ PTX2                 = -5.368400E-003
+ PTX3                 = -3.103700E-001
+$-----------------------------------------------------------LATERAL_COEFFICIENTS
+[LATERAL_COEFFICIENTS]
+ PCY1                 =  1.295900E+000
+ PDY1                 = -9.082400E-001
+ PDY2                 =  1.829000E-001
+ PDY3                 = -4.497900E+000
+ PEY1                 = -1.025000E+000
+ PEY2                 =  6.557200E-001
+ PEY3                 = -6.444100E-001
+ PEY4                 = -1.274500E+001
+ PKY1                 = -1.296300E+001
+ PKY2                 =  1.712400E+000
+ PKY3                 =  2.216700E-001
+ PHY1                 =  3.449000E-003
+ PHY2                 = -2.989200E-003
+ PHY3                 =  4.521300E-002
+ PVY1                 =  4.552500E-002
+ PVY2                 = -3.354300E-002
+ PVY3                 = -1.726200E-001
+ PVY4                 = -4.511100E-001
+ RBY1                 =  6.875300E+000
+ RBY2                 =  6.766700E+000
+ RBY3                 = -8.460100E-002
+ RCY1                 =  1.061000E+000
+ RHY1                 = -1.831000E-002
+ RVY1                 =  5.347700E-002
+ RVY2                 = -1.032800E-001
+ RVY3                 = -6.880500E-002
+ RVY4                 = -8.754700E-003
+ RVY5                 =  1.900000E+000
+ RVY6                 = -4.986300E+000
+ PTY1                 =  2.393500E+000
+ PTY2                 =  2.689500E+000
+$----------------------------------------------------------ALIGNING_COEFFICIENTS
+[ALIGNING_COEFFICIENTS]
+ QBZ1                 =  8.332800E+000
+ QBZ2                 = -2.881100E+000
+ QBZ3                 =  4.665500E-001
+ QBZ4                 = -4.475200E-001
+ QBZ5                 = -4.343100E-001
+ QBZ9                 = -3.369100E+000
+ QBZ10                =  0.000000E+000
+ QCZ1                 =  1.186100E+000
+ QDZ1                 =  1.100200E-001
+ QDZ2                 = -2.815200E-003
+ QDZ3                 = -5.601300E-001
+ QDZ4                 =  8.398100E+000
+ QDZ6                 = -3.377100E-003
+ QDZ7                 =  4.810300E-003
+ QDZ8                 = -1.196400E-001
+ QDZ9                 =  1.135500E-002
+ QEZ1                 = -2.965700E+000
+ QEZ2                 = -5.355300E-001
+ QEZ3                 =  0.000000E+000
+ QEZ4                 = -1.260100E-001
+ QEZ5                 = -3.718900E+000
+ QHZ1                 =  3.120300E-003
+ QHZ2                 =  7.592200E-004
+ QHZ3                 =  1.534600E-001
+ QHZ4                 =  1.158400E-001
+ SSZ1                 =  2.490800E-002
+ SSZ2                 =  1.678900E-002
+ SSZ3                 =  4.974900E-001
+ SSZ4                 = -2.729300E-001
+ QTZ1                 =  2.000000E-001
+ MBELT                =  4.000000E+000
+$-------------------------------------------------------OVERTURNING_COEFFICIENTS
+[OVERTURNING_COEFFICIENTS]
+ QSX1                 = 0.000000E+000
+ QSX2                 = 0.000000E+000
+ QSX3                 = 0.000000E+000
+$-----------------------------------------------------------ROLLING_COEFFICIENTS
+[ROLLING_COEFFICIENTS]
+$ NOTE: when QSY1 = QSY2 = 0 and FITTYP=5 an alternative formulation for rolling
+$       resistance is used. please check the PAC2002 documenation for more infos
+ QSY1                 = 0.000000E+000       
+ QSY2                 = 0.000000E+000
+ QSY3                 = 0.000000E+000 
+ QSY4                 = 0.000000E+000 

@@ -137,6 +137,11 @@ public:
         return params_->getParams().friction;
     }
 
+    virtual FreeBodyMotionAlgorithmType getFreeBodyMotionType() const override
+    {
+        return MOTIONTYPE_PROJECTILE;
+    }
+
     Rotor::Output getRotorOutput(uint rotor_index) const
     {
         return rotors_.at(rotor_index).getOutput();
@@ -145,7 +150,6 @@ public:
     virtual void setCollisionInfo(const CollisionInfo& collison_info) override
     {
         PhysicsBody::setCollisionInfo(collison_info);
-        getController()->setCollisionInfo(collison_info);
     }
 
     virtual ~MultiRotor() = default;

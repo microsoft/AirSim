@@ -19,6 +19,16 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
+/*For the hackathon and debugging the physics engine*/
+/*If defined, then the physics objects will spit out .tsv files for quantities of interest, allowing for debugging*/
+/*This will also make everything very slow. Don't define these unless you really want to see the debug variables*/
+#ifndef PHYSICS_VERBOSE
+#define PHYSICS_VERBOSE
+#define PHYSICS_OUTPUT_DIR std::string("F:/mechanics/")
+//#undef PHYSICS_VERBOSE
+//#undef PHYSICS_OUTPUT_DIR
+#endif
+
 namespace msr { namespace airlib {
 
 //numericals

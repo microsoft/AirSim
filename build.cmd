@@ -61,7 +61,7 @@ robocopy /MIR MavLinkCom\lib %MAVLINK_TARGET_LIB%
 REM //---------- all our output goes to Unreal/Plugin folder ----------
 if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
 robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp
-
+copy AirLib\include\test.brush "%userprofile%\Documents\AirSim"
 REM //---------- done building ----------
 goto :eof
 

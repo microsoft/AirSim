@@ -30,6 +30,7 @@ public:
         '/';
 #endif
 
+
     static std::string createDirectory(std::string fullPath);
 
     static std::string getUserHomeFolder()
@@ -94,10 +95,12 @@ public:
         return str.substr(ui, len - ui);
     }
 
-    static std::string getLogFileNamePath(std::string prefix, std::string suffix, std::string extension, bool add_timestamp)
+    static std::string getLogFileNamePath(std::string prefix, std::string suffix, std::string extension, bool add_timestamp, std::string subfolder)
     {
         std::string logfolder = Utils::to_string(Utils::now(), "%Y-%m-%d");
-        std::string fullPath = combine(getAppDataFolder(), logfolder);
+        std::string basePath = combine(getAppDataFolder(), logfolder);std::string basePath = combine(getAppDataFolder(), logfolder);
+        ensureFolder(basePath);
+        std::string fullPath = combine(basePath, subfolder);
         std::string timestamp = add_timestamp ? Utils::to_string(Utils::now()) : "";
 
         //TODO: because this bug we are using alternative code with stringstream
@@ -159,7 +162,7 @@ public:
     
     static std::string createLogFile(std::string suffix, std::ofstream& flog)
     {
-        std::string filepath = getLogFileNamePath("log_", suffix, ".tsv", true);
+        std::string filepath = getLogFileNamePath("log_", suffix, ".tsv", true, "logs");
         createTextFile(filepath, flog);
 
         Utils::log(Utils::stringf("log file started: %s", filepath.c_str()));

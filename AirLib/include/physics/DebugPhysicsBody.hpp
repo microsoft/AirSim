@@ -57,6 +57,11 @@ public:
         return friction_;
     }
 
+	virtual FreeBodyMotionAlgorithmType getFreeBodyMotionType() const override
+	{
+		return MOTIONTYPE_PROJECTILE;
+	}
+
     virtual uint wrenchVertexCount() const override
     {
         return static_cast<uint>(wrench_vertices_.size());

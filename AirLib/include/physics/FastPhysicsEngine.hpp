@@ -6,6 +6,7 @@
 
 #include "common/Common.hpp"
 #include "physics/PhysicsEngineBase.hpp"
+#include "automobile/Automobile.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -287,6 +288,20 @@ private:
 
     static void getNextKinematicsNoCollison(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
     {
+                /*There are a few different algorithms we can use to get the next state of the object if there is no collision*/
+                switch (body.getFreeBodyMotionType())
+                {
+                case MOTIONTYPE_PROJECTILE:
+                    getNextKinematicsNoCollisionProjectile(dt, body, current, next, next_wrench);
+                    break;
+                case MOTIONTYPE_AUTOMOBILE:
+                    getNextKinematicsNoCollisionAutomobile(dt, static_cast<const Automobile&>(body), current, next, next_wrench);
+                }
+
+            }
+
+            static void getNextKinematicsNoCollisionProjectile(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+            {
         const real_T dt_real = static_cast<real_T>(dt);
 
         /************************* Get force and torque acting on body ************************/
@@ -341,6 +356,200 @@ private:
         computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
     }
 
+            static void getNextKinematicsNoCollisionAutomobile(TTimeDelta dt, const Automobile& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+            {
+                const real_T dt_real = static_cast<real_T>(dt);
+
+                const Vector3r avg_linear = current.twist.linear + current.accelerations.linear * (0.5f * dt_real);
+                const Vector3r avg_angular = current.twist.angular + current.accelerations.angular * (0.5f * dt_real);
+
+                Vector3r frame_velocity_vec = VectorMath::transformToBodyFrame(current.twist.linear, current.pose.orientation);
+
+                Vector3r turned_wheel_direction = Vector3r(cos(body.GetSteeringAngleInRadians()), -sin(body.GetSteeringAngleInRadians()), 0);
+
+                Vector3r turned_vx = turned_wheel_direction.dot(frame_velocity_vec) * turned_wheel_direction.normalized();
+
+                real_T turned_wheel_slip_angle;
+                real_T unturned_wheel_slip_angle;
+
+#if defined(PHYSICS_VERBOSE)
+                std::ofstream stream_fvv;
+                stream_fvv.open(PHYSICS_OUTPUT_DIR + "frame_velocity_vec.tsv", std::ofstream::out | std::ofstream::app);
+                stream_fvv << frame_velocity_vec.x() << "\t" << frame_velocity_vec.y() << "\t" << frame_velocity_vec.z() << "\t" << frame_velocity_vec.norm() << "\t" << atan(frame_velocity_vec.y() / std::max(0.00000000001f, frame_velocity_vec.x())) << std::endl;
+                stream_fvv.close();
+
+                std::ofstream ctl;
+                ctl.open(PHYSICS_OUTPUT_DIR + "current_twist_linear.tsv", std::ofstream::out | std::ofstream::app);
+                ctl << current.twist.linear.x() << "\t" << current.twist.linear.y() << "\t" << current.twist.linear.z() << "\t" << current.twist.linear.norm() << std::endl;
+                ctl.close();
+#endif
+
+                if (Utils::isApproximatelyZero(frame_velocity_vec.x()))
+                {
+                    turned_wheel_slip_angle = static_cast<real_T>(0.0f);
+                    unturned_wheel_slip_angle = static_cast<real_T>(0.0f);
+                }
+                else
+                {
+                    unturned_wheel_slip_angle = atan(((frame_velocity_vec.y()) - (body.GetLongitudinalWheelBase() * current.twist.angular.z() / 2.0f)) / std::abs(frame_velocity_vec.x()));
+                    turned_wheel_slip_angle = (atan(((frame_velocity_vec.y()) + (body.GetLongitudinalWheelBase() * current.twist.angular.z() / 2.0f)) / std::abs(frame_velocity_vec.x()))) - body.GetSteeringAngleInRadians();
+
+                    unturned_wheel_slip_angle *= -1.0f;
+                    turned_wheel_slip_angle *= -1.0f;
+                }
+
+                std::vector<PneumaticWheel*> wheels = body.getWheels();
+
+                if (wheels.size() != 4)
+                {
+                    throw "Car with number of wheels other than 4 not currently supported.";
+                }
+
+                /*Get the normal force on each wheel*/
+                /*For now, distribute it evenly*/
+                Vector3r weight_vector = Vector3r(0, 0, body.getEnvironment().getState().gravity.norm() * body.getMass());
+
+                Vector3r frame_down_vec = VectorMath::transformToBodyFrame(Vector3r(0, 0, 1), current.pose.orientation, false);
+                real_T normalForcePerWheel = weight_vector.dot(frame_down_vec) / static_cast<real_T>(wheels.size());
+
+                Vector3r resultant_force(0, 0, 0);
+                Vector3r resultant_torque(0, 0, 0);
+
+                /*Front wheel is top left corner, goes counter-clockwise*/
+                /*That is...
+                *
+                *    0 | 1
+                *   --------
+                *    3 | 2
+                *
+                */
+
+#if defined(PHYSICS_VERBOSE)
+                bool wroteTurned = false;
+                bool wroteNotTurned = false;
+#endif
+
+                for (unsigned int i = 0; i < wheels.size(); ++i)
+                {
+                    Vector3r wheelForce;
+                    PneumaticWheel* currentWheel = wheels[i];
+
+                    if (currentWheel->CanSteer())
+                    {
+                        wheelForce = currentWheel->GetForce(normalForcePerWheel, turned_vx.x(), turned_wheel_slip_angle, 1.0f, dt);
+
+#if defined(PHYSICS_VERBOSE)
+                        if (!wroteTurned)
+                        {
+                            std::ofstream stream;
+                            stream.open(PHYSICS_OUTPUT_DIR + "turnedWheelForce.tsv", std::ofstream::out | std::ofstream::app);
+                            stream << wheelForce.x() << "\t" << wheelForce.y() << "\t" << wheelForce.z() << "\t" << turned_wheel_slip_angle << "\t" << turned_vx.x() << std::endl;
+                            stream.close();
+                            wroteTurned = true;
+                        }
+#endif
+
+                        wheelForce = VectorMath::rotateVector(wheelForce, Quaternionr(cos(body.GetSteeringAngleInRadians() / 2.0f), 0, 0, sin(body.GetSteeringAngleInRadians() / 2.0f)), false);
+                    }
+                    else
+                    {
+                        wheelForce = currentWheel->GetForce(normalForcePerWheel, frame_velocity_vec.x(), unturned_wheel_slip_angle, 1.0f, dt);
+
+#if defined(PHYSICS_VERBOSE)
+                        if (!wroteNotTurned)
+                        {
+                            std::ofstream stream;
+                            stream.open(PHYSICS_OUTPUT_DIR + "notTurnedWheelForce.tsv", std::ofstream::out | std::ofstream::app);
+                            stream << wheelForce.x() << "\t" << wheelForce.y() << "\t" << wheelForce.z() << "\t" << unturned_wheel_slip_angle << "\t" << frame_velocity_vec.x() << std::endl;
+                            stream.close();
+                            wroteNotTurned = true;
+                        }
+#endif
+
+                    }
+
+                    real_T dx = body.GetLongitudinalWheelBase() / 2.0f;
+                    real_T dy = body.GetLateralWheelBase() / 2.0f;
+
+                    /*There's probably a really elegant way to express this...*/
+                    if (i >= 2)
+                    {
+                        dx *= -1.0f;
+                    }
+                    if (i == 0 || i == 3)
+                    {
+                        dy *= -1.0f;
+                    }
+
+                    Vector3r wheelDisplacement(dx, dy, 0.0f);
+
+                    resultant_force += wheelForce;
+                    resultant_torque += wheelDisplacement.cross(wheelForce);
+                }
+
+#if defined(PHYSICS_VERBOSE)
+                std::ofstream stream1;
+                stream1.open(PHYSICS_OUTPUT_DIR + "torque.tsv", std::ofstream::out | std::ofstream::app);
+                stream1 << resultant_torque.z() << std::endl;
+                stream1.close();
+
+                std::ofstream stream2;
+                stream2.open(PHYSICS_OUTPUT_DIR + "force.tsv", std::ofstream::out | std::ofstream::app);
+                stream2 << resultant_force.x() << "\t" << resultant_force.y() << "\t" << resultant_force.z() << "\t" << atan(resultant_force.y() / resultant_force.x()) << "\t" << resultant_force.norm() << std::endl;
+                stream2.close();
+#endif
+
+                /*Add in air drag force*/
+                const real_T air_density = body.getEnvironment().getState().air_density;
+                real_T drag_force = 0.5f * air_density * frame_velocity_vec.norm() * frame_velocity_vec.norm() * body.GetDragCoefficient() * body.GetCrossSectionalArea();
+                Vector3r backward_velocity_unit_vec = (frame_velocity_vec * -1.0f).normalized() * drag_force;
+                resultant_force += backward_velocity_unit_vec;
+
+                /*Add in gravity*/
+                resultant_force += weight_vector;
+
+                /*Rotate to world frame*/
+                Vector3r resultant_force_world = VectorMath::transformToWorldFrame(resultant_force, current.pose.orientation);
+                next.accelerations.linear = resultant_force_world / body.getMass();
+
+#if defined(PHYSICS_VERBOSE)
+                std::ofstream streamrfw;
+                streamrfw.open(PHYSICS_OUTPUT_DIR + "resultant_force_linear.tsv", std::ofstream::out | std::ofstream::app);
+                streamrfw << resultant_force_world.x() << "\t" << resultant_force_world.y() << "\t" << resultant_force_world.z() << "\t" << resultant_force_world.norm() << std::endl;
+                streamrfw.close();
+#endif
+
+                const Vector3r angular_momentum = body.getInertia() * avg_angular;
+                const Vector3r angular_momentum_rate = resultant_torque - avg_angular.cross(angular_momentum);
+                next.accelerations.angular = body.getInertiaInv() * angular_momentum_rate;
+
+                ///************************* Update pose and twist after dt ************************/
+                ////Verlet integration: http://www.physics.udel.edu/~bnikolic/teaching/phys660/numerical_ode/node5.html
+                next.twist.linear = current.twist.linear + (current.accelerations.linear + next.accelerations.linear) * (0.5f * dt_real);
+                next.twist.angular = current.twist.angular + (current.accelerations.angular + next.accelerations.angular) * (0.5f * dt_real);
+
+                computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
+
+#if defined(PHYSICS_VERBOSE)
+                std::ofstream stream3;
+                stream3.open(PHYSICS_OUTPUT_DIR + "angularaccel.tsv", std::ofstream::out | std::ofstream::app);
+                stream3 << next.accelerations.angular.z() << std::endl;
+                stream3.close();
+
+                std::ofstream stream4;
+                stream4.open(PHYSICS_OUTPUT_DIR + "angularvel.tsv", std::ofstream::out | std::ofstream::app);
+                stream4 << next.twist.angular.z() << std::endl;
+                stream4.close();
+
+                std::ofstream stream5;
+                stream5.open(PHYSICS_OUTPUT_DIR + "orientation.tsv", std::ofstream::out | std::ofstream::app);
+                AngleAxisr ww = AngleAxisr(next.pose.orientation);
+                stream5 << ww.angle() * Utils::sgn(ww.axis().z()) << std::endl;
+                stream5.close();
+#endif
+
+            }
+
     static void computeNextPose(TTimeDelta dt, const Pose& current_pose, const Vector3r& avg_linear, const Vector3r& avg_angular, Kinematics::State& next)
     {
         real_T dt_real = static_cast<real_T>(dt);
@@ -381,7 +590,7 @@ private:
 
 private:
     static constexpr uint kCollisionResponseCycles = 1;
-    static constexpr float kAxisTolerance = 0.25f;
+            static constexpr float kAxisTolerance = 0.05f;
     static constexpr float kRestingVelocityMax = 0.1f;
     static constexpr float kDragMinVelocity = 0.1f;
 
@@ -391,5 +600,6 @@ private:
 
 };
 
-}} //namespace
+    }
+} //namespace
 #endif
