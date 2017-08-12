@@ -24,6 +24,13 @@ protected:
 public:
     CancelableBase() : is_cancelled_(false), is_complete_(false) {
     }
+
+    void reset()
+    {
+        is_cancelled_ = false;
+        is_complete_ = false;
+    }
+
     bool isCancelled() {
         return is_cancelled_;
     }
@@ -34,7 +41,7 @@ public:
 
     virtual void execute() = 0;
 
-    bool sleep(double secs)
+    virtual bool sleep(double secs)
     {
         //We can pass duration directly to sleep_for however it is known that on 
         //some systems, sleep_for makes system call anyway even if passed duration 

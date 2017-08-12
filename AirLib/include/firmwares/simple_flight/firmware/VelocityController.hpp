@@ -94,16 +94,17 @@ public:
         switch (axis_)
         {
         case 0: //+vx is -ve pitch
-            child_goal_.pitch() = -pid_->getOutput() * params_->angle_level_pid.max_limit.pitch();
+            child_goal_.pitch() = pid_->getOutput() * params_->angle_level_pid.max_limit.pitch();
             child_controller_->update();
             output_ = child_controller_->getOutput();
             break;
         case 1: //+vy is +ve roll
-            child_goal_.roll() = pid_->getOutput() * params_->angle_level_pid.max_limit.roll();
+            child_goal_.roll() = -pid_->getOutput() * params_->angle_level_pid.max_limit.roll();
+            child_controller_->update();
             output_ = child_controller_->getOutput();
             break;
         case 3: //+vz is -ve throttle (NED coordinates)
-            output_ = (- pid_->getOutput() + 1) / 2; //-1 to 1 --> 0 to 1
+            output_ = (-pid_->getOutput() + 1) / 2; //-1 to 1 --> 0 to 1
             output_ = std::max(output_, params_->velocity_pid.min_throttle);
             break;
         default:

@@ -103,12 +103,17 @@ size_t ASimModeWorldBase::getVehicleCount() const
 
 void ASimModeWorldBase::Tick(float DeltaSeconds)
 {
-    physics_world_->lock();
+    { //keep this lock as short as possible
+        physics_world_->lock();
 
-    for (auto& vehicle : vehicles_)
-        vehicle->updateRenderedState();
+        physics_world_->enableStateReport(EnableReport);
+        physics_world_->updateStateReport();
 
-    physics_world_->unlock();
+        for (auto& vehicle : vehicles_)
+            vehicle->updateRenderedState();
+
+        physics_world_->unlock();
+    }
 
     //perfom any expensive rendering update outside of lock region
     for (auto& vehicle : vehicles_)

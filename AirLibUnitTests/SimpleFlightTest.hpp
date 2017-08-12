@@ -35,31 +35,56 @@ public:
         std::string message;
         testAssert(controller->isAvailable(message), message);
 
-        DirectCancelableBase cancellable;
+        clock->sleep_for(0.04f);
+        
+        DirectCancelableBase cancellable(controller, &vehicle);
         controller->setOffboardMode(true);
         controller->armDisarm(true, cancellable);
         controller->takeoff(10, cancellable);
 
-        std::vector<std::string> messages;
-
-        for (int i = 0; i < 100; ++i) {
-            clock->sleep_for(0.02f);
-
-            controller->getStatusMessages(messages);
-            for (const auto& status_message : messages) {
+        while (true) {
+            clock->sleep_for(0.1f);
+            controller->getStatusMessages(messages_);
+            for (const auto& status_message : messages_) {
                 std::cout << status_message << std::endl;
             }
-            messages.clear();
+            messages_.clear();
 
             std::cout << VectorMath::toString(vehicle.getKinematics().pose.position) << std::endl;
         }
     }
 
 private:
+    std::vector<std::string> messages_;
+    
+private:
     class DirectCancelableBase : public CancelableBase
     {
     public:
-        virtual void execute() override {};
+        DirectCancelableBase(DroneControllerBase* controller, const MultiRotor* vehicle)
+            : controller_(controller), vehicle_(vehicle)
+        {
+        }
+        virtual void execute() override
+        {}
+
+        virtual bool sleep(double secs) override 
+        {
+            controller_->getStatusMessages(messages_);
+            for (const auto& status_message : messages_) {
+                std::cout << status_message << std::endl;
+            }
+            messages_.clear();
+
+            std::cout << VectorMath::toString(vehicle_->getKinematics().pose.position) << std::endl;
+
+            return CancelableBase::sleep(secs);
+        };
+
+    private:
+        DroneControllerBase* controller_;
+        const MultiRotor* vehicle_;
+        std::vector<std::string> messages_;
     };
 
 };

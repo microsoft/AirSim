@@ -223,15 +223,38 @@ public:
         return mode;
     }
 
+    static const GoalMode& getVelocityXYPosZMode() 
+    {
+        static const GoalMode mode = GoalMode(GoalModeType::VelocityWorld, 
+            GoalModeType::VelocityWorld, GoalModeType::AngleRate, GoalModeType::PositionWorld);
+        return mode;
+    }
+
+    static const GoalMode& getVelocityMode() 
+    {
+        static const GoalMode mode = GoalMode(GoalModeType::VelocityWorld, 
+            GoalModeType::VelocityWorld, GoalModeType::AngleRate, GoalModeType::VelocityWorld);
+        return mode;
+    }
+
+    static const GoalMode& getPositionMode() 
+    {
+        static const GoalMode mode = GoalMode(GoalModeType::PositionWorld, 
+            GoalModeType::PositionWorld, GoalModeType::AngleRate, GoalModeType::PositionWorld);
+        return mode;
+    }
+
     static const GoalMode& getAllRateMode()
     {
-        static const GoalMode mode = GoalMode(GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::Passthrough);
+        static const GoalMode mode = GoalMode(GoalModeType::AngleRate, 
+            GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::Passthrough);
         return mode;
     }
 
     static const GoalMode& getUnknown()
     {
-        static const GoalMode mode = GoalMode(GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown);
+        static const GoalMode mode = GoalMode(GoalModeType::Unknown, 
+            GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown);
         return mode;
     }
 };

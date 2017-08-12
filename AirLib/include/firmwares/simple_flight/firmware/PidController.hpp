@@ -101,7 +101,7 @@ public:
 
         float dt = clock_ == nullptr ? 1 :
             (static_cast<float>(clock_->millis()) - last_time_)
-                / config_.time_scale;
+            * config_.time_scale;
 
         float pterm = error * config_.kp;
         float dterm = 0;
