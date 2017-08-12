@@ -42,6 +42,8 @@ public:
 
         //should be >= motor.min_angling_throttle
         float min_angling_throttle = Params::min_armed_throttle() / 1.5f;
+
+        bool allow_api_when_disconnected = true;
     } rc;
 
     struct AngleRatePid {
@@ -88,7 +90,6 @@ public:
     } velocity_pid;
 
     GoalMode default_goal_mode = GoalMode::getStandardAngleMode();
-    bool default_allow_api_control = true;
     VehicleStateType default_vehicle_state = VehicleStateType::Inactive;
 };
 

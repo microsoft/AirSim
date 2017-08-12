@@ -154,6 +154,7 @@ public:
     void setRCData(const RCData& rcData) override
     {
         if (rcData.is_connected) {
+            board_->setIsRcConnected(true);
             board_->setInputChannel(0, rcData.roll); //X
             board_->setInputChannel(1, rcData.yaw); //Y
             board_->setInputChannel(2, rcData.throttle); //F
@@ -167,7 +168,9 @@ public:
             board_->setInputChannel(10, static_cast<float>(rcData.switch7)); 
             board_->setInputChannel(11, static_cast<float>(rcData.switch8)); 
         }
-        //else we don't have RC data
+        else { //else we don't have RC data
+            board_->setIsRcConnected(false);
+        }
     }
 
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override

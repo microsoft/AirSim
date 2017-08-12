@@ -26,7 +26,7 @@ public:
 
         goal_ = Axis4r::zero();
         goal_mode_ = params_->default_goal_mode;
-        allow_api_control_ = params_->default_allow_api_control;
+        allow_api_control_ = false;
         last_rec_read_ = 0;
         last_angle_mode_ = std::numeric_limits<TReal>::min();
         request_duration_ = 0;
@@ -46,8 +46,11 @@ public:
 
         //read channel values
         Axis4r channels;
-        for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis)
-            channels[axis] = board_inputs_->readChannel(params_->rc.channels[axis]);
+        for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis) {
+            channels[axis] = board_inputs_->isRcConnected() ?
+                board_inputs_->readChannel(params_->rc.channels[axis])
+                : 0;
+        }
 
         //set goal mode as per the switch position on RC
         updateGoalMode();
@@ -151,6 +154,13 @@ private:
 
     void updateGoalMode()
     {
+        if (!board_inputs_->isRcConnected()) {
+            if (!goal_mode_.equals4(GoalMode::getUnknown()))
+                goal_mode_ = GoalMode::getUnknown();
+
+            return;
+        }
+
         //set up RC mode as level or rate
         angle_mode_ = board_inputs_->readChannel(params_->rc.rate_level_mode_channel);
         if (last_angle_mode_ != angle_mode_) {
@@ -166,7 +176,9 @@ private:
 
     void updateAllowApiControl()
     {
-        bool allow = board_inputs_->readChannel(params_->rc.allow_api_control_channel) > 0.1f;
+        bool allow = board_inputs_->isRcConnected() ?
+            board_inputs_->readChannel(params_->rc.allow_api_control_channel) > 0.1f
+            : params_->rc.allow_api_when_disconnected;
 
         if (allow_api_control_ != allow)
             comm_link_->log(std::string("API control enabled:\t").append(std::to_string(allow_api_control_)));
