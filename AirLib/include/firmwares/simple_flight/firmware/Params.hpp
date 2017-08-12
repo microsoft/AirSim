@@ -74,18 +74,21 @@ public:
     } position_pid;
 
     struct VelocityPid {
-        const float kMaxLimit = 6.0f; //some big number
-        Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, kMaxLimit, 1.0f); //x, y, z in meters
+        const float kMaxLimit = 6.0f; // m/s
+        Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, 0, kMaxLimit); //x, y, yaw, z in meters
 
         const float kP = 0.5f;
-        Axis4r p = Axis4r(kP, kP, kP, 1.0f);
+        Axis4r p = Axis4r(kP, kP, 0, kP);
+
+        const float kI = 0.05f;
+        Axis4r i = Axis4r(0, 0, 0, 0.05f);
 
         //we keep min throttle higher so that if we are angling a lot, its still supported
         float min_throttle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);
     } velocity_pid;
 
     GoalMode default_goal_mode = GoalMode::getStandardAngleMode();
-    bool default_allow_api_control = false;
+    bool default_allow_api_control = true;
     VehicleStateType default_vehicle_state = VehicleStateType::Inactive;
 };
 

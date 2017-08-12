@@ -143,6 +143,16 @@ public:
         return 4;
     }
 
+    static Axis3<T> axis4ToXyz(const Axis4<T> axis4)
+    {
+        return Axis3<T>(axis4[0], axis4[1], axis4[3]);
+    }
+    static Axis4<T> xyzToAxis4(const Axis3<T> xyz)
+    {
+        //TODO: use nan instead 0?
+        return Axis4<T>(xyz[0], xyz[1], 0, xyz[2]);
+    }
+
 private:
     T val4_ = 0;
 };

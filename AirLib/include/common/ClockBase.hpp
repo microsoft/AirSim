@@ -31,7 +31,7 @@ public:
     TTimeDelta updateSince(TTimePoint& since) const
     {
         TTimePoint cur = nowNanos();
-        double elapsed = elapsedBetween(cur, since);
+        TTimeDelta elapsed = elapsedBetween(cur, since);
         since = cur;
         return elapsed;
     }
@@ -53,7 +53,7 @@ public:
         static constexpr std::chrono::duration<double> MinSleepDuration(0);
         TTimePoint start = nowNanos();
         //spin wait
-        while (updateSince(start) < dt)
+        while (elapsedSince(start) < dt)
             std::this_thread::sleep_for(MinSleepDuration);
     }
 

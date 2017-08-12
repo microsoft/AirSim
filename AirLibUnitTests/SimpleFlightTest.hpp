@@ -40,8 +40,17 @@ public:
         controller->armDisarm(true, cancellable);
         controller->takeoff(10, cancellable);
 
+        std::vector<std::string> messages;
+
         for (int i = 0; i < 100; ++i) {
             clock->sleep_for(0.02f);
+
+            controller->getStatusMessages(messages);
+            for (const auto& status_message : messages) {
+                std::cout << status_message << std::endl;
+            }
+            messages.clear();
+
             std::cout << VectorMath::toString(vehicle.getKinematics().pose.position) << std::endl;
         }
     }

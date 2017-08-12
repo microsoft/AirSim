@@ -59,7 +59,7 @@ public:
         //state machine
         switch (vehicle_state_->getState()) {
         case VehicleStateType::Inactive:
-            comm_link_->log(std::string("State:\t ").append("Inactive state"));
+            //comm_link_->log(std::string("State:\t ").append("Inactive state"));
 
             if (rc_action == RcRequestType::ArmRequest) {
                 comm_link_->log(std::string("State:\t ").append("Inactive state, Arm request recieved"));

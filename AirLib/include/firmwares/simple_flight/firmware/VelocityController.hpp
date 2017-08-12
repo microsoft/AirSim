@@ -29,9 +29,9 @@ public:
         goal_ = goal;
         state_estimator_ = state_estimator;
 
-        //initialize parent PID
         pid_.reset(new PidController<float>(clock_,
-            PidController<float>::Config(params_->velocity_pid.p[axis], 0, 0)));
+            PidController<float>::Config(params_->velocity_pid.p[axis], 
+                params_->velocity_pid.i[axis], 0)));
 
         //we will be setting goal for child controller so we need these two things
         child_mode_  = GoalMode::getUnknown();
@@ -42,15 +42,18 @@ public:
             break;
         case 1:
             child_controller_.reset(new AngleLevelController(params_, clock_));
-            child_mode_.roll() = GoalModeType::AngleLevel; //vx = roll
+            child_mode_.roll() = GoalModeType::AngleLevel; //vy = roll
             break;
         case 2:
             //we control yaw
             throw std::invalid_argument("axis must be 0, 1 or 3 but it was " + std::to_string(axis_) + " because yaw cannot be controlled by VelocityController");
             break;
         case 3:
+            //not really required
+            //output of parent controller is -1 to 1 which
+            //we will transofrm to 0 to 1
             child_controller_.reset(new PassthroughController());
-            child_mode_.throttle() = GoalModeType::Passthrough; //vx = roll
+            child_mode_.throttle() = GoalModeType::Passthrough;
             break;
         default:
             throw std::invalid_argument("axis must be 0 to 2");
@@ -75,12 +78,15 @@ public:
         IAxisController::update();
 
         //First get PID output
-        const Axis4r& goal_velocity_world = goal_->getGoalValue();
-        const Axis3r& goal_velocity_local = state_estimator_->transformToBodyFrame(goal_velocity_world);
+        const Axis3r& goal_velocity_world = Axis4r::axis4ToXyz(
+            goal_->getGoalValue());
+        const Axis4r& goal_velocity_local = Axis4r::xyzToAxis4(
+            state_estimator_->transformToBodyFrame(goal_velocity_world));
         pid_->setGoal(goal_velocity_local[axis_]);
 
         const Axis3r& measured_velocity_world = state_estimator_->getLinearVelocity();
-        const Axis3r& measured_velocity_local = state_estimator_->transformToBodyFrame(measured_velocity_world);
+        const Axis4r& measured_velocity_local = Axis4r::xyzToAxis4(
+            state_estimator_->transformToBodyFrame(measured_velocity_world));
         pid_->setMeasured(measured_velocity_local[axis_]);
         pid_->update();
 
@@ -97,7 +103,7 @@ public:
             output_ = child_controller_->getOutput();
             break;
         case 3: //+vz is -ve throttle (NED coordinates)
-            output_ = (-pid_->getOutput() + 1) / 2; //-1 to 1 --> 1 to 0
+            output_ = (- pid_->getOutput() + 1) / 2; //-1 to 1 --> 0 to 1
             output_ = std::max(output_, params_->velocity_pid.min_throttle);
             break;
         default:

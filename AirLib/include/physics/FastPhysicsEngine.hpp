@@ -198,7 +198,7 @@ private:
 
         next_wrench = Wrench::zero();
 
-        Utils::log(string("COL: ").append(VectorMath::toString(next.twist.linear)));
+        //Utils::log(string("COL: ").append(VectorMath::toString(next.twist.linear)));
 
         return true;
     }
@@ -342,7 +342,7 @@ private:
 
         computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
 
-        Utils::log(string("REG: ").append(VectorMath::toString(next.twist.linear)));
+        //Utils::log(string("REG: ").append(VectorMath::toString(next.twist.linear)));
     }
 
     static void computeNextPose(TTimeDelta dt, const Pose& current_pose, const Vector3r& avg_linear, const Vector3r& avg_angular, Kinematics::State& next)

@@ -76,6 +76,7 @@ public:
                     throw std::invalid_argument("Axis controller type is not yet implemented for axis " 
                         + std::to_string(axis));
                 }
+                last_goal_mode_[axis] = goal_mode[axis];
 
                 //initialize axis controller
                 axis_controllers_[axis]->initialize(axis, goal_, state_estimator_);
