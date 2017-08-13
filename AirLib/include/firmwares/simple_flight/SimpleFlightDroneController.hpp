@@ -334,7 +334,7 @@ private:
         Settings rc_settings;
         simple_flight_settings.getChild("RC", rc_settings);
         params_.rc.allow_api_when_disconnected = 
-            simple_flight_settings.getBool("AllowAPIWhenDisconnected", false);
+            rc_settings.getBool("AllowAPIWhenDisconnected", false);
 
     }
 

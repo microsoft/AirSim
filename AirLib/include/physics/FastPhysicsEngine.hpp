@@ -90,8 +90,8 @@ private:
             updateCollisonResponseInfo(collison_info, next, is_collison_response, collison_response_info);
         }
 
-        Utils::log(Utils::stringf("T-VEL %s %" PRIu64 ": ", 
-            VectorMath::toString(next.twist.linear).c_str(), clock()->getStepCount()));
+        //Utils::log(Utils::stringf("T-VEL %s %" PRIu64 ": ", 
+        //    VectorMath::toString(next.twist.linear).c_str(), clock()->getStepCount()));
 
         body.setKinematics(next);
         body.setWrench(next_wrench);
@@ -203,7 +203,7 @@ private:
 
         next_wrench = Wrench::zero();
 
-        Utils::log(Utils::stringf("*** C-VEL %s: ", VectorMath::toString(next.twist.linear).c_str()));
+        //Utils::log(Utils::stringf("*** C-VEL %s: ", VectorMath::toString(next.twist.linear).c_str()));
 
         return true;
     }
@@ -310,8 +310,8 @@ private:
 
         next_wrench = body_wrench + drag_wrench;
 
-        Utils::log(Utils::stringf("B-WRN %s: ", VectorMath::toString(body_wrench.force).c_str()));
-        Utils::log(Utils::stringf("D-WRN %s: ", VectorMath::toString(drag_wrench.force).c_str()));
+        //Utils::log(Utils::stringf("B-WRN %s: ", VectorMath::toString(body_wrench.force).c_str()));
+        //Utils::log(Utils::stringf("D-WRN %s: ", VectorMath::toString(drag_wrench.force).c_str()));
         
         /************************* Update accelerations due to force and torque ************************/
         //get new acceleration due to force - we'll use this acceleration in next time step
@@ -349,8 +349,8 @@ private:
 
         computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
 
-        Utils::log(Utils::stringf("N-VEL %s %f: ", VectorMath::toString(next.twist.linear).c_str(), dt));
-        Utils::log(Utils::stringf("N-POS %s %f: ", VectorMath::toString(next.pose.position).c_str(), dt));
+        //Utils::log(Utils::stringf("N-VEL %s %f: ", VectorMath::toString(next.twist.linear).c_str(), dt));
+        //Utils::log(Utils::stringf("N-POS %s %f: ", VectorMath::toString(next.pose.position).c_str(), dt));
 
     }
 
