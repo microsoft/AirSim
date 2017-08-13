@@ -189,6 +189,25 @@ public:
         state_ = state;
     }
 
+    static VehicleStateType fromString(const std::string& val)
+    {
+        if (val == "Unknown")
+            return VehicleStateType::Unknown;
+        if (val == "BeingArmed")
+            return VehicleStateType::BeingArmed;
+        if (val == "Armed")
+            return VehicleStateType::Armed;
+        if (val == "Active")
+            return VehicleStateType::Active;
+        if (val == "BeingDisarmed")
+            return VehicleStateType::BeingDisarmed;
+        if (val == "Disarmed")
+            return VehicleStateType::Disarmed;
+
+        throw std::invalid_argument(std::string(
+            "The value cannot be converted to VehicleStateType enum: ").append(val));
+    }
+
     const GeoPoint& getHomeGeoPoint() const
     {
         return home_point_;

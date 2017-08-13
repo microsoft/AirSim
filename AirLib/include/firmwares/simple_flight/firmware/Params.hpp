@@ -43,7 +43,7 @@ public:
         //should be >= motor.min_angling_throttle
         float min_angling_throttle = Params::min_armed_throttle() / 1.5f;
 
-        bool allow_api_when_disconnected = true;
+        bool allow_api_when_disconnected = false;
     } rc;
 
     struct AngleRatePid {

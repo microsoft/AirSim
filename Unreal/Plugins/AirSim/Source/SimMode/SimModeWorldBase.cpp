@@ -1,10 +1,15 @@
 #include "SimModeWorldBase.h"
+#include "common/ScalableClock.hpp"
+#include "common/SteppableClock.hpp"
+#include <exception>
 
 const char ASimModeWorldBase::kUsageScenarioComputerVision[] = "ComputerVision";
 
 void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();
+
+    setupClock();
 
     manual_pose_controller = NewObject<UManualPoseController>();
     setupInputBindings();
@@ -20,6 +25,21 @@ void ASimModeWorldBase::BeginPlay()
         manual_pose_controller->initializeForPlay();
         manual_pose_controller->setActor(getFpvVehiclePawn());
     }
+}
+
+void ASimModeWorldBase::setupClock()
+{
+    typedef msr::airlib::ClockFactory ClockFactory;
+
+
+    if (clock_type == "ScalableClock")
+        ClockFactory::get(std::make_shared<msr::airlib::ScalableClock>());
+    else if (clock_type == "SteppableClock")
+        ClockFactory::get(std::make_shared<msr::airlib::SteppableClock>(
+            static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9)));
+    else
+        throw std::invalid_argument(common_utils::Utils::stringf(
+            "clock_type %s is not recognized", clock_type.c_str()));
 }
 
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -42,7 +62,7 @@ void ASimModeWorldBase::stopAsyncUpdator()
     physics_world_->stopAsyncUpdator();
 }
 
-long long ASimModeWorldBase::getPhysicsLoopPeriod()
+long long ASimModeWorldBase::getPhysicsLoopPeriod() //nanoseconds
 {
     /*
     300Hz seems to be minimum for non-aggresive flights

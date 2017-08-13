@@ -60,6 +60,7 @@ protected: //settings
     std::string usage_scenario;
     bool enable_collision_passthrough;
     RecordingSettings recording_settings;
+    std::string clock_type;
 
 private:
     void readSettings();

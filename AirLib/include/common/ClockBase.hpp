@@ -41,8 +41,14 @@ public:
         //by default step doesn't do anything
         //for steppeble clock, this would advance to next tick
         //for wall clocks, step() is no-op
+        ++step_count_;
 
         return nowNanos();
+    }
+
+    uint64_t getStepCount() const
+    {
+        return step_count_;
     }
 
     virtual void sleep_for(TTimeDelta dt)
@@ -60,6 +66,8 @@ public:
 private:
     template <typename T>
     using duration = std::chrono::duration<T>;
+
+    uint64_t step_count_ = 0;
 };
 
 }} //namespace

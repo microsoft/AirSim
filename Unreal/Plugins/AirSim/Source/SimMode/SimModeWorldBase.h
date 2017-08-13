@@ -47,6 +47,7 @@ private:
     PhysicsEngineBase* createPhysicsEngine();
     static std::vector<UpdatableObject*> toUpdatableObjects(const std::vector<VehiclePtr>& vehicles);
     long long getPhysicsLoopPeriod();
+    void setupClock();
 
 private:
     std::unique_ptr<msr::airlib::PhysicsWorld> physics_world_;

@@ -155,8 +155,12 @@ private:
     void updateGoalMode()
     {
         if (!board_inputs_->isRcConnected()) {
-            if (!goal_mode_.equals4(GoalMode::getUnknown()))
-                goal_mode_ = GoalMode::getUnknown();
+            //TODO: is it good idea to keep the last mode?
+            //if (!goal_mode_.equals4(GoalMode::getUnknown()))
+            //    goal_mode_ = GoalMode::getUnknown();
+
+            //For angle as well as rate mode, keep only throttle
+            goal_.setAxis3(Axis3r());
 
             return;
         }

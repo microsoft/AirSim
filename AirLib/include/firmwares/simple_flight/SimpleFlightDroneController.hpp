@@ -26,6 +26,8 @@ public:
     SimpleFlightDroneController(const MultiRotorParams* vehicle_params)
         : vehicle_params_(vehicle_params)
     {
+        readSettings();
+
         //create sim implementations of board and commlink
         board_.reset(new AirSimSimpleFlightBoard(&params_));
         comm_link_.reset(new AirSimSimpleFlightCommLink());
@@ -34,10 +36,7 @@ public:
         //create firmware
         firmware_.reset(new simple_flight::Firmware(&params_, board_.get(), comm_link_.get(), estimator_.get()));
 
-        //find out which RC we should use
-        Settings child;
-        Settings::singleton().getChild("SimpleFlight", child);
-        remote_control_id_ = child.getInt("RemoteControlID", 0);
+
     }
 
     void setGroundTruth(PhysicsBody* physics_body) override
@@ -321,6 +320,22 @@ private:
     static uint16_t switchTopwm(float switchVal, uint maxSwitchVal = 1)
     {
         return static_cast<uint16_t>(1000.0f * switchVal / maxSwitchVal + 1000.0f);
+    }
+
+    void readSettings()
+    {
+        //find out which RC we should use
+        Settings simple_flight_settings;
+        Settings::singleton().getChild("SimpleFlight", simple_flight_settings);
+        remote_control_id_ = simple_flight_settings.getInt("RemoteControlID", 0);
+        params_.default_vehicle_state = simple_flight::VehicleState::fromString(
+            simple_flight_settings.getString("DefaultVehicleState", "Inactive"));
+
+        Settings rc_settings;
+        simple_flight_settings.getChild("RC", rc_settings);
+        params_.rc.allow_api_when_disconnected = 
+            simple_flight_settings.getBool("AllowAPIWhenDisconnected", false);
+
     }
 
 private:

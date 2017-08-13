@@ -131,6 +131,8 @@ float MultiRotorConnector::joyStickToRC(int16_t val)
 
 void MultiRotorConnector::updateRenderedState()
 {
+    Utils::log("------Render tick-------");
+
     //move collison info from rendering engine to vehicle
     const CollisionInfo& collision_info = vehicle_pawn_->getCollisonInfo();
     vehicle_.setCollisionInfo(collision_info);

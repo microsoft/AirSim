@@ -30,6 +30,8 @@ public:
 
     virtual TTimePoint step() override
     {
+        ClockBase::step();
+
         current_ = addTo(current_, step_);
         return current_;
     }

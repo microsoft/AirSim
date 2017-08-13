@@ -131,6 +131,7 @@ void ASimModeBase::readSettings()
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
     usage_scenario = settings.getString("UsageScenario", "");
     enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
+    clock_type = settings.getString("ClockType", "ScalableClock");
 
     Settings record_settings;
     if (settings.getChild("Recording", record_settings)) {
