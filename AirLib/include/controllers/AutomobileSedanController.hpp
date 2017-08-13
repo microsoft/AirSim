@@ -8,13 +8,14 @@
 #include "controllers/ControllerBase.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "automobile/AutomobileSedan.hpp"
-#include "controllers/VehicleCamera.hpp"
+#include "controllers/VehicleCameraBase.hpp"
 
 namespace msr { namespace airlib {
 
 	class AutomobileSedanController : public ControllerBase {
 		private:
 			AutomobileSedan* vehicle_;
+			vector<VehicleCameraBase*> cameras_;
 
 			// Control variables
 			real_T steeringAngle_;
@@ -22,8 +23,24 @@ namespace msr { namespace airlib {
 			real_T brakePercentage_;
 
 		public:
+			struct ImageRequest {
+				uint8_t camera_id;
+				VehicleCameraBase::ImageType image_type;
+				bool pixels_as_float;
+				bool compress;
 
-			unordered_map<int, std::shared_ptr<VehicleCamera>> enabled_cameras;
+				ImageRequest()
+				{}
+
+				ImageRequest(uint8_t camera_id_val, VehicleCameraBase::ImageType image_type_val, bool pixels_as_float_val = false, bool compress_val = true)
+				{
+					camera_id = camera_id_val;
+					image_type = image_type_val;
+					pixels_as_float = pixels_as_float_val;
+					compress = compress_val;
+				}
+			};
+
 			AutomobileSedanController(AutomobileSedan* vehicle)
 			{
 				vehicle_ = vehicle;
@@ -44,7 +61,7 @@ namespace msr { namespace airlib {
 
 			virtual real_T getVertexControlSignal(unsigned int rotor_index) override
 			{
-				return static_cast<real_T>(0);
+				return static_cast<real_T>(rotor_index);
 			}
 			virtual size_t getVertexCount() override
 			{
@@ -79,23 +96,37 @@ namespace msr { namespace airlib {
 				return brakePercentage_;
 			}
 
-			vector<uint8_t> AutomobileSedanController::getImageFromCamera(int camera_id, VehicleCamera::ImageType type)
+			void simAddCamera(VehicleCameraBase* camera)
 			{
-				//StatusLock lock(this);
-				vector<uint8_t> png;
-
-				//TODO: perf work
-				auto it = enabled_cameras.find(camera_id);
-				if (it != enabled_cameras.end()) {
-					it->second->getScreenShot(type, png);
-				}
-				return png;
+				cameras_.push_back(camera);
 			}
 
-			void AutomobileSedanController::addCamera(std::shared_ptr<VehicleCamera> camera)
+			VehicleCameraBase* simGetCamera(int index)
 			{
-				//StatusLock lock(this);
-				enabled_cameras[camera->getId()] = camera;
+				return cameras_.at(index);
+			}
+
+			vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<AutomobileSedanController::ImageRequest>& request)
+			{
+				vector<VehicleCameraBase::ImageResponse> response;
+
+				for (const auto& item : request) {
+					VehicleCameraBase* camera = simGetCamera(item.camera_id);
+					const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
+					response.push_back(item_response);
+				}
+
+				return response;
+			}
+
+			vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type)
+			{
+				vector<AutomobileSedanController::ImageRequest> request = { AutomobileSedanController::ImageRequest(camera_id, image_type) };
+				const vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
+				if (response.size() > 0)
+					return response.at(0).image_data;
+				else
+					return vector<uint8_t>();
 			}
 
 			virtual ~AutomobileSedanController() = default;

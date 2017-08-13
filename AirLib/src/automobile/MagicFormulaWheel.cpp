@@ -19,14 +19,13 @@ namespace msr {
 
 			real_T longitudinalForce;
 			real_T lateralForce;
-			ComputeMagicFormulaForces(wheelNormalForce, slipAngle, directionalVelocity, coefficientOfFrictionMultiplier, longitudinalForce, lateralForce);
+			ComputeMagicFormulaForces(wheelNormalForce, slipAngle, directionalVelocity, longitudinalForce, lateralForce);
 			return Vector3r(longitudinalForce, lateralForce, -1.0f * wheelNormalForce);
 		}
 
 		void MagicFormulaWheel::ComputeMagicFormulaForces(real_T wheelNormalForce,
 			real_T slipAngle,
 			real_T directionalVelocity,
-			real_T coefficientOfFrictionMultiplier,
 			real_T &longitudinalForce,
 			real_T &lateralForce)
 		{

@@ -3,7 +3,7 @@
 
 #include "Commands.h"
 #include <chrono>
-#include <cmath>
+#include <math.h>
 #include <iostream>
 #include <string.h>
 #include <thread>

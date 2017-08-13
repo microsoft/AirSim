@@ -143,7 +143,7 @@
     <ClInclude Include="include\api\RpcLibAdapators.hpp" />
     <ClInclude Include="include\api\RpcLibClient.hpp" />
     <ClInclude Include="include\api\RpcLibServer.hpp" />
-	<ClInclude Include="include\rpc\RpcLibAutomobileServer.hpp" />
+    <ClInclude Include="include\api\RpcLibAutomobileServer.hpp" />
     <ClInclude Include="include\safety\SafetyEval.hpp" />
     <ClInclude Include="include\controllers\DroneControllerCancelable.hpp" />
     <ClInclude Include="include\controllers\Settings.hpp" />
@@ -177,7 +177,7 @@
     <ClInclude Include="include\controllers\MotorDirectControllerParams.hpp" />
     <ClInclude Include="include\controllers\RpyDirectController.hpp" />
     <ClInclude Include="include\controllers\RpyDirectControllerParams.hpp" />
-	<ClInclude Include="include\controllers\AutomobileSedanController.hpp" />
+    <ClInclude Include="include\controllers\AutomobileSedanController.hpp" />
     <ClInclude Include="include\vehicles\configs\RosFlightQuadX.hpp" />
     <ClInclude Include="include\vehicles\configs\SimpleFlightQuadX.hpp" />
     <ClInclude Include="include\vehicles\MultiRotor.hpp" />
@@ -195,7 +195,7 @@
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\api\RpcLibClient.cpp" />
     <ClCompile Include="src\api\RpcLibServer.cpp" />
-	<ClCompile Include="src\rpc\RpcLibAutomobileServer.cpp" />
+    <ClCompile Include="src\api\RpcLibAutomobileServer.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />
     <ClCompile Include="src\controllers\FileSystem.cpp" />
   </ItemGroup>

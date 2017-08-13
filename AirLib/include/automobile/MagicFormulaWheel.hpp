@@ -26,7 +26,6 @@ namespace msr { namespace airlib {
 			void ComputeMagicFormulaForces(real_T wheelNormalForce,
 				real_T slipAngle,
 				real_T directionalVelocity,
-				real_T coefficientOfFrictionMultiplier,
 				real_T &longitudinalForce,
 				real_T &lateralForce);
 	};

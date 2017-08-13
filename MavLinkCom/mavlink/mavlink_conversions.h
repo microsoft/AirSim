@@ -6,7 +6,7 @@
 #define _USE_MATH_DEFINES
 #endif
 #endif
-#include <cmath>
+#include <math.h>
 
 #ifndef M_PI_2
     #define M_PI_2 ((float)asin(1))
