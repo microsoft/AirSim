@@ -226,7 +226,9 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
                 float error = (actual_vect - actual_on_goal).norm() * adaptive_lookahead;
                 if (error > lookahead_error) {
                     lookahead_error_increasing++;
-                    if (lookahead_error_increasing > 1E5) {
+                    //TODO: below should be lower than 1E3 and configurable
+                    //but lower values like 100 doesn't work for simple_flight + ScalableClock
+                    if (lookahead_error_increasing > 1E2) {
                         throw std::runtime_error("lookahead error is continually increasing so we do not have safe control, aborting moveOnPath operation");
                     }
                 }
