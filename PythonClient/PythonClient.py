@@ -97,28 +97,28 @@ class AirSimClient:
         # helper method for converting getOrientation to roll/pitch/yaw
         # https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
         def toEulerianAngle(self, q):
-            x = q[0]
+            z = q[0]
             y = q[1]
-            z = q[2]
+            x = q[2]
             w = q[3]
             ysqr = y * y;
 
             # roll (x-axis rotation)
-            t0 = -2.0* (ysqr + z * z) + 1.0;
-            t1 = +2.0* (x * y + w * z);
-            roll = math.atan2(t1, t0)
+            t0 = +2.0 * (w*x + y*z);
+            t1 = +1.0 - 2.0*(x*x + ysqr);
+            roll = math.atan2(t0, t1)
 
             # pitch (y-axis rotation)
-            t2 = -2.0* (x * z - w * y);
+            t2 = +2.0 * (w*y - z*x);
             if (t2 > 1.0):
                 t2 = 1
             if (t2 < -1.0):
                 t2 = -1.0
-            pitch = math.sin(t2)
+            pitch = math.asin(t2)
 
             # yaw (z-axis rotation)
-            t3 = +2.0* (y * z + w * x);
-            t4 = -2.0* (x * x + ysqr) + 1.0;
+            t3 = +2.0 * (w*z + x*y);
+            t4 = +1.0 - 2.0 * (ysqr + z*z);
             yaw = math.atan2(t3, t4)
 
             return (pitch, roll, yaw)

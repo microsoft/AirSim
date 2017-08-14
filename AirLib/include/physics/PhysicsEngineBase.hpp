@@ -24,6 +24,7 @@ public:
 
     virtual void reportState(StateReporter& reporter) override
     {
+        unused(reporter);
         //default nothing to report for physics engine
     }
 

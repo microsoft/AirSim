@@ -85,6 +85,7 @@ public:
     //async updater thread
     void startAsyncUpdator(uint64_t period)
     {
+        //TODO: probably we shouldn't be passing around fixed period
         executor_.initialize(std::bind(&World::worldUpdatorAsync, this, std::placeholders::_1), period);
         executor_.start();
     }
@@ -109,6 +110,8 @@ public:
 private:
     bool worldUpdatorAsync(uint64_t dt_nanos)
     {
+        unused(dt_nanos);
+
         try {
             update();
         }

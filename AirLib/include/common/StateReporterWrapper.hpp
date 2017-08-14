@@ -64,6 +64,9 @@ public:
     }
     virtual void reportState(StateReporter& reporter) override
     {
+        //TODO: perhaps we should be using supplied reporter?
+        unused(reporter);
+
         //write dt stats
         report_.writeNameOnly("dt");
         report_.writeValueOnly(dt_stats_.mean());

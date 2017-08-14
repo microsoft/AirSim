@@ -23,7 +23,7 @@ public:
     {
         enableStateReport(state_reporter_enabled);
         update_period_nanos_ = update_period_nanos;
-        initializeWorld(physics_engine, bodies, start_async_updator);
+        initializeWorld(bodies, start_async_updator);
     }
 
     void lock()
@@ -77,8 +77,7 @@ public:
     }
 
 private:
-    void initializeWorld(PhysicsEngineBase* physics_engine, 
-        const std::vector<UpdatableObject*>& bodies, bool start_async_updator)
+    void initializeWorld(const std::vector<UpdatableObject*>& bodies, bool start_async_updator)
     {
         reporter_.initialize(false);
         world_.insert(&reporter_);
