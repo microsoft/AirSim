@@ -66,7 +66,7 @@ public:
         UpdatableContainer::clear();
     }
 
-    virtual void insert(UpdatableObject* member) 
+    virtual void insert(UpdatableObject* member) override
     { 
         if (physics_engine_ && member->getPhysicsBody() != nullptr)
             physics_engine_->insert(static_cast<PhysicsBody*>(member->getPhysicsBody()));
@@ -74,7 +74,7 @@ public:
         UpdatableContainer::insert(member);
     }
 
-    virtual void erase_remove(UpdatableObject* member) 
+    virtual void erase_remove(UpdatableObject* member) override
     { 
         if (physics_engine_ && member->getPhysicsBody() != nullptr)
             physics_engine_->erase_remove(static_cast<PhysicsBody*>(member));
