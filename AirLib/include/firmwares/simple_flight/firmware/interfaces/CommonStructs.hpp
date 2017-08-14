@@ -191,6 +191,8 @@ public:
 
     static VehicleStateType fromString(const std::string& val)
     {
+        if (val == "Inactive")
+            return VehicleStateType::Inactive;
         if (val == "Unknown")
             return VehicleStateType::Unknown;
         if (val == "BeingArmed")
