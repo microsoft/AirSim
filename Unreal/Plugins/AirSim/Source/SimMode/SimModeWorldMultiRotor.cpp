@@ -4,7 +4,6 @@
 #include "controllers/DroneControllerBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include <memory>
-#include "FlyingPawn.h"
 #include "Logging/MessageLog.h"
 #include "vehicles/MultiRotorParamsFactory.hpp"
 
@@ -15,7 +14,7 @@ ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
     external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
     camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
-    static ConstructorHelpers::FClassFinder<AVehiclePawnBase> vehicle_pawn_class(TEXT("Blueprint'/AirSim/Blueprints/BP_FlyingPawn'"));
+    static ConstructorHelpers::FClassFinder<TMultiRotorPawn> vehicle_pawn_class(TEXT("Blueprint'/AirSim/Blueprints/BP_FlyingPawn'"));
     vehicle_pawn_class_ = vehicle_pawn_class.Succeeded() ? vehicle_pawn_class.Class : nullptr;
 }
 
@@ -66,13 +65,15 @@ AVehiclePawnBase* ASimModeWorldMultiRotor::getFpvVehiclePawn()
     return fpv_vehicle_pawn_;
 }
 
-void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
+void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 {
-    APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
-    FTransform actor_transform = controller->GetActorTransform();
+    //get player controller
+    APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
+    FTransform actor_transform = player_controller->GetActorTransform();
     //put camera little bit above vehicle
     FTransform camera_transform(actor_transform.GetLocation() + FVector(-300, 0, 200));
 
+    //we will either find external camera if it already exist in evironment or create one
     APIPCamera* external_camera;
 
     //find all BP camera directors in the environment
@@ -96,25 +97,51 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
         }
     }
 
+    //find all vehicle pawns
     {
-        //find all vehicle pawns
         TArray<AActor*> pawns;
-        UAirBlueprintLib::FindAllActor<AVehiclePawnBase>(this, pawns);
+        UAirBlueprintLib::FindAllActor<TMultiRotorPawn>(this, pawns);
+
+        //if no vehicle pawns exists in environment
         if (pawns.Num() == 0) {
             //create vehicle pawn
             FActorSpawnParameters pawn_spawn_params;
-            pawn_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-            fpv_vehicle_pawn_ = this->GetWorld()->SpawnActor<AVehiclePawnBase>(vehicle_pawn_class_, actor_transform, pawn_spawn_params);
-            spawned_actors_.Add(fpv_vehicle_pawn_);
+            pawn_spawn_params.SpawnCollisionHandlingOverride = 
+                ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+            TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
+                vehicle_pawn_class_, actor_transform, pawn_spawn_params);
+
+            spawned_pawn->IsFpvVehicle = true;
+
+            spawned_actors_.Add(spawned_pawn);
+            pawns.Add(spawned_pawn);
         }
-        else {
-            fpv_vehicle_pawn_ = static_cast<AVehiclePawnBase*>(pawns[0]);
+
+        //set up vehicle pawns
+        for (AActor* pawn : pawns)
+        {
+            //initialize each vehicle pawn we found
+            TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
+            if (enable_collision_passthrough)
+                vehicle_pawn->EnablePassthroughOnCollisons = true;    
+            vehicle_pawn->initializeForBeginPlay();
+
+            //chose first pawn as FPV if none is designated as FPV
+            if (vehicle_pawn->IsFpvVehicle || fpv_vehicle_pawn_ == nullptr)
+                fpv_vehicle_pawn_ = vehicle_pawn;
+
+            //now create the connector for each pawn
+            auto vehicle = createVehicle(vehicle_pawn);
+            if (vehicle != nullptr) {
+                vehicles.push_back(vehicle);
+
+                if (vehicle_pawn == fpv_vehicle_pawn_)
+                    fpv_vehicle_connector_ = vehicle;
+            }
+            //else we don't have vehicle for this pawn
         }
     }
 
-    if (enable_collision_passthrough)
-        fpv_vehicle_pawn_->EnablePassthroughOnCollisons = true;
-    fpv_vehicle_pawn_->initializeForBeginPlay();
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_, external_camera);
 }
 
@@ -153,30 +180,18 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
     //find vehicles and cameras available in environment
     //if none available then we will create one
-    setupVehiclesAndCamera();
-
-    //detect vehicles in the project and create connector for it
-    TArray<AActor*> pawns;
-    UAirBlueprintLib::FindAllActor<AFlyingPawn>(this, pawns);
-    for (AActor* pawn : pawns) {
-        auto vehicle = createVehicle(static_cast<AFlyingPawn*>(pawn));
-        if (vehicle != nullptr) {
-            vehicles.push_back(vehicle);
-
-            if (pawn == fpv_vehicle_pawn_) {
-                fpv_vehicle_connector_ = vehicle;
-            }
-        }
-        //else we don't have vehicle for this pawn
-    }
+    setupVehiclesAndCamera(vehicles);
 }
 
-ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* pawn)
+ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* vehicle_pawn)
 {
-    vehicle_params_ = MultiRotorParamsFactory::createConfig(fpv_vehicle_name);
+    vehicle_params_ = MultiRotorParamsFactory::createConfig(
+        vehicle_pawn->VehicleConfigName == "" ? default_vehicle_config 
+        : std::string(TCHAR_TO_UTF8(* vehicle_pawn->VehicleConfigName)));
 
     auto vehicle = std::make_shared<MultiRotorConnector>(
-        pawn, vehicle_params_.get(), enable_rpc, api_server_address, manual_pose_controller);
+        vehicle_pawn, vehicle_params_.get(), enable_rpc, api_server_address, 
+        vehicle_params_->getParams().api_server_port, manual_pose_controller);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

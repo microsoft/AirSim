@@ -55,7 +55,7 @@ protected: //settings
     int record_tick_count;
     bool enable_rpc;
     std::string api_server_address;
-    std::string fpv_vehicle_name;
+    std::string default_vehicle_config;
     std::string physics_engine_name;
     std::string usage_scenario;
     bool enable_collision_passthrough;

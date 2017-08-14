@@ -10,11 +10,14 @@
 
 using namespace msr::airlib;
 
-MultiRotorConnector::MultiRotorConnector(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
-    bool enable_rpc, std::string api_server_address, UManualPoseController* manual_pose_controller)
+MultiRotorConnector::MultiRotorConnector(AFlyingPawn* vehicle_pawn, 
+    msr::airlib::MultiRotorParams* vehicle_params, bool enable_rpc, 
+    std::string api_server_address, uint16_t api_server_port,
+    UManualPoseController* manual_pose_controller)
 {
     enable_rpc_ = enable_rpc;
     api_server_address_ = api_server_address;
+    api_server_port_ = api_server_port;
     vehicle_pawn_ = vehicle_pawn;
     manual_pose_controller_ = manual_pose_controller;
 
@@ -220,7 +223,8 @@ void MultiRotorConnector::startApiServer()
 #ifdef AIRLIB_NO_RPC
     rpclib_server_.reset(new msr::airlib::DebugApiServer());
 #else
-    rpclib_server_.reset(new msr::airlib::RpcLibServer(controller_cancelable_.get(), api_server_address_));
+    rpclib_server_.reset(new msr::airlib::RpcLibServer(
+        controller_cancelable_.get(), api_server_address_, api_server_port_));
 #endif
 
         rpclib_server_->start();

@@ -14,7 +14,7 @@ Below are complete list of settings available along with their default values. I
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
   "ViewMode": "FlyWithMe",
-  "FpvVehicleName": "Pixhawk",
+  "DefaultVehicleConfig": "Pixhawk",
   "UsageScenario": "",
   "RpcEnabled": true,
   "PhysicsEngineName": "FastPhysicsEngine",
@@ -61,9 +61,12 @@ Below are complete list of settings available along with their default values. I
     "TargetGamma": 1.0f
   },  
   "SimpleFlight": {
-    "RemoteControlID": 0
+    "FirmwareName": "SimpleFlight",
+    "RemoteControlID": 0,
+    "ApiServerPort": 41451
   },
   "Pixhawk": {
+    "FirmwareName": "Pixhawk",
     "LogViewerHostIp": "127.0.0.1",
     "LogViewerPort": 14388,
     "OffboardCompID": 1,
@@ -80,7 +83,8 @@ Below are complete list of settings available along with their default values. I
     "UdpPort": 14560,
     "UseSerial": true,
     "VehicleCompID": 1,
-    "VehicleSysID": 135
+    "VehicleSysID": 135,
+    "ApiServerPort": 41451
   }
 }
 ````
@@ -89,7 +93,7 @@ Below are complete list of settings available along with their default values. I
 The `SceneCaptureSettings`, `DepthCaptureSettings` and `SegCaptureSettings` determines how scene view, depth view and segmentation views are captures. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images. For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/).
 
 ## Changing Flight Controller
-The `FpvVehicleName` decides which vehicle will be your primary vehicle with FPV view. By default its Pixhawk and we have RosFlight and SimpleFlight in development, both of which are designed so you don't have to do separate HITL or SITL setups. For ["Computer Vision" mode](image_apis.md), use SimpleFlight as described in doc.
+The `DefaultVehicleConfig` decides which config settings will be used for your vehicles. By default its "Pixhaw"k and we have "RosFlight" and "SimpleFlight" in development, both of which are designed so you don't have to do separate HITL or SITL setups. For ["Computer Vision" mode](image_apis.md), use "SimpleFlight" as described in doc.
 
 ## Pixhawk and MavLink Related Settings
 These settings define the Mavlink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for an optional external renderer (ExtRendererSysID, ExtRendererCompID)

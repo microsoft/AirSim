@@ -59,6 +59,8 @@ public: //types
         real_T friction = 0.7f;
         EnabledSensors enabled_sensors;
         RotorParams rotor_params;
+
+        uint16_t api_server_port;
     };
 
 public: //interface
@@ -68,6 +70,11 @@ public: //interface
     }
 
     const Params& getParams() const
+    {
+        return params_;
+    }
+
+    Params& getParams()
     {
         return params_;
     }

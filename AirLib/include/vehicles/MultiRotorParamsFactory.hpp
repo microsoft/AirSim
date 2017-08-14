@@ -19,22 +19,27 @@ public:
     {
         //read settings and override defaults
         Settings& settings = Settings::singleton();
-        Settings child;
-        settings.getChild(vehicle_name, child);
+        Settings vehicle_config_settings;
+        settings.getChild(vehicle_name, vehicle_config_settings);
+
+        std::string firmware_name = vehicle_config_settings.getString("FirmwareName", vehicle_name);
 
         std::unique_ptr<MultiRotorParams> config;
 
-        if (vehicle_name == "Pixhawk") {
-            config.reset(new Px4MultiRotor(child));
-        } else if (vehicle_name == "RosFlight") {
-            config.reset(new RosFlightQuadX(child));
-        } else if (vehicle_name == "SimpleFlight") {
-            config.reset(new SimpleFlightQuadX(child));
+        if (firmware_name == "Pixhawk") {
+            config.reset(new Px4MultiRotor(vehicle_config_settings));
+        } else if (firmware_name == "RosFlight") {
+            config.reset(new RosFlightQuadX(vehicle_config_settings));
+        } else if (firmware_name == "SimpleFlight") {
+            config.reset(new SimpleFlightQuadX(vehicle_config_settings));
         } else
             throw std::runtime_error(Utils::stringf("Cannot create vehicle config because vehicle name '%s' is not recognized", vehicle_name.c_str()));
 
         config->initialize();
         
+        config->getParams().api_server_port = static_cast<uint16_t>(
+            vehicle_config_settings.getInt("ApiServerPort", 41451));
+
         return config;
     }
 };

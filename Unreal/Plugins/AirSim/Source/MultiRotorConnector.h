@@ -1,7 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FlyingPawn.h"
+//TODO: all code except setRotorSpeed requires VehiclePawnBase.
+//May be we should have MultiRotorPawnBase so we don't need FlyingPawn.h
+#include "FlyingPawn.h" 
 #include "controllers/DroneControllerCancelable.hpp"
 #include "vehicles/MultiRotor.hpp"
 #include "vehicles/MultiRotorParams.hpp"
@@ -13,7 +15,7 @@
 #include "ManualPoseController.h"
 #include <chrono>
 #include "api/ControlServerBase.hpp"
-
+#include "SimJoyStick/SimJoyStick.h"
 
 class MultiRotorConnector : public VehicleConnectorBase
 {
@@ -33,7 +35,8 @@ public:
     //VehicleConnectorBase interface
     //implements game interface to update pawn
     MultiRotorConnector(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
-        bool enable_rpc, std::string api_server_address, UManualPoseController* manual_pose_controller);
+        bool enable_rpc, std::string api_server_address, uint16_t api_server_port,
+        UManualPoseController* manual_pose_controller);
     virtual void updateRenderedState() override;
     virtual void updateRendering(float dt) override;
 
@@ -83,6 +86,7 @@ private:
 
     bool enable_rpc_;
     std::string api_server_address_;
+    uint16_t api_server_port_;
     msr::airlib::DroneControllerBase* controller_;
     UManualPoseController* manual_pose_controller_;
 

@@ -126,7 +126,7 @@ void ASimModeBase::readSettings()
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
 
     //do not save this default in json as this will change in near future
-    fpv_vehicle_name = settings.getString("FpvVehicleName", "Pixhawk");
+    default_vehicle_config = settings.getString("DefaultVehicleConfig", "Pixhawk");
 
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
     usage_scenario = settings.getString("UsageScenario", "");
@@ -139,7 +139,7 @@ void ASimModeBase::readSettings()
         recording_settings.record_interval = record_settings.getFloat("RecordInterval", recording_settings.record_interval);
     }
     
-    UAirBlueprintLib::LogMessage("Vehicle name: ", fpv_vehicle_name.c_str(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage("Default config: ", default_vehicle_config.c_str(), LogDebugLevel::Informational);
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
