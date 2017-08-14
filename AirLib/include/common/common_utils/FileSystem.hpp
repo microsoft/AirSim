@@ -95,12 +95,20 @@ public:
         return str.substr(ui, len - ui);
     }
 
-    static std::string getLogFileNamePath(std::string prefix, std::string suffix, std::string extension, bool add_timestamp, std::string subfolder)
+    static std::string getLogFileNamePath(std::string prefix, std::string suffix, std::string extension, bool add_timestamp, std::string subfolder="")
     {
         std::string logfolder = Utils::to_string(Utils::now(), "%Y-%m-%d");
         std::string basePath = combine(getAppDataFolder(), logfolder);
         ensureFolder(basePath);
-        std::string fullPath = combine(basePath, subfolder);
+		std::string fullPath;
+		if (subfolder.empty())
+		{
+			fullPath = basePath;
+		}
+		else
+		{
+			fullPath = combine(basePath, subfolder);
+		}
         std::string timestamp = add_timestamp ? Utils::to_string(Utils::now()) : "";
 
         //TODO: because this bug we are using alternative code with stringstream
