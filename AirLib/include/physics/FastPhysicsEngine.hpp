@@ -302,7 +302,7 @@ private:
                     getNextKinematicsNoCollisionProjectile(dt, body, current, next, next_wrench);
                     break;
                 case MOTIONTYPE_AUTOMOBILE:
-                    getNextKinematicsNoCollisionAutomobile(dt, static_cast<const Automobile&>(body), current, next, next_wrench);
+                    getNextKinematicsNoCollisionAutomobile(dt, static_cast<const Automobile&>(body), current, next);
                 }
 
             }
@@ -369,7 +369,7 @@ private:
 
     }
 
-            static void getNextKinematicsNoCollisionAutomobile(TTimeDelta dt, const Automobile& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+            static void getNextKinematicsNoCollisionAutomobile(TTimeDelta dt, const Automobile& body, const Kinematics::State& current, Kinematics::State& next)
             {
                 const real_T dt_real = static_cast<real_T>(dt);
 
