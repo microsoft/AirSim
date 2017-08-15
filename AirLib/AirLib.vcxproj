@@ -63,7 +63,7 @@
     <ClInclude Include="include\common\common_utils\type_utils.hpp" />
     <ClInclude Include="include\common\common_utils\Utils.hpp" />
     <ClInclude Include="include\common\common_utils\WorkerThread.hpp" />
-    <ClInclude Include="include\common\DebugClock.hpp" />
+    <ClInclude Include="include\common\SteppableClock.hpp" />
     <ClInclude Include="include\common\DelayLine.hpp" />
     <ClInclude Include="include\common\EarthUtils.hpp" />
     <ClInclude Include="include\common\FirstOrderFilter.hpp" />
@@ -71,7 +71,7 @@
     <ClInclude Include="include\common\GaussianMarkov.hpp" />
     <ClInclude Include="include\common\GeodeticConverter.hpp" />
     <ClInclude Include="include\common\LogFileWriter.hpp" />
-    <ClInclude Include="include\common\SimClock.hpp" />
+    <ClInclude Include="include\common\ScalableClock.hpp" />
     <ClInclude Include="include\common\StateReporter.hpp" />
     <ClInclude Include="include\common\StateReporterWrapper.hpp" />
     <ClInclude Include="include\common\UpdatableContainer.hpp" />
@@ -133,6 +133,8 @@
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />
     <ClInclude Include="include\api\ControlServerBase.hpp" />
     <ClInclude Include="include\physics\FreeBodyMotionAlgorithmType.hpp" />
+    <ClInclude Include="include\physics\PhysicsBodyWorld.hpp" />
+    <ClInclude Include="include\physics\PhysicsWorld.hpp" />
     <ClInclude Include="include\safety\CubeGeoFence.hpp" />
     <ClInclude Include="include\controllers\DroneCommon.hpp" />
     <ClInclude Include="include\controllers\DroneControllerBase.hpp" />

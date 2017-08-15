@@ -17,7 +17,7 @@
 #include "controllers/DroneCommon.hpp"
 #include "controllers/DroneControllerBase.hpp"
 #include "safety/SafetyEval.hpp"
-#include "common/ClockFactory.hpp"
+#include "common/common_utils/Timer.hpp"
 
 
 namespace msr { namespace airlib {

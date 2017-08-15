@@ -42,6 +42,11 @@ public:
         input_channels_[index] = static_cast<float>(val);
     }
 
+    void setIsRcConnected(bool is_connected)
+    {
+        is_connected_ = is_connected;
+    }
+
 public:
     //Board interface implementation --------------------------------------------------------------------------
 
@@ -58,6 +63,11 @@ public:
     virtual float readChannel(uint16_t index) const override 
     {
         return input_channels_[index];
+    }
+
+    virtual bool isRcConnected() const override
+    {
+        return is_connected_;
     }
 
     virtual void writeOutput(uint16_t index, float value) override 
@@ -94,6 +104,7 @@ public:
 
         motor_output_.assign(params_->motor.motor_count, 0);
         input_channels_.assign(params_->rc.channel_count, 0);
+        is_connected_ = false;
     }
 
     virtual void update() override
@@ -123,6 +134,7 @@ private:
     //motor outputs
     std::vector<float> motor_output_;
     std::vector<float> input_channels_;
+    bool is_connected_;
 
     const simple_flight::Params* params_;
     const Kinematics::State* kinematics_;

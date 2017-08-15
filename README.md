@@ -11,33 +11,33 @@ for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve 
 
 [![AirSim Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
-# Development Status
+## Development Status
 
 This project is under heavy development. The current release is in beta and all APIs are subject to change. The next major features currently in works are standalone mode, 
 several API enhancements and Python client support. We welcome contributions!
 
-# How to Get It
-## Prerequisites
+## How to Get It
+### Prerequisites
 To get the best experience you will need Pixhawk or compatible device and a RC controller. This enables the "hardware-in-loop simulation" for 
 more realistic experience. [Follow these instructions](docs/prereq.md) on how to get it, set it up and other alternatives.
 
-## Windows
+### Windows
 There are two ways to get AirSim working on your machine. Click on below links and follow the instructions.
 
 1.  [Build it and use it with Unreal](docs/build.md)
 2.  [Use the precompiled binaries](docs/use_precompiled.md)
 
-## Linux
+### Linux
 [Build AirSim on Ubuntu 16.04](docs/linux_build.md)
 
 
-# How to Use It
+## How to Use It
 
-## Video Tutorials
+### Video Tutorials
 - [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0)
 - [AirSim Setup  Video](https://youtu.be/1oY8Qu5maQQ) (shows you all the setup steps)
 
-## Manual flights
+### Manual flights
 If you have a Pixhawk flight controller (or compatible device) and a remote control you can manually control the drones in the simulator 
 and fly around.
 
@@ -45,7 +45,7 @@ and fly around.
 
 [More details](docs/manual_flight.md)
 
-## Gathering training data
+### Gathering training data
 There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button on the lower right corner. 
 This will start writing pose and images for each frame. 
 
@@ -60,7 +60,7 @@ For MavLink enabled drones, you can also use our [Log Viewer](docs/log_viewer.md
 
 You can also [playback recorded logs](docs/playback.md) for side-by-side comparison between real drone and the simulator.
 
-## Programmatic control
+### Programmatic control
 The AirSim exposes easy to use APIs in order to retrieve data from the drones that includes ground truth, sensor data as well as various images. It also exposes 
 APIs to control the drones in a platform independent way. This allows you to use your code to control different drones platforms, for example, Pixhawk or DJI Matrice, 
 without making changes as well as without having to learn internal protocols details. 
@@ -70,8 +70,8 @@ This way you can write and test your code in simulator and later execute it on t
 
 [More details](docs/apis.md)
 
-# Participate
-## Paper
+## Participate
+### Paper
 You can get additional technical details in [our paper (preprint)](https://arxiv.org/abs/1705.05065). Please cite this as:
 ```
 @inproceedings{airsim2017fsr,
@@ -84,19 +84,19 @@ You can get additional technical details in [our paper (preprint)](https://arxiv
 }
 ```
 
-## Contribute
+### Contribute
 We welcome contributions to help advance research frontiers. 
 
 - [More on our design](docs/design.md)
 - [More on our code structure](docs/code_structure.md)
 - [Contribution Guidelines](docs/contributing.md)
 
-## Contact
+### Contact
 Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
 
-## FAQ
+### FAQ
 
 If you run into problems, check the [FAQ](docs/faq.md) and feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
 
-## License
+### License
 This project is released under MIT License. Please review [License file](LICENSE) for more details.

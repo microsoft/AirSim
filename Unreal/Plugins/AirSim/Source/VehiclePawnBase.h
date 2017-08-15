@@ -26,6 +26,12 @@ public: //types
     typedef msr::airlib::Utils Utils;
 
 public: //modifiable properties
+    //Vehicle config settings
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VehicleConfig")
+    bool IsFpvVehicle = false; 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VehicleConfig")
+    FString VehicleConfigName = ""; //use the default config name
+
     //collisons settings
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collisons")
     bool EnableCollisons = true; 

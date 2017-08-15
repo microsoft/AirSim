@@ -14,14 +14,12 @@ struct RecordingSettings {
 
 class RecordingFile {
 public:
-    RecordingFile();
     ~RecordingFile();
 
     void appendRecord(TArray<uint8>& compressedPng, const msr::airlib::PhysicsBody* physics_body);
     void startRecording();
     void stopRecording();
     bool isRecording();
-    void initializeForPlay();
 
 private:
     void createFile(const std::string& file_path);
@@ -36,7 +34,6 @@ private:
     std::string record_filename = "airsim_rec";     
     unsigned int images_saved_ = 0;
     FString image_path_;
-    bool is_recording_;
-
-    IFileHandle* log_file_handle_;
+    bool is_recording_ = false;
+    IFileHandle* log_file_handle_ = nullptr;
 };

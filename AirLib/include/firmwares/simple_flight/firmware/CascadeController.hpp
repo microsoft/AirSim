@@ -69,6 +69,9 @@ public:
                 case GoalModeType::Passthrough:
                     axis_controllers_[axis].reset(new PassthroughController());
                     break;
+                case GoalModeType::Unknown:
+                    axis_controllers_[axis].reset(nullptr);
+                    break;
                 case GoalModeType::ConstantOutput:
                     axis_controllers_[axis].reset(new ConstantOutputController());
                     break;
@@ -76,10 +79,13 @@ public:
                     throw std::invalid_argument("Axis controller type is not yet implemented for axis " 
                         + std::to_string(axis));
                 }
+                last_goal_mode_[axis] = goal_mode[axis];
 
                 //initialize axis controller
-                axis_controllers_[axis]->initialize(axis, goal_, state_estimator_);
-                axis_controllers_[axis]->reset();
+                if (axis_controllers_[axis] != nullptr) {
+                    axis_controllers_[axis]->initialize(axis, goal_, state_estimator_);
+                    axis_controllers_[axis]->reset();
+                }
             }
 
             //update axis controller
@@ -88,7 +94,7 @@ public:
                 output_[axis] = axis_controllers_[axis]->getOutput();
             }
             else
-                comm_link_->log(std::string("Axis controller type is not set for axis ").append(std::to_string(axis)), ICommLink::kLogLevelError);
+                comm_link_->log(std::string("Axis controller type is not set for axis ").append(std::to_string(axis)), ICommLink::kLogLevelInfo);
         }
     }
 

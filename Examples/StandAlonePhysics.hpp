@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "common/DebugClock.hpp"
+#include "common/SteppableClock.hpp"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/DebugPhysicsBody.hpp"
 
@@ -12,7 +12,7 @@ public:
     {
         using namespace msr::airlib;
 
-        std::shared_ptr<DebugClock> clock = std::make_shared<DebugClock>();
+        std::shared_ptr<SteppableClock> clock = std::make_shared<SteppableClock>();
         ClockFactory::get(clock);
 
         //init physics state

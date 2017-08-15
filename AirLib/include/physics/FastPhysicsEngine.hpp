@@ -10,7 +10,10 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <memory>
 #include "common/CommonStructs.hpp"
+#include "common/SteppableClock.hpp"
+#include <cinttypes>
 
 namespace msr { namespace airlib {
 
@@ -20,7 +23,6 @@ public:
         : enable_ground_lock_(enable_ground_lock)
     { 
     }
-
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
@@ -88,6 +90,9 @@ private:
                 current, next, next_wrench, enable_ground_lock_);
             updateCollisonResponseInfo(collison_info, next, is_collison_response, collison_response_info);
         }
+
+        //Utils::log(Utils::stringf("T-VEL %s %" PRIu64 ": ", 
+        //    VectorMath::toString(next.twist.linear).c_str(), clock()->getStepCount()));
 
         body.setKinematics(next);
         body.setWrench(next_wrench);
@@ -199,35 +204,37 @@ private:
 
         next_wrench = Wrench::zero();
 
+        //Utils::log(Utils::stringf("*** C-VEL %s: ", VectorMath::toString(next.twist.linear).c_str()));
+
         return true;
     }
 
-    bool getNextKinematicsOnGround(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
-    {
-        /************************* reset state if we have hit the ground ************************/
-        real_T min_z_over_ground = body.getEnvironment().getState().min_z_over_ground;
-        grounded_ = 0;
-        if (min_z_over_ground <= next.pose.position.z()) {
-            grounded_ = 1;
-            next.pose.position.z() = min_z_over_ground;
+    //bool getNextKinematicsOnGround(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+    //{
+    //    /************************* reset state if we have hit the ground ************************/
+    //    real_T min_z_over_ground = body.getEnvironment().getState().min_z_over_ground;
+    //    grounded_ = 0;
+    //    if (min_z_over_ground <= next.pose.position.z()) {
+    //        grounded_ = 1;
+    //        next.pose.position.z() = min_z_over_ground;
 
-            real_T z_proj = static_cast<real_T>(next.twist.linear.z() + next.accelerations.linear.z() * dt);
-            if (Utils::isDefinitelyLessThan(0.0f, z_proj)) {
-                grounded_ = 2;
-                next.twist = Twist::zero();
-                next.accelerations.linear = Vector3r::Zero();
-                next.accelerations.angular = Vector3r::Zero();
-                //reset roll/pitch - px4 seems to have issue with this
-                real_T r, p, y;
-                VectorMath::toEulerianAngle(current.pose.orientation, p, r, y);
-                next.pose.orientation = VectorMath::toQuaternion(0, 0, y);
+    //        real_T z_proj = static_cast<real_T>(next.twist.linear.z() + next.accelerations.linear.z() * dt);
+    //        if (Utils::isDefinitelyLessThan(0.0f, z_proj)) {
+    //            grounded_ = 2;
+    //            next.twist = Twist::zero();
+    //            next.accelerations.linear = Vector3r::Zero();
+    //            next.accelerations.angular = Vector3r::Zero();
+    //            //reset roll/pitch - px4 seems to have issue with this
+    //            real_T r, p, y;
+    //            VectorMath::toEulerianAngle(current.pose.orientation, p, r, y);
+    //            next.pose.orientation = VectorMath::toQuaternion(0, 0, y);
 
-                next_wrench = Wrench::zero();
-            }
-        }
+    //            next_wrench = Wrench::zero();
+    //        }
+    //    }
 
-        return grounded_ != 0;
-    }
+    //    return grounded_ != 0;
+    //}
 
     static Wrench getDragWrench(const PhysicsBody& body, const Quaternionr& orientation, 
         const Vector3r& linear_vel, const Vector3r& angular_vel_body)
@@ -318,7 +325,9 @@ private:
 
         next_wrench = body_wrench + drag_wrench;
 
-
+        //Utils::log(Utils::stringf("B-WRN %s: ", VectorMath::toString(body_wrench.force).c_str()));
+        //Utils::log(Utils::stringf("D-WRN %s: ", VectorMath::toString(drag_wrench.force).c_str()));
+        
         /************************* Update accelerations due to force and torque ************************/
         //get new acceleration due to force - we'll use this acceleration in next time step
         next.accelerations.linear = (next_wrench.force / body.getMass()) + body.getEnvironment().getState().gravity;
@@ -354,6 +363,10 @@ private:
         }
 
         computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
+
+        //Utils::log(Utils::stringf("N-VEL %s %f: ", VectorMath::toString(next.twist.linear).c_str(), dt));
+        //Utils::log(Utils::stringf("N-POS %s %f: ", VectorMath::toString(next.pose.position).c_str(), dt));
+
     }
 
             static void getNextKinematicsNoCollisionAutomobile(TTimeDelta dt, const Automobile& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)

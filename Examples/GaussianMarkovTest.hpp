@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/GaussianMarkov.hpp"
-#include "common/DebugClock.hpp"
+#include "common/SteppableClock.hpp"
 
 namespace msr { namespace airlib {
 
@@ -10,7 +10,7 @@ public:
     GaussianMarkovTest()
         : pressure_factor_(0.1f, 5.0f)
     {
-        clock_ = std::make_shared<DebugClock>(0.02f);
+        clock_ = std::make_shared<SteppableClock>(0.02f);
         ClockFactory::get(clock_);
         pressure_factor_.reset();
     }
@@ -26,7 +26,7 @@ public:
 
 private:
     GaussianMarkov pressure_factor_;
-    std::shared_ptr<DebugClock> clock_;
+    std::shared_ptr<SteppableClock> clock_;
 };
 
 }}

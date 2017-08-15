@@ -25,7 +25,7 @@ void ASimModeBase::BeginPlay()
     //needs to be done before we call base class
     initializeSettings();
 
-    recording_file_.initializeForPlay();
+    recording_file_.reset(new RecordingFile());
     record_tick_count = 0;
     setupInputBindings();
 
@@ -36,6 +36,8 @@ void ASimModeBase::BeginPlay()
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    recording_file_.release();
+
 #if defined _WIN32 || defined _WIN64
     SimJoyStick::setInitializedSuccess(false);
     FPlatformProcess::FreeDllHandle(xinput_dllHandle);
@@ -124,11 +126,12 @@ void ASimModeBase::readSettings()
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
 
     //do not save this default in json as this will change in near future
-    fpv_vehicle_name = settings.getString("FpvVehicleName", "Pixhawk");
+    default_vehicle_config = settings.getString("DefaultVehicleConfig", "Pixhawk");
 
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
     usage_scenario = settings.getString("UsageScenario", "");
     enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
+    clock_type = settings.getString("ClockType", "ScalableClock");
 
     Settings record_settings;
     if (settings.getChild("Recording", record_settings)) {
@@ -136,12 +139,12 @@ void ASimModeBase::readSettings()
         recording_settings.record_interval = record_settings.getFloat("RecordInterval", recording_settings.record_interval);
     }
     
-    UAirBlueprintLib::LogMessage("Vehicle name: ", fpv_vehicle_name.c_str(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage("Default config: ", default_vehicle_config.c_str(), LogDebugLevel::Informational);
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
 {
-    if (recording_file_.isRecording())
+    if (recording_file_->isRecording())
         ++record_tick_count;
     Super::Tick(DeltaSeconds);
 }
@@ -172,7 +175,7 @@ void ASimModeBase::setupInputBindings()
 
 bool ASimModeBase::isRecording()
 {
-    return recording_file_.isRecording();
+    return recording_file_->isRecording();
 }
 
 bool ASimModeBase::isRecordUIVisible()
@@ -187,7 +190,7 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode()
 
 void ASimModeBase::startRecording()
 {
-    recording_file_.startRecording();
+    recording_file_->startRecording();
 }
 
 bool ASimModeBase::toggleRecording()
@@ -202,10 +205,10 @@ bool ASimModeBase::toggleRecording()
 
 void ASimModeBase::stopRecording()
 {
-    recording_file_.stopRecording();
+    recording_file_->stopRecording();
 }
 
 RecordingFile& ASimModeBase::getRecordingFile()
 {
-    return recording_file_;
+    return *recording_file_;
 }

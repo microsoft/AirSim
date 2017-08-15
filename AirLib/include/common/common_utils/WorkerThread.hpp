@@ -12,8 +12,8 @@
 #include <exception>
 #include <future>
 #include <mutex>
-#include "Timer.hpp"
 #include "Utils.hpp"
+#include "common/ClockFactory.hpp" //TODO: move this out of common_utils
 
 namespace msr { namespace airlib {
 
@@ -24,6 +24,13 @@ protected:
 public:
     CancelableBase() : is_cancelled_(false), is_complete_(false) {
     }
+
+    void reset()
+    {
+        is_cancelled_ = false;
+        is_complete_ = false;
+    }
+
     bool isCancelled() {
         return is_cancelled_;
     }
@@ -34,7 +41,7 @@ public:
 
     virtual void execute() = 0;
 
-    bool sleep(double secs)
+    virtual bool sleep(double secs)
     {
         //We can pass duration directly to sleep_for however it is known that on 
         //some systems, sleep_for makes system call anyway even if passed duration 
@@ -43,11 +50,14 @@ public:
             return false;
         }
 
-        common_utils::Timer timer;
-        timer.start();
+        TTimePoint start = ClockFactory::get()->nowNanos();
+        static constexpr std::chrono::duration<double> MinSleepDuration(0);
 
-        while(secs > 0 && !isCancelled() && !is_complete_ && timer.seconds() < secs)
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        while(secs > 0 && !isCancelled() && !is_complete_ && 
+            ClockFactory::get()->elapsedSince(start) < secs) {
+
+            std::this_thread::sleep_for(MinSleepDuration);
+        }
 
         return !isCancelled();
     }

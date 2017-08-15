@@ -143,6 +143,16 @@ public:
         return 4;
     }
 
+    static Axis3<T> axis4ToXyz(const Axis4<T> axis4)
+    {
+        return Axis3<T>(axis4[0], axis4[1], axis4[3]);
+    }
+    static Axis4<T> xyzToAxis4(const Axis3<T> xyz)
+    {
+        //TODO: use nan instead 0?
+        return Axis4<T>(xyz[0], xyz[1], 0, xyz[2]);
+    }
+
 private:
     T val4_ = 0;
 };
@@ -179,6 +189,27 @@ public:
         state_ = state;
     }
 
+    static VehicleStateType fromString(const std::string& val)
+    {
+        if (val == "Inactive")
+            return VehicleStateType::Inactive;
+        if (val == "Unknown")
+            return VehicleStateType::Unknown;
+        if (val == "BeingArmed")
+            return VehicleStateType::BeingArmed;
+        if (val == "Armed")
+            return VehicleStateType::Armed;
+        if (val == "Active")
+            return VehicleStateType::Active;
+        if (val == "BeingDisarmed")
+            return VehicleStateType::BeingDisarmed;
+        if (val == "Disarmed")
+            return VehicleStateType::Disarmed;
+
+        throw std::invalid_argument(std::string(
+            "The value cannot be converted to VehicleStateType enum: ").append(val));
+    }
+
     const GeoPoint& getHomeGeoPoint() const
     {
         return home_point_;
@@ -213,15 +244,38 @@ public:
         return mode;
     }
 
+    static const GoalMode& getVelocityXYPosZMode() 
+    {
+        static const GoalMode mode = GoalMode(GoalModeType::VelocityWorld, 
+            GoalModeType::VelocityWorld, GoalModeType::AngleRate, GoalModeType::PositionWorld);
+        return mode;
+    }
+
+    static const GoalMode& getVelocityMode() 
+    {
+        static const GoalMode mode = GoalMode(GoalModeType::VelocityWorld, 
+            GoalModeType::VelocityWorld, GoalModeType::AngleRate, GoalModeType::VelocityWorld);
+        return mode;
+    }
+
+    static const GoalMode& getPositionMode() 
+    {
+        static const GoalMode mode = GoalMode(GoalModeType::PositionWorld, 
+            GoalModeType::PositionWorld, GoalModeType::AngleRate, GoalModeType::PositionWorld);
+        return mode;
+    }
+
     static const GoalMode& getAllRateMode()
     {
-        static const GoalMode mode = GoalMode(GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::Passthrough);
+        static const GoalMode mode = GoalMode(GoalModeType::AngleRate, 
+            GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::Passthrough);
         return mode;
     }
 
     static const GoalMode& getUnknown()
     {
-        static const GoalMode mode = GoalMode(GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown);
+        static const GoalMode mode = GoalMode(GoalModeType::Unknown, 
+            GoalModeType::Unknown, GoalModeType::Unknown, GoalModeType::Unknown);
         return mode;
     }
 };

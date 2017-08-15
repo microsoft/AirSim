@@ -104,12 +104,10 @@ public:
     //*** Start: VehicleControllerBase implementation ***//
     virtual void reset() override;
     virtual void update() override;
-    virtual void start() override;
-    virtual void stop() override;
     virtual size_t getVertexCount() override;
     virtual real_T getVertexControlSignal(unsigned int rotor_index) override;
     virtual void getStatusMessages(std::vector<std::string>& messages) override;
-
+    virtual bool isAvailable(std::string& message) override;
     virtual bool isOffboardMode() override;
     virtual bool isSimulationMode() override;
     virtual void setOffboardMode(bool is_set) override;
@@ -224,6 +222,8 @@ public:
     uint64_t last_gps_time_;
     bool was_reset_;
     Pose debug_pose_;
+    std::string is_available_message_;
+    bool is_available_;
 
     //additional variables required for DroneControllerBase implementation
     //this is optional for methods that might not use vehicle commands
@@ -242,8 +242,24 @@ public:
         connection_info_ = connection_info;
         sensors_ = sensors;
         is_simulation_mode_ = is_simulation;
+
+        try {
+            openAllConnections();
+            is_available_ = true;
+        }
+        catch (std::exception& ex) {
+            is_available_ = false;
+            is_available_message_ = Utils::stringf("Failed to connect: %s", ex.what());
+        }
     }
 
+    bool isAvailable(std::string& message)
+    {
+        if (!is_available_)
+            message = is_available_message_;
+        return is_available_;
+    }
+    
     ConnectionInfo getMavConnectionInfo()
     {
         return connection_info_;
@@ -772,7 +788,7 @@ public:
         }
     }
 
-    void start()
+    void openAllConnections()
     {
         close(); //just in case if connections were open
         resetState(); //reset all variables we might have changed during last session
@@ -782,7 +798,7 @@ public:
         connectToQGC();
 
     }
-    void stop()
+    void closeAllConnection()
     {
         close();
     }
@@ -1267,7 +1283,7 @@ MavLinkDroneController::MavLinkDroneController()
 
 MavLinkDroneController::~MavLinkDroneController()
 {
-    pimpl_->close();
+    pimpl_->closeAllConnection();
 }
 
 void MavLinkDroneController::initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
@@ -1313,18 +1329,15 @@ size_t MavLinkDroneController::getVertexCount()
 {
     return impl::RotorControlsCount;
 }
-void MavLinkDroneController::start()
-{
-    pimpl_->start();
-}
-void MavLinkDroneController::stop()
-{
-    pimpl_->stop();
-}
 void MavLinkDroneController::getStatusMessages(std::vector<std::string>& messages)
 {
     pimpl_->getStatusMessages(messages);
 }
+bool MavLinkDroneController::isAvailable(std::string& message)
+{
+    return pimpl_->isAvailable(message);
+}
+
 //*** End: VehicleControllerBase implementation ***//
 
 

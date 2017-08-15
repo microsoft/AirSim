@@ -18,7 +18,7 @@ public:
     OffboardApi(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, 
         IStateEstimator* state_estimator, ICommLink* comm_link)
         : params_(params), rc_(params, clock, board_inputs, &vehicle_state_, state_estimator, comm_link), 
-          state_estimator_(state_estimator), comm_link_(comm_link)
+          state_estimator_(state_estimator), comm_link_(comm_link), clock_(clock)
     {
     }
 
@@ -27,8 +27,9 @@ public:
         IUpdatable::reset();
 
         vehicle_state_.setState(params_->default_vehicle_state, state_estimator_->getGeoPoint());
-        has_api_control_ = false;
         rc_.reset();
+        has_api_control_ = false;
+        goal_timestamp_ = 0;
         updateGoalFromRc();
     }
 
@@ -36,9 +37,22 @@ public:
     {
         IUpdatable::update();
 
-        if (! has_api_control_) {
-            rc_.update();
+        rc_.update();
+        if (! has_api_control_)
             updateGoalFromRc();
+        else {
+            if (clock_->millis() - goal_timestamp_ > params_->api_goal_timeout) {
+                if (!is_api_timedout_) {
+                    comm_link_->log("API call timed out, entering hover mode");
+                    goal_mode_ = GoalMode::getPositionMode();
+                    goal_ = Axis4r::xyzToAxis4(state_estimator_->getPosition());
+
+                    is_api_timedout_ = true;
+                }
+
+                //do not update goal_timestamp_
+            }
+
         }
         //else leave the goal set by IOffboardApi API
     }
@@ -99,6 +113,8 @@ public:
                 goal_ = *goal;
             if (goal_mode != nullptr)
                 goal_mode_ = *goal_mode;
+            goal_timestamp_ = clock_->millis();
+            is_api_timedout_ = false;
             return true;
         }
         else {
@@ -185,13 +201,16 @@ private:
     RemoteControl rc_;
     IStateEstimator* state_estimator_;
     ICommLink* comm_link_;
+    const IBoardClock* clock_;
 
     VehicleState vehicle_state_;
     
     Axis4r goal_;
     GoalMode goal_mode_;
+    uint64_t goal_timestamp_;
 
     bool has_api_control_;
+    bool is_api_timedout_;
 };
 
 

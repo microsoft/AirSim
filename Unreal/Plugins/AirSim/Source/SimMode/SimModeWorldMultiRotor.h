@@ -5,6 +5,7 @@
 #include "MultiRotorConnector.h"
 #include "vehicles/MultiRotorParams.hpp"
 #include "SimModeWorldBase.h"
+#include "FlyingPawn.h"
 #include "SimModeWorldMultiRotor.generated.h"
 
 
@@ -22,14 +23,17 @@ public:
     AVehiclePawnBase* getFpvVehiclePawn() override;
 
 protected:
+    typedef AFlyingPawn TMultiRotorPawn;
+
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
     bool checkConnection();
-    VehiclePtr createVehicle(AFlyingPawn* pawn);
+    VehiclePtr createVehicle(TMultiRotorPawn* vehicle_pawn);
 
 private:
-    void setupVehiclesAndCamera();
+    void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
 
 private:    
+
     TArray<uint8> image_;
     std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
     bool isLoggingStarted;

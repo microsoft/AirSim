@@ -25,6 +25,19 @@ public:
     {
         initialize(params, initial_kinematic_state, environment);
     }
+    void initialize(MultiRotorParams* params, const Pose& initial_pose, const GeoPoint& home_point, 
+        std::unique_ptr<Environment>& environment)
+    {
+        //init physics vehicle
+        auto initial_kinematics = Kinematics::State::zero();
+        initial_kinematics.pose = initial_pose;
+        Environment::State initial_environment;
+        initial_environment.position = initial_kinematics.pose.position;
+        initial_environment.geo_point = home_point;
+        environment.reset(new Environment(initial_environment));
+        
+        initialize(params, initial_kinematics, environment.get());
+    }
     void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
     {
         params_ = params;
@@ -35,6 +48,8 @@ public:
         createDragVertices();
 
         initSensors(*params_, getKinematics(), getEnvironment());
+
+        getController()->setGroundTruth(this);
     }
 
     DroneControllerBase* getController()

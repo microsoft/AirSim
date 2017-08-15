@@ -22,8 +22,12 @@ public:
     virtual bool isOffboardMode() = 0;
     virtual bool isSimulationMode() = 0;
 
+    //if controller connects via USB/UDP and connection fails then this
+    //should return false
+    virtual bool isAvailable(std::string& message) = 0;
+
     //TODO: below method is needed to support firmwares without state estimation. In future, we should probably remove this support.
-    virtual void initializePhysics(PhysicsBody* physics_body)
+    virtual void setGroundTruth(PhysicsBody* physics_body)
     {
         unused(physics_body);
         //by default don't use it. If derived class needs this, it should override.

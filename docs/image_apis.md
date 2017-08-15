@@ -60,7 +60,7 @@ To active this mode, simply go to settings.json that you can find in your Docume
 
 ```
 {
-  "FpvVehicleName": "SimpleFlight",
+  "DefaultVehicleConfig": "SimpleFlight",
   "UsageScenario": "ComputerVision"
 }
 ```
@@ -81,7 +81,7 @@ To change resolution, FOV etc, you can use [settings.json](settings.md). For exa
     "AutoExposureSpeed": 100,
     "MotionBlurAmount": 0
   },
-  "FpvVehicleName": "SimpleFlight",
+  "DefaultVehicleConfig": "SimpleFlight",
   "UsageScenario": "ComputerVision"
 }
 ```

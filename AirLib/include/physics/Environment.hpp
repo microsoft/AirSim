@@ -15,9 +15,8 @@ class Environment : public UpdatableObject {
 public:
     struct State {
         //these fields must be set at initialization time
-        GeoPoint geo_point;
-        real_T min_z_over_ground;
         Vector3r position;
+        GeoPoint geo_point;
 
         //these fields are computed
         Vector3r gravity;
@@ -27,8 +26,8 @@ public:
 
         State()
         {}
-        State(const Vector3r& position_val, const GeoPoint& geo_point_val, real_T min_z_over_ground_val)
-            : geo_point(geo_point_val), min_z_over_ground(min_z_over_ground_val), position(position_val)
+        State(const Vector3r& position_val, const GeoPoint& geo_point_val)
+            : position(position_val), geo_point(geo_point_val)
         {
         }
     };

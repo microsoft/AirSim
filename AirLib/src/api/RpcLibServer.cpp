@@ -57,8 +57,6 @@ RpcLibServer::RpcLibServer(DroneControllerCancelable* drone, string server_addre
     pimpl_->server.bind("takeoff", [&](float max_wait_seconds) -> bool { return drone_->takeoff(max_wait_seconds); });
     pimpl_->server.bind("land", [&](float max_wait_seconds) -> bool { return drone_->land(max_wait_seconds); });
     pimpl_->server.bind("goHome", [&]() -> bool { return drone_->goHome(); });
-    pimpl_->server.bind("start", [&]() -> void { drone_->start(); });
-    pimpl_->server.bind("stop", [&]() -> void { drone_->stop(); });
 
 
     pimpl_->server.bind("moveByAngle", [&](float pitch, float roll, float z, float yaw, float duration) -> 

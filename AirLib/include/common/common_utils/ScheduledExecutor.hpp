@@ -10,7 +10,7 @@
 #include <atomic>
 #include <system_error>
 #include <mutex>
-
+#include <cstdint>
 
 namespace common_utils {
 
@@ -18,7 +18,7 @@ class ScheduledExecutor {
 public:
     ScheduledExecutor()
     {}
-    ScheduledExecutor(const std::function<bool(long long)>& callback, long long period_nanos)
+    ScheduledExecutor(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         initialize(callback, period_nanos);
     }
@@ -26,16 +26,16 @@ public:
     {
         stop();
     }
-    void initialize(const std::function<bool(long long)>& callback, long long period_nanos)
+    void initialize(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         callback_ = callback;
         period_nanos_ = period_nanos;
-        keep_running_ = false;
+        started_ = false;
     }
 
     void start()
     {
-        keep_running_ = true;
+        started_ = true;
         sleep_time_avg_ = 0;
         period_count_ = 0;
         Utils::cleanupThread(th_);
@@ -44,8 +44,8 @@ public:
 
     void stop()
     {
-        if (keep_running_) {
-            keep_running_ = false;
+        if (started_) {
+            started_ = false;
             try {
                 if (th_.joinable()) {
                     th_.join();
@@ -58,7 +58,7 @@ public:
 
     bool isRunning()
     {
-        return keep_running_;
+        return started_;
     }
 
     double getSleepTimeAvg()
@@ -85,8 +85,8 @@ public:
 
 private:
     typedef std::chrono::high_resolution_clock clock;
-    typedef long long TTimePoint;
-    typedef long long TTimeDelta;
+    typedef uint64_t TTimePoint;
+    typedef uint64_t TTimeDelta;
     template <typename T>
     using duration = std::chrono::duration<T>;
 
@@ -121,7 +121,7 @@ private:
     void executorLoop()
     {
         TTimePoint call_end = nanos();
-        while (keep_running_) {
+        while (started_) {
             TTimePoint period_start = nanos();
             TTimeDelta since_last_call = period_start - call_end;
             
@@ -132,7 +132,7 @@ private:
 
                 bool result = callback_(since_last_call);
                 if (!result) {
-                    keep_running_ = result;
+                    started_ = result;
                 }
             }
             
@@ -143,16 +143,16 @@ private:
             //moving average of how much we are sleeping
             sleep_time_avg_ = 0.25f * sleep_time_avg_ + 0.75f * delay_nanos;
             ++period_count_;
-            if (delay_nanos > 0 && keep_running_)
+            if (delay_nanos > 0 && started_)
                 sleep_for(delay_nanos);
         }
     }
 
 private:
-    long long period_nanos_;
+    uint64_t period_nanos_;
     std::thread th_;
-    std::function<bool(long long)> callback_;
-    std::atomic_bool keep_running_;
+    std::function<bool(uint64_t)> callback_;
+    std::atomic_bool started_;
 
     double sleep_time_avg_;
     uint64_t period_count_;

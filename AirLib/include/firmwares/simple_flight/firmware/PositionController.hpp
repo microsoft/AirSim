@@ -61,12 +61,12 @@ public:
 
         const Axis4r& goal_position_world = goal_->getGoalValue();
         pid_->setGoal(goal_position_world[axis_]);
-        const Axis3r& measured_position_world = state_estimator_->getPosition();
+        const Axis4r& measured_position_world = Axis4r::xyzToAxis4(
+            state_estimator_->getPosition());
         pid_->setMeasured(measured_position_world[axis_]);
         pid_->update();
 
         //use this to drive child controller
-        velocity_goal_.throttle() = goal_position_world.throttle();
         velocity_goal_[axis_] = pid_->getOutput() * params_->velocity_pid.max_limit[axis_];
         velocity_controller_->update();
 

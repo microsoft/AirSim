@@ -4,7 +4,6 @@
 #include "GameFramework/RotatingMovementComponent.h"
 #include <memory>
 #include "controllers/DroneCommon.hpp"
-#include "SimJoyStick/SimJoyStick.h"
 #include "FlyingPawn.generated.h"
 
 UCLASS()

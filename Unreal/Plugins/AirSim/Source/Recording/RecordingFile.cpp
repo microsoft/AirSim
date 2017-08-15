@@ -6,10 +6,6 @@
 #include "common/ClockFactory.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
-RecordingFile::RecordingFile()
-    : log_file_handle_(nullptr)
-{
-}
 
 void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::PhysicsBody* physics_body)
 {
@@ -162,9 +158,4 @@ void RecordingFile::stopRecording()
 bool RecordingFile::isRecording()
 {
     return is_recording_;
-}
-
-void RecordingFile::initializeForPlay()
-{
-    is_recording_ = false;
 }

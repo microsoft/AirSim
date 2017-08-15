@@ -10,26 +10,15 @@
 #include "PhysicsEngineBase.hpp"
 #include "PhysicsBody.hpp"
 #include "common/common_utils/ScheduledExecutor.hpp"
-//#include "common/DebugClock.hpp"
+#include "common/ClockFactory.hpp"
 
 namespace msr { namespace airlib {
 
 class World : public UpdatableContainer<UpdatableObject*> {
 public:
-    World()
-    { 
-        initialize(nullptr);
-    }
     World(PhysicsEngineBase* physics_engine)
-    {
-        initialize(physics_engine);
-    }
-    void initialize(PhysicsEngineBase* physics_engine)
-    {
+    { 
         World::clear();
-
-        //clock_ = std::make_shared<msr::airlib::DebugClock>(3E-3f);
-        //msr::airlib::ClockFactory::get(clock_);
 
         physics_engine_ = physics_engine;
         if (physics_engine)
@@ -48,8 +37,7 @@ public:
 
     virtual void update() override
     {
-        //if (clock_)
-        //    clock_->step();
+        ClockFactory::get()->step();
 
         //first update our objects
         UpdatableContainer::update();
@@ -78,7 +66,7 @@ public:
         UpdatableContainer::clear();
     }
 
-    virtual void insert(UpdatableObject* member) 
+    virtual void insert(UpdatableObject* member) override
     { 
         if (physics_engine_ && member->getPhysicsBody() != nullptr)
             physics_engine_->insert(static_cast<PhysicsBody*>(member->getPhysicsBody()));
@@ -86,7 +74,7 @@ public:
         UpdatableContainer::insert(member);
     }
 
-    virtual void erase_remove(UpdatableObject* member) 
+    virtual void erase_remove(UpdatableObject* member) override
     { 
         if (physics_engine_ && member->getPhysicsBody() != nullptr)
             physics_engine_->erase_remove(static_cast<PhysicsBody*>(member));
@@ -95,8 +83,9 @@ public:
     }
 
     //async updater thread
-    void startAsyncUpdator(long long period)
+    void startAsyncUpdator(uint64_t period)
     {
+        //TODO: probably we shouldn't be passing around fixed period
         executor_.initialize(std::bind(&World::worldUpdatorAsync, this, std::placeholders::_1), period);
         executor_.start();
     }
@@ -113,9 +102,16 @@ public:
         executor_.unlock();
     }
 
-private:
-    bool worldUpdatorAsync(long long dt_nanos)
+    virtual ~World()
     {
+        executor_.stop();
+    }
+
+private:
+    bool worldUpdatorAsync(uint64_t dt_nanos)
+    {
+        unused(dt_nanos);
+
         try {
             update();
         }
@@ -133,7 +129,6 @@ private:
 
 private:
     PhysicsEngineBase* physics_engine_ = nullptr;
-    //std::shared_ptr<msr::airlib::DebugClock> clock_;
     common_utils::ScheduledExecutor executor_;
 };
 

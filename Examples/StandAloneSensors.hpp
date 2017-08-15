@@ -14,7 +14,7 @@ namespace msr {
             static void generateImuStaticData(std::ostream& output_stream, float period, float total_duration)
             {
                 auto kinematics = Kinematics::State::zero();
-                msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(), 0);
+                msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint());
                 msr::airlib::Environment environment(initial_environment);
                 environment.reset();
 
@@ -45,7 +45,7 @@ namespace msr {
             static void generateBarometerStaticData(std::ostream& output_stream, float period, float total_duration, GeoPoint loc)
             {
                 auto kinematics = Kinematics::State::zero();
-                msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
+                msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc);
                 msr::airlib::Environment environment(initial_environment);
                 environment.reset();
 
@@ -78,7 +78,7 @@ namespace msr {
             static void generateBarometerDynamicData(std::ostream& output_stream, float period, float total_duration, GeoPoint loc)
             {
                 auto kinematics = Kinematics::State::zero();
-                msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
+                msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc);
                 msr::airlib::Environment environment(initial_environment);
                 environment.reset();
 
@@ -136,7 +136,7 @@ namespace msr {
 
                     auto kinematics = Kinematics::State::zero();
                     kinematics.pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
-                    msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
+                    msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc);
                     msr::airlib::Environment environment(initial_environment);
                     environment.reset();
 
@@ -185,7 +185,7 @@ namespace msr {
 
                             auto kinematics = Kinematics::State::zero();
                             kinematics.pose.orientation = VectorMath::toQuaternion(pitch, roll, yaw);
-                            msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc, 0);
+                            msr::airlib::Environment::State initial_environment(kinematics.pose.position, loc);
                             msr::airlib::Environment environment(initial_environment);
                             environment.reset();
 
@@ -221,7 +221,7 @@ namespace msr {
 
                 auto kinematics = Kinematics::State::zero();
                 kinematics.pose.orientation = VectorMath::toQuaternion(0, 0, 0);
-                msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint(), 0);
+                msr::airlib::Environment::State initial_environment(kinematics.pose.position, GeoPoint());
                 msr::airlib::Environment environment(initial_environment);
                 environment.reset();
 
