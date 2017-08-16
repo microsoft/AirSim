@@ -37,7 +37,7 @@ public:
 
         clock->sleep_for(0.04f);
         
-        //Utils::getSetMinLogLevel(true, 100);
+        Utils::getSetMinLogLevel(true, 100);
 
         DirectCancelableBase cancellable(controller, &vehicle);
         controller->setOffboardMode(true);
@@ -48,7 +48,7 @@ public:
 
         Utils::getSetMinLogLevel(true);
 
-        controller->moveToPosition(3, -5, -1.5, 1, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 20), -1, 0, cancellable);
+        controller->moveToPosition(-5, -5, -5, 5, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0, cancellable);
 
         clock->sleep_for(2.0f);
 

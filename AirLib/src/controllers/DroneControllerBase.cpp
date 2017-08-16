@@ -143,7 +143,8 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     //when path ends, we want to slow down
     float breaking_dist = 0;
     if (velocity > getVehicleParams().breaking_vel) {
-        breaking_dist = std::max(velocity * getVehicleParams().vel_to_breaking_dist, getVehicleParams().min_breaking_dist);
+        breaking_dist = Utils::clip(velocity * getVehicleParams().vel_to_breaking_dist, 
+            getVehicleParams().min_breaking_dist, getVehicleParams().max_breaking_dist);
     }
     //else no need to change velocities for last segments
 
@@ -168,7 +169,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
 
         float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
         float path_length_remaining = path_length - path_segs.at(cur_path_loc.seg_index).seg_path_length - cur_path_loc.offset;
-        if (path_length_remaining <= breaking_dist) {
+        if (seg_velocity > getVehicleParams().min_vel_for_breaking && path_length_remaining <= breaking_dist) {
             seg_velocity = getVehicleParams().breaking_vel;
             //Utils::logMessage("path_length_remaining = %f, Switched to breaking vel %f", path_length_remaining, seg_velocity);
         }

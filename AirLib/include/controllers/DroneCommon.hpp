@@ -45,7 +45,9 @@ struct VehicleParams {
     //Below is just proportionalty constant to convert from velocity to breaking distance
     float vel_to_breaking_dist = 0.5f;   //ideally this should be 2X for very high speed but for testing we are keeping it 0.5
     float min_breaking_dist = 1; //min breaking distance
-    float breaking_vel = 0.25f;
+    float max_breaking_dist = 3; //min breaking distance
+    float breaking_vel = 1.0f;
+    float min_vel_for_breaking = 3;
 
     //what is the differential positional accuracy of cur_loc?
     //this is not same as GPS accuracy because translational errors

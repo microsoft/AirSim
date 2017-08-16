@@ -29,7 +29,7 @@ public:
         readSettings();
 
         //TODO: set below properly for better high speed safety
-        safety_params.vel_to_breaking_dist = safety_params.min_breaking_dist = 0;
+        //safety_params.vel_to_breaking_dist = safety_params.min_breaking_dist = 0;
 
         //create sim implementations of board and commlink
         board_.reset(new AirSimSimpleFlightBoard(&params_));
