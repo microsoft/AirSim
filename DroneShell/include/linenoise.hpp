@@ -1,124 +1,124 @@
 /*
- *  linenoise.hpp -- Multi-platfrom C++ header-only linenoise library.
- *
- *  All credits and commendations have to go to the authors of the
- *  following excellent libraries.
- *
- *  - linenoise.h and linenose.c (https://github.com/antirez/linenoise)
- *  - ANSI.c (https://github.com/adoxa/ansicon)
- *  - Win32_ANSI.h and Win32_ANSI.c (https://github.com/MSOpenTech/redis)
- *
- * ------------------------------------------------------------------------
- *
- *  Copyright (c) 2015 yhirose
- *  All rights reserved.
- *  
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are met:
- *  
- *  1. Redistributions of source code must retain the above copyright notice, this
- *     list of conditions and the following disclaimer.
- *  2. Redistributions in binary form must reproduce the above copyright notice,
- *     this list of conditions and the following disclaimer in the documentation
- *     and/or other materials provided with the distribution.
- *  
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*  linenoise.hpp -- Multi-platfrom C++ header-only linenoise library.
+*
+*  All credits and commendations have to go to the authors of the
+*  following excellent libraries.
+*
+*  - linenoise.h and linenose.c (https://github.com/antirez/linenoise)
+*  - ANSI.c (https://github.com/adoxa/ansicon)
+*  - Win32_ANSI.h and Win32_ANSI.c (https://github.com/MSOpenTech/redis)
+*
+* ------------------------------------------------------------------------
+*
+*  Copyright (c) 2015 yhirose
+*  All rights reserved.
+*  
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions are met:
+*  
+*  1. Redistributions of source code must retain the above copyright notice, this
+*     list of conditions and the following disclaimer.
+*  2. Redistributions in binary form must reproduce the above copyright notice,
+*     this list of conditions and the following disclaimer in the documentation
+*     and/or other materials provided with the distribution.
+*  
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+*  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+*  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+*  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+*  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+*  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+*  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+*  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+*  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 /* linenoise.h -- guerrilla line editing library against the idea that a
- * line editing lib needs to be 20,000 lines of C code.
- *
- * See linenoise.c for more information.
- *
- * ------------------------------------------------------------------------
- *
- * Copyright (c) 2010, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2010, Pieter Noordhuis <pcnoordhuis at gmail dot com>
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *  *  Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *  *  Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+* line editing lib needs to be 20,000 lines of C code.
+*
+* See linenoise.c for more information.
+*
+* ------------------------------------------------------------------------
+*
+* Copyright (c) 2010, Salvatore Sanfilippo <antirez at gmail dot com>
+* Copyright (c) 2010, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+*
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are
+* met:
+*
+*  *  Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*
+*  *  Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in the
+*     documentation and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+* HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 /*
- * ANSI.c - ANSI escape sequence console driver.
- *
- * Copyright (C) 2005-2014 Jason Hood
- * This software is provided 'as-is', without any express or implied
- * warranty.  In no event will the author be held liable for any damages
- * arising from the use of this software.
- * 
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- * 
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- * 
- * Jason Hood
- * jadoxa@yahoo.com.au
- */
+* ANSI.c - ANSI escape sequence console driver.
+*
+* Copyright (C) 2005-2014 Jason Hood
+* This software is provided 'as-is', without any express or implied
+* warranty.  In no event will the author be held liable for any damages
+* arising from the use of this software.
+* 
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+* 
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software. If you use this software
+*    in a product, an acknowledgment in the product documentation would be
+*    appreciated but is not required.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+* 
+* Jason Hood
+* jadoxa@yahoo.com.au
+*/
 
 /*
- * Win32_ANSI.h and Win32_ANSI.c
- *
- * Derived from ANSI.c by Jason Hood, from his ansicon project (https://github.com/adoxa/ansicon), with modifications.
- *
- * Copyright (c), Microsoft Open Technologies, Inc.
- * All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *  - Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+* Win32_ANSI.h and Win32_ANSI.c
+*
+* Derived from ANSI.c by Jason Hood, from his ansicon project (https://github.com/adoxa/ansicon), with modifications.
+*
+* Copyright (c), Microsoft Open Technologies, Inc.
+* All rights reserved.
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*  - Redistributions of source code must retain the above copyright notice,
+*    this list of conditions and the following disclaimer.
+*  - Redistributions in binary form must reproduce the above copyright notice,
+*    this list of conditions and the following disclaimer in the documentation
+*    and/or other materials provided with the distribution.
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #ifndef __LINENOISE_HPP
 #define __LINENOISE_HPP
@@ -128,7 +128,9 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #else
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 #include <io.h>
 #ifndef STDIN_FILENO
@@ -252,7 +254,7 @@ const WCHAR G1[] =
 #define BACKGROUND_WHITE BACKGROUND_RED|BACKGROUND_GREEN|BACKGROUND_BLUE
 
 const BYTE foregroundcolor[8] =
-    {
+{
     FOREGROUND_BLACK,                   // black foreground
     FOREGROUND_RED,                     // red foreground
     FOREGROUND_GREEN,                   // green foreground
@@ -261,10 +263,10 @@ const BYTE foregroundcolor[8] =
     FOREGROUND_BLUE | FOREGROUND_RED,   // magenta foreground
     FOREGROUND_BLUE | FOREGROUND_GREEN, // cyan foreground
     FOREGROUND_WHITE                    // white foreground
-    };
+};
 
 const BYTE backgroundcolor[8] =
-    {
+{
     BACKGROUND_BLACK,           // black background
     BACKGROUND_RED,         // red background
     BACKGROUND_GREEN,           // green background
@@ -273,7 +275,7 @@ const BYTE backgroundcolor[8] =
     BACKGROUND_BLUE | BACKGROUND_RED,   // magenta background
     BACKGROUND_BLUE | BACKGROUND_GREEN, // cyan background
     BACKGROUND_WHITE,           // white background
-    };
+};
 
 const BYTE attr2ansi[8] =       // map console attribute to ANSI number
 {
@@ -344,10 +346,10 @@ inline void SendSequence(LPWSTR seq)
     in.Event.KeyEvent.wVirtualScanCode = 0;
     in.Event.KeyEvent.dwControlKeyState = 0;
     for (; *seq; ++seq)
-        {
+    {
         in.Event.KeyEvent.uChar.UnicodeChar = *seq;
         WriteConsoleInput(hStdIn, &in, 1, &out);
-        }
+    }
 }
 
 // ========== Print functions
@@ -378,429 +380,429 @@ inline void InterpretEscSeq(void)
     CHAR_INFO  CharInfo;
 
     if (prefix == '[')
-        {
+    {
         if (prefix2 == '?' && (suffix == 'h' || suffix == 'l'))
-            {
+        {
             if (es_argc == 1 && es_argv[0] == 25)
-                {
+            {
                 GetConsoleCursorInfo(hConOut, &CursInfo);
                 CursInfo.bVisible = (suffix == 'h');
                 SetConsoleCursorInfo(hConOut, &CursInfo);
                 return;
-                }
             }
+        }
         // Ignore any other \e[? or \e[> sequences.
         if (prefix2 != 0)
             return;
 
         GetConsoleScreenBufferInfo(hConOut, &Info);
         switch (suffix)
-            {
-                case 'm':
-                    if (es_argc == 0) es_argv[es_argc++] = 0;
-                    for (i = 0; i < es_argc; i++)
-                        {
-                        if (30 <= es_argv[i] && es_argv[i] <= 37)
-                            grm.foreground = es_argv[i] - 30;
-                        else if (40 <= es_argv[i] && es_argv[i] <= 47)
-                            grm.background = es_argv[i] - 40;
-                        else switch (es_argv[i])
-                            {
-                                case 0:
-                                case 39:
-                                case 49:
-                                        {
-                                        WCHAR def[4];
-                                        int   a;
-                                        *def = '7'; def[1] = '\0';
-                                        GetEnvironmentVariableW(L"ANSICON_DEF", def, lenof(def));
-                                        a = wcstol(def, NULL, 16);
-                                        grm.reverse = FALSE;
-                                        if (a < 0)
-                                            {
-                                            grm.reverse = TRUE;
-                                            a = -a;
-                                            }
-                                        if (es_argv[i] != 49)
-                                            grm.foreground = attr2ansi[a & 7];
-                                        if (es_argv[i] != 39)
-                                            grm.background = attr2ansi[(a >> 4) & 7];
-                                        if (es_argv[i] == 0)
-                                            {
-                                            if (es_argc == 1)
-                                                {
-                                                grm.bold = a & FOREGROUND_INTENSITY;
-                                                grm.underline = a & BACKGROUND_INTENSITY;
-                                                }
-                                            else
-                                                {
-                                                grm.bold = 0;
-                                                grm.underline = 0;
-                                                }
-                                            grm.rvideo = 0;
-                                            grm.concealed = 0;
-                                            }
-                                        }
-                                        break;
-
-                                case  1: grm.bold = FOREGROUND_INTENSITY; break;
-                                case  5: // blink
-                                case  4: grm.underline = BACKGROUND_INTENSITY; break;
-                                case  7: grm.rvideo = 1; break;
-                                case  8: grm.concealed = 1; break;
-                                case 21: // oops, this actually turns on double underline
-                                case 22: grm.bold = 0; break;
-                                case 25:
-                                case 24: grm.underline = 0; break;
-                                case 27: grm.rvideo = 0; break;
-                                case 28: grm.concealed = 0; break;
-                            }
-                        }
-                    if (grm.concealed)
-                        {
-                        if (grm.rvideo)
-                            {
-                            attribut = foregroundcolor[grm.foreground]
-                                | backgroundcolor[grm.foreground];
-                            if (grm.bold)
-                                attribut |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
-                            }
-                        else
-                            {
-                            attribut = foregroundcolor[grm.background]
-                                | backgroundcolor[grm.background];
-                            if (grm.underline)
-                                attribut |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
-                            }
-                        }
-                    else if (grm.rvideo)
-                        {
-                        attribut = foregroundcolor[grm.background]
-                            | backgroundcolor[grm.foreground];
-                        if (grm.bold)
-                            attribut |= BACKGROUND_INTENSITY;
-                        if (grm.underline)
-                            attribut |= FOREGROUND_INTENSITY;
-                        }
-                    else
-                        attribut = foregroundcolor[grm.foreground] | grm.bold
-                        | backgroundcolor[grm.background] | grm.underline;
-                    if (grm.reverse)
-                        attribut = ((attribut >> 4) & 15) | ((attribut & 15) << 4);
-                    SetConsoleTextAttribute(hConOut, attribut);
-                    return;
-
-                case 'J':
-                    if (es_argc == 0) es_argv[es_argc++] = 0; // ESC[J == ESC[0J
-                    if (es_argc != 1) return;
-                    switch (es_argv[0])
-                        {
-                            case 0:     // ESC[0J erase from cursor to end of display
-                                len = (Info.dwSize.Y - Info.dwCursorPosition.Y - 1) * Info.dwSize.X
-                                    + Info.dwSize.X - Info.dwCursorPosition.X - 1;
-                                FillConsoleOutputCharacter(hConOut, ' ', len,
-                                    Info.dwCursorPosition,
-                                    &NumberOfCharsWritten);
-                                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len,
-                                    Info.dwCursorPosition,
-                                    &NumberOfCharsWritten);
-                                return;
-
-                            case 1:     // ESC[1J erase from start to cursor.
-                                Pos.X = 0;
-                                Pos.Y = 0;
-                                len = Info.dwCursorPosition.Y * Info.dwSize.X
-                                    + Info.dwCursorPosition.X + 1;
-                                FillConsoleOutputCharacter(hConOut, ' ', len, Pos,
-                                    &NumberOfCharsWritten);
-                                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len, Pos,
-                                    &NumberOfCharsWritten);
-                                return;
-
-                            case 2:     // ESC[2J Clear screen and home cursor
-                                Pos.X = 0;
-                                Pos.Y = 0;
-                                len = Info.dwSize.X * Info.dwSize.Y;
-                                FillConsoleOutputCharacter(hConOut, ' ', len, Pos,
-                                    &NumberOfCharsWritten);
-                                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len, Pos,
-                                    &NumberOfCharsWritten);
-                                SetConsoleCursorPosition(hConOut, Pos);
-                                return;
-
-                            default:
-                                return;
-                        }
-
-                case 'K':
-                    if (es_argc == 0) es_argv[es_argc++] = 0; // ESC[K == ESC[0K
-                    if (es_argc != 1) return;
-                    switch (es_argv[0])
-                        {
-                            case 0:     // ESC[0K Clear to end of line
-                                len = Info.dwSize.X - Info.dwCursorPosition.X + 1;
-                                FillConsoleOutputCharacter(hConOut, ' ', len,
-                                    Info.dwCursorPosition,
-                                    &NumberOfCharsWritten);
-                                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len,
-                                    Info.dwCursorPosition,
-                                    &NumberOfCharsWritten);
-                                return;
-
-                            case 1:     // ESC[1K Clear from start of line to cursor
-                                Pos.X = 0;
-                                Pos.Y = Info.dwCursorPosition.Y;
-                                FillConsoleOutputCharacter(hConOut, ' ',
-                                    Info.dwCursorPosition.X + 1, Pos,
-                                    &NumberOfCharsWritten);
-                                FillConsoleOutputAttribute(hConOut, Info.wAttributes,
-                                    Info.dwCursorPosition.X + 1, Pos,
-                                    &NumberOfCharsWritten);
-                                return;
-
-                            case 2:     // ESC[2K Clear whole line.
-                                Pos.X = 0;
-                                Pos.Y = Info.dwCursorPosition.Y;
-                                FillConsoleOutputCharacter(hConOut, ' ', Info.dwSize.X, Pos,
-                                    &NumberOfCharsWritten);
-                                FillConsoleOutputAttribute(hConOut, Info.wAttributes,
-                                    Info.dwSize.X, Pos,
-                                    &NumberOfCharsWritten);
-                                return;
-
-                            default:
-                                return;
-                        }
-
-                case 'X':                 // ESC[#X Erase # characters.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[X == ESC[1X
-                    if (es_argc != 1) return;
-                    FillConsoleOutputCharacter(hConOut, ' ', es_argv[0],
-                        Info.dwCursorPosition,
-                        &NumberOfCharsWritten);
-                    FillConsoleOutputAttribute(hConOut, Info.wAttributes, es_argv[0],
-                        Info.dwCursorPosition,
-                        &NumberOfCharsWritten);
-                    return;
-
-                case 'L':                 // ESC[#L Insert # blank lines.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[L == ESC[1L
-                    if (es_argc != 1) return;
-                    Rect.Left = 0;
-                    Rect.Top = Info.dwCursorPosition.Y;
-                    Rect.Right = Info.dwSize.X - 1;
-                    Rect.Bottom = Info.dwSize.Y - 1;
-                    Pos.X = 0;
-                    Pos.Y = Info.dwCursorPosition.Y + es_argv[0];
-                    CharInfo.Char.UnicodeChar = ' ';
-                    CharInfo.Attributes = Info.wAttributes;
-                    ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Pos, &CharInfo);
-                    return;
-
-                case 'M':                 // ESC[#M Delete # lines.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[M == ESC[1M
-                    if (es_argc != 1) return;
-                    if (es_argv[0] > Info.dwSize.Y - Info.dwCursorPosition.Y)
-                        es_argv[0] = Info.dwSize.Y - Info.dwCursorPosition.Y;
-                    Rect.Left = 0;
-                    Rect.Top = Info.dwCursorPosition.Y + es_argv[0];
-                    Rect.Right = Info.dwSize.X - 1;
-                    Rect.Bottom = Info.dwSize.Y - 1;
-                    Pos.X = 0;
-                    Pos.Y = Info.dwCursorPosition.Y;
-                    CharInfo.Char.UnicodeChar = ' ';
-                    CharInfo.Attributes = Info.wAttributes;
-                    ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Pos, &CharInfo);
-                    return;
-
-                case 'P':                 // ESC[#P Delete # characters.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[P == ESC[1P
-                    if (es_argc != 1) return;
-                    if (Info.dwCursorPosition.X + es_argv[0] > Info.dwSize.X - 1)
-                        es_argv[0] = Info.dwSize.X - Info.dwCursorPosition.X;
-                    Rect.Left = Info.dwCursorPosition.X + es_argv[0];
-                    Rect.Top = Info.dwCursorPosition.Y;
-                    Rect.Right = Info.dwSize.X - 1;
-                    Rect.Bottom = Info.dwCursorPosition.Y;
-                    CharInfo.Char.UnicodeChar = ' ';
-                    CharInfo.Attributes = Info.wAttributes;
-                    ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Info.dwCursorPosition,
-                        &CharInfo);
-                    return;
-
-                case '@':                 // ESC[#@ Insert # blank characters.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[@ == ESC[1@
-                    if (es_argc != 1) return;
-                    if (Info.dwCursorPosition.X + es_argv[0] > Info.dwSize.X - 1)
-                        es_argv[0] = Info.dwSize.X - Info.dwCursorPosition.X;
-                    Rect.Left = Info.dwCursorPosition.X;
-                    Rect.Top = Info.dwCursorPosition.Y;
-                    Rect.Right = Info.dwSize.X - 1 - es_argv[0];
-                    Rect.Bottom = Info.dwCursorPosition.Y;
-                    Pos.X = Info.dwCursorPosition.X + es_argv[0];
-                    Pos.Y = Info.dwCursorPosition.Y;
-                    CharInfo.Char.UnicodeChar = ' ';
-                    CharInfo.Attributes = Info.wAttributes;
-                    ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Pos, &CharInfo);
-                    return;
-
-                case 'k':                 // ESC[#k
-                case 'A':                 // ESC[#A Moves cursor up # lines
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[A == ESC[1A
-                    if (es_argc != 1) return;
-                    Pos.Y = Info.dwCursorPosition.Y - es_argv[0];
-                    if (Pos.Y < 0) Pos.Y = 0;
-                    Pos.X = Info.dwCursorPosition.X;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 'e':                 // ESC[#e
-                case 'B':                 // ESC[#B Moves cursor down # lines
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[B == ESC[1B
-                    if (es_argc != 1) return;
-                    Pos.Y = Info.dwCursorPosition.Y + es_argv[0];
-                    if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
-                    Pos.X = Info.dwCursorPosition.X;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 'a':                 // ESC[#a
-                case 'C':                 // ESC[#C Moves cursor forward # spaces
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[C == ESC[1C
-                    if (es_argc != 1) return;
-                    Pos.X = Info.dwCursorPosition.X + es_argv[0];
-                    if (Pos.X >= Info.dwSize.X) Pos.X = Info.dwSize.X - 1;
-                    Pos.Y = Info.dwCursorPosition.Y;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 'j':                 // ESC[#j
-                case 'D':                 // ESC[#D Moves cursor back # spaces
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[D == ESC[1D
-                    if (es_argc != 1) return;
-                    Pos.X = Info.dwCursorPosition.X - es_argv[0];
-                    if (Pos.X < 0) Pos.X = 0;
-                    Pos.Y = Info.dwCursorPosition.Y;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 'E':                 // ESC[#E Moves cursor down # lines, column 1.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[E == ESC[1E
-                    if (es_argc != 1) return;
-                    Pos.Y = Info.dwCursorPosition.Y + es_argv[0];
-                    if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
-                    Pos.X = 0;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 'F':                 // ESC[#F Moves cursor up # lines, column 1.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[F == ESC[1F
-                    if (es_argc != 1) return;
-                    Pos.Y = Info.dwCursorPosition.Y - es_argv[0];
-                    if (Pos.Y < 0) Pos.Y = 0;
-                    Pos.X = 0;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case '`':                 // ESC[#`
-                case 'G':                 // ESC[#G Moves cursor column # in current row.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[G == ESC[1G
-                    if (es_argc != 1) return;
-                    Pos.X = es_argv[0] - 1;
-                    if (Pos.X >= Info.dwSize.X) Pos.X = Info.dwSize.X - 1;
-                    if (Pos.X < 0) Pos.X = 0;
-                    Pos.Y = Info.dwCursorPosition.Y;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 'd':                 // ESC[#d Moves cursor row #, current column.
-                    if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[d == ESC[1d
-                    if (es_argc != 1) return;
-                    Pos.Y = es_argv[0] - 1;
-                    if (Pos.Y < 0) Pos.Y = 0;
-                    if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 'f':                 // ESC[#;#f
-                case 'H':                 // ESC[#;#H Moves cursor to line #, column #
-                    if (es_argc == 0)
-                        es_argv[es_argc++] = 1; // ESC[H == ESC[1;1H
-                    if (es_argc == 1)
-                        es_argv[es_argc++] = 1; // ESC[#H == ESC[#;1H
-                    if (es_argc > 2) return;
-                    Pos.X = es_argv[1] - 1;
-                    if (Pos.X < 0) Pos.X = 0;
-                    if (Pos.X >= Info.dwSize.X) Pos.X = Info.dwSize.X - 1;
-                    Pos.Y = es_argv[0] - 1;
-                    if (Pos.Y < 0) Pos.Y = 0;
-                    if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
-                    SetConsoleCursorPosition(hConOut, Pos);
-                    return;
-
-                case 's':                 // ESC[s Saves cursor position for recall later
-                    if (es_argc != 0) return;
-                    SavePos = Info.dwCursorPosition;
-                    return;
-
-                case 'u':                 // ESC[u Return to saved cursor position
-                    if (es_argc != 0) return;
-                    SetConsoleCursorPosition(hConOut, SavePos);
-                    return;
-
-                case 'n':                 // ESC[#n Device status report
-                    if (es_argc != 1) return; // ESC[n == ESC[0n -> ignored
-                    switch (es_argv[0])
-                        {
-                            case 5:     // ESC[5n Report status
-                                SendSequence(L"\33[0n"); // "OK"
-                                return;
-
-                            case 6:     // ESC[6n Report cursor position
-                                    {
-                                    WCHAR buf[32];
-                                    swprintf(buf, L"\33[%d;%dR", Info.dwCursorPosition.Y + 1,
-                                        Info.dwCursorPosition.X + 1);
-                                    SendSequence(buf);
-                                    }
-                                    return;
-
-                            default:
-                                return;
-                        }
-
-                case 't':                 // ESC[#t Window manipulation
-                    if (es_argc != 1) return;
-                    if (es_argv[0] == 21)   // ESC[21t Report xterm window's title
-                        {
-                        WCHAR buf[MAX_PATH * 2];
-                        DWORD len = GetConsoleTitleW(buf + 3, lenof(buf) - 3 - 2);
-                        // Too bad if it's too big or fails.
-                        buf[0] = ESC;
-                        buf[1] = ']';
-                        buf[2] = 'l';
-                        buf[3 + len] = ESC;
-                        buf[3 + len + 1] = '\\';
-                        buf[3 + len + 2] = '\0';
-                        SendSequence(buf);
-                        }
-                    return;
-
-                default:
-                    return;
-            }
-        }
-    else // (prefix == ']')
         {
+        case 'm':
+            if (es_argc == 0) es_argv[es_argc++] = 0;
+            for (i = 0; i < es_argc; i++)
+            {
+                if (30 <= es_argv[i] && es_argv[i] <= 37)
+                    grm.foreground = es_argv[i] - 30;
+                else if (40 <= es_argv[i] && es_argv[i] <= 47)
+                    grm.background = es_argv[i] - 40;
+                else switch (es_argv[i])
+                {
+                case 0:
+                case 39:
+                case 49:
+                {
+                    WCHAR def[4];
+                    int   a;
+                    *def = '7'; def[1] = '\0';
+                    GetEnvironmentVariableW(L"ANSICON_DEF", def, lenof(def));
+                    a = wcstol(def, NULL, 16);
+                    grm.reverse = FALSE;
+                    if (a < 0)
+                    {
+                        grm.reverse = TRUE;
+                        a = -a;
+                    }
+                    if (es_argv[i] != 49)
+                        grm.foreground = attr2ansi[a & 7];
+                    if (es_argv[i] != 39)
+                        grm.background = attr2ansi[(a >> 4) & 7];
+                    if (es_argv[i] == 0)
+                    {
+                        if (es_argc == 1)
+                        {
+                            grm.bold = a & FOREGROUND_INTENSITY;
+                            grm.underline = a & BACKGROUND_INTENSITY;
+                        }
+                        else
+                        {
+                            grm.bold = 0;
+                            grm.underline = 0;
+                        }
+                        grm.rvideo = 0;
+                        grm.concealed = 0;
+                    }
+                }
+                break;
+
+                case  1: grm.bold = FOREGROUND_INTENSITY; break;
+                case  5: // blink
+                case  4: grm.underline = BACKGROUND_INTENSITY; break;
+                case  7: grm.rvideo = 1; break;
+                case  8: grm.concealed = 1; break;
+                case 21: // oops, this actually turns on double underline
+                case 22: grm.bold = 0; break;
+                case 25:
+                case 24: grm.underline = 0; break;
+                case 27: grm.rvideo = 0; break;
+                case 28: grm.concealed = 0; break;
+                }
+            }
+            if (grm.concealed)
+            {
+                if (grm.rvideo)
+                {
+                    attribut = foregroundcolor[grm.foreground]
+                        | backgroundcolor[grm.foreground];
+                    if (grm.bold)
+                        attribut |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
+                }
+                else
+                {
+                    attribut = foregroundcolor[grm.background]
+                        | backgroundcolor[grm.background];
+                    if (grm.underline)
+                        attribut |= FOREGROUND_INTENSITY | BACKGROUND_INTENSITY;
+                }
+            }
+            else if (grm.rvideo)
+            {
+                attribut = foregroundcolor[grm.background]
+                    | backgroundcolor[grm.foreground];
+                if (grm.bold)
+                    attribut |= BACKGROUND_INTENSITY;
+                if (grm.underline)
+                    attribut |= FOREGROUND_INTENSITY;
+            }
+            else
+                attribut = foregroundcolor[grm.foreground] | grm.bold
+                | backgroundcolor[grm.background] | grm.underline;
+            if (grm.reverse)
+                attribut = ((attribut >> 4) & 15) | ((attribut & 15) << 4);
+            SetConsoleTextAttribute(hConOut, attribut);
+            return;
+
+        case 'J':
+            if (es_argc == 0) es_argv[es_argc++] = 0; // ESC[J == ESC[0J
+            if (es_argc != 1) return;
+            switch (es_argv[0])
+            {
+            case 0:     // ESC[0J erase from cursor to end of display
+                len = (Info.dwSize.Y - Info.dwCursorPosition.Y - 1) * Info.dwSize.X
+                    + Info.dwSize.X - Info.dwCursorPosition.X - 1;
+                FillConsoleOutputCharacter(hConOut, ' ', len,
+                    Info.dwCursorPosition,
+                    &NumberOfCharsWritten);
+                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len,
+                    Info.dwCursorPosition,
+                    &NumberOfCharsWritten);
+                return;
+
+            case 1:     // ESC[1J erase from start to cursor.
+                Pos.X = 0;
+                Pos.Y = 0;
+                len = Info.dwCursorPosition.Y * Info.dwSize.X
+                    + Info.dwCursorPosition.X + 1;
+                FillConsoleOutputCharacter(hConOut, ' ', len, Pos,
+                    &NumberOfCharsWritten);
+                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len, Pos,
+                    &NumberOfCharsWritten);
+                return;
+
+            case 2:     // ESC[2J Clear screen and home cursor
+                Pos.X = 0;
+                Pos.Y = 0;
+                len = Info.dwSize.X * Info.dwSize.Y;
+                FillConsoleOutputCharacter(hConOut, ' ', len, Pos,
+                    &NumberOfCharsWritten);
+                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len, Pos,
+                    &NumberOfCharsWritten);
+                SetConsoleCursorPosition(hConOut, Pos);
+                return;
+
+            default:
+                return;
+            }
+
+        case 'K':
+            if (es_argc == 0) es_argv[es_argc++] = 0; // ESC[K == ESC[0K
+            if (es_argc != 1) return;
+            switch (es_argv[0])
+            {
+            case 0:     // ESC[0K Clear to end of line
+                len = Info.dwSize.X - Info.dwCursorPosition.X + 1;
+                FillConsoleOutputCharacter(hConOut, ' ', len,
+                    Info.dwCursorPosition,
+                    &NumberOfCharsWritten);
+                FillConsoleOutputAttribute(hConOut, Info.wAttributes, len,
+                    Info.dwCursorPosition,
+                    &NumberOfCharsWritten);
+                return;
+
+            case 1:     // ESC[1K Clear from start of line to cursor
+                Pos.X = 0;
+                Pos.Y = Info.dwCursorPosition.Y;
+                FillConsoleOutputCharacter(hConOut, ' ',
+                    Info.dwCursorPosition.X + 1, Pos,
+                    &NumberOfCharsWritten);
+                FillConsoleOutputAttribute(hConOut, Info.wAttributes,
+                    Info.dwCursorPosition.X + 1, Pos,
+                    &NumberOfCharsWritten);
+                return;
+
+            case 2:     // ESC[2K Clear whole line.
+                Pos.X = 0;
+                Pos.Y = Info.dwCursorPosition.Y;
+                FillConsoleOutputCharacter(hConOut, ' ', Info.dwSize.X, Pos,
+                    &NumberOfCharsWritten);
+                FillConsoleOutputAttribute(hConOut, Info.wAttributes,
+                    Info.dwSize.X, Pos,
+                    &NumberOfCharsWritten);
+                return;
+
+            default:
+                return;
+            }
+
+        case 'X':                 // ESC[#X Erase # characters.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[X == ESC[1X
+            if (es_argc != 1) return;
+            FillConsoleOutputCharacter(hConOut, ' ', es_argv[0],
+                Info.dwCursorPosition,
+                &NumberOfCharsWritten);
+            FillConsoleOutputAttribute(hConOut, Info.wAttributes, es_argv[0],
+                Info.dwCursorPosition,
+                &NumberOfCharsWritten);
+            return;
+
+        case 'L':                 // ESC[#L Insert # blank lines.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[L == ESC[1L
+            if (es_argc != 1) return;
+            Rect.Left = 0;
+            Rect.Top = Info.dwCursorPosition.Y;
+            Rect.Right = Info.dwSize.X - 1;
+            Rect.Bottom = Info.dwSize.Y - 1;
+            Pos.X = 0;
+            Pos.Y = Info.dwCursorPosition.Y + es_argv[0];
+            CharInfo.Char.UnicodeChar = ' ';
+            CharInfo.Attributes = Info.wAttributes;
+            ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Pos, &CharInfo);
+            return;
+
+        case 'M':                 // ESC[#M Delete # lines.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[M == ESC[1M
+            if (es_argc != 1) return;
+            if (es_argv[0] > Info.dwSize.Y - Info.dwCursorPosition.Y)
+                es_argv[0] = Info.dwSize.Y - Info.dwCursorPosition.Y;
+            Rect.Left = 0;
+            Rect.Top = Info.dwCursorPosition.Y + es_argv[0];
+            Rect.Right = Info.dwSize.X - 1;
+            Rect.Bottom = Info.dwSize.Y - 1;
+            Pos.X = 0;
+            Pos.Y = Info.dwCursorPosition.Y;
+            CharInfo.Char.UnicodeChar = ' ';
+            CharInfo.Attributes = Info.wAttributes;
+            ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Pos, &CharInfo);
+            return;
+
+        case 'P':                 // ESC[#P Delete # characters.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[P == ESC[1P
+            if (es_argc != 1) return;
+            if (Info.dwCursorPosition.X + es_argv[0] > Info.dwSize.X - 1)
+                es_argv[0] = Info.dwSize.X - Info.dwCursorPosition.X;
+            Rect.Left = Info.dwCursorPosition.X + es_argv[0];
+            Rect.Top = Info.dwCursorPosition.Y;
+            Rect.Right = Info.dwSize.X - 1;
+            Rect.Bottom = Info.dwCursorPosition.Y;
+            CharInfo.Char.UnicodeChar = ' ';
+            CharInfo.Attributes = Info.wAttributes;
+            ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Info.dwCursorPosition,
+                &CharInfo);
+            return;
+
+        case '@':                 // ESC[#@ Insert # blank characters.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[@ == ESC[1@
+            if (es_argc != 1) return;
+            if (Info.dwCursorPosition.X + es_argv[0] > Info.dwSize.X - 1)
+                es_argv[0] = Info.dwSize.X - Info.dwCursorPosition.X;
+            Rect.Left = Info.dwCursorPosition.X;
+            Rect.Top = Info.dwCursorPosition.Y;
+            Rect.Right = Info.dwSize.X - 1 - es_argv[0];
+            Rect.Bottom = Info.dwCursorPosition.Y;
+            Pos.X = Info.dwCursorPosition.X + es_argv[0];
+            Pos.Y = Info.dwCursorPosition.Y;
+            CharInfo.Char.UnicodeChar = ' ';
+            CharInfo.Attributes = Info.wAttributes;
+            ScrollConsoleScreenBuffer(hConOut, &Rect, NULL, Pos, &CharInfo);
+            return;
+
+        case 'k':                 // ESC[#k
+        case 'A':                 // ESC[#A Moves cursor up # lines
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[A == ESC[1A
+            if (es_argc != 1) return;
+            Pos.Y = Info.dwCursorPosition.Y - es_argv[0];
+            if (Pos.Y < 0) Pos.Y = 0;
+            Pos.X = Info.dwCursorPosition.X;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 'e':                 // ESC[#e
+        case 'B':                 // ESC[#B Moves cursor down # lines
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[B == ESC[1B
+            if (es_argc != 1) return;
+            Pos.Y = Info.dwCursorPosition.Y + es_argv[0];
+            if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
+            Pos.X = Info.dwCursorPosition.X;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 'a':                 // ESC[#a
+        case 'C':                 // ESC[#C Moves cursor forward # spaces
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[C == ESC[1C
+            if (es_argc != 1) return;
+            Pos.X = Info.dwCursorPosition.X + es_argv[0];
+            if (Pos.X >= Info.dwSize.X) Pos.X = Info.dwSize.X - 1;
+            Pos.Y = Info.dwCursorPosition.Y;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 'j':                 // ESC[#j
+        case 'D':                 // ESC[#D Moves cursor back # spaces
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[D == ESC[1D
+            if (es_argc != 1) return;
+            Pos.X = Info.dwCursorPosition.X - es_argv[0];
+            if (Pos.X < 0) Pos.X = 0;
+            Pos.Y = Info.dwCursorPosition.Y;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 'E':                 // ESC[#E Moves cursor down # lines, column 1.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[E == ESC[1E
+            if (es_argc != 1) return;
+            Pos.Y = Info.dwCursorPosition.Y + es_argv[0];
+            if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
+            Pos.X = 0;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 'F':                 // ESC[#F Moves cursor up # lines, column 1.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[F == ESC[1F
+            if (es_argc != 1) return;
+            Pos.Y = Info.dwCursorPosition.Y - es_argv[0];
+            if (Pos.Y < 0) Pos.Y = 0;
+            Pos.X = 0;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case '`':                 // ESC[#`
+        case 'G':                 // ESC[#G Moves cursor column # in current row.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[G == ESC[1G
+            if (es_argc != 1) return;
+            Pos.X = es_argv[0] - 1;
+            if (Pos.X >= Info.dwSize.X) Pos.X = Info.dwSize.X - 1;
+            if (Pos.X < 0) Pos.X = 0;
+            Pos.Y = Info.dwCursorPosition.Y;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 'd':                 // ESC[#d Moves cursor row #, current column.
+            if (es_argc == 0) es_argv[es_argc++] = 1; // ESC[d == ESC[1d
+            if (es_argc != 1) return;
+            Pos.Y = es_argv[0] - 1;
+            if (Pos.Y < 0) Pos.Y = 0;
+            if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 'f':                 // ESC[#;#f
+        case 'H':                 // ESC[#;#H Moves cursor to line #, column #
+            if (es_argc == 0)
+                es_argv[es_argc++] = 1; // ESC[H == ESC[1;1H
+            if (es_argc == 1)
+                es_argv[es_argc++] = 1; // ESC[#H == ESC[#;1H
+            if (es_argc > 2) return;
+            Pos.X = es_argv[1] - 1;
+            if (Pos.X < 0) Pos.X = 0;
+            if (Pos.X >= Info.dwSize.X) Pos.X = Info.dwSize.X - 1;
+            Pos.Y = es_argv[0] - 1;
+            if (Pos.Y < 0) Pos.Y = 0;
+            if (Pos.Y >= Info.dwSize.Y) Pos.Y = Info.dwSize.Y - 1;
+            SetConsoleCursorPosition(hConOut, Pos);
+            return;
+
+        case 's':                 // ESC[s Saves cursor position for recall later
+            if (es_argc != 0) return;
+            SavePos = Info.dwCursorPosition;
+            return;
+
+        case 'u':                 // ESC[u Return to saved cursor position
+            if (es_argc != 0) return;
+            SetConsoleCursorPosition(hConOut, SavePos);
+            return;
+
+        case 'n':                 // ESC[#n Device status report
+            if (es_argc != 1) return; // ESC[n == ESC[0n -> ignored
+            switch (es_argv[0])
+            {
+            case 5:     // ESC[5n Report status
+                SendSequence(L"\33[0n"); // "OK"
+                return;
+
+            case 6:     // ESC[6n Report cursor position
+            {
+                WCHAR buf[32];
+                swprintf(buf, 32, L"\33[%d;%dR", Info.dwCursorPosition.Y + 1,
+                    Info.dwCursorPosition.X + 1);
+                SendSequence(buf);
+            }
+            return;
+
+            default:
+                return;
+            }
+
+        case 't':                 // ESC[#t Window manipulation
+            if (es_argc != 1) return;
+            if (es_argv[0] == 21)   // ESC[21t Report xterm window's title
+            {
+                WCHAR buf[MAX_PATH * 2];
+                DWORD len = GetConsoleTitleW(buf + 3, lenof(buf) - 3 - 2);
+                // Too bad if it's too big or fails.
+                buf[0] = ESC;
+                buf[1] = ']';
+                buf[2] = 'l';
+                buf[3 + len] = ESC;
+                buf[3 + len + 1] = '\\';
+                buf[3 + len + 2] = '\0';
+                SendSequence(buf);
+            }
+            return;
+
+        default:
+            return;
+        }
+    }
+    else // (prefix == ']')
+    {
         // Ignore any \e]? or \e]> sequences.
         if (prefix2 != 0)
             return;
 
         if (es_argc == 1 && es_argv[0] == 0) // ESC]0;titleST
-            {
+        {
             SetConsoleTitleW(Pt_arg);
-            }
         }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -818,106 +820,106 @@ inline BOOL ParseAndPrintANSIString(HANDLE hDev, LPCVOID lpBuffer, DWORD nNumber
     LPCSTR s;
 
     if (hDev != hConOut)    // reinit if device has changed
-        {
+    {
         hConOut = hDev;
         state = 1;
         shifted = FALSE;
-        }
+    }
     for (i = nNumberOfBytesToWrite, s = (LPCSTR)lpBuffer; i > 0; i--, s++)
-        {
+    {
         if (state == 1)
-            {
+        {
             if (*s == ESC) state = 2;
             else if (*s == SO) shifted = TRUE;
             else if (*s == SI) shifted = FALSE;
             else PushBuffer(*s);
-            }
+        }
         else if (state == 2)
-            {
+        {
             if (*s == ESC); // \e\e...\e == \e
             else if ((*s == '[') || (*s == ']'))
-                {
+            {
                 FlushBuffer();
                 prefix = *s;
                 prefix2 = 0;
                 state = 3;
                 Pt_len = 0;
                 *Pt_arg = '\0';
-                }
+            }
             else if (*s == ')' || *s == '(') state = 6;
             else state = 1;
-            }
+        }
         else if (state == 3)
-            {
+        {
             if (is_digit(*s))
-                {
+            {
                 es_argc = 0;
                 es_argv[0] = *s - '0';
                 state = 4;
-                }
+            }
             else if (*s == ';')
-                {
+            {
                 es_argc = 1;
                 es_argv[0] = 0;
                 es_argv[1] = 0;
                 state = 4;
-                }
+            }
             else if (*s == '?' || *s == '>')
-                {
+            {
                 prefix2 = *s;
-                }
+            }
             else
-                {
+            {
                 es_argc = 0;
                 suffix = *s;
                 InterpretEscSeq();
                 state = 1;
-                }
             }
+        }
         else if (state == 4)
-            {
+        {
             if (is_digit(*s))
-                {
+            {
                 es_argv[es_argc] = 10 * es_argv[es_argc] + (*s - '0');
-                }
+            }
             else if (*s == ';')
-                {
+            {
                 if (es_argc < MAX_ARG - 1) es_argc++;
                 es_argv[es_argc] = 0;
                 if (prefix == ']')
                     state = 5;
-                }
+            }
             else
-                {
+            {
                 es_argc++;
                 suffix = *s;
                 InterpretEscSeq();
                 state = 1;
-                }
             }
+        }
         else if (state == 5)
-            {
+        {
             if (*s == BEL)
-                {
+            {
                 Pt_arg[Pt_len] = '\0';
                 InterpretEscSeq();
                 state = 1;
-                }
+            }
             else if (*s == '\\' && Pt_len > 0 && Pt_arg[Pt_len - 1] == ESC)
-                {
+            {
                 Pt_arg[--Pt_len] = '\0';
                 InterpretEscSeq();
                 state = 1;
-                }
+            }
             else if (Pt_len < lenof(Pt_arg) - 1)
                 Pt_arg[Pt_len++] = *s;
-            }
+        }
         else if (state == 6)
-            {
+        {
             // Ignore it (ESC ) 0 is implicit; nothing else is supported).
             state = 1;
-            }
         }
+    }
     FlushBuffer();
     if (lpNumberOfBytesWritten != NULL)
         *lpNumberOfBytesWritten = nNumberOfBytesToWrite - i;
@@ -928,10 +930,9 @@ inline BOOL ParseAndPrintANSIString(HANDLE hDev, LPCVOID lpBuffer, DWORD nNumber
 
 HANDLE hOut;
 HANDLE hIn;
-DWORD consolemode;
+DWORD consolemodeIn = 0;
 
 inline int win32read(int *c) {
-
     DWORD foo;
     INPUT_RECORD b;
     KEY_EVENT_RECORD e;
@@ -952,42 +953,42 @@ inline int win32read(int *c) {
 
                 /* Ctrl+Key */
                 switch (*c) {
-                    case 'D':
-                        *c = 4;
-                        return 1;
-                    case 'C':
-                        *c = 3;
-                        return 1;
-                    case 'H':
-                        *c = 8;
-                        return 1;
-                    case 'T':
-                        *c = 20;
-                        return 1;
-                    case 'B': /* ctrl-b, left_arrow */
-                        *c = 2;
-                        return 1;
-                    case 'F': /* ctrl-f right_arrow*/
-                        *c = 6;
-                        return 1;
-                    case 'P': /* ctrl-p up_arrow*/
-                        *c = 16;
-                        return 1;
-                    case 'N': /* ctrl-n down_arrow*/
-                        *c = 14;
-                        return 1;
-                    case 'U': /* Ctrl+u, delete the whole line. */
-                        *c = 21;
-                        return 1;
-                    case 'K': /* Ctrl+k, delete from current to end of line. */
-                        *c = 11;
-                        return 1;
-                    case 'A': /* Ctrl+a, go to the start of the line */
-                        *c = 1;
-                        return 1;
-                    case 'E': /* ctrl+e, go to the end of the line */
-                        *c = 5;
-                        return 1;
+                case 'D':
+                    *c = 4;
+                    return 1;
+                case 'C':
+                    *c = 3;
+                    return 1;
+                case 'H':
+                    *c = 8;
+                    return 1;
+                case 'T':
+                    *c = 20;
+                    return 1;
+                case 'B': /* ctrl-b, left_arrow */
+                    *c = 2;
+                    return 1;
+                case 'F': /* ctrl-f right_arrow*/
+                    *c = 6;
+                    return 1;
+                case 'P': /* ctrl-p up_arrow*/
+                    *c = 16;
+                    return 1;
+                case 'N': /* ctrl-n down_arrow*/
+                    *c = 14;
+                    return 1;
+                case 'U': /* Ctrl+u, delete the whole line. */
+                    *c = 21;
+                    return 1;
+                case 'K': /* Ctrl+k, delete from current to end of line. */
+                    *c = 11;
+                    return 1;
+                case 'A': /* Ctrl+a, go to the start of the line */
+                    *c = 1;
+                    return 1;
+                case 'E': /* ctrl+e, go to the end of the line */
+                    *c = 5;
+                    return 1;
                 }
 
                 /* Other Ctrl+KEYs ignored */
@@ -995,38 +996,38 @@ inline int win32read(int *c) {
 
                 switch (e.wVirtualKeyCode) {
 
-                    case VK_ESCAPE: /* ignore - send ctrl-c, will return -1 */
-                        *c = 3;
-                        return 1;
-                    case VK_RETURN:  /* enter */
-                        *c = 13;
-                        return 1;
-                    case VK_LEFT:   /* left */
-                        *c = 2;
-                        return 1;
-                    case VK_RIGHT: /* right */
-                        *c = 6;
-                        return 1;
-                    case VK_UP:   /* up */
-                        *c = 16;
-                        return 1;
-                    case VK_DOWN:  /* down */
-                        *c = 14;
-                        return 1;
-                    case VK_HOME:
-                        *c = 1;
-                        return 1;
-                    case VK_END:
-                        *c = 5;
-                        return 1;
-                    case VK_BACK:
-                        *c = 8;
-                        return 1;
-                    case VK_DELETE:
-                        *c = 127;
-                        return 1;
-                    default:
-                        if (*c) return 1;
+                case VK_ESCAPE: /* ignore - send ctrl-c, will return -1 */
+                    *c = 3;
+                    return 1;
+                case VK_RETURN:  /* enter */
+                    *c = 13;
+                    return 1;
+                case VK_LEFT:   /* left */
+                    *c = 2;
+                    return 1;
+                case VK_RIGHT: /* right */
+                    *c = 6;
+                    return 1;
+                case VK_UP:   /* up */
+                    *c = 16;
+                    return 1;
+                case VK_DOWN:  /* down */
+                    *c = 14;
+                    return 1;
+                case VK_HOME:
+                    *c = 1;
+                    return 1;
+                case VK_END:
+                    *c = 5;
+                    return 1;
+                case VK_BACK:
+                    *c = 8;
+                    return 1;
+                case VK_DELETE:
+                    *c = 127;
+                    return 1;
+                default:
+                    if (*c) return 1;
                 }
             }
         }
@@ -1073,8 +1074,8 @@ static size_t history_max_len = LINENOISE_DEFAULT_HISTORY_MAX_LEN;
 static std::vector<std::string> history;
 
 /* The linenoiseState structure represents the state during line editing.
- * We pass this state to functions implementing specific editing
- * functionalities. */
+* We pass this state to functions implementing specific editing
+* functionalities. */
 struct linenoiseState {
     int ifd;            /* Terminal stdin file descriptor. */
     int ofd;            /* Terminal stdout file descriptor. */
@@ -1356,7 +1357,7 @@ inline int unicodeIsCombiningChar(unsigned long cp)
 }
 
 /* Get length of previous UTF8 character
- */
+*/
 inline size_t unicodePrevUTF8CharLen(char* buf, int pos)
 {
     int end = pos--;
@@ -1367,7 +1368,7 @@ inline size_t unicodePrevUTF8CharLen(char* buf, int pos)
 }
 
 /* Get length of previous UTF8 character
- */
+*/
 inline size_t unicodeUTF8CharLen(char* buf, size_t buf_len, size_t pos)
 {
     if (pos == buf_len) { return 0; }
@@ -1379,11 +1380,11 @@ inline size_t unicodeUTF8CharLen(char* buf, size_t buf_len, size_t pos)
 }
 
 /* Convert UTF8 to Unicode code point
- */
+*/
 inline size_t unicodeUTF8CharToCodePoint(
-   const char* buf,
-   size_t      len,
-   int*        cp)
+    const char* buf,
+    size_t      len,
+    int*        cp)
 {
     if (len) {
         unsigned char byte = buf[0];
@@ -1393,22 +1394,22 @@ inline size_t unicodeUTF8CharToCodePoint(
         } else if ((byte & 0xE0) == 0xC0) {
             if (len >= 2) {
                 *cp = (((unsigned long)(buf[0] & 0x1F)) << 6) |
-                       ((unsigned long)(buf[1] & 0x3F));
+                    ((unsigned long)(buf[1] & 0x3F));
                 return 2;
             }
         } else if ((byte & 0xF0) == 0xE0) {
             if (len >= 3) {
                 *cp = (((unsigned long)(buf[0] & 0x0F)) << 12) |
-                      (((unsigned long)(buf[1] & 0x3F)) << 6) |
-                       ((unsigned long)(buf[2] & 0x3F));
+                    (((unsigned long)(buf[1] & 0x3F)) << 6) |
+                    ((unsigned long)(buf[2] & 0x3F));
                 return 3;
             }
         } else if ((byte & 0xF8) == 0xF0) {
             if (len >= 4) {
                 *cp = (((unsigned long)(buf[0] & 0x07)) << 18) |
-                      (((unsigned long)(buf[1] & 0x3F)) << 12) |
-                      (((unsigned long)(buf[2] & 0x3F)) << 6) |
-                       ((unsigned long)(buf[3] & 0x3F));
+                    (((unsigned long)(buf[1] & 0x3F)) << 12) |
+                    (((unsigned long)(buf[2] & 0x3F)) << 6) |
+                    ((unsigned long)(buf[3] & 0x3F));
                 return 4;
             }
         }
@@ -1417,7 +1418,7 @@ inline size_t unicodeUTF8CharToCodePoint(
 }
 
 /* Get length of grapheme
- */
+*/
 inline size_t unicodeGraphemeLen(char* buf, size_t buf_len, size_t pos)
 {
     if (pos == buf_len) {
@@ -1427,7 +1428,7 @@ inline size_t unicodeGraphemeLen(char* buf, size_t buf_len, size_t pos)
     pos += unicodeUTF8CharLen(buf, buf_len, pos);
     while (pos < buf_len) {
         size_t len = unicodeUTF8CharLen(buf, buf_len, pos);
-        int cp;
+        int cp = 0;
         unicodeUTF8CharToCodePoint(buf + pos, len, &cp);
         if (!unicodeIsCombiningChar(cp)) {
             return pos - beg;
@@ -1438,7 +1439,7 @@ inline size_t unicodeGraphemeLen(char* buf, size_t buf_len, size_t pos)
 }
 
 /* Get length of previous grapheme
- */
+*/
 inline size_t unicodePrevGraphemeLen(char* buf, size_t pos)
 {
     if (pos == 0) {
@@ -1448,7 +1449,7 @@ inline size_t unicodePrevGraphemeLen(char* buf, size_t pos)
     while (pos > 0) {
         size_t len = unicodePrevUTF8CharLen(buf, pos);
         pos -= len;
-        int cp;
+        int cp = 0;
         unicodeUTF8CharToCodePoint(buf + pos, len, &cp);
         if (!unicodeIsCombiningChar(cp)) {
             return end - pos;
@@ -1476,7 +1477,7 @@ inline int isAnsiEscape(const char* buf, size_t buf_len, size_t* len)
 }
 
 /* Get column position for the single line mode.
- */
+*/
 inline size_t unicodeColumnPos(const char* buf, size_t buf_len)
 {
     size_t ret = 0;
@@ -1489,7 +1490,7 @@ inline size_t unicodeColumnPos(const char* buf, size_t buf_len)
             continue;
         }
 
-        int cp;
+        int cp = 0;
         len = unicodeUTF8CharToCodePoint(buf + off, buf_len - off, &cp);
 
         if (!unicodeIsCombiningChar(cp)) {
@@ -1503,7 +1504,7 @@ inline size_t unicodeColumnPos(const char* buf, size_t buf_len)
 }
 
 /* Get column position for the multi line mode.
- */
+*/
 inline size_t unicodeColumnPosForMultiLine(char* buf, size_t buf_len, size_t pos, size_t cols, size_t ini_pos)
 {
     size_t ret = 0;
@@ -1511,7 +1512,7 @@ inline size_t unicodeColumnPosForMultiLine(char* buf, size_t buf_len, size_t pos
 
     size_t off = 0;
     while (off < buf_len) {
-        int cp;
+        int cp = 0;
         size_t len = unicodeUTF8CharToCodePoint(buf + off, buf_len - off, &cp);
 
         size_t wid = 0;
@@ -1541,7 +1542,7 @@ inline size_t unicodeColumnPosForMultiLine(char* buf, size_t buf_len, size_t pos
 }
 
 /* Read UTF8 character from file.
- */
+*/
 inline size_t unicodeReadUTF8Char(int fd, char* buf, int* cp)
 {
     size_t nread = read(fd,&buf[0],1);
@@ -1576,7 +1577,7 @@ inline void SetMultiLine(bool ml) {
 }
 
 /* Return true if the terminal name is in the list of terminals we know are
- * not able to understand basic escape sequences. */
+* not able to understand basic escape sequences. */
 inline bool isUnsupportedTerm(void) {
 #ifndef _WIN32
     char *term = getenv("TERM");
@@ -1602,49 +1603,50 @@ inline bool enableRawMode(int fd) {
     if (tcgetattr(fd,&orig_termios) == -1) goto fatal;
 
     raw = orig_termios;  /* modify the original mode */
-    /* input modes: no break, no CR to NL, no parity check, no strip char,
-     * no start/stop output control. */
+                         /* input modes: no break, no CR to NL, no parity check, no strip char,
+                         * no start/stop output control. */
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     /* output modes - disable post processing */
     raw.c_oflag &= ~(OPOST);
     /* control modes - set 8 bit chars */
     raw.c_cflag |= (CS8);
     /* local modes - choing off, canonical off, no extended functions,
-     * no signal chars (^Z,^C) */
+    * no signal chars (^Z,^C) */
     raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
     /* control chars - set return condition: min number of bytes and timer.
-     * We want read to return every single byte, without timeout. */
+    * We want read to return every single byte, without timeout. */
     raw.c_cc[VMIN] = 1; raw.c_cc[VTIME] = 0; /* 1 byte, no timer */
 
-    /* put terminal in raw mode after flushing */
+                                             /* put terminal in raw mode after flushing */
     if (tcsetattr(fd,TCSAFLUSH,&raw) < 0) goto fatal;
     rawmode = true;
 #else
     if (!atexit_registered) {
-        /* Init windows console handles only once */
-        hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (hOut==INVALID_HANDLE_VALUE) goto fatal;
-
-        if (!GetConsoleMode(hOut, &consolemode)) {
-            CloseHandle(hOut);
-            errno = ENOTTY;
-            return false;
-        };
-
-        hIn = GetStdHandle(STD_INPUT_HANDLE);
-        if (hIn == INVALID_HANDLE_VALUE) {
-            CloseHandle(hOut);
-            errno = ENOTTY;
-            return false;
-        }
-
-        GetConsoleMode(hIn, &consolemode);
-        SetConsoleMode(hIn, ENABLE_PROCESSED_INPUT);
-
         /* Cleanup them at exit */
         atexit(linenoiseAtExit);
         atexit_registered = true;
+
+        /* Init windows console handles only once */
+        hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (hOut==INVALID_HANDLE_VALUE) goto fatal;
     }
+
+    DWORD consolemodeOut;
+    if (!GetConsoleMode(hOut, &consolemodeOut)) {
+        CloseHandle(hOut);
+        errno = ENOTTY;
+        return false;
+    };
+
+    hIn = GetStdHandle(STD_INPUT_HANDLE);
+    if (hIn == INVALID_HANDLE_VALUE) {
+        CloseHandle(hOut);
+        errno = ENOTTY;
+        return false;
+    }
+
+    GetConsoleMode(hIn, &consolemodeIn);
+    SetConsoleMode(hIn, ENABLE_PROCESSED_INPUT);
 
     rawmode = true;
 #endif
@@ -1657,6 +1659,10 @@ fatal:
 
 inline void disableRawMode(int fd) {
 #ifdef _WIN32
+    if (consolemodeIn) {
+        SetConsoleMode(hIn, consolemodeIn);
+        consolemodeIn = 0;
+    }
     rawmode = false;
 #else
     /* Don't even check the return value as it's too late. */
@@ -1666,8 +1672,8 @@ inline void disableRawMode(int fd) {
 }
 
 /* Use the ESC [6n escape sequence to query the horizontal cursor position
- * and return it. On error -1 is returned, on success the position of the
- * cursor. */
+* and return it. On error -1 is returned, on success the position of the
+* cursor. */
 inline int getCursorPosition(int ifd, int ofd) {
     char buf[32];
     int cols, rows;
@@ -1691,7 +1697,7 @@ inline int getCursorPosition(int ifd, int ofd) {
 }
 
 /* Try to get the number of columns in the current terminal, or assume 80
- * if it fails. */
+* if it fails. */
 inline int getColumns(int ifd, int ofd) {
 #ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO b;
@@ -1740,7 +1746,7 @@ inline void linenoiseClearScreen(void) {
 }
 
 /* Beep, used for completion when there is nothing to complete or when all
- * the choices were already shown. */
+* the choices were already shown. */
 inline void linenoiseBeep(void) {
     fprintf(stderr, "\x7");
     fflush(stderr);
@@ -1749,15 +1755,15 @@ inline void linenoiseBeep(void) {
 /* ============================== Completion ================================ */
 
 /* This is an helper function for linenoiseEdit() and is called when the
- * user types the <tab> key in order to complete the string currently in the
- * input.
- *
- * The state of the editing is encapsulated into the pointed linenoiseState
- * structure as described in the structure definition. */
-inline int completeLine(struct linenoiseState *ls) {
+* user types the <tab> key in order to complete the string currently in the
+* input.
+*
+* The state of the editing is encapsulated into the pointed linenoiseState
+* structure as described in the structure definition. */
+inline int completeLine(struct linenoiseState *ls, char *cbuf, int *c) {
     std::vector<std::string> lc;
-    int nread, nwritten;
-    char c = 0;
+    int nread = 0, nwritten;
+    *c = 0;
 
     completionCallback(ls->buf,lc);
     if (lc.empty()) {
@@ -1780,34 +1786,43 @@ inline int completeLine(struct linenoiseState *ls) {
                 refreshLine(ls);
             }
 
-            nread = read(ls->ifd,&c,1);
+            //nread = read(ls->ifd,&c,1);
+#ifdef _WIN32
+            nread = win32read(c);
+            if (nread == 1) {
+                cbuf[0] = *c;
+            }
+#else
+            nread = unicodeReadUTF8Char(ls->ifd,cbuf,c);
+#endif
             if (nread <= 0) {
-                return -1;
+                *c = -1;
+                return nread;
             }
 
-            switch(c) {
-                case 9: /* tab */
-                    i = (i+1) % (lc.size()+1);
-                    if (i == lc.size()) linenoiseBeep();
-                    break;
-                case 27: /* escape */
-                    /* Re-show original buffer */
-                    if (i < lc.size()) refreshLine(ls);
-                    stop = 1;
-                    break;
-                default:
-                    /* Update buffer and return */
-                    if (i < lc.size()) {
-                        nwritten = snprintf(ls->buf,ls->buflen,"%s",&lc[i][0]);
-                        ls->len = ls->pos = nwritten;
-                    }
-                    stop = 1;
-                    break;
+            switch(*c) {
+            case 9: /* tab */
+                i = (i+1) % (lc.size()+1);
+                if (i == lc.size()) linenoiseBeep();
+                break;
+            case 27: /* escape */
+                     /* Re-show original buffer */
+                if (i < lc.size()) refreshLine(ls);
+                stop = 1;
+                break;
+            default:
+                /* Update buffer and return */
+                if (i < lc.size()) {
+                    nwritten = snprintf(ls->buf,ls->buflen,"%s",&lc[i][0]);
+                    ls->len = ls->pos = nwritten;
+                }
+                stop = 1;
+                break;
             }
         }
     }
 
-    return c; /* Return last read character */
+    return nread;
 }
 
 /* Register a callback function to be called for tab-completion. */
@@ -1818,12 +1833,11 @@ void SetCompletionCallback(CompletionCallback fn) {
 /* =========================== Line editing ================================= */
 
 /* Single line low level line refresh.
- *
- * Rewrite the currently edited line accordingly to the buffer content,
- * cursor position, and number of columns of the terminal. */
+*
+* Rewrite the currently edited line accordingly to the buffer content,
+* cursor position, and number of columns of the terminal. */
 inline void refreshSingleLine(struct linenoiseState *l) {
     char seq[64];
-    size_t plen = l->prompt.length();
     size_t pcolwid = unicodeColumnPos(l->prompt.c_str(), l->prompt.length());
     int fd = l->ofd;
     char *buf = l->buf;
@@ -1857,9 +1871,9 @@ inline void refreshSingleLine(struct linenoiseState *l) {
 }
 
 /* Multi line low level line refresh.
- *
- * Rewrite the currently edited line accordingly to the buffer content,
- * cursor position, and number of columns of the terminal. */
+*
+* Rewrite the currently edited line accordingly to the buffer content,
+* cursor position, and number of columns of the terminal. */
 inline void refreshMultiLine(struct linenoiseState *l) {
     char seq[64];
     size_t pcolwid = unicodeColumnPos(l->prompt.c_str(), l->prompt.length());
@@ -1868,7 +1882,7 @@ inline void refreshMultiLine(struct linenoiseState *l) {
     int rows = (pcolwid+colpos+l->cols-1)/l->cols; /* rows used by current buf. */
     int rpos = (pcolwid+l->oldcolpos+l->cols)/l->cols; /* cursor relative row. */
     int rpos2; /* rpos after refresh. */
-    int col; /* column position, zero-based. */
+    int col; /* colum position, zero-based. */
     int old_rows = (int)l->maxrows;
     int fd = l->ofd, j;
     std::string ab;
@@ -1877,7 +1891,7 @@ inline void refreshMultiLine(struct linenoiseState *l) {
     if (rows > (int)l->maxrows) l->maxrows = rows;
 
     /* First step: clear all the lines used before. To do so start by
-     * going to the last row. */
+    * going to the last row. */
     if (old_rows-rpos > 0) {
         snprintf(seq,64,"\x1b[%dB", old_rows-rpos);
         ab += seq;
@@ -1901,7 +1915,7 @@ inline void refreshMultiLine(struct linenoiseState *l) {
     colpos2 = unicodeColumnPosForMultiLine(l->buf, l->len, l->pos, l->cols, pcolwid);
 
     /* If we are at the very end of the screen with our prompt, we need to
-     * emit a newline and move the prompt to the first column. */
+    * emit a newline and move the prompt to the first column. */
     if (l->pos &&
         l->pos == l->len &&
         (colpos2+pcolwid) % l->cols == 0)
@@ -1916,7 +1930,7 @@ inline void refreshMultiLine(struct linenoiseState *l) {
     /* Move cursor to right position. */
     rpos2 = (pcolwid+colpos2+l->cols)/l->cols; /* current cursor relative row. */
 
-    /* Go up till we reach the expected position. */
+                                               /* Go up till we reach the expected positon. */
     if (rows-rpos2 > 0) {
         snprintf(seq,64,"\x1b[%dA", rows-rpos2);
         ab += seq;
@@ -1936,7 +1950,7 @@ inline void refreshMultiLine(struct linenoiseState *l) {
 }
 
 /* Calls the two low level functions refreshSingleLine() or
- * refreshMultiLine() according to the selected mode. */
+* refreshMultiLine() according to the selected mode. */
 inline void refreshLine(struct linenoiseState *l) {
     if (mlmode)
         refreshMultiLine(l);
@@ -1945,8 +1959,8 @@ inline void refreshLine(struct linenoiseState *l) {
 }
 
 /* Insert the character 'c' at cursor current position.
- *
- * On error writing to the terminal -1 is returned, otherwise 0. */
+*
+* On error writing to the terminal -1 is returned, otherwise 0. */
 inline int linenoiseEditInsert(struct linenoiseState *l, const char* cbuf, int clen) {
     if (l->len < l->buflen) {
         if (l->len == l->pos) {
@@ -1956,7 +1970,7 @@ inline int linenoiseEditInsert(struct linenoiseState *l, const char* cbuf, int c
             l->buf[l->len] = '\0';
             if ((!mlmode && unicodeColumnPos(l->prompt.c_str(),l->prompt.length())+unicodeColumnPos(l->buf,l->len) < l->cols) /* || mlmode */) {
                 /* Avoid a full update of the line in the
-                 * trivial case. */
+                * trivial case. */
                 if (write(l->ofd,cbuf,clen) == -1) return -1;
             } else {
                 refreshLine(l);
@@ -2006,13 +2020,13 @@ inline void linenoiseEditMoveEnd(struct linenoiseState *l) {
 }
 
 /* Substitute the currently edited line with the next or previous history
- * entry as specified by 'dir'. */
+* entry as specified by 'dir'. */
 #define LINENOISE_HISTORY_NEXT 0
 #define LINENOISE_HISTORY_PREV 1
 inline void linenoiseEditHistoryNext(struct linenoiseState *l, int dir) {
     if (history.size() > 1) {
         /* Update the current history entry before to
-         * overwrite it with the next one. */
+        * overwrite it with the next one. */
         history[history.size() - 1 - l->history_index] = l->buf;
         /* Show the new entry */
         l->history_index += (dir == LINENOISE_HISTORY_PREV) ? 1 : -1;
@@ -2031,7 +2045,7 @@ inline void linenoiseEditHistoryNext(struct linenoiseState *l, int dir) {
 }
 
 /* Delete the character at the right of the cursor without altering the cursor
- * position. Basically this is what happens with the "Delete" keyboard key. */
+* position. Basically this is what happens with the "Delete" keyboard key. */
 inline void linenoiseEditDelete(struct linenoiseState *l) {
     if (l->len > 0 && l->pos < l->len) {
         int glen = unicodeGraphemeLen(l->buf,l->len,l->pos);
@@ -2055,7 +2069,7 @@ inline void linenoiseEditBackspace(struct linenoiseState *l) {
 }
 
 /* Delete the previosu word, maintaining the cursor at the start of the
- * current word. */
+* current word. */
 inline void linenoiseEditDeletePrevWord(struct linenoiseState *l) {
     size_t old_pos = l->pos;
     size_t diff;
@@ -2071,19 +2085,19 @@ inline void linenoiseEditDeletePrevWord(struct linenoiseState *l) {
 }
 
 /* This function is the core of the line editing capability of linenoise.
- * It expects 'fd' to be already in "raw mode" so that every key pressed
- * will be returned ASAP to read().
- *
- * The resulting string is put into 'buf' when the user type enter, or
- * when ctrl+d is typed.
- *
- * The function returns the length of the current buffer. */
+* It expects 'fd' to be already in "raw mode" so that every key pressed
+* will be returned ASAP to read().
+*
+* The resulting string is put into 'buf' when the user type enter, or
+* when ctrl+d is typed.
+*
+* The function returns the length of the current buffer. */
 inline int linenoiseEdit(int stdin_fd, int stdout_fd, char *buf, size_t buflen, const char *prompt)
 {
     struct linenoiseState l;
 
     /* Populate the linenoise state that we pass to functions implementing
-     * specific editing functionalities. */
+    * specific editing functionalities. */
     l.ifd = stdin_fd;
     l.ofd = stdout_fd;
     l.buf = buf;
@@ -2099,8 +2113,8 @@ inline int linenoiseEdit(int stdin_fd, int stdout_fd, char *buf, size_t buflen, 
     l.buf[0] = '\0';
     l.buflen--; /* Make sure there is always space for the nulterm */
 
-    /* The latest history entry is always our current buffer, that
-     * initially is just an empty string. */
+                /* The latest history entry is always our current buffer, that
+                * initially is just an empty string. */
     AddHistory("");
 
     if (write(l.ofd,prompt,l.prompt.length()) == -1) return -1;
@@ -2121,10 +2135,10 @@ inline int linenoiseEdit(int stdin_fd, int stdout_fd, char *buf, size_t buflen, 
         if (nread <= 0) return (int)l.len;
 
         /* Only autocomplete when the callback is set. It returns < 0 when
-         * there was an error reading from fd. Otherwise it will return the
-         * character that should be handled next. */
+        * there was an error reading from fd. Otherwise it will return the
+        * character that should be handled next. */
         if (c == 9 && completionCallback != NULL) {
-            c = completeLine(&l);
+            nread = completeLine(&l,cbuf,&c);
             /* Return on errors */
             if (c < 0) return l.len;
             /* Read next character when 0 */
@@ -2144,7 +2158,7 @@ inline int linenoiseEdit(int stdin_fd, int stdout_fd, char *buf, size_t buflen, 
             linenoiseEditBackspace(&l);
             break;
         case CTRL_D:     /* ctrl-d, remove char at right of cursor, or if the
-                            line is empty, act as end-of-file. */
+                         line is empty, act as end-of-file. */
             if (l.len > 0) {
                 linenoiseEditDelete(&l);
             } else {
@@ -2174,9 +2188,9 @@ inline int linenoiseEdit(int stdin_fd, int stdout_fd, char *buf, size_t buflen, 
             linenoiseEditHistoryNext(&l, LINENOISE_HISTORY_NEXT);
             break;
         case ESC:    /* escape sequence */
-            /* Read the next two bytes representing the escape sequence.
-             * Use two calls to handle slow terminals returning the two
-             * chars at different times. */
+                     /* Read the next two bytes representing the escape sequence.
+                     * Use two calls to handle slow terminals returning the two
+                     * chars at different times. */
             if (read(l.ifd,seq,1) == -1) break;
             if (read(l.ifd,seq+1,1) == -1) break;
 
@@ -2260,44 +2274,58 @@ inline int linenoiseEdit(int stdin_fd, int stdout_fd, char *buf, size_t buflen, 
 }
 
 /* This function calls the line editing function linenoiseEdit() using
- * the STDIN file descriptor set in raw mode. */
-inline std::string linenoiseRaw(const char *prompt) {
-    std::string line;
+* the STDIN file descriptor set in raw mode. */
+inline bool linenoiseRaw(const char *prompt, std::string& line) {
+    bool quit = false;
 
     if (!isatty(STDIN_FILENO)) {
         /* Not a tty: read from file / pipe. */
         std::getline(std::cin, line);
     } else {
         /* Interactive editing. */
-        if (enableRawMode(STDIN_FILENO) == false) return line;
+        if (enableRawMode(STDIN_FILENO) == false) {
+            return quit;
+        }
 
         char buf[LINENOISE_MAX_LINE];
         auto count = linenoiseEdit(STDIN_FILENO, STDOUT_FILENO, buf, LINENOISE_MAX_LINE, prompt);
-        if (count != -1) {
+        if (count == -1) {
+            quit = true;
+        } else {
             line.assign(buf, count);
         }
 
         disableRawMode(STDIN_FILENO);
         printf("\n");
     }
-    return line;
+    return quit;
 }
 
 /* The high level function that is the main API of the linenoise library.
- * This function checks if the terminal has basic capabilities, just checking
- * for a blacklist of stupid terminals, and later either calls the line
- * editing function or uses dummy fgets() so that you will be able to type
- * something even in the most desperate of the conditions. */
-inline std::string Readline(const char *prompt) {
+* This function checks if the terminal has basic capabilities, just checking
+* for a blacklist of stupid terminals, and later either calls the line
+* editing function or uses dummy fgets() so that you will be able to type
+* something even in the most desperate of the conditions. */
+inline bool Readline(const char *prompt, std::string& line) {
     if (isUnsupportedTerm()) {
         printf("%s",prompt);
         fflush(stdout);
-        std::string line;
         std::getline(std::cin, line);
-        return line;
+        return false;
     } else {
-        return linenoiseRaw(prompt);
+        return linenoiseRaw(prompt, line);
     }
+}
+
+inline std::string Readline(const char *prompt, bool& quit) {
+    std::string line;
+    quit = Readline(prompt, line);
+    return line;
+}
+
+inline std::string Readline(const char *prompt) {
+    bool quit; // dummy
+    return Readline(prompt, quit);
 }
 
 /* ================================ History ================================= */
@@ -2308,12 +2336,12 @@ inline void linenoiseAtExit(void) {
 }
 
 /* This is the API call to add a new entry in the linenoise history.
- * It uses a fixed array of char pointers that are shifted (memmoved)
- * when the history max length is reached in order to remove the older
- * entry and make room for the new one, so it is not exactly suitable for huge
- * histories, but will work well for a few hundred of entries.
- *
- * Using a circular buffer is smarter, but a bit more complex to handle. */
+* It uses a fixed array of char pointers that are shifted (memmoved)
+* when the history max length is reached in order to remove the older
+* entry and make room for the new one, so it is not exactly suitable for huge
+* histories, but will work well for a few hundred of entries.
+*
+* Using a circular buffer is smarter, but a bit more complex to handle. */
 inline bool AddHistory(const char* line) {
     if (history_max_len == 0) return false;
 
@@ -2330,9 +2358,9 @@ inline bool AddHistory(const char* line) {
 }
 
 /* Set the maximum length for the history. This function can be called even
- * if there is already some history, the function will make sure to retain
- * just the latest 'len' elements if the new history length value is smaller
- * than the amount of items already inside the history. */
+* if there is already some history, the function will make sure to retain
+* just the latest 'len' elements if the new history length value is smaller
+* than the amount of items already inside the history. */
 inline bool SetHistoryMaxLen(size_t len) {
     if (len < 1) return false;
     history_max_len = len;
@@ -2343,7 +2371,7 @@ inline bool SetHistoryMaxLen(size_t len) {
 }
 
 /* Save the history in the specified file. On success *true* is returned
- * otherwise *false* is returned. */
+* otherwise *false* is returned. */
 inline bool SaveHistory(const char* path) {
     std::ofstream f(path); // TODO: need 'std::ios::binary'?
     if (!f) return false;
@@ -2354,10 +2382,10 @@ inline bool SaveHistory(const char* path) {
 }
 
 /* Load the history from the specified file. If the file does not exist
- * zero is returned and no operation is performed.
- *
- * If the file exists and the operation succeeded *true* is returned, otherwise
- * on error *false* is returned. */
+* zero is returned and no operation is performed.
+*
+* If the file exists and the operation succeeded *true* is returned, otherwise
+* on error *false* is returned. */
 inline bool LoadHistory(const char* path) {
     std::ifstream f(path);
     if (!f) return false;

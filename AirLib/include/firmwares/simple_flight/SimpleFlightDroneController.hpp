@@ -28,6 +28,9 @@ public:
     {
         readSettings();
 
+        //TODO: set below properly for better high speed safety
+        safety_params.vel_to_breaking_dist = safety_params.min_breaking_dist = 0;
+
         //create sim implementations of board and commlink
         board_.reset(new AirSimSimpleFlightBoard(&params_));
         comm_link_.reset(new AirSimSimpleFlightCommLink());
@@ -208,7 +211,7 @@ public:
     {
         // pick a number, 3 meters is probably safe 
         // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
-        return -3.0f;  
+        return params_.takeoff.takeoff_z;
     }
 
     float getDistanceAccuracy() override
@@ -219,6 +222,8 @@ public:
 protected: 
     void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
+        Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
+
         typedef simple_flight::GoalModeType GoalModeType;
         static simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
 
@@ -230,12 +235,14 @@ protected:
 
     void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
+        Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
+
         typedef simple_flight::GoalModeType GoalModeType;
         static simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
             yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
             GoalModeType::VelocityWorld);
 
-        simple_flight::Axis4r goal(vx, vy, yaw_mode.yaw_or_rate, vz);
+        simple_flight::Axis4r goal(vy, vx, Utils::degreesToRadians(yaw_mode.yaw_or_rate), vz);
 
         std::string message;
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
@@ -243,12 +250,14 @@ protected:
 
     void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
+        Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
+
         typedef simple_flight::GoalModeType GoalModeType;
         static simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
             yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
             GoalModeType::PositionWorld);
 
-        simple_flight::Axis4r goal(vx, vy, yaw_mode.yaw_or_rate, z);
+        simple_flight::Axis4r goal(vy, vx, Utils::degreesToRadians(yaw_mode.yaw_or_rate), z);
 
         std::string message;
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
@@ -256,12 +265,14 @@ protected:
 
     void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
+        Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
+
         typedef simple_flight::GoalModeType GoalModeType;
         static simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
             yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
             GoalModeType::PositionWorld);
 
-        simple_flight::Axis4r goal(x, y, yaw_mode.yaw_or_rate, z);
+        simple_flight::Axis4r goal(y, x, Utils::degreesToRadians(yaw_mode.yaw_or_rate), z);
 
         std::string message;
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
@@ -269,8 +280,6 @@ protected:
 
     const VehicleParams& getVehicleParams() override
     {
-        //used for safety algos. For now just use defaults
-        static const VehicleParams safety_params;
         return safety_params;
     }
 
@@ -355,6 +364,7 @@ private:
     bool is_pose_update_done_;
     Pose pending_pose_;
 
+    VehicleParams safety_params;
 };
 
 }} //namespace

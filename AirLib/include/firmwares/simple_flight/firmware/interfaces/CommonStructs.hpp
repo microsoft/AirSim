@@ -24,6 +24,14 @@ public:
     {
         return vals_[index];
     }
+    virtual std::string toString() const
+    {
+        return std::to_string(static_cast<float>(vals_[0]))
+            .append(", ")
+            .append(std::to_string(static_cast<float>(vals_[1])))
+            .append(", ")
+            .append(std::to_string(static_cast<float>(vals_[2])));
+    }
 
     bool equals3(const Axis3<T>& other) const
     {
@@ -110,6 +118,12 @@ public:
             return val4_;
         else throw std::out_of_range("index must be <= 3 but it was " + std::to_string(index));
     }
+    virtual std::string toString() const override
+    {
+        return Axis3<T>::toString()
+            .append(", ")
+            .append(std::to_string(static_cast<float>(val4_)));
+    }
 
     bool equals4(const Axis4<T>& other) const
     {
@@ -143,14 +157,14 @@ public:
         return 4;
     }
 
-    static Axis3<T> axis4ToXyz(const Axis4<T> axis4)
+    static Axis3<T> axis4ToXyz(const Axis4<T> axis4, bool swap_xy)
     {
-        return Axis3<T>(axis4[0], axis4[1], axis4[3]);
+        return Axis3<T>(axis4[swap_xy ? 1 : 0], axis4[swap_xy ? 0 : 1], axis4[3]);
     }
-    static Axis4<T> xyzToAxis4(const Axis3<T> xyz)
+    static Axis4<T> xyzToAxis4(const Axis3<T> xyz, bool swap_xy)
     {
         //TODO: use nan instead 0?
-        return Axis4<T>(xyz[0], xyz[1], 0, xyz[2]);
+        return Axis4<T>(xyz[swap_xy ? 1 : 0], xyz[swap_xy ? 0 : 1], 0, xyz[2]);
     }
 
 private:
@@ -220,8 +234,8 @@ private:
     GeoPoint home_point_;
 };
 
-enum class GoalModeType {
-    Unknown,
+enum class GoalModeType : int {
+    Unknown = 0,
     Passthrough,
     AngleLevel,
     AngleRate,

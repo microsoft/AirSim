@@ -42,9 +42,9 @@ struct YawMode {
 struct VehicleParams {
     VehicleParams(){}; 
     //what is the breaking distance for given velocity?
-    //currently we support simple linear relationship
+    //Below is just proportionalty constant to convert from velocity to breaking distance
     float vel_to_breaking_dist = 0.5f;   //ideally this should be 2X for very high speed but for testing we are keeping it 0.5
-    float min_vel_to_breaking_dist = 1;
+    float min_breaking_dist = 1; //min breaking distance
     float breaking_vel = 0.25f;
 
     //what is the differential positional accuracy of cur_loc?

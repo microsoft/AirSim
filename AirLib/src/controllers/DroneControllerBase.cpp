@@ -143,7 +143,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     //when path ends, we want to slow down
     float breaking_dist = 0;
     if (velocity > getVehicleParams().breaking_vel) {
-        breaking_dist = std::max(velocity * getVehicleParams().vel_to_breaking_dist, getVehicleParams().min_vel_to_breaking_dist);
+        breaking_dist = std::max(velocity * getVehicleParams().vel_to_breaking_dist, getVehicleParams().min_breaking_dist);
     }
     //else no need to change velocities for last segments
 
@@ -159,9 +159,12 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
 
     //initialize next path position
     setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
+    float overshoot = 0;
+    float goal_dist = 0;
 
-    while (next_path_loc.seg_index < path_segs.size()-1 || //until we are at the end of the path (last seg is always zero size)
-        ((next_path_loc.position - getPosition()).norm() > getDistanceAccuracy())) { //current position is approximately at the last end point
+    //until we are at the end of the path (last seg is always zero size)
+    while (next_path_loc.seg_index < path_segs.size()-1 || goal_dist > 0
+        ) { //current position is approximately at the last end point
 
         float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
         float path_length_remaining = path_length - path_segs.at(cur_path_loc.seg_index).seg_path_length - cur_path_loc.offset;
@@ -212,7 +215,6 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         //how much have we moved towards last goal?
         const Vector3r& goal_vect = next_path_loc.position - cur_path_loc.position;
 
-        float goal_dist;
         if (!goal_vect.isZero()) { //goal can only be zero if we are at the end of path
             const Vector3r& actual_vect = getPosition() - cur_path_loc.position;
 
@@ -220,7 +222,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
             const Vector3r& goal_normalized = goal_vect.normalized();    
             goal_dist = actual_vect.dot(goal_normalized); //dist could be -ve if drone moves away from goal
 
-                                                            //if adaptive lookahead is enabled the calculate lookahead error (see above fig)
+            //if adaptive lookahead is enabled the calculate lookahead error (see above fig)
             if (adaptive_lookahead) {
                 const Vector3r& actual_on_goal = goal_normalized * goal_dist;
                 float error = (actual_vect - actual_on_goal).norm() * adaptive_lookahead;
@@ -228,7 +230,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
                     lookahead_error_increasing++;
                     //TODO: below should be lower than 1E3 and configurable
                     //but lower values like 100 doesn't work for simple_flight + ScalableClock
-                    if (lookahead_error_increasing > 1E2) {
+                    if (lookahead_error_increasing > 1E5) {
                         throw std::runtime_error("lookahead error is continually increasing so we do not have safe control, aborting moveOnPath operation");
                     }
                 }
@@ -255,7 +257,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         //so only climb forward on the path, never back. Also note >= which means
         //we climb path even if distance was 0 to take care of duplicated points on path
         if (goal_dist >= 0) {
-            float overshoot = setNextPathPosition(path3d, path_segs, cur_path_loc, goal_dist, cur_path_loc);
+            overshoot = setNextPathPosition(path3d, path_segs, cur_path_loc, goal_dist, cur_path_loc);
             if (overshoot)
                 Utils::log(Utils::stringf("overshoot=%f", overshoot));
         }
@@ -263,7 +265,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         //    Utils::logMessage("goal_dist was negative: %f", goal_dist);
 
         //compute next target on path
-        setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
+        overshoot = setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
 
         if (log_to_file_) {
             flog << cur_path_loc.seg_index << "\t" << cur_path_loc.offset << "\t" << cur_path_loc.position.x() << "\t" << cur_path_loc.position.y() << "\t" << cur_path_loc.position.z() << "\t" << lookahead  << "\t" << lookahead_error  << "\t";
@@ -326,7 +328,12 @@ bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, Cancel
 bool DroneControllerBase::takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
 {
     unused(max_wait_seconds);
-    return moveToPosition(0, 0, getTakeoffZ(), 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1, cancelable_action);
+    bool ret = moveToPosition(0, 0, getTakeoffZ(), 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1, cancelable_action);
+
+    //last command is to hold on to position
+    //commandPosition(0, 0, getTakeoffZ(), YawMode::Zero());
+
+    return ret;
 }
 
 bool DroneControllerBase::goHome(CancelableBase& cancelable_action)
@@ -336,8 +343,19 @@ bool DroneControllerBase::goHome(CancelableBase& cancelable_action)
 
 bool DroneControllerBase::land(float max_wait_seconds, CancelableBase& cancelable_action)
 {
-    unused(max_wait_seconds);
-    return moveByVelocity(0, 0, 0.2f, 3600, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), cancelable_action);
+    float land_vel = 0.2f;
+    float near_zero_vel = land_vel / 4;
+    int near_zero_vel_count = 0;
+
+    return !waitForFunction([&]() {
+        float z_vel = getVelocity().z();
+        if (z_vel <= near_zero_vel)
+            ++near_zero_vel_count;
+        else
+            near_zero_vel_count = 0;
+
+        return near_zero_vel_count > 10 || !moveByVelocity(0, 0, 0.2f, YawMode::Zero());
+    }, max_wait_seconds, cancelable_action);
 }
 
 bool DroneControllerBase::hover(CancelableBase& cancelable_action)

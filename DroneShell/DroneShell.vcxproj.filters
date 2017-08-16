@@ -20,10 +20,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\linenoise.hpp">
+    <ClInclude Include="include\SimpleShell.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\SimpleShell.hpp">
+    <ClInclude Include="include\linenoise.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

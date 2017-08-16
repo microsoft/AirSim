@@ -72,22 +72,29 @@ public:
         Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, kMaxLimit, 1.0f); //x, y, z in meters
 
         const float kP = 0.5f;
-        Axis4r p = Axis4r(kP, kP, kP, 1.0f);
+        Axis4r p = Axis4r(kP, kP, 0, 0.25f);
     } position_pid;
 
     struct VelocityPid {
+        const float kMinThrottle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);
         const float kMaxLimit = 6.0f; // m/s
         Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, 0, kMaxLimit); //x, y, yaw, z in meters
 
         const float kP = 0.5f;
-        Axis4r p = Axis4r(kP, kP, 0, kP);
+        Axis4r p = Axis4r(kP, kP, 0, 0.75f);
 
-        const float kI = 0.05f;
-        Axis4r i = Axis4r(0, 0, 0, 0.05f);
-
+        Axis4r i = Axis4r(0, 0, 0, 0.75f);
+        Axis4r iterm_discount = Axis4r(1, 1, 1, 1);
+        Axis4r output_bias = Axis4r(0, 0, 0, 0);
+                
         //we keep min throttle higher so that if we are angling a lot, its still supported
-        float min_throttle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);
+        float min_throttle =kMinThrottle ;
     } velocity_pid;
+
+    struct Takeoff {
+        float takeoff_z = -1.5f;
+        //float velocity = -1.0f;
+    } takeoff;
 
     GoalMode default_goal_mode = GoalMode::getStandardAngleMode();
     VehicleStateType default_vehicle_state = VehicleStateType::Inactive;

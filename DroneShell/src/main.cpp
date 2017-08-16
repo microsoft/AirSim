@@ -61,7 +61,7 @@ public:
         if (yaw.empty())
         {
             if (rate.empty()) {
-                return YawMode(false, 0);
+                return YawMode(true, 0);
             }
             return YawMode(true, getSwitch("-yaw_rate").toFloat());
         }
@@ -88,7 +88,7 @@ public:
     }
 
     void addDriveTrainSwitch() {
-        this->addSwitch({"-drivetrain", "1", "type of drive mode (1=forward only, 0= max degree of freedom) (default is 1)" });
+        this->addSwitch({"-drivetrain", "0", "type of drive mode (1=forward only, 0= max degree of freedom) (default is 1)" });
     }
 
 };
@@ -405,7 +405,7 @@ public:
         this->addSwitch({"-x", "0", "x position in meters (default 0)" });
         this->addSwitch({"-y", "0", "y position in meters (default 0)" });
         this->addSwitch({"-z", "-2.5", "z position in meters (default -2.5)" });
-        this->addSwitch({"-velocity", "2.5", "the velocity to approach the position in meters per second (default 2.5)" });
+        this->addSwitch({"-velocity", "0.5", "the velocity to approach the position in meters per second (default 0.5)" });
         this->addSwitch({ "-duration", "0", "maximum time to wait to reach position (default no wait)" });
         addYawModeSwitches();
         addDriveTrainSwitch();

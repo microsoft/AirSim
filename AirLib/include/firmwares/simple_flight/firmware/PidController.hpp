@@ -12,19 +12,21 @@ public:
     //config params for PID controller
     struct Config {
         Config(float kp_val = 0.01f, float ki_val = 0.0f, float kd_val = 0.0f,
-            float min_output_val = -1.0f, float max_output_val = 1.0f,
+            T min_output_val = -1, T max_output_val = 1,
             float time_scale_val = 1.0f / 1000,
-            bool enabled_val = true)
+            bool enabled_val = true, T output_bias_val = T(), float iterm_discount_val = 1)
             : kp(kp_val), ki(ki_val), kd(kd_val),
               time_scale(time_scale_val),
               min_output(min_output_val), max_output(max_output_val),
-              enabled(enabled_val)
+              enabled(enabled_val), output_bias(output_bias_val), iterm_discount(iterm_discount_val)
         {}
 
         float kp, ki, kd;
         float time_scale;
-        float min_output, max_output;
+        T min_output, max_output;
         bool enabled;
+        T output_bias;
+        float iterm_discount;
     };
 
     PidController(const IBoardClock* clock = nullptr, const Config& config = Config())
@@ -108,7 +110,7 @@ public:
         if (dt > min_dt_) {
             //to supoort changes in ki at runtime, we accumulate iterm
             //instead of error
-            iterm_int_ += dt * error * config_.ki;
+            iterm_int_ = iterm_int_ * config_.iterm_discount + dt * error * config_.ki;
 
             //don't let iterm grow beyond limits (integral windup)
             clipIterm();
@@ -120,7 +122,7 @@ public:
             last_goal_ = goal_;
         }
 
-        output_ = pterm + iterm_int_ + dterm;
+        output_ = config_.output_bias + pterm + iterm_int_ + dterm;
 
         //limit final output
         output_ = clip(output_, config_.min_output, config_.max_output);

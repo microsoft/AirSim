@@ -16,7 +16,7 @@ class SimpleFlightTest : public TestBase
 public:
     virtual void run() override
     {
-        auto clock = std::make_shared<SteppableClock>();
+        auto clock = std::make_shared<SteppableClock>(3E-3f);
         ClockFactory::get(clock);
 
         std::unique_ptr<MultiRotorParams> params = MultiRotorParamsFactory::createConfig("SimpleFlight");
@@ -37,10 +37,21 @@ public:
 
         clock->sleep_for(0.04f);
         
+        //Utils::getSetMinLogLevel(true, 100);
+
         DirectCancelableBase cancellable(controller, &vehicle);
         controller->setOffboardMode(true);
         controller->armDisarm(true, cancellable);
         controller->takeoff(10, cancellable);
+
+        clock->sleep_for(2.0f);
+
+        Utils::getSetMinLogLevel(true);
+
+        controller->moveToPosition(3, -5, -1.5, 1, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 20), -1, 0, cancellable);
+
+        clock->sleep_for(2.0f);
+
 
         while (true) {
             clock->sleep_for(0.1f);
@@ -49,8 +60,6 @@ public:
                 std::cout << status_message << std::endl;
             }
             messages_.clear();
-
-            std::cout << VectorMath::toString(vehicle.getKinematics().pose.position) << std::endl;
         }
     }
 
@@ -75,8 +84,6 @@ private:
                 std::cout << status_message << std::endl;
             }
             messages_.clear();
-
-            std::cout << VectorMath::toString(vehicle_->getKinematics().pose.position) << std::endl;
 
             return CancelableBase::sleep(secs);
         };

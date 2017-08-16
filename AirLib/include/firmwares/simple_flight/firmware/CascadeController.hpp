@@ -12,7 +12,7 @@
 #include "ConstantOutputController.hpp"
 #include "VelocityController.hpp"
 #include "PositionController.hpp"
-
+#include "common/common_utils/Utils.hpp"
 
 
 namespace simple_flight {
@@ -49,6 +49,17 @@ public:
         IController::update();
 
         const auto& goal_mode = goal_->getGoalMode();
+        const auto& goal_val = goal_->getGoalValue();
+
+        common_utils::Utils::log(common_utils::Utils::stringf("Pos: %s", state_estimator_->getPosition().toString().c_str()));
+        
+        if (!goal_mode.equals4(last_goal_mode_)) {
+            common_utils::Utils::log(common_utils::Utils::stringf("GoalMode: %s", goal_mode.toString().c_str()));
+        }
+        if (!goal_val.equals4(last_goal_val_)) {
+            common_utils::Utils::log(common_utils::Utils::stringf("GoalVal : %s", goal_val.toString().c_str()));
+            last_goal_val_ = goal_val;
+        }
 
         for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis) {
             //re-create axis controllers if goal mode was changed since last time
@@ -115,6 +126,7 @@ private:
     Axis4r output_;
 
     GoalMode last_goal_mode_;
+    Axis4r last_goal_val_;
 
     std::unique_ptr<IAxisController> axis_controllers_[Axis4r::AxisCount()];
 };
