@@ -172,7 +172,7 @@ public:
             if (bytes == -1 || bytes != sizeof(event_)) {
                 // NOTE if this condition is not met, we're probably out of sync and this
                 // Joystick instance is likely unusable
-                state.is_connected = false;
+                
             }
             else {
                 state.is_connected = true;
@@ -195,6 +195,8 @@ public:
                 //else ignore
             }
         }
+        else
+            state.is_connected = false;
     }
 
 private:
