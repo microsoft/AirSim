@@ -137,7 +137,17 @@ public:
     static constexpr int kLogLevelError = -2;
     static void log(std::string message, int level = kLogLevelInfo)
     {
-        getSetLogger()->log(level, message);
+        if (level >= getSetMinLogLevel())
+            getSetLogger()->log(level, message);
+    }
+    static int getSetMinLogLevel(bool set_or_get = false, 
+        int set_min_log_level = std::numeric_limits<int>::min())
+    {
+        static int min_log_level = std::numeric_limits<int>::min();
+        if (set_or_get)
+            min_log_level = set_min_log_level;
+        
+        return min_log_level;
     }
 
     template <typename T>

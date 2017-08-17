@@ -38,14 +38,14 @@ public:
         IUpdatable::update();
 
         rc_.update();
-        if (! has_api_control_)
+        if (!has_api_control_)
             updateGoalFromRc();
         else {
             if (clock_->millis() - goal_timestamp_ > params_->api_goal_timeout) {
                 if (!is_api_timedout_) {
                     comm_link_->log("API call timed out, entering hover mode");
                     goal_mode_ = GoalMode::getPositionMode();
-                    goal_ = Axis4r::xyzToAxis4(state_estimator_->getPosition());
+                    goal_ = Axis4r::xyzToAxis4(state_estimator_->getPosition(), true);
 
                     is_api_timedout_ = true;
                 }
@@ -93,10 +93,9 @@ public:
             updateGoalFromRc();
 
             comm_link_->log("requestApiControl was successful", ICommLink::kLogLevelInfo);
-            
+
             return true;
-        }
-        else {
+        } else {
             comm_link_->log("requestApiControl failed", ICommLink::kLogLevelError);
             return false;
         }
@@ -116,8 +115,7 @@ public:
             goal_timestamp_ = clock_->millis();
             is_api_timedout_ = false;
             return true;
-        }
-        else {
+        } else {
             message = "requestControl() must be called before using API control";
             comm_link_->log(message, ICommLink::kLogLevelError);
             return false;
@@ -127,24 +125,37 @@ public:
 
     virtual bool arm(std::string& message) override
     {
-        if (has_api_control_ && (vehicle_state_.getState() == VehicleStateType::Inactive
-            || vehicle_state_.getState() == VehicleStateType::Disarmed
-            || vehicle_state_.getState() == VehicleStateType::BeingDisarmed)) {
+        if (has_api_control_) {
+            if (vehicle_state_.getState() == VehicleStateType::Armed) {
+                message = "Vehicle is already armed";
+                comm_link_->log(message, ICommLink::kLogLevelInfo);
+                return true;
+            }
+            else if ((vehicle_state_.getState() == VehicleStateType::Inactive
+                || vehicle_state_.getState() == VehicleStateType::Disarmed
+                || vehicle_state_.getState() == VehicleStateType::BeingDisarmed)) {
 
-            state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
-            vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
-            goal_ = Axis4r(0, 0, 0, params_->rc.min_angling_throttle);
-            goal_mode_ = GoalMode::getAllRateMode();
+                state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
+                vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
+                goal_ = Axis4r(0, 0, 0, params_->rc.min_angling_throttle);
+                goal_mode_ = GoalMode::getAllRateMode();
 
-            message = "Vehicle is armed";
-            comm_link_->log(message, ICommLink::kLogLevelInfo);
-            return true;
+                message = "Vehicle is armed";
+                comm_link_->log(message, ICommLink::kLogLevelInfo);
+                return true;
+            }
+            else {
+                message = "Vehicle cannot be armed because it is not in Inactive, Disarmed or BeingDisarmed state";
+                comm_link_->log(message, ICommLink::kLogLevelError);
+                return false;
+            }
         }
         else {
-            message = "Vehicle cannot be armed because it is not in Inactive, Disarmed or BeingDisarmed state";
+            message = "Vehicle cannot be armed via API because API has not been given control";
             comm_link_->log(message, ICommLink::kLogLevelError);
             return false;
         }
+
     }
 
     virtual bool disarm(std::string& message) override

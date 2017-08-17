@@ -205,7 +205,7 @@ Vector3r SafetyEval::getDestination(const Vector3r& cur_pos, const Vector3r& vel
     //breaking distance at this velocity
     float velocity_mag = velocity.norm();
     float dest_pos_dist = std::max(velocity_mag * vehicle_params_.vel_to_breaking_dist,
-        vehicle_params_.min_vel_to_breaking_dist);
+        vehicle_params_.min_breaking_dist);
 
     //calculate dest_pos cur_pos we will be if we had to break suddenly
     return velocity_mag >= vehicle_params_.distance_accuracy ? 

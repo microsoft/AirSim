@@ -62,7 +62,7 @@ public:
         const Axis4r& goal_position_world = goal_->getGoalValue();
         pid_->setGoal(goal_position_world[axis_]);
         const Axis4r& measured_position_world = Axis4r::xyzToAxis4(
-            state_estimator_->getPosition());
+            state_estimator_->getPosition(), true);
         pid_->setMeasured(measured_position_world[axis_]);
         pid_->update();
 

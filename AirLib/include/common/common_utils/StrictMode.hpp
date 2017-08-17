@@ -5,7 +5,7 @@
 //'=': conversion from 'double' to 'float', possible loss of data
 #define STRICT_MODE_OFF                                           \
     __pragma(warning(push))										  \
-    __pragma(warning( disable : 4100 4189 4244 4245 4239 4267 4365 4464 4456 4505 4514 4571 4624 4625 4626 4668 4710 4820 4917 5026 5027 5031))					  
+    __pragma(warning( disable : 4100 4189 4244 4245 4239 4267 4365 4464 4456 4505 4514 4571 4624 4625 4626 4668 4701 4710 4820 4917 5026 5027 5031))					  
 #define STRICT_MODE_ON                                            \
     __pragma(warning(pop))										  
 

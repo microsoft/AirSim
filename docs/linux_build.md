@@ -11,7 +11,7 @@ It's super simple 1-2-3!
 2. Clone Unreal in your favorite folder and run setup.sh (this may take a while!). Note: We only support Unreal 4.16 and newer.
 ```
      # go to folder where you clone GitHub projects
-     git clone -b 4.16 https://github.com/EpicGames/UnrealEngine.git
+     git clone -b 4.17 https://github.com/EpicGames/UnrealEngine.git
      cd UnrealEngine
      ./Setup.sh
      ./GenerateProjectFiles.sh
