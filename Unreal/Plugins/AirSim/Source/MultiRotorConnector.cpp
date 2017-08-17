@@ -2,7 +2,7 @@
 #ifdef AIRLIB_NO_RPC
 #include "api/DebugApiServer.hpp"
 #else
-#include "api/RpcLibServer.hpp"
+#include "api/RpcLibDroneServer.hpp"
 #endif
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
@@ -223,7 +223,7 @@ void MultiRotorConnector::startApiServer()
 #ifdef AIRLIB_NO_RPC
     rpclib_server_.reset(new msr::airlib::DebugApiServer());
 #else
-    rpclib_server_.reset(new msr::airlib::RpcLibServer(
+    rpclib_server_.reset(new msr::airlib::RpcLibDroneServer(
         controller_cancelable_.get(), api_server_address_, api_server_port_));
 #endif
 

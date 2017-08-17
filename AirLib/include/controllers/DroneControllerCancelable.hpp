@@ -16,13 +16,13 @@ using namespace msr::airlib;
 
 namespace msr { namespace airlib {
 
-// We want to make it possible for RpcLibClient to call the offboard movement methods (moveByAngle, moveByVelocity, etc) at a high
+// We want to make it possible for RpcLibDroneClient to call the offboard movement methods (moveByAngle, moveByVelocity, etc) at a high
 // rate, like 30 times a second.  But we also want these movement methods to drive the drone at a reliable rate which we do inside
 // DroneControllerBase using the Waiter object so it pumps the virtual commandVelocity method at a fixed rate defined by getCommandPeriod.
 // This fixed rate is needed by the drone flight controller (for example Pixhawk) because the flight controller usually reverts to
 // a failsafe operation like hover if it stop receiving these offboard control messages at that rate (for safety reasons).
 // So moveByVelocity takes a duration, and DroneControllerBase pumps commandVelocity at the getCommandPeriod for that duration.
-// How ever this would block the server RPC thread until that duration is complete, which would stop the RpcLibClient from being
+// How ever this would block the server RPC thread until that duration is complete, which would stop the RpcLibDroneClient from being
 // able to send a new velocity at high rate.  So we have to decouple the client from the server side moveByVelocity control loop.
 // And we do that decoupling with a thread which we call the "offboard_control" thread.  Then each client side call is passed to
 // this thread so that the RPC call does NOT block, and the client can proceed with the next command.  But we also have to guarentee

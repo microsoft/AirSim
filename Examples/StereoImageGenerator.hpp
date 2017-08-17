@@ -9,7 +9,7 @@
 #include "common/common_utils/ProsumerQueue.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include "common/ClockFactory.hpp"
-#include "api/RpcLibClient.hpp"
+#include "api/RpcLibDroneClient.hpp"
 #include "controllers/DroneControllerBase.hpp"
 #include "RandomPointPoseGenerator.hpp"
 STRICT_MODE_OFF
@@ -30,7 +30,7 @@ public:
 
     int generate(int num_samples)
     {
-        msr::airlib::RpcLibClient client;
+        msr::airlib::RpcLibDroneClient client;
         client.confirmConnection();
 
         msr::airlib::ClockBase* clock = msr::airlib::ClockFactory::get();

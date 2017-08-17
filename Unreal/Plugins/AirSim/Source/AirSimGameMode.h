@@ -2,17 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "AirSimGameModeBase.generated.h"
+#include "AirSimGameMode.generated.h"
 
 UCLASS()
-class AIRSIM_API AAirSimGameModeBase : public AGameModeBase
+class AIRSIM_API AAirSimGameMode : public AGameModeBase
 {
     GENERATED_BODY()
-    
     virtual void StartPlay() override;
 
 protected:
-    AAirSimGameModeBase(const FObjectInitializer& ObjectInitializer);
+    AAirSimGameMode(const FObjectInitializer& ObjectInitializer);
     virtual void SetHUD();
     
 };

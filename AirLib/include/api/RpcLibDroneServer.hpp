@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef air_RpcLibAutomobileServer_hpp
-#define air_RpcLibAutomobileServer_hpp
+#ifndef air_RpcLibDroneServer_hpp
+#define air_RpcLibDroneServer_hpp
 
-#include "controllers/AutomobileSedanController.hpp"
+#include "controllers/DroneControllerCancelable.hpp"
 #include "RpcLibBaseServer.hpp"
 
 STRICT_MODE_OFF
@@ -21,17 +21,12 @@ STRICT_MODE_ON
 
 namespace msr { namespace airlib {
 
-class RpcLibAutomobileServer : RpcLibBaseServer {
+class RpcLibDroneServer : public RpcLibBaseServer {
 public:
-    RpcLibAutomobileServer(AutomobileSedanController* vechicle_controller, string server_address, uint16_t port = 41451);
-    virtual ~RpcLibAutomobileServer() override;
-
-protected:
-    bool setVehicleControlSignals(float steeringAngle, float throttlePercentage, float brakePercentage);
-    vector<uint8_t> getImageFromCamera(uint8_t camera_id, VehicleCameraBase::ImageType_ type);
-
+    RpcLibDroneServer(DroneControllerCancelable* drone, string server_address, uint16_t port = 41451);
+    virtual ~RpcLibDroneServer() override;
 private:
-    AutomobileSedanController* vehicle_controller_;
+    DroneControllerCancelable* drone_;
 };
 
 }} //namespace
