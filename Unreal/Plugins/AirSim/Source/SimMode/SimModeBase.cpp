@@ -127,6 +127,7 @@ void ASimModeBase::readSettings()
 
     //do not save this default in json as this will change in near future
     default_vehicle_config = settings.getString("DefaultVehicleConfig", "Pixhawk");
+    current_folder_timestamp = common_utils::Utils::to_string(common_utils::Utils::now());
 
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
     usage_scenario = settings.getString("UsageScenario", "");
@@ -140,6 +141,7 @@ void ASimModeBase::readSettings()
     }
     
     UAirBlueprintLib::LogMessage("Default config: ", default_vehicle_config.c_str(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage("Camera Mode: ", view_mode_string.c_str(), LogDebugLevel::Informational);
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)

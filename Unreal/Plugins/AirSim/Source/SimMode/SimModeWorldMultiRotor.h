@@ -26,7 +26,6 @@ protected:
     typedef AFlyingPawn TMultiRotorPawn;
 
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
-    bool checkConnection();
     VehiclePtr createVehicle(TMultiRotorPawn* vehicle_pawn);
 
 private:
@@ -37,10 +36,6 @@ private:
     TArray<uint8> image_;
     std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
     bool isLoggingStarted;
-
-    UClass* external_camera_class_;
-    UClass* camera_director_class_;
-    UClass* vehicle_pawn_class_;
 
     TArray<AActor*> spawned_actors_;
 

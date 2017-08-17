@@ -5,6 +5,13 @@
 
 const char ASimModeWorldBase::kUsageScenarioComputerVision[] = "ComputerVision";
 
+ASimModeWorldBase::ASimModeWorldBase()
+{
+    static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
+    static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
+    camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
+}
 void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();
@@ -140,6 +147,11 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
         vehicle->updateRendering(DeltaSeconds);
 
     Super::Tick(DeltaSeconds);
+}
+
+bool ASimModeWorldBase::checkConnection()
+{
+    return true;
 }
 
 void ASimModeWorldBase::reset()

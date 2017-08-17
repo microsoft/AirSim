@@ -1,4 +1,4 @@
-#include "AirSimGameMode.h"
+#include "AirSimGameModeBase.h"
 #include "Misc/FileHelper.h"
 #include "SimHUD/SimHUD.h"
 #include "common/Common.hpp"
@@ -47,17 +47,19 @@ public:
 
 static AUnrealLog GlobalASimLog;
 
-AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
+AAirSimGameModeBase::AAirSimGameModeBase(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
     DefaultPawnClass = nullptr;
-    HUDClass = ASimHUD::StaticClass();
-
     common_utils::Utils::getSetLogger(&GlobalASimLog);
 }
 
-void AAirSimGameMode::StartPlay() 
+void AAirSimGameModeBase::StartPlay() 
 {
     Super::StartPlay();
 }
 
+void AAirSimGameModeBase::SetHUD()
+{
+    throw std::runtime_error("SetHUD must be implemented in derived class.");
+}

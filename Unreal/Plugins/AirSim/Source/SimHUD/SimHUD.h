@@ -14,7 +14,7 @@ enum class ESimulatorMode : uint8
     SIM_MODE_HIL 	UMETA(DisplayName="Hardware-in-loop")
 };
 
-UCLASS()
+UCLASS(Abstract)
 class AIRSIM_API ASimHUD : public AHUD
 {
     GENERATED_BODY()
@@ -48,17 +48,19 @@ public:
     static ASimHUD* GetInstance() {
         return instance_;
     }
+
 protected:
+    UPROPERTY() ASimModeBase* simmode_;
+
+    virtual void CreateSimMode();
     virtual void setupInputBindings();
-    std::string reportRefreshHandler();
     void toggleRecordHandler();
     void updateWidgetSubwindowVisibility();
     bool isWidgetSubwindowVisible(int window_index);
+
 private:
     UClass* widget_class_;
-
     UPROPERTY() USimHUDWidget* widget_;
-    UPROPERTY() ASimModeBase* simmode_;
 
     static constexpr int kSubwindowCount = 3; //must be >= 3 for now
     APIPCamera* subwindow_cameras_[kSubwindowCount];
