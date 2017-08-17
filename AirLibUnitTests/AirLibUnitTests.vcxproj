@@ -188,7 +188,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QuaternionTest.hpp" />
-    <ClInclude Include="AutomobilePhysicsUnitTests.hpp" />
     <ClInclude Include="RosFlightTest.hpp" />
     <ClInclude Include="SettingsTest.hpp" />
     <ClInclude Include="SimpleFlightTest.hpp" />

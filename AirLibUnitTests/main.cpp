@@ -5,7 +5,6 @@
 #include "SimpleFlightTest.hpp"
 #include "WorkerThreadTest.hpp"
 #include "QuaternionTest.hpp"
-//#include "AutomobilePhysicsUnitTests.hpp"
 
 int main()
 {
@@ -24,9 +23,6 @@ int main()
     for (auto& test : tests)
         test->run();
 
-	// TODO: integrate automobile tests
-	//std::unique_ptr<AutomobilePhysicsUnitTests>automobileTests(new AutomobilePhysicsUnitTests);
-	//automobileTests->RunAll();
     return 0;
 }
 
