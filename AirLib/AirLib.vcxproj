@@ -143,8 +143,9 @@
     <ClInclude Include="include\safety\ObstacleMap.hpp" />
     <ClInclude Include="include\controllers\PidController.hpp" />
     <ClInclude Include="include\api\RpcLibAdapators.hpp" />
-    <ClInclude Include="include\api\RpcLibClient.hpp" />
-    <ClInclude Include="include\api\RpcLibServer.hpp" />
+    <ClInclude Include="include\api\RpcLibDroneClient.hpp" />
+    <ClInclude Include="include\api\RpcLibBaseServer.hpp" />
+    <ClInclude Include="include\api\RpcLibDroneServer.hpp" />
     <ClInclude Include="include\api\RpcLibAutomobileServer.hpp" />
     <ClInclude Include="include\safety\SafetyEval.hpp" />
     <ClInclude Include="include\controllers\DroneControllerCancelable.hpp" />
@@ -195,8 +196,9 @@
     <ClCompile Include="src\automobile\PneumaticWheel.cpp" />
     <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
-    <ClCompile Include="src\api\RpcLibClient.cpp" />
-    <ClCompile Include="src\api\RpcLibServer.cpp" />
+    <ClCompile Include="src\api\RpcLibDroneClient.cpp" />
+    <ClCompile Include="src\api\RpcLibBaseServer.cpp" />
+    <ClCompile Include="src\api\RpcLibDroneServer.cpp" />
     <ClCompile Include="src\api\RpcLibAutomobileServer.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />
     <ClCompile Include="src\controllers\FileSystem.cpp" />
@@ -205,17 +207,6 @@
     <ProjectReference Include="..\MavLinkCom\MavLinkCom.vcxproj">
       <Project>{8510c7a4-bf63-41d2-94f6-d8731d137a5a}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="include\test.brush">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="include\test.tir">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="include\VI_Racer_front_tire.tir">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4BFB7231-077A-4671-BD21-D3ADE3EA36E7}</ProjectGuid>

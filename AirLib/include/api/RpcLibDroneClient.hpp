@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef air_RpcLibClient_hpp
-#define air_RpcLibClient_hpp
+#ifndef air_RpcLibDroneClient_hpp
+#define air_RpcLibDroneClient_hpp
 
 #include "common/Common.hpp"
 #include <functional>
@@ -13,13 +13,13 @@
 
 namespace msr { namespace airlib {
 
-class RpcLibClient {
+class RpcLibDroneClient {
 public:
     enum class ConnectionState {
         Initial, Connected, Disconnected, Reset, Unknown
     };
 public:
-    RpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
+    RpcLibDroneClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
     ConnectionState getConnectionState();
     bool ping();
     bool armDisarm(bool arm);
@@ -69,7 +69,7 @@ public:
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
 
-    ~RpcLibClient();    //required for pimpl
+    ~RpcLibDroneClient();    //required for pimpl
 private:
     struct impl;
     std::unique_ptr<impl> pimpl_;

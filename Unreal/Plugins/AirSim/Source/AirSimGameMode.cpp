@@ -1,6 +1,7 @@
-#include "AirSimGameModeBase.h"
+#include "AirSimGameMode.h"
 #include "Misc/FileHelper.h"
 #include "SimHUD/SimHUD.h"
+#include "SimHUD/SimHUDMultiRotor.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
 #include "controllers/Settings.hpp"
@@ -47,19 +48,29 @@ public:
 
 static AUnrealLog GlobalASimLog;
 
-AAirSimGameModeBase::AAirSimGameModeBase(const FObjectInitializer& ObjectInitializer)
+AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
     DefaultPawnClass = nullptr;
     common_utils::Utils::getSetLogger(&GlobalASimLog);
+    SetHUD();
 }
 
-void AAirSimGameModeBase::StartPlay() 
+void AAirSimGameMode::StartPlay() 
 {
     Super::StartPlay();
 }
 
-void AAirSimGameModeBase::SetHUD()
+void AAirSimGameMode::SetHUD()
 {
-    throw std::runtime_error("SetHUD must be implemented in derived class.");
+    msr::airlib::Settings& settings = msr::airlib::Settings::singleton();
+    std::string default_vehicle = settings.getString("DefaultVehicle", "MultiRotor");
+    if (default_vehicle == "MultiRotor")
+    {
+        HUDClass = ASimHUDMultiRotor::StaticClass();
+    }
+    else
+    {
+        // No HUD gets created
+    }
 }

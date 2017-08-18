@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include "api/RpcLibServer.hpp"
+#include "api/RpcLibDroneServer.hpp"
 #include "controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
 
@@ -77,7 +77,7 @@ int main(int argc, const char* argv[])
     mav_drone.reset();
 
     DroneControllerCancelable server_wrapper(&mav_drone);
-    msr::airlib::RpcLibServer server(&server_wrapper, connection_info.local_host_ip);
+    msr::airlib::RpcLibDroneServer server(&server_wrapper, connection_info.local_host_ip);
     
     //start server in async mode
     server.start(false);
