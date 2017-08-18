@@ -15,6 +15,9 @@
 #include "common/SteppableClock.hpp"
 #include <cinttypes>
 
+//#define PHYSICS_VERBOSE
+//#define PHYSICS_OUTPUT_DIR std::string("./")
+
 namespace msr { namespace airlib {
 
 class FastPhysicsEngine : public PhysicsEngineBase {

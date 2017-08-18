@@ -16,7 +16,6 @@ include_directories(
 
 file(GLOB_RECURSE ${PROJECT_NAME}_sources ${AIRSIM_ROOT}/${PROJECT_NAME}/src/*.cpp)
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_sources})
-  ${AIRSIM_ROOT}/AirLib/src/rpc/RpcLibAutomobileServer.cpp
 
 CommonTargetLink()
 target_link_libraries(${PROJECT_NAME} ${RPC_LIB})
