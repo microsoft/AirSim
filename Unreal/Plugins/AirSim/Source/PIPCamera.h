@@ -66,14 +66,18 @@ private:
     UPROPERTY() USceneCaptureComponent2D* screen_capture_;
     UPROPERTY() USceneCaptureComponent2D* depth_capture_;
     UPROPERTY() USceneCaptureComponent2D* seg_capture_;
+    UPROPERTY() USceneCaptureComponent2D* normals_capture_;
+
     UPROPERTY() UCameraComponent*  camera_;
     UPROPERTY() UTextureRenderTarget2D* scene_render_target_;
     UPROPERTY() UTextureRenderTarget2D* depth_render_target_;
     UPROPERTY() UTextureRenderTarget2D* seg_render_target_;
+    UPROPERTY() UTextureRenderTarget2D* normals_render_target_;
 
     ImageType enabled_camera_types_ = DefaultEnabledCameras;
 
-    CaptureSettings scene_capture_settings_, seg_capture_settings_, depth_capture_settings_;
+    CaptureSettings scene_capture_settings_, seg_capture_settings_, 
+        depth_capture_settings_, normals_capture_settings_;
 
 private:
     void enableCaptureComponent(const ImageType type, bool is_enabled);

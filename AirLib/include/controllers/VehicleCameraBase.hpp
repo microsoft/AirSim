@@ -17,6 +17,7 @@ namespace msr { namespace airlib {
                 Scene = 1, 
                 Depth = 2, 
                 Segmentation = 4,
+                Normals = 8,
                 All = 255
             };
             typedef common_utils::EnumFlags<ImageType_>  ImageType;

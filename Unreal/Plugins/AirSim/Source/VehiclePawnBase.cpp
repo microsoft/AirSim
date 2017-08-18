@@ -34,21 +34,23 @@ void AVehiclePawnBase::setupCamerasFromSettings()
 
     Settings& settings = Settings::singleton();
     Settings scene_settings_child, depth_settings_child, seg_settings_child;
-    APIPCamera::CaptureSettings scene_settings, depth_settings, seg_settings;
+    APIPCamera::CaptureSettings scene_settings, depth_settings, seg_settings, normals_settings;;
     scene_settings.target_gamma = APIPCamera::CaptureSettings::kSceneTargetGamma;
     if (settings.getChild("SceneCaptureSettings", scene_settings_child))
         createCaptureSettings(scene_settings_child, scene_settings);
-    if (settings.getChild("DepthCaptureSettings", depth_settings_child))
-        createCaptureSettings(depth_settings_child, depth_settings);
     if (settings.getChild("SegCaptureSettings", seg_settings_child))
         createCaptureSettings(seg_settings_child, seg_settings);
-
+    if (settings.getChild("DepthCaptureSettings", depth_settings_child))
+        createCaptureSettings(depth_settings_child, depth_settings);
+    if (settings.getChild("NormalsCaptureSettings", depth_settings_child))
+        createCaptureSettings(depth_settings_child, normals_settings);  //TODO: use separate settings?
 
     for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
         APIPCamera* camera = getCamera(camera_index);
         camera->setCaptureSettings(ImageType_::Scene, scene_settings);
-        camera->setCaptureSettings(ImageType_::Depth, depth_settings);
         camera->setCaptureSettings(ImageType_::Segmentation, seg_settings);
+        camera->setCaptureSettings(ImageType_::Depth, depth_settings);
+        camera->setCaptureSettings(ImageType_::Normals, normals_settings);
     }
 }
 
