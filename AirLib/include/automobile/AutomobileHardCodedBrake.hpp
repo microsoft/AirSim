@@ -7,17 +7,17 @@
 
 namespace msr { namespace airlib {
 
-	class AutomobileHardCodedBrake : public AutomobileBrake
-	{
-		public:
-			AutomobileHardCodedBrake(AutomobileBrakeParameters *parameters)
-				: AutomobileBrake(parameters) {};
+    class AutomobileHardCodedBrake : public AutomobileBrake
+    {
+        public:
+            AutomobileHardCodedBrake(AutomobileBrakeParameters *parameters)
+                : AutomobileBrake(parameters) {};
 
-			virtual real_T GetBrakeTorque(real_T brakePercentage) override
-			{
-				return this->_parameters->MaximumBrakeTorque * brakePercentage;
-			}
-	};
+            virtual real_T GetBrakeTorque(real_T brakePercentage) override
+            {
+                return this->_parameters->MaximumBrakeTorque * brakePercentage;
+            }
+    };
 }}
 
 #endif

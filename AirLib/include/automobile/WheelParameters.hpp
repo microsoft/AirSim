@@ -5,13 +5,13 @@
 
 namespace msr { namespace airlib {
 
-	class WheelParameters 
-	{
-		public:
-			virtual real_T GetNoLoadOuterDiameter() const = 0;
-			virtual real_T GetDryRollingFrictionCoefficient() const = 0;
-			virtual real_T GetAngularInertia() const = 0;
-	};
+    class WheelParameters
+    {
+        public:
+            virtual real_T GetNoLoadOuterDiameter() const = 0;
+            virtual real_T GetDryRollingFrictionCoefficient() const = 0;
+            virtual real_T GetAngularInertia() const = 0;
+    };
 }}
 
 #endif

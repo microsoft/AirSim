@@ -8,28 +8,28 @@
 
 namespace msr { namespace airlib {
 
-	class MagicFormulaWheel : public PneumaticWheel
-	{
-		public:
-			MagicFormulaWheel(TirFileWheelParameters tirWheelParameters, bool isPowered, bool hasBrake, bool canSteer);
-			virtual Vector3r GetForce(real_T wheelNormalForce, real_T directionalVelocity, real_T slipAngle, real_T coefficientOfFrictionMultiplier, TTimeDelta timeSinceLastUpdate) override;
+    class MagicFormulaWheel : public PneumaticWheel
+    {
+        public:
+            MagicFormulaWheel(TirFileWheelParameters tirWheelParameters, bool isPowered, bool hasBrake, bool canSteer);
+            virtual Vector3r GetForce(real_T wheelNormalForce, real_T directionalVelocity, real_T slipAngle, real_T coefficientOfFrictionMultiplier, TTimeDelta timeSinceLastUpdate) override;
 
-			virtual WheelParameters* GetWheelParameters() const override
-			{
-				/*TODO: make this work with static_cast*/
-				return (WheelParameters*)&this->_wheelParameters;
-			}
+            virtual WheelParameters* GetWheelParameters() const override
+            {
+                /*TODO: make this work with static_cast*/
+                return (WheelParameters*)&this->_wheelParameters;
+            }
 
-		private:
-			TirFileWheelParameters _wheelParameters;
+        private:
+            TirFileWheelParameters _wheelParameters;
 
-			void ComputeMagicFormulaForces(real_T wheelNormalForce,
-				real_T slipAngle,
-				real_T directionalVelocity,
-				real_T &longitudinalForce,
-				real_T &lateralForce);
-	};
-	
+            void ComputeMagicFormulaForces(real_T wheelNormalForce,
+                real_T slipAngle,
+                real_T directionalVelocity,
+                real_T &longitudinalForce,
+                real_T &lateralForce);
+    };
+
 }}
 
 #endif

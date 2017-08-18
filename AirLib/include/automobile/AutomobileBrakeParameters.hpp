@@ -4,16 +4,16 @@
 #include "common/Common.hpp"
 
 namespace msr { namespace airlib {
-	class AutomobileBrakeParameters
-	{
-		public:
-			AutomobileBrakeParameters(real_T maximumBrakeTorque)
-			{
-				this->MaximumBrakeTorque = maximumBrakeTorque;
-			}
+    class AutomobileBrakeParameters
+    {
+        public:
+            AutomobileBrakeParameters(real_T maximumBrakeTorque)
+            {
+                this->MaximumBrakeTorque = maximumBrakeTorque;
+            }
 
-			real_T MaximumBrakeTorque;
-	};
+            real_T MaximumBrakeTorque;
+    };
 }}
-	
+
 #endif
