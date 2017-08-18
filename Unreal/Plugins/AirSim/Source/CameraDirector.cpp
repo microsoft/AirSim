@@ -31,6 +31,7 @@ ECameraDirectorMode ACameraDirector::getMode()
 void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, AVehiclePawnBase* vehicle, APIPCamera* external_camera)
 {
     manual_pose_controller_ = NewObject<UManualPoseController>();
+    manual_pose_controller_->initializeForPlay();
 
     setupInputBindings();
 
