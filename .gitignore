@@ -35,6 +35,7 @@ CMakeCache.txt
 #Unreal Engine
 StarterContent/
 Saved/
+!DefaultEditorPerProjectUserSettings.ini #contains use less CPU setting
 Binaries/
 Build/
 Debug/
