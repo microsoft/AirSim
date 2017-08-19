@@ -1,11 +1,19 @@
 #include "MultiRotorConnector.h"
+
 #ifdef AIRLIB_NO_RPC
 #include "api/DebugApiServer.hpp"
 #else
+
+#if defined _WIN32 || defined _WIN64
 #include "AllowWindowsPlatformTypes.h"
+#endif
 #include "api/RpcLibServer.hpp"
+#if defined _WIN32 || defined _WIN64
 #include "HideWindowsPlatformTypes.h"
 #endif
+
+#endif
+
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
 #include <exception>
