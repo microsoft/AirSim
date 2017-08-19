@@ -8,6 +8,7 @@
 #include "common/UpdatableObject.hpp"
 #include "PhysicsBodyVertex.hpp"
 #include "common/CommonStructs.hpp"
+#include "physics/FreeBodyMotionAlgorithmType.hpp"
 #include "Kinematics.hpp"
 #include "Environment.hpp"
 #include <unordered_set>
@@ -20,7 +21,7 @@ public: //interface
     virtual void kinematicsUpdated() = 0;
     virtual real_T getRestitution() const = 0;
     virtual real_T getFriction() const = 0;
-
+    virtual FreeBodyMotionAlgorithmType getFreeBodyMotionType() const = 0;
     //derived class may return covariant type
     virtual uint wrenchVertexCount() const
     {

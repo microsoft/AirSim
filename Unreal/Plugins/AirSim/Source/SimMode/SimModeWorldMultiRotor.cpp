@@ -10,10 +10,6 @@
 
 ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
 {
-    static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
-    external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
-    static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
-    camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<TMultiRotorPawn> vehicle_pawn_class(TEXT("Blueprint'/AirSim/Blueprints/BP_FlyingPawn'"));
     vehicle_pawn_class_ = vehicle_pawn_class.Succeeded() ? vehicle_pawn_class.Class : nullptr;
 }
@@ -166,11 +162,6 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
     }
 
     Super::Tick(DeltaSeconds);
-}
-
-bool ASimModeWorldMultiRotor::checkConnection()
-{
-    return true;
 }
 
 void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)

@@ -24,7 +24,7 @@ if (not cameraType in cameraTypeMap):
   printUsage()
   sys.exit(0)
 
-print cameraTypeMap[cameraType]
+print(cameraTypeMap[cameraType])
 
 client = AirSimClient('127.0.0.1')
 

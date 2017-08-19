@@ -12,7 +12,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include "common/common_utils/AsyncTasker.hpp"
-#include "api/RpcLibClient.hpp"
+#include "api/RpcLibDroneClient.hpp"
 #include "common/EarthUtils.hpp"
 #include "controllers/DroneCommon.hpp"
 #include "controllers/DroneControllerBase.hpp"
@@ -32,7 +32,7 @@ public:
     {
     }
 
-    RpcLibClient client;
+    RpcLibDroneClient client;
     AsyncTasker tasker;
 
     void sleep_for(TTimeDelta wall_clock_dt)
@@ -1081,7 +1081,7 @@ Each record is tab separated floating point numbers containing GPS lat,lon,alt,z
             quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z()
         );
 
-        std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false);
+        std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false, "rec");
         FileSystem::appendLineToFile(file_path_name, line);
 
         return false;
@@ -1109,7 +1109,7 @@ See RecordPose for information about log file format")
 
         context->tasker.execute([=]() {
             std::ifstream file;
-            std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false);
+            std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false, "rec");
             file.exceptions(file.exceptions() | std::ios::failbit);
             FileSystem::openTextFile(file_path_name, file);
 

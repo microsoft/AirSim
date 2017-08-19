@@ -35,6 +35,7 @@ void ASimHUD::BeginPlay()
         UAirBlueprintLib::LogMessage(TEXT("Cannot instantiate BP_SimHUDWidget blueprint!"), TEXT(""), LogDebugLevel::Failure, 180);
     }
 
+    this->CreateSimMode();
     //create simmode
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -56,6 +57,11 @@ void ASimHUD::BeginPlay()
     widget_->setOnToggleRecordingHandler(std::bind(&ASimHUD::toggleRecordHandler, this));
     widget_->setRecordButtonVisibility(simmode_->isRecordUIVisible());
     updateWidgetSubwindowVisibility();
+}
+
+void ASimHUD::CreateSimMode()
+{
+
 }
 
 void ASimHUD::Tick( float DeltaSeconds )

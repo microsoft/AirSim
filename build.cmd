@@ -62,6 +62,12 @@ REM //---------- all our output goes to Unreal/Plugin folder ----------
 if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
 robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp
 
+REM //---------- set AIRSIM environment variable to the AirSim folder ----------
+setx AIRSIM %CD%
+
+REM //---------- copy the brush file for automobile to the AirSim folder ----------
+robocopy "AirLib\include\automobile" "%userprofile%\Documents\AirSim" *.brush
+
 REM //---------- done building ----------
 goto :eof
 

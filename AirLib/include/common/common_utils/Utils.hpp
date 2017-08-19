@@ -607,6 +607,14 @@ public:
         return min_a <= b && max_a >= b;
     }
 
+	//Signum function
+	//https://stackoverflow.com/questions/1903954/is-there-a-standard-sign-function-signum-sgn-in-c-c
+	template <typename T> 
+	static int sgn(T val) 
+	{
+		return (T(0) < val) - (val < T(0));
+	}
+
     static void DebugBreak()
     {
 #ifdef _MSC_VER

@@ -1,6 +1,7 @@
 #include "AirSimGameMode.h"
 #include "Misc/FileHelper.h"
 #include "SimHUD/SimHUD.h"
+#include "SimHUD/SimHUDMultiRotor.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
 #include "controllers/Settings.hpp"
@@ -51,9 +52,8 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
     DefaultPawnClass = nullptr;
-    HUDClass = ASimHUD::StaticClass();
-
     common_utils::Utils::getSetLogger(&GlobalASimLog);
+    SetHUD();
 }
 
 void AAirSimGameMode::StartPlay() 
@@ -61,3 +61,16 @@ void AAirSimGameMode::StartPlay()
     Super::StartPlay();
 }
 
+void AAirSimGameMode::SetHUD()
+{
+    msr::airlib::Settings& settings = msr::airlib::Settings::singleton();
+    std::string default_vehicle = settings.getString("DefaultVehicle", "MultiRotor");
+    if (default_vehicle == "MultiRotor")
+    {
+        HUDClass = ASimHUDMultiRotor::StaticClass();
+    }
+    else
+    {
+        // No HUD gets created
+    }
+}

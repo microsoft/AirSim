@@ -9,7 +9,7 @@ STRICT_MODE_OFF
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
-#include "api/RpcLibClient.hpp"
+#include "api/RpcLibDroneClient.hpp"
 #include "controllers/DroneControllerBase.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include <iostream>
@@ -24,7 +24,7 @@ int main()
 
     // This assumes you are running DroneServer already on the same machine.
     // DroneServer must be running first.
-    msr::airlib::RpcLibClient client;
+    msr::airlib::RpcLibDroneClient client;
     typedef DroneControllerBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType_ ImageType_;

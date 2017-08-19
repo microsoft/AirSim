@@ -45,6 +45,7 @@ public:
     virtual AVehiclePawnBase* getFpvVehiclePawn();
 
     RecordingFile& getRecordingFile();
+    std::string current_folder_timestamp;
 
 protected:
     virtual void setupInputBindings();
