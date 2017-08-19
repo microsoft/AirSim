@@ -28,12 +28,16 @@ public:
         }
 
         // Simply get the state of the controller from XInput.
-        auto dwResult = XInputGetState(index, &controllers_[index].state);
+        DWORD dwResult = XInputGetState(index, &controllers_[index].state);
 
-        if( dwResult == ERROR_SUCCESS )
+        if (dwResult == ERROR_SUCCESS) {
             controllers_[index].bConnected = true;
-        else
+            state.connection_error_code = 0;
+        }
+        else {
             controllers_[index].bConnected = false;
+            state.connection_error_code = dwResult;
+        }
 
         state.is_connected = controllers_[index].bConnected;
 

@@ -2,7 +2,9 @@
 #ifdef AIRLIB_NO_RPC
 #include "api/DebugApiServer.hpp"
 #else
+#include "AllowWindowsPlatformTypes.h"
 #include "api/RpcLibServer.hpp"
+#include "HideWindowsPlatformTypes.h"
 #endif
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
@@ -81,7 +83,8 @@ void MultiRotorConnector::detectUsbRc()
     if (rc_data_.is_connected)
         UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Detected", LogDebugLevel::Informational);
     else
-        UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Not detected", LogDebugLevel::Informational);
+        UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
+            std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
 }
 
 const msr::airlib::RCData& MultiRotorConnector::getRCData()

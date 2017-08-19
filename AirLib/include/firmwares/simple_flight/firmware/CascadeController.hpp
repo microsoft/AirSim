@@ -51,13 +51,13 @@ public:
         const auto& goal_mode = goal_->getGoalMode();
         const auto& goal_val = goal_->getGoalValue();
 
-        common_utils::Utils::log(common_utils::Utils::stringf("Pos: %s", state_estimator_->getPosition().toString().c_str()));
+        //common_utils::Utils::log(common_utils::Utils::stringf("Pos: %s", state_estimator_->getPosition().toString().c_str()));
         
-        if (!goal_mode.equals4(last_goal_mode_)) {
-            common_utils::Utils::log(common_utils::Utils::stringf("GoalMode: %s", goal_mode.toString().c_str()));
-        }
+        //if (!goal_mode.equals4(last_goal_mode_)) {
+        //    common_utils::Utils::log(common_utils::Utils::stringf("GoalMode: %s", goal_mode.toString().c_str()));
+        //}
         if (!goal_val.equals4(last_goal_val_)) {
-            common_utils::Utils::log(common_utils::Utils::stringf("GoalVal : %s", goal_val.toString().c_str()));
+            //common_utils::Utils::log(common_utils::Utils::stringf("GoalVal : %s", goal_val.toString().c_str()));
             last_goal_val_ = goal_val;
         }
 

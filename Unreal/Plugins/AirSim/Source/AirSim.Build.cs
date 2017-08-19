@@ -13,9 +13,13 @@ public class AirSim : ModuleRules
         get { return ModuleDirectory; }
     }
 
-    private string AirSimPath
+    private string AirLibPath
     {
         get { return Path.GetFullPath(Path.Combine(ModulePath, "AirLib")); }
+    }
+    private string AirSimPluginPath
+    {
+        get { return Path.GetFullPath(Path.Combine(ModulePath, "..")); }
     }
 
     private enum CompileMode
@@ -35,11 +39,11 @@ public class AirSim : ModuleRules
             case CompileMode.HeaderOnlyNoRpc:
                 Definitions.Add("AIRLIB_HEADER_ONLY=1");
                 Definitions.Add("AIRLIB_NO_RPC=1");
-                AddLibDependency("AirLib", Path.Combine(AirSimPath, "lib"), "AirLib", Target, false);
+                AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 break;
             case CompileMode.HeaderOnlyWithRpc:
                 Definitions.Add("AIRLIB_HEADER_ONLY=1");
-                AddLibDependency("AirLib", Path.Combine(AirSimPath, "lib"), "AirLib", Target, false);
+                AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
             case CompileMode.CppCompileNoRpc:
@@ -69,8 +73,8 @@ public class AirSim : ModuleRules
         Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
         Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
 
-        PrivateIncludePaths.Add(Path.Combine(AirSimPath, "include"));
-        PrivateIncludePaths.Add(Path.Combine(AirSimPath, "deps", "eigen3"));
+        PrivateIncludePaths.Add(Path.Combine(AirLibPath, "include"));
+        PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
 
         SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
@@ -89,12 +93,15 @@ public class AirSim : ModuleRules
             //this should be in path, typically at C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64
             //typically gets installed with Visual Studio
             PublicAdditionalLibraries.Add("xinput9_1_0.lib");
+
+            RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(AirSimPluginPath, "Dependencies", "x360ce", "xinput9_1_0.dll")));
+            RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(AirSimPluginPath, "Dependencies", "x360ce", "x360ce.ini")));
         }
     }
 
     private bool LoadAirSimDependency(ReadOnlyTargetRules Target, string LibName, string LibFileName)
     {
-        string LibrariesPath = Path.Combine(AirSimPath, "deps", LibName, "lib");
+        string LibrariesPath = Path.Combine(AirLibPath, "deps", LibName, "lib");
         return AddLibDependency(LibName, LibrariesPath, LibFileName, Target, true);
     }
 
@@ -118,7 +125,7 @@ public class AirSim : ModuleRules
         if (isLibrarySupported && IsAddLibInclude)
         {
             // Include path
-            PrivateIncludePaths.Add(Path.Combine(AirSimPath, "deps", LibName, "include"));
+            PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
         }
 
         Definitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
