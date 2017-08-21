@@ -34,7 +34,6 @@
     <ClInclude Include="include\automobile\AutomobileSedan.hpp" />
     <ClInclude Include="include\automobile\AutomobileState.hpp" />
     <ClInclude Include="include\automobile\AutomobileStaticParams.hpp" />
-    <ClInclude Include="include\automobile\GamepadAutomobileController.hpp" />
     <ClInclude Include="include\automobile\MagicFormulaWheel.hpp" />
     <ClInclude Include="include\automobile\TirFileWheelParameters.hpp" />
     <ClInclude Include="include\automobile\BrushWheel.hpp" />
