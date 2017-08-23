@@ -27,14 +27,14 @@ int main()
     msr::airlib::RpcLibClient client;
     typedef DroneControllerBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
-    typedef VehicleCameraBase::ImageType_ ImageType_;
+    typedef VehicleCameraBase::ImageType ImageType;
     typedef common_utils::FileSystem FileSystem;
     
     try {
         client.confirmConnection();
 
         std::cout << "Press Enter to get FPV image" << std::endl; std::cin.get();
-        vector<ImageRequest> request = { ImageRequest(0, ImageType_::Scene), ImageRequest(1, ImageType_::Depth) };
+        vector<ImageRequest> request = { ImageRequest(0, ImageType::Scene), ImageRequest(1, ImageType::DepthMeters, true) };
         const vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images recieved: " << response.size() << std::endl;
 
@@ -44,16 +44,26 @@ int main()
             std::getline(std::cin, path);
 
             for (const ImageResponse& image_info : response) {
-                std::cout << "Image size: " << image_info.image_data.size() << std::endl;
+                std::cout << "Image uint8 size: " << image_info.image_data_uint8.size() << std::endl;
+                std::cout << "Image float size: " << image_info.image_data_float.size() << std::endl;
+
                 if (path != "") {
-                    std::ofstream file(FileSystem::combine(path, std::to_string(image_info.time_stamp) + ".png"), std::ios::binary);
-                    file.write(reinterpret_cast<const char*>(image_info.image_data.data()), image_info.image_data.size());
-                    file.close();
+                    std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
+                    if (image_info.pixels_as_float) {
+                        Utils::writePfmFile(image_info.image_data_float.data(), image_info.width, image_info.height,
+                            file_path + ".pfm");
+                    }
+                    else {
+                        std::ofstream file(file_path + ".png", std::ios::binary);
+                        file.write(reinterpret_cast<const char*>(image_info.image_data_uint8.data()), image_info.image_data_uint8.size());
+                        file.close();
+                    }
                 }
             }
         }
 
         std::cout << "Press Enter to arm the drone" << std::endl; std::cin.get();
+        client.setOffboardMode(true);
         client.armDisarm(true);
 
         std::cout << "Press Enter to takeoff" << std::endl; std::cin.get();
@@ -65,16 +75,16 @@ int main()
         std::this_thread::sleep_for(std::chrono::duration<double>(5));
         client.hover();
 
-        std::cout << "Press Enter to fly in a 10m box pattern at 1 m/s velocity" << std::endl; std::cin.get();
+        std::cout << "Press Enter to fly in a 10m box pattern at 3 m/s velocity" << std::endl; std::cin.get();
         // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
         client.setOffboardMode(true); 
         auto position = client.getPosition();
         float z = position.z(); // current position (NED coordinate system).  
-        const float speed = 1.0f;
+        const float speed = 3.0f;
         const float size = 10.0f; 
         const float duration = size / speed;
         DrivetrainType driveTrain = DrivetrainType::ForwardOnly;
-        YawMode yaw_mode(false, 0);
+        YawMode yaw_mode(true, 0);
         std::cout << "moveByVelocityZ(" << speed << ", 0, " << z << "," << duration << ")" << std::endl;
         client.moveByVelocityZ(speed, 0, z, duration, driveTrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));

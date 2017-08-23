@@ -170,7 +170,7 @@ vector<VehicleCameraBase::ImageResponse> RpcLibClient::simGetImages(vector<Drone
 }
 vector<uint8_t> RpcLibClient::simGetImage(int camera_id, VehicleCameraBase::ImageType type)
 {
-    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type.toEnum()).as<vector<uint8_t>>();
+    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type).as<vector<uint8_t>>();
     if (result.size() == 1) {
         // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
         result.clear();

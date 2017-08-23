@@ -64,9 +64,9 @@ uint32 FRecordingThread::Run()
 
                 // todo: should we go as fast as possible, or should we limit this to a particular number of
                 // frames per second?
-                auto response = camera_->getImage(msr::airlib::VehicleCameraBase::ImageType_::Scene, false, true);
+                auto response = camera_->getImage(msr::airlib::VehicleCameraBase::ImageType::Scene, false, true);
                 TArray<uint8_t> image_data;
-                image_data.Append(response.image_data.data(), response.image_data.size());
+                image_data.Append(response.image_data_uint8.data(), response.image_data_uint8.size());
                 recording_file_->appendRecord(image_data, fpv_physics_body_);
             }
         }

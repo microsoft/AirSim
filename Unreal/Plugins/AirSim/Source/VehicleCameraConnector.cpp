@@ -20,11 +20,6 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(V
         response.message = "camera is not set";
         return response;
     }
-    if (image_type == ImageType_::None) {
-        ImageResponse response;
-        response.message = "ImageType was None";
-        return response;
-    }
 
     return getSceneCaptureImage(image_type, pixels_as_float, compress, false);
 }
@@ -33,9 +28,8 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCa
     bool pixels_as_float, bool compress, bool use_safe_method)
 {
     bool visibilityChanged = false;
-    if ((camera_->getEnableCameraTypes() & image_type) == ImageType_::None
-        && (image_type != ImageType_::None)) {
-        camera_->setEnableCameraTypes(camera_->getEnableCameraTypes() | image_type);
+    if (! camera_->getCameraTypeEnabled(image_type)) {
+        camera_->setCameraTypeEnabled(image_type, true);
         visibilityChanged = true;
     }
 
@@ -66,12 +60,16 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCa
 
     RenderRequest request(use_safe_method);
     int width, height;
-    TArray<uint8> image;
-    request.getScreenshot(textureTarget, image, pixels_as_float, compress, width, height);
+    TArray<uint8> image_uint8;
+    TArray<float> image_float;
+
+    request.getScreenshot(textureTarget, image_uint8, image_float, pixels_as_float, compress, width, height);
 
     ImageResponse response;
     response.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
-    response.image_data = std::vector<uint8_t>(image.GetData(), image.GetData() + image.Num());
+    response.image_data_uint8 = std::vector<uint8_t>(image_uint8.GetData(), image_uint8.GetData() + image_uint8.Num());
+    response.image_data_float = std::vector<float>(image_float.GetData(), image_float.GetData() + image_float.Num());
+
     response.camera_position = NedTransform::toNedMeters(capture->GetComponentLocation());
     response.camera_orientation = NedTransform::toQuaternionr(capture->GetComponentRotation().Quaternion(), true);
     response.pixels_as_float = pixels_as_float;

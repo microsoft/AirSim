@@ -12,25 +12,27 @@ namespace msr { namespace airlib {
         class VehicleCameraBase
         {
         public: //types
-            enum class ImageType_ : uint {
-                None = 0,
-                Scene = 1, 
-                Depth = 2, 
-                Segmentation = 4,
-                Normals = 8,
-                All = 255
+            enum class ImageType : uint { //this indexes to array
+                Scene = 0, 
+                DepthMeters, 
+                DepthVis, 
+                DisparityNormalized,
+                Segmentation,
+                Normals,
+                Count //must be last
             };
-            typedef common_utils::EnumFlags<ImageType_>  ImageType;
 
             struct ImageResponse {
-                vector<uint8_t> image_data;
+                vector<uint8_t> image_data_uint8;
+                vector<float> image_data_float;
+
                 Vector3r camera_position = Vector3r::Zero();
                 Quaternionr camera_orientation = Quaternionr::Identity();
                 TTimePoint time_stamp = 0;
                 std::string message;
-                bool pixels_as_float;
-                bool compress;
-                int width, height;
+                bool pixels_as_float = false;
+                bool compress = true;
+                int width = 0, height = 0;
             };
 
         public: //methods

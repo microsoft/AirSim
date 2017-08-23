@@ -192,7 +192,7 @@ public:
 
     struct ImageRequest {
         uint8_t camera_id;
-        msr::airlib::VehicleCameraBase::ImageType_ image_type;
+        msr::airlib::VehicleCameraBase::ImageType image_type;
         bool pixels_as_float;
         bool compress;
 
@@ -204,7 +204,7 @@ public:
         ImageRequest(const msr::airlib::DroneControllerBase::ImageRequest& s)
         {
             camera_id = s.camera_id;
-            image_type = s.image_type.toEnum();
+            image_type = s.image_type;
             pixels_as_float = s.pixels_as_float;
             compress = s.compress;
         }
@@ -241,7 +241,9 @@ public:
     };
 
     struct ImageResponse {
-        std::vector<uint8_t> image_data;
+        std::vector<uint8_t> image_data_uint8;
+        std::vector<float> image_data_float;
+
         Vector3r camera_position;
         Quaternionr camera_orientation;
         msr::airlib::TTimePoint time_stamp;
@@ -250,19 +252,28 @@ public:
         bool compress;
         int width, height;
 
-        MSGPACK_DEFINE_ARRAY(image_data, camera_position, camera_orientation, time_stamp, message, pixels_as_float, compress, width, height);
+        MSGPACK_DEFINE_ARRAY(image_data_uint8, image_data_float, camera_position, camera_orientation, time_stamp, message, pixels_as_float, compress, width, height);
 
         ImageResponse()
         {}
 
         ImageResponse(const msr::airlib::VehicleCameraBase::ImageResponse& s)
         {
-            image_data = s.image_data;
+            pixels_as_float = s.pixels_as_float;
+            
+            image_data_uint8 = s.image_data_uint8;
+            image_data_float = s.image_data_float;
+
+            //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
+            if (image_data_uint8.size() == 0)
+                image_data_uint8.push_back(0);
+            if (image_data_float.size() == 0)
+                image_data_float.push_back(0);
+
             camera_position = Vector3r(s.camera_position);
             camera_orientation = Quaternionr(s.camera_orientation);
             time_stamp = s.time_stamp;
             message = s.message;
-            pixels_as_float = s.pixels_as_float;
             compress = s.compress;
             width = s.width;
             height = s.height;
@@ -272,12 +283,17 @@ public:
         {
             msr::airlib::VehicleCameraBase::ImageResponse d;
 
-            d.image_data = image_data;
+            d.pixels_as_float = pixels_as_float;
+
+            if (! pixels_as_float)
+                d.image_data_uint8 = image_data_uint8;
+            else
+                d.image_data_float = image_data_float;
+
             d.camera_position = camera_position.to();
             d.camera_orientation = camera_orientation.to();
             d.time_stamp = time_stamp;
             d.message = message;
-            d.pixels_as_float = pixels_as_float;
             d.compress = compress;
             d.width = width;
             d.height = height;
@@ -311,7 +327,7 @@ public:
 MSGPACK_ADD_ENUM(msr::airlib::DrivetrainType);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::SafetyViolationType_);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::ObsAvoidanceStrategy);
-MSGPACK_ADD_ENUM(msr::airlib::VehicleCameraBase::ImageType_);
+MSGPACK_ADD_ENUM(msr::airlib::VehicleCameraBase::ImageType);
 
 
 #endif

@@ -1,5 +1,6 @@
 #include "AirSimGameMode.h"
 #include "Misc/FileHelper.h"
+#include "ImageWrapper.h"
 #include "SimHUD/SimHUD.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
@@ -10,6 +11,10 @@
 //#define WIN32_LEAN_AND_MEAN
 //#include <windows.h>
 //#endif
+
+// Module loading is not allowed outside of the main thread, so we load the ImageWrapper module ahead of time.
+static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
+
 
 class AUnrealLog : public msr::airlib::Utils::Logger
 {

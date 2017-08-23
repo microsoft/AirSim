@@ -21,7 +21,6 @@ class AIRSIM_API ASimHUD : public AHUD
 
 public:
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
-    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
 
 public:
     void inputEventToggleReport();
@@ -48,13 +47,19 @@ public:
     static ASimHUD* GetInstance() {
         return instance_;
     }
+
 protected:
     virtual void setupInputBindings();
     std::string reportRefreshHandler();
     void toggleRecordHandler();
     void updateWidgetSubwindowVisibility();
     bool isWidgetSubwindowVisible(int window_index);
+
 private:
+    void initializeSubWindows();
+
+private:
+    typedef common_utils::Utils Utils;
     UClass* widget_class_;
 
     UPROPERTY() USimHUDWidget* widget_;

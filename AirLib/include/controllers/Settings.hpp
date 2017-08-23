@@ -108,8 +108,28 @@ public:
 
     bool getChild(std::string name, Settings& child) const
     {
-        if (doc_.count(name) == 1 && doc_[name].type() == nlohmann::detail::value_t::object) {
+        if (doc_.count(name) == 1 && 
+            ( doc_[name].type() == nlohmann::detail::value_t::object ||
+                doc_[name].type() == nlohmann::detail::value_t::array
+            )) {
             child.doc_ = doc_[name].get<nlohmann::json>();
+            return true;
+        }
+        return false;
+    }
+
+    size_t size() {
+        return doc_.size();
+    }
+
+    bool getChild(size_t index, Settings& child) const
+    {
+        if (doc_.size() > index && 
+            ( doc_[index].type() == nlohmann::detail::value_t::object ||
+                doc_[index].type() == nlohmann::detail::value_t::array
+            )) {
+
+            child.doc_ = doc_[index].get<nlohmann::json>();
             return true;
         }
         return false;

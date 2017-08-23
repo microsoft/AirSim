@@ -616,6 +616,51 @@ public:
 #endif
     }
 
+    //convert strongly typed enum to underlying scaler types
+    template <typename E>
+    static constexpr typename std::underlying_type<E>::type toNumeric(E e) {
+        return static_cast<typename std::underlying_type<E>::type>(e);
+    }
+    template <typename E>
+    static constexpr E toEnum(typename std::underlying_type<E>::type u) {
+        return static_cast<E>(u);
+    }
+
+    // check whether machine is little endian
+    static bool isLittleEndian()
+    {
+        int intval = 1;
+        unsigned char *uval = (unsigned char *)&intval;
+        return uval[0] == 1;
+    }
+
+    static void writePfmFile(const float * const image_data, int width, int height, std::string path, float scalef=1)
+    {
+        std::fstream file(path.c_str(), std::ios::out | std::ios::binary);
+
+        std::string bands;
+        float fvalue;       // scale factor and temp value to hold pixel value
+        bands = "Pf";   // grayscale
+
+                        // sign of scalefact indicates endianness, see pfms specs
+        if(isLittleEndian())
+            scalef = -scalef;
+
+        // insert header information 
+        file << bands   << "\n";
+        file << width   << " ";
+        file << height  << "\n";
+        file << scalef  << "\n";
+
+        if(bands == "Pf"){          // handle 1-band image 
+            for (int i=0; i < height; i++) {
+                for(int j=0; j < width; ++j){
+                    fvalue = image_data[i * width + j];
+                    file.write((char*) &fvalue, sizeof(fvalue));
+                }
+            }
+        }
+    }
 };
 
 } //namespace

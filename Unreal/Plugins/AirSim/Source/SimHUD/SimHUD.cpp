@@ -1,6 +1,7 @@
 #include "SimHUD.h"
 #include "ConstructorHelpers.h"
 #include "SimMode/SimModeWorldMultiRotor.h"
+#include "controllers/Settings.hpp"
 #include "Kismet/KismetSystemLibrary.h"
 
 ASimHUD* ASimHUD::instance_ = nullptr;
@@ -40,11 +41,7 @@ void ASimHUD::BeginPlay()
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
 
-    subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawn()->getCamera();
-    subwindow_camera_types_[0] = ImageType_::Depth;
-    subwindow_camera_types_[1] = ImageType_::Segmentation;
-    subwindow_camera_types_[2] = ImageType_::Scene;
-    subwindow_visible_[0] = subwindow_visible_[1] = subwindow_visible_[2] = false;
+    initializeSubWindows();
 
     setupInputBindings();
 
@@ -136,15 +133,10 @@ void ASimHUD::updateWidgetSubwindowVisibility()
         APIPCamera* camera = subwindow_cameras_[window_index];
         ImageType camera_type = subwindow_camera_types_[window_index];
 
-        bool is_visible = subwindow_visible_[window_index] && camera != nullptr &&
-            camera_type != ImageType_::None;
+        bool is_visible = subwindow_visible_[window_index] && camera != nullptr;
 
-        if (camera != nullptr) {
-            if (is_visible)
-                camera->setEnableCameraTypes(camera->getEnableCameraTypes() | camera_type);
-            else
-                camera->setEnableCameraTypes(camera->getEnableCameraTypes() & (~camera_type));
-        }
+        if (camera != nullptr)
+            camera->setCameraTypeEnabled(camera_type, is_visible);
 
         widget_->setSubwindowVisibility(window_index, 
             is_visible,
@@ -194,4 +186,34 @@ void ASimHUD::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow1", EKeys::Two, this, &ASimHUD::inputEventToggleSubwindow1);
     UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow2", EKeys::Three, this, &ASimHUD::inputEventToggleSubwindow2);
     UAirBlueprintLib::BindActionToKey("InputEventToggleAll", EKeys::Zero, this, &ASimHUD::inputEventToggleAll);
+}
+
+void ASimHUD::initializeSubWindows()
+{
+    //setup defaults
+    subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawn()->getCamera();
+    subwindow_camera_types_[0] = ImageType::DepthVis;
+    subwindow_camera_types_[1] = ImageType::Segmentation;
+    subwindow_camera_types_[2] = ImageType::Scene;
+    subwindow_visible_[0] = subwindow_visible_[1] = subwindow_visible_[2] = false;
+
+    Settings& json_settings_root = Settings::singleton();
+    Settings json_settings_parent;
+    if (json_settings_root.getChild("SubWindows", json_settings_parent)) {
+        for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
+            Settings json_settings_child;     
+            if (json_settings_parent.getChild(child_index, json_settings_child)) {
+                int index = json_settings_child.getInt("Index", -1);
+
+                if (index == -1) {
+                    UAirBlueprintLib::LogMessageString("Index not set in <SubWindows> element(s) in settings.json", 
+                        std::to_string(child_index), LogDebugLevel::Failure);
+                    continue;
+                }
+
+                subwindow_camera_types_[index] = Utils::toEnum<ImageType>(json_settings_child.getInt("ImageType", 0));
+                subwindow_visible_[index] = json_settings_child.getBool("Visible", false);
+            }
+        }
+    }
 }

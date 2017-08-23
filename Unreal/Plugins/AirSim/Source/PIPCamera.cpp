@@ -7,50 +7,60 @@
 #include "AirBlueprintLib.h"
 #include "ImageUtils.h"
 
+unsigned int APIPCamera::imageTypeCount()
+{
+    return Utils::toNumeric(ImageType::Count);
+}
+
 void APIPCamera::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
     camera_ = UAirBlueprintLib::GetActorComponent<UCameraComponent>(this, TEXT("CameraComponent"));
+    captures_.Init(nullptr, imageTypeCount());
+    render_targets_.Init(nullptr, imageTypeCount());
 
-    screen_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent"));
-    depth_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthCaptureComponent"));
-    seg_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SegmentationCaptureComponent"));
-    normals_capture_ = UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
-
-
-    //set default for brigher images
-    scene_capture_settings_.target_gamma = CaptureSettings::kSceneTargetGamma;
+    captures_[Utils::toNumeric(ImageType::Scene)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::DepthMeters)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthMetersCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::DepthVis)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthVisCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::DisparityNormalized)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DisparityNormalizedCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::Segmentation)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SegmentationCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::Normals)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
 }
 
 void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
+    
+    //set default for brigher images 
+    capture_settings_.assign(imageTypeCount(), CaptureSettings());
+    capture_settings_[Utils::toNumeric(ImageType::Scene)].target_gamma = CaptureSettings::kSceneTargetGamma;
 
-    screen_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
-    depth_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
-    seg_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
-    normals_capture_->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
-        
-    scene_render_target_ = NewObject<UTextureRenderTarget2D>();
-    setCaptureSettings(ImageType_::Scene, scene_capture_settings_);
-    //scene_render_target_->bHDR = false;
+    //by default all image types are disabled
+    camera_type_enabled_.assign(imageTypeCount(), false);
 
-    seg_render_target_ = NewObject<UTextureRenderTarget2D>();
-    setCaptureSettings(ImageType_::Segmentation, seg_capture_settings_);
+    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+        //use final color for all calculations
+        captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
 
-    depth_render_target_ = NewObject<UTextureRenderTarget2D>();
-    setCaptureSettings(ImageType_::Depth, depth_capture_settings_);
-
-    normals_render_target_ = NewObject<UTextureRenderTarget2D>();
-    setCaptureSettings(ImageType_::Normals, normals_capture_settings_);
+        render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
+        updateCaptureComponentSettings(captures_[image_type], render_targets_[image_type], capture_settings_[image_type]);
+    }
 }
 
 void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    scene_render_target_ = nullptr;
-    depth_render_target_ = nullptr;
-    seg_render_target_ = nullptr;
+    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+        //use final color for all calculations
+        captures_[image_type] = nullptr;
+        render_targets_[image_type] = nullptr;
+    }
 }
 
 void APIPCamera::showToScreen()
@@ -67,66 +77,28 @@ void APIPCamera::disableAll()
     disableAllPIP();
 }
 
-
-APIPCamera::ImageType APIPCamera::toggleEnableCameraTypes(APIPCamera::ImageType types)
+bool APIPCamera::getCameraTypeEnabled(ImageType type) const
 {
-    setEnableCameraTypes(types ^ getEnableCameraTypes());
-    return types ^ getEnableCameraTypes();
+    return camera_type_enabled_[Utils::toNumeric(type)];
 }
 
-APIPCamera::ImageType APIPCamera::getEnableCameraTypes()
+void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
 {
-    return enabled_camera_types_;
+    enableCaptureComponent(type, enabled);
 }
 
-void APIPCamera::setEnableCameraTypes(APIPCamera::ImageType types)
+const APIPCamera::CaptureSettings& APIPCamera::getCaptureSettings(ImageType type)
 {
-    enableCaptureComponent(ImageType_::Depth, (types & ImageType_::Depth));
-    enableCaptureComponent(ImageType_::Scene, (types & ImageType_::Scene));
-    enableCaptureComponent(ImageType_::Segmentation, (types & ImageType_::Segmentation));
-    enableCaptureComponent(ImageType_::Normals, (types & ImageType_::Normals));
+    return capture_settings_[Utils::toNumeric(type)];
 }
 
-APIPCamera::CaptureSettings APIPCamera::getCaptureSettings(ImageType_ type)
+void APIPCamera::setCaptureSettings(APIPCamera::ImageType type, const APIPCamera::CaptureSettings& settings)
 {
-    switch (type)
-    {
-    case ImageType_::Scene: return scene_capture_settings_;
-    case ImageType_::Segmentation: return seg_capture_settings_;
-    case ImageType_::Depth: return depth_capture_settings_;
-    case ImageType_::Normals: return normals_capture_settings_;
-    default:
-        throw std::invalid_argument("the ImageType specified for getCaptureSettings is not recognized");
-    }
-}
+    unsigned int image_type = Utils::toNumeric(type);
 
-void APIPCamera::setCaptureSettings(APIPCamera::ImageType_ type, const APIPCamera::CaptureSettings& settings)
-{
-    switch (type)
-    {
-    case ImageType_::Scene: {
-        scene_capture_settings_ = settings; 
-        updateCaptureComponentSettings(screen_capture_, scene_render_target_, scene_capture_settings_);
-        break;
-    }
-    case ImageType_::Segmentation: {
-        seg_capture_settings_ = settings;
-        updateCaptureComponentSettings(seg_capture_, seg_render_target_, seg_capture_settings_);
-        break;
-    }
-    case ImageType_::Depth: {
-        depth_capture_settings_ = settings;
-        updateCaptureComponentSettings(depth_capture_, depth_render_target_, depth_capture_settings_);
-        break;
-    }
-    case ImageType_::Normals: {
-        normals_capture_settings_ = settings;
-        updateCaptureComponentSettings(normals_capture_, normals_render_target_, normals_capture_settings_);
-        break;
-    }
-    default:
-        throw std::invalid_argument("the ImageType specified for setCaptureSettings is not recognized");
-    }
+    capture_settings_[image_type] = settings;
+    updateCaptureComponentSettings(captures_[image_type], render_targets_[image_type], 
+        capture_settings_[image_type]);
 }
 
 void APIPCamera::updateCaptureComponentSettings(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSettings& settings)
@@ -175,82 +147,41 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
                 capture->TextureTarget = getRenderTarget(type, false);
                 capture->Activate();
             }
-            enabled_camera_types_ |= type;
         }
         else {
             if (capture->IsActive() || capture->TextureTarget != nullptr) {
                 capture->Deactivate();
                 capture->TextureTarget = nullptr;
             }
-            enabled_camera_types_ &= ~type;
         }
+        camera_type_enabled_[Utils::toNumeric(type)] = is_enabled;
     }
     //else nothing to enable
 }
 
 UTextureRenderTarget2D* APIPCamera::getRenderTarget(const APIPCamera::ImageType type, bool if_active)
 {
-    switch (type.toEnum()) {
-    case ImageType_::Scene:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Scene))
-            return scene_render_target_;
-        return nullptr;
-    case ImageType_::Segmentation:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Segmentation))
-            return seg_render_target_;
-        return nullptr;
-    case ImageType_::Depth:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Depth))
-            return depth_render_target_;
-        return nullptr;
-    case ImageType_::Normals:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Normals))
-            return normals_render_target_;
-        return nullptr;
-    case ImageType_::None:
-        return nullptr;
-    default:
-        return nullptr;
-        UAirBlueprintLib::LogMessageString("Cannot get render target because camera type is not recognized", std::to_string(static_cast<uint8>(type.toEnum())), LogDebugLevel::Failure);
-    }
+    unsigned int image_type = Utils::toNumeric(type);
 
+    if (!if_active || camera_type_enabled_[image_type])
+        return render_targets_[image_type];
+    return nullptr;
 }
 
 USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const APIPCamera::ImageType type, bool if_active)
 {
-    switch (type.toEnum()) {
-    case ImageType_::Scene:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Scene))
-            return screen_capture_;
-        return nullptr;
-    case ImageType_::Segmentation:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Segmentation))
-            return seg_capture_;
-        return nullptr;
-    case ImageType_::Depth:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Depth))
-            return depth_capture_;
-        return nullptr;
-    case ImageType_::Normals:
-        if (!if_active || (enabled_camera_types_ & ImageType_::Normals))
-            return normals_capture_;
-        return nullptr;
-    case ImageType_::None:
-        return nullptr;
-    default:
-        return nullptr;
-        UAirBlueprintLib::LogMessageString("Cannot get capture component because camera type is not recognized", std::to_string(static_cast<uint8>(type.toEnum())), LogDebugLevel::Failure);
-    }
+    unsigned int image_type = Utils::toNumeric(type);
 
+    if (!if_active || camera_type_enabled_[image_type])
+        return captures_[image_type];
+    return nullptr;
 }
-
 
 void APIPCamera::disableAllPIP()
 {
-    enableCaptureComponent(ImageType_::Scene, false);
-    enableCaptureComponent(ImageType_::Depth, false);
-    enableCaptureComponent(ImageType_::Segmentation, false);
-    enableCaptureComponent(ImageType_::Normals, false);
+    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+        enableCaptureComponent(Utils::toEnum<ImageType>(image_type), false);
+    }
 }
 
 

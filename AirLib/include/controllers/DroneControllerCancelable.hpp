@@ -181,7 +181,7 @@ public:
         vector<DroneControllerBase::ImageRequest> request = { DroneControllerBase::ImageRequest(camera_id, image_type)};
         const vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
         if (response.size() > 0)
-            return response.at(0).image_data;
+            return response.at(0).image_data_uint8;
         else 
             return vector<uint8_t>();
     }

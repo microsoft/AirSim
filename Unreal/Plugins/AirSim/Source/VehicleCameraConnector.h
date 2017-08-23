@@ -9,7 +9,6 @@ class VehicleCameraConnector : public VehicleCameraBase
 {
 public:
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
-    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
 
     VehicleCameraConnector(APIPCamera* camera);
     virtual ImageResponse getImage(ImageType image_type, bool pixels_as_float, bool compress) override;

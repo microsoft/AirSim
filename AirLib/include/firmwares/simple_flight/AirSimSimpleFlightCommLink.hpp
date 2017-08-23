@@ -38,7 +38,7 @@ public: // implement CommLink interface
     virtual void log(const std::string& message, int32_t log_level = ICommLink::kLogLevelInfo)
     {
         if (log_level > 0)
-            throw std::runtime_error(message.c_str());
+            Utils::DebugBreak();
         messages_.push_back(std::string(message));
     }
 

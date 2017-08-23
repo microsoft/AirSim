@@ -4,10 +4,12 @@ import numpy as np
 import math;
 
 class AirSimImageType:    
-    Off = 0
-    Scene = 1 
-    Depth = 2
+    Scene = 0
+    DepthMeters = 1
+    DepthVis = 2
+    DisparityNormalized = 3
     Segmentation = 4
+    Normals = 5
 
 class DrivetrainType:
     MaxDegreeOfFreedom = 0
