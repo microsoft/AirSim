@@ -630,7 +630,7 @@ public:
     static bool isLittleEndian()
     {
         int intval = 1;
-        unsigned char *uval = (unsigned char *)&intval;
+        unsigned char *uval = reinterpret_cast<unsigned char *>(&intval);
         return uval[0] == 1;
     }
 
@@ -656,7 +656,7 @@ public:
             for (int i=0; i < height; i++) {
                 for(int j=0; j < width; ++j){
                     fvalue = image_data[i * width + j];
-                    file.write((char*) &fvalue, sizeof(fvalue));
+                    file.write(reinterpret_cast<char *>(&fvalue), sizeof(fvalue));
                 }
             }
         }
