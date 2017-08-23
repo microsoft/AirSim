@@ -12,9 +12,6 @@
 //#include <windows.h>
 //#endif
 
-// Module loading is not allowed outside of the main thread, so we load the ImageWrapper module ahead of time.
-static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
-
 
 class AUnrealLog : public msr::airlib::Utils::Logger
 {
@@ -59,6 +56,9 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     HUDClass = ASimHUD::StaticClass();
 
     common_utils::Utils::getSetLogger(&GlobalASimLog);
+
+    //module loading is not allowed outside of the main thread, so we load the ImageWrapper module ahead of time.
+    static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 }
 
 void AAirSimGameMode::StartPlay() 
