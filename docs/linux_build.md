@@ -29,8 +29,8 @@ It's super simple 1-2-3!
 ## Running AirSim on Linux
 Go to Unreal folder and bring up Unreal Editor:
 ```
-cd Unreal/Engine/Binaries/Linux
-UE4Editor
+cd UnrealEngine/Engine/Binaries/Linux
+./UE4Editor
 ```
 
 On first start you might not see any projects in UE4 editor. Click on Projects tab, Browse button and then navigate to `AirSim/Unreal/Environments/Blocks/Blocks.uproject`. You will be then prompted by message "The following modules are missing or built with a different engine versions...". Click Yes. Now it might take a while so go get some coffee :).
