@@ -13,7 +13,7 @@ Now you can run the samples in the PythonClient folder.
 
 ### Takeoff 
 
-For example [takeoff.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/takeoff.py) which
+For example [takeoff.py](../PythonClient/takeoff.py) which
 shows how to do a simple takeoff command and hover once it reaches the takeoff altitude.
 
 ````
@@ -55,7 +55,7 @@ client.hover();
 
 ### Flying a path 
 Now that the drone is flying you can send some other flight commands.
-See [path.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/path.py) which shows how I
+See [path.py](../PythonClient/path.py) which shows how I
  created the [moveOnPath demo](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo).
 If your drone is located at the start position x=310.0 cm, y=11200.0 cm, z=235.0 cm of the Modular Neighbohood map
 then the following will make the drone fly along the streets.
@@ -82,7 +82,7 @@ The drone should now be flying fast along the specified path.
 ### Camera
 
 While the drone is flying you might want to capture some camera images.
-See  [camera.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/camera.py) in the PythonClient folder.
+See  [camera.py](../PythonClient/camera.py) in the PythonClient folder.
 This program is capturing the Depth camera view from AirSim and displaying it in an OpenCV window.
 
 ````

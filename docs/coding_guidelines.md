@@ -1,7 +1,6 @@
 # Modern C++ Coding Guidelines
 
-We are using Modern C++ 11 and we are limiting use of C++ 14 to specific parts of the code for now.
-Smart pointers, Lamdas, and C++ 11 multithreading primitives are your friend.
+We are using Modern C++11. Smart pointers, Lamdas, and C++11 multithreading primitives are your friend.
 
 ## Quick Note
 

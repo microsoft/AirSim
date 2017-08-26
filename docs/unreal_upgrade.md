@@ -3,10 +3,10 @@
 
 ## Blocks Project
 
-If you are using Blocks project that comes with AirSim then you don't need to do anything other than [installling Unreal 4.16](build.md).
+If you are using Blocks project that comes with AirSim then you don't need to do anything other than [installling Unreal 4.16](build_windows.md).
 
 ## Your Own Unreal Project
-If you have your own Unreal project using AirSim plugin then you need to upgrade your project to use Unreal 4.16. 
+If you have your own Unreal project created in version Unreal 4.15 then you need to upgrade your project to use Unreal 4.16. 
 
 ### Option 1: Just Recreate Project
 

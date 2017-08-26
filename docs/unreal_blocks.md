@@ -1,17 +1,34 @@
 
-# Setting up Blocks Unreal environment for AirSim
+# Setup Blocks Environment for AirSim
 
-Blocks environment comes with the repo and is designed to be lightweight in size. That means its very basic but fast.
+Blocks environment is available in repo in folder `Unreal/Environments/Blocks` and is designed to be lightweight in size. That means its very basic but fast.
 
-Here are quick steps to get our build-in Blocks environment up and running:
+Here are quick steps to get Blocks environment up and running:
 
-1. Make sure you have [built the AirSim](build.md), have [setup your Pixhawk](prereq.md) and connected to USB port.
-2. Navigate to folder `AirSim/Unreal/Environments/Blocks`.
-3. Run `clean_build.bat`.  This removes temporary intermediate files that can confuse the AirSim update process.
-3. Run `update_from_git.bat`. This will copy all new compiled AirSim binaries to Unreal plugin folder.
-4. Right click on `Blocks.uproject` and click `Generate Visual Studio Project files`.
-5. Double click on generated .sln file to open in Visual Studio 2015 Update 3.
-6. Make sure `Blocks` project is the startup project and run "Build/Rebuild" then F5 to run.
-7. You might get some errors/warnings like "_BuitData" file is missing which you can ignore. Press the Play button in Unreal Editor and you will see something like below.
+## Windows
+
+1. Make sure you have [installed Unreal and built AirSim](build_windows.md).
+2. Navigate to folder `AirSim\Unreal\Environments\Blocks` and run `update_from_git.bat`.
+3. Double click on generated .sln file to open in Visual Studio 2015 Update 3 or newer.
+4. Make sure `Blocks` project is the startup project, build configuration is set to `DebugGame` and `Win64`. Hit F5 to run.
+5. Press the Play button in Unreal Editor and you will see something like in below video. Also see [how to use AirSim](../#how-to-use-it).
+
+### Changing Code and Rebuilding
+For Windows, you can just change the code in Visual Studio, press F5 and re-run. There are few batch files available in folder `AirSim\Unreal\Environments\Blocks` that lets you sync code, clean etc.
+
+## Linux
+1. Make sure you have [built the Unreal Engine and AirSim](build_linux.md).
+2. Navigate to your Unreal repo folder and run `Engine/Binaries/Linux/UE4Editor` which will start Unreal Editor.
+3. On first start you might not see any projects in UE4 editor. Click on Projects tab, Browse button and then navigate to `AirSim/Unreal/Environments/Blocks/Blocks.uproject`. 
+4. If you get prompted for incompatible version and conversion, select In-place conversion which is usually under "More" options. If you get prompted for missing modules, make sure to select No so you don't exit. 
+5. Finally, when prompted with building AirSim, select Yes. Now it might take a while so go get some coffee :).
+6. Press the Play button in Unreal Editor and you will see something like in below video. Also see [how to use AirSim](../#how-to-use-it).
 
 [![Blocks Demo Video](images/blocks_video.png)](https://www.youtube.com/watch?v=-r_QGaxMT4A)
+
+### Changing Code and Rebuilding
+For Linux, make code changes in AirLib or Unreal/Plugins folder and then run `./build.sh` to rebuild. This step also copies the build output to Blocks sample project. You can then follow above steps again to re-run.
+
+## FAQ
+#### I see warnings about like "_BuitData" file is missing. 
+These are intermediate files and you can safely ignore it.
