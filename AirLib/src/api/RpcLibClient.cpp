@@ -66,9 +66,9 @@ bool RpcLibClient::armDisarm(bool arm)
 {
     return pimpl_->client.call("armDisarm", arm).as<bool>();
 }
-void RpcLibClient::setOffboardMode(bool is_set)
+void RpcLibClient::enableApiControl(bool is_enabled)
 {
-    pimpl_->client.call("setOffboardMode", is_set);
+    pimpl_->client.call("enableApiControl", is_enabled);
 }
 void RpcLibClient::setSimulationMode(bool is_set)
 {
@@ -223,9 +223,9 @@ GeoPoint RpcLibClient::getGpsLocation()
     return pimpl_->client.call("getGpsLocation").as<RpcLibAdapators::GeoPoint>().to();
 }
 
-bool RpcLibClient::isOffboardMode()
+bool RpcLibClient::isApiControlEnabled()
 {
-    return pimpl_->client.call("isOffboardMode").as<bool>();
+    return pimpl_->client.call("isApiControlEnabled").as<bool>();
 }
 
 bool RpcLibClient::isSimulationMode()

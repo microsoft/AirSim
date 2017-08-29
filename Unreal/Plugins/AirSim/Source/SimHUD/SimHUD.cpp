@@ -80,6 +80,11 @@ void ASimHUD::toggleRecordHandler()
     simmode_->toggleRecording();
 }
 
+void ASimHUD::inputEventToggleRecording()
+{
+    toggleRecordHandler();
+}
+
 void ASimHUD::inputEventToggleReport()
 {
     simmode_->EnableReport = !simmode_->EnableReport;
@@ -178,7 +183,8 @@ void ASimHUD::inputEventToggleAll()
 
 void ASimHUD::setupInputBindings()
 {
-    UAirBlueprintLib::BindActionToKey("InputEventToggleReport", EKeys::R, this, &ASimHUD::inputEventToggleReport);
+    UAirBlueprintLib::BindActionToKey("inputEventToggleRecording", EKeys::R, this, &ASimHUD::inputEventToggleRecording);
+    UAirBlueprintLib::BindActionToKey("InputEventToggleReport", EKeys::Semicolon, this, &ASimHUD::inputEventToggleReport);
     UAirBlueprintLib::BindActionToKey("InputEventToggleHelp", EKeys::F1, this, &ASimHUD::inputEventToggleHelp);
     UAirBlueprintLib::BindActionToKey("InputEventToggleTrace", EKeys::T, this, &ASimHUD::inputEventToggleTrace);
 

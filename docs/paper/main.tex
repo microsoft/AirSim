@@ -89,7 +89,7 @@
 	
 	Other notable efforts includes Hector \cite{meyer2012comprehensive} that primarily focuses on tight integration with popular middleware ROS and Gazebo. It offers wind tunnel tuned flight dynamics, sensor models that includes bias drift using Gaussian Markov process and software-in-loop using Orocos toolchain. However, Hector lacks support for popular hardware platforms such as Pixhawk and protocols such as MavLink. Because of its tight dependency on ROS and Gazebo, it's limited by richness of simulated environments as noted previously.
 	
-	Similarly, RotorS \cite{furrer2016rotors} provides a modular framework to design Micro Aerial Vehicles, and build algorithms for control and state estimation that can be tested in simulator. It is possible to setup RotorS for HITL with Pixhawk. RotorS also uses Gazebo as its platform, consequently limiting its perception related capabilities. 
+	Similarly, RotorS \cite{furrer2016rotors} provides a modular framework to design Micro Aerial Vehicles, and build algorithms for control and state estimation that can be tested in simulator. It is possible to setup RotorS for HITL with PX4. RotorS also uses Gazebo as its platform, consequently limiting its perception related capabilities. 
 	
 	Finally, jMavSim \cite{jmavsim} is easy to use simulator that was designed with a goal of testing PX4 firmware and devices. It is therefore tightly coupled with PX4 simulation APIs, uses albeit simpler sensor models and utilizes simple rendering engine without any objects in the environment. 
 	

@@ -63,7 +63,7 @@ int main()
         }
 
         std::cout << "Press Enter to arm the drone" << std::endl; std::cin.get();
-        client.setOffboardMode(true);
+        client.enableApiControl(true);
         client.armDisarm(true);
 
         std::cout << "Press Enter to takeoff" << std::endl; std::cin.get();
@@ -77,7 +77,7 @@ int main()
 
         std::cout << "Press Enter to fly in a 10m box pattern at 3 m/s velocity" << std::endl; std::cin.get();
         // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
-        client.setOffboardMode(true); 
+        client.enableApiControl(true); 
         auto position = client.getPosition();
         float z = position.z(); // current position (NED coordinate system).  
         const float speed = 3.0f;

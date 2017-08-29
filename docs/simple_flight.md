@@ -1,6 +1,8 @@
 # simple_flight
 
- If you don't know what flight controller does that see [What is Flight Controller?](flight_controller.md). AirSim has built-in flight controller called simple_flight and it is used by default. You don't need to do anything to use or configure it. AirSim also supports [PX4](px4_setup.md) as another flight controller for advanced users. In future, we also plan to support [ROSFlight](https://rosflight.org/) and [Hackflight](https://github.com/simondlevy/hackflight).
+ If you don't know what flight controller does than see [What is Flight Controller?](flight_controller.md). 
+ 
+ AirSim has built-in flight controller called simple_flight and it is used by default. You don't need to do anything to use or configure it. AirSim also supports [PX4](px4_setup.md) as another flight controller for advanced users. In future, we also plan to support [ROSFlight](https://rosflight.org/) and [Hackflight](https://github.com/simondlevy/hackflight).
 
 ## Advantages
 

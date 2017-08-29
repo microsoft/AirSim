@@ -44,6 +44,8 @@ public:
         float min_angling_throttle = Params::min_armed_throttle() / 1.5f;
 
         bool allow_api_when_disconnected = false;
+        bool allow_api_always = false;
+
     } rc;
 
     struct AngleRatePid {

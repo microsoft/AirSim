@@ -33,11 +33,11 @@ namespace msr { namespace airlib {
 /// negative from there up.  This is the defacto standard in the drone world so it is
 /// simpler to keep with that throughout the AirSim library.
 /// 
-/// NOTE: all the movement commands, except hover, require you first call setOffboardMode(true).  If that succeeds
+/// NOTE: all the movement commands, except hover, require you first call enableApiControl(true).  If that succeeds
 /// it means your application now has control over the drone and the user cannot control the drone unless they
 /// flip a switch on their controller taking control back from your program.  If the user takes control back
 /// and you call one of these methods, an exception will be thrown telling your program that it no longer
-/// has control.  If you call setOffboardMode(false) the drone will hover waiting for user RC input.
+/// has control.  If you call enableApiControl(false) the drone will hover waiting for user RC input.
     
 
 class DroneControllerBase : public VehicleControllerBase {

@@ -19,7 +19,7 @@ namespace msr { namespace airlib {
 // We want to make it possible for RpcLibClient to call the offboard movement methods (moveByAngle, moveByVelocity, etc) at a high
 // rate, like 30 times a second.  But we also want these movement methods to drive the drone at a reliable rate which we do inside
 // DroneControllerBase using the Waiter object so it pumps the virtual commandVelocity method at a fixed rate defined by getCommandPeriod.
-// This fixed rate is needed by the drone flight controller (for example Pixhawk) because the flight controller usually reverts to
+// This fixed rate is needed by the drone flight controller (for example PX4) because the flight controller usually reverts to
 // a failsafe operation like hover if it stop receiving these offboard control messages at that rate (for safety reasons).
 // So moveByVelocity takes a duration, and DroneControllerBase pumps commandVelocity at the getCommandPeriod for that duration.
 // How ever this would block the server RPC thread until that duration is complete, which would stop the RpcLibClient from being
@@ -45,11 +45,11 @@ public:
         pending_ = std::make_shared<DirectCancelableBase>();
         return controller_->armDisarm(arm, *pending_);
     }
-    void setOffboardMode(bool is_set)
+    void enableApiControl(bool is_enabled)
     {
         CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
         pending_ = std::make_shared<DirectCancelableBase>();
-        controller_->setOffboardMode(is_set);
+        controller_->enableApiControl(is_enabled);
     }
     void setSimulationMode(bool is_set)
     {
@@ -225,9 +225,9 @@ public:
         return controller_->isSimulationMode();
     }
 
-    bool isOffboardMode()
+    bool isApiControlEnabled()
     {
-        return controller_->isOffboardMode();
+        return controller_->isApiControlEnabled();
     }
 
     std::string getServerDebugInfo()

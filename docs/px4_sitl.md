@@ -5,31 +5,31 @@ you can build and run it there.
 
 1. From your Linux bash terminal follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included out own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
 
-3. Get the PX4 source code and build the posix SITL version of PX4:
-```
-mkdir -p PX4
-cd PX4
-git clone https://github.com/PX4/Firmware.git
-cd Firmware
-git checkout tags/v1.5.5 -b v1.5.5
-make posix_sitl_default
-```
-4. Use following command to start PX4 firmware in SITL mode:
-```
-./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/ekf2/iris
-```
-5. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is waiting for someone to connect.
-6. Now edit [AirSim settings](settings.md) file to make sure you have followings:
+2. Get the PX4 source code and build the posix SITL version of PX4:
+    ```
+    mkdir -p PX4
+    cd PX4
+    git clone https://github.com/PX4/Firmware.git
+    cd Firmware
+    git checkout tags/v1.5.5 -b v1.5.5
+    make posix_sitl_default
+    ```
+3. Use following command to start PX4 firmware in SITL mode:
+    ```
+    ./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/ekf2/iris
+    ```
+4. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is waiting for someone to connect.
+5. Now edit [AirSim settings](settings.md) file to make sure you have followings:
     ```
     {
-        "DefaultVehicleConfig": "Pixhawk",
-        "Pixhawk": {
+        "DefaultVehicleConfig": "PX4",
+        "PX4": {
             "UseSerial": false
         }
     }
     ```
-7. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from things like `local_position_estimator` and `commander` and so on.
-8. You should also be able to use QGroundControl just like with flight controller hardware. Note that as we don't have physical board, RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to PC. This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.
+6. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from things like `local_position_estimator` and `commander` and so on.
+7. You should also be able to use QGroundControl just like with flight controller hardware. Note that as we don't have physical board, RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to PC. This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.
 
 ## Setting GPS origin
 

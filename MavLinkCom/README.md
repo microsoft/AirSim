@@ -136,7 +136,7 @@ The following code uses the vehicle object to arm the drone and take off and wai
 	}
 	
 The following code uses offboard control to make the drone fly in a circle with camera pointed at the center.
-Here we use the subscribe method to check each new local position message to indicate so we can compue the new 
+Here we use the subscribe method to check each new local position message to indicate so we can compute the new 
 velocity vector as soon as that new position is received.  We request a high rate for those messages using 
 setMessageInterval to ensure smooth circular orbit.
 	

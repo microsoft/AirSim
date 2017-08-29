@@ -97,7 +97,7 @@ public:
         comm_link_->getStatusMessages(messages);
     }
 
-    virtual bool isOffboardMode() override
+    virtual bool isApiControlEnabled() override
     {
         //TODO: support offboard mode
         return false;
@@ -108,10 +108,10 @@ public:
         return true;
     }
 
-    virtual void setOffboardMode(bool is_set) override
+    virtual void enableApiControl(bool is_enabled) override
     {
         //TODO: implement this
-        unused(is_set);
+        unused(is_enabled);
     }
 
     virtual void setSimulationMode(bool is_set) override

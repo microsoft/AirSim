@@ -36,7 +36,7 @@ public:
     struct YawMode {
         bool is_rate;
         float yaw_or_rate;
-        MSGPACK_DEFINE_ARRAY(is_rate, yaw_or_rate);
+        MSGPACK_DEFINE_MAP(is_rate, yaw_or_rate);
     
         YawMode()
         {}
@@ -53,21 +53,21 @@ public:
     };
 
     struct Vector3r {
-        msr::airlib::real_T x_ = 0, y_ = 0, z_ = 0;
-        MSGPACK_DEFINE_ARRAY(x_, y_, z_);
+        msr::airlib::real_T x_val = 0, y_val = 0, z_val = 0;
+        MSGPACK_DEFINE_MAP(x_val, y_val, z_val);
 
         Vector3r()
         {}
 
         Vector3r(const msr::airlib::Vector3r& s)
         {
-            x_ = s.x();
-            y_ = s.y();
-            z_ = s.z();
+            x_val = s.x();
+            y_val = s.y();
+            z_val = s.z();
         }
         msr::airlib::Vector3r to() const
         {
-            return msr::airlib::Vector3r(x_, y_, z_);
+            return msr::airlib::Vector3r(x_val, y_val, z_val);
         }
     };
 
@@ -79,7 +79,7 @@ public:
         msr::airlib::real_T penetration_depth = 0;
         msr::airlib::TTimePoint time_stamp = 0;
 
-        MSGPACK_DEFINE_ARRAY(has_collided, penetration_depth, time_stamp, normal, impact_point, position);
+        MSGPACK_DEFINE_MAP(has_collided, penetration_depth, time_stamp, normal, impact_point, position);
         
         CollisionInfo()
         {}
@@ -102,29 +102,29 @@ public:
     };
 
     struct Quaternionr {
-        msr::airlib::real_T w_, x_, y_, z_;
-        MSGPACK_DEFINE_ARRAY(w_, x_, y_, z_);
+        msr::airlib::real_T w_val, x_val, y_val, z_val;
+        MSGPACK_DEFINE_MAP(w_val, x_val, y_val, z_val);
 
         Quaternionr()
         {}
 
         Quaternionr(const msr::airlib::Quaternionr& s)
         {
-            w_ = s.w();
-            x_ = s.x();
-            y_ = s.y();
-            z_ = s.z();
+            w_val = s.w();
+            x_val = s.x();
+            y_val = s.y();
+            z_val = s.z();
         }
         msr::airlib::Quaternionr to() const
         {
-            return msr::airlib::Quaternionr(w_, x_, y_, z_);
+            return msr::airlib::Quaternionr(w_val, x_val, y_val, z_val);
         }
     };
 
     struct GeoPoint {
         double latitude = 0, longitude = 0;
         float altitude = 0;
-        MSGPACK_DEFINE_ARRAY(latitude, longitude, altitude);
+        MSGPACK_DEFINE_MAP(latitude, longitude, altitude);
 
         GeoPoint()
         {}
@@ -147,7 +147,7 @@ public:
         unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, 
             switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
 
-        MSGPACK_DEFINE_ARRAY(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8);
+        MSGPACK_DEFINE_MAP(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8);
 
         RCData()
         {}
@@ -196,7 +196,7 @@ public:
         bool pixels_as_float;
         bool compress;
 
-        MSGPACK_DEFINE_ARRAY(camera_id, image_type, pixels_as_float, compress);
+        MSGPACK_DEFINE_MAP(camera_id, image_type, pixels_as_float, compress);
 
         ImageRequest()
         {}
@@ -252,7 +252,7 @@ public:
         bool compress;
         int width, height;
 
-        MSGPACK_DEFINE_ARRAY(image_data_uint8, image_data_float, camera_position, camera_orientation, time_stamp, message, pixels_as_float, compress, width, height);
+        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, camera_orientation, time_stamp, message, pixels_as_float, compress, width, height);
 
         ImageResponse()
         {}

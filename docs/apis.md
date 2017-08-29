@@ -15,7 +15,7 @@ int main()
     msr::airlib::RpcLibClient client;
 
     cout << "Press Enter to use offboard control" << endl; cin.get();
-    client.setOffboardMode(true);
+    client.enableApiControl(true);
 
     cout << "Press Enter to arm the drone" << endl; cin.get();
     client.armDisarm(true);
@@ -68,7 +68,7 @@ We want to be able to run *same code* that runs in simulation as on real vehicle
 
 Generally speaking, APIs therefore shouldn't allow you to do something that cannot be done on real vehicle (for example, getting the ground truth). But, of course, simulator has much more information and it would be useful in applications that may not care about running things on real vehicle. For this reason, we clearly delineate between sim-only APIs by attaching `sim` prefix and we recommend that you don't use these APIs if you do care about real vehicle deployment.
 
-The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as Pixhawk using exact same code and flight controller protocol. The code you write for testing in the simulator remains unchanged. See [AirLib on custom drones](/custom_drone.md).
+The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as PX4 using exact same code and flight controller protocol. The code you write for testing in the simulator remains unchanged. See [AirLib on custom drones](/custom_drone.md).
 
 
 ## References and Examples

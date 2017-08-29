@@ -23,6 +23,7 @@ public:
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
 
 public:
+    void inputEventToggleRecording();
     void inputEventToggleReport();
     void inputEventToggleHelp();
     void inputEventToggleTrace();

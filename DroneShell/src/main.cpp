@@ -127,7 +127,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.setOffboardMode(true);
+        params.context->client.enableApiControl(true);
         return false;
     }
 };
@@ -140,7 +140,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.setOffboardMode(false);
+        params.context->client.enableApiControl(false);
         return false;
     }
 };
@@ -1184,7 +1184,7 @@ public:
             case msr::airlib::VehicleCameraBase::ImageType::Segmentation:
                 typeName = "seg";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType::Normals:
+            case msr::airlib::VehicleCameraBase::ImageType::SurfaceNormals:
                 typeName = "normals";
                 break;
             case msr::airlib::VehicleCameraBase::ImageType::DisparityNormalized:
@@ -1226,7 +1226,7 @@ public:
         } else if (type == "segmentation") {
             imageType = VehicleCameraBase::ImageType::Segmentation;
         } else if (type == "normals") {
-            imageType = VehicleCameraBase::ImageType::Normals;
+            imageType = VehicleCameraBase::ImageType::SurfaceNormals;
         } else if (type == "disparity") {
             imageType = VehicleCameraBase::ImageType::DisparityNormalized;
         } else {

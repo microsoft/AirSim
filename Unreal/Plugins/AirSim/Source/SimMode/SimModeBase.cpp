@@ -66,9 +66,6 @@ void ASimModeBase::initializeSettings()
     //load settings file if found
     typedef msr::airlib::Settings Settings;
     try {
-
-        /******** CAUSION: Do not use std file/IO function. They cause segfault in Linux! ******************/
-
         FString settings_filename = FString(Settings::getFullPath("settings.json").c_str());
         FString json_fstring;
         bool load_success = false;
@@ -93,7 +90,8 @@ void ASimModeBase::initializeSettings()
             //create default settings
             Settings& settings = Settings::loadJSonString("{}");
             //write some settings in new file otherwise the string "null" is written if all settigs are empty
-            settings.setString("see_docs_at", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
+            settings.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
+            settings.setDouble("SettingdVersion", 1.0);
 
             if (!file_found) {
                 std::string json_content;
@@ -102,7 +100,7 @@ void ASimModeBase::initializeSettings()
 #ifdef _WIN32
                 json_content = settings.saveJSonString();
 #else
-                json_content = "{  \"see_docs_at\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
+                json_content = "{ \"SettingdVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
 #endif
                 json_fstring = FString(json_content.c_str());
                 FFileHelper::SaveStringToFile(json_fstring, * settings_filename);
@@ -120,6 +118,23 @@ void ASimModeBase::readSettings()
     typedef msr::airlib::Settings Settings;
 
     Settings& settings = Settings::singleton();
+
+    settings_version_actual = settings.getFloat("SettingdVersion", 0);
+    if (settings_version_actual < settings_version_minimum) {
+        if ((settings.size() == 1 && 
+            ((settings.getString("SeeDocsAt", "") != "") || settings.getString("see_docs_at", "") != ""))
+            || (settings.size() == 0)) {
+            //no warnings because we have default settings
+        }
+        else {
+            UAirBlueprintLib::LogMessageString("Your settings file is of old version and possibly not compatible!","", LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Please look at new settings and update your settings.json","https://git.io/v9mYY", LogDebugLevel::Failure);
+        }
+    }
+
+    usage_scenario = settings.getString("UsageScenario", "");
+    default_vehicle_config = settings.getString("DefaultVehicleConfig", "SimpleFlight");
+   
     enable_rpc = settings.getBool("RpcEnabled", true);
     //by default we spawn server at local endpoint. Do not use 127.0.0.1 as default below
     //because for docker container default is 0.0.0.0 and people get really confused why things
@@ -137,13 +152,10 @@ void ASimModeBase::readSettings()
     else if (view_mode_string == "GroundObserver")
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
 
-    //do not save this default in json as this will change in near future
-    default_vehicle_config = settings.getString("DefaultVehicleConfig", "Pixhawk");
-
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
-    usage_scenario = settings.getString("UsageScenario", "");
     enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
-    clock_type = settings.getString("ClockType", "ScalableClock");
+    clock_type = settings.getString("ClockType", 
+        default_vehicle_config == "SimpleFlight" ? "SteppableClock" : "ScalableClock");
 
     Settings record_settings;
     if (settings.getChild("Recording", record_settings)) {

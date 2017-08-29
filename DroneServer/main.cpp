@@ -12,7 +12,7 @@ using namespace msr::airlib;
 
 void printUsage() {
     cout << "Usage: DroneServer" << endl;
-    cout << "Start the DroneServer using the 'Pixhawk' settings in ~/Documents/AirSim/settings.json." << endl;
+    cout << "Start the DroneServer using the 'PX4' settings in ~/Documents/AirSim/settings.json." << endl;
 }
 
 int main(int argc, const char* argv[])
@@ -35,7 +35,7 @@ int main(int argc, const char* argv[])
     Settings& settings = Settings::singleton().loadJSonFile("settings.json");
     Settings child;
     if (settings.isLoadSuccess()) {
-        settings.getChild("Pixhawk", child);
+        settings.getChild("PX4", child);
 
         // allow json overrides on a per-vehicle basis.
         connection_info.sim_sysid = static_cast<uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));

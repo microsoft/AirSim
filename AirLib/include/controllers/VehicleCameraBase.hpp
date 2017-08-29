@@ -18,7 +18,7 @@ namespace msr { namespace airlib {
                 DepthVis, 
                 DisparityNormalized,
                 Segmentation,
-                Normals,
+                SurfaceNormals,
                 Count //must be last
             };
 

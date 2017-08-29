@@ -29,7 +29,7 @@ public:
         readSettings();
 
         //TODO: set below properly for better high speed safety
-        //safety_params.vel_to_breaking_dist = safety_params.min_breaking_dist = 0;
+        safety_params_.vel_to_breaking_dist = safety_params_.min_breaking_dist = 0;
 
         //create sim implementations of board and commlink
         board_.reset(new AirSimSimpleFlightBoard(&params_));
@@ -88,7 +88,7 @@ public:
         comm_link_->getStatusMessages(messages);
     }
 
-    virtual bool isOffboardMode() override
+    virtual bool isApiControlEnabled() override
     {
         return firmware_->offboardApi().hasApiControl();
     }
@@ -99,9 +99,9 @@ public:
         return true;
     }
 
-    virtual void setOffboardMode(bool is_set) override
+    virtual void enableApiControl(bool is_enabled) override
     {
-        if (is_set) {
+        if (is_enabled) {
             //comm_link should print message so no extra handling for errors
             std::string message;
             firmware_->offboardApi().requestApiControl(message);
@@ -280,7 +280,7 @@ protected:
 
     const VehicleParams& getVehicleParams() override
     {
-        return safety_params;
+        return safety_params_;
     }
 
 
@@ -336,15 +336,16 @@ private:
         //find out which RC we should use
         Settings simple_flight_settings;
         Settings::singleton().getChild("SimpleFlight", simple_flight_settings);
-        remote_control_id_ = simple_flight_settings.getInt("RemoteControlID", 0);
         params_.default_vehicle_state = simple_flight::VehicleState::fromString(
-            simple_flight_settings.getString("DefaultVehicleState", "Inactive"));
+            simple_flight_settings.getString("DefaultVehicleState", "Armed")); //Inactive, Armed
 
         Settings rc_settings;
         simple_flight_settings.getChild("RC", rc_settings);
+        remote_control_id_ = rc_settings.getInt("RemoteControlID", 0);
         params_.rc.allow_api_when_disconnected = 
             rc_settings.getBool("AllowAPIWhenDisconnected", false);
-
+        params_.rc.allow_api_always = 
+            rc_settings.getBool("AllowAPIAlways", true);
     }
 
 private:
@@ -364,7 +365,7 @@ private:
     bool is_pose_update_done_;
     Pose pending_pose_;
 
-    VehicleParams safety_params;
+    VehicleParams safety_params_;
 };
 
 }} //namespace

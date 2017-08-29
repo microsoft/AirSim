@@ -26,7 +26,7 @@ public:
 
         std::unique_ptr<MultiRotorParams> config;
 
-        if (firmware_name == "Pixhawk") {
+        if (firmware_name == "PX4") {
             config.reset(new Px4MultiRotor(vehicle_config_settings));
         } else if (firmware_name == "RosFlight") {
             config.reset(new RosFlightQuadX(vehicle_config_settings));

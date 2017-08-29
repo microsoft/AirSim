@@ -146,7 +146,7 @@ void RecordingFile::startRecording()
 void RecordingFile::stopRecording()
 {
     is_recording_ = false;
-    if (isFileOpen()) {
+    if (! isFileOpen()) {
         UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was not open"), LogDebugLevel::Failure);
     }
     else

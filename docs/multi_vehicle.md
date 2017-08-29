@@ -10,12 +10,12 @@ If you click on Flying Pawn instances you dropped in environment you will see tw
 
 ## VehicleConfigName Property
 
-Another property that you can set is `VehicleConfigName`. This allows you to specify name of section in [settings.json](settings.md) that will have configuration for your vehicle. By default sections with names "Pixhawk", "SimpleFlight" and "RosFlight" are automatically created and used if you had only one vehicle in the environment. However if you have multiple vehicles then you might want to create multiple sections, one for each vehicle. For example, if you have two Pixhawk vehicles in SITL, then you may create two section in settings.json like below. Notice that we are also specifying two different ports for RPC server so we can control vehicles independently. Now you can set `VehicleConfigName` for one of the FlyingPawn to "Pixhawk_1" and other to "Pixhawk_2".
+Another property that you can set is `VehicleConfigName`. This allows you to specify name of section in [settings.json](settings.md) that will have configuration for your vehicle. By default sections with names "PX4", "SimpleFlight" and "RosFlight" are automatically created and used if you had only one vehicle in the environment. However if you have multiple vehicles then you might want to create multiple sections, one for each vehicle. For example, if you have two PX4 vehicles in SITL, then you may create two section in settings.json like below. Notice that we are also specifying two different ports for RPC server so we can control vehicles independently. Now you can set `VehicleConfigName` for one of the FlyingPawn to "PX4_1" and other to "PX4_2".
 
 ```
 {
-  "Pixhawk_1": {
-    "FirmwareName": "Pixhawk",
+  "PX4_1": {
+    "FirmwareName": "PX4",
     "SitlIp": "127.0.0.1",
     "SitlPort": 14556,
     "UdpIp": "127.0.0.1",
@@ -23,8 +23,8 @@ Another property that you can set is `VehicleConfigName`. This allows you to spe
     "UseSerial": false,
     "ApiServerPort": 41451
   },
-  "Pixhawk_2": {
-    "FirmwareName": "Pixhawk",
+  "PX4_2": {
+    "FirmwareName": "PX4",
     "SitlIp": "127.0.0.1",
     "SitlPort": 14557,
     "UdpIp": "127.0.0.1",
@@ -40,6 +40,6 @@ Another property that you can set is `VehicleConfigName`. This allows you to spe
 If you are going deeper in to multi-vehicle scenarios, you may want to understand code more closely. Your starting point is function `ASimModeWorldMultiRotor::setupVehiclesAndCamera`. This function detects currently available pawns in the environment, initializes them and then
 creates the "connector" object for each pawn. The "connector" object is simply and object that connects Unreal Engine's pawns to vehicles in Physics engine.
 
-## Coming Soon
+## Using simple_flight
 
-We are currently working on "simple_flight" and "ros_flight" firmwares which will be directly integrated in AirSim and thus eliminating any need for external SITL/HITL setups required by Pixhawk. Also, we will be doing some significant refactoring of APIs so that there will be no need for individual RPC endpoint for each vehicle. In other words, one RPC endpoint would be sufficient to control 100s of vehicles in the environment.
+AirSim uses "simple_flight" firmware by default which is built-it right in and thus eliminating any need for external SITL/HITL setups required by PX4. This might be better choice for multiple vehicles scenario. Also, we will be doing some significant refactoring of APIs so that there will be no need for individual RPC endpoint for each vehicle. In other words, one RPC endpoint would be sufficient to control 100s of vehicles in the environment.

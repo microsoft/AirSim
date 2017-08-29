@@ -1,6 +1,6 @@
 # Welcome to AirSim
 
-AirSim is a simulator for drones (and soon other vehicles) built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as Pixhawk for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
+AirSim is a simulator for drones (and soon other vehicles) built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
 
 Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 

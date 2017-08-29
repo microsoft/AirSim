@@ -23,7 +23,7 @@ public:
     ConnectionState getConnectionState();
     bool ping();
     bool armDisarm(bool arm);
-    void setOffboardMode(bool is_set);
+    void enableApiControl(bool is_enabled);
     void setSimulationMode(bool is_set);
     void start();
     void stop();
@@ -42,7 +42,8 @@ public:
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
     bool moveToZ(float z, float velocity, float max_wait_seconds = 60,
         const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
+    bool moveByManual(float vx_max, float vy_max, float z_min, float duration, 
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
     bool rotateToYaw(float yaw, float max_wait_seconds = 60, float margin = 5);
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
@@ -58,7 +59,7 @@ public:
     RCData getRCData();
     GeoPoint getGpsLocation();
 
-    bool isOffboardMode();
+    bool isApiControlEnabled();
     bool isSimulationMode();
     std::string getDebugInfo();
     void confirmConnection();

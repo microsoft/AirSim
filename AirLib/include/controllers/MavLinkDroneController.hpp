@@ -95,7 +95,7 @@ public:
     //non-base interface specific to MavLinKDroneController
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation);
     ConnectionInfo getMavConnectionInfo();
-    static std::string findPixhawk();
+    static std::string findPX4();
 
     //TODO: get rid of below methods?
     void sendImage(unsigned char data[], uint32_t length, uint16_t width, uint16_t height);
@@ -108,9 +108,9 @@ public:
     virtual real_T getVertexControlSignal(unsigned int rotor_index) override;
     virtual void getStatusMessages(std::vector<std::string>& messages) override;
     virtual bool isAvailable(std::string& message) override;
-    virtual bool isOffboardMode() override;
+    virtual bool isApiControlEnabled() override;
     virtual bool isSimulationMode() override;
-    virtual void setOffboardMode(bool is_set) override;
+    virtual void enableApiControl(bool is_enabled) override;
     virtual void setSimulationMode(bool is_set) override;
     virtual Pose getDebugPose() override;
     //*** End: VehicleControllerBase implementation ***//
@@ -231,7 +231,7 @@ public:
     int state_version_;
     mavlinkcom::VehicleState current_state;
     float target_height_;
-    bool is_offboard_mode_;
+    bool is_api_control_enabled_;
     bool is_simulation_mode_;
     PidController thrust_controller_;
     common_utils::Timer hil_message_timer_;
@@ -399,7 +399,7 @@ public:
         }
     }
 
-    static std::string findPixhawk()
+    static std::string findPX4()
     {
         auto result = mavlinkcom::MavLinkConnection::findSerialPorts(0, 0);
         for (auto iter = result.begin(); iter != result.end(); iter++)
@@ -485,7 +485,7 @@ public:
 
         std::string port_name_auto = port_name;
         if (port_name_auto == "" || port_name_auto == "*") {
-            port_name_auto = findPixhawk();
+            port_name_auto = findPX4();
             if (port_name_auto == "") {
                 throw std::domain_error("Could not detect a connected PX4 flight controller on any USB ports. You can specify USB port in settings.json.");
             }
@@ -702,7 +702,7 @@ public:
         state_version_ = 0;
         current_state = mavlinkcom::VehicleState();
         target_height_ = 0;
-        is_offboard_mode_ = false;
+        is_api_control_enabled_ = false;
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
@@ -982,9 +982,9 @@ public:
         return rc;
     }
 
-    bool isOffboardMode()
+    bool isApiControlEnabled()
     {
-        return is_offboard_mode_;
+        return is_api_control_enabled_;
     }
 
     bool isSimulationMode()
@@ -992,16 +992,16 @@ public:
         return is_simulation_mode_;
     }
 
-    void setOffboardMode(bool is_set)
+    void enableApiControl(bool is_enabled)
     {
         checkVehicle();
-        if (is_set) {
+        if (is_enabled) {
             mav_vehicle_->requestControl();
-            is_offboard_mode_ = true;
+            is_api_control_enabled_ = true;
         }
         else {
             mav_vehicle_->releaseControl();
-            is_offboard_mode_ = false;
+            is_api_control_enabled_ = false;
         }
     }
 
@@ -1304,9 +1304,9 @@ bool MavLinkDroneController::hasVideoRequest()
 {
     return pimpl_->hasVideoRequest();
 }
-std::string MavLinkDroneController::findPixhawk()
+std::string MavLinkDroneController::findPX4()
 {
-    return impl::findPixhawk();
+    return impl::findPX4();
 }
 
 
@@ -1380,17 +1380,17 @@ bool MavLinkDroneController::armDisarm(bool arm, CancelableBase& cancelable_acti
 }
 
 
-void MavLinkDroneController::setOffboardMode(bool is_set)
+void MavLinkDroneController::enableApiControl(bool is_enabled)
 {
-    pimpl_->setOffboardMode(is_set);
+    pimpl_->enableApiControl(is_enabled);
 }
 void MavLinkDroneController::setSimulationMode(bool is_set)
 {
     pimpl_->setSimulationMode(is_set);
 }
-bool MavLinkDroneController::isOffboardMode()
+bool MavLinkDroneController::isApiControlEnabled()
 {
-    return pimpl_->isOffboardMode();
+    return pimpl_->isApiControlEnabled();
 }
 bool MavLinkDroneController::isSimulationMode()
 {

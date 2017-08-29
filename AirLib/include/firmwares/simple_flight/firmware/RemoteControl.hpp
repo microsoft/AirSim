@@ -180,7 +180,8 @@ private:
 
     void updateAllowApiControl()
     {
-        bool allow = board_inputs_->isRcConnected() ?
+        bool allow = params_->rc.allow_api_always;
+        allow |= board_inputs_->isRcConnected() ?
             board_inputs_->readChannel(params_->rc.allow_api_control_channel) > 0.1f
             : params_->rc.allow_api_when_disconnected;
 
