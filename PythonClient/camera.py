@@ -14,17 +14,19 @@ for arg in sys.argv[1:]:
   cameraType = arg.lower()
 
 cameraTypeMap = { 
- "depth": AirSimImageType.Depth,
+ "depth": AirSimImageType.DepthVis,
  "segmentation": AirSimImageType.Segmentation,
  "seg": AirSimImageType.Segmentation,
  "scene": AirSimImageType.Scene,
+ "disparity": AirSimImageType.DisparityNormalized,
+ "normals": AirSimImageType.SurfaceNormals
 }
 
 if (not cameraType in cameraTypeMap):
   printUsage()
   sys.exit(0)
 
-print cameraTypeMap[cameraType]
+print (cameraTypeMap[cameraType])
 
 client = AirSimClient('127.0.0.1')
 

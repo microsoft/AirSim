@@ -33,6 +33,7 @@ namespace msr { namespace airlib {
                 bool pixels_as_float = false;
                 bool compress = true;
                 int width = 0, height = 0;
+                ImageType image_type;
             };
 
         public: //methods

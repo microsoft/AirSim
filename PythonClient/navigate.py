@@ -74,13 +74,13 @@ while True:
             yaw = (yaw + change)
             vx = math.cos(yaw);
             vy = math.sin(yaw);
-            print "switching angle", math.degrees(yaw), vx, vy, min, distance, current
+            print ("switching angle", math.degrees(yaw), vx, vy, min, distance, current)
     
         if (vx == 0 and vy == 0):
             vx = math.cos(yaw);
             vy = math.sin(yaw);
 
-        print "distance=", current
+        print ("distance=", current)
         client.moveByVelocityZ(vx, vy,-6, 1, DrivetrainType.ForwardOnly, YawMode(False, 0)).get()
 
         x = int(driving * 50)

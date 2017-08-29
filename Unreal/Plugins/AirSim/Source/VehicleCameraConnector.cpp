@@ -76,7 +76,7 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCa
     response.compress = compress;
     response.width = width;
     response.height = height;
-
+    response.image_type = image_type;
     return response;
 }
 

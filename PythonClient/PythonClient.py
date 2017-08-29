@@ -1,4 +1,4 @@
-# to install this run 'pip install msgpack-rpc-python'
+from __future__ import print_function
 import msgpackrpc #pip install msgpack-rpc-python
 import numpy as np #pip install numpy
 import msgpack
@@ -8,7 +8,6 @@ import sys
 import os
 
 
-
 class MsgpackMixin:
     def to_msgpack(self, *args, **kwargs):
         return self.__dict__ #msgpack.dump(self.to_dict(*args, **kwargs))
@@ -16,7 +15,7 @@ class MsgpackMixin:
     @classmethod
     def from_msgpack(cls, encoded):
         obj = cls()
-        obj.__dict__.update(encoded)
+        obj.__dict__ = {k.decode('utf-8'): v for k, v in encoded.items()}
         return obj
 
 
@@ -91,6 +90,7 @@ class ImageResponse(MsgpackMixin):
     compress = True
     width = 0
     height = 0
+    image_type = AirSimImageType.Scene
 
 class AirSimClient:
         def __init__(self, ip = ""):
@@ -102,14 +102,14 @@ class AirSimClient:
         def ping(self):
             return self.client.call('ping')
         def confirmConnection(self):
-            print("Waiting for connection: ")
+            print('Waiting for connection: ', end='')
             home = self.getHomeGeoPoint()
             while ((home.latitude == 0 and home.longitude == 0 and home.altitude == 0) or
                    math.isnan(home.latitude) or  math.isnan(home.longitude) or  math.isnan(home.altitude)):
                 time.sleep(1)
                 home = self.getHomeGeoPoint()
-                print("X")
-            print("\n")
+                print('X', end='')
+            print('')
 
         # basic flight control
         def enableApiControl(self, is_enabled):
@@ -198,7 +198,7 @@ class AirSimClient:
             result = self.client.call('simGetImage', camera_id, image_type)
             if (result == "" or result == "\0"):
                 return None
-            return np.fromstring(result, np.int8)
+            return result
 
         # camera control
         # simGetImage returns compressed png in array of bytes
@@ -206,6 +206,24 @@ class AirSimClient:
         def simGetImages(self, requests):
             responses_raw = self.client.call('simGetImages', requests)
             return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
+
+        @staticmethod
+        def stringToUint8Array(bstr):
+            return np.fromstring(bstr, np.uint8)
+        @staticmethod
+        def stringToFloatArray(bstr):
+            return np.fromstring(bstr, np.float32)
+        @staticmethod
+        def listTo2DFloatArray(flst, width, height):
+            return np.reshape(np.asarray(flst, np.float32), (height, width))
+        @staticmethod
+        def getPfmArray(response):
+            return AirSimClient.listTo2DFloatArray(response.image_data_float, response.width, response.height)
+
+        @staticmethod
+        def write_file(filename, bstr):
+            with open(filename, 'wb') as afile:
+                afile.write(bstr)
 
         def simSetPose(self, position, orientation):
             return self.client.call('simSetPose', position, orientation)
@@ -260,7 +278,7 @@ class AirSimClient:
         def wait_key(message = ''):
             ''' Wait for a key press on the console and return it. '''
             if message != '':
-                print message
+                print (message)
 
             result = None
             if os.name == 'nt':
@@ -283,3 +301,80 @@ class AirSimClient:
                     termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
 
             return result
+
+        @staticmethod
+        def read_pfm(file):
+            """ Read a pfm file """
+            file = open(file, 'rb')
+
+            color = None
+            width = None
+            height = None
+            scale = None
+            endian = None
+
+            header = file.readline().rstrip()
+            header = str(bytes.decode(header, encoding='utf-8'))
+            if header == 'PF':
+                color = True
+            elif header == 'Pf':
+                color = False
+            else:
+                raise Exception('Not a PFM file.')
+
+            temp_str = str(bytes.decode(file.readline(), encoding='utf-8'))
+            dim_match = re.match(r'^(\d+)\s(\d+)\s$', temp_str)
+            if dim_match:
+                width, height = map(int, dim_match.groups())
+            else:
+                raise Exception('Malformed PFM header.')
+
+            scale = float(file.readline().rstrip())
+            if scale < 0: # little-endian
+                endian = '<'
+                scale = -scale
+            else:
+                endian = '>' # big-endian
+
+            data = np.fromfile(file, endian + 'f')
+            shape = (height, width, 3) if color else (height, width)
+
+            data = np.reshape(data, shape)
+            # DEY: I don't know why this was there.
+            #data = np.flipud(data)
+            file.close()
+    
+            return data, scale
+
+        @staticmethod
+        def write_pfm(file, image, scale=1):
+            """ Write a pfm file """
+            file = open(file, 'wb')
+
+            color = None
+
+            if image.dtype.name != 'float32':
+                raise Exception('Image dtype must be float32.')
+
+            image = np.flipud(image)
+
+            if len(image.shape) == 3 and image.shape[2] == 3: # color image
+                color = True
+            elif len(image.shape) == 2 or len(image.shape) == 3 and image.shape[2] == 1: # greyscale
+                color = False
+            else:
+                raise Exception('Image must have H x W x 3, H x W x 1 or H x W dimensions.')
+
+            file.write(bytes('PF\n', 'UTF-8') if color else bytes('Pf\n', 'UTF-8'))
+            temp_str = '%d %d\n' % (image.shape[1], image.shape[0])
+            file.write(bytes(temp_str, 'UTF-8'))
+
+            endian = image.dtype.byteorder
+
+            if endian == '<' or endian == '=' and sys.byteorder == 'little':
+                scale = -scale
+
+            temp_str = '%f\n' % scale
+            file.write(bytes(temp_str, 'UTF-8'))
+
+            image.tofile(file)

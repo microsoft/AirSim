@@ -10,6 +10,7 @@ import scipy.misc
 import StringIO
 
 import read_write_pfm
+from camera import cv2
 
 """ Depth is returned in meters, but the coordinate system is left handed global and uses centimeters """
 
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     # Connect to the game
     client.connect()
     if not client.isconnected():  # Check if the connection is successfully established
-        print 'UnrealCV server is not running. Run the game first!'
+        print ('UnrealCV server is not running. Run the game first!')
     else:
 
         num_samples = 10
@@ -79,7 +80,7 @@ if __name__ == '__main__':
         sleep_interval = 0.1
 
         for i in range(num_samples):
-            print 'Processing image %d'%i
+            print ('Processing image %d' % i)
             # Generate a random location
             x = random.uniform(x_low, x_high)
             y = random.uniform(y_low, y_high)
@@ -106,7 +107,7 @@ if __name__ == '__main__':
             # Get depth image (aligned with the left camera)
             depth_str = client.request('vget /camera/0/depth npy')
             if depth_str is None:
-                print 'Depth request did not succeed'
+                print ('Depth request did not succeed')
             sleep(sleep_interval)
             depth_str_io = StringIO.StringIO(depth_str)
             depth_img = np.load(depth_str_io)

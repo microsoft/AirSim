@@ -251,8 +251,10 @@ public:
         bool pixels_as_float;
         bool compress;
         int width, height;
+        msr::airlib::VehicleCameraBase::ImageType image_type;
 
-        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, camera_orientation, time_stamp, message, pixels_as_float, compress, width, height);
+        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, 
+            camera_orientation, time_stamp, message, pixels_as_float, compress, width, height, image_type);
 
         ImageResponse()
         {}
@@ -277,6 +279,7 @@ public:
             compress = s.compress;
             width = s.width;
             height = s.height;
+            image_type = s.image_type;
         }
 
         msr::airlib::VehicleCameraBase::ImageResponse to() const
@@ -297,6 +300,7 @@ public:
             d.compress = compress;
             d.width = width;
             d.height = height;
+            d.image_type = image_type;
 
             return d;
         }
