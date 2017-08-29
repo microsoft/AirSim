@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>navigate.py</StartupFile>
+    <StartupFile>hello_drone.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -28,9 +28,6 @@
     <Compile Include="camera.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="generate_stereo_data.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="hello_drone.py">
       <SubType>Code</SubType>
     </Compile>
@@ -42,9 +39,6 @@
     </Compile>
     <Compile Include="pfm.py" />
     <Compile Include="PythonClient.py" />
-    <Compile Include="takeoff.py">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

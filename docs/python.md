@@ -1,6 +1,6 @@
-## Using Python with AirSim
+# Using Python with AirSim
 
-You can call AirSim from Python to control the drone and get images back.  
+You can call AirSim APIs from Python to control the drone and get vehicle state and images back.  
 
 First install the following Python package:
 
@@ -8,118 +8,68 @@ First install the following Python package:
 pip install msgpack-rpc-python
 ````
 
-Now you can run the samples in the PythonClient folder.  
+If you are using Visual Studio then click on "Python Environments" under your Python project. Then right click on environment and choose "Install Python Package...".
+
+Now you can run the samples in the [PythonClient](../PythonClient) folder.  
 
 
-### Takeoff 
+## Getting Started
 
-For example [takeoff.py](../PythonClient/takeoff.py) which
-shows how to do a simple takeoff command and hover once it reaches the takeoff altitude.
+The [hello_drone.py](../PythonClient/hello_drone.py) example shows basic operations using Python.
 
-````
+```
 from PythonClient import *
-import sys
-import time
-import msgpackrpc
-import math
 
 # connect to the AirSim simulator 
-client = AirSimClient('127.0.0.1')
+client = AirSimClient()
+client.confirmConnection()
+client.enableApiControl(True)
+client.armDisarm(True)
 
-print("Waiting for home GPS location to be set...")
-home = client.getHomePoint()
-while ((home[0] == 0 and home[1] == 0 and home[2] == 0) or
-       math.isnan(home[0]) or  math.isnan(home[1]) or  math.isnan(home[2])):
-    time.sleep(1)
-    home = client.getHomePoint()
+AirSimClient.wait_key('Press any key to takeoff')
+client.takeoff()
 
-print("Home lat=%g, lon=%g, alt=%g" % tuple(home))
+AirSimClient.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
+client.moveToPosition(-10, 10, -10, 5)
 
-if (not client.arm()):
-    print("failed to arm the drone")
-    sys.exit(1);
+AirSimClient.wait_key('Press any key to take images')
+responses = client.simGetImages([
+    ImageRequest(0, AirSimImageType.DepthVis), 
+    ImageRequest(1, AirSimImageType.DepthMeters, True)])
+print('Retrieved images: %d', len(responses))
 
-if (client.getLandedState() == LandedState.Landed):
-    print("Taking off...")
-    if (not client.takeoff(60)):
-        print("failed to reach takeoff altitude after 60 seconds")
-        sys.exit(1);
-    print("Should now be flying...")
-else:
-    print("it appears the drone is already flying")
-
-client.hover();
-
-````
-
-
-### Flying a path 
-Now that the drone is flying you can send some other flight commands.
-See [path.py](../PythonClient/path.py) which shows how I
- created the [moveOnPath demo](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo).
-If your drone is located at the start position x=310.0 cm, y=11200.0 cm, z=235.0 cm of the Modular Neighbohood map
-then the following will make the drone fly along the streets.
-
-````
-from PythonClient import *
-import sys
-import time
-
-client = AirSimClient('127.0.0.1')
-
-# AirSim uses NED coordinates so negative axis is up.
-# z of -5 is 5 meters above the original launch point.
-z = -5
-
-# this method is async and we are not waiting for the result since we are passing max_wait_seconds=0.
-print("client.moveOnPath to fly fast path along the streets")
-result = client.moveOnPath([(0,-253,z),(125,-253,z),(125,0,z),(0,0,z)], 15, 0, DrivetrainType.ForwardOnly, YawMode(False,0), 20, 1)
-
-````
-
-The drone should now be flying fast along the specified path.
-
-### Camera
-
-While the drone is flying you might want to capture some camera images.
-See  [camera.py](../PythonClient/camera.py) in the PythonClient folder.
-This program is capturing the Depth camera view from AirSim and displaying it in an OpenCV window.
-
-````
-# use open cv to show new images from AirSim 
-
-from PythonClient import *
-import cv2
-import time
-import sys
-
-client = AirSimClient('127.0.0.1')
-
-# get depth image
-result = client.setImageTypeForCamera(0, AirSimImageType.Depth)
-
-time.sleep(1) # give it time to render
-help = False
-
-while True:
-    # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-    result = client.simGetImage(0, AirSimImageType.Depth)
-    if (result == "\0"):
-        if (not help):
-            help = True
-            print("Please press '1' in the AirSim view to enable the Depth camera view")
+for response in responses:
+    if response.pixels_as_float:
+        print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
+        AirSimClient.write_pfm(os.path.normpath('/temp/py1.pfm'), AirSimClient.getPfmArray(response))
     else:
-        rawImage = np.fromstring(result, np.int8)
-        png = cv2.imdecode(rawImage, cv2.IMREAD_UNCHANGED)
-        cv2.imshow("Traffic", png)
+        print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
+        AirSimClient.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)
+```
 
-    key = cv2.waitKey(1) & 0xFF;
-    if (key == 27 or key == ord('q') or key == ord('x')):
-        break;
+## Other examples
+The [PythonClient folder](../PythonClient] has few other ready to run examples:
 
-````
+- Flying a path: shows how Chris Lovett created the [moveOnPath demo](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo).
+Make sure your drone is initially located at the start position x=310.0 cm, y=11200.0 cm, z=235.0 cm of the Modular Neighbohood map.
+- Camera: shows capturing the Depth camera view from AirSim and displaying it in an OpenCV window.
 
-## Windows
+## Notes on APIs
 
-On windows you may need to install the Microsoft Visual C++ 9.0 from [http://aka.ms/vcpython27](http://aka.ms/vcpython27).
+### Image APIs
+- The API `simGetImage` returns `binary string literal` which means you can simply dump it in binary file to create a .png file. However if you want to process it in any other way than you can handy function `AirSimClient.stringToUint8Array`. This converts binary string literal to NumPy uint8 array.
+
+- The API `simGetImages` can accept request for multiple image types from any cameras in single call. You can specify if image is png compressed, RGB uncompressed or float array. For png compressed images, you get `binary string literal`. For float array you get Python list of float64. You can convert this float array to NumPy 2D array using
+    ```
+    AirSimClient.listTo2DFloatArray(response.image_data_float, response.width, response.height)
+    ```
+    You can also save float array to .pfm file (Portable Float Map format) using `AirSimClient.write_pfm()` function.
+
+## FAQ
+
+#### Do I need any thing else on Windows?
+VS2015 Upate 3 should have everything if you installed VC++ and Python. Otherwise you may need to install the Microsoft Visual C++ 9.0 from [http://aka.ms/vcpython27](http://aka.ms/vcpython27).
+
+#### I get error on `import cv2`
+We recommand [Anaconda](https://www.anaconda.com/download/) to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have [problems](https://stackoverflow.com/a/45934992/207661). You can install OpenCV using `pip install opencv-python`.
 

@@ -1,18 +1,21 @@
 # use open cv to show new images from AirSim 
 
 from PythonClient import *
+# requires Python 3.5.3 :: Anaconda 4.4.0
+# pip install opencv-python
 import cv2
 import time
 import math
 import sys
 
 client = AirSimClient('127.0.0.1')
+client.confirmConnection()
+client.enableApiControl(True)
+client.armDisarm(True)
 
 # you must first press "1" in the AirSim view to turn on the depth capture
 
 # get depth image
-client.setImageTypeForCamera(0, AirSimImageType.Depth)
-time.sleep(1) # give it time to render
 yaw = 0
 pi = 3.14159265483
 vx = 0
@@ -22,7 +25,7 @@ help = False
 
 while True:
     # this will return png width= 256, height= 144
-    result = client.simGetImage(0, AirSimImageType.Depth)
+    result = client.simGetImage(0, AirSimImageType.DepthVis)
     if (result == "\0"):
         if (not help):
             help = True
@@ -81,7 +84,7 @@ while True:
             vy = math.sin(yaw);
 
         print ("distance=", current)
-        client.moveByVelocityZ(vx, vy,-6, 1, DrivetrainType.ForwardOnly, YawMode(False, 0)).get()
+        client.moveByVelocityZ(vx, vy,-6, 1, DrivetrainType.ForwardOnly, YawMode(False, 0))
 
         x = int(driving * 50)
         cv2.rectangle(png, (x,0), (x+50,50), (0,255,0), 2)

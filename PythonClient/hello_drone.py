@@ -9,6 +9,9 @@ client.armDisarm(True)
 AirSimClient.wait_key('Press any key to takeoff')
 client.takeoff()
 
+AirSimClient.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
+client.moveToPosition(-10, 10, -10, 5)
+
 AirSimClient.wait_key('Press any key to take images')
 responses = client.simGetImages([
     ImageRequest(0, AirSimImageType.DepthVis), 

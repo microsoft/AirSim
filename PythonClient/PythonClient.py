@@ -40,6 +40,12 @@ class Vector3r(MsgpackMixin):
     y_val = np.float32(0)
     z_val = np.float32(0)
 
+    def __init__(self, x_val = np.float32(0), y_val = np.float32(0), z_val = np.float32(0)):
+        self.x_val = x_val
+        self.y_val = y_val
+        self.z_val = z_val
+
+
 class Quaternionr(MsgpackMixin):
     w_val = np.float32(0)
     x_val = np.float32(0)
@@ -232,10 +238,10 @@ class AirSimClient:
         # https:#en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
         @staticmethod
         def toEulerianAngle(q):
-            z = q[0]
-            y = q[1]
-            x = q[2]
-            w = q[3]
+            z = q.z_val
+            y = q.y_val
+            x = q.x_val
+            w = q.w_val
             ysqr = y * y
 
             # roll (x-axis rotation)
@@ -260,7 +266,6 @@ class AirSimClient:
         
         @staticmethod
         def toQuaternion(pitch, roll, yaw):
-            q = [0, 0, 0, 0]
             t0 = math.cos(yaw * 0.5)
             t1 = math.sin(yaw * 0.5)
             t2 = math.cos(roll * 0.5)
@@ -268,10 +273,11 @@ class AirSimClient:
             t4 = math.cos(pitch * 0.5)
             t5 = math.sin(pitch * 0.5)
 
-            q[3] = t0 * t2 * t4 + t1 * t3 * t5 #w
-            q[2] = t0 * t3 * t4 - t1 * t2 * t5 #x
-            q[1] = t0 * t2 * t5 + t1 * t3 * t4 #y
-            q[0] = t1 * t2 * t4 - t0 * t3 * t5 #z
+            q = Quaternionr()
+            q.w_val = t0 * t2 * t4 + t1 * t3 * t5 #w
+            q.x_val = t0 * t3 * t4 - t1 * t2 * t5 #x
+            q.y_val = t0 * t2 * t5 + t1 * t3 * t4 #y
+            q.z_val = t1 * t2 * t4 - t0 * t3 * t5 #z
             return q
 
         @staticmethod
