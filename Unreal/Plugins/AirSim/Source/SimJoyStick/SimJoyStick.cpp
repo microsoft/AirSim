@@ -2,67 +2,47 @@
 
 #if defined _WIN32 || defined _WIN64
 
-#include "common/common_utils/StrictMode.hpp"
-
-STRICT_MODE_OFF
-//below headers are required for using windows.h types in Unreal
-//#include "Windows/WindowsHWrapper.h"
-//#include <XInput.h>
-
-//Below is old way of doing it?
-//#include "AllowWindowsPlatformTypes.h"
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#include <XInput.h>
-//#include "HideWindowsPlatformTypes.h"
-STRICT_MODE_ON
+#include "DirectInputJoystick.h"
 
 struct SimJoyStick::impl {
 public:
     void getJoyStickState(unsigned int index, SimJoyStick::State& state)
     {
-        if (!initialized_success_ || index >= kMaxControllers) {
+        if (index >= kMaxControllers) {
             state.is_connected = false;
             return;
         }
 
-        // Simply get the state of the controller from XInput.
-        DWORD dwResult = XInputGetState(index, &controllers_[index].state);
-
-        if (dwResult == ERROR_SUCCESS) {
-            controllers_[index].bConnected = true;
-            state.connection_error_code = 0;
-        }
-        else {
-            controllers_[index].bConnected = false;
-            state.connection_error_code = dwResult;
+        if (controllers_[index] == nullptr) {
+            controllers_[index].reset(new DirectInputJoyStick());
+            if (!controllers_[index]->initialize(index)) {
+                state.is_connected = false;
+                state.message = controllers_[index]->getState(false).message;
+                return;
+            }
         }
 
-        state.is_connected = controllers_[index].bConnected;
+        const auto& di_state = controllers_[index]->getState();
 
-        if (state.is_connected) {
-            state.left_x = controllers_[index].state.Gamepad.sThumbLX;
-            state.left_y = controllers_[index].state.Gamepad.sThumbLY;
-            state.right_x = controllers_[index].state.Gamepad.sThumbRX;
-            state.right_y = controllers_[index].state.Gamepad.sThumbRY;
+        state.is_connected = di_state.is_valid;
 
-            state.buttons = controllers_[index].state.Gamepad.wButtons;
-            state.left_trigger = controllers_[index].state.Gamepad.bLeftTrigger != 0;
-            state.right_trigger = controllers_[index].state.Gamepad.bRightTrigger != 0;
+        
+        state.left_x = di_state.x;
+        state.left_y = di_state.y;
+        state.right_x = di_state.rx;
+        state.right_y = di_state.ry;
+
+        for (int i = 0; i < sizeof(int)*8; ++i) {
+            state.buttons |= ((di_state.buttons[i] & 0x80) == 0 ? 0 : 1) << i;
         }
-        //else don't waste time
+
+        state.left_trigger = di_state.z > +100; //actual value 1000
+        state.right_trigger = di_state.z < -100;
     }
 
 private:
-    struct ControllerState
-    {
-        XINPUT_STATE state;
-        bool bConnected;
-    };
-
     static constexpr unsigned int kMaxControllers = 4;
-    ControllerState controllers_[kMaxControllers];
+    std::unique_ptr<DirectInputJoyStick> controllers_[kMaxControllers];
 };
 
 #else
@@ -210,17 +190,6 @@ private:
 };
 
 #endif
-
-bool SimJoyStick::initialized_success_ = false;
-
-void SimJoyStick::setInitializedSuccess(bool success)
-{
-    initialized_success_ = success;
-}
-bool SimJoyStick::isInitializedSuccess()
-{
-    return initialized_success_;
-}
 
 SimJoyStick::SimJoyStick()
 {

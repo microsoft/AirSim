@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined _WIN32 || defined _WIN64
+
 #include <memory>
 #include <string>
 
@@ -48,3 +50,5 @@ private: //pimpl
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };
+
+#endif

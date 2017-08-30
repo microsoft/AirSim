@@ -1,6 +1,12 @@
 #include "DirectInputJoystick.h"
-#define DIRECTINPUT_VERSION 0x0800
 
+#if defined _WIN32 || defined _WIN64
+
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0800
+#endif
+
+#include "common/common_utils/MinWinDefines.hpp"
 #include <windows.h>
 #pragma warning(push)
 #pragma warning(disable:6000 28251)
@@ -10,6 +16,13 @@
 #include <dinputd.h>
 
 // Stuff to filter out XInput devices
+#ifndef FALSE
+#define FALSE               0
+#endif
+
+#ifndef TRUE
+#define TRUE                1
+#endif
 #include <wbemidl.h>
 
 
@@ -264,10 +277,10 @@ private:
                         // If it does, then get the VID/PID from var.bstrVal
                         DWORD dwPid = 0, dwVid = 0;
                         WCHAR* strVid = wcsstr(var.bstrVal, L"VID_");
-                        if (strVid && swscanf(strVid, L"VID_%4X", &dwVid) != 1)
+                        if (strVid && swscanf(strVid, L"VID_%lX", &dwVid) != 1)
                             dwVid = 0;
                         WCHAR* strPid = wcsstr(var.bstrVal, L"PID_");
-                        if (strPid && swscanf(strPid, L"PID_%4X", &dwPid) != 1)
+                        if (strPid && swscanf(strPid, L"PID_%lX", &dwPid) != 1)
                             dwPid = 0;
 
                         DWORD dwVidPid = MAKELONG(dwVid, dwPid);
@@ -579,3 +592,5 @@ const DirectInputJoyStick::JoystickInfo& DirectInputJoyStick::getJoystickInfo()
 {
     return pimpl_->getJoystickInfo();
 }
+
+#endif

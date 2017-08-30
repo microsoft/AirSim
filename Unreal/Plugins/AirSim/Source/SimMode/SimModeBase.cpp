@@ -15,25 +15,6 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    //load xinput DLL
-#if defined _WIN32 || defined _WIN64
-    FString filePath = FPaths::ConvertRelativePathToFull(
-        FPaths::Combine(FPaths::GamePluginsDir(), TEXT("AirSim"), TEXT("Dependencies"), TEXT("x360ce"), TEXT("Xinput9_1_0.dll")));
-    //FString filePath = *FPaths::GamePluginsDir() + FString(c/Dependencies/x360ce/xinput9_1_0.dll");
-    UAirBlueprintLib::LogMessage(TEXT("Plugin dir: "), FPaths::GamePluginsDir(), LogDebugLevel::Informational);
-
-    if (! FPaths::FileExists(filePath))
-        UAirBlueprintLib::LogMessage(TEXT("XInput DLL can't be found: "), 
-            filePath, LogDebugLevel::Failure);
-
-    xinput_dllHandle = FPlatformProcess::GetDllHandle(*filePath); // Retrieve the DLL.
-    SimJoyStick::setInitializedSuccess(xinput_dllHandle != NULL);
-    if (!SimJoyStick::isInitializedSuccess()) {
-        UAirBlueprintLib::LogMessage(TEXT("XInput DLL cannot be loaded. Joystick will not be available."), 
-            TEXT(""), LogDebugLevel::Failure);
-    }
-#endif
-
     //needs to be done before we call base class
     initializeSettings();
 
@@ -49,12 +30,6 @@ void ASimModeBase::BeginPlay()
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     recording_file_.release();
-
-#if defined _WIN32 || defined _WIN64
-    SimJoyStick::setInitializedSuccess(false);
-    FPlatformProcess::FreeDllHandle(xinput_dllHandle);
-    xinput_dllHandle = NULL;
-#endif
 
     Super::EndPlay(EndPlayReason);
 }

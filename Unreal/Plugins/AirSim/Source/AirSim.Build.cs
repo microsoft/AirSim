@@ -96,21 +96,11 @@ public class AirSim : ModuleRules
         {
             // for SHGetFolderPath.
             PublicAdditionalLibraries.Add("Shell32.lib");
+
+            //for joystick support
+            PublicAdditionalLibraries.Add("dinput8.lib");
+            PublicAdditionalLibraries.Add("dxguid.lib");
         }
-    }
-
-    private void CopyX360CEToBinaries()
-    {
-        CopyFileIfNewer(
-            Path.Combine(AirSimPluginDependencyPath, "x360ce", "xinput1_3.dll"),
-            ProjectBinariesPath
-            );
-
-        CopyFileIfNewer(
-            Path.Combine(AirSimPluginDependencyPath, "x360ce", "x360ce.ini"),
-            ProjectBinariesPath
-            );
-
     }
 
     static void CopyFileIfNewer(string srcFilePath, string destFolder)

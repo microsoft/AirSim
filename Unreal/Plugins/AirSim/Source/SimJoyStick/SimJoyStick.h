@@ -14,6 +14,7 @@ public:
         bool left_trigger, right_trigger;
         uint16_t buttons;
         bool is_connected;
+        std::string message;
         unsigned long connection_error_code = std::numeric_limits<unsigned long>::max();
     };
 
