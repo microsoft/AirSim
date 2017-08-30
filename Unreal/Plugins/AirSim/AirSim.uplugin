@@ -20,11 +20,5 @@
         "Type": "Runtime",
         "LoadingPhase": "PreDefault"
       }
-    ],
-    "PostBuildSteps":
-    {
-        "Win64": [
-            "(robocopy $(PluginDir)\\Dependencies\\x360ce\\ $(ProjectDir)\\Binaries\\$(TargetPlatform)\\  /XF *.bin) ^& IF %ERRORLEVEL% LSS 8 EXIT /B 0"
-        ]
-    }
+    ]
 }

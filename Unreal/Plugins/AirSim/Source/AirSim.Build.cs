@@ -15,18 +15,21 @@ public class AirSim : ModuleRules
 
     private string AirLibPath
     {
-        get { return Path.GetFullPath(Path.Combine(ModulePath, "AirLib")); }
+        get { return Path.Combine(ModulePath, "AirLib"); }
     }
     private string AirSimPluginPath
     {
-        get { return Path.GetFullPath(Directory.GetParent(ModulePath).ToString()); }
+        get { return Directory.GetParent(ModulePath).FullName; }
     }
     private string ProjectBinariesPath
     {
-        get {
-            return Path.GetFullPath(Path.Combine(
-                Directory.GetParent(ModulePath).Parent.Parent.ToString(), "Binaries"));
+        get { return Path.Combine(
+                Directory.GetParent(AirSimPluginPath).Parent.FullName, "Binaries");
         }
+    }
+    private string AirSimPluginDependencyPath
+    {
+        get { return Path.Combine(AirSimPluginPath, "Dependencies"); }
     }
 
     private enum CompileMode
@@ -93,22 +96,50 @@ public class AirSim : ModuleRules
         {
             // for SHGetFolderPath.
             PublicAdditionalLibraries.Add("Shell32.lib");
-
-            // XInput for JoyStick, make sure to delay load this because we use generated DLL from x360ce
-            PublicDelayLoadDLLs.Add("Xinput9_1_0.dll");
-            //Lib for the xinput DLL
-            //this should be in path, typically at C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64
-            //typically gets installed with Visual Studio or DirectX
-            PublicAdditionalLibraries.Add("Xinput9_1_0.lib");
-
-            RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(ProjectBinariesPath, "Win64", "xinput1_3.dll")));
-            RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(ProjectBinariesPath, "Win64", "x360ce.ini")));
-            System.Console.WriteLine(Directory.GetParent( ModulePath));
-            System.Console.WriteLine(Directory.GetParent(ModulePath).Parent);
-            System.Console.WriteLine(Directory.GetParent(ModulePath).Parent.Parent);
-
-            System.Console.WriteLine(ProjectBinariesPath);
+            SetupXinput();
         }
+    }
+
+    private void SetupXinput()
+    {
+        // XInput for JoyStick, make sure to delay load this because we use generated DLL from x360ce
+        PublicDelayLoadDLLs.Add("Xinput9_1_0.dll");
+        //Lib for the xinput DLL
+        //this should be in path, typically at C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64
+        //typically gets installed with Visual Studio or DirectX
+        PublicAdditionalLibraries.Add("Xinput9_1_0.lib");
+
+        CopyX360CEToBinaries();
+        RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(ProjectBinariesPath, "Win64", "xinput1_3.dll")));
+        RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(ProjectBinariesPath, "Win64", "x360ce.ini")));
+
+        RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(AirSimPluginDependencyPath, "x360ce", "xinput9_1_0.dll")));
+        RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(AirSimPluginDependencyPath, "x360ce", "x360ce.ini")));
+    }
+
+    private void CopyX360CEToBinaries()
+    {
+        CopyFileIfNewer(
+            Path.Combine(AirSimPluginDependencyPath, "x360ce", "xinput1_3.dll"),
+            ProjectBinariesPath
+            );
+
+        CopyFileIfNewer(
+            Path.Combine(AirSimPluginDependencyPath, "x360ce", "x360ce.ini"),
+            ProjectBinariesPath
+            );
+
+    }
+
+    static void CopyFileIfNewer(string srcFilePath, string destFolder)
+    {
+        FileInfo srcFile = new FileInfo(srcFilePath);
+        FileInfo destFile = new FileInfo(Path.Combine(destFolder, srcFile.Name));
+        if (!destFile.Exists || srcFile.LastWriteTime > destFile.LastWriteTime)
+        {
+            srcFile.CopyTo(destFile.FullName, true);
+        }
+        //else skip
     }
 
     private bool LoadAirSimDependency(ReadOnlyTargetRules Target, string LibName, string LibFileName)
