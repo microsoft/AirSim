@@ -18,7 +18,7 @@ void ASimModeBase::BeginPlay()
     //load xinput DLL
 #if defined _WIN32 || defined _WIN64
     FString filePath = FPaths::ConvertRelativePathToFull(
-        FPaths::Combine(FPaths::GamePluginsDir(), TEXT("AirSim"), TEXT("Dependencies"), TEXT("x360ce"), TEXT("xinput9_1_0.dll")));
+        FPaths::Combine(FPaths::GamePluginsDir(), TEXT("AirSim"), TEXT("Dependencies"), TEXT("x360ce"), TEXT("Xinput9_1_0.dll")));
     //FString filePath = *FPaths::GamePluginsDir() + FString(c/Dependencies/x360ce/xinput9_1_0.dll");
     UAirBlueprintLib::LogMessage(TEXT("Plugin dir: "), FPaths::GamePluginsDir(), LogDebugLevel::Informational);
 
@@ -128,7 +128,7 @@ void ASimModeBase::readSettings()
         }
         else {
             UAirBlueprintLib::LogMessageString("Your settings file is of old version and possibly not compatible!","", LogDebugLevel::Failure);
-            UAirBlueprintLib::LogMessageString("Please look at new settings and update your settings.json","https://git.io/v9mYY", LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Please look at new settings and update your settings.json: ","https://git.io/v9mYY", LogDebugLevel::Failure);
         }
     }
 
