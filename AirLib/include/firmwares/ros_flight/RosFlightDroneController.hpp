@@ -156,7 +156,7 @@ public:
 
     void setRCData(const RCData& rcData) override
     {
-        if (rcData.is_connected) {
+        if (rcData.is_valid) {
             board_->setInputChannel(0, angleToPwm(rcData.roll)); //X
             board_->setInputChannel(1, angleToPwm(rcData.yaw)); //Y
             board_->setInputChannel(2, thrustToPwm(rcData.throttle)); //F

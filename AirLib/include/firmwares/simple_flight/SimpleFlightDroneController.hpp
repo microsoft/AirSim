@@ -155,7 +155,7 @@ public:
 
     void setRCData(const RCData& rcData) override
     {
-        if (rcData.is_connected) {
+        if (rcData.is_valid) {
             board_->setIsRcConnected(true);
             board_->setInputChannel(0, rcData.roll); //X
             board_->setInputChannel(1, rcData.yaw); //Y

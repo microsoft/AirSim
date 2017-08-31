@@ -9,17 +9,31 @@
 class SimJoyStick
 {
 public:
+    struct AxisMap {
+        enum class AxisType : int {
+            Auto = 0, LeftX, LeftY, LeftZ, RightX, RightY, RightZ
+        };
+        enum class AxisDirection : int {
+            Auto = 0, Normal, Reverse
+        };
+
+        AxisType rc_axis = AxisType::Auto;
+        float min_val = -1000, max_val = 1000;
+        AxisDirection direction = AxisDirection::Auto;
+    };
+    struct AxisMaps {
+        AxisMap left_x, left_y, left_z, right_x, right_y, right_z;
+    } axis_maps;
+
     struct State {
-        int16_t left_x, left_y, right_x, right_y;
-        bool left_trigger, right_trigger;
+        float left_x, left_y, left_z, right_x, right_y, right_z;
         uint16_t buttons;
-        bool is_connected;
+        bool is_initialized = false;
+        bool is_valid = false;
+
         std::string message;
         unsigned long connection_error_code = std::numeric_limits<unsigned long>::max();
     };
-
-    static void setInitializedSuccess(bool success);
-    static bool isInitializedSuccess();
 
     void getJoyStickState(unsigned int index, State& state);
 

@@ -6,38 +6,107 @@
 
 struct SimJoyStick::impl {
 public:
-    void getJoyStickState(unsigned int index, SimJoyStick::State& state)
+    void getJoyStickState(unsigned int index, SimJoyStick::State& state, const AxisMaps& maps)
     {
         if (index >= kMaxControllers) {
-            state.is_connected = false;
+            state.is_initialized = false;
             return;
         }
 
         if (controllers_[index] == nullptr) {
             controllers_[index].reset(new DirectInputJoyStick());
             if (!controllers_[index]->initialize(index)) {
-                state.is_connected = false;
+                state.is_initialized = false;
                 state.message = controllers_[index]->getState(false).message;
                 return;
             }
+            state.is_initialized = true;
         }
 
-        const auto& di_state = controllers_[index]->getState();
+        const DirectInputJoyStick::JoystickState& di_state = controllers_[index]->getState();
+        const DirectInputJoyStick::JoystickInfo& joystick_info = controllers_[index]->getJoystickInfo();
 
-        state.is_connected = di_state.is_valid;
-
+        state.is_valid = di_state.is_valid;
         
-        state.left_x = di_state.x;
-        state.left_y = di_state.y;
-        state.right_x = di_state.rx;
-        state.right_y = di_state.ry;
+        state.left_x = getAxisValue(AxisMap::AxisType::LeftX, maps.left_x, di_state, joystick_info.pid_vid);
+        state.left_y = getAxisValue(AxisMap::AxisType::LeftY, maps.left_y, di_state, joystick_info.pid_vid);
+        state.right_x = getAxisValue(AxisMap::AxisType::RightX, maps.right_x, di_state, joystick_info.pid_vid);
+        state.right_y = getAxisValue(AxisMap::AxisType::RightY, maps.right_y, di_state, joystick_info.pid_vid);
+        state.right_z = getAxisValue(AxisMap::AxisType::RightZ, maps.right_z, di_state, joystick_info.pid_vid);
+        state.left_z = getAxisValue(AxisMap::AxisType::LeftZ, maps.left_z, di_state, joystick_info.pid_vid);
 
+        state.buttons = 0;
         for (int i = 0; i < sizeof(int)*8; ++i) {
             state.buttons |= ((di_state.buttons[i] & 0x80) == 0 ? 0 : 1) << i;
         }
+    }
 
-        state.left_trigger = di_state.z > +100; //actual value 1000
-        state.right_trigger = di_state.z < -100;
+
+private:
+    float getMappedValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
+    {
+        AxisMap::AxisType rc_axis;
+        if (map.rc_axis == AxisMap::AxisType::Auto) {
+            if (device_pid_vid == "" || device_pid_vid == "VID_0483&PID_5710") { //RCs like FrSky Taranis
+                switch (axis_type) {
+                case AxisMap::AxisType::LeftX: rc_axis = AxisMap::AxisType::RightX; break;
+                case AxisMap::AxisType::LeftY: rc_axis = AxisMap::AxisType::LeftX; break;
+                case AxisMap::AxisType::LeftZ: rc_axis = AxisMap::AxisType::RightY; break;
+                case AxisMap::AxisType::RightX: rc_axis = AxisMap::AxisType::LeftY; break;
+                case AxisMap::AxisType::RightY: rc_axis = AxisMap::AxisType::LeftZ; break;
+                case AxisMap::AxisType::RightZ: rc_axis = AxisMap::AxisType::RightZ; break;
+                default:
+                    throw std::invalid_argument("Unsupported axis_type in getMappedValue");
+                }
+            }
+            else { //Xbox controllers
+                rc_axis = axis_type;
+            }
+        } else
+            rc_axis = map.rc_axis;
+
+
+        switch (rc_axis)
+        {
+        case AxisMap::AxisType::LeftX: return di_state.x;
+        case AxisMap::AxisType::LeftY: return di_state.y;
+        case AxisMap::AxisType::LeftZ: return di_state.z;
+        case AxisMap::AxisType::RightX: return di_state.rx;
+        case AxisMap::AxisType::RightY: return di_state.ry;
+        case AxisMap::AxisType::RightZ: return di_state.rz;
+        default:
+            throw std::invalid_argument("Unsupported rc_axis in getMappedValue");
+        }
+    }
+
+    float getAxisValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
+    {
+        float val = getMappedValue(axis_type, map, di_state, device_pid_vid);
+        
+        //normalize min to max --> 0 to 1
+        val = (val - map.min_val) / (map.max_val - map.min_val);
+
+        switch (map.direction)
+        {
+        case AxisMap::AxisDirection::Auto:
+            if (
+                ((device_pid_vid == "" || device_pid_vid == "VID_0483&PID_5710") &&
+                    (axis_type == AxisMap::AxisType::LeftZ || axis_type == AxisMap::AxisType::RightY)) ||
+                ((device_pid_vid != "" && device_pid_vid != "VID_0483&PID_5710") &&
+                    (axis_type == AxisMap::AxisType::LeftY))
+               )
+                val = 1 - val;
+            break;
+        case AxisMap::AxisDirection::Normal: break;
+        case AxisMap::AxisDirection::Reverse: val = 1 - val; break;
+        default:
+            throw std::invalid_argument("Unsupported map.direction in getAxisValue");
+        }
+
+        //normalize 0 to 1 --> -1 to 1
+        val = 2*val - 1;
+
+        return val;
     }
 
 private:
@@ -202,5 +271,5 @@ SimJoyStick::~SimJoyStick()
 
 void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state)
 {
-    pimpl_->getJoyStickState(index, state);
+    pimpl_->getJoyStickState(index, state, axis_maps);
 }

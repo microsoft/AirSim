@@ -146,8 +146,10 @@ public:
         float pitch = 0, roll = 0, throttle = 0, yaw = 0;
         unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, 
             switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
+        bool is_initialized = false; //is RC connected?
+        bool is_valid = false; //must be true for data to be valid
 
-        MSGPACK_DEFINE_MAP(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8);
+        MSGPACK_DEFINE_MAP(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8, is_initialized, is_valid);
 
         RCData()
         {}
@@ -167,6 +169,8 @@ public:
             switch6 = s.switch6;
             switch7 = s.switch7;
             switch8 = s.switch8;
+            is_initialized = s.is_initialized;
+            is_valid = s.is_valid;
 
         }
         msr::airlib::RCData to() const
@@ -185,6 +189,8 @@ public:
             d.switch6 = switch6;
             d.switch7 = switch7;
             d.switch8 = switch8;
+            d.is_initialized = is_initialized;
+            d.is_valid = is_valid;
             
             return d;
         }

@@ -86,9 +86,9 @@ void MultiRotorConnector::detectUsbRc()
 {
     joystick_.getJoyStickState(controller_->getRemoteControlID(), joystick_state_);
 
-    rc_data_.is_connected = joystick_state_.is_connected;
+    rc_data_.is_initialized = joystick_state_.is_initialized;
 
-    if (rc_data_.is_connected)
+    if (rc_data_.is_initialized)
         UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Detected", LogDebugLevel::Informational);
     else
         UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
@@ -99,51 +99,45 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
 {
     joystick_.getJoyStickState(controller_->getRemoteControlID(), joystick_state_);
 
-    rc_data_.is_connected = joystick_state_.is_connected;
+    rc_data_.is_valid = joystick_state_.is_valid;
 
-    if (rc_data_.is_connected) {
-        //-1 to 1 --> 1 to 0
-        rc_data_.throttle = 1 - (joyStickToRC(joystick_state_.left_y) + 1) / 2;
+    if (rc_data_.is_valid) {
+        //-1 to 1 --> 0 to 1
+        rc_data_.throttle = (joystick_state_.left_y + 1) / 2;
 
         //convert 0 to 1 -> -1 to 1
-        rc_data_.yaw = joyStickToRC(joystick_state_.left_x); 
-        rc_data_.roll = joyStickToRC(joystick_state_.right_x);
-        rc_data_.pitch = - joyStickToRC(joystick_state_.right_y);
+        rc_data_.yaw = joystick_state_.left_x; 
+        rc_data_.roll = joystick_state_.right_x;
+        rc_data_.pitch = - joystick_state_.right_y;
 
-        rc_data_.switch1 = joystick_state_.left_trigger ? 1 : 0;
-        rc_data_.switch2 = joystick_state_.right_trigger ? 1 : 0;
-        rc_data_.switch3 = joystick_state_.buttons & 0x100 ? 1 : 0; //front-upper-left
-        rc_data_.switch4 = joystick_state_.buttons & 0x200 ? 1 : 0; //front-upper-right
-        rc_data_.switch5 = joystick_state_.buttons & 0x1000 ? 1 : 0; //top-left-right
-        rc_data_.switch6 = joystick_state_.buttons & 0x2000 ? 1 : 0; //top-right-right
-        rc_data_.switch7 = joystick_state_.buttons & 0x4000 ? 1 : 0; //top-left-left
-        rc_data_.switch8 = joystick_state_.buttons & 0x8000 ? 1 : 0; //top-right-left
+        //TODO: add fields for z axis?
 
-        UAirBlueprintLib::LogMessage(FString("Joystick (T,R,P,Y): "),
-            FString::SanitizeFloat(rc_data_.throttle) + ", " + FString::SanitizeFloat(rc_data_.roll) + ", " + FString::SanitizeFloat(rc_data_.pitch) + ", " + FString::SanitizeFloat(rc_data_.yaw),
-            LogDebugLevel::Informational);
+        //last 8 bits are not used for now
+        rc_data_.switch1 = joystick_state_.buttons & 0x0001 ? 1 : 0; //front-upper-left
+        rc_data_.switch2 = joystick_state_.buttons & 0x0002 ? 1 : 0; //front-upper-right
+        rc_data_.switch3 = joystick_state_.buttons & 0x0004 ? 1 : 0; //top-right-left
+        rc_data_.switch4 = joystick_state_.buttons & 0x0008 ? 1 : 0; //top-right-left
+        rc_data_.switch5 = joystick_state_.buttons & 0x0010 ? 1 : 0; //top-left-right
+        rc_data_.switch6 = joystick_state_.buttons & 0x0020 ? 1 : 0; //top-right-right
+        rc_data_.switch7 = joystick_state_.buttons & 0x0040 ? 1 : 0; //top-left-left
+        rc_data_.switch8 = joystick_state_.buttons & 0x0080 ? 1 : 0; //top-right-left
+
+
+        UAirBlueprintLib::LogMessageString("Joystick (T,R,P,Y,Buttons): ", Utils::stringf("%f, %f, %f %f, %d",
+            rc_data_.throttle, rc_data_.roll, rc_data_.pitch, rc_data_.yaw, joystick_state_.buttons), LogDebugLevel::Informational);
 
         //TODO: should below be at controller level info?
-        UAirBlueprintLib::LogMessageString("RC Mode: ", rc_data_.switch3 == 0 ? "Angle" : "Rate", LogDebugLevel::Informational);
+        UAirBlueprintLib::LogMessageString("RC Mode: ", rc_data_.switch1 == 0 ? "Angle" : "Rate", LogDebugLevel::Informational);
 
-        //UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " +
-        //    FString::FromInt(rc_data_.switch1) + ", " + FString::FromInt(rc_data_.switch2) + ", " + FString::FromInt(rc_data_.switch3) + ", " + FString::FromInt(rc_data_.switch4)
-        //    + ", " + FString::FromInt(rc_data_.switch5) + ", " + FString::FromInt(rc_data_.switch6) + ", " + FString::FromInt(rc_data_.switch7) + ", " + FString::FromInt(rc_data_.switch8),
-        //    LogDebugLevel::Informational);
+        UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " +
+            FString::FromInt(rc_data_.switch1) + ", " + FString::FromInt(rc_data_.switch2) + ", " + FString::FromInt(rc_data_.switch3) + ", " + FString::FromInt(rc_data_.switch4)
+            + ", " + FString::FromInt(rc_data_.switch5) + ", " + FString::FromInt(rc_data_.switch6) + ", " + FString::FromInt(rc_data_.switch7) + ", " + FString::FromInt(rc_data_.switch8),
+            LogDebugLevel::Informational);
     }
     //else don't waste time
 
     return rc_data_;
 }
-
-//return 0 to 1
-float MultiRotorConnector::joyStickToRC(int16_t val)
-{
-    //-1000 to 1000 --> -1 to 1
-    float valf = static_cast<float>(val);
-    return valf / 1000.0f;
-}
-
 
 void MultiRotorConnector::updateRenderedState()
 {
