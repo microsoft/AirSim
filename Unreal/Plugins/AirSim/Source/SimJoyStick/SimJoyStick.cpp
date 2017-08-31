@@ -116,11 +116,13 @@ private:
 
 #else
 
+#include <limits>
 #include <fcntl.h>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <libudev.h>
 #include "unistd.h"
 
 //implementation for unsupported OS
@@ -203,14 +205,35 @@ public:
             close(fd_);
     }
 
+    static float normalizeAxisVal(int axis_val, bool wide, bool zero2One, bool reversed)
+    {
+        float min_val = wide ? -32768 : -16384;
+        float max_val = wide ? 32767 : 16383;
+
+        float val = (axis_val - min_val) / (max_val - min_val);
+        if (zero2One) {
+            if (reversed)
+                val = 1 - val;
+        }
+        else {
+            val = 2*val - 1;
+            if (reversed)
+                val *= -1;
+        }
+
+        return val;
+    }
+
     void getJoyStickState(unsigned int index, SimJoyStick::State& state, const AxisMaps& maps)
     {
         unused(maps);
-        
+
         static constexpr bool blocking = false;
 
         //if this is new indec
         if (index != last_index_) {
+             //getJoystickInfo(1, manufacturerID, productID, state.message);
+
             //close previos one
             if (fd_ >= 0)
                 close(fd_);
@@ -246,12 +269,26 @@ public:
                         state.buttons |= (1 << event_.number);
                 }
                 else if (event_.isAxis()) {
-                    switch(event_.number) {
-                    case 0: state.left_y = event_.value; break;
-                    case 1: state.right_x = event_.value; break;
-                    case 2: state.right_y = event_.value; break;
-                    case 3: state.left_x = event_.value; break;
-                    default: break;
+                    if (device_type > 0) { //RCs like FrSky Taranis
+                        switch(event_.number) {
+                        case 0: state.left_y = event_.value; break;
+                        case 1: state.right_x = event_.value; break;
+                        case 2: state.right_y = event_.value; break;
+                        case 3: state.left_x = event_.value; break;
+                        default: break;
+                        }
+                    }
+                    else { //XBox
+                        switch(event_.number) {
+                        case 0: state.left_x = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 1: state.left_y = normalizeAxisVal(event_.value, false, true, true); break;
+                        case 2: state.left_z = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 3: state.right_x = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 4: state.right_y = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 5: state.right_z = normalizeAxisVal(event_.value, true, false, false); break;
+
+                        default: break;
+                        }
                     }
                 }
                 //else ignore
@@ -261,10 +298,48 @@ public:
             state.is_valid = false;
     }
 
+    // bool getJoystickInfo(int index, std::string& manufacturerID, std::string& productID, std::string& message)
+    // {
+    //     manufacturerID = productID = "";
+    //     // Use udev to look up the product and manufacturer IDs
+    //     struct udev *udev = udev_new();
+    //     if (udev) {
+    //         char sysname[32];
+    //         std::snprintf(sysname, sizeof(sysname), "js%u", index);
+    //         struct udev_device *dev = udev_device_new_from_subsystem_sysname(udev, "input", sysname);
+    //         dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
+    //         if (!dev)
+    //         {
+    //             message = "Unable to find parent USB device";
+    //             return false;
+    //         }
+
+    //         std::stringstream ss;
+    //         ss << std::hex << udev_device_get_sysattr_value(dev, "idVendor");
+    //         ss >> manufacturerID;
+
+    //         ss.clear();
+    //         ss.str("");
+    //         ss << std::hex << udev_device_get_sysattr_value(dev, "idProduct");
+    //         ss >> productID;
+
+    //         udev_device_unref(dev);
+    //     }
+    //     else
+    //     {
+    //         message = "Cannot create udev";
+    //         return false;
+    //     }
+    //     udev_unref(udev);
+    //     return true;
+    // }
+
 private:
     unsigned int last_index_ = -1;
     int fd_ = -1;
     JoystickEvent event_;
+    std::string manufacturerID, productID;
+    int device_type = 0;
 };
 
 #endif

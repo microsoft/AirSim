@@ -4,15 +4,19 @@ To fly manually, you need remote control or RC. If you don't have one then you c
 
 ## RC Setup for Default Config
 
-By default AirSim uses [simple_flight](simple_flight.md) as its flight controller which needs RC that can be connected via USB port to your computer.
+By default AirSim uses [simple_flight](simple_flight.md) as its flight controller which connects to RC via USB port to your computer.
 
-### Option 1: XBox 360 USB Gamepad
+You can either use XBox controller or [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html). Note that XBox 360 controller is not precise enough and is not recommended if you wanted more real world experience. See FAQ below if things are not working.
 
-XBox 360 controller is not precise enough and is not recommended if you wanted more real world experience. However if that's all you have then connect it up, restart Unreal and it should just work. You will see message printed on screen that USB RC is detected. If its not working then see the FAQ section below for troubleshooting.
+ ### Other Devices
+ AirSim can detect large variety of devices however devices other than above *might* need extra configuration. In future we will add ability to set this config through settings.json. For now, if things are not working then you might want to try workarounds such as [x360ce](http://www.x360ce.com/) or chnage code in [SimJoystick.cpp file](/Unreal/Plugins/AirSim/Source/SimJoyStick/SimJoyStick.cpp#L50).
 
-### Option 2: FrSky Taranis X9D Plus
+ ### Note on FrSky Taranis X9D Plus
 
- [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) is real UAV remote control with an advantage that it has USB port so it can be directly connected to PC. You can [download our config file](../Unreal/Plugins/AirSim/Dependencies/x360ce/AirSim_FrSkyTaranis.bin) and [follow this tutorial](https://www.youtube.com/watch?v=qe-13Gyb0sw) to import it in your RC. You should then see "sim" model in RC with all channels configured properly. After you plugin RC via USB to PC, it should just work and AirSim will show message printed on screen that USB RC is detected. If its not working then see the FAQ section below for troubleshooting.
+ [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) is real UAV remote control with an advantage that it has USB port so it can be directly connected to PC. You can [download AirSim config file](../Unreal/Plugins/AirSim/Dependencies/x360ce/AirSim_FrSkyTaranis.bin) and [follow this tutorial](https://www.youtube.com/watch?v=qe-13Gyb0sw) to import it in your RC. You should then see "sim" model in RC with all channels configured properly.
+
+### Note on Linux
+Currently default config on Linux is for using Xbox controller. This means other devices might not work properly. In future we will add ability to configure RC in settings.json but for now you *might* have to change  code in [SimJoystick.cpp file](/Unreal/Plugins/AirSim/Source/SimJoyStick/SimJoyStick.cpp#L340) to use other devices.
 
 ## RC Setup for PX4
 
@@ -52,7 +56,7 @@ This typically happens if you have multiple RCs and or XBox/Playstation gamepads
 
 #### Vehicle seems unstable when using XBox/PS3 contoller.
 
-Typical gamepads are not very precise and have lot of random noise. Most of the times you may see significant offsets as well (i.e. output is not zero when sticks are at zero). So this behaviour is expected.
+Regular gamepads are not very precise and have lot of random noise. Most of the times you may see significant offsets as well (i.e. output is not zero when sticks are at zero). So this behaviour is expected.
 
 #### Where is RC calibration in AirSim?
 
