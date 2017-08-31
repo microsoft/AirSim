@@ -203,32 +203,41 @@ public:
             close(fd_);
     }
 
-    void getJoyStickState(unsigned int index, SimJoyStick::State& state)
+    void getJoyStickState(unsigned int index, SimJoyStick::State& state, const AxisMaps& maps)
     {
+        unused(maps);
+        
         static constexpr bool blocking = false;
 
+        //if this is new indec
         if (index != last_index_) {
+            //close previos one
             if (fd_ >= 0)
                 close(fd_);
 
+            //open new device
             std::stringstream devicePath;
             devicePath << "/dev/input/js" << index;
 
             fd_ = open(devicePath.str().c_str(), blocking ? O_RDONLY : O_RDONLY | O_NONBLOCK);
-
+            state.is_initialized = fd_ >= 0;
             last_index_ = index;
         }
 
+        //if open was sucessfull
         if (fd_ >= 0) {
+            //read the device
             int bytes = read(fd_, &event_, sizeof(event_)); 
 
+            //if we didn't had valid read
             if (bytes == -1 || bytes != sizeof(event_)) {
                 // NOTE if this condition is not met, we're probably out of sync and this
                 // Joystick instance is likely unusable
-                
+                //TODO: set below to false?
+                //state.is_valid = false;
             }
             else {
-                state.is_connected = true;
+                state.is_valid = true;
 
                 if (event_.isButton()) {
                     if (event_.value == 0)
@@ -249,7 +258,7 @@ public:
             }
         }
         else
-            state.is_connected = false;
+            state.is_valid = false;
     }
 
 private:
