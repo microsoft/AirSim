@@ -9,6 +9,8 @@ The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first
 ## Available Settings and Their Defaults
 Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. 
 
+** You do not need to copy beliw in your settings.json. ** In fact, we stronly recommand leaving out any settings that you want with default values from settings.json.
+
 ````
 {
   "DefaultVehicleConfig": "SimpleFlight",
@@ -22,14 +24,13 @@ Below are complete list of settings available along with their default values. I
   "RpcEnabled": true,
   "PhysicsEngineName": "FastPhysicsEngine",
   "EnableCollisionPassthrogh": false,
-  "LogMessagesVisible": true,
   "Recording": {
     "RecordOnMove": false,
-    "RecordInterval": 0.05f
+    "RecordInterval": 0.05
   },
   "CaptureSettings": [
     {
-      "ImageType": -1
+      "ImageType": -1,
       "Width": 256,
       "Height": 144,
       "FOV_Degrees": 90,
@@ -50,9 +51,9 @@ Below are complete list of settings available along with their default values. I
     "DefaultVehicleState": "Armed",
     "RC": {
       "RemoteControlID": 0,
-		  "AllowAPIWhenDisconnected": false,
+      "AllowAPIWhenDisconnected": false,
       "AllowAPIAlways": true
-	  }
+    },
     "ApiServerPort": 41451
   },
   "PX4": {
