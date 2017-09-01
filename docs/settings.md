@@ -9,7 +9,7 @@ The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first
 ## Available Settings and Their Defaults
 Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. 
 
-** You do not need to copy beliw in your settings.json. ** In fact, we stronly recommand leaving out any settings that you want with default values from settings.json.
+** You do not need to copy below in your settings.json. ** In fact, we stronly recommand leaving out any settings that you want with default values from settings.json.
 
 ````
 {
@@ -36,10 +36,10 @@ Below are complete list of settings available along with their default values. I
       "FOV_Degrees": 90,
       "AutoExposureSpeed": 100,
       "AutoExposureBias": 0,
-      "AutoExposureMaxBrightness": 0.64f,
-      "AutoExposureMinBrightness": 0.03f,
+      "AutoExposureMaxBrightness": 0.64,
+      "AutoExposureMinBrightness": 0.03,
       "MotionBlurAmount": 0,
-      "TargetGamma": 1.0f
+      "TargetGamma": 1.0
     }
   ],
   "SubWindows": [
