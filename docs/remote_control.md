@@ -13,7 +13,7 @@ You can either use XBox controller or [FrSky Taranis X9D Plus](https://hobbyking
 
  ### Note on FrSky Taranis X9D Plus
 
- [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) is real UAV remote control with an advantage that it has USB port so it can be directly connected to PC. You can [download AirSim config file](../Unreal/Plugins/AirSim/Dependencies/x360ce/AirSim_FrSkyTaranis.bin) and [follow this tutorial](https://www.youtube.com/watch?v=qe-13Gyb0sw) to import it in your RC. You should then see "sim" model in RC with all channels configured properly.
+ [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html) is real UAV remote control with an advantage that it has USB port so it can be directly connected to PC. You can [download AirSim config file](misc/AirSim_FrSkyTaranis.bin) and [follow this tutorial](https://www.youtube.com/watch?v=qe-13Gyb0sw) to import it in your RC. You should then see "sim" model in RC with all channels configured properly.
 
 ### Note on Linux
 Currently default config on Linux is for using Xbox controller. This means other devices might not work properly. In future we will add ability to configure RC in settings.json but for now you *might* have to change  code in [SimJoystick.cpp file](/Unreal/Plugins/AirSim/Source/SimJoyStick/SimJoyStick.cpp#L340) to use other devices.

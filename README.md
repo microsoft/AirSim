@@ -14,8 +14,12 @@ AirSim has been going through massive revamping and new additions. It now has bu
 
 ## How to Get It
 
-* [Build it on Windows](docs/build_windows.md)
-* [Build it on Linux](docs/build_linux.md)
+### Windows
+* [Download binaries](docs/use_precompiled.md)
+* [Build it](docs/build_windows.md)
+
+### Linux
+* [Build it](docs/build_linux.md)
 
 ## How to Use It
 
