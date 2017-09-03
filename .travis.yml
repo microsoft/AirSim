@@ -37,9 +37,10 @@ install:
       docker cp . xenial:/build;
       docker exec xenial apt-get update;
       docker exec xenial apt-get -y upgrade;
-      docker exec xenial apt-get -y install git wget unzip;
+      docker exec xenial apt-get -y install git wget unzip sudo;
       docker exec xenial apt-get -y install build-essential software-properties-common cmake;
       docker exec xenial apt-get update;
+      docker exec -ti -u root useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
       echo "No install osx actions--using repo";
     fi
