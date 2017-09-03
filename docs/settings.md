@@ -9,7 +9,7 @@ The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first
 ## Available Settings and Their Defaults
 Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. 
 
-** You do not need to copy below in your settings.json. ** In fact, we stronly recommand leaving out any settings that you want with default values from settings.json.
+**WARNING:** Do not copy below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default.
 
 ````
 {
@@ -81,7 +81,20 @@ Below are complete list of settings available along with their default values. I
 ````
 
 ## Image Capture Settings
-The `SceneCaptureSettings`, `DepthCaptureSettings` and `SegCaptureSettings` determines how scene view, depth view and segmentation views are captures. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images. For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/).
+The `CaptureSettings` determines how different image types such as scene, depth, disparity, surface normals and segmentation views are rendered. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images. For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/). 
+
+The `ImageType` element determines which image type the settings applies to. By default it is -1 which is invalid value and you will get an error if you have haven't changed it to a valid value. The valid values are:
+
+```
+Scene = 0, 
+DepthMeters = 1, 
+DepthVis = 2, 
+DisparityNormalized = 3,
+Segmentation = 4,
+SurfaceNormals = 5
+```
+
+Note that `CaptureSettings` element is json array so you can add settings for multiple image types easily.
 
 ## Changing Flight Controller
 The `DefaultVehicleConfig` decides which config settings will be used for your vehicles. By default we use [simple_flight](simple_flight.md) so you don't have to do separate HITL or SITL setups. We also support ["PX4"](px4_setup.md) for advanced users.

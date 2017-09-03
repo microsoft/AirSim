@@ -91,5 +91,3 @@ set the  LocalIpAddress to the address of your host machine running the Unreal e
 
 There are several options for flying the simulated drone using a remote control or joystick like xbox gamepad. See [remote controllers](remote_control.md#RC_Setup_for_PX4)
 
-
-

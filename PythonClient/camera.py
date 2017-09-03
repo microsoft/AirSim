@@ -34,6 +34,7 @@ client = AirSimClient('127.0.0.1')
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
+client.takeoff()
 
 help = False
 

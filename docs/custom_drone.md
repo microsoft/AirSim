@@ -24,6 +24,8 @@ orbit 10 2
 This will arm the drone, takeoff ot 5 meters, then do an orbit pattern radius 10 meters, at 2 m/s.
 Type '?' to find all available commands.
 
+**Note:** Some commands (for example, `orbit`) are named differently and have different syntax in MavLinkTest and DroneShell (for example, `circlebypath -radius 10 -velocity 21`).
+
 When you land the drone you can stop MavLinkTest and copy the *.mavlink log file that was generated.
 
 # DroneServer and DroneShell
@@ -50,6 +52,7 @@ DroneShell
         Microsoft Research (c) 2016.
 
 Waiting for drone to report a valid GPS location...
+==||=> requestcontrol
 ==||=> arm
 ==||=> takeoff
 ==||=> circlebypath -radius 10 -velocity 2

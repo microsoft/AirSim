@@ -6,6 +6,7 @@ client = AirSimClient('127.0.0.1')
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
+client.takeoff()
 
 # AirSim uses NED coordinates so negative axis is up.
 # z of -5 is 5 meters above the original launch point.

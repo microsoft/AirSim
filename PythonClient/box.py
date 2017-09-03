@@ -3,6 +3,10 @@ import sys
 import time
 
 client = AirSimClient('127.0.0.1')
+client.confirmConnection()
+client.enableApiControl(True)
+client.armDisarm(True)
+client.takeoff()
 
 print("Flying a small square box using moveByVelocityZ")
 print("Try pressing 't' in the AirSim view to see a pink trace of the flight")
