@@ -382,8 +382,10 @@ private:
             Thus new attitude is q0q1
             */
             next.pose.orientation = current_pose.orientation * angle_dt_q;
-            if (VectorMath::hasNan(next.pose.orientation))
-                Utils::DebugBreak();
+            if (VectorMath::hasNan(next.pose.orientation)) {
+                //Utils::DebugBreak();
+                Utils::log("orientation had NaN!", Utils::kLogLevelError);
+            }
 
             //re-normalize quaternion to avoid accumulating error
             next.pose.orientation.normalize();

@@ -116,11 +116,11 @@ private:
             update();
         }
         catch(const std::exception& ex) {
-            Utils::DebugBreak();
+            //Utils::DebugBreak();
             Utils::log(Utils::stringf("Exception occurred while updating world: %s", ex.what()), Utils::kLogLevelError);
         }
         catch(...) {
-            Utils::DebugBreak();
+            //Utils::DebugBreak();
             Utils::log("Exception occurred while updating world", Utils::kLogLevelError);
         }
 
