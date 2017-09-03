@@ -654,28 +654,28 @@ void PrintHeartbeat(const MavLinkMessage& msg) {
     MavLinkHeartbeat heartbeat;
     heartbeat.decode(msg);
 
-    Utils::log("Connected:");
-    Utils::log(Utils::stringf("    Version=%d", static_cast<int>(heartbeat.mavlink_version)));
+    Utils::log("Connected:\n");
+    Utils::log(Utils::stringf("    Version=%d\n", static_cast<int>(heartbeat.mavlink_version)));
 
     if (heartbeat.type < MAV_TYPE_ENUM_END) {
-        Utils::log(Utils::stringf("    Type=%s", MavTypeNames[heartbeat.type]));
+        Utils::log(Utils::stringf("    Type=%s\n", MavTypeNames[heartbeat.type]));
     }
 
     if (heartbeat.autopilot < MAV_AUTOPILOT_ENUM_END) {
-        Utils::log(Utils::stringf("    Autopilot=%s", AutoPilotNames[heartbeat.autopilot]));
+        Utils::log(Utils::stringf("    Autopilot=%s\n", AutoPilotNames[heartbeat.autopilot]));
     }
 
     if (heartbeat.system_status < MAV_STATE_ENUM_END) {
-        Utils::log(Utils::stringf("    State=%s", MavStateNames[heartbeat.system_status]));
+        Utils::log(Utils::stringf("    State=%s\n", MavStateNames[heartbeat.system_status]));
     }
 
-    Utils::log("    Base mode:");
+    Utils::log("    Base mode:\n");
     PrintFlags(ModeFlagNames, heartbeat.base_mode);
 
     PrintCustomMode(heartbeat);
 
-    Utils::log(Utils::stringf("    VEHICLE SYSTEM ID: %i", msg.sysid));
-    Utils::log(Utils::stringf("    VEHICLE COMPONENT ID: %i", msg.compid));
+    Utils::log(Utils::stringf("    VEHICLE SYSTEM ID: %i\n", msg.sysid));
+    Utils::log(Utils::stringf("    VEHICLE COMPONENT ID: %i\n", msg.compid));
 
 }
 

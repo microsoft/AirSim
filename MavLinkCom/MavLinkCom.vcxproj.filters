@@ -28,9 +28,6 @@
     <ClCompile Include="src\serial_com\UdpClientPort.cpp">
       <Filter>serial_com</Filter>
     </ClCompile>
-    <ClCompile Include="src\impl\windows\MavLinkFindSerialPorts.cpp">
-      <Filter>src\impl\windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\MavLinkFtpClient.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -72,6 +69,12 @@
     </ClCompile>
     <ClCompile Include="src\serial_com\wifi.cpp">
       <Filter>serial_com</Filter>
+    </ClCompile>
+    <ClCompile Include="src\impl\onecore\OneCoreFindSerialPorts.cpp">
+      <Filter>src\impl\onecore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\impl\windows\WindowsFindSerialPorts.cpp">
+      <Filter>src\impl\windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +240,9 @@
     </Filter>
     <Filter Include="src\impl\windows">
       <UniqueIdentifier>{4ee25053-206a-4174-99cb-5fb278fc5079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\impl\onecore">
+      <UniqueIdentifier>{7b6dab75-eedb-4b36-a3a3-ea8c30b4a412}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
