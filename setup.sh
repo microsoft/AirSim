@@ -10,12 +10,13 @@ pushd "$SCRIPT_DIR" >/dev/null
 git submodule update --init --recursive
 
 #give user perms to access USB port - this is not needed if not using PX4 HIL
-if [ "$(uname)" == "Darwin" ]; then
-    sudo dseditgroup -o edit -a `whoami` -t user dialout       
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    sudo /usr/sbin/useradd -G dialout ${whoami}
-    sudo usermod -a -G dialout ${whoami}
-fi
+#TODO: re-enable below after we figure out how to use it with travis
+# if [ "$(uname)" == "Darwin" ]; then
+#     sudo dseditgroup -o edit -a `whoami` -t user dialout       
+# elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+#     sudo /usr/sbin/useradd -G dialout ${whoami}
+#     sudo usermod -a -G dialout ${whoami}
+# fi
 
 # get clang, libc++
 # sudo rm -rf llvm-build
