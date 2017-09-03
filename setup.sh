@@ -13,8 +13,8 @@ git submodule update --init --recursive
 if [ "$(uname)" == "Darwin" ]; then
     sudo dseditgroup -o edit -a `whoami` -t user dialout       
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    sudo /usr/sbin/useradd -G dialout $USER
-    sudo usermod -a -G dialout $USER
+    sudo /usr/sbin/useradd -G dialout ${whoami}
+    sudo usermod -a -G dialout ${whoami}
 fi
 
 # get clang, libc++
