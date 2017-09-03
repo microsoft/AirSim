@@ -10,8 +10,12 @@ pushd "$SCRIPT_DIR" >/dev/null
 git submodule update --init --recursive
 
 #give user perms to access USB port - this is not needed if not using PX4 HIL
-sudo adduser $USER dialout
-sudo usermod -a -G dialout $USER
+if [ "$(uname)" == "Darwin" ]; then
+    sudo dseditgroup -o edit -a `whoami` -t user dialout       
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    sudo /usr/sbin/useradd -G dialout $USER
+    sudo usermod -a -G dialout $USER
+fi
 
 # get clang, libc++
 # sudo rm -rf llvm-build
