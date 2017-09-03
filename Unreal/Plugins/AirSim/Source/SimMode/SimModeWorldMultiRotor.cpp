@@ -185,13 +185,15 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* vehicle_pawn)
 {
-    vehicle_params_ = MultiRotorParamsFactory::createConfig(
+    auto vehicle_params = MultiRotorParamsFactory::createConfig(
         vehicle_pawn->VehicleConfigName == "" ? default_vehicle_config 
         : std::string(TCHAR_TO_UTF8(* vehicle_pawn->VehicleConfigName)));
 
+	vehicle_params_.push_back(std::move(vehicle_params));
+
     auto vehicle = std::make_shared<MultiRotorConnector>(
-        vehicle_pawn, vehicle_params_.get(), enable_rpc, api_server_address, 
-        vehicle_params_->getParams().api_server_port, manual_pose_controller);
+        vehicle_pawn, vehicle_params_.back().get(), enable_rpc, api_server_address, 
+        vehicle_params_.back()->getParams().api_server_port, manual_pose_controller);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 
