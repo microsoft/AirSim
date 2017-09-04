@@ -12,11 +12,11 @@ git submodule update --init --recursive
 #give user perms to access USB port - this is not needed if not using PX4 HIL
 #TODO: figure out how to do below in travis
 if [ "$(uname)" == "Darwin" ]; then
-    if [[ ! -z "${whoami}" ]] #this happens when running in travis
+    if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
         sudo dseditgroup -o edit -a `whoami` -t user dialout
     fi
 else
-    if [[ ! -z "${whoami}" ]] #this happens when running in travis
+    if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
         sudo /usr/sbin/useradd -G dialout $USER
         sudo usermod -a -G dialout $USER
     fi
