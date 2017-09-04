@@ -10,26 +10,33 @@ pushd "$SCRIPT_DIR" >/dev/null
 git submodule update --init --recursive
 
 #give user perms to access USB port - this is not needed if not using PX4 HIL
-#TODO: re-enable below after we figure out how to use it with travis
-# if [ "$(uname)" == "Darwin" ]; then
-#     sudo dseditgroup -o edit -a `whoami` -t user dialout       
-# elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-#     sudo /usr/sbin/useradd -G dialout ${whoami}
-#     sudo usermod -a -G dialout ${whoami}
-# fi
+#TODO: figure out how to do below in travis
+if [ "$(uname)" == "Darwin" ]; then
+    if [[ ! -z "${whoami}" ]] #this happens when running in travis
+        sudo dseditgroup -o edit -a `whoami` -t user dialout
+    fi
+else
+    if [[ ! -z "${whoami}" ]] #this happens when running in travis
+        sudo /usr/sbin/useradd -G dialout $USER
+        sudo usermod -a -G dialout $USER
+    fi
 
+    #install clang and build tools
+    sudo apt-get install -y build-essential
+    sudo apt-get install cmake
+    wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get install -y clang-3.9 clang++-3.9
+fi
+
+# Below is alternative way to get cland by downloading binaries
 # get clang, libc++
 # sudo rm -rf llvm-build
 # mkdir -p llvm-build/output
 # wget "http://releases.llvm.org/4.0.1/clang+llvm-4.0.1-x86_64-linux-gnu-debian8.tar.xz"
 # tar -xf "clang+llvm-4.0.1-x86_64-linux-gnu-debian8.tar.xz" -C llvm-build/output
 
-sudo apt-get install -y build-essential
-sudo apt-get install cmake
-wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-sudo apt-get update
-sudo apt-get install -y clang-3.9 clang++-3.9
-# #other packages
+# #other packages - not need for now
 # #sudo apt-get install -y clang-3.9-doc libclang-common-3.9-dev libclang-3.9-dev libclang1-3.9 libclang1-3.9-dbg libllvm-3.9-ocaml-dev libllvm3.9 libllvm3.9-dbg lldb-3.9 llvm-3.9 llvm-3.9-dev llvm-3.9-doc llvm-3.9-examples llvm-3.9-runtime clang-format-3.9 python-clang-3.9 libfuzzer-3.9-dev
 
 #get libc++ source
