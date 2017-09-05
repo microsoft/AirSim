@@ -75,14 +75,16 @@ To change resolution, FOV etc, you can use [settings.json](settings.md). For exa
 
 ```
 {
-  "SceneCaptureSettings" : {
-    "Width": 256,
-    "Height": 144,
-    "FOV_Degrees": 90,
-    "AutoExposureSpeed": 100,
-    "MotionBlurAmount": 0
-  },
-  "DefaultVehicleConfig": "SimpleFlight",
+  "CaptureSettings": [
+    {
+      "ImageType": 0,
+      "Width": 256,
+      "Height": 144,
+      "FOV_Degrees": 90,
+      "AutoExposureSpeed": 100,
+      "MotionBlurAmount": 0
+    }
+  ],
   "UsageScenario": "ComputerVision"
 }
 ```
