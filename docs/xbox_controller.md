@@ -43,4 +43,4 @@ type `COM_RC_IN_MODE` in search box and change its value to either `Joystick/No 
 
 ### Other Options
 
-See [remote controller options](remote_controls.md)
+See [remote controller options](remote_control.md)

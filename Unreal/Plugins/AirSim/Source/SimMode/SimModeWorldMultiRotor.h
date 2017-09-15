@@ -35,7 +35,7 @@ private:
 private:    
 
     TArray<uint8> image_;
-    std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
+    std::vector <std::unique_ptr<msr::airlib::MultiRotorParams> > vehicle_params_;
     bool isLoggingStarted;
 
     UClass* external_camera_class_;

@@ -14,12 +14,11 @@
     "CanContainContent": true,
     "IsBetaVersion" : true,
     "Installed": true,
-    "Modules" :
-    [
-        {
-            "Name": "AirSim",
-            "Type" : "Runtime",
-            "LoadingPhase" : "PreDefault"
-        }
+    "Modules": [
+      {
+        "Name": "AirSim",
+        "Type": "Runtime",
+        "LoadingPhase": "PreDefault"
+      }
     ]
 }

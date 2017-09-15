@@ -10,19 +10,19 @@ git submodule update --init --recursive
 REM //---------- if cmake doesn't exist then install it ----------
 WHERE cmake >nul 2>nul
 IF %ERRORLEVEL% NEQ 0 (
-	call :installcmake
+    call :installcmake
 )
 
 REM //---------- get Eigen library ----------
 IF NOT EXIST AirLib\deps mkdir AirLib\deps
 IF NOT EXIST AirLib\deps\eigen3 (
-	powershell -command "& { iwr http://bitbucket.org/eigen/eigen/get/3.3.2.zip -OutFile eigen3.zip }"
-	powershell -command "& { Expand-Archive -Path eigen3.zip -DestinationPath AirLib\deps }"
-	move AirLib\deps\eigen* AirLib\deps\del_eigen
-	mkdir AirLib\deps\eigen3
-	move AirLib\deps\del_eigen\Eigen AirLib\deps\eigen3\Eigen
+    powershell -command "& { iwr http://bitbucket.org/eigen/eigen/get/3.3.2.zip -OutFile eigen3.zip }"
+    powershell -command "& { Expand-Archive -Path eigen3.zip -DestinationPath AirLib\deps }"
+    move AirLib\deps\eigen* AirLib\deps\del_eigen
+    mkdir AirLib\deps\eigen3
+    move AirLib\deps\del_eigen\Eigen AirLib\deps\eigen3\Eigen
     rmdir /S /Q AirLib\deps\del_eigen
-	del eigen3.zip
+    del eigen3.zip
 )
 IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
@@ -60,7 +60,7 @@ robocopy /MIR MavLinkCom\lib %MAVLINK_TARGET_LIB%
 
 REM //---------- all our output goes to Unreal/Plugin folder ----------
 if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
-robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp
+robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp *. /njh /njs /ndl /np
 
 REM //---------- done building ----------
 goto :eof

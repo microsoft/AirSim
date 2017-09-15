@@ -2,76 +2,127 @@
 
 #if defined _WIN32 || defined _WIN64
 
-#include "common/common_utils/StrictMode.hpp"
-
-STRICT_MODE_OFF
-//below headers are required for using windows.h types in Unreal
-//#include "Windows/WindowsHWrapper.h"
-//#include <XInput.h>
-
-//Below is old way of doing it?
-//#include "AllowWindowsPlatformTypes.h"
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#include <XInput.h>
-//#include "HideWindowsPlatformTypes.h"
-STRICT_MODE_ON
+#include "DirectInputJoystick.h"
 
 struct SimJoyStick::impl {
 public:
-    void getJoyStickState(unsigned int index, SimJoyStick::State& state)
+    void getJoyStickState(unsigned int index, SimJoyStick::State& state, const AxisMaps& maps)
     {
-        if (!initialized_success_ || index >= kMaxControllers) {
-            state.is_connected = false;
+        if (index >= kMaxControllers) {
+            state.is_initialized = false;
             return;
         }
 
-        // Simply get the state of the controller from XInput.
-        DWORD dwResult = XInputGetState(index, &controllers_[index].state);
-
-        if (dwResult == ERROR_SUCCESS) {
-            controllers_[index].bConnected = true;
-            state.connection_error_code = 0;
-        }
-        else {
-            controllers_[index].bConnected = false;
-            state.connection_error_code = dwResult;
+        if (controllers_[index] == nullptr) {
+            controllers_[index].reset(new DirectInputJoyStick());
+            if (!controllers_[index]->initialize(index)) {
+                state.is_initialized = false;
+                state.message = controllers_[index]->getState(false).message;
+                return;
+            }
+            state.is_initialized = true;
         }
 
-        state.is_connected = controllers_[index].bConnected;
+        const DirectInputJoyStick::JoystickState& di_state = controllers_[index]->getState();
+        const DirectInputJoyStick::JoystickInfo& joystick_info = controllers_[index]->getJoystickInfo();
 
-        if (state.is_connected) {
-            state.left_x = controllers_[index].state.Gamepad.sThumbLX;
-            state.left_y = controllers_[index].state.Gamepad.sThumbLY;
-            state.right_x = controllers_[index].state.Gamepad.sThumbRX;
-            state.right_y = controllers_[index].state.Gamepad.sThumbRY;
+        state.is_valid = di_state.is_valid;
+        
+        state.left_x = getAxisValue(AxisMap::AxisType::LeftX, maps.left_x, di_state, joystick_info.pid_vid);
+        state.left_y = getAxisValue(AxisMap::AxisType::LeftY, maps.left_y, di_state, joystick_info.pid_vid);
+        state.right_x = getAxisValue(AxisMap::AxisType::RightX, maps.right_x, di_state, joystick_info.pid_vid);
+        state.right_y = getAxisValue(AxisMap::AxisType::RightY, maps.right_y, di_state, joystick_info.pid_vid);
+        state.right_z = getAxisValue(AxisMap::AxisType::RightZ, maps.right_z, di_state, joystick_info.pid_vid);
+        state.left_z = getAxisValue(AxisMap::AxisType::LeftZ, maps.left_z, di_state, joystick_info.pid_vid);
 
-            state.buttons = controllers_[index].state.Gamepad.wButtons;
-            state.left_trigger = controllers_[index].state.Gamepad.bLeftTrigger != 0;
-            state.right_trigger = controllers_[index].state.Gamepad.bRightTrigger != 0;
+        state.buttons = 0;
+        for (int i = 0; i < sizeof(int)*8; ++i) {
+            state.buttons |= ((di_state.buttons[i] & 0x80) == 0 ? 0 : 1) << i;
         }
-        //else don't waste time
+    }
+
+
+private:
+    float getMappedValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
+    {
+        AxisMap::AxisType rc_axis;
+        if (map.rc_axis == AxisMap::AxisType::Auto) {
+            if (device_pid_vid == "" || device_pid_vid == "VID_0483&PID_5710") { //RCs like FrSky Taranis
+                switch (axis_type) {
+                case AxisMap::AxisType::LeftX: rc_axis = AxisMap::AxisType::RightX; break;
+                case AxisMap::AxisType::LeftY: rc_axis = AxisMap::AxisType::LeftX; break;
+                case AxisMap::AxisType::LeftZ: rc_axis = AxisMap::AxisType::RightY; break;
+                case AxisMap::AxisType::RightX: rc_axis = AxisMap::AxisType::LeftY; break;
+                case AxisMap::AxisType::RightY: rc_axis = AxisMap::AxisType::LeftZ; break;
+                case AxisMap::AxisType::RightZ: rc_axis = AxisMap::AxisType::RightZ; break;
+                default:
+                    throw std::invalid_argument("Unsupported axis_type in getMappedValue");
+                }
+            }
+            else { //Xbox controllers
+                rc_axis = axis_type;
+            }
+        } else
+            rc_axis = map.rc_axis;
+
+
+        switch (rc_axis)
+        {
+        case AxisMap::AxisType::LeftX: return di_state.x;
+        case AxisMap::AxisType::LeftY: return di_state.y;
+        case AxisMap::AxisType::LeftZ: return di_state.z;
+        case AxisMap::AxisType::RightX: return di_state.rx;
+        case AxisMap::AxisType::RightY: return di_state.ry;
+        case AxisMap::AxisType::RightZ: return di_state.rz;
+        default:
+            throw std::invalid_argument("Unsupported rc_axis in getMappedValue");
+        }
+    }
+
+    float getAxisValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
+    {
+        float val = getMappedValue(axis_type, map, di_state, device_pid_vid);
+        
+        //normalize min to max --> 0 to 1
+        val = (val - map.min_val) / (map.max_val - map.min_val);
+
+        switch (map.direction)
+        {
+        case AxisMap::AxisDirection::Auto:
+            if (
+                ((device_pid_vid == "" || device_pid_vid == "VID_0483&PID_5710") &&
+                    (axis_type == AxisMap::AxisType::LeftZ || axis_type == AxisMap::AxisType::RightY)) ||
+                ((device_pid_vid != "" && device_pid_vid != "VID_0483&PID_5710") &&
+                    (axis_type == AxisMap::AxisType::LeftY))
+               )
+                val = 1 - val;
+            break;
+        case AxisMap::AxisDirection::Normal: break;
+        case AxisMap::AxisDirection::Reverse: val = 1 - val; break;
+        default:
+            throw std::invalid_argument("Unsupported map.direction in getAxisValue");
+        }
+
+        //normalize 0 to 1 --> -1 to 1
+        val = 2*val - 1;
+
+        return val;
     }
 
 private:
-    struct ControllerState
-    {
-        XINPUT_STATE state;
-        bool bConnected;
-    };
-
     static constexpr unsigned int kMaxControllers = 4;
-    ControllerState controllers_[kMaxControllers];
+    std::unique_ptr<DirectInputJoyStick> controllers_[kMaxControllers];
 };
 
 #else
 
+#include <limits>
 #include <fcntl.h>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <libudev.h>
 #include "unistd.h"
 
 //implementation for unsupported OS
@@ -154,32 +205,62 @@ public:
             close(fd_);
     }
 
-    void getJoyStickState(unsigned int index, SimJoyStick::State& state)
+    static float normalizeAxisVal(int axis_val, bool wide, bool zero2One, bool reversed)
     {
+        float min_val = wide ? -32768 : -16384;
+        float max_val = wide ? 32767 : 16383;
+
+        float val = (axis_val - min_val) / (max_val - min_val);
+        if (zero2One) {
+            if (reversed)
+                val = 1 - val;
+        }
+        else {
+            val = 2*val - 1;
+            if (reversed)
+                val *= -1;
+        }
+
+        return val;
+    }
+
+    void getJoyStickState(unsigned int index, SimJoyStick::State& state, const AxisMaps& maps)
+    {
+        unused(maps);
+
         static constexpr bool blocking = false;
 
+        //if this is new indec
         if (index != last_index_) {
+             //getJoystickInfo(1, manufacturerID, productID, state.message);
+
+            //close previos one
             if (fd_ >= 0)
                 close(fd_);
 
+            //open new device
             std::stringstream devicePath;
             devicePath << "/dev/input/js" << index;
 
             fd_ = open(devicePath.str().c_str(), blocking ? O_RDONLY : O_RDONLY | O_NONBLOCK);
-
+            state.is_initialized = fd_ >= 0;
             last_index_ = index;
         }
 
+        //if open was sucessfull
         if (fd_ >= 0) {
+            //read the device
             int bytes = read(fd_, &event_, sizeof(event_)); 
 
+            //if we didn't had valid read
             if (bytes == -1 || bytes != sizeof(event_)) {
                 // NOTE if this condition is not met, we're probably out of sync and this
                 // Joystick instance is likely unusable
-                
+                //TODO: set below to false?
+                //state.is_valid = false;
             }
             else {
-                state.is_connected = true;
+                state.is_valid = true;
 
                 if (event_.isButton()) {
                     if (event_.value == 0)
@@ -188,39 +269,80 @@ public:
                         state.buttons |= (1 << event_.number);
                 }
                 else if (event_.isAxis()) {
-                    switch(event_.number) {
-                    case 0: state.left_y = event_.value; break;
-                    case 1: state.right_x = event_.value; break;
-                    case 2: state.right_y = event_.value; break;
-                    case 3: state.left_x = event_.value; break;
-                    default: break;
+                    if (device_type > 0) { //RCs like FrSky Taranis
+                        switch(event_.number) {
+                        case 0: state.left_y = event_.value; break;
+                        case 1: state.right_x = event_.value; break;
+                        case 2: state.right_y = event_.value; break;
+                        case 3: state.left_x = event_.value; break;
+                        default: break;
+                        }
+                    }
+                    else { //XBox
+                        switch(event_.number) {
+                        case 0: state.left_x = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 1: state.left_y = normalizeAxisVal(event_.value, false, true, true); break;
+                        case 2: state.left_z = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 3: state.right_x = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 4: state.right_y = normalizeAxisVal(event_.value, true, false, false); break;
+                        case 5: state.right_z = normalizeAxisVal(event_.value, true, false, false); break;
+
+                        default: break;
+                        }
                     }
                 }
                 //else ignore
             }
         }
         else
-            state.is_connected = false;
+            state.is_valid = false;
     }
+
+    // bool getJoystickInfo(int index, std::string& manufacturerID, std::string& productID, std::string& message)
+    // {
+    //     manufacturerID = productID = "";
+    //     // Use udev to look up the product and manufacturer IDs
+    //     struct udev *udev = udev_new();
+    //     if (udev) {
+    //         char sysname[32];
+    //         std::snprintf(sysname, sizeof(sysname), "js%u", index);
+    //         struct udev_device *dev = udev_device_new_from_subsystem_sysname(udev, "input", sysname);
+    //         dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
+    //         if (!dev)
+    //         {
+    //             message = "Unable to find parent USB device";
+    //             return false;
+    //         }
+
+    //         std::stringstream ss;
+    //         ss << std::hex << udev_device_get_sysattr_value(dev, "idVendor");
+    //         ss >> manufacturerID;
+
+    //         ss.clear();
+    //         ss.str("");
+    //         ss << std::hex << udev_device_get_sysattr_value(dev, "idProduct");
+    //         ss >> productID;
+
+    //         udev_device_unref(dev);
+    //     }
+    //     else
+    //     {
+    //         message = "Cannot create udev";
+    //         return false;
+    //     }
+    //     udev_unref(udev);
+    //     return true;
+    // }
 
 private:
     unsigned int last_index_ = -1;
     int fd_ = -1;
     JoystickEvent event_;
+    std::string manufacturerID, productID;
+    int device_type = 0;
 };
 
 #endif
-
-bool SimJoyStick::initialized_success_ = false;
-
-void SimJoyStick::setInitializedSuccess(bool success)
-{
-    initialized_success_ = success;
-}
-bool SimJoyStick::isInitializedSuccess()
-{
-    return initialized_success_;
-}
 
 SimJoyStick::SimJoyStick()
 {
@@ -233,5 +355,5 @@ SimJoyStick::~SimJoyStick()
 
 void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state)
 {
-    pimpl_->getJoyStickState(index, state);
+    pimpl_->getJoyStickState(index, state, axis_maps);
 }

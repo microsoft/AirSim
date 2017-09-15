@@ -66,9 +66,9 @@ bool RpcLibClient::armDisarm(bool arm)
 {
     return pimpl_->client.call("armDisarm", arm).as<bool>();
 }
-void RpcLibClient::setOffboardMode(bool is_set)
+void RpcLibClient::enableApiControl(bool is_enabled)
 {
-    pimpl_->client.call("setOffboardMode", is_set);
+    pimpl_->client.call("enableApiControl", is_enabled);
 }
 void RpcLibClient::setSimulationMode(bool is_set)
 {
@@ -170,7 +170,7 @@ vector<VehicleCameraBase::ImageResponse> RpcLibClient::simGetImages(vector<Drone
 }
 vector<uint8_t> RpcLibClient::simGetImage(int camera_id, VehicleCameraBase::ImageType type)
 {
-    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type.toEnum()).as<vector<uint8_t>>();
+    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type).as<vector<uint8_t>>();
     if (result.size() == 1) {
         // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
         result.clear();
@@ -223,9 +223,9 @@ GeoPoint RpcLibClient::getGpsLocation()
     return pimpl_->client.call("getGpsLocation").as<RpcLibAdapators::GeoPoint>().to();
 }
 
-bool RpcLibClient::isOffboardMode()
+bool RpcLibClient::isApiControlEnabled()
 {
-    return pimpl_->client.call("isOffboardMode").as<bool>();
+    return pimpl_->client.call("isApiControlEnabled").as<bool>();
 }
 
 bool RpcLibClient::isSimulationMode()

@@ -2,7 +2,7 @@
 # You should NOT use this with Unreal.
 # If you want bits that work in Unreal you need to use ../build.sh
 # For pre-requisite tools needed to run this script see
-# https://github.com/Microsoft/AirSim/blob/master/docs/linux_build.md
+# https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md
 
 # First get the location of this script, it is assumed you already cloned "main" and you are running the
 # script from that repo.  It will then put everything else in a ROS workspace at "../catkin_ws"

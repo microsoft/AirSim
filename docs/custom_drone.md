@@ -1,7 +1,6 @@
 # AirLib on a Real Drone
 
-Parts of the AirLib stack can be used on a real drone.  For example, you can run the MavlinkCom library and MavLinkTest app to test the connection
-between your `big brain` and `little brain`.  For our testing we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB.  The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wifi: 
+The AirLib library can be compiled and deployed on the companion computer on a real drone. For our testing we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB. The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wifi: 
 
 ![Flamewheel](images/Flamewheel.png)
 
@@ -24,6 +23,8 @@ orbit 10 2
 
 This will arm the drone, takeoff ot 5 meters, then do an orbit pattern radius 10 meters, at 2 m/s.
 Type '?' to find all available commands.
+
+**Note:** Some commands (for example, `orbit`) are named differently and have different syntax in MavLinkTest and DroneShell (for example, `circlebypath -radius 10 -velocity 21`).
 
 When you land the drone you can stop MavLinkTest and copy the *.mavlink log file that was generated.
 
@@ -51,8 +52,12 @@ DroneShell
         Microsoft Research (c) 2016.
 
 Waiting for drone to report a valid GPS location...
+==||=> requestcontrol
 ==||=> arm
 ==||=> takeoff
 ==||=> circlebypath -radius 10 -velocity 2
 ````
 
+## PX4 Specific Tools
+You can run the MavlinkCom library and MavLinkTest app to test the connection
+between your companion computer and flight controller.  

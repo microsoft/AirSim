@@ -69,7 +69,9 @@ struct RCData {
     float pitch = 0, roll = 0, throttle = 0, yaw = 0;
     unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, 
         switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
-    bool is_connected = false; //must be true for data to be valid
+    bool is_initialized = false; //is RC connected?
+    bool is_valid = false; //must be true for data to be valid
+
 
     void add(const RCData& other)
     {

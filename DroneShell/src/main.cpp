@@ -127,7 +127,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.setOffboardMode(true);
+        params.context->client.enableApiControl(true);
         return false;
     }
 };
@@ -140,7 +140,7 @@ public:
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.setOffboardMode(false);
+        params.context->client.enableApiControl(false);
         return false;
     }
 };
@@ -1173,19 +1173,23 @@ public:
             }
 
             const char* typeName = "";
-            switch (imageType.toEnum())
+            switch (imageType)
             {
-            case msr::airlib::VehicleCameraBase::ImageType_::Scene:
+            case msr::airlib::VehicleCameraBase::ImageType::Scene:
                 typeName = "scene";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType_::Depth:
+            case msr::airlib::VehicleCameraBase::ImageType::DepthVis:
                 typeName = "depth";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType_::Segmentation:
+            case msr::airlib::VehicleCameraBase::ImageType::Segmentation:
                 typeName = "seg";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType_::None:
-            case msr::airlib::VehicleCameraBase::ImageType_::All:
+            case msr::airlib::VehicleCameraBase::ImageType::SurfaceNormals:
+                typeName = "normals";
+                break;
+            case msr::airlib::VehicleCameraBase::ImageType::DisparityNormalized:
+                typeName = "disparity";
+                break;
             default:
                 break;
             }
@@ -1216,11 +1220,15 @@ public:
         VehicleCameraBase::ImageType imageType;
 
         if (type == "depth") {
-            imageType = VehicleCameraBase::ImageType_::Depth;
+            imageType = VehicleCameraBase::ImageType::DepthVis;
         } else if (type == "scene") {
-            imageType = VehicleCameraBase::ImageType_::Scene;
+            imageType = VehicleCameraBase::ImageType::Scene;
         } else if (type == "segmentation") {
-            imageType = VehicleCameraBase::ImageType_::Segmentation;
+            imageType = VehicleCameraBase::ImageType::Segmentation;
+        } else if (type == "normals") {
+            imageType = VehicleCameraBase::ImageType::SurfaceNormals;
+        } else if (type == "disparity") {
+            imageType = VehicleCameraBase::ImageType::DisparityNormalized;
         } else {
             cout << "Error: Invalid image type '" << type << "', expecting either 'depth', 'scene' or 'segmentation'" << endl;
             return true;

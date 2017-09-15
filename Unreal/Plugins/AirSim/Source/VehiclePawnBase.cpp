@@ -30,27 +30,31 @@ void AVehiclePawnBase::BeginPlay()
 void AVehiclePawnBase::setupCamerasFromSettings()
 {
     typedef msr::airlib::Settings Settings;
-    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
+    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
 
-    Settings& settings = Settings::singleton();
-    Settings scene_settings_child, depth_settings_child, seg_settings_child;
-    APIPCamera::CaptureSettings scene_settings, depth_settings, seg_settings, normals_settings;;
-    scene_settings.target_gamma = APIPCamera::CaptureSettings::kSceneTargetGamma;
-    if (settings.getChild("SceneCaptureSettings", scene_settings_child))
-        createCaptureSettings(scene_settings_child, scene_settings);
-    if (settings.getChild("SegCaptureSettings", seg_settings_child))
-        createCaptureSettings(seg_settings_child, seg_settings);
-    if (settings.getChild("DepthCaptureSettings", depth_settings_child))
-        createCaptureSettings(depth_settings_child, depth_settings);
-    if (settings.getChild("NormalsCaptureSettings", depth_settings_child))
-        createCaptureSettings(depth_settings_child, normals_settings);  //TODO: use separate settings?
+    Settings& json_settings_root = Settings::singleton();
+    Settings json_settings_parent;
+    if (json_settings_root.getChild("CaptureSettings", json_settings_parent)) {
+        for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
+            Settings json_settings_child;     
+            if (json_settings_parent.getChild(child_index, json_settings_child)) {
+                APIPCamera::CaptureSettings capture_settings;;
+                createCaptureSettings(json_settings_child, capture_settings);
 
-    for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
-        APIPCamera* camera = getCamera(camera_index);
-        camera->setCaptureSettings(ImageType_::Scene, scene_settings);
-        camera->setCaptureSettings(ImageType_::Segmentation, seg_settings);
-        camera->setCaptureSettings(ImageType_::Depth, depth_settings);
-        camera->setCaptureSettings(ImageType_::Normals, normals_settings);
+                int image_type = json_settings_child.getInt("ImageType", -1);
+
+                if (image_type == -1) {
+                    UAirBlueprintLib::LogMessageString("ImageType not set in <CaptureSettings> element(s) in settings.json", 
+                        std::to_string(child_index), LogDebugLevel::Failure);
+                    continue;
+                }
+
+                for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
+                    APIPCamera* camera = getCamera(camera_index);
+                    camera->setCaptureSettings(Utils::toEnum<ImageType>(image_type), capture_settings);
+                }
+            }
+        }
     }
 }
 

@@ -40,7 +40,7 @@ public:
         Utils::getSetMinLogLevel(true, 100);
 
         DirectCancelableBase cancellable(controller, &vehicle);
-        controller->setOffboardMode(true);
+        controller->enableApiControl(true);
         controller->armDisarm(true, cancellable);
         controller->takeoff(10, cancellable);
 

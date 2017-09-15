@@ -36,7 +36,7 @@ public:
     struct YawMode {
         bool is_rate;
         float yaw_or_rate;
-        MSGPACK_DEFINE_ARRAY(is_rate, yaw_or_rate);
+        MSGPACK_DEFINE_MAP(is_rate, yaw_or_rate);
     
         YawMode()
         {}
@@ -53,21 +53,21 @@ public:
     };
 
     struct Vector3r {
-        msr::airlib::real_T x_ = 0, y_ = 0, z_ = 0;
-        MSGPACK_DEFINE_ARRAY(x_, y_, z_);
+        msr::airlib::real_T x_val = 0, y_val = 0, z_val = 0;
+        MSGPACK_DEFINE_MAP(x_val, y_val, z_val);
 
         Vector3r()
         {}
 
         Vector3r(const msr::airlib::Vector3r& s)
         {
-            x_ = s.x();
-            y_ = s.y();
-            z_ = s.z();
+            x_val = s.x();
+            y_val = s.y();
+            z_val = s.z();
         }
         msr::airlib::Vector3r to() const
         {
-            return msr::airlib::Vector3r(x_, y_, z_);
+            return msr::airlib::Vector3r(x_val, y_val, z_val);
         }
     };
 
@@ -79,7 +79,7 @@ public:
         msr::airlib::real_T penetration_depth = 0;
         msr::airlib::TTimePoint time_stamp = 0;
 
-        MSGPACK_DEFINE_ARRAY(has_collided, penetration_depth, time_stamp, normal, impact_point, position);
+        MSGPACK_DEFINE_MAP(has_collided, penetration_depth, time_stamp, normal, impact_point, position);
         
         CollisionInfo()
         {}
@@ -102,29 +102,29 @@ public:
     };
 
     struct Quaternionr {
-        msr::airlib::real_T w_, x_, y_, z_;
-        MSGPACK_DEFINE_ARRAY(w_, x_, y_, z_);
+        msr::airlib::real_T w_val, x_val, y_val, z_val;
+        MSGPACK_DEFINE_MAP(w_val, x_val, y_val, z_val);
 
         Quaternionr()
         {}
 
         Quaternionr(const msr::airlib::Quaternionr& s)
         {
-            w_ = s.w();
-            x_ = s.x();
-            y_ = s.y();
-            z_ = s.z();
+            w_val = s.w();
+            x_val = s.x();
+            y_val = s.y();
+            z_val = s.z();
         }
         msr::airlib::Quaternionr to() const
         {
-            return msr::airlib::Quaternionr(w_, x_, y_, z_);
+            return msr::airlib::Quaternionr(w_val, x_val, y_val, z_val);
         }
     };
 
     struct GeoPoint {
         double latitude = 0, longitude = 0;
         float altitude = 0;
-        MSGPACK_DEFINE_ARRAY(latitude, longitude, altitude);
+        MSGPACK_DEFINE_MAP(latitude, longitude, altitude);
 
         GeoPoint()
         {}
@@ -146,8 +146,10 @@ public:
         float pitch = 0, roll = 0, throttle = 0, yaw = 0;
         unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, 
             switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
+        bool is_initialized = false; //is RC connected?
+        bool is_valid = false; //must be true for data to be valid
 
-        MSGPACK_DEFINE_ARRAY(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8);
+        MSGPACK_DEFINE_MAP(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8, is_initialized, is_valid);
 
         RCData()
         {}
@@ -167,6 +169,8 @@ public:
             switch6 = s.switch6;
             switch7 = s.switch7;
             switch8 = s.switch8;
+            is_initialized = s.is_initialized;
+            is_valid = s.is_valid;
 
         }
         msr::airlib::RCData to() const
@@ -185,6 +189,8 @@ public:
             d.switch6 = switch6;
             d.switch7 = switch7;
             d.switch8 = switch8;
+            d.is_initialized = is_initialized;
+            d.is_valid = is_valid;
             
             return d;
         }
@@ -192,11 +198,11 @@ public:
 
     struct ImageRequest {
         uint8_t camera_id;
-        msr::airlib::VehicleCameraBase::ImageType_ image_type;
+        msr::airlib::VehicleCameraBase::ImageType image_type;
         bool pixels_as_float;
         bool compress;
 
-        MSGPACK_DEFINE_ARRAY(camera_id, image_type, pixels_as_float, compress);
+        MSGPACK_DEFINE_MAP(camera_id, image_type, pixels_as_float, compress);
 
         ImageRequest()
         {}
@@ -204,7 +210,7 @@ public:
         ImageRequest(const msr::airlib::DroneControllerBase::ImageRequest& s)
         {
             camera_id = s.camera_id;
-            image_type = s.image_type.toEnum();
+            image_type = s.image_type;
             pixels_as_float = s.pixels_as_float;
             compress = s.compress;
         }
@@ -241,7 +247,9 @@ public:
     };
 
     struct ImageResponse {
-        std::vector<uint8_t> image_data;
+        std::vector<uint8_t> image_data_uint8;
+        std::vector<float> image_data_float;
+
         Vector3r camera_position;
         Quaternionr camera_orientation;
         msr::airlib::TTimePoint time_stamp;
@@ -249,38 +257,56 @@ public:
         bool pixels_as_float;
         bool compress;
         int width, height;
+        msr::airlib::VehicleCameraBase::ImageType image_type;
 
-        MSGPACK_DEFINE_ARRAY(image_data, camera_position, camera_orientation, time_stamp, message, pixels_as_float, compress, width, height);
+        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, 
+            camera_orientation, time_stamp, message, pixels_as_float, compress, width, height, image_type);
 
         ImageResponse()
         {}
 
         ImageResponse(const msr::airlib::VehicleCameraBase::ImageResponse& s)
         {
-            image_data = s.image_data;
+            pixels_as_float = s.pixels_as_float;
+            
+            image_data_uint8 = s.image_data_uint8;
+            image_data_float = s.image_data_float;
+
+            //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
+            if (image_data_uint8.size() == 0)
+                image_data_uint8.push_back(0);
+            if (image_data_float.size() == 0)
+                image_data_float.push_back(0);
+
             camera_position = Vector3r(s.camera_position);
             camera_orientation = Quaternionr(s.camera_orientation);
             time_stamp = s.time_stamp;
             message = s.message;
-            pixels_as_float = s.pixels_as_float;
             compress = s.compress;
             width = s.width;
             height = s.height;
+            image_type = s.image_type;
         }
 
         msr::airlib::VehicleCameraBase::ImageResponse to() const
         {
             msr::airlib::VehicleCameraBase::ImageResponse d;
 
-            d.image_data = image_data;
+            d.pixels_as_float = pixels_as_float;
+
+            if (! pixels_as_float)
+                d.image_data_uint8 = image_data_uint8;
+            else
+                d.image_data_float = image_data_float;
+
             d.camera_position = camera_position.to();
             d.camera_orientation = camera_orientation.to();
             d.time_stamp = time_stamp;
             d.message = message;
-            d.pixels_as_float = pixels_as_float;
             d.compress = compress;
             d.width = width;
             d.height = height;
+            d.image_type = image_type;
 
             return d;
         }
@@ -311,7 +337,7 @@ public:
 MSGPACK_ADD_ENUM(msr::airlib::DrivetrainType);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::SafetyViolationType_);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::ObsAvoidanceStrategy);
-MSGPACK_ADD_ENUM(msr::airlib::VehicleCameraBase::ImageType_);
+MSGPACK_ADD_ENUM(msr::airlib::VehicleCameraBase::ImageType);
 
 
 #endif

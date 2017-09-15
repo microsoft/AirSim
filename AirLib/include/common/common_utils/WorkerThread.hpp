@@ -264,7 +264,7 @@ private:
                     pending->execute();
                 }
                 catch (std::exception& e) {
-                    Utils::DebugBreak();
+                    //Utils::DebugBreak();
                     Utils::log(Utils::stringf("WorkerThread caught unhandled exception: %s", e.what()), Utils::kLogLevelError);
                 }
 

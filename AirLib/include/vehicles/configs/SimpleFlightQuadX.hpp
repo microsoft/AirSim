@@ -21,7 +21,7 @@ public:
 protected:
     virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) override
     {
-        /******* Below is same config as Pixhawk generic model ********/
+        /******* Below is same config as PX4 generic model ********/
 
         //set up arm lengths
         //dimensions are for F450 frame: http://artofcircuits.com/product/quadcopter-frame-hj450-with-power-distribution

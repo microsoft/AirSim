@@ -87,7 +87,7 @@ echo "If you are using your own environment, update plugin using,"
 echo "rsync -t -r Unreal/Plugins path/to/MyUnrealProject"
 echo ""
 echo "For help see:"
-echo "https://github.com/Microsoft/AirSim/blob/master/docs/linux_build.md"
+echo "https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md"
 echo "=================================================================="
 
 

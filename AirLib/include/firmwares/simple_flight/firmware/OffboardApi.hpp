@@ -116,7 +116,7 @@ public:
             is_api_timedout_ = false;
             return true;
         } else {
-            message = "requestControl() must be called before using API control";
+            message = "requestApiControl() must be called before using API control";
             comm_link_->log(message, ICommLink::kLogLevelError);
             return false;
         }

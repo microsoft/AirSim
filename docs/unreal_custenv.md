@@ -1,53 +1,27 @@
-# Setting up custom Unreal environment for AirSim
+# Creating and Setting Up Unreal Environment
+This page contains the complete instructions start to finish for setting up Unreal environment with AirSim. For demonstration, we will use a freely downloadable environment from [Unreal Marketplace](https://www.unrealengine.com/marketplace) called Landscape Mountain but the steps are same for any other environments. You can also view these steps performed in [Unreal AirSim Setup Video](https://youtu.be/1oY8Qu5maQQ).
 
-This page contains the complete instructions start to finish for setting up a free downloadable unreal environment
-with AirSim.  This document goes with the [Unreal AirSim Setup Video](https://youtu.be/1oY8Qu5maQQ).
+## Note for Linux Users
+There is no `Epic Games Launcher` for Linux which means that if you need to create custom environment, you will need Windows machine to do that. Once you have Unreal project folder, just copy it over to your Linux machine. 
 
-First, make sure Unreal is installed as per [build instructions](build.md) then make sure the 4.16 version 
-is set as the `current` version in the Epic Games Launcher, like this:
+## Step by Step Instructions
 
-![current version](images/current_version.png)
-
-Next from the `Epic Games Launcher` click the Learn tab then scroll down and find `Landscape Mountains`.
-
-Click `Create Project` and download this content.  It is about 2 gigabytes.
+1. Make sure AirSim is built and Unreal 4.16 is installed as described in [build instructions](build_windows.md).
+2. In `Epic Games Launcher` click the Learn tab then scroll down and find `Landscape Mountains`. Click the `Create Project` and download this content (~2GB download).
 
 ![current version](images/landscape_mountains.png)
 
-Now open `LandscapeMountains.uproject`, it should launch the Unreal Editor.
+3. Open `LandscapeMountains.uproject`, it should launch the Unreal Editor.
 
 ![unreal editor](images/unreal_editor.png)
 
-Now from the `File menu` select `New C++ class`, leave default `None` on the type of class, click `Next`, leave default name `MyClass`, and click `Create Class`.
+4. From the `File menu` select `New C++ class`, leave default `None` on the type of class, click `Next`, leave default name `MyClass`, and click `Create Class`. We need to do this because Unreal requires at least one source file in project. It should trigger compile and open up Visual Studio solution `LandscapeMountains.sln`.
 
-This turns the Landscape Mountains content only project into a C++ project (which we need so we can add the AirSim plugin).
+5. Go to your folder for AirSim repo and copy `Unreal\Plugins` folder in to your `LandscapeMountains` folder. This way now your own Unreal project has AirSim plugin.
 
-It should compile that new C++ code and then it will open the resulting Visual Studio solution `LandscapeMountains.sln`.
+6. Edit the `LandscapeMountains.uproject` so that it looks like this
 
-Having followed the AirSim [build instructions](build.md) you should have run `build.cmd` so you can add the following script, 
-let's call it `update_airsim.cmd` to your Landscape Mountains project, be sure to fix the `AIRSIM` environment variable so it points to 
-the location of your AirSim git repo that you built already.
-
-````
-pushd %~dp0
-set AIRSIM=D:\git\AirSim
-if NOT exist %AIRSIM%\Unreal\Plugins\AirSim goto :nobits
-if not exist Plugins\AirSim mkdir Plugins\AirSim
-robocopy /MIR %AIRSIM%\Unreal\Plugins\AirSim Plugins\AirSim 
-goto :end
-:nobits
-echo Could not find %AIRSIM%\AirSim\Unreal\Plugins\AirSim
-echo Please run build.cmd in the AirSim directory.
-:end
-popd
-pause
-````
-
-Now run this script and make sure it succeeded.  You should now see a `~\Plugins\AirSim` folder in your landscape mountains project folder.
-
-Now edit the `LandscapeMountains.uproject` so that it looks like this
-
-````
+```
 {
 	"FileVersion": 3,
 	"EngineAssociation": "4.16",
@@ -75,75 +49,50 @@ Now edit the `LandscapeMountains.uproject` so that it looks like this
 		}
 	]
 }
-````
+```
 
-Close Visual Studio and the  `Unreal Editor` and right click the LandscapeMountains.uproject in Windows Explorer
-and select `Generate Visual Studio Project Files`.  This will pick up and incorporate the new plugin we just copied.
+7. Close Visual Studio and the  `Unreal Editor` and right click the LandscapeMountains.uproject in Windows Explorer and select `Generate Visual Studio Project Files`.  This step detects all plugins and source files in your Unreal project and generates `.sln` file for Visual Studio.
 
 ![regen](images/regen_sln.png)
 
-If the `Generate Visual Studio Project Files` option is missing you may need to reboot your Windows machine
-for the Unreal Shell extension to get loaded.  If it is still missing then open the LandscapeMountains.uproject in the
-Unreal Editor and select `Refresh Visual Studio Project` from the `File` menu.
+Tip: If the `Generate Visual Studio Project Files` option is missing you may need to reboot your machine for the Unreal Shell extensions to take effect.  If it is still missing then open the LandscapeMountains.uproject in the Unreal Editor and select `Refresh Visual Studio Project` from the `File` menu.
 
-Reopen `LandscapeMountains.sln` in Visual Studio, and make sure "DebugGame Editor" and "Win64" build configuration is the active build configuration.
+8. Reopen `LandscapeMountains.sln` in Visual Studio, and make sure "DebugGame Editor" and "Win64" build configuration is the active build configuration.
 
 ![build config](images/vsbuild_config.png)
 
-Select `Rebuild Solution` from the `Build` menu.
-
-Now plug in your `Pixhawk hardware` that that has been configured using QGroundControl to run in `HIL mode` by selecting `HIL Quadrocopter-X` from the AirFrames.
-See [px4.md](px4.md) or [sitl.md](sitl.md) for PX4 instructions.
-
-Press `F5` to `run`.   This will run the Visual Studio debugger, and it you should see the `Unreal Editor` loading.  The unreal game is not running yet.
-This is a handy mode that lets you edit the game content in the Unreal Editor and debug the game using Visual Studio debugger.
-
-When you click Play AirSim will create a settings file in ~/Documents/AirSim/settings.json. You can view the available settings [here](settings.md).
-
-Now find the `PlayerStart` object in the `World Outliner` and set the location to this:
+9. Press `F5` to `run`. This will start the Unreal Editor. The Unreal Editor allows you to edit the environment, assets and other game related settings. First thing you want to do in your environment is set up `PlayerStart` object. In Landscape Mountains environment, `PlayerStart` object already exist and you can find it in the `World Outliner`. Make sure its location is setup as shown. This is where AirSim plugin will create and place the vehicle. If its too high up then vehicle will fall down as soon as you press play giving potentially random behaviour.
 
 ![lm_player_start_pos.png](images/lm_player_start_pos.png)
 
-and delete Player Start_2 through 13.
-
-Then using `Window/World Settings`, set the `GameMode Override` to `AirSimGameMode`:
+10. In `Window/World Settings` as shown below, set the `GameMode Override` to `AirSimGameMode`:
 
 ![sim_game_mode.png](images/sim_game_mode.png)
 
-Now be sure to `Save` these edits, then hit the Play button in the Unreal Editor.
+11. Be sure to `Save` these edits. Hit the Play button in the Unreal Editor. See [how to use AirSim](../#how-to-use-it).
 
-If your RC radio is hooked up you should beable to flying. 
-Note: the PX4 allows you to `arm` the drone for take off by holding  the sticks down and to the center.
+Congratulations! You are now running AirSim in your own Unreal environment.
 
-Note: that Unreal steals the mouse, and we don't draw one.  So to get your mouse back just use Alt+TAB to switch to a different window.
+## FAQ
 
-If something doesn't work, please first check the [FAQ](faq.md) then if you don't find the answer there,
-turn on C++ exceptions from the Exceptions window:
+#### What are other cool environments?
+[Unreal Marketplace](https://www.unrealengine.com/marketplace) has dozens of prebuilt extra-ordinarily detailed [environments](https://www.unrealengine.com/marketplace/content-cat/assets/environments) ranging from Moon to Mars and everything in between. The one we have used for testing is called [Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) 
+but you can use any environment. Another free environment is [Infinity Blade series](https://www.unrealengine.com/marketplace/infinity-blade-plain-lands). Alternatively, if you look under the Learn tab in Epic Game Launcher, you will find many free samples that you can use. One of our favorites is "A Boy and His Kite" which is a 100 square miles of highly detailed environment (caution: you will need *very* beefy PC to run it!).
 
-![exceptions](images/exceptions.png)
+#### When I press Play button some kind of video starts instead of my vehicle.
+If the environment comes with MatineeActor, delete it to avoid any startup demo sequences. There might be other ways to remove it as well, for example, click on Blueprints button, then Level Blueprint and then look at Begin Play event in Event Graph. You might want to disconnect any connections that may be starting "matinee".
 
-and copy the stack trace of all exceptions you see there during execution that look relevant (for example, there might be an initial 
-exception from VSPerf140 that you can ignore) then paste these call stacks into a new AirSim github issue, thanks.
+#### Is there easy way to sync code in my Unreal project with code in AirSim repo?
+Sure, there is! You can find bunch of `.bat` files (for linux, `.sh`) in `AirSim\Unreal\Environments\Blocks`. Just copy them over to your own Unreal project. Most of these are quite simple and self explanatory.
 
+#### I get some error about map.
+You might have to set default map for your project. For example, if you are using Modular Neighborhood Pack, set the Editor Starter Map as well as Game Default Map to Demo_Map in Project Settings > Maps & Modes.
 
-# Generalized Instructions
+#### I see "Add to project" option for environment but not "Create project" option.
+In this case, create a new blank C++ project with no Starter Content and add your environment in to it.
 
-So to sum up, to run the AirSim, you need an environment and its very easy to create one! [Unreal Marketplace](https://www.unrealengine.com/marketplace) has dozens of prebuilt extra-ordinarily detailed [environments](https://www.unrealengine.com/marketplace/content-cat/assets/environments) ranging from Moon to Mars and everything in between. The one we have used for testing is called [Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) 
-but you can use any environment.
-  1. Either purchase an environment from Unreal Marketplace or choose one of the free ones such as [Infinity Blade series](https://www.unrealengine.com/marketplace/infinity-blade-plain-lands). 
-  or the [Landscape Mountains](https://www.unrealengine.com/blog/new-on-marketplace-landscape-mountains).
-  Alternatively, if you look under the Learn tab in Epic Game Launcher, you will find many free samples that you can use. One of our favorites is "A Boy and His Kite" which is a 100 square miles of highly detailed environment (caution: you will need *very* beefy PC to run it!).
-  2. Once you have the environment, you can simply go to the Library tab of the Epic Game Launcher and add in to any project you like. We recommend creating a new blank C++ project with no Starter Content and add your environment in to it.
-  3. If the environment comes with MatineeActor, delete it to avoid any startup demo sequences. There might be other ways to remove it as well, for example, click on Blueprints button, then Level Blueprint and then look at Begin Play event in Event Graph. You might want to disconnect any connections that may be starting "matinee".
-  4. You might have to set default map for your project. For example, if you are using Modular Neighborhood Pack, set the Editor Starter Map as well as Game Default Map to Demo_Map in Project Settings > Maps & Modes..
-
-## Install the AirSim Plugin
-### Copy plugins folder
-  Copy the `Unreal\Plugins` folder from the build you did in the above section into the root of your Unreal project's folder. The overall structure should look something like this: 
-
-### Enable plugin for your Unreal project
-
-In your Unreal project's .uproject file, add the key `AdditionalDependencies` to the "Modules" object
+#### I already have my own Unreal project. How do I use AirSim with it?
+Copy the `Unreal\Plugins` folder from the build you did in the above section into the root of your Unreal project's folder. In your Unreal project's .uproject file, add the key `AdditionalDependencies` to the "Modules" object
 as we showed in the `LandscapeMountains.uproject` above.
    ```
 "AdditionalDependencies": [
@@ -160,15 +109,4 @@ and the `Plugins` section to the top level object:
         ]      
   ```
 
-### Ready, Set, Go!
-You are all ready to go now! 
-
-1. Right click on the Unreal project .uproject file, then Generate Visual Studio Project files. 
-2. Double click on .sln file to open the solution. 
-3. Hit F5.
-4. After Unreal Editor comes up, go to the World settings and select Game Mode = AirSimGameMode.
-5. Make sure your environment has a Player Start component or add one. This is where the quadrotor will be placed.
-6. Hit Play button.
-
-Congratulations! You are now running AirSim in your own Unreal environment.
 

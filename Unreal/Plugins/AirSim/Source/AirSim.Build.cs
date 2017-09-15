@@ -15,11 +15,21 @@ public class AirSim : ModuleRules
 
     private string AirLibPath
     {
-        get { return Path.GetFullPath(Path.Combine(ModulePath, "AirLib")); }
+        get { return Path.Combine(ModulePath, "AirLib"); }
     }
     private string AirSimPluginPath
     {
-        get { return Path.GetFullPath(Path.Combine(ModulePath, "..")); }
+        get { return Directory.GetParent(ModulePath).FullName; }
+    }
+    private string ProjectBinariesPath
+    {
+        get { return Path.Combine(
+                Directory.GetParent(AirSimPluginPath).Parent.FullName, "Binaries");
+        }
+    }
+    private string AirSimPluginDependencyPath
+    {
+        get { return Path.Combine(AirSimPluginPath, "Dependencies"); }
     }
 
     private enum CompileMode
@@ -66,7 +76,7 @@ public class AirSim : ModuleRules
         //below is no longer supported in 4.16
         bEnableExceptions = true;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "RenderCore", "RHI" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
@@ -87,16 +97,21 @@ public class AirSim : ModuleRules
             // for SHGetFolderPath.
             PublicAdditionalLibraries.Add("Shell32.lib");
 
-            // XInput for JoyStick, make sure to delay load this because we use generated DLL from x360ce
-            PublicDelayLoadDLLs.Add("xinput9_1_0.dll");
-            //Lib for the xinput DLL
-            //this should be in path, typically at C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64
-            //typically gets installed with Visual Studio
-            PublicAdditionalLibraries.Add("xinput9_1_0.lib");
-
-            RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(AirSimPluginPath, "Dependencies", "x360ce", "xinput9_1_0.dll")));
-            RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(AirSimPluginPath, "Dependencies", "x360ce", "x360ce.ini")));
+            //for joystick support
+            PublicAdditionalLibraries.Add("dinput8.lib");
+            PublicAdditionalLibraries.Add("dxguid.lib");
         }
+    }
+
+    static void CopyFileIfNewer(string srcFilePath, string destFolder)
+    {
+        FileInfo srcFile = new FileInfo(srcFilePath);
+        FileInfo destFile = new FileInfo(Path.Combine(destFolder, srcFile.Name));
+        if (!destFile.Exists || srcFile.LastWriteTime > destFile.LastWriteTime)
+        {
+            srcFile.CopyTo(destFile.FullName, true);
+        }
+        //else skip
     }
 
     private bool LoadAirSimDependency(ReadOnlyTargetRules Target, string LibName, string LibFileName)

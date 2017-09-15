@@ -1,32 +1,31 @@
 # Camera Views
 
-The camera views that are shown on screen are the camera views you can fetch via the [simGetImage API](apis.md).
+The camera views that are shown on screen are the camera views you can fetch via the [simGetImages API](image_apis.md).
 
 ![Cameras](images/cameras.png)
 
-From left to right is the depth view, segmentation view and the FPV view.
+From left to right is the depth view, segmentation view and the FPV view. See [Image APIs](image_apis.md) for description of various available views.
 
-## Depth View
+## Turning ON/OFF Views
 
-The depth view provides a ground truth depth map image.  This depth is computed from the 3D model information and therefore can
-be used to test any other algorithm that tries to compute depth from the images.
+Press F1 key to see keyboard shortcuts for turning on/off any or all views. You can also select various view modes there, such as "Fly with Me" mode, FPV mode and "Ground View" mode.
 
-## Segmentation View
+## Configuring Sub-Windows
 
-This view randomly colors objects in the scene based on information on how the 3D model was built.  These colors are currently
-random, so they contain no semantic tagging.  For example, in the above picture the hedge in the forground is made up of separate
-hedge segments so each segment gets a different color as a result, even though it is the same type of hedge.
+Now you can select what is shown by each of above sub windows. For instance, you can chose to show surface normals in first window (instead of depth) and disparity in second window (instead of segmentation). Below is the settings value you can use in [settings.json](settings.md):
 
-If you want your Unreal environment to provide colors that are meaningful, then override FlyingPawn::setupStencilIDs() function or 
-assign proper values in CustomDepthStencilValue property in object browser window in Unreal Editor, then remove the random 
-assignment that is happening in AFlyingPawn::setStencilIDs.
+```
+{
+  "SubWindows": [
+	{"Index": 1, "ImageType": 5},
+	{"Index": 2, "ImageType": 3}
+  ]
+}
+```
 
-## FPV View
+## Performance Impact
 
-This view is simulating a fixed forward pointing camera on the drone.  Note however, that this camera switchs places with the
-main game view if the user presses '[' or ']'.  
-
-## Performance
+*Note*: This section is outdated and has not been updated for new performance enhancement changes.
 
 Now rendering these views does impact the FPS performance of the game, since this is additional work for the GPU.  The following shows the impact on FPS when you open these views.
 
@@ -42,6 +41,6 @@ without any problems with all views open, and with 3 python scripts running
 to capture each view type.  But there was one stall during this flight, but it
 recovered gracefully and completed the path.  So it was right on the limit.
 
-The following shows the impact on CPU, perhaps a bit surprizingly, the CPU impact is also non trivial.
+The following shows the impact on CPU, perhaps a bit surprisingly, the CPU impact is also non trivial.
 
 ![fps](images/cpu_views.png)

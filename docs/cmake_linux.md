@@ -1,4 +1,4 @@
-# Installing cmake
+# Installing cmake on Linux
 
 If you don't have cmake version 3.5 (for example, 3.2.2 is the default on Ubuntu 14) you can run the following:
 

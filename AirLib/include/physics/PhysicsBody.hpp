@@ -178,8 +178,10 @@ public: //methods
     }
     void setKinematics(const Kinematics::State& state)
     {
-        if (VectorMath::hasNan(state.twist.linear))
-            Utils::DebugBreak();
+        if (VectorMath::hasNan(state.twist.linear)) {
+            //Utils::DebugBreak();
+            Utils::log("Linear velocity had NaN!", Utils::kLogLevelError);
+        }
 
         kinematics_.setState(state);
     }

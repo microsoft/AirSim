@@ -61,6 +61,9 @@ protected: //settings
     bool enable_collision_passthrough;
     RecordingSettings recording_settings;
     std::string clock_type;
+    float settings_version_actual;
+    float settings_version_minimum = 1;
+
 
 private:
     void readSettings();

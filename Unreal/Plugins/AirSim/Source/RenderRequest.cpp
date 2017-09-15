@@ -17,8 +17,8 @@ RenderRequest::~RenderRequest()
 
 // read pixels from render target using render thread, then compress the result into PNG
 // argument on the thread that calls this method.
-void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<uint8>& image_data, 
-    bool pixels_as_float, bool compress, int& width, int& height)
+void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<uint8>& image_data_uint8, 
+    TArray<float>& image_data_float, bool pixels_as_float, bool compress, int& width, int& height)
 {
     data->render_target = renderTarget;
     if (!pixels_as_float)
@@ -64,13 +64,13 @@ void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<u
     if (!pixels_as_float) {
         if (data->width != 0 && data->height != 0) {
             if (data->compress)
-                FImageUtils::CompressImageArray(data->width, data->height, data->bmp, image_data);
+                FImageUtils::CompressImageArray(data->width, data->height, data->bmp, image_data_uint8);
             else {
                 for (const auto& item : data->bmp) {
-                    image_data.Add(item.R);
-                    image_data.Add(item.G);
-                    image_data.Add(item.B);
-                    image_data.Add(item.A);
+                    image_data_uint8.Add(item.R);
+                    image_data_uint8.Add(item.G);
+                    image_data_uint8.Add(item.B);
+                    image_data_uint8.Add(item.A);
                 }
             }
         }
@@ -78,9 +78,7 @@ void RenderRequest::getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<u
     else {
         for (const auto& item : data->bmp_float) {
             float fval = item.R.GetFloat();
-            const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&fval);
-            for (int i = 0; i < sizeof(float); ++i)
-                image_data.Add(*(bytes + i));
+            image_data_float.Add(fval);
         }
     }
 }

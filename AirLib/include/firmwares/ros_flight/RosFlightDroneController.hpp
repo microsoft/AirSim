@@ -97,7 +97,7 @@ public:
         comm_link_->getStatusMessages(messages);
     }
 
-    virtual bool isOffboardMode() override
+    virtual bool isApiControlEnabled() override
     {
         //TODO: support offboard mode
         return false;
@@ -108,10 +108,10 @@ public:
         return true;
     }
 
-    virtual void setOffboardMode(bool is_set) override
+    virtual void enableApiControl(bool is_enabled) override
     {
         //TODO: implement this
-        unused(is_set);
+        unused(is_enabled);
     }
 
     virtual void setSimulationMode(bool is_set) override
@@ -156,7 +156,7 @@ public:
 
     void setRCData(const RCData& rcData) override
     {
-        if (rcData.is_connected) {
+        if (rcData.is_valid) {
             board_->setInputChannel(0, angleToPwm(rcData.roll)); //X
             board_->setInputChannel(1, angleToPwm(rcData.yaw)); //Y
             board_->setInputChannel(2, thrustToPwm(rcData.throttle)); //F

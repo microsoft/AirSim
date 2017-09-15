@@ -17,9 +17,9 @@ namespace msr { namespace airlib {
 class VehicleControllerBase : public ControllerBase {
 public:
     //tells the controller to switch from human operated mode to computer operated mode
-    virtual void setOffboardMode(bool is_set) = 0;
+    virtual void enableApiControl(bool is_enabled) = 0;
     virtual void setSimulationMode(bool is_set) = 0;
-    virtual bool isOffboardMode() = 0;
+    virtual bool isApiControlEnabled() = 0;
     virtual bool isSimulationMode() = 0;
 
     //if controller connects via USB/UDP and connection fails then this

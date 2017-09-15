@@ -38,7 +38,7 @@ public:
         BarometerBase::reset();
 
         pressure_factor_.reset();
-        correlated_noise_.reset();
+        //correlated_noise_.reset();
         uncorrelated_noise_.reset();
 
         freq_limiter_.reset();
@@ -97,7 +97,7 @@ private:
     BarometerSimpleParams params_;
 
     GaussianMarkov pressure_factor_;
-    GaussianMarkov correlated_noise_;
+    //GaussianMarkov correlated_noise_;
     RandomGeneratorGausianR uncorrelated_noise_;
 
     FrequencyLimiter freq_limiter_;

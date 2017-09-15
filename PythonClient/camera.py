@@ -1,6 +1,8 @@
 # use open cv to show new images from AirSim 
 
 from PythonClient import *
+# requires Python 3.5.3 :: Anaconda 4.4.0
+# pip install opencv-python
 import cv2
 import time
 import sys
@@ -14,19 +16,25 @@ for arg in sys.argv[1:]:
   cameraType = arg.lower()
 
 cameraTypeMap = { 
- "depth": AirSimImageType.Depth,
+ "depth": AirSimImageType.DepthVis,
  "segmentation": AirSimImageType.Segmentation,
  "seg": AirSimImageType.Segmentation,
  "scene": AirSimImageType.Scene,
+ "disparity": AirSimImageType.DisparityNormalized,
+ "normals": AirSimImageType.SurfaceNormals
 }
 
 if (not cameraType in cameraTypeMap):
   printUsage()
   sys.exit(0)
 
-print cameraTypeMap[cameraType]
+print (cameraTypeMap[cameraType])
 
 client = AirSimClient('127.0.0.1')
+client.confirmConnection()
+client.enableApiControl(True)
+client.armDisarm(True)
+client.takeoff()
 
 help = False
 
@@ -47,7 +55,7 @@ while True:
         print("Camera is not returning image, please check airsim for error messages")
         sys.exit(0)
     else:
-        png = cv2.imdecode(rawImage, cv2.IMREAD_UNCHANGED)
+        png = cv2.imdecode(AirSimClient.stringToUint8Array(rawImage), cv2.IMREAD_UNCHANGED)
         cv2.putText(png,'FPS ' + str(fps),textOrg, fontFace, fontScale,(255,0,255),thickness)
         cv2.imshow("Depth", png)
 

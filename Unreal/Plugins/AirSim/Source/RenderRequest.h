@@ -39,7 +39,7 @@ public:
 
     // read pixels from render target using render thread, then compress the result into PNG
     // argument on the thread that calls this method.
-    void getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<uint8>& image_data, bool pixels_as_float, 
-        bool compress, int& width, int& height);
+    void getScreenshot(UTextureRenderTarget2D* renderTarget, TArray<uint8>& image_data_uint8, 
+        TArray<float>& image_data_float, bool pixels_as_float, bool compress, int& width, int& height);
     void ExecuteTask();
 };

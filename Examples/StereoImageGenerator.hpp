@@ -61,9 +61,9 @@ public:
                 auto start_nanos = clock->nowNanos();
 
                 std::vector<ImageRequest> request = { 
-                    ImageRequest(0, ImageType_::Scene), 
-                    ImageRequest(1, ImageType_::Scene),
-                    ImageRequest(1, ImageType_::Depth, true)
+                    ImageRequest(0, ImageType::Scene), 
+                    ImageRequest(1, ImageType::Scene),
+                    ImageRequest(1, ImageType::DisparityNormalized, true)
                 };
                 const std::vector<ImageResponse>& response = client.simGetImages(request);
                 if (response.size() != 3) {
@@ -109,7 +109,7 @@ private:
     typedef msr::airlib::Quaternionr Quaternionr;
     typedef msr::airlib::DroneControllerBase::ImageRequest ImageRequest;
     typedef msr::airlib::VehicleCameraBase::ImageResponse ImageResponse;
-    typedef msr::airlib::VehicleCameraBase::ImageType_ ImageType_;
+    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
 
     std::string storage_dir_;
     bool spawn_ue4 = false;
@@ -156,26 +156,24 @@ private:
             std::string left_file_name = Utils::stringf("left_%06d.png", result.sample);
             std::string right_file_name = Utils::stringf("right_%06d.png", result.sample);
             std::string disparity_file_name  = Utils::stringf("disparity_%06d.pfm", result.sample);
-            saveImageToFile(result.response.at(0).image_data, 
+            saveImageToFile(result.response.at(0).image_data_uint8, 
                 FileSystem::combine(result.storage_dir_, right_file_name));
-            saveImageToFile(result.response.at(1).image_data, 
+            saveImageToFile(result.response.at(1).image_data_uint8, 
                 FileSystem::combine(result.storage_dir_, left_file_name));
 
-            std::vector<float> depth_data;
-            const auto& depth_raw = result.response.at(2).image_data;
-            for (int k = 0; k < depth_raw.size(); k += sizeof(float)) {
-                float pixel_float = *(reinterpret_cast<const float*>(&depth_raw[k]));
-                depth_data.push_back(pixel_float);
-            }
+            std::vector<float> disparity_data = result.response.at(2).image_data_float;
 
             //writeFilePFM(depth_data, response.at(2).width, response.at(2).height,
             //    FileSystem::combine(storage_dir_, Utils::stringf("depth_%06d.pfm", i)));
+            
+            //below is not needed because we get disparity directly
+            //convertToPlanDepth(depth_data, result.response.at(2).width, result.response.at(2).height);
+            //float f = result.response.at(2).width / 2.0f - 1;
+            //convertToDisparity(depth_data, result.response.at(2).width, result.response.at(2).height, f, 25 / 100.0f);
 
-            convertToPlanDepth(depth_data, result.response.at(2).width, result.response.at(2).height);
+            denormalizeDisparity(disparity_data, result.response.at(2).width);
 
-            float f = result.response.at(2).width / 2.0f - 1;
-            convertToDisparity(depth_data, result.response.at(2).width, result.response.at(2).height, f, 25 / 100.0f);
-            writeFilePFM(depth_data, result.response.at(2).width, result.response.at(2).height,
+            Utils::writePfmFile(disparity_data.data(), result.response.at(2).width, result.response.at(2).height,
                 FileSystem::combine(result.storage_dir_, disparity_file_name));
 
             (* result.file_list) << left_file_name << "," << right_file_name << "," << disparity_file_name << std::endl;
@@ -220,39 +218,10 @@ private:
         }
     }
 
-    // check whether machine is little endian
-    static int littleendian()
+    static void denormalizeDisparity(std::vector<float>& image_data, int width)
     {
-        int intval = 1;
-        unsigned char *uval = (unsigned char *)&intval;
-        return uval[0] == 1;
-    }
-
-    static void writeFilePFM(const std::vector<float>& image_data, int width, int height, std::string path, float scalef=1)
-    {
-        std::fstream file(path.c_str(), std::ios::out | std::ios::binary);
-
-        std::string bands;
-        float fvalue;       // scale factor and temp value to hold pixel value
-        bands = "Pf";   // grayscale
-
-        // sign of scalefact indicates endianness, see pfms specs
-        if(littleendian())
-            scalef = -scalef;
-
-        // insert header information 
-        file << bands   << "\n";
-        file << width   << " ";
-        file << height  << "\n";
-        file << scalef  << "\n";
-
-        if(bands == "Pf"){          // handle 1-band image 
-            for (int i=0; i < height; i++) {
-                for(int j=0; j < width; ++j){
-                    fvalue = image_data.at(i * width + j);
-                    file.write((char*) &fvalue, sizeof(fvalue));
-                }
-            }
+        for (int i = 0; i < image_data.size(); ++i) {
+            image_data[i] = image_data[i] * width;
         }
     }
 
