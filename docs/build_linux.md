@@ -12,6 +12,8 @@ It's super simple 1-2-3!
      # go to folder where you clone GitHub projects
      git clone -b 4.17 https://github.com/EpicGames/UnrealEngine.git
      cd UnrealEngine
+     # few times Epic folks broke the build so we will get commit that works
+     git checkout af96417313a908b20621a443175ba91683c238c8
      ./Setup.sh
      ./GenerateProjectFiles.sh
      make

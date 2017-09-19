@@ -64,6 +64,8 @@ To active this mode, edit [settings.json](settings.json) that you can find in yo
 }
 ```
 
+[Here's the Python code example](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py) to move camera around and capture images.
+
 If you are only interested in this mode, you might also want to take a look at [UnrealCV project](http://unrealcv.org/).
 
 ## How to Set Position and Orientation (Pose)?
