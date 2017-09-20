@@ -10,7 +10,7 @@ Our goal is to develop AirSim as a platform for AI research to experiment with d
 
 ## What's New
 
-AirSim has been going through massive revamping and new additions. It now has built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. AirSim now also generates [depth as well as disparity impages](image_apis.md) that is in camera plan. We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](release_notes.md).
+AirSim has been going through massive revamping and new additions. It now has built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. AirSim now also generates [depth as well as disparity impages](image_apis.md) that is in camera plan. We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](docs/release_notes.md).
 
 ## How to Get It
 
