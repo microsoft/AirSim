@@ -1,4 +1,4 @@
-#include "VehiclePawnBase.h"
+#include "VehiclePawnWrapper.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -8,26 +8,19 @@
 #include "NedTransform.h"
 
 
-AVehiclePawnBase::AVehiclePawnBase()
+VehiclePawnWrapper::VehiclePawnWrapper(APawn* pawn, const std::vector<APIPCamera*>& cameras)
+    : pawn_(pawn), cameras_(cameras)
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collison_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
     if (!collison_display.Succeeded())
         collison_display_template = collison_display.Object;
     else
         collison_display_template = nullptr;
+
+    initialize();
 }
 
-void AVehiclePawnBase::PostInitializeComponents()
-{
-    Super::PostInitializeComponents();
-}
-
-void AVehiclePawnBase::BeginPlay()
-{
-    Super::BeginPlay();
-}
-
-void AVehiclePawnBase::setupCamerasFromSettings()
+void VehiclePawnWrapper::setupCamerasFromSettings()
 {
     typedef msr::airlib::Settings Settings;
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
@@ -58,7 +51,7 @@ void AVehiclePawnBase::setupCamerasFromSettings()
     }
 }
 
-void AVehiclePawnBase::createCaptureSettings(const msr::airlib::Settings& settings, APIPCamera::CaptureSettings& capture_settings)
+void VehiclePawnWrapper::createCaptureSettings(const msr::airlib::Settings& settings, APIPCamera::CaptureSettings& capture_settings)
 {
     typedef msr::airlib::Settings Settings;
 
@@ -73,14 +66,8 @@ void AVehiclePawnBase::createCaptureSettings(const msr::airlib::Settings& settin
     capture_settings.target_gamma = settings.getFloat("TargetGamma", capture_settings.target_gamma);
 }
 
-void AVehiclePawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-    state_ = initial_state_ = State();
 
-    Super::EndPlay(EndPlayReason);
-}
-
-void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
+void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
     // Deflect along the surface when we collide.
@@ -96,69 +83,69 @@ void AVehiclePawnBase::NotifyHit(class UPrimitiveComponent* MyComp, class AActor
     ++state_.collison_info.collison_count;
 }
 
-void AVehiclePawnBase::displayCollisonEffect(FVector hit_location, const FHitResult& hit)
+APawn* VehiclePawnWrapper::getPawn()
+{
+    return pawn_;
+}
+
+void VehiclePawnWrapper::displayCollisonEffect(FVector hit_location, const FHitResult& hit)
 {
     if (collison_display_template != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
-        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), collison_display_template, hit_location);
+        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(pawn_->GetWorld(), collison_display_template, hit_location);
         particles->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
     }
 }
 
-void AVehiclePawnBase::initialize()
+void VehiclePawnWrapper::initialize()
 {
     if (!NedTransform::isInitialized())
-        NedTransform::initialize(this);
+        NedTransform::initialize(pawn_);
 
     //set up key variables
-    home_point = msr::airlib::GeoPoint(HomeLatitude, HomeLongitude, HomeAltitude);
+    home_point_ = msr::airlib::GeoPoint(config.home_lattitude, config.home_longitude, config.home_altitude);
 
     //initialize state
-    this->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
+    pawn_->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
     initial_state_.ground_offset = FVector(0, 0, initial_state_.mesh_bounds.Z);
-    initial_state_.transformation_offset = this->GetActorLocation() - initial_state_.ground_offset;
-    ground_margin = FVector(0, 0, 20); //TODO: can we explain this experimental setting? 7 seems to be minimum
-    ground_trace_end = initial_state_.ground_offset + ground_margin; 
+    initial_state_.transformation_offset = pawn_->GetActorLocation() - initial_state_.ground_offset;
+    ground_margin_ = FVector(0, 0, 20); //TODO: can we explain pawn_ experimental setting? 7 seems to be minimum
+    ground_trace_end_ = initial_state_.ground_offset + ground_margin_; 
 
     initial_state_.start_location = getPosition();
     initial_state_.last_position = initial_state_.start_location;
     initial_state_.last_debug_position = initial_state_.start_location;
     initial_state_.start_rotation = getOrientation();
 
-    initial_state_.tracing_enabled = EnableTrace;
-    initial_state_.collisons_enabled = EnableCollisons;
-    initial_state_.passthrough_enabled = EnablePassthroughOnCollisons;
+    initial_state_.tracing_enabled = config.enable_trace;
+    initial_state_.collisons_enabled = config.enable_collisions;
+    initial_state_.passthrough_enabled = config.enable_passthrough_on_collisions;
 
     initial_state_.collison_info = CollisionInfo();
 
     initial_state_.was_last_move_teleport = false;
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
 
-    //call derived class reset which in turn should call base class reset
-    reset();
-}
-
-void AVehiclePawnBase::initializeForBeginPlay()
-{
-    //nothing to do in base
+    setupCamerasFromSettings();
 }
 
 
-APIPCamera* AVehiclePawnBase::getCamera(int index)
+APIPCamera* VehiclePawnWrapper::getCamera(int index)
 {
     //should be overridden in derived class
-    return nullptr;
+    return cameras_.at(index);
 }
 
-int AVehiclePawnBase::getCameraCount()
+int VehiclePawnWrapper::getCameraCount()
 {
-    return 0;
+    return cameras_.size();
 }
 
-void AVehiclePawnBase::reset()
+void VehiclePawnWrapper::reset()
 {
     state_ = initial_state_;
-    this->SetActorLocation(state_.start_location, false, nullptr, ETeleportType::TeleportPhysics);
-    this->SetActorRotation(state_.start_rotation, ETeleportType::TeleportPhysics);
+
+    pawn_->SetActorLocation(state_.start_location, false, nullptr, ETeleportType::TeleportPhysics);
+    pawn_->SetActorRotation(state_.start_rotation, ETeleportType::TeleportPhysics);
 
     //TODO: delete below
     //std::ifstream sim_log("C:\\temp\\mavlogs\\circle\\sim_cmd_006_orbit 5 1.txt.pos.txt");
@@ -172,46 +159,46 @@ void AVehiclePawnBase::reset()
     //plot(real_log, FColor::Yellow, Vector3r(0, 0, -3));
 }
 
-const AVehiclePawnBase::GeoPoint& AVehiclePawnBase::getHomePoint() const
+const VehiclePawnWrapper::GeoPoint& VehiclePawnWrapper::getHomePoint() const
 {
-    return home_point;
+    return home_point_;
 }
 
-const AVehiclePawnBase::CollisionInfo& AVehiclePawnBase::getCollisonInfo() const
+const VehiclePawnWrapper::CollisionInfo& VehiclePawnWrapper::getCollisonInfo() const
 {
     return state_.collison_info;
 }
 
-FVector AVehiclePawnBase::getPosition() const
+FVector VehiclePawnWrapper::getPosition() const
 {
-    return this->GetActorLocation(); // - state_.mesh_origin
+    return pawn_->GetActorLocation(); // - state_.mesh_origin
 }
 
-FRotator AVehiclePawnBase::getOrientation() const
+FRotator VehiclePawnWrapper::getOrientation() const
 {
-    return this->GetActorRotation();
+    return pawn_->GetActorRotation();
 }
 
-void AVehiclePawnBase::toggleTrace()
+void VehiclePawnWrapper::toggleTrace()
 {
     state_.tracing_enabled = !state_.tracing_enabled;
 
     if (!state_.tracing_enabled)
-        UKismetSystemLibrary::FlushPersistentDebugLines(this->GetWorld());
+        UKismetSystemLibrary::FlushPersistentDebugLines(pawn_->GetWorld());
     else {     
         state_.debug_position_offset = state_.current_debug_position - state_.current_position;
         state_.last_debug_position = state_.last_position;
     }
 }
 
-void AVehiclePawnBase::allowPassthroughToggleInput()
+void VehiclePawnWrapper::allowPassthroughToggleInput()
 {
     state_.passthrough_enabled = !state_.passthrough_enabled;
-    UAirBlueprintLib::LogMessage("EnablePassthroughOnCollisons: ", FString::FromInt(state_.passthrough_enabled), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage("enable_passthrough_on_collisions: ", FString::FromInt(state_.passthrough_enabled), LogDebugLevel::Informational);
 }
 
 
-void AVehiclePawnBase::plot(std::istream& s, FColor color, const Vector3r& offset)
+void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& offset)
 {
     using namespace msr::airlib;
 
@@ -225,7 +212,7 @@ void AVehiclePawnBase::plot(std::istream& s, FColor color, const Vector3r& offse
         Vector3r current_point(x, y, z);
         current_point += offset;
         if (!VectorMath::hasNan(last_point)) {
-            UKismetSystemLibrary::DrawDebugLine(this->GetWorld(), NedTransform::toNeuUU(last_point), NedTransform::toNeuUU(current_point), color, 0, 3.0F);
+            UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), NedTransform::toNeuUU(last_point), NedTransform::toNeuUU(current_point), color, 0, 3.0F);
         }
         last_point = current_point;
     }
@@ -233,16 +220,16 @@ void AVehiclePawnBase::plot(std::istream& s, FColor color, const Vector3r& offse
 }
 
 //parameters in NED frame
-AVehiclePawnBase::Pose AVehiclePawnBase::getPose() const
+VehiclePawnWrapper::Pose VehiclePawnWrapper::getPose() const
 {
     Vector3r position = NedTransform::toNedMeters(getPosition());
-    Quaternionr orientation = NedTransform::toQuaternionr(this->GetActorRotation().Quaternion(), true);
+    Quaternionr orientation = NedTransform::toQuaternionr(pawn_->GetActorRotation().Quaternion(), true);
     return Pose(position, orientation);
 }
 
-void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
+void VehiclePawnWrapper::setPose(const Pose& pose)
 {
-    //translate to new AVehiclePawnBase position & orientation from NED to NEU
+    //translate to new VehiclePawnWrapper position & orientation from NED to NEU
     FVector position = NedTransform::toNeuUU(pose.position);
     state_.current_position = position;
 
@@ -258,22 +245,27 @@ void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
     state_.was_last_move_teleport = enable_teleport;
 
     if (enable_teleport)
-        this->SetActorLocationAndRotation(position, orientation, false, nullptr, ETeleportType::TeleportPhysics);
+        pawn_->SetActorLocationAndRotation(position, orientation, false, nullptr, ETeleportType::TeleportPhysics);
     else
-        this->SetActorLocationAndRotation(position, orientation, true);
+        pawn_->SetActorLocationAndRotation(position, orientation, true);
 
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
-        UKismetSystemLibrary::DrawDebugLine(this->GetWorld(), state_.last_position, position, FColor::Purple, -1, 3.0f);
+        UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), state_.last_position, position, FColor::Purple, -1, 3.0f);
         state_.last_position = position;
     }
     else if (!state_.tracing_enabled) {
         state_.last_position = position;
     }
+
+}
+
+void VehiclePawnWrapper::setDebugPose(const Pose& debug_pose)
+{
     state_.current_debug_position = NedTransform::toNeuUU(debug_pose.position);
     if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
         FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
-            UKismetSystemLibrary::DrawDebugLine(this->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), -1, 10.0F);
+            UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), -1, 10.0F);
             UAirBlueprintLib::LogMessage("Debug Pose: ", debug_position.ToCompactString(), LogDebugLevel::Informational);
             state_.last_debug_position = debug_position;
         }
@@ -283,7 +275,7 @@ void AVehiclePawnBase::setPose(const Pose& pose, const Pose& debug_pose)
     }
 }
 
-bool AVehiclePawnBase::canTeleportWhileMove()  const
+bool VehiclePawnWrapper::canTeleportWhileMove()  const
 {
     //allow teleportation
     //  if collisons are not enabled
@@ -293,12 +285,5 @@ bool AVehiclePawnBase::canTeleportWhileMove()  const
     return !state_.collisons_enabled || (state_.collison_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
-AVehiclePawnBase::real_T AVehiclePawnBase::getMinZOverGround() const
-{
-    FVector location = this->GetActorLocation();
-    if (UAirBlueprintLib::HasObstacle(this, location, location - ground_trace_end))
-        return NedTransform::toNedMeters(location).z();
-    else
-        return Utils::max<float>();
-}
+
 

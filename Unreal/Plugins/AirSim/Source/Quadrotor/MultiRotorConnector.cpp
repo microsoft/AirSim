@@ -14,13 +14,14 @@
 
 #endif
 
+#include "FlyingPawn.h" 
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
 #include <exception>
 
 using namespace msr::airlib;
 
-MultiRotorConnector::MultiRotorConnector(AFlyingPawn* vehicle_pawn, 
+MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrapper, 
     msr::airlib::MultiRotorParams* vehicle_params, bool enable_rpc, 
     std::string api_server_address, uint16_t api_server_port,
     UManualPoseController* manual_pose_controller)
@@ -28,25 +29,25 @@ MultiRotorConnector::MultiRotorConnector(AFlyingPawn* vehicle_pawn,
     enable_rpc_ = enable_rpc;
     api_server_address_ = api_server_address;
     api_server_port_ = api_server_port;
-    vehicle_pawn_ = vehicle_pawn;
+    vehicle_pawn_wrapper_ = vehicle_pawn_wrapper;
     manual_pose_controller_ = manual_pose_controller;
 
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
-    FRotator rotation = vehicle_pawn_->GetActorRotation();
-    rotation.Roll = rotation.Pitch = 0;
-    vehicle_pawn_->SetActorRotation(rotation);
-    
-    vehicle_pawn_->initialize();
+    Pose pose = vehicle_pawn_wrapper->getPose();
+    float pitch, roll, yaw;
+    VectorMath::toEulerianAngle(pose.orientation, pitch, roll, yaw);
+    pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
+    vehicle_pawn_wrapper->setPose(pose);
 
     vehicle_params_ = vehicle_params;
 
-    vehicle_.initialize(vehicle_params_, vehicle_pawn_->getPose(), 
-        vehicle_pawn_->getHomePoint(), environment_);
+    vehicle_.initialize(vehicle_params_, vehicle_pawn_wrapper_->getPose(), 
+        vehicle_pawn_wrapper_->getHomePoint(), environment_);
 
     controller_ = static_cast<msr::airlib::DroneControllerBase*>(vehicle_.getController());
 
-    for (int camera_index = 0; camera_index < vehicle_pawn->getCameraCount(); ++camera_index) {
-        camera_connectors_.push_back(std::make_shared<VehicleCameraConnector>(vehicle_pawn->getCamera(camera_index)));
+    for (int camera_index = 0; camera_index < vehicle_pawn_wrapper_->getCameraCount(); ++camera_index) {
+        camera_connectors_.push_back(std::make_shared<VehicleCameraConnector>(vehicle_pawn_wrapper_->getCamera(camera_index)));
         controller_->simAddCamera(camera_connectors_.at(camera_index).get());
     }
 
@@ -144,11 +145,11 @@ void MultiRotorConnector::updateRenderedState()
     //Utils::log("------Render tick-------");
 
     //move collison info from rendering engine to vehicle
-    const CollisionInfo& collision_info = vehicle_pawn_->getCollisonInfo();
+    const CollisionInfo& collision_info = vehicle_pawn_wrapper_->getCollisonInfo();
     vehicle_.setCollisionInfo(collision_info);
 
     //update ground level
-    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_) {
+    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_wrapper_->getPawn()) {
         FVector delta_position;
         FRotator delta_rotation;
 
@@ -198,21 +199,23 @@ void MultiRotorConnector::updateRendering(float dt)
     }
 
     if (!VectorMath::hasNan(last_pose.position)) {
-        vehicle_pawn_->setPose(last_pose, last_debug_pose);
+        vehicle_pawn_wrapper_->setPose(last_pose);
+        vehicle_pawn_wrapper_->setDebugPose(last_debug_pose);
     }
 
     //update rotor animations
     for (unsigned int i = 0; i < rotor_count_; ++i) {
         RotorInfo* info = &rotor_info_[i];
-        vehicle_pawn_->setRotorSpeed(i, info->rotor_speed * info->rotor_direction);
+        static_cast<AFlyingPawn*>(vehicle_pawn_wrapper_->getPawn())->
+            setRotorSpeed(i, info->rotor_speed * info->rotor_direction);
     }
 
     for (auto i = 0; i < controller_messages_.size(); ++i) {
         UAirBlueprintLib::LogMessage(FString(controller_messages_[i].c_str()), TEXT(""), LogDebugLevel::Success, 30);
     }
 
-    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_) {
-        UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(vehicle_pawn_->getCollisonInfo().collison_count), LogDebugLevel::Failure);
+    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_wrapper_->getPawn()) {
+        UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(vehicle_pawn_wrapper_->getCollisonInfo().collison_count), LogDebugLevel::Failure);
     }
     else {
         //UAirBlueprintLib::LogMessage(TEXT("Collison (raw) Count:"), FString::FromInt(collision_response_info.collison_count_raw), LogDebugLevel::Unimportant);
@@ -266,7 +269,7 @@ void MultiRotorConnector::reset()
     //controller_->reset();
 
     rc_data_ = RCData();
-    vehicle_pawn_->reset();    //we do flier resetPose so that flier is placed back without collisons
+    vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisons
     vehicle_.reset();
 }
 
@@ -281,8 +284,8 @@ void MultiRotorConnector::update()
 void MultiRotorConnector::reportState(StateReporter& reporter)
 {
     // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
-    if (vehicle_pawn_ != nullptr) {
-        FVector unrealPosition = vehicle_pawn_->getPosition();
+    if (vehicle_pawn_wrapper_ != nullptr) {
+        FVector unrealPosition = vehicle_pawn_wrapper_->getPosition();
         reporter.writeValue("unreal pos", NedTransform::toVector3r(unrealPosition, 1.0f, false));
         vehicle_.reportState(reporter);
     }

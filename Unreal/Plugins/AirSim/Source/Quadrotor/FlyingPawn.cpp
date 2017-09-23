@@ -5,24 +5,22 @@
 #include "MultiRotorConnector.h"
 #include "common/Common.hpp"
 
-void AFlyingPawn::initialize()
-{
-    Super::initialize();
-}
 
 void AFlyingPawn::initializeForBeginPlay()
 {
-    Super::initializeForBeginPlay();
-
     //get references of components so we can use later
     setupComponentReferences();
 
     //set stencil IDs
     setStencilIDs();
 
-    setupInputBindings();
+    std::vector<APIPCamera*> cameras = {fpv_camera_right_, fpv_camera_left_};
+    wrapper_.reset(new VehiclePawnWrapper(this, cameras));
+}
 
-    setupCamerasFromSettings();
+VehiclePawnWrapper* AFlyingPawn::getVehiclePawnWrapper()
+{
+    return wrapper_.get();
 }
 
 void AFlyingPawn::setStencilIDs()
@@ -39,28 +37,6 @@ void AFlyingPawn::setStencilIDs()
             components[0]->MarkRenderStateDirty();
         }
     }
-}
-
-void AFlyingPawn::reset()
-{
-    Super::reset();
-}
-
-
-APIPCamera* AFlyingPawn::getCamera(int index)
-{
-    switch (index) {
-    case 0: return fpv_camera_right_; 
-    case 1: return fpv_camera_left_; 
-    default:
-        UAirBlueprintLib::LogMessageString("FlyingPawn doesn't have camera with index = ", std::to_string(index), LogDebugLevel::Failure);
-        return fpv_camera_right_;
-    }
-}
-
-int AFlyingPawn::getCameraCount()
-{
-    return 2;
 }
 
 void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
@@ -83,10 +59,4 @@ void AFlyingPawn::setupComponentReferences()
     for (auto i = 0; i < rotor_count; ++i) {
         rotating_movements_[i] = UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i));
     }
-}
-
-
-void AFlyingPawn::setupInputBindings()
-{
-    //UAirBlueprintLib::EnableInput(this);
 }

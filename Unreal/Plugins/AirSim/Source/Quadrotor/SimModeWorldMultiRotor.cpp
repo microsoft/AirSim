@@ -4,6 +4,7 @@
 #include "controllers/DroneControllerBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include <memory>
+#include "Recording/RecordingThread.h"
 #include "Logging/MessageLog.h"
 #include "vehicles/MultiRotorParamsFactory.hpp"
 
@@ -40,6 +41,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     if (fpv_vehicle_connector_ != nullptr) {
         fpv_vehicle_connector_->stopApiServer();
+        fpv_vehicle_pawn_wrapper_ = nullptr;
     }
 
     if (isLoggingStarted)
@@ -60,9 +62,9 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-AVehiclePawnBase* ASimModeWorldMultiRotor::getFpvVehiclePawn()
+VehiclePawnWrapper* ASimModeWorldMultiRotor::getFpvVehiclePawnWrapper()
 {
-    return fpv_vehicle_pawn_;
+    return fpv_vehicle_pawn_wrapper_;
 }
 
 void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
@@ -111,7 +113,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
                 vehicle_pawn_class_, actor_transform, pawn_spawn_params);
 
-            spawned_pawn->IsFpvVehicle = true;
+            spawned_pawn->getVehiclePawnWrapper()->config.is_fpv_vehicle = true;
 
             spawned_actors_.Add(spawned_pawn);
             pawns.Add(spawned_pawn);
@@ -122,27 +124,28 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         {
             //initialize each vehicle pawn we found
             TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
-            if (enable_collision_passthrough)
-                vehicle_pawn->EnablePassthroughOnCollisons = true;    
             vehicle_pawn->initializeForBeginPlay();
 
             //chose first pawn as FPV if none is designated as FPV
-            if (vehicle_pawn->IsFpvVehicle || fpv_vehicle_pawn_ == nullptr)
-                fpv_vehicle_pawn_ = vehicle_pawn;
+            VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
+            if (enable_collision_passthrough)
+                wrapper->config.enable_passthrough_on_collisions = true;  
+            if (wrapper->config.is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
+                fpv_vehicle_pawn_wrapper_ = wrapper;
 
             //now create the connector for each pawn
-            auto vehicle = createVehicle(vehicle_pawn);
+            auto vehicle = createVehicle(wrapper);
             if (vehicle != nullptr) {
                 vehicles.push_back(vehicle);
 
-                if (vehicle_pawn == fpv_vehicle_pawn_)
+                if (fpv_vehicle_pawn_wrapper_ == wrapper)
                     fpv_vehicle_connector_ = vehicle;
             }
             //else we don't have vehicle for this pawn
         }
     }
 
-    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_, external_camera);
+    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
 }
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
@@ -168,31 +171,23 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
-bool ASimModeWorldMultiRotor::checkConnection()
-{
-    return true;
-}
-
 void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 {
-    if (!checkConnection())
-        return;
-
     //find vehicles and cameras available in environment
     //if none available then we will create one
     setupVehiclesAndCamera(vehicles);
 }
 
-ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(AFlyingPawn* vehicle_pawn)
+ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
     auto vehicle_params = MultiRotorParamsFactory::createConfig(
-        vehicle_pawn->VehicleConfigName == "" ? default_vehicle_config 
-        : std::string(TCHAR_TO_UTF8(* vehicle_pawn->VehicleConfigName)));
+        wrapper->config.vehicle_config_name == "" ? default_vehicle_config 
+        : std::string(TCHAR_TO_UTF8(* wrapper->config.vehicle_config_name)));
 
-	vehicle_params_.push_back(std::move(vehicle_params));
+    vehicle_params_.push_back(std::move(vehicle_params));
 
     auto vehicle = std::make_shared<MultiRotorConnector>(
-        vehicle_pawn, vehicle_params_.back().get(), enable_rpc, api_server_address, 
+        wrapper, vehicle_params_.back().get(), enable_rpc, api_server_address, 
         vehicle_params_.back()->getParams().api_server_port, manual_pose_controller);
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }

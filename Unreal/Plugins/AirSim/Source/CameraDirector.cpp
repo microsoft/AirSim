@@ -28,7 +28,7 @@ ECameraDirectorMode ACameraDirector::getMode()
     return mode_;
 }
 
-void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, AVehiclePawnBase* vehicle, APIPCamera* external_camera)
+void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, VehiclePawnWrapper* vehicle_pawn_wrapper, APIPCamera* external_camera)
 {
     manual_pose_controller_ = NewObject<UManualPoseController>();
     manual_pose_controller_->initializeForPlay();
@@ -36,7 +36,7 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, AVeh
     setupInputBindings();
 
     mode_ = view_mode;
-    setCameras(external_camera, vehicle);
+    setCameras(external_camera, vehicle_pawn_wrapper);
 
     camera_start_location_ = this->GetActorLocation();
     camera_start_rotation_ = this->GetActorRotation();
@@ -44,11 +44,11 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, AVeh
 
 }
 
-void ACameraDirector::setCameras(APIPCamera* external_camera, AVehiclePawnBase* vehicle)
+void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper)
 {
     external_camera_ = external_camera;
-    fpv_camera_ = vehicle->getCamera();
-    follow_actor_ = vehicle;
+    fpv_camera_ = vehicle_pawn_wrapper->getCamera();
+    follow_actor_ = vehicle_pawn_wrapper->getPawn();
 
     manual_pose_controller_->setActor(external_camera_, false);
 

@@ -57,7 +57,9 @@ protected:
     bool isWidgetSubwindowVisible(int window_index);
 
 private:
+    void initializeSettings();
     void initializeSubWindows();
+    void createSimMode();
 
 private:
     typedef common_utils::Utils Utils;

@@ -9,6 +9,7 @@
 #include "GameFramework/RotatingMovementComponent.h"
 #include <exception>
 #include "common/common_utils/Utils.hpp"
+#include "Components/StaticMeshComponent.h"
 
 /*
 //TODO: change naming conventions to same as other files?

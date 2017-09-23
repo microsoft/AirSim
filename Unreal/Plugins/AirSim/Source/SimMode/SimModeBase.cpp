@@ -15,9 +15,6 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    //needs to be done before we call base class
-    initializeSettings();
-
     recording_file_.reset(new RecordingFile());
     record_tick_count = 0;
     setupInputBindings();
@@ -32,60 +29,6 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     recording_file_.release();
 
     Super::EndPlay(EndPlayReason);
-}
-
-
-void ASimModeBase::initializeSettings()
-{
-    //TODO: should this be done somewhere else?
-    //load settings file if found
-    typedef msr::airlib::Settings Settings;
-    try {
-        FString settings_filename = FString(Settings::getFullPath("settings.json").c_str());
-        FString json_fstring;
-        bool load_success = false;
-        bool file_found = FPaths::FileExists(settings_filename);
-        if (file_found) {
-            bool read_sucess = FFileHelper::LoadFileToString(json_fstring, * settings_filename);
-            if (read_sucess) {
-                Settings& settings = Settings::loadJSonString(TCHAR_TO_UTF8(*json_fstring));
-                if (settings.isLoadSuccess()) {
-                    UAirBlueprintLib::setLogMessagesHidden(! settings.getBool("LogMessagesVisible", true));
-                    UAirBlueprintLib::LogMessageString("Loaded settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
-                    load_success = true;
-                }
-                else
-                    UAirBlueprintLib::LogMessageString("Possibly invalid json string in ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
-            }
-            else
-                UAirBlueprintLib::LogMessageString("Cannot read settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
-        }
-
-        if (!load_success) {
-            //create default settings
-            Settings& settings = Settings::loadJSonString("{}");
-            //write some settings in new file otherwise the string "null" is written if all settigs are empty
-            settings.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
-            settings.setDouble("SettingdVersion", 1.0);
-
-            if (!file_found) {
-                std::string json_content;
-                //TODO: there is a crash in Linux due to settings.saveJSonString(). Remove this workaround after we only support Unreal 4.17
-                //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
-#ifdef _WIN32
-                json_content = settings.saveJSonString();
-#else
-                json_content = "{ \"SettingdVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
-#endif
-                json_fstring = FString(json_content.c_str());
-                FFileHelper::SaveStringToFile(json_fstring, * settings_filename);
-                UAirBlueprintLib::LogMessageString("Created settings file at ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
-            }
-        }
-    }
-    catch (std::exception& ex) {
-        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), FString(ex.what()), LogDebugLevel::Failure, 30);
-    }
 }
 
 void ASimModeBase::readSettings()
@@ -153,7 +96,7 @@ void ASimModeBase::reset()
     //Should be overridden by derived classes
 }
 
-AVehiclePawnBase* ASimModeBase::getFpvVehiclePawn()
+VehiclePawnWrapper* ASimModeBase::getFpvVehiclePawnWrapper()
 {
     //Should be overridden by derived classes
     return nullptr;

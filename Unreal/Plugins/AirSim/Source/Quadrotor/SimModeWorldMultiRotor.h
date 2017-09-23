@@ -4,8 +4,8 @@
 #include "common/Common.hpp"
 #include "MultiRotorConnector.h"
 #include "vehicles/MultiRotorParams.hpp"
-#include "SimModeWorldBase.h"
-#include "FlyingPawn.h"
+#include "SimMode/SimModeWorldBase.h"
+#include "VehiclePawnWrapper.h"
 #include "SimModeWorldMultiRotor.generated.h"
 
 
@@ -20,14 +20,13 @@ public:
 
     virtual void Tick( float DeltaSeconds ) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-    AVehiclePawnBase* getFpvVehiclePawn() override;
+    VehiclePawnWrapper* getFpvVehiclePawnWrapper() override;
 
 protected:
     typedef AFlyingPawn TMultiRotorPawn;
 
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
-    bool checkConnection();
-    VehiclePtr createVehicle(TMultiRotorPawn* vehicle_pawn);
+    VehiclePtr createVehicle(VehiclePawnWrapper* wrapper);
 
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
@@ -44,6 +43,6 @@ private:
 
     TArray<AActor*> spawned_actors_;
 
-    AVehiclePawnBase* fpv_vehicle_pawn_;
+    VehiclePawnWrapper* fpv_vehicle_pawn_wrapper_;
     std::shared_ptr<VehicleConnectorBase> fpv_vehicle_connector_;
 };

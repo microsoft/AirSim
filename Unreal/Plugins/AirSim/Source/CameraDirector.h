@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VehiclePawnBase.h"
+#include "VehiclePawnWrapper.h"
 #include "PIPCamera.h"
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
@@ -39,9 +39,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Modes")
     void setMode(ECameraDirectorMode mode);
 
-    void initializeForBeginPlay(ECameraDirectorMode view_mode, AVehiclePawnBase* vehicle, APIPCamera* external_camera);
+    void initializeForBeginPlay(ECameraDirectorMode view_mode, VehiclePawnWrapper* vehicle_pawn_wrapper, APIPCamera* external_camera);
 
-    void setCameras(APIPCamera* external_camera, AVehiclePawnBase* vehicle);
+    void setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper);
     APIPCamera* getFpvCamera() const;
     APIPCamera* getExternalCamera() const;
 

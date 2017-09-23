@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 //TODO: all code except setRotorSpeed requires VehiclePawnBase.
 //May be we should have MultiRotorPawnBase so we don't need FlyingPawn.h
-#include "FlyingPawn.h" 
 #include "controllers/DroneControllerCancelable.hpp"
+#include "VehiclePawnWrapper.h"
 #include "vehicles/MultiRotor.hpp"
 #include "vehicles/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
@@ -34,7 +34,7 @@ public:
 
     //VehicleConnectorBase interface
     //implements game interface to update pawn
-    MultiRotorConnector(AFlyingPawn* vehicle_pawn, msr::airlib::MultiRotorParams* vehicle_params, 
+    MultiRotorConnector(VehiclePawnWrapper* vehicle_paw_wrapper, msr::airlib::MultiRotorParams* vehicle_params, 
         bool enable_rpc, std::string api_server_address, uint16_t api_server_port,
         UManualPoseController* manual_pose_controller);
     virtual void updateRenderedState() override;
@@ -63,7 +63,7 @@ private:
     MultiRotor vehicle_;
     std::vector<std::string> controller_messages_;
     std::unique_ptr<msr::airlib::Environment> environment_;
-    AFlyingPawn* vehicle_pawn_;
+    VehiclePawnWrapper* vehicle_pawn_wrapper_;
 
     msr::airlib::MultiRotorParams* vehicle_params_;
     std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;
