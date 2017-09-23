@@ -11,6 +11,14 @@ Below are complete list of settings available along with their default values. I
 
 **WARNING:** Do not copy below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default.
 
+**WARNING:** Do not delete the initial two entries, simply append the options you want after the initial two.
+````
+{
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SettingdVersion": 1.0,
+}
+````
+
 ````
 {
   "DefaultVehicleConfig": "SimpleFlight",
