@@ -9,7 +9,7 @@ The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first
 ## Available Settings and Their Defaults
 Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. 
 
-**WARNING:** Do not copy below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default.
+**WARNING:** Do not copy below in your settings.json. We strongly recommend leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default.
 
 **WARNING:** Do not delete the initial two entries, simply append the options you want after the initial two.
 ````
