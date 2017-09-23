@@ -19,6 +19,6 @@ UCar4x4WheelRear::UCar4x4WheelRear()
 	SuspensionDampingRatio = 1.05f;
 
 	// Find the tire object and set the data for it
-	static ConstructorHelpers::FObjectFinder<UTireConfig> TireData(TEXT("/Game/CarPhysXAdv/Vehicle/WheelData/Vehicle_BackTireConfig.Vehicle_BackTireConfig"));
+	static ConstructorHelpers::FObjectFinder<UTireConfig> TireData(TEXT("/AirSim/CarPhysXAdv/Vehicle/WheelData/Vehicle_BackTireConfig.Vehicle_BackTireConfig"));
 	TireConfig = TireData.Object;
 }

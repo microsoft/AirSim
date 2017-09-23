@@ -13,6 +13,8 @@ class AIRSIM_API AFlyingPawn : public APawn
     GENERATED_BODY()
 
 public:
+    AFlyingPawn();
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
     float RotatorFactor = 1.0f;
 
@@ -20,7 +22,8 @@ public:
     void initializeForBeginPlay();
     VehiclePawnWrapper* getVehiclePawnWrapper();
 
-
+    virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
+        FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 private: //methods
     void setupComponentReferences();
     void setStencilIDs();

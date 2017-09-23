@@ -6,6 +6,11 @@
 #include "common/Common.hpp"
 
 
+AFlyingPawn::AFlyingPawn()
+{
+    wrapper_.reset(new VehiclePawnWrapper());
+}
+
 void AFlyingPawn::initializeForBeginPlay()
 {
     //get references of components so we can use later
@@ -15,7 +20,14 @@ void AFlyingPawn::initializeForBeginPlay()
     setStencilIDs();
 
     std::vector<APIPCamera*> cameras = {fpv_camera_right_, fpv_camera_left_};
-    wrapper_.reset(new VehiclePawnWrapper(this, cameras));
+    wrapper_->initialize(this, cameras);
+}
+
+void AFlyingPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
+    FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+    wrapper_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
+        HitNormal, NormalImpulse, Hit);
 }
 
 VehiclePawnWrapper* AFlyingPawn::getVehiclePawnWrapper()

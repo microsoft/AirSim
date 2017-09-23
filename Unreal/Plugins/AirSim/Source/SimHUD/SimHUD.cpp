@@ -197,12 +197,12 @@ void ASimHUD::setupInputBindings()
 void ASimHUD::createSimMode()
 {
     Settings& settings = Settings::singleton();
-    std::string simmode_name = settings.getString("SimMode", "Multirotor");
+    std::string simmode_name = settings.getString("SimMode", "Quadrotor");
 
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    if (simmode_name == "Multirotor")
+    if (simmode_name == "Quadrotor")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
     else if (simmode_name == "Car")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
@@ -212,7 +212,10 @@ void ASimHUD::createSimMode()
 void ASimHUD::initializeSubWindows()
 {
     //setup defaults
-    subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawnWrapper()->getCamera();
+    if (simmode_->getFpvVehiclePawnWrapper()->getCameraCount() > 0)
+        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawnWrapper()->getCamera();
+    else
+        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
     subwindow_camera_types_[0] = ImageType::DepthVis;
     subwindow_camera_types_[1] = ImageType::Segmentation;
     subwindow_camera_types_[2] = ImageType::Scene;

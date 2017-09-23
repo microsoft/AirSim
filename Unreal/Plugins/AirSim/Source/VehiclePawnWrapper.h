@@ -35,7 +35,8 @@ public:
     void toggleTrace();
 
 public: //interface
-    VehiclePawnWrapper(APawn* pawn, const std::vector<APIPCamera*>& cameras);
+    VehiclePawnWrapper();
+    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras);
 
     void reset();
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
@@ -65,7 +66,6 @@ protected:
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
-    void initialize();
     void setupCamerasFromSettings();
 
     //these methods are for future usage

@@ -17,6 +17,7 @@ public:
     typedef ACar4x4Pawn TVehiclePawn;
 
     ASimModeCar();
+    virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() override;
@@ -32,6 +33,6 @@ private:
     UClass* vehicle_pawn_class_;
 
     TArray<AActor*> spawned_actors_;
-
+    std::vector<VehiclePtr> vehicles_;
     VehiclePawnWrapper* fpv_vehicle_pawn_wrapper_;
 };

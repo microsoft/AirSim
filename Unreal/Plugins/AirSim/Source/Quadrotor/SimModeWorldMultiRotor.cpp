@@ -113,8 +113,6 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
                 vehicle_pawn_class_, actor_transform, pawn_spawn_params);
 
-            spawned_pawn->getVehiclePawnWrapper()->config.is_fpv_vehicle = true;
-
             spawned_actors_.Add(spawned_pawn);
             pawns.Add(spawned_pawn);
         }

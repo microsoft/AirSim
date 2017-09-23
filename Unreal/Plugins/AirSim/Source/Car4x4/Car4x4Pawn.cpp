@@ -168,12 +168,21 @@ ACar4x4Pawn::ACar4x4Pawn()
 
     bIsLowFriction = false;
     bInReverseGear = false;
+
+    wrapper_.reset(new VehiclePawnWrapper());
+}
+
+void ACar4x4Pawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
+    FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+    wrapper_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
+        HitNormal, NormalImpulse, Hit);
 }
 
 void ACar4x4Pawn::initializeForBeginPlay()
 {
     std::vector<APIPCamera*> cameras = {};
-    wrapper_.reset(new VehiclePawnWrapper(this, cameras));
+    wrapper_->initialize(this, cameras);
 }
 
 VehiclePawnWrapper* ACar4x4Pawn::getVehiclePawnWrapper()

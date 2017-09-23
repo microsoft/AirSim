@@ -47,7 +47,7 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, Vehi
 void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper)
 {
     external_camera_ = external_camera;
-    fpv_camera_ = vehicle_pawn_wrapper->getCamera();
+    fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > 0 ? vehicle_pawn_wrapper->getCamera() : nullptr;
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
 
     manual_pose_controller_->setActor(external_camera_, false);
@@ -88,14 +88,16 @@ void ACameraDirector::inputEventFpvView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV);
     external_camera_->disableMain();
-    fpv_camera_->showToScreen();
+    if (fpv_camera_)
+        fpv_camera_->showToScreen();
 }
 
 void ACameraDirector::inputEventGroundView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER);
     external_camera_->showToScreen();
-    fpv_camera_->disableMain();
+    if (fpv_camera_)
+        fpv_camera_->disableMain();
     ext_obs_fixed_z_ = true;
 }
 
@@ -125,7 +127,8 @@ void ACameraDirector::inputEventFlyWithView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
     external_camera_->showToScreen();
-    fpv_camera_->disableMain();
+    if (fpv_camera_)
+        fpv_camera_->disableMain();
     ext_obs_fixed_z_ = false;
 }
 

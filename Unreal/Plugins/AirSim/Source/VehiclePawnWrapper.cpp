@@ -8,16 +8,13 @@
 #include "NedTransform.h"
 
 
-VehiclePawnWrapper::VehiclePawnWrapper(APawn* pawn, const std::vector<APIPCamera*>& cameras)
-    : pawn_(pawn), cameras_(cameras)
+VehiclePawnWrapper::VehiclePawnWrapper()
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collison_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
     if (!collison_display.Succeeded())
         collison_display_template = collison_display.Object;
     else
         collison_display_template = nullptr;
-
-    initialize();
 }
 
 void VehiclePawnWrapper::setupCamerasFromSettings()
@@ -96,8 +93,11 @@ void VehiclePawnWrapper::displayCollisonEffect(FVector hit_location, const FHitR
     }
 }
 
-void VehiclePawnWrapper::initialize()
+void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)
 {
+    pawn_ = pawn;
+    cameras_ = cameras;
+
     if (!NedTransform::isInitialized())
         NedTransform::initialize(pawn_);
 

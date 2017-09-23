@@ -12,6 +12,13 @@ ASimModeCar::ASimModeCar()
     vehicle_pawn_class_ = ACar4x4Pawn::StaticClass();
 }
 
+void ASimModeCar::BeginPlay()
+{
+    Super::BeginPlay();
+
+    createVehicles(vehicles_);
+}
+
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     spawned_actors_.Empty();
@@ -73,8 +80,6 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
                 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
             TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
                 vehicle_pawn_class_, actor_transform, pawn_spawn_params);
-
-            spawned_pawn->getVehiclePawnWrapper()->config.is_fpv_vehicle = true;
 
             spawned_actors_.Add(spawned_pawn);
             pawns.Add(spawned_pawn);

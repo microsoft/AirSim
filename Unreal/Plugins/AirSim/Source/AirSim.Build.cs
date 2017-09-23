@@ -82,6 +82,7 @@ public class AirSim : ModuleRules
         //suppress VC++ proprietary warnings
         Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
         Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
+        Definitions.Add("HMD_MODULE_INCLUDED=0");
 
         PrivateIncludePaths.Add(Path.Combine(AirLibPath, "include"));
         PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
