@@ -6,6 +6,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "common/common_utils/Utils.hpp"
 #include "Components/InputComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/AudioComponent.h"
@@ -15,6 +16,7 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/Engine.h"
 #include "GameFramework/Controller.h"
+#include "AirBlueprintLib.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Needed for VR Headset
@@ -30,19 +32,22 @@ const FName ACar4x4Pawn::EngineAudioRPM("RPM");
 
 ACar4x4Pawn::ACar4x4Pawn()
 {
+    this->AutoPossessPlayer = EAutoReceiveInput::Player0;
+    //this->AutoReceiveInput = EAutoReceiveInput::Player0;
+
     // Car mesh
-    static ConstructorHelpers::FObjectFinder<USkeletalMesh> CarMesh(TEXT("/AirSim/CarPhysXAdv/Vehicle/Vehicle_SkelMesh.Vehicle_SkelMesh"));
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh> CarMesh(TEXT("/AirSim/VehicleAdv/Vehicle/Vehicle_SkelMesh.Vehicle_SkelMesh"));
     GetMesh()->SetSkeletalMesh(CarMesh.Object);
     
-    static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/AirSim/CarPhysXAdv/Vehicle/VehicleAnimationBlueprint"));
+    static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/AirSim/VehicleAdv/Vehicle/VehicleAnimationBlueprint"));
     GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
     GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
 
     // Setup friction materials
-    static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> SlipperyMat(TEXT("/AirSim/CarPhysXAdv/PhysicsMaterials/Slippery.Slippery"));
+    static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> SlipperyMat(TEXT("/AirSim/VehicleAdv/PhysicsMaterials/Slippery.Slippery"));
     SlipperyMaterial = SlipperyMat.Object;
         
-    static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> NonSlipperyMat(TEXT("/AirSim/CarPhysXAdv/PhysicsMaterials/NonSlippery.NonSlippery"));
+    static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> NonSlipperyMat(TEXT("/AirSim/VehicleAdv/PhysicsMaterials/NonSlippery.NonSlippery"));
     NonSlipperyMaterial = NonSlipperyMat.Object;
 
     UWheeledVehicleMovementComponent4W* Vehicle4W = CastChecked<UWheeledVehicleMovementComponent4W>(GetVehicleMovement());
@@ -157,7 +162,7 @@ ACar4x4Pawn::ACar4x4Pawn()
     InCarGear->SetupAttachment(GetMesh());
     
     // Setup the audio component and allocate it a sound cue
-    static ConstructorHelpers::FObjectFinder<USoundCue> SoundCue(TEXT("/AirSim/CarPhysXAdv/Sound/Engine_Loop_Cue.Engine_Loop_Cue"));
+    static ConstructorHelpers::FObjectFinder<USoundCue> SoundCue(TEXT("/AirSim/VehicleAdv/Sound/Engine_Loop_Cue.Engine_Loop_Cue"));
     EngineSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineSound"));
     EngineSoundComponent->SetSound(SoundCue.Object);
     EngineSoundComponent->SetupAttachment(GetMesh());
@@ -181,6 +186,8 @@ void ACar4x4Pawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Oth
 
 void ACar4x4Pawn::initializeForBeginPlay()
 {
+    setupInputBindings();
+
     std::vector<APIPCamera*> cameras = {};
     wrapper_->initialize(this, cameras);
 }
@@ -190,33 +197,52 @@ VehiclePawnWrapper* ACar4x4Pawn::getVehiclePawnWrapper()
     return wrapper_.get();
 }
 
-void ACar4x4Pawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void ACar4x4Pawn::setupInputBindings()
 {
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
+    UAirBlueprintLib::EnableInput(this);
 
-    // set up gameplay key bindings
-    check(PlayerInputComponent);
+    FInputAxisBinding *forward_binding_ = & UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this,
+        this, &ACar4x4Pawn::MoveForward);
+    forward_binding_->bConsumeInput = true;
 
-    PlayerInputComponent->BindAxis("MoveForward", this, &ACar4x4Pawn::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &ACar4x4Pawn::MoveRight);
-    PlayerInputComponent->BindAxis(LookUpBinding);
-    PlayerInputComponent->BindAxis(LookRightBinding);
+    FInputAxisBinding *reverse_binding_ = &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this,
+        this, &ACar4x4Pawn::MoveForward);
+    reverse_binding_->bConsumeInput = true;
 
-    PlayerInputComponent->BindAction("Handbrake", IE_Pressed, this, &ACar4x4Pawn::OnHandbrakePressed);
-    PlayerInputComponent->BindAction("Handbrake", IE_Released, this, &ACar4x4Pawn::OnHandbrakeReleased);
-    PlayerInputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ACar4x4Pawn::OnToggleCamera);
+    FInputAxisBinding *right_binding_ = &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 1), this,
+        this, &ACar4x4Pawn::MoveRight);
+    right_binding_->bConsumeInput = true;
 
-    PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACar4x4Pawn::OnResetVR); 
+    FInputAxisBinding *left_binding_ = &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -1), this,
+        this, &ACar4x4Pawn::MoveRight);
+    left_binding_->bConsumeInput = true;
+
+
+
+    //PlayerInputComponent->BindAxis("MoveForward", this, &ACar4x4Pawn::MoveForward);
+    //PlayerInputComponent->BindAxis("MoveRight", this, &ACar4x4Pawn::MoveRight);
+    //PlayerInputComponent->BindAxis(LookUpBinding);
+    //PlayerInputComponent->BindAxis(LookRightBinding);
+
+    //PlayerInputComponent->BindAction("Handbrake", IE_Pressed, this, &ACar4x4Pawn::OnHandbrakePressed);
+    //PlayerInputComponent->BindAction("Handbrake", IE_Released, this, &ACar4x4Pawn::OnHandbrakeReleased);
+    //PlayerInputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ACar4x4Pawn::OnToggleCamera);
+
+    //PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACar4x4Pawn::OnResetVR); 
 }
 
 void ACar4x4Pawn::MoveForward(float Val)
 {
+    UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
+
     GetVehicleMovementComponent()->SetThrottleInput(Val);
 
 }
 
 void ACar4x4Pawn::MoveRight(float Val)
 {
+    UAirBlueprintLib::LogMessage(TEXT("Steering: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
+
     GetVehicleMovementComponent()->SetSteeringInput(Val);
 }
 
@@ -347,6 +373,10 @@ void ACar4x4Pawn::UpdateHUDStrings()
     {
         GearDisplayString = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
     }
+
+
+    UAirBlueprintLib::LogMessage(TEXT("Speed: "), SpeedDisplayString.ToString(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage(TEXT("Gear: "), GearDisplayString.ToString(), LogDebugLevel::Informational);
 
 }
 

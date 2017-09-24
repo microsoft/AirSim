@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <string>
 
-#ifdef _WIN32
+#if defined _WIN32 || defined _WIN64
 #include <Shlobj.h>
 #include <direct.h>
 #include <stdlib.h>

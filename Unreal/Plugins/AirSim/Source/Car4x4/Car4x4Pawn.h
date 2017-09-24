@@ -77,9 +77,7 @@ public:
     /** Initial offset of incar camera */
     FVector InternalCameraOrigin;
 
-    // Begin Pawn interface
-    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-    // End Pawn interface
+    void setupInputBindings();
 
     // Begin Actor interface
     virtual void Tick(float Delta) override;
