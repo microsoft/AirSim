@@ -15,7 +15,12 @@ void ASimModeWorldBase::BeginPlay()
     setupInputBindings();
 
     //call virtual method in derived class
-    createVehicles(vehicles_);
+    try {
+        createVehicles(vehicles_);
+    }
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessageString("Error creating vehicles", ex.what(), LogDebugLevel::Failure);
+    }
 
     physics_world_.reset(new msr::airlib::PhysicsWorld(
         createPhysicsEngine(), toUpdatableObjects(vehicles_), 
@@ -51,7 +56,9 @@ void ASimModeWorldBase::setupClock()
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //remove everything that we created in BeginPlay
-    physics_world_.release();
+    if (physics_world_) {
+        physics_world_.release();
+    }
     physics_engine_.release();
     vehicles_.clear();
     manual_pose_controller = nullptr;
@@ -61,11 +68,15 @@ void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ASimModeWorldBase::startAsyncUpdator()
 {
-    physics_world_->startAsyncUpdator();
+    if (physics_world_) {
+        physics_world_->startAsyncUpdator();
+    }
 }
 void ASimModeWorldBase::stopAsyncUpdator()
 {
-    physics_world_->stopAsyncUpdator();
+    if (physics_world_) {
+        physics_world_->stopAsyncUpdator();
+    }
 }
 
 long long ASimModeWorldBase::getPhysicsLoopPeriod() //nanoseconds
@@ -114,7 +125,8 @@ ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
             );
         }
     }
-    else {
+    else 
+    {
         physics_engine_.release();
         UAirBlueprintLib::LogMessageString("Unrecognized physics engine name: ",  physics_engine_name, LogDebugLevel::Failure);
     }
@@ -129,7 +141,7 @@ size_t ASimModeWorldBase::getVehicleCount() const
 
 void ASimModeWorldBase::Tick(float DeltaSeconds)
 {
-    { //keep this lock as short as possible
+    if (physics_world_) {
         physics_world_->lock();
 
         physics_world_->enableStateReport(EnableReport);
@@ -139,25 +151,27 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
             vehicle->updateRenderedState();
 
         physics_world_->unlock();
+        //perfom any expensive rendering update outside of lock region
+        for (auto& vehicle : vehicles_)
+            vehicle->updateRendering(DeltaSeconds);
     }
-
-    //perfom any expensive rendering update outside of lock region
-    for (auto& vehicle : vehicles_)
-        vehicle->updateRendering(DeltaSeconds);
-
     Super::Tick(DeltaSeconds);
 }
 
 void ASimModeWorldBase::reset()
 {
-    physics_world_->reset();
-    
+    if (physics_world_) {
+        physics_world_->reset();
+    }
     Super::reset();
 }
 
 std::string ASimModeWorldBase::getReport()
 {
-    return physics_world_->getReport();
+    if (physics_world_) {
+        return physics_world_->getReport();
+    }
+    return "";
 }
 
 void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles)
