@@ -198,23 +198,20 @@ void ACar4x4Pawn::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
 
-    FInputAxisBinding *forward_binding_ = & UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this,
         this, &ACar4x4Pawn::MoveForward);
-    forward_binding_->bConsumeInput = true;
 
-    FInputAxisBinding *reverse_binding_ = &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this,
+    &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this,
         this, &ACar4x4Pawn::MoveForward);
-    reverse_binding_->bConsumeInput = true;
 
-    FInputAxisBinding *right_binding_ = &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 1), this,
         this, &ACar4x4Pawn::MoveRight);
-    right_binding_->bConsumeInput = true;
 
-    FInputAxisBinding *left_binding_ = &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -1), this,
         this, &ACar4x4Pawn::MoveRight);
-    left_binding_->bConsumeInput = true;
 
-
+    UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::SpaceBar, this, &ACar4x4Pawn::OnHandbrakePressed, true);
+    UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::SpaceBar, this, &ACar4x4Pawn::OnHandbrakeReleased, false);
 
     //PlayerInputComponent->BindAxis("MoveForward", this, &ACar4x4Pawn::MoveForward);
     //PlayerInputComponent->BindAxis("MoveRight", this, &ACar4x4Pawn::MoveRight);
@@ -245,11 +242,15 @@ void ACar4x4Pawn::MoveRight(float Val)
 
 void ACar4x4Pawn::OnHandbrakePressed()
 {
+    UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Pressed"), LogDebugLevel::Informational);
+
     GetVehicleMovementComponent()->SetHandbrakeInput(true);
 }
 
 void ACar4x4Pawn::OnHandbrakeReleased()
 {
+    UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Released"), LogDebugLevel::Informational);
+
     GetVehicleMovementComponent()->SetHandbrakeInput(false);
 }
 
