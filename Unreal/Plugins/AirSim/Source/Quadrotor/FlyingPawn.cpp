@@ -16,9 +16,6 @@ void AFlyingPawn::initializeForBeginPlay()
     //get references of components so we can use later
     setupComponentReferences();
 
-    //set stencil IDs
-    setStencilIDs();
-
     std::vector<APIPCamera*> cameras = {fpv_camera_right_, fpv_camera_left_};
     wrapper_->initialize(this, cameras);
 }
@@ -33,22 +30,6 @@ void AFlyingPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Oth
 VehiclePawnWrapper* AFlyingPawn::getVehiclePawnWrapper()
 {
     return wrapper_.get();
-}
-
-void AFlyingPawn::setStencilIDs()
-{
-    TArray<AActor*> foundActors;
-    UAirBlueprintLib::FindAllActor<AActor>(this, foundActors);
-    TArray<UStaticMeshComponent*> components;
-    int stencil = 0;
-    for (AActor* actor : foundActors) {
-        actor->GetComponents(components);
-        if (components.Num() == 1) {
-            components[0]->SetRenderCustomDepth(true);
-            components[0]->CustomDepthStencilValue = (stencil++) % 256;
-            components[0]->MarkRenderStateDirty();
-        }
-    }
 }
 
 void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)

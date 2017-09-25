@@ -26,7 +26,6 @@ public:
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 private: //methods
     void setupComponentReferences();
-    void setStencilIDs();
 
 private: //variables
          //Unreal components

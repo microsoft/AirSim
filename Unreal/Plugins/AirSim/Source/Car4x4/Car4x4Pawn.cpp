@@ -17,6 +17,7 @@
 #include "Engine/Engine.h"
 #include "GameFramework/Controller.h"
 #include "AirBlueprintLib.h"
+#include "PIPCamera.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Needed for VR Headset
@@ -49,6 +50,9 @@ ACar4x4Pawn::ACar4x4Pawn()
         
     static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> NonSlipperyMat(TEXT("/AirSim/VehicleAdv/PhysicsMaterials/NonSlippery.NonSlippery"));
     NonSlipperyMaterial = NonSlipperyMat.Object;
+
+    static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
 
     UWheeledVehicleMovementComponent4W* Vehicle4W = CastChecked<UWheeledVehicleMovementComponent4W>(GetVehicleMovement());
 
@@ -115,36 +119,11 @@ ACar4x4Pawn::ACar4x4Pawn()
     // Set the inertia scale. This controls how the mass of the vehicle is distributed.
     Vehicle4W->InertiaTensorScale = FVector(1.0f, 1.333f, 1.2f);
 
-    // Create a spring arm component for our chase camera
-    SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-    SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 34.0f));
-    SpringArm->SetWorldRotation(FRotator(-20.0f, 0.0f, 0.0f));
-    SpringArm->SetupAttachment(RootComponent);
-    SpringArm->TargetArmLength = 125.0f;
-    SpringArm->bEnableCameraLag = false;
-    SpringArm->bEnableCameraRotationLag = false;
-    SpringArm->bInheritPitch = true;
-    SpringArm->bInheritYaw = true;
-    SpringArm->bInheritRoll = true;
-
-    // Create the chase camera component 
-    Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ChaseCamera"));
-    Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-    Camera->SetRelativeLocation(FVector(-125.0, 0.0f, 0.0f));
-    Camera->SetRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
-    Camera->bUsePawnControlRotation = false;
-    Camera->FieldOfView = 90.f;
-
     // Create In-Car camera component 
     InternalCameraOrigin = FVector(-34.0f, -10.0f, 50.0f);
     InternalCameraBase = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase"));
     InternalCameraBase->SetRelativeLocation(InternalCameraOrigin);
     InternalCameraBase->SetupAttachment(GetMesh());
-
-    InternalCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("InternalCamera"));
-    InternalCamera->bUsePawnControlRotation = false;
-    InternalCamera->FieldOfView = 90.f;
-    InternalCamera->SetupAttachment(InternalCameraBase);
 
     // In car HUD
     // Create text render component for in car speed display
@@ -188,11 +167,27 @@ void ACar4x4Pawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Oth
 
 void ACar4x4Pawn::initializeForBeginPlay()
 {
+
+    //put camera little bit above vehicle
+    FTransform camera_transform(FVector(0, 0, 0));
+    FActorSpawnParameters camera_spawn_params;
+    camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    InternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    InternalCamera->AttachToComponent(InternalCameraBase, FAttachmentTransformRules::KeepRelativeTransform);
+
     setupInputBindings();
 
-    std::vector<APIPCamera*> cameras = {};
+    std::vector<APIPCamera*> cameras = { InternalCamera };
     wrapper_->initialize(this, cameras);
 }
+
+void ACar4x4Pawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (InternalCamera)
+        InternalCamera->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+    InternalCamera = nullptr;
+}
+
 
 VehiclePawnWrapper* ACar4x4Pawn::getVehiclePawnWrapper()
 {

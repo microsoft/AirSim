@@ -68,6 +68,7 @@ protected: //settings
 
 private:
     void readSettings();
+    void setStencilIDs();
 
 private:
     std::unique_ptr<RecordingFile> recording_file_;

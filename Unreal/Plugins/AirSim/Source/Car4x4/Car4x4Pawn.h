@@ -19,10 +19,6 @@ class ACar4x4Pawn : public AWheeledVehicle
 {
     GENERATED_BODY()
 
-    /** Spring arm that will offset the camera */
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    USpringArmComponent* SpringArm;
-
     /** Camera component that will be our viewpoint */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     UCameraComponent* Camera;
@@ -33,7 +29,7 @@ class ACar4x4Pawn : public AWheeledVehicle
 
     /** Camera component for the In-Car view */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    UCameraComponent* InternalCamera;
+    APIPCamera* InternalCamera;
 
     /** Text component for the In-Car speed */
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -77,6 +73,7 @@ public:
 
     // Begin Actor interface
     virtual void Tick(float Delta) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     VehiclePawnWrapper* getVehiclePawnWrapper();
     void initializeForBeginPlay();
@@ -124,16 +121,14 @@ private:
 
 
 public:
-    /** Returns SpringArm subobject **/
-    FORCEINLINE USpringArmComponent* GetSpringArm() const { return SpringArm; }
-    /** Returns Camera subobject **/
-    FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
-    /** Returns InternalCamera subobject **/
-    FORCEINLINE UCameraComponent* GetInternalCamera() const { return InternalCamera; }
     /** Returns InCarSpeed subobject **/
     FORCEINLINE UTextRenderComponent* GetInCarSpeed() const { return InCarSpeed; }
     /** Returns InCarGear subobject **/
     FORCEINLINE UTextRenderComponent* GetInCarGear() const { return InCarGear; }
     /** Returns EngineSoundComponent subobject **/
     FORCEINLINE UAudioComponent* GetEngineSoundComponent() const { return EngineSoundComponent; }
+
+private:
+    UClass* pip_camera_class_;
+
 };

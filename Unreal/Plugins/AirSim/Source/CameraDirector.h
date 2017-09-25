@@ -5,6 +5,7 @@
 #include "PIPCamera.h"
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "CameraDirector.generated.h"
 
 
@@ -14,19 +15,26 @@ enum class ECameraDirectorMode : uint8
     CAMERA_DIRECTOR_MODE_FPV = 1	UMETA(DisplayName="FPV"),
     CAMERA_DIRECTOR_MODE_GROUND_OBSERVER = 2	UMETA(DisplayName="GroundObserver"),
     CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3	UMETA(DisplayName="FlyWithMe"),
-    CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName="Manual")
+    CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName="Manual"),
+    CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE = 5	UMETA(DisplayName = "SpringArmChase")
 };
 
 UCLASS()
 class AIRSIM_API ACameraDirector : public AActor
 {
     GENERATED_BODY()
-    
+
+public:
+    /** Spring arm that will offset the camera */
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USpringArmComponent* SpringArm;
+
 public:
     void inputEventFpvView();
     void inputEventGroundView();
     void inputEventManualView();
     void inputEventFlyWithView();
+    void inputEventSpringArmChaseView();
 
 public:	
     ACameraDirector();
@@ -47,11 +55,15 @@ public:
 
 private:
     void setupInputBindings();	
+    void attachSpringArm(bool attach);
+
 
 private:
     APIPCamera* fpv_camera_;
     APIPCamera* external_camera_;
     AActor* follow_actor_;
+
+    USceneComponent* last_parent_ = nullptr;
 
     ECameraDirectorMode mode_;
     UPROPERTY() UManualPoseController* manual_pose_controller_;

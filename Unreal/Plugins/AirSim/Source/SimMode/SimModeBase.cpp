@@ -15,6 +15,8 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    setStencilIDs();
+
     recording_file_.reset(new RecordingFile());
     record_tick_count = 0;
     setupInputBindings();
@@ -22,6 +24,22 @@ void ASimModeBase::BeginPlay()
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
     readSettings();
+}
+
+void ASimModeBase::setStencilIDs()
+{
+    TArray<AActor*> foundActors;
+    UAirBlueprintLib::FindAllActor<AActor>(this, foundActors);
+    TArray<UStaticMeshComponent*> components;
+    int stencil = 0;
+    for (AActor* actor : foundActors) {
+        actor->GetComponents(components);
+        if (components.Num() == 1) {
+            components[0]->SetRenderCustomDepth(true);
+            components[0]->CustomDepthStencilValue = (stencil++) % 256;
+            components[0]->MarkRenderStateDirty();
+        }
+    }
 }
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -50,6 +68,7 @@ void ASimModeBase::readSettings()
         }
     }
 
+    std::string simmode_name = settings.getString("SimMode", "Quadrotor");
     usage_scenario = settings.getString("UsageScenario", "");
     default_vehicle_config = settings.getString("DefaultVehicleConfig", "SimpleFlight");
    
@@ -60,7 +79,7 @@ void ASimModeBase::readSettings()
     api_server_address = settings.getString("LocalHostIp", "");
     is_record_ui_visible = settings.getBool("RecordUIVisible", true);
 
-    std::string view_mode_string = settings.getString("ViewMode", "FlyWithMe");
+    std::string view_mode_string = settings.getString("ViewMode", simmode_name == "Quadrotor" ? "FlyWithMe" : "SpringArmChase");
     if (view_mode_string == "FlyWithMe")
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
     else if (view_mode_string == "Fpv")
@@ -69,7 +88,11 @@ void ASimModeBase::readSettings()
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL;
     else if (view_mode_string == "GroundObserver")
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
-
+    else if (view_mode_string == "SpringArmChase")
+        initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE;
+    else
+        UAirBlueprintLib::LogMessage("ViewMode setting is not recognized: ", view_mode_string.c_str(), LogDebugLevel::Failure);
+        
     physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
     enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
     clock_type = settings.getString("ClockType", 
