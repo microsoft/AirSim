@@ -153,6 +153,7 @@ ACar4x4Pawn::ACar4x4Pawn()
     InCarSpeed->SetRelativeLocation(FVector(35.0f, -6.0f, 20.0f));
     InCarSpeed->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
     InCarSpeed->SetupAttachment(GetMesh());
+    InCarSpeed->SetVisibility(true);
 
     // Create text render component for in car gear display
     InCarGear = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarGear"));
@@ -160,7 +161,8 @@ ACar4x4Pawn::ACar4x4Pawn()
     InCarGear->SetRelativeLocation(FVector(35.0f, 5.0f, 20.0f));
     InCarGear->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
     InCarGear->SetupAttachment(GetMesh());
-    
+    InCarGear->SetVisibility(true);
+
     // Setup the audio component and allocate it a sound cue
     static ConstructorHelpers::FObjectFinder<USoundCue> SoundCue(TEXT("/AirSim/VehicleAdv/Sound/Engine_Loop_Cue.Engine_Loop_Cue"));
     EngineSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineSound"));
@@ -256,34 +258,6 @@ void ACar4x4Pawn::OnHandbrakeReleased()
     GetVehicleMovementComponent()->SetHandbrakeInput(false);
 }
 
-void ACar4x4Pawn::OnToggleCamera()
-{
-    EnableIncarView(!bInCarCameraActive);
-}
-
-void ACar4x4Pawn::EnableIncarView(const bool bState)
-{
-    if (bState != bInCarCameraActive)
-    {
-        bInCarCameraActive = bState;
-        
-        if (bState == true)
-        {
-            OnResetVR();
-            Camera->Deactivate();
-            InternalCamera->Activate();
-        }
-        else
-        {
-            InternalCamera->Deactivate();
-            Camera->Activate();
-        }
-        
-        InCarSpeed->SetVisibility(bInCarCameraActive);
-        InCarGear->SetVisibility(bInCarCameraActive);
-    }
-}
-
 void ACar4x4Pawn::Tick(float Delta)
 {
     Super::Tick(Delta);
@@ -298,25 +272,7 @@ void ACar4x4Pawn::Tick(float Delta)
     UpdateHUDStrings();
 
     // Set the string in the incar hud
-    SetupInCarHUD();
-
-    bool bHMDActive = false;
-#if HMD_MODULE_INCLUDED
-    if ((GEngine->HMDDevice.IsValid() == true ) && ( (GEngine->HMDDevice->IsHeadTrackingAllowed() == true) || (GEngine->IsStereoscopic3D() == true)))
-    {
-        bHMDActive = true;
-    }
-#endif // HMD_MODULE_INCLUDED
-    if( bHMDActive == false )
-    {
-        if ( (InputComponent) && (bInCarCameraActive == true ))
-        {
-            FRotator HeadRotation = InternalCamera->RelativeRotation;
-            HeadRotation.Pitch += InputComponent->GetAxisValue(LookUpBinding);
-            HeadRotation.Yaw += InputComponent->GetAxisValue(LookRightBinding);
-            InternalCamera->RelativeRotation = HeadRotation;
-        }
-    }	
+    UpdateInCarHUD();
 
     // Pass the engine RPM to the sound component
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
@@ -327,32 +283,8 @@ void ACar4x4Pawn::BeginPlay()
 {
     Super::BeginPlay();
 
-    bool bWantInCar = false;
-    // First disable both speed/gear displays 
-    bInCarCameraActive = false;
-    InCarSpeed->SetVisibility(bInCarCameraActive);
-    InCarGear->SetVisibility(bInCarCameraActive);
-
-    // Enable in car view if HMD is attached
-#if HMD_MODULE_INCLUDED
-    bWantInCar = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
-#endif // HMD_MODULE_INCLUDED
-
-    EnableIncarView(bWantInCar);
     // Start an engine sound playing
     EngineSoundComponent->Play();
-}
-
-void ACar4x4Pawn::OnResetVR()
-{
-#if HMD_MODULE_INCLUDED
-    if (GEngine->HMDDevice.IsValid())
-    {
-        GEngine->HMDDevice->ResetOrientationAndPosition();
-        InternalCamera->SetRelativeLocation(InternalCameraOrigin);
-        GetController()->SetControlRotation(FRotator());
-    }
-#endif // HMD_MODULE_INCLUDED
 }
 
 void ACar4x4Pawn::UpdateHUDStrings()
@@ -380,7 +312,7 @@ void ACar4x4Pawn::UpdateHUDStrings()
 
 }
 
-void ACar4x4Pawn::SetupInCarHUD()
+void ACar4x4Pawn::UpdateInCarHUD()
 {
     APlayerController* PlayerController = Cast<APlayerController>(GetController());
     if ((PlayerController != nullptr) && (InCarSpeed != nullptr) && (InCarGear != nullptr))
