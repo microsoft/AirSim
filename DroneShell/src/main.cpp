@@ -12,10 +12,10 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include "common/common_utils/AsyncTasker.hpp"
-#include "api/RpcLibClient.hpp"
+#include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "common/EarthUtils.hpp"
-#include "controllers/DroneCommon.hpp"
-#include "controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/DroneCommon.hpp"
+#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "common/common_utils/Timer.hpp"
 
@@ -32,7 +32,7 @@ public:
     {
     }
 
-    RpcLibClient client;
+    MultirotorRpcLibClient client;
     AsyncTasker tasker;
 
     void sleep_for(TTimeDelta wall_clock_dt)

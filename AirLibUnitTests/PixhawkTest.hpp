@@ -2,7 +2,7 @@
 #ifndef msr_AirLibUnitTests_PixhawkTest_hpp
 #define msr_AirLibUnitTests_PixhawkTest_hpp
 
-#include "vehicles/MultiRotorParamsFactory.hpp"
+#include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 #include "TestBase.hpp"
 
 namespace msr { namespace airlib {

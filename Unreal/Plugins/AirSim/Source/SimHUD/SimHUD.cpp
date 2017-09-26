@@ -1,7 +1,7 @@
 #include "SimHUD.h"
 #include "ConstructorHelpers.h"
-#include "Quadrotor/SimModeWorldMultiRotor.h"
-#include "Car4x4/SimModeCar.h"
+#include "Multirotor/SimModeWorldMultiRotor.h"
+#include "Car/SimModeCar.h"
 #include "controllers/Settings.hpp"
 #include "Kismet/KismetSystemLibrary.h"
 

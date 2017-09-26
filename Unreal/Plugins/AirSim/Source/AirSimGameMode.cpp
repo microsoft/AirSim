@@ -4,6 +4,7 @@
 #include "SimHUD/SimHUD.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
+#include "GameFramework/GameUserSettings.h"
 #include "controllers/Settings.hpp"
  
 
@@ -55,8 +56,20 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 }
 
+UGameUserSettings* AAirSimGameMode::GetGameUserSettings()
+{
+    if (GEngine != nullptr)
+    {
+        return GEngine->GameUserSettings;
+    }
+    return nullptr;
+}
+
 void AAirSimGameMode::StartPlay() 
 {
     Super::StartPlay();
+
+    UGameUserSettings* game_settings = GetGameUserSettings();
+    game_settings->SetFullscreenMode(EWindowMode::Fullscreen);
 }
 

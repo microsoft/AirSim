@@ -2,11 +2,11 @@
 #ifndef msr_AirLibUnitTests_SimpleFlightTest_hpp
 #define msr_AirLibUnitTests_SimpleFlightTest_hpp
 
-#include "vehicles/MultiRotorParamsFactory.hpp"
+#include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 #include "TestBase.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "physics/FastPhysicsEngine.hpp"
-#include "controllers/DroneControllerCancelable.hpp"
+#include "vehicles/multirotor/controllers/DroneControllerCancelable.hpp"
 #include "common/SteppableClock.hpp"
 
 namespace msr { namespace airlib {

@@ -68,7 +68,7 @@ void ASimModeBase::readSettings()
         }
     }
 
-    std::string simmode_name = settings.getString("SimMode", "Quadrotor");
+    std::string simmode_name = settings.getString("SimMode", "");
     usage_scenario = settings.getString("UsageScenario", "");
     default_vehicle_config = settings.getString("DefaultVehicleConfig", "SimpleFlight");
    
@@ -79,7 +79,7 @@ void ASimModeBase::readSettings()
     api_server_address = settings.getString("LocalHostIp", "");
     is_record_ui_visible = settings.getBool("RecordUIVisible", true);
 
-    std::string view_mode_string = settings.getString("ViewMode", simmode_name == "Quadrotor" ? "FlyWithMe" : "SpringArmChase");
+    std::string view_mode_string = settings.getString("ViewMode", simmode_name == "" ? "FlyWithMe" : "SpringArmChase");
     if (view_mode_string == "FlyWithMe")
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
     else if (view_mode_string == "Fpv")

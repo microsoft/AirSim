@@ -3,7 +3,6 @@
 
 #include "AirBlueprintLib.h"
 #include "GameFramework/WorldSettings.h"
-#include "Engine/Engine.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/RotatingMovementComponent.h"
