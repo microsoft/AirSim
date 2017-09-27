@@ -1,4 +1,3 @@
-@echo off
 REM //---------- set up variable ----------
 setlocal
 set ROOT_DIR=%CD%

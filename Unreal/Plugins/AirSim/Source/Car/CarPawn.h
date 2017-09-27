@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "VehiclePawnWrapper.h"
 #include "WheeledVehicle.h"
+#include "vehicles/car/api/CarRpcLibServer.hpp"
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;
@@ -71,12 +72,15 @@ public:
 
     void setupInputBindings();
 
+    void enableApiControl(bool is_enabled);
+    bool isApiControlEnabled();
+
     // Begin Actor interface
     virtual void Tick(float Delta) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     VehiclePawnWrapper* getVehiclePawnWrapper();
-    void initializeForBeginPlay();
+    void initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address);
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -109,6 +113,9 @@ public:
 private:
     /** Update the gear and speed strings */
     void UpdateHUDStrings();
+    void startApiServer(bool enable_rpc, const std::string& api_server_address);
+    void stopApiServer();
+    bool isApiServerStarted();
 
     /* Are we on a 'slippery' surface */
     bool bIsLowFriction;
@@ -116,9 +123,6 @@ private:
     UPhysicalMaterial* SlipperyMaterial;
     /** Non Slippery Material instance */
     UPhysicalMaterial* NonSlipperyMaterial;
-
-    std::unique_ptr<VehiclePawnWrapper> wrapper_;
-
 
 public:
     /** Returns InCarSpeed subobject **/
@@ -130,5 +134,10 @@ public:
 
 private:
     UClass* pip_camera_class_;
+    class CarController;
+    std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
+    std::unique_ptr<msr::airlib::CarControllerBase> controller_;
+    std::unique_ptr<VehiclePawnWrapper> wrapper_;
 
+    bool api_control_enabled_ = false;
 };

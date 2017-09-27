@@ -4,10 +4,7 @@
 #include "CarWheelFront.h"
 #include "CarWheelRear.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
 #include "common/common_utils/Utils.hpp"
-#include "Components/InputComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
@@ -15,8 +12,12 @@
 #include "WheeledVehicleMovementComponent4W.h"
 #include "Engine/SkeletalMesh.h"
 #include "GameFramework/Controller.h"
+#include "vehicles/car/controllers/CarControllerBase.hpp"
 #include "AirBlueprintLib.h"
+#include "NedTransform.h"
 #include "PIPCamera.h"
+#include "VehicleCameraConnector.h"
+#include <vector>
 #include "UObject/ConstructorHelpers.h"
 
 // Needed for VR Headset
@@ -29,6 +30,87 @@ const FName ACarPawn::LookRightBinding("LookRight");
 const FName ACarPawn::EngineAudioRPM("RPM");
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
+
+class ACarPawn::CarController : public msr::airlib::CarControllerBase {
+public:
+    typedef msr::airlib::CarControllerBase CarControllerBase;
+    typedef msr::airlib::VehicleCameraBase VehicleCameraBase;
+
+    CarController(ACarPawn* car_pawn)
+        : car_pawn_(car_pawn)
+    {
+        for (int i = 0; i < car_pawn->getVehiclePawnWrapper()->getCameraCount(); ++i) {
+            cameras_.push_back(
+                std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(
+                    car_pawn->getVehiclePawnWrapper()->getCamera())));
+        }
+    }
+
+    virtual std::vector<VehicleCameraBase::ImageResponse> simGetImages(
+        const std::vector<VehicleCameraBase::ImageRequest>& request) override
+    {
+        std::vector<VehicleCameraBase::ImageResponse> response;
+
+        for (const auto& item : request) {
+            VehicleCameraBase* camera = cameras_.at(item.camera_id).get();
+            const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
+            response.push_back(item_response);
+        }
+
+        return response;
+    }
+
+    virtual std::vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) override
+    {
+        std::vector<VehicleCameraBase::ImageRequest> request = { VehicleCameraBase::ImageRequest(camera_id, image_type) };
+        const std::vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
+        if (response.size() > 0)
+            return response.at(0).image_data_uint8;
+        else
+            return std::vector<uint8_t>();
+    }
+
+    virtual void setCarControls(const CarControllerBase::CarControls& controls) override
+    {
+        car_pawn_->GetVehicleMovementComponent()->SetThrottleInput(controls.throttle);
+        car_pawn_->GetVehicleMovementComponent()->SetSteeringInput(controls.steering);
+        car_pawn_->GetVehicleMovementComponent()->SetHandbrakeInput(controls.handbreak);
+    }
+
+    virtual CarControllerBase::CarState getCarState() override
+    {
+        CarControllerBase::CarState state(
+            car_pawn_->GetVehicleMovement()->GetForwardSpeed(),
+            car_pawn_->GetVehicleMovement()->GetCurrentGear(),
+            NedTransform::toNedMeters(car_pawn_->GetActorLocation(), true),
+            NedTransform::toNedMeters(car_pawn_->GetVelocity(), true),
+            NedTransform::toQuaternionr(car_pawn_->GetActorRotation().Quaternion(), true));
+        return state;
+    }
+
+    virtual msr::airlib::GeoPoint getHomeGeoPoint() override
+    {
+        return car_pawn_->getVehiclePawnWrapper()->getHomePoint();
+    }
+
+    virtual void enableApiControl(bool is_enabled) override
+    {
+        car_pawn_->enableApiControl(is_enabled);
+    }
+
+    virtual bool isApiControlEnabled() override
+    {
+        return car_pawn_->isApiControlEnabled();
+    }
+
+    virtual ~CarController()
+    {}
+
+private:
+    ACarPawn* car_pawn_;
+    std::vector<std::unique_ptr<VehicleCameraConnector>> cameras_;
+
+};
 
 ACarPawn::ACarPawn()
 {
@@ -164,7 +246,7 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
         HitNormal, NormalImpulse, Hit);
 }
 
-void ACarPawn::initializeForBeginPlay()
+void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address)
 {
 
     //put camera little bit above vehicle
@@ -178,10 +260,58 @@ void ACarPawn::initializeForBeginPlay()
 
     std::vector<APIPCamera*> cameras = { InternalCamera };
     wrapper_->initialize(this, cameras);
+
+    startApiServer(enable_rpc, api_server_address);
+}
+
+void ACarPawn::enableApiControl(bool is_enabled)
+{
+    api_control_enabled_ = is_enabled;
+}
+
+bool ACarPawn::isApiControlEnabled()
+{
+    return api_control_enabled_;
+}
+
+void ACarPawn::startApiServer(bool enable_rpc, const std::string& api_server_address)
+{
+    if (enable_rpc) {
+        controller_.reset(new CarController(this));
+
+
+#ifdef AIRLIB_NO_RPC
+        rpclib_server_.reset(new msr::airlib::DebugApiServer());
+#else
+        rpclib_server_.reset(new msr::airlib::CarRpcLibServer(controller_.get(), api_server_address));
+#endif
+
+        rpclib_server_->start();
+        UAirBlueprintLib::LogMessageString("API server started at ",
+            api_server_address == "" ? "(default)" : api_server_address.c_str(), LogDebugLevel::Informational);
+    }
+    else
+        UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
+
+}
+void ACarPawn::stopApiServer()
+{
+    if (rpclib_server_ != nullptr) {
+        rpclib_server_->stop();
+        rpclib_server_.reset(nullptr);
+        controller_.reset(nullptr);
+    }
+}
+
+bool ACarPawn::isApiServerStarted()
+{
+    return rpclib_server_ != nullptr;
 }
 
 void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    stopApiServer();
+
     if (InternalCamera)
         InternalCamera->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
     InternalCamera = nullptr;
@@ -226,31 +356,46 @@ void ACarPawn::setupInputBindings()
 
 void ACarPawn::MoveForward(float Val)
 {
-    UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
-    GetVehicleMovementComponent()->SetThrottleInput(Val);
-
+        GetVehicleMovementComponent()->SetThrottleInput(Val);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Throttle: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
 void ACarPawn::MoveRight(float Val)
 {
-    UAirBlueprintLib::LogMessage(TEXT("Steering: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Steering: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
-    GetVehicleMovementComponent()->SetSteeringInput(Val);
+        GetVehicleMovementComponent()->SetSteeringInput(Val);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Steering: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
 void ACarPawn::OnHandbrakePressed()
 {
-    UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Pressed"), LogDebugLevel::Informational);
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Pressed"), LogDebugLevel::Informational);
 
-    GetVehicleMovementComponent()->SetHandbrakeInput(true);
+        GetVehicleMovementComponent()->SetHandbrakeInput(true);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
 void ACarPawn::OnHandbrakeReleased()
 {
-    UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Released"), LogDebugLevel::Informational);
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Released"), LogDebugLevel::Informational);
 
-    GetVehicleMovementComponent()->SetHandbrakeInput(false);
+        GetVehicleMovementComponent()->SetHandbrakeInput(false);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
 void ACarPawn::Tick(float Delta)

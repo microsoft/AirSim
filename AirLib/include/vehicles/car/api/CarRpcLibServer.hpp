@@ -13,7 +13,7 @@ namespace msr { namespace airlib {
 
 class CarRpcLibServer : public ControlServerBase {
 public:
-    CarRpcLibServer(CarControllerBase* vehicle, string server_address, uint16_t port = 41451);
+    CarRpcLibServer(CarControllerBase* vehicle, string server_address, uint16_t port = 42451);
     virtual void start(bool block = false) override;
     virtual void stop() override;
     virtual ~CarRpcLibServer() override;

@@ -69,6 +69,21 @@ CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_addre
         return result;
     });
 
+    pimpl_->server.bind("setCarControls", [&](const RpcLibAdapators::CarControls& controls) -> void {
+        vehicle_->setCarControls(controls.to());
+    });
+
+    pimpl_->server.bind("getCarState", [&]() -> RpcLibAdapators::CarState {
+        return RpcLibAdapators::CarState(vehicle_->getCarState());
+    });
+
+    pimpl_->server.bind("getHomeGeoPoint", [&]() -> RpcLibAdapators::GeoPoint { 
+        return vehicle_->getHomeGeoPoint(); 
+    });
+
+    pimpl_->server.bind("enableApiControl", [&](bool is_enabled) -> void { vehicle_->enableApiControl(is_enabled); });
+    pimpl_->server.bind("isApiControlEnabled", [&]() -> bool { return vehicle_->isApiControlEnabled(); });
+    
     pimpl_->server.suppress_exceptions(true);
 }
 

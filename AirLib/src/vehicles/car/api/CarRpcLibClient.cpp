@@ -62,7 +62,14 @@ CarRpcLibClient::ConnectionState CarRpcLibClient::getConnectionState()
         return ConnectionState::Unknown;
     }
 }
-
+void CarRpcLibClient::enableApiControl(bool is_enabled)
+{
+    pimpl_->client.call("enableApiControl", is_enabled);
+}
+bool CarRpcLibClient::isApiControlEnabled()
+{
+    return pimpl_->client.call("isApiControlEnabled").as<bool>();
+}
 vector<VehicleCameraBase::ImageResponse> CarRpcLibClient::simGetImages(vector<VehicleCameraBase::ImageRequest> request)
 {
     const auto& response_adaptor = pimpl_->client.call("simGetImages", 
@@ -80,6 +87,22 @@ vector<uint8_t> CarRpcLibClient::simGetImage(int camera_id, VehicleCameraBase::I
         result.clear();
     }
     return result;
+}
+
+void CarRpcLibClient::setCarControls(const CarControllerBase::CarControls& controls)
+{
+    pimpl_->client.call("setCarControls", CarRpcLibAdapators::CarControls(controls));
+}
+
+CarControllerBase::CarState CarRpcLibClient::getCarState()
+{
+    return pimpl_->client.call("getCarState").as<CarRpcLibAdapators::CarState>().to();
+
+}
+
+msr::airlib::GeoPoint CarRpcLibClient::getHomeGeoPoint()
+{
+    return pimpl_->client.call("getHomeGeoPoint").as<CarRpcLibAdapators::GeoPoint>().to();
 }
 
 void CarRpcLibClient::confirmConnection()

@@ -15,8 +15,8 @@ namespace msr { namespace airlib {
 
 class MultirotorRpcLibClient {
 public:
-    enum class ConnectionState {
-        Initial, Connected, Disconnected, Reset, Unknown
+    enum class ConnectionState : uint {
+        Initial = 0, Connected, Disconnected, Reset, Unknown
     };
 public:
     MultirotorRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
