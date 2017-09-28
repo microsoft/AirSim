@@ -356,7 +356,6 @@ void ACarPawn::setupInputBindings()
 
     UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReversePressed, true);
     UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReverseReleased, false);
-    //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReverseReleased, false);
 
 
     //PlayerInputComponent->BindAxis("MoveForward", this, &ACarPawn::MoveForward);
