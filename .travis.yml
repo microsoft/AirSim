@@ -18,14 +18,14 @@ matrix:
         - docker
 
     # OS X CMake
-    - os: osx
-      sudo: required
-      osx_image: xcode8.2
-      compiler:
-        - clang
-      env:
-        - TOOL="cmake"
-        - DESCRIPTION="OS X build/test via CMake"
+    #- os: osx
+    #  sudo: required
+    #  osx_image: xcode8.2
+    #  compiler:
+    #    - clang
+    #  env:
+    #    - TOOL="cmake"
+    #    - DESCRIPTION="OS X build/test via CMake"
 
 # docker exec xenial apt-get -y install clang libclang-3.8-dev;
 install:

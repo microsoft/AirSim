@@ -4,7 +4,7 @@
 #ifndef msr_airlib_vehicles_Px4MultiRotor_hpp
 #define msr_airlib_vehicles_Px4MultiRotor_hpp
 
-#include "controllers/MavLinkDroneController.hpp"
+#include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
 #include "controllers/Settings.hpp"
 
 
