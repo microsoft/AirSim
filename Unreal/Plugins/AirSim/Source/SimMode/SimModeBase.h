@@ -5,6 +5,7 @@
 #include "CameraDirector.h"
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
+#include "VehiclePawnWrapper.h"
 #include "Recording/RecordingFile.h"
 #include "SimModeBase.generated.h"
 
@@ -42,7 +43,7 @@ public:
 
     //must be implemented by derived class
     //can't use pure virtual because of restriction with Unreal
-    virtual AVehiclePawnBase* getFpvVehiclePawn();
+    virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper();
 
     RecordingFile& getRecordingFile();
 
@@ -67,7 +68,7 @@ protected: //settings
 
 private:
     void readSettings();
-    void initializeSettings();
+    void setStencilIDs();
 
 private:
     std::unique_ptr<RecordingFile> recording_file_;

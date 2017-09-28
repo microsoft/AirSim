@@ -11,7 +11,7 @@ int getOneImage()
     
     msr::airlib::RpcLibClient client;
 
-    vector<uint8_t> png_image = client.simGetImage(0, DroneControlBase::ImageType::DepthVis);
+    vector<uint8_t> png_image = client.simGetImage(0, VehicleCameraBase::ImageType::DepthVis);
     //do something with images
 }
 ```
@@ -28,11 +28,13 @@ int getStereoAndDepthImages()
     using namespace std;
     using namespace msr::airlib;
     
-    typedef DroneControllerBase::ImageRequest ImageRequest;
+    typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType_ ImageType_;
 
-    msr::airlib::RpcLibClient client;
+    //for car use
+    //msr::airlib::CarRpcLibClient client;
+    msr::airlib::MultirotorRpcLibClient client;
 
     //get right, left and depth images. First two as png, second as float16.
     vector<ImageRequest> request = { 
@@ -44,7 +46,7 @@ int getStereoAndDepthImages()
     //do something with response which contains image data, pose, timestamp etc
 }
 ```
-For a ready to run sample code please see [sample code in HelloDrone project](../HelloDrone/main.cpp). 
+For a ready to run sample code please see [sample code in HelloDrone project](../HelloDrone/main.cpp) for multirotors or [HelloCar project](../HelloCar/main.cpp). 
 
 See also [complete code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to pfm format.
 

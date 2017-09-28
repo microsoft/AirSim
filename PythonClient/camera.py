@@ -30,7 +30,7 @@ if (not cameraType in cameraTypeMap):
 
 print (cameraTypeMap[cameraType])
 
-client = AirSimClient('127.0.0.1')
+client = MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
@@ -55,7 +55,7 @@ while True:
         print("Camera is not returning image, please check airsim for error messages")
         sys.exit(0)
     else:
-        png = cv2.imdecode(AirSimClient.stringToUint8Array(rawImage), cv2.IMREAD_UNCHANGED)
+        png = cv2.imdecode(MultirotorClient.stringToUint8Array(rawImage), cv2.IMREAD_UNCHANGED)
         cv2.putText(png,'FPS ' + str(fps),textOrg, fontFace, fontScale,(255,0,255),thickness)
         cv2.imshow("Depth", png)
 

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>cv_mode.py</StartupFile>
+    <StartupFile>hello_drone.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -29,6 +29,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cv_mode.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="hello_car.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="hello_drone.py">

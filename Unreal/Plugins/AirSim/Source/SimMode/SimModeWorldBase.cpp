@@ -29,7 +29,7 @@ void ASimModeWorldBase::BeginPlay()
 
 
         manual_pose_controller->initializeForPlay();
-        manual_pose_controller->setActor(getFpvVehiclePawn());
+        manual_pose_controller->setActor(getFpvVehiclePawnWrapper()->getPawn());
     }
 }
 

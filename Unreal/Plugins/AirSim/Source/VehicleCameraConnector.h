@@ -5,7 +5,7 @@
 #include "controllers/VehicleCameraBase.hpp"
 
 
-class VehicleCameraConnector : public VehicleCameraBase
+class VehicleCameraConnector : public msr::airlib::VehicleCameraBase
 {
 public:
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;

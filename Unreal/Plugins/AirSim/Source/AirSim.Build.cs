@@ -76,12 +76,13 @@ public class AirSim : ModuleRules
         //below is no longer supported in 4.16
         bEnableExceptions = true;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "PhysXVehicles" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
         Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
         Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
+        Definitions.Add("HMD_MODULE_INCLUDED=0");
 
         PrivateIncludePaths.Add(Path.Combine(AirLibPath, "include"));
         PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));

@@ -3,12 +3,12 @@
 
 #include "AirBlueprintLib.h"
 #include "GameFramework/WorldSettings.h"
-#include "Engine/Engine.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include <exception>
 #include "common/common_utils/Utils.hpp"
+#include "Components/StaticMeshComponent.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -184,7 +184,7 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
 
 template<class UserClass>
 FInputActionBinding& UAirBlueprintLib::BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor, 
-    typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func,
+    typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func, bool on_press_or_release,
     bool shift_key, bool control_key, bool alt_key, bool command_key)
 {
     FInputActionKeyMapping action(action_name, in_key, shift_key, control_key, alt_key, command_key);
@@ -193,7 +193,7 @@ FInputActionBinding& UAirBlueprintLib::BindActionToKey(const FName action_name, 
 
     controller->PlayerInput->AddActionMapping(action);
     return controller->InputComponent->
-        BindAction(action_name, IE_Released, actor, func);
+        BindAction(action_name, on_press_or_release ? IE_Pressed : IE_Released, actor, func);
 }
 
 

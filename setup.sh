@@ -18,7 +18,7 @@ if [ "$(uname)" == "Darwin" ]; then
 
     #below takes way too long
     # brew install llvm@3.9
-    brew install homebrew/versions/llvm39
+    brew install --force-bottle homebrew/versions/llvm39
 else
     if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
         sudo /usr/sbin/useradd -G dialout $USER

@@ -4,14 +4,9 @@
 #include "SimHUD/SimHUD.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
+#include "GameFramework/GameUserSettings.h"
 #include "controllers/Settings.hpp"
  
-////for OutputDebugString
-//#ifdef _MSC_VER
-//#define WIN32_LEAN_AND_MEAN
-//#include <windows.h>
-//#endif
-
 
 class AUnrealLog : public msr::airlib::Utils::Logger
 {
@@ -61,8 +56,20 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 }
 
+UGameUserSettings* AAirSimGameMode::GetGameUserSettings()
+{
+    if (GEngine != nullptr)
+    {
+        return GEngine->GameUserSettings;
+    }
+    return nullptr;
+}
+
 void AAirSimGameMode::StartPlay() 
 {
     Super::StartPlay();
+
+    UGameUserSettings* game_settings = GetGameUserSettings();
+    game_settings->SetFullscreenMode(EWindowMode::Fullscreen);
 }
 
