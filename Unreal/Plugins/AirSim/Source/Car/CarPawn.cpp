@@ -196,6 +196,9 @@ ACarPawn::ACarPawn()
     Vehicle4W->TransmissionSetup.GearSwitchTime = 0.15f;
     Vehicle4W->TransmissionSetup.GearAutoBoxLatency = 1.0f;
 
+    // Disable reverse as brake
+    Vehicle4W->bReverseAsBrake = false;
+
     // Physics settings
     // Adjust the center of mass - the buggy is quite low
     UPrimitiveComponent* UpdatedPrimitive = Cast<UPrimitiveComponent>(Vehicle4W->UpdatedComponent);
@@ -352,7 +355,10 @@ void ACarPawn::setupInputBindings()
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this,
         this, &ACarPawn::MoveForward);
 
-    &UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this,
+        this, &ACarPawn::MoveForward);
+
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightY, -1), this,
         this, &ACarPawn::MoveForward);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 1), this,
@@ -361,8 +367,14 @@ void ACarPawn::setupInputBindings()
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -1), this,
         this, &ACarPawn::MoveRight);
 
-    UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::SpaceBar, this, &ACarPawn::OnHandbrakePressed, true);
-    UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::SpaceBar, this, &ACarPawn::OnHandbrakeReleased, false);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this,
+        this, &ACarPawn::MoveRight);
+
+    GetVehicleMovementComponent()->bReverseAsBrake = false;
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::SpaceBar, 1), this, 
+        this, &ACarPawn::FootBrake);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_RightTriggerAxis, 1), this,
+        this, &ACarPawn::FootBrake);
 
     //PlayerInputComponent->BindAxis("MoveForward", this, &ACarPawn::MoveForward);
     //PlayerInputComponent->BindAxis("MoveRight", this, &ACarPawn::MoveRight);
@@ -398,26 +410,15 @@ void ACarPawn::MoveRight(float Val)
         UAirBlueprintLib::LogMessage(TEXT("Steering: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
-void ACarPawn::OnHandbrakePressed()
+void ACarPawn::FootBrake(float Val)
 {
     if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Pressed"), LogDebugLevel::Informational);
+        UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
-        GetVehicleMovementComponent()->SetHandbrakeInput(true);
+        GetVehicleMovementComponent()->SetBrakeInput(Val);
     }
     else
-        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("(API)"), LogDebugLevel::Informational);
-}
-
-void ACarPawn::OnHandbrakeReleased()
-{
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("Released"), LogDebugLevel::Informational);
-
-        GetVehicleMovementComponent()->SetHandbrakeInput(false);
-    }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Handbreak: "), TEXT("(API)"), LogDebugLevel::Informational);
+        UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
 void ACarPawn::Tick(float Delta)
