@@ -4,7 +4,7 @@
 #ifndef msr_airlib_vehicles_RosFlightQuadX_hpp
 #define msr_airlib_vehicles_RosFlightQuadX_hpp
 
-#include "firmwares/ros_flight/RosFlightDroneController.hpp"
+#include "vehicles/multirotor/firmwares/ros_flight/RosFlightDroneController.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "controllers/Settings.hpp"
 
