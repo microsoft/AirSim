@@ -90,8 +90,6 @@ protected:
 public:
     // End Actor interface
 
-    /** Handle pressing forwards */
-    void MoveForward(float Val);
 
     /** Setup the strings used on the hud */
     void UpdateInCarHUD();
@@ -99,8 +97,12 @@ public:
     /** Update the physics material used by the vehicle mesh */
     void UpdatePhysicsMaterial();
 
+    /** Handle pressing forwards */
+    void MoveForward(float Val);
     /** Handle pressing right */
     void MoveRight(float Val);
+    /** Handle pressiong footbrake */
+    void FootBrake(float Val);
     /** Handle handbrake pressed */
     void OnHandbrakePressed();
     /** Handle handbrake released */

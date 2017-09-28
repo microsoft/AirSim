@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AirSimGameMode.generated.h"
 
+class UGameUserSettings;
 /**
  * 
  */

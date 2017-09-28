@@ -4,6 +4,7 @@
 #ifndef air_CarControllerBase_hpp
 #define air_CarControllerBase_hpp
 
+#include "common/CommonStructs.hpp"
 #include "controllers/VehicleCameraBase.hpp"
 #include "common/VectorMath.hpp"
 

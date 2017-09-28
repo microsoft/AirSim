@@ -9,6 +9,7 @@
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 #include "Components/StaticMeshComponent.h"
+#include "Engine.h"
 
 /*
 //TODO: change naming conventions to same as other files?
