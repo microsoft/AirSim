@@ -170,7 +170,7 @@
     <ClInclude Include="include\vehicles\multirotor\RotorParams.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\vehicles\multirotor\controllers\DroneControllerBase.cpp" />
+    <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />
     <ClCompile Include="src\common\common_utils\FileSystem.cpp" />

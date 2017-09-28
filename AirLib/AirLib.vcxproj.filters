@@ -479,5 +479,8 @@
     <ClCompile Include="src\vehicles\multirotor\api\MultirotorRpcLibClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\controllers\DroneControllerBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
