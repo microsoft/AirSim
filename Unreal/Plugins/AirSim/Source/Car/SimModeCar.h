@@ -23,6 +23,7 @@ public:
     virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() override;
 
     void createVehicles(std::vector<VehiclePtr>& vehicles);
+    virtual void reset() override;
 
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);

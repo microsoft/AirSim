@@ -30,6 +30,7 @@ For this you will need one of the supported device listed above. For manual flig
 8. In [AirSim settings](settings.md) file, specify PX4 for your vehicle config like this:
 ```
 {
+  "SettingdVersion": 1.0,
   "DefaultVehicleConfig": "Pixhawk"
 }
 ```

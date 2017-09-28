@@ -163,6 +163,8 @@ std::string ASimModeBase::getReport()
 void ASimModeBase::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
+
+    UAirBlueprintLib::BindActionToKey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeBase::reset);
 }
 
 bool ASimModeBase::isRecording()

@@ -62,6 +62,7 @@ To active this mode, edit [settings.json](settings.json) that you can find in yo
 
 ```
 {
+  "SettingdVersion": 1.0,
   "UsageScenario": "ComputerVision"
 }
 ```

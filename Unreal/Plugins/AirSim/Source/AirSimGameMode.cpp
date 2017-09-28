@@ -4,7 +4,6 @@
 #include "SimHUD/SimHUD.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
-#include "GameFramework/GameUserSettings.h"
 #include "controllers/Settings.hpp"
  
 
@@ -69,7 +68,8 @@ void AAirSimGameMode::StartPlay()
 {
     Super::StartPlay();
 
-    UGameUserSettings* game_settings = GetGameUserSettings();
-    game_settings->SetFullscreenMode(EWindowMode::Fullscreen);
+    //UGameUserSettings* game_settings = GetGameUserSettings();
+    //game_settings->SetFullscreenMode(EWindowMode::WindowedFullscreen);
+    //game_settings->ApplySettings(true);
 }
 

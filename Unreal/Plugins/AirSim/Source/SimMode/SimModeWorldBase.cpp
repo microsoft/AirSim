@@ -166,9 +166,3 @@ void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles)
     //Unreal doesn't allow pure abstract methods in actors
 }
 
-void ASimModeWorldBase::setupInputBindings()
-{
-    Super::setupInputBindings();
-
-    UAirBlueprintLib::BindActionToKey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeWorldBase::reset);
-}
