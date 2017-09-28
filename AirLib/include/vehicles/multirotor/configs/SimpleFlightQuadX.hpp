@@ -4,7 +4,7 @@
 #ifndef msr_airlib_vehicles_SimpleFlightQuadX_hpp
 #define msr_airlib_vehicles_SimpleFlightQuadX_hpp
 
-#include "firmwares/simple_flight/SimpleFlightDroneController.hpp"
+#include "vehicles/multirotor/firmwares/simple_flight/SimpleFlightDroneController.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "controllers/Settings.hpp"
 

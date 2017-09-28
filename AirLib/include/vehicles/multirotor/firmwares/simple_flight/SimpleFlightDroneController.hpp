@@ -4,7 +4,7 @@
 #ifndef msr_airlib_SimpleFlightDroneController_hpp
 #define msr_airlib_SimpleFlightDroneController_hpp
 
-#include "controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "sensors/SensorCollection.hpp"
 #include "physics/Environment.hpp"
 #include "physics/Kinematics.hpp"

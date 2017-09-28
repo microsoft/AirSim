@@ -4,7 +4,7 @@
 #ifndef msr_airlib_RosFlightDroneController_hpp
 #define msr_airlib_RosFlightDroneController_hpp
 
-#include "controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "sensors/SensorCollection.hpp"
 #include "physics/Environment.hpp"
 #include "physics/Kinematics.hpp"
