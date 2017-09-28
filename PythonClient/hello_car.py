@@ -22,7 +22,7 @@ while True:
     #for response in responses:
     #    if response.pixels_as_float:
     #        print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-    #        AirSimClient.write_pfm(os.path.normpath('/temp/py1.pfm'), AirSimClient.getPfmArray(response))
+    #        CarClient.write_pfm(os.path.normpath('/temp/py1.pfm'), MultirotorClient.getPfmArray(response))
     #    else:
     #        print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
-    #        AirSimClient.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)
+    #        CarClient.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)

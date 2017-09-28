@@ -6,6 +6,7 @@
 
 #include "controllers/VehicleCameraBase.hpp"
 #include "common/VectorMath.hpp"
+#include "common/CommonStructs.hpp"
 
 namespace msr { namespace airlib {
 
@@ -15,9 +16,14 @@ public:
         float throttle = 0;
         float steering = 0;
         bool handbreak = false;
+        bool is_manual_gear = false;
+        int manual_gear = 0;
+        bool gear_immediate = false;
 
-        CarControls(float throttle_val, float steering_val, bool handbreak_val)
-            : throttle(throttle_val), steering(steering_val), handbreak(handbreak_val)
+        CarControls(float throttle_val, float steering_val, bool handbreak_val,
+            bool is_manual_gear_val, int manual_gear_val, bool gear_immediate_val)
+            : throttle(throttle_val), steering(steering_val), handbreak(handbreak_val),
+            is_manual_gear(is_manual_gear_val), manual_gear(manual_gear_val), gear_immediate(gear_immediate_val)
         {
         }
     };
@@ -45,6 +51,7 @@ public:
     virtual void enableApiControl(bool is_enabled) = 0;
     virtual bool isApiControlEnabled() = 0;
 
+    virtual ~CarControllerBase() = default;
 };
 
 

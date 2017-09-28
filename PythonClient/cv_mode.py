@@ -3,12 +3,12 @@
 
 from PythonClient import *
 
-client = AirSimClient()
+client = MultirotorClient()
 client.confirmConnection()
 
 for x in range(3): # do 5 times
     z = x * -20 - 5
-    # you can also use AirSimClient.toQuaternion(0, 0, x) to generate quaternion
+    # you can also use MultirotorClient.toQuaternion(0, 0, x) to generate quaternion
     client.simSetPose(Vector3r(1, 1, z), Quaternionr(0, 0, 0, 1))
 
     responses = client.simGetImages([
@@ -22,7 +22,7 @@ for x in range(3): # do 5 times
     for i, response in enumerate(responses):
         if response.pixels_as_float:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-            AirSimClient.write_pfm(os.path.normpath('/temp/cv_mode_' + str(x) + "_" + str(i) + '.pfm'), AirSimClient.getPfmArray(response))
+            MultirotorClient.write_pfm(os.path.normpath('/temp/cv_mode_' + str(x) + "_" + str(i) + '.pfm'), MultirotorClient.getPfmArray(response))
         else:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
-            AirSimClient.write_file(os.path.normpath('/temp/cv_mode_' + str(x) + "_" + str(i) + '.png'), response.image_data_uint8)
+            MultirotorClient.write_file(os.path.normpath('/temp/cv_mode_' + str(x) + "_" + str(i) + '.png'), response.image_data_uint8)

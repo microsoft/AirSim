@@ -10,6 +10,7 @@
 #include "vehicles/car/api/CarRpcLibClient.hpp"
 
 #include "common/Common.hpp"
+#include "common/ClockFactory.hpp"
 #include <thread>
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK

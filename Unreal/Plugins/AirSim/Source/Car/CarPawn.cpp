@@ -52,6 +52,8 @@ public:
         std::vector<VehicleCameraBase::ImageResponse> response;
 
         for (const auto& item : request) {
+            if (item.camera_id < 0 || item.camera_id >= cameras_.size())
+                throw std::out_of_range("Camera id is not valid");
             VehicleCameraBase* camera = cameras_.at(item.camera_id).get();
             const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
             response.push_back(item_response);
@@ -72,9 +74,15 @@ public:
 
     virtual void setCarControls(const CarControllerBase::CarControls& controls) override
     {
-        car_pawn_->GetVehicleMovementComponent()->SetThrottleInput(controls.throttle);
-        car_pawn_->GetVehicleMovementComponent()->SetSteeringInput(controls.steering);
-        car_pawn_->GetVehicleMovementComponent()->SetHandbrakeInput(controls.handbreak);
+        UWheeledVehicleMovementComponent* movement = car_pawn_->GetVehicleMovementComponent();
+        movement->SetThrottleInput(controls.throttle);
+        movement->SetSteeringInput(controls.steering);
+        movement->SetHandbrakeInput(controls.handbreak);
+
+        if (movement->GetUseAutoGears() != !controls.is_manual_gear)
+            movement->SetUseAutoGears(!controls.is_manual_gear);
+        if (controls.is_manual_gear && movement->GetTargetGear() != controls.manual_gear)
+            movement->SetTargetGear(controls.manual_gear, controls.gear_immediate);
     }
 
     virtual CarControllerBase::CarState getCarState() override
@@ -103,8 +111,7 @@ public:
         return car_pawn_->isApiControlEnabled();
     }
 
-    virtual ~CarController()
-    {}
+    virtual ~CarController() = default;
 
 private:
     ACarPawn* car_pawn_;
@@ -201,10 +208,15 @@ ACarPawn::ACarPawn()
     Vehicle4W->InertiaTensorScale = FVector(1.0f, 1.333f, 1.2f);
 
     // Create In-Car camera component 
-    InternalCameraOrigin = FVector(-34.0f, -10.0f, 50.0f);
-    InternalCameraBase = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase"));
-    InternalCameraBase->SetRelativeLocation(InternalCameraOrigin);
-    InternalCameraBase->SetupAttachment(GetMesh());
+    InternalCameraBase1 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase1"));
+    InternalCameraBase1->SetRelativeLocation(FVector(-34.0f, 0, 50.0f));
+    InternalCameraBase1->SetupAttachment(GetMesh());
+    InternalCameraBase2 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase2"));
+    InternalCameraBase2->SetRelativeLocation(FVector(-34.0f, -10, 50.0f));
+    InternalCameraBase2->SetupAttachment(GetMesh());
+    InternalCameraBase3 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase3"));
+    InternalCameraBase3->SetRelativeLocation(FVector(-34.0f, 10, 50.0f));
+    InternalCameraBase3->SetupAttachment(GetMesh());
 
     // In car HUD
     // Create text render component for in car speed display
@@ -253,12 +265,16 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     FTransform camera_transform(FVector(0, 0, 0));
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    InternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
-    InternalCamera->AttachToComponent(InternalCameraBase, FAttachmentTransformRules::KeepRelativeTransform);
+    InternalCamera1 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    InternalCamera1->AttachToComponent(InternalCameraBase1, FAttachmentTransformRules::KeepRelativeTransform);
+    InternalCamera2 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    InternalCamera2->AttachToComponent(InternalCameraBase2, FAttachmentTransformRules::KeepRelativeTransform);
+    InternalCamera3 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    InternalCamera3->AttachToComponent(InternalCameraBase3, FAttachmentTransformRules::KeepRelativeTransform);
 
     setupInputBindings();
 
-    std::vector<APIPCamera*> cameras = { InternalCamera };
+    std::vector<APIPCamera*> cameras = { InternalCamera1, InternalCamera2, InternalCamera3 };
     wrapper_->initialize(this, cameras);
 
     startApiServer(enable_rpc, api_server_address);
@@ -312,9 +328,15 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     stopApiServer();
 
-    if (InternalCamera)
-        InternalCamera->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-    InternalCamera = nullptr;
+    if (InternalCamera1)
+        InternalCamera1->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+    InternalCamera1 = nullptr;
+    if (InternalCamera2)
+        InternalCamera2->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+    InternalCamera2 = nullptr;
+    if (InternalCamera3)
+        InternalCamera3->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+    InternalCamera3 = nullptr;
 }
 
 

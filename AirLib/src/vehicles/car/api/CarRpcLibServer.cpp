@@ -43,7 +43,7 @@ struct CarRpcLibServer::impl {
     rpc::server server;
 };
 
-typedef msr::airlib_rpclib::CarRpcLibAdapators RpcLibAdapators;
+typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
 CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_address, uint16_t port)
     : vehicle_(vehicle)
@@ -56,9 +56,9 @@ CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_addre
 
 
     //sim only
-    pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapators::ImageRequest>& request_adapter) -> vector<RpcLibAdapators::ImageResponse> { 
-        const auto& response = vehicle_->simGetImages(RpcLibAdapators::ImageRequest::to(request_adapter)); 
-        return RpcLibAdapators::ImageResponse::from(response);
+    pimpl_->server.bind("simGetImages", [&](const std::vector<CarRpcLibAdapators::ImageRequest>& request_adapter) -> vector<CarRpcLibAdapators::ImageResponse> { 
+        const auto& response = vehicle_->simGetImages(CarRpcLibAdapators::ImageRequest::to(request_adapter)); 
+        return CarRpcLibAdapators::ImageResponse::from(response);
     });
     pimpl_->server.bind("simGetImage", [&](uint8_t camera_id, VehicleCameraBase::ImageType type) -> vector<uint8_t> { 
         auto result = vehicle_->simGetImage(camera_id, type); 
@@ -69,15 +69,15 @@ CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_addre
         return result;
     });
 
-    pimpl_->server.bind("setCarControls", [&](const RpcLibAdapators::CarControls& controls) -> void {
+    pimpl_->server.bind("setCarControls", [&](const CarRpcLibAdapators::CarControls& controls) -> void {
         vehicle_->setCarControls(controls.to());
     });
 
-    pimpl_->server.bind("getCarState", [&]() -> RpcLibAdapators::CarState {
-        return RpcLibAdapators::CarState(vehicle_->getCarState());
+    pimpl_->server.bind("getCarState", [&]() -> CarRpcLibAdapators::CarState {
+        return CarRpcLibAdapators::CarState(vehicle_->getCarState());
     });
 
-    pimpl_->server.bind("getHomeGeoPoint", [&]() -> RpcLibAdapators::GeoPoint { 
+    pimpl_->server.bind("getHomeGeoPoint", [&]() -> CarRpcLibAdapators::GeoPoint { 
         return vehicle_->getHomeGeoPoint(); 
     });
 

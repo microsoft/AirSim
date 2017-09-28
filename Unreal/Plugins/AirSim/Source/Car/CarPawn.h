@@ -26,11 +26,19 @@ class ACarPawn : public AWheeledVehicle
 
     /** SCene component for the In-Car view origin */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    class USceneComponent* InternalCameraBase;
+    class USceneComponent* InternalCameraBase1;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    class USceneComponent* InternalCameraBase2;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    class USceneComponent* InternalCameraBase3;
 
     /** Camera component for the In-Car view */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    APIPCamera* InternalCamera;
+    APIPCamera* InternalCamera1;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    APIPCamera* InternalCamera2;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    APIPCamera* InternalCamera3;
 
     /** Text component for the In-Car speed */
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -66,9 +74,6 @@ public:
     /** Are we in reverse gear */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly)
     bool bInReverseGear;
-
-    /** Initial offset of incar camera */
-    FVector InternalCameraOrigin;
 
     void setupInputBindings();
 
