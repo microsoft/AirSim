@@ -348,11 +348,16 @@ void ACarPawn::setupInputBindings()
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this,
         this, &ACarPawn::MoveRight);
 
-    GetVehicleMovementComponent()->bReverseAsBrake = false;
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::SpaceBar, 1), this, 
         this, &ACarPawn::FootBrake);
+
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_RightTriggerAxis, 1), this,
         this, &ACarPawn::FootBrake);
+
+    UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReversePressed, true);
+    UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReverseReleased, false);
+    //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReverseReleased, false);
+
 
     //PlayerInputComponent->BindAxis("MoveForward", this, &ACarPawn::MoveForward);
     //PlayerInputComponent->BindAxis("MoveRight", this, &ACarPawn::MoveRight);
@@ -368,6 +373,14 @@ void ACarPawn::setupInputBindings()
 
 void ACarPawn::MoveForward(float Val)
 {
+    // NOTE: This causes the reverse gear to be set suddenly.
+    //       If the vehicle is not already at rest, it will 
+    //       immediately start moving in reverse direction.
+    if (Val < 0)
+        OnReversePressed();
+    else
+        OnReverseReleased();
+
     if (!api_control_enabled_) {
         UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
@@ -398,6 +411,52 @@ void ACarPawn::FootBrake(float Val)
     else
         UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
+
+void ACarPawn::OnReversePressed()
+{
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("Pressed"), LogDebugLevel::Informational);
+
+        GetVehicleMovementComponent()->SetTargetGear(-1, true);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);
+}
+
+void ACarPawn::OnReverseReleased()
+{
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("Released"), LogDebugLevel::Informational);
+
+        GetVehicleMovementComponent()->SetTargetGear(1, true);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);
+}
+
+void ACarPawn::OnHandbrakePressed()
+{
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("Pressed"), LogDebugLevel::Informational);
+
+        GetVehicleMovementComponent()->SetHandbrakeInput(true);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
+}
+
+void ACarPawn::OnHandbrakeReleased()
+{
+    if (!api_control_enabled_) {
+        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("Released"), LogDebugLevel::Informational);
+
+        GetVehicleMovementComponent()->SetHandbrakeInput(false);
+    }
+    else
+        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
+}
+
+
 
 void ACarPawn::Tick(float Delta)
 {

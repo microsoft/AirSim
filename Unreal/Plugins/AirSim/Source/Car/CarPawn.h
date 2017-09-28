@@ -103,9 +103,13 @@ public:
     void MoveRight(float Val);
     /** Handle pressiong footbrake */
     void FootBrake(float Val);
-    /** Handle handbrake pressed */
+    /** Handle Reverse pressed */
+    void OnReversePressed();
+    /** Handle Reverse released */
+    void OnReverseReleased();
+    /** Handle Handbrake pressed */
     void OnHandbrakePressed();
-    /** Handle handbrake released */
+    /** Handle Handbrake released */
     void OnHandbrakeReleased();
 
     static const FName LookUpBinding;
