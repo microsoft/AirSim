@@ -170,7 +170,7 @@ class AirSimClientBase:
         return np.reshape(np.asarray(flst, np.float32), (height, width))
     @staticmethod
     def getPfmArray(response):
-        return AirSimClient.listTo2DFloatArray(response.image_data_float, response.width, response.height)
+        return AirSimClientBase.listTo2DFloatArray(response.image_data_float, response.width, response.height)
 
     @staticmethod
     def write_file(filename, bstr):

@@ -70,8 +70,14 @@ void ASimModeBase::readSettings()
 
     std::string simmode_name = settings.getString("SimMode", "");
     usage_scenario = settings.getString("UsageScenario", "");
-    default_vehicle_config = settings.getString("DefaultVehicleConfig", "SimpleFlight");
-   
+    default_vehicle_config = settings.getString("DefaultVehicleConfig", "");
+    if (default_vehicle_config == "") {
+        if (simmode_name == "")
+            default_vehicle_config = "SimpleFlight";
+        else
+            default_vehicle_config = "PhysXCar4x4";
+    }
+
     enable_rpc = settings.getBool("RpcEnabled", true);
     //by default we spawn server at local endpoint. Do not use 127.0.0.1 as default below
     //because for docker container default is 0.0.0.0 and people get really confused why things
@@ -79,7 +85,15 @@ void ASimModeBase::readSettings()
     api_server_address = settings.getString("LocalHostIp", "");
     is_record_ui_visible = settings.getBool("RecordUIVisible", true);
 
-    std::string view_mode_string = settings.getString("ViewMode", simmode_name == "" ? "FlyWithMe" : "SpringArmChase");
+    std::string view_mode_string = settings.getString("ViewMode", "");
+
+    if (view_mode_string == "") {
+        if (simmode_name == "")
+            view_mode_string = "FlyWithMe";
+        else
+            view_mode_string = "SpringArmChase";
+    }
+
     if (view_mode_string == "FlyWithMe")
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
     else if (view_mode_string == "Fpv")
@@ -93,10 +107,23 @@ void ASimModeBase::readSettings()
     else
         UAirBlueprintLib::LogMessage("ViewMode setting is not recognized: ", view_mode_string.c_str(), LogDebugLevel::Failure);
         
-    physics_engine_name = settings.getString("PhysicsEngineName", "FastPhysicsEngine");
+    physics_engine_name = settings.getString("PhysicsEngineName", "");
+    if (physics_engine_name == "") {
+        if (simmode_name == "")
+            physics_engine_name = "FastPhysicsEngine";
+        else
+            physics_engine_name = "PhysX";
+    }
+
     enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
-    clock_type = settings.getString("ClockType", 
-        default_vehicle_config == "SimpleFlight" ? "SteppableClock" : "ScalableClock");
+    clock_type = settings.getString("ClockType", "");
+
+    if (clock_type == "") {
+        if (default_vehicle_config == "SimpleFlight")
+            clock_type = "SteppableClock";
+        else
+            clock_type = "ScalableClock";
+    }
 
     Settings record_settings;
     if (settings.getChild("Recording", record_settings)) {

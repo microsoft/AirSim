@@ -73,6 +73,10 @@ Tip: If the `Generate Visual Studio Project Files` option is missing you may nee
 
 Congratulations! You are now running AirSim in your own Unreal environment.
 
+## Chosing Your Vehicle: Car or Multirotor
+By default AirSim spawns multirotor. You can easily change this to car and use all of AirSim goodies. Please see [using car](using_car.md) guide.
+
+
 ## FAQ
 
 #### What are other cool environments?

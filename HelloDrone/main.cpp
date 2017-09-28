@@ -10,7 +10,6 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include <iostream>
 #include <chrono>
@@ -21,9 +20,6 @@ int main()
 {
     using namespace msr::airlib;
 
-
-    // This assumes you are running DroneServer already on the same machine.
-    // DroneServer must be running first.
     msr::airlib::MultirotorRpcLibClient client;
     typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;

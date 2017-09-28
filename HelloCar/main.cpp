@@ -10,7 +10,6 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 
 #include "vehicles/car/api/CarRpcLibClient.hpp"
-#include "vehicles/car/controllers/CarControllerBase.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include <iostream>
 #include <chrono>
