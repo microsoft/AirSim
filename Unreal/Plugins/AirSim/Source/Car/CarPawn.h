@@ -95,8 +95,6 @@ protected:
 public:
     // End Actor interface
 
-    /** Handle pressing forwards */
-    void MoveForward(float Val);
 
     /** Setup the strings used on the hud */
     void UpdateInCarHUD();
@@ -104,11 +102,19 @@ public:
     /** Update the physics material used by the vehicle mesh */
     void UpdatePhysicsMaterial();
 
+    /** Handle pressing forwards */
+    void MoveForward(float Val);
     /** Handle pressing right */
     void MoveRight(float Val);
-    /** Handle handbrake pressed */
+    /** Handle pressiong footbrake */
+    void FootBrake(float Val);
+    /** Handle Reverse pressed */
+    void OnReversePressed();
+    /** Handle Reverse released */
+    void OnReverseReleased();
+    /** Handle Handbrake pressed */
     void OnHandbrakePressed();
-    /** Handle handbrake released */
+    /** Handle Handbrake released */
     void OnHandbrakeReleased();
 
     static const FName LookUpBinding;
