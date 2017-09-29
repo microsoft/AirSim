@@ -19,12 +19,13 @@ public:
     struct CarControls {
         float throttle = 0;
         float steering = 0;
-        bool handbreak = false;
+        float brake = 0;
+        bool handbrake = false;
         bool is_manual_gear = false;
         int manual_gear = 0;
         bool gear_immediate = false;
 
-        MSGPACK_DEFINE_MAP(throttle, steering, handbreak, is_manual_gear, manual_gear, gear_immediate);
+        MSGPACK_DEFINE_MAP(throttle, steering, brake, handbrake, is_manual_gear, manual_gear, gear_immediate);
 
         CarControls()
         {}
@@ -33,14 +34,15 @@ public:
         {
             throttle = s.throttle;
             steering = s.steering;
-            handbreak = s.handbreak;
+            brake = s.brake;
+            handbrake = s.handbrake;
             is_manual_gear = s.is_manual_gear;
             manual_gear = s.manual_gear;
             gear_immediate = s.gear_immediate;
         }
         msr::airlib::CarControllerBase::CarControls to() const
         {
-            return msr::airlib::CarControllerBase::CarControls(throttle, steering, handbreak, 
+            return msr::airlib::CarControllerBase::CarControls(throttle, steering, brake, handbrake,
                 is_manual_gear, manual_gear, gear_immediate);
         }
     };

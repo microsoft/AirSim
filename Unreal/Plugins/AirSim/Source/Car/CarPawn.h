@@ -97,19 +97,25 @@ public:
 
     /** Handle pressing forwards */
     void MoveForward(float Val);
-
-    /** Setup the strings used on the hud */
-    void UpdateInCarHUD();
-
-    /** Update the physics material used by the vehicle mesh */
-    void UpdatePhysicsMaterial();
-
     /** Handle pressing right */
     void MoveRight(float Val);
     /** Handle handbrake pressed */
     void OnHandbrakePressed();
     /** Handle handbrake released */
     void OnHandbrakeReleased();
+    /** Handle pressiong footbrake */
+    void FootBrake(float Val);
+    /** Handle Reverse pressed */
+    void OnReversePressed();
+    /** Handle Reverse released */
+    void OnReverseReleased();
+    /** Handle Handbrake pressed */
+
+    /** Setup the strings used on the hud */
+    void UpdateInCarHUD();
+
+    /** Update the physics material used by the vehicle mesh */
+    void UpdatePhysicsMaterial();
 
     static const FName LookUpBinding;
     static const FName LookRightBinding;

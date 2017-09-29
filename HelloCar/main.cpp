@@ -62,20 +62,25 @@ int main()
             }
         }
 
-        std::cout << "Press enter to drive forward" << std::endl; std::cin.get();
+        //enable API control
         client.enableApiControl(true);
         CarControllerBase::CarControls controls;
-        controls.throttle = 1;
+
+        std::cout << "Press enter to drive forward" << std::endl; std::cin.get();
+        controls.throttle = 0.5f;
+        controls.steering = 0.0f;
         client.setCarControls(controls);
 
-        std::cout << "Press Enter to activate handbreak" << std::endl; std::cin.get();
-        controls.handbreak = true;
+        std::cout << "Press Enter to activate handbrake" << std::endl; std::cin.get();
+        controls.handbrake = true;
         client.setCarControls(controls);
 
         std::cout << "Press Enter to take turn and drive backward" << std::endl; std::cin.get();
-        controls.handbreak = false;
-        controls.throttle = -1;
+        controls.handbrake = false;
+        controls.throttle = -0.5;
         controls.steering = 1;
+        controls.is_manual_gear = true;
+        controls.manual_gear = -1;
         client.setCarControls(controls);
 
         std::cout << "Press Enter to stop" << std::endl; std::cin.get();

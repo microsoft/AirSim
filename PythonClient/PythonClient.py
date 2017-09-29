@@ -108,7 +108,21 @@ class ImageResponse(MsgpackMixin):
 class CarControls(MsgpackMixin):
     throttle = np.float32(0)
     steering = np.float32(0)
-    handbreak = False
+    brake = np.float32(0)
+    handbrake = False
+    is_manual_gear = False
+    manual_gear = 0
+    gear_immediate = False
+
+    def set_throttle(self, throttle_val, forward):
+        if (forward):
+            is_manual_gear = False
+            manual_gear = 0
+            throttle = abs(throttle_val)
+        else:
+            is_manual_gear = False
+            manual_gear = -1
+            throttle = - abs(throttle_val)
 
 class CarState(MsgpackMixin):
     speed = np.float32(0)

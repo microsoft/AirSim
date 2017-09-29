@@ -11,14 +11,38 @@ while True:
     car_state = client.getCarState()
     print("Speed %d, Gear %d" % (car_state.speed, car_state.gear))
 
-    # set the controls for car
-    car_controls.throttle = 1
+    # go forward
+    car_controls.throttle = 0.5
+    car_controls.steering = 0
+    client.setCarControls(car_controls)
+    print("Go Foward")
+    time.sleep(3)   # let car drive a bit
+
+    # Go forward + steer right
+    car_controls.throttle = 0.5
     car_controls.steering = 1
     client.setCarControls(car_controls)
+    print("Go Foward, steer right")
+    time.sleep(3)   # let car drive a bit
 
-    # let car drive a bit
-    time.sleep(1)
+    # go reverse, steer left
+    car_controls.throttle = -0.5
+    car_controls.is_manual_gear = True;
+    car_controls.manual_gear = -1
+    car_controls.steering = -1
+    client.setCarControls(car_controls)
+    print("Go reverse, steer right")
+    time.sleep(3)   # let car drive a bit
+    car_controls.is_manual_gear = False; # change back gear to auto
+    car_controls.manual_gear = 0  
 
+    # apply breaks
+    car_controls.brake = 1
+    client.setCarControls(car_controls)
+    print("Apply break")
+    time.sleep(3)   # let car drive a bit
+    car_controls.brake = 0 #remove break
+    
     # get camera images from the car
     responses = client.simGetImages([
         ImageRequest(0, AirSimImageType.DepthVis),

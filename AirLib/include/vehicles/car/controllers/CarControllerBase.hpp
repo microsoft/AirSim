@@ -13,9 +13,10 @@ namespace msr { namespace airlib {
 class CarControllerBase {
 public:
     struct CarControls {
-        float throttle = 0;
-        float steering = 0;
-        bool handbreak = false;
+        float throttle = 0; /* 1 to -1 */
+        float steering = 0; /* 1 to -1 */
+        float brake = 0;    /* 1 to -1 */
+        bool handbrake = false;
         bool is_manual_gear = false;
         int manual_gear = 0;
         bool gear_immediate = false;
@@ -23,11 +24,24 @@ public:
         CarControls()
         {
         }
-        CarControls(float throttle_val, float steering_val, bool handbreak_val,
+        CarControls(float throttle_val, float steering_val, float brake_val, bool handbrake_val,
             bool is_manual_gear_val, int manual_gear_val, bool gear_immediate_val)
-            : throttle(throttle_val), steering(steering_val), handbreak(handbreak_val),
+            : throttle(throttle_val), steering(steering_val), brake(brake_val), handbrake(handbrake_val),
             is_manual_gear(is_manual_gear_val), manual_gear(manual_gear_val), gear_immediate(gear_immediate_val)
         {
+        }
+        void set_throttle(float throttle_val, bool forward)
+        {
+            if (forward) {
+                is_manual_gear = false;
+                manual_gear = 0;
+                throttle = std::abs(throttle_val);
+            }
+            else {
+                is_manual_gear = false;
+                manual_gear = -1;
+                throttle = - std::abs(throttle_val);
+            }
         }
     };
 
