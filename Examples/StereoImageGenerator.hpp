@@ -9,8 +9,8 @@
 #include "common/common_utils/ProsumerQueue.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include "common/ClockFactory.hpp"
-#include "api/RpcLibClient.hpp"
-#include "controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
+#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "RandomPointPoseGenerator.hpp"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
@@ -30,7 +30,7 @@ public:
 
     int generate(int num_samples)
     {
-        msr::airlib::RpcLibClient client;
+        msr::airlib::MultirotorRpcLibClient client;
         client.confirmConnection();
 
         msr::airlib::ClockBase* clock = msr::airlib::ClockFactory::get();
@@ -107,7 +107,7 @@ private:
     typedef common_utils::RandomGeneratorF RandomGeneratorF;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Quaternionr Quaternionr;
-    typedef msr::airlib::DroneControllerBase::ImageRequest ImageRequest;
+    typedef msr::airlib::VehicleCameraBase::ImageRequest ImageRequest;
     typedef msr::airlib::VehicleCameraBase::ImageResponse ImageResponse;
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
 

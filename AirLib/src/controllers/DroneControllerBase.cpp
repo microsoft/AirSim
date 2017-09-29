@@ -4,7 +4,7 @@
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
 
-#include "controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include <functional>
 #include <exception>
 #include <vector>
@@ -382,7 +382,7 @@ VehicleCameraBase* DroneControllerBase::simGetCamera(int index)
 {
     return cameras_.at(index);
 }
-vector<VehicleCameraBase::ImageResponse> DroneControllerBase::simGetImages(const vector<DroneControllerBase::ImageRequest>& request)
+vector<VehicleCameraBase::ImageResponse> DroneControllerBase::simGetImages(const vector<VehicleCameraBase::ImageRequest>& request)
 {
     StatusLock lock(this);
 

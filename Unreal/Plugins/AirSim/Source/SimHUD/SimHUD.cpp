@@ -1,6 +1,7 @@
 #include "SimHUD.h"
 #include "ConstructorHelpers.h"
-#include "SimMode/SimModeWorldMultiRotor.h"
+#include "Multirotor/SimModeWorldMultiRotor.h"
+#include "Car/SimModeCar.h"
 #include "controllers/Settings.hpp"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -17,6 +18,8 @@ void ASimHUD::BeginPlay()
 {
     Super::BeginPlay();
 
+    initializeSettings();
+    
     //TODO: should we only do below on SceneCapture2D components and cameras?
     //avoid motion blur so capture images don't get
     GetWorld()->GetGameViewport()->GetEngineShowFlags()->SetMotionBlur(false);
@@ -36,10 +39,7 @@ void ASimHUD::BeginPlay()
         UAirBlueprintLib::LogMessage(TEXT("Cannot instantiate BP_SimHUDWidget blueprint!"), TEXT(""), LogDebugLevel::Failure, 180);
     }
 
-    //create simmode
-    FActorSpawnParameters simmode_spawn_params;
-    simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
+    createSimMode();
 
     initializeSubWindows();
 
@@ -98,7 +98,7 @@ void ASimHUD::inputEventToggleHelp()
 
 void ASimHUD::inputEventToggleTrace()
 {
-    simmode_->getFpvVehiclePawn()->toggleTrace();
+    simmode_->getFpvVehiclePawnWrapper()->toggleTrace();
 }
 
 ASimHUD::ImageType ASimHUD::getSubwindowCameraType(int window_index)
@@ -194,10 +194,28 @@ void ASimHUD::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventToggleAll", EKeys::Zero, this, &ASimHUD::inputEventToggleAll);
 }
 
+void ASimHUD::createSimMode()
+{
+    Settings& settings = Settings::singleton();
+    std::string simmode_name = settings.getString("SimMode", "Quadrotor");
+
+    FActorSpawnParameters simmode_spawn_params;
+    simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+    if (simmode_name == "Quadrotor")
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
+    else if (simmode_name == "Car")
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
+}
+
+
 void ASimHUD::initializeSubWindows()
 {
     //setup defaults
-    subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawn()->getCamera();
+    if (simmode_->getFpvVehiclePawnWrapper()->getCameraCount() > 0)
+        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawnWrapper()->getCamera();
+    else
+        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
     subwindow_camera_types_[0] = ImageType::DepthVis;
     subwindow_camera_types_[1] = ImageType::Segmentation;
     subwindow_camera_types_[2] = ImageType::Scene;
@@ -221,5 +239,58 @@ void ASimHUD::initializeSubWindows()
                 subwindow_visible_[index] = json_settings_child.getBool("Visible", false);
             }
         }
+    }
+}
+
+void ASimHUD::initializeSettings()
+{
+    //TODO: should this be done somewhere else?
+    //load settings file if found
+    typedef msr::airlib::Settings Settings;
+    try {
+        FString settings_filename = FString(Settings::getFullPath("settings.json").c_str());
+        FString json_fstring;
+        bool load_success = false;
+        bool file_found = FPaths::FileExists(settings_filename);
+        if (file_found) {
+            bool read_sucess = FFileHelper::LoadFileToString(json_fstring, *settings_filename);
+            if (read_sucess) {
+                Settings& settings = Settings::loadJSonString(TCHAR_TO_UTF8(*json_fstring));
+                if (settings.isLoadSuccess()) {
+                    UAirBlueprintLib::setLogMessagesHidden(!settings.getBool("LogMessagesVisible", true));
+                    UAirBlueprintLib::LogMessageString("Loaded settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
+                    load_success = true;
+                }
+                else
+                    UAirBlueprintLib::LogMessageString("Possibly invalid json string in ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
+            }
+            else
+                UAirBlueprintLib::LogMessageString("Cannot read settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
+        }
+
+        if (!load_success) {
+            //create default settings
+            Settings& settings = Settings::loadJSonString("{}");
+            //write some settings in new file otherwise the string "null" is written if all settigs are empty
+            settings.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
+            settings.setDouble("SettingdVersion", 1.0);
+
+            if (!file_found) {
+                std::string json_content;
+                //TODO: there is a crash in Linux due to settings.saveJSonString(). Remove this workaround after we only support Unreal 4.17
+                //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
+#ifdef _WIN32
+                json_content = settings.saveJSonString();
+#else
+                json_content = "{ \"SettingdVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
+#endif
+                json_fstring = FString(json_content.c_str());
+                FFileHelper::SaveStringToFile(json_fstring, *settings_filename);
+                UAirBlueprintLib::LogMessageString("Created settings file at ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
+            }
+        }
+    }
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), FString(ex.what()), LogDebugLevel::Failure, 30);
     }
 }

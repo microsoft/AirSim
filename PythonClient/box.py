@@ -2,7 +2,7 @@ from PythonClient import *
 import sys
 import time
 
-client = AirSimClient('127.0.0.1')
+client = MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)

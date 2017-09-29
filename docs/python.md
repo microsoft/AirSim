@@ -1,6 +1,6 @@
 # Using Python with AirSim
 
-You can call AirSim APIs from Python to control the drone and get vehicle state and images back.  
+You can call AirSim APIs from Python to control the vehicle and get vehicle state as well as images back.  
 
 First install the following Python package:
 
@@ -13,26 +13,26 @@ If you are using Visual Studio then click on "Python Environments" under your Py
 Now you can run the samples in the [PythonClient](../PythonClient) folder.  
 
 
-## Getting Started
+## Getting Started with Multirotors
 
-The [hello_drone.py](../PythonClient/hello_drone.py) example shows basic operations using Python.
+The [hello_drone.py](../PythonClient/hello_drone.py) example shows how to use APIs to control multirotor and get state as well as images using Python.
 
 ```
 from PythonClient import *
 
 # connect to the AirSim simulator 
-client = AirSimClient()
+client = MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
-AirSimClient.wait_key('Press any key to takeoff')
+MultirotorClient.wait_key('Press any key to takeoff')
 client.takeoff()
 
-AirSimClient.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
+MultirotorClient.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
 client.moveToPosition(-10, 10, -10, 5)
 
-AirSimClient.wait_key('Press any key to take images')
+MultirotorClient.wait_key('Press any key to take images')
 responses = client.simGetImages([
     ImageRequest(0, AirSimImageType.DepthVis), 
     ImageRequest(1, AirSimImageType.DepthMeters, True)])
@@ -41,10 +41,51 @@ print('Retrieved images: %d', len(responses))
 for response in responses:
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-        AirSimClient.write_pfm(os.path.normpath('/temp/py1.pfm'), AirSimClient.getPfmArray(response))
+        MultirotorClient.write_pfm(os.path.normpath('/temp/py1.pfm'), MultirotorClient.getPfmArray(response))
     else:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
-        AirSimClient.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)
+        MultirotorClient.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)
+```
+
+## Getting Started with Cars
+
+The [hello_car.py](../PythonClient/hello_car.py) example shows how to use APIs to control car and get state as well as images using Python.
+
+```
+from PythonClient import *
+
+# connect to the AirSim simulator 
+client = CarClient()
+client.confirmConnection()
+client.enableApiControl(True)
+car_controls = CarControls()
+
+while True:
+    # get state of the car
+    car_state = client.getCarState()
+    print("Speed %d, Gear %d" % (car_state.speed, car_state.gear))
+
+    # set the controls for car
+    car_controls.throttle = 1
+    car_controls.steering = 1
+    client.setCarControls(car_controls)
+
+    # let car drive a bit
+    time.sleep(1)
+
+    # get camera images from the car
+    responses = client.simGetImages([
+        ImageRequest(0, AirSimImageType.DepthVis),
+        ImageRequest(1, AirSimImageType.DepthMeters, True)]) 
+    print('Retrieved images: %d', len(responses))
+
+    for response in responses:
+        if response.pixels_as_float:
+            print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
+            CarClient.write_pfm(os.path.normpath('c:/temp/py1.pfm'), CarClient.getPfmArray(response))
+        else:
+            print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
+            CarClient.write_file(os.path.normpath('c:/temp/py1.png'), response.image_data_uint8)
 ```
 
 ## Other examples
@@ -57,13 +98,13 @@ Make sure your drone is initially located at the start position x=310.0 cm, y=11
 ## Notes on APIs
 
 ### Image APIs
-- The API `simGetImage` returns `binary string literal` which means you can simply dump it in binary file to create a .png file. However if you want to process it in any other way than you can handy function `AirSimClient.stringToUint8Array`. This converts binary string literal to NumPy uint8 array.
+- The API `simGetImage` returns `binary string literal` which means you can simply dump it in binary file to create a .png file. However if you want to process it in any other way than you can handy function `AirSimClientBase.stringToUint8Array`. This converts binary string literal to NumPy uint8 array.
 
 - The API `simGetImages` can accept request for multiple image types from any cameras in single call. You can specify if image is png compressed, RGB uncompressed or float array. For png compressed images, you get `binary string literal`. For float array you get Python list of float64. You can convert this float array to NumPy 2D array using
     ```
-    AirSimClient.listTo2DFloatArray(response.image_data_float, response.width, response.height)
+    AirSimClientBase.listTo2DFloatArray(response.image_data_float, response.width, response.height)
     ```
-    You can also save float array to .pfm file (Portable Float Map format) using `AirSimClient.write_pfm()` function.
+    You can also save float array to .pfm file (Portable Float Map format) using `AirSimClientBase.write_pfm()` function.
 
 ## FAQ
 

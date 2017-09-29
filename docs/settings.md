@@ -6,23 +6,35 @@ Linux: `~/Documents/AirSim`
 
 The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings. To avoid problems, always use ASCII format to save json file.
 
+## How to Chose Between Car and Multirotor?
+The default is to use multirotor. To use car simple set `"SimMode": "Car"` like this:
+
+```
+{
+  "SettingdVersion": 1.0,
+  "SimMode": "Car"
+}
+```
+
+To choose multirotor, set `"SimMode": ""`.
+
 ## Available Settings and Their Defaults
-Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. 
+Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. Please note that if setting has default value then its actual value may be chosen based on other settings. For example, ViewMode setting will have value "FlyWithMe" for drones and "SpringArmChase" for cars.
 
 **WARNING:** Do not copy below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default.
 
 ````
 {
-  "DefaultVehicleConfig": "SimpleFlight",
-
-  "ClockType": "ScalableClock",
+  "DefaultVehicleConfig": "",
+  "SimMode": "",
+  "ClockType": "",
   "LocalHostIp": "127.0.0.1",
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
-  "ViewMode": "FlyWithMe",
+  "ViewMode": "",
   "UsageScenario": "",
   "RpcEnabled": true,
-  "PhysicsEngineName": "FastPhysicsEngine",
+  "PhysicsEngineName": "",
   "EnableCollisionPassthrogh": false,
   "Recording": {
     "RecordOnMove": false,
@@ -116,11 +128,23 @@ that on a different machine (QgcHostIp,QgcPort).
 
 You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP address for that (LogViewerHostIp,LogViewerPort).
 
-And for each flying drone added to the simulator there is a named block of additional settings.  In the above you see the default name "PX4".  
-You can change this name from the Unreal Editor when you add a new BP_FlyingPawn asset.  You will see these properties grouped under the category
-"MavLink". The mavlink node for this pawn can be remote over UDP or it can be connected
-to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false and set the appropriate bard rate.  The default
-of 115200 works with Pixhawk version 2 over USB.
+And for each flying drone added to the simulator there is a named block of additional settings.  In the above you see the default name "PX4".   You can change this name from the Unreal Editor when you add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink". The mavlink node for this pawn can be remote over UDP or it can be connected to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false and set the appropriate bard rate.  The default of 115200 works with Pixhawk version 2 over USB.
+
+## Other Settings
+#### SimMode
+Currently SimMode can be set to `"Multirotor"` or  `"Car"`. This determines which vehicle you would be using.
+
+#### PhysicsEngineName
+For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.
+
+### ViewMode 
+The ViewMode determines how you will view the vehicle. For multirotors, the default ViewMode is `"FlyWithMe"` while for cars the default ViewMode is `"SpringArmChase"`.
+
+* FlyWithMe: Chase the vehicle from behind with 6 degrees of freedom
+* GroundObserver: Chase the vehicle from 6' above the ground but with full freedome in XY plane.
+* Fpv: View the scene from front camera of vehicle
+* Manual: Don't move camera automatically. Use arrow keys and ASWD keys for move camera manually.
+* SpringArmChase: Chase the vehicle with camera mounted on (invisible) arm that is attached to the vehicle via spring (so it has some latency in movement).
 
 
 

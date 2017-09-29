@@ -1,6 +1,6 @@
 # Welcome to AirSim
 
-AirSim is a simulator for drones (and soon other vehicles) built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
+AirSim is a simulator for drones, cars and more built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
 
 Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
@@ -10,7 +10,11 @@ Our goal is to develop AirSim as a platform for AI research to experiment with d
 
 ## What's New
 
-AirSim has been going through massive revamping and new additions. It now has built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. AirSim now also generates [depth as well as disparity impages](image_apis.md) that is in camera plan. We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](release_notes.md).
+* We now have the [car model](docs/using_car.md).
+* New built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
+* AirSim now also generates [depth as well as disparity impages](image_apis.md) that is in camera plan. 
+* We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](release_notes.md).
+* No need to build the code. Just download [our binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
 
 ## How to Get It
 
@@ -23,9 +27,12 @@ AirSim has been going through massive revamping and new additions. It now has bu
 
 ## How to Use It
 
-### Manual flights
+### Chosing Your Vehicle: Car or Multirotor
+By default AirSim spawns multirotor. You can easily change this to car and use all of AirSim goodies. Please see [using car](docs/using_car.md) guide.
 
-If you have remote control (RC) as shown below, you can manually control the vehicle in the simulator.
+### Manual drive
+
+If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.
 
 [More details](docs/remote_control.md)
 
@@ -35,7 +42,7 @@ If you have remote control (RC) as shown below, you can manually control the veh
 
 AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through RPC and accessible via variety of languages including C++, Python, C# and Java.
 
-These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an companion computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real drones. Transfer learning and related research is one of our focus areas.
+These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an companion computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.
 
 [More details](docs/apis.md)
 
@@ -49,7 +56,7 @@ A better way to generate training data exactly the way you want is by accessing 
 
 ### Computer Vision mode
 
-Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode, you don't have vehicle physics and dynamics but you can use keyboard to move around and use APIs to position vehicle in any arbitrary pose and get images such as depth, disparity, surface normals or object segmentation. 
+Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode, you don't have vehicle physics and dynamics but you can use keyboard to move around and use APIs to position the vehicle in any arbitrary pose and get images such as depth, disparity, surface normals or object segmentation. 
 
 [More details](image_apis.md)
 

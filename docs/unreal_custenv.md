@@ -69,9 +69,13 @@ Tip: If the `Generate Visual Studio Project Files` option is missing you may nee
 
 ![sim_game_mode.png](images/sim_game_mode.png)
 
-11. Be sure to `Save` these edits. Hit the Play button in the Unreal Editor. See [how to use AirSim](../#how-to-use-it).
+11. Be sure to `Save` these edits. Hit the Play button in the Unreal Editor. See [how to use AirSim](https://github.com/Microsoft/AirSim/#how-to-use-it).
 
 Congratulations! You are now running AirSim in your own Unreal environment.
+
+## Chosing Your Vehicle: Car or Multirotor
+By default AirSim spawns multirotor. You can easily change this to car and use all of AirSim goodies. Please see [using car](using_car.md) guide.
+
 
 ## FAQ
 

@@ -28,6 +28,12 @@
     <Compile Include="camera.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="cv_mode.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="hello_car.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="hello_drone.py">
       <SubType>Code</SubType>
     </Compile>
