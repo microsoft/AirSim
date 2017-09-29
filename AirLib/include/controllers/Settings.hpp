@@ -138,7 +138,13 @@ public:
     std::string getString(std::string name, std::string defaultValue) const
     {
         if (doc_.count(name) == 1) {
-            return doc_[name].get<std::string>();
+            try {
+                return doc_[name].get<std::string>();
+            }
+            catch (std::exception& ex) {
+                Utils::log(Utils::stringf("setting '%s' is not a valid string: %s", name.c_str(), ex.what()));
+                return defaultValue;
+            }
         }
         else {
             return defaultValue;
@@ -148,7 +154,13 @@ public:
     double getDouble(std::string name, double defaultValue) const
     {
         if (doc_.count(name) == 1) {
-            return doc_[name].get<double>();
+            try {
+                return doc_[name].get<double>();
+            }
+            catch (std::exception& ex) {
+                Utils::log(Utils::stringf("setting '%s' is not a valid number: %s", name.c_str(), ex.what()));
+                return defaultValue;
+            }
         }
         else {
             return defaultValue;
@@ -158,7 +170,13 @@ public:
     double getFloat(std::string name, float defaultValue) const
     {
         if (doc_.count(name) == 1) {
-            return doc_[name].get<float>();
+            try {
+                return doc_[name].get<float>();
+            }
+            catch (std::exception& ex) {
+                Utils::log(Utils::stringf("setting '%s' is not a valid number: %s", name.c_str(), ex.what()));
+                return defaultValue;
+            }
         }
         else {
             return defaultValue;
@@ -168,7 +186,13 @@ public:
     bool getBool(std::string name, bool defaultValue) const
     {
         if (doc_.count(name) == 1) {
-            return doc_[name].get<bool>();
+            try {
+                return doc_[name].get<bool>();
+            }
+            catch (std::exception& ex) {
+                Utils::log(Utils::stringf("setting '%s' is not a valid boolean: %s", name.c_str(), ex.what()));
+                return defaultValue;
+            }
         }
         else {
             return defaultValue;
@@ -178,7 +202,13 @@ public:
     int getInt(std::string name, int defaultValue) const
     {
         if (doc_.count(name) == 1) {
-            return doc_[name].get<int>();
+            try {
+                return doc_[name].get<int>();
+            }
+            catch (std::exception& ex) {
+                Utils::log(Utils::stringf("setting '%s' is not a valid integer: %s", name.c_str(), ex.what()));
+                return defaultValue;
+            }
         }
         else {
             return defaultValue;
