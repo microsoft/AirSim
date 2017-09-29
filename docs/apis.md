@@ -42,7 +42,7 @@ First make sure you have below in [settings.json](settings.md). This is because 
 
 ```
 {
-  "SettingdVersion": 1.0,
+  "SettingsVersion": 1.0,
   "SimMode": "Car"
 }
 ```
@@ -63,12 +63,12 @@ int main()
     controls.throttle = 1;
     client.setCarControls(controls);
 
-    std::cout << "Press Enter to activate handbreak" << std::endl; std::cin.get();
-    controls.handbreak = true;
+    std::cout << "Press Enter to activate handbrake" << std::endl; std::cin.get();
+    controls.handbrake = true;
     client.setCarControls(controls);
 
     std::cout << "Press Enter to take turn and drive backward" << std::endl; std::cin.get();
-    controls.handbreak = false;
+    controls.handbrake = false;
     controls.throttle = -1;
     controls.steering = 1;
     client.setCarControls(controls);
@@ -91,7 +91,7 @@ More on [image APIs and Computer Vision mode](image_apis.md).
 ### APIs for Car
 Car has followings APIs available:
 
-* `setCarControls`: This allows you to set throttle, steering, handbreak and auto or manual gear.
+* `setCarControls`: This allows you to set throttle, steering, handbrake and auto or manual gear.
 * `getCarState`: This retrieves the state information including speed, current gear, velocity vector, position and orientation.
 * [Image APIs](image_apis.md).
 

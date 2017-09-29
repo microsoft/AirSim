@@ -11,7 +11,7 @@ The default is to use multirotor. To use car simple set `"SimMode": "Car"` like 
 
 ```
 {
-  "SettingdVersion": 1.0,
+  "SettingsVersion": 1.0,
   "SimMode": "Car"
 }
 ```
@@ -21,7 +21,7 @@ To choose multirotor, set `"SimMode": ""`.
 ## Available Settings and Their Defaults
 Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. Please note that if setting has default value then its actual value may be chosen based on other settings. For example, ViewMode setting will have value "FlyWithMe" for drones and "SpringArmChase" for cars.
 
-**WARNING:** Do not copy below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default.
+**WARNING:** Do not copy paste all of below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default. Only required element is `"SettingsVersion": 1.0`.
 
 ````
 {

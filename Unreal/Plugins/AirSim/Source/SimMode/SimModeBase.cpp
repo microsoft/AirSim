@@ -23,7 +23,12 @@ void ASimModeBase::BeginPlay()
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
-    readSettings();
+    try {
+        readSettings();
+    }
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessageString("Error occured while reading the Settings: ", ex.what(), LogDebugLevel::Failure);
+    }
 }
 
 void ASimModeBase::setStencilIDs()
@@ -51,11 +56,25 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ASimModeBase::readSettings()
 {
+    //set defaults in case exception occurs
+    is_record_ui_visible = false;
+    initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
+    enable_rpc = false;
+    api_server_address = "";
+    default_vehicle_config = "";
+    physics_engine_name = "";
+    usage_scenario = "";
+    enable_collision_passthrough = false;
+    clock_type = "";
+
+
     typedef msr::airlib::Settings Settings;
 
     Settings& settings = Settings::singleton();
 
-    settings_version_actual = settings.getFloat("SettingdVersion", 0);
+    //we had spelling mistake so we are currently supporting SettingsVersion or SettingdVersion :(
+    settings_version_actual = settings.getFloat("SettingsVersion", settings.getFloat("SettingdVersion", 0));
+
     if (settings_version_actual < settings_version_minimum) {
         if ((settings.size() == 1 && 
             ((settings.getString("SeeDocsAt", "") != "") || settings.getString("see_docs_at", "") != ""))
@@ -63,7 +82,7 @@ void ASimModeBase::readSettings()
             //no warnings because we have default settings
         }
         else {
-            UAirBlueprintLib::LogMessageString("Your settings file is of old version and possibly not compatible!","", LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Your settings file does not have SettingsVersion element."," This probably means you have old format settings file.", LogDebugLevel::Failure);
             UAirBlueprintLib::LogMessageString("Please look at new settings and update your settings.json: ","https://git.io/v9mYY", LogDebugLevel::Failure);
         }
     }
@@ -104,7 +123,7 @@ void ASimModeBase::readSettings()
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
     else if (view_mode_string == "SpringArmChase")
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE;
-    else
+    else 
         UAirBlueprintLib::LogMessage("ViewMode setting is not recognized: ", view_mode_string.c_str(), LogDebugLevel::Failure);
         
     physics_engine_name = settings.getString("PhysicsEngineName", "");

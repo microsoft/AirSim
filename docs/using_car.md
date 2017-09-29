@@ -4,7 +4,7 @@ By default vehicle type used in AirSim is multirotor. If you want to use car ins
 
 ```
 {
-  "SettingdVersion": 1.0,
+  "SettingsVersion": 1.0,
   "SimMode": "Car"
 }
 ```
@@ -12,7 +12,7 @@ By default vehicle type used in AirSim is multirotor. If you want to use car ins
 Now when you restart AirSim, you should see the car spawned automatically.
 
 ## Manual Driving 
-Please use the keyboard arrow keys to drive manually. Spacebar for the handbreak. In manual drive mode, gears are set in "auto".
+Please use the keyboard arrow keys to drive manually. Spacebar for the handbrake. In manual drive mode, gears are set in "auto".
 
 ## Using APIs
 You can control the car, get state and images by calling APIs in variety of client languages including C++ and Python. Please see [APIs doc](apis.md) for more details.

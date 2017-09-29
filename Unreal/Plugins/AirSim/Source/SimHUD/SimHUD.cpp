@@ -277,7 +277,7 @@ void ASimHUD::initializeSettings()
             Settings& settings = Settings::loadJSonString("{}");
             //write some settings in new file otherwise the string "null" is written if all settigs are empty
             settings.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
-            settings.setDouble("SettingdVersion", 1.0);
+            settings.setDouble("SettingsVersion", 1.0);
 
             if (!file_found) {
                 std::string json_content;
@@ -286,7 +286,7 @@ void ASimHUD::initializeSettings()
 #ifdef _WIN32
                 json_content = settings.saveJSonString();
 #else
-                json_content = "{ \"SettingdVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
+                json_content = "{ \"SettingsVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
 #endif
                 json_fstring = FString(json_content.c_str());
                 FFileHelper::SaveStringToFile(json_fstring, *settings_filename);
