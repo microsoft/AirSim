@@ -15,7 +15,7 @@ client.moveToPosition(-10, 10, -10, 5)
 MultirotorClient.wait_key('Press any key to take images')
 responses = client.simGetImages([
     ImageRequest(0, AirSimImageType.DepthVis), 
-    ImageRequest(1, AirSimImageType.DepthMeters, True)])
+    ImageRequest(1, AirSimImageType.DepthPlanner, True)])
 print('Retrieved images: %d', len(responses))
 
 for response in responses:

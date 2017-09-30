@@ -99,11 +99,12 @@ The `ImageType` element determines which image type the settings applies to. By 
 
 ```
 Scene = 0, 
-DepthMeters = 1, 
-DepthVis = 2, 
-DisparityNormalized = 3,
-Segmentation = 4,
-SurfaceNormals = 5
+DepthPlanner = 1,
+DepthPerspective = 2,
+DepthVis = 3, 
+DisparityNormalized = 4,
+Segmentation = 5,
+SurfaceNormals = 6
 ```
 
 Note that `CaptureSettings` element is json array so you can add settings for multiple image types easily.

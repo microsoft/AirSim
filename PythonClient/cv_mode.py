@@ -13,7 +13,7 @@ for x in range(3): # do 5 times
 
     responses = client.simGetImages([
         ImageRequest(0, AirSimImageType.DepthVis),
-        ImageRequest(1, AirSimImageType.DepthMeters, True),
+        ImageRequest(1, AirSimImageType.DepthPerspective, True),
         ImageRequest(0, AirSimImageType.Segmentation),
         ImageRequest(0, AirSimImageType.Scene),
         ImageRequest(0, AirSimImageType.DisparityNormalized),

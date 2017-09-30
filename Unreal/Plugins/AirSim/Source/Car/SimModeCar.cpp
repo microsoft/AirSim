@@ -124,7 +124,7 @@ void ASimModeCar::reset()
         {
             //initialize each vehicle pawn we found
             TVehiclePawn* vehicle_pawn = static_cast<TVehiclePawn*>(pawn);
-            vehicle_pawn->getVehiclePawnWrapper()->reset();
+            vehicle_pawn->reset();
         }
     }
 

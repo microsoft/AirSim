@@ -46,7 +46,7 @@ while True:
     # get camera images from the car
     responses = client.simGetImages([
         ImageRequest(0, AirSimImageType.DepthVis),
-        ImageRequest(1, AirSimImageType.DepthMeters, True)]) 
+        ImageRequest(1, AirSimImageType.DepthPerspective, True)]) 
     print('Retrieved images: %d', len(responses))
 
     for response in responses:

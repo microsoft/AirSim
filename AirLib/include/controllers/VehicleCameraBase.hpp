@@ -14,7 +14,8 @@ namespace msr { namespace airlib {
         public: //types
             enum class ImageType : uint { //this indexes to array
                 Scene = 0, 
-                DepthMeters, 
+                DepthPlanner, 
+                DepthPerspective,
                 DepthVis, 
                 DisparityNormalized,
                 Segmentation,

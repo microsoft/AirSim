@@ -285,6 +285,13 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     startApiServer(enable_rpc, api_server_address);
 }
 
+void ACarPawn::reset()
+{
+    this->getVehiclePawnWrapper()->reset();
+    controller_->setCarControls(CarController::CarControls());
+    api_control_enabled_ = false;
+}
+
 void ACarPawn::enableApiControl(bool is_enabled)
 {
     api_control_enabled_ = is_enabled;

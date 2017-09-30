@@ -22,8 +22,10 @@ void APIPCamera::PostInitializeComponents()
 
     captures_[Utils::toNumeric(ImageType::Scene)] = 
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent"));
-    captures_[Utils::toNumeric(ImageType::DepthMeters)] = 
-        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthMetersCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::DepthPlanner)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthPlannerCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::DepthPerspective)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthPerspectiveCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::DepthVis)] = 
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthVisCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::DisparityNormalized)] = 
