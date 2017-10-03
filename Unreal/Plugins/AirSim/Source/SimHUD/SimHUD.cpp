@@ -199,12 +199,14 @@ void ASimHUD::setupInputBindings()
 void ASimHUD::createSimMode()
 {
     Settings& settings = Settings::singleton();
-    std::string simmode_name = settings.getString("SimMode", "Quadrotor");
+    std::string simmode_name = settings.getString("SimMode", "");
+    if (simmode_name == "")
+        simmode_name = "Multirotor";
 
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    if (simmode_name == "Quadrotor")
+    if (simmode_name == "Multirotor")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
     else if (simmode_name == "Car")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);

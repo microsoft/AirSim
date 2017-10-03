@@ -88,13 +88,18 @@ void ASimModeBase::readSettings()
     }
 
     std::string simmode_name = settings.getString("SimMode", "");
+    if (simmode_name == "")
+        simmode_name = "Multirotor";
+
     usage_scenario = settings.getString("UsageScenario", "");
     default_vehicle_config = settings.getString("DefaultVehicleConfig", "");
     if (default_vehicle_config == "") {
-        if (simmode_name == "")
+        if (simmode_name == "Multirotor")
             default_vehicle_config = "SimpleFlight";
-        else
+        else if (simmode_name == "Car")
             default_vehicle_config = "PhysXCar4x4";
+        else         
+            UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
     }
 
     enable_rpc = settings.getBool("RpcEnabled", true);
@@ -107,7 +112,7 @@ void ASimModeBase::readSettings()
     std::string view_mode_string = settings.getString("ViewMode", "");
 
     if (view_mode_string == "") {
-        if (simmode_name == "")
+        if (simmode_name == "Multirotor")
             view_mode_string = "FlyWithMe";
         else
             view_mode_string = "SpringArmChase";
@@ -128,7 +133,7 @@ void ASimModeBase::readSettings()
         
     physics_engine_name = settings.getString("PhysicsEngineName", "");
     if (physics_engine_name == "") {
-        if (simmode_name == "")
+        if (simmode_name == "Multirotor")
             physics_engine_name = "FastPhysicsEngine";
         else
             physics_engine_name = "PhysX";

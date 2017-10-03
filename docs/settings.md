@@ -133,7 +133,7 @@ And for each flying drone added to the simulator there is a named block of addit
 
 ## Other Settings
 #### SimMode
-Currently SimMode can be set to `"Multirotor"` or  `"Car"`. This determines which vehicle you would be using.
+Currently SimMode can be set to `""`, `"Multirotor"` or `"Car"`. The empty string value `""` means that use the default vehicle which is `"Multirotor"`. This determines which vehicle you would be using.
 
 #### PhysicsEngineName
 For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.
