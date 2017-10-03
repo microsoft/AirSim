@@ -29,7 +29,7 @@ while True:
     car_controls.throttle = -0.5
     car_controls.is_manual_gear = True;
     car_controls.manual_gear = -1
-    car_controls.steering = -1
+    car_controls.steering = -0.5
     client.setCarControls(car_controls)
     print("Go reverse, steer right")
     time.sleep(3)   # let car drive a bit

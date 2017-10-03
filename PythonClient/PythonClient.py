@@ -332,9 +332,9 @@ class AirSimClientBase:
         else:
             raise Exception('Image must have H x W x 3, H x W x 1 or H x W dimensions.')
 
-        file.write(bytes('PF\n', 'UTF-8') if color else bytes('Pf\n', 'UTF-8'))
+        file.write('PF\n'.encode('utf-8')  if color else 'Pf\n'.encode('utf-8'))
         temp_str = '%d %d\n' % (image.shape[1], image.shape[0])
-        file.write(bytes(temp_str, 'UTF-8'))
+        file.write(temp_str.encode('utf-8'))
 
         endian = image.dtype.byteorder
 
@@ -342,13 +342,13 @@ class AirSimClientBase:
             scale = -scale
 
         temp_str = '%f\n' % scale
-        file.write(bytes(temp_str, 'UTF-8'))
+        file.write(temp_str.encode('utf-8'))
 
         image.tofile(file)
 
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
-class MultirotorClient(AirSimClientBase):
+class MultirotorClient(AirSimClientBase, object):
     def __init__(self, ip = ""):
         if (ip == ""):
             ip = "127.0.0.1"
@@ -426,7 +426,7 @@ class MultirotorClient(AirSimClientBase):
         return self.client.call('rotateByYawRate', yaw_rate, duration)
 
 # -----------------------------------  Car APIs ---------------------------------------------
-class CarClient(AirSimClientBase):
+class CarClient(AirSimClientBase, object):
     def __init__(self, ip = ""):
         if (ip == ""):
             ip = "127.0.0.1"

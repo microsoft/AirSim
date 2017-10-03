@@ -640,9 +640,9 @@ public:
 
         std::string bands;
         float fvalue;       // scale factor and temp value to hold pixel value
-        bands = "Pf";   // grayscale
+        bands = "Pf";       // grayscale
 
-                        // sign of scalefact indicates endianness, see pfms specs
+        // sign of scalefact indicates endianness, see pfm specs
         if(isLittleEndian())
             scalef = -scalef;
 
