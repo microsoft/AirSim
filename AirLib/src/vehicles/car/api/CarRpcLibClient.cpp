@@ -95,6 +95,11 @@ void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls)
     pimpl_->client.call("setCarControls", CarRpcLibAdapators::CarControls(controls));
 }
 
+void CarRpcLibClient::reset()
+{
+    pimpl_->client.call("reset");
+}
+
 CarApiBase::CarState CarRpcLibClient::getCarState()
 {
     return pimpl_->client.call("getCarState").as<CarRpcLibAdapators::CarState>().to();

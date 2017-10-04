@@ -6,6 +6,8 @@ client.confirmConnection()
 client.enableApiControl(True)
 car_controls = CarControls()
 
+client.reset()
+
 for idx in range(3):
     # get state of the car
     car_state = client.getCarState()
@@ -68,6 +70,9 @@ for idx in range(3):
             img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
             CarClient.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
 
+
+#restore to original state
+client.reset()
 
 client.enableApiControl(False)
 

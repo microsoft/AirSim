@@ -98,6 +98,13 @@ public:
         return state;
     }
 
+    virtual void reset() override
+    {
+        UAirBlueprintLib::RunCommandOnGameThread([this]() {
+            this->car_pawn_->reset(false);
+        });
+    }
+
     virtual msr::airlib::GeoPoint getHomeGeoPoint() override
     {
         return car_pawn_->getVehiclePawnWrapper()->getHomePoint();
@@ -285,11 +292,13 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     startApiServer(enable_rpc, api_server_address);
 }
 
-void ACarPawn::reset()
+void ACarPawn::reset(bool disable_api_control)
 {
     this->getVehiclePawnWrapper()->reset();
     controller_->setCarControls(CarController::CarControls());
-    api_control_enabled_ = false;
+
+    if (disable_api_control)
+        api_control_enabled_ = false;
 }
 
 void ACarPawn::enableApiControl(bool is_enabled)

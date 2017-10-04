@@ -73,6 +73,10 @@ CarRpcLibServer::CarRpcLibServer(CarApiBase* vehicle, string server_address, uin
         vehicle_->setCarControls(controls.to());
     });
 
+    pimpl_->server.bind("reset", [&]() -> void {
+        vehicle_->reset();
+    });
+
     pimpl_->server.bind("getCarState", [&]() -> CarRpcLibAdapators::CarState {
         return CarRpcLibAdapators::CarState(vehicle_->getCarState());
     });

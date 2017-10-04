@@ -26,6 +26,7 @@ public:
     vector<VehicleCameraBase::ImageResponse> simGetImages(vector<VehicleCameraBase::ImageRequest> request);
     vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
     void setCarControls(const CarApiBase::CarControls& controls);
+    void reset();
     CarApiBase::CarState getCarState();
     msr::airlib::GeoPoint getHomeGeoPoint();
 

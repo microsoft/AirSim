@@ -144,8 +144,7 @@ void VehiclePawnWrapper::reset()
 {
     state_ = initial_state_;
 
-    pawn_->SetActorLocation(state_.start_location, false, nullptr, ETeleportType::TeleportPhysics);
-    pawn_->SetActorRotation(state_.start_rotation, ETeleportType::TeleportPhysics);
+    pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
 
     //TODO: delete below
     //std::ifstream sim_log("C:\\temp\\mavlogs\\circle\\sim_cmd_006_orbit 5 1.txt.pos.txt");

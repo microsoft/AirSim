@@ -60,6 +60,9 @@ public:
 
     static void EnableInput(AActor* actor);
 
+    static void RunCommandOnGameThread(TFunction<void()> InFunction, const TStatId InStatId = TStatId());
+
+
     static bool getLogMessagesHidden()
     {
         return log_messages_hidden;

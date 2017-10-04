@@ -79,7 +79,7 @@ public:
 
     void enableApiControl(bool is_enabled);
     bool isApiControlEnabled();
-    void reset();
+    void reset(bool disable_api_control = true);
 
     // Begin Actor interface
     virtual void Tick(float Delta) override;
