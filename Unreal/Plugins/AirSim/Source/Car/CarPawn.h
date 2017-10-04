@@ -31,6 +31,10 @@ class ACarPawn : public AWheeledVehicle
     class USceneComponent* InternalCameraBase2;
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     class USceneComponent* InternalCameraBase3;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    class USceneComponent* InternalCameraBase4;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    class USceneComponent* InternalCameraBase5;
 
     /** Camera component for the In-Car view */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -39,6 +43,10 @@ class ACarPawn : public AWheeledVehicle
     APIPCamera* InternalCamera2;
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     APIPCamera* InternalCamera3;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    APIPCamera* InternalCamera4;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    APIPCamera* InternalCamera5;
 
     /** Text component for the In-Car speed */
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

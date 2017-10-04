@@ -222,6 +222,7 @@ void ASimHUD::initializeSubWindows()
         subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawnWrapper()->getCamera();
     else
         subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
+
     subwindow_camera_types_[0] = ImageType::DepthVis;
     subwindow_camera_types_[1] = ImageType::Segmentation;
     subwindow_camera_types_[2] = ImageType::Scene;
@@ -233,16 +234,24 @@ void ASimHUD::initializeSubWindows()
         for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
             Settings json_settings_child;     
             if (json_settings_parent.getChild(child_index, json_settings_child)) {
-                int index = json_settings_child.getInt("Index", -1);
+                int index = json_settings_child.getInt("WindowID", -1);
 
                 if (index == -1) {
-                    UAirBlueprintLib::LogMessageString("Index not set in <SubWindows> element(s) in settings.json", 
+                    UAirBlueprintLib::LogMessageString("WindowID not set in <SubWindows> element(s) in settings.json", 
                         std::to_string(child_index), LogDebugLevel::Failure);
                     continue;
                 }
 
                 subwindow_camera_types_[index] = Utils::toEnum<ImageType>(json_settings_child.getInt("ImageType", 0));
                 subwindow_visible_[index] = json_settings_child.getBool("Visible", false);
+
+                int camera_id = json_settings_child.getInt("CameraID", 0);
+                if (camera_id >= 0 && camera_id < simmode_->getFpvVehiclePawnWrapper()->getCameraCount())
+                    subwindow_cameras_[index] = simmode_->getFpvVehiclePawnWrapper()->getCamera(camera_id);
+                else 
+
+                    UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid", 
+                        std::to_string(child_index), LogDebugLevel::Failure);
             }
         }
     }
