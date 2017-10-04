@@ -90,7 +90,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
         {
             //initialize each vehicle pawn we found
             TVehiclePawn* vehicle_pawn = static_cast<TVehiclePawn*>(pawn);
-            vehicle_pawn->initializeForBeginPlay(enable_rpc, api_server_address);
+            vehicle_pawn->initializeForBeginPlay(enable_rpc, api_server_address, engine_sound);
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();

@@ -34,6 +34,7 @@ Below are complete list of settings available along with their default values. I
   "ViewMode": "",
   "UsageScenario": "",
   "RpcEnabled": true,
+  "EngineSound": true,
   "PhysicsEngineName": "",
   "EnableCollisionPassthrogh": false,
   "Recording": {
@@ -138,7 +139,7 @@ Currently SimMode can be set to `""`, `"Multirotor"` or `"Car"`. The empty strin
 #### PhysicsEngineName
 For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.
 
-### ViewMode 
+#### ViewMode 
 The ViewMode determines how you will view the vehicle. For multirotors, the default ViewMode is `"FlyWithMe"` while for cars the default ViewMode is `"SpringArmChase"`.
 
 * FlyWithMe: Chase the vehicle from behind with 6 degrees of freedom
@@ -146,6 +147,9 @@ The ViewMode determines how you will view the vehicle. For multirotors, the defa
 * Fpv: View the scene from front camera of vehicle
 * Manual: Don't move camera automatically. Use arrow keys and ASWD keys for move camera manually.
 * SpringArmChase: Chase the vehicle with camera mounted on (invisible) arm that is attached to the vehicle via spring (so it has some latency in movement).
+
+#### EngineSound
+To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. Currently this setting applies only to car.
 
 
 

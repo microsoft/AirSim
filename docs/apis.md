@@ -94,6 +94,7 @@ Car has followings APIs available:
 * `setCarControls`: This allows you to set throttle, steering, handbrake and auto or manual gear.
 * `getCarState`: This retrieves the state information including speed, current gear, velocity vector, position and orientation.
 * [Image APIs](image_apis.md).
+* `reset`: This resets the vehicle to its original starting state.
 
 ### APIs for Multirotor
 Multirotor can be controlled by specifying angles, velocity vector, destination position or some combination of these. There are corresponding `move*` APIs for this purpose. When doing position control, we need to use some path following algorithm. By default AirSim uses carrot following algorithm. This is often referred to as "high level control" because you just need to specify very high level goal and the firmware takes care of the rest. Currently lowest level control available in AirSim is moveByAngle API however we will be adding more lower level controls soon as well.

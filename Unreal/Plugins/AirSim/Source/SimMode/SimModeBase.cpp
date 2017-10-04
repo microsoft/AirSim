@@ -66,6 +66,7 @@ void ASimModeBase::readSettings()
     usage_scenario = "";
     enable_collision_passthrough = false;
     clock_type = "";
+    engine_sound = true;
 
 
     typedef msr::airlib::Settings Settings;
@@ -108,6 +109,7 @@ void ASimModeBase::readSettings()
     //don't work
     api_server_address = settings.getString("LocalHostIp", "");
     is_record_ui_visible = settings.getBool("RecordUIVisible", true);
+    engine_sound = settings.getBool("EngineSound", true);
 
     std::string view_mode_string = settings.getString("ViewMode", "");
 

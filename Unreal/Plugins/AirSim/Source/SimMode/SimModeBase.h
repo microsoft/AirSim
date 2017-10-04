@@ -64,6 +64,7 @@ protected: //settings
     std::string clock_type;
     float settings_version_actual;
     float settings_version_minimum = 1;
+    bool engine_sound;
 
 
 private:

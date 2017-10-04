@@ -6,8 +6,6 @@ client.confirmConnection()
 client.enableApiControl(True)
 car_controls = CarControls()
 
-client.reset()
-
 for idx in range(3):
     # get state of the car
     car_state = client.getCarState()

@@ -270,8 +270,12 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
         HitNormal, NormalImpulse, Hit);
 }
 
-void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address)
+void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound)
 {
+    if (engine_sound)
+        EngineSoundComponent->Activate(); 
+    else
+        EngineSoundComponent->Deactivate(); 
 
     //put camera little bit above vehicle
     FTransform camera_transform(FVector(0, 0, 0));
