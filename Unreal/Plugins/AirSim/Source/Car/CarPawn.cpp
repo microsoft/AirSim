@@ -12,7 +12,7 @@
 #include "WheeledVehicleMovementComponent4W.h"
 #include "Engine/SkeletalMesh.h"
 #include "GameFramework/Controller.h"
-#include "vehicles/car/controllers/CarControllerBase.hpp"
+#include "vehicles/car/api/CarApiBase.hpp"
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
 #include "PIPCamera.h"
@@ -31,9 +31,9 @@ const FName ACarPawn::EngineAudioRPM("RPM");
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
-class ACarPawn::CarController : public msr::airlib::CarControllerBase {
+class ACarPawn::CarController : public msr::airlib::CarApiBase {
 public:
-    typedef msr::airlib::CarControllerBase CarControllerBase;
+    typedef msr::airlib::CarApiBase CarApiBase;
     typedef msr::airlib::VehicleCameraBase VehicleCameraBase;
 
     CarController(ACarPawn* car_pawn)
@@ -72,7 +72,7 @@ public:
             return std::vector<uint8_t>();
     }
 
-    virtual void setCarControls(const CarControllerBase::CarControls& controls) override
+    virtual void setCarControls(const CarApiBase::CarControls& controls) override
     {
         UWheeledVehicleMovementComponent* movement = car_pawn_->GetVehicleMovementComponent();
         movement->SetThrottleInput(controls.throttle);
@@ -87,9 +87,9 @@ public:
             movement->SetTargetGear(controls.manual_gear, controls.gear_immediate);
     }
 
-    virtual CarControllerBase::CarState getCarState() override
+    virtual CarApiBase::CarState getCarState() override
     {
-        CarControllerBase::CarState state(
+        CarApiBase::CarState state(
             car_pawn_->GetVehicleMovement()->GetForwardSpeed(),
             car_pawn_->GetVehicleMovement()->GetCurrentGear(),
             NedTransform::toNedMeters(car_pawn_->GetActorLocation(), true),

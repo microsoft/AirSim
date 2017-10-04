@@ -8,7 +8,7 @@
 #include "common/CommonStructs.hpp"
 #include "api/RpcLibAdapatorsBase.hpp"
 #include "controllers/VehicleCameraBase.hpp"
-#include "vehicles/car/controllers/CarControllerBase.hpp"
+#include "vehicles/car/api/CarApiBase.hpp"
 #include "rpc/msgpack.hpp"
 
 
@@ -30,7 +30,7 @@ public:
         CarControls()
         {}
 
-        CarControls(const msr::airlib::CarControllerBase::CarControls& s)
+        CarControls(const msr::airlib::CarApiBase::CarControls& s)
         {
             throttle = s.throttle;
             steering = s.steering;
@@ -40,9 +40,9 @@ public:
             manual_gear = s.manual_gear;
             gear_immediate = s.gear_immediate;
         }
-        msr::airlib::CarControllerBase::CarControls to() const
+        msr::airlib::CarApiBase::CarControls to() const
         {
-            return msr::airlib::CarControllerBase::CarControls(throttle, steering, brake, handbrake,
+            return msr::airlib::CarApiBase::CarControls(throttle, steering, brake, handbrake,
                 is_manual_gear, manual_gear, gear_immediate);
         }
     };
@@ -59,7 +59,7 @@ public:
         CarState()
         {}
 
-        CarState(const msr::airlib::CarControllerBase::CarState& s)
+        CarState(const msr::airlib::CarApiBase::CarState& s)
         {
             speed = s.speed;
             gear = s.gear;
@@ -67,9 +67,9 @@ public:
             velocity = s.velocity;
             orientation = s.orientation;
         }
-        msr::airlib::CarControllerBase::CarState to() const
+        msr::airlib::CarApiBase::CarState to() const
         {
-            return msr::airlib::CarControllerBase::CarState(
+            return msr::airlib::CarApiBase::CarState(
                 speed, gear, position.to(), velocity.to(), orientation.to());
         }
     };

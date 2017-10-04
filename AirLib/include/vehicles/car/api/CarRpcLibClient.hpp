@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include <functional>
 #include "common/CommonStructs.hpp"
-#include "vehicles/car/controllers/CarControllerBase.hpp"
+#include "vehicles/car/api/CarApiBase.hpp"
 #include "controllers/VehicleCameraBase.hpp"
 
 
@@ -25,8 +25,8 @@ public:
 
     vector<VehicleCameraBase::ImageResponse> simGetImages(vector<VehicleCameraBase::ImageRequest> request);
     vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
-    void setCarControls(const CarControllerBase::CarControls& controls);
-    CarControllerBase::CarState getCarState();
+    void setCarControls(const CarApiBase::CarControls& controls);
+    CarApiBase::CarState getCarState();
     msr::airlib::GeoPoint getHomeGeoPoint();
 
     void confirmConnection();

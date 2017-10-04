@@ -1,26 +1,44 @@
 # Image APIs
 
-## Getting Single Image
-Here's a sample code to get a single image:
+## Getting a Single Image
+
+Here's a sample code to get a single image. Below returned value is bytes of png format image. To get uncompressed and other format please see next section.
+
+### C++
 
 ```
+#include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
+
 int getOneImage() 
 {
     using namespace std;
     using namespace msr::airlib;
     
-    msr::airlib::RpcLibClient client;
+    //for car use CarRpcLibClient
+    msr::airlib::MultirotorRpcLibClient client;
 
-    vector<uint8_t> png_image = client.simGetImage(0, VehicleCameraBase::ImageType::DepthVis);
+    vector<uint8_t> png_image = client.simGetImage(0, VehicleCameraBase::ImageType::Scene);
     //do something with images
 }
 ```
 
-Returned image is always in png format. To get uncompressed and other format please see next section.
+### Python
 
-## Getting Stereo/Multiple Images at Once
+```
+from AirSimClient import *
 
-The `simGetImages` API which is slightly more complex to use than `simGetImage` API, for example, you can get left camera view, right camera view and depth image from left camera - all at once! 
+# for car use CarClient() 
+client = MultirotorClient()
+
+png_image = client.simGetImage(0, AirSimImageType.Scene)
+# do something with image
+```
+
+## Getting Images with More Flexibility
+
+The `simGetImages` API which is slightly more complex to use than `simGetImage` API, for example, you can get left camera view, right camera view and depth image from left camera in a single API call. The `simGetImages` API also allows you to get uncompressed images as well as floating point single channel images (instead of 3 channel (RGB), each 8 bit).
+
+### C++
 
 ```
 int getStereoAndDepthImages() 
@@ -30,7 +48,7 @@ int getStereoAndDepthImages()
     
     typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
-    typedef VehicleCameraBase::ImageType_ ImageType_;
+    typedef VehicleCameraBase::ImageType ImageType;
 
     //for car use
     //msr::airlib::CarRpcLibClient client;
@@ -38,21 +56,73 @@ int getStereoAndDepthImages()
 
     //get right, left and depth images. First two as png, second as float16.
     vector<ImageRequest> request = { 
-        ImageRequest(0, ImageType_::Scene), 
-        ImageRequest(1, ImageType_::Scene),        
-        ImageRequest(1, ImageType_::DepthPlanner, true) 
+        //png format
+        ImageRequest(0, ImageType::Scene),
+        //uncompressed RGBA array bytes
+        ImageRequest(1, ImageType::Scene, false, false),       
+        //floating point uncompressed image  
+        ImageRequest(1, ImageType::DepthPlanner, true) 
     };
+
     const vector<ImageResponse>& response = client.simGetImages(request);
     //do something with response which contains image data, pose, timestamp etc
 }
 ```
-For a ready to run sample code please see [sample code in HelloDrone project](../HelloDrone/main.cpp) for multirotors or [HelloCar project](../HelloCar/main.cpp). 
 
-See also [complete code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
+### Python
 
-Unlike `simGetImage`, the `simGetImages` API also allows you to get uncompressed images as well as floating point single channel images (instead of 3 channel (RGB), each 8 bit).
+```
+from AirSimClient import *
 
-You can also use Python to get images. For sample code please see [PythonClient project](https://github.com/Microsoft/AirSim/tree/master/PythonClient) and [Python example doc](python.md).
+# for car use CarClient() 
+client = MultirotorClient()
+
+responses = client.simGetImages([
+    # png format
+    ImageRequest(0, AirSimImageType.Scene), 
+    # uncompressed RGBA array bytes
+    ImageRequest(1, AirSimImageType.Scene, False, False),
+    # floating point uncompressed image
+    ImageRequest(1, AirSimImageType.DepthPlanner, True)])
+ 
+ # do something with response which contains image data, pose, timestamp etc
+```
+
+#### Using AirSim Images with NumPy
+
+If you plan to use numpy for image manipulation, you should get uncompressed RGBA image and then convert to numpy like this:
+
+```
+responses = client.simGetImages([ImageRequest(0, AirSimImageType.Scene, False, False)])
+response = responses[0]
+
+# get numpy array
+img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
+
+# reshape array to 4 channel image array H X W X 4
+img_rgba = img1d.reshape(response.height, response.width, 4)  
+
+# original image is fliped vertically
+img_rgba = np.flipud(img_rgba)
+
+# just for fun add little bit of green in all pixels
+img_rgba[:,:,1:2] = 100
+
+# write to png 
+Client.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) 
+```
+
+## Ready to Run Complete Examples
+
+### C++
+
+For a more complete ready to run sample code please see [sample code in HelloDrone project](../HelloDrone/main.cpp) for multirotors or [HelloCar project](../HelloCar/main.cpp). 
+
+See also [other example code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images along with ground truth depth and disparity and saving it to [pfm format](pfm.md).
+
+### Python
+
+For a more complete ready to run sample code please see [sample code in AirSimClient project](../PythonClient/hello_drone.py) for multirotors or [HelloCar sample](../PythonClient/hello_car.py). This code also demonstrates simple activities such as saving images in files or using `numpy` to manipulate images.
 
 ## "Computer Vision" Mode
 

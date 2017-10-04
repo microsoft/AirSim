@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{39683523-C864-4D47-8350-33FC3EC0F00F}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="unreal\plugins\airsim\source\AirBlueprintLib.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\AirSim.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\AirSimGameMode.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\CameraDirector.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\car\CarPawn.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\car\CarWheelFront.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\car\CarWheelRear.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\car\SimModeCar.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\ManualPoseController.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\multirotor\FlyingPawn.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\multirotor\MultiRotorConnector.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\multirotor\SimModeWorldMultiRotor.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\NedTransform.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\PIPCamera.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingFile.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingThread.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\RenderRequest.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\simhud\SimHUD.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\simhud\SimHUDWidget.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\simjoystick\DirectInputJoyStick.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\simjoystick\SimJoyStick.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeBase.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\VehicleCameraConnector.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\VehicleConnectorBase.cpp" />
+    <ClCompile Include="unreal\plugins\airsim\source\VehiclePawnWrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="unreal\plugins\airsim\source\AirBlueprintLib.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\AirSim.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\AirSimGameMode.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\CameraDirector.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\car\CarPawn.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\car\CarWheelFront.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\car\CarWheelRear.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\car\SimModeCar.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\ManualPoseController.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\multirotor\FlyingPawn.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\multirotor\MultiRotorConnector.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\multirotor\SimModeWorldMultiRotor.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\NedTransform.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\PIPCamera.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\recording\RecordingFile.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\recording\RecordingThread.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\RenderRequest.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\simhud\SimHUD.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\simhud\SimHUDWidget.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\simjoystick\DirectInputJoystick.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\simjoystick\SimJoyStick.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeBase.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\VehicleCameraConnector.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\VehicleConnectorBase.h" />
+    <ClInclude Include="unreal\plugins\airsim\source\VehiclePawnWrapper.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

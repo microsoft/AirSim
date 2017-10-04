@@ -64,7 +64,7 @@ int main()
 
         //enable API control
         client.enableApiControl(true);
-        CarControllerBase::CarControls controls;
+        CarApiBase::CarControls controls;
 
         std::cout << "Press enter to drive forward" << std::endl; std::cin.get();
         controls.throttle = 0.5f;
@@ -84,7 +84,7 @@ int main()
         client.setCarControls(controls);
 
         std::cout << "Press Enter to stop" << std::endl; std::cin.get();
-        client.setCarControls(CarControllerBase::CarControls());
+        client.setCarControls(CarApiBase::CarControls());
     }
     catch (rpc::rpc_error&  e) {
         std::string msg = e.get_error().as<std::string>();

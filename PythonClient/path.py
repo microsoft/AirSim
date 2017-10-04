@@ -1,4 +1,4 @@
-from PythonClient import *
+from AirSimClient import *
 import sys
 import time
 

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef air_CarControllerBase_hpp
-#define air_CarControllerBase_hpp
+#ifndef air_CarApiBase_hpp
+#define air_CarApiBase_hpp
 
 #include "controllers/VehicleCameraBase.hpp"
 #include "common/VectorMath.hpp"
@@ -10,7 +10,7 @@
 
 namespace msr { namespace airlib {
 
-class CarControllerBase {
+class CarApiBase {
 public:
     struct CarControls {
         float throttle = 0; /* 1 to -1 */
@@ -67,8 +67,9 @@ public:
     virtual GeoPoint getHomeGeoPoint() = 0;
     virtual void enableApiControl(bool is_enabled) = 0;
     virtual bool isApiControlEnabled() = 0;
+    virtual void reset() = 0;
 
-    virtual ~CarControllerBase() = default;
+    virtual ~CarApiBase() = default;
 };
 
 

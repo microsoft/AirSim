@@ -148,7 +148,7 @@ private:
     UClass* pip_camera_class_;
     class CarController;
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
-    std::unique_ptr<msr::airlib::CarControllerBase> controller_;
+    std::unique_ptr<msr::airlib::CarApiBase> controller_;
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
 
     bool api_control_enabled_ = false;

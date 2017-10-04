@@ -2,13 +2,16 @@
 
 You can call AirSim APIs from Python to control the vehicle and get vehicle state as well as images back.  
 
+Python 3.x is required for running sample code however AirSimClient package can be used from Python 2.7 as well.
+
 First install the following Python package:
 
 ````
 pip install msgpack-rpc-python
+pip install numpy
 ````
 
-If you are using Visual Studio then click on "Python Environments" under your Python project. Then right click on environment and choose "Install Python Package...".
+If you are using Visual Studio then click on "Python Environments" under your Python project. Then right click on environment and choose "Install Python Package...". Choose pip and then type the names of above packages.
 
 Now you can run the samples in the [PythonClient](../PythonClient) folder.  
 
@@ -18,7 +21,7 @@ Now you can run the samples in the [PythonClient](../PythonClient) folder.
 The [hello_drone.py](../PythonClient/hello_drone.py) example shows how to use APIs to control multirotor and get state as well as images using Python.
 
 ```
-from PythonClient import *
+from AirSimClient import *
 
 # connect to the AirSim simulator 
 client = MultirotorClient()
@@ -52,7 +55,7 @@ for response in responses:
 The [hello_car.py](../PythonClient/hello_car.py) example shows how to use APIs to control car and get state as well as images using Python.
 
 ```
-from PythonClient import *
+from AirSimClient import *
 
 # connect to the AirSim simulator 
 client = CarClient()

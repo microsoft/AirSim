@@ -12,6 +12,8 @@
     <OutputPath>.</OutputPath>
     <Name>PythonClient</Name>
     <RootNamespace>PythonClient</RootNamespace>
+    <InterpreterId>{a50a5f96-88d3-4e9d-a5bf-3637ba9c96b7}</InterpreterId>
+    <InterpreterVersion>3.5</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,7 +46,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pfm.py" />
-    <Compile Include="PythonClient.py" />
+    <Compile Include="AirSimClient.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{a50a5f96-88d3-4e9d-a5bf-3637ba9c96b7}\3.5" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

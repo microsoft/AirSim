@@ -450,7 +450,7 @@
     <ClInclude Include="include\api\RpcLibAdapatorsBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\car\controllers\CarControllerBase.hpp">
+    <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -471,9 +471,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vehicles\car\api\CarRpcLibServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vehicles\multirotor\controllers\DroneControllerBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vehicles\multirotor\api\MultirotorRpcLibClient.cpp">

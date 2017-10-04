@@ -45,7 +45,7 @@ struct CarRpcLibServer::impl {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_address, uint16_t port)
+CarRpcLibServer::CarRpcLibServer(CarApiBase* vehicle, string server_address, uint16_t port)
     : vehicle_(vehicle)
 {
     if (server_address == "")

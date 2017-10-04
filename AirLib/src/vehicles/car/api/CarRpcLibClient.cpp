@@ -90,12 +90,12 @@ vector<uint8_t> CarRpcLibClient::simGetImage(int camera_id, VehicleCameraBase::I
     return result;
 }
 
-void CarRpcLibClient::setCarControls(const CarControllerBase::CarControls& controls)
+void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls)
 {
     pimpl_->client.call("setCarControls", CarRpcLibAdapators::CarControls(controls));
 }
 
-CarControllerBase::CarState CarRpcLibClient::getCarState()
+CarApiBase::CarState CarRpcLibClient::getCarState()
 {
     return pimpl_->client.call("getCarState").as<CarRpcLibAdapators::CarState>().to();
 

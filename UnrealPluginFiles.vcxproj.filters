@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="unreal\plugins\airsim\source\AirBlueprintLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\AirSim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\AirSimGameMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\CameraDirector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\ManualPoseController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\NedTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\PIPCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\RenderRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\VehicleCameraConnector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\VehicleConnectorBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\VehiclePawnWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\car\CarPawn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\car\CarWheelFront.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\car\CarWheelRear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\car\SimModeCar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\multirotor\FlyingPawn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\multirotor\MultiRotorConnector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\multirotor\SimModeWorldMultiRotor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\simhud\SimHUD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\simhud\SimHUDWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\simjoystick\DirectInputJoyStick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\simjoystick\SimJoyStick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="unreal\plugins\airsim\source\AirBlueprintLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\AirSim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\AirSimGameMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\CameraDirector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\ManualPoseController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\NedTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\PIPCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\RenderRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\VehicleCameraConnector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\VehicleConnectorBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\VehiclePawnWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\car\CarPawn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\car\CarWheelFront.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\car\CarWheelRear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\car\SimModeCar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\multirotor\FlyingPawn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\multirotor\MultiRotorConnector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\multirotor\SimModeWorldMultiRotor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\recording\RecordingFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\recording\RecordingThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\simhud\SimHUD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\simhud\SimHUDWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\simjoystick\DirectInputJoystick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\simjoystick\SimJoyStick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

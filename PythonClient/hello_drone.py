@@ -1,4 +1,4 @@
-from PythonClient import *
+from AirSimClient import *
 
 # connect to the AirSim simulator 
 client = MultirotorClient()
