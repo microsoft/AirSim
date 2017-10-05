@@ -100,15 +100,15 @@ public:
 
     virtual void reset() override
     {
-        UAirBlueprintLib::RunCommandOnGameThread([&]() {
+        UAirBlueprintLib::RunCommandOnGameThread([this]() {
             this->car_pawn_->reset(false);
         });
     }
 
-    virtual void simSetPose(const Pose& pose) override
+    virtual void simSetPose(const Pose& pose, bool ignore_collison) override
     {
-        UAirBlueprintLib::RunCommandOnGameThread([&]() {
-            this->car_pawn_->getVehiclePawnWrapper()->setPose(pose);
+        UAirBlueprintLib::RunCommandOnGameThread([this, pose, ignore_collison]() {
+            this->car_pawn_->getVehiclePawnWrapper()->setPose(pose, ignore_collison);
         });
     }
 

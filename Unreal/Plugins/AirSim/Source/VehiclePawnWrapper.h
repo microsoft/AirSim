@@ -50,7 +50,7 @@ public: //interface
     //get/set pose
     //parameters in NED frame
     Pose getPose() const;
-    void setPose(const Pose& pose);
+    void setPose(const Pose& pose, bool ignore_collison);
     void setDebugPose(const Pose& debug_pose);
     FVector getPosition() const;
     FRotator getOrientation() const;

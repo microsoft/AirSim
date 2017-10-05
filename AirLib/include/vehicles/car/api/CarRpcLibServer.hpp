@@ -17,6 +17,7 @@ public:
     virtual void start(bool block = false) override;
     virtual void stop() override;
     virtual ~CarRpcLibServer() override;
+
 private:
     CarApiBase* vehicle_;
     struct impl;

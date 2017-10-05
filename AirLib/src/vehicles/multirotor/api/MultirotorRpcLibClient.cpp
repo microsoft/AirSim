@@ -156,9 +156,9 @@ bool MultirotorRpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_re
 }
 
 //sim only
-void MultirotorRpcLibClient::simSetPose(const Pose& pose)
+void MultirotorRpcLibClient::simSetPose(const Pose& pose, bool ignore_collison)
 {
-    pimpl_->client.call("simSetPose", MultirotorRpcLibAdapators::Pose(pose));
+    pimpl_->client.call("simSetPose", MultirotorRpcLibAdapators::Pose(pose), ignore_collison);
 }
 Pose MultirotorRpcLibClient::simGetPose()
 {

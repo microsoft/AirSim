@@ -168,9 +168,9 @@ public:
         return controller_->getVelocity();
     }
 
-    void simSetPose(const Pose& pose)
+    void simSetPose(const Pose& pose, bool ignore_collison)
     {
-        controller_->simSetPose(pose);
+        controller_->simSetPose(pose, ignore_collison);
     }
     Pose simGetPose()
     {

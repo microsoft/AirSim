@@ -364,9 +364,10 @@ bool DroneControllerBase::hover(CancelableBase& cancelable_action)
     return moveToZ(getZ(), 0.5f, YawMode{ true,0 }, 1.0f, false, cancelable_action);
 }
 
-void DroneControllerBase::simSetPose(const Pose& pose)
+void DroneControllerBase::simSetPose(const Pose& pose, bool ignore_collison)
 {
     unused(pose);
+    unused(ignore_collison);
     //derived flight controller class should provide implementation if they support exclusive sim*** methods
 }
 Pose DroneControllerBase::simGetPose()

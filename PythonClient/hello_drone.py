@@ -6,13 +6,13 @@ client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
-MultirotorClient.wait_key('Press any key to takeoff')
+AirSimClientBase.wait_key('Press any key to takeoff')
 client.takeoff()
 
-MultirotorClient.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
+AirSimClientBase.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
 client.moveToPosition(-10, 10, -10, 5)
 
-MultirotorClient.wait_key('Press any key to take images')
+AirSimClientBase.wait_key('Press any key to take images')
 # get camera images from the car
 responses = client.simGetImages([
     ImageRequest(0, AirSimImageType.DepthVis),  #depth visualiztion image
@@ -26,16 +26,16 @@ for response in responses:
 
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-        MultirotorClient.write_pfm(os.path.normpath(filename + '.pfm'), MultirotorClient.getPfmArray(response))
+        AirSimClientBase.write_pfm(os.path.normpath(filename + '.pfm'), AirSimClientBase.getPfmArray(response))
     elif response.compress: #png format
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
-        MultirotorClient.write_file(os.path.normpath(filename + '.png'), response.image_data_uint8)
+        AirSimClientBase.write_file(os.path.normpath(filename + '.png'), response.image_data_uint8)
     else: #uncompressed array
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
         img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
         img_rgba = np.flipud(img_rgba) #original image is fliped vertically
         img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
-        MultirotorClient.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
+        AirSimClientBase.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
 
 client.enableApiControl(False)

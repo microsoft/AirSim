@@ -73,9 +73,9 @@ bool CarRpcLibClient::isApiControlEnabled()
 }
 
 //sim only
-void CarRpcLibClient::simSetPose(const Pose& pose)
+void CarRpcLibClient::simSetPose(const Pose& pose, bool ignore_collison)
 {
-    pimpl_->client.call("simSetPose", CarRpcLibAdapators::Pose(pose));
+    pimpl_->client.call("simSetPose", CarRpcLibAdapators::Pose(pose), ignore_collison);
 }
 Pose CarRpcLibClient::simGetPose()
 {

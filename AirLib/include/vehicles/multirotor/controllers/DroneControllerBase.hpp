@@ -223,7 +223,7 @@ public: //interface for outside world
 
 
     //TODO: methods that are only valid for simulation mode should be prefixed with "sim"
-    virtual void simSetPose(const Pose& pose);
+    virtual void simSetPose(const Pose& pose, bool ignore_collison);
     virtual Pose simGetPose();
 
     /// Request an image of specific type from the specified camera.  Currently default pawn is configured with only 2 cameras which

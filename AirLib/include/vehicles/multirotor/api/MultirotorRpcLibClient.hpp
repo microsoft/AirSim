@@ -48,7 +48,7 @@ public:
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
 
-    void simSetPose(const Pose& pose);
+    void simSetPose(const Pose& pose, bool ignore_collison);
     Pose simGetPose();
 
     vector<VehicleCameraBase::ImageResponse> simGetImages(vector<VehicleCameraBase::ImageRequest> request);

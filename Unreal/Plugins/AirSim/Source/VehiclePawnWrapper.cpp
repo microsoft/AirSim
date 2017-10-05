@@ -226,7 +226,7 @@ VehiclePawnWrapper::Pose VehiclePawnWrapper::getPose() const
     return Pose(position, orientation);
 }
 
-void VehiclePawnWrapper::setPose(const Pose& pose)
+void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collison)
 {
     //translate to new VehiclePawnWrapper position & orientation from NED to NEU
     FVector position = NedTransform::toNeuUU(pose.position);
@@ -235,7 +235,7 @@ void VehiclePawnWrapper::setPose(const Pose& pose)
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
     FQuat orientation = NedTransform::toFQuat(pose.orientation, true);
 
-    bool enable_teleport = canTeleportWhileMove();
+    bool enable_teleport = ignore_collison || canTeleportWhileMove();
 
     //must reset collison before we set pose. Setting pose will immediately call NotifyHit if there was collison
     //if there was no collison than has_collided would remain false, else it will be set so its value can be

@@ -68,7 +68,7 @@ public:
     virtual void enableApiControl(bool is_enabled) = 0;
     virtual bool isApiControlEnabled() = 0;
     virtual void reset() = 0;
-    virtual void simSetPose(const Pose& pose) = 0;
+    virtual void simSetPose(const Pose& pose, bool ignore_collison) = 0;
     virtual Pose simGetPose() = 0;
     virtual ~CarApiBase() = default;
 };

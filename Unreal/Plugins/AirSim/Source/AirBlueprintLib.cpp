@@ -108,7 +108,6 @@ T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
 
 void UAirBlueprintLib::RunCommandOnGameThread(TFunction<void()> InFunction, const TStatId InStatId)
 {
-
     FFunctionGraphTask::CreateAndDispatchWhenReady(MoveTemp(InFunction), InStatId, nullptr, ENamedThreads::GameThread);
 }
 

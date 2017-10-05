@@ -37,7 +37,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrappe
     float pitch, roll, yaw;
     VectorMath::toEulerianAngle(pose.orientation, pitch, roll, yaw);
     pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
-    vehicle_pawn_wrapper->setPose(pose);
+    vehicle_pawn_wrapper->setPose(pose, false);
 
     vehicle_params_ = vehicle_params;
 
@@ -199,7 +199,7 @@ void MultiRotorConnector::updateRendering(float dt)
     }
 
     if (!VectorMath::hasNan(last_pose.position)) {
-        vehicle_pawn_wrapper_->setPose(last_pose);
+        vehicle_pawn_wrapper_->setPose(last_pose, false);
         vehicle_pawn_wrapper_->setDebugPose(last_debug_pose);
     }
 

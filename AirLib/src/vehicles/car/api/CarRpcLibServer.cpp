@@ -56,8 +56,9 @@ CarRpcLibServer::CarRpcLibServer(CarApiBase* vehicle, string server_address, uin
 
 
     //sim only
-    pimpl_->server.bind("simSetPose", [&](const CarRpcLibAdapators::Pose &pose) -> 
-        void { vehicle_->simSetPose(pose.to()); });
+    pimpl_->server.bind("simSetPose", [&](const CarRpcLibAdapators::Pose &pose, bool ignore_collison) -> void { 
+        vehicle_->simSetPose(pose.to(), ignore_collison); 
+    });
     pimpl_->server.bind("simGetPose", [&]() ->
         CarRpcLibAdapators::Pose { return vehicle_->simGetPose(); 
     });

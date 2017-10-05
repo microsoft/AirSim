@@ -284,9 +284,10 @@ protected:
     }
 
 
-    void simSetPose(const Pose& pose) override
+    void simSetPose(const Pose& pose, bool ignore_collison) override
     {
         pending_pose_ = pose;
+        pending_pose_ignore_collison_ = ignore_collison;
         waitForRender();
     }
     Pose simGetPose() override
@@ -312,7 +313,7 @@ protected:
             render_wait_lock.unlock();
             render_cond_.notify_all();
         }
-        if (! VectorMath::hasNan(last_pose_)) {
+        if (VectorMath::hasNan(last_pose_)) {
             last_pose_ = physics_body_->getKinematics().pose;
         }
     }
@@ -374,6 +375,7 @@ private:
     std::condition_variable render_cond_;
     bool is_pose_update_done_;
     Pose pending_pose_, last_pose_;
+    bool pending_pose_ignore_collison_;
 
     VehicleParams safety_params_;
 };

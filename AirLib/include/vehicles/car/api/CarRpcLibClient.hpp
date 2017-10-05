@@ -30,7 +30,7 @@ public:
     CarApiBase::CarState getCarState();
     msr::airlib::GeoPoint getHomeGeoPoint();
 
-    void simSetPose(const Pose& pose);
+    void simSetPose(const Pose& pose, bool ignore_collison);
     Pose simGetPose();
 
     void confirmConnection();
