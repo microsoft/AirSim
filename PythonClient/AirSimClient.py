@@ -6,6 +6,8 @@ import math
 import time
 import sys
 import os
+import inspect
+import types
 
 
 class MsgpackMixin:
@@ -58,7 +60,15 @@ class Quaternionr(MsgpackMixin):
         self.y_val = y_val
         self.z_val = z_val
         self.w_val = w_val
-        
+
+class Pose(MsgpackMixin):
+    position = Vector3r()
+    orientation = Quaternionr()
+
+    def __init__(self, position_val, orientation_val):
+        self.position = position_val
+        self.orientation = orientation_val
+
 
 class CollisionInfo(MsgpackMixin):
     has_collided = False
@@ -188,12 +198,32 @@ class AirSimClientBase:
         return AirSimClientBase.listTo2DFloatArray(response.image_data_float, response.width, response.height)
 
     @staticmethod
+    def get_public_fields(obj):
+        return [attr for attr in dir(obj)
+                             if not (attr.startswith("_") 
+                                or inspect.isbuiltin(attr)
+                                or inspect.isfunction(attr)
+                                or inspect.ismethod(attr))]
+
+
+    @staticmethod
+    def to_dict(obj):
+        return dict([attr, getattr(obj, attr)] for attr in AirSimClientBase.get_public_fields(obj))
+
+    @staticmethod
+    def to_str(obj):
+        return str(AirSimClientBase.to_dict(obj))
+
+    @staticmethod
     def write_file(filename, bstr):
         with open(filename, 'wb') as afile:
             afile.write(bstr)
 
-    def simSetPose(self, position, orientation):
-        return self.client.call('simSetPose', position, orientation)
+    def simSetPose(self, pose):
+        self.client.call('simSetPose', pose)
+
+    def simGetPose(self):
+        return self.client.call('simGetPose')
 
     # helper method for converting getOrientation to roll/pitch/yaw
     # https:#en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -224,7 +254,7 @@ class AirSimClientBase:
         yaw = math.atan2(t3, t4)
 
         return (pitch, roll, yaw)
-        
+
     @staticmethod
     def toQuaternion(pitch, roll, yaw):
         t0 = math.cos(yaw * 0.5)

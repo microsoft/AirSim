@@ -48,7 +48,9 @@ public:
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
 
-    void simSetPose(const Vector3r& position, const Quaternionr& orientation);
+    void simSetPose(const Pose& pose);
+    Pose simGetPose();
+
     vector<VehicleCameraBase::ImageResponse> simGetImages(vector<VehicleCameraBase::ImageRequest> request);
     vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
     

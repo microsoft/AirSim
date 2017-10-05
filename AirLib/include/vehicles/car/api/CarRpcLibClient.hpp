@@ -30,6 +30,9 @@ public:
     CarApiBase::CarState getCarState();
     msr::airlib::GeoPoint getHomeGeoPoint();
 
+    void simSetPose(const Pose& pose);
+    Pose simGetPose();
+
     void confirmConnection();
     bool isApiControlEnabled();
     void enableApiControl(bool is_enabled);

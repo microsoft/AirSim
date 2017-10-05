@@ -221,8 +221,8 @@ void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& off
 //parameters in NED frame
 VehiclePawnWrapper::Pose VehiclePawnWrapper::getPose() const
 {
-    Vector3r position = NedTransform::toNedMeters(getPosition());
-    Quaternionr orientation = NedTransform::toQuaternionr(pawn_->GetActorRotation().Quaternion(), true);
+    const Vector3r& position = NedTransform::toNedMeters(getPosition());
+    const Quaternionr& orientation = NedTransform::toQuaternionr(pawn_->GetActorRotation().Quaternion(), true);
     return Pose(position, orientation);
 }
 

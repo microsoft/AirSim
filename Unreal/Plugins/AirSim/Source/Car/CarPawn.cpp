@@ -100,9 +100,21 @@ public:
 
     virtual void reset() override
     {
-        UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        UAirBlueprintLib::RunCommandOnGameThread([&]() {
             this->car_pawn_->reset(false);
         });
+    }
+
+    virtual void simSetPose(const Pose& pose) override
+    {
+        UAirBlueprintLib::RunCommandOnGameThread([&]() {
+            this->car_pawn_->getVehiclePawnWrapper()->setPose(pose);
+        });
+    }
+
+    virtual Pose simGetPose() override
+    {
+        return this->car_pawn_->getVehiclePawnWrapper()->getPose();
     }
 
     virtual msr::airlib::GeoPoint getHomeGeoPoint() override

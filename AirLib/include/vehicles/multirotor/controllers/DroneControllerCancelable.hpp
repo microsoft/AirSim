@@ -168,9 +168,13 @@ public:
         return controller_->getVelocity();
     }
 
-    void simSetPose(const Vector3r& position, const Quaternionr& orientation)
+    void simSetPose(const Pose& pose)
     {
-        controller_->simSetPose(position, orientation);
+        controller_->simSetPose(pose);
+    }
+    Pose simGetPose()
+    {
+        return controller_->simGetPose();
     }
     vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request)
     {

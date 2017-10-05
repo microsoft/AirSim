@@ -94,8 +94,11 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(DroneControllerCancelable* drone,
             obs_avoidance_vel, origin.to(), xy_length, max_z, min_z); });
 
     //sim only
-    pimpl_->server.bind("simSetPose", [&](const MultirotorRpcLibAdapators::Vector3r &position, const MultirotorRpcLibAdapators::Quaternionr& orientation) -> 
-        void { drone_->simSetPose(position.to(), orientation.to()); });
+    pimpl_->server.bind("simSetPose", [&](const MultirotorRpcLibAdapators::Pose &pose) -> 
+        void { drone_->simSetPose(pose.to()); });
+    pimpl_->server.bind("simGetPose", [&]() ->
+        MultirotorRpcLibAdapators::Pose { return drone_->simGetPose(); 
+    });
     pimpl_->server.bind("simGetImages", [&](const std::vector<MultirotorRpcLibAdapators::ImageRequest>& request_adapter) -> vector<MultirotorRpcLibAdapators::ImageResponse> { 
         const auto& response = drone_->simGetImages(MultirotorRpcLibAdapators::ImageRequest::to(request_adapter)); 
         return MultirotorRpcLibAdapators::ImageResponse::from(response);

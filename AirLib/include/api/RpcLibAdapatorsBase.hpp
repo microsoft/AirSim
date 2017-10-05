@@ -81,7 +81,7 @@ public:
     };
 
     struct Quaternionr {
-        msr::airlib::real_T w_val, x_val, y_val, z_val;
+        msr::airlib::real_T w_val = 1, x_val = 0, y_val = 0, z_val = 0;
         MSGPACK_DEFINE_MAP(w_val, x_val, y_val, z_val);
 
         Quaternionr()
@@ -97,6 +97,24 @@ public:
         msr::airlib::Quaternionr to() const
         {
             return msr::airlib::Quaternionr(w_val, x_val, y_val, z_val);
+        }
+    };
+
+    struct Pose {
+        Vector3r position;
+        Quaternionr orientation;
+        MSGPACK_DEFINE_MAP(position, orientation);
+
+        Pose()
+        {}
+        Pose(const msr::airlib::Pose& s)
+        {
+            position = s.position;
+            orientation = s.orientation;
+        }
+        msr::airlib::Pose to() const
+        {
+            return msr::airlib::Pose(position.to(), orientation.to());
         }
     };
 

@@ -284,11 +284,18 @@ protected:
     }
 
 
-    void simSetPose(const Vector3r& position, const Quaternionr& orientation) override
+    void simSetPose(const Pose& pose) override
     {
-        pending_pose_ = Pose(position, orientation);
+        pending_pose_ = pose;
         waitForRender();
     }
+    Pose simGetPose() override
+    {
+        last_pose_ = Pose::nanPose();
+        waitForRender();
+        return last_pose_;
+    }
+
 
     void simNotifyRender() override
     {
@@ -304,6 +311,9 @@ protected:
             is_pose_update_done_ = true;
             render_wait_lock.unlock();
             render_cond_.notify_all();
+        }
+        if (! VectorMath::hasNan(last_pose_)) {
+            last_pose_ = physics_body_->getKinematics().pose;
         }
     }
 
@@ -363,7 +373,7 @@ private:
     std::mutex render_mutex_;
     std::condition_variable render_cond_;
     bool is_pose_update_done_;
-    Pose pending_pose_;
+    Pose pending_pose_, last_pose_;
 
     VehicleParams safety_params_;
 };

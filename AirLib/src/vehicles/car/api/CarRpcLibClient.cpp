@@ -71,6 +71,16 @@ bool CarRpcLibClient::isApiControlEnabled()
 {
     return pimpl_->client.call("isApiControlEnabled").as<bool>();
 }
+
+//sim only
+void CarRpcLibClient::simSetPose(const Pose& pose)
+{
+    pimpl_->client.call("simSetPose", CarRpcLibAdapators::Pose(pose));
+}
+Pose CarRpcLibClient::simGetPose()
+{
+    return pimpl_->client.call("simGetPose").as<CarRpcLibAdapators::Pose>().to();
+}
 vector<VehicleCameraBase::ImageResponse> CarRpcLibClient::simGetImages(vector<VehicleCameraBase::ImageRequest> request)
 {
     const auto& response_adaptor = pimpl_->client.call("simGetImages", 
@@ -79,7 +89,6 @@ vector<VehicleCameraBase::ImageResponse> CarRpcLibClient::simGetImages(vector<Ve
 
     return CarRpcLibAdapators::ImageResponse::to(response_adaptor);
 }
-
 vector<uint8_t> CarRpcLibClient::simGetImage(int camera_id, VehicleCameraBase::ImageType type)
 {
     vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type).as<vector<uint8_t>>();

@@ -156,9 +156,13 @@ bool MultirotorRpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_re
 }
 
 //sim only
-void MultirotorRpcLibClient::simSetPose(const Vector3r& position, const Quaternionr& orientation)
+void MultirotorRpcLibClient::simSetPose(const Pose& pose)
 {
-    pimpl_->client.call("simSetPose", MultirotorRpcLibAdapators::Vector3r(position), MultirotorRpcLibAdapators::Quaternionr(orientation));
+    pimpl_->client.call("simSetPose", MultirotorRpcLibAdapators::Pose(pose));
+}
+Pose MultirotorRpcLibClient::simGetPose()
+{
+    return pimpl_->client.call("simGetPose").as<MultirotorRpcLibAdapators::Pose>().to();
 }
 vector<VehicleCameraBase::ImageResponse> MultirotorRpcLibClient::simGetImages(vector<VehicleCameraBase::ImageRequest> request)
 {
