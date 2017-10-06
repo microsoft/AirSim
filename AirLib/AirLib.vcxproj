@@ -24,6 +24,7 @@
   <ItemGroup>
     <ClInclude Include="include\api\DebugApiServer.hpp" />
     <ClInclude Include="include\api\RpcLibAdapatorsBase.hpp" />
+    <ClInclude Include="include\api\RpcLibClientBase.hpp" />
     <ClInclude Include="include\common\ClockBase.hpp" />
     <ClInclude Include="include\common\Common.hpp" />
     <ClInclude Include="include\common\CommonStructs.hpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="include\vehicles\multirotor\RotorParams.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\api\RpcLibClientBase.cpp" />
     <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />

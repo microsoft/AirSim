@@ -9,21 +9,16 @@
 #include "common/CommonStructs.hpp"
 #include "controllers/VehicleCameraBase.hpp"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "api/RpcLibClientBase.hpp"
 #include "vehicles/multirotor/controllers/DroneCommon.hpp"
 
 namespace msr { namespace airlib {
 
-class MultirotorRpcLibClient {
-public:
-    enum class ConnectionState : uint {
-        Initial = 0, Connected, Disconnected, Reset, Unknown
-    };
+class MultirotorRpcLibClient : public RpcLibClientBase {
 public:
     MultirotorRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
-    ConnectionState getConnectionState();
-    bool ping();
+
     bool armDisarm(bool arm);
-    void enableApiControl(bool is_enabled);
     void setSimulationMode(bool is_set);
     void start();
     void stop();
@@ -48,34 +43,24 @@ public:
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
 
-    void simSetPose(const Pose& pose, bool ignore_collison);
-    Pose simGetPose();
-
-    vector<VehicleCameraBase::ImageResponse> simGetImages(vector<VehicleCameraBase::ImageRequest> request);
-    vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
-    
+  
     Vector3r getPosition();
     CollisionInfo getCollisionInfo();
     Vector3r getVelocity();
     Quaternionr getOrientation();
     RCData getRCData();
     GeoPoint getGpsLocation();
-    GeoPoint getHomeGeoPoint();
-
-    bool isApiControlEnabled();
     bool isSimulationMode();
     std::string getDebugInfo();
-    void confirmConnection();
+
     DroneControllerBase::LandedState getLandedState();
     TTimePoint timestampNow();
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
 
-    ~MultirotorRpcLibClient();    //required for pimpl
-private:
-    struct impl;
-    std::unique_ptr<impl> pimpl_;
+    virtual ~MultirotorRpcLibClient();    //required for pimpl
+
 };
 
 }} //namespace

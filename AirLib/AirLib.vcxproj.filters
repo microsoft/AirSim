@@ -453,6 +453,9 @@
     <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\api\RpcLibClientBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\safety\ObstacleMap.cpp">
@@ -477,6 +480,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\controllers\DroneControllerBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\api\RpcLibClientBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
