@@ -73,6 +73,7 @@ private:
 
 private:
     std::unique_ptr<RecordingFile> recording_file_;
+    bool isLoggingStarted;
     void *xinput_dllHandle;
 
 };

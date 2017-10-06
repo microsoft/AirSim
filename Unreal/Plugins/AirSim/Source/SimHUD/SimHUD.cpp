@@ -217,9 +217,15 @@ void ASimHUD::createSimMode()
 
 void ASimHUD::initializeSubWindows()
 {
+    auto wrapper = simmode_->getFpvVehiclePawnWrapper();
+    auto camera_count = wrapper->getCameraCount();
+
     //setup defaults
-    if (simmode_->getFpvVehiclePawnWrapper()->getCameraCount() > 0)
-        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawnWrapper()->getCamera();
+    if (camera_count > 0) {
+        subwindow_cameras_[0] = wrapper->getCamera(0);
+        subwindow_cameras_[1] = wrapper->getCamera(camera_count > 3 ? 3 : 0);
+        subwindow_cameras_[2] = wrapper->getCamera(camera_count > 4 ? 4 : 0);
+    }
     else
         subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
 
@@ -246,8 +252,8 @@ void ASimHUD::initializeSubWindows()
                 subwindow_visible_[index] = json_settings_child.getBool("Visible", false);
 
                 int camera_id = json_settings_child.getInt("CameraID", 0);
-                if (camera_id >= 0 && camera_id < simmode_->getFpvVehiclePawnWrapper()->getCameraCount())
-                    subwindow_cameras_[index] = simmode_->getFpvVehiclePawnWrapper()->getCamera(camera_id);
+                if (camera_id >= 0 && camera_id < camera_count)
+                    subwindow_cameras_[index] = wrapper->getCamera(camera_id);
                 else 
 
                     UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid", 

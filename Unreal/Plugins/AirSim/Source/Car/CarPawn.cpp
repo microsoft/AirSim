@@ -16,7 +16,6 @@
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
 #include "PIPCamera.h"
-#include "VehicleCameraConnector.h"
 #include <vector>
 #include "UObject/ConstructorHelpers.h"
 
@@ -39,11 +38,6 @@ public:
     CarController(ACarPawn* car_pawn)
         : car_pawn_(car_pawn)
     {
-        for (int i = 0; i < car_pawn->getVehiclePawnWrapper()->getCameraCount(); ++i) {
-            cameras_.push_back(
-                std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(
-                    car_pawn->getVehiclePawnWrapper()->getCamera())));
-        }
     }
 
     virtual std::vector<VehicleCameraBase::ImageResponse> simGetImages(
@@ -52,9 +46,7 @@ public:
         std::vector<VehicleCameraBase::ImageResponse> response;
 
         for (const auto& item : request) {
-            if (item.camera_id < 0 || item.camera_id >= cameras_.size())
-                throw std::out_of_range("Camera id is not valid");
-            VehicleCameraBase* camera = cameras_.at(item.camera_id).get();
+            VehicleCameraBase* camera = car_pawn_->getVehiclePawnWrapper()->getCameraConnector(item.camera_id);
             const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
             response.push_back(item_response);
         }
@@ -136,8 +128,6 @@ public:
 
 private:
     ACarPawn* car_pawn_;
-    std::vector<std::unique_ptr<VehicleCameraConnector>> cameras_;
-
 };
 
 ACarPawn::ACarPawn()

@@ -16,7 +16,8 @@ void AFlyingPawn::initializeForBeginPlay()
     //get references of components so we can use later
     setupComponentReferences();
 
-    std::vector<APIPCamera*> cameras = {fpv_camera_right_, fpv_camera_left_};
+    std::vector<APIPCamera*> cameras = {fpv_camera_front_center_, fpv_camera_front_right_, fpv_camera_front_left_, 
+        fpv_camera_bottom_center_, fpv_camera_back_center_};
     wrapper_->initialize(this, cameras);
 }
 
@@ -44,10 +45,16 @@ void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
 
 void AFlyingPawn::setupComponentReferences()
 {
-    fpv_camera_right_ = Cast<APIPCamera>(
-        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("RightPIPCamera")))->GetChildActor());
-    fpv_camera_left_ = Cast<APIPCamera>(
-        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("LeftPIPCamera")))->GetChildActor());
+    fpv_camera_front_right_ = Cast<APIPCamera>(
+        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("FrontRightCamera")))->GetChildActor());
+    fpv_camera_front_left_ = Cast<APIPCamera>(
+        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("FrontLeftCamera")))->GetChildActor());
+    fpv_camera_front_center_ = Cast<APIPCamera>(
+        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("FrontCenterCamera")))->GetChildActor());
+    fpv_camera_back_center_ = Cast<APIPCamera>(
+        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("BackCenterCamera")))->GetChildActor());
+    fpv_camera_bottom_center_ = Cast<APIPCamera>(
+        (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("BottomCenterCamera")))->GetChildActor());
 
     for (auto i = 0; i < rotor_count; ++i) {
         rotating_movements_[i] = UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i));

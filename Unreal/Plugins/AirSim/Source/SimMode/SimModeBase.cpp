@@ -3,6 +3,7 @@
 #include "Misc/EngineVersion.h"
 #include "AirBlueprintLib.h"
 #include "Runtime/Launch/Resources/Version.h"
+#include "Recording/RecordingThread.h"
 #include "controllers/Settings.hpp"
 #include "SimJoyStick/SimJoyStick.h"
 
@@ -49,6 +50,12 @@ void ASimModeBase::setStencilIDs()
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    if (isLoggingStarted)
+    {
+        FRecordingThread::Shutdown();
+        isLoggingStarted = false;
+    }
+
     recording_file_.release();
 
     Super::EndPlay(EndPlayReason);
@@ -109,7 +116,7 @@ void ASimModeBase::readSettings()
     //don't work
     api_server_address = settings.getString("LocalHostIp", "");
     is_record_ui_visible = settings.getBool("RecordUIVisible", true);
-    engine_sound = settings.getBool("EngineSound", true);
+    engine_sound = settings.getBool("EngineSound", false);
 
     std::string view_mode_string = settings.getString("ViewMode", "");
 
@@ -162,6 +169,24 @@ void ASimModeBase::readSettings()
 
 void ASimModeBase::Tick(float DeltaSeconds)
 {
+    if (getFpvVehiclePawnWrapper() != nullptr && getFpvVehiclePawnWrapper()->getCameraCount() > 0) {
+
+        if (isRecording() && getRecordingFile().isRecording()) {
+            if (!isLoggingStarted)
+            {
+                FRecordingThread::ThreadInit(getFpvVehiclePawnWrapper()->getCameraConnector(0), & getRecordingFile(), 
+                    getFpvVehiclePawnWrapper()->getKinematics(), recording_settings);
+                isLoggingStarted = true;
+            }
+        }
+
+        if (!isRecording() && isLoggingStarted)
+        {
+            FRecordingThread::Shutdown();
+            isLoggingStarted = false;
+        }
+    }
+
     if (recording_file_->isRecording())
         ++record_tick_count;
     Super::Tick(DeltaSeconds);

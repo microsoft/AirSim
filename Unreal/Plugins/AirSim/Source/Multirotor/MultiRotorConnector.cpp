@@ -47,8 +47,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrappe
     controller_ = static_cast<msr::airlib::DroneControllerBase*>(vehicle_.getController());
 
     for (int camera_index = 0; camera_index < vehicle_pawn_wrapper_->getCameraCount(); ++camera_index) {
-        camera_connectors_.push_back(std::make_shared<VehicleCameraConnector>(vehicle_pawn_wrapper_->getCamera(camera_index)));
-        controller_->simAddCamera(camera_connectors_.at(camera_index).get());
+        controller_->simAddCamera(vehicle_pawn_wrapper_->getCameraConnector(camera_index));
     }
 
     if (controller_->getRemoteControlID() >= 0)
@@ -69,7 +68,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrappe
 
 msr::airlib::VehicleCameraBase* MultiRotorConnector::getCamera(unsigned int index)
 {
-    return camera_connectors_.at(index).get();
+    return vehicle_pawn_wrapper_->getCameraConnector(index);
 }
 
 MultiRotorConnector::~MultiRotorConnector()

@@ -1,11 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VehicleConnectorBase.h"
+#include <vector>
+#include <memory>
+#include "VehicleCameraConnector.h"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"
 #include "controllers/Settings.hpp"
+#include "physics/Kinematics.hpp"
 #include "GameFramework/Pawn.h"
 
 class VehiclePawnWrapper
@@ -43,6 +46,7 @@ public: //interface
         bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
     APIPCamera* getCamera(int index = 0);
+    VehicleCameraConnector* getCameraConnector(int index = 0);
     int getCameraCount();
     void displayCollisonEffect(FVector hit_location, const FHitResult& hit);
     APawn* getPawn();
@@ -54,6 +58,7 @@ public: //interface
     void setDebugPose(const Pose& debug_pose);
     FVector getPosition() const;
     FRotator getOrientation() const;
+    msr::airlib::Kinematics* getKinematics() const;
 
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisonInfo() const;
@@ -79,6 +84,7 @@ private: //vars
     GeoPoint home_point_;
     APawn* pawn_;
     std::vector<APIPCamera*> cameras_;
+    std::vector<std::unique_ptr<VehicleCameraConnector>> camera_connectors_;
 
     struct State {
         FVector start_location;

@@ -93,10 +93,18 @@ void VehiclePawnWrapper::displayCollisonEffect(FVector hit_location, const FHitR
     }
 }
 
+msr::airlib::Kinematics* VehiclePawnWrapper::getKinematics() const
+{
+    return nullptr;
+}
+
 void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)
 {
     pawn_ = pawn;
     cameras_ = cameras;
+    for (auto camera : cameras_) {
+        camera_connectors_.push_back(std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(camera)));
+    }
 
     if (!NedTransform::isInitialized())
         NedTransform::initialize(pawn_);
@@ -131,8 +139,16 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
 
 APIPCamera* VehiclePawnWrapper::getCamera(int index)
 {
+    if (index < 0 || index >= cameras_.size())
+        throw std::out_of_range("Camera id is not valid");
     //should be overridden in derived class
     return cameras_.at(index);
+}
+
+VehicleCameraConnector* VehiclePawnWrapper::getCameraConnector(int index)
+{
+    //should be overridden in derived class
+    return camera_connectors_.at(index).get();
 }
 
 int VehiclePawnWrapper::getCameraCount()

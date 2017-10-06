@@ -85,7 +85,7 @@ public:
                 results.push(result);
 
                 pose_generator.next();
-                client.simSetPose(pose_generator.position, pose_generator.orientation);
+                client.simSetPose(Pose(pose_generator.position, pose_generator.orientation), true);
             }
         } catch (rpc::timeout &t) {
             // will display a message like
@@ -107,6 +107,7 @@ private:
     typedef common_utils::RandomGeneratorF RandomGeneratorF;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Quaternionr Quaternionr;
+    typedef msr::airlib::Pose Pose;
     typedef msr::airlib::VehicleCameraBase::ImageRequest ImageRequest;
     typedef msr::airlib::VehicleCameraBase::ImageResponse ImageResponse;
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;

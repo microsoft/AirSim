@@ -44,12 +44,6 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
         fpv_vehicle_pawn_wrapper_ = nullptr;
     }
 
-    if (isLoggingStarted)
-    {
-        FRecordingThread::Shutdown();
-        isLoggingStarted = false;
-    }
-
     //for (AActor* actor : spawned_actors_) {
     //    actor->Destroy();
     //}
@@ -148,24 +142,6 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
-    if (fpv_vehicle_connector_ != nullptr && fpv_vehicle_connector_->isApiServerStarted() && getVehicleCount() > 0) {
-
-        if (isRecording() && getRecordingFile().isRecording()) {
-            if (!isLoggingStarted)
-            {
-                FRecordingThread::ThreadInit(fpv_vehicle_connector_->getCamera(), & getRecordingFile(), 
-                    static_cast<msr::airlib::PhysicsBody*>(fpv_vehicle_connector_->getPhysicsBody()), recording_settings);
-                isLoggingStarted = true;
-            }
-        }
-
-        if (!isRecording() && isLoggingStarted)
-        {
-            FRecordingThread::Shutdown();
-            isLoggingStarted = false;
-        }
-    }
-
     Super::Tick(DeltaSeconds);
 }
 

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include <string>
 #include "AirBlueprintLib.h"
-#include "physics/PhysicsBody.hpp"
+#include "physics/Kinematics.hpp"
 #include "FileManager.h"
 
 //TODO: move struct to its own file?
@@ -16,7 +16,7 @@ class RecordingFile {
 public:
     ~RecordingFile();
 
-    void appendRecord(TArray<uint8>& compressedPng, const msr::airlib::PhysicsBody* physics_body);
+    void appendRecord(TArray<uint8>& compressedPng, const msr::airlib::Kinematics* kinematics);
     void startRecording();
     void stopRecording();
     bool isRecording();

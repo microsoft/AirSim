@@ -7,7 +7,7 @@
 #include "common/common_utils/FileSystem.hpp"
 
 
-void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::PhysicsBody* physics_body)
+void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::Kinematics* kinematics)
 {
     if (image_data.Num() == 0)
         return;
@@ -25,9 +25,7 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::P
     // If render command is complete, save image along with position and orientation
 
     if (imageSavedOk) {
-        auto kinematics = physics_body->getKinematics();
-
-        writeString(getLine(kinematics));
+        writeString(getLine(kinematics->getState()));
 
         UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
