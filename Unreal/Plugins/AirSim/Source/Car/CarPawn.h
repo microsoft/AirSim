@@ -6,7 +6,7 @@
 #include "VehiclePawnWrapper.h"
 #include "WheeledVehicle.h"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
-#include "Physics/Kinematics.hpp"
+#include "physics/Kinematics.hpp"
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;

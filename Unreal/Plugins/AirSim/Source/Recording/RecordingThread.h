@@ -38,8 +38,8 @@ private:
 
     RecordingSettings settings_;
     msr::airlib::VehicleCameraBase* camera_;
-    const msr::airlib::Kinematics::State* kinematics_;
     std::unique_ptr<RecordingFile> recording_file_;
+    const msr::airlib::Kinematics::State* kinematics_;
 
     msr::airlib::TTimePoint last_screenshot_on_;
     msr::airlib::Pose last_pose_;
