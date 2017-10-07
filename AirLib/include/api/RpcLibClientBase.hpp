@@ -6,7 +6,6 @@
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "vehicles/car/api/CarApiBase.hpp"
 #include "controllers/VehicleCameraBase.hpp"
 
 

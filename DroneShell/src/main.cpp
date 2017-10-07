@@ -1081,7 +1081,8 @@ Each record is tab separated floating point numbers containing GPS lat,lon,alt,z
             quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z()
         );
 
-        std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false);
+        std::string folder_path_name = FileSystem::getLogFolderPath(true);
+        std::string file_path_name = FileSystem::getLogFileNamePath(folder_path_name, "rec_pos", "", ".log", false);
         FileSystem::appendLineToFile(file_path_name, line);
 
         return false;
@@ -1109,7 +1110,9 @@ See RecordPose for information about log file format")
 
         context->tasker.execute([=]() {
             std::ifstream file;
-            std::string file_path_name = FileSystem::getLogFileNamePath("rec_pos", "", ".log", false);
+            //TODO: shouldn't we pass folder path?
+            std::string file_path_name = FileSystem::getLogFileNamePath(FileSystem::getAppDataFolder(),
+                "rec_pos", "", ".log", false);
             file.exceptions(file.exceptions() | std::ios::failbit);
             FileSystem::openTextFile(file_path_name, file);
 
