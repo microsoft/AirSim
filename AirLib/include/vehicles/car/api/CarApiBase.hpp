@@ -19,7 +19,7 @@ public:
         bool handbrake = false;
         bool is_manual_gear = false;
         int manual_gear = 0;
-        bool gear_immediate = false;
+        bool gear_immediate = true;
 
         CarControls()
         {

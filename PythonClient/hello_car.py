@@ -25,11 +25,11 @@ for idx in range(3):
     print("Go Foward, steer right")
     time.sleep(3)   # let car drive a bit
 
-    # go reverse, steer left
+    # go reverse
     car_controls.throttle = -0.5
     car_controls.is_manual_gear = True;
     car_controls.manual_gear = -1
-    car_controls.steering = -0.5
+    car_controls.steering = 0
     client.setCarControls(car_controls)
     print("Go reverse, steer right")
     time.sleep(3)   # let car drive a bit

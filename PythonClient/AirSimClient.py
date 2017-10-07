@@ -123,7 +123,7 @@ class CarControls(MsgpackMixin):
     handbrake = False
     is_manual_gear = False
     manual_gear = 0
-    gear_immediate = False
+    gear_immediate = True
 
     def set_throttle(self, throttle_val, forward):
         if (forward):

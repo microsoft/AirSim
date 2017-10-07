@@ -67,16 +67,17 @@ public:
     virtual void setCarControls(const CarApiBase::CarControls& controls) override
     {
         UWheeledVehicleMovementComponent* movement = car_pawn_->GetVehicleMovementComponent();
-        movement->SetThrottleInput(controls.throttle);
-        movement->SetSteeringInput(controls.steering);
-        movement->SetBrakeInput(controls.brake);
-        movement->SetHandbrakeInput(controls.handbrake);
-        movement->SetUseAutoGears(!controls.is_manual_gear);
 
         if (!controls.is_manual_gear && movement->GetTargetGear() < 0)
             movement->SetTargetGear(0, true); //in auto gear we must have gear >= 0
         if (controls.is_manual_gear && movement->GetTargetGear() != controls.manual_gear)
             movement->SetTargetGear(controls.manual_gear, controls.gear_immediate);
+
+        movement->SetThrottleInput(controls.throttle);
+        movement->SetSteeringInput(controls.steering);
+        movement->SetBrakeInput(controls.brake);
+        movement->SetHandbrakeInput(controls.handbrake);
+        movement->SetUseAutoGears(!controls.is_manual_gear);
     }
 
     virtual CarApiBase::CarState getCarState() override
@@ -416,16 +417,17 @@ void ACarPawn::setupInputBindings()
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_RightTriggerAxis, 1), this,
         this, &ACarPawn::FootBrake);
 
-    UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReversePressed, true);
-    UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReverseReleased, false);
+    //below is not needed
+    //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReversePressed, true);
+    //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::OnReverseReleased, false);
 }
 
 void ACarPawn::MoveForward(float Val)
 {
-    //if (Val < 0)
-    //    OnReversePressed();
-    //else
-    //    OnReverseReleased();
+    if (Val < 0)
+        OnReversePressed();
+    else
+        OnReverseReleased();
 
     if (!api_control_enabled_) {
         UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);

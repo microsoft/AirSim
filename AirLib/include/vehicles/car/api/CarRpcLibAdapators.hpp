@@ -23,7 +23,7 @@ public:
         bool handbrake = false;
         bool is_manual_gear = false;
         int manual_gear = 0;
-        bool gear_immediate = false;
+        bool gear_immediate = true;
 
         MSGPACK_DEFINE_MAP(throttle, steering, brake, handbrake, is_manual_gear, manual_gear, gear_immediate);
 
