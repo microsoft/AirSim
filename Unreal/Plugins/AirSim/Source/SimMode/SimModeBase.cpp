@@ -3,8 +3,8 @@
 #include "Misc/EngineVersion.h"
 #include "AirBlueprintLib.h"
 #include "Runtime/Launch/Resources/Version.h"
-#include "Recording/RecordingThread.h"
 #include "controllers/Settings.hpp"
+#include "Recording/RecordingThread.h"
 #include "SimJoyStick/SimJoyStick.h"
 
 ASimModeBase::ASimModeBase()
@@ -18,7 +18,6 @@ void ASimModeBase::BeginPlay()
 
     setStencilIDs();
 
-    recording_file_.reset(new RecordingFile());
     record_tick_count = 0;
     setupInputBindings();
 
@@ -50,14 +49,7 @@ void ASimModeBase::setStencilIDs()
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    if (isLoggingStarted)
-    {
-        FRecordingThread::Shutdown();
-        isLoggingStarted = false;
-    }
-
-    recording_file_.release();
-
+    FRecordingThread::stopRecording();
     Super::EndPlay(EndPlayReason);
 }
 
@@ -173,25 +165,7 @@ void ASimModeBase::readSettings()
 
 void ASimModeBase::Tick(float DeltaSeconds)
 {
-    if (getFpvVehiclePawnWrapper() != nullptr && getFpvVehiclePawnWrapper()->getCameraCount() > 0) {
-
-        if (isRecording() && getRecordingFile().isRecording()) {
-            if (!isLoggingStarted)
-            {
-                FRecordingThread::ThreadInit(getFpvVehiclePawnWrapper()->getCameraConnector(0), & getRecordingFile(), 
-                    getFpvVehiclePawnWrapper()->getKinematics(), recording_settings);
-                isLoggingStarted = true;
-            }
-        }
-
-        if (!isRecording() && isLoggingStarted)
-        {
-            FRecordingThread::Shutdown();
-            isLoggingStarted = false;
-        }
-    }
-
-    if (recording_file_->isRecording())
+    if (isRecording())
         ++record_tick_count;
     Super::Tick(DeltaSeconds);
 }
@@ -224,7 +198,7 @@ void ASimModeBase::setupInputBindings()
 
 bool ASimModeBase::isRecording()
 {
-    return recording_file_->isRecording();
+    return FRecordingThread::isRecording();
 }
 
 bool ASimModeBase::isRecordUIVisible()
@@ -239,25 +213,22 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode()
 
 void ASimModeBase::startRecording()
 {
-    recording_file_->startRecording();
+    FRecordingThread::startRecording(getFpvVehiclePawnWrapper()->getCameraConnector(0),
+        getFpvVehiclePawnWrapper()->getKinematics(), recording_settings);
 }
 
 bool ASimModeBase::toggleRecording()
 {
     if (isRecording())
-        stopRecording(false);
+        stopRecording();
     else
         startRecording();
 
     return isRecording();
 }
 
-void ASimModeBase::stopRecording(bool ignore_if_stopped)
+void ASimModeBase::stopRecording()
 {
-    recording_file_->stopRecording(ignore_if_stopped);
+    FRecordingThread::stopRecording();
 }
 
-RecordingFile& ASimModeBase::getRecordingFile()
-{
-    return *recording_file_;
-}

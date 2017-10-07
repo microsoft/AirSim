@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
 #include "VehiclePawnWrapper.h"
-#include "Recording/RecordingFile.h"
+#include "Recording/RecordingSettings.h"
 #include "SimModeBase.generated.h"
 
 
@@ -36,7 +36,7 @@ public:
     virtual void reset();
     virtual std::string getReport();
     virtual void startRecording();
-    virtual void stopRecording(bool ignore_if_stopped);
+    virtual void stopRecording();
     virtual bool isRecording();
     virtual bool isRecordUIVisible();
     virtual ECameraDirectorMode getInitialViewMode();
@@ -45,7 +45,6 @@ public:
     //can't use pure virtual because of restriction with Unreal
     virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper();
 
-    RecordingFile& getRecordingFile();
 
 protected:
     virtual void setupInputBindings();
@@ -70,10 +69,5 @@ protected: //settings
 private:
     void readSettings();
     void setStencilIDs();
-
-private:
-    std::unique_ptr<RecordingFile> recording_file_;
-    bool isLoggingStarted;
-    void *xinput_dllHandle;
 
 };

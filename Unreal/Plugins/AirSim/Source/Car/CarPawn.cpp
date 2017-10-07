@@ -71,8 +71,8 @@ public:
         movement->SetSteeringInput(controls.steering);
         movement->SetBrakeInput(controls.brake);
         movement->SetHandbrakeInput(controls.handbrake);
+        movement->SetUseAutoGears(!controls.is_manual_gear);
 
-            movement->SetUseAutoGears(!controls.is_manual_gear);
         if (!controls.is_manual_gear && movement->GetTargetGear() < 0)
             movement->SetTargetGear(0, true); //in auto gear we must have gear >= 0
         if (controls.is_manual_gear && movement->GetTargetGear() != controls.manual_gear)
@@ -506,9 +506,20 @@ void ACarPawn::OnReverseReleased()
         UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
+void ACarPawn::updateKinematics()
+{
+    kinematics_.pose = getVehiclePawnWrapper()->getPose();
+    kinematics_.twist.linear = NedTransform::toNedMeters(this->GetVelocity(), true);
+
+    //TODO: update other fields
+
+}
+
 void ACarPawn::Tick(float Delta)
 {
     Super::Tick(Delta);
+
+    updateKinematics();
 
     // Setup the flag to say we are in reverse gear
     bInReverseGear = GetVehicleMovement()->GetCurrentGear() < 0;

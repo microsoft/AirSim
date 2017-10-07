@@ -51,8 +51,8 @@ void ASimModeWorldBase::setupClock()
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //remove everything that we created in BeginPlay
-    physics_world_.release();
-    physics_engine_.release();
+    physics_world_.reset();
+    physics_engine_.reset();
     vehicles_.clear();
     manual_pose_controller = nullptr;
 
@@ -100,7 +100,7 @@ std::vector<ASimModeWorldBase::UpdatableObject*> ASimModeWorldBase::toUpdatableO
 ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
 {
     if (physics_engine_name == "" || usage_scenario == kUsageScenarioComputerVision)
-        physics_engine_.release(); //no physics engine
+        physics_engine_.reset(); //no physics engine
     else if (physics_engine_name == "FastPhysicsEngine") {
         msr::airlib::Settings fast_phys_settings;
         if (msr::airlib::Settings::singleton().getChild("FastPhysicsEngine", fast_phys_settings)) {
@@ -115,7 +115,7 @@ ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
         }
     }
     else {
-        physics_engine_.release();
+        physics_engine_.reset();
         UAirBlueprintLib::LogMessageString("Unrecognized physics engine name: ",  physics_engine_name, LogDebugLevel::Failure);
     }
 

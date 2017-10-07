@@ -14,8 +14,11 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::K
 
     bool imageSavedOk = false;
     FString filePath;
+
+    std::string filename = std::string("img_").append(std::to_string(images_saved_)).append(".png");
+
     try {    
-        FString image_file_path = FString(common_utils::FileSystem::combine(image_path_, "img_").c_str()) + FString::FromInt(images_saved_) + ".png";
+        FString image_file_path = FString(common_utils::FileSystem::combine(image_path_, filename).c_str());
         imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *image_file_path);
     }
     catch(std::exception& ex) {
@@ -24,14 +27,14 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::K
     // If render command is complete, save image along with position and orientation
 
     if (imageSavedOk) {
-        writeString(getLine(*kinematics));
+        writeString(getLine(*kinematics, filename));
 
         UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
     }
 }
 
-std::string RecordingFile::getLine(const msr::airlib::Kinematics::State& kinematics)
+std::string RecordingFile::getLine(const msr::airlib::Kinematics::State& kinematics, const std::string& image_file_name)
 {
     uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
@@ -47,6 +50,7 @@ std::string RecordingFile::getLine(const msr::airlib::Kinematics::State& kinemat
         .append(std::to_string(kinematics.pose.orientation.x())).append("\t")
         .append(std::to_string(kinematics.pose.orientation.y())).append("\t")
         .append(std::to_string(kinematics.pose.orientation.z())).append("\t")
+        .append(image_file_name)
         .append("\n");
 
     return line;
@@ -93,7 +97,7 @@ void RecordingFile::writeString(const std::string& str)
             log_file_handle_->Write((const uint8*)TCHAR_TO_ANSI(*line_f), line_f.Len());
         }
         else
-            UAirBlueprintLib::LogMessageString("Attempt to write to recording loh file when file was not opened", "", LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Attempt to write to recording log file when file was not opened", "", LogDebugLevel::Failure);
     }
     catch(std::exception& ex) {
         UAirBlueprintLib::LogMessageString(std::string("file write to recording file failed "), ex.what(), LogDebugLevel::Failure);        
@@ -102,7 +106,7 @@ void RecordingFile::writeString(const std::string& str)
 
 RecordingFile::~RecordingFile()
 {
-    closeFile();
+    stopRecording(true);
 }
 
 void RecordingFile::startRecording()

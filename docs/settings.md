@@ -165,7 +165,8 @@ This setting determines what is shown in each of 3 subwindows which are visible 
 #### Recording
 The recording feature allows you to record data such as position, orientation, velocity along with image get recorded in real time at given interval. You can start recording by pressing red Record button on lower right or R key. The data is recorded in `Documents\AirSim` folder, in a timestamped subfolder for each recording session, as csv file.
 
-* RecordInterval: specifies minimal interval between capturing two images.
+* RecordInterval: specifies minimal interval in seconds between capturing two images.
+* RecordOnMove: specifies that do not record frame if there was vehicle's position or orientation hasn't changed
 
 
 

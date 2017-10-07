@@ -4,7 +4,6 @@
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include <memory>
-#include "Recording/RecordingThread.h"
 #include "Logging/MessageLog.h"
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 

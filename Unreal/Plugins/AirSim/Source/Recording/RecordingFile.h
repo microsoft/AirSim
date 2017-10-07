@@ -6,15 +6,10 @@
 #include "physics/Kinematics.hpp"
 #include "FileManager.h"
 
-//TODO: move struct to its own file?
-struct RecordingSettings {
-    bool record_on_move = false;
-    float record_interval = 0.05f;
-};
 
 class RecordingFile {
 public:
-    ~RecordingFile();
+     ~RecordingFile();
 
     void appendRecord(TArray<uint8>& compressedPng, const msr::airlib::Kinematics::State* kinematics);
     void startRecording();
@@ -27,7 +22,7 @@ private:
     void writeString(const std::string& line);
     bool isFileOpen();
     std::string getLogFileFullPath();
-    std::string getLine(const msr::airlib::Kinematics::State& kinematics);
+    std::string getLine(const msr::airlib::Kinematics::State& kinematics, const std::string& image_file_name);
 
 
 private:
