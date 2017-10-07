@@ -121,8 +121,12 @@ void ASimModeBase::readSettings()
     std::string view_mode_string = settings.getString("ViewMode", "");
 
     if (view_mode_string == "") {
-        if (simmode_name == "Multirotor")
-            view_mode_string = "FlyWithMe";
+        if (usage_scenario == "") {
+            if (simmode_name == "Multirotor")
+                view_mode_string = "FlyWithMe";
+            else
+                view_mode_string = "SpringArmChase";
+        }
         else
             view_mode_string = "SpringArmChase";
     }
@@ -241,16 +245,16 @@ void ASimModeBase::startRecording()
 bool ASimModeBase::toggleRecording()
 {
     if (isRecording())
-        stopRecording();
+        stopRecording(false);
     else
         startRecording();
 
     return isRecording();
 }
 
-void ASimModeBase::stopRecording()
+void ASimModeBase::stopRecording(bool ignore_if_stopped)
 {
-    recording_file_->stopRecording();
+    recording_file_->stopRecording(ignore_if_stopped);
 }
 
 RecordingFile& ASimModeBase::getRecordingFile()

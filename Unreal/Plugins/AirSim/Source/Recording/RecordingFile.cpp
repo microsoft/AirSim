@@ -7,7 +7,7 @@
 #include "common/common_utils/FileSystem.hpp"
 
 
-void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::Kinematics* kinematics)
+void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::Kinematics::State* kinematics)
 {
     if (image_data.Num() == 0)
         return;
@@ -15,9 +15,8 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::K
     bool imageSavedOk = false;
     FString filePath;
     try {    
-        FString image_path = FString(common_utils::FileSystem::getLogFileNamePath("img_", "", "", false).c_str());
-        filePath = image_path + FString::FromInt(images_saved_) + ".png";
-        imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *filePath);
+        FString image_file_path = FString(common_utils::FileSystem::combine(image_path_, "img_").c_str()) + FString::FromInt(images_saved_) + ".png";
+        imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *image_file_path);
     }
     catch(std::exception& ex) {
         UAirBlueprintLib::LogMessage(TEXT("Image file save failed"), FString(ex.what()), LogDebugLevel::Failure);        
@@ -25,7 +24,7 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::K
     // If render command is complete, save image along with position and orientation
 
     if (imageSavedOk) {
-        writeString(getLine(kinematics->getState()));
+        writeString(getLine(*kinematics));
 
         UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
@@ -106,23 +105,14 @@ RecordingFile::~RecordingFile()
     closeFile();
 }
 
-std::string RecordingFile::getLogFileFullPath()
-{
-    try {
-        return common_utils::FileSystem::getLogFileNamePath(record_filename, "", ".txt", true);
-    }
-    catch(std::exception& ex) {
-        UAirBlueprintLib::LogMessageString(std::string("getLogFileFullPath failed: "), ex.what(), LogDebugLevel::Failure); 
-        return "";  
-    }
-}
-
 void RecordingFile::startRecording()
 {
     try {
-        std::string fullPath = getLogFileFullPath();
-        if (fullPath != "")
-            createFile(fullPath);
+        std::string log_folderpath = common_utils::FileSystem::getLogFolderPath(true);
+        image_path_ = common_utils::FileSystem::ensureFolder(log_folderpath, "images");
+        std::string log_filepath = common_utils::FileSystem::getLogFileNamePath(log_folderpath, record_filename, "", ".txt", false);
+        if (log_filepath != "")
+            createFile(log_filepath);
         else {
             UAirBlueprintLib::LogMessageString("Cannot start recording because path for log file is not available", "", LogDebugLevel::Failure);
             return;
@@ -134,17 +124,20 @@ void RecordingFile::startRecording()
             UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
         }
         else
-            UAirBlueprintLib::LogMessageString("Error creating log file", fullPath.c_str(), LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Error creating log file", log_filepath.c_str(), LogDebugLevel::Failure);
     }
     catch(...) {
         UAirBlueprintLib::LogMessageString("Error in startRecording", "", LogDebugLevel::Failure);
     }
 }
 
-void RecordingFile::stopRecording()
+void RecordingFile::stopRecording(bool ignore_if_stopped)
 {
     is_recording_ = false;
     if (! isFileOpen()) {
+        if (ignore_if_stopped)
+            return;
+
         UAirBlueprintLib::LogMessage(TEXT("Recording Error"), TEXT("File was not open"), LogDebugLevel::Failure);
     }
     else

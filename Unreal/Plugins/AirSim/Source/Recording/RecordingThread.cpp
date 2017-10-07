@@ -16,7 +16,7 @@ FRecordingThread::FRecordingThread()
 }
 
 
-FRecordingThread* FRecordingThread::ThreadInit(msr::airlib::VehicleCameraBase* camera, RecordingFile* recording_file, const msr::airlib::Kinematics* kinematics, const RecordingSettings& settings)
+FRecordingThread* FRecordingThread::ThreadInit(msr::airlib::VehicleCameraBase* camera, RecordingFile* recording_file, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings)
 {
     if (!instance_ && FPlatformProcess::SupportsMultithreading())
     {
@@ -56,11 +56,11 @@ uint32 FRecordingThread::Run()
         //make sire all vars are set up
         if (is_ready_) {
             bool interval_elapsed = msr::airlib::ClockFactory::get()->elapsedSince(last_screenshot_on_) > settings_.record_interval;
-            bool is_pose_unequal = kinematics_ && last_pose_ != kinematics_->getPose();
+            bool is_pose_unequal = kinematics_ && last_pose_ != kinematics_->pose;
             if (interval_elapsed && (!settings_.record_on_move || is_pose_unequal))
             {
                 last_screenshot_on_ = msr::airlib::ClockFactory::get()->nowNanos();
-                last_pose_ = kinematics_->getPose();
+                last_pose_ = kinematics_->pose;
 
                 // todo: should we go as fast as possible, or should we limit this to a particular number of
                 // frames per second?

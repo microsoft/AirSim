@@ -306,6 +306,7 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
 
     std::vector<APIPCamera*> cameras = { InternalCamera1, InternalCamera2, InternalCamera3, InternalCamera4, InternalCamera5 };
     wrapper_->initialize(this, cameras);
+    wrapper_->setKinematics(&kinematics_);
 
     startApiServer(enable_rpc, api_server_address);
 }

@@ -13,7 +13,7 @@ class FRecordingThread : public FRunnable
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
-    static FRecordingThread* ThreadInit(msr::airlib::VehicleCameraBase* camera, RecordingFile* recording_file, const msr::airlib::Kinematics* kinematics, const RecordingSettings& settings);
+    static FRecordingThread* ThreadInit(msr::airlib::VehicleCameraBase* camera, RecordingFile* recording_file, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings);
     static void Shutdown();
 
 private:
@@ -29,7 +29,7 @@ private:
 
     msr::airlib::VehicleCameraBase* camera_;
     RecordingFile* recording_file_;
-    const msr::airlib::Kinematics* kinematics_;
+    const msr::airlib::Kinematics::State* kinematics_;
 
     FString image_path_;
 

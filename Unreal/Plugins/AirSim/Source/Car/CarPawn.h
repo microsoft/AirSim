@@ -6,6 +6,7 @@
 #include "VehiclePawnWrapper.h"
 #include "WheeledVehicle.h"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
+#include "Physics/Kinematics.hpp"
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;
@@ -158,6 +159,6 @@ private:
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
     std::unique_ptr<msr::airlib::CarApiBase> controller_;
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
-
+    msr::airlib::Kinematics::State kinematics_;
     bool api_control_enabled_ = false;
 };

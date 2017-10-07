@@ -36,7 +36,7 @@ public:
     virtual void reset();
     virtual std::string getReport();
     virtual void startRecording();
-    virtual void stopRecording();
+    virtual void stopRecording(bool ignore_if_stopped);
     virtual bool isRecording();
     virtual bool isRecordUIVisible();
     virtual ECameraDirectorMode getInitialViewMode();

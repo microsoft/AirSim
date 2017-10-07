@@ -352,7 +352,7 @@ private: //methods
 private:// vars
     shared_ptr<SafetyEval> safety_eval_ptr_;
     float obs_avoidance_vel_ = 0.5f;
-    bool log_to_file_ = false;
+
     CollisionInfo collision_info_;
     vector<VehicleCameraBase*> cameras_;
 

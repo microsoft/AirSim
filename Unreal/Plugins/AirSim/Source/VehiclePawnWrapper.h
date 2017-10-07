@@ -58,7 +58,9 @@ public: //interface
     void setDebugPose(const Pose& debug_pose);
     FVector getPosition() const;
     FRotator getOrientation() const;
-    msr::airlib::Kinematics* getKinematics() const;
+
+    void setKinematics(const msr::airlib::Kinematics::State* kinematics);
+    const msr::airlib::Kinematics::State* getKinematics();
 
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisonInfo() const;
@@ -85,6 +87,7 @@ private: //vars
     APawn* pawn_;
     std::vector<APIPCamera*> cameras_;
     std::vector<std::unique_ptr<VehicleCameraConnector>> camera_connectors_;
+    const msr::airlib::Kinematics::State* kinematics_;
 
     struct State {
         FVector start_location;

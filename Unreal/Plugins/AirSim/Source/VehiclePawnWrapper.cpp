@@ -93,15 +93,21 @@ void VehiclePawnWrapper::displayCollisonEffect(FVector hit_location, const FHitR
     }
 }
 
-msr::airlib::Kinematics* VehiclePawnWrapper::getKinematics() const
+const msr::airlib::Kinematics::State* VehiclePawnWrapper::getKinematics()
 {
-    return nullptr;
+    return kinematics_;
+}
+
+void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kinematics)
+{
+    kinematics_ = kinematics;
 }
 
 void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)
 {
     pawn_ = pawn;
     cameras_ = cameras;
+
     for (auto camera : cameras_) {
         camera_connectors_.push_back(std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(camera)));
     }

@@ -126,7 +126,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
                 fpv_vehicle_pawn_wrapper_ = wrapper;
 
             //now create the connector for each pawn
-            auto vehicle = createVehicle(wrapper);
+            VehiclePtr vehicle = createVehicle(wrapper);
             if (vehicle != nullptr) {
                 vehicles.push_back(vehicle);
 
@@ -160,9 +160,13 @@ ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawn
 
     vehicle_params_.push_back(std::move(vehicle_params));
 
-    auto vehicle = std::make_shared<MultiRotorConnector>(
+    std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
         wrapper, vehicle_params_.back().get(), enable_rpc, api_server_address, 
         vehicle_params_.back()->getParams().api_server_port, manual_pose_controller);
+
+    if (vehicle->getPhysicsBody() != nullptr)
+        wrapper->setKinematics(& (static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
+
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
 

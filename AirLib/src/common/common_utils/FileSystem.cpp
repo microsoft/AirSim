@@ -36,7 +36,7 @@ using namespace common_utils;
 
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
 // Windows, OSX and Linux.
-std::string FileSystem::createDirectory(std::string fullPath) {
+std::string FileSystem::createDirectory(const std::string& fullPath) {
     
 #ifdef _WIN32
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
