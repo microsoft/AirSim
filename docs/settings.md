@@ -57,9 +57,9 @@ Below are complete list of settings available along with their default values. I
     }
   ],
   "SubWindows": [
-    {"WindowID": 0, "CameraID": 0, "ImageType": 3},
-    {"WindowID": 1, "CameraID": 0, "ImageType": 5},
-    {"WindowID": 2, "CameraID": 0, "ImageType": 0}    
+    {"WindowID": 0, "CameraID": 0, "ImageType": 3, "Visible": false},
+    {"WindowID": 1, "CameraID": 0, "ImageType": 5, "Visible": false},
+    {"WindowID": 2, "CameraID": 0, "ImageType": 0, "Visible": false}    
   ] 
   "SimpleFlight": {
     "FirmwareName": "SimpleFlight",
@@ -157,9 +157,9 @@ To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. 
 This setting determines what is shown in each of 3 subwindows which are visible when you press 0 key. The WindowsID can be 0 to 2, CameraID is integer identifying camera number on the vehicle. ImageType integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). For example, for car vehicles below shows driver view, front bumper view and rear view as scene, depth ans surface normals respectively.
 ```
   "SubWindows": [
-    {"WindowID": 0, "ImageType": 0, "CameraID": 3},
-    {"WindowID": 1, "ImageType": 3, "CameraID": 0},
-    {"WindowID": 2, "ImageType": 6, "CameraID": 4}
+    {"WindowID": 0, "ImageType": 0, "CameraID": 3, "Visible": true},
+    {"WindowID": 1, "ImageType": 3, "CameraID": 0, "Visible": true},
+    {"WindowID": 2, "ImageType": 6, "CameraID": 4, "Visible": true}
   ]
 ```
 

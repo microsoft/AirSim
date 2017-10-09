@@ -17,9 +17,10 @@ public:
     struct CaptureSettings {
         //below settinsg are obtained by using Unreal console command (press ~):
         // ShowFlag.VisualizeHDR 1.
-        //to replicate camera settings to SceneCapture2D, except motion blur
+        //to replicate camera settings to SceneCapture2D
+        //TODO: should we use UAirBlueprintLib::GetDisplayGamma()?
         typedef msr::airlib::Utils Utils;
-        static constexpr float kSceneTargetGamma = Utils::nan<float>(); //1.0f;
+        static constexpr float kSceneTargetGamma = 1.4f;
 
         unsigned int width = 256, height = 144; //960 X 540
         float fov_degrees = Utils::nan<float>(); //90.0f
@@ -31,8 +32,8 @@ public:
         float auto_exposure_high_percent = Utils::nan<float>(); // 98.3f;
         float auto_exposure_histogram_log_min = Utils::nan<float>(); // -8;
         float auto_exposure_histogram_log_max = Utils::nan<float>(); // 4;
-        float motion_blur_amount = 0;
-        float target_gamma = Utils::nan<float>(); //1.0f; //should be defaulted to kSceneTargetGamma for scene
+        float motion_blur_amount = Utils::nan<float>();
+        float target_gamma = Utils::nan<float>(); //1.0f; //This would be reset to kSceneTargetGamma for scene as default
     };
 
 

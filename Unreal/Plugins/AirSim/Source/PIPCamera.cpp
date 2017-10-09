@@ -40,7 +40,7 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
     
-    //set default for brigher images 
+    //set default for brigher images
     capture_settings_.assign(imageTypeCount(), CaptureSettings());
     capture_settings_[Utils::toNumeric(ImageType::Scene)].target_gamma = CaptureSettings::kSceneTargetGamma;
 
@@ -107,7 +107,8 @@ void APIPCamera::updateCaptureComponentSettings(USceneCaptureComponent2D* captur
 {
     if (render_target) {
         render_target->InitAutoFormat(settings.width, settings.height); //256 X 144, X 480
-        render_target->TargetGamma = settings.target_gamma;
+        if (!std::isnan(settings.target_gamma))
+            render_target->TargetGamma = settings.target_gamma;
     }
     //else we will set this after this components get created
 
