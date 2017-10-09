@@ -28,6 +28,7 @@ Below are complete list of settings available along with their default values. I
   "DefaultVehicleConfig": "",
   "SimMode": "",
   "ClockType": "",
+  "ClockSpeed": "1",
   "LocalHostIp": "127.0.0.1",
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
@@ -168,7 +169,5 @@ The recording feature allows you to record data such as position, orientation, v
 * RecordInterval: specifies minimal interval in seconds between capturing two images.
 * RecordOnMove: specifies that do not record frame if there was vehicle's position or orientation hasn't changed
 
-
-
-
-
+#### ClockSpeed
+Determines the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simuation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collison is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.
