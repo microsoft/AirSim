@@ -78,6 +78,9 @@ void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AA
     state_.collison_info.penetration_depth = NedTransform::toNedMeters(Hit.PenetrationDepth);
     state_.collison_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
     ++state_.collison_info.collison_count;
+
+    UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(
+        state_.collison_info.collison_count), LogDebugLevel::Failure);
 }
 
 APawn* VehiclePawnWrapper::getPawn()

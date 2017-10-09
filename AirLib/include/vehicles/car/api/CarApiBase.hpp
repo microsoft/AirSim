@@ -51,11 +51,13 @@ public:
         Vector3r position;
         Vector3r velocity;
         Quaternionr orientation;
+        CollisionInfo collision;
+        uint64_t timestamp;
 
         CarState(float speed_val, int gear_val, const Vector3r& position_val, const Vector3r& velocity_val,
-            const Quaternionr& orientation_val)
+            const Quaternionr& orientation_val, const CollisionInfo& collision_val, uint64_t timestamp_val)
             : speed(speed_val), gear(gear_val), position(position_val), velocity(velocity_val),
-            orientation(orientation_val)
+            orientation(orientation_val), collision(collision_val), timestamp(timestamp_val)
         {
         }
     };

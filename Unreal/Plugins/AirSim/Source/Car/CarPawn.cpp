@@ -15,6 +15,7 @@
 #include "vehicles/car/api/CarApiBase.hpp"
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
+#include "common/ClockFactory.hpp"
 #include "PIPCamera.h"
 #include <vector>
 #include "UObject/ConstructorHelpers.h"
@@ -87,7 +88,10 @@ public:
             car_pawn_->GetVehicleMovement()->GetCurrentGear(),
             NedTransform::toNedMeters(car_pawn_->GetActorLocation(), true),
             NedTransform::toNedMeters(car_pawn_->GetVelocity(), true),
-            NedTransform::toQuaternionr(car_pawn_->GetActorRotation().Quaternion(), true));
+            NedTransform::toQuaternionr(car_pawn_->GetActorRotation().Quaternion(), true),
+            car_pawn_->getVehiclePawnWrapper()->getCollisonInfo(),
+            msr::airlib::ClockFactory::get()->nowNanos()
+            );
         return state;
     }
 

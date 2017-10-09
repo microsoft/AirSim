@@ -53,8 +53,10 @@ public:
         Vector3r position;
         Vector3r velocity;
         Quaternionr orientation;
+        CollisionInfo collision;
+        uint64_t timestamp;
 
-        MSGPACK_DEFINE_MAP(speed, gear, position, velocity, orientation);
+        MSGPACK_DEFINE_MAP(speed, gear, position, velocity, orientation, collision, timestamp);
 
         CarState()
         {}
@@ -66,11 +68,13 @@ public:
             position = s.position;
             velocity = s.velocity;
             orientation = s.orientation;
+            collision = s.collision;
+            timestamp = s.timestamp;
         }
         msr::airlib::CarApiBase::CarState to() const
         {
             return msr::airlib::CarApiBase::CarState(
-                speed, gear, position.to(), velocity.to(), orientation.to());
+                speed, gear, position.to(), velocity.to(), orientation.to(), collision.to(), timestamp);
         }
     };
 };
