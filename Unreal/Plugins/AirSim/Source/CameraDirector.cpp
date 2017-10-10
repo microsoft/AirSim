@@ -51,11 +51,6 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, Vehi
 
     mode_ = view_mode;
     setCameras(external_camera, vehicle_pawn_wrapper);
-
-    camera_start_location_ = this->GetActorLocation();
-    camera_start_rotation_ = this->GetActorRotation();
-    initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
-
 }
 
 void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper)
@@ -63,6 +58,10 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
     external_camera_ = external_camera;
     fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > 0 ? vehicle_pawn_wrapper->getCamera() : nullptr;
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
+
+    camera_start_location_ = this->GetActorLocation();
+    camera_start_rotation_ = this->GetActorRotation();
+    initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
 
     manual_pose_controller_->setActor(external_camera_, false);
 
@@ -86,12 +85,12 @@ void ACameraDirector::attachSpringArm(bool attach)
             external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
             SpringArm->AttachToComponent(follow_actor_->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
             SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 34.0f));
-
-            external_camera_->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
-            external_camera_->SetActorRelativeLocation(FVector(-225.0, 0.0f, 0.0f));
-            external_camera_->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
-            //external_camera_->bUsePawnControlRotation = false;
         }
+
+        external_camera_->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
+        external_camera_->SetActorRelativeLocation(FVector(-225.0, 0.0f, 0.0f));
+        external_camera_->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
+        //external_camera_->bUsePawnControlRotation = false;
     }
     else {
         if (last_parent_ && external_camera_->GetRootComponent()->GetAttachParent() == SpringArm) {
@@ -184,6 +183,10 @@ void ACameraDirector::inputEventFlyWithView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
     external_camera_->showToScreen();
+
+    if (follow_actor_)
+        external_camera_->SetActorLocationAndRotation(
+            follow_actor_->GetActorLocation() + initial_ground_obs_offset_, camera_start_rotation_);
     if (fpv_camera_)
         fpv_camera_->disableMain();
     ext_obs_fixed_z_ = false;

@@ -24,6 +24,7 @@
   <ItemGroup>
     <ClInclude Include="include\api\DebugApiServer.hpp" />
     <ClInclude Include="include\api\RpcLibAdapatorsBase.hpp" />
+    <ClInclude Include="include\api\RpcLibClientBase.hpp" />
     <ClInclude Include="include\common\ClockBase.hpp" />
     <ClInclude Include="include\common\Common.hpp" />
     <ClInclude Include="include\common\CommonStructs.hpp" />
@@ -63,7 +64,7 @@
     <ClInclude Include="include\common\VectorMath.hpp" />
     <ClInclude Include="include\common\common_utils\AsyncTasker.hpp" />
     <ClInclude Include="include\controllers\VehicleCameraBase.hpp" />
-    <ClInclude Include="include\vehicles\car\controllers\CarControllerBase.hpp" />
+    <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdapators.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibClient.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibServer.hpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="include\vehicles\multirotor\RotorParams.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\api\RpcLibClientBase.cpp" />
     <ClCompile Include="src\controllers\DroneControllerBase.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />

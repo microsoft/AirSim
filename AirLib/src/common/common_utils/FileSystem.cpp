@@ -3,7 +3,6 @@
 
 #include "common/common_utils/FileSystem.hpp"
 
-#include "common/common_utils/FileSystem.hpp"
 #include "common/common_utils/Utils.hpp"
 #include <codecvt>
 #include <fstream>
@@ -11,10 +10,20 @@
 #include <string>
 
 #if defined _WIN32 || defined _WIN64
+#include "common/common_utils/MinWinDefines.hpp"
+
+#undef NOWINMESSAGES			// WM_*, EM_*, LB_*, CB_*
+#undef NOCTLMGR				    // Control and Dialog routines
+#undef NOGDI					// All GDI #undefs and routines
+#undef NOKERNEL				    // All KERNEL #undefs and routines
+#undef NOUSER				    // All USER #undefs and routines
+#undef NOMSG					// typedef MSG and associated routines
+
 #include <Shlobj.h>
 #include <direct.h>
 #include <stdlib.h>
 #include <direct.h>
+
 #else
 #include <unistd.h>
 #include <sys/param.h> // MAXPATHLEN definition
@@ -27,7 +36,7 @@ using namespace common_utils;
 
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
 // Windows, OSX and Linux.
-std::string FileSystem::createDirectory(std::string fullPath) {
+std::string FileSystem::createDirectory(const std::string& fullPath) {
     
 #ifdef _WIN32
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;

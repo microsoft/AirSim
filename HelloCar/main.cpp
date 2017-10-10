@@ -34,7 +34,7 @@ int main()
         client.confirmConnection();
 
         std::cout << "Press Enter to get FPV image" << std::endl; std::cin.get();
-        vector<ImageRequest> request = { ImageRequest(0, ImageType::Scene), ImageRequest(1, ImageType::DepthMeters, true) };
+        vector<ImageRequest> request = { ImageRequest(0, ImageType::Scene), ImageRequest(1, ImageType::DepthPlanner, true) };
         const vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images recieved: " << response.size() << std::endl;
 
@@ -62,24 +62,29 @@ int main()
             }
         }
 
-        std::cout << "Press enter to drive forward" << std::endl; std::cin.get();
+        //enable API control
         client.enableApiControl(true);
-        CarControllerBase::CarControls controls;
-        controls.throttle = 1;
+        CarApiBase::CarControls controls;
+
+        std::cout << "Press enter to drive forward" << std::endl; std::cin.get();
+        controls.throttle = 0.5f;
+        controls.steering = 0.0f;
         client.setCarControls(controls);
 
-        std::cout << "Press Enter to activate handbreak" << std::endl; std::cin.get();
-        controls.handbreak = true;
+        std::cout << "Press Enter to activate handbrake" << std::endl; std::cin.get();
+        controls.handbrake = true;
         client.setCarControls(controls);
 
         std::cout << "Press Enter to take turn and drive backward" << std::endl; std::cin.get();
-        controls.handbreak = false;
-        controls.throttle = -1;
+        controls.handbrake = false;
+        controls.throttle = -0.5;
         controls.steering = 1;
+        controls.is_manual_gear = true;
+        controls.manual_gear = -1;
         client.setCarControls(controls);
 
         std::cout << "Press Enter to stop" << std::endl; std::cin.get();
-        client.setCarControls(CarControllerBase::CarControls());
+        client.setCarControls(CarApiBase::CarControls());
     }
     catch (rpc::rpc_error&  e) {
         std::string msg = e.get_error().as<std::string>();

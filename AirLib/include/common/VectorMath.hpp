@@ -52,7 +52,7 @@ public:
         Pose() 
         {}
 
-        Pose(Vector3T position_val, QuaternionT orientation_val)
+        Pose(const Vector3T& position_val, const QuaternionT& orientation_val)
         {
             orientation = orientation_val;
             position = position_val;
@@ -281,6 +281,10 @@ public:
     static bool hasNan(const QuaternionT& q)
     {
         return std::isnan(q.x()) || std::isnan(q.y()) || std::isnan(q.z()) || std::isnan(q.w());
+    }
+    static bool hasNan(const Pose& p)
+    {
+        return hasNan(p.position) || hasNan(p.orientation);
     }
 
     static QuaternionT addAngularVelocity(const QuaternionT& orientation, const Vector3T& angular_vel, RealT dt)

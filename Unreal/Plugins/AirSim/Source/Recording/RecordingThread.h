@@ -5,7 +5,9 @@
 #include "HAL/Runnable.h"
 #include "VehicleCameraConnector.h"
 #include "Recording/RecordingFile.h"
-#include "physics/PhysicsBody.hpp"
+#include "physics/Kinematics.hpp"
+#include "Recording/RecordingSettings.h"
+#include <memory>
 #include "common/ClockFactory.hpp"
 
 class FRecordingThread : public FRunnable
@@ -13,30 +15,31 @@ class FRecordingThread : public FRunnable
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
-    static FRecordingThread* ThreadInit(msr::airlib::VehicleCameraBase* camera, RecordingFile* recording_file, const msr::airlib::PhysicsBody* fpv_physics_body, const RecordingSettings& settings);
-    static void Shutdown();
+    static void startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings);
+    static void stopRecording(); 
+    static bool isRecording();
 
 private:
     virtual bool Init();
     virtual uint32 Run();
     virtual void Stop();
+    virtual void Exit();
+
 
     void EnsureCompletion();
 
 private:
     FThreadSafeCounter stop_task_counter_;
     FRenderCommandFence read_pixel_fence_;
+    
+    static std::unique_ptr<FRecordingThread> instance_;
 
-    msr::airlib::VehicleCameraBase* camera_;
-    RecordingFile* recording_file_;
-    const msr::airlib::PhysicsBody* fpv_physics_body_;
-
-    FString image_path_;
-
-    static FRecordingThread* instance_;
-    FRunnableThread* thread_;
+    std::unique_ptr<FRunnableThread> thread_;
 
     RecordingSettings settings_;
+    msr::airlib::VehicleCameraBase* camera_;
+    std::unique_ptr<RecordingFile> recording_file_;
+    const msr::airlib::Kinematics::State* kinematics_;
 
     msr::airlib::TTimePoint last_screenshot_on_;
     msr::airlib::Pose last_pose_;

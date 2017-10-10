@@ -27,7 +27,6 @@ public:
 
     virtual void reset() override;
     virtual std::string getReport() override;
-    virtual void setupInputBindings() override;
 
 protected:
     typedef std::shared_ptr<VehicleConnectorBase> VehiclePtr;

@@ -42,7 +42,7 @@ First make sure you have below in [settings.json](settings.md). This is because 
 
 ```
 {
-  "SettingdVersion": 1.0,
+  "SettingsVersion": 1.0,
   "SimMode": "Car"
 }
 ```
@@ -63,12 +63,12 @@ int main()
     controls.throttle = 1;
     client.setCarControls(controls);
 
-    std::cout << "Press Enter to activate handbreak" << std::endl; std::cin.get();
-    controls.handbreak = true;
+    std::cout << "Press Enter to activate handbrake" << std::endl; std::cin.get();
+    controls.handbrake = true;
     client.setCarControls(controls);
 
     std::cout << "Press Enter to take turn and drive backward" << std::endl; std::cin.get();
-    controls.handbreak = false;
+    controls.handbrake = false;
     controls.throttle = -1;
     controls.steering = 1;
     client.setCarControls(controls);
@@ -84,16 +84,17 @@ int main()
 You can find a ready to run project in HelloCar folder in the repository.
 
 ## Image / Computer Vision and Collision APIs
-AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to pfm format.
+AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
 
 More on [image APIs and Computer Vision mode](image_apis.md).
 
 ### APIs for Car
 Car has followings APIs available:
 
-* `setCarControls`: This allows you to set throttle, steering, handbreak and auto or manual gear.
+* `setCarControls`: This allows you to set throttle, steering, handbrake and auto or manual gear.
 * `getCarState`: This retrieves the state information including speed, current gear, velocity vector, position and orientation.
 * [Image APIs](image_apis.md).
+* `reset`: This resets the vehicle to its original starting state.
 
 ### APIs for Multirotor
 Multirotor can be controlled by specifying angles, velocity vector, destination position or some combination of these. There are corresponding `move*` APIs for this purpose. When doing position control, we need to use some path following algorithm. By default AirSim uses carrot following algorithm. This is often referred to as "high level control" because you just need to specify very high level goal and the firmware takes care of the rest. Currently lowest level control available in AirSim is moveByAngle API however we will be adding more lower level controls soon as well.

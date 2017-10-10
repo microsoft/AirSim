@@ -183,6 +183,8 @@ void ASimHUD::inputEventToggleAll()
 
 void ASimHUD::setupInputBindings()
 {
+    UAirBlueprintLib::EnableInput(this);
+
     UAirBlueprintLib::BindActionToKey("inputEventToggleRecording", EKeys::R, this, &ASimHUD::inputEventToggleRecording);
     UAirBlueprintLib::BindActionToKey("InputEventToggleReport", EKeys::Semicolon, this, &ASimHUD::inputEventToggleReport);
     UAirBlueprintLib::BindActionToKey("InputEventToggleHelp", EKeys::F1, this, &ASimHUD::inputEventToggleHelp);
@@ -197,25 +199,36 @@ void ASimHUD::setupInputBindings()
 void ASimHUD::createSimMode()
 {
     Settings& settings = Settings::singleton();
-    std::string simmode_name = settings.getString("SimMode", "Quadrotor");
+    std::string simmode_name = settings.getString("SimMode", "");
+    if (simmode_name == "")
+        simmode_name = "Multirotor";
 
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    if (simmode_name == "Quadrotor")
+    if (simmode_name == "Multirotor")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
     else if (simmode_name == "Car")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
+    else
+        UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
 }
 
 
 void ASimHUD::initializeSubWindows()
 {
+    auto wrapper = simmode_->getFpvVehiclePawnWrapper();
+    auto camera_count = wrapper->getCameraCount();
+
     //setup defaults
-    if (simmode_->getFpvVehiclePawnWrapper()->getCameraCount() > 0)
-        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = simmode_->getFpvVehiclePawnWrapper()->getCamera();
+    if (camera_count > 0) {
+        subwindow_cameras_[0] = wrapper->getCamera(0);
+        subwindow_cameras_[1] = wrapper->getCamera(camera_count > 3 ? 3 : 0);
+        subwindow_cameras_[2] = wrapper->getCamera(camera_count > 4 ? 4 : 0);
+    }
     else
         subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
+
     subwindow_camera_types_[0] = ImageType::DepthVis;
     subwindow_camera_types_[1] = ImageType::Segmentation;
     subwindow_camera_types_[2] = ImageType::Scene;
@@ -227,16 +240,24 @@ void ASimHUD::initializeSubWindows()
         for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
             Settings json_settings_child;     
             if (json_settings_parent.getChild(child_index, json_settings_child)) {
-                int index = json_settings_child.getInt("Index", -1);
+                int index = json_settings_child.getInt("WindowID", -1);
 
                 if (index == -1) {
-                    UAirBlueprintLib::LogMessageString("Index not set in <SubWindows> element(s) in settings.json", 
+                    UAirBlueprintLib::LogMessageString("WindowID not set in <SubWindows> element(s) in settings.json", 
                         std::to_string(child_index), LogDebugLevel::Failure);
                     continue;
                 }
 
                 subwindow_camera_types_[index] = Utils::toEnum<ImageType>(json_settings_child.getInt("ImageType", 0));
                 subwindow_visible_[index] = json_settings_child.getBool("Visible", false);
+
+                int camera_id = json_settings_child.getInt("CameraID", 0);
+                if (camera_id >= 0 && camera_id < camera_count)
+                    subwindow_cameras_[index] = wrapper->getCamera(camera_id);
+                else 
+
+                    UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid", 
+                        std::to_string(child_index), LogDebugLevel::Failure);
             }
         }
     }
@@ -273,7 +294,7 @@ void ASimHUD::initializeSettings()
             Settings& settings = Settings::loadJSonString("{}");
             //write some settings in new file otherwise the string "null" is written if all settigs are empty
             settings.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
-            settings.setDouble("SettingdVersion", 1.0);
+            settings.setDouble("SettingsVersion", 1.0);
 
             if (!file_found) {
                 std::string json_content;
@@ -282,7 +303,7 @@ void ASimHUD::initializeSettings()
 #ifdef _WIN32
                 json_content = settings.saveJSonString();
 #else
-                json_content = "{ \"SettingdVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
+                json_content = "{ \"SettingsVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
 #endif
                 json_fstring = FString(json_content.c_str());
                 FFileHelper::SaveStringToFile(json_fstring, *settings_filename);

@@ -6,6 +6,7 @@
 #include "VehiclePawnWrapper.h"
 #include "WheeledVehicle.h"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
+#include "physics/Kinematics.hpp"
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;
@@ -31,6 +32,10 @@ class ACarPawn : public AWheeledVehicle
     class USceneComponent* InternalCameraBase2;
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     class USceneComponent* InternalCameraBase3;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    class USceneComponent* InternalCameraBase4;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    class USceneComponent* InternalCameraBase5;
 
     /** Camera component for the In-Car view */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -39,6 +44,10 @@ class ACarPawn : public AWheeledVehicle
     APIPCamera* InternalCamera2;
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     APIPCamera* InternalCamera3;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    APIPCamera* InternalCamera4;
+    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    APIPCamera* InternalCamera5;
 
     /** Text component for the In-Car speed */
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -79,13 +88,14 @@ public:
 
     void enableApiControl(bool is_enabled);
     bool isApiControlEnabled();
+    void reset(bool disable_api_control = true);
 
     // Begin Actor interface
     virtual void Tick(float Delta) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     VehiclePawnWrapper* getVehiclePawnWrapper();
-    void initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address);
+    void initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound);
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -97,19 +107,25 @@ public:
 
     /** Handle pressing forwards */
     void MoveForward(float Val);
-
-    /** Setup the strings used on the hud */
-    void UpdateInCarHUD();
-
-    /** Update the physics material used by the vehicle mesh */
-    void UpdatePhysicsMaterial();
-
     /** Handle pressing right */
     void MoveRight(float Val);
     /** Handle handbrake pressed */
     void OnHandbrakePressed();
     /** Handle handbrake released */
     void OnHandbrakeReleased();
+    /** Handle pressiong footbrake */
+    void FootBrake(float Val);
+    /** Handle Reverse pressed */
+    void OnReversePressed();
+    /** Handle Reverse released */
+    void OnReverseReleased();
+    /** Handle Handbrake pressed */
+
+    /** Setup the strings used on the hud */
+    void UpdateInCarHUD();
+
+    /** Update the physics material used by the vehicle mesh */
+    void UpdatePhysicsMaterial();
 
     static const FName LookUpBinding;
     static const FName LookRightBinding;
@@ -121,6 +137,7 @@ private:
     void startApiServer(bool enable_rpc, const std::string& api_server_address);
     void stopApiServer();
     bool isApiServerStarted();
+    void updateKinematics();
 
     /* Are we on a 'slippery' surface */
     bool bIsLowFriction;
@@ -141,8 +158,8 @@ private:
     UClass* pip_camera_class_;
     class CarController;
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
-    std::unique_ptr<msr::airlib::CarControllerBase> controller_;
+    std::unique_ptr<msr::airlib::CarApiBase> controller_;
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
-
+    msr::airlib::Kinematics::State kinematics_;
     bool api_control_enabled_ = false;
 };

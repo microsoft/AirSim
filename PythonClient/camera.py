@@ -1,6 +1,6 @@
 # use open cv to show new images from AirSim 
 
-from PythonClient import *
+from AirSimClient import *
 # requires Python 3.5.3 :: Anaconda 4.4.0
 # pip install opencv-python
 import cv2
@@ -55,7 +55,7 @@ while True:
         print("Camera is not returning image, please check airsim for error messages")
         sys.exit(0)
     else:
-        png = cv2.imdecode(MultirotorClient.stringToUint8Array(rawImage), cv2.IMREAD_UNCHANGED)
+        png = cv2.imdecode(AirSimClientBase.stringToUint8Array(rawImage), cv2.IMREAD_UNCHANGED)
         cv2.putText(png,'FPS ' + str(fps),textOrg, fontFace, fontScale,(255,0,255),thickness)
         cv2.imshow("Depth", png)
 

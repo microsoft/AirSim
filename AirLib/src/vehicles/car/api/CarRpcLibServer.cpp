@@ -45,7 +45,7 @@ struct CarRpcLibServer::impl {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_address, uint16_t port)
+CarRpcLibServer::CarRpcLibServer(CarApiBase* vehicle, string server_address, uint16_t port)
     : vehicle_(vehicle)
 {
     if (server_address == "")
@@ -56,6 +56,12 @@ CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_addre
 
 
     //sim only
+    pimpl_->server.bind("simSetPose", [&](const CarRpcLibAdapators::Pose &pose, bool ignore_collison) -> void { 
+        vehicle_->simSetPose(pose.to(), ignore_collison); 
+    });
+    pimpl_->server.bind("simGetPose", [&]() ->
+        CarRpcLibAdapators::Pose { return vehicle_->simGetPose(); 
+    });
     pimpl_->server.bind("simGetImages", [&](const std::vector<CarRpcLibAdapators::ImageRequest>& request_adapter) -> vector<CarRpcLibAdapators::ImageResponse> { 
         const auto& response = vehicle_->simGetImages(CarRpcLibAdapators::ImageRequest::to(request_adapter)); 
         return CarRpcLibAdapators::ImageResponse::from(response);
@@ -71,6 +77,10 @@ CarRpcLibServer::CarRpcLibServer(CarControllerBase* vehicle, string server_addre
 
     pimpl_->server.bind("setCarControls", [&](const CarRpcLibAdapators::CarControls& controls) -> void {
         vehicle_->setCarControls(controls.to());
+    });
+
+    pimpl_->server.bind("reset", [&]() -> void {
+        vehicle_->reset();
     });
 
     pimpl_->server.bind("getCarState", [&]() -> CarRpcLibAdapators::CarState {

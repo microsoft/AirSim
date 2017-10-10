@@ -11,7 +11,7 @@ The default is to use multirotor. To use car simple set `"SimMode": "Car"` like 
 
 ```
 {
-  "SettingdVersion": 1.0,
+  "SettingsVersion": 1.0,
   "SimMode": "Car"
 }
 ```
@@ -21,19 +21,21 @@ To choose multirotor, set `"SimMode": ""`.
 ## Available Settings and Their Defaults
 Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then below default value is assumed. Please note that if setting has default value then its actual value may be chosen based on other settings. For example, ViewMode setting will have value "FlyWithMe" for drones and "SpringArmChase" for cars.
 
-**WARNING:** Do not copy below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default.
+**WARNING:** Do not copy paste all of below in your settings.json. We stronly recommand leaving out any settings that you want to have default values from settings.json. Only copy settings that you want to *change* from default. Only required element is `"SettingsVersion": 1.0`.
 
 ````
 {
   "DefaultVehicleConfig": "",
   "SimMode": "",
   "ClockType": "",
+  "ClockSpeed": "1",
   "LocalHostIp": "127.0.0.1",
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
   "ViewMode": "",
   "UsageScenario": "",
   "RpcEnabled": true,
+  "EngineSound": true,
   "PhysicsEngineName": "",
   "EnableCollisionPassthrogh": false,
   "Recording": {
@@ -55,8 +57,9 @@ Below are complete list of settings available along with their default values. I
     }
   ],
   "SubWindows": [
-    {"Index": 1, "ImageType": 3},
-    {"Index": 2, "ImageType": 5}
+    {"WindowID": 0, "CameraID": 0, "ImageType": 3, "Visible": false},
+    {"WindowID": 1, "CameraID": 0, "ImageType": 5, "Visible": false},
+    {"WindowID": 2, "CameraID": 0, "ImageType": 0, "Visible": false}    
   ] 
   "SimpleFlight": {
     "FirmwareName": "SimpleFlight",
@@ -99,11 +102,12 @@ The `ImageType` element determines which image type the settings applies to. By 
 
 ```
 Scene = 0, 
-DepthMeters = 1, 
-DepthVis = 2, 
-DisparityNormalized = 3,
-Segmentation = 4,
-SurfaceNormals = 5
+DepthPlanner = 1,
+DepthPerspective = 2,
+DepthVis = 3, 
+DisparityNormalized = 4,
+Segmentation = 5,
+SurfaceNormals = 6
 ```
 
 Note that `CaptureSettings` element is json array so you can add settings for multiple image types easily.
@@ -132,12 +136,12 @@ And for each flying drone added to the simulator there is a named block of addit
 
 ## Other Settings
 #### SimMode
-Currently SimMode can be set to `"Multirotor"` or  `"Car"`. This determines which vehicle you would be using.
+Currently SimMode can be set to `""`, `"Multirotor"` or `"Car"`. The empty string value `""` means that use the default vehicle which is `"Multirotor"`. This determines which vehicle you would be using.
 
 #### PhysicsEngineName
 For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.
 
-### ViewMode 
+#### ViewMode 
 The ViewMode determines how you will view the vehicle. For multirotors, the default ViewMode is `"FlyWithMe"` while for cars the default ViewMode is `"SpringArmChase"`.
 
 * FlyWithMe: Chase the vehicle from behind with 6 degrees of freedom
@@ -146,7 +150,24 @@ The ViewMode determines how you will view the vehicle. For multirotors, the defa
 * Manual: Don't move camera automatically. Use arrow keys and ASWD keys for move camera manually.
 * SpringArmChase: Chase the vehicle with camera mounted on (invisible) arm that is attached to the vehicle via spring (so it has some latency in movement).
 
+#### EngineSound
+To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. Currently this setting applies only to car.
 
+#### SubWindows
+This setting determines what is shown in each of 3 subwindows which are visible when you press 0 key. The WindowsID can be 0 to 2, CameraID is integer identifying camera number on the vehicle. ImageType integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). For example, for car vehicles below shows driver view, front bumper view and rear view as scene, depth ans surface normals respectively.
+```
+  "SubWindows": [
+    {"WindowID": 0, "ImageType": 0, "CameraID": 3, "Visible": true},
+    {"WindowID": 1, "ImageType": 3, "CameraID": 0, "Visible": true},
+    {"WindowID": 2, "ImageType": 6, "CameraID": 4, "Visible": true}
+  ]
+```
 
+#### Recording
+The recording feature allows you to record data such as position, orientation, velocity along with image get recorded in real time at given interval. You can start recording by pressing red Record button on lower right or R key. The data is recorded in `Documents\AirSim` folder, in a timestamped subfolder for each recording session, as csv file.
 
+* RecordInterval: specifies minimal interval in seconds between capturing two images.
+* RecordOnMove: specifies that do not record frame if there was vehicle's position or orientation hasn't changed
 
+#### ClockSpeed
+Determines the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simuation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collison is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.

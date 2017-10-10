@@ -4,6 +4,7 @@
 #include "AirBlueprintLib.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "controllers/Settings.hpp"
+#include "Recording/RecordingThread.h"
 #include "SimJoyStick/SimJoyStick.h"
 
 ASimModeBase::ASimModeBase()
@@ -15,15 +16,24 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    try {
+        readSettings();
+    }
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessageString("Error occured while reading the Settings: ", ex.what(), LogDebugLevel::Failure);
+    }
+
+    if (clock_speed != 1.0f) {
+        this->GetWorldSettings()->SetTimeDilation(clock_speed);
+        UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(clock_speed), LogDebugLevel::Informational);
+    }
+
     setStencilIDs();
 
-    recording_file_.reset(new RecordingFile());
     record_tick_count = 0;
     setupInputBindings();
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
-
-    readSettings();
 }
 
 void ASimModeBase::setStencilIDs()
@@ -44,18 +54,33 @@ void ASimModeBase::setStencilIDs()
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    recording_file_.release();
-
+    FRecordingThread::stopRecording();
     Super::EndPlay(EndPlayReason);
 }
 
 void ASimModeBase::readSettings()
 {
+    //set defaults in case exception occurs
+    is_record_ui_visible = false;
+    initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
+    enable_rpc = false;
+    api_server_address = "";
+    default_vehicle_config = "";
+    physics_engine_name = "";
+    usage_scenario = "";
+    enable_collision_passthrough = false;
+    clock_type = "";
+    engine_sound = true;
+    clock_speed = 1.0f;
+
+
     typedef msr::airlib::Settings Settings;
 
     Settings& settings = Settings::singleton();
 
-    settings_version_actual = settings.getFloat("SettingdVersion", 0);
+    //we had spelling mistake so we are currently supporting SettingsVersion or SettingdVersion :(
+    settings_version_actual = settings.getFloat("SettingsVersion", settings.getFloat("SettingdVersion", 0));
+
     if (settings_version_actual < settings_version_minimum) {
         if ((settings.size() == 1 && 
             ((settings.getString("SeeDocsAt", "") != "") || settings.getString("see_docs_at", "") != ""))
@@ -63,19 +88,24 @@ void ASimModeBase::readSettings()
             //no warnings because we have default settings
         }
         else {
-            UAirBlueprintLib::LogMessageString("Your settings file is of old version and possibly not compatible!","", LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Your settings file does not have SettingsVersion element."," This probably means you have old format settings file.", LogDebugLevel::Failure);
             UAirBlueprintLib::LogMessageString("Please look at new settings and update your settings.json: ","https://git.io/v9mYY", LogDebugLevel::Failure);
         }
     }
 
     std::string simmode_name = settings.getString("SimMode", "");
+    if (simmode_name == "")
+        simmode_name = "Multirotor";
+
     usage_scenario = settings.getString("UsageScenario", "");
     default_vehicle_config = settings.getString("DefaultVehicleConfig", "");
     if (default_vehicle_config == "") {
-        if (simmode_name == "")
+        if (simmode_name == "Multirotor")
             default_vehicle_config = "SimpleFlight";
-        else
+        else if (simmode_name == "Car")
             default_vehicle_config = "PhysXCar4x4";
+        else         
+            UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
     }
 
     enable_rpc = settings.getBool("RpcEnabled", true);
@@ -84,12 +114,17 @@ void ASimModeBase::readSettings()
     //don't work
     api_server_address = settings.getString("LocalHostIp", "");
     is_record_ui_visible = settings.getBool("RecordUIVisible", true);
+    engine_sound = settings.getBool("EngineSound", false);
 
     std::string view_mode_string = settings.getString("ViewMode", "");
 
     if (view_mode_string == "") {
-        if (simmode_name == "")
-            view_mode_string = "FlyWithMe";
+        if (usage_scenario == "") {
+            if (simmode_name == "Multirotor")
+                view_mode_string = "FlyWithMe";
+            else
+                view_mode_string = "SpringArmChase";
+        }
         else
             view_mode_string = "SpringArmChase";
     }
@@ -104,12 +139,12 @@ void ASimModeBase::readSettings()
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
     else if (view_mode_string == "SpringArmChase")
         initial_view_mode = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE;
-    else
+    else 
         UAirBlueprintLib::LogMessage("ViewMode setting is not recognized: ", view_mode_string.c_str(), LogDebugLevel::Failure);
         
     physics_engine_name = settings.getString("PhysicsEngineName", "");
     if (physics_engine_name == "") {
-        if (simmode_name == "")
+        if (simmode_name == "Multirotor")
             physics_engine_name = "FastPhysicsEngine";
         else
             physics_engine_name = "PhysX";
@@ -125,6 +160,8 @@ void ASimModeBase::readSettings()
             clock_type = "ScalableClock";
     }
 
+    clock_speed = settings.getFloat("ClockSpeed", 1.0f);
+
     Settings record_settings;
     if (settings.getChild("Recording", record_settings)) {
         recording_settings.record_on_move = record_settings.getBool("RecordOnMove", recording_settings.record_on_move);
@@ -136,7 +173,7 @@ void ASimModeBase::readSettings()
 
 void ASimModeBase::Tick(float DeltaSeconds)
 {
-    if (recording_file_->isRecording())
+    if (isRecording())
         ++record_tick_count;
     Super::Tick(DeltaSeconds);
 }
@@ -163,11 +200,13 @@ std::string ASimModeBase::getReport()
 void ASimModeBase::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
+
+    UAirBlueprintLib::BindActionToKey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeBase::reset);
 }
 
 bool ASimModeBase::isRecording()
 {
-    return recording_file_->isRecording();
+    return FRecordingThread::isRecording();
 }
 
 bool ASimModeBase::isRecordUIVisible()
@@ -182,7 +221,8 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode()
 
 void ASimModeBase::startRecording()
 {
-    recording_file_->startRecording();
+    FRecordingThread::startRecording(getFpvVehiclePawnWrapper()->getCameraConnector(0),
+        getFpvVehiclePawnWrapper()->getKinematics(), recording_settings);
 }
 
 bool ASimModeBase::toggleRecording()
@@ -197,10 +237,6 @@ bool ASimModeBase::toggleRecording()
 
 void ASimModeBase::stopRecording()
 {
-    recording_file_->stopRecording();
+    FRecordingThread::stopRecording();
 }
 
-RecordingFile& ASimModeBase::getRecordingFile()
-{
-    return *recording_file_;
-}

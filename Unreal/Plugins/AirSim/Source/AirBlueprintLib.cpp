@@ -9,6 +9,7 @@
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/Engine.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -103,6 +104,13 @@ T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
     UAirBlueprintLib::LogMessage(name + TEXT(" Actor not found!"), TEXT(""), LogDebugLevel::Failure);
     return nullptr;
 }
+
+
+void UAirBlueprintLib::RunCommandOnGameThread(TFunction<void()> InFunction, const TStatId InStatId)
+{
+    FFunctionGraphTask::CreateAndDispatchWhenReady(MoveTemp(InFunction), InStatId, nullptr, ENamedThreads::GameThread);
+}
+
 
 template<typename T>
 void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& foundActors)
@@ -250,6 +258,11 @@ int UAirBlueprintLib::RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInput
         return found_binding_index;
     }
     else return -1;
+}
+
+float UAirBlueprintLib::GetDisplayGamma()
+{
+    return GEngine->DisplayGamma;
 }
 
 void UAirBlueprintLib::EnableInput(AActor* actor)

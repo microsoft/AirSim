@@ -3,22 +3,17 @@
 #include "CoreMinimal.h"
 #include <string>
 #include "AirBlueprintLib.h"
-#include "physics/PhysicsBody.hpp"
+#include "physics/Kinematics.hpp"
 #include "FileManager.h"
 
-//TODO: move struct to its own file?
-struct RecordingSettings {
-    bool record_on_move = false;
-    float record_interval = 0.05f;
-};
 
 class RecordingFile {
 public:
-    ~RecordingFile();
+     ~RecordingFile();
 
-    void appendRecord(TArray<uint8>& compressedPng, const msr::airlib::PhysicsBody* physics_body);
+    void appendRecord(TArray<uint8>& compressedPng, const msr::airlib::Kinematics::State* kinematics);
     void startRecording();
-    void stopRecording();
+    void stopRecording(bool ignore_if_stopped);
     bool isRecording();
 
 private:
@@ -27,13 +22,13 @@ private:
     void writeString(const std::string& line);
     bool isFileOpen();
     std::string getLogFileFullPath();
-    std::string getLine(const msr::airlib::Kinematics::State& kinematics);
+    std::string getLine(const msr::airlib::Kinematics::State& kinematics, const std::string& image_file_name);
 
 
 private:
     std::string record_filename = "airsim_rec";     
     unsigned int images_saved_ = 0;
-    FString image_path_;
+    std::string image_path_;
     bool is_recording_ = false;
     IFileHandle* log_file_handle_ = nullptr;
 };

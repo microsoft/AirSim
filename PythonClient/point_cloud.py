@@ -1,5 +1,5 @@
 # use open cv to create point cloud from depth image.
-from PythonClient import *
+from AirSimClient import *
 import cv2
 import time
 import sys

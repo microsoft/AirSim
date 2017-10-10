@@ -3,74 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unreal", "Unreal", "{04B515C0-07BC-4CE8-8A16-F0D70E86C7C9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{A3E13CC1-566C-46BD-B46C-45FC31CF12CF}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AirSim", "AirSim", "{6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}"
-	ProjectSection(SolutionItems) = preProject
-		Unreal\Plugins\AirSim\Source\AirBlueprintLib.cpp = Unreal\Plugins\AirSim\Source\AirBlueprintLib.cpp
-		Unreal\Plugins\AirSim\Source\AirBlueprintLib.h = Unreal\Plugins\AirSim\Source\AirBlueprintLib.h
-		Unreal\Plugins\AirSim\Source\AirSim.Build.cs = Unreal\Plugins\AirSim\Source\AirSim.Build.cs
-		Unreal\Plugins\AirSim\Source\AirSim.cpp = Unreal\Plugins\AirSim\Source\AirSim.cpp
-		Unreal\Plugins\AirSim\Source\AirSim.h = Unreal\Plugins\AirSim\Source\AirSim.h
-		Unreal\Plugins\AirSim\AirSim.uplugin = Unreal\Plugins\AirSim\AirSim.uplugin
-		Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp = Unreal\Plugins\AirSim\Source\AirSimGameMode.cpp
-		Unreal\Plugins\AirSim\Source\AirSimGameMode.h = Unreal\Plugins\AirSim\Source\AirSimGameMode.h
-		Unreal\Plugins\AirSim\Source\CameraDirector.cpp = Unreal\Plugins\AirSim\Source\CameraDirector.cpp
-		Unreal\Plugins\AirSim\Source\CameraDirector.h = Unreal\Plugins\AirSim\Source\CameraDirector.h
-		Unreal\Plugins\AirSim\Source\FlyingPawn.cpp = Unreal\Plugins\AirSim\Source\FlyingPawn.cpp
-		Unreal\Plugins\AirSim\Source\FlyingPawn.h = Unreal\Plugins\AirSim\Source\FlyingPawn.h
-		Unreal\Plugins\AirSim\Source\ManualPoseController.cpp = Unreal\Plugins\AirSim\Source\ManualPoseController.cpp
-		Unreal\Plugins\AirSim\Source\ManualPoseController.h = Unreal\Plugins\AirSim\Source\ManualPoseController.h
-		Unreal\Plugins\AirSim\Source\MultiRotorConnector.cpp = Unreal\Plugins\AirSim\Source\MultiRotorConnector.cpp
-		Unreal\Plugins\AirSim\Source\MultiRotorConnector.h = Unreal\Plugins\AirSim\Source\MultiRotorConnector.h
-		Unreal\Plugins\AirSim\Source\NedTransform.cpp = Unreal\Plugins\AirSim\Source\NedTransform.cpp
-		Unreal\Plugins\AirSim\Source\NedTransform.h = Unreal\Plugins\AirSim\Source\NedTransform.h
-		Unreal\Plugins\AirSim\Source\PIPCamera.cpp = Unreal\Plugins\AirSim\Source\PIPCamera.cpp
-		Unreal\Plugins\AirSim\Source\PIPCamera.h = Unreal\Plugins\AirSim\Source\PIPCamera.h
-		Unreal\Plugins\AirSim\Source\RenderRequest.cpp = Unreal\Plugins\AirSim\Source\RenderRequest.cpp
-		Unreal\Plugins\AirSim\Source\RenderRequest.h = Unreal\Plugins\AirSim\Source\RenderRequest.h
-		Unreal\Plugins\AirSim\Source\VehicleCameraConnector.cpp = Unreal\Plugins\AirSim\Source\VehicleCameraConnector.cpp
-		Unreal\Plugins\AirSim\Source\VehicleCameraConnector.h = Unreal\Plugins\AirSim\Source\VehicleCameraConnector.h
-		Unreal\Plugins\AirSim\Source\VehicleConnectorBase.cpp = Unreal\Plugins\AirSim\Source\VehicleConnectorBase.cpp
-		Unreal\Plugins\AirSim\Source\VehicleConnectorBase.h = Unreal\Plugins\AirSim\Source\VehicleConnectorBase.h
-		Unreal\Plugins\AirSim\Source\VehiclePawnBase.cpp = Unreal\Plugins\AirSim\Source\VehiclePawnBase.cpp
-		Unreal\Plugins\AirSim\Source\VehiclePawnBase.h = Unreal\Plugins\AirSim\Source\VehiclePawnBase.h
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimJoystick", "SimJoystick", "{275DB4C1-B933-4D75-85B3-18D3F93439F3}"
-	ProjectSection(SolutionItems) = preProject
-		Unreal\Plugins\AirSim\Source\SimJoyStick\SimJoyStick.cpp = Unreal\Plugins\AirSim\Source\SimJoyStick\SimJoyStick.cpp
-		Unreal\Plugins\AirSim\Source\SimJoyStick\SimJoyStick.h = Unreal\Plugins\AirSim\Source\SimJoyStick\SimJoyStick.h
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimHUD", "SimHUD", "{95E2FEEF-3F34-4255-BB56-EF77466EFE7C}"
-	ProjectSection(SolutionItems) = preProject
-		Unreal\Plugins\AirSim\Source\SimHUD\SimHUD.cpp = Unreal\Plugins\AirSim\Source\SimHUD\SimHUD.cpp
-		Unreal\Plugins\AirSim\Source\SimHUD\SimHUD.h = Unreal\Plugins\AirSim\Source\SimHUD\SimHUD.h
-		Unreal\Plugins\AirSim\Source\SimHUD\SimHUDWidget.cpp = Unreal\Plugins\AirSim\Source\SimHUD\SimHUDWidget.cpp
-		Unreal\Plugins\AirSim\Source\SimHUD\SimHUDWidget.h = Unreal\Plugins\AirSim\Source\SimHUD\SimHUDWidget.h
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimMode", "SimMode", "{6175579D-2920-406D-A36B-2A0A56AA7892}"
-	ProjectSection(SolutionItems) = preProject
-		Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.cpp = Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.cpp
-		Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.h = Unreal\Plugins\AirSim\Source\SimMode\SimModeBase.h
-		Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldBase.cpp = Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldBase.cpp
-		Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldBase.h = Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldBase.h
-		Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldMultiRotor.cpp = Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldMultiRotor.cpp
-		Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldMultiRotor.h = Unreal\Plugins\AirSim\Source\SimMode\SimModeWorldMultiRotor.h
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Recording", "Recording", "{66DAD5E7-6925-4266-8E04-91F19052623A}"
-	ProjectSection(SolutionItems) = preProject
-		Unreal\Plugins\AirSim\Source\Recording\RecordingFile.cpp = Unreal\Plugins\AirSim\Source\Recording\RecordingFile.cpp
-		Unreal\Plugins\AirSim\Source\Recording\RecordingFile.h = Unreal\Plugins\AirSim\Source\Recording\RecordingFile.h
-		Unreal\Plugins\AirSim\Source\Recording\RecordingThread.cpp = Unreal\Plugins\AirSim\Source\Recording\RecordingThread.cpp
-		Unreal\Plugins\AirSim\Source\Recording\RecordingThread.h = Unreal\Plugins\AirSim\Source\Recording\RecordingThread.h
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DroneShell", "DroneShell\DroneShell.vcxproj", "{9FE9234B-373A-4D5A-AD6B-FB0B593312DD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AirLib", "AirLib\AirLib.vcxproj", "{4BFB7231-077A-4671-BD21-D3ADE3EA36E7}"
@@ -103,26 +35,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		setup.sh = setup.sh
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Environments", "Environments", "{00D55ED5-8214-4EC6-8828-5146D757BE46}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blocks", "Blocks", "{C7F74F18-FD02-4044-98AB-F771DF882A2F}"
-	ProjectSection(SolutionItems) = preProject
-		Unreal\Environments\Blocks\.gitignore = Unreal\Environments\Blocks\.gitignore
-		Unreal\Environments\Blocks\Blocks.uproject = Unreal\Environments\Blocks\Blocks.uproject
-		Unreal\Environments\Blocks\clean.bat = Unreal\Environments\Blocks\clean.bat
-		Unreal\Environments\Blocks\clean.sh = Unreal\Environments\Blocks\clean.sh
-		Unreal\Environments\Blocks\update_from_git.bat = Unreal\Environments\Blocks\update_from_git.bat
-		Unreal\Environments\Blocks\update_from_git.sh = Unreal\Environments\Blocks\update_from_git.sh
-		Unreal\Environments\Blocks\update_to_git.bat = Unreal\Environments\Blocks\update_to_git.bat
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{7F07A6E9-396C-47F7-A18D-DE1A3A84BC8E}"
-	ProjectSection(SolutionItems) = preProject
-		Unreal\Environments\Blocks\Source\Blocks.Target.cs = Unreal\Environments\Blocks\Source\Blocks.Target.cs
-		Unreal\Environments\Blocks\Source\BlocksEditor.Target.cs = Unreal\Environments\Blocks\Source\BlocksEditor.Target.cs
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloCar", "HelloCar\HelloCar.vcxproj", "{4358ED90-CCA1-47A8-8D68-A260F212931E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnrealPluginFiles", "UnrealPluginFiles.vcxproj", "{39683523-C864-4D47-8350-33FC3EC0F00F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -230,19 +145,14 @@ Global
 		{4358ED90-CCA1-47A8-8D68-A260F212931E}.Release|x64.Build.0 = Release|x64
 		{4358ED90-CCA1-47A8-8D68-A260F212931E}.Release|x86.ActiveCfg = Release|Win32
 		{4358ED90-CCA1-47A8-8D68-A260F212931E}.Release|x86.Build.0 = Release|Win32
+		{39683523-C864-4D47-8350-33FC3EC0F00F}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{39683523-C864-4D47-8350-33FC3EC0F00F}.Debug|x64.ActiveCfg = Debug|x64
+		{39683523-C864-4D47-8350-33FC3EC0F00F}.Debug|x86.ActiveCfg = Debug|Win32
+		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|Any CPU.ActiveCfg = Release|Win32
+		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|x64.ActiveCfg = Release|x64
+		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{A3E13CC1-566C-46BD-B46C-45FC31CF12CF} = {04B515C0-07BC-4CE8-8A16-F0D70E86C7C9}
-		{6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC} = {A3E13CC1-566C-46BD-B46C-45FC31CF12CF}
-		{275DB4C1-B933-4D75-85B3-18D3F93439F3} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
-		{95E2FEEF-3F34-4255-BB56-EF77466EFE7C} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
-		{6175579D-2920-406D-A36B-2A0A56AA7892} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
-		{66DAD5E7-6925-4266-8E04-91F19052623A} = {6B69410D-51EA-4DD2-94EF-4EB4CEB67CEC}
-		{00D55ED5-8214-4EC6-8828-5146D757BE46} = {04B515C0-07BC-4CE8-8A16-F0D70E86C7C9}
-		{C7F74F18-FD02-4044-98AB-F771DF882A2F} = {00D55ED5-8214-4EC6-8828-5146D757BE46}
-		{7F07A6E9-396C-47F7-A18D-DE1A3A84BC8E} = {C7F74F18-FD02-4044-98AB-F771DF882A2F}
 	EndGlobalSection
 EndGlobal

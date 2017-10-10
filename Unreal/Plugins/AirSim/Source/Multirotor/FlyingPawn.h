@@ -30,8 +30,12 @@ private: //methods
 private: //variables
          //Unreal components
     static constexpr size_t rotor_count = 4;
-    UPROPERTY() APIPCamera* fpv_camera_left_;
-    UPROPERTY() APIPCamera* fpv_camera_right_;
+    UPROPERTY() APIPCamera* fpv_camera_front_left_;
+    UPROPERTY() APIPCamera* fpv_camera_front_right_;
+    UPROPERTY() APIPCamera* fpv_camera_front_center_;
+    UPROPERTY() APIPCamera* fpv_camera_back_center_;
+    UPROPERTY() APIPCamera* fpv_camera_bottom_center_;
+
     UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
 
     std::unique_ptr<VehiclePawnWrapper> wrapper_;

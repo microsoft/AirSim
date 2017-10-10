@@ -78,6 +78,9 @@ void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AA
     state_.collison_info.penetration_depth = NedTransform::toNedMeters(Hit.PenetrationDepth);
     state_.collison_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
     ++state_.collison_info.collison_count;
+
+    UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(
+        state_.collison_info.collison_count), LogDebugLevel::Failure);
 }
 
 APawn* VehiclePawnWrapper::getPawn()
@@ -93,10 +96,24 @@ void VehiclePawnWrapper::displayCollisonEffect(FVector hit_location, const FHitR
     }
 }
 
+const msr::airlib::Kinematics::State* VehiclePawnWrapper::getKinematics()
+{
+    return kinematics_;
+}
+
+void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kinematics)
+{
+    kinematics_ = kinematics;
+}
+
 void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)
 {
     pawn_ = pawn;
     cameras_ = cameras;
+
+    for (auto camera : cameras_) {
+        camera_connectors_.push_back(std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(camera)));
+    }
 
     if (!NedTransform::isInitialized())
         NedTransform::initialize(pawn_);
@@ -131,8 +148,16 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
 
 APIPCamera* VehiclePawnWrapper::getCamera(int index)
 {
+    if (index < 0 || index >= cameras_.size())
+        throw std::out_of_range("Camera id is not valid");
     //should be overridden in derived class
     return cameras_.at(index);
+}
+
+VehicleCameraConnector* VehiclePawnWrapper::getCameraConnector(int index)
+{
+    //should be overridden in derived class
+    return camera_connectors_.at(index).get();
 }
 
 int VehiclePawnWrapper::getCameraCount()
@@ -144,8 +169,7 @@ void VehiclePawnWrapper::reset()
 {
     state_ = initial_state_;
 
-    pawn_->SetActorLocation(state_.start_location, false, nullptr, ETeleportType::TeleportPhysics);
-    pawn_->SetActorRotation(state_.start_rotation, ETeleportType::TeleportPhysics);
+    pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
 
     //TODO: delete below
     //std::ifstream sim_log("C:\\temp\\mavlogs\\circle\\sim_cmd_006_orbit 5 1.txt.pos.txt");
@@ -222,12 +246,12 @@ void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& off
 //parameters in NED frame
 VehiclePawnWrapper::Pose VehiclePawnWrapper::getPose() const
 {
-    Vector3r position = NedTransform::toNedMeters(getPosition());
-    Quaternionr orientation = NedTransform::toQuaternionr(pawn_->GetActorRotation().Quaternion(), true);
+    const Vector3r& position = NedTransform::toNedMeters(getPosition());
+    const Quaternionr& orientation = NedTransform::toQuaternionr(pawn_->GetActorRotation().Quaternion(), true);
     return Pose(position, orientation);
 }
 
-void VehiclePawnWrapper::setPose(const Pose& pose)
+void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collison)
 {
     //translate to new VehiclePawnWrapper position & orientation from NED to NEU
     FVector position = NedTransform::toNeuUU(pose.position);
@@ -236,7 +260,7 @@ void VehiclePawnWrapper::setPose(const Pose& pose)
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
     FQuat orientation = NedTransform::toFQuat(pose.orientation, true);
 
-    bool enable_teleport = canTeleportWhileMove();
+    bool enable_teleport = ignore_collison || canTeleportWhileMove();
 
     //must reset collison before we set pose. Setting pose will immediately call NotifyHit if there was collison
     //if there was no collison than has_collided would remain false, else it will be set so its value can be

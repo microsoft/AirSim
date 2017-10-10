@@ -1,6 +1,6 @@
 # use open cv to show new images from AirSim 
 
-from PythonClient import *
+from AirSimClient import *
 # requires Python 3.5.3 :: Anaconda 4.4.0
 # pip install opencv-python
 import cv2

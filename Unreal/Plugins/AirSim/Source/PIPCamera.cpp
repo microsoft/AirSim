@@ -22,8 +22,10 @@ void APIPCamera::PostInitializeComponents()
 
     captures_[Utils::toNumeric(ImageType::Scene)] = 
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent"));
-    captures_[Utils::toNumeric(ImageType::DepthMeters)] = 
-        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthMetersCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::DepthPlanner)] = 
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthPlannerCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::DepthPerspective)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthPerspectiveCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::DepthVis)] = 
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("DepthVisCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::DisparityNormalized)] = 
@@ -38,7 +40,7 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
     
-    //set default for brigher images 
+    //set default for brigher images
     capture_settings_.assign(imageTypeCount(), CaptureSettings());
     capture_settings_[Utils::toNumeric(ImageType::Scene)].target_gamma = CaptureSettings::kSceneTargetGamma;
 
@@ -105,7 +107,8 @@ void APIPCamera::updateCaptureComponentSettings(USceneCaptureComponent2D* captur
 {
     if (render_target) {
         render_target->InitAutoFormat(settings.width, settings.height); //256 X 144, X 480
-        render_target->TargetGamma = settings.target_gamma;
+        if (!std::isnan(settings.target_gamma))
+            render_target->TargetGamma = settings.target_gamma;
     }
     //else we will set this after this components get created
 

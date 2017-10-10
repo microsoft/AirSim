@@ -41,7 +41,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
     APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
     FTransform actor_transform = player_controller->GetActorTransform();
     //put camera little bit above vehicle
-    FTransform camera_transform(actor_transform.GetLocation() + FVector(-300, 0, 200));
+    FTransform camera_transform(actor_transform.GetLocation() + FVector(300, 0, 200));
 
     //we will either find external camera if it already exist in evironment or create one
     APIPCamera* external_camera;
@@ -90,7 +90,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
         {
             //initialize each vehicle pawn we found
             TVehiclePawn* vehicle_pawn = static_cast<TVehiclePawn*>(pawn);
-            vehicle_pawn->initializeForBeginPlay(enable_rpc, api_server_address);
+            vehicle_pawn->initializeForBeginPlay(enable_rpc, api_server_address, engine_sound);
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
@@ -112,5 +112,21 @@ void ASimModeCar::createVehicles(std::vector<VehiclePtr>& vehicles)
     setupVehiclesAndCamera(vehicles);
 }
 
+void ASimModeCar::reset()
+{
+    //find all vehicle pawns
+    {
+        TArray<AActor*> pawns;
+        UAirBlueprintLib::FindAllActor<TVehiclePawn>(this, pawns);
 
+        //set up vehicle pawns
+        for (AActor* pawn : pawns)
+        {
+            //initialize each vehicle pawn we found
+            TVehiclePawn* vehicle_pawn = static_cast<TVehiclePawn*>(pawn);
+            vehicle_pawn->reset();
+        }
+    }
 
+    Super::reset();
+}

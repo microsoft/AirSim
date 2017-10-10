@@ -223,7 +223,9 @@ public: //interface for outside world
 
 
     //TODO: methods that are only valid for simulation mode should be prefixed with "sim"
-    virtual void simSetPose(const Vector3r& position, const Quaternionr& orientation);
+    virtual void simSetPose(const Pose& pose, bool ignore_collison);
+    virtual Pose simGetPose();
+
     /// Request an image of specific type from the specified camera.  Currently default pawn is configured with only 2 cameras which
     /// have id of 0 and 1, right and left respectively.  Camera 0 is is always FPV camera view
     /// The image is return in the .png format.  This call will block until the render is complete.  
@@ -350,7 +352,7 @@ private: //methods
 private:// vars
     shared_ptr<SafetyEval> safety_eval_ptr_;
     float obs_avoidance_vel_ = 0.5f;
-    bool log_to_file_ = false;
+
     CollisionInfo collision_info_;
     vector<VehicleCameraBase*> cameras_;
 

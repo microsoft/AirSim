@@ -120,12 +120,6 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     vector<PathSegment> path_segs;
     path3d.push_back(getPosition());
 
-    std::ofstream flog;
-    if (log_to_file_) {
-        common_utils::FileSystem::createLogFile("MoveToPosition", flog);
-        flog << "seg_index\toffset\tx\ty\tz\tgoal_dist\tseg_index\toffset\tx\ty\tz\tlookahead\tlookahead_error\tseg_index\toffset\tx\ty\tz";
-    }
-
     Vector3r point;
     float path_length = 0;
     //append the input path and compute segments
@@ -251,9 +245,6 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
         //     VectorMath::toString(getPosition()).c_str(), goal_dist, VectorMath::toString(cur_path_loc.position).c_str(),
         //     VectorMath::toString(next_path_loc.position).c_str(), lookahead_error);
 
-        if (log_to_file_)
-            flog << cur_path_loc.seg_index << "\t" << cur_path_loc.offset << "\t" << cur_path_loc.position.x() << "\t" << cur_path_loc.position.y() << "\t" << cur_path_loc.position.z() << "\t" << goal_dist << "\t";
-
         //if drone moved backward, we don't want goal to move backward as well
         //so only climb forward on the path, never back. Also note >= which means
         //we climb path even if distance was 0 to take care of duplicated points on path
@@ -267,11 +258,6 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
 
         //compute next target on path
         overshoot = setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
-
-        if (log_to_file_) {
-            flog << cur_path_loc.seg_index << "\t" << cur_path_loc.offset << "\t" << cur_path_loc.position.x() << "\t" << cur_path_loc.position.y() << "\t" << cur_path_loc.position.z() << "\t" << lookahead  << "\t" << lookahead_error  << "\t";
-            flog << next_path_loc.seg_index << "\t" << next_path_loc.offset << "\t" << next_path_loc.position.x() << "\t" << next_path_loc.position.y() << "\t" << next_path_loc.position.z() << std::endl;
-        }
     }
 
     return true;
@@ -364,19 +350,24 @@ bool DroneControllerBase::hover(CancelableBase& cancelable_action)
     return moveToZ(getZ(), 0.5f, YawMode{ true,0 }, 1.0f, false, cancelable_action);
 }
 
-void DroneControllerBase::simSetPose(const Vector3r& position, const Quaternionr& orientation)
+void DroneControllerBase::simSetPose(const Pose& pose, bool ignore_collison)
 {
-    unused(position);
-    unused(orientation);
+    unused(pose);
+    unused(ignore_collison);
+    //derived flight controller class should provide implementation if they support exclusive sim*** methods
+}
+Pose DroneControllerBase::simGetPose()
+{
+    return Pose();
+    //derived flight controller class should provide implementation if they support exclusive sim*** methods
+}
+void DroneControllerBase::simNotifyRender()
+{
     //derived flight controller class should provide implementation if they support exclusive sim*** methods
 }
 void DroneControllerBase::simAddCamera(VehicleCameraBase* camera)
 {
     cameras_.push_back(camera);
-}
-void DroneControllerBase::simNotifyRender()
-{
-    //derived class should override this if it supports sim**** methods
 }
 VehicleCameraBase* DroneControllerBase::simGetCamera(int index)
 {

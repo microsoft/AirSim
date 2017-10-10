@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
 #include "VehiclePawnWrapper.h"
-#include "Recording/RecordingFile.h"
+#include "Recording/RecordingSettings.h"
 #include "SimModeBase.generated.h"
 
 
@@ -45,7 +45,6 @@ public:
     //can't use pure virtual because of restriction with Unreal
     virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper();
 
-    RecordingFile& getRecordingFile();
 
 protected:
     virtual void setupInputBindings();
@@ -64,14 +63,11 @@ protected: //settings
     std::string clock_type;
     float settings_version_actual;
     float settings_version_minimum = 1;
-
+    bool engine_sound;
+    float clock_speed;
 
 private:
     void readSettings();
     void setStencilIDs();
-
-private:
-    std::unique_ptr<RecordingFile> recording_file_;
-    void *xinput_dllHandle;
 
 };
