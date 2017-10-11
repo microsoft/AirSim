@@ -260,6 +260,11 @@ int UAirBlueprintLib::RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInput
     else return -1;
 }
 
+float UAirBlueprintLib::GetDisplayGamma()
+{
+    return GEngine->DisplayGamma;
+}
+
 void UAirBlueprintLib::EnableInput(AActor* actor)
 {
     actor->EnableInput(actor->GetWorld()->GetFirstPlayerController());

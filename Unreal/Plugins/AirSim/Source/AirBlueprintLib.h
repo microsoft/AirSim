@@ -62,6 +62,7 @@ public:
 
     static void RunCommandOnGameThread(TFunction<void()> InFunction, const TStatId InStatId = TStatId());
 
+    static float GetDisplayGamma();
 
     static bool getLogMessagesHidden()
     {

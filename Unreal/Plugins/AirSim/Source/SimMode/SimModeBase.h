@@ -66,6 +66,7 @@ protected: //settings
     bool engine_sound;
 	std::vector <std::string> columns;
 
+    float clock_speed;
 
 private:
     void readSettings();

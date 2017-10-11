@@ -28,6 +28,7 @@ Below are complete list of settings available along with their default values. I
   "DefaultVehicleConfig": "",
   "SimMode": "",
   "ClockType": "",
+  "ClockSpeed": "1",
   "LocalHostIp": "127.0.0.1",
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
@@ -56,9 +57,9 @@ Below are complete list of settings available along with their default values. I
     }
   ],
   "SubWindows": [
-    {"WindowID": 0, "CameraID": 0, "ImageType": 3},
-    {"WindowID": 1, "CameraID": 0, "ImageType": 5},
-    {"WindowID": 2, "CameraID": 0, "ImageType": 0}    
+    {"WindowID": 0, "CameraID": 0, "ImageType": 3, "Visible": false},
+    {"WindowID": 1, "CameraID": 0, "ImageType": 5, "Visible": false},
+    {"WindowID": 2, "CameraID": 0, "ImageType": 0, "Visible": false}    
   ] 
   "SimpleFlight": {
     "FirmwareName": "SimpleFlight",
@@ -156,9 +157,9 @@ To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. 
 This setting determines what is shown in each of 3 subwindows which are visible when you press 0 key. The WindowsID can be 0 to 2, CameraID is integer identifying camera number on the vehicle. ImageType integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). For example, for car vehicles below shows driver view, front bumper view and rear view as scene, depth ans surface normals respectively.
 ```
   "SubWindows": [
-    {"WindowID": 0, "ImageType": 0, "CameraID": 3},
-    {"WindowID": 1, "ImageType": 3, "CameraID": 0},
-    {"WindowID": 2, "ImageType": 6, "CameraID": 4}
+    {"WindowID": 0, "ImageType": 0, "CameraID": 3, "Visible": true},
+    {"WindowID": 1, "ImageType": 3, "CameraID": 0, "Visible": true},
+    {"WindowID": 2, "ImageType": 6, "CameraID": 4, "Visible": true}
   ]
 ```
 
@@ -168,7 +169,5 @@ The recording feature allows you to record data such as position, orientation, v
 * RecordInterval: specifies minimal interval in seconds between capturing two images.
 * RecordOnMove: specifies that do not record frame if there was vehicle's position or orientation hasn't changed
 
-
-
-
-
+#### ClockSpeed
+Determines the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simuation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collison is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.

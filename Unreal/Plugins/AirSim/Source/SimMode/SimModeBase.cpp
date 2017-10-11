@@ -16,19 +16,24 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    setStencilIDs();
-
-    record_tick_count = 0;
-    setupInputBindings();
-
-    UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
-
     try {
         readSettings();
     }
     catch (std::exception& ex) {
         UAirBlueprintLib::LogMessageString("Error occured while reading the Settings: ", ex.what(), LogDebugLevel::Failure);
     }
+
+    if (clock_speed != 1.0f) {
+        this->GetWorldSettings()->SetTimeDilation(clock_speed);
+        UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(clock_speed), LogDebugLevel::Informational);
+    }
+
+    setStencilIDs();
+
+    record_tick_count = 0;
+    setupInputBindings();
+
+    UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 }
 
 void ASimModeBase::setStencilIDs()
@@ -66,6 +71,7 @@ void ASimModeBase::readSettings()
     enable_collision_passthrough = false;
     clock_type = "";
     engine_sound = true;
+    clock_speed = 1.0f;
 
 
     typedef msr::airlib::Settings Settings;
@@ -153,6 +159,8 @@ void ASimModeBase::readSettings()
         else
             clock_type = "ScalableClock";
     }
+
+    clock_speed = settings.getFloat("ClockSpeed", 1.0f);
 
     Settings record_settings;
     if (settings.getChild("Recording", record_settings)) {
