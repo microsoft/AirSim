@@ -64,7 +64,7 @@ protected: //settings
     float settings_version_actual;
     float settings_version_minimum = 1;
     bool engine_sound;
-	std::vector <std::string> columns;
+    std::vector <std::string> columns;
 
     float clock_speed;
 
