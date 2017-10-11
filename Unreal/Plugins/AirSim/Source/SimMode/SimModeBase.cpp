@@ -170,7 +170,7 @@ void ASimModeBase::readSettings()
     
     UAirBlueprintLib::LogMessage("Default config: ", default_vehicle_config.c_str(), LogDebugLevel::Informational);
 
-	// TODO: maybe a setting file which has column names. Read and set the column dynamically. Or set by the individual pawn?
+	// By default this is the column header. Override it in BeginPlay of pawn mode
 	columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
