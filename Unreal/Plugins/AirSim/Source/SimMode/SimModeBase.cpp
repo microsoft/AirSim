@@ -170,8 +170,8 @@ void ASimModeBase::readSettings()
     
     UAirBlueprintLib::LogMessage("Default config: ", default_vehicle_config.c_str(), LogDebugLevel::Informational);
 
-    // By default this is the column header. Override it in BeginPlay of pawn mode
-    columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
+	// By default this is the column header. Override it in BeginPlay of pawn mode
+	columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
