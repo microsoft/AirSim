@@ -298,7 +298,7 @@ deps/
 /.settings
 
 /boost
-/eigen
+/[Ee]igen
 /build_debug
 /cmake/CPackSourceConfig.cmake
 /cmake/CPackConfig.cmake
@@ -317,4 +317,4 @@ deps/
 /cmake-3.7.2-win64-x64
 /cmake-3.7.2-win64-x64.zip
 /3.3.2.zip
-
+/PythonClient/cloud.txt
