@@ -27,6 +27,7 @@ using namespace mavlink_utils;
 std::string FileSystem::createDirectory(std::string fullPath) {
     
 #ifdef _WIN32
+#ifndef ONECORE
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
     std::wstring wide_path = converter.from_bytes(fullPath);
     int hr = CreateDirectory(wide_path.c_str(), NULL);
@@ -36,6 +37,7 @@ std::string FileSystem::createDirectory(std::string fullPath) {
             throw std::invalid_argument(Utils::stringf("Error creating directory, hr=%d", hr));
         }
     }
+#endif
 #else
     mkdir(fullPath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
@@ -68,6 +70,7 @@ void FileSystem::remove(std::string fileName) {
 
 std::string FileSystem::getUserDocumentsFolder() {
 #ifdef _WIN32
+#ifndef ONECORE
     // Windows users can move the Documents folder to any location they want
     // SHGetFolderPath knows how to find it.
     wchar_t szPath[MAX_PATH];
@@ -81,7 +84,7 @@ std::string FileSystem::getUserDocumentsFolder() {
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
         return converter.to_bytes(szPath);
     }
-
+#endif
     // fall back in case SHGetFolderPath failed for some reason.
 #endif
     return combine(getUserHomeFolder(), "Documents");
