@@ -177,6 +177,8 @@ struct GeoPoint {
     double longitude = std::numeric_limits<double>::quiet_NaN(); 
     float altiude = std::numeric_limits<float>::quiet_NaN();
 
+    GeoPoint() {}
+
     static const GeoPoint& nan()
     {
         const static GeoPoint val;
