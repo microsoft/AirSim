@@ -17,6 +17,8 @@ void ASimModeCar::BeginPlay()
     Super::BeginPlay();
 
     createVehicles(vehicles_);
+
+    columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)

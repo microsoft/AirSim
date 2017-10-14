@@ -15,7 +15,7 @@ class FRecordingThread : public FRunnable
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
-    static void startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings);
+    static void startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns);
     static void stopRecording(); 
     static bool isRecording();
 

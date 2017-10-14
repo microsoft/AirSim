@@ -7,6 +7,10 @@
 #include "common/common_utils/FileSystem.hpp"
 
 
+RecordingFile::RecordingFile(std::vector <std::string> columns)
+{
+    this->columns = columns;
+}
 void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::Kinematics::State* kinematics)
 {
     if (image_data.Num() == 0)
@@ -32,6 +36,18 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::K
         UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
     }
+}
+
+void RecordingFile::appendColumnHeader(std::vector <std::string> columns)
+{
+    std::string line;
+    for (int i = 0; i < columns.size()-1; i++) 
+    {
+        line.append(columns[i]).append("\t");
+    }
+    line.append(columns[columns.size() - 1]).append("\n");
+
+    writeString(line);
 }
 
 std::string RecordingFile::getLine(const msr::airlib::Kinematics::State& kinematics, const std::string& image_file_name)
@@ -70,6 +86,7 @@ void RecordingFile::createFile(const std::string& file_path)
 
         IPlatformFile& platform_file = FPlatformFileManager::Get().GetPlatformFile();
         log_file_handle_ = platform_file.OpenWrite(*FString(file_path.c_str()));
+        appendColumnHeader(this->columns);
     }
     catch(std::exception& ex) {
         UAirBlueprintLib::LogMessageString(std::string("createFile Failed for ") + file_path, ex.what(), LogDebugLevel::Failure);        

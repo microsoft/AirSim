@@ -31,6 +31,8 @@ void ASimModeWorldMultiRotor::BeginPlay()
             UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server",  ex.what(), LogDebugLevel::Failure);
         }
     }
+
+	columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
