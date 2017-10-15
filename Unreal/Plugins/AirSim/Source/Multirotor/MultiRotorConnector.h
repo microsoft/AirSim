@@ -3,20 +3,20 @@
 #include "CoreMinimal.h"
 //TODO: all code except setRotorSpeed requires VehiclePawnBase.
 //May be we should have MultiRotorPawnBase so we don't need FlyingPawn.h
-#include "vehicles/multirotor/controllers/DroneControllerCancelable.hpp"
+#include "vehicles/multirotor/api/DroneApi.hpp"
 #include "VehiclePawnWrapper.h"
 #include "vehicles/multirotor/MultiRotor.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "VehicleConnectorBase.h"
+#include "controllers/VehicleConnectorBase.hpp"
 #include "ManualPoseController.h"
 #include <chrono>
 #include "api/ControlServerBase.hpp"
 #include "SimJoyStick/SimJoyStick.h"
 
-class MultiRotorConnector : public VehicleConnectorBase
+class MultiRotorConnector : public msr::airlib::VehicleConnectorBase
 {
 public:
     typedef msr::airlib::real_T real_T;
@@ -51,6 +51,9 @@ public:
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
 
+    virtual void setPose(const Pose& pose, bool ignore_collison) override;
+    virtual Pose getPose() override;
+
     virtual msr::airlib::VehicleCameraBase* getCamera(unsigned int index = 0) override;
 
 private:
@@ -65,7 +68,7 @@ private:
     VehiclePawnWrapper* vehicle_pawn_wrapper_;
 
     msr::airlib::MultiRotorParams* vehicle_params_;
-    std::unique_ptr<msr::airlib::DroneControllerCancelable> controller_cancelable_;
+    std::unique_ptr<msr::airlib::DroneApi> controller_cancelable_;
     std::unique_ptr<msr::airlib::ControlServerBase> rpclib_server_;
 
     struct RotorInfo {
@@ -76,8 +79,6 @@ private:
     };
     unsigned int rotor_count_;
     std::vector<RotorInfo> rotor_info_;
-
-    Pose last_pose, last_debug_pose;
 
     CollisonResponseInfo collision_response_info;
 
@@ -90,4 +91,9 @@ private:
     SimJoyStick joystick_;
     SimJoyStick::State joystick_state_;
     msr::airlib::RCData rc_data_;
+
+    bool pending_pose_collisions_;
+    Pose pending_pose_; //force new pose through API
+    Pose last_pose_; //for trace lines showing vehicle path
+    Pose last_debug_pose_; //for purposes such as comparing recorded trajectory
 };

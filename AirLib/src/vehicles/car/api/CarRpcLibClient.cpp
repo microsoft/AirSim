@@ -45,16 +45,10 @@ void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls)
         call("setCarControls", CarRpcLibAdapators::CarControls(controls));
 }
 
-void CarRpcLibClient::reset()
-{
-    static_cast<rpc::client*>(getClient())->call("reset");
-}
-
 CarApiBase::CarState CarRpcLibClient::getCarState()
 {
     return static_cast<rpc::client*>(getClient())->
         call("getCarState").as<CarRpcLibAdapators::CarState>().to();
-
 }
 
 

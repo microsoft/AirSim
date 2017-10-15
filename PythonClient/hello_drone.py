@@ -21,8 +21,8 @@ responses = client.simGetImages([
     ImageRequest(1, AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
 print('Retrieved images: %d', len(responses))
 
-for response in responses:
-    filename = 'c:/temp/py' + str(idx)
+for idx, response in enumerate(responses):
+    filename = 'c:/temp/py_drone_' + str(idx)
 
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))

@@ -7,6 +7,8 @@
 #include "common/Common.hpp"
 #include "common/common_utils/WorkerThread.hpp"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "controllers/VehicleConnectorBase.hpp"
+#include "api/VehicleApiBase.hpp"
 #include "controllers/Waiter.hpp"
 #include <atomic>
 #include <thread>
@@ -29,12 +31,14 @@ namespace msr { namespace airlib {
 // here that only one operation is allowed at a time and that is what the CallLock object is for.  It cancels previous operation then
 // sets up the new operation.
 
-class DroneControllerCancelable  {
+class DroneApi : public VehicleApiBase {
 
 public:
-    DroneControllerCancelable(DroneControllerBase* drone)
-        :controller_(drone)
+    DroneApi(VehicleConnectorBase* vehicle)
+        : vehicle_(vehicle)
     {
+        controller_ = static_cast<DroneControllerBase*>(vehicle->getController());
+
         //auto vehicle_params = controller_->getVehicleParams();
         //auto fence = std::make_shared<CubeGeoFence>(VectorMath::Vector3f(-1E10, -1E10, -1E10), VectorMath::Vector3f(1E10, 1E10, 1E10), vehicle_params.distance_accuracy);
         //auto safety_eval = std::make_shared<SafetyEval>(vehicle_params, fence);
@@ -45,12 +49,7 @@ public:
         pending_ = std::make_shared<DirectCancelableBase>();
         return controller_->armDisarm(arm, *pending_);
     }
-    void enableApiControl(bool is_enabled)
-    {
-        CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
-        pending_ = std::make_shared<DirectCancelableBase>();
-        controller_->enableApiControl(is_enabled);
-    }
+
     void setSimulationMode(bool is_set)
     {
         CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
@@ -170,24 +169,11 @@ public:
 
     void simSetPose(const Pose& pose, bool ignore_collison)
     {
-        controller_->simSetPose(pose, ignore_collison);
+        vehicle_->setPose(pose, ignore_collison);
     }
     Pose simGetPose()
     {
-        return controller_->simGetPose();
-    }
-    vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request)
-    {
-        return controller_->simGetImages(request);
-    }
-    vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type)
-    {
-        vector<VehicleCameraBase::ImageRequest> request = { VehicleCameraBase::ImageRequest(camera_id, image_type)};
-        const vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
-        if (response.size() > 0)
-            return response.at(0).image_data_uint8;
-        else 
-            return vector<uint8_t>();
+        return vehicle_->getPose();
     }
 
     Quaternionr getOrientation()
@@ -208,14 +194,9 @@ public:
     {
         return controller_->getRCData();
     }
-
     TTimePoint timestampNow()
     {
         return controller_->clock()->nowNanos();
-    }
-    GeoPoint getHomeGeoPoint()
-    {
-        return controller_->getHomeGeoPoint();
     }
 
     //TODO: add GPS health, accuracy in API
@@ -228,12 +209,6 @@ public:
     {
         return controller_->isSimulationMode();
     }
-
-    bool isApiControlEnabled()
-    {
-        return controller_->isApiControlEnabled();
-    }
-
     std::string getServerDebugInfo()
     {
         //for now this method just allows to see if server was started
@@ -245,11 +220,55 @@ public:
         controller_->getStatusMessages(messages);
     }
 
-
     virtual void cancelAllTasks()
     {
         offboard_thread_.cancel();
     }
+
+    /******************* VehicleApiBase implementtaion ********************/
+    virtual GeoPoint getHomeGeoPoint() override
+    {
+        return controller_->getHomeGeoPoint();
+    }
+    virtual void enableApiControl(bool is_enabled) override
+    {
+        CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
+        pending_ = std::make_shared<DirectCancelableBase>();
+        controller_->enableApiControl(is_enabled);
+    }
+
+    virtual vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request) override
+    {
+        vector<VehicleCameraBase::ImageResponse> response;
+
+        for (const auto& item : request) {
+            VehicleCameraBase* camera = vehicle_->getCamera(item.camera_id);
+            const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
+            response.push_back(item_response);
+        }
+
+        return response;
+    }
+    virtual vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) override
+    {
+        vector<VehicleCameraBase::ImageRequest> request = { VehicleCameraBase::ImageRequest(camera_id, image_type)};
+        const vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
+        if (response.size() > 0)
+            return response.at(0).image_data_uint8;
+        else 
+            return vector<uint8_t>();
+    }
+
+    virtual bool isApiControlEnabled() override
+    {
+        return controller_->isApiControlEnabled();
+    }
+
+    virtual void reset() override
+    {
+        vehicle_->reset();
+    }
+
 
     /*** Implementation of CancelableBase ***/
 
@@ -508,7 +527,8 @@ private:// types
 
 
 private: //vars
-    DroneControllerBase* controller_;
+    VehicleConnectorBase* vehicle_ = nullptr;
+    DroneControllerBase* controller_ = nullptr;
     WorkerThread offboard_thread_;
     std::mutex action_mutex_;
     std::mutex cancel_mutex_;

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "MavLinkConnection.hpp"
+
 #ifdef ONECORE 
 #include <Windows.h>
 #include <cfgmgr32.h>
@@ -149,4 +150,8 @@ std::vector<SerialPortInfo> MavLinkConnection::findSerialPorts(int vid, int pid)
 
     return list;
 }
+#elif defined _WIN32 || defined _WIN64
+//suppress
+//OneCoreFindSerialPorts.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+__declspec(dllexport) void getRidOfLNK4221() {}
 #endif

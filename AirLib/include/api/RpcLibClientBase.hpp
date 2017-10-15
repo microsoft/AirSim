@@ -31,6 +31,7 @@ public:
     void confirmConnection();
     bool isApiControlEnabled();
     void enableApiControl(bool is_enabled);
+    void reset();
 
     virtual ~RpcLibClientBase();    //required for pimpl
 

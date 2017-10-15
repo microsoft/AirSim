@@ -20,8 +20,6 @@ public:
 
     bool armDisarm(bool arm);
     void setSimulationMode(bool is_set);
-    void start();
-    void stop();
     bool takeoff(float max_wait_ms = 15);
     bool land(float max_wait_seconds = 60);
     bool goHome();

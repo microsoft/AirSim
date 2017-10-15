@@ -7,10 +7,11 @@
 #include "controllers/VehicleCameraBase.hpp"
 #include "common/VectorMath.hpp"
 #include "common/CommonStructs.hpp"
+#include "api/VehicleApiBase.hpp"
 
 namespace msr { namespace airlib {
 
-class CarApiBase {
+class CarApiBase : public VehicleApiBase  {
 public:
     struct CarControls {
         float throttle = 0; /* 1 to -1 */
@@ -62,16 +63,8 @@ public:
         }
     };
 
-    virtual vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request) = 0;
-    virtual vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) = 0;
     virtual void setCarControls(const CarControls& controls) = 0;
     virtual CarState getCarState() = 0;
-    virtual GeoPoint getHomeGeoPoint() = 0;
-    virtual void enableApiControl(bool is_enabled) = 0;
-    virtual bool isApiControlEnabled() = 0;
-    virtual void reset() = 0;
-    virtual void simSetPose(const Pose& pose, bool ignore_collison) = 0;
-    virtual Pose simGetPose() = 0;
     virtual ~CarApiBase() = default;
 };
 
