@@ -13,6 +13,22 @@ IF %ERRORLEVEL% NEQ 0 (
     call :installcmake
 )
 
+REM //---------- get High PolyCount SUV Car Model ------------
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV (
+	IF EXIST suv_download_tmp rmdir suv_download_tmp /q /s
+	mkdir suv_download_tmp
+	cd suv_download_tmp
+	powershell -command "& { iwr https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip -OutFile SUV.zip }"
+    powershell -command "& { Expand-Archive -Path SUV.zip -DestinationPath ..\Unreal\Plugins\AirSim\Content\VehicleAdv }"
+    cd ..
+	rmdir suv_download_tmp /q /s
+)
+REM // Don't fail the build if the high-poly car is unable to be downloaded
+REM // Instead, just notify users that the gokart will be used.
+REM //
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV ECHO "Unable to download high-polycount SUV. Your AirSim build will use the default vehicle."
+
 REM //---------- get Eigen library ----------
 IF NOT EXIST AirLib\deps mkdir AirLib\deps
 IF NOT EXIST AirLib\deps\eigen3 (

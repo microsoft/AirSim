@@ -33,6 +33,23 @@ else
     sudo apt-get install -y clang-3.9 clang++-3.9
 fi
 
+# Download high-polycount SUV model
+if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv" ]; then
+    mkdir -p "Unreal/Plugins/AirSim/Content/VehicleAdv"
+fi
+if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV" ]; then
+    IF EXIST suv_download_tmp rmdir suv_download_tmp /q /s
+	if [ -d "suv_download_tmp" ]; then
+        rm -rf "suv_download_tmp"
+    fi
+    mkdir -p "suv_download_tmp"
+	cd suv_download_tmp
+	wget https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip
+    unzip SUV.zip -d ../Unreal/Plugins/AirSim/Content/VehicleAdv
+    cd ..
+	rm -rf "suv_download_tmp" 
+fi
+
 # Below is alternative way to get cland by downloading binaries
 # get clang, libc++
 # sudo rm -rf llvm-build

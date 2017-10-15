@@ -6,15 +6,17 @@
 
 UCarWheelFront::UCarWheelFront()
 {
-	ShapeRadius = 18.f;
-	ShapeWidth = 15.0f;
+	ShapeRadius = 43.f;
+	ShapeWidth = 33.0f;
+	Mass = 20.0f;
+	DampingRate = 0.25f;
 	bAffectedByHandbrake = false;
 	SteerAngle = 40.f;
 
 	// Setup suspension forces
-	SuspensionForceOffset = -4.0f;
-	SuspensionMaxRaise = 8.0f;
-	SuspensionMaxDrop = 12.0f;
+	SuspensionForceOffset = 0.0f;
+	SuspensionMaxRaise = 10.0f;
+	SuspensionMaxDrop = 10.0f;
 	SuspensionNaturalFrequency = 9.0f;
 	SuspensionDampingRatio = 1.05f;
 
