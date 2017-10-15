@@ -60,7 +60,8 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
 
     // For drone, FPV camera is camera 0.
-    // For car, FPV camera is camera 3. Cameras 0,1,2 are hood cameras. Camera Camera 4 is reverse camera.
+    // For car, FPV camera is camera 3. Cameras 0,1,2 are hood cameras. 
+	//     Camera 4 is the backup camera.
     //
     is_following_car_ = follow_actor_->IsA(ACarPawn::StaticClass());
     int fpv_camera_index = (is_following_car_ ? 3 : 0);
