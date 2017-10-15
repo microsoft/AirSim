@@ -73,5 +73,5 @@ private:
     FVector initial_ground_obs_offset_;
     FRotator camera_start_rotation_;
     bool ext_obs_fixed_z_;
-    bool is_following_car;
+    bool is_following_car_;
 };
