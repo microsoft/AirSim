@@ -167,11 +167,11 @@ public:
         return controller_->getVelocity();
     }
 
-    void simSetPose(const Pose& pose, bool ignore_collison)
+    virtual void simSetPose(const Pose& pose, bool ignore_collison) override
     {
         vehicle_->setPose(pose, ignore_collison);
     }
-    Pose simGetPose()
+    virtual Pose simGetPose() override
     {
         return vehicle_->getPose();
     }
