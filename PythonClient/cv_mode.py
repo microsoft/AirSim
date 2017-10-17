@@ -6,7 +6,7 @@ import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
 
-client = CarClient()
+client = MultirotorClient()
 client.confirmConnection()
 
 for x in range(3): # do few times

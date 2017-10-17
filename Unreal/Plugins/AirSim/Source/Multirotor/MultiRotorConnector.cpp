@@ -53,6 +53,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrappe
     rotor_info_.assign(rotor_count_, RotorInfo());
 
     last_pose_ = pending_pose_ = last_debug_pose_ = Pose::nanPose();
+    pending_pose_status_ = PendingPoseStatus::NonePending;
 
     std::string message;
     if (!vehicle_.getController()->isAvailable(message)) {
@@ -158,7 +159,7 @@ void MultiRotorConnector::updateRenderedState()
         vehicle_.setPose(pose);
     }
 
-    if (! VectorMath::hasNan(pending_pose_))
+    if (pending_pose_status_ == PendingPoseStatus::RenderStatePending)
         vehicle_.setPose(pending_pose_);
         
     last_pose_ = vehicle_.getPose();
@@ -192,9 +193,9 @@ void MultiRotorConnector::updateRendering(float dt)
     }
 
     if (!VectorMath::hasNan(last_pose_)) {
-        if (!VectorMath::hasNan(pending_pose_)) {
+        if (pending_pose_status_ ==  PendingPoseStatus::RenderPending) {
             vehicle_pawn_wrapper_->setPose(last_pose_, pending_pose_collisions_);
-            pending_pose_ = Pose::nanPose();
+            pending_pose_status_ = PendingPoseStatus::NonePending;
         }
         else
             vehicle_pawn_wrapper_->setPose(last_pose_, false);
@@ -226,6 +227,7 @@ void MultiRotorConnector::setPose(const Pose& pose, bool ignore_collison)
 {
     pending_pose_ = pose;
     pending_pose_collisions_ = ignore_collison;
+    pending_pose_status_ = PendingPoseStatus::RenderStatePending;
 }
 
 Pose MultiRotorConnector::getPose()

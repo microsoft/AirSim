@@ -38,4 +38,8 @@ for idx, response in enumerate(responses):
         img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
         AirSimClientBase.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
 
+AirSimClientBase.wait_key('Press any key to reset to original state')
+client.reset()
+
+# that's enough fun for now. let's quite cleanly
 client.enableApiControl(False)

@@ -93,6 +93,9 @@ private:
     msr::airlib::RCData rc_data_;
 
     bool pending_pose_collisions_;
+    enum class PendingPoseStatus {
+        NonePending, RenderStatePending, RenderPending
+    } pending_pose_status_;
     Pose pending_pose_; //force new pose through API
     Pose last_pose_; //for trace lines showing vehicle path
     Pose last_debug_pose_; //for purposes such as comparing recorded trajectory
