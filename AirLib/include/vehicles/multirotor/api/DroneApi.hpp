@@ -266,9 +266,7 @@ public:
 
     virtual void reset() override
     {
-        UAirBlueprintLib::RunCommandOnGameThread([this]() {
-            vehicle_->reset();
-        });
+        vehicle_->reset();
     }
 
 

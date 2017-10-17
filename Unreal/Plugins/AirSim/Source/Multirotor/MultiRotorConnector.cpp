@@ -273,14 +273,16 @@ bool MultiRotorConnector::isApiServerStarted()
 //*** Start: UpdatableState implementation ***//
 void MultiRotorConnector::reset()
 {
-    VehicleConnectorBase::reset();
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        VehicleConnectorBase::reset();
 
-    //TODO: should this be done in MultiRotor.hpp
-    //controller_->reset();
+        //TODO: should this be done in MultiRotor.hpp
+        //controller_->reset();
 
-    rc_data_ = RCData();
-    vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisons
-    vehicle_.reset();
+        rc_data_ = RCData();
+        vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisons
+        vehicle_.reset();
+    });
 }
 
 void MultiRotorConnector::update()
