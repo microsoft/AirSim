@@ -350,45 +350,6 @@ bool DroneControllerBase::hover(CancelableBase& cancelable_action)
     return moveToZ(getZ(), 0.5f, YawMode{ true,0 }, 1.0f, false, cancelable_action);
 }
 
-void DroneControllerBase::simSetPose(const Pose& pose, bool ignore_collison)
-{
-    unused(pose);
-    unused(ignore_collison);
-    //derived flight controller class should provide implementation if they support exclusive sim*** methods
-}
-Pose DroneControllerBase::simGetPose()
-{
-    return Pose();
-    //derived flight controller class should provide implementation if they support exclusive sim*** methods
-}
-void DroneControllerBase::simNotifyRender()
-{
-    //derived flight controller class should provide implementation if they support exclusive sim*** methods
-}
-void DroneControllerBase::simAddCamera(VehicleCameraBase* camera)
-{
-    cameras_.push_back(camera);
-}
-VehicleCameraBase* DroneControllerBase::simGetCamera(int index)
-{
-    return cameras_.at(index);
-}
-vector<VehicleCameraBase::ImageResponse> DroneControllerBase::simGetImages(const vector<VehicleCameraBase::ImageRequest>& request)
-{
-    StatusLock lock(this);
-
-    vector<VehicleCameraBase::ImageResponse> response;
-
-    for (const auto& item : request) {
-        VehicleCameraBase* camera = simGetCamera(item.camera_id);
-        const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
-        response.push_back(item_response);
-    }
-
-    return response;
-}
-
-
 bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, const YawMode& yaw_mode)
 {
     if (safetyCheckVelocity(Vector3r(vx, vy, vz)))

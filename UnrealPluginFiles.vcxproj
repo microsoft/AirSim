@@ -122,7 +122,6 @@
     <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeBase.h" />
     <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.h" />
     <ClInclude Include="unreal\plugins\airsim\source\VehicleCameraConnector.h" />
-    <ClInclude Include="unreal\plugins\airsim\source\VehicleConnectorBase.h" />
     <ClInclude Include="unreal\plugins\airsim\source\VehiclePawnWrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

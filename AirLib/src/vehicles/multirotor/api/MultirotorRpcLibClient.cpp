@@ -57,15 +57,6 @@ bool MultirotorRpcLibClient::goHome()
 {
     return static_cast<rpc::client*>(getClient())->call("goHome").as<bool>();
 }
-void MultirotorRpcLibClient::start()
-{
-    static_cast<rpc::client*>(getClient())->call("start");
-}
-void MultirotorRpcLibClient::stop()
-{
-    static_cast<rpc::client*>(getClient())->call("stop");
-}
-
 
 bool MultirotorRpcLibClient::moveByAngle(float pitch, float roll, float z, float yaw, float duration)
 {

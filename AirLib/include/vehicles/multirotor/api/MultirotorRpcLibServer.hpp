@@ -6,21 +6,19 @@
 
 #include "common/Common.hpp"
 #include <functional>
-#include "vehicles/multirotor/controllers/DroneControllerCancelable.hpp"
-#include "api/ControlServerBase.hpp"
+#include "vehicles/multirotor/api/DroneApi.hpp"
+#include "api/RpcLibServerBase.hpp"
+
 
 namespace msr { namespace airlib {
 
-class MultirotorRpcLibServer : public ControlServerBase {
+class MultirotorRpcLibServer : public RpcLibServerBase {
 public:
-    MultirotorRpcLibServer(DroneControllerCancelable* drone, string server_address, uint16_t port = 41451);
-    virtual void start(bool block = false) override;
-    virtual void stop() override;
-    virtual ~MultirotorRpcLibServer() override;
+    MultirotorRpcLibServer(DroneApi* drone, string server_address, uint16_t port = 41451);
+    virtual ~MultirotorRpcLibServer();
+
 private:
-    DroneControllerCancelable* drone_;
-    struct impl;
-    std::unique_ptr<impl> pimpl_;
+    DroneApi* getDroneApi();
 };
 
 }} //namespace

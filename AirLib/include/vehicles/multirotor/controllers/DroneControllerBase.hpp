@@ -8,7 +8,6 @@
 #include "common/Common.hpp"
 #include "controllers/VehicleControllerBase.hpp"
 #include "common/common_utils/WorkerThread.hpp"
-#include "controllers/VehicleCameraBase.hpp"
 #include "controllers/Waiter.hpp"
 #include "safety/SafetyEval.hpp"
 #include "common/CommonStructs.hpp"
@@ -221,20 +220,6 @@ public: //interface for outside world
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
     virtual const VehicleParams& getVehicleParams() = 0;
 
-
-    //TODO: methods that are only valid for simulation mode should be prefixed with "sim"
-    virtual void simSetPose(const Pose& pose, bool ignore_collison);
-    virtual Pose simGetPose();
-
-    /// Request an image of specific type from the specified camera.  Currently default pawn is configured with only 2 cameras which
-    /// have id of 0 and 1, right and left respectively.  Camera 0 is is always FPV camera view
-    /// The image is return in the .png format.  This call will block until the render is complete.  
-    virtual vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request);
-    void simAddCamera(VehicleCameraBase* camera);
-    VehicleCameraBase* simGetCamera(int index);
-    //notifies the controller that rendering was completed by simulated
-    virtual void simNotifyRender();
-
     //*********************************common pre & post for move commands***************************************************
     //TODO: make these protected
     virtual bool loopCommandPre();
@@ -354,7 +339,6 @@ private:// vars
     float obs_avoidance_vel_ = 0.5f;
 
     CollisionInfo collision_info_;
-    vector<VehicleCameraBase*> cameras_;
 
     // we make this recursive so that DroneControllerBase subclass can grab StatusLock then call a 
     // base class method on DroneControllerBase that also grabs the StatusLock.
