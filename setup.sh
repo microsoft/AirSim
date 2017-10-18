@@ -8,7 +8,7 @@ pushd "$SCRIPT_DIR" >/dev/null
 
 #Parse command line arguments
 downloadHighPolySuv=false
-if [[ $1 == "--no-full-poly-car"]]; then
+if [[ $1 == "--no-full-poly-car" ]]; then
     downloadHighPolySuv=true
 fi
 
