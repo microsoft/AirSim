@@ -434,11 +434,7 @@ void ACarPawn::MoveForward(float Val)
         Val = 0;
         GetVehicleMovementComponent()->SetTargetGear(0, true);
     }
-    else if (Val > 0)
-    {
-        GetVehicleMovementComponent()->SetTargetGear(1, true);
-    }
-    else
+    else if (Val < 0)
     {
         GetVehicleMovementComponent()->SetTargetGear(-1, true);
     }

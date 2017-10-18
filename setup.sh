@@ -6,6 +6,12 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
 
+#Parse command line arguments
+downloadHighPolySuv=false
+if [[ $1 == "--no-full-poly-car"]]; then
+    downloadHighPolySuv=true
+fi
+
 #get sub modules
 git submodule update --init --recursive
 
@@ -38,16 +44,21 @@ if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv" ]; then
     mkdir -p "Unreal/Plugins/AirSim/Content/VehicleAdv"
 fi
 if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV" ]; then
-    IF EXIST suv_download_tmp rmdir suv_download_tmp /q /s
-	if [ -d "suv_download_tmp" ]; then
-        rm -rf "suv_download_tmp"
+    if $downloadHighPolySuv; then
+        echo "Downloading high-poly car assets. The download is ~300MB and can take some time."
+        echo "To install AirSim without this asset, re-run build.cmd with the argument --no-full-poly-car"
+        if [ -d "suv_download_tmp" ]; then
+            rm -rf "suv_download_tmp"
+        fi
+        mkdir -p "suv_download_tmp"
+        cd suv_download_tmp
+        wget https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip
+        unzip SUV.zip -d ../Unreal/Plugins/AirSim/Content/VehicleAdv
+        cd ..
+        rm -rf "suv_download_tmp" 
+    else
+        echo "Not downloading high-poly car asset. The default unreal vehicle will be used."
     fi
-    mkdir -p "suv_download_tmp"
-	cd suv_download_tmp
-	wget https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip
-    unzip SUV.zip -d ../Unreal/Plugins/AirSim/Content/VehicleAdv
-    cd ..
-	rm -rf "suv_download_tmp" 
 fi
 
 # Below is alternative way to get cland by downloading binaries

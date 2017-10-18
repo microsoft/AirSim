@@ -23,7 +23,7 @@ void ASimModeCar::BeginPlay()
 
     createVehicles(vehicles_);
 
-	columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
+    columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -62,6 +62,9 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             FActorSpawnParameters camera_spawn_params;
             camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
             CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
+            CameraDirector->setFollowDistance(-800);
+            CameraDirector->setCameraRotationLagEnabled(true);
+            CameraDirector->setFpvCameraIndex(3);
             spawned_actors_.Add(CameraDirector);
 
             //create external camera required for the director

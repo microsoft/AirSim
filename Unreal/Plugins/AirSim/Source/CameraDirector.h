@@ -53,6 +53,9 @@ public:
     void setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper);
     APIPCamera* getFpvCamera() const;
     APIPCamera* getExternalCamera() const;
+    void setFollowDistance(const int follow_distance) { this->follow_distance_ = follow_distance; }
+    void setCameraRotationLagEnabled(const bool lag_enabled) { this->camera_rotation_lag_enabled_ = lag_enabled; }
+    void setFpvCameraIndex(const int fpv_camera_index) { this->fpv_camera_index_ = fpv_camera_index; }
 
 private:
     void setupInputBindings();
@@ -73,5 +76,7 @@ private:
     FVector initial_ground_obs_offset_;
     FRotator camera_start_rotation_;
     bool ext_obs_fixed_z_;
-    bool is_following_car_;
+    int follow_distance_;
+    bool camera_rotation_lag_enabled_;
+    int fpv_camera_index_;
 };

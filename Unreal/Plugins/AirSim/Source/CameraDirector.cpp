@@ -58,16 +58,7 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
 {
     external_camera_ = external_camera;
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
-
-    // For drone, FPV camera is camera 0.
-    // For car, FPV camera is camera 3. Cameras 0,1,2 are hood cameras. 
-	//     Camera 4 is the backup camera.
-    //
-    is_following_car_ = follow_actor_->IsA(ACarPawn::StaticClass());
-    int fpv_camera_index = (is_following_car_ ? 3 : 0);
-    fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > fpv_camera_index ? vehicle_pawn_wrapper->getCamera(fpv_camera_index) : nullptr;
-
-
+    fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > fpv_camera_index_ ? vehicle_pawn_wrapper->getCamera(fpv_camera_index_) : nullptr;
     camera_start_location_ = this->GetActorLocation();
     camera_start_rotation_ = this->GetActorRotation();
     initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
@@ -95,7 +86,7 @@ void ACameraDirector::attachSpringArm(bool attach)
             // If the lag is missing, the camera will also occasionally shake.
             // But, lag is not desired when piloting a drone
             //
-            SpringArm->bEnableCameraRotationLag = (is_following_car_);
+            SpringArm->bEnableCameraRotationLag = camera_rotation_lag_enabled_;
             last_parent_ = external_camera_->GetRootComponent()->GetAttachParent();
             external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
             SpringArm->AttachToComponent(follow_actor_->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
@@ -107,8 +98,7 @@ void ACameraDirector::attachSpringArm(bool attach)
         // For car, we need to move the camera back a little more than for a drone. 
         // Otherwise, the camera will be stuck inside the car
         //
-        float follow_distance = (is_following_car_ ? -800.0f : -225.0f);
-        external_camera_->SetActorRelativeLocation(FVector(follow_distance, 0.0f, 0.0f));
+        external_camera_->SetActorRelativeLocation(FVector(follow_distance_, 0.0f, 0.0f));
         external_camera_->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
         //external_camera_->bUsePawnControlRotation = false;
     }
