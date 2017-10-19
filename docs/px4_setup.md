@@ -93,3 +93,6 @@ set this PX4 parameter:
 ```
 param set COM_OBL_ACT 1
 ```
+
+#### I get message length mismatches errors
+You might need to set MAV_PROTO_VER parameter in QGC to "Always use version 1". Please see [this issue](https://github.com/Microsoft/AirSim/issues/546) more details.
