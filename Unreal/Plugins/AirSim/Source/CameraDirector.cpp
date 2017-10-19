@@ -80,29 +80,32 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
 void ACameraDirector::attachSpringArm(bool attach)
 {
     if (attach) {
+        //If we do have actor to follow AND don't have sprint arm attached to that actor, we will attach it
         if (follow_actor_ && external_camera_->GetRootComponent()->GetAttachParent() != SpringArm) {
-
-            // For car, we want a bit of camera lag, as that is customary of racing video games
-            // If the lag is missing, the camera will also occasionally shake.
-            // But, lag is not desired when piloting a drone
-            //
+            //For car, we want a bit of camera lag, as that is customary of racing video games
+            //If the lag is missing, the camera will also occasionally shake.
+            //But, lag is not desired when piloting a drone
             SpringArm->bEnableCameraRotationLag = camera_rotation_lag_enabled_;
-            last_parent_ = external_camera_->GetRootComponent()->GetAttachParent();
-            external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+            //attach spring arm to actor
             SpringArm->AttachToComponent(follow_actor_->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
             SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 34.0f));
+
+            //remember current parent for external camera. Later when we remove external
+            //camera from spring arm, we will attach it back to its last parent
+            last_parent_ = external_camera_->GetRootComponent()->GetAttachParent();
+            external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+            //now attach camera to spring arm
+            external_camera_->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
         }
 
-        external_camera_->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
-
-        // For car, we need to move the camera back a little more than for a drone. 
-        // Otherwise, the camera will be stuck inside the car
-        //
+        //For car, we need to move the camera back a little more than for a drone. 
+        //Otherwise, the camera will be stuck inside the car
         external_camera_->SetActorRelativeLocation(FVector(follow_distance_, 0.0f, 0.0f));
         external_camera_->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
         //external_camera_->bUsePawnControlRotation = false;
     }
-    else {
+    else { //detach
         if (last_parent_ && external_camera_->GetRootComponent()->GetAttachParent() == SpringArm) {
             external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
             external_camera_->AttachToComponent(last_parent_, FAttachmentTransformRules::KeepWorldTransform);

@@ -14,15 +14,6 @@ ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
     external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
     camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
-
-    if (camera_director_class_ != nullptr)
-    {
-        ACameraDirector* cast_camera_director = (ACameraDirector*)camera_director_class_;
-        cast_camera_director->setFollowDistance(225);
-        cast_camera_director->setCameraRotationLagEnabled(false);
-        cast_camera_director->setFpvCameraIndex(0);
-    }
-
     static ConstructorHelpers::FClassFinder<TMultiRotorPawn> vehicle_pawn_class(TEXT("Blueprint'/AirSim/Blueprints/BP_FlyingPawn'"));
     vehicle_pawn_class_ = vehicle_pawn_class.Succeeded() ? vehicle_pawn_class.Class : nullptr;
 }

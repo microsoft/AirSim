@@ -429,16 +429,6 @@ void ACarPawn::setupInputBindings()
 
 void ACarPawn::MoveForward(float Val)
 {
-    if (std::abs(Val) < 0.01)
-    {
-        Val = 0;
-        GetVehicleMovementComponent()->SetTargetGear(0, true);
-    }
-    else if (Val < 0)
-    {
-        GetVehicleMovementComponent()->SetTargetGear(-1, true);
-    }
-
     if (Val < 0)
         OnReversePressed();
     else
@@ -501,6 +491,9 @@ void ACarPawn::OnReversePressed()
 {
     if (!api_control_enabled_) {
         UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("Pressed"), LogDebugLevel::Informational);
+
+        if (GetVehicleMovementComponent()->GetTargetGear() >= 0)
+            GetVehicleMovementComponent()->SetTargetGear(-1, true);
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);
@@ -510,6 +503,11 @@ void ACarPawn::OnReverseReleased()
 {
     if (!api_control_enabled_) {
         UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("Released"), LogDebugLevel::Informational);
+
+        if (GetVehicleMovementComponent()->GetTargetGear() < 0) {
+            GetVehicleMovementComponent()->SetTargetGear(0, true);
+            GetVehicleMovementComponent()->SetUseAutoGears(true);
+        }
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);

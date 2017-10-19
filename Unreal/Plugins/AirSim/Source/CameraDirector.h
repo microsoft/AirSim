@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Car/CarPawn.h"
 #include "CameraDirector.generated.h"
 
 
