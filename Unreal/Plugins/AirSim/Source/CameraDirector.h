@@ -6,16 +6,17 @@
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Car/CarPawn.h"
 #include "CameraDirector.generated.h"
 
 
 UENUM(BlueprintType)
 enum class ECameraDirectorMode : uint8
 {
-    CAMERA_DIRECTOR_MODE_FPV = 1	UMETA(DisplayName="FPV"),
-    CAMERA_DIRECTOR_MODE_GROUND_OBSERVER = 2	UMETA(DisplayName="GroundObserver"),
-    CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3	UMETA(DisplayName="FlyWithMe"),
-    CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName="Manual"),
+    CAMERA_DIRECTOR_MODE_FPV = 1	UMETA(DisplayName = "FPV"),
+    CAMERA_DIRECTOR_MODE_GROUND_OBSERVER = 2	UMETA(DisplayName = "GroundObserver"),
+    CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3	UMETA(DisplayName = "FlyWithMe"),
+    CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName = "Manual"),
     CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE = 5	UMETA(DisplayName = "SpringArmChase")
 };
 
@@ -27,7 +28,7 @@ class AIRSIM_API ACameraDirector : public AActor
 public:
     /** Spring arm that will offset the camera */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    USpringArmComponent* SpringArm;
+        USpringArmComponent* SpringArm;
 
 public:
     void inputEventFpvView();
@@ -36,25 +37,28 @@ public:
     void inputEventFlyWithView();
     void inputEventSpringArmChaseView();
 
-public:	
+public:
     ACameraDirector();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-    virtual void Tick( float DeltaSeconds ) override;
+    virtual void Tick(float DeltaSeconds) override;
 
     UFUNCTION(BlueprintCallable, Category = "Modes")
-    ECameraDirectorMode getMode();
+        ECameraDirectorMode getMode();
     UFUNCTION(BlueprintCallable, Category = "Modes")
-    void setMode(ECameraDirectorMode mode);
+        void setMode(ECameraDirectorMode mode);
 
     void initializeForBeginPlay(ECameraDirectorMode view_mode, VehiclePawnWrapper* vehicle_pawn_wrapper, APIPCamera* external_camera);
 
     void setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper);
     APIPCamera* getFpvCamera() const;
     APIPCamera* getExternalCamera() const;
+    void setFollowDistance(const int follow_distance) { this->follow_distance_ = follow_distance; }
+    void setCameraRotationLagEnabled(const bool lag_enabled) { this->camera_rotation_lag_enabled_ = lag_enabled; }
+    void setFpvCameraIndex(const int fpv_camera_index) { this->fpv_camera_index_ = fpv_camera_index; }
 
 private:
-    void setupInputBindings();	
+    void setupInputBindings();
     void attachSpringArm(bool attach);
 
 
@@ -72,4 +76,7 @@ private:
     FVector initial_ground_obs_offset_;
     FRotator camera_start_rotation_;
     bool ext_obs_fixed_z_;
+    int follow_distance_;
+    bool camera_rotation_lag_enabled_;
+    int fpv_camera_index_;
 };

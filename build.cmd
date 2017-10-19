@@ -3,6 +3,14 @@ REM //---------- set up variable ----------
 setlocal
 set ROOT_DIR=%CD%
 
+REM // Check command line arguments
+set "noFullPolyCar="
+
+if "%1"=="" goto noargs
+if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
+
+:noargs
+
 REM //---------- make sure we have got all sub modules ----------
 chdir /d %ROOT_DIR% 
 git submodule update --init --recursive
@@ -11,6 +19,30 @@ REM //---------- if cmake doesn't exist then install it ----------
 WHERE cmake >nul 2>nul
 IF %ERRORLEVEL% NEQ 0 (
     call :installcmake
+)
+
+REM //---------- get High PolyCount SUV Car Model ------------
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV (
+    IF NOT DEFINED noFullPolyCar (
+        ECHO "Downloading high-poly car assets. The download is ~300MB and can take some time."
+        ECHO "To install AirSim without this asset, re-run build.cmd with the argument --no-full-poly-car"
+        IF EXIST suv_download_tmp rmdir suv_download_tmp /q /s
+        mkdir suv_download_tmp
+        cd suv_download_tmp
+        powershell -command "& { iwr https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip -OutFile SUV.zip }"
+        powershell -command "& { Expand-Archive -Path SUV.zip -DestinationPath ..\Unreal\Plugins\AirSim\Content\VehicleAdv }"
+        cd ..
+        rmdir suv_download_tmp /q /s
+        
+        REM // Don't fail the build if the high-poly car is unable to be downloaded
+        REM // Instead, just notify users that the gokart will be used.
+        REM //
+        
+        IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV ECHO "Unable to download high-polycount SUV. Your AirSim build will use the default vehicle."
+    ) else (
+        ECHO "Not downloading high-poly car asset. The default unreal vehicle will be used."
+    )
 )
 
 REM //---------- get Eigen library ----------

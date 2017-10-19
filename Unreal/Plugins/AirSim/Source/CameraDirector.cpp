@@ -12,6 +12,7 @@ ACameraDirector::ACameraDirector()
     SpringArm->TargetArmLength = 125.0f;
     SpringArm->bEnableCameraLag = false;
     SpringArm->bEnableCameraRotationLag = false;
+    SpringArm->CameraRotationLagSpeed = 10.0f;
     SpringArm->bInheritPitch = true;
     SpringArm->bInheritYaw = true;
     SpringArm->bInheritRoll = true;
@@ -22,9 +23,9 @@ void ACameraDirector::BeginPlay()
     Super::BeginPlay();
 }
 
-void ACameraDirector::Tick( float DeltaTime )
+void ACameraDirector::Tick(float DeltaTime)
 {
-    Super::Tick( DeltaTime );
+    Super::Tick(DeltaTime);
 
     if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
         manual_pose_controller_->updateActorPose();
@@ -56,9 +57,8 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, Vehi
 void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper)
 {
     external_camera_ = external_camera;
-    fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > 0 ? vehicle_pawn_wrapper->getCamera() : nullptr;
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
-
+    fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > fpv_camera_index_ ? vehicle_pawn_wrapper->getCamera(fpv_camera_index_) : nullptr;
     camera_start_location_ = this->GetActorLocation();
     camera_start_rotation_ = this->GetActorRotation();
     initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
@@ -81,6 +81,12 @@ void ACameraDirector::attachSpringArm(bool attach)
 {
     if (attach) {
         if (follow_actor_ && external_camera_->GetRootComponent()->GetAttachParent() != SpringArm) {
+
+            // For car, we want a bit of camera lag, as that is customary of racing video games
+            // If the lag is missing, the camera will also occasionally shake.
+            // But, lag is not desired when piloting a drone
+            //
+            SpringArm->bEnableCameraRotationLag = camera_rotation_lag_enabled_;
             last_parent_ = external_camera_->GetRootComponent()->GetAttachParent();
             external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
             SpringArm->AttachToComponent(follow_actor_->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
@@ -88,7 +94,11 @@ void ACameraDirector::attachSpringArm(bool attach)
         }
 
         external_camera_->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
-        external_camera_->SetActorRelativeLocation(FVector(-225.0, 0.0f, 0.0f));
+
+        // For car, we need to move the camera back a little more than for a drone. 
+        // Otherwise, the camera will be stuck inside the car
+        //
+        external_camera_->SetActorRelativeLocation(FVector(follow_distance_, 0.0f, 0.0f));
         external_camera_->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
         //external_camera_->bUsePawnControlRotation = false;
     }
