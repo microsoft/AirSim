@@ -9,7 +9,12 @@ ASimModeCar::ASimModeCar()
     external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
     camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
-    vehicle_pawn_class_ = ACarPawn::StaticClass();
+
+    // Try to find the high polycount vehicle
+    // If not found, spawn the default class (go-kart)
+    //
+    static ConstructorHelpers::FClassFinder<ACarPawn> vehicle_pawn_class(TEXT("Blueprint'/AirSim/VehicleAdv/SUV/SuvCarPawn'"));
+    vehicle_pawn_class_ = vehicle_pawn_class.Succeeded() ? vehicle_pawn_class.Class : ACarPawn::StaticClass();
 }
 
 void ASimModeCar::BeginPlay()
@@ -57,6 +62,9 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             FActorSpawnParameters camera_spawn_params;
             camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
             CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
+            CameraDirector->setFollowDistance(-800);
+            CameraDirector->setCameraRotationLagEnabled(true);
+            CameraDirector->setFpvCameraIndex(3);
             spawned_actors_.Add(CameraDirector);
 
             //create external camera required for the director
@@ -78,7 +86,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
         if (pawns.Num() == 0) {
             //create vehicle pawn
             FActorSpawnParameters pawn_spawn_params;
-            pawn_spawn_params.SpawnCollisionHandlingOverride = 
+            pawn_spawn_params.SpawnCollisionHandlingOverride =
                 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
             TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
                 vehicle_pawn_class_, actor_transform, pawn_spawn_params);
@@ -97,7 +105,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
             if (enable_collision_passthrough)
-                wrapper->config.enable_passthrough_on_collisions = true;  
+                wrapper->config.enable_passthrough_on_collisions = true;
             if (wrapper->config.is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
                 fpv_vehicle_pawn_wrapper_ = wrapper;
         }

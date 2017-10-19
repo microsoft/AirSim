@@ -36,4 +36,5 @@ private:
     TArray<AActor*> spawned_actors_;
     std::vector<VehiclePtr> vehicles_;
     VehiclePawnWrapper* fpv_vehicle_pawn_wrapper_;
+	bool is_high_poly_car_;
 };
