@@ -29,6 +29,8 @@ public:
     {
     }
 
+    virtual ~AirSimRosFlightBoard() = default;
+
     //interface for simulator --------------------------------------------------------------------------------
     real_T getMotorControlSignal(uint index)
     {

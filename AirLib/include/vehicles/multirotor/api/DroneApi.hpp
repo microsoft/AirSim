@@ -43,6 +43,8 @@ public:
         //auto fence = std::make_shared<CubeGeoFence>(VectorMath::Vector3f(-1E10, -1E10, -1E10), VectorMath::Vector3f(1E10, 1E10, 1E10), vehicle_params.distance_accuracy);
         //auto safety_eval = std::make_shared<SafetyEval>(vehicle_params, fence);
     }
+    virtual ~DroneApi() = default;
+
     bool armDisarm(bool arm)
     {
         CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);

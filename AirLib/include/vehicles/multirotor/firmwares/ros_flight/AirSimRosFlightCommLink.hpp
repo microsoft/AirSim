@@ -24,6 +24,8 @@ public: // derived class specific methods
         }
     }
 
+    virtual ~AirSimRosFlightCommLink() = default;
+
 public: // implement CommLink interface
     virtual void init()
     {
