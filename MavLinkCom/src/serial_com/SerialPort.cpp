@@ -9,7 +9,9 @@
 #include <string>
 #include "Windows.h"
 #include "Utils.hpp"
+#ifndef ONECORE
 #pragma comment(lib, "wbemuuid.lib")
+#endif
 
 class SerialPort::serialport_impl
 {
@@ -48,12 +50,16 @@ public:
 		int writeBufferSize = 8192;
 
 		std::string port = portName;
+#ifndef ONECORE
 		if (port.substr(0, 4) != "\\\\.\\")
 		{
 			port.insert(0, "\\\\.\\");
 		}
+#endif
+        std::wstring wide(port.begin(), port.end());
 
-		handle = CreateFileA(port.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
+		handle = CreateFileW(wide.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, 0);
 
 		if (handle == INVALID_HANDLE_VALUE)
 		{

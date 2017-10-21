@@ -21,8 +21,8 @@ responses = client.simGetImages([
     ImageRequest(1, AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
 print('Retrieved images: %d', len(responses))
 
-for response in responses:
-    filename = 'c:/temp/py' + str(idx)
+for idx, response in enumerate(responses):
+    filename = 'c:/temp/py_drone_' + str(idx)
 
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
@@ -38,4 +38,8 @@ for response in responses:
         img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
         AirSimClientBase.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
 
+AirSimClientBase.wait_key('Press any key to reset to original state')
+client.reset()
+
+# that's enough fun for now. let's quite cleanly
 client.enableApiControl(False)

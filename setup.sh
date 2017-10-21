@@ -6,6 +6,12 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
 
+#Parse command line arguments
+downloadHighPolySuv=true
+if [[ $1 == "--no-full-poly-car" ]]; then
+    downloadHighPolySuv=false
+fi
+
 #get sub modules
 git submodule update --init --recursive
 
@@ -32,6 +38,31 @@ else
     sudo apt-get update
     sudo apt-get install -y clang-3.9 clang++-3.9
 fi
+
+# Download high-polycount SUV model
+# if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv" ]; then
+#     mkdir -p "Unreal/Plugins/AirSim/Content/VehicleAdv"
+# fi
+# if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV" ]; then
+#     if $downloadHighPolySuv; then
+#         echo "*********************************************************************************************"
+#         echo "Downloading high-poly car assets.... The download is ~300MB and can take some time."
+#         echo "To install without this assets, re-run setup.sh with the argument --no-full-poly-car"
+#         echo "*********************************************************************************************"
+        
+#         if [ -d "suv_download_tmp" ]; then
+#             rm -rf "suv_download_tmp"
+#         fi
+#         mkdir -p "suv_download_tmp"
+#         cd suv_download_tmp
+#         wget https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip
+#         unzip SUV.zip -d ../Unreal/Plugins/AirSim/Content/VehicleAdv
+#         cd ..
+#         rm -rf "suv_download_tmp" 
+#     else
+#         echo "Not downloading high-poly car asset. The default unreal vehicle will be used."
+#     fi
+# fi
 
 # Below is alternative way to get cland by downloading binaries
 # get clang, libc++

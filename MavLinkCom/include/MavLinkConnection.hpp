@@ -11,9 +11,11 @@
 #include "MavLinkMessageBase.hpp"
 #include "MavLinkLog.hpp"
 
+#ifndef ONECORE
 #if defined(_WIN32) && defined(_MSC_VER )
 #pragma comment( lib, "Setupapi.lib" )
 #pragma comment( lib, "Cfgmgr32.lib" )
+#endif
 #endif
 
 class Port;

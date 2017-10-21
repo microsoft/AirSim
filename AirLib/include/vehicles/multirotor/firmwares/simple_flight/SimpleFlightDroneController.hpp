@@ -281,50 +281,9 @@ protected:
         return safety_params_;
     }
 
-
-    void simSetPose(const Pose& pose, bool ignore_collison) override
-    {
-        pending_pose_ = pose;
-        pending_pose_ignore_collison_ = ignore_collison;
-        waitForRender();
-    }
-    Pose simGetPose() override
-    {
-        last_pose_ = Pose::nanPose();
-        waitForRender();
-        return last_pose_;
-    }
-
-
-    void simNotifyRender() override
-    {
-        std::unique_lock<std::mutex> render_wait_lock(render_mutex_);
-        if (!is_pose_update_done_) {
-            auto kinematics = physics_body_->getKinematics();
-            if (! VectorMath::hasNan(pending_pose_.position))
-                kinematics.pose.position = pending_pose_.position;
-            if (! VectorMath::hasNan(pending_pose_.orientation))
-                kinematics.pose.orientation = pending_pose_.orientation;
-            physics_body_->setKinematics(kinematics);
-
-            is_pose_update_done_ = true;
-            render_wait_lock.unlock();
-            render_cond_.notify_all();
-        }
-        if (VectorMath::hasNan(last_pose_)) {
-            last_pose_ = physics_body_->getKinematics().pose;
-        }
-    }
-
     //*** End: DroneControllerBase implementation ***//
 
 private:
-    void waitForRender()
-    {
-        std::unique_lock<std::mutex> render_wait_lock(render_mutex_);
-        is_pose_update_done_ = false;
-        render_cond_.wait(render_wait_lock, [this]{return is_pose_update_done_;});
-    }
 
     //convert pitch, roll, yaw from -1 to 1 to PWM
     static uint16_t angleToPwm(float angle)
@@ -368,12 +327,6 @@ private:
     unique_ptr<AirSimSimpleFlightCommLink> comm_link_;
     unique_ptr<AirSimSimpleFlightEstimator> estimator_;
     unique_ptr<simple_flight::IFirmware> firmware_;
-
-    std::mutex render_mutex_;
-    std::condition_variable render_cond_;
-    bool is_pose_update_done_;
-    Pose pending_pose_, last_pose_;
-    bool pending_pose_ignore_collison_;
 
     VehicleParams safety_params_;
 };

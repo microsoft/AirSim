@@ -12,6 +12,9 @@ VehicleCameraConnector::VehicleCameraConnector(APIPCamera* camera)
     //addScreenCaptureHandler(camera->GetWorld());
 }
 
+VehicleCameraConnector::~VehicleCameraConnector()
+{}
+
 msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(VehicleCameraConnector::ImageType image_type, bool pixels_as_float, bool compress)
 {
 

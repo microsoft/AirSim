@@ -8,6 +8,7 @@ import sys
 import os
 import inspect
 import types
+import re
 
 
 class MsgpackMixin:
@@ -148,6 +149,10 @@ class AirSimClientBase:
         
     def ping(self):
         return self.client.call('ping')
+    
+    def reset(self):
+        self.client.call('reset')
+
     def confirmConnection(self):
         print('Waiting for connection: ', end='')
         home = self.getHomeGeoPoint()
@@ -497,6 +502,3 @@ class CarClient(AirSimClientBase, object):
     def getCarState(self):
         state_raw = self.client.call('getCarState')
         return CarState.from_msgpack(state_raw)
-
-    def reset(self):
-        self.client.call('reset')

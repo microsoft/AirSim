@@ -28,11 +28,11 @@ void ASimModeWorldMultiRotor::BeginPlay()
             fpv_vehicle_connector_->startApiServer();
         }
         catch (std::exception& ex) {
-            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server",  ex.what(), LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
         }
     }
 
-	columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
+    columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -82,6 +82,9 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             FActorSpawnParameters camera_spawn_params;
             camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
             CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
+            CameraDirector->setFollowDistance(225);
+            CameraDirector->setCameraRotationLagEnabled(false);
+            CameraDirector->setFpvCameraIndex(0);
             spawned_actors_.Add(CameraDirector);
 
             //create external camera required for the director
@@ -103,7 +106,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         if (pawns.Num() == 0) {
             //create vehicle pawn
             FActorSpawnParameters pawn_spawn_params;
-            pawn_spawn_params.SpawnCollisionHandlingOverride = 
+            pawn_spawn_params.SpawnCollisionHandlingOverride =
                 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
             TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
                 vehicle_pawn_class_, actor_transform, pawn_spawn_params);
@@ -122,7 +125,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
             if (enable_collision_passthrough)
-                wrapper->config.enable_passthrough_on_collisions = true;  
+                wrapper->config.enable_passthrough_on_collisions = true;
             if (wrapper->config.is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
                 fpv_vehicle_pawn_wrapper_ = wrapper;
 
@@ -156,17 +159,17 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
     auto vehicle_params = MultiRotorParamsFactory::createConfig(
-        wrapper->config.vehicle_config_name == "" ? default_vehicle_config 
-        : std::string(TCHAR_TO_UTF8(* wrapper->config.vehicle_config_name)));
+        wrapper->config.vehicle_config_name == "" ? default_vehicle_config
+        : std::string(TCHAR_TO_UTF8(*wrapper->config.vehicle_config_name)));
 
     vehicle_params_.push_back(std::move(vehicle_params));
 
     std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
-        wrapper, vehicle_params_.back().get(), enable_rpc, api_server_address, 
+        wrapper, vehicle_params_.back().get(), enable_rpc, api_server_address,
         vehicle_params_.back()->getParams().api_server_port, manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
-        wrapper->setKinematics(& (static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
+        wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
 
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }

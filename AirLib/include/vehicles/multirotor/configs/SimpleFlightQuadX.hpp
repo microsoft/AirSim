@@ -18,6 +18,8 @@ public:
         unused(settings);
     }
 
+    virtual ~SimpleFlightQuadX() = default;
+
 protected:
     virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) override
     {

@@ -90,7 +90,7 @@ public:
 public:
     //required for pimpl
     MavLinkDroneController();
-    ~MavLinkDroneController();
+    virtual ~MavLinkDroneController();
 
     //non-base interface specific to MavLinKDroneController
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation);

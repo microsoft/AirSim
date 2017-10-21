@@ -20,6 +20,12 @@ public:
 
     virtual ~IUpdatable() = default;
 
+protected:
+    void clearResetUpdateAsserts()
+    {
+        reset_called = false;
+        update_called = false;
+    }
 
 private:
     bool reset_called = false;

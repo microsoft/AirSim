@@ -11,6 +11,7 @@ public:
     typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
 
     VehicleCameraConnector(APIPCamera* camera);
+    virtual ~VehicleCameraConnector();
     virtual ImageResponse getImage(ImageType image_type, bool pixels_as_float, bool compress) override;
 
 private:

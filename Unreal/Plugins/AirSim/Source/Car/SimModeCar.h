@@ -36,4 +36,5 @@ private:
     TArray<AActor*> spawned_actors_;
     std::vector<VehiclePtr> vehicles_;
     VehiclePawnWrapper* fpv_vehicle_pawn_wrapper_;
+    float follow_distance_;
 };

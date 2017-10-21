@@ -124,6 +124,13 @@ See also [other example code](../Examples/StereoImageGenerator.hpp) that generat
 
 For a more complete ready to run sample code please see [sample code in AirSimClient project](../PythonClient/hello_drone.py) for multirotors or [HelloCar sample](../PythonClient/hello_car.py). This code also demonstrates simple activities such as saving images in files or using `numpy` to manipulate images.
 
+## Available Cameras
+### Car
+The camera ID 0 to 4 corresponds to center front, left front, right front, driver head, center rear respectively.
+
+### Multirotor
+The camera ID 0 to 4 corresponds to center front, left front, right front, center downward, center rear respectively.
+
 ## "Computer Vision" Mode
 
 You can use AirSim in so-called "Computer Vision" mode. In this mode, physics engine is disabled and there is no flight controller active. This means when you start AirSim, vehicle would just hang in the air. However you can move around using keyboard (use F1 to see help on keys). You can press Record button to continuously generate images. Or you can call APIs to move around and take images.

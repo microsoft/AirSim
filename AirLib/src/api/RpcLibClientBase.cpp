@@ -106,6 +106,11 @@ msr::airlib::GeoPoint RpcLibClientBase::getHomeGeoPoint()
     return pimpl_->client.call("getHomeGeoPoint").as<RpcLibAdapatorsBase::GeoPoint>().to();
 }
 
+void RpcLibClientBase::reset()
+{
+    pimpl_->client.call("reset");
+}
+
 void RpcLibClientBase::confirmConnection()
 {
     ClockBase* clock = ClockFactory::get();
