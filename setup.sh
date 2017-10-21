@@ -40,29 +40,29 @@ else
 fi
 
 # Download high-polycount SUV model
-# if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv" ]; then
-#     mkdir -p "Unreal/Plugins/AirSim/Content/VehicleAdv"
-# fi
-# if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV" ]; then
-#     if $downloadHighPolySuv; then
-#         echo "*********************************************************************************************"
-#         echo "Downloading high-poly car assets.... The download is ~300MB and can take some time."
-#         echo "To install without this assets, re-run setup.sh with the argument --no-full-poly-car"
-#         echo "*********************************************************************************************"
+if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv" ]; then
+    mkdir -p "Unreal/Plugins/AirSim/Content/VehicleAdv"
+fi
+if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV" ]; then
+    if $downloadHighPolySuv; then
+        echo "*********************************************************************************************"
+        echo "Downloading high-poly car assets.... The download is ~300MB and can take some time."
+        echo "To install without this assets, re-run setup.sh with the argument --no-full-poly-car"
+        echo "*********************************************************************************************"
         
-#         if [ -d "suv_download_tmp" ]; then
-#             rm -rf "suv_download_tmp"
-#         fi
-#         mkdir -p "suv_download_tmp"
-#         cd suv_download_tmp
-#         wget https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip
-#         unzip SUV.zip -d ../Unreal/Plugins/AirSim/Content/VehicleAdv
-#         cd ..
-#         rm -rf "suv_download_tmp" 
-#     else
-#         echo "Not downloading high-poly car asset. The default unreal vehicle will be used."
-#     fi
-# fi
+        if [ -d "suv_download_tmp" ]; then
+            rm -rf "suv_download_tmp"
+        fi
+        mkdir -p "suv_download_tmp"
+        cd suv_download_tmp
+        wget https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.1/SUV.zip
+        unzip SUV.zip -d ../Unreal/Plugins/AirSim/Content/VehicleAdv
+        cd ..
+        rm -rf "suv_download_tmp" 
+    else
+        echo "Not downloading high-poly car asset. The default unreal vehicle will be used."
+    fi
+fi
 
 # Below is alternative way to get cland by downloading binaries
 # get clang, libc++

@@ -12,15 +12,15 @@ ASimModeCar::ASimModeCar()
 
     //Try to find the high polycount vehicle
     //If not found, spawn the default class (go-kart)
-    /*static ConstructorHelpers::FClassFinder<ACarPawn> vehicle_pawn_class(TEXT("Blueprint'/AirSim/VehicleAdv/SUV/SuvCarPawn'"));
+    static ConstructorHelpers::FClassFinder<ACarPawn> vehicle_pawn_class(TEXT("Blueprint'/AirSim/VehicleAdv/SUV/SuvCarPawn'"));
     if (vehicle_pawn_class.Succeeded()) {
         vehicle_pawn_class_ = vehicle_pawn_class.Class;
         follow_distance_ = -800;
     }
-    else {*/
+    else {
         vehicle_pawn_class_ = ACarPawn::StaticClass();
         follow_distance_ = -225;
-    //}
+    }
 }
 
 void ASimModeCar::BeginPlay()

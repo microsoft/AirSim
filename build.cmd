@@ -23,37 +23,37 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 REM //---------- get High PolyCount SUV Car Model ------------
-REM IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
-REM IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV (
-REM     IF NOT DEFINED noFullPolyCar (
-REM         REM //leave some blank lines because powershell shows download banner at top of console
-REM         ECHO(   
-REM         ECHO(   
-REM         ECHO(   
-REM         ECHO *****************************************************************************************
-REM         ECHO Downloading high-poly car assets.... The download is ~300MB and can take some time.
-REM         ECHO To install without this assets, re-run build.cmd with the argument --no-full-poly-car
-REM         ECHO *****************************************************************************************
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV (
+    IF NOT DEFINED noFullPolyCar (
+        REM //leave some blank lines because powershell shows download banner at top of console
+        ECHO(   
+        ECHO(   
+        ECHO(   
+        ECHO *****************************************************************************************
+        ECHO Downloading high-poly car assets.... The download is ~300MB and can take some time.
+        ECHO To install without this assets, re-run build.cmd with the argument --no-full-poly-car
+        ECHO *****************************************************************************************
        
-REM         IF EXIST suv_download_tmp rmdir suv_download_tmp /q /s
-REM         mkdir suv_download_tmp
-REM         cd suv_download_tmp
-REM         @echo on
-REM         REM powershell -command "& { Start-BitsTransfer -Source https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip -Destination SUV.zip }"
-REM         REM powershell -command "& { (New-Object System.Net.WebClient).DownloadFile('https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip', 'SUV.zip') }"
-REM         powershell -command "& { iwr https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.0/SUV.zip -OutFile SUV.zip }"
-REM         @echo off
-REM         powershell -command "& { Expand-Archive -Path SUV.zip -DestinationPath ..\Unreal\Plugins\AirSim\Content\VehicleAdv }"
-REM         cd ..
-REM         rmdir suv_download_tmp /q /s
+        IF EXIST suv_download_tmp rmdir suv_download_tmp /q /s
+        mkdir suv_download_tmp
+        cd suv_download_tmp
+        @echo on
+        REM powershell -command "& { Start-BitsTransfer -Source https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.1/SUV.zip -Destination SUV.zip }"
+        REM powershell -command "& { (New-Object System.Net.WebClient).DownloadFile('https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.1/SUV.zip', 'SUV.zip') }"
+        powershell -command "& { iwr https://github.com/mitchellspryn/AirsimHighPolySuv/releases/download/V1.0.1/SUV.zip -OutFile SUV.zip }"
+        @echo off
+        powershell -command "& { Expand-Archive -Path SUV.zip -DestinationPath ..\Unreal\Plugins\AirSim\Content\VehicleAdv }"
+        cd ..
+        rmdir suv_download_tmp /q /s
         
-REM         REM //Don't fail the build if the high-poly car is unable to be downloaded
-REM         REM //Instead, just notify users that the gokart will be used.
-REM         IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV ECHO Unable to download high-polycount SUV. Your AirSim build will use the default vehicle.
-REM     ) else (
-REM         ECHO Not downloading high-poly car asset. The default unreal vehicle will be used.
-REM     )
-REM )
+        REM //Don't fail the build if the high-poly car is unable to be downloaded
+        REM //Instead, just notify users that the gokart will be used.
+        IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV ECHO Unable to download high-polycount SUV. Your AirSim build will use the default vehicle.
+    ) else (
+        ECHO Not downloading high-poly car asset. The default unreal vehicle will be used.
+    )
+)
 
 REM //---------- get Eigen library ----------
 IF NOT EXIST AirLib\deps mkdir AirLib\deps
