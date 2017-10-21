@@ -16,7 +16,8 @@ enum class ECameraDirectorMode : uint8
     CAMERA_DIRECTOR_MODE_GROUND_OBSERVER = 2	UMETA(DisplayName = "GroundObserver"),
     CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3	UMETA(DisplayName = "FlyWithMe"),
     CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName = "Manual"),
-    CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE = 5	UMETA(DisplayName = "SpringArmChase")
+    CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE = 5	UMETA(DisplayName = "SpringArmChase"),
+    CAMREA_DIRECTOR_MODE_BACKUP = 6 UMETA(DisplayName = "Backup")
 };
 
 UCLASS()
@@ -35,6 +36,8 @@ public:
     void inputEventManualView();
     void inputEventFlyWithView();
     void inputEventSpringArmChaseView();
+    void inputEventBackupView();
+    void inputEventBKey();
 
 public:
     ACameraDirector();
@@ -52,17 +55,25 @@ public:
     void setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper);
     APIPCamera* getFpvCamera() const;
     APIPCamera* getExternalCamera() const;
+    APIPCamera* getBackupCamera() const;
     void setFollowDistance(const int follow_distance) { this->follow_distance_ = follow_distance; }
     void setCameraRotationLagEnabled(const bool lag_enabled) { this->camera_rotation_lag_enabled_ = lag_enabled; }
     void setFpvCameraIndex(const int fpv_camera_index) { this->fpv_camera_index_ = fpv_camera_index; }
 
+    // Both of these get bound to the 'b' key
+    //
+    void enableBackupCameraMode(const int backup_camera_index) { this->backup_camera_index_ = backup_camera_index; }
+    void enableFlyWithMeMode() { this->backup_camera_index_ = -1; }
+
 private:
     void setupInputBindings();
     void attachSpringArm(bool attach);
+    void disableNonExternalCameras();
 
 
 private:
     APIPCamera* fpv_camera_;
+    APIPCamera* backup_camera_;
     APIPCamera* external_camera_;
     AActor* follow_actor_;
 
@@ -78,4 +89,5 @@ private:
     int follow_distance_;
     bool camera_rotation_lag_enabled_;
     int fpv_camera_index_;
+    int backup_camera_index_ = -1;
 };

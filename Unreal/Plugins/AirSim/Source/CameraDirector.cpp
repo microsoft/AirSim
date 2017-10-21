@@ -59,6 +59,7 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
     external_camera_ = external_camera;
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
     fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > fpv_camera_index_ ? vehicle_pawn_wrapper->getCamera(fpv_camera_index_) : nullptr;
+    backup_camera_ = backup_camera_index_ >= 0 && vehicle_pawn_wrapper->getCameraCount() > backup_camera_index_ ? vehicle_pawn_wrapper->getCamera(backup_camera_index_) : nullptr;
     camera_start_location_ = this->GetActorLocation();
     camera_start_rotation_ = this->GetActorRotation();
     initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
@@ -138,7 +139,7 @@ void ACameraDirector::setupInputBindings()
     UAirBlueprintLib::EnableInput(this);
 
     UAirBlueprintLib::BindActionToKey("inputEventFpvView", EKeys::F, this, &ACameraDirector::inputEventFpvView);
-    UAirBlueprintLib::BindActionToKey("inputEventFlyWithView", EKeys::B, this, &ACameraDirector::inputEventFlyWithView);
+    UAirBlueprintLib::BindActionToKey("inputEventFlyWithView", EKeys::B, this, &ACameraDirector::inputEventBKey);
     UAirBlueprintLib::BindActionToKey("inputEventGroundView", EKeys::Backslash, this, &ACameraDirector::inputEventGroundView);
     UAirBlueprintLib::BindActionToKey("inputEventManualView", EKeys::M, this, &ACameraDirector::inputEventManualView);
     UAirBlueprintLib::BindActionToKey("inputEventSpringArmChaseView", EKeys::Slash, this, &ACameraDirector::inputEventSpringArmChaseView);
@@ -149,6 +150,8 @@ void ACameraDirector::inputEventFpvView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV);
     external_camera_->disableMain();
+    if (backup_camera_)
+        backup_camera_->disableMain();
     if (fpv_camera_)
         fpv_camera_->showToScreen();
 }
@@ -157,16 +160,14 @@ void ACameraDirector::inputEventSpringArmChaseView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE);
     external_camera_->showToScreen();
-    if (fpv_camera_)
-        fpv_camera_->disableMain();
+    disableNonExternalCameras();
 }
 
 void ACameraDirector::inputEventGroundView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER);
     external_camera_->showToScreen();
-    if (fpv_camera_)
-        fpv_camera_->disableMain();
+    disableNonExternalCameras();
     ext_obs_fixed_z_ = true;
 }
 
@@ -187,9 +188,29 @@ APIPCamera* ACameraDirector::getExternalCamera() const
     return external_camera_;
 }
 
+APIPCamera* ACameraDirector::getBackupCamera() const
+{
+    return backup_camera_;
+}
+
 void ACameraDirector::inputEventManualView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL);
+}
+
+void ACameraDirector::inputEventBKey()
+{
+    (backup_camera_ ? inputEventBackupView() : inputEventFlyWithView());
+}
+
+void ACameraDirector::inputEventBackupView()
+{
+    setMode(ECameraDirectorMode::CAMREA_DIRECTOR_MODE_BACKUP);
+    external_camera_->disableMain();
+    if (fpv_camera_)
+        fpv_camera_->disableMain();
+    if (backup_camera_)
+        backup_camera_->showToScreen();
 }
 
 void ACameraDirector::inputEventFlyWithView()
@@ -200,9 +221,16 @@ void ACameraDirector::inputEventFlyWithView()
     if (follow_actor_)
         external_camera_->SetActorLocationAndRotation(
             follow_actor_->GetActorLocation() + initial_ground_obs_offset_, camera_start_rotation_);
+    disableNonExternalCameras();
+    ext_obs_fixed_z_ = false;
+}
+
+void ACameraDirector::disableNonExternalCameras()
+{
     if (fpv_camera_)
         fpv_camera_->disableMain();
-    ext_obs_fixed_z_ = false;
+    if (backup_camera_)
+        backup_camera_->disableMain();
 }
 
 

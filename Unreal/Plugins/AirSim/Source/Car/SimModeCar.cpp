@@ -71,6 +71,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             CameraDirector->setFollowDistance(follow_distance_);
             CameraDirector->setCameraRotationLagEnabled(true);
             CameraDirector->setFpvCameraIndex(3);
+            CameraDirector->enableBackupCameraMode(4);
             spawned_actors_.Add(CameraDirector);
 
             //create external camera required for the director

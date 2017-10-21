@@ -85,6 +85,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             CameraDirector->setFollowDistance(225);
             CameraDirector->setCameraRotationLagEnabled(false);
             CameraDirector->setFpvCameraIndex(0);
+            CameraDirector->enableFlyWithMeMode();
             spawned_actors_.Add(CameraDirector);
 
             //create external camera required for the director
