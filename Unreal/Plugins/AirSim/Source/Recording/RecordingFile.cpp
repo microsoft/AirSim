@@ -11,7 +11,7 @@ RecordingFile::RecordingFile(std::vector <std::string> columns)
 {
     this->columns = columns;
 }
-void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::Kinematics::State* kinematics)
+void RecordingFile::appendRecord(TArray<uint8>& image_data, VehiclePawnWrapper* wrapper)
 {
     if (image_data.Num() == 0)
         return;
@@ -31,7 +31,7 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, const msr::airlib::K
     // If render command is complete, save image along with position and orientation
 
     if (imageSavedOk) {
-        writeString(getLine(*kinematics, filename));
+        writeString(wrapper->getLogLine().append(filename).append("\n"));
 
         UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
@@ -48,35 +48,6 @@ void RecordingFile::appendColumnHeader(std::vector <std::string> columns)
     line.append(columns[columns.size() - 1]).append("\n");
 
     writeString(line);
-}
-
-std::string RecordingFile::getLine(const msr::airlib::Kinematics::State& kinematics, const std::string& image_file_name)
-{
-    uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
-
-    //TODO: because this bug we are using alternative code with stringstream
-    //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
-
-    std::string line;
-    line.append(std::to_string(timestamp_millis)).append("\t")
-        .append(std::to_string(kinematics.pose.position.x())).append("\t")
-        .append(std::to_string(kinematics.pose.position.y())).append("\t")
-        .append(std::to_string(kinematics.pose.position.z())).append("\t")
-        .append(std::to_string(kinematics.pose.orientation.w())).append("\t")
-        .append(std::to_string(kinematics.pose.orientation.x())).append("\t")
-        .append(std::to_string(kinematics.pose.orientation.y())).append("\t")
-        .append(std::to_string(kinematics.pose.orientation.z())).append("\t")
-        .append(image_file_name)
-        .append("\n");
-
-    return line;
-
-    //std::stringstream ss;
-    //ss << timestamp_millis << "\t";
-    //ss << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
-    //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
-    //ss << "\n";
-    //return ss.str();
 }
 
 void RecordingFile::createFile(const std::string& file_path)

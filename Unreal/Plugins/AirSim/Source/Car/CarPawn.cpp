@@ -91,7 +91,7 @@ public:
             NedTransform::toQuaternionr(car_pawn_->GetActorRotation().Quaternion(), true),
             car_pawn_->getVehiclePawnWrapper()->getCollisonInfo(),
             msr::airlib::ClockFactory::get()->nowNanos()
-        );
+            );
         return state;
     }
 
@@ -143,7 +143,7 @@ ACarPawn::ACarPawn()
     // Car mesh
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> CarMesh(TEXT("/AirSim/VehicleAdv/Vehicle/Vehicle_SkelMesh.Vehicle_SkelMesh"));
     GetMesh()->SetSkeletalMesh(CarMesh.Object);
-
+    
     static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/AirSim/VehicleAdv/Vehicle/VehicleAnimationBlueprint"));
     GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
     GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
@@ -151,7 +151,7 @@ ACarPawn::ACarPawn()
     // Setup friction materials
     static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> SlipperyMat(TEXT("/AirSim/VehicleAdv/PhysicsMaterials/Slippery.Slippery"));
     SlipperyMaterial = SlipperyMat.Object;
-
+        
     static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> NonSlipperyMat(TEXT("/AirSim/VehicleAdv/PhysicsMaterials/NonSlippery.NonSlippery"));
     NonSlipperyMaterial = NonSlipperyMat.Object;
 
@@ -182,28 +182,28 @@ ACarPawn::ACarPawn()
 
     // Adjust the tire loading
     Vehicle4W->MinNormalizedTireLoad = 0.0f;
-    Vehicle4W->MinNormalizedTireLoadFiltered = 0.2308f;
+    Vehicle4W->MinNormalizedTireLoadFiltered = 0.2f;
     Vehicle4W->MaxNormalizedTireLoad = 2.0f;
     Vehicle4W->MaxNormalizedTireLoadFiltered = 2.0f;
 
     // Engine 
     // Torque setup
-    Vehicle4W->EngineSetup.MaxRPM = 5700.0f;
+    Vehicle4W->MaxEngineRPM = 5700.0f;
     Vehicle4W->EngineSetup.TorqueCurve.GetRichCurve()->Reset();
     Vehicle4W->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(0.0f, 400.0f);
     Vehicle4W->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(1890.0f, 500.0f);
     Vehicle4W->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(5730.0f, 400.0f);
-
+ 
     // Adjust the steering 
     Vehicle4W->SteeringCurve.GetRichCurve()->Reset();
     Vehicle4W->SteeringCurve.GetRichCurve()->AddKey(0.0f, 1.0f);
     Vehicle4W->SteeringCurve.GetRichCurve()->AddKey(40.0f, 0.7f);
     Vehicle4W->SteeringCurve.GetRichCurve()->AddKey(120.0f, 0.6f);
-
+            
     // Transmission	
     // We want 4wd
     Vehicle4W->DifferentialSetup.DifferentialType = EVehicleDifferential4W::LimitedSlip_4W;
-
+    
     // Drive the front wheels a little more than the rear
     Vehicle4W->DifferentialSetup.FrontRearSplit = 0.65;
 
@@ -225,7 +225,6 @@ ACarPawn::ACarPawn()
 
     // Set the inertia scale. This controls how the mass of the vehicle is distributed.
     Vehicle4W->InertiaTensorScale = FVector(1.0f, 1.333f, 1.2f);
-    Vehicle4W->bDeprecatedSpringOffsetMode = true;
 
     // Create In-Car camera component 
     InternalCameraBase1 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase1"));
@@ -278,7 +277,7 @@ ACarPawn::ACarPawn()
     wrapper_.reset(new VehiclePawnWrapper());
 }
 
-void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
+void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
     wrapper_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
@@ -288,9 +287,9 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
 void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound)
 {
     if (engine_sound)
-        EngineSoundComponent->Activate();
+        EngineSoundComponent->Activate(); 
     else
-        EngineSoundComponent->Deactivate();
+        EngineSoundComponent->Deactivate(); 
 
     //put camera little bit above vehicle
     FTransform camera_transform(FVector::ZeroVector);
@@ -305,7 +304,7 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     InternalCamera4 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     InternalCamera4->AttachToComponent(InternalCameraBase4, FAttachmentTransformRules::KeepRelativeTransform);
     InternalCamera5 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, FTransform(FRotator(0, 180, 0), FVector::ZeroVector), camera_spawn_params);
-    InternalCamera5->AttachToComponent(InternalCameraBase5, FAttachmentTransformRules::KeepRelativeTransform);
+    InternalCamera5->AttachToComponent(InternalCameraBase4, FAttachmentTransformRules::KeepRelativeTransform);
 
 
     setupInputBindings();
@@ -416,10 +415,10 @@ void ACarPawn::setupInputBindings()
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this,
         this, &ACarPawn::MoveRight);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightTriggerAxis, 1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightY, -1), this,
         this, &ACarPawn::MoveForward);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_LeftTriggerAxis, 1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_RightTriggerAxis, 1), this,
         this, &ACarPawn::FootBrake);
 
     //below is not needed
@@ -438,6 +437,7 @@ void ACarPawn::MoveForward(float Val)
         UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
         GetVehicleMovementComponent()->SetThrottleInput(Val);
+        throttle_ = Val;
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Throttle: "), TEXT("(API)"), LogDebugLevel::Informational);
@@ -449,6 +449,7 @@ void ACarPawn::MoveRight(float Val)
         UAirBlueprintLib::LogMessage(TEXT("Steering: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
         GetVehicleMovementComponent()->SetSteeringInput(Val);
+        steering_ = Val;
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Steering: "), TEXT("(API)"), LogDebugLevel::Informational);
@@ -482,6 +483,7 @@ void ACarPawn::FootBrake(float Val)
         UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
         GetVehicleMovementComponent()->SetBrakeInput(Val);
+        brake_ = Val;
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
@@ -530,7 +532,7 @@ void ACarPawn::Tick(float Delta)
 
     // Setup the flag to say we are in reverse gear
     bInReverseGear = GetVehicleMovement()->GetCurrentGear() < 0;
-
+    
     // Update phsyics material
     UpdatePhysicsMaterial();
 
@@ -543,6 +545,8 @@ void ACarPawn::Tick(float Delta)
     // Pass the engine RPM to the sound component
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
     EngineSoundComponent->SetFloatParameter(EngineAudioRPM, GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
+
+    getVehiclePawnWrapper()->setLogLine(getLogString());
 }
 
 void ACarPawn::BeginPlay()
@@ -586,7 +590,7 @@ void ACarPawn::UpdateInCarHUD()
         // Setup the text render component strings
         InCarSpeed->SetText(SpeedDisplayString);
         InCarGear->SetText(GearDisplayString);
-
+        
         if (bInReverseGear == false)
         {
             InCarGear->SetTextRenderColor(GearDisplayColor);
@@ -613,6 +617,31 @@ void ACarPawn::UpdatePhysicsMaterial()
             bIsLowFriction = true;
         }
     }
+}
+
+std::string ACarPawn::getLogString()
+{
+    // Timestamp \t Speed \t Throttle \t Steering \t Brake \t gear
+
+    // timestamp
+    uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
+
+    // Speed
+    float KPH = FMath::Abs(GetVehicleMovement()->GetForwardSpeed()) * 0.036f;
+    int32 KPH_int = FMath::FloorToInt(KPH);
+
+    // Gear
+    FString gearString = GearDisplayString.ToString();
+    std::string gear = std::string(TCHAR_TO_UTF8(*gearString));
+
+    std::string logString = std::to_string(timestamp_millis).append("\t")
+        .append(std::to_string(KPH_int).append("\t"))
+        .append(std::to_string(throttle_)).append("\t")
+        .append(std::to_string(steering_)).append("\t")
+        .append(std::to_string(brake_)).append("\t")
+        .append(gear).append("\t");
+
+    return logString;
 }
 
 #undef LOCTEXT_NAMESPACE

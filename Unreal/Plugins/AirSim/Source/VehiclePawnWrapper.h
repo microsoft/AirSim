@@ -65,6 +65,10 @@ public: //interface
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisonInfo() const;
 
+    std::string logLine;
+    void setLogLine(std::string line);
+    std::string getLogLine();
+
 protected:
     UPROPERTY(VisibleAnywhere)
         UParticleSystem* collison_display_template;
