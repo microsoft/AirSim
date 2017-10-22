@@ -4,6 +4,7 @@
 #include "AirBlueprintLib.h"
 #include "HAL/Runnable.h"
 #include "VehicleCameraConnector.h"
+#include "VehiclePawnWrapper.h"
 #include "Recording/RecordingFile.h"
 #include "physics/Kinematics.hpp"
 #include "Recording/RecordingSettings.h"
@@ -15,7 +16,7 @@ class FRecordingThread : public FRunnable
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
-    static void startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns);
+    static void startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns, VehiclePawnWrapper* wrapper);
     static void stopRecording(); 
     static bool isRecording();
 
@@ -40,6 +41,7 @@ private:
     msr::airlib::VehicleCameraBase* camera_;
     std::unique_ptr<RecordingFile> recording_file_;
     const msr::airlib::Kinematics::State* kinematics_;
+    VehiclePawnWrapper* wrapper_;
 
     msr::airlib::TTimePoint last_screenshot_on_;
     msr::airlib::Pose last_pose_;
