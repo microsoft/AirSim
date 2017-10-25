@@ -65,7 +65,6 @@ public: //interface
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisonInfo() const;
 
-    std::string logLine;
     void setLogLine(std::string line);
     std::string getLogLine();
 
@@ -92,6 +91,7 @@ private: //vars
     std::vector<APIPCamera*> cameras_;
     std::vector<std::unique_ptr<VehicleCameraConnector>> camera_connectors_;
     const msr::airlib::Kinematics::State* kinematics_;
+    std::string log_line_;
 
     struct State {
         FVector start_location;

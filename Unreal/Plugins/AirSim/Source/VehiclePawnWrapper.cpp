@@ -108,11 +108,11 @@ void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kin
 
 void VehiclePawnWrapper::setLogLine(std::string line)
 {
-    logLine = line;
+    log_line_ = line;
 }
 std::string VehiclePawnWrapper::getLogLine()
 {
-    return logLine;
+    return log_line_;
 }
 
 void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)

@@ -182,13 +182,13 @@ ACarPawn::ACarPawn()
 
     // Adjust the tire loading
     Vehicle4W->MinNormalizedTireLoad = 0.0f;
-    Vehicle4W->MinNormalizedTireLoadFiltered = 0.2f;
+    Vehicle4W->MinNormalizedTireLoadFiltered = 0.2308f;
     Vehicle4W->MaxNormalizedTireLoad = 2.0f;
     Vehicle4W->MaxNormalizedTireLoadFiltered = 2.0f;
 
     // Engine 
     // Torque setup
-    Vehicle4W->MaxEngineRPM = 5700.0f;
+    Vehicle4W->EngineSetup.MaxRPM = 5700.0f;
     Vehicle4W->EngineSetup.TorqueCurve.GetRichCurve()->Reset();
     Vehicle4W->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(0.0f, 400.0f);
     Vehicle4W->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(1890.0f, 500.0f);
@@ -304,7 +304,7 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     InternalCamera4 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     InternalCamera4->AttachToComponent(InternalCameraBase4, FAttachmentTransformRules::KeepRelativeTransform);
     InternalCamera5 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, FTransform(FRotator(0, 180, 0), FVector::ZeroVector), camera_spawn_params);
-    InternalCamera5->AttachToComponent(InternalCameraBase4, FAttachmentTransformRules::KeepRelativeTransform);
+    InternalCamera5->AttachToComponent(InternalCameraBase5, FAttachmentTransformRules::KeepRelativeTransform);
 
 
     setupInputBindings();
@@ -415,10 +415,10 @@ void ACarPawn::setupInputBindings()
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this,
         this, &ACarPawn::MoveRight);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightY, -1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightTriggerAxis, -1), this,
         this, &ACarPawn::MoveForward);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_RightTriggerAxis, 1), this,
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_LeftTriggerAxis, 1), this,
         this, &ACarPawn::FootBrake);
 
     //below is not needed
