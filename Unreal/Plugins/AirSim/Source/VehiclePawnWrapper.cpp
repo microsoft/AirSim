@@ -106,6 +106,15 @@ void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kin
     kinematics_ = kinematics;
 }
 
+void VehiclePawnWrapper::setLogLine(std::string line)
+{
+    log_line_ = line;
+}
+std::string VehiclePawnWrapper::getLogLine()
+{
+    return log_line_;
+}
+
 void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)
 {
     pawn_ = pawn;
@@ -206,7 +215,6 @@ FRotator VehiclePawnWrapper::getOrientation() const
 void VehiclePawnWrapper::toggleTrace()
 {
     state_.tracing_enabled = !state_.tracing_enabled;
-
     if (!state_.tracing_enabled)
         UKismetSystemLibrary::FlushPersistentDebugLines(pawn_->GetWorld());
     else {     
