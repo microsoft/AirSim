@@ -60,7 +60,7 @@ public:
 
     static void EnableInput(AActor* actor);
 
-    static void RunCommandOnGameThread(TFunction<void()> InFunction, const TStatId InStatId = TStatId());
+    static void RunCommandOnGameThread(TFunction<void()> InFunction, bool wait = false, const TStatId InStatId = TStatId());
 
     static float GetDisplayGamma();
 

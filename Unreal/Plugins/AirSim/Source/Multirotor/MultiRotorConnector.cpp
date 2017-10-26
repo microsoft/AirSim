@@ -282,7 +282,7 @@ void MultiRotorConnector::reset()
         rc_data_ = RCData();
         vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisons
         vehicle_.reset();
-    });
+    }, true);
 }
 
 void MultiRotorConnector::update()
