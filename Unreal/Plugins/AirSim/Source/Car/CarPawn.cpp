@@ -513,10 +513,17 @@ void ACarPawn::OnReverseReleased()
         UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
-void ACarPawn::updateKinematics()
+void ACarPawn::updateKinematics(float delta)
 {
+    auto last_kinematics = kinematics_;
+
     kinematics_.pose = getVehiclePawnWrapper()->getPose();
-    kinematics_.twist.linear = NedTransform::toNedMeters(this->GetVelocity(), true);
+    kinematics_.twist.linear = NedTransform::toNedMeters(this->GetVelocity(), false);
+    kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
+        kinematics_.pose.orientation, last_kinematics.pose.orientation, delta);
+
+    kinematics_.accelerations.linear = (kinematics_.twist.linear - last_kinematics.twist.linear) / delta;
+    kinematics_.accelerations.angular = (kinematics_.twist.angular - last_kinematics.twist.angular) / delta;
 
     //TODO: update other fields
 
@@ -526,7 +533,7 @@ void ACarPawn::Tick(float Delta)
 {
     Super::Tick(Delta);
 
-    updateKinematics();
+    updateKinematics(Delta);
 
     // Setup the flag to say we are in reverse gear
     bInReverseGear = GetVehicleMovement()->GetCurrentGear() < 0;

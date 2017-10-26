@@ -30,6 +30,9 @@ void ASimModeCar::BeginPlay()
     createVehicles(vehicles_);
 
     columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
+
+    report_wrapper_.initialize(false);
+    report_wrapper_.reset();
 }
 
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -107,6 +110,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
         {
             //initialize each vehicle pawn we found
             TVehiclePawn* vehicle_pawn = static_cast<TVehiclePawn*>(pawn);
+            vehicles.push_back(vehicle_pawn);
             vehicle_pawn->initializeForBeginPlay(enable_rpc, api_server_address, engine_sound);
 
             //chose first pawn as FPV if none is designated as FPV
@@ -146,4 +150,41 @@ void ASimModeCar::reset()
     }
 
     Super::reset();
+}
+
+void ASimModeCar::Tick(float DeltaSeconds)
+{
+    report_wrapper_.update();
+    report_wrapper_.setEnable(EnableReport);
+
+    if (report_wrapper_.canReport()) {
+        report_wrapper_.clearReport();
+        updateReport();
+    }
+}
+
+void ASimModeCar::updateReport()
+{
+    for (VehiclePtr vehicle : vehicles_) {
+        VehiclePawnWrapper* wrapper = vehicle->getVehiclePawnWrapper();
+        msr::airlib::StateReporter& reporter = * report_wrapper_.getReporter();
+        std::string vehicle_name = std::string(TCHAR_TO_UTF8(* wrapper->config.vehicle_config_name));
+
+        reporter.writeHeading(std::string("Vehicle: ").append(
+            vehicle_name == "" ? "(default)" : vehicle_name));
+
+        const msr::airlib::Kinematics::State* kinematics = wrapper->getKinematics();
+
+        reporter.writeValue("Position", kinematics->pose.position);
+        reporter.writeValue("Orientation", kinematics->pose.orientation);
+        reporter.writeValue("Lin-Vel", kinematics->twist.linear);
+        reporter.writeValue("Lin-Accl", kinematics->accelerations.linear);
+        reporter.writeValue("Ang-Vel", kinematics->twist.angular);
+        reporter.writeValue("Ang-Accl", kinematics->accelerations.angular);
+    }
+}
+
+std::string ASimModeCar::getReport()
+{
+    return report_wrapper_.getOutput();
 }

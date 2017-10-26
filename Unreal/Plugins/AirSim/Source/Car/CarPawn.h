@@ -137,7 +137,7 @@ private:
     void startApiServer(bool enable_rpc, const std::string& api_server_address);
     void stopApiServer();
     bool isApiServerStarted();
-    void updateKinematics();
+    void updateKinematics(float delta);
 
     /* Are we on a 'slippery' surface */
     bool bIsLowFriction;
