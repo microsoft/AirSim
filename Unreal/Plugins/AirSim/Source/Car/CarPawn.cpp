@@ -438,6 +438,7 @@ void ACarPawn::MoveForward(float Val)
         UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
         GetVehicleMovementComponent()->SetThrottleInput(Val);
+        throttle_ = Val;
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Throttle: "), TEXT("(API)"), LogDebugLevel::Informational);
@@ -449,6 +450,7 @@ void ACarPawn::MoveRight(float Val)
         UAirBlueprintLib::LogMessage(TEXT("Steering: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
         GetVehicleMovementComponent()->SetSteeringInput(Val);
+        steering_ = Val;
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Steering: "), TEXT("(API)"), LogDebugLevel::Informational);
@@ -482,6 +484,7 @@ void ACarPawn::FootBrake(float Val)
         UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
 
         GetVehicleMovementComponent()->SetBrakeInput(Val);
+        brake_ = Val;
     }
     else
         UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
@@ -550,6 +553,8 @@ void ACarPawn::Tick(float Delta)
     // Pass the engine RPM to the sound component
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
     EngineSoundComponent->SetFloatParameter(EngineAudioRPM, GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
+
+    getVehiclePawnWrapper()->setLogLine(getLogString());
 }
 
 void ACarPawn::BeginPlay()
@@ -620,6 +625,31 @@ void ACarPawn::UpdatePhysicsMaterial()
             bIsLowFriction = true;
         }
     }
+}
+
+std::string ACarPawn::getLogString()
+{
+    // Timestamp \t Speed \t Throttle \t Steering \t Brake \t gear
+
+    // timestamp
+    uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
+
+    // Speed
+    float KPH = FMath::Abs(GetVehicleMovement()->GetForwardSpeed()) * 0.036f;
+    int32 KPH_int = FMath::FloorToInt(KPH);
+
+    // Gear
+    FString gearString = GearDisplayString.ToString();
+    std::string gear = std::string(TCHAR_TO_UTF8(*gearString));
+
+    std::string logString = std::to_string(timestamp_millis).append("\t")
+        .append(std::to_string(KPH_int).append("\t"))
+        .append(std::to_string(throttle_)).append("\t")
+        .append(std::to_string(steering_)).append("\t")
+        .append(std::to_string(brake_)).append("\t")
+        .append(gear).append("\t");
+
+    return logString;
 }
 
 #undef LOCTEXT_NAMESPACE

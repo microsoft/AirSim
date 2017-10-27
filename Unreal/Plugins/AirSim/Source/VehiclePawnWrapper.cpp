@@ -309,5 +309,15 @@ bool VehiclePawnWrapper::canTeleportWhileMove()  const
     return !state_.collisons_enabled || (state_.collison_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
+void VehiclePawnWrapper::setLogLine(std::string line)
+{
+    log_line_ = line;
+}
+
+std::string VehiclePawnWrapper::getLogLine()
+{
+    return log_line_;
+}
+
 
 
