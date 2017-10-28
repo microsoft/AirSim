@@ -138,6 +138,7 @@ private:
     void stopApiServer();
     bool isApiServerStarted();
     void updateKinematics(float delta);
+    std::string getLogString();
 
     /* Are we on a 'slippery' surface */
     bool bIsLowFriction;
@@ -162,4 +163,8 @@ private:
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
     msr::airlib::Kinematics::State kinematics_;
     bool api_control_enabled_ = false;
+
+    float throttle_;
+    float brake_;
+    float steering_;
 };

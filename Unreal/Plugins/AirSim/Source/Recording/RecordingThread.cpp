@@ -17,7 +17,7 @@ FRecordingThread::FRecordingThread()
 }
 
 
-void FRecordingThread::startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns)
+void FRecordingThread::startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns, VehiclePawnWrapper* wrapper)
 {
     stopRecording();
 
@@ -27,6 +27,7 @@ void FRecordingThread::startRecording(msr::airlib::VehicleCameraBase* camera, co
     instance_->camera_ = camera;
     instance_->kinematics_ = kinematics;
     instance_->settings_ = settings;
+    instance_->wrapper_ = wrapper;
 
     instance_->last_screenshot_on_ = 0;
     instance_->last_pose_ = msr::airlib::Pose();
@@ -85,7 +86,7 @@ uint32 FRecordingThread::Run()
                 auto response = camera_->getImage(msr::airlib::VehicleCameraBase::ImageType::Scene, false, true);
                 TArray<uint8_t> image_data;
                 image_data.Append(response.image_data_uint8.data(), response.image_data_uint8.size());
-                recording_file_->appendRecord(image_data, kinematics_);
+                recording_file_->appendRecord(image_data, wrapper_);
             }
         }
     }
