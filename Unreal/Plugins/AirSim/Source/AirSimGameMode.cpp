@@ -1,6 +1,6 @@
 #include "AirSimGameMode.h"
 #include "Misc/FileHelper.h"
-#include "ImageWrapper.h"
+#include "IImageWrapperModule.h"
 #include "SimHUD/SimHUD.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
