@@ -31,12 +31,12 @@ const FName ACarPawn::EngineAudioRPM("RPM");
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
-class ACarPawn::CarController : public msr::airlib::CarApiBase {
+class ACarPawn::CarApi : public msr::airlib::CarApiBase {
 public:
     typedef msr::airlib::CarApiBase CarApiBase;
     typedef msr::airlib::VehicleCameraBase VehicleCameraBase;
 
-    CarController(ACarPawn* car_pawn)
+    CarApi(ACarPawn* car_pawn)
         : car_pawn_(car_pawn)
     {
     }
@@ -53,6 +53,17 @@ public:
         }
 
         return response;
+    }
+
+    virtual void simSetSegmentationObjectID(const std::string& mesh_name, int object_id, 
+        bool is_name_regex = false) override
+    {
+        UAirBlueprintLib::SetMeshStencilID(mesh_name, object_id, is_name_regex);
+    }
+    
+    virtual int simGetSegmentationObjectID(const std::string& mesh_name) override
+    {
+        return UAirBlueprintLib::GetMeshStencilID(mesh_name);
     }
 
     virtual std::vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) override
@@ -129,7 +140,7 @@ public:
         return car_pawn_->isApiControlEnabled();
     }
 
-    virtual ~CarController() = default;
+    virtual ~CarApi() = default;
 
 private:
     ACarPawn* car_pawn_;
@@ -320,7 +331,7 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
 void ACarPawn::reset(bool disable_api_control)
 {
     this->getVehiclePawnWrapper()->reset();
-    controller_->setCarControls(CarController::CarControls());
+    controller_->setCarControls(CarApi::CarControls());
 
     if (disable_api_control)
         api_control_enabled_ = false;
@@ -339,7 +350,7 @@ bool ACarPawn::isApiControlEnabled()
 void ACarPawn::startApiServer(bool enable_rpc, const std::string& api_server_address)
 {
     if (enable_rpc) {
-        controller_.reset(new CarController(this));
+        controller_.reset(new CarApi(this));
 
 
 #ifdef AIRLIB_NO_RPC

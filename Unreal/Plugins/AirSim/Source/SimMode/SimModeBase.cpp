@@ -38,18 +38,7 @@ void ASimModeBase::BeginPlay()
 
 void ASimModeBase::setStencilIDs()
 {
-    TArray<AActor*> foundActors;
-    UAirBlueprintLib::FindAllActor<AActor>(this, foundActors);
-    TArray<UStaticMeshComponent*> components;
-    int stencil = 0;
-    for (AActor* actor : foundActors) {
-        actor->GetComponents(components);
-        if (components.Num() == 1) {
-            components[0]->SetRenderCustomDepth(true);
-            components[0]->CustomDepthStencilValue = (stencil++) % 256;
-            components[0]->MarkRenderStateDirty();
-        }
-    }
+    UAirBlueprintLib::InitializeMeshStencilIDs();
 }
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)

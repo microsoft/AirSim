@@ -157,7 +157,7 @@ public:
 
 private:
     UClass* pip_camera_class_;
-    class CarController;
+    class CarApi;
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
     std::unique_ptr<msr::airlib::CarApiBase> controller_;
     std::unique_ptr<VehiclePawnWrapper> wrapper_;

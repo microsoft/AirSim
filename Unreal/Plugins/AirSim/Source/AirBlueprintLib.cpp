@@ -9,6 +9,8 @@
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 #include "Components/StaticMeshComponent.h"
+#include "EngineUtils.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "Engine/Engine.h"
 
 /*
@@ -122,6 +124,56 @@ template<typename T>
 void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& foundActors)
 {
     UGameplayStatics::GetAllActorsOfClass(context == nullptr ? GEngine : context, T::StaticClass(), foundActors);
+}
+
+void UAirBlueprintLib::InitializeMeshStencilIDs()
+{
+    for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
+    {
+        UMeshComponent *mesh = *comp;
+        mesh->SetRenderCustomDepth(true);
+        FString name = mesh->GetName();
+        int hash = 0;
+        for (int idx = 0; idx < name.Len() && idx < 3; ++idx) {
+            hash += UKismetStringLibrary::GetCharacterAsNumber(name, idx);
+        }
+
+        mesh->CustomDepthStencilValue = hash % 256;
+        mesh->MarkRenderStateDirty();
+    }
+}
+
+void UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object_id,
+    bool is_name_regex)
+{
+    FString fmesh_name(mesh_name.c_str());
+    for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
+    {
+        // Access the subclass instance with the * or -> operators.
+        UMeshComponent *mesh = *comp;
+        if (mesh->GetName() == fmesh_name) {
+            mesh->SetRenderCustomDepth(true);
+            mesh->CustomDepthStencilValue = object_id;
+            mesh->MarkRenderStateDirty();
+
+            break;
+        }
+    }
+}
+
+int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
+{
+    FString fmesh_name(mesh_name.c_str());
+    for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
+    {
+        // Access the subclass instance with the * or -> operators.
+        UMeshComponent *mesh = *comp;
+        if (mesh->GetName() == fmesh_name) {
+            return mesh->CustomDepthStencilValue;
+        }
+    }
+
+    return -1;
 }
 
 bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collison_channel) 

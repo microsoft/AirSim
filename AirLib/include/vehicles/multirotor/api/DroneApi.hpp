@@ -178,6 +178,17 @@ public:
         return vehicle_->getPose();
     }
 
+    virtual void simSetSegmentationObjectID(const std::string& mesh_name, int object_id,
+        bool is_name_regex = false) override
+    {
+        vehicle_->setSegmentationObjectID(mesh_name, object_id, is_name_regex);
+    }
+
+    virtual int simGetSegmentationObjectID(const std::string& mesh_name) override
+    {
+        return vehicle_->getSegmentationObjectID(mesh_name);
+    }
+
     Quaternionr getOrientation()
     {
         return controller_->getOrientation();

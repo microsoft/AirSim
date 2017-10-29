@@ -54,6 +54,10 @@ public:
     virtual void setPose(const Pose& pose, bool ignore_collison) override;
     virtual Pose getPose() override;
 
+    virtual void setSegmentationObjectID(const std::string& mesh_name, int object_id,
+        bool is_name_regex = false) override;
+    virtual int getSegmentationObjectID(const std::string& mesh_name) override;
+
     virtual msr::airlib::VehicleCameraBase* getCamera(unsigned int index = 0) override;
 
 private:
