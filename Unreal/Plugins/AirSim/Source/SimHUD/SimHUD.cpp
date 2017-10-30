@@ -223,8 +223,8 @@ void ASimHUD::initializeSubWindows()
     //setup defaults
     if (camera_count > 0) {
         subwindow_cameras_[0] = wrapper->getCamera(0);
-        subwindow_cameras_[1] = wrapper->getCamera(camera_count > 3 ? 3 : 0);
-        subwindow_cameras_[2] = wrapper->getCamera(camera_count > 4 ? 4 : 0);
+        subwindow_cameras_[1] = wrapper->getCamera(0); //camera_count > 3 ? 3 : 0
+        subwindow_cameras_[2] = wrapper->getCamera(0); //camera_count > 4 ? 4 : 0
     }
     else
         subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;

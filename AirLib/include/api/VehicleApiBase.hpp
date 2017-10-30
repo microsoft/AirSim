@@ -23,7 +23,7 @@ public:
     virtual void simSetPose(const Pose& pose, bool ignore_collison) = 0;
     virtual Pose simGetPose() = 0;
 
-    virtual void simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
+    virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int simGetSegmentationObjectID(const std::string& mesh_name) = 0;
 
     virtual ~VehicleApiBase() = default;

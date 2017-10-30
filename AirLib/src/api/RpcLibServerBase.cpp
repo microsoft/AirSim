@@ -78,6 +78,15 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
             RpcLibAdapatorsBase::Pose { return vehicle_->simGetPose();
     });
 
+    pimpl_->server.
+        bind("simSetSegmentationObjectID", [&](const std::string& mesh_name, int object_id, bool is_name_regex) -> bool {
+        return vehicle_->simSetSegmentationObjectID(mesh_name, object_id, is_name_regex);
+    });
+    pimpl_->server.
+        bind("simGetSegmentationObjectID", [&](const std::string& mesh_name) -> int {
+        return vehicle_->simGetSegmentationObjectID(mesh_name);
+    });    
+
     pimpl_->server.bind("reset", [&]() -> void {
         vehicle_->reset();
     });

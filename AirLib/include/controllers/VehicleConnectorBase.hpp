@@ -28,7 +28,7 @@ public:
     virtual VehicleCameraBase* getCamera(unsigned int index) = 0;
     virtual void setPose(const Pose& pose, bool ignore_collison) = 0;
     virtual Pose getPose() = 0;
-    virtual void setSegmentationObjectID(const std::string& mesh_name, int object_id,
+    virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id,
         bool is_name_regex = false) = 0;
     virtual int getSegmentationObjectID(const std::string& mesh_name) = 0;
 };

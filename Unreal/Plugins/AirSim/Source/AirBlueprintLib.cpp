@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include <exception>
+#include <regex>
 #include "common/common_utils/Utils.hpp"
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
@@ -126,39 +127,66 @@ void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& fou
     UGameplayStatics::GetAllActorsOfClass(context == nullptr ? GEngine : context, T::StaticClass(), foundActors);
 }
 
+std::string UAirBlueprintLib::GetMeshName(UMeshComponent* mesh)
+{
+    return std::string( TCHAR_TO_UTF8(*(mesh->GetOwner() ? mesh->GetOwner()->GetName() :
+        ""))); //UKismetSystemLibrary::GetDisplayName(mesh)
+}
+
 void UAirBlueprintLib::InitializeMeshStencilIDs()
 {
     for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
     {
         UMeshComponent *mesh = *comp;
         mesh->SetRenderCustomDepth(true);
-        FString name = mesh->GetName();
+        std::string mesh_name = GetMeshName(mesh);
+        if (mesh_name == "")
+            continue;
+        FString name(mesh_name.c_str());
         int hash = 0;
         for (int idx = 0; idx < name.Len() && idx < 3; ++idx) {
             hash += UKismetStringLibrary::GetCharacterAsNumber(name, idx);
         }
-
-        mesh->CustomDepthStencilValue = hash % 256;
+        mesh->CustomDepthStencilValue = (hash+1) % 256;
         mesh->MarkRenderStateDirty();
     }
 }
 
-void UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object_id,
+bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object_id,
     bool is_name_regex)
 {
-    FString fmesh_name(mesh_name.c_str());
+    std::regex name_regex;
+
+    if (is_name_regex)
+        name_regex.assign(mesh_name);
+
+    int changes = 0;
     for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
     {
-        // Access the subclass instance with the * or -> operators.
         UMeshComponent *mesh = *comp;
-        if (mesh->GetName() == fmesh_name) {
+
+        std::string comp_mesh_name = GetMeshName(mesh);
+        if (comp_mesh_name == "")
+            continue;
+
+        bool is_match = (!is_name_regex && (comp_mesh_name == mesh_name))
+            || (is_name_regex && std::regex_match(comp_mesh_name, name_regex));
+
+        if (is_match) {
+            ++changes;
+            mesh->SetRenderCustomDepth(false);
             mesh->SetRenderCustomDepth(true);
             mesh->CustomDepthStencilValue = object_id;
+            //mesh->SetVisibility(false);
+            //mesh->SetVisibility(true);
             mesh->MarkRenderStateDirty();
 
-            break;
+            if (! is_name_regex)
+                return true;
         }
     }
+
+    return changes > 0;
 }
 
 int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)

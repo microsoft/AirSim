@@ -55,10 +55,10 @@ public:
         return response;
     }
 
-    virtual void simSetSegmentationObjectID(const std::string& mesh_name, int object_id, 
+    virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, 
         bool is_name_regex = false) override
     {
-        UAirBlueprintLib::SetMeshStencilID(mesh_name, object_id, is_name_regex);
+        return UAirBlueprintLib::SetMeshStencilID(mesh_name, object_id, is_name_regex);
     }
     
     virtual int simGetSegmentationObjectID(const std::string& mesh_name) override

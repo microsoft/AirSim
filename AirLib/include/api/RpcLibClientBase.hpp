@@ -33,6 +33,9 @@ public:
     void enableApiControl(bool is_enabled);
     void reset();
 
+    bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false);
+    int simGetSegmentationObjectID(const std::string& mesh_name);
+
     virtual ~RpcLibClientBase();    //required for pimpl
 
 protected:
