@@ -22,9 +22,9 @@ if [ "$(uname)" == "Darwin" ]; then
         sudo dseditgroup -o edit -a `whoami` -t user dialout
     fi
 
-    #below takes way too long
-    # brew install llvm@3.9
-    brew install --force-bottle homebrew/versions/llvm39
+    brew install llvm@3.9
+    # below is now deprecated
+    # brew install --force-bottle homebrew/versions/llvm39
 else
     if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
         sudo /usr/sbin/useradd -G dialout $USER
