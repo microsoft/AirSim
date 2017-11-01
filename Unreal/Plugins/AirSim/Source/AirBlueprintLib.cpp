@@ -181,8 +181,8 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
             //mesh->SetVisibility(true);
             mesh->MarkRenderStateDirty();
 
-            if (! is_name_regex)
-                return true;
+            //if (! is_name_regex)
+            //    return true;
         }
     }
 
