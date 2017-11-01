@@ -1,5 +1,5 @@
-# Using the car model in AirSim
-> Please node that the car model is currently in preview mode.
+# Using the Car model in AirSim
+> Please note that the Car model is currently in preview mode.
 
 By default the vehicle type used in AirSim is multirotor. If you want to use car instead then just set the SimMode in your [settings.json](settings.md) which you can find in your `~/Documents/AirSim` folder, like this:
 
