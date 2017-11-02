@@ -11,6 +11,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
+#include "UObjectIterator.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Engine/Engine.h"
 

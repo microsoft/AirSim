@@ -10,6 +10,7 @@
 #include <string>
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/MeshComponent.h"
 #include "AirBlueprintLib.generated.h"
 
 UENUM(BlueprintType)
