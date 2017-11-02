@@ -147,7 +147,7 @@ void UAirBlueprintLib::InitializeMeshStencilIDs()
         for (int idx = 0; idx < name.Len() && idx < 3; ++idx) {
             hash += UKismetStringLibrary::GetCharacterAsNumber(name, idx);
         }
-        mesh->CustomDepthStencilValue = (hash+1) % 256;
+        mesh->CustomDepthStencilValue = hash % 256;
         mesh->MarkRenderStateDirty();
     }
 }
@@ -158,7 +158,7 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
     std::regex name_regex;
 
     if (is_name_regex)
-        name_regex.assign(mesh_name);
+        name_regex.assign(mesh_name, std::regex_constants::icase);
 
     int changes = 0;
     for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
@@ -174,8 +174,8 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
 
         if (is_match) {
             ++changes;
-            mesh->SetRenderCustomDepth(false);
-            mesh->SetRenderCustomDepth(true);
+            //mesh->SetRenderCustomDepth(false);
+            //mesh->SetRenderCustomDepth(true);
             mesh->CustomDepthStencilValue = object_id;
             //mesh->SetVisibility(false);
             //mesh->SetVisibility(true);
