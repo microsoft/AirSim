@@ -213,7 +213,7 @@ The return value is true if at least one mesh was found using regular expression
 
 A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/segmentation.py).
 
-### How to Find Mesh Names?
+#### How to Find Mesh Names?
 To get desired ground truth segmentation you will need to know names of the meshes in your Unreal environment that you are interested in. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in the World Outliner. For example, below we see the meshe names for he ground in Blocks environment in right panel in the editor:
 
 ![record screenshot](images/unreal_editor_blocks.png)
@@ -222,14 +222,14 @@ If you don't know how to open Unreal Environment in Unreal Editor then try follo
 
 Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs.
 
-### Changing Colors for Object IDs
+#### Changing Colors for Object IDs
 At present color for each object ID is fixed as in [this pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the mean time it might be easier just to open the segmentation image in some image editor and get the RGB values you are interested in. 
 
-### Startup Object IDs
+#### Startup Object IDs
 At the start, AirSim assigns object ID to each mesh. To do this, it takes first 3 letters of mesh name, converts them to int, sums them and modulo 255 generates the object ID. In other words, all object with first same 3 letters will get same object ID at the start. This heuristic is simple and effective for many Unreal environments but may not be what you want. In that case, please use above APIs to change object IDs to your desired values.
 
 
-### Getting Object ID for Mesh
+#### Getting Object ID for Mesh
 The `simGetSegmentationObjectID` API allows you get object ID for given mesh name.
 
 ## Collision API
