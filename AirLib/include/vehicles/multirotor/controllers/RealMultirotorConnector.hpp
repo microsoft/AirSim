@@ -22,6 +22,7 @@ public:
 
     virtual void updateRendering(float dt) override
     {
+        unused(dt);
     }
 
     virtual void startApiServer() override
@@ -57,6 +58,17 @@ public:
     {
         throw std::logic_error("getPose() call is only supported for simulation");
     }
+
+    virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id,
+        bool is_name_regex = false) override
+    {
+        throw std::logic_error("setSegmentationObjectID() call is only supported for simulation");
+    }
+    virtual int getSegmentationObjectID(const std::string& mesh_name) override
+    {
+        throw std::logic_error("getSegmentationObjectID() call is only supported for simulation");
+    }
+
 
 private:
     VehicleControllerBase* controller_;
