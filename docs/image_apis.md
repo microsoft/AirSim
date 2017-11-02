@@ -193,7 +193,44 @@ When you specify `ImageType = DepthVis` in `ImageRequest`, you get image that he
 You normally want retrieve disparity image as float (i.e. set `pixels_as_float = true` and specify `ImageType = DisparityNormalized` in `ImageRequest`) in which case each pixel is `(Xl - Xr)/Xmax`, valued from 0 to 1.
 
 ### Segmentation
-When you specify `ImageType = Segmentation` in `ImageRequest`, you get image that gives you ground truth segmentation of the scene. AirSim assigns value 0 to 255 to each mesh available in environment. This value is than mapped to a specific color in [the pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). Currently, if you had like to assign specific value to specific map, you will need to [change code](../Unreal/Plugins/AirSim/Source/FlyingPawn.cpp#L28). We are planning to enable APIs for this in future.
+When you specify `ImageType = Segmentation` in `ImageRequest`, you get image that gives you ground truth segmentation of the scene. At the starup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is than mapped to a specific color in [the pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). 
+
+You can assign a specific value to specific mesh using APIs. For example, below Python code sets the object ID for the mesh called "Ground" to 20 in Blocks environment and hence changes its color in Segmentation view:
+
+```
+success = client.simSetSegmentationObjectID("Ground", 20);
+```
+
+The return value is boolean type that lets you know if the mesh was found.
+
+Notice that typical Unreal environment like Blocks usually have many other meshes that comprises of same object, for example, "Ground_2", "Ground_3" and so on. As it is tedious to set object ID for all of these meshes, AirSim also supports regular expressions. For example, below code sets all meshes which have names starting with "ground" (ignoring case) to 21 with just one line:
+
+```
+success = client.simSetSegmentationObjectID("ground[\w]*", 22, True);
+```
+
+The return value is true if at least one mesh was found using regular expression matching.
+
+A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/segmentation.py).
+
+### How to Find Mesh Names?
+To get desired ground truth segmentation you will need to know names of the meshes in your Unreal environment that you are interested in. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in the World Outliner. For example, below we see the meshe names for he ground in Blocks environment in right panel in the editor:
+
+![record screenshot](images/unreal_editor_blocks.png)
+
+If you don't know how to open Unreal Environment in Unreal Editor then try following the guide for [building from source](build_windows.md).
+
+Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs.
+
+### Changing Colors for Object IDs
+At present color for each object ID is fixed as in [this pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the mean time it might be easier just to open the segmentation image in some image editor and get the RGB values you are interested in. 
+
+### Startup Object IDs
+At the start, AirSim assigns object ID to each mesh. To do this, it takes first 3 letters of mesh name, converts them to int, sums them and modulo 255 generates the object ID. In other words, all object with first same 3 letters will get same object ID at the start. This heuristic is simple and effective for many Unreal environments but may not be what you want. In that case, please use above APIs to change object IDs to your desired values.
+
+
+### Getting Object ID for Mesh
+The `simGetSegmentationObjectID` API allows you get object ID for given mesh name.
 
 ## Collision API
 The collision information can be obtained using `getCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.

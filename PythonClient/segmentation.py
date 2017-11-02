@@ -6,25 +6,12 @@ from AirSimClient import *
 client = CarClient()
 client.confirmConnection()
 
+AirSimClientBase.wait_key('Press any key to change one ground object ID')
 found = client.simSetSegmentationObjectID("Ground", 20);
 print("Done: %r" % (found))
 
-found = client.simSetSegmentationObjectID("Ground_2", 22);
-print("Done: %r" % (found))
-
-found = client.simSetSegmentationObjectID("Ground_3", 23);
-print("Done: %r" % (found))
-
-found = client.simSetSegmentationObjectID("Ground_4", 24);
-print("Done: %r" % (found))
-
-found = client.simSetSegmentationObjectID("Ground_5", 25);
-print("Done: %r" % (found))
-
-found = client.simSetSegmentationObjectID("Ground_6", 26);
-print("Done: %r" % (found))
-
-found = client.simSetSegmentationObjectID("Ground_7", 27);
+AirSimClientBase.wait_key('Press any key to change all ground object ID')
+found = client.simSetSegmentationObjectID("ground[\w]*", 22, True);
 print("Done: %r" % (found))
 
 
