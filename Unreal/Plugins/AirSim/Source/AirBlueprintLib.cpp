@@ -48,10 +48,10 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
 
     FColor color;
     switch (level) {
-    case LogDebugLevel::Informational: color = FColor(5, 5, 100);; break;
-    case LogDebugLevel::Success: color = FColor::Green; break;
-    case LogDebugLevel::Failure: color = FColor::Red; break;
-    case LogDebugLevel::Unimportant: color = FColor::Silver; break;
+    case LogDebugLevel::Informational: color = FColor(147, 237, 235); break;
+    case LogDebugLevel::Success: color = FColor(156, 237, 147); break;
+    case LogDebugLevel::Failure: color = FColor(237, 147, 168); break;
+    case LogDebugLevel::Unimportant: color = FColor(237, 228, 147); break;
     default: color = FColor::Black; break;
     }
     GEngine->AddOnScreenDebugMessage(key, persist_sec, color, prefix + suffix);
