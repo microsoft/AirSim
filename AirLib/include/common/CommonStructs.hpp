@@ -180,16 +180,20 @@ struct CollisionInfo {
     real_T penetration_depth = 0;
     TTimePoint time_stamp = 0;
     unsigned int collision_count = 0;
+    std::string object_name;
+    int object_id = -1;
 
     CollisionInfo()
     {}
 
     CollisionInfo(bool has_collided_val, const Vector3r& normal_val, 
         const Vector3r& impact_point_val, const Vector3r& position_val, 
-        real_T penetration_depth_val, TTimePoint time_stamp_val)
+        real_T penetration_depth_val, TTimePoint time_stamp_val,
+        const std::string& object_name_val, int object_id_val)
         : has_collided(has_collided_val), normal(normal_val),
         impact_point(impact_point_val), position(position_val),
-        penetration_depth(penetration_depth_val), time_stamp(time_stamp_val)
+        penetration_depth(penetration_depth_val), time_stamp(time_stamp_val),
+        object_name(object_name_val), object_id(object_id_val)
     {
     }
 };

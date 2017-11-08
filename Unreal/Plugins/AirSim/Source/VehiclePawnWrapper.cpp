@@ -71,16 +71,24 @@ void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AA
     //FRotator CurrentRotation = GetActorRotation(RootComponent);
     //SetActorRotation(FQuat::Slerp(CurrentRotation.Quaternion(), HitNormal.ToOrientationQuat(), 0.025f));
 
+    UPrimitiveComponent* comp = Other ? (Other->GetRootPrimitiveComponent() ? Other->GetRootPrimitiveComponent() : nullptr) : nullptr;
+
     state_.collision_info.has_collided = true;
     state_.collision_info.normal = NedTransform::toVector3r(Hit.ImpactNormal, 1, true);
     state_.collision_info.impact_point = NedTransform::toNedMeters(Hit.ImpactPoint);
     state_.collision_info.position = NedTransform::toNedMeters(getPosition());
     state_.collision_info.penetration_depth = NedTransform::toNedMeters(Hit.PenetrationDepth);
     state_.collision_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
+    state_.collision_info.object_name = std::string(Other ? TCHAR_TO_UTF8(*(Other->GetName())) : "(null)");
+    state_.collision_info.object_id = comp ? comp->CustomDepthStencilValue : -1;
+
     ++state_.collision_info.collision_count;
 
-    UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(
-        state_.collision_info.collision_count), LogDebugLevel::Failure);
+
+    UAirBlueprintLib::LogMessageString("Collision", Utils::stringf("#%d with %s - ObjID %d", 
+        state_.collision_info.collision_count, 
+        state_.collision_info.object_name.c_str(), state_.collision_info.object_id),
+        LogDebugLevel::Failure);
 }
 
 APawn* VehiclePawnWrapper::getPawn()

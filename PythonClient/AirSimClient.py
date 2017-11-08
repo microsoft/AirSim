@@ -78,6 +78,8 @@ class CollisionInfo(MsgpackMixin):
     position = Vector3r()
     penetration_depth = np.float32(0)
     time_stamp = np.float32(0)
+    object_name = ""
+    object_id = -1
 
 class GeoPoint(MsgpackMixin):
     latitude = 0.0
