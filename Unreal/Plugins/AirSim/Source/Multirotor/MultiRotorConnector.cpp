@@ -238,7 +238,11 @@ Pose MultiRotorConnector::getPose()
 bool MultiRotorConnector::setSegmentationObjectID(const std::string& mesh_name, int object_id,
     bool is_name_regex)
 {
-    return UAirBlueprintLib::SetMeshStencilID(mesh_name, object_id, is_name_regex);
+    bool success;
+    UAirBlueprintLib::RunCommandOnGameThread([mesh_name, object_id, is_name_regex, &success]() {
+        success = UAirBlueprintLib::SetMeshStencilID(mesh_name, object_id, is_name_regex);
+    }, true);
+    return success;
 }
 
 int MultiRotorConnector::getSegmentationObjectID(const std::string& mesh_name)
