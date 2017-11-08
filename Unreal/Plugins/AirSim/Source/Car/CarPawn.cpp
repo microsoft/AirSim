@@ -66,6 +66,11 @@ public:
         return UAirBlueprintLib::GetMeshStencilID(mesh_name);
     }
 
+    virtual msr::airlib::CollisionInfo getCollisionInfo() override
+    {
+        return car_pawn_->getVehiclePawnWrapper()->getCollisionInfo();
+    }
+
     virtual std::vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) override
     {
         std::vector<VehicleCameraBase::ImageRequest> request = { VehicleCameraBase::ImageRequest(camera_id, image_type) };
@@ -100,7 +105,7 @@ public:
             NedTransform::toNedMeters(car_pawn_->GetActorLocation(), true),
             NedTransform::toNedMeters(car_pawn_->GetVelocity(), true),
             NedTransform::toQuaternionr(car_pawn_->GetActorRotation().Quaternion(), true),
-            car_pawn_->getVehiclePawnWrapper()->getCollisonInfo(),
+            car_pawn_->getVehiclePawnWrapper()->getCollisionInfo(),
             msr::airlib::ClockFactory::get()->nowNanos()
         );
         return state;
@@ -110,14 +115,14 @@ public:
     {
         UAirBlueprintLib::RunCommandOnGameThread([this]() {
             this->car_pawn_->reset(false);
-        });
+        }, true);
     }
 
-    virtual void simSetPose(const Pose& pose, bool ignore_collison) override
+    virtual void simSetPose(const Pose& pose, bool ignore_collision) override
     {
-        UAirBlueprintLib::RunCommandOnGameThread([this, pose, ignore_collison]() {
-            this->car_pawn_->getVehiclePawnWrapper()->setPose(pose, ignore_collison);
-        });
+        UAirBlueprintLib::RunCommandOnGameThread([this, pose, ignore_collision]() {
+            this->car_pawn_->getVehiclePawnWrapper()->setPose(pose, ignore_collision);
+        }, true);
     }
 
     virtual Pose simGetPose() override

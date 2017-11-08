@@ -48,13 +48,13 @@ public: //interface
     APIPCamera* getCamera(int index = 0);
     VehicleCameraConnector* getCameraConnector(int index = 0);
     int getCameraCount();
-    void displayCollisonEffect(FVector hit_location, const FHitResult& hit);
+    void displayCollisionEffect(FVector hit_location, const FHitResult& hit);
     APawn* getPawn();
 
     //get/set pose
     //parameters in NED frame
     Pose getPose() const;
-    void setPose(const Pose& pose, bool ignore_collison);
+    void setPose(const Pose& pose, bool ignore_collision);
     void setDebugPose(const Pose& debug_pose);
     FVector getPosition() const;
     FRotator getOrientation() const;
@@ -63,14 +63,14 @@ public: //interface
     const msr::airlib::Kinematics::State* getKinematics();
 
     const GeoPoint& getHomePoint() const;
-    const CollisionInfo& getCollisonInfo() const;
+    const CollisionInfo& getCollisionInfo() const;
 
     void setLogLine(std::string line);
     std::string getLogLine();
 
 protected:
     UPROPERTY(VisibleAnywhere)
-        UParticleSystem* collison_display_template;
+        UParticleSystem* collision_display_template;
 
 
 private: //methods
@@ -102,10 +102,10 @@ private: //vars
         FVector current_debug_position;
         FVector debug_position_offset;        
         bool tracing_enabled;
-        bool collisons_enabled;
+        bool collisions_enabled;
         bool passthrough_enabled;
         bool was_last_move_teleport;
-        CollisionInfo collison_info;
+        CollisionInfo collision_info;
 
         FVector mesh_origin;
         FVector mesh_bounds;

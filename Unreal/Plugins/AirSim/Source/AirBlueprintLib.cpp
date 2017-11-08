@@ -48,7 +48,7 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
 
     FColor color;
     switch (level) {
-    case LogDebugLevel::Informational: color = FColor(147, 237, 235); break;
+    case LogDebugLevel::Informational: color = FColor(147, 231, 237); break;
     case LogDebugLevel::Success: color = FColor(156, 237, 147); break;
     case LogDebugLevel::Failure: color = FColor(237, 147, 168); break;
     case LogDebugLevel::Unimportant: color = FColor(237, 228, 147); break;
@@ -205,17 +205,17 @@ int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
     return -1;
 }
 
-bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collison_channel) 
+bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collision_channel) 
 {
     FCollisionQueryParams trace_params;
     trace_params.AddIgnoredActor(actor);
     if (ignore_actor != nullptr)
         trace_params.AddIgnoredActor(ignore_actor);
 
-    return actor->GetWorld()->LineTraceTestByChannel(start, end, collison_channel, trace_params);
+    return actor->GetWorld()->LineTraceTestByChannel(start, end, collision_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collison_channel) 
+bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collision_channel) 
 {
     hit = FHitResult(ForceInit);
 
@@ -224,10 +224,10 @@ bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, co
     if (ignore_actor != nullptr)
         trace_params.AddIgnoredActor(ignore_actor);
 
-    return actor->GetWorld()->LineTraceSingleByChannel(hit, start, end, collison_channel, trace_params);
+    return actor->GetWorld()->LineTraceSingleByChannel(hit, start, end, collision_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collison_channel) 
+bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collision_channel) 
 {
     TArray<FHitResult> hits;
 
@@ -236,7 +236,7 @@ bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVecto
     if (ignore_actor != nullptr)
         trace_params.AddIgnoredActor(ignore_actor);
 
-    bool has_hit = actor->GetWorld()->LineTraceMultiByChannel(hits, start, end, collison_channel, trace_params);
+    bool has_hit = actor->GetWorld()->LineTraceMultiByChannel(hits, start, end, collision_channel, trace_params);
 
     if (hits.Num())
         hit = hits.Last(0);

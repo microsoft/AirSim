@@ -43,7 +43,6 @@ public:
 
   
     Vector3r getPosition();
-    CollisionInfo getCollisionInfo();
     Vector3r getVelocity();
     Quaternionr getOrientation();
     RCData getRCData();

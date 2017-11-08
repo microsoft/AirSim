@@ -20,11 +20,13 @@ public:
     virtual vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request) = 0;
     virtual vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) = 0;
 
-    virtual void simSetPose(const Pose& pose, bool ignore_collison) = 0;
+    virtual void simSetPose(const Pose& pose, bool ignore_collision) = 0;
     virtual Pose simGetPose() = 0;
 
     virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int simGetSegmentationObjectID(const std::string& mesh_name) = 0;
+
+    virtual CollisionInfo getCollisionInfo() = 0;
 
     virtual ~VehicleApiBase() = default;
 };

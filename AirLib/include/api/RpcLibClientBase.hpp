@@ -25,13 +25,15 @@ public:
     vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
     msr::airlib::GeoPoint getHomeGeoPoint();
 
-    void simSetPose(const Pose& pose, bool ignore_collison);
+    void simSetPose(const Pose& pose, bool ignore_collision);
     Pose simGetPose();
 
     void confirmConnection();
     bool isApiControlEnabled();
     void enableApiControl(bool is_enabled);
     void reset();
+
+    CollisionInfo getCollisionInfo();
 
     bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false);
     int simGetSegmentationObjectID(const std::string& mesh_name);

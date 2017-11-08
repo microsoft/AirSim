@@ -51,7 +51,7 @@ public:
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
 
-    virtual void setPose(const Pose& pose, bool ignore_collison) override;
+    virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual Pose getPose() override;
 
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id,
@@ -84,7 +84,7 @@ private:
     unsigned int rotor_count_;
     std::vector<RotorInfo> rotor_info_;
 
-    CollisonResponseInfo collision_response_info;
+    CollisionResponseInfo collision_response_info;
 
     bool enable_rpc_;
     std::string api_server_address_;

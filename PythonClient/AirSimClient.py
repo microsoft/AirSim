@@ -194,6 +194,9 @@ class AirSimClientBase:
         responses_raw = self.client.call('simGetImages', requests)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
 
+    def getCollisionInfo(self):
+        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
+
     @staticmethod
     def stringToUint8Array(bstr):
         return np.fromstring(bstr, np.uint8)
@@ -452,8 +455,7 @@ class MultirotorClient(AirSimClientBase, object):
         return GeoPoint.from_msgpack(self.client.call('getGpsLocation'))
     def getRollPitchYaw(self):
         return self.toEulerianAngle(self.getOrientation())
-    def getCollisionInfo(self):
-        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
+
     #def getRCData(self):
     #    return self.client.call('getRCData')
     def timestampNow(self):

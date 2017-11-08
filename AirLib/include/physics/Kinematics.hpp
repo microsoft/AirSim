@@ -53,7 +53,7 @@ public:
         //nothing to do because next state should be updated 
         //by physics engine. The reason is that final state
         //needs to take in to account state of other objects as well,
-        //for example, if collison occurs
+        //for example, if collision occurs
     }
     virtual void reportState(StateReporter& reporter) override
     {

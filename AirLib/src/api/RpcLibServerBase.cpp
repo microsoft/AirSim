@@ -70,8 +70,8 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
     });
 
     pimpl_->server.
-        bind("simSetPose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collison) -> void {
-        vehicle_->simSetPose(pose.to(), ignore_collison);
+        bind("simSetPose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision) -> void {
+        vehicle_->simSetPose(pose.to(), ignore_collision);
     });
     pimpl_->server.
         bind("simGetPose", [&]() ->
@@ -97,6 +97,8 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
 
     pimpl_->server.bind("enableApiControl", [&](bool is_enabled) -> void { vehicle_->enableApiControl(is_enabled); });
     pimpl_->server.bind("isApiControlEnabled", [&]() -> bool { return vehicle_->isApiControlEnabled(); });
+
+    pimpl_->server.bind("getCollisionInfo", [&]() -> RpcLibAdapatorsBase::CollisionInfo { return vehicle_->getCollisionInfo(); });
 
     pimpl_->server.suppress_exceptions(true);
 }

@@ -138,8 +138,8 @@ void MultiRotorConnector::updateRenderedState()
 {
     //Utils::log("------Render tick-------");
 
-    //move collison info from rendering engine to vehicle
-    const CollisionInfo& collision_info = vehicle_pawn_wrapper_->getCollisonInfo();
+    //move collision info from rendering engine to vehicle
+    const CollisionInfo& collision_info = vehicle_pawn_wrapper_->getCollisionInfo();
     vehicle_.setCollisionInfo(collision_info);
 
     //update ground level
@@ -215,18 +215,18 @@ void MultiRotorConnector::updateRendering(float dt)
     }
 
     if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_wrapper_->getPawn()) {
-        UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(vehicle_pawn_wrapper_->getCollisonInfo().collison_count), LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(vehicle_pawn_wrapper_->getCollisionInfo().collision_count), LogDebugLevel::Failure);
     }
     else {
-        //UAirBlueprintLib::LogMessage(TEXT("Collison (raw) Count:"), FString::FromInt(collision_response_info.collison_count_raw), LogDebugLevel::Unimportant);
-        UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(collision_response_info.collison_count_non_resting), LogDebugLevel::Failure);
+        //UAirBlueprintLib::LogMessage(TEXT("Collision (raw) Count:"), FString::FromInt(collision_response_info.collision_count_raw), LogDebugLevel::Unimportant);
+        UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(collision_response_info.collision_count_non_resting), LogDebugLevel::Failure);
     }
 }
 
-void MultiRotorConnector::setPose(const Pose& pose, bool ignore_collison)
+void MultiRotorConnector::setPose(const Pose& pose, bool ignore_collision)
 {
     pending_pose_ = pose;
-    pending_pose_collisions_ = ignore_collison;
+    pending_pose_collisions_ = ignore_collision;
     pending_pose_status_ = PendingPoseStatus::RenderStatePending;
 }
 
@@ -292,7 +292,7 @@ void MultiRotorConnector::reset()
         //controller_->reset();
 
         rc_data_ = RCData();
-        vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisons
+        vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisions
         vehicle_.reset();
     }, true);
 }

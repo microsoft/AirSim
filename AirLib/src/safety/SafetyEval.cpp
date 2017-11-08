@@ -118,7 +118,7 @@ void SafetyEval::isSafeDestination(const Vector3r& dest_pos, const Vector3r& cur
 
         //less risk distance is better
         result.dest_risk_dist = cur_dest_norm + adjustClearanceForPrStl(vehicle_params_.obs_clearance, result.dest_obs.confidence) - result.dest_obs.distance;
-        if (result.dest_risk_dist >= 0) { //potential collison
+        if (result.dest_risk_dist >= 0) { //potential collision
             //check obstacles around current position and see if it has lower risk
             isCurrentSafer(result);
         }

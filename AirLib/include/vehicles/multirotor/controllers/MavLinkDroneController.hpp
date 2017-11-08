@@ -813,7 +813,7 @@ public:
         orientation.y() = MocapPoseMessage.q[2]; orientation.z() = MocapPoseMessage.q[3];
     }
 
-    void sendCollison(float normalX, float normalY, float normalZ)
+    void sendCollision(float normalX, float normalY, float normalZ)
     {
         checkVehicle();
 

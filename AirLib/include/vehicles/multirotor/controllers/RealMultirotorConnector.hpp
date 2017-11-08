@@ -49,7 +49,7 @@ public:
         throw std::logic_error("getCamera() call is only supported for simulation");
     }
 
-    virtual void setPose(const Pose& pose, bool ignore_collison) override
+    virtual void setPose(const Pose& pose, bool ignore_collision) override
     {
         throw std::logic_error("setPose() call is only supported for simulation");
     }

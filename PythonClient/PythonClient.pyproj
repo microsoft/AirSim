@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>segmentation.py</StartupFile>
+    <StartupFile>car_collision.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -30,6 +30,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="camera.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="car_collision.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cv_mode.py">

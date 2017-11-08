@@ -169,9 +169,9 @@ public:
         return controller_->getVelocity();
     }
 
-    virtual void simSetPose(const Pose& pose, bool ignore_collison) override
+    virtual void simSetPose(const Pose& pose, bool ignore_collision) override
     {
-        vehicle_->setPose(pose, ignore_collison);
+        vehicle_->setPose(pose, ignore_collision);
     }
     virtual Pose simGetPose() override
     {
@@ -198,7 +198,8 @@ public:
         return controller_->getLandedState();
     }
 
-    CollisionInfo getCollisionInfo()
+
+    virtual CollisionInfo getCollisionInfo() override
     {
         return controller_->getCollisionInfo();
     }

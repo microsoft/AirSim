@@ -209,7 +209,7 @@ public: //interface for outside world
     virtual GeoPoint getGpsLocation() = 0;
 
     //below are for passing information from simulator to API layer
-    //in non simulation mode default would be no collison unless
+    //in non simulation mode default would be no collision unless
     //controller implements otherwise.
     virtual CollisionInfo getCollisionInfo();
     virtual void setCollisionInfo(const CollisionInfo& collision_info);

@@ -142,11 +142,6 @@ RCData MultirotorRpcLibClient::getRCData()
     return static_cast<rpc::client*>(getClient())->call("getRCData").as<MultirotorRpcLibAdapators::RCData>().to();
 }
 
-CollisionInfo MultirotorRpcLibClient::getCollisionInfo()
-{
-    return static_cast<rpc::client*>(getClient())->call("getCollisionInfo").as<MultirotorRpcLibAdapators::CollisionInfo>().to();
-}
-
 TTimePoint MultirotorRpcLibClient::timestampNow()
 {
     return static_cast<rpc::client*>(getClient())->call("timestampNow").as<TTimePoint>();

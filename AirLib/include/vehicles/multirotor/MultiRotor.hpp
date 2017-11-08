@@ -157,10 +157,10 @@ public:
         return rotors_.at(rotor_index).getOutput();
     }
 
-    virtual void setCollisionInfo(const CollisionInfo& collison_info) override
+    virtual void setCollisionInfo(const CollisionInfo& collision_info) override
     {
-        PhysicsBody::setCollisionInfo(collison_info);
-        getController()->setCollisionInfo(collison_info);
+        PhysicsBody::setCollisionInfo(collision_info);
+        getController()->setCollisionInfo(collision_info);
     }
 
     virtual ~MultiRotor() = default;

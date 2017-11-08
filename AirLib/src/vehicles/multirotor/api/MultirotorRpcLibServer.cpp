@@ -107,8 +107,7 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(DroneApi* drone, string server_ad
         bind("isSimulationMode", [&]() -> bool { return getDroneApi()->isSimulationMode(); });
     (static_cast<rpc::server*>(getServer()))->
         bind("getServerDebugInfo", [&]() -> std::string { return getDroneApi()->getServerDebugInfo(); });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getCollisionInfo", [&]() -> MultirotorRpcLibAdapators::CollisionInfo { return getDroneApi()->getCollisionInfo(); });
+
 }
 
 //required for pimpl
