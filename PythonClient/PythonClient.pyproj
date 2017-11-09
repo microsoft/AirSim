@@ -44,6 +44,9 @@
     <Compile Include="hello_drone.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="infrared.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="navigate.py">
       <SubType>Code</SubType>
     </Compile>
