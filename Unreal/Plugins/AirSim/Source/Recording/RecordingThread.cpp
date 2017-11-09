@@ -113,5 +113,5 @@ void FRecordingThread::EnsureCompletion()
 {
     Stop();
     thread_->WaitForCompletion();
-    UAirBlueprintLib::LogMessage(TEXT("Stopped recording thread"), TEXT(""), LogDebugLevel::Success);
+    //UAirBlueprintLib::LogMessage(TEXT("Stopped recording thread"), TEXT(""), LogDebugLevel::Success);
 }

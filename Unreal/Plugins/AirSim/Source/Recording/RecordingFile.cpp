@@ -22,8 +22,8 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, VehiclePawnWrapper* 
     std::string filename = std::string("img_").append(std::to_string(images_saved_)).append(".png");
 
     try {    
-        FString image_file_path = FString(common_utils::FileSystem::combine(image_path_, filename).c_str());
-        imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *image_file_path);
+        filePath = FString(common_utils::FileSystem::combine(image_path_, filename).c_str());
+        imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *filePath);
     }
     catch(std::exception& ex) {
         UAirBlueprintLib::LogMessage(TEXT("Image file save failed"), FString(ex.what()), LogDebugLevel::Failure);        
@@ -33,7 +33,7 @@ void RecordingFile::appendRecord(TArray<uint8>& image_data, VehiclePawnWrapper* 
     if (imageSavedOk) {
         writeString(wrapper->getLogLine().append(filename).append("\n"));
 
-        UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
+        //UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
     }
 }
@@ -113,7 +113,7 @@ void RecordingFile::startRecording()
         if (isFileOpen()) {
             is_recording_ = true;
 
-            UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Started"), LogDebugLevel::Success);
+            UAirBlueprintLib::LogMessage(TEXT("Recording: "), TEXT("Started"), LogDebugLevel::Success);
         }
         else
             UAirBlueprintLib::LogMessageString("Error creating log file", log_filepath.c_str(), LogDebugLevel::Failure);
@@ -135,7 +135,8 @@ void RecordingFile::stopRecording(bool ignore_if_stopped)
     else
         closeFile();
 
-    UAirBlueprintLib::LogMessage(TEXT("Recording"), TEXT("Stopped"), LogDebugLevel::Success);
+    UAirBlueprintLib::LogMessage(TEXT("Recording: "), TEXT("Stopped"), LogDebugLevel::Success);
+    UAirBlueprintLib::LogMessage(TEXT("Data saved to: "), FString(image_path_.c_str()), LogDebugLevel::Success);
 }
 
 bool RecordingFile::isRecording()
