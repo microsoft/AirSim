@@ -1,6 +1,6 @@
 # Who is Using AirSim?
 
-#### Would you like to see your own project here? Please add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick details and link to your website or paper. 
+Would you like to see your own group or project here? Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick details and link to your website or paper or send us email at msrair at microsoft.com.
 
 *  [Astrobotic](https://www.astrobotic.com/technology) - [Kerry Snyder](http://www.ohscope.com/)
 * [Ghent University](https://www.ugent.be) - [Nils Tijtgat](https://timebutt.github.io/static/author/nils/)
