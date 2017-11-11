@@ -104,10 +104,10 @@ public:
     virtual CarApiBase::CarState getCarState() override
     {
         CarApiBase::CarState state(
-            car_pawn_->GetVehicleMovement()->GetForwardSpeed(),
+            car_pawn_->GetVehicleMovement()->GetForwardSpeed() / 100, //cm/s -> m/s
             car_pawn_->GetVehicleMovement()->GetCurrentGear(),
             NedTransform::toNedMeters(car_pawn_->GetActorLocation(), true),
-            NedTransform::toNedMeters(car_pawn_->GetVelocity(), true),
+            NedTransform::toNedMeters(car_pawn_->GetVelocity(), false),
             NedTransform::toQuaternionr(car_pawn_->GetActorRotation().Quaternion(), true),
             car_pawn_->getVehiclePawnWrapper()->getCollisionInfo(),
             msr::airlib::ClockFactory::get()->nowNanos()
@@ -587,12 +587,12 @@ void ACarPawn::BeginPlay()
 
 void ACarPawn::UpdateHUDStrings()
 {
-    float KPH = FMath::Abs(GetVehicleMovement()->GetForwardSpeed()) * 0.036f;
-    int32 KPH_int = FMath::FloorToInt(KPH);
+    float vel = FMath::Abs(GetVehicleMovement()->GetForwardSpeed() / 100); //cm/s -> m/s
+    float vel_rounded = FMath::FloorToInt(vel * 10) / 10.0f;
     int32 Gear = GetVehicleMovement()->GetCurrentGear();
 
     // Using FText because this is display text that should be localizable
-    SpeedDisplayString = FText::Format(LOCTEXT("SpeedFormat", "{0} km/h"), FText::AsNumber(KPH_int));
+    SpeedDisplayString = FText::Format(LOCTEXT("SpeedFormat", "{0} m/s"), FText::AsNumber(vel_rounded));
 
 
     if (bInReverseGear == true)
