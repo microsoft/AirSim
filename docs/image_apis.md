@@ -193,7 +193,7 @@ When you specify `ImageType = DepthVis` in `ImageRequest`, you get image that he
 You normally want retrieve disparity image as float (i.e. set `pixels_as_float = true` and specify `ImageType = DisparityNormalized` in `ImageRequest`) in which case each pixel is `(Xl - Xr)/Xmax`, valued from 0 to 1.
 
 ### Segmentation
-When you specify `ImageType = Segmentation` in `ImageRequest`, you get image that gives you ground truth segmentation of the scene. At the starup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is than mapped to a specific color in [the pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). 
+When you specify `ImageType = Segmentation` in `ImageRequest`, you get image that gives you ground truth segmentation of the scene. At the starup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is than mapped to a specific color in [the pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). Thr RGB values for each object ID can be found in [this file](seg_rgbs.txt).
 
 You can assign a specific value to specific mesh using APIs. For example, below Python code sets the object ID for the mesh called "Ground" to 20 in Blocks environment and hence changes its color in Segmentation view:
 
@@ -210,6 +210,19 @@ success = client.simSetSegmentationObjectID("ground[\w]*", 22, True);
 ```
 
 The return value is true if at least one mesh was found using regular expression matching.
+
+We recommand getting uncompressed image using API like this to make sure you get precise RGB values for segmentation image:
+```
+responses = client.simGetImages([ImageRequest(0, AirSimImageType.Segmentation, False, False)])
+img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
+img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
+img_rgba = np.flipud(img_rgba) #original image is fliped vertically
+
+#find unique colors
+print(np.unique(img_rgba[:,:,0], return_counts=True)) #red
+print(np.unique(img_rgba[:,:,1], return_counts=True)) #green
+print(np.unique(img_rgba[:,:,2], return_counts=True)) #blue  
+```
 
 A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/segmentation.py).
 
