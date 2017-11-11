@@ -60,8 +60,8 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
     fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > fpv_camera_index_ ? vehicle_pawn_wrapper->getCamera(fpv_camera_index_) : nullptr;
     backup_camera_ = backup_camera_index_ >= 0 && vehicle_pawn_wrapper->getCameraCount() > backup_camera_index_ ? vehicle_pawn_wrapper->getCamera(backup_camera_index_) : nullptr;
-    camera_start_location_ = this->GetActorLocation();
-    camera_start_rotation_ = this->GetActorRotation();
+    camera_start_location_ = external_camera_->GetActorLocation();
+    camera_start_rotation_ = external_camera_->GetActorRotation();
     initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
 
     manual_pose_controller_->setActor(external_camera_, false);
@@ -108,14 +108,15 @@ void ACameraDirector::attachSpringArm(bool attach)
     }
     else { //detach
         if (last_parent_ && external_camera_->GetRootComponent()->GetAttachParent() == SpringArm) {
-            external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-            external_camera_->AttachToComponent(last_parent_, FAttachmentTransformRules::KeepWorldTransform);
+            external_camera_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+            external_camera_->AttachToComponent(last_parent_, FAttachmentTransformRules::KeepRelativeTransform);
         }
     }
 }
 
 void ACameraDirector::setMode(ECameraDirectorMode mode)
 {
+    //if prev mode was spring arm but new mode isn't then detach spring arm
     if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE &&
         mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE)
     {
@@ -139,7 +140,8 @@ void ACameraDirector::setupInputBindings()
     UAirBlueprintLib::EnableInput(this);
 
     UAirBlueprintLib::BindActionToKey("inputEventFpvView", EKeys::F, this, &ACameraDirector::inputEventFpvView);
-    UAirBlueprintLib::BindActionToKey("inputEventFlyWithView", EKeys::B, this, &ACameraDirector::inputEventBKey);
+    UAirBlueprintLib::BindActionToKey("inputEventFlyWithView", EKeys::B, this, &ACameraDirector::inputEventFlyWithView);
+    UAirBlueprintLib::BindActionToKey("inputEventBackupView", EKeys::K, this, &ACameraDirector::inputEventBackupView);
     UAirBlueprintLib::BindActionToKey("inputEventGroundView", EKeys::Backslash, this, &ACameraDirector::inputEventGroundView);
     UAirBlueprintLib::BindActionToKey("inputEventManualView", EKeys::M, this, &ACameraDirector::inputEventManualView);
     UAirBlueprintLib::BindActionToKey("inputEventSpringArmChaseView", EKeys::Slash, this, &ACameraDirector::inputEventSpringArmChaseView);
@@ -196,11 +198,6 @@ APIPCamera* ACameraDirector::getBackupCamera() const
 void ACameraDirector::inputEventManualView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL);
-}
-
-void ACameraDirector::inputEventBKey()
-{
-    (backup_camera_ ? inputEventBackupView() : inputEventFlyWithView());
 }
 
 void ACameraDirector::inputEventBackupView()

@@ -58,7 +58,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
     APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
     FTransform actor_transform = player_controller->GetActorTransform();
     //put camera little bit above vehicle
-    FTransform camera_transform(actor_transform.GetLocation() + FVector(300, 0, 200));
+    FTransform camera_transform(actor_transform.GetLocation() + FVector(follow_distance_, 0, 400));
 
     //we will either find external camera if it already exist in evironment or create one
     APIPCamera* external_camera;
@@ -75,7 +75,6 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             CameraDirector->setFollowDistance(follow_distance_);
             CameraDirector->setCameraRotationLagEnabled(true);
             CameraDirector->setFpvCameraIndex(3);
-            CameraDirector->enableBackupCameraMode(4);
             spawned_actors_.Add(CameraDirector);
 
             //create external camera required for the director

@@ -251,14 +251,15 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
     if (followee == nullptr) {
         return;
     }
-    FVector next_location = followee->GetActorLocation() + offset;
+    FVector actor_location = followee->GetActorLocation() + FVector(0, 0, 4);
+    FVector next_location = actor_location + offset;
     if (fixed_z)
         next_location.Z = fixed_z_val;
 
-    if (GetLastObstaclePosition(follower, next_location, followee->GetActorLocation(), hit, followee)) {
+    if (GetObstacle(follower, next_location, actor_location, hit, followee)) {
         next_location = hit.ImpactPoint + offset;
 
-        if (GetLastObstaclePosition(follower, next_location, followee->GetActorLocation(), hit, followee)) {
+        if (GetObstacle(follower, next_location, actor_location, hit, followee)) {
             float next_z = next_location.Z;
             next_location = hit.ImpactPoint - offset;
             next_location.Z = next_z;

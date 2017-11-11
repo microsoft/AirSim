@@ -83,8 +83,9 @@ void ASimModeBase::readSettings()
     }
 
     std::string simmode_name = settings.getString("SimMode", "");
-    if (simmode_name == "")
-        simmode_name = "Multirotor";
+    if (simmode_name == "") {
+        throw std::invalid_argument("simmode_name is not expected empty in SimModeBase");
+    }
 
     usage_scenario = settings.getString("UsageScenario", "");
     default_vehicle_config = settings.getString("DefaultVehicleConfig", "");

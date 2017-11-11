@@ -37,7 +37,6 @@ public:
     void inputEventFlyWithView();
     void inputEventSpringArmChaseView();
     void inputEventBackupView();
-    void inputEventBKey();
 
 public:
     ACameraDirector();
@@ -62,7 +61,7 @@ public:
 
     // Both of these get bound to the 'b' key
     //
-    void enableBackupCameraMode(const int backup_camera_index) { this->backup_camera_index_ = backup_camera_index; }
+    void setBackupCameraIndex(const int backup_camera_index) { this->backup_camera_index_ = backup_camera_index; }
     void enableFlyWithMeMode() { this->backup_camera_index_ = -1; }
 
 private:
@@ -89,5 +88,5 @@ private:
     int follow_distance_;
     bool camera_rotation_lag_enabled_;
     int fpv_camera_index_;
-    int backup_camera_index_ = -1;
+    int backup_camera_index_ = 4;
 };
