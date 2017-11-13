@@ -11,7 +11,7 @@ Our goal is to develop AirSim as a platform for AI research to experiment with d
 ## What's New
 
 * We now have the [car model](docs/using_car.md).
-* New built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
+* New built-in flight controller called [simple_flight](docs/simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
 * AirSim now also generates [depth as well as disparity images](docs/image_apis.md) that is in camera plan. 
 * We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](docs/release_notes.md).
 * No need to build the code. Just download [our binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
