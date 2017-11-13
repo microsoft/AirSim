@@ -53,7 +53,7 @@ while True:
 
         if (current < 20):
             print("woops - we are about to crash, so stopping!")
-            client.hover().get()
+            client.hover()
             sys.exit(0)
     
         pitch, roll, yaw  = client.getRollPitchYaw()
