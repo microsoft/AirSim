@@ -96,6 +96,9 @@ More on [image APIs and Computer Vision mode](image_apis.md).
 * `isApiControlEnabled`: Returns true if API control is established. If false (which is default) then API calls would be ignored. After a successful call to `enableApiControl`, the `isApiControlEnabled` should return true.
 * `ping`: If connection is established then this call will return true otherwise it will be blocked until timeout.
 
+### Coordinate System
+All AirSim API uses NED coordinate system, i.e., +X is North, +Y is East and +Z is Down. All units are in SI system. Please note that this is different from coordinate system used internally by Unreal Engine. In Unreal Engine, +Z is up instead of down and length unit is in centimeters instead of meters. AirSim APIs takes care of the appropriate conversions. The starting point of the vehicle is always coordinates (0, 0, 0) in NED system. Thus when converting from Unreal coordinates to NED, we first subtract the starting offset and then scale by 100 for cm to m conversion.
+
 ### APIs for Car
 Car has followings APIs available:
 

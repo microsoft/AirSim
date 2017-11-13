@@ -89,14 +89,19 @@ We welcome contributions to help advance research frontiers.
 * [More on code structure](docs/code_structure.md)
 * [Contribution Guidelines](docs/contributing.md)
 
-### Contact
+
+### Who is Using AirSim?
+
+We are [maintaining list](docs/who_is_using.md) of few projects, people and groups that we are aware of. If you had like to be featured in this list please [add request here](https://github.com/microsoft/airsim/issues).
+
+## Contact
 
 Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
 
-### FAQ
+## FAQ
 
 If you run into problems, check the [FAQ](docs/faq.md) and feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
 
-### License
+## License
 
 This project is released under MIT License. Please review [License file](LICENSE) for more details.

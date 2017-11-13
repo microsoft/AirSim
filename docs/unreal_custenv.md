@@ -1,5 +1,7 @@
 # Creating and Setting Up Unreal Environment
-This page contains the complete instructions start to finish for setting up Unreal environment with AirSim. For demonstration, we will use a freely downloadable environment from [Unreal Marketplace](https://www.unrealengine.com/marketplace) called Landscape Mountain but the steps are same for any other environments. You can also view these steps performed in [Unreal AirSim Setup Video](https://youtu.be/1oY8Qu5maQQ).
+This page contains the complete instructions start to finish for setting up Unreal environment with AirSim. The Unreal Marketplace has [several environment](https://www.unrealengine.com/marketplace/content-cat/assets/environments) available that you can start using in just few minutes. It is also possible to use environments available on websites such as [turbosquid.com](https://www.turbosquid.com/) or [cgitrader.com](https://www.cgtrader.com/) with bit more effort (here's [tutorial video](https://www.youtube.com/watch?v=y09VbdQWvQY&feature)). 
+
+Below we will use a freely downloadable environment from Unreal Marketplace called Landscape Mountain but the steps are same for any other environments. You can also view these steps performed in [Unreal AirSim Setup Video](https://youtu.be/1oY8Qu5maQQ).
 
 ## Note for Linux Users
 There is no `Epic Games Launcher` for Linux which means that if you need to create custom environment, you will need Windows machine to do that. Once you have Unreal project folder, just copy it over to your Linux machine. 
@@ -41,7 +43,6 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
 		"MacNoEditor",
 		"WindowsNoEditor"
 	],
-	"EpicSampleNameHash": "1226740271",
 	"Plugins": [
 		{
 			"Name": "AirSim",
@@ -76,6 +77,13 @@ Congratulations! You are now running AirSim in your own Unreal environment.
 ## Chosing Your Vehicle: Car or Multirotor
 By default AirSim spawns multirotor. You can easily change this to car and use all of AirSim goodies. Please see [using car](using_car.md) guide.
 
+## Updating Your Environment to Latest Version of AirSim
+Once you have your environment using above instructions, you should frequently update your local AirSim code to latest version from GitHub. Below are the instructions to do this:
+
+1. First put [clean.bat](https://github.com/Microsoft/AirSim/blob/master/Unreal/Environments/Blocks/clean.bat) (or [clean.sh](https://github.com/Microsoft/AirSim/blob/master/Unreal/Environments/Blocks/clean.sh) for Linux users) in the root folder of your environment. Run this file to clean up all intermediate files in your Unreal project.
+2. Do `git pull` in your AirSim repo followed by `build.cmd` (or `./build.sh` for Linux users).
+3. Replace [your project]/Plugins folder with AirSim/Unreal/Plugins folder.
+4. Right click on your .uproject file and chose "Generate Visual Studio project files" option. This is not required for Linux.
 
 ## FAQ
 
