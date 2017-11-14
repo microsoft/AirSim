@@ -71,7 +71,7 @@ void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AA
     //FRotator CurrentRotation = GetActorRotation(RootComponent);
     //SetActorRotation(FQuat::Slerp(CurrentRotation.Quaternion(), HitNormal.ToOrientationQuat(), 0.025f));
 
-    UPrimitiveComponent* comp = Other ? (Other->GetRootPrimitiveComponent() ? Other->GetRootPrimitiveComponent() : nullptr) : nullptr;
+    UPrimitiveComponent* comp = Cast<class UPrimitiveComponent>(Other ? (Other->GetRootComponent() ? Other->GetRootComponent() : nullptr) : nullptr);
 
     state_.collision_info.has_collided = true;
     state_.collision_info.normal = NedTransform::toVector3r(Hit.ImpactNormal, 1, true);
