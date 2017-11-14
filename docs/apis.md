@@ -83,12 +83,7 @@ int main()
 
 You can find a ready to run project in HelloCar folder in the repository.
 
-## Image / Computer Vision and Collision APIs
-AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
-
-More on [image APIs and Computer Vision mode](image_apis.md).
-
-### Common APIs
+## Common APIs
 
 * `reset`: This resets the vehicle to its original starting state.
 * `confirmConnection`: Checks state of connection every 1 sec and reports it in Console so user can see the progress for connection.
@@ -99,6 +94,12 @@ More on [image APIs and Computer Vision mode](image_apis.md).
 ### Coordinate System
 All AirSim API uses NED coordinate system, i.e., +X is North, +Y is East and +Z is Down. All units are in SI system. Please note that this is different from coordinate system used internally by Unreal Engine. In Unreal Engine, +Z is up instead of down and length unit is in centimeters instead of meters. AirSim APIs takes care of the appropriate conversions. The starting point of the vehicle is always coordinates (0, 0, 0) in NED system. Thus when converting from Unreal coordinates to NED, we first subtract the starting offset and then scale by 100 for cm to m conversion.
 
+## Image / Computer Vision and Collision APIs
+AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
+
+More on [image APIs and Computer Vision mode](image_apis.md).
+
+## Vehicle Specific APIs
 ### APIs for Car
 Car has followings APIs available:
 
