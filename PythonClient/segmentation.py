@@ -20,6 +20,10 @@ print("Done: %r" % (found))
 
 #for neighbourhood environment
 
+#set object ID for sky
+found = client.simSetSegmentationObjectID("SkySphere", 42, True);
+print("Done: %r" % (found))
+
 success = client.simSetSegmentationObjectID("[\w]*", 0, True);
 print('success', success)
 success = client.simSetSegmentationObjectID("birch[\w]*", 2, True);
