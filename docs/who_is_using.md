@@ -7,6 +7,7 @@ Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick
 * [Astrobotic](https://www.astrobotic.com/technology) - [Kerry Snyder](http://www.ohscope.com/)
 * [GRASP Lab, Univ of Pennsylvania](https://www.grasp.upenn.edu/) - [Dr. Giuseppe Loianno](http://wpage.unina.it/giuseppe.loianno/)
 * [Department of Aeronautics and Astronautics, Stanford University](https://aa.stanford.edu/) - [Prof. Mykel J. Kochenderfer](http://mykel.kochenderfer.com/)
+* [Formula Technion](https://formula-technion.weebly.com/) - Dean Zadok
 * [Ghent University](https://www.ugent.be) - [Nils Tijtgat](https://timebutt.github.io/static/author/nils/)
 * [ICARUS](http://icarus.upc.edu) - [Kjell Kersandt](https://github.com/kjell-k)
 * [UC, Santa Barbara](https://www.ucsb.edu/) - [Rodger Luo](http://www.rodgerluo.com/) and Sam Green
