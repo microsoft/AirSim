@@ -56,7 +56,7 @@ while True:
             client.hover()
             sys.exit(0)
     
-        pitch, roll, yaw  = client.getRollPitchYaw()
+        pitch, roll, yaw  = client.getPitchRollYaw()
 
         if (distance > current + 30):
         

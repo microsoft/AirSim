@@ -455,7 +455,7 @@ class MultirotorClient(AirSimClientBase, object):
         return self.client.call('getLandedState')
     def getGpsLocation(self):
         return GeoPoint.from_msgpack(self.client.call('getGpsLocation'))
-    def getRollPitchYaw(self):
+    def getPitchRollYaw(self):
         return self.toEulerianAngle(self.getOrientation())
 
     #def getRCData(self):
