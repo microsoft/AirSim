@@ -122,7 +122,7 @@ private:
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <libudev.h>
+//#include <libudev.h>
 #include "unistd.h"
 
 //implementation for unsupported OS
