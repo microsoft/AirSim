@@ -74,7 +74,7 @@ macro(CommonSetup)
                     -nostdinc++ -isystem ${LIBCXX_INC_PATH} \
                     -D__CLANG__ ${CMAKE_CXX_FLAGS}")
                 set(CMAKE_EXE_LINKER_FLAGS "\
-                    ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc -lgcc_s -lgcc -lsupc++ \
+                    ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc -lsupc++ \
                     -L ${LIBCXX_LIB_PATH}")
                 
                 #do not use experimental as it might potentially cause ABI issues
