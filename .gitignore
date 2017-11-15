@@ -318,5 +318,6 @@ deps/
 /cmake-3.7.2-win64-x64.zip
 /3.3.2.zip
 /PythonClient/cloud.txt
-/Unreal/Plugins/AirSim/Content/VehicleAdv/Suv
+/Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/
 /suv_download_tmp
+car_assets.zip
