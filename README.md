@@ -95,7 +95,7 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 
 ### Contribute
 
-We welcome contributions to help advance research frontiers. 
+We welcome contributions to help advance research frontiers. Please take a look at [open issues](https://github.com/microsoft/airsim/issues) and [Trello board](https://trello.com/b/1t2qCeaA/todo) if you are looking for areas to contribute to.
 
 * [More on AirSim design](docs/design.md)
 * [More on code structure](docs/code_structure.md)
