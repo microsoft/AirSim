@@ -139,7 +139,8 @@ private:
             call_end = nanos();
 
             TTimeDelta elapsed_period = nanos() - period_start;
-            TTimeDelta delay_nanos = period_nanos_ - elapsed_period;
+            //prevent underflow: https://github.com/Microsoft/AirSim/issues/617
+            TTimeDelta delay_nanos = period_nanos_ > elapsed_period ? period_nanos_ - elapsed_period : 0;
             //moving average of how much we are sleeping
             sleep_time_avg_ = 0.25f * sleep_time_avg_ + 0.75f * delay_nanos;
             ++period_count_;
