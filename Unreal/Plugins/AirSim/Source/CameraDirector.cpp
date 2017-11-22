@@ -28,7 +28,7 @@ void ACameraDirector::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
-        manual_pose_controller_->updateActorPose();
+        manual_pose_controller_->updateActorPose(DeltaTime);
     }
     else if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE) {
         //do nothing
