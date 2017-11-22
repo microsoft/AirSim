@@ -144,6 +144,8 @@ To active this mode, edit [settings.json](settings.json) that you can find in yo
 }
 ```
 
+When you start AirSim and prompted to choose car or drone, select drone by pressing No button.
+
 [Here's the Python code example](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py) to move camera around and capture images.
 
 If you are only interested in this mode, you might also want to take a look at [UnrealCV project](http://unrealcv.org/).

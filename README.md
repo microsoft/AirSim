@@ -61,11 +61,11 @@ Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode,
 
 [More details](image_apis.md)
 
-### Video Tutorials
+### Tutorials
 
-- [Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) 
-- [Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0)
-
+- [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) 
+- [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0)
+- [Reinforcement Learning with AirSim](docs/reinforcement_learning.md)
 
 ## What's New
 
@@ -95,7 +95,7 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 
 ### Contribute
 
-We welcome contributions to help advance research frontiers. Please take a look at [open issues](https://github.com/microsoft/airsim/issues) and [Trello board](https://trello.com/b/1t2qCeaA/todo) if you are looking for areas to contribute to.
+Please take a look at [open issues](https://github.com/microsoft/airsim/issues) and [Trello board](https://trello.com/b/1t2qCeaA/todo) if you are looking for areas to contribute to.
 
 * [More on AirSim design](docs/design.md)
 * [More on code structure](docs/code_structure.md)
