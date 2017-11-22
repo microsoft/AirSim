@@ -24,7 +24,7 @@ macro(SetupConsoleBuild)
 endmacro(SetupConsoleBuild)
 
 macro(CommonSetup)
-    message(STATUS "Running CommonSetup...")   
+    message(STATUS "Running CommonSetup...")
 
     find_package(Threads REQUIRED)
 
@@ -33,16 +33,16 @@ macro(CommonSetup)
 
     #setup output paths
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
-    SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/output/bin) 
-    SET(LIBRARY_OUTPUT_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}) 
+    SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/output/bin)
+    SET(LIBRARY_OUTPUT_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
     #libcxx which we will use with specific version of clang
-    SET(LIBCXX_INC_PATH ${AIRSIM_ROOT}/llvm-build/output/include/c++/v1) 
-    SET(LIBCXX_LIB_PATH ${AIRSIM_ROOT}/llvm-build/output/lib) 
+    SET(LIBCXX_INC_PATH ${AIRSIM_ROOT}/llvm-build/output/include/c++/v1)
+    SET(LIBCXX_LIB_PATH ${AIRSIM_ROOT}/llvm-build/output/lib)
 
     #setup include and lib for rpclib which will be referenced by other projects
     set(RPCLIB_NAME_SUFFIX rpclib)
-    set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/include") 
+    set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/include")
     set(RPC_LIB ${CMAKE_PROJECT_NAME}-${RPCLIB_NAME_SUFFIX})
 
     #what is our build type debug or release?
@@ -58,7 +58,7 @@ macro(CommonSetup)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__CLANG__")
         else ()
             # other flags used in Unreal: -funwind-tables  -fdiagnostics-format=msvc -fno-inline  -Werror -fno-omit-frame-pointer  -fstack-protector -O2
-            # TODO: add back -Wunused-parameter -Wno-documentation after rpclib can be compiled 
+            # TODO: add back -Wunused-parameter -Wno-documentation after rpclib can be compiled
             set(CMAKE_CXX_FLAGS "\
                 -std=c++14 -ggdb -Wall -Wextra -Wstrict-aliasing -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy \
                 -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch-default \
@@ -75,8 +75,8 @@ macro(CommonSetup)
                     -D__CLANG__ ${CMAKE_CXX_FLAGS}")
                 set(CMAKE_EXE_LINKER_FLAGS "\
                     ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc -lsupc++ \
-                    -L ${LIBCXX_LIB_PATH}")
-                
+                    -L ${LIBCXX_LIB_PATH} -rpath ${LIBCXX_LIB_PATH}")
+
                 #do not use experimental as it might potentially cause ABI issues
                 #set(CXX_EXP_LIB "-lc++experimental")
 
@@ -109,15 +109,15 @@ macro(CommonSetup)
 
     ## TODO: we are not using Boost any more so below shouldn't be needed
     ## common boost settings to make sure we are all on the same page
-    set(Boost_USE_STATIC_LIBS ON) 
-    set(Boost_USE_MULTITHREADED ON)  
-    #set(Boost_USE_STATIC_RUNTIME ON)  
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+    #set(Boost_USE_STATIC_RUNTIME ON)
 
     ## TODO: probably should set x64 explicitly
     ## strip x64 from /machine:x64 from CMAKE_STATIC_LINKER_FLAGS and set in BUILD_PLATFORM
     if(NOT "${CMAKE_STATIC_LINKER_FLAGS}" STREQUAL "")
       string(SUBSTRING ${CMAKE_STATIC_LINKER_FLAGS} 9 -1 "BUILD_PLATFORM")
-    endif() 
-    
+    endif()
+
 endmacro(CommonSetup)
 
