@@ -134,7 +134,7 @@ const msr::airlib::RCData& MultiRotorConnector::getRCData()
     return rc_data_;
 }
 
-void MultiRotorConnector::updateRenderedState()
+void MultiRotorConnector::updateRenderedState(float dt)
 {
     //Utils::log("------Render tick-------");
 
@@ -147,7 +147,9 @@ void MultiRotorConnector::updateRenderedState()
         FVector delta_position;
         FRotator delta_rotation;
 
-        manual_pose_controller_->getActorDeltaPose(delta_position, delta_rotation, true);
+        manual_pose_controller_->updateDeltaPosition(dt);
+        manual_pose_controller_->getDeltaPose(delta_position, delta_rotation);
+        manual_pose_controller_->resetDelta();
         Vector3r delta_position_ned = NedTransform::toNedMeters(delta_position, false);
         Quaternionr delta_rotation_ned = NedTransform::toQuaternionr(delta_rotation.Quaternion(), true);
 

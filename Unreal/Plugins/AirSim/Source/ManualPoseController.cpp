@@ -14,6 +14,8 @@ void UManualPoseController::initializeForPlay()
     up_mapping_ = FInputAxisKeyMapping("inputManualArrowUp", EKeys::PageUp); down_mapping_ = FInputAxisKeyMapping("inputManualArrowDown", EKeys::PageDown); 
     left_yaw_mapping_ = FInputAxisKeyMapping("inputManualLeftYaw", EKeys::A); up_pitch_mapping_ = FInputAxisKeyMapping("inputManualUpPitch", EKeys::W);
     right_yaw_mapping_ = FInputAxisKeyMapping("inputManualRightYaw", EKeys::D); down_pitch_mapping_ = FInputAxisKeyMapping("inputManualDownPitch", EKeys::S);
+
+    input_positive_ = inpute_negative_ = last_velocity_ = FVector::ZeroVector;
 }
 
 void UManualPoseController::restoreLastActor()
@@ -41,10 +43,10 @@ AActor* UManualPoseController::getActor() const
     return actor_;
 }
 
-void UManualPoseController::updateActorPose(float delta_sec)
+void UManualPoseController::updateActorPose(float dt)
 {
     if (actor_ != nullptr) {
-        updateDeltaPosition(delta_sec);
+        updateDeltaPosition(dt);
 
         FVector location = actor_->GetActorLocation();
         FRotator rotation = actor_->GetActorRotation();
@@ -56,18 +58,15 @@ void UManualPoseController::updateActorPose(float delta_sec)
     }
 }
 
-void UManualPoseController::getActorDeltaPose(FVector& delta_position, FRotator& delta_rotation, bool reset_delta)
+void UManualPoseController::getDeltaPose(FVector& delta_position, FRotator& delta_rotation) const
 {
     delta_position = delta_position_;
     delta_rotation = delta_rotation_;
-
-    if (reset_delta)
-        resetDelta();
 }
 
 void UManualPoseController::resetDelta()
 {
-    delta_position_ = input_positive_ = inpute_negative_ = last_velocity_ = FVector::ZeroVector;
+    delta_position_ = FVector::ZeroVector;
     delta_rotation_ = FRotator::ZeroRotator;
 }
 
@@ -109,12 +108,15 @@ void UManualPoseController::enableBindings(bool enable)
     right_yaw_binding_->bConsumeInput = down_pitch_binding_->bConsumeInput = enable;
 }
 
-void UManualPoseController::updateDeltaPosition(float delta_sec)
+void UManualPoseController::updateDeltaPosition(float dt)
 {
     FVector input = input_positive_ - inpute_negative_;
     if (!FMath::IsNearlyZero(input.SizeSquared())) {
-        last_velocity_ += input * (acceleration_ * delta_sec);
-        delta_position_ += actor_->GetActorRotation().RotateVector(last_velocity_ * delta_sec);
+        if (FMath::IsNearlyZero(acceleration_))
+            last_velocity_ = input * 1000;
+        else
+            last_velocity_ += input * (acceleration_ * dt);
+        delta_position_ += actor_->GetActorRotation().RotateVector(last_velocity_ * dt);
     } else {
         delta_position_ = last_velocity_ = FVector::ZeroVector;
     }

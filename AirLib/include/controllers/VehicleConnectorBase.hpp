@@ -16,7 +16,7 @@ public:
     //pure abstract methods in addition to UpdatableObject
 
     //called when physics gets updated (must be fast, avoid rendering)
-    virtual void updateRenderedState() = 0;
+    virtual void updateRenderedState(float dt) = 0;
     //called when render changes are required
     virtual void updateRendering(float dt) = 0;
 

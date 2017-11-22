@@ -12,10 +12,12 @@ public:
     void initializeForPlay();
     void setActor(AActor* actor, bool enable_binding = true);
     AActor* getActor() const;
-    void updateActorPose(float delta_sec);
+    void updateActorPose(float dt);
     void restoreLastActor();
     void enableBindings(bool enable);
-    void getActorDeltaPose(FVector& delta_position, FRotator& delta_rotation, bool reset_delta);
+    void getDeltaPose(FVector& delta_position, FRotator& delta_rotation) const;
+    void resetDelta();
+    void updateDeltaPosition(float dt);
 
 private:
     void inputManualLeft(float val);
@@ -31,10 +33,7 @@ private:
 
     void setupInputBindings();	
     void removeInputBindings();
-    void resetDelta();
-    void updateDeltaPosition(float delta_sec);
-
-
+    
 private:
     FInputAxisBinding *left_binding_, *right_binding_, *up_binding_, *down_binding_;
     FInputAxisBinding *forward_binding_, *backward_binding_, *left_yaw_binding_, *up_pitch_binding_;
@@ -50,7 +49,7 @@ private:
 
     AActor *actor_, *last_actor_;
 
-    float acceleration_ = 10;
+    float acceleration_ = 0;
     FVector input_positive_, inpute_negative_;
     FVector last_velocity_;
 };

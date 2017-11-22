@@ -36,7 +36,7 @@ public:
     MultiRotorConnector(VehiclePawnWrapper* vehicle_paw_wrapper, msr::airlib::MultiRotorParams* vehicle_params, 
         bool enable_rpc, std::string api_server_address, uint16_t api_server_port,
         UManualPoseController* manual_pose_controller);
-    virtual void updateRenderedState() override;
+    virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
     virtual void startApiServer() override;

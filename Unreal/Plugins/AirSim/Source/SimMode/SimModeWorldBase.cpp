@@ -136,7 +136,7 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
         physics_world_->updateStateReport();
 
         for (auto& vehicle : vehicles_)
-            vehicle->updateRenderedState();
+            vehicle->updateRenderedState(DeltaSeconds);
 
         physics_world_->unlock();
     }
