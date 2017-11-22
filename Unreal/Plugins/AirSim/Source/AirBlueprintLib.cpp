@@ -7,11 +7,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include <exception>
-#include <regex>
 #include "common/common_utils/Utils.hpp"
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
 #include "UObjectIterator.h"
+//#include "Runtime/Foliage/Public/FoliageType.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Engine/Engine.h"
 
@@ -128,31 +128,78 @@ void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& fou
     UGameplayStatics::GetAllActorsOfClass(context == nullptr ? GEngine : context, T::StaticClass(), foundActors);
 }
 
-std::string UAirBlueprintLib::GetMeshName(UMeshComponent* mesh)
+template<typename T>
+void UAirBlueprintLib::InitializeObjectStencilID(T* mesh)
 {
-    return std::string( TCHAR_TO_UTF8(*(mesh->GetOwner() ? mesh->GetOwner()->GetName() :
-        ""))); //UKismetSystemLibrary::GetDisplayName(mesh)
+    //mesh->SetRenderCustomDepth(true);
+    std::string mesh_name = GetMeshName(mesh);
+    if (mesh_name == "") {
+        //Utils::DebugBreak();
+        return;
+    }
+    FString name(mesh_name.c_str());
+    int hash = 5;
+    int max_len = name.Len() - name.Len() / 4; //remove training numerical suffixes
+    if (max_len < 3)
+        max_len = name.Len();
+    for (int idx = 0; idx < max_len; ++idx) {
+        hash += UKismetStringLibrary::GetCharacterAsNumber(name, idx);
+    }
+    //if (mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
+        mesh->CustomDepthStencilValue = hash % 256;
+        //mesh->SetRenderCustomDepth(true);
+        //mesh->MarkRenderStateDirty();
+    //}
+}
+
+template<class T>
+std::string UAirBlueprintLib::GetMeshName(T* mesh)
+{
+    if (mesh->GetOwner())
+        return std::string(TCHAR_TO_UTF8(*(mesh->GetOwner()->GetName())));
+    else
+        return ""; // std::string(TCHAR_TO_UTF8(*(UKismetSystemLibrary::GetDisplayName(mesh))));
+}
+
+std::string GetMeshName(ALandscapeProxy* mesh)
+{
+    return std::string(TCHAR_TO_UTF8(*(mesh->GetName())));
 }
 
 void UAirBlueprintLib::InitializeMeshStencilIDs()
 {
     for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
     {
-        UMeshComponent *mesh = *comp;
-        mesh->SetRenderCustomDepth(true);
-        std::string mesh_name = GetMeshName(mesh);
-        if (mesh_name == "")
-            continue;
-        FString name(mesh_name.c_str());
-        int hash = 0;
-        for (int idx = 0; idx < name.Len() && idx < 3; ++idx) {
-            hash += UKismetStringLibrary::GetCharacterAsNumber(name, idx);
-        }
-        mesh->CustomDepthStencilValue = hash % 256;
-        mesh->MarkRenderStateDirty();
+        InitializeObjectStencilID(*comp);
+    }
+    //for (TObjectIterator<UFoliageType> comp; comp; ++comp)
+    //{
+    //    InitializeObjectStencilID(*comp);
+    //}
+    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
+    {
+        InitializeObjectStencilID(*comp);
     }
 }
 
+template<typename T>
+void UAirBlueprintLib::SetObjectStencilID(T* mesh, int object_id, const std::string& mesh_name, bool is_name_regex, 
+    const std::regex& name_regex, int& changes)
+{
+    std::string comp_mesh_name = GetMeshName(mesh);
+    if (comp_mesh_name == "")
+        return;
+    bool is_match = (!is_name_regex && (comp_mesh_name == mesh_name))
+        || (is_name_regex && std::regex_match(comp_mesh_name, name_regex));
+    if (is_match) {
+        ++changes;
+        mesh->CustomDepthStencilValue = object_id;
+        //mesh->SetRenderCustomDepth(false);
+        //mesh->SetRenderCustomDepth(true);
+        //mesh->SetVisibility(false);
+        //mesh->SetVisibility(true);
+    }
+}
 bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object_id,
     bool is_name_regex)
 {
@@ -164,27 +211,11 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
     int changes = 0;
     for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
     {
-        UMeshComponent *mesh = *comp;
-
-        std::string comp_mesh_name = GetMeshName(mesh);
-        if (comp_mesh_name == "")
-            continue;
-
-        bool is_match = (!is_name_regex && (comp_mesh_name == mesh_name))
-            || (is_name_regex && std::regex_match(comp_mesh_name, name_regex));
-
-        if (is_match) {
-            ++changes;
-            //mesh->SetRenderCustomDepth(false);
-            //mesh->SetRenderCustomDepth(true);
-            mesh->CustomDepthStencilValue = object_id;
-            //mesh->SetVisibility(false);
-            //mesh->SetVisibility(true);
-            mesh->MarkRenderStateDirty();
-
-            //if (! is_name_regex)
-            //    return true;
-        }
+        SetObjectStencilID(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
+    }
+    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
+    {
+        SetObjectStencilID(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }
 
     return changes > 0;
