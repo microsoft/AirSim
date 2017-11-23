@@ -23,8 +23,6 @@ parameters -> camel_case
 */
 
 
-typedef common_utils::Utils Utils;
-
 bool UAirBlueprintLib::log_messages_hidden = false;
 
 void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec)
@@ -129,12 +127,11 @@ void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& fou
 }
 
 template<typename T>
-void UAirBlueprintLib::InitializeObjectStencilID(T* mesh)
+void UAirBlueprintLib::InitializeObjectStencilID(T* mesh, bool ignore_existing)
 {
-    //mesh->SetRenderCustomDepth(true);
     std::string mesh_name = GetMeshName(mesh);
-    if (mesh_name == "") {
-        //Utils::DebugBreak();
+    if (mesh_name == "" || common_utils::Utils::startsWith(mesh_name, "Default_")) {
+        //common_utils::Utils::DebugBreak();
         return;
     }
     FString name(mesh_name.c_str());
@@ -145,11 +142,24 @@ void UAirBlueprintLib::InitializeObjectStencilID(T* mesh)
     for (int idx = 0; idx < max_len; ++idx) {
         hash += UKismetStringLibrary::GetCharacterAsNumber(name, idx);
     }
-    //if (mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
-        mesh->CustomDepthStencilValue = hash % 256;
-        //mesh->SetRenderCustomDepth(true);
-        //mesh->MarkRenderStateDirty();
-    //}
+    if (ignore_existing || mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
+        SetObjectStencilID(mesh, hash % 256);
+    }
+}
+
+template<typename T>
+void UAirBlueprintLib::SetObjectStencilID(T* mesh, int object_id)
+{
+    mesh->SetCustomDepthStencilValue(object_id);
+    mesh->SetRenderCustomDepth(true);
+    //mesh->SetVisibility(false);
+    //mesh->SetVisibility(true);
+}
+
+void UAirBlueprintLib::SetObjectStencilID(ALandscapeProxy* mesh, int object_id)
+{
+    mesh->CustomDepthStencilValue = object_id;
+    mesh->bRenderCustomDepth = true;
 }
 
 template<class T>
@@ -161,7 +171,7 @@ std::string UAirBlueprintLib::GetMeshName(T* mesh)
         return ""; // std::string(TCHAR_TO_UTF8(*(UKismetSystemLibrary::GetDisplayName(mesh))));
 }
 
-std::string GetMeshName(ALandscapeProxy* mesh)
+std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
 {
     return std::string(TCHAR_TO_UTF8(*(mesh->GetName())));
 }
@@ -183,7 +193,7 @@ void UAirBlueprintLib::InitializeMeshStencilIDs()
 }
 
 template<typename T>
-void UAirBlueprintLib::SetObjectStencilID(T* mesh, int object_id, const std::string& mesh_name, bool is_name_regex, 
+void UAirBlueprintLib::SetObjectStencilIDIfMatch(T* mesh, int object_id, const std::string& mesh_name, bool is_name_regex, 
     const std::regex& name_regex, int& changes)
 {
     std::string comp_mesh_name = GetMeshName(mesh);
@@ -193,11 +203,7 @@ void UAirBlueprintLib::SetObjectStencilID(T* mesh, int object_id, const std::str
         || (is_name_regex && std::regex_match(comp_mesh_name, name_regex));
     if (is_match) {
         ++changes;
-        mesh->CustomDepthStencilValue = object_id;
-        //mesh->SetRenderCustomDepth(false);
-        //mesh->SetRenderCustomDepth(true);
-        //mesh->SetVisibility(false);
-        //mesh->SetVisibility(true);
+        SetObjectStencilID(mesh, object_id);
     }
 }
 bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object_id,
@@ -211,11 +217,11 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
     int changes = 0;
     for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
     {
-        SetObjectStencilID(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
+        SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }
     for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
     {
-        SetObjectStencilID(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
+        SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }
 
     return changes > 0;
@@ -300,7 +306,7 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
     float dist = (follower->GetActorLocation() - next_location).Size();
     float offset_dist = offset.Size();
     float dist_offset = (dist - offset_dist) / offset_dist;
-    float lerp_alpha = Utils::clip((dist_offset*dist_offset) * 0.01f + 0.01f, 0.0f, 1.0f);
+    float lerp_alpha = common_utils::Utils::clip((dist_offset*dist_offset) * 0.01f + 0.01f, 0.0f, 1.0f);
     next_location = FMath::Lerp(follower->GetActorLocation(), next_location, lerp_alpha);
     follower->SetActorLocation(next_location);
 

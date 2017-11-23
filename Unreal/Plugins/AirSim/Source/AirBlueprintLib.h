@@ -89,10 +89,17 @@ public:
 
 private:
     template<typename T>
-    static void InitializeObjectStencilID(T* obj);
+    static void InitializeObjectStencilID(T* obj, bool ignore_existing = true);
+
+
     template<typename T>
-    static void SetObjectStencilID(T* mesh, int object_id, 
+    static void SetObjectStencilIDIfMatch(T* mesh, int object_id, 
         const std::string& mesh_name, bool is_name_regex, const std::regex& name_regex, int& changes);
+
+    template<typename T>
+    static void SetObjectStencilID(T* mesh, int object_id);
+    static void SetObjectStencilID(ALandscapeProxy* mesh, int object_id);
+
 
 private:
     static bool log_messages_hidden;
