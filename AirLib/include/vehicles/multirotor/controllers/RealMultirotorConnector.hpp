@@ -16,7 +16,7 @@ public:
     {
     }
 
-    virtual void updateRenderedState() override
+    virtual void updateRenderedState(float dt) override
     {
     }
 

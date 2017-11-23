@@ -8,10 +8,13 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/PlayerInput.h"
 #include <string>
+#include <regex>
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/MeshComponent.h"
+#include "LandscapeProxy.h"
 #include "AirBlueprintLib.generated.h"
+
 
 UENUM(BlueprintType)
 enum class LogDebugLevel : uint8 {
@@ -49,7 +52,11 @@ public:
         bool is_name_regex = false);
     static int GetMeshStencilID(const std::string& mesh_name);
     static void InitializeMeshStencilIDs();
-    static std::string GetMeshName(UMeshComponent* mesh);
+
+    template<class T>
+    static std::string GetMeshName(T* mesh);
+    static std::string GetMeshName(ALandscapeProxy* mesh);
+
 
     template<class UserClass>
     static FInputActionBinding& BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,
@@ -79,6 +86,20 @@ public:
     {
         log_messages_hidden = is_hidden;
     }
+
+private:
+    template<typename T>
+    static void InitializeObjectStencilID(T* obj, bool ignore_existing = true);
+
+
+    template<typename T>
+    static void SetObjectStencilIDIfMatch(T* mesh, int object_id, 
+        const std::string& mesh_name, bool is_name_regex, const std::regex& name_regex, int& changes);
+
+    template<typename T>
+    static void SetObjectStencilID(T* mesh, int object_id);
+    static void SetObjectStencilID(ALandscapeProxy* mesh, int object_id);
+
 
 private:
     static bool log_messages_hidden;
