@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>segmentation.py</StartupFile>
+    <StartupFile>hello_car.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -39,6 +39,9 @@
     <Compile Include="drive_straight.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="drone_stress_test.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="seg_pallete.py">
       <SubType>Code</SubType>
     </Compile>
@@ -46,9 +49,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="hello_drone.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="infrared.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="navigate.py">
@@ -60,6 +60,9 @@
     <Compile Include="pfm.py" />
     <Compile Include="AirSimClient.py" />
     <Compile Include="segmentation.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="car_stress_test.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
