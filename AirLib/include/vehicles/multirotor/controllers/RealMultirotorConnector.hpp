@@ -68,6 +68,9 @@ public:
     {
         throw std::logic_error("getSegmentationObjectID() call is only supported for simulation");
     }
+    virtual void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) override
+    {   
+    }
 
 
 private:
