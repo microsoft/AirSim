@@ -109,6 +109,12 @@ vector<uint8_t> RpcLibClientBase::simGetImage(int camera_id, VehicleCameraBase::
     return result;
 }
 
+void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
+{
+    pimpl_->client.call("simPrintLogMessage", message, message_param, severity);
+}
+
+
 msr::airlib::GeoPoint RpcLibClientBase::getHomeGeoPoint()
 {
     return pimpl_->client.call("getHomeGeoPoint").as<RpcLibAdapatorsBase::GeoPoint>().to();

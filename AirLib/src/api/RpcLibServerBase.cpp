@@ -91,6 +91,10 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
         vehicle_->reset();
     });
 
+    pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, std::string message_param, unsigned char severity) -> void {
+        vehicle_->simPrintLogMessage(message, message_param, severity);
+    });
+
     pimpl_->server.bind("getHomeGeoPoint", [&]() -> RpcLibAdapatorsBase::GeoPoint {
         return vehicle_->getHomeGeoPoint();
     });

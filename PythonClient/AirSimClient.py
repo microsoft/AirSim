@@ -178,7 +178,10 @@ class AirSimClientBase:
         return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
     def simGetSegmentationObjectID(self, mesh_name):
         return self.client.call('simGetSegmentationObjectID', mesh_name)
-            
+    def simPrintLogMessage(self, message, message_param = "", severity = 0):
+        return self.client.call('simPrintLogMessage', message, message_param, severity)
+
+
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the AirSimImageType members

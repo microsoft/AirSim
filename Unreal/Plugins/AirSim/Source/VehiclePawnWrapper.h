@@ -68,6 +68,9 @@ public: //interface
     void setLogLine(std::string line);
     std::string getLogLine();
 
+    void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
+
+
 protected:
     UPROPERTY(VisibleAnywhere)
         UParticleSystem* collision_display_template;

@@ -251,6 +251,11 @@ void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& off
 
 }
 
+void VehiclePawnWrapper::printLogMessage(const std::string& message, std::string message_param, unsigned char severity)
+{
+    UAirBlueprintLib::LogMessageString(message, message_param, static_cast<LogDebugLevel>(severity));
+}
+
 //parameters in NED frame
 VehiclePawnWrapper::Pose VehiclePawnWrapper::getPose() const
 {

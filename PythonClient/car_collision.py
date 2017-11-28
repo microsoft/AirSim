@@ -9,6 +9,8 @@ car_controls = CarControls()
 
 client.reset()
 
+client.simPrintLogMessage("Hello", "345", 2)
+
 # go forward
 car_controls.throttle = 0.5
 car_controls.steering = 0

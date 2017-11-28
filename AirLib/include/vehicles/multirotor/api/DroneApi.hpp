@@ -273,6 +273,11 @@ public:
             return vector<uint8_t>();
     }
 
+    virtual void simPrintLogMessage(const std::string& message, std::string message_param, unsigned char severity) override
+    {
+        vehicle_->printLogMessage(message, message_param, severity);
+    }
+
     virtual bool isApiControlEnabled() override
     {
         return controller_->isApiControlEnabled();

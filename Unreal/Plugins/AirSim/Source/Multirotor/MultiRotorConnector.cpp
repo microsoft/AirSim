@@ -247,6 +247,11 @@ bool MultiRotorConnector::setSegmentationObjectID(const std::string& mesh_name, 
     return success;
 }
 
+void MultiRotorConnector::printLogMessage(const std::string& message, std::string message_param, unsigned char severity)
+{
+    vehicle_pawn_wrapper_->printLogMessage(message, message_param, severity);
+}
+
 int MultiRotorConnector::getSegmentationObjectID(const std::string& mesh_name)
 {
     return UAirBlueprintLib::GetMeshStencilID(mesh_name);

@@ -65,6 +65,11 @@ public:
         return success;
     }
     
+    virtual void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) override
+    {
+        car_pawn_->getVehiclePawnWrapper()->printLogMessage(message, message_param, severity);
+    }
+
     virtual int simGetSegmentationObjectID(const std::string& mesh_name) override
     {
         return UAirBlueprintLib::GetMeshStencilID(mesh_name);

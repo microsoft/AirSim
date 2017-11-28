@@ -37,6 +37,7 @@ public:
 
     bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false);
     int simGetSegmentationObjectID(const std::string& mesh_name);
+    void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
     virtual ~RpcLibClientBase();    //required for pimpl
 

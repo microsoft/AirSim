@@ -60,6 +60,9 @@ public:
 
     virtual msr::airlib::VehicleCameraBase* getCamera(unsigned int index = 0) override;
 
+    virtual void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) override;
+
+
 private:
     void detectUsbRc();
     static float joyStickToRC(int16_t val);
