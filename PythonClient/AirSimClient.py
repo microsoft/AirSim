@@ -493,6 +493,19 @@ class MultirotorClient(AirSimClientBase, object):
         return self.client.call('moveToPosition', x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode, lookahead, adaptive_lookahead)
 
     def moveByManual(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
+        """Read current RC state and use it to control the vehicles. 
+
+        Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints
+        then that RC state would be ignored.
+
+        :param vx_max: max velocity allowed in x direction
+        :param vy_max: max velocity allowed in y direction
+        :param vz_max: max velocity allowed in z direction
+        :param z_min: min z allowed allowed for vehicle position
+        :param duration: after this duration vehicle would switch back to non-manual mode
+        :param drivetrain: when ForwardOnly, vehicle rotates itself so that its front is always facing the direction of travel. If MaxDegreeOfFreedom then it doesn't do that (crab-like movement)
+        :param yaw_mode: Specifies if vehicle should face at given angle (is_rate=False) or should be rotating around its axis at given rate (is_rate=True)
+        """
         return self.client.call('moveByManual', vx_max, vy_max, z_min, duration, drivetrain, yaw_mode)
 
     def rotateToYaw(self, yaw, max_wait_seconds = 60, margin = 5):
