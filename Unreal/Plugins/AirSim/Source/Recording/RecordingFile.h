@@ -13,7 +13,7 @@ public:
     RecordingFile(std::vector <std::string> columns);
     ~RecordingFile();
 
-    void appendRecord(TArray<uint8>& compressedPng, VehiclePawnWrapper* wrapper);
+    void appendRecord(TArray<uint8>& compressedPng, VehiclePawnWrapper* wrapper, const std::string& camera_name, const std::string& img_type_name, const std::string& img_name);
     void appendColumnHeader(std::vector <std::string> columns);
     void startRecording();
     void stopRecording(bool ignore_if_stopped);
@@ -29,7 +29,6 @@ private:
 
 private:
     std::string record_filename = "airsim_rec";     
-    unsigned int images_saved_ = 0;
     std::string image_path_;
     bool is_recording_ = false;
     IFileHandle* log_file_handle_ = nullptr;
