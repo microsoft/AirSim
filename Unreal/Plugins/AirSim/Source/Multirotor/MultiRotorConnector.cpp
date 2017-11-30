@@ -85,7 +85,7 @@ void MultiRotorConnector::detectUsbRc()
     rc_data_.is_initialized = joystick_state_.is_initialized;
 
     if (rc_data_.is_initialized)
-        UAirBlueprintLib::LogMessage(TEXT("RC Controller on USB: "), "Detected", LogDebugLevel::Informational);
+        UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid, LogDebugLevel::Informational);
     else
         UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
             std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);

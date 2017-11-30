@@ -35,6 +35,16 @@ public:
         state.right_z = getAxisValue(AxisMap::AxisType::RightZ, maps.right_z, di_state, joystick_info.pid_vid);
         state.left_z = getAxisValue(AxisMap::AxisType::LeftZ, maps.left_z, di_state, joystick_info.pid_vid);
 
+        state.slider0 = di_state.slider0;
+        state.slider1 = di_state.slider1;
+
+        state.pov0 = di_state.pov0;
+        state.pov1 = di_state.pov1;
+        state.pov2 = di_state.pov2;
+        state.pov3 = di_state.pov3;
+
+        state.pid_vid = joystick_info.pid_vid;
+
         state.buttons = 0;
         for (int i = 0; i < sizeof(int)*8; ++i) {
             state.buttons |= ((di_state.buttons[i] & 0x80) == 0 ? 0 : 1) << i;
@@ -62,7 +72,8 @@ private:
             else { //Xbox controllers
                 rc_axis = axis_type;
             }
-        } else
+        } 
+        else
             rc_axis = map.rc_axis;
 
 

@@ -34,6 +34,7 @@ class UAirBlueprintLib : public UBlueprintFunctionLibrary
 
 public:
     static void LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec = 60);
+    UFUNCTION(BlueprintCallable, Category = "Utils")
     static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
     static float GetWorldToMetersScale(const AActor* context);
 

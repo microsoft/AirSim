@@ -14,7 +14,7 @@ class VehicleApiBase {
 public:
     virtual GeoPoint getHomeGeoPoint() = 0;
     virtual void enableApiControl(bool is_enabled) = 0;
-    virtual bool isApiControlEnabled() = 0;
+    virtual bool isApiControlEnabled() const = 0;
     virtual void reset() = 0;
 
     virtual vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request) = 0;

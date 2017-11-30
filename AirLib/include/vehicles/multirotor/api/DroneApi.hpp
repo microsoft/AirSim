@@ -278,7 +278,7 @@ public:
         vehicle_->printLogMessage(message, message_param, severity);
     }
 
-    virtual bool isApiControlEnabled() override
+    virtual bool isApiControlEnabled() const override
     {
         return controller_->isApiControlEnabled();
     }

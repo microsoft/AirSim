@@ -1,12 +1,11 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VehiclePawnWrapper.h"
 #include "WheeledVehicle.h"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
 #include "physics/Kinematics.hpp"
+#include "CarPawnApi.h"
+#include "SimJoyStick/SimJoyStick.h"
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;
@@ -80,14 +79,8 @@ public:
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
     FColor	GearDisplayReverseColor;
 
-    /** Are we in reverse gear */
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly)
-    bool bInReverseGear;
-
     void setupInputBindings();
 
-    void enableApiControl(bool is_enabled);
-    bool isApiControlEnabled();
     void reset(bool disable_api_control = true);
 
     // Begin Actor interface
@@ -157,14 +150,14 @@ public:
 
 private:
     UClass* pip_camera_class_;
-    class CarApi;
+
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
-    std::unique_ptr<msr::airlib::CarApiBase> controller_;
+    std::unique_ptr<msr::airlib::CarApiBase> api_;
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
     msr::airlib::Kinematics::State kinematics_;
-    bool api_control_enabled_ = false;
 
-    float throttle_;
-    float brake_;
-    float steering_;
+    CarPawnApi::CarControls keyboard_controls_;
+
+    SimJoyStick joystick_;
+    SimJoyStick::State joystick_state_;
 };

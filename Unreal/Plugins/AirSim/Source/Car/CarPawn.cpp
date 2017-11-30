@@ -1,5 +1,3 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
-
 #include "CarPawn.h"
 #include "CarWheelFront.h"
 #include "CarWheelRear.h"
@@ -12,7 +10,6 @@
 #include "WheeledVehicleMovementComponent4W.h"
 #include "Engine/SkeletalMesh.h"
 #include "GameFramework/Controller.h"
-#include "vehicles/car/api/CarApiBase.hpp"
 #include "AirBlueprintLib.h"
 #include "NedTransform.h"
 #include "common/ClockFactory.hpp"
@@ -31,134 +28,6 @@ const FName ACarPawn::EngineAudioRPM("RPM");
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
-class ACarPawn::CarApi : public msr::airlib::CarApiBase {
-public:
-    typedef msr::airlib::CarApiBase CarApiBase;
-    typedef msr::airlib::VehicleCameraBase VehicleCameraBase;
-
-    CarApi(ACarPawn* car_pawn)
-        : car_pawn_(car_pawn)
-    {
-    }
-
-    virtual std::vector<VehicleCameraBase::ImageResponse> simGetImages(
-        const std::vector<VehicleCameraBase::ImageRequest>& request) override
-    {
-        std::vector<VehicleCameraBase::ImageResponse> response;
-
-        for (const auto& item : request) {
-            VehicleCameraBase* camera = car_pawn_->getVehiclePawnWrapper()->getCameraConnector(item.camera_id);
-            const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
-            response.push_back(item_response);
-        }
-
-        return response;
-    }
-
-    virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, 
-        bool is_name_regex = false) override
-    {
-        bool success;
-        UAirBlueprintLib::RunCommandOnGameThread([mesh_name, object_id, is_name_regex, &success]() {
-            success = UAirBlueprintLib::SetMeshStencilID(mesh_name, object_id, is_name_regex);
-        }, true);
-        return success;
-    }
-    
-    virtual void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) override
-    {
-        car_pawn_->getVehiclePawnWrapper()->printLogMessage(message, message_param, severity);
-    }
-
-    virtual int simGetSegmentationObjectID(const std::string& mesh_name) override
-    {
-        return UAirBlueprintLib::GetMeshStencilID(mesh_name);
-    }
-
-    virtual msr::airlib::CollisionInfo getCollisionInfo() override
-    {
-        return car_pawn_->getVehiclePawnWrapper()->getCollisionInfo();
-    }
-
-    virtual std::vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) override
-    {
-        std::vector<VehicleCameraBase::ImageRequest> request = { VehicleCameraBase::ImageRequest(camera_id, image_type) };
-        const std::vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
-        if (response.size() > 0)
-            return response.at(0).image_data_uint8;
-        else
-            return std::vector<uint8_t>();
-    }
-
-    virtual void setCarControls(const CarApiBase::CarControls& controls) override
-    {
-        UWheeledVehicleMovementComponent* movement = car_pawn_->GetVehicleMovementComponent();
-
-        if (!controls.is_manual_gear && movement->GetTargetGear() < 0)
-            movement->SetTargetGear(0, true); //in auto gear we must have gear >= 0
-        if (controls.is_manual_gear && movement->GetTargetGear() != controls.manual_gear)
-            movement->SetTargetGear(controls.manual_gear, controls.gear_immediate);
-
-        movement->SetThrottleInput(controls.throttle);
-        movement->SetSteeringInput(controls.steering);
-        movement->SetBrakeInput(controls.brake);
-        movement->SetHandbrakeInput(controls.handbrake);
-        movement->SetUseAutoGears(!controls.is_manual_gear);
-    }
-
-    virtual CarApiBase::CarState getCarState() override
-    {
-        CarApiBase::CarState state(
-            car_pawn_->GetVehicleMovement()->GetForwardSpeed() / 100, //cm/s -> m/s
-            car_pawn_->GetVehicleMovement()->GetCurrentGear(),
-            NedTransform::toNedMeters(car_pawn_->GetActorLocation(), true),
-            NedTransform::toNedMeters(car_pawn_->GetVelocity(), false),
-            NedTransform::toQuaternionr(car_pawn_->GetActorRotation().Quaternion(), true),
-            car_pawn_->getVehiclePawnWrapper()->getCollisionInfo(),
-            msr::airlib::ClockFactory::get()->nowNanos()
-        );
-        return state;
-    }
-
-    virtual void reset() override
-    {
-        UAirBlueprintLib::RunCommandOnGameThread([this]() {
-            this->car_pawn_->reset(false);
-        }, true);
-    }
-
-    virtual void simSetPose(const Pose& pose, bool ignore_collision) override
-    {
-        UAirBlueprintLib::RunCommandOnGameThread([this, pose, ignore_collision]() {
-            this->car_pawn_->getVehiclePawnWrapper()->setPose(pose, ignore_collision);
-        }, true);
-    }
-
-    virtual Pose simGetPose() override
-    {
-        return this->car_pawn_->getVehiclePawnWrapper()->getPose();
-    }
-
-    virtual msr::airlib::GeoPoint getHomeGeoPoint() override
-    {
-        return car_pawn_->getVehiclePawnWrapper()->getHomePoint();
-    }
-
-    virtual void enableApiControl(bool is_enabled) override
-    {
-        car_pawn_->enableApiControl(is_enabled);
-    }
-
-    virtual bool isApiControlEnabled() override
-    {
-        return car_pawn_->isApiControlEnabled();
-    }
-
-    virtual ~CarApi() = default;
-
-private:
-    ACarPawn* car_pawn_;
-};
 
 ACarPawn::ACarPawn()
 {
@@ -298,7 +167,6 @@ ACarPawn::ACarPawn()
     GearDisplayColor = FColor(255, 255, 255, 255);
 
     bIsLowFriction = false;
-    bInReverseGear = false;
 
     wrapper_.reset(new VehiclePawnWrapper());
 }
@@ -340,37 +208,34 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     wrapper_->setKinematics(&kinematics_);
 
     startApiServer(enable_rpc, api_server_address);
+
+    //joystick
+    joystick_.getJoyStickState(0, joystick_state_);
+    if (joystick_state_.is_initialized)
+        UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid, LogDebugLevel::Informational);
+    else
+        UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
+            std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
 }
 
 void ACarPawn::reset(bool disable_api_control)
 {
-    this->getVehiclePawnWrapper()->reset();
-    controller_->setCarControls(CarApi::CarControls());
+    api_->reset();
 
     if (disable_api_control)
-        api_control_enabled_ = false;
-}
-
-void ACarPawn::enableApiControl(bool is_enabled)
-{
-    api_control_enabled_ = is_enabled;
-}
-
-bool ACarPawn::isApiControlEnabled()
-{
-    return api_control_enabled_;
+        api_->enableApiControl(false);
 }
 
 void ACarPawn::startApiServer(bool enable_rpc, const std::string& api_server_address)
 {
     if (enable_rpc) {
-        controller_.reset(new CarApi(this));
+        api_.reset(new CarPawnApi(getVehiclePawnWrapper(), this->GetVehicleMovement()));
 
 
 #ifdef AIRLIB_NO_RPC
         rpclib_server_.reset(new msr::airlib::DebugApiServer());
 #else
-        rpclib_server_.reset(new msr::airlib::CarRpcLibServer(controller_.get(), api_server_address));
+        rpclib_server_.reset(new msr::airlib::CarRpcLibServer(api_.get(), api_server_address));
 #endif
 
         rpclib_server_->start();
@@ -386,7 +251,7 @@ void ACarPawn::stopApiServer()
     if (rpclib_server_ != nullptr) {
         rpclib_server_->stop();
         rpclib_server_.reset(nullptr);
-        controller_.reset(nullptr);
+        api_.reset(nullptr);
     }
 }
 
@@ -459,86 +324,45 @@ void ACarPawn::MoveForward(float Val)
     else
         OnReverseReleased();
 
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Throttle: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
-
-        GetVehicleMovementComponent()->SetThrottleInput(Val);
-        throttle_ = Val;
-    }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Throttle: "), TEXT("(API)"), LogDebugLevel::Informational);
+    keyboard_controls_.throttle = Val;
 }
 
 void ACarPawn::MoveRight(float Val)
 {
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Steering: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
-
-        GetVehicleMovementComponent()->SetSteeringInput(Val);
-        steering_ = Val;
-    }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Steering: "), TEXT("(API)"), LogDebugLevel::Informational);
+    keyboard_controls_.steering = Val;
 }
 
 void ACarPawn::OnHandbrakePressed()
 {
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("Pressed"), LogDebugLevel::Informational);
-
-        GetVehicleMovementComponent()->SetHandbrakeInput(true);
-    }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
+    keyboard_controls_.handbrake = true;
 }
 
 void ACarPawn::OnHandbrakeReleased()
 {
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("Released"), LogDebugLevel::Informational);
-
-        GetVehicleMovementComponent()->SetHandbrakeInput(false);
-    }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Handbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
+    keyboard_controls_.handbrake = false;
 }
 
 void ACarPawn::FootBrake(float Val)
 {
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), FString::SanitizeFloat(Val), LogDebugLevel::Informational);
-
-        GetVehicleMovementComponent()->SetBrakeInput(Val);
-        brake_ = Val;
-    }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Footbrake: "), TEXT("(API)"), LogDebugLevel::Informational);
+    keyboard_controls_.brake = Val;
 }
 
 void ACarPawn::OnReversePressed()
 {
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("Pressed"), LogDebugLevel::Informational);
-
-        if (GetVehicleMovementComponent()->GetTargetGear() >= 0)
-            GetVehicleMovementComponent()->SetTargetGear(-1, true);
+    if (keyboard_controls_.manual_gear >= 0) {
+        keyboard_controls_.is_manual_gear = true;
+        keyboard_controls_.manual_gear = -1;
+        keyboard_controls_.gear_immediate = true;
     }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
 void ACarPawn::OnReverseReleased()
 {
-    if (!api_control_enabled_) {
-        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("Released"), LogDebugLevel::Informational);
-
-        if (GetVehicleMovementComponent()->GetTargetGear() < 0) {
-            GetVehicleMovementComponent()->SetTargetGear(0, true);
-            GetVehicleMovementComponent()->SetUseAutoGears(true);
-        }
+    if (keyboard_controls_.manual_gear < 0) {
+        keyboard_controls_.is_manual_gear = false;
+        keyboard_controls_.manual_gear = 0;
+        keyboard_controls_.gear_immediate = true;
     }
-    else
-        UAirBlueprintLib::LogMessage(TEXT("Reverse: "), TEXT("(API)"), LogDebugLevel::Informational);
 }
 
 void ACarPawn::updateKinematics(float delta)
@@ -561,10 +385,24 @@ void ACarPawn::Tick(float Delta)
 {
     Super::Tick(Delta);
 
-    updateKinematics(Delta);
+    const msr::airlib::CarApiBase::CarControls* current_controls = &keyboard_controls_;
+    if (!api_->isApiControlEnabled()) {
+        UAirBlueprintLib::LogMessageString("Control Mode: ", "Keyboard", LogDebugLevel::Informational);
+        api_->setCarControls(keyboard_controls_);
+    }
+    else {
+        UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
+        current_controls = & api_->getCarControls();
+    }
+    UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls->throttle), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls->brake), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Steering: ", std::to_string(current_controls->steering), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Handbreak: ", std::to_string(current_controls->handbrake), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls->manual_gear), LogDebugLevel::Informational);
 
-    // Setup the flag to say we are in reverse gear
-    bInReverseGear = GetVehicleMovement()->GetCurrentGear() < 0;
+
+
+    updateKinematics(Delta);
 
     // Update phsyics material
     UpdatePhysicsMaterial();
@@ -600,7 +438,7 @@ void ACarPawn::UpdateHUDStrings()
     SpeedDisplayString = FText::Format(LOCTEXT("SpeedFormat", "{0} m/s"), FText::AsNumber(vel_rounded));
 
 
-    if (bInReverseGear == true)
+    if (GetVehicleMovement()->GetCurrentGear() < 0)
     {
         GearDisplayString = FText(LOCTEXT("ReverseGear", "R"));
     }
@@ -624,7 +462,7 @@ void ACarPawn::UpdateInCarHUD()
         InCarSpeed->SetText(SpeedDisplayString);
         InCarGear->SetText(GearDisplayString);
 
-        if (bInReverseGear == false)
+        if (GetVehicleMovement()->GetCurrentGear() >= 0)
         {
             InCarGear->SetTextRenderColor(GearDisplayColor);
         }
@@ -669,9 +507,9 @@ std::string ACarPawn::getLogString()
 
     std::string logString = std::to_string(timestamp_millis).append("\t")
         .append(std::to_string(KPH_int).append("\t"))
-        .append(std::to_string(throttle_)).append("\t")
-        .append(std::to_string(steering_)).append("\t")
-        .append(std::to_string(brake_)).append("\t")
+        .append(std::to_string(keyboard_controls_.throttle)).append("\t")
+        .append(std::to_string(keyboard_controls_.steering)).append("\t")
+        .append(std::to_string(keyboard_controls_.brake)).append("\t")
         .append(gear).append("\t");
 
     return logString;
