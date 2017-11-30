@@ -18,6 +18,7 @@ public:
 
     virtual void updateRenderedState(float dt) override
     {
+        unused(dt);
     }
 
     virtual void updateRendering(float dt) override

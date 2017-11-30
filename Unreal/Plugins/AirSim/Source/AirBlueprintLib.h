@@ -53,6 +53,8 @@ public:
     static int GetMeshStencilID(const std::string& mesh_name);
     static void InitializeMeshStencilIDs();
 
+    static bool IsInGameThread();
+    
     template<class T>
     static std::string GetMeshName(T* mesh);
     static std::string GetMeshName(ALandscapeProxy* mesh);

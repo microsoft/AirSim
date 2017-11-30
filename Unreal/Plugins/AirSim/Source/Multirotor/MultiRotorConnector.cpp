@@ -54,6 +54,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrappe
 
     last_pose_ = pending_pose_ = last_debug_pose_ = Pose::nanPose();
     pending_pose_status_ = PendingPoseStatus::NonePending;
+    reset_pending_ = false;
 
     std::string message;
     if (!vehicle_.getController()->isAvailable(message)) {
@@ -138,6 +139,12 @@ void MultiRotorConnector::updateRenderedState(float dt)
 {
     //Utils::log("------Render tick-------");
 
+    //if reset is pending then do it first, no need to do other things until next tick
+    if (reset_pending_) {
+        reset_task_();
+        return;
+    }
+
     //move collision info from rendering engine to vehicle
     const CollisionInfo& collision_info = vehicle_pawn_wrapper_->getCollisionInfo();
     vehicle_.setCollisionInfo(collision_info);
@@ -187,6 +194,12 @@ void MultiRotorConnector::updateRenderedState(float dt)
 
 void MultiRotorConnector::updateRendering(float dt)
 {
+    //if we did reset then don't worry about synchrnozing states for this tick
+    if (reset_pending_) {
+        reset_pending_ = false;
+        return;
+    }
+
     try {
         controller_->reportTelemetry(dt);
     }
@@ -296,16 +309,27 @@ bool MultiRotorConnector::isApiServerStarted()
 //*** Start: UpdatableState implementation ***//
 void MultiRotorConnector::reset()
 {
-    UAirBlueprintLib::RunCommandOnGameThread([this]() {
-        VehicleConnectorBase::reset();
+    if (UAirBlueprintLib::IsInGameThread())
+        resetPrivate();
+    else {
+        //schedule the task which we will execute in tick event when World object is locked
+        reset_task_ = std::packaged_task<void()>([this]() { resetPrivate(); });
+        std::future<void> reset_result = reset_task_.get_future();
+        reset_pending_ = true;
+        reset_result.wait();
+    }
+}
 
-        //TODO: should this be done in MultiRotor.hpp
-        //controller_->reset();
+void MultiRotorConnector::resetPrivate()
+{
+    VehicleConnectorBase::reset();
 
-        rc_data_ = RCData();
-        vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisions
-        vehicle_.reset();
-    }, true);
+    //TODO: should this be done in MultiRotor.hpp
+    //controller_->reset();
+
+    rc_data_ = RCData();
+    vehicle_pawn_wrapper_->reset();    //we do flier resetPose so that flier is placed back without collisions
+    vehicle_.reset();
 }
 
 void MultiRotorConnector::update()

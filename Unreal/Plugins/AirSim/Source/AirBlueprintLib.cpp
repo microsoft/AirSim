@@ -107,6 +107,10 @@ T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
     return nullptr;
 }
 
+bool UAirBlueprintLib::IsInGameThread()
+{
+    return ::IsInGameThread();
+}
 
 void UAirBlueprintLib::RunCommandOnGameThread(TFunction<void()> InFunction, bool wait, const TStatId InStatId)
 {
