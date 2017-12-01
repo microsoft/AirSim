@@ -88,7 +88,7 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     VehiclePawnWrapper* getVehiclePawnWrapper();
-    void initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound);
+    void initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound, int remoteControlID);
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -131,6 +131,8 @@ private:
     void stopApiServer();
     bool isApiServerStarted();
     void updateKinematics(float delta);
+    void updateCarControls();
+
     std::string getLogString();
 
     /* Are we on a 'slippery' surface */
@@ -157,6 +159,9 @@ private:
     msr::airlib::Kinematics::State kinematics_;
 
     CarPawnApi::CarControls keyboard_controls_;
+    CarPawnApi::CarControls joystick_controls_;
+
+    int remote_control_id_ = -1;
 
     SimJoyStick joystick_;
     SimJoyStick::State joystick_state_;

@@ -125,8 +125,8 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
             if (enable_collision_passthrough)
-                wrapper->config.enable_passthrough_on_collisions = true;
-            if (wrapper->config.is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
+                wrapper->getConfig().enable_passthrough_on_collisions = true;
+            if (wrapper->getConfig().is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
                 fpv_vehicle_pawn_wrapper_ = wrapper;
 
             //now create the connector for each pawn
@@ -189,8 +189,8 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
     auto vehicle_params = MultiRotorParamsFactory::createConfig(
-        wrapper->config.vehicle_config_name == "" ? default_vehicle_config
-        : std::string(TCHAR_TO_UTF8(*wrapper->config.vehicle_config_name)));
+        wrapper->getConfig().vehicle_config_name == "" ? default_vehicle_config
+        : wrapper->getConfig().vehicle_config_name);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 

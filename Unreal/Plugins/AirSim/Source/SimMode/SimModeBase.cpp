@@ -93,7 +93,7 @@ void ASimModeBase::readSettings()
         if (simmode_name == "Multirotor")
             default_vehicle_config = "SimpleFlight";
         else if (simmode_name == "Car")
-            default_vehicle_config = "PhysXCar4x4";
+            default_vehicle_config = "PhysXCar";
         else         
             UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
     }

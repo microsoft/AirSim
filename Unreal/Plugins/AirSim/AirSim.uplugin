@@ -1,7 +1,7 @@
 {
   "FileVersion" : 3,
-  "Version" : "1.1.5",
-  "VersionName": "1.1.5",
+  "Version" : "1.1.7",
+  "VersionName": "1.1.7",
   "FriendlyName": "AirSim",
   "Description": "AirSim - Autonomous Aerial Vehicles Simulator Plugin",
   "Category" : "Science",

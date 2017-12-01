@@ -178,8 +178,10 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
         HitNormal, NormalImpulse, Hit);
 }
 
-void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound)
+void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound, int remote_control_id)
 {
+    remote_control_id_ = remote_control_id;
+
     if (engine_sound)
         EngineSoundComponent->Activate();
     else
@@ -209,17 +211,25 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
 
     startApiServer(enable_rpc, api_server_address);
 
+    //TODO: should do reset() here?
+    keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
+
     //joystick
-    joystick_.getJoyStickState(0, joystick_state_);
-    if (joystick_state_.is_initialized)
-        UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid, LogDebugLevel::Informational);
-    else
-        UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
-            std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
+    if (remote_control_id_ >= 0) {
+        joystick_.getJoyStickState(remote_control_id_, joystick_state_);
+        if (joystick_state_.is_initialized)
+            UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid == "" ?
+                "(Detected)" : joystick_state_.pid_vid, LogDebugLevel::Informational);
+        else
+            UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
+                std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
+    }
+
 }
 
 void ACarPawn::reset(bool disable_api_control)
 {
+    keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
     api_->reset();
 
     if (disable_api_control)
@@ -385,22 +395,7 @@ void ACarPawn::Tick(float Delta)
 {
     Super::Tick(Delta);
 
-    const msr::airlib::CarApiBase::CarControls* current_controls = &keyboard_controls_;
-    if (!api_->isApiControlEnabled()) {
-        UAirBlueprintLib::LogMessageString("Control Mode: ", "Keyboard", LogDebugLevel::Informational);
-        api_->setCarControls(keyboard_controls_);
-    }
-    else {
-        UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
-        current_controls = & api_->getCarControls();
-    }
-    UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls->throttle), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls->brake), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Steering: ", std::to_string(current_controls->steering), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Handbreak: ", std::to_string(current_controls->handbrake), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls->manual_gear), LogDebugLevel::Informational);
-
-
+    updateCarControls();
 
     updateKinematics(Delta);
 
@@ -418,6 +413,57 @@ void ACarPawn::Tick(float Delta)
     EngineSoundComponent->SetFloatParameter(EngineAudioRPM, GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
 
     getVehiclePawnWrapper()->setLogLine(getLogString());
+}
+
+void ACarPawn::updateCarControls()
+{
+    const msr::airlib::CarApiBase::CarControls* current_controls = nullptr;
+    if (remote_control_id_ >= 0 && joystick_state_.is_initialized) {
+        joystick_.getJoyStickState(0, joystick_state_);
+
+        if ((joystick_state_.buttons & 4) | (joystick_state_.buttons & 1024)) { //X button or Start button
+            reset();
+            return;
+        }
+
+        joystick_controls_.steering = joystick_state_.left_y * 1.25;
+        joystick_controls_.throttle = (-joystick_state_.right_x + 1) / 2;
+        joystick_controls_.brake = -joystick_state_.right_z + 1;
+
+        //Two steel levers behind wheel
+        joystick_controls_.handbrake = (joystick_state_.buttons & 32) | (joystick_state_.buttons & 64) ? 1 : 0;
+
+        if ((joystick_state_.buttons & 256) | (joystick_state_.buttons & 2)) { //RSB button or B button
+            joystick_controls_.manual_gear = -1;
+            joystick_controls_.is_manual_gear = true;
+            joystick_controls_.gear_immediate = true;
+        }
+        else if ((joystick_state_.buttons & 512) | (joystick_state_.buttons & 1)) { //LSB button or A button
+            joystick_controls_.manual_gear = 0;
+            joystick_controls_.is_manual_gear = false;
+            joystick_controls_.gear_immediate = true;
+        }
+
+        UAirBlueprintLib::LogMessageString("Control Mode: ", "Wheel/Joystick", LogDebugLevel::Informational);
+        current_controls = &joystick_controls_;
+    }
+    else {
+        UAirBlueprintLib::LogMessageString("Control Mode: ", "Keyboard", LogDebugLevel::Informational);
+        current_controls = &keyboard_controls_;
+    }
+
+    if (!api_->isApiControlEnabled()) {
+        api_->setCarControls(* current_controls);
+    }
+    else {
+        UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
+        current_controls = & api_->getCarControls();
+    }
+    UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls->throttle), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls->brake), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Steering: ", std::to_string(current_controls->steering), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Handbreak: ", std::to_string(current_controls->handbrake), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls->manual_gear), LogDebugLevel::Informational);
 }
 
 void ACarPawn::BeginPlay()
@@ -450,6 +496,8 @@ void ACarPawn::UpdateHUDStrings()
 
     UAirBlueprintLib::LogMessage(TEXT("Speed: "), SpeedDisplayString.ToString(), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessage(TEXT("Gear: "), GearDisplayString.ToString(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage(TEXT("RPM: "), FText::AsNumber(GetVehicleMovement()->GetEngineRotationSpeed()).ToString(), LogDebugLevel::Informational);
+
 
 }
 

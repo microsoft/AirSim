@@ -97,9 +97,14 @@ CarApiBase::CarState CarPawnApi::getCarState()
 
 void CarPawnApi::reset()
 {
+    last_controls_ = CarControls();
     UAirBlueprintLib::RunCommandOnGameThread([this]() {
         pawn_->reset();
+        //movement_->ResetMoveState();
+        //movement_->SetActive(false);
+        //movement_->SetActive(true, true);
         setCarControls(CarControls());
+        
     }, true);
 }
 

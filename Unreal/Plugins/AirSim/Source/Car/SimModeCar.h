@@ -31,6 +31,8 @@ public:
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
     void updateReport();
+    int getRemoteControlID(const VehiclePawnWrapper& pawn);
+
 
 private:    
     UClass* external_camera_class_;

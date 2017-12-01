@@ -114,10 +114,11 @@ void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kin
     kinematics_ = kinematics;
 }
 
-void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)
+void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config)
 {
     pawn_ = pawn;
     cameras_ = cameras;
+    config_ = config;
 
     for (auto camera : cameras_) {
         camera_connectors_.push_back(std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(camera)));
@@ -153,6 +154,15 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
     setupCamerasFromSettings();
 }
 
+VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig()
+{
+    return config_;
+}
+
+const VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig() const
+{
+    return config_;
+}
 
 APIPCamera* VehiclePawnWrapper::getCamera(int index)
 {
@@ -176,7 +186,10 @@ int VehiclePawnWrapper::getCameraCount()
 void VehiclePawnWrapper::reset()
 {
     state_ = initial_state_;
-
+    //if (pawn_->GetRootPrimitiveComponent()->IsAnySimulatingPhysics()) {
+    //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(false);
+    //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(true);
+    //}
     pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
 
     //TODO: delete below
