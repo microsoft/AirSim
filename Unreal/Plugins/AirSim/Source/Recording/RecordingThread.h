@@ -16,7 +16,8 @@ class FRecordingThread : public FRunnable
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
-    static void startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns, VehiclePawnWrapper* wrapper);
+    static void startRecording(const std::vector<msr::airlib::VehicleCameraBase*>& cameras, const std::vector<int>& image_type_ids, 
+        const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns, VehiclePawnWrapper* wrapper);
     static void stopRecording(); 
     static bool isRecording();
 
@@ -38,7 +39,9 @@ private:
     std::unique_ptr<FRunnableThread> thread_;
 
     RecordingSettings settings_;
-    msr::airlib::VehicleCameraBase* camera_;
+    int img_count = 0;
+    std::vector<msr::airlib::VehicleCameraBase*> cameras_;
+    std::vector<int> image_type_ids_;
     std::unique_ptr<RecordingFile> recording_file_;
     const msr::airlib::Kinematics::State* kinematics_;
     VehiclePawnWrapper* wrapper_;

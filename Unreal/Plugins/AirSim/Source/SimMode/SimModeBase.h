@@ -67,6 +67,8 @@ protected: //settings
     std::vector <std::string> columns;
 
     float clock_speed;
+    std::unordered_set<int> record_with_cameras;
+    std::unordered_set<int> record_image_types;
 
 private:
     void readSettings();

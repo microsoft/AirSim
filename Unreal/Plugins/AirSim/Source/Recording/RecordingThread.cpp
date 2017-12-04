@@ -11,20 +11,20 @@ std::unique_ptr<FRecordingThread> FRecordingThread::instance_;
 
 
 FRecordingThread::FRecordingThread()
-    : stop_task_counter_(0), camera_(nullptr), recording_file_(nullptr), kinematics_(nullptr), is_ready_(false)
+    : stop_task_counter_(0), recording_file_(nullptr), kinematics_(nullptr), is_ready_(false)
 {
     thread_.reset(FRunnableThread::Create(this, TEXT("FRecordingThread"), 0, TPri_BelowNormal)); // Windows default, possible to specify more priority
 }
 
-
-void FRecordingThread::startRecording(msr::airlib::VehicleCameraBase* camera, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns, VehiclePawnWrapper* wrapper)
+void FRecordingThread::startRecording(const std::vector<msr::airlib::VehicleCameraBase*>& cameras, const std::vector<int>& image_type_ids, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns, VehiclePawnWrapper* wrapper)
 {
     stopRecording();
 
     //TODO: check FPlatformProcess::SupportsMultithreading()?
 
     instance_.reset(new FRecordingThread());
-    instance_->camera_ = camera;
+    instance_->cameras_ = cameras;
+    instance_->image_type_ids_ = image_type_ids;
     instance_->kinematics_ = kinematics;
     instance_->settings_ = settings;
     instance_->wrapper_ = wrapper;
@@ -61,7 +61,7 @@ void FRecordingThread::stopRecording()
 
 bool FRecordingThread::Init()
 {
-    if (camera_ && recording_file_)
+    if (!cameras_.empty() && recording_file_)
     {
         UAirBlueprintLib::LogMessage(TEXT("Initiated recording thread"), TEXT(""), LogDebugLevel::Success);
     }
@@ -83,10 +83,24 @@ uint32 FRecordingThread::Run()
 
                 // todo: should we go as fast as possible, or should we limit this to a particular number of
                 // frames per second?
-                auto response = camera_->getImage(msr::airlib::VehicleCameraBase::ImageType::Scene, false, true);
-                TArray<uint8_t> image_data;
-                image_data.Append(response.image_data_uint8.data(), response.image_data_uint8.size());
-                recording_file_->appendRecord(image_data, wrapper_);
+
+                for (int i = 0; i < cameras_.size(); i++)
+                {
+                    std::string image_name = "img_" + std::to_string(img_count);
+                    if (cameras_[i] != nullptr)
+                    {
+                        std::string camera_name = "camera_" + std::to_string(i);
+                        for (auto type_id = image_type_ids_.begin(); type_id != image_type_ids_.end(); ++type_id)
+                        {
+                            auto response = cameras_[i]->getImage(static_cast<msr::airlib::VehicleCameraBase::ImageType>(*type_id), false, true);
+                            TArray<uint8_t> image_data;
+                            image_data.Append(response.image_data_uint8.data(), response.image_data_uint8.size());
+                            std::string img_type_name = "img_type_" + std::to_string(*type_id);
+                            recording_file_->appendRecord(image_data, wrapper_, camera_name, img_type_name, image_name);
+                        }
+                    }
+                }
+                img_count++;
             }
         }
     }
