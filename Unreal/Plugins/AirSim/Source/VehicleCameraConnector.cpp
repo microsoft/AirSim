@@ -62,23 +62,24 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCa
     UTextureRenderTarget2D* textureTarget = capture->TextureTarget;
 
     RenderRequest request(use_safe_method);
-    int width, height;
-    TArray<uint8> image_uint8;
-    TArray<float> image_float;
+    std::vector<std::shared_ptr<RenderRequest::RenderParams>> render_params;
+    std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
 
-    request.getScreenshot(textureTarget, image_uint8, image_float, pixels_as_float, compress, width, height);
+    render_params.push_back(std::make_shared<RenderRequest::RenderParams>(textureTarget, pixels_as_float, compress));
+
+    request.getScreenshot(render_params.data(), render_results, render_params.size());
 
     ImageResponse response;
     response.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
-    response.image_data_uint8 = std::vector<uint8_t>(image_uint8.GetData(), image_uint8.GetData() + image_uint8.Num());
-    response.image_data_float = std::vector<float>(image_float.GetData(), image_float.GetData() + image_float.Num());
+    response.image_data_uint8 = std::vector<uint8_t>(render_results[0]->image_data_uint8.GetData(), render_results[0]->image_data_uint8.GetData() + render_results[0]->image_data_uint8.Num());
+    response.image_data_float = std::vector<float>(render_results[0]->image_data_float.GetData(), render_results[0]->image_data_float.GetData() + render_results[0]->image_data_float.Num());
 
     response.camera_position = NedTransform::toNedMeters(capture->GetComponentLocation());
     response.camera_orientation = NedTransform::toQuaternionr(capture->GetComponentRotation().Quaternion(), true);
     response.pixels_as_float = pixels_as_float;
     response.compress = compress;
-    response.width = width;
-    response.height = height;
+    response.width = render_results[0]->width;
+    response.height = render_results[0]->height;
     response.image_type = image_type;
     return response;
 }
