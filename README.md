@@ -59,7 +59,7 @@ A better way to generate training data exactly the way you want is by accessing 
 
 Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode, you don't have vehicle physics and dynamics but you can use keyboard to move around and use APIs to position the vehicle in any arbitrary pose and get images such as depth, disparity, surface normals or object segmentation. 
 
-[More details](image_apis.md)
+[More details](docs/image_apis.md)
 
 ### Tutorials
 
