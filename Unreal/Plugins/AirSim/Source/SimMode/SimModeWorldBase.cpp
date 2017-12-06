@@ -39,10 +39,10 @@ void ASimModeWorldBase::setupClock()
 
 
     if (clock_type == "ScalableClock")
-        ClockFactory::get(std::make_shared<msr::airlib::ScalableClock>());
+        ClockFactory::get(std::make_shared<msr::airlib::ScalableClock>(clock_speed == 1 ? 1 : 1 / clock_speed));
     else if (clock_type == "SteppableClock")
         ClockFactory::get(std::make_shared<msr::airlib::SteppableClock>(
-            static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9)));
+            static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
     else
         throw std::invalid_argument(common_utils::Utils::stringf(
             "clock_type %s is not recognized", clock_type.c_str()));
