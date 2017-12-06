@@ -44,7 +44,7 @@ public:
         return controller_;
     }
 
-    virtual VehicleCameraBase* getCamera(unsigned int index) override
+    virtual ImageCaptureBase* getCamera(unsigned int index) override
     {
         //TODO: we need to support this but with only scene image type
         throw std::logic_error("getCamera() call is only supported for simulation");

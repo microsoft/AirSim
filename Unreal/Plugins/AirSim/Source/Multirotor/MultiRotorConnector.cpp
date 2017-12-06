@@ -63,7 +63,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrappe
     }
 }
 
-msr::airlib::VehicleCameraBase* MultiRotorConnector::getCamera(unsigned int index)
+msr::airlib::ImageCaptureBase* MultiRotorConnector::getCamera(unsigned int index)
 {
     return vehicle_pawn_wrapper_->getCameraConnector(index);
 }

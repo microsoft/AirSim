@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 
 
 namespace msr { namespace airlib {
@@ -21,8 +21,8 @@ public:
     ConnectionState getConnectionState();
     bool ping();
 
-    vector<VehicleCameraBase::ImageResponse> simGetImages(vector<VehicleCameraBase::ImageRequest> request);
-    vector<uint8_t> simGetImage(int camera_id, VehicleCameraBase::ImageType type);
+    vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request);
+    vector<uint8_t> simGetImage(int camera_id, ImageCaptureBase::ImageType type);
     msr::airlib::GeoPoint getHomeGeoPoint();
 
     void simSetPose(const Pose& pose, bool ignore_collision);

@@ -15,7 +15,7 @@ VehicleCameraConnector::VehicleCameraConnector(APIPCamera* camera)
 VehicleCameraConnector::~VehicleCameraConnector()
 {}
 
-msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(VehicleCameraConnector::ImageType image_type, bool pixels_as_float, bool compress)
+msr::airlib::ImageCaptureBase::ImageResponse VehicleCameraConnector::getImage(VehicleCameraConnector::ImageType image_type, bool pixels_as_float, bool compress)
 {
 
     if (camera_== nullptr) {
@@ -27,7 +27,7 @@ msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getImage(V
     return getSceneCaptureImage(image_type, pixels_as_float, compress, false);
 }
 
-msr::airlib::VehicleCameraBase::ImageResponse VehicleCameraConnector::getSceneCaptureImage(VehicleCameraConnector::ImageType image_type, 
+msr::airlib::ImageCaptureBase::ImageResponse VehicleCameraConnector::getSceneCaptureImage(VehicleCameraConnector::ImageType image_type, 
     bool pixels_as_float, bool compress, bool use_safe_method)
 {
     bool visibilityChanged = false;

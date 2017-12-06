@@ -251,22 +251,22 @@ public:
         controller_->enableApiControl(is_enabled);
     }
 
-    virtual vector<VehicleCameraBase::ImageResponse> simGetImages(const vector<VehicleCameraBase::ImageRequest>& request) override
+    virtual vector<ImageCaptureBase::ImageResponse> simGetImages(const vector<ImageCaptureBase::ImageRequest>& request) override
     {
-        vector<VehicleCameraBase::ImageResponse> response;
+        vector<ImageCaptureBase::ImageResponse> response;
 
         for (const auto& item : request) {
-            VehicleCameraBase* camera = vehicle_->getCamera(item.camera_id);
+            ImageCaptureBase* camera = vehicle_->getCamera(item.camera_id);
             const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
             response.push_back(item_response);
         }
 
         return response;
     }
-    virtual vector<uint8_t> simGetImage(uint8_t camera_id, VehicleCameraBase::ImageType image_type) override
+    virtual vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) override
     {
-        vector<VehicleCameraBase::ImageRequest> request = { VehicleCameraBase::ImageRequest(camera_id, image_type)};
-        const vector<VehicleCameraBase::ImageResponse>& response = simGetImages(request);
+        vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_id, image_type)};
+        const vector<ImageCaptureBase::ImageResponse>& response = simGetImages(request);
         if (response.size() > 0)
             return response.at(0).image_data_uint8;
         else 

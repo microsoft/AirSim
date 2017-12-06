@@ -5,7 +5,7 @@
 #define air_VehicleConnectorBase_hpp
 
 #include "VehicleControllerBase.hpp"
-#include "VehicleCameraBase.hpp"
+#include "ImageCaptureBase.hpp"
 #include "common/UpdatableObject.hpp"
 
 namespace msr { namespace airlib {
@@ -25,7 +25,7 @@ public:
     virtual void stopApiServer() = 0;
     virtual bool isApiServerStarted() = 0;
     virtual VehicleControllerBase* getController() = 0;
-    virtual VehicleCameraBase* getCamera(unsigned int index) = 0;
+    virtual ImageCaptureBase* getCamera(unsigned int index) = 0;
     virtual void setPose(const Pose& pose, bool ignore_collision) = 0;
     virtual Pose getPose() = 0;
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id,

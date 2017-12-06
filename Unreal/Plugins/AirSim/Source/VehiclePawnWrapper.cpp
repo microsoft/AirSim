@@ -20,7 +20,7 @@ VehiclePawnWrapper::VehiclePawnWrapper()
 void VehiclePawnWrapper::setupCamerasFromSettings()
 {
     typedef msr::airlib::Settings Settings;
-    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
     Settings& json_settings_root = Settings::singleton();
     Settings json_settings_parent;

@@ -60,7 +60,7 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
         const auto& response = vehicle_->simGetImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));
         return RpcLibAdapatorsBase::ImageResponse::from(response);
     });
-    pimpl_->server.bind("simGetImage", [&](uint8_t camera_id, VehicleCameraBase::ImageType type) -> vector<uint8_t> {
+    pimpl_->server.bind("simGetImage", [&](uint8_t camera_id, ImageCaptureBase::ImageType type) -> vector<uint8_t> {
         auto result = vehicle_->simGetImage(camera_id, type);
         if (result.size() == 0) {
             // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.

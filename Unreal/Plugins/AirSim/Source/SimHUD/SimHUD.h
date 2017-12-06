@@ -20,7 +20,7 @@ class AIRSIM_API ASimHUD : public AHUD
     GENERATED_BODY()
 
 public:
-    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
 public:
     void inputEventToggleRecording();

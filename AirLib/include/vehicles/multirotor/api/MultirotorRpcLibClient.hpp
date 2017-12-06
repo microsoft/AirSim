@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include <functional>
 #include "common/CommonStructs.hpp"
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "api/RpcLibClientBase.hpp"
 #include "vehicles/multirotor/controllers/DroneCommon.hpp"

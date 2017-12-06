@@ -65,7 +65,7 @@
     <ClInclude Include="include\common\UpdatableObject.hpp" />
     <ClInclude Include="include\common\VectorMath.hpp" />
     <ClInclude Include="include\common\common_utils\AsyncTasker.hpp" />
-    <ClInclude Include="include\controllers\VehicleCameraBase.hpp" />
+    <ClInclude Include="include\controllers\ImageCaptureBase.hpp" />
     <ClInclude Include="include\controllers\VehicleConnectorBase.hpp" />
     <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdapators.hpp" />

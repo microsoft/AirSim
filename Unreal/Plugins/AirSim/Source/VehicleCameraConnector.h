@@ -2,20 +2,20 @@
 
 #include "CoreMinimal.h"
 #include "PIPCamera.h"
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 
 
-class VehicleCameraConnector : public msr::airlib::VehicleCameraBase
+class VehicleCameraConnector : public msr::airlib::ImageCaptureBase
 {
 public:
-    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
     VehicleCameraConnector(APIPCamera* camera);
     virtual ~VehicleCameraConnector();
     virtual ImageResponse getImage(ImageType image_type, bool pixels_as_float, bool compress) override;
 
 private:
-    msr::airlib::VehicleCameraBase::ImageResponse getSceneCaptureImage(ImageType image_type, 
+    msr::airlib::ImageCaptureBase::ImageResponse getSceneCaptureImage(ImageType image_type, 
         bool pixels_as_float, bool compress, bool use_safe_method);
 
     void addScreenCaptureHandler(UWorld *world);

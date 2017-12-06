@@ -4,7 +4,7 @@
 #ifndef air_CarApiBase_hpp
 #define air_CarApiBase_hpp
 
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 #include "common/VectorMath.hpp"
 #include "common/CommonStructs.hpp"
 #include "api/VehicleApiBase.hpp"
