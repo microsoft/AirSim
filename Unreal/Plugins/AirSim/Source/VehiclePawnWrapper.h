@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include <vector>
 #include <memory>
-#include "VehicleCameraConnector.h"
+#include "UnrealImageCapture.h"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"
@@ -46,7 +46,7 @@ public: //interface
         bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
     APIPCamera* getCamera(int index = 0);
-    VehicleCameraConnector* getCameraConnector(int index = 0);
+    UnrealImageCapture* getImageCapture();
     int getCameraCount();
     void displayCollisionEffect(FVector hit_location, const FHitResult& hit);
     APawn* getPawn();
@@ -94,7 +94,7 @@ private: //vars
     GeoPoint home_point_;
     APawn* pawn_;
     std::vector<APIPCamera*> cameras_;
-    std::vector<std::unique_ptr<VehicleCameraConnector>> camera_connectors_;
+    std::unique_ptr<UnrealImageCapture> image_capture_;
     const msr::airlib::Kinematics::State* kinematics_;
     std::string log_line_;
     WrapperConfig config_;

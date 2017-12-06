@@ -120,9 +120,7 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
     cameras_ = cameras;
     config_ = config;
 
-    for (auto camera : cameras_) {
-        camera_connectors_.push_back(std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(camera)));
-    }
+    image_capture_.reset(new UnrealImageCapture(cameras_.data()));
 
     if (!NedTransform::isInitialized())
         NedTransform::initialize(pawn_);
@@ -172,10 +170,9 @@ APIPCamera* VehiclePawnWrapper::getCamera(int index)
     return cameras_.at(index);
 }
 
-VehicleCameraConnector* VehiclePawnWrapper::getCameraConnector(int index)
+UnrealImageCapture* VehiclePawnWrapper::getImageCapture()
 {
-    //should be overridden in derived class
-    return camera_connectors_.at(index).get();
+    return image_capture_.get();
 }
 
 int VehiclePawnWrapper::getCameraCount()

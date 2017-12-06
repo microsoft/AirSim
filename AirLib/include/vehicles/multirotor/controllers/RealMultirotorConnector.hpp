@@ -44,10 +44,10 @@ public:
         return controller_;
     }
 
-    virtual ImageCaptureBase* getCamera(unsigned int index) override
+    virtual ImageCaptureBase* getImageCapture() override
     {
         //TODO: we need to support this but with only scene image type
-        throw std::logic_error("getCamera() call is only supported for simulation");
+        throw std::logic_error("getImageCapture() call is only supported for simulation");
     }
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override

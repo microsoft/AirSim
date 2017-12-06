@@ -25,10 +25,10 @@ public: //types
     };
 
     struct ImageRequest {
-        uint8_t camera_id;
-        ImageCaptureBase::ImageType image_type;
-        bool pixels_as_float;
-        bool compress;
+        uint8_t camera_id = 0;
+        ImageCaptureBase::ImageType image_type = ImageCaptureBase::ImageType::Scene;
+        bool pixels_as_float = false;
+        bool compress = true;
 
         ImageRequest()
         {}
@@ -57,7 +57,7 @@ public: //types
     };
 
 public: //methods
-    virtual ImageResponse getImage(ImageType image_type, bool pixels_as_float, bool compress) = 0;
+    virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) = 0;
 };
 
 

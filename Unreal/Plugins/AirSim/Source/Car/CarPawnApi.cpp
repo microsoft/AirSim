@@ -10,17 +10,14 @@ CarPawnApi::CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponen
 }
 
 std::vector<ImageCaptureBase::ImageResponse> CarPawnApi::simGetImages(
-    const std::vector<ImageCaptureBase::ImageRequest>& request)
+    const std::vector<ImageCaptureBase::ImageRequest>& requests)
 {
-    std::vector<ImageCaptureBase::ImageResponse> response;
+    std::vector<ImageCaptureBase::ImageResponse> responses;
 
-    for (const auto& item : request) {
-        ImageCaptureBase* camera = pawn_->getCameraConnector(item.camera_id);
-        const auto& item_response = camera->getImage(item.image_type, item.pixels_as_float, item.compress);
-        response.push_back(item_response);
-    }
+    ImageCaptureBase* camera = pawn_->getImageCapture();
+    camera->getImages(requests, responses);
 
-    return response;
+    return responses;
 }
 
 bool CarPawnApi::simSetSegmentationObjectID(const std::string& mesh_name, int object_id, 

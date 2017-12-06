@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "AirBlueprintLib.h"
 #include "HAL/Runnable.h"
-#include "VehicleCameraConnector.h"
+#include "UnrealImageCapture.h"
 #include "VehiclePawnWrapper.h"
 #include "Recording/RecordingFile.h"
 #include "physics/Kinematics.hpp"
@@ -38,7 +38,7 @@ private:
     std::unique_ptr<FRunnableThread> thread_;
 
     RecordingSettings settings_;
-    msr::airlib::ImageCaptureBase* camera_;
+    msr::airlib::ImageCaptureBase* image_capture_;
     std::unique_ptr<RecordingFile> recording_file_;
     const msr::airlib::Kinematics::State* kinematics_;
     VehiclePawnWrapper* wrapper_;

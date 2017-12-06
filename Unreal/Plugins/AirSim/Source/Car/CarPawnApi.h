@@ -13,8 +13,7 @@ public:
 
     CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponent* movement);
 
-    virtual std::vector<ImageCaptureBase::ImageResponse> simGetImages(
-        const std::vector<ImageCaptureBase::ImageRequest>& request) override;
+
 
     virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id,
         bool is_name_regex = false) override;
@@ -26,6 +25,8 @@ public:
     virtual msr::airlib::CollisionInfo getCollisionInfo() override;
 
     virtual std::vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) override;
+    virtual std::vector<ImageCaptureBase::ImageResponse> simGetImages(
+        const std::vector<ImageCaptureBase::ImageRequest>& requests) override;
 
     virtual void setCarControls(const CarApiBase::CarControls& controls) override;
 
