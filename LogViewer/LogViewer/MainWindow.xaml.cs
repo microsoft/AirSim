@@ -999,11 +999,13 @@ namespace LogViewer
                     List<DataValue> values = new List<DataValue>(currentFlightLog.GetDataValues(schema, DateTime.MinValue, TimeSpan.MaxValue));
                     chart = AddChart(schema, values);
 
-                    // now turn on live scrolling...
-                    chart.LiveScrolling = true;
-                    // the X values are in microseconds (s0 the numerator is the speed of scrolling).
-                    chart.LiveScrollingXScale = 50.0 / 1000000.0;
-
+                    if (!pauseRecording)
+                    {
+                        // now turn on live scrolling if we are recording...
+                        chart.LiveScrolling = true;
+                        // the X values are in microseconds (s0 the numerator is the speed of scrolling).
+                        chart.LiveScrollingXScale = 50.0 / 1000000.0;
+                    }
                     liveScrolling.Add(chart);
 
                     // now start watching the live update for new values that need to be added to this chart.
