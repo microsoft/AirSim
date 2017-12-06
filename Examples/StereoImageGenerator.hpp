@@ -108,9 +108,9 @@ private:
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Quaternionr Quaternionr;
     typedef msr::airlib::Pose Pose;
-    typedef msr::airlib::VehicleCameraBase::ImageRequest ImageRequest;
-    typedef msr::airlib::VehicleCameraBase::ImageResponse ImageResponse;
-    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
+    typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
+    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
     std::string storage_dir_;
     bool spawn_ue4 = false;
