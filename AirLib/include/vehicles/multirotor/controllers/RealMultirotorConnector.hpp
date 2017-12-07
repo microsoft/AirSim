@@ -80,6 +80,7 @@ public:
     virtual Pose getActorPose(const std::string& actor_name) override
     {
         unused(actor_name);
+        return msr::airlib::Pose();
     }
 
 
