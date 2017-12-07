@@ -268,10 +268,16 @@ public:
             return vector<uint8_t>();
     }
 
-    virtual void simPrintLogMessage(const std::string& message, std::string message_param, unsigned char severity) override
+    virtual void simPrintLogMessage(const std::string& message, const std::string& message_param, unsigned char severity) override
     {
         vehicle_->printLogMessage(message, message_param, severity);
     }
+
+    virtual Pose simGetObjectPose(const std::string& actor_name) override
+    {
+        return vehicle_->getActorPose(actor_name);
+    }
+
 
     virtual bool isApiControlEnabled() const override
     {

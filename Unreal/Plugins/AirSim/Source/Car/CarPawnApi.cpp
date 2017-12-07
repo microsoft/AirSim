@@ -30,7 +30,7 @@ bool CarPawnApi::simSetSegmentationObjectID(const std::string& mesh_name, int ob
     return success;
 }
 
-void CarPawnApi::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char severity)
+void CarPawnApi::simPrintLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
     pawn_->printLogMessage(message, message_param, severity);
 }
@@ -71,6 +71,17 @@ void CarPawnApi::setCarControls(const CarApiBase::CarControls& controls)
     movement_->SetBrakeInput(controls.brake);
     movement_->SetHandbrakeInput(controls.handbrake);
     movement_->SetUseAutoGears(!controls.is_manual_gear);
+}
+
+msr::airlib::Pose CarPawnApi::simGetObjectPose(const std::string& actor_name)
+{
+    msr::airlib::Pose pose;
+
+    UAirBlueprintLib::RunCommandOnGameThread([&pose, &actor_name, this]() {
+        pose = pawn_->getActorPose(actor_name);
+    }, true);
+
+    return pose;
 }
 
 const CarApiBase::CarControls& CarPawnApi::getCarControls() const

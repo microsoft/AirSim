@@ -98,12 +98,12 @@ T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
     FindAllActor<T>(context, foundActors);
 
     for (AActor* actor : foundActors) {
-        if (actor->GetName().Compare(name) == 0) {
+        if (actor->GetActorLabel().Compare(name) == 0 || actor->GetName().Compare(name) == 0) {
             return static_cast<T*>(actor);
         }
     }
 
-    UAirBlueprintLib::LogMessage(name + TEXT(" Actor not found!"), TEXT(""), LogDebugLevel::Failure);
+    //UAirBlueprintLib::LogMessage(name + TEXT(" Actor not found!"), TEXT(""), LogDebugLevel::Failure);
     return nullptr;
 }
 

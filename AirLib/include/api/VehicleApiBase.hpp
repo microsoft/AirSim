@@ -26,9 +26,11 @@ public:
     virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int simGetSegmentationObjectID(const std::string& mesh_name) = 0;
 
-    virtual void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) = 0;
+    virtual void simPrintLogMessage(const std::string& message, const std::string& message_param = "", unsigned char severity = 0) = 0;
     
     virtual CollisionInfo getCollisionInfo() = 0;
+
+    virtual Pose simGetObjectPose(const std::string& object_name) = 0;
 
     virtual ~VehicleApiBase() = default;
 };

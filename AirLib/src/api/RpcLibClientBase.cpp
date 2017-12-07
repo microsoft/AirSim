@@ -155,6 +155,11 @@ CollisionInfo RpcLibClientBase::getCollisionInfo()
     return pimpl_->client.call("getCollisionInfo").as<RpcLibAdapatorsBase::CollisionInfo>().to();
 }
 
+msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name)
+{
+    return pimpl_->client.call("simGetObjectPose").as<RpcLibAdapatorsBase::Pose>().to();
+}
+
 
 }} //namespace
 

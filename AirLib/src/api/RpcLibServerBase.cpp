@@ -73,9 +73,9 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
         bind("simSetPose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision) -> void {
         vehicle_->simSetPose(pose.to(), ignore_collision);
     });
-    pimpl_->server.
-        bind("simGetPose", [&]() ->
-            RpcLibAdapatorsBase::Pose { return vehicle_->simGetPose();
+    pimpl_->server.bind("simGetPose", [&]() -> RpcLibAdapatorsBase::Pose { 
+        const auto& pose = vehicle_->simGetPose();
+        return RpcLibAdapatorsBase::Pose(pose);
     });
 
     pimpl_->server.
@@ -91,19 +91,28 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
         vehicle_->reset();
     });
 
-    pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, std::string message_param, unsigned char severity) -> void {
+    pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, const std::string& message_param, unsigned char severity) -> void {
         vehicle_->simPrintLogMessage(message, message_param, severity);
     });
 
     pimpl_->server.bind("getHomeGeoPoint", [&]() -> RpcLibAdapatorsBase::GeoPoint {
-        return vehicle_->getHomeGeoPoint();
+        const auto& geo_point = vehicle_->getHomeGeoPoint();
+        return RpcLibAdapatorsBase::GeoPoint(geo_point);
     });
 
     pimpl_->server.bind("enableApiControl", [&](bool is_enabled) -> void { vehicle_->enableApiControl(is_enabled); });
     pimpl_->server.bind("isApiControlEnabled", [&]() -> bool { return vehicle_->isApiControlEnabled(); });
 
-    pimpl_->server.bind("getCollisionInfo", [&]() -> RpcLibAdapatorsBase::CollisionInfo { return vehicle_->getCollisionInfo(); });
+    pimpl_->server.bind("getCollisionInfo", [&]() -> RpcLibAdapatorsBase::CollisionInfo { 
+        const auto& collision_info = vehicle_->getCollisionInfo(); 
+        return RpcLibAdapatorsBase::CollisionInfo(collision_info);
+    });
 
+    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Pose { 
+        const auto& pose = vehicle_->simGetObjectPose(object_name); 
+        return RpcLibAdapatorsBase::Pose(pose);
+    });
+    
     pimpl_->server.suppress_exceptions(true);
 }
 

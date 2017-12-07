@@ -68,10 +68,14 @@ public: //interface
     void setLogLine(std::string line);
     std::string getLogLine();
 
-    void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
+    void printLogMessage(const std::string& message, const std::string& message_param = "", unsigned char severity = 0);
 
     WrapperConfig& getConfig();
     const WrapperConfig& getConfig() const;
+
+    static VehiclePawnWrapper::Pose toPose(const FVector& u_position, const FQuat& u_quat);
+    msr::airlib::Pose getActorPose(std::string actor_name);
+
 
 protected:
     UPROPERTY(VisibleAnywhere)

@@ -77,6 +77,12 @@ public:
         unused(severity);
     }
 
+    virtual Pose getActorPose(const std::string& actor_name) override
+    {
+        unused(actor_name);
+    }
+
+
 private:
     VehicleControllerBase* controller_;
 };
