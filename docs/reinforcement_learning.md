@@ -167,3 +167,6 @@ The reset function here flies the quadrotor to the initial starting point:
 Here is the video of first few episodes during the training.
 
 [![Reinforcement Learning - Quadrotor](images/dqn_quadcopter.png)](https://youtu.be/uKm15Y3M1Nk)
+
+## Related
+ Please also see [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter.
