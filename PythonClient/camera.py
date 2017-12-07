@@ -31,7 +31,7 @@ if (not cameraType in cameraTypeMap):
 print (cameraTypeMap[cameraType])
 
 client = MultirotorClient()
-client.confirmConnection()
+client.waitForReadyState()
 client.enableApiControl(True)
 client.armDisarm(True)
 client.takeoff()
