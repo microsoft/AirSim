@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Camera/CameraActor.h"
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "PIPCamera.generated.h"
 
@@ -38,7 +38,7 @@ public:
 
 
 public:
-    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
     virtual void PostInitializeComponents() override;
     virtual void BeginPlay() override;

@@ -17,6 +17,8 @@ public:
         connection_info_ = getConnectionInfo(settings);
     }
 
+    virtual ~Px4MultiRotor() = default;
+
     virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) override
     {
         if (connection_info_.model == "Blacksheep") {

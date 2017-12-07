@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include <memory>
 #include <vector>
-#include "VehicleConnectorBase.h"
+#include "controllers/VehicleConnectorBase.hpp"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
@@ -29,7 +29,7 @@ public:
     virtual std::string getReport() override;
 
 protected:
-    typedef std::shared_ptr<VehicleConnectorBase> VehiclePtr;
+    typedef std::shared_ptr<msr::airlib::VehicleConnectorBase> VehiclePtr;
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
     size_t getVehicleCount() const;
 

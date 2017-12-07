@@ -90,6 +90,8 @@ public: //interface
         return controller_.get();
     }
 
+    virtual ~MultiRotorParams() = default;
+
 protected: //must override by derived class
     //this method must clean up any previous initializations
     virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) = 0;

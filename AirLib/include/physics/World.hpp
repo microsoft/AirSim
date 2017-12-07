@@ -77,7 +77,8 @@ public:
     virtual void erase_remove(UpdatableObject* member) override
     { 
         if (physics_engine_ && member->getPhysicsBody() != nullptr)
-            physics_engine_->erase_remove(static_cast<PhysicsBody*>(member));
+            physics_engine_->erase_remove(static_cast<PhysicsBody*>(
+                member->getPhysicsBody()));
 
         UpdatableContainer::erase_remove(member);
     }

@@ -10,17 +10,17 @@
 
 VehiclePawnWrapper::VehiclePawnWrapper()
 {
-    static ConstructorHelpers::FObjectFinder<UParticleSystem> collison_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
-    if (!collison_display.Succeeded())
-        collison_display_template = collison_display.Object;
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
+    if (!collision_display.Succeeded())
+        collision_display_template = collision_display.Object;
     else
-        collison_display_template = nullptr;
+        collision_display_template = nullptr;
 }
 
 void VehiclePawnWrapper::setupCamerasFromSettings()
 {
     typedef msr::airlib::Settings Settings;
-    typedef msr::airlib::VehicleCameraBase::ImageType ImageType;
+    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
     Settings& json_settings_root = Settings::singleton();
     Settings json_settings_parent;
@@ -71,16 +71,24 @@ void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AA
     //FRotator CurrentRotation = GetActorRotation(RootComponent);
     //SetActorRotation(FQuat::Slerp(CurrentRotation.Quaternion(), HitNormal.ToOrientationQuat(), 0.025f));
 
-    state_.collison_info.has_collided = true;
-    state_.collison_info.normal = NedTransform::toVector3r(Hit.ImpactNormal, 1, true);
-    state_.collison_info.impact_point = NedTransform::toNedMeters(Hit.ImpactPoint);
-    state_.collison_info.position = NedTransform::toNedMeters(getPosition());
-    state_.collison_info.penetration_depth = NedTransform::toNedMeters(Hit.PenetrationDepth);
-    state_.collison_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
-    ++state_.collison_info.collison_count;
+    UPrimitiveComponent* comp = Cast<class UPrimitiveComponent>(Other ? (Other->GetRootComponent() ? Other->GetRootComponent() : nullptr) : nullptr);
 
-    UAirBlueprintLib::LogMessage(TEXT("Collison Count:"), FString::FromInt(
-        state_.collison_info.collison_count), LogDebugLevel::Failure);
+    state_.collision_info.has_collided = true;
+    state_.collision_info.normal = NedTransform::toVector3r(Hit.ImpactNormal, 1, true);
+    state_.collision_info.impact_point = NedTransform::toNedMeters(Hit.ImpactPoint);
+    state_.collision_info.position = NedTransform::toNedMeters(getPosition());
+    state_.collision_info.penetration_depth = NedTransform::toNedMeters(Hit.PenetrationDepth);
+    state_.collision_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
+    state_.collision_info.object_name = std::string(Other ? TCHAR_TO_UTF8(*(Other->GetName())) : "(null)");
+    state_.collision_info.object_id = comp ? comp->CustomDepthStencilValue : -1;
+
+    ++state_.collision_info.collision_count;
+
+
+    UAirBlueprintLib::LogMessageString("Collision", Utils::stringf("#%d with %s - ObjID %d", 
+        state_.collision_info.collision_count, 
+        state_.collision_info.object_name.c_str(), state_.collision_info.object_id),
+        LogDebugLevel::Failure);
 }
 
 APawn* VehiclePawnWrapper::getPawn()
@@ -88,10 +96,10 @@ APawn* VehiclePawnWrapper::getPawn()
     return pawn_;
 }
 
-void VehiclePawnWrapper::displayCollisonEffect(FVector hit_location, const FHitResult& hit)
+void VehiclePawnWrapper::displayCollisionEffect(FVector hit_location, const FHitResult& hit)
 {
-    if (collison_display_template != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
-        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(pawn_->GetWorld(), collison_display_template, hit_location);
+    if (collision_display_template != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
+        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(pawn_->GetWorld(), collision_display_template, hit_location);
         particles->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
     }
 }
@@ -106,14 +114,13 @@ void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kin
     kinematics_ = kinematics;
 }
 
-void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras)
+void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config)
 {
     pawn_ = pawn;
     cameras_ = cameras;
+    config_ = config;
 
-    for (auto camera : cameras_) {
-        camera_connectors_.push_back(std::unique_ptr<VehicleCameraConnector>(new VehicleCameraConnector(camera)));
-    }
+    image_capture_.reset(new UnrealImageCapture(cameras_.data()));
 
     if (!NedTransform::isInitialized())
         NedTransform::initialize(pawn_);
@@ -134,10 +141,10 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
     initial_state_.start_rotation = getOrientation();
 
     initial_state_.tracing_enabled = config.enable_trace;
-    initial_state_.collisons_enabled = config.enable_collisions;
+    initial_state_.collisions_enabled = config.enable_collisions;
     initial_state_.passthrough_enabled = config.enable_passthrough_on_collisions;
 
-    initial_state_.collison_info = CollisionInfo();
+    initial_state_.collision_info = CollisionInfo();
 
     initial_state_.was_last_move_teleport = false;
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
@@ -145,6 +152,15 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
     setupCamerasFromSettings();
 }
 
+VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig()
+{
+    return config_;
+}
+
+const VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig() const
+{
+    return config_;
+}
 
 APIPCamera* VehiclePawnWrapper::getCamera(int index)
 {
@@ -154,10 +170,9 @@ APIPCamera* VehiclePawnWrapper::getCamera(int index)
     return cameras_.at(index);
 }
 
-VehicleCameraConnector* VehiclePawnWrapper::getCameraConnector(int index)
+UnrealImageCapture* VehiclePawnWrapper::getImageCapture()
 {
-    //should be overridden in derived class
-    return camera_connectors_.at(index).get();
+    return image_capture_.get();
 }
 
 int VehiclePawnWrapper::getCameraCount()
@@ -168,7 +183,10 @@ int VehiclePawnWrapper::getCameraCount()
 void VehiclePawnWrapper::reset()
 {
     state_ = initial_state_;
-
+    //if (pawn_->GetRootPrimitiveComponent()->IsAnySimulatingPhysics()) {
+    //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(false);
+    //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(true);
+    //}
     pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
 
     //TODO: delete below
@@ -188,9 +206,9 @@ const VehiclePawnWrapper::GeoPoint& VehiclePawnWrapper::getHomePoint() const
     return home_point_;
 }
 
-const VehiclePawnWrapper::CollisionInfo& VehiclePawnWrapper::getCollisonInfo() const
+const VehiclePawnWrapper::CollisionInfo& VehiclePawnWrapper::getCollisionInfo() const
 {
-    return state_.collison_info;
+    return state_.collision_info;
 }
 
 FVector VehiclePawnWrapper::getPosition() const
@@ -243,15 +261,25 @@ void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& off
 
 }
 
+void VehiclePawnWrapper::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
+{
+    UAirBlueprintLib::LogMessageString(message, message_param, static_cast<LogDebugLevel>(severity));
+}
+
 //parameters in NED frame
 VehiclePawnWrapper::Pose VehiclePawnWrapper::getPose() const
 {
-    const Vector3r& position = NedTransform::toNedMeters(getPosition());
-    const Quaternionr& orientation = NedTransform::toQuaternionr(pawn_->GetActorRotation().Quaternion(), true);
+    return toPose(getPosition(), pawn_->GetActorRotation().Quaternion());
+}
+
+VehiclePawnWrapper::Pose VehiclePawnWrapper::toPose(const FVector& u_position, const FQuat& u_quat)
+{
+    const Vector3r& position = NedTransform::toNedMeters(u_position);
+    const Quaternionr& orientation = NedTransform::toQuaternionr(u_quat, true);
     return Pose(position, orientation);
 }
 
-void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collison)
+void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collision)
 {
     //translate to new VehiclePawnWrapper position & orientation from NED to NEU
     FVector position = NedTransform::toNeuUU(pose.position);
@@ -260,12 +288,12 @@ void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collison)
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
     FQuat orientation = NedTransform::toFQuat(pose.orientation, true);
 
-    bool enable_teleport = ignore_collison || canTeleportWhileMove();
+    bool enable_teleport = ignore_collision || canTeleportWhileMove();
 
-    //must reset collison before we set pose. Setting pose will immediately call NotifyHit if there was collison
-    //if there was no collison than has_collided would remain false, else it will be set so its value can be
+    //must reset collision before we set pose. Setting pose will immediately call NotifyHit if there was collision
+    //if there was no collision than has_collided would remain false, else it will be set so its value can be
     //checked at the start of next tick
-    state_.collison_info.has_collided = false;
+    state_.collision_info.has_collided = false;
     state_.was_last_move_teleport = enable_teleport;
 
     if (enable_teleport)
@@ -290,7 +318,7 @@ void VehiclePawnWrapper::setDebugPose(const Pose& debug_pose)
         FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
             UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), -1, 10.0F);
-            UAirBlueprintLib::LogMessage("Debug Pose: ", debug_position.ToCompactString(), LogDebugLevel::Informational);
+            UAirBlueprintLib::LogMessage(FString("Debug Pose: "), debug_position.ToCompactString(), LogDebugLevel::Informational);
             state_.last_debug_position = debug_position;
         }
     }
@@ -302,12 +330,28 @@ void VehiclePawnWrapper::setDebugPose(const Pose& debug_pose)
 bool VehiclePawnWrapper::canTeleportWhileMove()  const
 {
     //allow teleportation
-    //  if collisons are not enabled
+    //  if collisions are not enabled
     //  or we have collided but passthrough is enabled
     //     we will flip-flop was_last_move_teleport flag so on one tick we have passthrough and other tick we don't
-    //     without flip flopping, collisons can't be detected
-    return !state_.collisons_enabled || (state_.collison_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
+    //     without flip flopping, collisions can't be detected
+    return !state_.collisions_enabled || (state_.collision_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
+void VehiclePawnWrapper::setLogLine(std::string line)
+{
+    log_line_ = line;
+}
+
+std::string VehiclePawnWrapper::getLogLine()
+{
+    return log_line_;
+}
+
+msr::airlib::Pose VehiclePawnWrapper::getActorPose(std::string actor_name)
+{
+    AActor* actor = UAirBlueprintLib::FindActor<AActor>(pawn_, FString(actor_name.c_str()));
+    return actor ? toPose(actor->GetActorLocation(), actor->GetActorQuat())
+        : Pose::nanPose();
+}
 
 

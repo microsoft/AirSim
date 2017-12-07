@@ -6,7 +6,7 @@ import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
 
-client = CarClient()
+client = MultirotorClient()
 client.waitForReadyState()
 
 for x in range(3): # do few times
@@ -33,3 +33,6 @@ for x in range(3): # do few times
     pp.pprint(pose)
 
     time.sleep(3)
+
+# currently reset() doesn't work in CV mode. Below is the workaround
+client.simSetPose(Pose(Vector3r(0, 0, 0), AirSimClientBase.toQuaternion(0, 0, 0)), True)

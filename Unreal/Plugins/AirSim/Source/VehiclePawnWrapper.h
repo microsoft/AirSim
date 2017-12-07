@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include <vector>
 #include <memory>
-#include "VehicleCameraConnector.h"
+#include "UnrealImageCapture.h"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"
@@ -26,35 +26,35 @@ public: //types
 public:
     struct WrapperConfig {
         bool is_fpv_vehicle = false; 
-        FString vehicle_config_name = ""; //use the default config name
+        std::string vehicle_config_name = ""; //use the default config name
         bool enable_collisions = true; 
         bool enable_passthrough_on_collisions = false; 
         float home_lattitude = 47.641468;
         float home_longitude = -122.140165;
         float home_altitude = 122;
         bool enable_trace = false;
-    } config;
+    };
 
     void toggleTrace();
 
 public: //interface
     VehiclePawnWrapper();
-    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras);
+    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config = WrapperConfig());
 
     void reset();
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
         bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
     APIPCamera* getCamera(int index = 0);
-    VehicleCameraConnector* getCameraConnector(int index = 0);
+    UnrealImageCapture* getImageCapture();
     int getCameraCount();
-    void displayCollisonEffect(FVector hit_location, const FHitResult& hit);
+    void displayCollisionEffect(FVector hit_location, const FHitResult& hit);
     APawn* getPawn();
 
     //get/set pose
     //parameters in NED frame
     Pose getPose() const;
-    void setPose(const Pose& pose, bool ignore_collison);
+    void setPose(const Pose& pose, bool ignore_collision);
     void setDebugPose(const Pose& debug_pose);
     FVector getPosition() const;
     FRotator getOrientation() const;
@@ -63,11 +63,23 @@ public: //interface
     const msr::airlib::Kinematics::State* getKinematics();
 
     const GeoPoint& getHomePoint() const;
-    const CollisionInfo& getCollisonInfo() const;
+    const CollisionInfo& getCollisionInfo() const;
+
+    void setLogLine(std::string line);
+    std::string getLogLine();
+
+    void printLogMessage(const std::string& message, const std::string& message_param = "", unsigned char severity = 0);
+
+    WrapperConfig& getConfig();
+    const WrapperConfig& getConfig() const;
+
+    static VehiclePawnWrapper::Pose toPose(const FVector& u_position, const FQuat& u_quat);
+    msr::airlib::Pose getActorPose(std::string actor_name);
+
 
 protected:
     UPROPERTY(VisibleAnywhere)
-        UParticleSystem* collison_display_template;
+        UParticleSystem* collision_display_template;
 
 
 private: //methods
@@ -86,8 +98,10 @@ private: //vars
     GeoPoint home_point_;
     APawn* pawn_;
     std::vector<APIPCamera*> cameras_;
-    std::vector<std::unique_ptr<VehicleCameraConnector>> camera_connectors_;
+    std::unique_ptr<UnrealImageCapture> image_capture_;
     const msr::airlib::Kinematics::State* kinematics_;
+    std::string log_line_;
+    WrapperConfig config_;
 
     struct State {
         FVector start_location;
@@ -98,10 +112,10 @@ private: //vars
         FVector current_debug_position;
         FVector debug_position_offset;        
         bool tracing_enabled;
-        bool collisons_enabled;
+        bool collisions_enabled;
         bool passthrough_enabled;
         bool was_last_move_teleport;
-        CollisionInfo collison_info;
+        CollisionInfo collision_info;
 
         FVector mesh_origin;
         FVector mesh_bounds;

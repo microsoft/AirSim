@@ -5,13 +5,16 @@
 #include "AirBlueprintLib.h"
 #include "physics/Kinematics.hpp"
 #include "FileManager.h"
+#include "VehiclePawnWrapper.h"
 
 
 class RecordingFile {
 public:
-     ~RecordingFile();
+    RecordingFile(std::vector <std::string> columns);
+    ~RecordingFile();
 
-    void appendRecord(TArray<uint8>& compressedPng, const msr::airlib::Kinematics::State* kinematics);
+    void appendRecord(TArray<uint8>& compressedPng, VehiclePawnWrapper* wrapper);
+    void appendColumnHeader(std::vector <std::string> columns);
     void startRecording();
     void stopRecording(bool ignore_if_stopped);
     bool isRecording();
@@ -22,7 +25,6 @@ private:
     void writeString(const std::string& line);
     bool isFileOpen();
     std::string getLogFileFullPath();
-    std::string getLine(const msr::airlib::Kinematics::State& kinematics, const std::string& image_file_name);
 
 
 private:
@@ -31,4 +33,5 @@ private:
     std::string image_path_;
     bool is_recording_ = false;
     IFileHandle* log_file_handle_ = nullptr;
+    std::vector <std::string> columns;
 };

@@ -90,7 +90,7 @@ public:
 public:
     //required for pimpl
     MavLinkDroneController();
-    ~MavLinkDroneController();
+    virtual ~MavLinkDroneController();
 
     //non-base interface specific to MavLinKDroneController
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation);
@@ -823,7 +823,7 @@ public:
         orientation.y() = MocapPoseMessage.q[2]; orientation.z() = MocapPoseMessage.q[3];
     }
 
-    void sendCollison(float normalX, float normalY, float normalZ)
+    void sendCollision(float normalX, float normalY, float normalZ)
     {
         checkVehicle();
 

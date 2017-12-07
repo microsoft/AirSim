@@ -5,5 +5,5 @@ set /p gen_bin=<gen_temp.txt
 del /q gen_temp.txt
 for %%f in (*.uproject) do (
 		echo Generating files for %%f
-		%gen_bin% /projectfiles %cd%\%%f
+		%gen_bin% /projectfiles "%cd%\%%f"
 )

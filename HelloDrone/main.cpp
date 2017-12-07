@@ -21,9 +21,9 @@ int main()
     using namespace msr::airlib;
 
     msr::airlib::MultirotorRpcLibClient client;
-    typedef VehicleCameraBase::ImageRequest ImageRequest;
-    typedef VehicleCameraBase::ImageResponse ImageResponse;
-    typedef VehicleCameraBase::ImageType ImageType;
+    typedef ImageCaptureBase::ImageRequest ImageRequest;
+    typedef ImageCaptureBase::ImageResponse ImageResponse;
+    typedef ImageCaptureBase::ImageType ImageType;
     typedef common_utils::FileSystem FileSystem;
     
     try {

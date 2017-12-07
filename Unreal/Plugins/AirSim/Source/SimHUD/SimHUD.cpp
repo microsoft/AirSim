@@ -3,6 +3,7 @@
 #include "Multirotor/SimModeWorldMultiRotor.h"
 #include "Car/SimModeCar.h"
 #include "controllers/Settings.hpp"
+#include "MessageDialog.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 ASimHUD* ASimHUD::instance_ = nullptr;
@@ -200,8 +201,19 @@ void ASimHUD::createSimMode()
 {
     Settings& settings = Settings::singleton();
     std::string simmode_name = settings.getString("SimMode", "");
-    if (simmode_name == "")
-        simmode_name = "Multirotor";
+    if (simmode_name == "") {
+        FText title = FText::FromString("Choose Vehicle");
+        if (EAppReturnType::No == FMessageDialog::Open(EAppMsgType::YesNo, 
+            FText::FromString("Would you like to use car simulation? Choose no to use quadrotor simulation."), 
+            & title))
+        {
+            simmode_name = "Multirotor";
+        }
+        else
+            simmode_name = "Car";
+
+        settings.setString("SimMode", simmode_name);
+    }
 
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -223,8 +235,8 @@ void ASimHUD::initializeSubWindows()
     //setup defaults
     if (camera_count > 0) {
         subwindow_cameras_[0] = wrapper->getCamera(0);
-        subwindow_cameras_[1] = wrapper->getCamera(camera_count > 3 ? 3 : 0);
-        subwindow_cameras_[2] = wrapper->getCamera(camera_count > 4 ? 4 : 0);
+        subwindow_cameras_[1] = wrapper->getCamera(0); //camera_count > 3 ? 3 : 0
+        subwindow_cameras_[2] = wrapper->getCamera(0); //camera_count > 4 ? 4 : 0
     }
     else
         subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;

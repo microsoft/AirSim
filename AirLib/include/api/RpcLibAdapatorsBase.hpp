@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "rpc/msgpack.hpp"
 
@@ -57,8 +57,10 @@ public:
         Vector3r position;
         msr::airlib::real_T penetration_depth = 0;
         msr::airlib::TTimePoint time_stamp = 0;
+        std::string object_name;
+        int object_id = -1;
 
-        MSGPACK_DEFINE_MAP(has_collided, penetration_depth, time_stamp, normal, impact_point, position);
+        MSGPACK_DEFINE_MAP(has_collided, penetration_depth, time_stamp, normal, impact_point, position, object_name, object_id);
         
         CollisionInfo()
         {}
@@ -66,17 +68,19 @@ public:
         CollisionInfo(const msr::airlib::CollisionInfo& s)
         {
             has_collided = s.has_collided;
-            penetration_depth = s.penetration_depth;
-            time_stamp = s.time_stamp;
             normal = s.normal;
             impact_point = s.impact_point;
             position = s.position;
+            penetration_depth = s.penetration_depth;
+            time_stamp = s.time_stamp;
+            object_name = s.object_name;
+            object_id = s.object_id;
         }
 
         msr::airlib::CollisionInfo to() const
         {
             return msr::airlib::CollisionInfo(has_collided, normal.to(), impact_point.to(), position.to(),
-                penetration_depth, time_stamp);
+                penetration_depth, time_stamp, object_name, object_id);
         }
     };
 
@@ -195,7 +199,7 @@ public:
 
     struct ImageRequest {
         uint8_t camera_id;
-        msr::airlib::VehicleCameraBase::ImageType image_type;
+        msr::airlib::ImageCaptureBase::ImageType image_type;
         bool pixels_as_float;
         bool compress;
 
@@ -204,7 +208,7 @@ public:
         ImageRequest()
         {}
 
-        ImageRequest(const msr::airlib::VehicleCameraBase::ImageRequest& s)
+        ImageRequest(const msr::airlib::ImageCaptureBase::ImageRequest& s)
         {
             camera_id = s.camera_id;
             image_type = s.image_type;
@@ -212,9 +216,9 @@ public:
             compress = s.compress;
         }
 
-        msr::airlib::VehicleCameraBase::ImageRequest to() const
+        msr::airlib::ImageCaptureBase::ImageRequest to() const
         {
-            msr::airlib::VehicleCameraBase::ImageRequest d;
+            msr::airlib::ImageCaptureBase::ImageRequest d;
             d.camera_id = camera_id;
             d.image_type = image_type;
             d.pixels_as_float = pixels_as_float;
@@ -224,7 +228,7 @@ public:
         }
 
         static std::vector<ImageRequest> from(
-            const std::vector<msr::airlib::VehicleCameraBase::ImageRequest>& request
+            const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& request
         ) {
             std::vector<ImageRequest> request_adaptor;
             for (const auto& item : request)
@@ -232,10 +236,10 @@ public:
 
             return request_adaptor;
         }
-        static std::vector<msr::airlib::VehicleCameraBase::ImageRequest> to(
+        static std::vector<msr::airlib::ImageCaptureBase::ImageRequest> to(
             const std::vector<ImageRequest>& request_adapter
         ) {
-            std::vector<msr::airlib::VehicleCameraBase::ImageRequest> request;
+            std::vector<msr::airlib::ImageCaptureBase::ImageRequest> request;
             for (const auto& item : request_adapter)
                 request.push_back(item.to());
 
@@ -254,7 +258,7 @@ public:
         bool pixels_as_float;
         bool compress;
         int width, height;
-        msr::airlib::VehicleCameraBase::ImageType image_type;
+        msr::airlib::ImageCaptureBase::ImageType image_type;
 
         MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, 
             camera_orientation, time_stamp, message, pixels_as_float, compress, width, height, image_type);
@@ -262,7 +266,7 @@ public:
         ImageResponse()
         {}
 
-        ImageResponse(const msr::airlib::VehicleCameraBase::ImageResponse& s)
+        ImageResponse(const msr::airlib::ImageCaptureBase::ImageResponse& s)
         {
             pixels_as_float = s.pixels_as_float;
             
@@ -285,9 +289,9 @@ public:
             image_type = s.image_type;
         }
 
-        msr::airlib::VehicleCameraBase::ImageResponse to() const
+        msr::airlib::ImageCaptureBase::ImageResponse to() const
         {
-            msr::airlib::VehicleCameraBase::ImageResponse d;
+            msr::airlib::ImageCaptureBase::ImageResponse d;
 
             d.pixels_as_float = pixels_as_float;
 
@@ -308,17 +312,17 @@ public:
             return d;
         }
 
-        static std::vector<msr::airlib::VehicleCameraBase::ImageResponse> to(
+        static std::vector<msr::airlib::ImageCaptureBase::ImageResponse> to(
             const std::vector<ImageResponse>& response_adapter
         ) {
-            std::vector<msr::airlib::VehicleCameraBase::ImageResponse> response;
+            std::vector<msr::airlib::ImageCaptureBase::ImageResponse> response;
             for (const auto& item : response_adapter)
                 response.push_back(item.to());
 
             return response;
         }
         static std::vector<ImageResponse> from(
-            const std::vector<msr::airlib::VehicleCameraBase::ImageResponse>& response
+            const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& response
         ) {
             std::vector<ImageResponse> response_adapter;
             for (const auto& item : response)
@@ -333,7 +337,7 @@ public:
 
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::SafetyViolationType_);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::ObsAvoidanceStrategy);
-MSGPACK_ADD_ENUM(msr::airlib::VehicleCameraBase::ImageType);
+MSGPACK_ADD_ENUM(msr::airlib::ImageCaptureBase::ImageType);
 
 
 #endif

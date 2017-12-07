@@ -8,6 +8,7 @@ import sys
 import os
 import inspect
 import types
+import re
 
 
 class MsgpackMixin:
@@ -65,7 +66,7 @@ class Pose(MsgpackMixin):
     position = Vector3r()
     orientation = Quaternionr()
 
-    def __init__(self, position_val, orientation_val):
+    def __init__(self, position_val = Vector3r(), orientation_val = Quaternionr()):
         self.position = position_val
         self.orientation = orientation_val
 
@@ -77,6 +78,8 @@ class CollisionInfo(MsgpackMixin):
     position = Vector3r()
     penetration_depth = np.float32(0)
     time_stamp = np.float32(0)
+    object_name = ""
+    object_id = -1
 
 class GeoPoint(MsgpackMixin):
     latitude = 0.0
@@ -149,6 +152,9 @@ class AirSimClientBase:
     def ping(self):
         return self.client.call('ping')
 
+    def reset(self):
+        self.client.call('reset')
+
     def waitForReadyState(self, timeout=60):
         print('Waiting for valid home location.', end='', flush=True)
         home = self.getHomeGeoPoint()
@@ -171,6 +177,17 @@ class AirSimClientBase:
     def isApiControlEnabled(self):
         return self.client.call('isApiControlEnabled')
 
+    def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
+        return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
+    def simGetSegmentationObjectID(self, mesh_name):
+        return self.client.call('simGetSegmentationObjectID', mesh_name)
+    def simPrintLogMessage(self, message, message_param = "", severity = 0):
+        return self.client.call('simPrintLogMessage', message, message_param, severity)
+    def simGetObjectPose(self, object_name):
+        pose = self.client.call('simGetObjectPose', object_name)
+        return Pose.from_msgpack(pose)
+
+
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the AirSimImageType members
@@ -187,6 +204,9 @@ class AirSimClientBase:
     def simGetImages(self, requests):
         responses_raw = self.client.call('simGetImages', requests)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
+
+    def getCollisionInfo(self):
+        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
 
     @staticmethod
     def stringToUint8Array(bstr):
@@ -227,7 +247,8 @@ class AirSimClientBase:
         self.client.call('simSetPose', pose, ignore_collison)
 
     def simGetPose(self):
-        return self.client.call('simGetPose')
+        pose = self.client.call('simGetPose')
+        return Pose.from_msgpack(pose)
 
     # helper method for converting getOrientation to roll/pitch/yaw
     # https:#en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -444,10 +465,9 @@ class MultirotorClient(AirSimClientBase, object):
         return self.client.call('getLandedState')
     def getGpsLocation(self):
         return GeoPoint.from_msgpack(self.client.call('getGpsLocation'))
-    def getRollPitchYaw(self):
+    def getPitchRollYaw(self):
         return self.toEulerianAngle(self.getOrientation())
-    def getCollisionInfo(self):
-        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
+
     #def getRCData(self):
     #    return self.client.call('getRCData')
     def timestampNow(self):
@@ -480,6 +500,19 @@ class MultirotorClient(AirSimClientBase, object):
         return self.client.call('moveToPosition', x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode, lookahead, adaptive_lookahead)
 
     def moveByManual(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
+        """Read current RC state and use it to control the vehicles. 
+
+        Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints
+        then that RC state would be ignored.
+
+        :param vx_max: max velocity allowed in x direction
+        :param vy_max: max velocity allowed in y direction
+        :param vz_max: max velocity allowed in z direction
+        :param z_min: min z allowed allowed for vehicle position
+        :param duration: after this duration vehicle would switch back to non-manual mode
+        :param drivetrain: when ForwardOnly, vehicle rotates itself so that its front is always facing the direction of travel. If MaxDegreeOfFreedom then it doesn't do that (crab-like movement)
+        :param yaw_mode: Specifies if vehicle should face at given angle (is_rate=False) or should be rotating around its axis at given rate (is_rate=True)
+        """
         return self.client.call('moveByManual', vx_max, vy_max, z_min, duration, drivetrain, yaw_mode)
 
     def rotateToYaw(self, yaw, max_wait_seconds = 60, margin = 5):
@@ -501,6 +534,3 @@ class CarClient(AirSimClientBase, object):
     def getCarState(self):
         state_raw = self.client.call('getCarState')
         return CarState.from_msgpack(state_raw)
-
-    def reset(self):
-        self.client.call('reset')

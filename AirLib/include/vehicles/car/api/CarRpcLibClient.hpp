@@ -9,7 +9,7 @@
 #include "common/CommonStructs.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
 #include "api/RpcLibClientBase.hpp"
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 
 
 namespace msr { namespace airlib {

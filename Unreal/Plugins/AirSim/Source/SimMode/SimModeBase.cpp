@@ -38,18 +38,7 @@ void ASimModeBase::BeginPlay()
 
 void ASimModeBase::setStencilIDs()
 {
-    TArray<AActor*> foundActors;
-    UAirBlueprintLib::FindAllActor<AActor>(this, foundActors);
-    TArray<UStaticMeshComponent*> components;
-    int stencil = 0;
-    for (AActor* actor : foundActors) {
-        actor->GetComponents(components);
-        if (components.Num() == 1) {
-            components[0]->SetRenderCustomDepth(true);
-            components[0]->CustomDepthStencilValue = (stencil++) % 256;
-            components[0]->MarkRenderStateDirty();
-        }
-    }
+    UAirBlueprintLib::InitializeMeshStencilIDs();
 }
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -94,8 +83,9 @@ void ASimModeBase::readSettings()
     }
 
     std::string simmode_name = settings.getString("SimMode", "");
-    if (simmode_name == "")
-        simmode_name = "Multirotor";
+    if (simmode_name == "") {
+        throw std::invalid_argument("simmode_name is not expected empty in SimModeBase");
+    }
 
     usage_scenario = settings.getString("UsageScenario", "");
     default_vehicle_config = settings.getString("DefaultVehicleConfig", "");
@@ -103,7 +93,7 @@ void ASimModeBase::readSettings()
         if (simmode_name == "Multirotor")
             default_vehicle_config = "SimpleFlight";
         else if (simmode_name == "Car")
-            default_vehicle_config = "PhysXCar4x4";
+            default_vehicle_config = "PhysXCar";
         else         
             UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
     }
@@ -169,6 +159,9 @@ void ASimModeBase::readSettings()
     }
     
     UAirBlueprintLib::LogMessage("Default config: ", default_vehicle_config.c_str(), LogDebugLevel::Informational);
+
+    // By default this is the column header. Override it in BeginPlay of pawn mode
+    columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
@@ -221,8 +214,8 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode()
 
 void ASimModeBase::startRecording()
 {
-    FRecordingThread::startRecording(getFpvVehiclePawnWrapper()->getCameraConnector(0),
-        getFpvVehiclePawnWrapper()->getKinematics(), recording_settings);
+    FRecordingThread::startRecording(getFpvVehiclePawnWrapper()->getImageCapture(),
+        getFpvVehiclePawnWrapper()->getKinematics(), recording_settings, columns, getFpvVehiclePawnWrapper());
 }
 
 bool ASimModeBase::toggleRecording()

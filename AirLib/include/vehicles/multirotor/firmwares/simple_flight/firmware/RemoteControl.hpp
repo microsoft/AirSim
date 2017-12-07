@@ -26,7 +26,7 @@ public:
 
         goal_ = Axis4r::zero();
         goal_mode_ = params_->default_goal_mode;
-        allow_api_control_ = false;
+        allow_api_control_ = params_->rc.allow_api_always;
         last_rec_read_ = 0;
         last_angle_mode_ = std::numeric_limits<TReal>::min();
         request_duration_ = 0;

@@ -32,7 +32,22 @@
     <Compile Include="camera.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="car_collision.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cv_mode.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="drive_straight.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="drone_stress_test.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="objects.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="seg_pallete.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="hello_car.py">
@@ -49,6 +64,12 @@
     </Compile>
     <Compile Include="pfm.py" />
     <Compile Include="AirSimClient.py" />
+    <Compile Include="segmentation.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="car_stress_test.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

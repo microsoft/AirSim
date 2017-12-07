@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include <functional>
 #include "common/CommonStructs.hpp"
-#include "controllers/VehicleCameraBase.hpp"
+#include "controllers/ImageCaptureBase.hpp"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "api/RpcLibClientBase.hpp"
 #include "vehicles/multirotor/controllers/DroneCommon.hpp"
@@ -20,8 +20,6 @@ public:
 
     bool armDisarm(bool arm);
     void setSimulationMode(bool is_set);
-    void start();
-    void stop();
     bool takeoff(float max_wait_ms = 15);
     bool land(float max_wait_seconds = 60);
     bool goHome();
@@ -45,7 +43,6 @@ public:
 
   
     Vector3r getPosition();
-    CollisionInfo getCollisionInfo();
     Vector3r getVelocity();
     Quaternionr getOrientation();
     RCData getRCData();

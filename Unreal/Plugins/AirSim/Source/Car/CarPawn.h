@@ -1,12 +1,11 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VehiclePawnWrapper.h"
 #include "WheeledVehicle.h"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
 #include "physics/Kinematics.hpp"
+#include "CarPawnApi.h"
+#include "SimJoyStick/SimJoyStick.h"
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;
@@ -80,14 +79,8 @@ public:
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
     FColor	GearDisplayReverseColor;
 
-    /** Are we in reverse gear */
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly)
-    bool bInReverseGear;
-
     void setupInputBindings();
 
-    void enableApiControl(bool is_enabled);
-    bool isApiControlEnabled();
     void reset(bool disable_api_control = true);
 
     // Begin Actor interface
@@ -95,7 +88,7 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     VehiclePawnWrapper* getVehiclePawnWrapper();
-    void initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound);
+    void initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound, int remoteControlID);
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -137,7 +130,10 @@ private:
     void startApiServer(bool enable_rpc, const std::string& api_server_address);
     void stopApiServer();
     bool isApiServerStarted();
-    void updateKinematics();
+    void updateKinematics(float delta);
+    void updateCarControls();
+
+    std::string getLogString();
 
     /* Are we on a 'slippery' surface */
     bool bIsLowFriction;
@@ -156,10 +152,17 @@ public:
 
 private:
     UClass* pip_camera_class_;
-    class CarController;
+
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
-    std::unique_ptr<msr::airlib::CarApiBase> controller_;
+    std::unique_ptr<msr::airlib::CarApiBase> api_;
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
     msr::airlib::Kinematics::State kinematics_;
-    bool api_control_enabled_ = false;
+
+    CarPawnApi::CarControls keyboard_controls_;
+    CarPawnApi::CarControls joystick_controls_;
+
+    int remote_control_id_ = -1;
+
+    SimJoyStick joystick_;
+    SimJoyStick::State joystick_state_;
 };

@@ -25,9 +25,9 @@ int main()
     // This assumes you are running DroneServer already on the same machine.
     // DroneServer must be running first.
     msr::airlib::CarRpcLibClient client;
-    typedef VehicleCameraBase::ImageRequest ImageRequest;
-    typedef VehicleCameraBase::ImageResponse ImageResponse;
-    typedef VehicleCameraBase::ImageType ImageType;
+    typedef ImageCaptureBase::ImageRequest ImageRequest;
+    typedef ImageCaptureBase::ImageResponse ImageResponse;
+    typedef ImageCaptureBase::ImageType ImageType;
     typedef common_utils::FileSystem FileSystem;
     
     try {

@@ -1160,7 +1160,7 @@ public:
         this->addSwitch({ "-pause_time", "100", "pause time between each image in milliseconds (default 100)" });
     }
 
-    void getImages(CommandContext* context, VehicleCameraBase::ImageType imageType, std::string baseName, int iterations, TTimeDelta pause_time)
+    void getImages(CommandContext* context, ImageCaptureBase::ImageType imageType, std::string baseName, int iterations, TTimeDelta pause_time)
     {
         // group the images by the current date.
         std::string folderName = Utils::to_string(Utils::now(), "%Y-%m-%d");
@@ -1178,19 +1178,19 @@ public:
             const char* typeName = "";
             switch (imageType)
             {
-            case msr::airlib::VehicleCameraBase::ImageType::Scene:
+            case msr::airlib::ImageCaptureBase::ImageType::Scene:
                 typeName = "scene";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType::DepthVis:
+            case msr::airlib::ImageCaptureBase::ImageType::DepthVis:
                 typeName = "depth";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType::Segmentation:
+            case msr::airlib::ImageCaptureBase::ImageType::Segmentation:
                 typeName = "seg";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType::SurfaceNormals:
+            case msr::airlib::ImageCaptureBase::ImageType::SurfaceNormals:
                 typeName = "normals";
                 break;
-            case msr::airlib::VehicleCameraBase::ImageType::DisparityNormalized:
+            case msr::airlib::ImageCaptureBase::ImageType::DisparityNormalized:
                 typeName = "disparity";
                 break;
             default:
@@ -1220,18 +1220,18 @@ public:
         TTimeDelta pause_time = getSwitch("-pause_time").toTimeDelta();
         CommandContext* context = params.context;
 
-        VehicleCameraBase::ImageType imageType;
+        ImageCaptureBase::ImageType imageType;
 
         if (type == "depth") {
-            imageType = VehicleCameraBase::ImageType::DepthVis;
+            imageType = ImageCaptureBase::ImageType::DepthVis;
         } else if (type == "scene") {
-            imageType = VehicleCameraBase::ImageType::Scene;
+            imageType = ImageCaptureBase::ImageType::Scene;
         } else if (type == "segmentation") {
-            imageType = VehicleCameraBase::ImageType::Segmentation;
+            imageType = ImageCaptureBase::ImageType::Segmentation;
         } else if (type == "normals") {
-            imageType = VehicleCameraBase::ImageType::SurfaceNormals;
+            imageType = ImageCaptureBase::ImageType::SurfaceNormals;
         } else if (type == "disparity") {
-            imageType = VehicleCameraBase::ImageType::DisparityNormalized;
+            imageType = ImageCaptureBase::ImageType::DisparityNormalized;
         } else {
             cout << "Error: Invalid image type '" << type << "', expecting either 'depth', 'scene' or 'segmentation'" << endl;
             return true;

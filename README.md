@@ -6,15 +6,13 @@ Our goal is to develop AirSim as a platform for AI research to experiment with d
 
 **Check out the quick 1.5 minute demo**
 
-[![AirSim Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
+Drones in AirSim
 
-## What's New
+[![AirSim Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
-* We now have the [car model](docs/using_car.md).
-* New built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
-* AirSim now also generates [depth as well as disparity impages](image_apis.md) that is in camera plan. 
-* We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](docs/release_notes.md).
-* No need to build the code. Just download [our binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
+Cars in AirSim
+
+[![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
 ## How to Get It
 
@@ -36,7 +34,10 @@ If you have remote control (RC) as shown below, you can manually control the dro
 
 [More details](docs/remote_control.md)
 
-![record screenshot](docs/images/DroneGIF-03.gif)
+![record screenshot](docs/images/AirSimDroneManual.gif)
+
+![record screenshot](docs/images/AirSimCarManual.gif)
+
 
 ### Programmatic control
 
@@ -58,12 +59,23 @@ A better way to generate training data exactly the way you want is by accessing 
 
 Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode, you don't have vehicle physics and dynamics but you can use keyboard to move around and use APIs to position the vehicle in any arbitrary pose and get images such as depth, disparity, surface normals or object segmentation. 
 
-[More details](image_apis.md)
+[More details](docs/image_apis.md)
 
-### Video Tutorials
+### Tutorials
 
-- [Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) 
-- [Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0)
+- [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) 
+- [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0)
+- [Reinforcement Learning with AirSim](docs/reinforcement_learning.md)
+
+## What's New
+
+* We now have the [car model](docs/using_car.md).
+* No need to build the code. Just download [binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
+* The [tutorial](https://www.youtube.com/watch?v=y09VbdQWvQY) for using off-the-self environments with AirSim.
+* The [reinforcement learning example](docs/reinforcement_learning.md) with AirSim
+* New built-in flight controller called [simple_flight](docs/simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
+* AirSim now also generates [depth as well as disparity images](docs/image_apis.md) that is in camera plan. 
+* We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](docs/release_notes.md).
 
 ## Participate
 
@@ -83,20 +95,25 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 
 ### Contribute
 
-We welcome contributions to help advance research frontiers. 
+Please take a look at [open issues](https://github.com/microsoft/airsim/issues) and [Trello board](https://trello.com/b/1t2qCeaA/todo) if you are looking for areas to contribute to.
 
 * [More on AirSim design](docs/design.md)
 * [More on code structure](docs/code_structure.md)
 * [Contribution Guidelines](docs/contributing.md)
 
-### Contact
+
+### Who is Using AirSim?
+
+We are [maintaining list](docs/who_is_using.md) of few projects, people and groups that we are aware of. If you had like to be featured in this list please [add request here](https://github.com/microsoft/airsim/issues).
+
+## Contact
 
 Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
 
-### FAQ
+## FAQ
 
 If you run into problems, check the [FAQ](docs/faq.md) and feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
 
-### License
+## License
 
 This project is released under MIT License. Please review [License file](LICENSE) for more details.

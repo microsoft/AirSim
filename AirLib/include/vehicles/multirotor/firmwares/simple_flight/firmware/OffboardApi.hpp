@@ -75,7 +75,7 @@ public:
         if (rc_.allowApiControl())
             return true;
         else {
-            message = "RemoteControl switch position disallows API control";
+            message = "Remote Control switch position disallows API control";
             comm_link_->log(message, ICommLink::kLogLevelError);
             return false;
         }

@@ -57,15 +57,6 @@ bool MultirotorRpcLibClient::goHome()
 {
     return static_cast<rpc::client*>(getClient())->call("goHome").as<bool>();
 }
-void MultirotorRpcLibClient::start()
-{
-    static_cast<rpc::client*>(getClient())->call("start");
-}
-void MultirotorRpcLibClient::stop()
-{
-    static_cast<rpc::client*>(getClient())->call("stop");
-}
-
 
 bool MultirotorRpcLibClient::moveByAngle(float pitch, float roll, float z, float yaw, float duration)
 {
@@ -149,11 +140,6 @@ DroneControllerBase::LandedState MultirotorRpcLibClient::getLandedState()
 RCData MultirotorRpcLibClient::getRCData()
 {
     return static_cast<rpc::client*>(getClient())->call("getRCData").as<MultirotorRpcLibAdapators::RCData>().to();
-}
-
-CollisionInfo MultirotorRpcLibClient::getCollisionInfo()
-{
-    return static_cast<rpc::client*>(getClient())->call("getCollisionInfo").as<MultirotorRpcLibAdapators::CollisionInfo>().to();
 }
 
 TTimePoint MultirotorRpcLibClient::timestampNow()

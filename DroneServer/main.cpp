@@ -5,6 +5,7 @@
 #include <string>
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
 #include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
+#include "vehicles/multirotor/controllers/RealMultirotorConnector.hpp"
 #include "controllers/Settings.hpp"
 
 using namespace std;
@@ -76,7 +77,9 @@ int main(int argc, const char* argv[])
     mav_drone.initialize(connection_info, nullptr, is_simulation);
     mav_drone.reset();
 
-    DroneControllerCancelable server_wrapper(&mav_drone);
+    RealMultirotorConnector connector(& mav_drone);
+
+    DroneApi server_wrapper(& connector);
     msr::airlib::MultirotorRpcLibServer server(&server_wrapper, connection_info.local_host_ip);
     
     //start server in async mode

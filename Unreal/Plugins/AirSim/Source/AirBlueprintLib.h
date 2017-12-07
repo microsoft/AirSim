@@ -8,9 +8,13 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/PlayerInput.h"
 #include <string>
+#include <regex>
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/MeshComponent.h"
+#include "LandscapeProxy.h"
 #include "AirBlueprintLib.generated.h"
+
 
 UENUM(BlueprintType)
 enum class LogDebugLevel : uint8 {
@@ -30,6 +34,7 @@ class UAirBlueprintLib : public UBlueprintFunctionLibrary
 
 public:
     static void LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec = 60);
+    UFUNCTION(BlueprintCallable, Category = "Utils")
     static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
     static float GetWorldToMetersScale(const AActor* context);
 
@@ -39,10 +44,22 @@ public:
     static T* FindActor(const UObject* context, FString name);
     template<typename T>
     static void FindAllActor(const UObject* context, TArray<AActor*>& foundActors);
-    static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor = nullptr, ECollisionChannel collison_channel = ECC_Visibility);
-    static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collison_channel = ECC_Visibility);
-    static bool GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collison_channel = ECC_Visibility);
+    static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+    static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+    static bool GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
     static void FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z = false, float fixed_z_val = 2.0f);
+
+    static bool SetMeshStencilID(const std::string& mesh_name, int object_id,
+        bool is_name_regex = false);
+    static int GetMeshStencilID(const std::string& mesh_name);
+    static void InitializeMeshStencilIDs();
+
+    static bool IsInGameThread();
+    
+    template<class T>
+    static std::string GetMeshName(T* mesh);
+    static std::string GetMeshName(ALandscapeProxy* mesh);
+
 
     template<class UserClass>
     static FInputActionBinding& BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,
@@ -60,7 +77,7 @@ public:
 
     static void EnableInput(AActor* actor);
 
-    static void RunCommandOnGameThread(TFunction<void()> InFunction, const TStatId InStatId = TStatId());
+    static void RunCommandOnGameThread(TFunction<void()> InFunction, bool wait = false, const TStatId InStatId = TStatId());
 
     static float GetDisplayGamma();
 
@@ -72,6 +89,20 @@ public:
     {
         log_messages_hidden = is_hidden;
     }
+
+private:
+    template<typename T>
+    static void InitializeObjectStencilID(T* obj, bool ignore_existing = true);
+
+
+    template<typename T>
+    static void SetObjectStencilIDIfMatch(T* mesh, int object_id, 
+        const std::string& mesh_name, bool is_name_regex, const std::regex& name_regex, int& changes);
+
+    template<typename T>
+    static void SetObjectStencilID(T* mesh, int object_id);
+    static void SetObjectStencilID(ALandscapeProxy* mesh, int object_id);
+
 
 private:
     static bool log_messages_hidden;
