@@ -1222,7 +1222,7 @@ void handleStatus(const MavLinkStatustext& statustext) {
     }
 
     std::string safeText(statustext.text, 50);
-    Utils::log(Utils::stringf("STATUS: sev=%d, '%s'", static_cast<int>(statustext.severity), safeText.c_str()));
+    Utils::log(Utils::stringf("STATUS: sev=%d, '%s'\n", static_cast<int>(statustext.severity), safeText.c_str()));
 }
 
 int console(std::stringstream& script) {

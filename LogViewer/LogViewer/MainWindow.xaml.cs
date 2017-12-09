@@ -38,6 +38,7 @@ namespace LogViewer
         Quaternion initialAttitude;
         MapPolyline currentFlight;
         MavlinkLog currentFlightLog;
+        long lastAttitudeMessage;
 
         public MainWindow()
         {
@@ -146,17 +147,22 @@ namespace LogViewer
             {
                 case MAVLink.MAVLINK_MSG_ID.ATTITUDE_QUATERNION:
                     {
-                        var payload = (MAVLink.mavlink_attitude_quaternion_t)e.TypedPayload;
-                        var q = new System.Windows.Media.Media3D.Quaternion(payload.q1, payload.q2, payload.q3, payload.q4);
-                        UiDispatcher.RunOnUIThread(() =>
-                        {
-                            //ModelViewer.ModelAttitude = initialAttitude * q;
+                        // Only do this if drone is not sending MAVLINK_MSG_ID.ATTITUDE...
+                        if (Environment.TickCount - lastAttitudeMessage > 1000)
+                        {                            
+                            var payload = (MAVLink.mavlink_attitude_quaternion_t)e.TypedPayload;
+                            var q = new System.Windows.Media.Media3D.Quaternion(payload.q1, payload.q2, payload.q3, payload.q4);
+                            UiDispatcher.RunOnUIThread(() =>
+                            {
+                            ModelViewer.ModelAttitude = initialAttitude * q;
                         });
+                        }
                         break;
                     }
 
                 case MAVLink.MAVLINK_MSG_ID.ATTITUDE:
                     {
+                        lastAttitudeMessage = Environment.TickCount;
                         var payload = (MAVLink.mavlink_attitude_t)e.TypedPayload;
                         Quaternion y = new Quaternion(new Vector3D(0, 0, 1), -payload.yaw * 180 / Math.PI);
                         Quaternion x = new Quaternion(new Vector3D(1, 0, 0), payload.pitch * 180 / Math.PI);
@@ -999,11 +1005,13 @@ namespace LogViewer
                     List<DataValue> values = new List<DataValue>(currentFlightLog.GetDataValues(schema, DateTime.MinValue, TimeSpan.MaxValue));
                     chart = AddChart(schema, values);
 
-                    // now turn on live scrolling...
-                    chart.LiveScrolling = true;
-                    // the X values are in microseconds (s0 the numerator is the speed of scrolling).
-                    chart.LiveScrollingXScale = 50.0 / 1000000.0;
-
+                    if (!pauseRecording)
+                    {
+                        // now turn on live scrolling if we are recording...
+                        chart.LiveScrolling = true;
+                        // the X values are in microseconds (s0 the numerator is the speed of scrolling).
+                        chart.LiveScrollingXScale = 50.0 / 1000000.0;
+                    }
                     liveScrolling.Add(chart);
 
                     // now start watching the live update for new values that need to be added to this chart.

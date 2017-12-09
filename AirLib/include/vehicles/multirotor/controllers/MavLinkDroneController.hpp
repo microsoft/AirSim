@@ -49,7 +49,7 @@ public:
         /* Default values are requires so uninitialized instance doesn't have random values */
 
         bool use_serial = true; // false means use UDP instead
-        //Used to connect via HITL: needed only if use_serial = true
+                                //Used to connect via HITL: needed only if use_serial = true
         std::string serial_port = "*";
         int baud_rate = 115200;
 
@@ -77,7 +77,7 @@ public:
         uint8_t offboard_sysid = 134;
         int offboard_compid = 1;
         uint8_t vehicle_sysid = 135;
-        int vehicle_compid = 1;    
+        int vehicle_compid = 1;
 
         // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet) 
         // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
@@ -128,7 +128,7 @@ public:
     bool armDisarm(bool arm, CancelableBase& cancelable_action) override;
     bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override;
     bool land(float max_wait_seconds, CancelableBase& cancelable_action) override;
-    bool goHome(CancelableBase& cancelable_action) override; 
+    bool goHome(CancelableBase& cancelable_action) override;
     bool hover(CancelableBase& cancelable_action) override;
     GeoPoint getHomeGeoPoint() override;
     GeoPoint getGpsLocation() override;
@@ -140,7 +140,7 @@ public:
 
     virtual bool loopCommandPre() override;
     virtual void loopCommandPost() override;
-protected: 
+protected:
     void commandRollPitchZ(float pitch, float roll, float z, float yaw) override;
     void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;
     void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override;
@@ -259,7 +259,7 @@ public:
             message = is_available_message_;
         return is_available_;
     }
-    
+
     ConnectionInfo getMavConnectionInfo()
     {
         return connection_info_;
@@ -293,7 +293,7 @@ public:
             is_controls_0_1_ = true;
             Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
-            connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg){
+            connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                 unused(connection);
                 processMavMessages(msg);
             });
@@ -366,7 +366,7 @@ public:
                 qgc_proxy_ = nullptr;
             }
             else {
-                connection->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection_val, const mavlinkcom::MavLinkMessage& msg){
+                connection->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection_val, const mavlinkcom::MavLinkMessage& msg) {
                     unused(connection_val);
                     processQgcMessages(msg);
                 });
@@ -406,13 +406,13 @@ public:
         {
             mavlinkcom::SerialPortInfo info = *iter;
             if (
-                    (
-                        (info.vid == pixhawkVendorId) &&
-                        (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
+                (
+                (info.vid == pixhawkVendorId) &&
+                    (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
                     ) ||
                     (
-                        (info.displayName.find(L"PX4_") != std::string::npos)
-                    )
+                (info.displayName.find(L"PX4_") != std::string::npos)
+                        )
                 )
             {
                 // printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
@@ -423,7 +423,7 @@ public:
     }
 
     void connect()
-    {        
+    {
         createMavConnection(connection_info_);
         initializeMavSubscriptions();
     }
@@ -454,7 +454,7 @@ public:
 
         addStatusMessage(Utils::stringf("Connecting to UDP port %d, local IP %s, remote IP...", port, connection_info_.local_host_ip.c_str(), ip.c_str()));
         connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
-        hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid); 
+        hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
         addStatusMessage(std::string("Connected over UDP."));
 
@@ -463,11 +463,11 @@ public:
         if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0 && connection_info_.sitl_ip_port != port) {
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-            addStatusMessage(Utils::stringf("Connecting to PX4 SITL UDP port %d, local IP %s, remote IP...", 
+            addStatusMessage(Utils::stringf("Connecting to PX4 SITL UDP port %d, local IP %s, remote IP...",
                 connection_info_.sitl_ip_port, connection_info_.local_host_ip.c_str(), connection_info_.sitl_ip_address.c_str()));
 
-            auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl", 
-                connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);		
+            auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl",
+                connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);
             mav_vehicle_->connect(sitlconnection);
 
             addStatusMessage(std::string("Connected to SITL over UDP."));
@@ -625,10 +625,10 @@ public:
 
         mavlinkcom::MavLinkHilSensor hil_sensor;
         hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+       
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
         hil_sensor.zacc = acceleration.z();
-
         hil_sensor.xgyro = gyro.x();
         hil_sensor.ygyro = gyro.y();
         hil_sensor.zgyro = gyro.z();
@@ -639,7 +639,7 @@ public:
 
         hil_sensor.abs_pressure = abs_pressure;
         hil_sensor.pressure_alt = pressure_alt;
-        //TODO: enable tempeprature? diff_presure
+        //TODO: enable temperature? diff_pressure
         hil_sensor.fields_updated = was_reset_ ? (1 << 31) : 0;
 
         if (hil_node_ != nullptr) {
@@ -746,8 +746,8 @@ public:
         const auto& mag_output = getMagnetometer()->getOutput();
         const auto& baro_output = getBarometer()->getOutput();
 
-        sendHILSensor(imu_output.linear_acceleration, 
-            imu_output.angular_velocity, 
+        sendHILSensor(imu_output.linear_acceleration,
+            imu_output.angular_velocity,
             mag_output.magnetic_field_body,
             baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
 
@@ -808,8 +808,8 @@ public:
 
     void getMocapPose(Vector3r& position, Quaternionr& orientation)
     {
-        position.x() = MocapPoseMessage.x; position.y() = MocapPoseMessage.y; position.z() = MocapPoseMessage.z; 
-        orientation.w() = MocapPoseMessage.q[0]; orientation.x() = MocapPoseMessage.q[1]; 
+        position.x() = MocapPoseMessage.x; position.y() = MocapPoseMessage.y; position.z() = MocapPoseMessage.z;
+        orientation.w() = MocapPoseMessage.q[0]; orientation.x() = MocapPoseMessage.q[1];
         orientation.y() = MocapPoseMessage.q[2]; orientation.z() = MocapPoseMessage.q[3];
     }
 
@@ -1035,7 +1035,7 @@ public:
         if (max_wait_seconds <= 0)
             return true; // client doesn't want to wait.
 
-        return parent_->waitForZ(max_wait_seconds, z, getDistanceAccuracy(), cancelable_action);        
+        return parent_->waitForZ(max_wait_seconds, z, getDistanceAccuracy(), cancelable_action);
     }
 
     bool hover(CancelableBase& cancelable_action)
@@ -1068,11 +1068,11 @@ public:
             {
                 throw VehicleMoveException("Landing command - timeout waiting for response from drone");
             }
-            else if(!rc) {
+            else if (!rc) {
                 throw VehicleMoveException("Landing command rejected by drone");
             }
         }
-        else 
+        else
         {
             throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
         }
@@ -1150,17 +1150,17 @@ public:
     }
 
     //drone parameters
-    float getCommandPeriod() 
+    float getCommandPeriod()
     {
-        return 1.0f/50; //1 period of 50hz
+        return 1.0f / 50; //1 period of 50hz
     }
     float getTakeoffZ()
     {
         // pick a number, PX4 doesn't have a fixed limit here, but 3 meters is probably safe 
         // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
-        return -3.0f;    
+        return -3.0f;
     }
-    float getDistanceAccuracy() 
+    float getDistanceAccuracy()
     {
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance travelled
     }
@@ -1250,7 +1250,7 @@ public:
         ensureSafeMode();
     }
 
-    void ensureSafeMode() 
+    void ensureSafeMode()
     {
         if (mav_vehicle_ != nullptr) {
             const mavlinkcom::VehicleState& state = mav_vehicle_->getVehicleState();
@@ -1456,7 +1456,7 @@ void MavLinkDroneController::loopCommandPost()
 }
 
 //drone parameters
-float MavLinkDroneController::getCommandPeriod() 
+float MavLinkDroneController::getCommandPeriod()
 {
     return pimpl_->getCommandPeriod();
 }
@@ -1464,7 +1464,7 @@ float MavLinkDroneController::getTakeoffZ()
 {
     return pimpl_->getTakeoffZ();
 }
-float MavLinkDroneController::getDistanceAccuracy() 
+float MavLinkDroneController::getDistanceAccuracy()
 {
     return pimpl_->getDistanceAccuracy();
 }

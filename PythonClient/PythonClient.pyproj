@@ -70,6 +70,7 @@
     <Compile Include="car_stress_test.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="survey.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
