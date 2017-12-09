@@ -244,6 +244,8 @@ namespace LogViewer.Controls
         {
             this.dirty = true;
             this.series = series;
+            this.currentValue = null;
+            this.scaleTransform = null;
 
             this.UpdateLayout();
             if (this.ActualWidth != 0)
@@ -477,13 +479,33 @@ namespace LogViewer.Controls
             if (liveScrolling)
             {
                 // just show the tail that fits on screen, since the scaling will not happen on x-axis in this case.
-                this.visibleStartIndex = series.Values.Count - (int)this.ActualWidth;
+                var width = this.ActualWidth;
+                
                 this.visibleEndIndex = series.Values.Count;
+                this.visibleStartIndex = this.visibleEndIndex;
+
+                if (series.Values.Count > 0)
+                {
+                    // walk back until the scaled values fill one screen width.
+                    this.visibleStartIndex = this.visibleEndIndex - 1;
+                    Point endPoint = GetScaledValue(series.Values[this.visibleStartIndex]);
+                    while (--this.visibleStartIndex > 0)
+                    {
+                        Point p = GetScaledValue(series.Values[this.visibleStartIndex]);
+                        if (endPoint.X - p.X > width)
+                        {
+                            break;
+                        }
+                    }
+                }
+
                 minY = double.MaxValue;
                 maxY = double.MinValue;
                 minX = double.MaxValue;
                 maxX = double.MinValue;
                 this.smoothScrollIndex = this.series.Values.Count;
+
+                ComputeScale();
             }
 
             double count = series.Values.Count;
@@ -527,7 +549,7 @@ namespace LogViewer.Controls
 
                 double rx = pt.X + offset;
 
-                if (pt.X >= 0 && pt.X < width)
+                if (pt.X >= 0)
                 {
                     visibleCount++;
                     if (!started)

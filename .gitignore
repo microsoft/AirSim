@@ -321,3 +321,5 @@ deps/
 /Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/
 /suv_download_tmp
 car_assets.zip
+/PythonClient/cloud.txt
+__pycache__/

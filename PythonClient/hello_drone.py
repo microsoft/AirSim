@@ -2,7 +2,7 @@ from AirSimClient import *
 
 # connect to the AirSim simulator 
 client = MultirotorClient()
-client.confirmConnection()
+client.waitForReadyState()
 client.enableApiControl(True)
 client.armDisarm(True)
 

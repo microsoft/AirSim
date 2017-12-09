@@ -9,7 +9,7 @@ import math
 import sys
 
 client = MultirotorClient()
-client.confirmConnection()
+client.waitForReadyState()
 client.enableApiControl(True)
 client.armDisarm(True)
 client.takeoff()

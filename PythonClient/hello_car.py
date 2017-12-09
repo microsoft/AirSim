@@ -2,7 +2,7 @@ from AirSimClient import *
 
 # connect to the AirSim simulator 
 client = CarClient()
-client.confirmConnection()
+client.waitForReadyState()
 client.enableApiControl(True)
 car_controls = CarControls()
 

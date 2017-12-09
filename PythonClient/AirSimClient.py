@@ -151,18 +151,21 @@ class AirSimClientBase:
         
     def ping(self):
         return self.client.call('ping')
-    
+
     def reset(self):
         self.client.call('reset')
 
-    def confirmConnection(self):
-        print('Waiting for connection: ', end='')
+    def waitForReadyState(self, timeout=60):
+        print('Waiting for valid home location.', end='', flush=True)
         home = self.getHomeGeoPoint()
         while ((home.latitude == 0 and home.longitude == 0 and home.altitude == 0) or
                 math.isnan(home.latitude) or  math.isnan(home.longitude) or  math.isnan(home.altitude)):
             time.sleep(1)
+            timeout -= 1
+            if timeout <= 0:
+                raise Exception("timeout waiting for home location")
             home = self.getHomeGeoPoint()
-            print('X', end='')
+            print('.', end='', flush=True)
         print('')
 
     def getHomeGeoPoint(self):

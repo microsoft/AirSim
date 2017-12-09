@@ -3,7 +3,7 @@ import sys
 import time
 
 client = MultirotorClient()
-client.confirmConnection()
+client.waitForReadyState()
 client.enableApiControl(True)
 client.armDisarm(True)
 client.takeoff()

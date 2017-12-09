@@ -7,7 +7,7 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 client = MultirotorClient()
-client.confirmConnection()
+client.waitForReadyState()
 
 for x in range(3): # do few times
     z = x * -20 - 5 # some random number
