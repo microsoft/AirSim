@@ -25,7 +25,7 @@ print("client.moveOnPath to fly fast path along the streets")
 try:
     result = client.moveOnPath([Vector3r(0,-253,z),Vector3r(125,-253,z),Vector3r(125,0,z),Vector3r(0,0,z),Vector3r(0,0,-20)], 
                            15, 65, 
-                           DrivetrainType.ForwardOnly, YawMode(False,0), 15, 1)
+                           DrivetrainType.ForwardOnly, YawMode(False,0), 20, 1)
 except:
     errorType, value, traceback = sys.exc_info()
     print("moveOnPath threw exception: " + str(value))
