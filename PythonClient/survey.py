@@ -21,12 +21,12 @@ class SurveyNavigator:
         if landed != 1:
             print("taking off...")
             self.client.takeoff()
-
-
-        # AirSim uses NED coordinates so negative axis is up.
         
+        # AirSim uses NED coordinates so negative axis is up.
         x = -self.boxsize
         z = -self.altitude
+
+        self.client.moveToPosition(0, 0, z, self.velocity)
 
         print("flying to corner of survey box and climing to altitude: " + str(self.altitude))
         self.client.moveToPosition(x, -self.boxsize, z, self.velocity)
@@ -63,7 +63,11 @@ class SurveyNavigator:
             pass
 
         print("flying back home")
-        self.client.moveToPosition(0, 0, z, 1)
+        self.client.moveToPosition(0, 0, z, self.velocity)
+        
+        if z < -5:
+            print("descending")
+            self.client.moveToPosition(0, 0, -5, 2)
 
         print("landing...")
         self.client.land()
