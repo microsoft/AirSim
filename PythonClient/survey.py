@@ -26,9 +26,10 @@ class SurveyNavigator:
         x = -self.boxsize
         z = -self.altitude
 
+        print("climing to altitude: " + str(self.altitude))
         self.client.moveToPosition(0, 0, z, self.velocity)
 
-        print("flying to corner of survey box and climing to altitude: " + str(self.altitude))
+        print("flying to first corner of survey box")
         self.client.moveToPosition(x, -self.boxsize, z, self.velocity)
         
         # let it settle there a bit.
