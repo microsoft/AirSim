@@ -19,7 +19,7 @@ namespace msr { namespace airlib {
 class FastPhysicsEngine : public PhysicsEngineBase {
 public:
     FastPhysicsEngine(bool enable_ground_lock = true)
-        : enable_ground_lock_(enable_ground_lock)
+        : enable_ground_lock_(enable_ground_lock), grounded_(0)
     { 
     }
 
@@ -88,6 +88,10 @@ private:
             bool is_collision_response = getNextKinematicsOnCollision(dt, collision_info, body, 
                 current, next, next_wrench, enable_ground_lock_);
             updateCollisionResponseInfo(collision_info, next, is_collision_response, collision_response_info);
+            //throttledLogOutput("*** has collision", 0.1);
+        }
+        else {
+            //throttledLogOutput("*** no collision", 0.1);
         }
 
         //Utils::log(Utils::stringf("T-VEL %s %" PRIu64 ": ", 
@@ -110,7 +114,7 @@ private:
     }
 
     //return value indicates if collision response was generated
-    static bool getNextKinematicsOnCollision(TTimeDelta dt, const CollisionInfo& collision_info, const PhysicsBody& body, 
+    bool getNextKinematicsOnCollision(TTimeDelta dt, const CollisionInfo& collision_info, const PhysicsBody& body, 
         const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench, bool enable_ground_lock)
     {
         /************************* Collision response ************************/
@@ -147,7 +151,7 @@ private:
 
         //velocity at contact point
         const Vector3r vcur_avg_body = VectorMath::transformToBodyFrame(vcur_avg, current.pose.orientation);
-        const Vector3r contact_vel_body = vcur_avg_body + angular_avg.cross(r);
+        const Vector3r contact_vel_body = vcur_avg_body + angular_avg.cross(r); 
 
         /*
             GafferOnGames - Collision response with columb friction
@@ -197,15 +201,36 @@ private:
 
             //there is a lot of random angular velocity when vehicle is on the ground
             next.twist.angular = Vector3r::Zero();
-        }
-        //else keep the orientation
-        next.pose.position = collision_info.position + (collision_info.normal * collision_info.penetration_depth) + next.twist.linear * (dt_real * kCollisionResponseCycles);
 
+            // also eliminate any linear velocity due to twist - since we are sitting on the ground there shouldn't be any.
+            next.twist.linear = Vector3r::Zero();
+            next.pose.position = collision_info.position;
+            grounded_ = 1;
+            //throttledLogOutput("*** Triggering ground lock", 0.1);
+        }
+        else
+        {
+            //else keep the orientation
+            next.pose.position = collision_info.position + (collision_info.normal * collision_info.penetration_depth) + next.twist.linear * (dt_real * kCollisionResponseCycles);
+        }
         next_wrench = Wrench::zero();
 
         //Utils::log(Utils::stringf("*** C-VEL %s: ", VectorMath::toString(next.twist.linear).c_str()));
 
         return true;
+    }
+
+    TTimePoint last_message_time;
+
+    void throttledLogOutput(const std::string& msg, double seconds)
+    {
+        TTimeDelta dt = clock()->elapsedSince(last_message_time);
+        const real_T dt_real = static_cast<real_T>(dt);
+        if (dt_real > seconds)
+        {
+            Utils::log(msg);
+            last_message_time = clock()->nowNanos();
+        }
     }
 
     //bool getNextKinematicsOnGround(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
@@ -292,59 +317,85 @@ private:
         return wrench;
     }
 
-    static void getNextKinematicsNoCollision(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
+    void getNextKinematicsNoCollision(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
     {
         const real_T dt_real = static_cast<real_T>(dt);
+
+        Vector3r avg_linear = Vector3r::Zero();
+        Vector3r avg_angular = Vector3r::Zero();
 
         /************************* Get force and torque acting on body ************************/
         //set wrench sum to zero
         const Wrench body_wrench = getBodyWrench(body, current.pose.orientation);
 
-        //add linear drag due to velocity we had since last dt seconds
-        //drag vector magnitude is proportional to v^2, direction opposite of velocity
-        //total drag is b*v + c*v*v but we ignore the first term as b << c (pg 44, Classical Mechanics, John Taylor)
-        //To find the drag force, we find the magnitude in the body frame and unit vector direction in world frame
-        const Vector3r avg_linear = current.twist.linear + current.accelerations.linear * (0.5f * dt_real);
-        const Vector3r avg_angular = current.twist.angular + current.accelerations.angular * (0.5f * dt_real);
-        const Wrench drag_wrench = getDragWrench(body, current.pose.orientation, avg_linear, avg_angular);
-
-        next_wrench = body_wrench + drag_wrench;
-
-        //Utils::log(Utils::stringf("B-WRN %s: ", VectorMath::toString(body_wrench.force).c_str()));
-        //Utils::log(Utils::stringf("D-WRN %s: ", VectorMath::toString(drag_wrench.force).c_str()));
-        
-        /************************* Update accelerations due to force and torque ************************/
-        //get new acceleration due to force - we'll use this acceleration in next time step
-        next.accelerations.linear = (next_wrench.force / body.getMass()) + body.getEnvironment().getState().gravity;
-
-        //get new angular acceleration
-        //Euler's rotation equation: https://en.wikipedia.org/wiki/Euler's_equations_(body_dynamics)
-        //we will use torque to find out the angular acceleration
-        //angular momentum L = I * omega
-        const Vector3r angular_momentum = body.getInertia() * avg_angular;
-        const Vector3r angular_momentum_rate = next_wrench.torque - avg_angular.cross(angular_momentum);
-        //new angular acceleration - we'll use this acceleration in next time step
-        next.accelerations.angular = body.getInertiaInv() * angular_momentum_rate;
-
-
-
-        /************************* Update pose and twist after dt ************************/
-        //Verlet integration: http://www.physics.udel.edu/~bnikolic/teaching/phys660/numerical_ode/node5.html
-        next.twist.linear = current.twist.linear + (current.accelerations.linear + next.accelerations.linear) * (0.5f * dt_real);
-        next.twist.angular = current.twist.angular + (current.accelerations.angular + next.accelerations.angular) * (0.5f * dt_real);
-
-        //if controller has bug, velocities can increase idenfinitely 
-        //so we need to clip this or everything will turn in to infinity/nans
-
-        if (next.twist.linear.squaredNorm() > EarthUtils::SpeedOfLight * EarthUtils::SpeedOfLight) { //speed of light
-            next.twist.linear /= (next.twist.linear.norm() / EarthUtils::SpeedOfLight);
+        if (grounded_)
+        {
+            // make it stick to the ground until we see significant body wrench forces.
+            float normalizedForce = body_wrench.force.squaredNorm();
+            if (normalizedForce > kSurfaceTension)
+            {
+                //throttledLogOutput("*** Losing ground lock due to body_wrench " + VectorMath::toString(body_wrench.force), 0.1);
+                grounded_ = 0;
+            }
+            next_wrench.force = Vector3r::Zero();
+            next_wrench.torque = Vector3r::Zero();
             next.accelerations.linear = Vector3r::Zero();
         }
-        //
-        //for disc of 1m radius which angular velocity translates to speed of light on tangent?
-        if (next.twist.angular.squaredNorm() > EarthUtils::SpeedOfLight * EarthUtils::SpeedOfLight) { //speed of light
-            next.twist.angular /= (next.twist.angular.norm() / EarthUtils::SpeedOfLight);
+        else
+        {
+            //add linear drag due to velocity we had since last dt seconds
+            //drag vector magnitude is proportional to v^2, direction opposite of velocity
+            //total drag is b*v + c*v*v but we ignore the first term as b << c (pg 44, Classical Mechanics, John Taylor)
+            //To find the drag force, we find the magnitude in the body frame and unit vector direction in world frame
+            avg_linear = current.twist.linear + current.accelerations.linear * (0.5f * dt_real);
+            avg_angular = current.twist.angular + current.accelerations.angular * (0.5f * dt_real);
+            const Wrench drag_wrench = getDragWrench(body, current.pose.orientation, avg_linear, avg_angular);
+
+            next_wrench = body_wrench + drag_wrench;
+
+            //Utils::log(Utils::stringf("B-WRN %s: ", VectorMath::toString(body_wrench.force).c_str()));
+            //Utils::log(Utils::stringf("D-WRN %s: ", VectorMath::toString(drag_wrench.force).c_str()));
+
+            /************************* Update accelerations due to force and torque ************************/
+            //get new acceleration due to force - we'll use this acceleration in next time step
+
+            next.accelerations.linear = (next_wrench.force / body.getMass()) + body.getEnvironment().getState().gravity;
+        }
+
+
+        if (grounded_) {
+            // this stops vehicle from vibrating while it is on the ground doing nothing.
             next.accelerations.angular = Vector3r::Zero();
+            next.twist.linear = Vector3r::Zero();
+            next.twist.angular = Vector3r::Zero();
+        } else {
+            //get new angular acceleration
+            //Euler's rotation equation: https://en.wikipedia.org/wiki/Euler's_equations_(body_dynamics)
+            //we will use torque to find out the angular acceleration
+            //angular momentum L = I * omega
+            const Vector3r angular_momentum = body.getInertia() * avg_angular;
+            const Vector3r angular_momentum_rate = next_wrench.torque - avg_angular.cross(angular_momentum);
+            //new angular acceleration - we'll use this acceleration in next time step
+            next.accelerations.angular = body.getInertiaInv() * angular_momentum_rate;
+
+            /************************* Update pose and twist after dt ************************/
+            //Verlet integration: http://www.physics.udel.edu/~bnikolic/teaching/phys660/numerical_ode/node5.html
+            next.twist.linear = current.twist.linear + (current.accelerations.linear + next.accelerations.linear) * (0.5f * dt_real);
+            next.twist.angular = current.twist.angular + (current.accelerations.angular + next.accelerations.angular) * (0.5f * dt_real);
+
+            //if controller has bug, velocities can increase idenfinitely 
+            //so we need to clip this or everything will turn in to infinity/nans
+
+            if (next.twist.linear.squaredNorm() > EarthUtils::SpeedOfLight * EarthUtils::SpeedOfLight) { //speed of light
+                next.twist.linear /= (next.twist.linear.norm() / EarthUtils::SpeedOfLight);
+                next.accelerations.linear = Vector3r::Zero();
+            }
+            //
+            //for disc of 1m radius which angular velocity translates to speed of light on tangent?
+            if (next.twist.angular.squaredNorm() > EarthUtils::SpeedOfLight * EarthUtils::SpeedOfLight) { //speed of light
+                next.twist.angular /= (next.twist.angular.norm() / EarthUtils::SpeedOfLight);
+                next.accelerations.angular = Vector3r::Zero();
+            }
         }
 
         computeNextPose(dt, current.pose, avg_linear, avg_angular, next);
@@ -399,6 +450,7 @@ private:
     static constexpr float kAxisTolerance = 0.25f;
     static constexpr float kRestingVelocityMax = 0.1f;
     static constexpr float kDragMinVelocity = 0.1f;
+    static constexpr float kSurfaceTension = 1.0f;
 
     std::stringstream debug_string_;
     int grounded_;

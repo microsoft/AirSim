@@ -625,20 +625,10 @@ public:
 
         mavlinkcom::MavLinkHilSensor hil_sensor;
         hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
-        if (getLandedState() == LandedState::Landed ||
-            !current_state.controls.armed) // disarmed, so we can't be flying!
-        {
-            hil_sensor.xacc = 0;
-            hil_sensor.yacc = 0;
-            hil_sensor.zacc = 0;
-        }
-        else
-        {
-            hil_sensor.xacc = acceleration.x();
-            hil_sensor.yacc = acceleration.y();
-            hil_sensor.zacc = acceleration.z();
-        }
-
+       
+        hil_sensor.xacc = acceleration.x();
+        hil_sensor.yacc = acceleration.y();
+        hil_sensor.zacc = acceleration.z();
         hil_sensor.xgyro = gyro.x();
         hil_sensor.ygyro = gyro.y();
         hil_sensor.zgyro = gyro.z();
@@ -649,7 +639,7 @@ public:
 
         hil_sensor.abs_pressure = abs_pressure;
         hil_sensor.pressure_alt = pressure_alt;
-        //TODO: enable tempeprature? diff_presure
+        //TODO: enable temperature? diff_pressure
         hil_sensor.fields_updated = was_reset_ ? (1 << 31) : 0;
 
         if (hil_node_ != nullptr) {

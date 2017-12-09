@@ -10,24 +10,13 @@ client.waitForReadyState()
 print("arming the drone...")
 client.armDisarm(True)
 
-# note: here we need to wait until the PX4 has estabilished the home position, which it
-# does after it is done with GPS EKF fusion (checking GPS signal).  This can take up to
-# a minute or so...if you try and takeoff before that then the takeoff is rejected.
-
-print("attempting takeoff")
-while True:
-    try:
-        client.takeoff()
-        time.sleep(2) # give it a couple seconds to stabilize
-        break
-    except:
-        print("takeoff failed, trying again in 5 seconds...")
-        time.sleep(5)
+print("taking off...")
+client.takeoff()
 
 client.enableApiControl(True)
 # AirSim uses NED coordinates so negative axis is up.
-# z of -5 is 5 meters above the original launch point.
-z = -5
+# z of -7 is 7 meters above the original launch point.
+z = -7
 
 # see https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo
 
@@ -36,8 +25,10 @@ print("client.moveOnPath to fly fast path along the streets")
 try:
     result = client.moveOnPath([Vector3r(0,-253,z),Vector3r(125,-253,z),Vector3r(125,0,z),Vector3r(0,0,z),Vector3r(0,0,-20)], 
                            15, 65, 
-                           DrivetrainType.ForwardOnly, YawMode(False,0), 20, 1)
+                           DrivetrainType.ForwardOnly, YawMode(False,0), 15, 1)
 except:
+    errorType, value, traceback = sys.exc_info()
+    print("moveOnPath threw exception: " + str(value))
     pass
 
 print("landing...")
