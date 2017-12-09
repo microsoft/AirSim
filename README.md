@@ -65,13 +65,15 @@ Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode,
 
 - [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) 
 - [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0)
+- [Video - Using off-the-self environments with AirSim](https://www.youtube.com/watch?v=y09VbdQWvQY)
 - [Reinforcement Learning with AirSim](docs/reinforcement_learning.md)
+- [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
+
 
 ## What's New
 
 * We now have the [car model](docs/using_car.md).
 * No need to build the code. Just download [binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
-* The [tutorial](https://www.youtube.com/watch?v=y09VbdQWvQY) for using off-the-self environments with AirSim.
 * The [reinforcement learning example](docs/reinforcement_learning.md) with AirSim
 * New built-in flight controller called [simple_flight](docs/simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
 * AirSim now also generates [depth as well as disparity images](docs/image_apis.md) that is in camera plan. 
