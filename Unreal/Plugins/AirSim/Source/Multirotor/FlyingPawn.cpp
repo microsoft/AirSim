@@ -18,7 +18,7 @@ void AFlyingPawn::initializeForBeginPlay()
 
     std::vector<APIPCamera*> cameras = {fpv_camera_front_center_, fpv_camera_front_right_, fpv_camera_front_left_, 
         fpv_camera_bottom_center_, fpv_camera_back_center_};
-    wrapper_->initialize(this, cameras);
+    wrapper_->initialize(this, cameras, getVehiclePawnWrapper()->getConfig());
 }
 
 void AFlyingPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
