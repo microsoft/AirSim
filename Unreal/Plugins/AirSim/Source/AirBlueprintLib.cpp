@@ -96,9 +96,10 @@ T* UAirBlueprintLib::FindActor(const UObject* context, FString name)
 {
     TArray<AActor*> foundActors;
     FindAllActor<T>(context, foundActors);
+    FName name_n = FName(*name);
 
     for (AActor* actor : foundActors) {
-        if (actor->GetClass()->GetName().Compare(name) == 0 || actor->GetName().Compare(name) == 0) {
+        if (actor->ActorHasTag(name_n) || actor->GetName().Compare(name) == 0) {
             return static_cast<T*>(actor);
         }
     }
