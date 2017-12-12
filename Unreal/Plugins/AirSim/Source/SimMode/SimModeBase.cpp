@@ -157,11 +157,22 @@ void ASimModeBase::readSettings()
         recording_settings.record_on_move = record_settings.getBool("RecordOnMove", recording_settings.record_on_move);
         recording_settings.record_interval = record_settings.getFloat("RecordInterval", recording_settings.record_interval);
     }
+
+    if (simmode_name == "Multirotor") {
+        recording_settings.header_columns = std::vector<std::string> {
+            "Timestamp", "Position(x)", "Position(y)", "Position(z)", "Orientation(w)",
+                "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName"
+        };
+    }
+    else if (simmode_name == "Car") {
+        recording_settings.header_columns = std::vector<std::string> {
+            "Timestamp", "Speed (kmph)", "Throttle" , "Steering", "Brake", "Gear", "ImageName"
+        };
+    }
+    else         
+        UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
     
     UAirBlueprintLib::LogMessage("Default config: ", default_vehicle_config.c_str(), LogDebugLevel::Informational);
-
-    // By default this is the column header. Override it in BeginPlay of pawn mode
-    columns = { "Timestamp", "Position(x)", "Position(y)" , "Position(z)", "Orientation(w)", "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName" };
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
@@ -215,7 +226,7 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode()
 void ASimModeBase::startRecording()
 {
     FRecordingThread::startRecording(getFpvVehiclePawnWrapper()->getImageCapture(),
-        getFpvVehiclePawnWrapper()->getKinematics(), recording_settings, columns, getFpvVehiclePawnWrapper());
+        getFpvVehiclePawnWrapper()->getKinematics(), recording_settings, getFpvVehiclePawnWrapper());
 }
 
 bool ASimModeBase::toggleRecording()

@@ -17,7 +17,8 @@ FRecordingThread::FRecordingThread()
 }
 
 
-void FRecordingThread::startRecording(msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics, const RecordingSettings& settings, std::vector <std::string> columns, VehiclePawnWrapper* wrapper)
+void FRecordingThread::startRecording(msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics, 
+    const RecordingSettings& settings, VehiclePawnWrapper* wrapper)
 {
     stopRecording();
 
@@ -34,7 +35,7 @@ void FRecordingThread::startRecording(msr::airlib::ImageCaptureBase* image_captu
 
     instance_->is_ready_ = true;
 
-    instance_->recording_file_.reset(new RecordingFile(columns));
+    instance_->recording_file_.reset(new RecordingFile(instance_->settings_.header_columns));
     instance_->recording_file_->startRecording();
 }
 

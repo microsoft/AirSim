@@ -30,9 +30,6 @@ void ASimModeCar::BeginPlay()
 
     createVehicles(vehicles_);
 
-    // Timestamp \t Speed \t Throttle \t Steering \t Brake \t gear \t ImageName
-    columns = { "Timestamp", "Speed (kmph)", "Throttle" , "Steering", "Brake", "Gear", "ImageName" };
-
     report_wrapper_.initialize(false);
     report_wrapper_.reset();
 }
