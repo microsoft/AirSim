@@ -25,14 +25,26 @@ public: //types
 
 public:
     struct WrapperConfig {
-        bool is_fpv_vehicle = false; 
-        std::string vehicle_config_name = ""; //use the default config name
-        bool enable_collisions = true; 
-        bool enable_passthrough_on_collisions = false; 
-        float home_lattitude = 47.641468;
-        float home_longitude = -122.140165;
-        float home_altitude = 122;
-        bool enable_trace = false;
+        bool is_fpv_vehicle; 
+        std::string vehicle_config_name;
+        bool enable_collisions; 
+        bool enable_passthrough_on_collisions; 
+        float home_lattitude;
+        float home_longitude;
+        float home_altitude;
+        bool enable_trace;
+
+        WrapperConfig() :
+            is_fpv_vehicle(false),
+            vehicle_config_name(""), //use the default config name
+            enable_collisions(true),
+            enable_passthrough_on_collisions(false),
+            home_lattitude(47.641468),
+            home_longitude(-122.140165),
+            home_altitude(122),
+            enable_trace(false)
+        {
+        }
     };
 
     void toggleTrace();
