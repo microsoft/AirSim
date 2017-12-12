@@ -64,7 +64,6 @@ _Pragma("clang diagnostic ignored \"-Wunused-variable\"")         \
     _Pragma("GCC diagnostic push")                                  \
     _Pragma("GCC diagnostic ignored \"-Wctor-dtor-privacy\"")        \
     _Pragma("GCC diagnostic ignored \"-Wdelete-non-virtual-dtor\"") \
-    _Pragma("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")		\
     _Pragma("GCC diagnostic ignored \"-Wmissing-field-initializers\"") \
     _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")          \
     _Pragma("GCC diagnostic ignored \"-Wredundant-decls\"")         \
@@ -82,6 +81,8 @@ _Pragma("GCC diagnostic ignored \"-Wformat=\"")                 \
 _Pragma("GCC diagnostic ignored \"-Werror\"")                   \
 _Pragma("GCC diagnostic ignored \"-Werror=\"")                  \
 _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
+_Pragma("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")		\
+
 */
 
 #define STRICT_MODE_ON                                            \
