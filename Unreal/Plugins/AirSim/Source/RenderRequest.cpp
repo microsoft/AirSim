@@ -27,6 +27,7 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
             results[i]->bmp.Reset();
         else
             results[i]->bmp_float.Reset();
+        results[i]->time_stamp = 0;
     }
 
     //make sure we are not on the rendering thread
@@ -131,6 +132,8 @@ void RenderRequest::ExecuteTask()
                     );
                 }
             }
+
+            results_[i]->time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
         }
 
         req_size_ = 0;

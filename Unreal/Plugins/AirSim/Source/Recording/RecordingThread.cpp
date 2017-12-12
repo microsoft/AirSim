@@ -84,14 +84,10 @@ uint32 FRecordingThread::Run()
 
                 // todo: should we go as fast as possible, or should we limit this to a particular number of
                 // frames per second?
-                std::vector<msr::airlib::ImageCaptureBase::ImageRequest> requests;
+                
                 std::vector<msr::airlib::ImageCaptureBase::ImageResponse> responses;
-
-                requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(0, msr::airlib::ImageCaptureBase::ImageType::Scene, false, true));
-                image_capture_->getImages(requests, responses);
-                TArray<uint8_t> image_data;
-                image_data.Append(responses[0].image_data_uint8.data(), responses[0].image_data_uint8.size());
-                recording_file_->appendRecord(image_data, wrapper_);
+                image_capture_->getImages(settings_.requests, responses);
+                recording_file_->appendRecord(responses, wrapper_);
             }
         }
     }

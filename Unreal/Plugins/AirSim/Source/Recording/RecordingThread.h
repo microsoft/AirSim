@@ -21,13 +21,13 @@ public:
     static void stopRecording(); 
     static bool isRecording();
 
+protected:
+    virtual bool Init() override;
+    virtual uint32 Run() override;
+    virtual void Stop() override;
+    virtual void Exit() override;
+
 private:
-    virtual bool Init();
-    virtual uint32 Run();
-    virtual void Stop();
-    virtual void Exit();
-
-
     void EnsureCompletion();
 
 private:

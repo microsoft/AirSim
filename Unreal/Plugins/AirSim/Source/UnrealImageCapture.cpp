@@ -61,11 +61,12 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     render_request.getScreenshot(render_params.data(), render_results, render_params.size());
 
     for (unsigned int i = 0; i < requests.size(); ++i) {
-        const ImageRequest& request = requests[i];
-        ImageResponse& response = responses[i];
+        const ImageRequest& request = requests.at(i);
+        ImageResponse& response = responses.at(i);
         APIPCamera* camera = cameras_[i];
-                
-        response.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
+              
+        response.camera_id = request.camera_id;
+        response.time_stamp = render_results[i]->time_stamp;
         response.image_data_uint8 = std::vector<uint8_t>(render_results[i]->image_data_uint8.GetData(), render_results[i]->image_data_uint8.GetData() + render_results[i]->image_data_uint8.Num());
         response.image_data_float = std::vector<float>(render_results[i]->image_data_float.GetData(), render_results[i]->image_data_float.GetData() + render_results[i]->image_data_float.Num());
 

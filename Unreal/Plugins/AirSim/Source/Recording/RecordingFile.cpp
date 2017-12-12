@@ -11,27 +11,46 @@ RecordingFile::RecordingFile(std::vector <std::string> columns)
 {
     this->columns = columns;
 }
-void RecordingFile::appendRecord(TArray<uint8>& image_data, VehiclePawnWrapper* wrapper)
-{
-    if (image_data.Num() == 0)
-        return;
+void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehiclePawnWrapper* wrapper)
+{   bool save_success = false;
+    std::stringstream image_file_names;
 
-    bool imageSavedOk = false;
-    FString filePath;
+    for (auto i = 0; i < responses.size(); ++i) {
+        const auto& response = responses.at(i);
 
-    std::string filename = std::string("img_").append(std::to_string(images_saved_)).append(".png");
+        std::stringstream image_file_name;
+        image_file_name << "img_" << response.camera_id << "_" <<
+            common_utils::Utils::toNumeric(response.image_type) << "_" <<
+            common_utils::Utils::getTimeSinceEpochNanos() << 
+            (response.pixels_as_float ? ".pfm" : ".png");
 
-    try {    
-        filePath = FString(common_utils::FileSystem::combine(image_path_, filename).c_str());
-        imageSavedOk = FFileHelper::SaveArrayToFile(image_data, *filePath);
+        if (i > 0)
+            image_file_names << ";";
+        image_file_names << image_file_name.str();
+
+        std::string image_full_file_path = common_utils::FileSystem::combine(image_path_, image_file_name.str());
+
+        try {
+            if (response.pixels_as_float) {
+                common_utils::Utils::writePfmFile(response.image_data_float.data(), response.width, response.height,
+                    image_full_file_path);
+            }
+            else {
+                std::ofstream file(image_full_file_path, std::ios::binary);
+                file.write(reinterpret_cast<const char*>(response.image_data_uint8.data()), response.image_data_uint8.size());
+                file.close();
+            }
+
+            save_success = true;
+        }
+        catch(std::exception& ex) {
+            save_success = false;
+            UAirBlueprintLib::LogMessage(TEXT("Image file save failed"), FString(ex.what()), LogDebugLevel::Failure);        
+        }
     }
-    catch(std::exception& ex) {
-        UAirBlueprintLib::LogMessage(TEXT("Image file save failed"), FString(ex.what()), LogDebugLevel::Failure);        
-    }
-    // If render command is complete, save image along with position and orientation
 
-    if (imageSavedOk) {
-        writeString(wrapper->getLogLine().append(filename).append("\n"));
+    if (save_success) {
+        writeString(wrapper->getLogLine().append(image_file_names.str()).append("\n"));
 
         //UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;

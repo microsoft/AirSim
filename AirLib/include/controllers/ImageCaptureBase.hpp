@@ -46,6 +46,7 @@ public: //types
         vector<uint8_t> image_data_uint8;
         vector<float> image_data_float;
 
+        int camera_id = -1; //should be filled later
         Vector3r camera_position = Vector3r::Zero();
         Quaternionr camera_orientation = Quaternionr::Identity();
         TTimePoint time_stamp = 0;

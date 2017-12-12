@@ -13,7 +13,7 @@ public:
     RecordingFile(std::vector <std::string> columns);
     ~RecordingFile();
 
-    void appendRecord(TArray<uint8>& compressedPng, VehiclePawnWrapper* wrapper);
+    void appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehiclePawnWrapper* wrapper);
     void appendColumnHeader(std::vector <std::string> columns);
     void startRecording();
     void stopRecording(bool ignore_if_stopped);

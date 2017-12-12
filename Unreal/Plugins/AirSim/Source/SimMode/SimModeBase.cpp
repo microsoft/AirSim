@@ -156,7 +156,28 @@ void ASimModeBase::readSettings()
     if (settings.getChild("Recording", record_settings)) {
         recording_settings.record_on_move = record_settings.getBool("RecordOnMove", recording_settings.record_on_move);
         recording_settings.record_interval = record_settings.getFloat("RecordInterval", recording_settings.record_interval);
+
+        Settings req_cameras_settings;
+        if (record_settings.getChild("Cameras", req_cameras_settings)) {
+            for (size_t child_index = 0; child_index < req_cameras_settings.size(); ++child_index) {
+                Settings req_camera_settings;
+                if (req_cameras_settings.getChild(child_index, req_camera_settings)) {
+                    int camera_id = req_camera_settings.getInt("CameraID", 0);
+                    msr::airlib::ImageCaptureBase::ImageType image_type =
+                        common_utils::Utils::toEnum<msr::airlib::ImageCaptureBase::ImageType>(
+                            req_camera_settings.getInt("ImageType", 0));
+                    bool compress = req_camera_settings.getBool("Compress", true);
+                    bool pixels_as_float = req_camera_settings.getBool("PixelsAsFloat", false);
+
+                    recording_settings.requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(
+                        camera_id, image_type, pixels_as_float, compress));
+                }
+            }
+        }
     }
+    if (recording_settings.requests.size() == 0)
+        recording_settings.requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(
+            0, msr::airlib::ImageCaptureBase::ImageType::Scene, false, true));
 
     if (simmode_name == "Multirotor") {
         recording_settings.header_columns = std::vector<std::string> {

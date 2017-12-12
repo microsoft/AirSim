@@ -40,7 +40,10 @@ Below are complete list of settings available along with their default values. I
   "EnableCollisionPassthrogh": false,
   "Recording": {
     "RecordOnMove": false,
-    "RecordInterval": 0.05
+    "RecordInterval": 0.05,
+    "Cameras": [
+		  { "CameraID": 0, "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
+	  ]
   },
   "CaptureSettings": [
     {
@@ -162,12 +165,12 @@ This setting determines what is shown in each of 3 subwindows which are visible 
     {"WindowID": 2, "ImageType": 6, "CameraID": 4, "Visible": true}
   ]
 ```
-
 #### Recording
 The recording feature allows you to record data such as position, orientation, velocity along with image get recorded in real time at given interval. You can start recording by pressing red Record button on lower right or R key. The data is recorded in `Documents\AirSim` folder, in a timestamped subfolder for each recording session, as csv file.
 
 * RecordInterval: specifies minimal interval in seconds between capturing two images.
 * RecordOnMove: specifies that do not record frame if there was vehicle's position or orientation hasn't changed
+* Cameras: this element controls which images gets recorded. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can add more elements that allows to capture images from multiple cameras in different [image types](settings.md#image-capture-settings). When PixelsAsFloat is true, image is saved as [pfm](pfm.md) file instead of png file.
 
 #### ClockSpeed
 Determines the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simuation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collison is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.

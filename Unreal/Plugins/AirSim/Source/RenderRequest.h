@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include <memory>
 #include "common/common_utils/WorkerThread.hpp"
+#include "common/Common.hpp"
 
 class RenderRequest : public FRenderCommand
 {
@@ -26,6 +27,8 @@ public:
 
         int width;
         int height;
+
+        msr::airlib::TTimePoint time_stamp;
     };
 
 private:
