@@ -51,7 +51,7 @@ public:
 
 public: //interface
     VehiclePawnWrapper();
-    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config = WrapperConfig());
+    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config));
 
     void reset();
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
