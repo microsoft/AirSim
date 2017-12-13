@@ -73,8 +73,10 @@ macro(CommonSetup)
                 set(CMAKE_CXX_FLAGS "\
                     -nostdinc++ -isystem ${LIBCXX_INC_PATH} \
                     -D__CLANG__ ${CMAKE_CXX_FLAGS}")
+
+                # removed -lsupc++ from below (Git issue # 678)
                 set(CMAKE_EXE_LINKER_FLAGS "\
-                    ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc -lsupc++ \
+                    ${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++ -lc++abi -lm -lc \
                     -L ${LIBCXX_LIB_PATH} -rpath ${LIBCXX_LIB_PATH}")
 
                 #do not use experimental as it might potentially cause ABI issues
