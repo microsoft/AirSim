@@ -1,7 +1,5 @@
 #include "CarPawnApi.h"
 #include "AirBlueprintLib.h"
-#include "NedTransform.h"
-
 
 
 CarPawnApi::CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponent* movement_)
@@ -94,10 +92,8 @@ CarApiBase::CarState CarPawnApi::getCarState()
     CarApiBase::CarState state(
         movement_->GetForwardSpeed() / 100, //cm/s -> m/s
         movement_->GetCurrentGear(),
-        NedTransform::toNedMeters(pawn_->getPawn()->GetActorLocation(), true),
-        NedTransform::toNedMeters(pawn_->getPawn()->GetVelocity(), false),
-        NedTransform::toQuaternionr(pawn_->getPawn()->GetActorRotation().Quaternion(), true),
         pawn_->getCollisionInfo(),
+        *pawn_->getTrueKinematics(),
         msr::airlib::ClockFactory::get()->nowNanos()
     );
     return state;

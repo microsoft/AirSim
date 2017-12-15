@@ -6,7 +6,7 @@
 #include "TestBase.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "physics/FastPhysicsEngine.hpp"
-#include "vehicles/multirotor/api/DroneApi.hpp"
+#include "vehicles/multirotor/api/MultirotorApi.hpp"
 #include "common/SteppableClock.hpp"
 
 namespace msr { namespace airlib {

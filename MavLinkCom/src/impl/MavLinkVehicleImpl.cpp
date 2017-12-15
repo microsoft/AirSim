@@ -196,9 +196,8 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
             }
             previous_mode_ = custom;
         }
-    }
         break;
-
+    }
     case MavLinkAttitude::kMessageId: { // MAVLINK_MSG_ID_ATTITUDE:
         MavLinkAttitude att;
         att.decode(msg);
@@ -216,6 +215,34 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         //Utils::logMessage("Received attitude, acc=[%2.2f %2.2f %2.2f]", att.pitch, att.roll, att.yaw);
         break;
     }
+    case MavLinkControlSystemState::kMessageId: { // CONTROL_SYSTEM_STATE:
+        MavLinkControlSystemState cnt;
+        cnt.decode(msg);
+
+        std::lock_guard<std::mutex> guard(state_mutex_);
+        state_version_++;
+        updateReadStats(msg);
+        vehicle_state_.local_est.acc.x = cnt.x_acc;
+        vehicle_state_.local_est.acc.y = cnt.x_acc;
+        vehicle_state_.local_est.acc.z = cnt.x_acc;
+        //Utils::logMessage("Received attitude, acc=[%2.2f %2.2f %2.2f]", att.pitch, att.roll, att.yaw);
+        break;
+    }
+    case MavLinkLocalPositionNed::kMessageId: { // MAVLINK_MSG_ID_LOCAL_POSITION_NED:
+        MavLinkLocalPositionNed value;
+        value.decode(msg);
+        std::lock_guard<std::mutex> guard(state_mutex_);
+        state_version_++;
+        updateReadStats(msg);
+        vehicle_state_.local_est.pos.x = value.x;
+        vehicle_state_.local_est.pos.y = value.y;
+        vehicle_state_.local_est.pos.z = value.z;
+        vehicle_state_.local_est.lin_vel.x = value.vx;
+        vehicle_state_.local_est.lin_vel.y = value.vy;
+        vehicle_state_.local_est.lin_vel.z = value.vz;
+        vehicle_state_.local_est.updated_on = value.time_boot_ms;
+        break;
+    }
     case MavLinkGlobalPositionInt::kMessageId: { // MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
         MavLinkGlobalPositionInt pos;
         pos.decode(msg);
@@ -225,9 +252,9 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         vehicle_state_.global_est.pos.lat = static_cast<float>(pos.lat) / 1E7f;
         vehicle_state_.global_est.pos.lon = static_cast<float>(pos.lon) / 1E7f;
         vehicle_state_.global_est.pos.alt = static_cast<float>(pos.alt) / 1E3f;
-        vehicle_state_.global_est.vel.vx = pos.vx;
-        vehicle_state_.global_est.vel.vy = pos.vy;
-        vehicle_state_.global_est.vel.vz = pos.vz;
+        vehicle_state_.global_est.vel.x = pos.vx;
+        vehicle_state_.global_est.vel.y = pos.vy;
+        vehicle_state_.global_est.vel.z = pos.vz;
         vehicle_state_.global_est.alt_ground = pos.relative_alt;
         vehicle_state_.global_est.heading = static_cast<float>(pos.hdg) / 100;
         vehicle_state_.global_est.updated_on = pos.time_boot_ms;
@@ -395,21 +422,6 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         vehicle_state_.controls.actuator_mode = value.mode;
         vehicle_state_.controls.actuator_nav_mode = value.nav_mode;
         vehicle_state_.controls.updated_on = value.time_usec;
-        break;
-    }
-    case MavLinkLocalPositionNed::kMessageId: { // MAVLINK_MSG_ID_LOCAL_POSITION_NED:
-        MavLinkLocalPositionNed value;
-        value.decode(msg);
-        std::lock_guard<std::mutex> guard(state_mutex_);
-        state_version_++;
-        updateReadStats(msg);
-        vehicle_state_.local_est.pos.x = value.x;
-        vehicle_state_.local_est.pos.y = value.y;
-        vehicle_state_.local_est.pos.z = value.z;
-        vehicle_state_.local_est.vel.vx = value.vx;
-        vehicle_state_.local_est.vel.vy = value.vy;
-        vehicle_state_.local_est.vel.vz = value.vz;
-        vehicle_state_.local_est.updated_on = value.time_boot_ms;
         break;
     }
     case MavLinkCommandAck::kMessageId:

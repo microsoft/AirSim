@@ -118,6 +118,12 @@ bool MultirotorRpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_re
 }
 
 //status getters
+MultirotorState MultirotorRpcLibClient::getMultirotorState()
+{
+    return static_cast<rpc::client*>(getClient())->call("getMultirotorState").
+        as<MultirotorRpcLibAdapators::MultirotorState>().to();
+}
+
 Vector3r MultirotorRpcLibClient::getPosition()
 {
     return static_cast<rpc::client*>(getClient())->call("getPosition").as<MultirotorRpcLibAdapators::Vector3r>().to();
@@ -142,11 +148,6 @@ RCData MultirotorRpcLibClient::getRCData()
     return static_cast<rpc::client*>(getClient())->call("getRCData").as<MultirotorRpcLibAdapators::RCData>().to();
 }
 
-TTimePoint MultirotorRpcLibClient::timestampNow()
-{
-    return static_cast<rpc::client*>(getClient())->call("timestampNow").as<TTimePoint>();
-}
-
 GeoPoint MultirotorRpcLibClient::getGpsLocation()
 {
     return static_cast<rpc::client*>(getClient())->call("getGpsLocation").as<MultirotorRpcLibAdapators::GeoPoint>().to();
@@ -155,11 +156,6 @@ GeoPoint MultirotorRpcLibClient::getGpsLocation()
 bool MultirotorRpcLibClient::isSimulationMode()
 {
     return static_cast<rpc::client*>(getClient())->call("isSimulationMode").as<bool>();
-}
-
-std::string MultirotorRpcLibClient::getDebugInfo()
-{
-    return static_cast<rpc::client*>(getClient())->call("getServerDebugInfo").as<std::string>();
 }
 
 

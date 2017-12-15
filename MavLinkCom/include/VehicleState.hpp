@@ -15,14 +15,11 @@ namespace mavlinkcom {
         struct GlobalPosition {
             float lat = 0, lon = 0, alt = 0; 
         };
-        struct LocalPosition {
+        struct Vector3 {
             float x = 0, y = 0, z = 0; // in NED (north, east, down) coordinates
         };
-        struct Velocity {
-            float vx = 0, vy = 0, vz = 0;  // in NEU (north, east, down) coordinates
-        };
         struct LocalPose {
-            LocalPosition pos;  // in NEU (north, east, down) coordinates
+            Vector3 pos;  // in NEU (north, east, down) coordinates
             float q[4] = { 0 }; //qauternion
         };
 
@@ -33,7 +30,7 @@ namespace mavlinkcom {
 
         struct GlobalState {
             GlobalPosition pos;
-            Velocity vel;
+            Vector3 vel;
             int alt_ground = 0;
             float heading = 0;
             uint64_t updated_on = 0;
@@ -62,8 +59,9 @@ namespace mavlinkcom {
         } controls;
 
         struct LocalState {
-            LocalPosition pos; // in NEU (north, east, up) coordinates (positive Z goes upwards).
-            Velocity vel;
+            Vector3 pos; // in NEU (north, east, up) coordinates (positive Z goes upwards).
+            Vector3 lin_vel;
+            Vector3 acc;
             uint64_t updated_on;
         } local_est;
 
@@ -90,7 +88,7 @@ namespace mavlinkcom {
         struct HomeState {
             GlobalPosition global_pos;
             LocalPose local_pose;
-            LocalPosition approach; // in NEU (north, east, up) coordinates (positive Z goes upwards).
+            Vector3 approach; // in NEU (north, east, up) coordinates (positive Z goes upwards).
             bool is_set = false;
         } home;
 

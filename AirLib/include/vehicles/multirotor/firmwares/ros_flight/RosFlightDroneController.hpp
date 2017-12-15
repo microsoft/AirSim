@@ -123,6 +123,11 @@ public:
 
 //*** Start: DroneControllerBase implementation ***//
 public:
+    Kinematics::State getKinematicsEstimated()
+    {
+        return *kinematics_;
+    }
+    
     Vector3r getPosition() override
     {
         return kinematics_->pose.position;

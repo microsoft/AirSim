@@ -138,7 +138,7 @@
     <ClInclude Include="include\vehicles\car\api\CarRpcLibClient.hpp" />
     <ClInclude Include="include\vehicles\car\api\CarRpcLibServer.hpp" />
     <ClInclude Include="include\safety\SafetyEval.hpp" />
-    <ClInclude Include="include\vehicles\multirotor\api\DroneApi.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApi.hpp" />
     <ClInclude Include="include\controllers\Settings.hpp" />
     <ClInclude Include="include\safety\SphereGeoFence.hpp" />
     <ClInclude Include="include\controllers\VehicleControllerBase.hpp" />

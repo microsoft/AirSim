@@ -184,7 +184,7 @@ void ASimModeCar::updateReport()
         reporter.writeHeading(std::string("Vehicle: ").append(
             vehicle_name == "" ? "(default)" : vehicle_name));
 
-        const msr::airlib::Kinematics::State* kinematics = wrapper->getKinematics();
+        const msr::airlib::Kinematics::State* kinematics = wrapper->getTrueKinematics();
 
         reporter.writeValue("Position", kinematics->pose.position);
         reporter.writeValue("Orientation", kinematics->pose.orientation);

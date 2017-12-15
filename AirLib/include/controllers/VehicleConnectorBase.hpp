@@ -33,6 +33,7 @@ public:
     virtual int getSegmentationObjectID(const std::string& mesh_name) = 0;
     virtual void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) = 0;
     virtual Pose getActorPose(const std::string& actor_name) = 0;
+    virtual Kinematics::State getTrueKinematics() = 0;
 
 };
 

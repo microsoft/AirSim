@@ -80,6 +80,20 @@ public:
         return AirSimSimpleFlightCommon::toSimpleFlightGeoPoint(environment_->getHomeGeoPoint());
     }
 
+    virtual simple_flight::KinematicsState getKinematicsEstimated() const override
+    {
+        simple_flight::KinematicsState state;
+        state.position = getPosition();
+        state.orientation = getOrientation();
+        state.linear_velocity = getLinearVelocity();
+        state.angular_velocity = getAngulerVelocity();
+        state.linear_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.linear);
+        state.angular_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.angular);
+        
+        return state;
+    }
+
+
 private:
     const Kinematics::State* kinematics_;
     Environment* environment_;

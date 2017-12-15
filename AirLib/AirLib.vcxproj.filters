@@ -450,9 +450,6 @@
     <ClInclude Include="include\api\RpcLibClientBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\api\DroneApi.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\api\VehicleApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -466,6 +463,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\controllers\ImageCaptureBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

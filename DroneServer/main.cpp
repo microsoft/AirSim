@@ -79,7 +79,7 @@ int main(int argc, const char* argv[])
 
     RealMultirotorConnector connector(& mav_drone);
 
-    DroneApi server_wrapper(& connector);
+    MultirotorApi server_wrapper(& connector);
     msr::airlib::MultirotorRpcLibServer server(&server_wrapper, connection_info.local_host_ip);
     
     //start server in async mode

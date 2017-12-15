@@ -247,7 +247,7 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode()
 void ASimModeBase::startRecording()
 {
     FRecordingThread::startRecording(getFpvVehiclePawnWrapper()->getImageCapture(),
-        getFpvVehiclePawnWrapper()->getKinematics(), recording_settings, getFpvVehiclePawnWrapper());
+        getFpvVehiclePawnWrapper()->getTrueKinematics(), recording_settings, getFpvVehiclePawnWrapper());
 }
 
 bool ASimModeBase::toggleRecording()

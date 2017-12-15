@@ -37,6 +37,33 @@ public:
         }
     };
 
+    struct MultirotorState {
+        CollisionInfo collision;
+        KinematicsState kinematics_estimated;
+        KinematicsState kinematics_true;
+        GeoPoint gps_location;
+        uint64_t timestamp;
+
+        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, kinematics_true, gps_location, timestamp);
+
+        MultirotorState()
+        {}
+
+        MultirotorState(const msr::airlib::MultirotorState& s)
+        {
+            collision = s.collision;
+            kinematics_estimated = s.kinematics_estimated;
+            kinematics_true = s.kinematics_true;
+            gps_location = s.gps_location;
+            timestamp = s.timestamp;
+        }
+
+        msr::airlib::MultirotorState to() const
+        {
+            return msr::airlib::MultirotorState(collision.to(), kinematics_estimated.to(), 
+                kinematics_true.to(), gps_location.to(), timestamp);
+        }
+    };
 };
 
 }} //namespace

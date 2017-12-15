@@ -6,6 +6,7 @@
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
+#include "physics/Kinematics.hpp"
 #include "controllers/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "rpc/msgpack.hpp"
@@ -194,6 +195,46 @@ public:
             d.is_valid = is_valid;
             
             return d;
+        }
+    };
+    
+    struct KinematicsState {
+        Vector3r position;
+        Quaternionr orientation;
+
+        Vector3r linear_velocity;
+        Vector3r angular_velocity;
+
+        Vector3r linear_acceleration;
+        Vector3r angular_acceleration;
+
+        MSGPACK_DEFINE_MAP(position, orientation, linear_velocity, angular_velocity, linear_acceleration, angular_acceleration);
+
+
+        KinematicsState()
+        {}
+
+        KinematicsState(const msr::airlib::Kinematics::State& s)
+        {
+            position = s.pose.position;
+            orientation = s.pose.orientation;
+            linear_velocity = s.twist.linear;
+            angular_velocity = s.twist.angular;
+            linear_acceleration = s.accelerations.linear;
+            angular_acceleration = s.accelerations.angular;
+        }
+
+        msr::airlib::Kinematics::State to() const
+        {
+            msr::airlib::Kinematics::State s;
+            s.pose.position = position.to();
+            s.pose.orientation = orientation.to();
+            s.twist.linear = linear_velocity.to();
+            s.twist.angular = angular_velocity.to();
+            s.accelerations.linear = linear_acceleration.to();
+            s.accelerations.angular = angular_acceleration.to();
+
+            return s;
         }
     };
 

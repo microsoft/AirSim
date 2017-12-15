@@ -2,7 +2,8 @@
 #define air_DroneCommon_hpp
 
 #include "common/Common.hpp"
-
+#include "common/CommonStructs.hpp"
+#include "physics/Kinematics.hpp"
 
 namespace msr { namespace airlib {
 
@@ -93,6 +94,23 @@ struct RCData {
     string toString()
     {
         return Utils::stringf("RCData[pitch=%f, roll=%f, throttle=%f, yaw=%f]", pitch, roll, throttle, yaw);
+    }
+};
+
+struct MultirotorState {
+    CollisionInfo collision;
+    Kinematics::State kinematics_estimated;
+    Kinematics::State kinematics_true;
+    GeoPoint gps_location;
+    uint64_t timestamp;
+
+    MultirotorState()
+    {}
+    MultirotorState(const CollisionInfo& collision_val, const Kinematics::State& kinematics_true_val, 
+        const Kinematics::State& kinematics_estimated_val, const GeoPoint& gps_location_val, uint64_t timestamp_val)
+        : collision(collision_val), kinematics_estimated(kinematics_estimated_val), 
+        kinematics_true(kinematics_true_val), gps_location(gps_location_val), timestamp(timestamp_val)
+    {
     }
 };
 

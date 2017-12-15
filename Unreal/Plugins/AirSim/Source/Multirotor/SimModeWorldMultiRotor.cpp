@@ -153,7 +153,7 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 
 std::string ASimModeWorldMultiRotor::getLogString()
 {
-    const msr::airlib::Kinematics::State* kinematics = getFpvVehiclePawnWrapper()->getKinematics();
+    const msr::airlib::Kinematics::State* kinematics = getFpvVehiclePawnWrapper()->getTrueKinematics();
     uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
     //TODO: because this bug we are using alternative code with stringstream

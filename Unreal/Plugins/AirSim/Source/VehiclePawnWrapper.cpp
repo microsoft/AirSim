@@ -104,7 +104,7 @@ void VehiclePawnWrapper::displayCollisionEffect(FVector hit_location, const FHit
     }
 }
 
-const msr::airlib::Kinematics::State* VehiclePawnWrapper::getKinematics()
+const msr::airlib::Kinematics::State* VehiclePawnWrapper::getTrueKinematics()
 {
     return kinematics_;
 }

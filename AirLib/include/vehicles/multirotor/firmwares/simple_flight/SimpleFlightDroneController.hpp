@@ -107,7 +107,7 @@ public:
         else
             firmware_->offboardApi().releaseApiControl();
     }
-
+    
     virtual void setSimulationMode(bool is_set) override
     {
         if (!is_set)
@@ -117,25 +117,31 @@ public:
 
 //*** Start: DroneControllerBase implementation ***//
 public:
-    Vector3r getPosition() override
+    virtual Kinematics::State getKinematicsEstimated() override
+    {
+        return AirSimSimpleFlightCommon::toKinematicsState3r(firmware_->offboardApi().
+            getStateEstimator().getKinematicsEstimated());
+    }
+
+    virtual Vector3r getPosition() override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getPosition();
         return AirSimSimpleFlightCommon::toVector3r(val);
     }
 
-    Vector3r getVelocity() override
+    virtual Vector3r getVelocity() override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getLinearVelocity();
         return AirSimSimpleFlightCommon::toVector3r(val);
     }
 
-    Quaternionr getOrientation() override
+    virtual Quaternionr getOrientation() override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getOrientation();
         return AirSimSimpleFlightCommon::toQuaternion(val);    
     }
 
-    LandedState getLandedState() override
+    virtual LandedState getLandedState() override
     {
         //TODO: implement this
         return LandedState::Landed;
@@ -146,12 +152,12 @@ public:
         return remote_control_id_;
     }
     
-    RCData getRCData() override
+    virtual RCData getRCData() override
     {
         return RCData();
     }
 
-    void setRCData(const RCData& rcData) override
+    virtual void setRCData(const RCData& rcData) override
     {
         if (rcData.is_valid) {
             board_->setIsRcConnected(true);
@@ -173,7 +179,7 @@ public:
         }
     }
 
-    bool armDisarm(bool arm, CancelableBase& cancelable_action) override
+    virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) override
     {
         unused(cancelable_action);
 
@@ -184,12 +190,12 @@ public:
             return firmware_->offboardApi().disarm(message);
     }
 
-    GeoPoint getHomeGeoPoint() override
+    virtual GeoPoint getHomeGeoPoint() override
     {
         return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getHomeGeoPoint());
     }
 
-    GeoPoint getGpsLocation() override
+    virtual GeoPoint getGpsLocation() override
     {
         return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getGeoPoint());
     }
@@ -200,25 +206,25 @@ public:
         //TODO: implement this
     }
 
-    float getCommandPeriod() override
+    virtual float getCommandPeriod() override
     {
         return 1.0f/50; //50hz
     }
 
-    float getTakeoffZ() override
+    virtual float getTakeoffZ() override
     {
         // pick a number, 3 meters is probably safe 
         // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
         return params_.takeoff.takeoff_z;
     }
 
-    float getDistanceAccuracy() override
+    virtual float getDistanceAccuracy() override
     {
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance travelled
     }
 
 protected: 
-    void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
+    virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
         Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
 
@@ -231,7 +237,7 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
+    virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
         Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
 
@@ -246,7 +252,7 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
+    virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
         Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
 
@@ -261,7 +267,7 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
+    virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
         Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
 
@@ -276,7 +282,7 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    const VehicleParams& getVehicleParams() override
+    virtual const VehicleParams& getVehicleParams() override
     {
         return safety_params_;
     }

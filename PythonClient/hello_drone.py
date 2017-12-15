@@ -1,4 +1,5 @@
 from AirSimClient import *
+import pprint
 
 # connect to the AirSim simulator 
 client = MultirotorClient()
@@ -6,11 +7,21 @@ client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
+state = client.getMultirotorState()
+s = pprint.pformat(state)
+print("state: %s" % s)
+
 AirSimClientBase.wait_key('Press any key to takeoff')
 client.takeoff()
 
+state = client.getMultirotorState()
+print("state: %s" % pprint.pformat(state))
+
 AirSimClientBase.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
 client.moveToPosition(-10, 10, -10, 5)
+
+state = client.getMultirotorState()
+print("state: %s" % pprint.pformat(state))
 
 AirSimClientBase.wait_key('Press any key to take images')
 # get camera images from the car

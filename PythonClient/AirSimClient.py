@@ -12,13 +12,19 @@ import re
 
 
 class MsgpackMixin:
+    def __repr__(self):
+        from pprint import pformat
+        return "<" + type(self).__name__ + "> " + pformat(vars(self), indent=4, width=1)
+
     def to_msgpack(self, *args, **kwargs):
-        return self.__dict__ #msgpack.dump(self.to_dict(*args, **kwargs))
+        return self.__dict__
 
     @classmethod
     def from_msgpack(cls, encoded):
         obj = cls()
-        obj.__dict__ = {k.decode('utf-8'): v for k, v in encoded.items()}
+        #obj.__dict__ = {k.decode('utf-8'): (from_msgpack(v.__class__, v) if hasattr(v, "__dict__") else v) for k, v in encoded.items()}
+        obj.__dict__ = { k : (v if not isinstance(v, dict) else getattr(getattr(obj, k).__class__, "from_msgpack")(v)) for k, v in encoded.items()}
+        #return cls(**msgpack.unpack(encoded))
         return obj
 
 
@@ -138,6 +144,14 @@ class CarControls(MsgpackMixin):
             manual_gear = -1
             throttle = - abs(throttle_val)
 
+class KinematicsState(MsgpackMixin):
+    position = Vector3r()
+    orientation = Quaternionr()
+    linear_velocity = Vector3r()
+    angular_velocity = Vector3r()
+    linear_acceleration = Vector3r()
+    angular_acceleration = Vector3r()
+
 class CarState(MsgpackMixin):
     speed = np.float32(0)
     gear = 0
@@ -145,9 +159,16 @@ class CarState(MsgpackMixin):
     velocity = Vector3r()
     orientation = Quaternionr()
 
+class MultirotorState(MsgpackMixin):
+    collision = CollisionInfo();
+    kinematics_estimated = KinematicsState()
+    kinematics_true = KinematicsState()
+    gps_location = GeoPoint()
+    timestamp = np.uint64(0)
+
 class AirSimClientBase:
     def __init__(self, ip, port):
-        self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = 3600)
+        self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = 3600, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
         
     def ping(self):
         return self.client.call('ping')
@@ -452,6 +473,8 @@ class MultirotorClient(AirSimClientBase, object):
 
         
     # query vehicle state
+    def getMultirotorState(self) -> MultirotorState:
+        return MultirotorState.from_msgpack(self.client.call('getMultirotorState'))
     def getPosition(self):
         return Vector3r.from_msgpack(self.client.call('getPosition'))
     def getVelocity(self):

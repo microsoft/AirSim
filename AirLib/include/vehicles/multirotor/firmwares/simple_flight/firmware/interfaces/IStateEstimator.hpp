@@ -13,6 +13,9 @@ public:
     virtual Axis4r getOrientation() const = 0;
     virtual GeoPoint getGeoPoint() const = 0;
 
+    virtual KinematicsState getKinematicsEstimated() const = 0;
+
+
     virtual void setHomeGeoPoint(const GeoPoint& geo_point) = 0;
     virtual GeoPoint getHomeGeoPoint() const = 0;
 

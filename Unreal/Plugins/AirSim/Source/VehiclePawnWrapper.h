@@ -72,7 +72,7 @@ public: //interface
     FRotator getOrientation() const;
 
     void setKinematics(const msr::airlib::Kinematics::State* kinematics);
-    const msr::airlib::Kinematics::State* getKinematics();
+    const msr::airlib::Kinematics::State* getTrueKinematics();
 
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisionInfo() const;

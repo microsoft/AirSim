@@ -118,33 +118,34 @@ public:
 
     //*** Start: DroneControllerBase implementation ***//
 public:
-    Vector3r getPosition() override;
-    Vector3r getVelocity() override;
-    Quaternionr getOrientation() override;
-    LandedState getLandedState() override;
-    RCData getRCData() override;
-    void setRCData(const RCData& rcData) override;
+    virtual Kinematics::State getKinematicsEstimated() override;
+    virtual Vector3r getPosition() override;
+    virtual Vector3r getVelocity() override;
+    virtual Quaternionr getOrientation() override;
+    virtual LandedState getLandedState() override;
+    virtual RCData getRCData() override;
+    virtual void setRCData(const RCData& rcData) override;
 
-    bool armDisarm(bool arm, CancelableBase& cancelable_action) override;
-    bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override;
-    bool land(float max_wait_seconds, CancelableBase& cancelable_action) override;
-    bool goHome(CancelableBase& cancelable_action) override;
-    bool hover(CancelableBase& cancelable_action) override;
-    GeoPoint getHomeGeoPoint() override;
-    GeoPoint getGpsLocation() override;
+    virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) override;
+    virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override;
+    virtual bool land(float max_wait_seconds, CancelableBase& cancelable_action) override;
+    virtual bool goHome(CancelableBase& cancelable_action) override;
+    virtual bool hover(CancelableBase& cancelable_action) override;
+    virtual GeoPoint getHomeGeoPoint() override;
+    virtual GeoPoint getGpsLocation() override;
     virtual void reportTelemetry(float renderTime) override;
 
-    float getCommandPeriod() override;
-    float getTakeoffZ() override;
-    float getDistanceAccuracy() override;
+    virtual float getCommandPeriod() override;
+    virtual float getTakeoffZ() override;
+    virtual float getDistanceAccuracy() override;
 
     virtual bool loopCommandPre() override;
     virtual void loopCommandPost() override;
 protected:
-    void commandRollPitchZ(float pitch, float roll, float z, float yaw) override;
-    void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;
-    void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override;
-    void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override;
+    virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override;
+    virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;
+    virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override;
+    virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override;
     const VehicleParams& getVehicleParams() override;
     //*** End: DroneControllerBase implementation ***//
 
@@ -932,6 +933,20 @@ public:
             }
         }
     }
+    
+    Kinematics::State getKinematicsEstimated()
+    {
+        updateState();
+        Kinematics::State state;
+        //TODO: reduce code duplication below?
+        state.pose.position = Vector3r(current_state.local_est.pos.x, current_state.local_est.pos.y, current_state.local_est.pos.z);
+        state.pose.orientation = VectorMath::toQuaternion(current_state.attitude.pitch, current_state.attitude.roll, current_state.attitude.yaw);
+        state.twist.linear = Vector3r(current_state.local_est.lin_vel.x, current_state.local_est.lin_vel.y, current_state.local_est.lin_vel.z);
+        state.twist.angular = Vector3r(current_state.attitude.roll_rate, current_state.attitude.pitch_rate, current_state.attitude.yaw_rate);
+        state.pose.position = Vector3r(current_state.local_est.acc.x, current_state.local_est.acc.y, current_state.local_est.acc.z);
+        //TODO: how do we get angular acceleration?
+        return state;
+    }
 
     Vector3r getPosition()
     {
@@ -942,7 +957,13 @@ public:
     Vector3r getVelocity()
     {
         updateState();
-        return Vector3r(current_state.local_est.vel.vx, current_state.local_est.vel.vy, current_state.local_est.vel.vz);
+        return Vector3r(current_state.local_est.lin_vel.x, current_state.local_est.lin_vel.y, current_state.local_est.lin_vel.z);
+    }
+
+    Quaternionr getOrientation()
+    {
+        updateState();
+        return VectorMath::toQuaternion(current_state.attitude.pitch, current_state.attitude.roll, current_state.attitude.yaw);
     }
 
     GeoPoint getHomeGeoPoint()
@@ -960,11 +981,6 @@ public:
         return GeoPoint(current_state.global_est.pos.lat, current_state.global_est.pos.lon, current_state.global_est.pos.alt);
     }
 
-    Quaternionr getOrientation()
-    {
-        updateState();
-        return VectorMath::toQuaternion(current_state.attitude.pitch, current_state.attitude.roll, current_state.attitude.yaw);
-    }
 
     LandedState getLandedState()
     {
@@ -1345,6 +1361,11 @@ bool MavLinkDroneController::isAvailable(std::string& message)
 
 
 //DroneControlBase
+Kinematics::State MavLinkDroneController::getKinematicsEstimated()
+{
+    return pimpl_->getKinematicsEstimated();
+}
+
 Vector3r MavLinkDroneController::getPosition()
 {
     return pimpl_->getPosition();
@@ -1355,6 +1376,11 @@ Vector3r MavLinkDroneController::getVelocity()
     return pimpl_->getVelocity();
 }
 
+Quaternionr MavLinkDroneController::getOrientation()
+{
+    return pimpl_->getOrientation();
+}
+
 GeoPoint MavLinkDroneController::getHomeGeoPoint()
 {
     return pimpl_->getHomeGeoPoint();
@@ -1363,11 +1389,6 @@ GeoPoint MavLinkDroneController::getHomeGeoPoint()
 GeoPoint MavLinkDroneController::getGpsLocation()
 {
     return pimpl_->getGpsLocation();
-}
-
-Quaternionr MavLinkDroneController::getOrientation()
-{
-    return pimpl_->getOrientation();
 }
 
 DroneControllerBase::LandedState MavLinkDroneController::getLandedState()

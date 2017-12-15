@@ -27,6 +27,20 @@ public:
         return conv;
     }
 
+    static Kinematics::State toKinematicsState3r(const simple_flight::KinematicsState& state)
+    {
+        Kinematics::State state3r;
+        state3r.pose.position = toVector3r(state.position);
+        state3r.pose.orientation = toQuaternion(state.orientation);
+        state3r.twist.linear = toVector3r(state.linear_velocity);
+        state3r.twist.angular = toVector3r(state.angular_velocity);
+        state3r.accelerations.linear = toVector3r(state.linear_acceleration);
+        state3r.accelerations.angular = toVector3r(state.angular_acceleration);
+
+
+        return state3r;
+    }
+
     static simple_flight::Axis4r toAxis4r(const Quaternionr& q)
     {
         simple_flight::Axis4r conv;

@@ -169,8 +169,18 @@ public: //interface for outside world
     /// and move back to the location it was at when this command was received and hover there.  
     virtual bool hover(CancelableBase& cancelable_action);
 
+    /// get state from estimator
+    virtual Kinematics::State getKinematicsEstimated() = 0;
+    
     /// get the current local position in NED coordinate (x=North/y=East,z=Down) so z is negative.
     virtual Vector3r getPosition() = 0;
+
+
+    /// Get the current velocity of the drone
+    virtual Vector3r getVelocity() = 0;
+
+    /// Get the current orientation (or attitude) of the drone as a Quaternion.
+    virtual Quaternionr getOrientation() = 0;
 
     /// Get debug pose, meaning of which is dependent on application usage. For example,
     /// this could be pose of real vehicle from log playback.
@@ -181,12 +191,6 @@ public: //interface for outside world
 
     /// Get the Z position (z starts at zero on the ground, and becomes more and more negative as you go up)
     float getZ();
-
-    /// Get the current velocity of the drone
-    virtual Vector3r getVelocity() = 0;
-
-    /// Get the current orientation (or attitude) of the drone as a Quaternion.
-    virtual Quaternionr getOrientation() = 0;
 
     /// Get current state of the drone, is it landed or in the air
     virtual LandedState getLandedState() = 0;

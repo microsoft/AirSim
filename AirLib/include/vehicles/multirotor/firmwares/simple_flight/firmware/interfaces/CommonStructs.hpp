@@ -186,6 +186,16 @@ struct GeoPoint {
     }
 };
 
+struct KinematicsState {
+    Axis3r position;
+    Axis4r orientation;
+
+    Axis3r linear_velocity;
+    Axis3r angular_velocity;
+
+    Axis3r linear_acceleration;
+    Axis3r angular_acceleration;
+};
 
 enum class VehicleStateType {
     Unknown, Inactive, BeingArmed, Armed, Active, BeingDisarmed, Disarmed
