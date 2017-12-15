@@ -31,7 +31,7 @@ For this you will need one of the supported device listed above. For manual flig
 ```
 {
   "SettingsVersion": 1.0,
-  "DefaultVehicleConfig": "Pixhawk"
+  "DefaultVehicleConfig": "PX4"
 }
 ```
 
