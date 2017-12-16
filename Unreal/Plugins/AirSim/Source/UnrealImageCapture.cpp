@@ -36,9 +36,9 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
 
     for (unsigned int i = 0; i < requests.size(); ++i) {
-        APIPCamera* camera = cameras_[i];
+        APIPCamera* camera = cameras_[requests.at(i).camera_id];
         responses.push_back(ImageResponse());
-        ImageResponse& response = responses[i];
+        ImageResponse& response = responses.at(i);
 
 
         updateCameraVisibility(camera, requests[i]);
@@ -63,7 +63,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     for (unsigned int i = 0; i < requests.size(); ++i) {
         const ImageRequest& request = requests.at(i);
         ImageResponse& response = responses.at(i);
-        APIPCamera* camera = cameras_[i];
+        APIPCamera* camera = cameras_[request.camera_id];
               
         response.camera_id = request.camera_id;
         response.time_stamp = render_results[i]->time_stamp;
