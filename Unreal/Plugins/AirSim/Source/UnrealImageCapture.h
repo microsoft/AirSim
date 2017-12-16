@@ -10,11 +10,10 @@ class UnrealImageCapture : public msr::airlib::ImageCaptureBase
 public:
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
-    UnrealImageCapture(APIPCamera* cameras[]);
+    UnrealImageCapture(const std::vector<APIPCamera*>& cameras);
     virtual ~UnrealImageCapture();
 
     virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) override;
-
 
 private:
     void getSceneCaptureImage(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
@@ -25,8 +24,7 @@ private:
 
     void updateCameraVisibility(APIPCamera* camera, const msr::airlib::ImageCaptureBase::ImageRequest& request);
 
-
 private:
-    APIPCamera** cameras_;
+    std::vector<APIPCamera*> cameras_;
     std::vector<uint8_t> last_compressed_png_;
 };

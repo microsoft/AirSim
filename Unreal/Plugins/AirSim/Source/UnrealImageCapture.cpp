@@ -5,7 +5,7 @@
 #include "NedTransform.h"
 
 
-UnrealImageCapture::UnrealImageCapture(APIPCamera* cameras[]) 
+UnrealImageCapture::UnrealImageCapture(const std::vector<APIPCamera*>& cameras) 
     : cameras_(cameras)
 {
     //TODO: explore screenshot option
@@ -18,7 +18,7 @@ UnrealImageCapture::~UnrealImageCapture()
 void UnrealImageCapture::getImages(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
     std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses)
 {
-    if (cameras_== nullptr) {
+    if (cameras_.size() == 0) {
         for (unsigned int i = 0; i < requests.size(); ++i) {
             responses.push_back(ImageResponse());
             responses[responses.size() - 1].message = "camera is not set";
