@@ -106,11 +106,14 @@ More on [image APIs and Computer Vision mode](image_apis.md).
 Car has followings APIs available:
 
 * `setCarControls`: This allows you to set throttle, steering, handbrake and auto or manual gear.
-* `getCarState`: This retrieves the state information including speed, current gear, velocity vector, position and orientation.
+* `getCarState`: This retrieves the state information including speed, current gear and 6 kinematics quantities: position, orientation, linear and angular velocity, linear and angular acceleration. All quantities are in NED coordinate system, SI units in world frame except for angular velocity and accelerations which are in body frame.
 * [Image APIs](image_apis.md).
 
 ### APIs for Multirotor
 Multirotor can be controlled by specifying angles, velocity vector, destination position or some combination of these. There are corresponding `move*` APIs for this purpose. When doing position control, we need to use some path following algorithm. By default AirSim uses carrot following algorithm. This is often referred to as "high level control" because you just need to specify very high level goal and the firmware takes care of the rest. Currently lowest level control available in AirSim is moveByAngle API however we will be adding more lower level controls soon as well.
+
+#### getMultirotorState
+This API state of the vehicle in one call. The state includes, collision, estimated kinematics (i.e. kinematics computed by fusing sensors), ground truth kinematics, GPS location and timestamp (nano seconds since epoch). The kinematics here means 6 quantities: position, orientation, linear and angular velocity, linear and angular acceleration. Please note that simple_slight currently doesn't support state estimator which means estimated and ground truth kinematics values would be same for simple_flight. Estimated kinematics are however available for PX4 except for angular acceleration. All quantities are in NED coordinate system, SI units in world frame except for angular velocity and accelerations which are in body frame.
 
 #### duration and max_wait_seconds
 Many API methods has parameters named `duration` or: `max_wait_seconds`.

@@ -16,17 +16,17 @@ for x in range(3): # do few times
     responses = client.simGetImages([
         ImageRequest(0, AirSimImageType.DepthVis),
         ImageRequest(1, AirSimImageType.DepthPerspective, True),
-        ImageRequest(0, AirSimImageType.Segmentation),
-        ImageRequest(0, AirSimImageType.Scene),
-        ImageRequest(0, AirSimImageType.DisparityNormalized),
-        ImageRequest(0, AirSimImageType.SurfaceNormals)])
+        ImageRequest(2, AirSimImageType.Segmentation),
+        ImageRequest(3, AirSimImageType.Scene),
+        ImageRequest(4, AirSimImageType.DisparityNormalized),
+        ImageRequest(4, AirSimImageType.SurfaceNormals)])
 
     for i, response in enumerate(responses):
         if response.pixels_as_float:
-            print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
+            print("Type %d, size %d, pos %s" % (response.image_type, len(response.image_data_float), pprint.pformat(response.camera_position)))
             AirSimClientBase.write_pfm(os.path.normpath('/temp/cv_mode_' + str(x) + "_" + str(i) + '.pfm'), AirSimClientBase.getPfmArray(response))
         else:
-            print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
+            print("Type %d, size %d, pos %s" % (response.image_type, len(response.image_data_uint8), pprint.pformat(response.camera_position)))
             AirSimClientBase.write_file(os.path.normpath('/temp/cv_mode_' + str(x) + "_" + str(i) + '.png'), response.image_data_uint8)
 
     pose = client.simGetPose()
