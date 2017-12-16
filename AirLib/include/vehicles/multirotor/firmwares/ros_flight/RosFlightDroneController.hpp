@@ -123,27 +123,27 @@ public:
 
 //*** Start: DroneControllerBase implementation ***//
 public:
-    Kinematics::State getKinematicsEstimated()
+    virtual Kinematics::State getKinematicsEstimated() override
     {
         return *kinematics_;
     }
     
-    Vector3r getPosition() override
+    virtual Vector3r getPosition() override
     {
         return kinematics_->pose.position;
     }
 
-    Vector3r getVelocity() override
+    virtual Vector3r getVelocity() override
     {
         return kinematics_->twist.linear;
     }
 
-    Quaternionr getOrientation() override
+    virtual Quaternionr getOrientation() override
     {
         return kinematics_->pose.orientation;
     }
 
-    LandedState getLandedState() override
+    virtual LandedState getLandedState() override
     {
         //TODO: implement this
         return LandedState::Landed;
@@ -154,12 +154,12 @@ public:
         return remote_control_id_;
     }
     
-    RCData getRCData() override
+    virtual RCData getRCData() override
     {
         return RCData();
     }
 
-    void setRCData(const RCData& rcData) override
+    virtual void setRCData(const RCData& rcData) override
     {
         if (rcData.is_valid) {
             board_->setInputChannel(0, angleToPwm(rcData.roll)); //X
@@ -178,7 +178,7 @@ public:
         //else we don't have RC data
     }
 
-    bool armDisarm(bool arm, CancelableBase& cancelable_action) override
+    virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) override
     {
         unused(arm);
         unused(cancelable_action);
@@ -186,7 +186,7 @@ public:
         return true;
     }
 
-    bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override
+    virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override
     {
         unused(max_wait_seconds);
         unused(cancelable_action);
@@ -194,7 +194,7 @@ public:
         return true;
     }
 
-    bool land(float max_wait_seconds, CancelableBase& cancelable_action) override
+    virtual bool land(float max_wait_seconds, CancelableBase& cancelable_action) override
     {
         unused(max_wait_seconds);
         unused(cancelable_action);
@@ -202,24 +202,24 @@ public:
         return true;
     }
 
-    bool goHome(CancelableBase& cancelable_action) override
+    virtual bool goHome(CancelableBase& cancelable_action) override
     {
         unused(cancelable_action);
         return true;
     }
 
-    bool hover(CancelableBase& cancelable_action) override
+    virtual bool hover(CancelableBase& cancelable_action) override
     {
         unused(cancelable_action);
         return true;
     }
 
-    GeoPoint getHomeGeoPoint() override
+    virtual GeoPoint getHomeGeoPoint() override
     {
         return environment_->getInitialState().geo_point;
     }
 
-    GeoPoint getGpsLocation() override
+    virtual GeoPoint getGpsLocation() override
     {
         return environment_->getState().geo_point;
     }
@@ -231,25 +231,25 @@ public:
         //TODO: implement this
     }
 
-    float getCommandPeriod() override
+    virtual float getCommandPeriod() override
     {
         return 1.0f/50; //50hz
     }
 
-    float getTakeoffZ() override
+    virtual float getTakeoffZ() override
     {
         // pick a number, 3 meters is probably safe 
         // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
         return -3.0f;  
     }
 
-    float getDistanceAccuracy() override
+    virtual float getDistanceAccuracy() override
     {
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance travelled
     }
 
 protected: 
-    void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
+    virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
         unused(pitch);
         unused(roll);
@@ -259,7 +259,7 @@ protected:
         //TODO: implement this
     }
 
-    void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
+    virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
         unused(vx);
         unused(vy);
@@ -269,7 +269,7 @@ protected:
         //TODO: implement this
     }
 
-    void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
+    virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
         unused(vx);
         unused(vy);
@@ -279,7 +279,7 @@ protected:
         //TODO: implement this
     }
 
-    void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
+    virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
         unused(x);
         unused(y);
@@ -289,7 +289,7 @@ protected:
         //TODO: implement this
     }
 
-    const VehicleParams& getVehicleParams() override
+    virtual const VehicleParams& getVehicleParams() override
     {
         //used for safety algos. For now just use defaults
         static const VehicleParams safety_params;
