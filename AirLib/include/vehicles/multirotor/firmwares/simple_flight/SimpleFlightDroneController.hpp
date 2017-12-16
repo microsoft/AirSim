@@ -229,7 +229,7 @@ protected:
         Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        static simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
+        simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
 
         simple_flight::Axis4r goal(roll, pitch, yaw, z);
 
@@ -242,7 +242,7 @@ protected:
         Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        static simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
+        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
             yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
             GoalModeType::VelocityWorld);
 
@@ -257,7 +257,7 @@ protected:
         Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        static simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
+        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
             yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
             GoalModeType::PositionWorld);
 
@@ -272,7 +272,7 @@ protected:
         Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        static simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
+        simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
             yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
             GoalModeType::PositionWorld);
 
