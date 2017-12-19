@@ -161,7 +161,6 @@ class CarState(MsgpackMixin):
     collision = CollisionInfo()
     kinematics_true = KinematicsState()
 
-
 class MultirotorState(MsgpackMixin):
     collision = CollisionInfo();
     kinematics_estimated = KinematicsState()
