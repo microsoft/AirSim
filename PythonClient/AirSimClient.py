@@ -39,7 +39,7 @@ class AirSimImageType:
 
 class DrivetrainType:
     MaxDegreeOfFreedom = 0
-    ForwardOnly = 1
+    ForwardOnly = 1 
     
 class LandedState:
     Landed = 0
@@ -158,6 +158,8 @@ class CarState(MsgpackMixin):
     position = Vector3r()
     velocity = Vector3r()
     orientation = Quaternionr()
+    collision = CollisionInfo()
+    kinematics_true = KinematicsState()
 
 class MultirotorState(MsgpackMixin):
     collision = CollisionInfo();

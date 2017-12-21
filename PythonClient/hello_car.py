@@ -1,4 +1,5 @@
 from AirSimClient import *
+import tempfile
 
 # connect to the AirSim simulator 
 client = CarClient()
@@ -49,10 +50,18 @@ for idx in range(3):
         ImageRequest(1, AirSimImageType.DepthPerspective, True), #depth in perspective projection
         ImageRequest(1, AirSimImageType.Scene), #scene vision image in png format
         ImageRequest(1, AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
-    print('Retrieved images: %d', len(responses))
+    print('Retrieved images: %d' % len(responses))
+    
+    tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_car")
+    print ("Saving images to %s" % tmp_dir)
+    try:
+        os.makedirs(tmp_dir)
+    except OSError:
+        if not os.path.isdir(tmp_dir):
+            raise
 
     for response in responses:
-        filename = 'c:/temp/py' + str(idx)
+        filename = os.path.join(tmp_dir, str(idx))
 
         if response.pixels_as_float:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
