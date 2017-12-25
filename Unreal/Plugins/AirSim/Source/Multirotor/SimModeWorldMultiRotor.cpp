@@ -22,15 +22,17 @@ void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (fpv_vehicle_connector_ != nullptr) {
-        //create its control server
-        try {
-            fpv_vehicle_connector_->startApiServer();
-        }
-        catch (std::exception& ex) {
-            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
-        }
-    }
+    if (fpv_vehicle_connector_.Num() >0) {
+		//create its control server
+		for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
+			try {
+				vehicle_connector_->startApiServer();
+			}
+			catch (std::exception& ex) {
+				UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
+			}
+		}
+	}
 
 }
 
@@ -39,10 +41,11 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     //stop physics thread before we dismental
     stopAsyncUpdator();
 
-    if (fpv_vehicle_connector_ != nullptr) {
-        fpv_vehicle_connector_->stopApiServer();
-        fpv_vehicle_pawn_wrapper_ = nullptr;
-    }
+    if (fpv_vehicle_connector_.Num() > 0) {
+		for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
+			vehicle_connector_->stopApiServer();
+		}
+	}
 
     //for (AActor* actor : spawned_actors_) {
     //    actor->Destroy();
@@ -133,9 +136,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             VehiclePtr vehicle = createVehicle(wrapper);
             if (vehicle != nullptr) {
                 vehicles.push_back(vehicle);
-
-                if (fpv_vehicle_pawn_wrapper_ == wrapper)
-                    fpv_vehicle_connector_ = vehicle;
+                fpv_vehicle_connector_.Add(vehicle);
             }
             //else we don't have vehicle for this pawn
         }
@@ -195,8 +196,9 @@ ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawn
     vehicle_params_.push_back(std::move(vehicle_params));
 
     std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
-        wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
-        vehicle_params_.back()->getParams().api_server_port, manual_pose_controller);
+
+	wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
+	vehicle_params_.back()->getParams().api_server_port + vehicle_params_.size() - 1, manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
         wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
