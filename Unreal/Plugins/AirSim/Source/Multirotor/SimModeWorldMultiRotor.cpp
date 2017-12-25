@@ -23,16 +23,16 @@ void ASimModeWorldMultiRotor::BeginPlay()
     Super::BeginPlay();
 
     if (fpv_vehicle_connector_.Num() >0) {
-		//create its control server
-		for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
-			try {
-				vehicle_connector_->startApiServer();
-			}
-			catch (std::exception& ex) {
-				UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
-			}
-		}
+	//create its control server
+        for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
+	    try {
+	        vehicle_connector_->startApiServer();
+	    }
+	    catch (std::exception& ex) {
+		UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
+	    }
 	}
+    }
 
 }
 
@@ -42,10 +42,10 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     stopAsyncUpdator();
 
     if (fpv_vehicle_connector_.Num() > 0) {
-		for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
-			vehicle_connector_->stopApiServer();
-		}
+        for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
+	    vehicle_connector_->stopApiServer();
 	}
+    }
 
     //for (AActor* actor : spawned_actors_) {
     //    actor->Destroy();
