@@ -158,6 +158,7 @@ class CarState(MsgpackMixin):
     position = Vector3r()
     velocity = Vector3r()
     orientation = Quaternionr()
+    #collision = CollisionInfo()
 
 class MultirotorState(MsgpackMixin):
     collision = CollisionInfo();
