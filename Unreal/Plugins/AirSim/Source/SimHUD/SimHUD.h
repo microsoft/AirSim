@@ -11,7 +11,7 @@
 UENUM(BlueprintType)
 enum class ESimulatorMode : uint8
 {
-    SIM_MODE_HIL 	UMETA(DisplayName="Hardware-in-loop")
+    SIM_MODE_HIL 	UMETA(DisplayName = "Hardware-in-loop")
 };
 
 UCLASS()
@@ -39,11 +39,11 @@ public:
     void setSubwindowCamera(int window_index, APIPCamera* camera);
     bool getSubwindowVisible(int window_index);
     void setSubwindowVisible(int window_index, bool is_visible);
-        
+
     ASimHUD();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-    virtual void Tick( float DeltaSeconds ) override;
+    virtual void Tick(float DeltaSeconds) override;
 
     static ASimHUD* GetInstance() {
         return instance_;
@@ -60,6 +60,10 @@ private:
     void initializeSettings();
     void initializeSubWindows();
     void createSimMode();
+
+    bool getSettingsText(std::string& settingsText);
+    bool getSettingsTextFromCommandLine(std::string& settingsText);
+    bool readSettingsTextFromFile(FString fileName, std::string& settingsText);
 
 private:
     typedef common_utils::Utils Utils;

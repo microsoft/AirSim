@@ -46,6 +46,8 @@ public:
 
     static std::string getUserDocumentsFolder();
 
+	static std::string getExecutableFolder();
+
     static std::string getAppDataFolder() {
         return ensureFolder(combine(getUserDocumentsFolder(), ProductFolderName));
     }

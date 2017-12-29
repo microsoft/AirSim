@@ -6,6 +6,8 @@
 #include "MessageDialog.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include <stdexcept>
+
 ASimHUD* ASimHUD::instance_ = nullptr;
 
 ASimHUD::ASimHUD()
@@ -20,7 +22,7 @@ void ASimHUD::BeginPlay()
     Super::BeginPlay();
 
     initializeSettings();
-    
+
     //TODO: should we only do below on SceneCapture2D components and cameras?
     //avoid motion blur so capture images don't get
     GetWorld()->GetGameViewport()->GetEngineShowFlags()->SetMotionBlur(false);
@@ -56,7 +58,7 @@ void ASimHUD::BeginPlay()
     updateWidgetSubwindowVisibility();
 }
 
-void ASimHUD::Tick( float DeltaSeconds )
+void ASimHUD::Tick(float DeltaSeconds)
 {
     if (simmode_->EnableReport)
         widget_->updateReport(simmode_->getReport());
@@ -144,7 +146,7 @@ void ASimHUD::updateWidgetSubwindowVisibility()
         if (camera != nullptr)
             camera->setCameraTypeEnabled(camera_type, is_visible);
 
-        widget_->setSubwindowVisibility(window_index, 
+        widget_->setSubwindowVisibility(window_index,
             is_visible,
             is_visible ? camera->getRenderTarget(camera_type, false) : nullptr
         );
@@ -203,9 +205,9 @@ void ASimHUD::createSimMode()
     std::string simmode_name = settings.getString("SimMode", "");
     if (simmode_name == "") {
         FText title = FText::FromString("Choose Vehicle");
-        if (EAppReturnType::No == FMessageDialog::Open(EAppMsgType::YesNo, 
-            FText::FromString("Would you like to use car simulation? Choose no to use quadrotor simulation."), 
-            & title))
+        if (EAppReturnType::No == FMessageDialog::Open(EAppMsgType::YesNo,
+            FText::FromString("Would you like to use car simulation? Choose no to use quadrotor simulation."),
+            &title))
         {
             simmode_name = "Multirotor";
         }
@@ -250,12 +252,12 @@ void ASimHUD::initializeSubWindows()
     Settings json_settings_parent;
     if (json_settings_root.getChild("SubWindows", json_settings_parent)) {
         for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
-            Settings json_settings_child;     
+            Settings json_settings_child;
             if (json_settings_parent.getChild(child_index, json_settings_child)) {
                 int index = json_settings_child.getInt("WindowID", -1);
 
                 if (index == -1) {
-                    UAirBlueprintLib::LogMessageString("WindowID not set in <SubWindows> element(s) in settings.json", 
+                    UAirBlueprintLib::LogMessageString("WindowID not set in <SubWindows> element(s) in settings.json",
                         std::to_string(child_index), LogDebugLevel::Failure);
                     continue;
                 }
@@ -266,9 +268,9 @@ void ASimHUD::initializeSubWindows()
                 int camera_id = json_settings_child.getInt("CameraID", 0);
                 if (camera_id >= 0 && camera_id < camera_count)
                     subwindow_cameras_[index] = wrapper->getCamera(camera_id);
-                else 
+                else
 
-                    UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid", 
+                    UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid",
                         std::to_string(child_index), LogDebugLevel::Failure);
             }
         }
@@ -281,34 +283,30 @@ void ASimHUD::initializeSettings()
     //load settings file if found
     typedef msr::airlib::Settings Settings;
     try {
-        FString settings_filename = FString(Settings::getFullPath("settings.json").c_str());
-        FString json_fstring;
+        std::string settings_str;
+        std::string json_settings_text;
         bool load_success = false;
-        bool file_found = FPaths::FileExists(settings_filename);
-        if (file_found) {
-            bool read_sucess = FFileHelper::LoadFileToString(json_fstring, *settings_filename);
-            if (read_sucess) {
-                Settings& settings = Settings::loadJSonString(TCHAR_TO_UTF8(*json_fstring));
-                if (settings.isLoadSuccess()) {
-                    UAirBlueprintLib::setLogMessagesHidden(!settings.getBool("LogMessagesVisible", true));
-                    UAirBlueprintLib::LogMessageString("Loaded settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
-                    load_success = true;
-                }
-                else
-                    UAirBlueprintLib::LogMessageString("Possibly invalid json string in ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
+        bool settings_found = getSettingsText(json_settings_text);
+        if (settings_found && json_settings_text.size() > 0) {
+            Settings& settings = Settings::loadJSonString(json_settings_text);
+            if (settings.isLoadSuccess()) {
+                UAirBlueprintLib::setLogMessagesHidden(!settings.getBool("LogMessagesVisible", true));
+                load_success = true;
             }
-            else
-                UAirBlueprintLib::LogMessageString("Cannot read settings from ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Failure);
+            else {
+                UAirBlueprintLib::LogMessageString("Cannot parse JSON settings string.", "", LogDebugLevel::Failure);
+            }
         }
 
         if (!load_success) {
+            FString settings_filename = FString(Settings::getUserDirectoryFullPath("settings.json").c_str());
             //create default settings
             Settings& settings = Settings::loadJSonString("{}");
             //write some settings in new file otherwise the string "null" is written if all settigs are empty
             settings.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
             settings.setDouble("SettingsVersion", 1.0);
 
-            if (!file_found) {
+            if (!settings_found) {
                 std::string json_content;
                 //TODO: there is a crash in Linux due to settings.saveJSonString(). Remove this workaround after we only support Unreal 4.17
                 //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
@@ -317,13 +315,69 @@ void ASimHUD::initializeSettings()
 #else
                 json_content = "{ \"SettingsVersion\": 1, \"SeeDocsAt\": \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"}";
 #endif
-                json_fstring = FString(json_content.c_str());
+                FString json_fstring = FString(json_content.c_str());
                 FFileHelper::SaveStringToFile(json_fstring, *settings_filename);
-                UAirBlueprintLib::LogMessageString("Created settings file at ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
+                UAirBlueprintLib::LogMessageString("Settings not provided. Created defalut settings file at ", TCHAR_TO_UTF8(*settings_filename), LogDebugLevel::Informational);
             }
         }
     }
     catch (std::exception& ex) {
-        UAirBlueprintLib::LogMessage(FString("Error loading settings from ~/Documents/AirSim/settings.json"), FString(ex.what()), LogDebugLevel::Failure, 30);
+        UAirBlueprintLib::LogMessage(FString("Error loading settings"), FString(ex.what()), LogDebugLevel::Failure, 30);
     }
+}
+
+// Attempts to parse the settings text from one of multiple locations.
+// First, check the command line for settings provided via "-s" or "--settings" arguments
+// Next, check the executable's working directory for the settings file.
+// Finally, check the user's documents folder. 
+// If the settings file cannot be read, throw an exception
+
+bool ASimHUD::getSettingsText(std::string& settingsText) {
+    return (getSettingsTextFromCommandLine(settingsText)
+        ||
+        readSettingsTextFromFile(FString(Settings::getExecutableFullPath("settings.json").c_str()), settingsText)
+        ||
+        readSettingsTextFromFile(FString(Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
+}
+
+// Attempts to parse the settings text from the command line
+// Looks for the flag "--settings". If it exists, settingsText will be set to the value.
+// Example: AirSim.exe -s '{"foo" : "bar"}' -> settingsText will be set to {"foo": "bar"}
+// Returns true if the argument is present, false otherwise.
+bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText) {
+
+    bool found = false;
+    FString settingsTextFString;
+    const TCHAR* commandLineArgs = FCommandLine::Get();
+
+    if (FParse::Param(commandLineArgs, TEXT("-settings"))) {
+        FString commandLineArgsFString = FString(commandLineArgs);
+        int idx = commandLineArgsFString.Find(TEXT("-settings"));
+        FString settingsJsonFString = commandLineArgsFString.RightChop(idx + 10);
+        if (FParse::QuotedString(*settingsJsonFString, settingsTextFString)) {
+            settingsText = std::string(TCHAR_TO_UTF8(*settingsTextFString));
+            found = true;
+        }
+    }
+
+    return found;
+}
+
+bool ASimHUD::readSettingsTextFromFile(FString settingsFilepath, std::string& settingsText) {
+
+    bool found = FPaths::FileExists(settingsFilepath);
+    if (found) {
+        FString settingsTextFStr;
+        bool readSuccessful = FFileHelper::LoadFileToString(settingsTextFStr, *settingsFilepath);
+        if (readSuccessful) {
+            UAirBlueprintLib::LogMessageString("Loaded settings from ", TCHAR_TO_UTF8(*settingsFilepath), LogDebugLevel::Informational);
+            settingsText = TCHAR_TO_UTF8(*settingsTextFStr);
+        }
+        else {
+            UAirBlueprintLib::LogMessageString("Cannot read file ", TCHAR_TO_UTF8(*settingsFilepath), LogDebugLevel::Failure);
+            throw std::runtime_error("Cannot read settings file.");
+        }
+    }
+
+    return found;
 }
