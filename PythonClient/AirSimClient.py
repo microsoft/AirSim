@@ -155,9 +155,9 @@ class KinematicsState(MsgpackMixin):
 class CarState(MsgpackMixin):
     speed = np.float32(0)
     gear = 0
-    position = Vector3r()
-    velocity = Vector3r()
-    orientation = Quaternionr()
+    collision = CollisionInfo();
+    kinematics_true = KinematicsState()
+    timestamp = np.uint64(0)
 
 class MultirotorState(MsgpackMixin):
     collision = CollisionInfo();
