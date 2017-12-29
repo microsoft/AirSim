@@ -198,7 +198,6 @@ public:
     mavlinkcom::MavLinkHilControls HilControlsMessage;
     mavlinkcom::MavLinkHilActuatorControls HilActuatorControlsMessage;
     mavlinkcom::MavLinkCommandLong CommandLongMessage;
-    mavlinkcom::MavLinkHilStateQuaternion HilStateQuaternionMessage;
 
     mavlinkcom::MavLinkHilSensor last_sensor_message_;
     mavlinkcom::MavLinkHilGps last_gps_message_;

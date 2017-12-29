@@ -14,4 +14,4 @@ You can read more about our architecture and design in [our paper (work in progr
 
 Below is high level overview of how different components interact with each other.
 
-![architecture diagram](paper/overview.PNG)
+![architecture diagram](paper/overview.png)
