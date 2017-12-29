@@ -1,7 +1,15 @@
-from AirSimClient import *
+"""
+For connecting to the AirSim drone environment and testing API functionality
+"""
+
+import os
+import tempfile
 import pprint
 
-# connect to the AirSim simulator 
+from AirSimClient import *
+
+
+# connect to the AirSim simulator
 client = MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
@@ -30,10 +38,19 @@ responses = client.simGetImages([
     ImageRequest(1, AirSimImageType.DepthPerspective, True), #depth in perspective projection
     ImageRequest(1, AirSimImageType.Scene), #scene vision image in png format
     ImageRequest(1, AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
-print('Retrieved images: %d', len(responses))
+print('Retrieved images: %d' % len(responses))
+
+tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_drone")
+print ("Saving images to %s" % tmp_dir)
+try:
+    os.makedirs(tmp_dir)
+except OSError:
+    if not os.path.isdir(tmp_dir):
+        raise
 
 for idx, response in enumerate(responses):
-    filename = 'c:/temp/py_drone_' + str(idx)
+
+    filename = os.path.join(tmp_dir, str(idx))
 
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
@@ -47,10 +64,10 @@ for idx, response in enumerate(responses):
         img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
         img_rgba = np.flipud(img_rgba) #original image is fliped vertically
         img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
-        AirSimClientBase.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
+        AirSimClientBase.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png
 
 AirSimClientBase.wait_key('Press any key to reset to original state')
 client.reset()
 
-# that's enough fun for now. let's quite cleanly
+# that's enough fun for now. let's quit cleanly
 client.enableApiControl(False)
