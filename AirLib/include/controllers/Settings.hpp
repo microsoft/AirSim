@@ -40,11 +40,17 @@ public:
 
     std::string getFileName() { return file_; }
 
-    static std::string getFullPath(std::string fileName)
-    {
-        std::string path = common_utils::FileSystem::getAppDataFolder();
-        return common_utils::FileSystem::combine(path, fileName);
-    }
+	static std::string getUserDirectoryFullPath(std::string fileName)
+	{
+		std::string path = common_utils::FileSystem::getAppDataFolder();
+		return common_utils::FileSystem::combine(path, fileName);
+	}
+
+	static std::string getExecutableFullPath(std::string fileName)
+	{
+		std::string path = common_utils::FileSystem::getExecutableFolder();
+		return common_utils::FileSystem::combine(path, fileName);
+	}
 
     static Settings& loadJSonString(const std::string& json_str)
     {
@@ -72,7 +78,7 @@ public:
     static Settings& loadJSonFile(std::string fileName)
     {
         std::lock_guard<std::mutex> guard(getFileAccessMutex());
-        std::string path = getFullPath(fileName);
+        std::string path = getUserDirectoryFullPath(fileName);
         singleton().file_ = fileName;
 
         singleton().load_success_ = false;
@@ -100,7 +106,7 @@ public:
     void saveJSonFile(std::string fileName)
     {
         std::lock_guard<std::mutex> guard(getFileAccessMutex());
-        std::string path = getFullPath(fileName);
+        std::string path = getUserDirectoryFullPath(fileName);
         std::ofstream s;
         common_utils::FileSystem::createTextFile(path, s);
         s << std::setw(2) << doc_ << std::endl;

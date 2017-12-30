@@ -37,7 +37,7 @@ using namespace common_utils;
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
 // Windows, OSX and Linux.
 std::string FileSystem::createDirectory(const std::string& fullPath) {
-    
+
 #ifdef _WIN32
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
     std::wstring wide_path = converter.from_bytes(fullPath);
@@ -83,3 +83,36 @@ std::string FileSystem::getUserDocumentsFolder() {
 }
 
 #endif
+
+std::string FileSystem::getExecutableFolder() {
+    std::string path;
+#ifdef _WIN32
+    wchar_t szPath[MAX_PATH];
+
+    HMODULE hModule = GetModuleHandle(NULL);
+
+    if (NULL != hModule) {
+        if (0 < GetModuleFileName(hModule, szPath, sizeof(szPath))) {
+            std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+            path = converter.to_bytes(szPath);
+        }
+        else {
+            HRESULT hr = GetLastError();
+            throw std::invalid_argument(Utils::stringf("Error getting executable folder, hr = %d", hr));
+        }
+    }
+    else {
+        HRESULT hr = GetLastError();
+        throw std::invalid_argument(Utils::stringf("Error getting executable folder - hModule is null. Last error = %d", hr));
+    }
+#else
+    char szPath[8192];
+    readlink("/proc/self/exe", szPath, sizeof(szPath));
+    path = std::string(szPath);
+#endif
+
+    size_t pathSeparatorIndex = path.find_last_of(kPathSeparator);
+    path = path.substr(0, pathSeparatorIndex);
+
+    return ensureFolder(path);
+}
