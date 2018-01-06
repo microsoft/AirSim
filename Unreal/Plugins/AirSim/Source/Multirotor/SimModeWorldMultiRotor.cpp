@@ -22,14 +22,16 @@ void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (fpv_vehicle_connector_ != nullptr) {
-        //create its control server
-        try {
-            fpv_vehicle_connector_->startApiServer();
-        }
-        catch (std::exception& ex) {
-            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
-        }
+    if (fpv_vehicle_connector_.Num() >0) {
+	//create its control server
+        for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
+	    try {
+	        vehicle_connector_->startApiServer();
+	    }
+	    catch (std::exception& ex) {
+		UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
+	    }
+	}
     }
 
 }
@@ -39,9 +41,10 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     //stop physics thread before we dismental
     stopAsyncUpdator();
 
-    if (fpv_vehicle_connector_ != nullptr) {
-        fpv_vehicle_connector_->stopApiServer();
-        fpv_vehicle_pawn_wrapper_ = nullptr;
+    if (fpv_vehicle_connector_.Num() > 0) {
+        for (std::shared_ptr<VehicleConnectorBase> vehicle_connector_ : fpv_vehicle_connector_) {
+	    vehicle_connector_->stopApiServer();
+	}
     }
 
     //for (AActor* actor : spawned_actors_) {
@@ -115,6 +118,8 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             pawns.Add(spawned_pawn);
         }
 
+        unsigned int vehicle_id = 0;
+
         //set up vehicle pawns
         for (AActor* pawn : pawns)
         {
@@ -124,6 +129,9 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
+
+            wrapper->getConfig().vehicle_config_name = default_vehicle_config + "_" + std::to_string(vehicle_id);
+
             if (enable_collision_passthrough)
                 wrapper->getConfig().enable_passthrough_on_collisions = true;
             if (wrapper->getConfig().is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
@@ -133,9 +141,8 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             VehiclePtr vehicle = createVehicle(wrapper);
             if (vehicle != nullptr) {
                 vehicles.push_back(vehicle);
-
-                if (fpv_vehicle_pawn_wrapper_ == wrapper)
-                    fpv_vehicle_connector_ = vehicle;
+                fpv_vehicle_connector_.Add(vehicle);
+                vehicle_id++;
             }
             //else we don't have vehicle for this pawn
         }
