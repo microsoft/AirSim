@@ -24,7 +24,13 @@ if [ "$(uname)" == "Darwin" ]; then
 
     #below takes way too long
     # brew install llvm@3.9
-    brew install --force-bottle homebrew/versions/llvm39
+    brew install --force-bottle llvm@3.9
+
+    brew install wget
+    brew install cmake
+
+    export C_COMPILER=/usr/local/opt/llvm\@3.9/bin/clang
+    export COMPILER=/usr/local/opt/llvm\@3.9/bin/clang++
 else
     if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
         sudo /usr/sbin/useradd -G dialout $USER
@@ -37,6 +43,9 @@ else
     wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
     sudo apt-get update
     sudo apt-get install -y clang-3.9 clang++-3.9
+
+    export C_COMPILER=clang-3.9
+    export COMPILER=clang++-3.9
 fi
 
 # Download high-polycount SUV model
@@ -84,12 +93,14 @@ else
 fi
 
 #build libc++
-sudo rm -rf llvm-build
+if [ "$(uname)" == "Darwin" ]; then
+    rm -rf llvm-build
+else
+    sudo rm -rf llvm-build
+fi
 mkdir -p llvm-build
 pushd llvm-build >/dev/null
 
-export C_COMPILER=clang-3.9
-export COMPILER=clang++-3.9
 
 cmake -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
       -LIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF -DLIBCXX_INSTALL_EXPERIMENTAL_LIBRARY=OFF \
@@ -99,12 +110,21 @@ cmake -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
 make cxx
 
 #install libc++ locally in output folder
-sudo make install-libcxx install-libcxxabi 
+if [ "$(uname)" == "Darwin" ]; then
+    make install-libcxx install-libcxxabi 
+else
+    sudo make install-libcxx install-libcxxabi 
+fi
 
 popd >/dev/null
 
 #install EIGEN library
-sudo rm -rf ./AirLib/deps/eigen3/Eigen
+
+if [ "$(uname)" == "Darwin" ]; then
+    rm -rf ./AirLib/deps/eigen3/Eigen
+else
+    sudo rm -rf ./AirLib/deps/eigen3/Eigen
+fi
 echo "downloading eigen..."
 wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
 unzip 3.3.2.zip -d temp_eigen

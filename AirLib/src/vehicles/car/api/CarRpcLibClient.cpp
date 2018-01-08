@@ -17,6 +17,9 @@ STRICT_MODE_OFF
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 #undef check
+#ifdef nil
+#undef nil
+#endif // nil
 #include "rpc/client.h"
 #include "vehicles/car/api/CarRpcLibAdapators.hpp"
 STRICT_MODE_ON
