@@ -174,9 +174,6 @@
     <ClInclude Include="include\controllers\VehicleControllerBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\Waiter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\safety\CubeGeoFence.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -193,9 +190,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\sensors\SensorCollection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\Settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\common\common_utils\FileSystem.hpp">
@@ -462,10 +456,19 @@
     <ClInclude Include="include\vehicles\multirotor\controllers\RealMultirotorConnector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\ImageCaptureBase.hpp">
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApi.hpp">
+    <ClInclude Include="include\common\AirSimSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\Settings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\Waiter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\ImageCaptureBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

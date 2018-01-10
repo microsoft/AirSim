@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "controllers/ImageCaptureBase.hpp"
+#include "common/ImageCaptureBase.hpp"
 
 
 namespace msr { namespace airlib {

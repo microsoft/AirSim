@@ -1,7 +1,7 @@
 #include "SimModeCar.h"
 #include "ConstructorHelpers.h"
 #include "AirBlueprintLib.h"
-#include "controllers/Settings.hpp"
+#include "common/AirSimSettings.hpp"
 #include "Car/CarPawn.h"
 
 ASimModeCar::ASimModeCar()
@@ -112,9 +112,10 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
-            vehicle_pawn->initializeForBeginPlay(enable_rpc, api_server_address, engine_sound, getRemoteControlID(*wrapper));
+            vehicle_pawn->initializeForBeginPlay(getSettings().enable_rpc, 
+                getSettings().api_server_address, getSettings().engine_sound, getRemoteControlID(*wrapper));
 
-            if (enable_collision_passthrough)
+            if (getSettings().enable_collision_passthrough)
                 wrapper->getConfig().enable_passthrough_on_collisions = true;
             if (wrapper->getConfig().is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
                 fpv_vehicle_pawn_wrapper_ = wrapper;
@@ -124,13 +125,22 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
 }
 
+std::string ASimModeCar::getVehicleName(const VehiclePawnWrapper& pawn)
+{
+    return pawn.getConfig().vehicle_config_name == "" ? getSettings().default_vehicle_config
+        : pawn.getConfig().vehicle_config_name;
+}
 
 int ASimModeCar::getRemoteControlID(const VehiclePawnWrapper& pawn)
 {
+    typedef msr::airlib::AirSimSettings AirSimSettings;
+
     //find out which RC we should use
+    AirSimSettings::VehicleSettings vehicle_settings =
+        AirSimSettings::singleton().getVehicleSettings(getVehicleName(pawn));
+
     msr::airlib::Settings settings;
-    msr::airlib::Settings::singleton().getChild(pawn.getConfig().vehicle_config_name == "" ? default_vehicle_config
-        : pawn.getConfig().vehicle_config_name, settings);
+    vehicle_settings.getRawSettings(settings);
 
     msr::airlib::Settings rc_settings;
     settings.getChild("RC", rc_settings);
@@ -179,7 +189,7 @@ void ASimModeCar::updateReport()
     for (VehiclePtr vehicle : vehicles_) {
         VehiclePawnWrapper* wrapper = vehicle->getVehiclePawnWrapper();
         msr::airlib::StateReporter& reporter = * report_wrapper_.getReporter();
-        std::string vehicle_name = wrapper->getConfig().vehicle_config_name;
+        std::string vehicle_name = getVehicleName(*wrapper);
 
         reporter.writeHeading(std::string("Vehicle: ").append(
             vehicle_name == "" ? "(default)" : vehicle_name));

@@ -5,6 +5,7 @@
 #include "ConstructorHelpers.h"
 #include "AirBlueprintLib.h"
 #include "common/ClockFactory.hpp"
+#include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
 
 
@@ -21,46 +22,15 @@ void VehiclePawnWrapper::setupCamerasFromSettings()
 {
     typedef msr::airlib::Settings Settings;
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
+    typedef msr::airlib::AirSimSettings AirSimSettings;
 
-    Settings& json_settings_root = Settings::singleton();
-    Settings json_settings_parent;
-    if (json_settings_root.getChild("CaptureSettings", json_settings_parent)) {
-        for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
-            Settings json_settings_child;     
-            if (json_settings_parent.getChild(child_index, json_settings_child)) {
-                APIPCamera::CaptureSettings capture_settings;;
-                createCaptureSettings(json_settings_child, capture_settings);
 
-                int image_type = json_settings_child.getInt("ImageType", -1);
-
-                if (image_type == -1) {
-                    UAirBlueprintLib::LogMessageString("ImageType not set in <CaptureSettings> element(s) in settings.json", 
-                        std::to_string(child_index), LogDebugLevel::Failure);
-                    continue;
-                }
-
-                for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
-                    APIPCamera* camera = getCamera(camera_index);
-                    camera->setCaptureSettings(Utils::toEnum<ImageType>(image_type), capture_settings);
-                }
-            }
+    for (const AirSimSettings::CaptureSetting& capture_setting : AirSimSettings::singleton().capture_settings) {
+        for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
+            APIPCamera* camera = getCamera(camera_index);
+            camera->setCaptureSetting(capture_setting);
         }
     }
-}
-
-void VehiclePawnWrapper::createCaptureSettings(const msr::airlib::Settings& settings, APIPCamera::CaptureSettings& capture_settings)
-{
-    typedef msr::airlib::Settings Settings;
-
-    capture_settings.width = settings.getInt("Width", capture_settings.width);
-    capture_settings.height = settings.getInt("Height", capture_settings.height);
-    capture_settings.fov_degrees = settings.getFloat("FOV_Degrees", capture_settings.fov_degrees);
-    capture_settings.auto_exposure_speed = settings.getFloat("AutoExposureSpeed", capture_settings.auto_exposure_speed);
-    capture_settings.auto_exposure_bias = settings.getFloat("AutoExposureBias", capture_settings.auto_exposure_bias);
-    capture_settings.auto_exposure_max_brightness = settings.getFloat("AutoExposureMaxBrightness", capture_settings.auto_exposure_max_brightness);
-    capture_settings.auto_exposure_min_brightness = settings.getFloat("AutoExposureMinBrightness", capture_settings.auto_exposure_min_brightness);
-    capture_settings.motion_blur_amount = settings.getFloat("MotionBlurAmount", capture_settings.motion_blur_amount);
-    capture_settings.target_gamma = settings.getFloat("TargetGamma", capture_settings.target_gamma);
 }
 
 

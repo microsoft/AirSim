@@ -5,7 +5,7 @@
 #define air_VehicleConnectorBase_hpp
 
 #include "VehicleControllerBase.hpp"
-#include "ImageCaptureBase.hpp"
+#include "common/ImageCaptureBase.hpp"
 #include "common/UpdatableObject.hpp"
 
 namespace msr { namespace airlib {

@@ -12,7 +12,7 @@
 #include "common/Common.hpp"
 #include "AirSimRosFlightBoard.hpp"
 #include "AirSimRosFlightCommLink.hpp"
-#include "controllers/Settings.hpp"
+#include "common/AirSimSettings.hpp"
 
 STRICT_MODE_OFF
 #include "firmware/firmware.hpp"

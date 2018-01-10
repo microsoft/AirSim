@@ -21,8 +21,8 @@ void ASimModeWorldBase::BeginPlay()
         createPhysicsEngine(), toUpdatableObjects(vehicles_), 
         getPhysicsLoopPeriod()));
 
-    if (usage_scenario == kUsageScenarioComputerVision) {
-        if (default_vehicle_config != "SimpleFlight")
+    if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
+        if (getSettings().default_vehicle_config != "SimpleFlight")
             UAirBlueprintLib::LogMessageString("settings.json is not using simple_flight in ComputerVision mode."
                 "This can lead to unpredictable behaviour!",  
                 "", LogDebugLevel::Failure);
@@ -37,6 +37,8 @@ void ASimModeWorldBase::setupClock()
 {
     typedef msr::airlib::ClockFactory ClockFactory;
 
+    float clock_speed = getSettings().clock_speed;
+    std::string clock_type = getSettings().clock_type;
 
     if (clock_type == "ScalableClock")
         ClockFactory::get(std::make_shared<msr::airlib::ScalableClock>(clock_speed == 1 ? 1 : 1 / clock_speed));
@@ -80,7 +82,7 @@ long long ASimModeWorldBase::getPhysicsLoopPeriod() //nanoseconds
     To increase freq with limited CPU power, switch Barometer to constant ref mode.
     */
 
-    if (usage_scenario == kUsageScenarioComputerVision)
+    if (getSettings().usage_scenario == kUsageScenarioComputerVision)
         return 30000000LL; //30ms
     else
         return 3000000LL; //3ms
@@ -99,7 +101,8 @@ std::vector<ASimModeWorldBase::UpdatableObject*> ASimModeWorldBase::toUpdatableO
 
 ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
 {
-    if (physics_engine_name == "" || usage_scenario == kUsageScenarioComputerVision)
+    std::string physics_engine_name = getSettings().physics_engine_name;
+    if (physics_engine_name == "" || getSettings().usage_scenario == kUsageScenarioComputerVision)
         physics_engine_.reset(); //no physics engine
     else if (physics_engine_name == "FastPhysicsEngine") {
         msr::airlib::Settings fast_phys_settings;

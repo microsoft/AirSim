@@ -6,16 +6,16 @@
 
 #include "vehicles/multirotor/firmwares/ros_flight/RosFlightDroneController.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
-#include "controllers/Settings.hpp"
+#include "common/AirSimSettings.hpp"
 
 
 namespace msr { namespace airlib {
 
 class RosFlightQuadX : public MultiRotorParams {
 public:
-    RosFlightQuadX(Settings& settings)
+    RosFlightQuadX(const AirSimSettings::VehicleSettings& vehicle_settings)
     {
-        unused(settings);
+        unused(vehicle_settings);
     }
 
 protected:

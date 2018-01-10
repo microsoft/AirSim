@@ -32,6 +32,7 @@ private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
     void updateReport();
     int getRemoteControlID(const VehiclePawnWrapper& pawn);
+    std::string getVehicleName(const VehiclePawnWrapper& pawn);
 
 
 private:    

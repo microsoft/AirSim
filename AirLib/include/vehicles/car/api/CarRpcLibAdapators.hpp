@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "api/RpcLibAdapatorsBase.hpp"
-#include "controllers/ImageCaptureBase.hpp"
+#include "common/ImageCaptureBase.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
 #include "rpc/msgpack.hpp"
 

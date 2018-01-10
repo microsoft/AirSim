@@ -4,18 +4,19 @@
 #ifndef msr_airlib_settings_hpp
 #define msr_airlib_settings_hpp
 
+#include "common_utils/Utils.hpp"
+
 STRICT_MODE_OFF
 // this json library is not strict clean
 //TODO: HACK!! below are added temporariliy because something is defining min, max macros
 //#undef max
 #undef min
-#include "common/common_utils/json.hpp"
+#include "common_utils/json.hpp"
 STRICT_MODE_ON
 
 #include <string>
 #include <mutex>
-#include "common/common_utils/Utils.hpp"
-#include "common/common_utils/FileSystem.hpp"
+#include "common_utils/FileSystem.hpp"
 
 namespace msr { namespace airlib {
 
@@ -40,17 +41,17 @@ public:
 
     std::string getFileName() { return file_; }
 
-	static std::string getUserDirectoryFullPath(std::string fileName)
-	{
-		std::string path = common_utils::FileSystem::getAppDataFolder();
-		return common_utils::FileSystem::combine(path, fileName);
-	}
+    static std::string getUserDirectoryFullPath(std::string fileName)
+    {
+        std::string path = common_utils::FileSystem::getAppDataFolder();
+        return common_utils::FileSystem::combine(path, fileName);
+    }
 
-	static std::string getExecutableFullPath(std::string fileName)
-	{
-		std::string path = common_utils::FileSystem::getExecutableFolder();
-		return common_utils::FileSystem::combine(path, fileName);
-	}
+    static std::string getExecutableFullPath(std::string fileName)
+    {
+        std::string path = common_utils::FileSystem::getExecutableFolder();
+        return common_utils::FileSystem::combine(path, fileName);
+    }
 
     static Settings& loadJSonString(const std::string& json_str)
     {
@@ -124,7 +125,7 @@ public:
         return false;
     }
 
-    size_t size() {
+    size_t size() const {
         return doc_.size();
     }
 
@@ -161,7 +162,7 @@ public:
         }
     }
 
-    double getFloat(std::string name, float defaultValue) const
+    float getFloat(std::string name, float defaultValue) const
     {
         if (doc_.count(name) == 1) {
             return doc_[name].get<float>();

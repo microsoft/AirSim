@@ -2,7 +2,7 @@
 #define msr_AirLibUnitTests_SettingsTest_hpp
 
 #include "TestBase.hpp"
-#include "controllers/Settings.hpp"
+#include "common/Settings.hpp"
 
 namespace msr { namespace airlib {
 

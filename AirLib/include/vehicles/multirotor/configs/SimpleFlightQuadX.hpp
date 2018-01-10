@@ -6,16 +6,16 @@
 
 #include "vehicles/multirotor/firmwares/simple_flight/SimpleFlightDroneController.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
-#include "controllers/Settings.hpp"
+#include "common/AirSimSettings.hpp"
 
 
 namespace msr { namespace airlib {
 
 class SimpleFlightQuadX : public MultiRotorParams {
 public:
-    SimpleFlightQuadX(Settings& settings)
+    SimpleFlightQuadX(const AirSimSettings::VehicleSettings& vehicle_settings)
     {
-        unused(settings);
+        vehicle_settings_ = vehicle_settings;
     }
 
     virtual ~SimpleFlightQuadX() = default;
@@ -59,11 +59,12 @@ private:
     void createController(unique_ptr<DroneControllerBase>& controller, SensorCollection& sensors)
     {
         unused(sensors);
-        controller.reset(new SimpleFlightDroneController(this));
+        controller.reset(new SimpleFlightDroneController(this, vehicle_settings_));
     }
 
 private:
     vector<unique_ptr<SensorBase>> sensor_storage_;
+    AirSimSettings::VehicleSettings vehicle_settings_;
 };
 
 }} //namespace

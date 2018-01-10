@@ -7,7 +7,6 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"
-#include "controllers/Settings.hpp"
 #include "physics/Kinematics.hpp"
 #include "GameFramework/Pawn.h"
 
@@ -101,7 +100,6 @@ private: //methods
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
-    void createCaptureSettings(const msr::airlib::Settings& settings, APIPCamera::CaptureSettings& capture_settings);
 
 
 private: //vars

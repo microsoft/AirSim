@@ -6,7 +6,7 @@
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
 #include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
 #include "vehicles/multirotor/controllers/RealMultirotorConnector.hpp"
-#include "controllers/Settings.hpp"
+#include "common/Settings.hpp"
 
 using namespace std;
 using namespace msr::airlib;

@@ -9,7 +9,7 @@
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "controllers/VehicleConnectorBase.hpp"
 #include "api/VehicleApiBase.hpp"
-#include "controllers/Waiter.hpp"
+#include "common/Waiter.hpp"
 #include <atomic>
 #include <thread>
 #include <memory>

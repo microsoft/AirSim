@@ -9,7 +9,7 @@
 #include "api/RpcLibAdapatorsBase.hpp"
 #include "vehicles/multirotor/controllers/DroneCommon.hpp"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
-#include "controllers/ImageCaptureBase.hpp"
+#include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "rpc/msgpack.hpp"
 

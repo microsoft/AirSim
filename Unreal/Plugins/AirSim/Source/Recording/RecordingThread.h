@@ -7,12 +7,15 @@
 #include "VehiclePawnWrapper.h"
 #include "Recording/RecordingFile.h"
 #include "physics/Kinematics.hpp"
-#include "Recording/RecordingSettings.h"
 #include <memory>
 #include "common/ClockFactory.hpp"
+#include "common/AirSimSettings.hpp"
 
 class FRecordingThread : public FRunnable
 {
+public:
+    typedef msr::airlib::AirSimSettings::RecordingSettings RecordingSettings;
+
 public:
     FRecordingThread();
     virtual ~FRecordingThread();

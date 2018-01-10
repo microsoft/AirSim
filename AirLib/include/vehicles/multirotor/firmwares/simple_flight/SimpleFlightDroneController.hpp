@@ -10,12 +10,12 @@
 #include "physics/Kinematics.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "common/Common.hpp"
-#include "controllers/Settings.hpp"
 #include "firmware/Firmware.hpp"
 #include "AirSimSimpleFlightBoard.hpp"
 #include "AirSimSimpleFlightCommLink.hpp"
 #include "AirSimSimpleFlightEstimator.hpp"
 #include "AirSimSimpleFlightCommon.hpp"
+#include "common/AirSimSettings.hpp"
 
 
 namespace msr { namespace airlib {
@@ -23,10 +23,10 @@ namespace msr { namespace airlib {
 class SimpleFlightDroneController : public DroneControllerBase {
 
 public:
-    SimpleFlightDroneController(const MultiRotorParams* vehicle_params)
+    SimpleFlightDroneController(const MultiRotorParams* vehicle_params, const AirSimSettings::VehicleSettings& vehicle_settings)
         : vehicle_params_(vehicle_params)
     {
-        readSettings();
+        readSettings(vehicle_settings);
 
         //TODO: set below properly for better high speed safety
         safety_params_.vel_to_breaking_dist = safety_params_.min_breaking_dist = 0;
@@ -305,11 +305,11 @@ private:
         return static_cast<uint16_t>(1000.0f * switchVal / maxSwitchVal + 1000.0f);
     }
 
-    void readSettings()
+    void readSettings(const AirSimSettings::VehicleSettings& vehicle_settings)
     {
         //find out which RC we should use
         Settings simple_flight_settings;
-        Settings::singleton().getChild("SimpleFlight", simple_flight_settings);
+        vehicle_settings.getRawSettings(simple_flight_settings);
         params_.default_vehicle_state = simple_flight::VehicleState::fromString(
             simple_flight_settings.getString("DefaultVehicleState", "Armed")); //Inactive, Armed
 

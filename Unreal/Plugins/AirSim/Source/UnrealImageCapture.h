@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PIPCamera.h"
-#include "controllers/ImageCaptureBase.hpp"
+#include "common/ImageCaptureBase.hpp"
 
 
 class UnrealImageCapture : public msr::airlib::ImageCaptureBase

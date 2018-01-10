@@ -21,6 +21,7 @@ class AIRSIM_API ASimHUD : public AHUD
 
 public:
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
+    typedef msr::airlib::AirSimSettings AirSimSettings;
 
 public:
     void inputEventToggleRecording();
@@ -57,13 +58,20 @@ protected:
     bool isWidgetSubwindowVisible(int window_index);
 
 private:
-    void initializeSettings();
     void initializeSubWindows();
     void createSimMode();
+    void initializeSettings();
+    void setUnrealEngineSettings();
+    void createMainWidget();
+    const std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings() const;
+    std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings();
+    
 
     bool getSettingsText(std::string& settingsText);
     bool getSettingsTextFromCommandLine(std::string& settingsText);
     bool readSettingsTextFromFile(FString fileName, std::string& settingsText);
+    std::string getSimModeFromUser();
+
 
 private:
     typedef common_utils::Utils Utils;
@@ -72,10 +80,7 @@ private:
     UPROPERTY() USimHUDWidget* widget_;
     UPROPERTY() ASimModeBase* simmode_;
 
-    static constexpr int kSubwindowCount = 3; //must be >= 3 for now
-    APIPCamera* subwindow_cameras_[kSubwindowCount];
-    ImageType subwindow_camera_types_[kSubwindowCount];
-    bool subwindow_visible_[kSubwindowCount];
+    APIPCamera* subwindow_cameras_[AirSimSettings::kSubwindowCount];
 
     static ASimHUD* instance_;
 };

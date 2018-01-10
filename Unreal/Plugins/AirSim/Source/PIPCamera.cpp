@@ -40,10 +40,6 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
     
-    //set default for brigher images
-    capture_settings_.assign(imageTypeCount(), CaptureSettings());
-    capture_settings_[Utils::toNumeric(ImageType::Scene)].target_gamma = CaptureSettings::kSceneTargetGamma;
-
     //by default all image types are disabled
     camera_type_enabled_.assign(imageTypeCount(), false);
 
@@ -52,7 +48,8 @@ void APIPCamera::BeginPlay()
         captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
 
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
-        updateCaptureComponentSettings(captures_[image_type], render_targets_[image_type], capture_settings_[image_type]);
+        updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], 
+            AirSimSettings::singleton().capture_settings[image_type]);
     }
 }
 
@@ -89,52 +86,46 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
-const APIPCamera::CaptureSettings& APIPCamera::getCaptureSettings(ImageType type)
+void APIPCamera::setCaptureSetting(const APIPCamera::CaptureSetting& setting)
 {
-    return capture_settings_[Utils::toNumeric(type)];
+    unsigned int image_type = static_cast<unsigned int>(setting.image_type);
+
+    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], 
+        setting);
 }
 
-void APIPCamera::setCaptureSettings(APIPCamera::ImageType type, const APIPCamera::CaptureSettings& settings)
-{
-    unsigned int image_type = Utils::toNumeric(type);
-
-    capture_settings_[image_type] = settings;
-    updateCaptureComponentSettings(captures_[image_type], render_targets_[image_type], 
-        capture_settings_[image_type]);
-}
-
-void APIPCamera::updateCaptureComponentSettings(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSettings& settings)
+void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSetting& setting)
 {
     if (render_target) {
-        render_target->InitAutoFormat(settings.width, settings.height); //256 X 144, X 480
-        if (!std::isnan(settings.target_gamma))
-            render_target->TargetGamma = settings.target_gamma;
+        render_target->InitAutoFormat(setting.width, setting.height); //256 X 144, X 480
+        if (!std::isnan(setting.target_gamma))
+            render_target->TargetGamma = setting.target_gamma;
     }
     //else we will set this after this components get created
 
     if (capture) {
-        if (!std::isnan(settings.fov_degrees))
-            capture->FOVAngle = settings.fov_degrees;
-        if (!std::isnan(settings.motion_blur_amount))
-            capture->PostProcessSettings.MotionBlurAmount = settings.motion_blur_amount;
+        if (!std::isnan(setting.fov_degrees))
+            capture->FOVAngle = setting.fov_degrees;
+        if (!std::isnan(setting.motion_blur_amount))
+            capture->PostProcessSettings.MotionBlurAmount = setting.motion_blur_amount;
 
         capture->PostProcessSettings.AutoExposureMethod = EAutoExposureMethod::AEM_Histogram;        
-        if (!std::isnan(settings.auto_exposure_speed))
-            capture->PostProcessSettings.AutoExposureSpeedDown = capture->PostProcessSettings.AutoExposureSpeedUp = settings.auto_exposure_speed;
-        if (!std::isnan(settings.auto_exposure_max_brightness))
-            capture->PostProcessSettings.AutoExposureMaxBrightness = settings.auto_exposure_max_brightness;
-        if (!std::isnan(settings.auto_exposure_min_brightness))
-            capture->PostProcessSettings.AutoExposureMinBrightness = settings.auto_exposure_min_brightness;
-        if (!std::isnan(settings.auto_exposure_bias))
-            capture->PostProcessSettings.AutoExposureBias = settings.auto_exposure_bias;
-        if (!std::isnan(settings.auto_exposure_low_percent))
-            capture->PostProcessSettings.AutoExposureLowPercent = settings.auto_exposure_low_percent;        
-        if (!std::isnan(settings.auto_exposure_high_percent))
-            capture->PostProcessSettings.AutoExposureHighPercent = settings.auto_exposure_high_percent;    
-        if (!std::isnan(settings.auto_exposure_histogram_log_min))
-            capture->PostProcessSettings.HistogramLogMin = settings.auto_exposure_histogram_log_min;    
-        if (!std::isnan(settings.auto_exposure_histogram_log_max))
-            capture->PostProcessSettings.HistogramLogMax = settings.auto_exposure_histogram_log_max;    
+        if (!std::isnan(setting.auto_exposure_speed))
+            capture->PostProcessSettings.AutoExposureSpeedDown = capture->PostProcessSettings.AutoExposureSpeedUp = setting.auto_exposure_speed;
+        if (!std::isnan(setting.auto_exposure_max_brightness))
+            capture->PostProcessSettings.AutoExposureMaxBrightness = setting.auto_exposure_max_brightness;
+        if (!std::isnan(setting.auto_exposure_min_brightness))
+            capture->PostProcessSettings.AutoExposureMinBrightness = setting.auto_exposure_min_brightness;
+        if (!std::isnan(setting.auto_exposure_bias))
+            capture->PostProcessSettings.AutoExposureBias = setting.auto_exposure_bias;
+        if (!std::isnan(setting.auto_exposure_low_percent))
+            capture->PostProcessSettings.AutoExposureLowPercent = setting.auto_exposure_low_percent;        
+        if (!std::isnan(setting.auto_exposure_high_percent))
+            capture->PostProcessSettings.AutoExposureHighPercent = setting.auto_exposure_high_percent;    
+        if (!std::isnan(setting.auto_exposure_histogram_log_min))
+            capture->PostProcessSettings.HistogramLogMin = setting.auto_exposure_histogram_log_min;    
+        if (!std::isnan(setting.auto_exposure_histogram_log_max))
+            capture->PostProcessSettings.HistogramLogMax = setting.auto_exposure_histogram_log_max;    
 
     }
     //else we will set this after this components get created

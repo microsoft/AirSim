@@ -5,16 +5,16 @@
 #define msr_airlib_vehicles_Px4MultiRotor_hpp
 
 #include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
-#include "controllers/Settings.hpp"
+#include "common/AirSimSettings.hpp"
 
 
 namespace msr { namespace airlib {
 
 class Px4MultiRotor : public MultiRotorParams {
 public:
-    Px4MultiRotor(Settings& settings)
+    Px4MultiRotor(const AirSimSettings::VehicleSettings& vehicle_settings)
     {
-        connection_info_ = getConnectionInfo(settings);
+        connection_info_ = getConnectionInfo(vehicle_settings);
     }
 
     virtual ~Px4MultiRotor() = default;
@@ -197,8 +197,11 @@ private:
     }
 
 
-    static MavLinkDroneController::ConnectionInfo getConnectionInfo(const Settings& child)
+    static MavLinkDroneController::ConnectionInfo getConnectionInfo(const AirSimSettings::VehicleSettings& vehicle_settings)
     {
+        Settings child;
+        vehicle_settings.getRawSettings(child);
+
         //start with defaults
         MavLinkDroneController::ConnectionInfo connection_info;
         // allow json overrides on a per-vehicle basis.

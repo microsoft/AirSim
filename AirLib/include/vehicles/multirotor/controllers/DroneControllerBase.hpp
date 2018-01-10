@@ -8,7 +8,7 @@
 #include "common/Common.hpp"
 #include "controllers/VehicleControllerBase.hpp"
 #include "common/common_utils/WorkerThread.hpp"
-#include "controllers/Waiter.hpp"
+#include "common/Waiter.hpp"
 #include "safety/SafetyEval.hpp"
 #include "common/CommonStructs.hpp"
 #include "DroneCommon.hpp"
