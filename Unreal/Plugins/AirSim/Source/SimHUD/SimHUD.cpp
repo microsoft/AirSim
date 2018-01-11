@@ -3,7 +3,6 @@
 #include "Multirotor/SimModeWorldMultiRotor.h"
 #include "Car/SimModeCar.h"
 #include "common/AirSimSettings.hpp"
-#include "MessageDialog.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 #include <stdexcept>
@@ -21,16 +20,24 @@ void ASimHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    initializeSettings();
-    setUnrealEngineSettings();
-    createSimMode();
-    createMainWidget();
-    setupInputBindings();
+    try {
+        initializeSettings();
+        setUnrealEngineSettings();
+        createSimMode();
+        createMainWidget();
+        setupInputBindings();
+    }
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessage(FString("Error loading settings"), FString(ex.what()), LogDebugLevel::Failure);
+        //FGenericPlatformMisc::PlatformInit();
+        //FGenericPlatformMisc::MessageBoxExt(EAppMsgType::Ok, TEXT("Error at Startup"), ANSI_TO_TCHAR(ex.what()));
+        UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("Error at startup: ") + ex.what(), "Error");
+    }
 }
 
 void ASimHUD::Tick(float DeltaSeconds)
 {
-    if (simmode_->EnableReport)
+    if (simmode_ && simmode_->EnableReport)
         widget_->updateReport(simmode_->getReport());
 }
 
@@ -210,23 +217,17 @@ void ASimHUD::setupInputBindings()
 
 void ASimHUD::initializeSettings()
 {
-    try {
-        std::string settingsText;
-        if (getSettingsText(settingsText))
-            AirSimSettings::initializeSettings(settingsText);
-        else
-            AirSimSettings::createDefaultSettingsFile();
+    std::string settingsText;
+    if (getSettingsText(settingsText))
+        AirSimSettings::initializeSettings(settingsText);
+    else
+        AirSimSettings::createDefaultSettingsFile();
 
-        int warning_count = AirSimSettings::singleton().load(std::bind(&ASimHUD::getSimModeFromUser, this));
-        if (warning_count > 0) {
-            for (const auto& warning : AirSimSettings::singleton().warning_messages) {
-                UAirBlueprintLib::LogMessageString(warning, "", LogDebugLevel::Failure);
-            }
-
+    int warning_count = AirSimSettings::singleton().load(std::bind(&ASimHUD::getSimModeFromUser, this));
+    if (warning_count > 0) {
+        for (const auto& warning : AirSimSettings::singleton().warning_messages) {
+            UAirBlueprintLib::LogMessageString(warning, "", LogDebugLevel::Failure);
         }
-    }
-    catch (std::exception& ex) {
-        UAirBlueprintLib::LogMessage(FString("Error loading settings"), FString(ex.what()), LogDebugLevel::Failure);
     }
 }
 
@@ -242,10 +243,9 @@ std::vector<AirSimSettings::SubwindowSetting>& ASimHUD::getSubWindowSettings()
 
 std::string ASimHUD::getSimModeFromUser()
 {
-    FText title = FText::FromString("Choose Vehicle");
-    if (EAppReturnType::No == FMessageDialog::Open(EAppMsgType::YesNo,
-        FText::FromString("Would you like to use car simulation? Choose no to use quadrotor simulation."),
-        &title))
+    if (EAppReturnType::No == UAirBlueprintLib::ShowMessage(EAppMsgType::YesNo,
+        "Would you like to use car simulation? Choose no to use quadrotor simulation.",
+        "Choose Vehicle"))
     {
         return "Multirotor";
     }

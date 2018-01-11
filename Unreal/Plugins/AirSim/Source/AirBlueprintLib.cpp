@@ -13,6 +13,7 @@
 #include "UObjectIterator.h"
 //#include "Runtime/Foliage/Public/FoliageType.h"
 #include "Kismet/KismetStringLibrary.h"
+#include "MessageDialog.h"
 #include "Engine/Engine.h"
 
 /*
@@ -29,6 +30,16 @@ void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::st
 {
     LogMessage(FString(prefix.c_str()), FString(suffix.c_str()), level, persist_sec);
 }
+
+EAppReturnType::Type UAirBlueprintLib::ShowMessage(EAppMsgType::Type message_type, const std::string& message, const std::string& title)
+{
+    FText title_text = FText::FromString(title.c_str());
+
+    return FMessageDialog::Open(message_type,
+        FText::FromString(message.c_str()),
+        &title_text);
+}
+
 
 void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
 {

@@ -180,7 +180,7 @@ public: //methods
     static void initializeSettings(const std::string& json_settings_text)
     {
         Settings& settings = Settings::loadJSonString(json_settings_text);
-        if (settings.isLoadSuccess())
+        if (! settings.isLoadSuccess())
             throw std::invalid_argument("Cannot parse JSON settings string.");
     }
 
@@ -231,7 +231,7 @@ private:
     void checkSettingsVersion(const Settings& settings)
     {
         //we had spelling mistake so we are currently supporting SettingsVersion or SettingdVersion :(
-        settings_version_actual = settings.getFloat("SettingsVersion", 0);
+        settings_version_actual = settings.getFloat("SettingsVersion", settings.getFloat("SettingdVersion", 0));
 
         if (settings_version_actual < settings_version_minimum) {
             if ((settings.size() == 1 && 

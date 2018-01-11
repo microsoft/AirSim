@@ -81,6 +81,8 @@ public:
 
     static float GetDisplayGamma();
 
+    static EAppReturnType::Type ShowMessage(EAppMsgType::Type MessageType, const std::string& message, const std::string& title);
+
     static bool getLogMessagesHidden()
     {
         return log_messages_hidden;
