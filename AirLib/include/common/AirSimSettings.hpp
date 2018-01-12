@@ -87,15 +87,39 @@ public: //types
         float target_gamma = Utils::nan<float>(); //1.0f; //This would be reset to kSceneTargetGamma for scene as default
     };
 
+    struct NoiseSetting {
+        int ImageType = 0;
+
+        bool Enabled = false;
+        float HorzWaveStrength = 0.01f;
+        float RandSpeed = 10.0f;
+        float RandSize = 300.0f;
+        float RandDensity = 2.0f;
+        float RandContrib = 0.1f;
+        float HorzWaveContrib = 0.8f;
+        float HorzWaveVertSize = 100.0f;
+        float HorzWaveScreenSize = 50.0f;
+        float HorzNoiseLinesContrib = 1.0f;
+        float HorzNoiseLinesDensityY = 0.01f;
+        float HorzNoiseLinesDensityXY = 0.1f;
+        float HorzDistortionStrength = 0.01f;
+        float HorzDistortionContrib = 0.5f;
+    };
+
 private: //fields
     float settings_version_actual;
     float settings_version_minimum = 1;
 
 public: //fields
     std::string simmode_name;
+
     std::vector<SubwindowSetting> subwindow_settings;
-    std::vector<CaptureSetting> capture_settings;
+
+    std::map<int, CaptureSetting> capture_settings;
+    std::map<int, NoiseSetting>  noise_settings;
+
     RecordingSettings recording_settings;
+
     std::vector<std::string> warning_messages;
 
     bool is_record_ui_visible;
@@ -137,6 +161,7 @@ public: //methods
         loadViewModeSettings(settings);
         loadRecordingSettings(settings);
         loadCaptureSettings(settings);
+        loadCameraNoiseSettings(settings);
         loadOtherSettings(settings);
 
         return static_cast<unsigned int>(warning_messages.size());
@@ -147,7 +172,7 @@ public: //methods
         warning_messages.clear();
 
         initializeSubwindowSettings();
-        initializeCaptureSettings();
+        initializeImageTypeSettings();
 
         simmode_name = "";
         recording_settings = RecordingSettings();
@@ -337,10 +362,46 @@ private:
         }
     }
 
+    void loadCameraNoiseSettings(const Settings& settings)
+    {
+        Settings json_settings_parent;
+        if (settings.getChild("NoiseSetting", json_settings_parent)) {
+            for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
+                Settings json_settings_child;     
+                if (json_settings_parent.getChild(child_index, json_settings_child)) {
+                    NoiseSetting noise_setting;
+                    createNoiseSettings(json_settings_child, noise_setting);
+                    if (noise_setting.ImageType >= 0 && noise_setting.ImageType < noise_settings.size())
+                        noise_settings[noise_setting.ImageType] = noise_setting;
+                    else
+                        throw std::invalid_argument("ImageType must be >= 0 and < " + std::to_string(noise_settings.size()));
+                }
+            }
+        }
+    }
+
+    void createNoiseSettings(const msr::airlib::Settings& settings, NoiseSetting& noise_setting)
+    {
+        noise_setting.Enabled = settings.getBool("Enabled", noise_setting.Enabled);
+        noise_setting.ImageType = settings.getInt("ImageType", noise_setting.ImageType);
+
+        noise_setting.HorzWaveStrength = settings.getFloat("HorzWaveStrength", noise_setting.HorzWaveStrength);
+        noise_setting.RandSpeed = settings.getFloat("RandSpeed", noise_setting.RandSpeed);
+        noise_setting.RandSize = settings.getFloat("RandSize", noise_setting.RandSize);
+        noise_setting.RandDensity = settings.getFloat("RandDensity", noise_setting.RandDensity);
+        noise_setting.RandContrib = settings.getFloat("RandContrib", noise_setting.RandContrib);
+        noise_setting.HorzWaveContrib = settings.getFloat("HorzWaveContrib", noise_setting.HorzWaveContrib);
+        noise_setting.HorzWaveVertSize = settings.getFloat("HorzWaveVertSize", noise_setting.HorzWaveVertSize);
+        noise_setting.HorzWaveScreenSize = settings.getFloat("HorzWaveScreenSize", noise_setting.HorzWaveScreenSize);
+        noise_setting.HorzNoiseLinesContrib = settings.getFloat("HorzNoiseLinesContrib", noise_setting.HorzNoiseLinesContrib);
+        noise_setting.HorzNoiseLinesDensityY = settings.getFloat("HorzNoiseLinesDensityY", noise_setting.HorzNoiseLinesDensityY);
+        noise_setting.HorzNoiseLinesDensityXY = settings.getFloat("HorzNoiseLinesDensityXY", noise_setting.HorzNoiseLinesDensityXY);
+        noise_setting.HorzDistortionStrength = settings.getFloat("HorzDistortionStrength", noise_setting.HorzDistortionStrength);
+        noise_setting.HorzDistortionContrib = settings.getFloat("HorzDistortionContrib", noise_setting.HorzDistortionContrib);
+    }
+
     void createCaptureSettings(const msr::airlib::Settings& settings, CaptureSetting& capture_setting)
     {
-        typedef msr::airlib::Settings Settings;
-
         capture_setting.width = settings.getInt("Width", capture_setting.width);
         capture_setting.height = settings.getInt("Height", capture_setting.height);
         capture_setting.fov_degrees = settings.getFloat("FOV_Degrees", capture_setting.fov_degrees);
@@ -376,10 +437,17 @@ private:
         }
     }
 
-    void initializeCaptureSettings()
+    void initializeImageTypeSettings()
     {
         capture_settings.clear();
-        capture_settings.assign(Utils::toNumeric(ImageType::Count), CaptureSetting());
+
+        int image_count = Utils::toNumeric(ImageType::Count);
+
+        for (int i = -1; i < image_count; ++i) {
+            capture_settings[i] = CaptureSetting();
+            noise_settings[i] = NoiseSetting();
+        }
+
         capture_settings.at(Utils::toNumeric(ImageType::Scene)).target_gamma = CaptureSetting::kSceneTargetGamma;
     }
 

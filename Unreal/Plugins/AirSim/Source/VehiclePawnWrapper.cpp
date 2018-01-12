@@ -24,11 +24,12 @@ void VehiclePawnWrapper::setupCamerasFromSettings()
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
-
-    for (const AirSimSettings::CaptureSetting& capture_setting : AirSimSettings::singleton().capture_settings) {
+    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
+    for (int image_type = 0; image_type < image_count; ++image_type) {
         for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
             APIPCamera* camera = getCamera(camera_index);
-            camera->setCaptureSetting(capture_setting);
+            camera->setImageTypeSettings(image_type, AirSimSettings::singleton().capture_settings[image_type], 
+                AirSimSettings::singleton().noise_settings[image_type]);
         }
     }
 }

@@ -7,9 +7,17 @@
 #include "AirBlueprintLib.h"
 #include "ImageUtils.h"
 
-unsigned int APIPCamera::imageTypeCount()
+
+APIPCamera::APIPCamera()
 {
-    return Utils::toNumeric(ImageType::Count);
+    static ConstructorHelpers::FObjectFinder<UMaterial> mat_finder(TEXT("Material'/AirSim/HUDAssets/CameraSensorNoise.CameraSensorNoise'"));
+    if (mat_finder.Succeeded())
+    {
+        noise_material_static_ = mat_finder.Object;
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Cannot create noise material for the PIPCamera", 
+            "", LogDebugLevel::Failure);
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -34,6 +42,7 @@ void APIPCamera::PostInitializeComponents()
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SegmentationCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] = 
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
+
 }
 
 void APIPCamera::BeginPlay()
@@ -48,18 +57,49 @@ void APIPCamera::BeginPlay()
         captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
 
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
-        updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], 
-            AirSimSettings::singleton().capture_settings[image_type]);
     }
+}
+
+void APIPCamera::setNoiseMaterial(FPostProcessSettings& obj, const NoiseSetting& settings)
+{
+    if (!settings.Enabled)
+        return;
+
+    noise_material_ = UMaterialInstanceDynamic::Create(noise_material_static_, GetWorld());
+
+    noise_material_->SetScalarParameterValue("HorzWaveStrength", settings.HorzWaveStrength);
+    noise_material_->SetScalarParameterValue("RandSpeed", settings.RandSpeed);
+    noise_material_->SetScalarParameterValue("RandSize", settings.RandSize);
+    noise_material_->SetScalarParameterValue("RandDensity", settings.RandDensity);
+    noise_material_->SetScalarParameterValue("RandContrib", settings.RandContrib);
+    noise_material_->SetScalarParameterValue("HorzWaveContrib", settings.HorzWaveContrib);
+    noise_material_->SetScalarParameterValue("HorzWaveVertSize", settings.HorzWaveVertSize);
+    noise_material_->SetScalarParameterValue("HorzWaveScreenSize", settings.HorzWaveScreenSize);
+    noise_material_->SetScalarParameterValue("HorzNoiseLinesContrib", settings.HorzNoiseLinesContrib);
+    noise_material_->SetScalarParameterValue("HorzNoiseLinesDensityY", settings.HorzNoiseLinesDensityY);
+    noise_material_->SetScalarParameterValue("HorzNoiseLinesDensityXY", settings.HorzNoiseLinesDensityXY);
+    noise_material_->SetScalarParameterValue("HorzDistortionStrength", settings.HorzDistortionStrength);
+    noise_material_->SetScalarParameterValue("HorzDistortionContrib", settings.HorzDistortionContrib);
+
+    obj.AddBlendable(noise_material_, 1.0f);
 }
 
 void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    noise_material_static_ = nullptr;
+    noise_material_ = nullptr;
+
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         //use final color for all calculations
         captures_[image_type] = nullptr;
         render_targets_[image_type] = nullptr;
     }
+}
+
+
+unsigned int APIPCamera::imageTypeCount()
+{
+    return Utils::toNumeric(ImageType::Count);
 }
 
 void APIPCamera::showToScreen()
@@ -86,12 +126,13 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
-void APIPCamera::setCaptureSetting(const APIPCamera::CaptureSetting& setting)
+void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureSetting& capture_setting, 
+    const APIPCamera::NoiseSetting& noise_setting)
 {
-    unsigned int image_type = static_cast<unsigned int>(setting.image_type);
-
     updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], 
-        setting);
+        capture_setting);
+
+    setNoiseMaterial(captures_[image_type]->PostProcessSettings, noise_setting);
 }
 
 void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSetting& setting)
