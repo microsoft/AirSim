@@ -18,6 +18,8 @@ APIPCamera::APIPCamera()
     else
         UAirBlueprintLib::LogMessageString("Cannot create noise material for the PIPCamera", 
             "", LogDebugLevel::Failure);
+
+    noise_materials_.AddZeroed(imageTypeCount() + 1);
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -62,8 +64,15 @@ void APIPCamera::BeginPlay()
 
 void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+        if (noise_materials_[image_type + 1])
+            captures_[image_type]->PostProcessSettings.RemoveBlendable(noise_materials_[image_type + 1]);
+    }
+    if (noise_materials_[0])
+        camera_->PostProcessSettings.RemoveBlendable(noise_materials_[0]);
+
     noise_material_static_ = nullptr;
-    noise_material_ = nullptr;
+    noise_materials_.Reset();
 
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         //use final color for all calculations
@@ -109,12 +118,12 @@ void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureS
         updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type],
             capture_setting);
 
-        setNoiseMaterial(captures_[image_type]->PostProcessSettings, noise_setting);
+        setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
     }
     else { //camera component
         updateCameraSetting(camera_, capture_setting);
 
-        setNoiseMaterial(camera_->PostProcessSettings, noise_setting);
+        setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
     }
 
 
@@ -169,12 +178,14 @@ void APIPCamera::updateCameraPostProcessingSetting(FPostProcessSettings& obj, co
         obj.HistogramLogMax = setting.auto_exposure_histogram_log_max;  
 }
 
-void APIPCamera::setNoiseMaterial(FPostProcessSettings& obj, const NoiseSetting& settings)
+void APIPCamera::setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings)
 {
     if (!settings.Enabled)
         return;
 
-    noise_material_ = UMaterialInstanceDynamic::Create(noise_material_static_, GetWorld());
+    UMaterialInstanceDynamic* noise_material_ = UMaterialInstanceDynamic::Create(noise_material_static_, outer);
+    noise_materials_[image_type + 1] = noise_material_;
+
 
     noise_material_->SetScalarParameterValue("HorzWaveStrength", settings.HorzWaveStrength);
     noise_material_->SetScalarParameterValue("RandSpeed", settings.RandSpeed);

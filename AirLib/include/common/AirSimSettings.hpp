@@ -93,19 +93,24 @@ public: //types
         int ImageType = 0;
 
         bool Enabled = false;
-        float HorzWaveStrength = 0.01f;
-        float RandSpeed = 10.0f;
-        float RandSize = 300.0f;
+
+        float RandContrib = 0.2f;
+        float RandSpeed = 100000.0f;
+        float RandSize = 500.0f;
         float RandDensity = 2.0f;
-        float RandContrib = 0.1f;
-        float HorzWaveContrib = 0.8f;
-        float HorzWaveVertSize = 100.0f;
-        float HorzWaveScreenSize = 50.0f;
+
+        float HorzWaveContrib = 0.03f;
+        float HorzWaveStrength = 0.08f;
+        float HorzWaveVertSize = 1.0f;
+        float HorzWaveScreenSize = 1.0f;
+
         float HorzNoiseLinesContrib = 1.0f;
         float HorzNoiseLinesDensityY = 0.01f;
-        float HorzNoiseLinesDensityXY = 0.1f;
-        float HorzDistortionStrength = 0.01f;
-        float HorzDistortionContrib = 0.5f;
+        float HorzNoiseLinesDensityXY = 0.5f;
+
+        float HorzDistortionContrib = 1.0f; 
+        float HorzDistortionStrength = 0.002f;
+
     };
 
 private: //fields
