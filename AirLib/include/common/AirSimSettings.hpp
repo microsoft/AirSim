@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <exception>
 #include <functional>
 #include "Settings.hpp"
 #include "CommonStructs.hpp"
@@ -75,6 +76,7 @@ public: //types
 
         unsigned int width = 256, height = 144; //960 X 540
         float fov_degrees = Utils::nan<float>(); //90.0f
+        int auto_exposure_method = -1;   //histogram
         float auto_exposure_speed = Utils::nan<float>(); // 100.0f;
         float auto_exposure_bias = Utils::nan<float>(); // 0;
         float auto_exposure_max_brightness = Utils::nan<float>(); // 0.64f;
@@ -347,16 +349,17 @@ private:
     void loadCaptureSettings(const Settings& settings)
     {
         Settings json_settings_parent;
-        if (settings.getChild("CaptureSetting", json_settings_parent)) {
+        if (settings.getChild("CaptureSettings", json_settings_parent)) {
             for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
                 Settings json_settings_child;     
                 if (json_settings_parent.getChild(child_index, json_settings_child)) {
                     CaptureSetting capture_setting;
                     createCaptureSettings(json_settings_child, capture_setting);
-                    if (capture_setting.image_type >= 0 && capture_setting.image_type < capture_settings.size())
+                    if (capture_setting.image_type >= -1 && capture_setting.image_type < static_cast<int>(capture_settings.size()))
                         capture_settings[capture_setting.image_type] = capture_setting;
                     else
-                        throw std::invalid_argument("ImageType must be >= 0 and < " + std::to_string(capture_settings.size()));
+                        //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
+                        throw std::invalid_argument(std::string("ImageType must be >= -1 and < ") + std::to_string(capture_settings.size()));
                 }
             }
         }
@@ -365,16 +368,17 @@ private:
     void loadCameraNoiseSettings(const Settings& settings)
     {
         Settings json_settings_parent;
-        if (settings.getChild("NoiseSetting", json_settings_parent)) {
+        if (settings.getChild("NoiseSettings", json_settings_parent)) {
             for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
                 Settings json_settings_child;     
                 if (json_settings_parent.getChild(child_index, json_settings_child)) {
                     NoiseSetting noise_setting;
                     createNoiseSettings(json_settings_child, noise_setting);
-                    if (noise_setting.ImageType >= 0 && noise_setting.ImageType < noise_settings.size())
+                    if (noise_setting.ImageType >= -1 && noise_setting.ImageType < static_cast<int>(noise_settings.size()))
                         noise_settings[noise_setting.ImageType] = noise_setting;
                     else
-                        throw std::invalid_argument("ImageType must be >= 0 and < " + std::to_string(noise_settings.size()));
+                        //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
+                        throw std::invalid_argument("ImageType must be >= -1 and < " + std::to_string(noise_settings.size()));
                 }
             }
         }

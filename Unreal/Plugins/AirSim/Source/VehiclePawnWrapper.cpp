@@ -25,7 +25,7 @@ void VehiclePawnWrapper::setupCamerasFromSettings()
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
     int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
-    for (int image_type = 0; image_type < image_count; ++image_type) {
+    for (int image_type = -1; image_type < image_count; ++image_type) {
         for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
             APIPCamera* camera = getCamera(camera_index);
             camera->setImageTypeSettings(image_type, AirSimSettings::singleton().capture_settings[image_type], 

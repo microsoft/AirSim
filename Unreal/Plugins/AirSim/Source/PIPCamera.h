@@ -43,7 +43,6 @@ public:
 
     
 private:
-    typedef common_utils::Utils Utils;
 
 
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
@@ -56,8 +55,14 @@ private:
     std::vector<bool> camera_type_enabled_;
 
 private:
+    typedef common_utils::Utils Utils;
+
     static unsigned int imageTypeCount();
     void enableCaptureComponent(const ImageType type, bool is_enabled);
     static void updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSetting& setting);
     void setNoiseMaterial(FPostProcessSettings& obj, const NoiseSetting& settings);
+    static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
+    static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting);
+
+
 };

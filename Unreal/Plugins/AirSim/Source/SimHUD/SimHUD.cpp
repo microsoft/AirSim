@@ -28,7 +28,7 @@ void ASimHUD::BeginPlay()
         setupInputBindings();
     }
     catch (std::exception& ex) {
-        UAirBlueprintLib::LogMessage(FString("Error loading settings"), FString(ex.what()), LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
         //FGenericPlatformMisc::PlatformInit();
         //FGenericPlatformMisc::MessageBoxExt(EAppMsgType::Ok, TEXT("Error at Startup"), ANSI_TO_TCHAR(ex.what()));
         UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("Error at startup: ") + ex.what(), "Error");

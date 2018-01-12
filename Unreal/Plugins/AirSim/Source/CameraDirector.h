@@ -5,6 +5,7 @@
 #include "PIPCamera.h"
 #include "GameFramework/Actor.h"
 #include "ManualPoseController.h"
+#include "common/common_utils/Utils.hpp"
 #include "GameFramework/SpringArmComponent.h"
 #include "CameraDirector.generated.h"
 
@@ -68,9 +69,13 @@ private:
     void setupInputBindings();
     void attachSpringArm(bool attach);
     void disableNonExternalCameras();
+    void setupCameraFromSettings();
 
 
 private:
+    typedef common_utils::Utils Utils;
+
+
     APIPCamera* fpv_camera_;
     APIPCamera* backup_camera_;
     APIPCamera* external_camera_;
