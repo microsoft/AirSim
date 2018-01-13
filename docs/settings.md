@@ -47,7 +47,7 @@ Below are complete list of settings available along with their default values. I
   },
   "CaptureSettings": [
     {
-      "ImageType": -1,
+      "ImageType": 0,
       "Width": 256,
       "Height": 144,
       "FOV_Degrees": 90,
@@ -57,6 +57,29 @@ Below are complete list of settings available along with their default values. I
       "AutoExposureMinBrightness": 0.03,
       "MotionBlurAmount": 0,
       "TargetGamma": 1.0
+    }
+  ],
+  "NoiseSettings": [
+    {
+      "Enabled": false,
+      "ImageType": 0,
+
+      "RandContrib": 0.2,
+      "RandSpeed": 100000.0,
+      "RandSize": 500.0,
+      "RandDensity": 2,
+
+      "HorzWaveContrib":0.03,			
+      "HorzWaveStrength": 0.08,
+      "HorzWaveVertSize": 1.0,
+      "HorzWaveScreenSize": 1.0,
+      
+      "HorzNoiseLinesContrib": 1.0,
+      "HorzNoiseLinesDensityY": 0.01,
+      "HorzNoiseLinesDensityXY": 0.5,
+      
+      "HorzDistortionContrib": 1.0,
+      "HorzDistortionStrength": 0.002
     }
   ],
   "SubWindows": [
@@ -101,7 +124,7 @@ Below are complete list of settings available along with their default values. I
 ## Image Capture Settings
 The `CaptureSettings` determines how different image types such as scene, depth, disparity, surface normals and segmentation views are rendered. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images. For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/). 
 
-The `ImageType` element determines which image type the settings applies to. By default it is -1 which is invalid value and you will get an error if you have haven't changed it to a valid value. The valid values are:
+The `ImageType` element determines which image type the settings applies to. The valid values are:
 
 ```
 Scene = 0, 
@@ -112,6 +135,8 @@ DisparityNormalized = 4,
 Segmentation = 5,
 SurfaceNormals = 6
 ```
+
+In addition, we also support special value `ImageType: -1` to apply the settings to external camera (i.e. what you are looking at on the screen).
 
 Note that `CaptureSettings` element is json array so you can add settings for multiple image types easily.
 
@@ -138,13 +163,13 @@ You can connect the simulator to the LogViewer app, provided in this repo, by se
 And for each flying drone added to the simulator there is a named block of additional settings.  In the above you see the default name "PX4".   You can change this name from the Unreal Editor when you add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink". The mavlink node for this pawn can be remote over UDP or it can be connected to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false and set the appropriate bard rate.  The default of 115200 works with Pixhawk version 2 over USB.
 
 ## Other Settings
-#### SimMode
+### SimMode
 Currently SimMode can be set to `""`, `"Multirotor"` or `"Car"`. The empty string value `""` means that use the default vehicle which is `"Multirotor"`. This determines which vehicle you would be using.
 
-#### PhysicsEngineName
+### PhysicsEngineName
 For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.
 
-#### ViewMode 
+### ViewMode 
 The ViewMode determines how you will view the vehicle. For multirotors, the default ViewMode is `"FlyWithMe"` while for cars the default ViewMode is `"SpringArmChase"`.
 
 * FlyWithMe: Chase the vehicle from behind with 6 degrees of freedom
@@ -153,10 +178,10 @@ The ViewMode determines how you will view the vehicle. For multirotors, the defa
 * Manual: Don't move camera automatically. Use arrow keys and ASWD keys for move camera manually.
 * SpringArmChase: Chase the vehicle with camera mounted on (invisible) arm that is attached to the vehicle via spring (so it has some latency in movement).
 
-#### EngineSound
+### EngineSound
 To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. Currently this setting applies only to car.
 
-#### SubWindows
+### SubWindows
 This setting determines what is shown in each of 3 subwindows which are visible when you press 0 key. The WindowsID can be 0 to 2, CameraID is integer identifying camera number on the vehicle. ImageType integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). For example, for car vehicles below shows driver view, front bumper view and rear view as scene, depth ans surface normals respectively.
 ```
   "SubWindows": [
@@ -169,8 +194,36 @@ This setting determines what is shown in each of 3 subwindows which are visible 
 The recording feature allows you to record data such as position, orientation, velocity along with image get recorded in real time at given interval. You can start recording by pressing red Record button on lower right or R key. The data is recorded in `Documents\AirSim` folder, in a timestamped subfolder for each recording session, as csv file.
 
 * RecordInterval: specifies minimal interval in seconds between capturing two images.
-* RecordOnMove: specifies that do not record frame if there was vehicle's position or orientation hasn't changed
+* RecordOnMove: specifies that do not record frame if there was vehicle's position or orientation hasn't changed.
 * Cameras: this element controls which images gets recorded. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can add more elements that allows to capture images from multiple cameras in different [image types](settings.md#image-capture-settings). When PixelsAsFloat is true, image is saved as [pfm](pfm.md) file instead of png file.
 
-#### ClockSpeed
+### ClockSpeed
 Determines the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simuation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collison is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.
+
+### Image Noise Settings
+The `NoiseSettings` allows to add noise to the specified image type with a goal of simulating camera sensor noise, interference and other artifacts. By default no noise is added, i.e., `Enabled: false`. If you set `Enabled: true` then following different types of noise and interference artifacts are enabled, each can be further tuned using setting. The noise effects are implemented as shader created as post processing material in Unreal Engine called [CameraSensorNoise](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/CameraSensorNoise.uasset).
+
+#### Random noise
+This adds random noise blobs with following parameters.
+* `RandContrib`: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* `RandSpeed`: This determines how fast noise fluctuates, 1 means no fluctuation and higher values like 1E6 means full fluctuation.
+* `RandSize`: This determines how coarse noise is, 1 means every pixel has its own noise while higher value means more than 1 pixels share same noise value.
+* `RandDensity`: This determines how many pixels out of total will have noise, 1 means all pixels while higher value means lesser number of pixels (exponentially).
+
+#### Horizontal bump distortion
+This adds horizontal bumps / flickering / ghosting effect.
+* `HorzWaveContrib`: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* `HorzWaveStrength`: This determines overall strength of the effect.
+* `HorzWaveVertSize`: This determines how many vertical pixels would be effected by the effect.
+* `HorzWaveScreenSize`: This determines how much of the screen is effected by the effect.
+
+#### Horizontal noise lines
+This adds regions of noise on horizontal lines.
+* `HorzNoiseLinesContrib`: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* `HorzNoiseLinesDensityY`: This determines how many pixels in horizontal line gets affected.
+* `HorzNoiseLinesDensityXY`: This determines how many lines on screen gets affected.
+
+#### Horizontal line distortion
+This adds fluctuations on horizontal line.
+* `HorzDistortionContrib`: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* `HorzDistortionStrength`: This determines how large is the distortion.
