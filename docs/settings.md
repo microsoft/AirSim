@@ -86,7 +86,7 @@ Below are complete list of settings available along with their default values. I
     {"WindowID": 0, "CameraID": 0, "ImageType": 3, "Visible": false},
     {"WindowID": 1, "CameraID": 0, "ImageType": 5, "Visible": false},
     {"WindowID": 2, "CameraID": 0, "ImageType": 0, "Visible": false}    
-  ] 
+  ],
   "SimpleFlight": {
     "FirmwareName": "SimpleFlight",
     "DefaultVehicleState": "Armed",
@@ -124,19 +124,7 @@ Below are complete list of settings available along with their default values. I
 ## Image Capture Settings
 The `CaptureSettings` determines how different image types such as scene, depth, disparity, surface normals and segmentation views are rendered. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Simplarly we set MotionBlurAmount to 0 by default to avoid artifacts in groung truth images. For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/). 
 
-The `ImageType` element determines which image type the settings applies to. The valid values are:
-
-```
-Scene = 0, 
-DepthPlanner = 1,
-DepthPerspective = 2,
-DepthVis = 3, 
-DisparityNormalized = 4,
-Segmentation = 5,
-SurfaceNormals = 6
-```
-
-In addition, we also support special value `ImageType: -1` to apply the settings to external camera (i.e. what you are looking at on the screen).
+The `ImageType` element determines which image type the settings applies to. The valid values are described in [ImageType section](image_apis.md#available-imagetype). In addition, we also support special value `ImageType: -1` to apply the settings to external camera (i.e. what you are looking at on the screen).
 
 Note that `CaptureSettings` element is json array so you can add settings for multiple image types easily.
 

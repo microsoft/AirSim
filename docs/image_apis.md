@@ -182,7 +182,8 @@ To change resolution, FOV etc, you can use [settings.json](settings.md). For exa
   DepthVis = 3, 
   DisparityNormalized = 4,
   Segmentation = 5,
-  SurfaceNormals = 6
+  SurfaceNormals = 6,
+  Infrared = 7
 ```                
 
 ### DepthPlanner and DepthPerspective
@@ -227,6 +228,9 @@ print(np.unique(img_rgba[:,:,2], return_counts=True)) #blue
 ```
 
 A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/segmentation.py).
+
+### Infrared
+Currently this is just a map from object ID to grey scale 0-255. So any mesh with object ID 42 shows up with color (42, 42, 42). Please see [segmentation section](#segmentation) for more details on how to set object IDs. Typically noise setting can be applied for this image type to get slightly more realistic effect. We are still working on adding other infrared artifacts and any contributions are welcome.
 
 #### How to Find Mesh Names?
 To get desired ground truth segmentation you will need to know names of the meshes in your Unreal environment that you are interested in. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in the World Outliner. For example, below we see the meshe names for he ground in Blocks environment in right panel in the editor:
