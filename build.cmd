@@ -1,7 +1,7 @@
 @echo off
 REM //---------- set up variable ----------
 setlocal
-set ROOT_DIR=%CD%
+set ROOT_DIR=%~dp0
 
 REM // Check command line arguments
 set "noFullPolyCar="
@@ -129,4 +129,4 @@ goto :eof
 
 :cmakefailed
 echo CMake install failed, please install cmake manually from https://cmake.org/ 1>&2
-exit 1
+exit /b 1
