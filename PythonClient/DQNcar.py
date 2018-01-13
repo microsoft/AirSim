@@ -2,7 +2,7 @@ from AirSimClient import *
 
 from argparse import ArgumentParser
 
-import gym
+#import gym #pip install gym
 import numpy as np
 from cntk.core import Value
 from cntk.initializer import he_uniform
@@ -463,8 +463,8 @@ def compute_reward(car_state):
 
     z = 0
     pts = [np.array([0, -1, z]), np.array([130, -1, z]), np.array([130, 125, z]), np.array([0, 125, z]), np.array([0, -1, z]), np.array([130, -1, z]), np.array([130, -128, z]), np.array([0, -128, z]), np.array([0, -1, z])]
-    pd = car_state.position
-    car_pt = np.array(list(pd.values()))
+    pd = car_state.kinematics_true.position
+    car_pt = np.array([pd.x_val, pd.y_val, pd.z_val])
 
     dist = 10000000
     for i in range(0, len(pts)-1):

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>hello_car.py</StartupFile>
+    <StartupFile>DQNdrone.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -38,6 +38,8 @@
     <Compile Include="cv_mode.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DQNcar.py" />
+    <Compile Include="DQNdrone.py" />
     <Compile Include="drive_straight.py">
       <SubType>Code</SubType>
     </Compile>
@@ -47,6 +49,7 @@
     <Compile Include="objects.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="point_cloud.py" />
     <Compile Include="seg_pallete.py">
       <SubType>Code</SubType>
     </Compile>

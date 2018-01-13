@@ -323,3 +323,4 @@ deps/
 car_assets.zip
 /PythonClient/cloud.txt
 __pycache__/
+/PythonClient/metrics/
