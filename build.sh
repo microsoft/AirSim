@@ -18,8 +18,13 @@ if [[ !(-d "./llvm-build/output/lib") ]]; then
 fi
 
 # set up paths of clang compiler
-export CC="clang-3.9"
-export CXX="clang++-3.9"
+if [ "$(uname)" == "Darwin" ]; then
+    export CC=/usr/local/opt/llvm\@3.9/bin/clang
+    export CXX=/usr/local/opt/llvm\@3.9/bin/clang++
+else
+    export CC="clang-3.9"
+    export CXX="clang++-3.9"
+fi
 
 #install EIGEN library
 if [[ !(-d "./AirLib/deps/eigen3/Eigen") ]]; then 
