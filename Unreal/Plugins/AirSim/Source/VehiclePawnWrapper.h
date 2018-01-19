@@ -86,7 +86,9 @@ public: //interface
 
     static VehiclePawnWrapper::Pose toPose(const FVector& u_position, const FQuat& u_quat);
     msr::airlib::Pose getActorPose(std::string actor_name);
+    std::string getVehicleConfigName() const;
 
+    int getRemoteControlID() const;
 
 protected:
     UPROPERTY(VisibleAnywhere)

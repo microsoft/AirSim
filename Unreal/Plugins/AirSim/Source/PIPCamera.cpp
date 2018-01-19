@@ -18,8 +18,6 @@ APIPCamera::APIPCamera()
     else
         UAirBlueprintLib::LogMessageString("Cannot create noise material for the PIPCamera", 
             "", LogDebugLevel::Failure);
-
-    noise_materials_.AddZeroed(imageTypeCount() + 1);
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -52,6 +50,8 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
     
+    noise_materials_.AddZeroed(imageTypeCount() + 1);
+
     //by default all image types are disabled
     camera_type_enabled_.assign(imageTypeCount(), false);
 
@@ -65,12 +65,14 @@ void APIPCamera::BeginPlay()
 
 void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
-        if (noise_materials_[image_type + 1])
-            captures_[image_type]->PostProcessSettings.RemoveBlendable(noise_materials_[image_type + 1]);
+    if (noise_materials_.Num()) {
+        for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+            if (noise_materials_[image_type + 1])
+                captures_[image_type]->PostProcessSettings.RemoveBlendable(noise_materials_[image_type + 1]);
+        }
+        if (noise_materials_[0])
+            camera_->PostProcessSettings.RemoveBlendable(noise_materials_[0]);
     }
-    if (noise_materials_[0])
-        camera_->PostProcessSettings.RemoveBlendable(noise_materials_[0]);
 
     noise_material_static_ = nullptr;
     noise_materials_.Reset();

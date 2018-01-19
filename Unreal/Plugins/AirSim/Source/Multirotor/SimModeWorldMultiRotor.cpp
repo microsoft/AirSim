@@ -23,7 +23,7 @@ void ASimModeWorldMultiRotor::BeginPlay()
     Super::BeginPlay();
 
     //create control server
-    for (std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connector_) {
+    for (const std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connectors_) {
         try {
             vehicle_connector_->startApiServer();
         }
@@ -39,17 +39,15 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     //stop physics thread before we dismental
     stopAsyncUpdator();
 
-    for (std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connector_)
+    for (const std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connectors_)
         vehicle_connector_->stopApiServer();
 
     //for (AActor* actor : spawned_actors_) {
     //    actor->Destroy();
     //}
     spawned_actors_.Empty();
-    if (CameraDirector != nullptr) {
-        fpv_vehicle_connector_.Empty();
-        CameraDirector = nullptr;
-    }
+    //fpv_vehicle_connectors_.Empty();
+    CameraDirector = nullptr;
 
     Super::EndPlay(EndPlayReason);
 }
@@ -113,8 +111,6 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             pawns.Add(spawned_pawn);
         }
 
-        unsigned int vehicle_id = 0;
-
         //set up vehicle pawns
         for (AActor* pawn : pawns)
         {
@@ -134,8 +130,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             VehiclePtr vehicle = createVehicle(wrapper);
             if (vehicle != nullptr) {
                 vehicles.push_back(vehicle);
-                fpv_vehicle_connector_.Add(vehicle);
-                vehicle_id++;
+                fpv_vehicle_connectors_.Add(vehicle);
             }
             //else we don't have vehicle for this pawn
         }
@@ -188,9 +183,7 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
-    auto vehicle_params = MultiRotorParamsFactory::createConfig(
-        wrapper->getConfig().vehicle_config_name == "" ? getSettings().default_vehicle_config
-        : wrapper->getConfig().vehicle_config_name);
+    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName());
 
     vehicle_params_.push_back(std::move(vehicle_params));
 

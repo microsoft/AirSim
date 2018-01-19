@@ -85,6 +85,28 @@ void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kin
     kinematics_ = kinematics;
 }
 
+std::string VehiclePawnWrapper::getVehicleConfigName() const 
+{
+    return getConfig().vehicle_config_name == "" ? msr::airlib::AirSimSettings::singleton().default_vehicle_config
+        : getConfig().vehicle_config_name;
+}
+
+int VehiclePawnWrapper::getRemoteControlID() const
+{
+    typedef msr::airlib::AirSimSettings AirSimSettings;
+
+    //find out which RC we should use
+    AirSimSettings::VehicleSettings vehicle_settings =
+        AirSimSettings::singleton().getVehicleSettings(getVehicleConfigName());
+
+    msr::airlib::Settings settings;
+    vehicle_settings.getRawSettings(settings);
+
+    msr::airlib::Settings rc_settings;
+    settings.getChild("RC", rc_settings);
+    return rc_settings.getInt("RemoteControlID", -1);
+}
+
 void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config)
 {
     pawn_ = pawn;
