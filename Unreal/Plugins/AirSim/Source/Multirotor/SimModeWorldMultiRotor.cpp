@@ -189,8 +189,8 @@ ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawn
 
     std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
 
-	wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
-	    vehicle_params_.back()->getParams().api_server_port + vehicle_params_.size() - 1, manual_pose_controller);
+    wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
+        vehicle_params_.back()->getParams().api_server_port + vehicle_params_.size() - 1, manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
         wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));

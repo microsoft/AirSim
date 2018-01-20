@@ -6,7 +6,9 @@ import sys
 import math
 import numpy as np
 
-outputFile = "cloud.asc"
+# file will be saved in PythonClient folder (i.e. same folder as script)
+# point cloud ASCII format, use viewers like CloudCompare http://www.danielgm.net/cc/ or see http://www.geonext.nl/wp-content/uploads/2014/05/Point-Cloud-Viewers.pdf
+outputFile = "cloud.asc" 
 color = (0,255,0)
 rgb = "%d %d %d" % color
 projectionMatrix = np.array([[-0.501202762, 0.000000000, 0.000000000, 0.000000000],
@@ -20,8 +22,8 @@ def printUsage():
    
 def savePointCloud(image, fileName):
    f = open(fileName, "w")
-   for x in xrange(image.shape[0]):
-     for y in xrange(image.shape[1]):
+   for x in range(image.shape[0]):
+     for y in range(image.shape[1]):
         pt = image[x,y]
         if (math.isinf(pt[0]) or math.isnan(pt[0])):
           # skip it
@@ -33,15 +35,15 @@ def savePointCloud(image, fileName):
 for arg in sys.argv[1:]:
   cloud.txt = arg
 
-client = AirSimClient('127.0.0.1')
+client = MultirotorClient()
 
 while True:
-    rawImage = client.getImageForCamera(0, AirSimImageType.Depth)
+    rawImage = client.simGetImage(0, AirSimImageType.DepthPerspective)
     if (rawImage is None):
         print("Camera is not returning image, please check airsim for error messages")
         sys.exit(0)
     else:
-        png = cv2.imdecode(rawImage, cv2.IMREAD_UNCHANGED)
+        png = cv2.imdecode(np.frombuffer(rawImage, np.uint8) , cv2.IMREAD_UNCHANGED)
         gray = cv2.cvtColor(png, cv2.COLOR_BGR2GRAY)
         Image3D = cv2.reprojectImageTo3D(gray, projectionMatrix)
         savePointCloud(Image3D, outputFile)
