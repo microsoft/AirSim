@@ -22,7 +22,7 @@ namespace msr { namespace airlib {
 
 class Settings {
 private:
-    std::string file_;
+    std::string full_filepath_;
     nlohmann::json doc_;
     bool load_success_ = false;
 
@@ -39,7 +39,7 @@ public:
         return instance;
     }
 
-    std::string getFileName() { return file_; }
+    std::string getFullFilePath() { return full_filepath_; }
 
     static std::string getUserDirectoryFullPath(std::string fileName)
     {
@@ -55,7 +55,7 @@ public:
 
     static Settings& loadJSonString(const std::string& json_str)
     {
-        singleton().file_ = "(loaded from string)";
+        singleton().full_filepath_ = "";
         singleton().load_success_ = false;
 
         if (json_str.length() > 0) {
@@ -76,16 +76,15 @@ public:
         return ss.str();
     }
             
-    static Settings& loadJSonFile(std::string fileName)
+    static Settings& loadJSonFile(std::string full_filepath)
     {
         std::lock_guard<std::mutex> guard(getFileAccessMutex());
-        std::string path = getUserDirectoryFullPath(fileName);
-        singleton().file_ = fileName;
+        singleton().full_filepath_ = full_filepath;
 
         singleton().load_success_ = false;
 
         std::ifstream s;
-        common_utils::FileSystem::openTextFile(path, s);
+        common_utils::FileSystem::openTextFile(full_filepath, s);
         if (!s.fail()) {
             s >> singleton().doc_;
             singleton().load_success_ = true;
@@ -101,15 +100,15 @@ public:
 
     bool hasFileName()
     {
-        return !getFileName().empty();
+        return !getFullFilePath().empty();
     }
 
-    void saveJSonFile(std::string fileName)
+    void saveJSonFile(std::string full_filepath)
     {
         std::lock_guard<std::mutex> guard(getFileAccessMutex());
-        std::string path = getUserDirectoryFullPath(fileName);
+        singleton().full_filepath_ = full_filepath;
         std::ofstream s;
-        common_utils::FileSystem::createTextFile(path, s);
+        common_utils::FileSystem::createTextFile(full_filepath, s);
         s << std::setw(2) << doc_ << std::endl;
     }
 
