@@ -10,4 +10,4 @@ IF(UNIX)
     set(CMAKE_CXX_FLAGS "${RPC_LIB_DEFINES} ${CMAKE_CXX_FLAGS}")    
 ENDIF()
 
-add_subdirectory("${AIRSIM_ROOT}/external/rpclib" "${CMAKE_CURRENT_BINARY_DIR}/rpclib")
+add_subdirectory("${AIRSIM_ROOT}/external/rpclib/rpclib-2.2.1" "${CMAKE_CURRENT_BINARY_DIR}/rpclib")

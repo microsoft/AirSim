@@ -11,16 +11,67 @@ if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
 
 :noargs
 
-REM //---------- make sure we have got all sub modules ----------
 chdir /d %ROOT_DIR% 
-ECHO Updating submodules...
-git submodule update --init --recursive
 
-REM //---------- if cmake doesn't exist then install it ----------
-WHERE cmake >nul 2>nul
-IF %ERRORLEVEL% NEQ 0 (
-    call :installcmake
+REM //---------- Check cmake version ----------
+CALL check_cmake.bat
+if ERRORLEVEL 1 (
+  CALL check_cmake.bat
+  if ERRORLEVEL 1 (
+    echo(
+    echo ERROR: cmake was not installed correctly.
+    goto :buildfailed
+  )
 )
+
+REM //---------- get rpclib ----------
+IF NOT EXIST external\rpclib mkdir external\rpclib
+IF NOT EXIST external\rpclib\rpclib-2.2.1 (
+	REM //leave some blank lines because powershell shows download banner at top of console
+	ECHO(
+	ECHO(   
+	ECHO(   
+	ECHO *****************************************************************************************
+	ECHO Downloading rpclib
+	ECHO *****************************************************************************************
+	@echo on
+	powershell -command "& { iwr https://github.com/rpclib/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip }"
+	@echo off
+	
+	REM //remove any previous versions
+	rmdir external\rpclib /q /s
+
+	powershell -command "& { Expand-Archive -Path external\rpclib.zip -DestinationPath external\rpclib }"
+	del external\rpclib.zip /q
+	
+	REM //Don't fail the build if the high-poly car is unable to be downloaded
+	REM //Instead, just notify users that the gokart will be used.
+	IF NOT EXIST external\rpclib\rpclib-2.2.1 (
+		ECHO Unable to download high-polycount SUV. Your AirSim build will use the default vehicle.
+		goto :buildfailed
+	)
+)
+
+REM //---------- Build rpclib ------------
+ECHO Starting cmake to build rpclib...
+IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
+cd external\rpclib\rpclib-2.2.1\build
+REM cmake -G"Visual Studio 15 2017 Win64" ..
+cmake -G"Visual Studio 14 2015 Win64" ..
+cmake --build .
+cmake --build . --config Release
+if ERRORLEVEL 1 goto :buildfailed
+chdir /d %ROOT_DIR% 
+
+
+REM //---------- copy rpclib binaries and include folder inside AirLib folder ----------
+set RPCLIB_TARGET_LIB=AirLib\deps\rpclib\lib\x64
+if NOT exist %RPCLIB_TARGET_LIB% mkdir %RPCLIB_TARGET_LIB%
+set RPCLIB_TARGET_INCLUDE=AirLib\deps\rpclib\include
+if NOT exist %RPCLIB_TARGET_INCLUDE% mkdir %RPCLIB_TARGET_INCLUDE%
+robocopy /MIR external\rpclib\rpclib-2.2.1\include %RPCLIB_TARGET_INCLUDE%
+robocopy /MIR external\rpclib\rpclib-2.2.1\build\Debug %RPCLIB_TARGET_LIB%\Debug
+robocopy /MIR external\rpclib\rpclib-2.2.1\build\Release %RPCLIB_TARGET_LIB%\Release
 
 REM //---------- get High PolyCount SUV Car Model ------------
 IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
@@ -67,24 +118,6 @@ IF NOT EXIST AirLib\deps\eigen3 (
 )
 IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
-ECHO Starting cmake...
-REM //---------- compile rpclib that we got from git submodule ----------
-IF NOT EXIST external\rpclib\build mkdir external\rpclib\build
-cd external\rpclib\build
-REM cmake -G"Visual Studio 15 2017 Win64" ..
-cmake -G"Visual Studio 14 2015 Win64" ..
-cmake --build .
-cmake --build . --config Release
-if ERRORLEVEL 1 goto :buildfailed
-chdir /d %ROOT_DIR% 
-
-REM //---------- copy rpclib binaries and include folder inside AirLib folder ----------
-set RPCLIB_TARGET_LIB=AirLib\deps\rpclib\lib\x64
-if NOT exist %RPCLIB_TARGET_LIB% mkdir %RPCLIB_TARGET_LIB%
-set RPCLIB_TARGET_INCLUDE=AirLib\deps\rpclib\include
-if NOT exist %RPCLIB_TARGET_INCLUDE% mkdir %RPCLIB_TARGET_INCLUDE%
-robocopy /MIR external\rpclib\include %RPCLIB_TARGET_INCLUDE%
-robocopy /MIR external\rpclib\build\output\lib %RPCLIB_TARGET_LIB%
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
 msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
@@ -109,7 +142,8 @@ goto :eof
 
 :buildfailed
 chdir /d %ROOT_DIR% 
-echo #### Build failed 1>&2
+echo(
+echo #### Build failed - see messages above. 1>&2
 goto :eof
 
 :installcmake

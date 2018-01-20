@@ -7,9 +7,6 @@ pushd "$SCRIPT_DIR"  >/dev/null
 set -e
 set -x
 
-# update any git submodules, currently rpclib
-git submodule update --init --recursive 
-
 # check for libc++
 if [[ !(-d "./llvm-build/output/lib") ]]; then
     echo "ERROR: clang++ and libc++ is necessary to compile AirSim and run it in Unreal engine"
@@ -71,7 +68,7 @@ cp $build_dir/output/lib/libAirSim-rpclib.a AirLib/deps/rpclib/lib/librpc.a
 
 # Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
 rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug
-rsync -a --delete external/rpclib/include AirLib/deps/rpclib
+rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 

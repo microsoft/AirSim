@@ -68,7 +68,7 @@ int main(int argc, const char* argv[])
 
     }
     else {
-        std::cout << "Could not load settings from " << Settings::singleton().getFileName() << std::endl;
+        std::cout << "Could not load settings from " << Settings::singleton().getFullFilePath() << std::endl;
         return 3;
 
     }
