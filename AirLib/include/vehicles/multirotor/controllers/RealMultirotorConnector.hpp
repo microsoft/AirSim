@@ -52,6 +52,8 @@ public:
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override
     {
+        unused(pose);
+        unused(ignore_collision);
         throw std::logic_error("setPose() call is only supported for simulation");
     }
 
@@ -63,10 +65,14 @@ public:
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id,
         bool is_name_regex = false) override
     {
+        unused(mesh_name);
+        unused(object_id);
+        unused(is_name_regex);
         throw std::logic_error("setSegmentationObjectID() call is only supported for simulation");
     }
     virtual int getSegmentationObjectID(const std::string& mesh_name) override
     {
+        unused(mesh_name);
         throw std::logic_error("getSegmentationObjectID() call is only supported for simulation");
     }
 

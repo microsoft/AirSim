@@ -5,14 +5,30 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"  >/dev/null
 
 set -e
-set -x
+# set -x
 
 # check for libc++
 if [[ !(-d "./llvm-build/output/lib") ]]; then
     echo "ERROR: clang++ and libc++ is necessary to compile AirSim and run it in Unreal engine"
-    echo "please run setup.sh first."
+    echo "Please run setup.sh first."
     exit 1
 fi
+
+# check for rpclib
+if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
+    echo "ERROR: new version of AirSim requires newer rpclib."
+    echo "please run setup.sh first and then run build.sh again."
+    exit 1
+fi
+
+# check for cmake build
+if [ ! -d "./cmake_build" ]; then
+    echo "ERROR: cmake build was not found."
+    echo "please run setup.sh first and then run build.sh again."
+    exit 1
+fi
+
+CMAKE="$(readlink -f cmake_build/bin/cmake)"
 
 # set up paths of clang compiler
 if [ "$(uname)" == "Darwin" ]; then
@@ -46,7 +62,7 @@ if [[ ! -d $build_dir ]]; then
     mkdir -p $build_dir
     pushd $build_dir  >/dev/null
 
-    cmake ../cmake -DCMAKE_BUILD_TYPE=Debug \
+    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug \
         || (popd && rm -r $build_dir && exit 1)
     popd >/dev/null
 fi
@@ -64,7 +80,7 @@ mkdir -p AirLib/deps/rpclib/lib
 mkdir -p AirLib/deps/MavLinkCom/lib
 cp $build_dir/output/lib/libAirLib.a AirLib/lib
 cp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
-cp $build_dir/output/lib/libAirSim-rpclib.a AirLib/deps/rpclib/lib/librpc.a
+cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
 
 # Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
 rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug

@@ -291,6 +291,7 @@ ModelManifest.xml
 cmake/AirLibUnitTests/Makefile
 external/
 deps/
+cmake_build/
 
 # Eclipse Project file
 /.project
@@ -308,6 +309,7 @@ deps/
 /cmake/rpclib
 /cmake/output/lib/libMavLinkCom.a
 /cmake/output/lib/libAirSim-rpclib.a
+/cmake/output/lib/librpc.a
 /cmake/output/lib/libAirLib.a
 /cmake/output/lib
 /AirLib/include/controllers/html

@@ -10,10 +10,6 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 pushd $SCRIPTPATH
 
-# update the rpclib git submodule
-pushd ..
-git submodule update --init --recursive
-
 if [[ ! -d "$EIGEN_ROOT" ]]; then
         if [[ ! -d eigen ]]; then
                 echo "downloading eigen..."

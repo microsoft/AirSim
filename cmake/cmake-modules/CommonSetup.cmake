@@ -41,9 +41,10 @@ macro(CommonSetup)
     SET(LIBCXX_LIB_PATH ${AIRSIM_ROOT}/llvm-build/output/lib)
 
     #setup include and lib for rpclib which will be referenced by other projects
-    set(RPCLIB_NAME_SUFFIX rpclib)
-    set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/include")
-    set(RPC_LIB ${CMAKE_PROJECT_NAME}-${RPCLIB_NAME_SUFFIX})
+    set(RPCLIB_VERSION_FOLDER rpclib-2.2.1)
+    set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/${RPCLIB_VERSION_FOLDER}/include")
+    #name of .a file with lib prefix
+    set(RPC_LIB rpc)
 
     #what is our build type debug or release?
     string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)

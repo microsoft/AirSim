@@ -12,9 +12,6 @@ if [[ $1 == "--no-full-poly-car" ]]; then
     downloadHighPolySuv=false
 fi
 
-#get sub modules
-git submodule update --init --recursive
-
 #give user perms to access USB port - this is not needed if not using PX4 HIL
 #TODO: figure out how to do below in travis
 if [ "$(uname)" == "Darwin" ]; then
@@ -27,7 +24,6 @@ if [ "$(uname)" == "Darwin" ]; then
     brew install --force-bottle llvm@3.9
 
     brew install wget
-    brew install cmake
 
     export C_COMPILER=/usr/local/opt/llvm\@3.9/bin/clang
     export COMPILER=/usr/local/opt/llvm\@3.9/bin/clang++
@@ -39,13 +35,44 @@ else
 
     #install clang and build tools
     sudo apt-get install -y build-essential
-    sudo apt-get install cmake
     wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
     sudo apt-get update
     sudo apt-get install -y clang-3.9 clang++-3.9
 
     export C_COMPILER=clang-3.9
     export COMPILER=clang++-3.9
+fi
+
+#download cmake - we need v3.9+ which is not available in Ubuntu 16.04
+if [[ ! -d "cmake_build/bin" ]]; then
+    echo "Downloading cmake..."
+    wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \
+        -O cmake.tar.gz
+    tar -xzf cmake.tar.gz
+    rm cmake.tar.gz
+    rm -rf ./cmake_build
+    mv ./cmake-3.10.2 ./cmake_build
+    pushd cmake_build
+    ./bootstrap
+    make
+    popd
+fi
+CMAKE="$(readlink -f cmake_build/bin/cmake)"
+
+# Download rpclib
+if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
+    echo "*********************************************************************************************"
+    echo "Downloading rpclib..."
+    echo "*********************************************************************************************"
+
+    wget  https://github.com/rpclib/rpclib/archive/v2.2.1.zip
+
+    # remove previous versions
+    rm -rf "external/rpclib"
+
+    mkdir -p "external/rpclib"
+    unzip v2.2.1.zip -d external/rpclib
+    rm v2.2.1.zip
 fi
 
 # Download high-polycount SUV model
@@ -102,7 +129,7 @@ mkdir -p llvm-build
 pushd llvm-build >/dev/null
 
 
-cmake -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
+"$CMAKE" -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
       -LIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF -DLIBCXX_INSTALL_EXPERIMENTAL_LIBRARY=OFF \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=./output \
             ../llvm-source-39
