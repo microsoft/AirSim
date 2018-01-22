@@ -141,7 +141,7 @@ We want to be able to run *same code* that runs in simulation as on real vehicle
 
 Generally speaking, APIs therefore shouldn't allow you to do something that cannot be done on real vehicle (for example, getting the ground truth). But, of course, simulator has much more information and it would be useful in applications that may not care about running things on real vehicle. For this reason, we clearly delineate between sim-only APIs by attaching `sim` prefix and we recommend that you don't use these APIs if you do care about real vehicle deployment.
 
-The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as PX4 using exact same code and flight controller protocol. The code you write for testing in the simulator remains unchanged. See [AirLib on custom drones](/custom_drone.md).
+The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as PX4 using exact same code and flight controller protocol. The code you write for testing in the simulator remains unchanged. See [AirLib on custom drones](custom_drone.md).
 
 ## Adding New APIs to AirSim
 Adding new APIs requires modifying the source code. Much of the changes are mechanical and purely required for various levels of abstractions that AirSim supports. [This commit](https://github.com/Microsoft/AirSim/commit/f0e83c29e7685e1021185e3c95bfdaffb6cb85dc) demonstrates how to add a simple API `simPrintLogMessage` that prints message in simulator window.

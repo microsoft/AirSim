@@ -229,9 +229,6 @@ print(np.unique(img_rgba[:,:,2], return_counts=True)) #blue
 
 A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/segmentation.py).
 
-### Infrared
-Currently this is just a map from object ID to grey scale 0-255. So any mesh with object ID 42 shows up with color (42, 42, 42). Please see [segmentation section](#segmentation) for more details on how to set object IDs. Typically noise setting can be applied for this image type to get slightly more realistic effect. We are still working on adding other infrared artifacts and any contributions are welcome.
-
 #### How to Find Mesh Names?
 To get desired ground truth segmentation you will need to know names of the meshes in your Unreal environment that you are interested in. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in the World Outliner. For example, below we see the meshe names for he ground in Blocks environment in right panel in the editor:
 
@@ -250,6 +247,9 @@ At the start, AirSim assigns object ID to each mesh. To do this, it takes first 
 
 #### Getting Object ID for Mesh
 The `simGetSegmentationObjectID` API allows you get object ID for given mesh name.
+
+### Infrared
+Currently this is just a map from object ID to grey scale 0-255. So any mesh with object ID 42 shows up with color (42, 42, 42). Please see [segmentation section](#segmentation) for more details on how to set object IDs. Typically noise setting can be applied for this image type to get slightly more realistic effect. We are still working on adding other infrared artifacts and any contributions are welcome.
 
 ## Collision API
 The collision information can be obtained using `getCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.
