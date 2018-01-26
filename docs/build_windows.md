@@ -13,7 +13,38 @@ Download Epic Games Launcher from [unreal.com](https://www.unrealengine.com/down
   1. You need Visual Studio 2015 Update 3 (make sure to install VC++) or newer. Other versions haven't been tested.
   2. Start VS2015 x64 Native Tools Command Prompt. Create a folder for repo and run `git clone https://github.com/Microsoft/AirSim.git`.
   3. Install [cmake](https://cmake.org/download/) which is used to build the rpclib submodule.
-  4. Run `build.cmd` from the command line. This will create ready to use plugin bits in `Unreal\Plugins` folder that can be dropped in to any Unreal projects.
+  4. Open build.cmd in Notepad++ or any other editor and comment the block which calls check_cmake.bat. If you do not do this, you will get the cmake error despite you having the cmake properly installed and properly set.
+  
+  Find the following block of code and comment it by prefixing every line with REM
+  
+   //---------- Check cmake version ----------
+ CALL check_cmake.bat
+ if ERRORLEVEL 1 (
+ CALL check_cmake.bat
+  if ERRORLEVEL 1 (
+   echo(
+    echo ERROR: cmake was not installed correctly.
+    goto :buildfailed
+  )
+ )
+ 
+ After commenting , the block will look like this:
+ 
+ REM //---------- Check cmake version ----------
+REM CALL check_cmake.bat
+REM if ERRORLEVEL 1 (
+REM  CALL check_cmake.bat
+REM  if ERRORLEVEL 1 (
+REM    echo(
+REM    echo ERROR: cmake was not installed correctly.
+REM    goto :buildfailed
+REM  )
+REM )
+
+Now , you are ready to go. build.cmd will find cmake when you run it from Visual Studio command prompt.
+To open Visual Studio command prompt , search vs2015 and you will get the developer command prompt.
+  
+  5. Run `build.cmd` from the command line of Visual Studio 2015 command prompt . This will create ready to use plugin bits in `Unreal\Plugins` folder that can be dropped in to any Unreal projects.
 
 ## Setup Remote Control
 
