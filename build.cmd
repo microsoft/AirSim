@@ -138,29 +138,13 @@ if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Sou
 robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp *. /njh /njs /ndl /np
 
 REM //---------- done building ----------
-goto :eof
+exit /b 0
 
 :buildfailed
 chdir /d %ROOT_DIR% 
 echo(
 echo #### Build failed - see messages above. 1>&2
-goto :eof
-
-:installcmake
-if NOT EXIST cmake-3.7.2-win64-x64 call :downloadcmake
-set PATH=%PATH%;%ROOT_DIR%\cmake-3.7.2-win64-x64\bin;
-goto :eof
-
-:downloadcmake
-echo CMake was not found, so we are installing it for you... 
-%ROOT_DIR%\tools\httpget "https://cmake.org/files/v3.7/cmake-3.7.2-win64-x64.zip"
-if ERRORLEVEL 1 goto :cmakefailed
-echo Decompressing cmake-3.7.2-win64-x64.zip...
-%ROOT_DIR%\tools\unzip "cmake-3.7.2-win64-x64.zip"
-if ERRORLEVEL 1 goto :cmakefailed
-del cmake-3.7.2-win64-x64.zip
-goto :eof
-
-:cmakefailed
-echo CMake install failed, please install cmake manually from https://cmake.org/ 1>&2
 exit /b 1
+
+
+

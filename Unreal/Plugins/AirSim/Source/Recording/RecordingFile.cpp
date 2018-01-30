@@ -7,9 +7,9 @@
 #include "common/common_utils/FileSystem.hpp"
 
 
-RecordingFile::RecordingFile(std::vector <std::string> columns)
+RecordingFile::RecordingFile(const std::vector <std::string>& columns)
 {
-    this->columns = columns;
+    this->columns_ = columns;
 }
 void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehiclePawnWrapper* wrapper)
 {   bool save_success = false;
@@ -57,7 +57,7 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
     }
 }
 
-void RecordingFile::appendColumnHeader(std::vector <std::string> columns)
+void RecordingFile::appendColumnHeader(const std::vector<std::string>& columns)
 {
     std::string line;
     for (int i = 0; i < columns.size()-1; i++) 
@@ -76,7 +76,7 @@ void RecordingFile::createFile(const std::string& file_path)
 
         IPlatformFile& platform_file = FPlatformFileManager::Get().GetPlatformFile();
         log_file_handle_ = platform_file.OpenWrite(*FString(file_path.c_str()));
-        appendColumnHeader(this->columns);
+        appendColumnHeader(this->columns_);
     }
     catch(std::exception& ex) {
         UAirBlueprintLib::LogMessageString(std::string("createFile Failed for ") + file_path, ex.what(), LogDebugLevel::Failure);        

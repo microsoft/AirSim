@@ -10,11 +10,11 @@
 
 class RecordingFile {
 public:
-    RecordingFile(std::vector <std::string> columns);
+    RecordingFile(const std::vector <std::string>& columns);
     ~RecordingFile();
 
     void appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehiclePawnWrapper* wrapper);
-    void appendColumnHeader(std::vector <std::string> columns);
+    void appendColumnHeader(const std::vector <std::string>& columns);
     void startRecording();
     void stopRecording(bool ignore_if_stopped);
     bool isRecording();
@@ -33,5 +33,5 @@ private:
     std::string image_path_;
     bool is_recording_ = false;
     IFileHandle* log_file_handle_ = nullptr;
-    std::vector <std::string> columns;
+    std::vector <std::string> columns_;
 };

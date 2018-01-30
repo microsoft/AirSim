@@ -4,6 +4,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include <string>
 #include <exception>
+#include "Materials/MaterialInstanceDynamic.h"
 #include "AirBlueprintLib.h"
 #include "ImageUtils.h"
 
