@@ -109,7 +109,7 @@ std::string FileSystem::getExecutableFolder() {
         HRESULT hr = GetLastError();
         throw std::invalid_argument(Utils::stringf("Error getting executable folder - hModule is null. Last error = %d", hr));
     }
-#elif __APPLE__
+#elif defined(__APPLE__)
     char szPath[8192];
     uint32_t size = sizeof(szPath);
 
