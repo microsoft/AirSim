@@ -32,6 +32,10 @@
 #include <errno.h>
 #endif
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 using namespace common_utils;
 
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
@@ -105,6 +109,15 @@ std::string FileSystem::getExecutableFolder() {
         HRESULT hr = GetLastError();
         throw std::invalid_argument(Utils::stringf("Error getting executable folder - hModule is null. Last error = %d", hr));
     }
+#elif defined(__APPLE__)
+    char szPath[8192];
+    uint32_t size = sizeof(szPath);
+
+    if (_NSGetExecutablePath(szPath, &size) != 0) {
+        throw std::invalid_argument("Error getting executable folder, path is too long");
+    }
+
+    path = std::string(szPath);
 #else
     char szPath[8192];
     readlink("/proc/self/exe", szPath, sizeof(szPath));
