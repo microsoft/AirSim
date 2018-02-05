@@ -10,6 +10,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
+#include "Runtime/Landscape/Classes/LandscapeComponent.h"
 #include "UObjectIterator.h"
 //#include "Runtime/Foliage/Public/FoliageType.h"
 #include "Kismet/KismetStringLibrary.h"
@@ -176,6 +177,15 @@ void UAirBlueprintLib::SetObjectStencilID(ALandscapeProxy* mesh, int object_id)
 {
     mesh->CustomDepthStencilValue = object_id;
     mesh->bRenderCustomDepth = true;
+
+    // Explicitly set the custom depth state on the components so the
+    // render state is marked dirty and the update actually takes effect
+    // immediately.
+    for (ULandscapeComponent* comp : mesh->LandscapeComponents)
+    {
+        comp->SetCustomDepthStencilValue(object_id);
+        comp->SetRenderCustomDepth(true);
+    }
 }
 
 template<class T>
