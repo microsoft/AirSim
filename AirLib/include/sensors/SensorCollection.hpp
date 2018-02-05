@@ -18,7 +18,8 @@ public: //types
         Barometer = 1,
         Imu = 2,
         Gps = 3,
-        Magnetometer = 4
+	Magnetometer = 4,
+	Distance = 5
     };
     typedef SensorBase* SensorBasePtr;
 public:

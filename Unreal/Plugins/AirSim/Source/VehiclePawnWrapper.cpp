@@ -8,7 +8,6 @@
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
 
-
 VehiclePawnWrapper::VehiclePawnWrapper()
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
@@ -204,6 +203,11 @@ const VehiclePawnWrapper::CollisionInfo& VehiclePawnWrapper::getCollisionInfo() 
     return state_.collision_info;
 }
 
+const real_T VehiclePawnWrapper::getDistance() const
+{
+    return distance_;
+}
+
 FVector VehiclePawnWrapper::getPosition() const
 {
     return pawn_->GetActorLocation(); // - state_.mesh_origin
@@ -302,6 +306,20 @@ void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collision)
         state_.last_position = position;
     }
 
+    //update ray tracing
+    FVector start = getPosition();
+    FVector end = start - (pawn_->GetActorUpVector()) * 4000;
+    FHitResult dist_hit = FHitResult(ForceInit);
+
+    bool is_hit = UAirBlueprintLib::GetObstacle(pawn_, start, end, dist_hit);
+    distance_ = is_hit? dist_hit.Distance : 4000;
+
+    FString hit_name = FString("None");
+    if (dist_hit.GetActor())
+        hit_name=dist_hit.GetActor()->GetName();
+
+	float range_m = distance_*0.01;
+    UAirBlueprintLib::LogMessage(FString("Distance to "), hit_name+FString(": ")+FString::SanitizeFloat(range_m), LogDebugLevel::Informational);
 }
 
 void VehiclePawnWrapper::setDebugPose(const Pose& debug_pose)
