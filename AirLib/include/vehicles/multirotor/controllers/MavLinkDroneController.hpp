@@ -30,6 +30,7 @@
 #include "sensors/imu/ImuBase.hpp"
 #include "sensors/gps/GpsBase.hpp"
 #include "sensors/magnetometer/MagnetometerBase.hpp"
+#include "sensors/distance/DistanceBase.hpp"
 
 namespace msr { namespace airlib {
 
@@ -200,6 +201,7 @@ public:
     mavlinkcom::MavLinkCommandLong CommandLongMessage;
 
     mavlinkcom::MavLinkHilSensor last_sensor_message_;
+    mavlinkcom::MavLinkDistanceSensor last_distance_message_;
     mavlinkcom::MavLinkHilGps last_gps_message_;
 
     std::mutex mocap_pose_mutex_, heartbeat_mutex_, set_mode_mutex_, status_text_mutex_, hil_controls_mutex_, last_message_mutex_;
@@ -517,6 +519,12 @@ public:
         return last_sensor_message_;
     }
 
+    mavlinkcom::MavLinkDistanceSensor getLastDistanceMessage()
+    {
+	std::lock_guard<std::mutex> guard(last_message_mutex_);
+	return last_distance_message_;
+    }
+
     mavlinkcom::MavLinkHilGps getLastGpsMessage()
     {
         std::lock_guard<std::mutex> guard(last_message_mutex_);
@@ -650,6 +658,31 @@ public:
         last_sensor_message_ = hil_sensor;
     }
 
+    void sendDistanceSensor(float min_distance, float max_distance, float current_distance, float sensor_type, float sensor_id, float orientation)
+    {
+
+	if (!is_simulation_mode_)
+	    throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
+
+	mavlinkcom::MavLinkDistanceSensor distance_sensor;
+	distance_sensor.time_boot_ms = static_cast<uint32_t>(Utils::getTimeSinceEpochNanos() / 1000000.0);
+
+	distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
+	distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
+	distance_sensor.current_distance = static_cast<uint16_t>(current_distance);
+	distance_sensor.type = static_cast<uint8_t>(sensor_type);
+	distance_sensor.id = static_cast<uint8_t>(sensor_id);
+	distance_sensor.orientation = static_cast<uint8_t>(orientation);
+	//TODO: use covariance parameter?
+
+	if (hil_node_ != nullptr) {
+	    hil_node_->sendMessage(distance_sensor);
+	}
+
+	std::lock_guard<std::mutex> guard(last_message_mutex_);
+	last_distance_message_ = distance_sensor;
+    }
+
     void sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog,
         float eph, float epv, int fix_type, unsigned int satellites_visible)
     {
@@ -731,6 +764,10 @@ public:
     {
         return static_cast<const BarometerBase*>(sensors_->getByType(SensorCollection::SensorType::Barometer));
     }
+    const DistanceBase* getDistance()
+    {
+	return static_cast<const DistanceBase*>(sensors_->getByType(SensorCollection::SensorType::Distance));
+    }
     const GpsBase* getGps()
     {
         return static_cast<const GpsBase*>(sensors_->getByType(SensorCollection::SensorType::Gps));
@@ -750,6 +787,14 @@ public:
             imu_output.angular_velocity,
             mag_output.magnetic_field_body,
             baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
+
+	const auto& distance_output = getDistance()->getOutput();
+	sendDistanceSensor(distance_output.min_distance,
+	    distance_output.max_distance,
+	    distance_output.distance,
+	    distance_output.sensor_type,
+	    distance_output.sensor_id,
+	    distance_output.orientation);
 
         const auto gps = getGps();
         if (gps != nullptr) {

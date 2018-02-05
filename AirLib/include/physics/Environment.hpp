@@ -78,6 +78,15 @@ public:
         return current_;
     }
 
+    void setDistance(const real_T distance)
+    {
+	distance_ = distance;
+    }
+    real_T getDistance() const
+    {
+        return distance_;
+    }
+
     //*** Start: UpdatableState implementation ***//
     virtual void reset()
     {
@@ -107,6 +116,7 @@ private:
 private:
     State initial_, current_;
     EarthUtils::HomeGeoPoint home_geo_point_;
+    real_T distance_;
 };
 
 }} //namespace
