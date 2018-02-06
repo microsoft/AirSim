@@ -162,6 +162,7 @@ public:
         PhysicsBody::setCollisionInfo(collision_info);
         getController()->setCollisionInfo(collision_info);
     }
+
     virtual void setDistance(const real_T distance) override
     {
         PhysicsBody::setDistance(distance);

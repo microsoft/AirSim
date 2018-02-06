@@ -521,8 +521,8 @@ public:
 
     mavlinkcom::MavLinkDistanceSensor getLastDistanceMessage()
     {
-	std::lock_guard<std::mutex> guard(last_message_mutex_);
-	return last_distance_message_;
+        std::lock_guard<std::mutex> guard(last_message_mutex_);
+        return last_distance_message_;
     }
 
     mavlinkcom::MavLinkHilGps getLastGpsMessage()
@@ -660,27 +660,26 @@ public:
 
     void sendDistanceSensor(float min_distance, float max_distance, float current_distance, float sensor_type, float sensor_id, float orientation)
     {
+        if (!is_simulation_mode_)
+            throw std::logic_error("Attempt to send simulated distance sensor messages while not in simulation mode");
 
-	if (!is_simulation_mode_)
-	    throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
+        mavlinkcom::MavLinkDistanceSensor distance_sensor;
+        distance_sensor.time_boot_ms = static_cast<uint32_t>(Utils::getTimeSinceEpochNanos() / 1000000.0);
 
-	mavlinkcom::MavLinkDistanceSensor distance_sensor;
-	distance_sensor.time_boot_ms = static_cast<uint32_t>(Utils::getTimeSinceEpochNanos() / 1000000.0);
+        distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
+        distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
+        distance_sensor.current_distance = static_cast<uint16_t>(current_distance);
+        distance_sensor.type = static_cast<uint8_t>(sensor_type);
+        distance_sensor.id = static_cast<uint8_t>(sensor_id);
+        distance_sensor.orientation = static_cast<uint8_t>(orientation);
+        //TODO: use covariance parameter?
 
-	distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
-	distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
-	distance_sensor.current_distance = static_cast<uint16_t>(current_distance);
-	distance_sensor.type = static_cast<uint8_t>(sensor_type);
-	distance_sensor.id = static_cast<uint8_t>(sensor_id);
-	distance_sensor.orientation = static_cast<uint8_t>(orientation);
-	//TODO: use covariance parameter?
+        if (hil_node_ != nullptr) {
+            hil_node_->sendMessage(distance_sensor);
+        }
 
-	if (hil_node_ != nullptr) {
-	    hil_node_->sendMessage(distance_sensor);
-	}
-
-	std::lock_guard<std::mutex> guard(last_message_mutex_);
-	last_distance_message_ = distance_sensor;
+        std::lock_guard<std::mutex> guard(last_message_mutex_);
+        last_distance_message_ = distance_sensor;
     }
 
     void sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog,
@@ -766,7 +765,7 @@ public:
     }
     const DistanceBase* getDistance()
     {
-	return static_cast<const DistanceBase*>(sensors_->getByType(SensorCollection::SensorType::Distance));
+        return static_cast<const DistanceBase*>(sensors_->getByType(SensorCollection::SensorType::Distance));
     }
     const GpsBase* getGps()
     {
@@ -788,13 +787,13 @@ public:
             mag_output.magnetic_field_body,
             baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
 
-	const auto& distance_output = getDistance()->getOutput();
-	sendDistanceSensor(distance_output.min_distance,
-	    distance_output.max_distance,
-	    distance_output.distance,
-	    distance_output.sensor_type,
-	    distance_output.sensor_id,
-	    distance_output.orientation);
+        const auto& distance_output = getDistance()->getOutput();
+        sendDistanceSensor(distance_output.min_distance,
+            distance_output.max_distance,
+            distance_output.distance,
+            distance_output.sensor_type,
+            distance_output.sensor_id,
+            distance_output.orientation);
 
         const auto gps = getGps();
         if (gps != nullptr) {

@@ -80,7 +80,7 @@ public:
 
     void setDistance(const real_T distance)
     {
-	distance_ = distance;
+        distance_ = distance;
     }
     real_T getDistance() const
     {

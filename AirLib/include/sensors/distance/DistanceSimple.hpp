@@ -17,22 +17,21 @@ namespace msr { namespace airlib {
 class DistanceSimple  : public DistanceBase {
 public:
     DistanceSimple(const DistanceSimpleParams& params = DistanceSimpleParams())
-	: params_(params)
+    : params_(params)
     {
+        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
+        //correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
 
-	uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
-	//correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
 
-
-	//initialize frequency limiter
-	freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
-	delay_line_.initialize(params_.update_latency);
+        //initialize frequency limiter
+        freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
+        delay_line_.initialize(params_.update_latency);
     }
 
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {
-	DistanceBase::reset();
+        DistanceBase::reset();
 
         //correlated_noise_.reset();
         uncorrelated_noise_.reset();
@@ -46,18 +45,18 @@ public:
 
     virtual void update() override
     {
-	DistanceBase::update();
+        DistanceBase::update();
 
-	freq_limiter_.update();
+        freq_limiter_.update();
 
-	if (freq_limiter_.isWaitComplete()) {
-	    delay_line_.push_back(getOutputInternal());
-	}
+        if (freq_limiter_.isWaitComplete()) {
+            delay_line_.push_back(getOutputInternal());
+        }
 
-	delay_line_.update();
+        delay_line_.update();
 
-	if (freq_limiter_.isWaitComplete())
-	    setOutput(delay_line_.getOutput());
+        if (freq_limiter_.isWaitComplete())
+            setOutput(delay_line_.getOutput());
     }
     //*** End: UpdatableState implementation ***//
 
@@ -66,24 +65,24 @@ public:
 private: //methods
     Output getOutputInternal()
     {
-	Output output;
-	const GroundTruth& ground_truth = getGroundTruth();
+        Output output;
+        const GroundTruth& ground_truth = getGroundTruth();
 
-	auto distance = ground_truth.environment->getDistance();
+        auto distance = ground_truth.environment->getDistance();
 
-	//add noise in distance (about 0.2m sigma)
-	distance += uncorrelated_noise_.next();
+        //add noise in distance (about 0.2m sigma)
+        distance += uncorrelated_noise_.next();
 
-	output.distance = distance;
+        output.distance = distance;
 
-	output.min_distance = params_.min_distance;
-	output.max_distance = params_.max_distance;
-	output.sensor_type  = params_.sensor_type;
-	output.sensor_id    = params_.sensor_id;
-	output.orientation         = params_.orientation;
+        output.min_distance = params_.min_distance;
+        output.max_distance = params_.max_distance;
+        output.sensor_type  = params_.sensor_type;
+        output.sensor_id    = params_.sensor_id;
+        output.orientation  = params_.orientation;
 
 
-	return output;
+        return output;
     }
 
 private:
