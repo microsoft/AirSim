@@ -2,6 +2,7 @@
 #include "StandAlonePhysics.hpp"
 #include "StereoImageGenerator.hpp"
 #include "GaussianMarkovTest.hpp"
+#include "ImagesWithTruth.hpp"
 #include <iostream>
 #include <string>
 
@@ -68,11 +69,30 @@ void runSteroImageGenerator(int argc, const char *argv[])
         : std::string(argv[2]));
 }
 
+void runImagesWithTruth(int num_samples, std::string storage_path)
+{
+	ImagesWithTruthGenerator gen(storage_path);
+	gen.generate(num_samples);
+}
+
+void runImagesWithTruth(int argc, const char *argv[])
+{
+	runImagesWithTruth(
+		argc < 2 ? 1000 : std::stoi(argv[1]),
+		argc < 3 ? common_utils::FileSystem::combine(
+			common_utils::FileSystem::getAppDataFolder(), "truth_images")
+		: std::string(argv[2]));
+}
+
 int main(int argc, const char *argv[])
 {
     using namespace msr::airlib;
 
-    GaussianMarkovTest test;
-    test.run();
+    //GaussianMarkovTest test;
+    //test.run();
+	
+	//runSteroImageGenerator(argc, argv);
+	
+	runImagesWithTruth(argc, argv);
 }
 
