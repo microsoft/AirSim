@@ -186,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GaussianMarkovTest.hpp" />
+    <ClInclude Include="ImagesWithTruth.hpp" />
     <ClInclude Include="RandomPointPoseGenerator.hpp" />
     <ClInclude Include="StandAlonePhysics.hpp" />
     <ClInclude Include="StandAloneSensors.hpp" />

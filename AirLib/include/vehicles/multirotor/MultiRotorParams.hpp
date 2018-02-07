@@ -14,6 +14,7 @@
 #include "sensors/imu/ImuSimple.hpp"
 #include "sensors/gps/GpsSimple.hpp"
 #include "sensors/magnetometer/MagnetometerSimple.hpp"
+#include "sensors/distance/DistanceSimple.hpp"
 
 
 namespace msr { namespace airlib {
@@ -38,6 +39,7 @@ public: //types
         bool magnetometer = true;
         bool gps = true;
         bool barometer = true;
+	bool distance = true;
     };
 
     struct Params {
@@ -224,6 +226,8 @@ protected: //static utility functions for derived classes to use
             sensors.insert(createSensor<GpsSimple>(sensor_storage), SensorCollection::SensorType::Gps);
         if (enabled_sensors.barometer)
             sensors.insert(createSensor<BarometerSimple>(sensor_storage), SensorCollection::SensorType::Barometer);
+	if (enabled_sensors.distance)
+	    sensors.insert(createSensor<DistanceSimple>(sensor_storage), SensorCollection::SensorType::Distance);
     }
 
     template<typename SensorClass>
