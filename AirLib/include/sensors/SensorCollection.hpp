@@ -14,16 +14,9 @@ namespace msr { namespace airlib {
 
 class SensorCollection : UpdatableObject {
 public: //types
-    enum class SensorType : uint {
-        Barometer = 1,
-        Imu = 2,
-        Gps = 3,
-        Magnetometer = 4,
-        Distance = 5
-    };
     typedef SensorBase* SensorBasePtr;
 public:
-    void insert(SensorBasePtr sensor, SensorType type)
+    void insert(SensorBasePtr sensor, SensorBase::SensorType type)
     {
         auto type_int = static_cast<uint>(type);
         const auto& it = sensors_.find(type_int);
@@ -36,7 +29,7 @@ public:
         }
     }
 
-    const SensorBase* getByType(SensorType type, uint index = 0) const
+    const SensorBase* getByType(SensorBase::SensorType type, uint index = 0) const
     {
         auto type_int = static_cast<uint>(type);
         const auto& it = sensors_.find(type_int);
@@ -48,7 +41,7 @@ public:
         }
     }
 
-    uint size(SensorType type) const
+    uint size(SensorBase::SensorType type) const
     {
         auto type_int = static_cast<uint>(type);
         const auto& it = sensors_.find(type_int);
@@ -69,7 +62,11 @@ public:
         }
     }
 
-
+    void clear()
+    {
+        sensors_.clear();
+    }
+    
     //*** Start: UpdatableState implementation ***//
     virtual void reset() override
     {

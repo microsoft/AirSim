@@ -10,6 +10,7 @@
 #include "MagnetometerSimpleParams.hpp"
 #include "MagnetometerBase.hpp"
 #include "common/FrequencyLimiter.hpp"
+#include "common/DelayLine.hpp"
 
 
 namespace msr { namespace airlib {

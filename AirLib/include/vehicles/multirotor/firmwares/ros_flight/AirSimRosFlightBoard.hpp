@@ -53,9 +53,9 @@ public:
     //Board interface implementation --------------------------------------------------------------------------
     virtual void init() override 
     {
-        imu_ = static_cast<const ImuBase*>(sensors_->getByType(SensorCollection::SensorType::Imu));
-        baro_ = static_cast<const BarometerBase*>(sensors_->getByType(SensorCollection::SensorType::Barometer));
-        mag_ = static_cast<const MagnetometerBase*>(sensors_->getByType(SensorCollection::SensorType::Magnetometer));
+        imu_ = static_cast<const ImuBase*>(sensors_->getByType(SensorBase::SensorType::Imu));
+        baro_ = static_cast<const BarometerBase*>(sensors_->getByType(SensorBase::SensorType::Barometer));
+        mag_ = static_cast<const MagnetometerBase*>(sensors_->getByType(SensorBase::SensorType::Magnetometer));
     }
 
     virtual uint64_t micros() override 

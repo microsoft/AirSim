@@ -7,20 +7,24 @@
 #include "vehicles/multirotor/firmwares/ros_flight/RosFlightDroneController.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "common/AirSimSettings.hpp"
+#include "sensors/SensorFactory.hpp"
 
 
 namespace msr { namespace airlib {
 
 class RosFlightQuadX : public MultiRotorParams {
 public:
-    RosFlightQuadX(const AirSimSettings::VehicleSettings& vehicle_settings)
+    RosFlightQuadX(const AirSimSettings::VehicleSettings& vehicle_settings, const SensorFactory* sensor_factory)
+        : sensor_factory_(sensor_factory)
     {
         unused(vehicle_settings);
     }
 
 protected:
-    virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) override
+    virtual void setupParams() override
     {
+        auto& params = getParams();
+
         //set up arm lengths
         //dimensions are for F450 frame: http://artofcircuits.com/product/quadcopter-frame-hj450-with-power-distribution
         params.rotor_count = 4;
@@ -54,20 +58,23 @@ protected:
         params.inertia(1, 1) = 0.08f;
         params.inertia(2, 2) = 0.12f;
 
-        createStandardSensors(sensor_storage_, sensors, params.enabled_sensors);
-        createController(controller, sensors);
-
         //leave everything else to defaults
     }
 
-private:
-    void createController(unique_ptr<DroneControllerBase>& controller, SensorCollection& sensors)
+    virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) override
     {
-        controller.reset(new RosFlightDroneController(&sensors, this));
+        return sensor_factory_->createSensor(sensor_type);
+    }
+
+    virtual std::unique_ptr<DroneControllerBase> createController() override
+    {
+        return std::unique_ptr<DroneControllerBase>(new RosFlightDroneController(& getSensors(), this));
     }
 
 private:
     vector<unique_ptr<SensorBase>> sensor_storage_;
+    const SensorFactory* sensor_factory_;
+
 };
 
 }} //namespace

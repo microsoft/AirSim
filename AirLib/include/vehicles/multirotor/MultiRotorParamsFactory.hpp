@@ -15,7 +15,7 @@ namespace msr { namespace airlib {
 
 class MultiRotorParamsFactory {
 public:
-    static std::unique_ptr<MultiRotorParams> createConfig(const std::string& vehicle_name)
+    static std::unique_ptr<MultiRotorParams> createConfig(const std::string& vehicle_name, const SensorFactory* sensor_factory)
     {
         AirSimSettings::VehicleSettings vehicle_settings = 
             AirSimSettings::singleton().getVehicleSettings(vehicle_name);
@@ -23,11 +23,11 @@ public:
         std::unique_ptr<MultiRotorParams> config;
 
         if (vehicle_settings.firmware_name == "PX4") {
-            config.reset(new Px4MultiRotor(vehicle_settings));
+            config.reset(new Px4MultiRotor(vehicle_settings, sensor_factory));
         } else if (vehicle_settings.firmware_name == "RosFlight") {
-            config.reset(new RosFlightQuadX(vehicle_settings));
+            config.reset(new RosFlightQuadX(vehicle_settings, sensor_factory));
         } else if (vehicle_settings.firmware_name == "SimpleFlight") {
-            config.reset(new SimpleFlightQuadX(vehicle_settings));
+            config.reset(new SimpleFlightQuadX(vehicle_settings, sensor_factory));
         } else
             throw std::runtime_error(Utils::stringf(
                 "Cannot create vehicle config because vehicle name '%s' is not recognized", 

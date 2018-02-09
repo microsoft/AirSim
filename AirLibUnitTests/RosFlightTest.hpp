@@ -4,6 +4,7 @@
 
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 #include "TestBase.hpp"
+#include "sensors/SensorFactory.hpp"
 
 namespace msr { namespace airlib {
 
@@ -11,7 +12,8 @@ class RosFlightTest : public TestBase {
 public:
     virtual void run() override
     {
-        auto rosFlight = MultiRotorParamsFactory::createConfig("RosFlight");
+        SensorFactory sensor_factory;
+        auto rosFlight = MultiRotorParamsFactory::createConfig("RosFlight", &sensor_factory);
         
         DroneControllerBase* controller = rosFlight->getController();
         testAssert(controller != nullptr, "Couldn't get controller");

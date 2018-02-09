@@ -6,6 +6,7 @@
 #include <memory>
 #include "Logging/MessageLog.h"
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
+#include "UnrealSensors/UnrealSensorFactory.h"
 
 
 ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
@@ -183,14 +184,15 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
-    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName());
+    UnrealSensorFactory sensor_factory(wrapper->getPawn());
+    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName(), & sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 
     std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
-
-    wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
-        vehicle_params_.back()->getParams().api_server_port + vehicle_params_.size() - 1, manual_pose_controller);
+        wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
+            vehicle_params_.back()->getParams().api_server_port + vehicle_params_.size() - 1, manual_pose_controller
+    );
 
     if (vehicle->getPhysicsBody() != nullptr)
         wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));

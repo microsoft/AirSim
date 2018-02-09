@@ -13,12 +13,10 @@ namespace msr { namespace airlib {
 class DistanceBase  : public SensorBase {
 public: //types
     struct Output { //same fields as ROS message
-    real_T min_distance;//cm
-    real_T max_distance;//cm
-    real_T distance;    //meters
-    real_T sensor_type;
-    real_T sensor_id;
-    real_T orientation;
+        real_T distance;    //meters
+        real_T min_distance;//m
+        real_T max_distance;//m
+        Pose relative_pose;
     };
 
 

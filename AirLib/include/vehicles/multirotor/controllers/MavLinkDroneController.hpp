@@ -753,23 +753,23 @@ public:
 
     const ImuBase* getImu()
     {
-        return static_cast<const ImuBase*>(sensors_->getByType(SensorCollection::SensorType::Imu));
+        return static_cast<const ImuBase*>(sensors_->getByType(SensorBase::SensorType::Imu));
     }
     const MagnetometerBase* getMagnetometer()
     {
-        return static_cast<const MagnetometerBase*>(sensors_->getByType(SensorCollection::SensorType::Magnetometer));
+        return static_cast<const MagnetometerBase*>(sensors_->getByType(SensorBase::SensorType::Magnetometer));
     }
     const BarometerBase* getBarometer()
     {
-        return static_cast<const BarometerBase*>(sensors_->getByType(SensorCollection::SensorType::Barometer));
+        return static_cast<const BarometerBase*>(sensors_->getByType(SensorBase::SensorType::Barometer));
     }
     const DistanceBase* getDistance()
     {
-        return static_cast<const DistanceBase*>(sensors_->getByType(SensorCollection::SensorType::Distance));
+        return static_cast<const DistanceBase*>(sensors_->getByType(SensorBase::SensorType::Distance));
     }
     const GpsBase* getGps()
     {
-        return static_cast<const GpsBase*>(sensors_->getByType(SensorCollection::SensorType::Gps));
+        return static_cast<const GpsBase*>(sensors_->getByType(SensorBase::SensorType::Gps));
     }
 
     void update()
@@ -788,12 +788,15 @@ public:
             baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
 
         const auto& distance_output = getDistance()->getOutput();
-        sendDistanceSensor(distance_output.min_distance,
-            distance_output.max_distance,
+        float pitch, roll, yaw;
+        VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
+
+        sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
+            distance_output.max_distance / 100, //m -> cm
             distance_output.distance,
-            distance_output.sensor_type,
-            distance_output.sensor_id,
-            distance_output.orientation);
+            0, //sensor type: //TODO: allow changing in settings?
+            77, //sensor id, //TODO: should this be something real?
+            pitch); //TODO: convert from radians to degrees?
 
         const auto gps = getGps();
         if (gps != nullptr) {

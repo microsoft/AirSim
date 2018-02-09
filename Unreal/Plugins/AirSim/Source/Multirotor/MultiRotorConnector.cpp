@@ -153,9 +153,7 @@ void MultiRotorConnector::updateRenderedState(float dt)
     //move collision info from rendering engine to vehicle
     const CollisionInfo& collision_info = vehicle_pawn_wrapper_->getCollisionInfo();
     vehicle_.setCollisionInfo(collision_info);
-    //move distance reading from rendering engine to vehicle
-    const real_T distance = vehicle_pawn_wrapper_->getDistance();
-    vehicle_.setDistance(distance);
+
 
     //update ground level
     if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_wrapper_->getPawn()) {

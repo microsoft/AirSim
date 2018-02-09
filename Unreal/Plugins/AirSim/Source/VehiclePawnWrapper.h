@@ -75,7 +75,6 @@ public: //interface
 
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisionInfo() const;
-    const real_T getDistance() const;
 
     void setLogLine(std::string line);
     std::string getLogLine();
@@ -115,7 +114,6 @@ private: //vars
     const msr::airlib::Kinematics::State* kinematics_;
     std::string log_line_;
     WrapperConfig config_;
-    real_T distance_;
 
     struct State {
         FVector start_location;

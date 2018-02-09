@@ -62,6 +62,10 @@ public:
         {
             return VectorMathT::subtract(lhs, rhs);
         }
+        friend Pose operator+(const Pose& lhs, const Pose& rhs)
+        {
+            return VectorMathT::add(lhs, rhs);
+        }
         friend bool operator==(const Pose& lhs, const Pose& rhs)
         {
             return lhs.position == rhs.position && lhs.orientation.coeffs() == rhs.orientation.coeffs();
@@ -293,6 +297,7 @@ public:
         QuaternionT net_q(dq_unit.coeffs() * dt + orientation.coeffs());
         return net_q.normalized();
     }
+    //all angles in radians
     static QuaternionT toQuaternion(RealT pitch, RealT roll, RealT yaw)
     {
         QuaternionT q;
@@ -310,7 +315,7 @@ public:
         return q;
     }
 
-    //from http://osrf-distributions.s3.amazonaws.com/gazebo/api/dev/Pose_8hh_source.html
+    //from https://github.com/arpg/Gazebo/blob/master/gazebo/math/Pose.cc
     static Vector3T coordPositionSubtract(const Pose& lhs, const Pose& rhs)
     {
         QuaternionT tmp(0,
@@ -329,11 +334,28 @@ public:
         result.normalize();
         return result;
     }
+    static Vector3T coordPositionAdd(const Pose& lhs, const Pose& rhs)
+    {
+        QuaternionT tmp(0, lhs.position.x(), lhs.position.y(), lhs.position.z());
+
+        tmp = rhs.orientation * (tmp * rhs.orientation.inverse());
+
+        return tmp.vec() + rhs.position;
+    }
+    static QuaternionT coordOrientationAdd(const QuaternionT& lhs, const QuaternionT& rhs)
+    {
+        QuaternionT result(rhs * lhs);
+        result.normalize();
+        return result;
+    }
     static Pose subtract(const Pose& lhs, const Pose& rhs)
     {
         return Pose(coordPositionSubtract(lhs, rhs), coordOrientationSubtract(lhs.orientation, rhs.orientation));
     }
-
+    static Pose add(const Pose& lhs, const Pose& rhs)
+    {
+        return Pose(coordPositionAdd(lhs, rhs), coordOrientationAdd(lhs.orientation, rhs.orientation));
+    }
 
     static std::string toString(const Vector3T& vect, const char* prefix = nullptr)
     {
@@ -398,6 +420,24 @@ public:
 
     static QuaternionT quaternionFromYaw(RealT yaw) {
         return QuaternionT(Eigen::AngleAxisd(yaw, Vector3T::UnitZ()));
+    }
+
+    static const Vector3T front() 
+    {
+        static Vector3T v(1, 0, 0);
+        return v;
+    }
+
+    static const Vector3T down() 
+    {
+        static Vector3T v(0, 0, 1);
+        return v;
+    }
+
+    static const Vector3T right() 
+    {
+        static Vector3T v(0, 1, 0);
+        return v;
     }
 };
 typedef VectorMathT<Eigen::Vector3d, Eigen::Quaternion<double,Eigen::DontAlign>, double> VectorMathd;

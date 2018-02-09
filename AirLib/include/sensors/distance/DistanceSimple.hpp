@@ -62,25 +62,28 @@ public:
 
     virtual ~DistanceSimple() = default;
 
+protected:
+    virtual real_T getRayLength(const Pose& pose) = 0;
+    const DistanceSimpleParams& getParams()
+    {
+        return params_;
+    }
+
 private: //methods
     Output getOutputInternal()
     {
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
 
-        auto distance = ground_truth.environment->getDistance();
+        auto distance = getRayLength(ground_truth.kinematics->pose + params_.relative_pose);
 
         //add noise in distance (about 0.2m sigma)
         distance += uncorrelated_noise_.next();
 
         output.distance = distance;
-
         output.min_distance = params_.min_distance;
         output.max_distance = params_.max_distance;
-        output.sensor_type  = params_.sensor_type;
-        output.sensor_id    = params_.sensor_id;
-        output.orientation  = params_.orientation;
-
+        output.relative_pose = params_.relative_pose;
 
         return output;
     }

@@ -55,10 +55,7 @@ public: //interface
     {
         collision_info_ = collision_info;
     }
-    virtual void setDistance(const real_T distance)
-    {
-        environment_->setDistance(distance);
-    }
+
 
 public: //methods
     //constructors

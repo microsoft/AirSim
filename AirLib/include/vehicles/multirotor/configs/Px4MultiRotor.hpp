@@ -6,21 +6,25 @@
 
 #include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
 #include "common/AirSimSettings.hpp"
+#include "sensors/SensorFactory.hpp"
 
 
 namespace msr { namespace airlib {
 
 class Px4MultiRotor : public MultiRotorParams {
 public:
-    Px4MultiRotor(const AirSimSettings::VehicleSettings& vehicle_settings)
+    Px4MultiRotor(const AirSimSettings::VehicleSettings& vehicle_settings, const SensorFactory* sensor_factory)
+        : sensor_factory_(sensor_factory)
     {
         connection_info_ = getConnectionInfo(vehicle_settings);
     }
 
     virtual ~Px4MultiRotor() = default;
 
-    virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) override
+    virtual void setupParams() override
     {
+        auto& params = getParams();
+
         if (connection_info_.model == "Blacksheep") {
             setupFrameBlacksheep(params);
         }
@@ -35,12 +39,23 @@ public:
         }
         else //Generic
             setupFrameGenericQuad(params);
-
-        //create sensors
-        createStandardSensors(sensor_storage_, sensors, params.enabled_sensors);
-        //create MavLink controller for PX4
-        createController(controller, sensors);
     }
+
+protected:
+    virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) override
+    {
+        return sensor_factory_->createSensor(sensor_type);
+    }
+
+    virtual std::unique_ptr<DroneControllerBase> createController() override
+    {
+        unique_ptr<DroneControllerBase> controller(new MavLinkDroneController());
+        auto mav_controller = static_cast<MavLinkDroneController*>(controller.get());
+        mav_controller->initialize(connection_info_, & getSensors(), true);
+
+        return controller;
+    }
+
 
 private:
     void setupFrameGenericQuad(Params& params)
@@ -269,16 +284,11 @@ private:
         return connection_info;
     }
 
-    void createController(unique_ptr<DroneControllerBase>& controller, SensorCollection& sensors)
-    {
-        controller.reset(new MavLinkDroneController());
-        auto mav_controller = static_cast<MavLinkDroneController*>(controller.get());
-        mav_controller->initialize(connection_info_, &sensors, true);
-    }
 
 private:
-    vector<unique_ptr<SensorBase>> sensor_storage_;
     MavLinkDroneController::ConnectionInfo connection_info_;
+    const SensorFactory* sensor_factory_;
+
 };
 
 }} //namespace

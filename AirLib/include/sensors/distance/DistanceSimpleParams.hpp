@@ -11,11 +11,9 @@ namespace msr { namespace airlib {
 
 
 struct DistanceSimpleParams {
-    real_T min_distance = 20;
-    real_T max_distance = 4000;
-    real_T sensor_type  = 0;   //TODO: allow changing in settings?
-    real_T sensor_id    = 77;  //TODO: should this be something real?
-    real_T orientation  = 25;  //Pitch270 (downwards) as defined in MavLinkMessages
+    real_T min_distance = 20.0f / 100; //m
+    real_T max_distance = 4000.0f / 100; //m
+    Pose relative_pose;
 
 /*
     Ref: A Stochastic Approach to Noise Modeling for Barometric Altimeters

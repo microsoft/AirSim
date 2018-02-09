@@ -9,12 +9,6 @@
 #include "sensors/SensorCollection.hpp"
 #include "controllers/DroneControllerBase.hpp"
 
-//sensors
-#include "sensors/barometer/BarometerSimple.hpp"
-#include "sensors/imu/ImuSimple.hpp"
-#include "sensors/gps/GpsSimple.hpp"
-#include "sensors/magnetometer/MagnetometerSimple.hpp"
-#include "sensors/distance/DistanceSimple.hpp"
 
 
 namespace msr { namespace airlib {
@@ -66,37 +60,71 @@ public: //types
     };
 
 public: //interface
-    void initialize()
+    virtual void initialize()
     {
-        setup(params_, sensors_, controller_);
+        sensor_storage_.clear();
+        sensors_.clear();
+
+        setupParams();
+
+        addEnabledSensors(params_.enabled_sensors);
+        controller_ = createController();
     }
 
     const Params& getParams() const
     {
         return params_;
     }
-
     Params& getParams()
     {
         return params_;
     }
-
     SensorCollection& getSensors()
     {
         return sensors_;
     }
-
-    //return pointer because we might have derived class
+    const SensorCollection& getSensors() const
+    {
+        return sensors_;
+    }
     DroneControllerBase* getController()
     {
         return controller_.get();
     }
+    const DroneControllerBase* getController() const
+    {
+        return controller_.get();
+    }
+
+    void addEnabledSensors(const EnabledSensors& enabled_sensors)
+    {
+        if (enabled_sensors.imu)
+            addSensor(SensorBase::SensorType::Imu);
+        if (enabled_sensors.magnetometer)
+            addSensor(SensorBase::SensorType::Magnetometer);
+        if (enabled_sensors.gps)
+            addSensor(SensorBase::SensorType::Gps);
+        if (enabled_sensors.barometer)
+            addSensor(SensorBase::SensorType::Barometer);
+        if (enabled_sensors.distance)
+            addSensor(SensorBase::SensorType::Distance);
+    }
+
+    SensorBase* addSensor(SensorBase::SensorType sensor_type)
+    {
+        sensor_storage_.emplace_back(createSensor(sensor_type));
+        auto sensor = sensor_storage_.back().get();
+        sensors_.insert(sensor, sensor_type);
+        return sensor;
+    }
+
 
     virtual ~MultiRotorParams() = default;
 
 protected: //must override by derived class
-    //this method must clean up any previous initializations
-    virtual void setup(Params& params, SensorCollection& sensors, unique_ptr<DroneControllerBase>& controller) = 0;
+    virtual void setupParams() = 0;
+    virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) = 0;
+    virtual std::unique_ptr<DroneControllerBase> createController() = 0;
 
 protected: //static utility functions for derived classes to use
 
@@ -215,31 +243,10 @@ protected: //static utility functions for derived classes to use
         }
     }
 
-    static void createStandardSensors(vector<unique_ptr<SensorBase>>& sensor_storage, SensorCollection& sensors, const EnabledSensors& enabled_sensors)
-    {
-        sensor_storage.clear();
-        if (enabled_sensors.imu)
-            sensors.insert(createSensor<ImuSimple>(sensor_storage), SensorCollection::SensorType::Imu);
-        if (enabled_sensors.magnetometer)
-            sensors.insert(createSensor<MagnetometerSimple>(sensor_storage), SensorCollection::SensorType::Magnetometer);
-        if (enabled_sensors.gps)
-            sensors.insert(createSensor<GpsSimple>(sensor_storage), SensorCollection::SensorType::Gps);
-        if (enabled_sensors.barometer)
-            sensors.insert(createSensor<BarometerSimple>(sensor_storage), SensorCollection::SensorType::Barometer);
-        if (enabled_sensors.distance)
-            sensors.insert(createSensor<DistanceSimple>(sensor_storage), SensorCollection::SensorType::Distance);
-    }
-
-    template<typename SensorClass>
-    static SensorBase* createSensor(vector<unique_ptr<SensorBase>>& sensor_storage)
-    {
-        sensor_storage.emplace_back(unique_ptr<SensorClass>(new SensorClass()));
-        return sensor_storage.back().get();
-    }
-
 private:
     Params params_;
-    SensorCollection sensors_;
+    SensorCollection sensors_; //maintains sensor type indexed collection of sensors
+    vector<unique_ptr<SensorBase>> sensor_storage_; //RAII for created sensors
     std::unique_ptr<DroneControllerBase> controller_;
 };
 
