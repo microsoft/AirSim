@@ -19,7 +19,7 @@ robocopy /MIR "%AirSimPath%\Unreal\Plugins\AirSim" Plugins\AirSim /XD temp *. /n
 robocopy /MIR "%AirSimPath%\AirLib" Plugins\AirSim\Source\AirLib /XD temp *. /njh /njs /ndl /np
 robocopy  /njh /njs /ndl /np "%AirSimPath%\Unreal\Environments\Blocks" "." *.bat 
 robocopy  /njh /njs /ndl /np "%AirSimPath%\Unreal\Environments\Blocks" "." *.sh  
-robocopy /njh /njs /ndl /np "%AirSimPath%" "." *.gitignore
+rem robocopy /njh /njs /ndl /np "%AirSimPath%" "." *.gitignore
 
 cmd /c clean.bat
 cmd /c GenerateProjectFiles.bat

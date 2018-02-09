@@ -97,10 +97,12 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightCommLink.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightEstimator.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightCommon.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\AdaptiveController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\AngleLevelController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\AngleRateController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\CascadeController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\ConstantOutputController.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\interfaces\IPidIntegrator.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\OffboardApi.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\Firmware.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\interfaces\CommonStructs.hpp" />
@@ -123,6 +125,8 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\PidController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\PositionController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\RemoteControl.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\RungKuttaPidIntegrator.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\StdPidIntegrator.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\VelocityController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightDroneController.hpp" />
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />

@@ -31,7 +31,7 @@ public:
         state_estimator_ = state_estimator;
 
         pid_.reset(new PidController<float>(clock_,
-            PidController<float>::Config(params_->angle_rate_pid.p[axis], 0, 0)));
+           PidConfig<float>(params_->angle_rate_pid.p[axis], 0, 0)));
     }
 
     virtual void reset() override

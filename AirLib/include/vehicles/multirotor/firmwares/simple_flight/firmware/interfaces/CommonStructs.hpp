@@ -306,4 +306,31 @@ public:
     }
 };
 
+//config params for PID controller
+template<class T>
+struct PidConfig {
+    PidConfig(float kp_val = 0.01f, float ki_val = 0.0f, float kd_val = 0.0f,
+        T min_output_val = -1, T max_output_val = 1,
+        float time_scale_val = 1.0f / 1000,
+        bool enabled_val = true, T output_bias_val = T(), float iterm_discount_val = 1)
+        : kp(kp_val), ki(ki_val), kd(kd_val),
+        time_scale(time_scale_val),
+        min_output(min_output_val), max_output(max_output_val),
+        enabled(enabled_val), output_bias(output_bias_val), iterm_discount(iterm_discount_val)
+    {}
+
+    float kp, ki, kd;
+    float time_scale;
+    T min_output, max_output;
+    bool enabled;
+    T output_bias;
+    float iterm_discount;
+
+    enum class IntegratorType {
+        Standard,
+        RungKutta
+    };
+    IntegratorType integrator_type = IntegratorType::Standard;
+};
+
 } //namespace

@@ -37,7 +37,7 @@ public:
 
         //initialize level PID
         pid_.reset(new PidController<float>(clock_,
-            PidController<float>::Config(params_->angle_level_pid.p[axis], 0, 0)));
+            PidConfig<float>(params_->angle_level_pid.p[axis], 0, 0)));
 
         //initialize rate controller
         rate_controller_.reset(new AngleRateController(params_, clock_));

@@ -97,9 +97,15 @@ public:
         //float velocity = -1.0f;
     } takeoff;
 
+    enum class ControllerType {
+        Cascade,
+        Adaptive
+    };
+
     GoalMode default_goal_mode = GoalMode::getStandardAngleMode();
     VehicleStateType default_vehicle_state = VehicleStateType::Inactive;
     uint64_t api_goal_timeout = 60; //milliseconds
+    ControllerType controller_type = ControllerType::Cascade;
 };
 
 

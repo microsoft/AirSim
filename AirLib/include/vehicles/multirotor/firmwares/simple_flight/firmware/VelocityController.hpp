@@ -29,7 +29,7 @@ public:
         goal_ = goal;
         state_estimator_ = state_estimator;
 
-        PidController<float>::Config pid_config(params_->velocity_pid.p[axis],
+        PidConfig<float> pid_config(params_->velocity_pid.p[axis],
             params_->velocity_pid.i[axis], 0);
         pid_config.iterm_discount = params_->velocity_pid.iterm_discount[axis];
         pid_config.output_bias = params_->velocity_pid.output_bias[axis];
