@@ -4,6 +4,13 @@
 #include <algorithm>
 #include "interfaces/CommonStructs.hpp"
 
+const int length = 1;
+float y_vec [length] = {};
+float* y = y_vec;
+float yp_vec[length] = {};
+float* yp = yp_vec;
+float error_int = 0;
+
 namespace simple_flight {
 
 template<class T>
@@ -27,6 +34,7 @@ public:
         bool enabled;
         T output_bias;
         float iterm_discount;
+		
     };
 
     PidController(const IBoardClock* clock = nullptr, const Config& config = Config())
@@ -92,6 +100,8 @@ public:
         min_dt_ = config_.time_scale * config_.time_scale;
     }
 
+	
+
     virtual void update() override
     {
         IUpdatable::update();
@@ -100,7 +110,8 @@ public:
             return;
 
         const T error = goal_ - measured_;
-
+		error_int = error;
+		y[0] = error_int;
         float dt = clock_ == nullptr ? 1 :
             (static_cast<float>(clock_->millis()) - last_time_)
             * config_.time_scale;
@@ -108,12 +119,10 @@ public:
         float pterm = error * config_.kp;
         float dterm = 0;
         if (dt > min_dt_) {
-            //to supoort changes in ki at runtime, we accumulate iterm
-            //instead of error
-            iterm_int_ = iterm_int_ * config_.iterm_discount + dt * error * config_.ki;
+			rungeKutta(y,yp,last_time_,0.003,length);
 
             //don't let iterm grow beyond limits (integral windup)
-            clipIterm();
+            clipIterm(yp);
 
             //To eliminate "derivative kick", we assume goal was approximately
             //constant between successive calls. dE = dGoal - dInput = -dInput
@@ -122,7 +131,7 @@ public:
             last_goal_ = goal_;
         }
 
-        output_ = config_.output_bias + pterm + iterm_int_ + dterm;
+        output_ = config_.output_bias + pterm + config_.ki * yp[0] + dterm;
 
         //limit final output
         output_ = clip(output_, config_.min_output, config_.max_output);
@@ -130,15 +139,47 @@ public:
         last_time_ = clock_->millis();
     }
 
+void model(float* y, uint64_t last_time_, float* y_out)
+{
+	y_out[0] = y[0];
+}
+
+void rungeKutta(float* y, float* yp, uint64_t time, float dt,int size)
+{
+	float k1, k2, k3, k4;
+	float zero_vec[length] = { 0 };
+	float* y_temp;
+	float* y_out = zero_vec;
+	for (int n = 0; n < size; n++)
+	{
+		y_temp = y;
+		model(y_temp, time, y_out);
+		k1 = dt*y_out[n];
+
+		y_temp[n] = y[n] + k1 / 2;
+		model(y_temp, time + dt / 2, y_out);
+		k2 = dt*y_out[n];
+
+		y_temp[n] = y[n] + k2 / 2;
+		model(y_temp, time + dt / 2, y_out);
+		k3 = dt*y_out[n];
+
+		y_temp[n] = y[n] + k3;
+		model(y_temp, time + dt, y_out);
+		k4 = dt*y_out[n];
+
+		yp[n] = y[n] + k1 / 6 + k2 / 3 + k3 / 4 + k4 / 6;
+	}
+}
 private:
     static T clip(T val, T min_value, T max_value) 
     {
         return std::max(min_value, std::min(val, max_value));
     }
 
-    void clipIterm()
+    void clipIterm(float* yp)
     {
-        iterm_int_ = clip(iterm_int_, config_.min_output, config_.max_output);
+        yp[0] = clip(yp[0], config_.min_output, config_.max_output);
     }
 
 private:
@@ -154,3 +195,4 @@ private:
 
 
 } //namespace
+
