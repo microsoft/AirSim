@@ -146,18 +146,18 @@ void UAirBlueprintLib::FindAllActor(const UObject* context, TArray<AActor*>& fou
 template<typename T>
 void UAirBlueprintLib::InitializeObjectStencilID(T* mesh, bool ignore_existing)
 {
-    std::string mesh_name = GetMeshName(mesh);
-    if (mesh_name == "" || common_utils::Utils::startsWith(mesh_name, "Default_")) {
+    std::string mesh_name = common_utils::Utils::toLower(GetMeshName(mesh));
+    if (mesh_name == "" || common_utils::Utils::startsWith(mesh_name, "default_")) {
         //common_utils::Utils::DebugBreak();
         return;
     }
     FString name(mesh_name.c_str());
     int hash = 5;
-    int max_len = name.Len() - name.Len() / 4; //remove training numerical suffixes
-    if (max_len < 3)
-        max_len = name.Len();
-    for (int idx = 0; idx < max_len; ++idx) {
-        hash += UKismetStringLibrary::GetCharacterAsNumber(name, idx);
+    for (int idx = 0; idx < name.Len(); ++idx) {
+        auto char_num = UKismetStringLibrary::GetCharacterAsNumber(name, idx);
+        if (char_num < 97)
+            continue; //numerics and other punctuations
+        hash += char_num;
     }
     if (ignore_existing || mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
         SetObjectStencilID(mesh, hash % 256);
@@ -202,11 +202,11 @@ std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
     return std::string(TCHAR_TO_UTF8(*(mesh->GetName())));
 }
 
-void UAirBlueprintLib::InitializeMeshStencilIDs()
+void UAirBlueprintLib::InitializeMeshStencilIDs(bool ignore_existing)
 {
     for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
     {
-        InitializeObjectStencilID(*comp);
+        InitializeObjectStencilID(*comp, ignore_existing);
     }
     //for (TObjectIterator<UFoliageType> comp; comp; ++comp)
     //{
@@ -214,7 +214,7 @@ void UAirBlueprintLib::InitializeMeshStencilIDs()
     //}
     for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
     {
-        InitializeObjectStencilID(*comp);
+        InitializeObjectStencilID(*comp, ignore_existing);
     }
 }
 

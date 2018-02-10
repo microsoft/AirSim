@@ -118,6 +118,7 @@ public: //types
         };
 
         InitMethodType init_method = InitMethodType::CommonObjectsRandomIDs;
+        bool override_existing = false;
     };
 
 private: //fields
@@ -392,6 +393,7 @@ private:
                 //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
                 throw std::invalid_argument(std::string("SegmentationSettings init_method has invalid value in settings ") + init_method);
 
+            segmentation_settings.override_existing = json_parent.getBool("OverrideExisting", false);
         }
     }
 

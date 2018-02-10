@@ -52,7 +52,7 @@ public:
     static bool SetMeshStencilID(const std::string& mesh_name, int object_id,
         bool is_name_regex = false);
     static int GetMeshStencilID(const std::string& mesh_name);
-    static void InitializeMeshStencilIDs();
+    static void InitializeMeshStencilIDs(bool ignore_existing);
 
     static bool IsInGameThread();
     
