@@ -52,15 +52,12 @@ if ERRORLEVEL 1 goto :failed
 CALL package.bat "%OutputPath%"
 if ERRORLEVEL 1 goto :failed
 
-cd "%ROOT_DIR%"
-GOTO:EOF
-
 goto :done
 
 :failed
-echo "Error occured while packaging"
-echo "Usage: package.bat <path\to\output> <path to Engine\Build\BatchFiles>"
+echo "Error occured while building all UE projects"
 exit /b 1
 
 :done
+cd "%ROOT_DIR%"
 if "%1"=="" pause
