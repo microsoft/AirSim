@@ -33,7 +33,12 @@ void ASimModeBase::BeginPlay()
 
 void ASimModeBase::setStencilIDs()
 {
-    UAirBlueprintLib::InitializeMeshStencilIDs();
+    if (getSettings().segmentation_settings.init_method ==
+        AirSimSettings::SegmentationSettings::InitMethodType::CommonObjectsRandomIDs) {
+     
+        UAirBlueprintLib::InitializeMeshStencilIDs();
+    }
+    //else don't init
 }
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)

@@ -204,7 +204,7 @@ std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
 
 void UAirBlueprintLib::InitializeMeshStencilIDs()
 {
-    for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
     {
         InitializeObjectStencilID(*comp);
     }
@@ -241,7 +241,7 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
         name_regex.assign(mesh_name, std::regex_constants::icase);
 
     int changes = 0;
-    for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
     {
         SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }

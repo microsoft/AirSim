@@ -36,16 +36,15 @@ public: //types
     };
 
     struct RecordingSettings {
-        bool record_on_move = false;
-        float record_interval = 0.05f;
+        bool record_on_move;
+        float record_interval;
         std::vector<std::string> header_columns;
 
         std::vector<msr::airlib::ImageCaptureBase::ImageRequest> requests;
 
         RecordingSettings(bool record_on_move_val = false, float record_interval_val = 0.05f)
+            : record_on_move(record_on_move_val), record_interval(record_interval_val)
         {
-            record_on_move = record_on_move_val;
-            record_interval = record_interval_val;
         }
     };
 
@@ -113,6 +112,14 @@ public: //types
 
     };
 
+    struct SegmentationSettings {
+        enum class InitMethodType {
+            None, CommonObjectsRandomIDs
+        };
+
+        InitMethodType init_method = InitMethodType::CommonObjectsRandomIDs;
+    };
+
 private: //fields
     float settings_version_actual;
     float settings_version_minimum = 1;
@@ -126,6 +133,7 @@ public: //fields
     std::map<int, NoiseSetting>  noise_settings;
 
     RecordingSettings recording_settings;
+    SegmentationSettings segmentation_settings;
 
     std::vector<std::string> warning_messages;
 
@@ -169,6 +177,7 @@ public: //methods
         loadRecordingSettings(settings);
         loadCaptureSettings(settings);
         loadCameraNoiseSettings(settings);
+        loadSegmentationSettings(settings);
         loadOtherSettings(settings);
 
         return static_cast<unsigned int>(warning_messages.size());
@@ -353,11 +362,11 @@ private:
 
     void loadCaptureSettings(const Settings& settings)
     {
-        Settings json_settings_parent;
-        if (settings.getChild("CaptureSettings", json_settings_parent)) {
-            for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
+        Settings json_parent;
+        if (settings.getChild("CaptureSettings", json_parent)) {
+            for (size_t child_index = 0; child_index < json_parent.size(); ++child_index) {
                 Settings json_settings_child;     
-                if (json_settings_parent.getChild(child_index, json_settings_child)) {
+                if (json_parent.getChild(child_index, json_settings_child)) {
                     CaptureSetting capture_setting;
                     createCaptureSettings(json_settings_child, capture_setting);
                     if (capture_setting.image_type >= -1 && capture_setting.image_type < static_cast<int>(capture_settings.size()))
@@ -370,13 +379,29 @@ private:
         }
     }
 
+    void loadSegmentationSettings(const Settings& settings)
+    {
+        Settings json_parent;
+        if (settings.getChild("SegmentationSettings", json_parent)) {
+            std::string init_method = Utils::toLower(json_parent.getString("init_method", ""));
+            if (init_method == "" || init_method == "none")
+                segmentation_settings.init_method = SegmentationSettings::InitMethodType::None;
+            else if (init_method == "commonobjectsrandomids")
+                segmentation_settings.init_method = SegmentationSettings::InitMethodType::CommonObjectsRandomIDs;
+            else
+                //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
+                throw std::invalid_argument(std::string("SegmentationSettings init_method has invalid value in settings ") + init_method);
+
+        }
+    }
+
     void loadCameraNoiseSettings(const Settings& settings)
     {
-        Settings json_settings_parent;
-        if (settings.getChild("NoiseSettings", json_settings_parent)) {
-            for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
+        Settings json_parent;
+        if (settings.getChild("NoiseSettings", json_parent)) {
+            for (size_t child_index = 0; child_index < json_parent.size(); ++child_index) {
                 Settings json_settings_child;     
-                if (json_settings_parent.getChild(child_index, json_settings_child)) {
+                if (json_parent.getChild(child_index, json_settings_child)) {
                     NoiseSetting noise_setting;
                     createNoiseSettings(json_settings_child, noise_setting);
                     if (noise_setting.ImageType >= -1 && noise_setting.ImageType < static_cast<int>(noise_settings.size()))
@@ -429,11 +454,11 @@ private:
         //load default subwindows
         initializeSubwindowSettings();
 
-        Settings json_settings_parent;
-        if (settings.getChild("SubWindows", json_settings_parent)) {
-            for (size_t child_index = 0; child_index < json_settings_parent.size(); ++child_index) {
+        Settings json_parent;
+        if (settings.getChild("SubWindows", json_parent)) {
+            for (size_t child_index = 0; child_index < json_parent.size(); ++child_index) {
                 Settings json_settings_child;
-                if (json_settings_parent.getChild(child_index, json_settings_child)) {
+                if (json_parent.getChild(child_index, json_settings_child)) {
                     int window_index = json_settings_child.getInt("WindowID", 0);
                     SubwindowSetting& subwindow_setting = subwindow_settings.at(window_index);
                     subwindow_setting.window_index = window_index;
