@@ -25,6 +25,8 @@ public:
 
     virtual void update(float dt, T error, uint64_t last_time) override
     {
+        unused(dt);
+        
         error_int = error;
         y[0] = error_int;
 

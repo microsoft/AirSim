@@ -457,8 +457,10 @@ private:
     // ---------------------------------------------------------------------------
     void model(float* y, float last_time_, float* y_out)
     {
-        /**********desired trajectory************************/
+        unused(last_time_);
 
+        /**********desired trajectory************************/
+        
 
         circle_trajectory(t, radius, alt, refs_temp);
         //square_trajectory(t, refs_temp, alt);
