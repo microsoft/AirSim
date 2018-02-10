@@ -1,4 +1,4 @@
-rem @echo off
+@echo off
 REM //---------- set up variable ----------
 setlocal
 set ROOT_DIR=%~dp0
@@ -31,7 +31,7 @@ call:doOneProject "AncientRome"
 call:doOneProject "CityEnviron"
 call:doOneProject "DowntownCar"
 call:doOneProject "LandscapeMountains"
-call:doOneProject "ModulerCity"
+call:doOneProject "ModularCity"
 call:doOneProject "Africa_001" "Africa"
 
 goto :done
@@ -40,8 +40,10 @@ goto :done
 if "%~2"=="" (
  cd /D "%UnrealProjsPath%\%~1"
 ) else (
- cd "%UnrealProjsPath%\%~2"
+ cd /D "%UnrealProjsPath%\%~2"
 )
+if ERRORLEVEL 1 goto :failed
+
 robocopy "%AirSimPath%\Unreal\Environments\Blocks" . update_from_git.bat  /njh /njs /ndl /np
 
 CALL update_from_git.bat "%AirSimPath%"
