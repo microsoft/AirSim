@@ -3,32 +3,36 @@ REM //---------- set up variable ----------
 setlocal
 set ROOT_DIR=%~dp0
 
+REM should rebuild?
+set RebuildAirSim=%1
 REM root folder containing all Unreal projects you want to build
-set UnrealProjsPath=%1
+set UnrealProjsPath=%2
 REM Output folder where the builds would be stored
-set OutputPath=%2
+set OutputPath=%3
 REM folder containing AirSim repo
-set AirSimPath=%3
+set AirSimPath=%4
 
 REM set defaults if ars are not supplied
 if "%UnrealProjsPath%"=="" set "UnrealProjsPath=D:\vso\msresearch\Theseus"
 if "%AirSimPath%"=="" set "AirSimPath=C:\GitHubSrc\AirSim"
 if "%OutputPath%"=="" set "OutputPath=%ROOT_DIR%build"
+if "%RebuildAirSim%"=="" set "RebuildAirSim=true"
 
 REM re-build airsim
-cd /D "%AirSimPath%"
-CALL clean
-CALL build
-if ERRORLEVEL 1 goto :failed
-
-cd /D "%ROOT_DIR%"
+if "%RebuildAirSim%"=="true" (
+    cd /D "%AirSimPath%"
+    CALL clean
+    CALL build
+    if ERRORLEVEL 1 goto :failed
+    cd /D "%ROOT_DIR%"
+)
 
 IF NOT EXIST "%OutputPath%" mkdir "%OutputPath%"
 
+call:doOneProject "CityEnviron"
 call:doOneProject "ZhangJiaJie"
 call:doOneProject "AirSimEnvNH"
 call:doOneProject "AncientRome"
-call:doOneProject "CityEnviron"
 call:doOneProject "DowntownCar"
 call:doOneProject "LandscapeMountains"
 call:doOneProject "ModularCity"
