@@ -24,6 +24,7 @@ if [ "$(uname)" == "Darwin" ]; then
     brew install --force-bottle llvm@3.9
 
     brew install wget
+    brew install coreutils
 
     export C_COMPILER=/usr/local/opt/llvm\@3.9/bin/clang
     export COMPILER=/usr/local/opt/llvm\@3.9/bin/clang++
@@ -57,7 +58,12 @@ if [[ ! -d "cmake_build/bin" ]]; then
     make
     popd
 fi
-CMAKE="$(readlink -f cmake_build/bin/cmake)"
+
+if [ "$(uname)" == "Darwin" ]; then
+    CMAKE="$(greadlink -f cmake_build/bin/cmake)"
+else
+    CMAKE="$(readlink -f cmake_build/bin/cmake)"
+fi
 
 # Download rpclib
 if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
