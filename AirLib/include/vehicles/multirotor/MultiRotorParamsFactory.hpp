@@ -15,7 +15,7 @@ namespace msr { namespace airlib {
 
 class MultiRotorParamsFactory {
 public:
-    static std::unique_ptr<MultiRotorParams> createConfig(const std::string& vehicle_name, const SensorFactory* sensor_factory)
+    static std::unique_ptr<MultiRotorParams> createConfig(const std::string& vehicle_name, std::shared_ptr<const SensorFactory> sensor_factory)
     {
         AirSimSettings::VehicleSettings vehicle_settings = 
             AirSimSettings::singleton().getVehicleSettings(vehicle_name);

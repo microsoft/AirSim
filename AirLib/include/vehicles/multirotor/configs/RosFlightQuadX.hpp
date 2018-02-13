@@ -14,7 +14,7 @@ namespace msr { namespace airlib {
 
 class RosFlightQuadX : public MultiRotorParams {
 public:
-    RosFlightQuadX(const AirSimSettings::VehicleSettings& vehicle_settings, const SensorFactory* sensor_factory)
+    RosFlightQuadX(const AirSimSettings::VehicleSettings& vehicle_settings, std::shared_ptr<const SensorFactory> sensor_factory)
         : sensor_factory_(sensor_factory)
     {
         unused(vehicle_settings);
@@ -73,7 +73,7 @@ protected:
 
 private:
     vector<unique_ptr<SensorBase>> sensor_storage_;
-    const SensorFactory* sensor_factory_;
+    std::shared_ptr<const SensorFactory> sensor_factory_;
 
 };
 

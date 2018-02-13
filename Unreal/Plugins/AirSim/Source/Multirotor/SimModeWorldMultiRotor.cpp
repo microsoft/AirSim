@@ -184,8 +184,8 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
-    UnrealSensorFactory sensor_factory(wrapper->getPawn());
-    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName(), & sensor_factory);
+    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn());
+    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName(), sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 

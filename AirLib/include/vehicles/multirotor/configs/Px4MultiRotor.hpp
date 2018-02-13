@@ -13,7 +13,7 @@ namespace msr { namespace airlib {
 
 class Px4MultiRotor : public MultiRotorParams {
 public:
-    Px4MultiRotor(const AirSimSettings::VehicleSettings& vehicle_settings, const SensorFactory* sensor_factory)
+    Px4MultiRotor(const AirSimSettings::VehicleSettings& vehicle_settings, std::shared_ptr<const SensorFactory> sensor_factory)
         : sensor_factory_(sensor_factory)
     {
         connection_info_ = getConnectionInfo(vehicle_settings);
@@ -287,7 +287,7 @@ private:
 
 private:
     MavLinkDroneController::ConnectionInfo connection_info_;
-    const SensorFactory* sensor_factory_;
+    std::shared_ptr<const SensorFactory> sensor_factory_;
 
 };
 
