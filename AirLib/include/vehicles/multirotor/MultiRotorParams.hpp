@@ -112,10 +112,14 @@ public: //interface
 
     SensorBase* addSensor(SensorBase::SensorType sensor_type)
     {
-        sensor_storage_.emplace_back(createSensor(sensor_type));
-        auto sensor = sensor_storage_.back().get();
-        sensors_.insert(sensor, sensor_type);
-        return sensor;
+        std::unique_ptr<SensorBase> sensor = createSensor(sensor_type);
+        if (sensor) {
+            SensorBase* sensor_temp = sensor.get();
+            sensor_storage_.push_back(std::move(sensor));
+            sensors_.insert(sensor_temp, sensor_type);
+            return sensor_temp;
+        }
+        return nullptr;
     }
 
 
