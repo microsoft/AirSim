@@ -193,7 +193,7 @@ The `NoiseSettings` allows to add noise to the specified image type with a goal 
 
 Demo of camera noise and inteference simulation:
 
-[![AirSim Drone Demo Video](docs/images/camera_noise_demo.png)](https://youtu.be/1BeCEZmQyp0)
+[![AirSim Drone Demo Video](images/camera_noise_demo.png)](https://youtu.be/1BeCEZmQyp0)
 
 #### Random noise
 This adds random noise blobs with following parameters.
