@@ -22,7 +22,7 @@ public:
 
         SensorFactory sensor_factory;
 
-        std::unique_ptr<MultiRotorParams> params = MultiRotorParamsFactory::createConfig("SimpleFlight", &sensor_factory);
+        std::unique_ptr<MultiRotorParams> params = MultiRotorParamsFactory::createConfig("SimpleFlight", std::make_shared<SensorFactory>());
         MultiRotor vehicle;
         std::unique_ptr<Environment> environment;
         vehicle.initialize(params.get(), Pose(), 

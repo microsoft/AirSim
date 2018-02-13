@@ -12,8 +12,7 @@ class RosFlightTest : public TestBase {
 public:
     virtual void run() override
     {
-        SensorFactory sensor_factory;
-        auto rosFlight = MultiRotorParamsFactory::createConfig("RosFlight", &sensor_factory);
+        auto rosFlight = MultiRotorParamsFactory::createConfig("RosFlight", std::make_shared<SensorFactory>());
         
         DroneControllerBase* controller = rosFlight->getController();
         testAssert(controller != nullptr, "Couldn't get controller");
