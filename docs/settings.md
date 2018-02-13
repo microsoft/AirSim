@@ -191,6 +191,10 @@ Determines the speed of simulation clock with respect to wall clock. For example
 ### Image Noise Settings
 The `NoiseSettings` allows to add noise to the specified image type with a goal of simulating camera sensor noise, interference and other artifacts. By default no noise is added, i.e., `Enabled: false`. If you set `Enabled: true` then following different types of noise and interference artifacts are enabled, each can be further tuned using setting. The noise effects are implemented as shader created as post processing material in Unreal Engine called [CameraSensorNoise](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/CameraSensorNoise.uasset).
 
+Demo of camera noise and inteference simulation:
+
+[![AirSim Drone Demo Video](docs/images/camera_noise_demo.png)](https://youtu.be/1BeCEZmQyp0)
+
 #### Random noise
 This adds random noise blobs with following parameters.
 * `RandContrib`: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
