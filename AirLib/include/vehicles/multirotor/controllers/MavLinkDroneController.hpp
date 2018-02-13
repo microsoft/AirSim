@@ -787,16 +787,20 @@ public:
             mag_output.magnetic_field_body,
             baro_output.pressure * 0.01f /*Pa to Milibar */, baro_output.altitude);
 
-        const auto& distance_output = getDistance()->getOutput();
-        float pitch, roll, yaw;
-        VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
 
-        sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
-            distance_output.max_distance / 100, //m -> cm
-            distance_output.distance,
-            0, //sensor type: //TODO: allow changing in settings?
-            77, //sensor id, //TODO: should this be something real?
-            pitch); //TODO: convert from radians to degrees?
+        const auto * distance = getDistance();
+        if (distance) {
+          const auto& distance_output = distance->getOutput();
+          float pitch, roll, yaw;
+          VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
+
+          sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
+                             distance_output.max_distance / 100, //m -> cm
+                             distance_output.distance,
+                             0, //sensor type: //TODO: allow changing in settings?
+                             77, //sensor id, //TODO: should this be something real?
+                             pitch); //TODO: convert from radians to degrees?
+        }
 
         const auto gps = getGps();
         if (gps != nullptr) {
