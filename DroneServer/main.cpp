@@ -33,7 +33,8 @@ int main(int argc, const char* argv[])
     MavLinkDroneController::ConnectionInfo connection_info;
     
     // read settings and override defaults
-    Settings& settings = Settings::singleton().loadJSonFile("settings.json");
+    auto settings_full_filepath = Settings::getUserDirectoryFullPath("settings.json");
+    Settings& settings = Settings::singleton().loadJSonFile(settings_full_filepath);
     Settings child;
     if (settings.isLoadSuccess()) {
         settings.getChild("PX4", child);
