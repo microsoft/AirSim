@@ -33,7 +33,7 @@ public: //types
         bool magnetometer = true;
         bool gps = true;
         bool barometer = true;
-        bool distance = true;
+        bool distance = false; //this causes ray casts so disabled by default
     };
 
     struct Params {

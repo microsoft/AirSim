@@ -6,6 +6,10 @@ import sys
 import math
 import numpy as np
 
+############################################
+########## This is work in progress! #######
+############################################
+
 # file will be saved in PythonClient folder (i.e. same folder as script)
 # point cloud ASCII format, use viewers like CloudCompare http://www.danielgm.net/cc/ or see http://www.geonext.nl/wp-content/uploads/2014/05/Point-Cloud-Viewers.pdf
 outputFile = "cloud.asc" 
