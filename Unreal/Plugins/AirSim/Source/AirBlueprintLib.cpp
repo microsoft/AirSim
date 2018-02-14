@@ -167,24 +167,45 @@ void UAirBlueprintLib::InitializeObjectStencilID(T* mesh, bool ignore_existing)
 template<typename T>
 void UAirBlueprintLib::SetObjectStencilID(T* mesh, int object_id)
 {
-    mesh->SetCustomDepthStencilValue(object_id);
-    mesh->SetRenderCustomDepth(true);
+    if (object_id < 0)
+    {
+        mesh->SetRenderCustomDepth(false);
+    }
+    else
+    {
+        mesh->SetCustomDepthStencilValue(object_id);
+        mesh->SetRenderCustomDepth(true);
+    }
     //mesh->SetVisibility(false);
     //mesh->SetVisibility(true);
 }
 
 void UAirBlueprintLib::SetObjectStencilID(ALandscapeProxy* mesh, int object_id)
 {
-    mesh->CustomDepthStencilValue = object_id;
-    mesh->bRenderCustomDepth = true;
+    if (object_id < 0)
+    {
+        mesh->bRenderCustomDepth = false;
+    }
+    else
+    {
+        mesh->CustomDepthStencilValue = object_id;
+        mesh->bRenderCustomDepth = true;
+    }
 
     // Explicitly set the custom depth state on the components so the
     // render state is marked dirty and the update actually takes effect
     // immediately.
     for (ULandscapeComponent* comp : mesh->LandscapeComponents)
     {
-        comp->SetCustomDepthStencilValue(object_id);
-        comp->SetRenderCustomDepth(true);
+        if (object_id < 0)
+        {
+            comp->SetRenderCustomDepth(false);
+        }
+        else
+        {
+            comp->SetCustomDepthStencilValue(object_id);
+            comp->SetRenderCustomDepth(true);
+        }
     }
 }
 

@@ -209,7 +209,7 @@ The return value is boolean type that lets you know if the mesh was found.
 Notice that typical Unreal environment like Blocks usually have many other meshes that comprises of same object, for example, "Ground_2", "Ground_3" and so on. As it is tedious to set object ID for all of these meshes, AirSim also supports regular expressions. For example, below code sets all meshes which have names starting with "ground" (ignoring case) to 21 with just one line:
 
 ```
-success = client.simSetSegmentationObjectID("ground[\w]*", 22, True);
+success = client.simSetSegmentationObjectID("ground[\w]*", 21, True);
 ```
 
 The return value is true if at least one mesh was found using regular expression matching.
@@ -228,6 +228,9 @@ print(np.unique(img_rgba[:,:,2], return_counts=True)) #blue
 ```
 
 A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/segmentation.py).
+
+#### Unsetting object ID
+An object's ID can be set to -1 to make it not show up on the segmentation image.
 
 #### How to Find Mesh Names?
 To get desired ground truth segmentation you will need to know names of the meshes in your Unreal environment that you are interested in. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in the World Outliner. For example, below we see the meshe names for he ground in Blocks environment in right panel in the editor:
