@@ -11,10 +11,8 @@ class PixhawkTest : public TestBase {
 public:
     virtual void run() override
     {
-        SensorFactory sensor_factory;
-
         //Test PX4 based drones
-        auto pixhawk = MultiRotorParamsFactory::createConfig("Pixhawk", &sensor_factory);	
+        auto pixhawk = MultiRotorParamsFactory::createConfig("Pixhawk", std::make_shared<SensorFactory>());	
         
         DroneControllerBase* controller = pixhawk->getController();
         testAssert(controller != nullptr, "Couldn't get pixhawk controller");
