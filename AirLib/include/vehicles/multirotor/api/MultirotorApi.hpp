@@ -199,6 +199,7 @@ public:
         return controller_->getRCData();
     }
 
+
     //TODO: add GPS health, accuracy in API
     GeoPoint getGpsLocation()
     {
@@ -290,6 +291,11 @@ public:
     {
         vehicle_->reset();
     }
+
+	virtual void setRCData(const RCData& data)
+	{
+		controller_->setRCData(data);
+	}
 
 
     /*** Implementation of CancelableBase ***/
@@ -546,7 +552,6 @@ private:// types
             controller->hover(cancelable);
         }
     };
-
 
 private: //vars
     VehicleConnectorBase* vehicle_ = nullptr;

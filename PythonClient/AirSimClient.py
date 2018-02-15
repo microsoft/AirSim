@@ -99,6 +99,40 @@ class YawMode(MsgpackMixin):
         self.is_rate = is_rate
         self.yaw_or_rate = yaw_or_rate
 
+class RCData(MsgpackMixin):
+    timestamp = 0
+    pitch = 0.0 
+    roll = 0.0 
+    throttle = 0.0 
+    yaw = 0.0 
+    switch1 = 0
+    switch2 = 0 
+    switch3 = 0 
+    switch4 = 0 
+    switch5 = 0
+    switch6 = 0 
+    switch7 = 0 
+    switch8 = 0
+    is_initialized = False
+    is_valid = False
+    def __init__(self, timestamp = 0, pitch = 0.0, roll = 0.0, throttle = 0.0, yaw = 0.0, switch1 = 0,
+                 switch2 = 0, switch3 = 0, switch4 = 0, switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0, is_initialized = False, is_valid = False):
+        self.timestamp = timestamp
+        self.pitch = pitch 
+        self.roll = roll
+        self.throttle = throttle 
+        self.yaw = yaw 
+        self.switch1 = switch1 
+        self.switch2 = switch2 
+        self.switch3 = switch3 
+        self.switch4 = switch4 
+        self.switch5 = switch5
+        self.switch6 = switch6 
+        self.switch7 = switch7 
+        self.switch8 = switch8 
+        self.is_initialized = is_initialized
+        self.is_valid = is_valid
+
 class ImageRequest(MsgpackMixin):
     camera_id = np.uint8(0)
     image_type = AirSimImageType.Scene
@@ -473,7 +507,7 @@ class MultirotorClient(AirSimClientBase, object):
 
         
     # query vehicle state
-    def getMultirotorState(self) -> MultirotorState:
+    def getMultirotorState(self):
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState'))
     def getPosition(self):
         return Vector3r.from_msgpack(self.client.call('getPosition'))
@@ -488,8 +522,8 @@ class MultirotorClient(AirSimClientBase, object):
     def getPitchRollYaw(self):
         return self.toEulerianAngle(self.getOrientation())
 
-    #def getRCData(self):
-    #    return self.client.call('getRCData')
+    def getRCData(self):
+        return self.client.call('getRCData')
     def timestampNow(self):
         return self.client.call('timestampNow')
     def isApiControlEnabled(self):
@@ -540,6 +574,9 @@ class MultirotorClient(AirSimClientBase, object):
 
     def rotateByYawRate(self, yaw_rate, duration):
         return self.client.call('rotateByYawRate', yaw_rate, duration)
+
+    def setRCData(self, rcdata = RCData()):
+        return self.client.call('setRCData', rcdata)
 
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(AirSimClientBase, object):

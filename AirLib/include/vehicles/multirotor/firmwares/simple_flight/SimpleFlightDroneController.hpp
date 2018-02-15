@@ -154,13 +154,35 @@ public:
     
     virtual RCData getRCData() override
     {
-        return RCData();
+		if (board_->isRcConnected() == true) {
+			RCData data = RCData();
+			data.is_initialized = true;
+			data.is_valid = true;
+			data.timestamp = timestamp;
+			data.roll = board_->readChannel(0);
+			data.yaw = board_->readChannel(1);
+			data.throttle = board_->readChannel(2);
+			data.pitch = -board_->readChannel(3);
+			data.switch1 = board_->readChannel(4);
+			data.switch2 = board_->readChannel(5);
+			data.switch3 = board_->readChannel(6);
+			data.switch4 = board_->readChannel(7);
+			data.switch5 = board_->readChannel(8);
+			data.switch6 = board_->readChannel(9);
+			data.switch7 = board_->readChannel(10);
+			data.switch8 = board_->readChannel(11);
+			return data;
+		}
+		else {
+			return RCData();
+		}
     }
 
     virtual void setRCData(const RCData& rcData) override
     {
         if (rcData.is_valid) {
             board_->setIsRcConnected(true);
+			timestamp = rcData.timestamp;
             board_->setInputChannel(0, rcData.roll); //X
             board_->setInputChannel(1, rcData.yaw); //Y
             board_->setInputChannel(2, rcData.throttle); //F
@@ -335,6 +357,8 @@ private:
     unique_ptr<simple_flight::IFirmware> firmware_;
 
     VehicleParams safety_params_;
+
+	TTimePoint timestamp;
 };
 
 }} //namespace
