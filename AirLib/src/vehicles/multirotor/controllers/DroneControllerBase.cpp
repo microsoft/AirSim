@@ -399,7 +399,7 @@ bool DroneControllerBase::setSafety(SafetyEval::SafetyViolationType enable_reaso
 
 bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode, CancelableBase& cancelable_action)
 {
-    const float kMaxMessageAge = 0.1f /* 0.1 sec */, kTrimduration = 1, kMinCountForTrim = 10, kMaxTrim = 100, kMaxRCValue = 10000;
+    const float kMaxMessageAge = 10000000.0f /* 0.1 sec */, kTrimduration = 1, kMinCountForTrim = 10, kMaxTrim = 100, kMaxRCValue = 10000;
 
     if (duration <= 0)
         return true;
