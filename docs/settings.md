@@ -56,7 +56,9 @@ Below are complete list of settings available along with their default values. I
       "AutoExposureMaxBrightness": 0.64,
       "AutoExposureMinBrightness": 0.03,
       "MotionBlurAmount": 0,
-      "TargetGamma": 1.0
+      "TargetGamma": 1.0,
+      "ProjectionMode": "perspective",
+      "OrthoWidth": 5.12
     }
   ],
   "NoiseSettings": [

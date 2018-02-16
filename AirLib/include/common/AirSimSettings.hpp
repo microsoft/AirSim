@@ -86,6 +86,9 @@ public: //types
         float auto_exposure_histogram_log_max = Utils::nan<float>(); // 4;
         float motion_blur_amount = Utils::nan<float>();
         float target_gamma = Utils::nan<float>(); //1.0f; //This would be reset to kSceneTargetGamma for scene as default
+        int projection_mode = 0; // ECameraProjectionMode::Perspective
+        float ortho_width = Utils::nan<float>();
+
     };
 
     struct NoiseSetting {
@@ -449,6 +452,16 @@ private:
         capture_setting.image_type = settings.getInt("ImageType", 0);
         capture_setting.target_gamma = settings.getFloat("TargetGamma", 
             capture_setting.image_type == 0 ? CaptureSetting::kSceneTargetGamma : Utils::nan<float>());
+
+        std::string projection_mode = Utils::toLower(settings.getString("ProjectionMode", ""));
+        if (projection_mode == "" || projection_mode == "perspective")
+            capture_setting.projection_mode = 0; // Perspective
+        else if (projection_mode == "orthographic")
+            capture_setting.projection_mode = 1; // Orthographic
+        else
+            throw std::invalid_argument(std::string("CaptureSettings projection_mode has invalid value in settings ") + projection_mode);
+
+        capture_setting.ortho_width = settings.getFloat("OrthoWidth", capture_setting.ortho_width);
     }
 
     void loadSubWindowsSettings(const Settings& settings)

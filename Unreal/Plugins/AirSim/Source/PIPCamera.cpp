@@ -140,8 +140,12 @@ void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture
     if (!std::isnan(setting.target_gamma))
         render_target->TargetGamma = setting.target_gamma;
 
+    capture->ProjectionType = static_cast<ECameraProjectionMode::Type>(setting.projection_mode);
+
     if (!std::isnan(setting.fov_degrees))
         capture->FOVAngle = setting.fov_degrees;
+    if (!std::isnan(setting.ortho_width))
+        capture->OrthoWidth = setting.ortho_width * 100.0f;
 
     updateCameraPostProcessingSetting(capture->PostProcessSettings, setting);
 }
@@ -151,8 +155,12 @@ void APIPCamera::updateCameraSetting(UCameraComponent* camera, const CaptureSett
     //if (!std::isnan(setting.target_gamma))
     //    camera-> = setting.target_gamma;
 
+    camera->SetProjectionMode(static_cast<ECameraProjectionMode::Type>(setting.projection_mode));
+
     if (!std::isnan(setting.fov_degrees))
         camera->SetFieldOfView(setting.fov_degrees);
+    if (!std::isnan(setting.ortho_width))
+        camera->SetOrthoWidth(setting.ortho_width * 100.0f);
 
     updateCameraPostProcessingSetting(camera->PostProcessSettings, setting);
 }
