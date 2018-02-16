@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>hello_drone.py</StartupFile>
+    <StartupFile>hello_car.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -44,6 +44,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="drone_stress_test.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="manual_mode_demo.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="objects.py">

@@ -45,10 +45,12 @@ public:
     Vector3r getPosition();
     Vector3r getVelocity();
     Quaternionr getOrientation();
-    RCData getRCData();
     GeoPoint getGpsLocation();
     bool isSimulationMode();
     std::string getDebugInfo();
+
+    RCData getRCData();
+    void setRCData(const RCData& rc_data);
 
     DroneControllerBase::LandedState getLandedState();
 

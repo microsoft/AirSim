@@ -154,11 +154,12 @@ public:
     
     virtual RCData getRCData() override
     {
-        return RCData();
+        return last_rcData_;
     }
 
     virtual void setRCData(const RCData& rcData) override
     {
+        last_rcData_ = rcData;
         if (rcData.is_valid) {
             board_->setIsRcConnected(true);
             board_->setInputChannel(0, rcData.roll); //X
@@ -335,6 +336,8 @@ private:
     unique_ptr<simple_flight::IFirmware> firmware_;
 
     VehicleParams safety_params_;
+
+    RCData last_rcData_;
 };
 
 }} //namespace

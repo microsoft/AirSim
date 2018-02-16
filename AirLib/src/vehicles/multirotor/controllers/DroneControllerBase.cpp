@@ -397,9 +397,47 @@ bool DroneControllerBase::setSafety(SafetyEval::SafetyViolationType enable_reaso
     return true;
 }
 
+
+RCData DroneControllerBase::estimateRCTrims(CancelableBase& cancelable_action, float trimduration, float minCountForTrim, float maxTrim)
+{
+    rc_data_trims_ = RCData();
+
+    //get trims
+    Waiter waiter_trim(getCommandPeriod(), trimduration);
+    uint count = 0;
+    do {
+
+        const RCData rc_data = getRCData();
+        if (rc_data.is_valid) {
+            rc_data_trims_.add(rc_data);
+            count++;
+        }
+
+    } while (waiter_trim.sleep(cancelable_action) && !waiter_trim.is_timeout());
+
+    rc_data_trims_.is_valid = true;
+
+
+    if (count < minCountForTrim) {
+        rc_data_trims_.is_valid = false;
+        Utils::log("Cannot compute RC trim because too few readings received");
+    }
+
+    //take average
+    rc_data_trims_.divideBy(static_cast<float>(count));
+    if (rc_data_trims_.isAnyMoreThan(maxTrim)) {
+        rc_data_trims_.is_valid = false;
+        Utils::log(Utils::stringf("RC trims does not seem to be valid: %s", rc_data_trims_.toString().c_str()));
+    }
+
+    Utils::log(Utils::stringf("RCData Trims: %s", rc_data_trims_.toString().c_str()));
+
+    return rc_data_trims_;
+}
+
 bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode, CancelableBase& cancelable_action)
 {
-    const float kMaxMessageAge = 10000000.0f /* 0.1 sec */, kTrimduration = 1, kMinCountForTrim = 10, kMaxTrim = 100, kMaxRCValue = 10000;
+    const float kMaxMessageAge = 0.1f /* 0.1 sec */, kMaxRCValue = 10000;
 
     if (duration <= 0)
         return true;
@@ -407,37 +445,14 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
     //freeze the quaternion
     Quaternionr starting_quaternion = getOrientation();
 
-    //get trims
-    Waiter waiter_trim(getCommandPeriod(), kTrimduration);
-    RCData rc_data_trims;
-    uint count = 0;
-    do {
-
-        const RCData rc_data = getRCData();
-        if (rc_data.timestamp > 0) {
-            rc_data_trims.add(rc_data);
-            count++;
-        }
-
-    } while (waiter_trim.sleep(cancelable_action) && !waiter_trim.is_timeout());
-
-    if (count < kMinCountForTrim)
-        throw VehicleMoveException("Cannot compute RC trim because too few readings received");
-
-    //take average
-    rc_data_trims.divideBy(static_cast<float>(count));
-    if (rc_data_trims.isAnyMoreThan(kMaxTrim))
-        throw VehicleMoveException(Utils::stringf("RC trims does not seem to be valid: %s", rc_data_trims.toString().c_str()));
-
-    Utils::log(Utils::stringf("RCData Trims: %s", rc_data_trims.toString().c_str()));
-
     Waiter waiter(getCommandPeriod(), duration);
     do {
 
         RCData rc_data = getRCData();
         TTimeDelta age = clock()->elapsedSince(rc_data.timestamp);
-        if (age <= kMaxMessageAge) {
-            rc_data.subtract(rc_data_trims);
+        if (rc_data.is_valid && (rc_data.timestamp == 0 || age <= kMaxMessageAge)) { //if rc message timestamp is not set OR is not too old 
+            if (rc_data_trims_.is_valid)
+                rc_data.subtract(rc_data_trims_);
 
             //convert RC commands to velocity vector
             const Vector3r vel_word(rc_data.pitch * vy_max/kMaxRCValue, rc_data.roll  * vx_max/kMaxRCValue, 0);

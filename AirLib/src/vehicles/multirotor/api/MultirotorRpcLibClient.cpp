@@ -150,6 +150,10 @@ RCData MultirotorRpcLibClient::getRCData()
 {
     return static_cast<rpc::client*>(getClient())->call("getRCData").as<MultirotorRpcLibAdapators::RCData>().to();
 }
+void MultirotorRpcLibClient::setRCData(const RCData& rc_data)
+{
+    static_cast<rpc::client*>(getClient())->call("setRCData", MultirotorRpcLibAdapators::RCData(rc_data));
+}
 
 GeoPoint MultirotorRpcLibClient::getGpsLocation()
 {

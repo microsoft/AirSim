@@ -101,18 +101,9 @@ class YawMode(MsgpackMixin):
 
 class RCData(MsgpackMixin):
     timestamp = 0
-    pitch = 0.0 
-    roll = 0.0 
-    throttle = 0.0 
-    yaw = 0.0 
-    switch1 = 0
-    switch2 = 0 
-    switch3 = 0 
-    switch4 = 0 
-    switch5 = 0
-    switch6 = 0 
-    switch7 = 0 
-    switch8 = 0
+    pitch, roll, throttle, yaw = (0.0,)*4 #init 4 variable to to 0.0
+    switch1, switch2, switch3, switch4 = (0,)*4
+    switch5, switch6, switch7, switch8 = (0,)*4
     is_initialized = False
     is_valid = False
     def __init__(self, timestamp = 0, pitch = 0.0, roll = 0.0, throttle = 0.0, yaw = 0.0, switch1 = 0,
@@ -507,7 +498,7 @@ class MultirotorClient(AirSimClientBase, object):
 
         
     # query vehicle state
-    def getMultirotorState(self):
+    def getMultirotorState(self) -> MultirotorState:
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState'))
     def getPosition(self):
         return Vector3r.from_msgpack(self.client.call('getPosition'))
