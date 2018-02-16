@@ -154,7 +154,6 @@ void MultiRotorConnector::updateRenderedState(float dt)
     const CollisionInfo& collision_info = vehicle_pawn_wrapper_->getCollisionInfo();
     vehicle_.setCollisionInfo(collision_info);
 
-
     //update ground level
     if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == vehicle_pawn_wrapper_->getPawn()) {
         FVector delta_position;
