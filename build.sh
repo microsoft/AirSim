@@ -101,7 +101,7 @@ set +x
 echo ""
 echo ""
 echo "=================================================================="
-echo " AirSim plugin is build! Here's how to build Unreal project."
+echo " AirSim plugin is built! Here's how to build Unreal project."
 echo "=================================================================="
 echo "If you are using Blocks environment, its already updated."
 echo "If you are using your own environment, update plugin using,"
