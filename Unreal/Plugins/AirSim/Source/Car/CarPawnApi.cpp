@@ -2,8 +2,8 @@
 #include "AirBlueprintLib.h"
 
 
-CarPawnApi::CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponent* movement_)
-    : pawn_(pawn), movement_(movement_)
+CarPawnApi::CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponent* movement)
+    : pawn_(pawn), movement_(movement)
 {
 }
 
