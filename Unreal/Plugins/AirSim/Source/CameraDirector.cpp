@@ -1,4 +1,5 @@
 #include "CameraDirector.h"
+#include "GameFramework/PlayerController.h"
 #include "AirBlueprintLib.h"
 
 ACameraDirector::ACameraDirector()

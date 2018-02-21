@@ -92,6 +92,8 @@ public:
         log_messages_hidden = is_hidden;
     }
 
+    static void enableWorldRendering(AActor* context, bool enable);
+
 private:
     template<typename T>
     static void InitializeObjectStencilID(T* obj, bool ignore_existing = true);

@@ -41,6 +41,18 @@ EAppReturnType::Type UAirBlueprintLib::ShowMessage(EAppMsgType::Type message_typ
         &title_text);
 }
 
+void UAirBlueprintLib::enableWorldRendering(AActor* context, bool enable)
+{
+    ULocalPlayer* player = context->GetWorld()->GetFirstLocalPlayerFromController();
+    if (player)
+    {
+        UGameViewportClient* viewport_client = player->ViewportClient;
+        if (viewport_client)
+        {
+            viewport_client->bDisableWorldRendering = enable;
+        }
+    }
+}
 
 void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
 {

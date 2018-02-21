@@ -260,9 +260,9 @@ void APIPCamera::disableMain()
 {
     camera_->Deactivate();
     camera_->SetVisibility(false);
-    APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
-    if (controller && controller->GetViewTarget() == this)
-        controller->SetViewTarget(nullptr);
+    //APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
+    //if (controller && controller->GetViewTarget() == this)
+    //    controller->SetViewTarget(nullptr);
 }
 
 
