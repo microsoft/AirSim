@@ -87,9 +87,16 @@ const CarApiBase::CarControls& CarPawnApi::getCarControls() const
     return last_controls_;
 }
 
-msr::airlib::CameraInfo CarPawnApi::getCameraInfo(int cameta_id) const
+msr::airlib::CameraInfo CarPawnApi::getCameraInfo(int camera_id) const
 {
-    return pawn_->getCameraInfo(cameta_id);
+    return pawn_->getCameraInfo(camera_id);
+}
+
+void CarPawnApi::setCameraOrientation(int camera_id, const msr::airlib::Quaternionr& orientation)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([&camera_id, &orientation, this]() {
+        pawn_->setCameraOrientation(camera_id, orientation);
+    }, true);
 }
 
 CarApiBase::CarState CarPawnApi::getCarState()

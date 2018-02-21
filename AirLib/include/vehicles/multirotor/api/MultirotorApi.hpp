@@ -281,9 +281,14 @@ public:
         return vehicle_->getSegmentationObjectID(mesh_name);
     }
 
-    virtual CameraInfo getCameraInfo(int cameta_id) const override
+    virtual CameraInfo getCameraInfo(int camera_id) const override
     {
-        return vehicle_->getCameraInfo(cameta_id);
+        return vehicle_->getCameraInfo(camera_id);
+    }
+
+    virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) override
+    {
+        vehicle_->setCameraOrientation(camera_id, orientation);
     }
 
     virtual bool isApiControlEnabled() const override

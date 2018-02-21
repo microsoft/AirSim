@@ -255,8 +255,11 @@ class AirSimClientBase:
     def getCollisionInfo(self):
         return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
 
-    def getCameraInfo(self, cameta_id):
-        return CameraInfo.from_msgpack(self.client.call('getCameraInfo', cameta_id))
+    def getCameraInfo(self, camera_id):
+        return CameraInfo.from_msgpack(self.client.call('getCameraInfo', camera_id))
+
+    def setCameraOrientation(self, camera_id, orientation):
+        self.client.call('setCameraOrientation', camera_id, orientation)
 
     @staticmethod
     def stringToUint8Array(bstr):

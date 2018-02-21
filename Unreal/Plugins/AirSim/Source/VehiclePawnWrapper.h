@@ -81,7 +81,8 @@ public: //interface
     std::string getLogLine();
 
     void printLogMessage(const std::string& message, const std::string& message_param = "", unsigned char severity = 0);
-    msr::airlib::CameraInfo getCameraInfo(int cameta_id) const;
+    msr::airlib::CameraInfo getCameraInfo(int camera_id) const;
+    void setCameraOrientation(int camera_id, const Quaternionr& orientation);
 
     WrapperConfig& getConfig();
     const WrapperConfig& getConfig() const;

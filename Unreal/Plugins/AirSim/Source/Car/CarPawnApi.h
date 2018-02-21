@@ -46,8 +46,8 @@ public:
     virtual const CarApiBase::CarControls& getCarControls() const override;
 
     virtual msr::airlib::Pose simGetObjectPose(const std::string& actor_name) override;
-    virtual msr::airlib::CameraInfo getCameraInfo(int cameta_id) const override;
-
+    virtual msr::airlib::CameraInfo getCameraInfo(int camera_id) const override;
+    virtual void setCameraOrientation(int camera_id, const msr::airlib::Quaternionr& orientation) override;
 
     virtual ~CarPawnApi();
 

@@ -152,7 +152,16 @@ If you are only interested in this mode, you might also want to take a look at [
 
 ## How to Set Position and Orientation (Pose)?
 
+### Vehicle Pose
 To move around the environment using APIs you can use `simSetPose` API. This API takes position and orientation and sets that on the vehicle. If you don't want to change position (or orientation) then set components of position (or orientation) to floating point nan values.
+
+### Camera Orientation (Gimble)
+To change orientation of individial camera, you can use `setCameraOrientation` API. It takes camera ID which is zero-based [index of camera](#available-cameras) and quaternion relative to body in NED frame. For example, to set camera-0 to 15-degree pitch, you can use:
+```
+client.setCameraOrientation(0, AirSimClientBase.toQuaternion(0.261799, 0, 0)); #radians
+```
+
+Please see [example usage](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py).
 
 ## Changing Resolution and Camera Parameters
 To change resolution, FOV etc, you can use [settings.json](settings.md). For example, below is the complete content of settings.json that sets parameters for scene capture and uses "Computer Vision" mode described above. If you omit any setting then below default values will be used. For more information see [settings doc](settings.md). If you are using stereo camera, currently the distance between left and right is fixed at 25 cm.

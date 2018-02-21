@@ -264,15 +264,22 @@ void VehiclePawnWrapper::printLogMessage(const std::string& message, const std::
     UAirBlueprintLib::LogMessageString(message, message_param, static_cast<LogDebugLevel>(severity));
 }
 
-msr::airlib::CameraInfo VehiclePawnWrapper::getCameraInfo(int cameta_id) const
+msr::airlib::CameraInfo VehiclePawnWrapper::getCameraInfo(int camera_id) const
 {
     msr::airlib::CameraInfo camera_info;
 
-    const APIPCamera* camera = getCamera(cameta_id);
+    const APIPCamera* camera = getCamera(camera_id);
     camera_info.pose.position = NedTransform::toNedMeters(camera->GetActorLocation(), true);
     camera_info.pose.orientation = NedTransform::toQuaternionr(camera->GetActorRotation().Quaternion(), true);
     camera_info.fov = camera->GetCameraComponent()->FieldOfView;
     return camera_info;
+}
+
+void VehiclePawnWrapper::setCameraOrientation(int camera_id, const msr::airlib::Quaternionr& orientation)
+{
+    APIPCamera* camera = getCamera(camera_id);
+    FQuat quat = NedTransform::toFQuat(orientation, true);
+    camera->SetActorRelativeRotation(quat);
 }
 
 //parameters in NED frame
