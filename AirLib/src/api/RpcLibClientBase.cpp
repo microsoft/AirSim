@@ -152,6 +152,10 @@ void* RpcLibClientBase::getClient()
     return &pimpl_->client;
 }
 
+CameraInfo RpcLibClientBase::getCameraInfo(int cameta_id)
+{
+    return pimpl_->client.call("getCameraInfo", cameta_id).as<RpcLibAdapatorsBase::CameraInfo>().to();
+}
 
 CollisionInfo RpcLibClientBase::getCollisionInfo()
 {

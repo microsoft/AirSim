@@ -154,12 +154,18 @@ const VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig() const
     return config_;
 }
 
-APIPCamera* VehiclePawnWrapper::getCamera(int index)
+const APIPCamera* VehiclePawnWrapper::getCamera(int index) const
 {
     if (index < 0 || index >= cameras_.size())
         throw std::out_of_range("Camera id is not valid");
     //should be overridden in derived class
     return cameras_.at(index);
+}
+
+APIPCamera* VehiclePawnWrapper::getCamera(int index)
+{
+    return const_cast<APIPCamera*>(
+        static_cast<const VehiclePawnWrapper*>(this)->getCamera(index));
 }
 
 UnrealImageCapture* VehiclePawnWrapper::getImageCapture()
@@ -256,6 +262,17 @@ void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& off
 void VehiclePawnWrapper::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
     UAirBlueprintLib::LogMessageString(message, message_param, static_cast<LogDebugLevel>(severity));
+}
+
+msr::airlib::CameraInfo VehiclePawnWrapper::getCameraInfo(int cameta_id) const
+{
+    msr::airlib::CameraInfo camera_info;
+
+    const APIPCamera* camera = getCamera(cameta_id);
+    camera_info.pose.position = NedTransform::toNedMeters(camera->GetActorLocation(), true);
+    camera_info.pose.orientation = NedTransform::toQuaternionr(camera->GetActorRotation().Quaternion(), true);
+    camera_info.fov = camera->GetCameraComponent()->FieldOfView;
+    return camera_info;
 }
 
 //parameters in NED frame

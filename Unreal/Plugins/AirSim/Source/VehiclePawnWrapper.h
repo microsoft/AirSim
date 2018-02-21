@@ -56,6 +56,7 @@ public: //interface
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
         bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
+    const APIPCamera* getCamera(int index = 0) const;
     APIPCamera* getCamera(int index = 0);
     UnrealImageCapture* getImageCapture();
     int getCameraCount();
@@ -80,6 +81,7 @@ public: //interface
     std::string getLogLine();
 
     void printLogMessage(const std::string& message, const std::string& message_param = "", unsigned char severity = 0);
+    msr::airlib::CameraInfo getCameraInfo(int cameta_id) const;
 
     WrapperConfig& getConfig();
     const WrapperConfig& getConfig() const;

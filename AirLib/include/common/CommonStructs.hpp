@@ -198,6 +198,19 @@ struct CollisionInfo {
     }
 };
 
+struct CameraInfo {
+    Pose pose;
+    float fov;
+
+    CameraInfo()
+    {}
+
+    CameraInfo(const Pose& pose_val, float fov_val)
+        : pose(pose_val), fov(fov_val)
+    {
+    }
+};
+
 struct CollisionResponseInfo {
     unsigned int collision_count_raw = 0;
     unsigned int collision_count_non_resting = 0;

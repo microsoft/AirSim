@@ -32,6 +32,8 @@ public:
 
     virtual Pose simGetObjectPose(const std::string& object_name) = 0;
 
+    virtual CameraInfo getCameraInfo(int cameta_id) const = 0;
+
     virtual ~VehicleApiBase() = default;
 };
 

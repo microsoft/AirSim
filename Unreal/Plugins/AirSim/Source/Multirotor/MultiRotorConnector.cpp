@@ -307,6 +307,11 @@ int MultiRotorConnector::getSegmentationObjectID(const std::string& mesh_name)
     return UAirBlueprintLib::GetMeshStencilID(mesh_name);
 }
 
+CameraInfo MultiRotorConnector::getCameraInfo(int cameta_id) const
+{
+    return vehicle_pawn_wrapper_->getCameraInfo(cameta_id);
+}
+
 void MultiRotorConnector::startApiServer()
 {
     if (enable_rpc_) {

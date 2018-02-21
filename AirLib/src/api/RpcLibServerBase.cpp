@@ -100,6 +100,11 @@ RpcLibServerBase::RpcLibServerBase(VehicleApiBase* vehicle, string server_addres
         return RpcLibAdapatorsBase::GeoPoint(geo_point);
     });
 
+    pimpl_->server.bind("getCameraInfo", [&](int cameta_id) -> RpcLibAdapatorsBase::CameraInfo {
+        const auto& camera_info = vehicle_->getCameraInfo(cameta_id);
+        return RpcLibAdapatorsBase::CameraInfo(camera_info);
+    });
+
     pimpl_->server.bind("enableApiControl", [&](bool is_enabled) -> void { vehicle_->enableApiControl(is_enabled); });
     pimpl_->server.bind("isApiControlEnabled", [&]() -> bool { return vehicle_->isApiControlEnabled(); });
 

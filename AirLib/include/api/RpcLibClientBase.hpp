@@ -40,7 +40,8 @@ public:
     void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
     Pose simGetObjectPose(const std::string& object_name);
-    
+    CameraInfo getCameraInfo(int cameta_id);
+
     virtual ~RpcLibClientBase();    //required for pimpl
 
 protected:

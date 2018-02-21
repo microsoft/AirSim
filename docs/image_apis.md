@@ -173,6 +173,9 @@ To change resolution, FOV etc, you can use [settings.json](settings.md). For exa
 }
 ```
 
+### Getting Camera Parameters
+The `getCameraInfo(camera_id)` API call retuns pose (in world frame, NED coordinates, SI units) and FOV (in degrees) of specified camera. Camera ID is zer-based [index of camera](#available-cameras). Please see [example usage](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py).
+
 ## What Does Pixel Values Mean in Different Image Types?
 ### Available ImageType
 ```

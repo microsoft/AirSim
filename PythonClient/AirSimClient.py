@@ -191,6 +191,10 @@ class MultirotorState(MsgpackMixin):
     gps_location = GeoPoint()
     timestamp = np.uint64(0)
 
+class CameraInfo(MsgpackMixin):
+    pose = Pose()
+    fov = -1
+
 class AirSimClientBase:
     def __init__(self, ip, port):
         self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = 3600, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
@@ -250,6 +254,9 @@ class AirSimClientBase:
 
     def getCollisionInfo(self):
         return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
+
+    def getCameraInfo(self, cameta_id):
+        return CameraInfo.from_msgpack(self.client.call('getCameraInfo', cameta_id))
 
     @staticmethod
     def stringToUint8Array(bstr):

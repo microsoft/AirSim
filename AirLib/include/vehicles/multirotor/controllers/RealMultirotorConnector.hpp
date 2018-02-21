@@ -94,6 +94,11 @@ public:
         return msr::airlib::Pose();
     }
 
+    virtual CameraInfo getCameraInfo(int cameta_id) const override
+    {
+        unused(cameta_id);
+        throw std::logic_error("getCameraInfo() call is not implemented for this vehicle");
+    }
 
 private:
     VehicleControllerBase* controller_;

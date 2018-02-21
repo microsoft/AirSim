@@ -197,6 +197,31 @@ public:
             return d;
         }
     };
+
+    struct CameraInfo {
+        Pose pose;
+        float fov;
+
+        MSGPACK_DEFINE_MAP(pose, fov);
+
+        CameraInfo()
+        {}
+
+        CameraInfo(const msr::airlib::CameraInfo& s)
+        {
+            pose = s.pose;
+            fov = s.fov;
+        }
+
+        msr::airlib::CameraInfo to() const
+        {
+            msr::airlib::CameraInfo s;
+            s.pose = pose.to();
+            s.fov = fov;
+
+            return s;
+        }
+    };
     
     struct KinematicsState {
         Vector3r position;

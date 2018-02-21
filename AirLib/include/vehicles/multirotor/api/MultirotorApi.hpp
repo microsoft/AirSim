@@ -281,6 +281,10 @@ public:
         return vehicle_->getSegmentationObjectID(mesh_name);
     }
 
+    virtual CameraInfo getCameraInfo(int cameta_id) const override
+    {
+        return vehicle_->getCameraInfo(cameta_id);
+    }
 
     virtual bool isApiControlEnabled() const override
     {
@@ -292,10 +296,10 @@ public:
         vehicle_->reset();
     }
 
-	virtual void setRCData(const RCData& data)
-	{
-		controller_->setRCData(data);
-	}
+    virtual void setRCData(const RCData& data)
+    {
+        controller_->setRCData(data);
+    }
 
 
     /*** Implementation of CancelableBase ***/

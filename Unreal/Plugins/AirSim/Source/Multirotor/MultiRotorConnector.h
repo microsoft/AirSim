@@ -66,7 +66,7 @@ public:
 
     virtual void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) override;
     virtual Pose getActorPose(const std::string& actor_name) override;
-
+    virtual CameraInfo getCameraInfo(int cameta_id) const override;
 
 private:
     void detectUsbRc();

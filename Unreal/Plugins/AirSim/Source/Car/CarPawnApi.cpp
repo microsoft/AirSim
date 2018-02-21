@@ -87,6 +87,11 @@ const CarApiBase::CarControls& CarPawnApi::getCarControls() const
     return last_controls_;
 }
 
+msr::airlib::CameraInfo CarPawnApi::getCameraInfo(int cameta_id) const
+{
+    return pawn_->getCameraInfo(cameta_id);
+}
+
 CarApiBase::CarState CarPawnApi::getCarState()
 {
     CarApiBase::CarState state(
