@@ -244,6 +244,8 @@ If you don't know how to open Unreal Environment in Unreal Editor then try follo
 
 Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs.
 
+Alternatively, the `MeshNamingMethod` can be switched to "StaticMeshName" in the [settings](settings.md). In this case, the static mesh name as shown in the content browser in the Unreal Editor is used to refer to meshes. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
+
 #### Changing Colors for Object IDs
 At present color for each object ID is fixed as in [this pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the mean time it might be easier just to open the segmentation image in some image editor and get the RGB values you are interested in. 
 

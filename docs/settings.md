@@ -97,6 +97,9 @@ Below are complete list of settings available along with their default values. I
     },
     "ApiServerPort": 41451
   },
+  "SegmentationSettings": {
+    "MeshNamingMethod": "OwnerName"
+  },
   "PX4": {
     "FirmwareName": "PX4",
     "LogViewerHostIp": "127.0.0.1",
