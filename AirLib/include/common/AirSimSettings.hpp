@@ -396,11 +396,11 @@ private:
     {
         Settings json_parent;
         if (settings.getChild("SegmentationSettings", json_parent)) {
-            std::string init_method = Utils::toLower(json_parent.getString("init_method", ""));
-            if (init_method == "" || init_method == "none")
-                segmentation_settings.init_method = SegmentationSettings::InitMethodType::None;
-            else if (init_method == "commonobjectsrandomids")
+            std::string init_method = Utils::toLower(json_parent.getString("InitMethod", ""));
+            if (init_method == "" || init_method == "commonobjectsrandomids")
                 segmentation_settings.init_method = SegmentationSettings::InitMethodType::CommonObjectsRandomIDs;
+            else if (init_method == "none")
+                segmentation_settings.init_method = SegmentationSettings::InitMethodType::None;
             else
                 //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
                 throw std::invalid_argument(std::string("SegmentationSettings init_method has invalid value in settings ") + init_method);

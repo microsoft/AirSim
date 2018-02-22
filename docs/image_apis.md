@@ -251,15 +251,13 @@ To get desired ground truth segmentation you will need to know the names of the 
 
 If you don't know how to open Unreal Environment in Unreal Editor then try following the guide for [building from source](build_windows.md).
 
-Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs.
-
-Alternatively, the `MeshNamingMethod` can be switched to "StaticMeshName" in the [settings](settings.md). In this case, the static mesh name as shown in the content browser in the Unreal Editor is used to refer to meshes. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
+Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs. There are [few settings](settings.md#segmentation-settings) available to change object ID generation behavior.
 
 #### Changing Colors for Object IDs
-At present the color for each object ID is fixed as in [this pallet](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the meantime you can open the segmentation image in your favorite image editor and get the RGB values you are interested in.
+At present the color for each object ID is fixed as in [this pallete](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the meantime you can open the segmentation image in your favorite image editor and get the RGB values you are interested in.
 
 #### Startup Object IDs
-At the start, AirSim assigns object ID to each mesh. To do this, it takes first 3 letters of mesh name, converts them to int, sums them and modulo 255 generates the object ID. In other words, all object with first same 3 letters will get same object ID at the start. This heuristic is simple and effective for many Unreal environments but may not be what you want. In that case, please use above APIs to change object IDs to your desired values.
+At the start, AirSim assigns object ID to each object found in environment of type `UStaticMeshComponent` or `ALandscapeProxy`. It then either uses mesh name or owner name (depending on settings), lower cases it, removes any chars below ASCII 97 to remove numbers and some punctuations, sums int value of all chars and modulo 255 to generate the object ID. In other words, all object with same alphabet chars would get same object ID. This heuristic is simple and effective for many Unreal environments but may not be what you want. In that case, please use above APIs to change object IDs to your desired values. There are [few settings](settings.md#segmentation-settings) available to change this behavior.
 
 #### Getting Object ID for Mesh
 The `simGetSegmentationObjectID` API allows you get object ID for given mesh name.

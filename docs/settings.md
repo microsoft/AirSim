@@ -100,7 +100,9 @@ Below are complete list of settings available along with their default values. I
     "ApiServerPort": 41451
   },
   "SegmentationSettings": {
-    "MeshNamingMethod": "OwnerName"
+    "InitMethod": "",
+    "MeshNamingMethod": "",
+    "OverrideExisting": false
   },
   "PX4": {
     "FirmwareName": "PX4",
@@ -137,14 +139,6 @@ Note that `CaptureSettings` element is json array so you can add settings for mu
 
 ## Changing Flight Controller
 The `DefaultVehicleConfig` decides which config settings will be used for your vehicles. By default we use [simple_flight](simple_flight.md) so you don't have to do separate HITL or SITL setups. We also support ["PX4"](px4_setup.md) for advanced users.
-
-## LocalHostIp Setting
-Now when connecting to remote machines you may need to pick a specific ethernet adapter to reach those machines, for example, it might be
-over ethernet or over wifi, or some other special virtual adapter or a VPN.  Your PC may have multiple networks, and those networks might not
-be allowed to talk to each other, in which case the UDP messages from one network will not get through to the others.
-
-So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines, 
-this default is only used when everything you are talking to is contained on a single PC.
 
 ## PX4 and MavLink Related Settings
 These settings define the Mavlink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for an optional external renderer (ExtRendererSysID, ExtRendererCompID)
@@ -194,6 +188,21 @@ The recording feature allows you to record data such as position, orientation, v
 
 ### ClockSpeed
 Determines the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simuation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collison is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.
+
+### Segmentation Settings
+The `InitMethod` determines how object IDs are initialized at startup to generate [segmentation](image_apis.md#segmentation). The value "" or "CommonObjectsRandomIDs" (default) means assign random IDs to each object at startup. This will generate segmentation view with random colors assign to each object. The value "None" means don't initialize object IDs. This will cause segmentation view to have single solid colors. This mode is useful if you plan to set up object IDs using [APIs](image_apis.md#segmentation) and it can save lot of delay at startup for large environments like CityEnviron.
+
+ If `OverrideExisting` is false then initializtion does not alter non-zero object IDs already assigned otherwise it does.
+
+ If `MeshNamingMethod` is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If its "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
+
+### LocalHostIp Setting
+Now when connecting to remote machines you may need to pick a specific ethernet adapter to reach those machines, for example, it might be
+over ethernet or over wifi, or some other special virtual adapter or a VPN.  Your PC may have multiple networks, and those networks might not
+be allowed to talk to each other, in which case the UDP messages from one network will not get through to the others.
+
+So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines, 
+this default is only used when everything you are talking to is contained on a single PC.
 
 ### Image Noise Settings
 The `NoiseSettings` allows to add noise to the specified image type with a goal of simulating camera sensor noise, interference and other artifacts. By default no noise is added, i.e., `Enabled: false`. If you set `Enabled: true` then following different types of noise and interference artifacts are enabled, each can be further tuned using setting. The noise effects are implemented as shader created as post processing material in Unreal Engine called [CameraSensorNoise](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/CameraSensorNoise.uasset).
