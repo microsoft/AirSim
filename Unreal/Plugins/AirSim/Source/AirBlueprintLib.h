@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/MeshComponent.h"
 #include "LandscapeProxy.h"
+#include "common/AirSimSettings.hpp"
 #include "AirBlueprintLib.generated.h"
 
 
@@ -91,6 +92,10 @@ public:
     {
         log_messages_hidden = is_hidden;
     }
+    static void SetMeshNamingMethod(msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType method)
+    {
+        mesh_naming_method = method;
+    }
 
     static void enableWorldRendering(AActor* context, bool enable);
 
@@ -110,5 +115,6 @@ private:
 
 private:
     static bool log_messages_hidden;
+    static msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType mesh_naming_method;
 };
 

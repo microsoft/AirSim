@@ -33,6 +33,8 @@ void ASimModeBase::BeginPlay()
 
 void ASimModeBase::setStencilIDs()
 {
+    UAirBlueprintLib::SetMeshNamingMethod(getSettings().segmentation_settings.mesh_naming_method);
+
     if (getSettings().segmentation_settings.init_method ==
         AirSimSettings::SegmentationSettings::InitMethodType::CommonObjectsRandomIDs) {
      
