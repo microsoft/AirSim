@@ -145,7 +145,7 @@ void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture
 
     if (!std::isnan(setting.fov_degrees))
         capture->FOVAngle = setting.fov_degrees;
-    if (!std::isnan(setting.ortho_width))
+    if (capture->ProjectionType == ECameraProjectionMode::Orthographic && !std::isnan(setting.ortho_width))
         capture->OrthoWidth = NedTransform::toNeuUU(setting.ortho_width);
 
     updateCameraPostProcessingSetting(capture->PostProcessSettings, setting);
@@ -160,7 +160,7 @@ void APIPCamera::updateCameraSetting(UCameraComponent* camera, const CaptureSett
 
     if (!std::isnan(setting.fov_degrees))
         camera->SetFieldOfView(setting.fov_degrees);
-    if (!std::isnan(setting.ortho_width))
+    if (camera->ProjectionMode == ECameraProjectionMode::Orthographic && !std::isnan(setting.ortho_width))
         camera->SetOrthoWidth(NedTransform::toNeuUU(setting.ortho_width));
 
     updateCameraPostProcessingSetting(camera->PostProcessSettings, setting);
