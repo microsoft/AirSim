@@ -205,6 +205,13 @@ void ASimHUD::setUnrealEngineSettings()
     static const auto render_timeout_var = IConsoleManager::Get().FindConsoleVariable(TEXT("g.TimeoutForBlockOnRenderFence"));
     render_timeout_var->Set(300000);
 
+    const bool main_viewport_visible = AirSimSettings::singleton().main_viewport_visible;
+
+    if (!main_viewport_visible) {
+        // This disables rendering of the main viewport in the same way as the
+        // console command "show rendering" would do.
+        GetWorld()->GetGameViewport()->EngineShowFlags.SetRendering(false);
+    }
 }
 
 void ASimHUD::setupInputBindings()
