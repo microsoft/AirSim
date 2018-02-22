@@ -20,6 +20,7 @@ public:
     static FQuat toFQuat(const Quaternionr& q, bool convert_from_ned);
     static Quaternionr toQuaternionr(const FQuat& q, bool convert_to_ned);
     static float toNedMeters(float length);
+    static float toNeuUU(float length);
 
     //TODO: make below private
     static FVector toFVector(const Vector3r& vec, float scale, bool convert_from_ned);
