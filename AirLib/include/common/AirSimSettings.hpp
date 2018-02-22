@@ -120,8 +120,13 @@ public: //types
             None, CommonObjectsRandomIDs
         };
 
+        enum class MeshNamingMethodType {
+            OwnerName, StaticMeshName
+        };
+
         InitMethodType init_method = InitMethodType::CommonObjectsRandomIDs;
         bool override_existing = false;
+        MeshNamingMethodType mesh_naming_method = MeshNamingMethodType::OwnerName;
     };
 
 private: //fields
@@ -401,6 +406,14 @@ private:
                 throw std::invalid_argument(std::string("SegmentationSettings init_method has invalid value in settings ") + init_method);
 
             segmentation_settings.override_existing = json_parent.getBool("OverrideExisting", false);
+
+            std::string mesh_naming_method = Utils::toLower(json_parent.getString("MeshNamingMethod", ""));
+            if (mesh_naming_method == "" || mesh_naming_method == "ownername")
+                segmentation_settings.mesh_naming_method = SegmentationSettings::MeshNamingMethodType::OwnerName;
+            else if (mesh_naming_method == "staticmeshname")
+                segmentation_settings.mesh_naming_method = SegmentationSettings::MeshNamingMethodType::StaticMeshName;
+            else
+                throw std::invalid_argument(std::string("SegmentationSettings MeshNamingMethod has invalid value in settings ") + mesh_naming_method);
         }
     }
 
