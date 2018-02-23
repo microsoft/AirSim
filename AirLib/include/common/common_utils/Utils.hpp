@@ -481,6 +481,15 @@ public:
         */
     }
 
+    static std::time_t to_time_t(const std::string& str, bool is_dst = false, const std::string& format = "%Y-%b-%d %H:%M:%S")
+    {
+        std::tm t = {0};
+        t.tm_isdst = is_dst ? 1 : 0;
+        std::istringstream ss(str);
+        ss >> std::get_time(&t, format.c_str());
+        return mktime(&t);
+    }
+
     static string to_string(time_point<system_clock> time, const char* format)
     {
         time_t tt = system_clock::to_time_t(time);
@@ -503,12 +512,14 @@ public:
         return ptr ? ptr : "";
     }
 
-    static uint64_t getUnixTimeStamp(std::time_t* t = nullptr)
+    static uint64_t getUnixTimeStamp(const std::time_t* t = nullptr)
     {
-        std::time_t st = std::time(t);
-        auto millies = static_cast<std::chrono::milliseconds>(st).count();
-        return static_cast<uint64_t>(millies);
+        //if specific time is not passed then get current time
+        std::time_t st = t == nullptr ? std::time(nullptr) : *t;
+        auto secs = static_cast<std::chrono::seconds>(st).count();
+        return static_cast<uint64_t>(secs);
     }
+
     //high precision time in seconds since epoch
     static double getTimeSinceEpochSecs(std::chrono::high_resolution_clock::time_point* t = nullptr)
     {

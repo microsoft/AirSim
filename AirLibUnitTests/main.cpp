@@ -5,12 +5,14 @@
 #include "SimpleFlightTest.hpp"
 #include "WorkerThreadTest.hpp"
 #include "QuaternionTest.hpp"
+#include "CelestialTests.hpp"
 
 int main()
 {
     using namespace msr::airlib;
 
     std::unique_ptr<TestBase> tests[] = {
+        std::unique_ptr<TestBase>(new CelestialTest()),
         std::unique_ptr<TestBase>(new SettingsTest()),
         std::unique_ptr<TestBase>(new SimpleFlightTest())
         //,

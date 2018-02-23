@@ -357,6 +357,9 @@ public: //consts
     static constexpr float Gravity = 9.80665f;    //m/s^2
     static constexpr float Radius = EARTH_RADIUS; //m
     static constexpr float SpeedOfLight = 299792458.0f; //m
+    static constexpr float Obliquity = Utils::degreesToRadians(23.4397f); 
+    static constexpr double Perihelion = Utils::degreesToRadians(102.9372); // perihelion of the Earth
+    static constexpr double DistanceFromSun = 149597870700.0; // meters
 
 private:
     /* magnetic field */

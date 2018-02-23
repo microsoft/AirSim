@@ -39,6 +39,9 @@
     <ClInclude Include="SettingsTest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CelestialTests.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

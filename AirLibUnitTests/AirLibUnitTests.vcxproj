@@ -187,6 +187,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CelestialTests.hpp" />
     <ClInclude Include="QuaternionTest.hpp" />
     <ClInclude Include="RosFlightTest.hpp" />
     <ClInclude Include="SettingsTest.hpp" />
