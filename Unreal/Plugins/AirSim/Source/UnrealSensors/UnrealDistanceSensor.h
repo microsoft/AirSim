@@ -9,7 +9,7 @@
 
 class UnrealDistanceSensor : public msr::airlib::DistanceSimple {
 public:
-    UnrealDistanceSensor(AActor* actor);
+    UnrealDistanceSensor(AActor* actor, const NedTransform* ned_transform);
 
 protected:
     virtual msr::airlib::real_T getRayLength(const msr::airlib::Pose& pose) override;
@@ -21,4 +21,5 @@ private:
 
 private:
     AActor* actor_;
+    const NedTransform* ned_transform_;
 };

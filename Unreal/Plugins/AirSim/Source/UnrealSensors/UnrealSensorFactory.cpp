@@ -7,9 +7,9 @@
 #include "UnrealSensors/UnrealDistanceSensor.h"
 
 
-UnrealSensorFactory::UnrealSensorFactory(AActor* actor)
+UnrealSensorFactory::UnrealSensorFactory(AActor* actor, const NedTransform* ned_transform)
 {
-    setActor(actor);
+    setActor(actor, ned_transform);
 }
 
 
@@ -19,15 +19,16 @@ std::unique_ptr<msr::airlib::SensorBase> UnrealSensorFactory::createSensor(msr::
 
     switch (sensor_type) {
     case SensorBase::SensorType::Distance:
-        return std::unique_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(actor_));
+        return std::unique_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(actor_, ned_transform_));
     default:
         return msr::airlib::SensorFactory::createSensor(sensor_type);
     }
 }
 
-void UnrealSensorFactory::setActor(AActor* actor)
+void UnrealSensorFactory::setActor(AActor* actor, const NedTransform* ned_transform)
 {
     actor_ = actor;
+    ned_transform_ = ned_transform;
 }
 
 

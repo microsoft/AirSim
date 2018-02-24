@@ -2,7 +2,7 @@
 #include "RenderRequest.h"
 #include "ImageUtils.h"
 #include "common/ClockFactory.hpp"
-#include "NedTransform.h"
+
 
 
 UnrealImageCapture::UnrealImageCapture(const std::vector<APIPCamera*>& cameras) 
@@ -70,8 +70,9 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
         response.image_data_uint8 = std::vector<uint8_t>(render_results[i]->image_data_uint8.GetData(), render_results[i]->image_data_uint8.GetData() + render_results[i]->image_data_uint8.Num());
         response.image_data_float = std::vector<float>(render_results[i]->image_data_float.GetData(), render_results[i]->image_data_float.GetData() + render_results[i]->image_data_float.Num());
 
-        response.camera_position = NedTransform::toNedMeters(camera->GetActorLocation());
-        response.camera_orientation = NedTransform::toQuaternionr(camera->GetActorRotation().Quaternion(), true);
+        msr::airlib::Pose pose = camera->getPose();
+        response.camera_position = pose.position;
+        response.camera_orientation = pose.orientation;
         response.pixels_as_float = request.pixels_as_float;
         response.compress = request.compress;
         response.width = render_results[i]->width;

@@ -16,7 +16,6 @@
 
 #include "FlyingPawn.h" 
 #include "AirBlueprintLib.h"
-#include "NedTransform.h"
 #include <exception>
 
 using namespace msr::airlib;
@@ -162,8 +161,8 @@ void MultiRotorConnector::updateRenderedState(float dt)
         manual_pose_controller_->updateDeltaPosition(dt);
         manual_pose_controller_->getDeltaPose(delta_position, delta_rotation);
         manual_pose_controller_->resetDelta();
-        Vector3r delta_position_ned = NedTransform::toNedMeters(delta_position, false);
-        Quaternionr delta_rotation_ned = NedTransform::toQuaternionr(delta_rotation.Quaternion(), true);
+        Vector3r delta_position_ned = vehicle_pawn_wrapper_->getNedTransform().toNedMeters(delta_position, false);
+        Quaternionr delta_rotation_ned = vehicle_pawn_wrapper_->getNedTransform().toQuaternionr(delta_rotation.Quaternion(), true);
 
         auto pose = vehicle_.getPose();
         pose.position += delta_position_ned;
@@ -392,8 +391,8 @@ void MultiRotorConnector::reportState(StateReporter& reporter)
 {
     // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
     if (vehicle_pawn_wrapper_ != nullptr) {
-        FVector unrealPosition = vehicle_pawn_wrapper_->getPosition();
-        reporter.writeValue("unreal pos", NedTransform::toVector3r(unrealPosition, 1.0f, false));
+        FVector unrealPosition = vehicle_pawn_wrapper_->getUUPosition();
+        reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
         vehicle_.reportState(reporter);
     }
 }

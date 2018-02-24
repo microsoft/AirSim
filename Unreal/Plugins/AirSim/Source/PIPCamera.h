@@ -6,6 +6,7 @@
 #include "common/ImageCaptureBase.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "common/AirSimSettings.hpp"
+#include "NedTransform.h"
 #include "PIPCamera.generated.h"
 
 
@@ -41,6 +42,7 @@ public:
     USceneCaptureComponent2D* getCaptureComponent(const ImageType type, bool if_active);
     UTextureRenderTarget2D* getRenderTarget(const ImageType type, bool if_active);
 
+    msr::airlib::Pose getPose() const;
     
 private:
 
@@ -55,16 +57,18 @@ private:
     UPROPERTY() UMaterial* noise_material_static_;
 
     std::vector<bool> camera_type_enabled_;
+    NedTransform ned_transform_;
 
 private:
     typedef common_utils::Utils Utils;
 
     static unsigned int imageTypeCount();
     void enableCaptureComponent(const ImageType type, bool is_enabled);
-    static void updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSetting& setting);
+    static void updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSetting& setting, 
+        const NedTransform& ned_transform);
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
-    static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting);
+    static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
 
 
 };

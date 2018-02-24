@@ -8,6 +8,7 @@
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"
 #include "physics/Kinematics.hpp"
+#include "NedTransform.h"
 #include "GameFramework/Pawn.h"
 
 class VehiclePawnWrapper
@@ -28,9 +29,6 @@ public:
         std::string vehicle_config_name;
         bool enable_collisions; 
         bool enable_passthrough_on_collisions; 
-        float home_lattitude;
-        float home_longitude;
-        float home_altitude;
         bool enable_trace;
 
         WrapperConfig() :
@@ -38,9 +36,6 @@ public:
             vehicle_config_name(""), //use the default config name
             enable_collisions(true),
             enable_passthrough_on_collisions(false),
-            home_lattitude(47.641468),
-            home_longitude(-122.140165),
-            home_altitude(122),
             enable_trace(false)
         {
         }
@@ -68,8 +63,6 @@ public: //interface
     Pose getPose() const;
     void setPose(const Pose& pose, bool ignore_collision);
     void setDebugPose(const Pose& debug_pose);
-    FVector getPosition() const;
-    FRotator getOrientation() const;
 
     void setKinematics(const msr::airlib::Kinematics::State* kinematics);
     const msr::airlib::Kinematics::State* getTrueKinematics();
@@ -87,11 +80,15 @@ public: //interface
     WrapperConfig& getConfig();
     const WrapperConfig& getConfig() const;
 
-    static VehiclePawnWrapper::Pose toPose(const FVector& u_position, const FQuat& u_quat);
     msr::airlib::Pose getActorPose(std::string actor_name);
     std::string getVehicleConfigName() const;
 
     int getRemoteControlID() const;
+
+    FVector getUUPosition() const;
+    FRotator getUUOrientation() const;
+
+    const NedTransform& getNedTransform() const;
 
 protected:
     UPROPERTY(VisibleAnywhere)
@@ -105,6 +102,7 @@ private: //methods
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
+    VehiclePawnWrapper::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
 
 
 private: //vars
@@ -117,6 +115,7 @@ private: //vars
     const msr::airlib::Kinematics::State* kinematics_;
     std::string log_line_;
     WrapperConfig config_;
+    NedTransform ned_transform_;
 
     struct State {
         FVector start_location;

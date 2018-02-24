@@ -6,8 +6,8 @@
 #include "common/Common.hpp"
 #include "NedTransform.h"
 
-UnrealDistanceSensor::UnrealDistanceSensor(AActor* actor)
-    : actor_(actor)
+UnrealDistanceSensor::UnrealDistanceSensor(AActor* actor, const NedTransform* ned_transform)
+    : actor_(actor), ned_transform_(ned_transform)
 {
 }
 
@@ -18,7 +18,7 @@ msr::airlib::real_T UnrealDistanceSensor::getRayLength(const msr::airlib::Pose& 
     Vector3r end = start + VectorMath::rotateVector(VectorMath::front(), pose.orientation, true) * getParams().max_distance;
 
     FHitResult dist_hit = FHitResult(ForceInit);
-    bool is_hit = UAirBlueprintLib::GetObstacle(actor_, NedTransform::toNeuUU(start), NedTransform::toNeuUU(end), dist_hit);
+    bool is_hit = UAirBlueprintLib::GetObstacle(actor_, ned_transform_->toNeuUU(start), ned_transform_->toNeuUU(end), dist_hit);
     float distance = is_hit? dist_hit.Distance / 100.0f : getParams().max_distance;
 
     //FString hit_name = FString("None");

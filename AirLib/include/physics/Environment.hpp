@@ -51,7 +51,7 @@ public:
     
     void setHomeGeoPoint(const GeoPoint& home_point)
     {
-        home_geo_point_ = EarthUtils::HomeGeoPoint(home_point);
+        home_geo_point_ = HomeGeoPoint(home_point);
     }
 
     GeoPoint getHomeGeoPoint() const
@@ -91,7 +91,7 @@ public:
     //*** End: UpdatableState implementation ***//
 
 private:
-    static void updateState(State& state, const EarthUtils::HomeGeoPoint& home_geo_point)
+    static void updateState(State& state, const HomeGeoPoint& home_geo_point)
     {
         state.geo_point = EarthUtils::nedToGeodetic(state.position, home_geo_point);
 
@@ -106,7 +106,7 @@ private:
 
 private:
     State initial_, current_;
-    EarthUtils::HomeGeoPoint home_geo_point_;
+    HomeGeoPoint home_geo_point_;
 };
 
 }} //namespace

@@ -7,7 +7,6 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "AirBlueprintLib.h"
 #include "ImageUtils.h"
-#include "NedTransform.h"
 
 
 APIPCamera::APIPCamera()
@@ -52,6 +51,8 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
     
+    ned_transform_.initialize(this->GetOwner());
+
     noise_materials_.AddZeroed(imageTypeCount() + 1);
 
     //by default all image types are disabled
@@ -121,12 +122,12 @@ void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureS
 {
     if (image_type >= 0) { //scene captue components
         updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type],
-            capture_setting);
+            capture_setting, ned_transform_);
 
         setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
     }
     else { //camera component
-        updateCameraSetting(camera_, capture_setting);
+        updateCameraSetting(camera_, capture_setting, ned_transform_);
 
         setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
     }
@@ -135,7 +136,8 @@ void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureS
 
 }
 
-void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSetting& setting)
+void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, 
+    const CaptureSetting& setting, const NedTransform& ned_transform)
 {
     render_target->InitAutoFormat(setting.width, setting.height); //256 X 144, X 480
     if (!std::isnan(setting.target_gamma))
@@ -146,12 +148,12 @@ void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture
     if (!std::isnan(setting.fov_degrees))
         capture->FOVAngle = setting.fov_degrees;
     if (capture->ProjectionType == ECameraProjectionMode::Orthographic && !std::isnan(setting.ortho_width))
-        capture->OrthoWidth = NedTransform::toNeuUU(setting.ortho_width);
+        capture->OrthoWidth = ned_transform.toNeuUU(setting.ortho_width);
 
     updateCameraPostProcessingSetting(capture->PostProcessSettings, setting);
 }
 
-void APIPCamera::updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting)
+void APIPCamera::updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform)
 {
     //if (!std::isnan(setting.target_gamma))
     //    camera-> = setting.target_gamma;
@@ -161,11 +163,16 @@ void APIPCamera::updateCameraSetting(UCameraComponent* camera, const CaptureSett
     if (!std::isnan(setting.fov_degrees))
         camera->SetFieldOfView(setting.fov_degrees);
     if (camera->ProjectionMode == ECameraProjectionMode::Orthographic && !std::isnan(setting.ortho_width))
-        camera->SetOrthoWidth(NedTransform::toNeuUU(setting.ortho_width));
+        camera->SetOrthoWidth(ned_transform.toNeuUU(setting.ortho_width));
 
     updateCameraPostProcessingSetting(camera->PostProcessSettings, setting);
 }
 
+msr::airlib::Pose APIPCamera::getPose() const
+{
+    return Pose(ned_transform_.toNedMeters(this->GetActorLocation()),
+        ned_transform_.toQuaternionr(this->GetActorRotation().Quaternion(), true));
+}
 
 void APIPCamera::updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting)
 {

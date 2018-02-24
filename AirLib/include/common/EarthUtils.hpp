@@ -285,27 +285,6 @@ public:
         );
     }
 
-    struct HomeGeoPoint {
-        GeoPoint home_point;
-        double lat_rad, lon_rad;
-        double cos_lat, sin_lat;
-
-        HomeGeoPoint()
-        {}
-        HomeGeoPoint(const GeoPoint& home_point_val)
-        {
-            initialize(home_point_val);
-        }
-        void initialize(const GeoPoint& home_point_val)
-        {
-            home_point = home_point_val;
-            lat_rad = Utils::degreesToRadians(home_point.latitude);
-            lon_rad = Utils::degreesToRadians(home_point.longitude);
-            cos_lat = cos(lat_rad);
-            sin_lat = sin(lat_rad);
-        }
-    };
-
     static GeoPoint nedToGeodetic(const Vector3r& v, const HomeGeoPoint& home_geo_point)
     {
         double x_rad = v.x() / EARTH_RADIUS;

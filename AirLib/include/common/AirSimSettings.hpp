@@ -129,6 +129,10 @@ public: //types
         MeshNamingMethodType mesh_naming_method = MeshNamingMethodType::OwnerName;
     };
 
+    struct TimeOfDaySettings {
+        bool enabled = false;
+    };
+
 private: //fields
     float settings_version_actual;
     float settings_version_minimum = 1;
@@ -158,6 +162,7 @@ public: //fields
     float clock_speed;
     bool engine_sound;
     bool log_messages_visible;
+    HomeGeoPoint origin_geopoint;
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -198,6 +203,9 @@ public: //methods
 
         initializeSubwindowSettings();
         initializeImageTypeSettings();
+        segmentation_settings = SegmentationSettings();
+        noise_settings.clear();
+        capture_settings.clear();
 
         simmode_name = "";
         recording_settings = RecordingSettings();
@@ -213,6 +221,8 @@ public: //methods
         clock_speed = 1.0f;
         engine_sound = true;     
         log_messages_visible = true;
+        //0,0,0 in Unreal is mapped to this GPS coordinates
+        origin_geopoint = HomeGeoPoint(GeoPoint(47.641468, -122.140165, 122)); 
     }
 
     VehicleSettings getVehicleSettings(const std::string& vehicle_name)

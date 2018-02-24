@@ -2,9 +2,10 @@
 #include "AirBlueprintLib.h"
 
 
-FVector NedTransform::offset_ = FVector::ZeroVector;
-float NedTransform::world_to_meters_ = 100.0f;
-bool NedTransform::is_initialized_ = false;
+NedTransform::NedTransform()
+    : is_initialized_(false), world_to_meters_(100.0f), offset_(FVector::ZeroVector)
+{
+}
 
 void NedTransform::initialize(const AActor* pivot)
 {
@@ -19,38 +20,38 @@ void NedTransform::initialize(const AActor* pivot)
     is_initialized_ = true;
 }
 
-bool NedTransform::isInitialized()
+bool NedTransform::isInitialized() const
 {
     return is_initialized_;
 }
 
-float NedTransform::toNedMeters(float length)
+float NedTransform::toNedMeters(float length) const
 {
     return length / world_to_meters_;
 }
 
-float NedTransform::toNeuUU(float length)
+float NedTransform::toNeuUU(float length) const
 {
     return length * world_to_meters_;
 }
 
-NedTransform::Vector3r NedTransform::toNedMeters(const FVector& position, bool use_offset)
+NedTransform::Vector3r NedTransform::toNedMeters(const FVector& position, bool use_offset) const
 {
     return NedTransform::toVector3r(position - (use_offset ? offset_ : FVector::ZeroVector), 1 / world_to_meters_, true);
 }
 
-FVector NedTransform::toNeuUU(const NedTransform::Vector3r& position)
+FVector NedTransform::toNeuUU(const NedTransform::Vector3r& position) const
 {
     return NedTransform::toFVector(position, world_to_meters_, true) + offset_;
 }
 
-FVector NedTransform::toFVector(const Vector3r& vec, float scale, bool convert_from_ned)
+FVector NedTransform::toFVector(const Vector3r& vec, float scale, bool convert_from_ned) const
 {
     return FVector(vec.x() * scale, vec.y() * scale, 
         (convert_from_ned ? -vec.z() : vec.z()) * scale);
 }
 
-FQuat NedTransform::toFQuat(const Quaternionr& q, bool convert_from_ned)
+FQuat NedTransform::toFQuat(const Quaternionr& q, bool convert_from_ned) const
 {
     return FQuat(
         convert_from_ned ? -q.x() : q.x(), 
@@ -59,13 +60,13 @@ FQuat NedTransform::toFQuat(const Quaternionr& q, bool convert_from_ned)
 }
 
 
-NedTransform::Vector3r NedTransform::toVector3r(const FVector& vec, float scale, bool convert_to_ned)
+NedTransform::Vector3r NedTransform::toVector3r(const FVector& vec, float scale, bool convert_to_ned) const
 {
     return Vector3r(vec.X * scale, vec.Y * scale, 
         (convert_to_ned ? -vec.Z : vec.Z)  * scale);
 }
 
-NedTransform::Quaternionr NedTransform::toQuaternionr(const FQuat& q, bool convert_to_ned)
+NedTransform::Quaternionr NedTransform::toQuaternionr(const FQuat& q, bool convert_to_ned) const
 {
     return Quaternionr(q.W, 
         convert_to_ned ? -q.X : q.X, 

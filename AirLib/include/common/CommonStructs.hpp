@@ -172,6 +172,27 @@ struct GeoPoint {
     }
 };
 
+struct HomeGeoPoint {
+    GeoPoint home_point;
+    double lat_rad, lon_rad;
+    double cos_lat, sin_lat;
+
+    HomeGeoPoint()
+    {}
+    HomeGeoPoint(const GeoPoint& home_point_val)
+    {
+        initialize(home_point_val);
+    }
+    void initialize(const GeoPoint& home_point_val)
+    {
+        home_point = home_point_val;
+        lat_rad = Utils::degreesToRadians(home_point.latitude);
+        lon_rad = Utils::degreesToRadians(home_point.longitude);
+        cos_lat = cos(lat_rad);
+        sin_lat = sin(lat_rad);
+    }
+};
+
 struct CollisionInfo {
     bool has_collided = false;
     Vector3r normal = Vector3r::Zero();
