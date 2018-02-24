@@ -470,9 +470,13 @@ public:
         return system_clock::now();
     }
 
-    static string to_string(time_point<system_clock> time)
+    static std::time_t to_time_t(const std::string& str, bool is_dst = false, const std::string& format = "%Y-%m-%d %H:%M:%S")
     {
-        return to_string(time, "%Y-%m-%d-%H-%M-%S");
+        std::tm t = {0};
+        t.tm_isdst = is_dst ? 1 : 0;
+        std::istringstream ss(str);
+        ss >> std::get_time(&t, format.c_str());
+        return mktime(&t);
 
         /* GCC doesn't implement put_time yet
         stringstream ss;
@@ -481,16 +485,15 @@ public:
         */
     }
 
-    static std::time_t to_time_t(const std::string& str, bool is_dst = false, const std::string& format = "%Y-%b-%d %H:%M:%S")
+    static string to_string(time_t tt, const char* format = "%Y-%m-%d-%H-%M-%S")
     {
-        std::tm t = {0};
-        t.tm_isdst = is_dst ? 1 : 0;
-        std::istringstream ss(str);
-        ss >> std::get_time(&t, format.c_str());
-        return mktime(&t);
+        char str[1024];
+        if (std::strftime(str, sizeof(str), format, std::localtime(&tt)))
+            return string(str);
+        else return string();
     }
 
-    static string to_string(time_point<system_clock> time, const char* format)
+    static string to_string(time_point<system_clock> time, const char* format = "%Y-%m-%d-%H-%M-%S")
     {
         time_t tt = system_clock::to_time_t(time);
         char str[1024];

@@ -1,15 +1,10 @@
 #include "SimModeWorldBase.h"
-#include "common/ScalableClock.hpp"
-#include "common/SteppableClock.hpp"
 #include <exception>
 
-const char ASimModeWorldBase::kUsageScenarioComputerVision[] = "ComputerVision";
 
 void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();
-
-    setupClock();
 
     manual_pose_controller = NewObject<UManualPoseController>();
     setupInputBindings();
@@ -33,22 +28,6 @@ void ASimModeWorldBase::BeginPlay()
     }
 }
 
-void ASimModeWorldBase::setupClock()
-{
-    typedef msr::airlib::ClockFactory ClockFactory;
-
-    float clock_speed = getSettings().clock_speed;
-    std::string clock_type = getSettings().clock_type;
-
-    if (clock_type == "ScalableClock")
-        ClockFactory::get(std::make_shared<msr::airlib::ScalableClock>(clock_speed == 1 ? 1 : 1 / clock_speed));
-    else if (clock_type == "SteppableClock")
-        ClockFactory::get(std::make_shared<msr::airlib::SteppableClock>(
-            static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
-    else
-        throw std::invalid_argument(common_utils::Utils::stringf(
-            "clock_type %s is not recognized", clock_type.c_str()));
-}
 
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -70,23 +49,6 @@ void ASimModeWorldBase::stopAsyncUpdator()
     physics_world_->stopAsyncUpdator();
 }
 
-long long ASimModeWorldBase::getPhysicsLoopPeriod() //nanoseconds
-{
-    /*
-    300Hz seems to be minimum for non-aggresive flights
-    400Hz is needed for moderately aggressive flights (such as
-    high yaw rate with simultaneous back move)
-    500Hz is recommanded for more aggressive flights
-    Lenovo P50 high-end config laptop seems to be topping out at 400Hz.
-    HP Z840 desktop high-end config seems to be able to go up to 500Hz.
-    To increase freq with limited CPU power, switch Barometer to constant ref mode.
-    */
-
-    if (getSettings().usage_scenario == kUsageScenarioComputerVision)
-        return 30000000LL; //30ms
-    else
-        return 3000000LL; //3ms
-}
 
 std::vector<ASimModeWorldBase::UpdatableObject*> ASimModeWorldBase::toUpdatableObjects(
     const std::vector<ASimModeWorldBase::VehiclePtr>& vehicles)

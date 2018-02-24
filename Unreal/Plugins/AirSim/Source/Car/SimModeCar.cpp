@@ -170,6 +170,8 @@ void ASimModeCar::reset()
 
 void ASimModeCar::Tick(float DeltaSeconds)
 {
+    Super::Tick(DeltaSeconds);
+
     report_wrapper_.update();
     report_wrapper_.setEnable(EnableReport);
 

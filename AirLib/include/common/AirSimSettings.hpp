@@ -131,6 +131,10 @@ public: //types
 
     struct TimeOfDaySettings {
         bool enabled = false;
+        std::string start_datetime = "";    //format: %Y-%m-%d %H:%M:%S
+        bool is_start_datetime_dst = false;
+        float celestial_clock_speed = 1;
+        float update_interval_secs = 60;
     };
 
 private: //fields
@@ -147,6 +151,7 @@ public: //fields
 
     RecordingSettings recording_settings;
     SegmentationSettings segmentation_settings;
+    TimeOfDaySettings tod_settings;
 
     std::vector<std::string> warning_messages;
 
@@ -547,6 +552,28 @@ private:
 
         enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
         log_messages_visible = settings.getBool("LogMessagesVisible", true);
+
+        {   //load origin geopoint
+            Settings origin_geopoint_json;
+            if (settings.getChild("OriginGeopoint", origin_geopoint_json)) {
+                GeoPoint origin = origin_geopoint.home_point;
+                origin.latitude = origin_geopoint_json.getDouble("Latitude", origin.latitude);
+                origin.longitude = origin_geopoint_json.getDouble("Longitude", origin.longitude);
+                origin.altitude = origin_geopoint_json.getFloat("Latitude", origin.altitude);
+                origin_geopoint.initialize(origin);
+            }
+        }
+
+        {   //time of day settings
+            Settings tod_settings_json;
+            if (settings.getChild("TimeOfDay", tod_settings_json)) {
+                tod_settings.enabled = tod_settings_json.getBool("Enabled", tod_settings.enabled);
+                tod_settings.start_datetime = tod_settings_json.getString("StartDateTime", tod_settings.start_datetime);
+                tod_settings.celestial_clock_speed = tod_settings_json.getFloat("CelestialClockSpeed", tod_settings.celestial_clock_speed);
+                tod_settings.is_start_datetime_dst = tod_settings_json.getBool("StartDateTimeDst", tod_settings.is_start_datetime_dst);
+                tod_settings.update_interval_secs = tod_settings_json.getFloat("UpdateIntervalSecs", tod_settings.update_interval_secs);
+            }
+        }
     }
 
     void loadClockSettings(const Settings& settings)

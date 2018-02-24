@@ -51,7 +51,8 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
     
-    ned_transform_.initialize(this->GetOwner());
+    auto* p = this->GetAttachParentActor();
+    ned_transform_.initialize(p ? p : this);
 
     noise_materials_.AddZeroed(imageTypeCount() + 1);
 

@@ -7,6 +7,8 @@
 #include "ManualPoseController.h"
 #include "VehiclePawnWrapper.h"
 #include "common/AirSimSettings.hpp"
+#include "Components/SkyLightComponent.h"
+#include "Engine/DirectionalLight.h"
 #include "SimModeBase.generated.h"
 
 
@@ -50,15 +52,29 @@ protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;
     virtual void setupInputBindings();
     virtual const AirSimSettings& getSettings() const;
+    long long getPhysicsLoopPeriod();
 
 protected: //settings
     int record_tick_count;
+    static const char kUsageScenarioComputerVision[];
+
 
 private:
     typedef common_utils::Utils Utils;
+    typedef msr::airlib::ClockFactory ClockFactory;
+    typedef msr::airlib::TTimePoint TTimePoint;
 
 private:
-    void readSettings();
-    void setStencilIDs();
+    UClass* sky_sphere_class_;
+    UPROPERTY() AActor* sky_sphere_;
+    UPROPERTY() ADirectionalLight* sun_;;
+    TTimePoint tod_sim_clock_start_;
+    TTimePoint tod_last_update_;
+    std::time_t tod_start_time_;
 
+private:
+    void setStencilIDs();
+    void setupTimeOfDay();
+    void setupClock();
+    void advanceTimeOfDay();
 };
