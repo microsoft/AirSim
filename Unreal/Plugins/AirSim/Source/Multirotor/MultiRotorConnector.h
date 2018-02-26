@@ -113,6 +113,7 @@ private:
 
     //reset must happen while World is locked so its async task initiated from API thread
     bool reset_pending_;
+    bool did_reset_;
     std::packaged_task<void()> reset_task_;
 
     Pose last_pose_; //for trace lines showing vehicle path
