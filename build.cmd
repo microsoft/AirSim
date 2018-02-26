@@ -35,7 +35,7 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1 (
 	ECHO Downloading rpclib
 	ECHO *****************************************************************************************
 	@echo on
-	powershell -command "& { iwr https://github.com/rpclib/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip }"
+	powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/rpclib/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip }"
 	@echo off
 	
 	REM //remove any previous versions
@@ -91,7 +91,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.1.7 (
         @echo on
         REM powershell -command "& { Start-BitsTransfer -Source https://github.com/Microsoft/AirSim/releases/download/v1.1.7/car_assets.zip -Destination suv_download_tmp\car_assets.zip }"
         REM powershell -command "& { (New-Object System.Net.WebClient).DownloadFile('https://github.com/Microsoft/AirSim/releases/download/v1.1.7/car_assets.zip', 'suv_download_tmp\car_assets.zip') }"
-        powershell -command "& { iwr https://github.com/Microsoft/AirSim/releases/download/v1.1.7/car_assets.zip -OutFile suv_download_tmp\car_assets.zip }"
+        powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/Microsoft/AirSim/releases/download/v1.1.7/car_assets.zip -OutFile suv_download_tmp\car_assets.zip }"
         @echo off
 		rmdir /S /Q Unreal\Plugins\AirSim\Content\VehicleAdv\SUV
         powershell -command "& { Expand-Archive -Path suv_download_tmp\car_assets.zip -DestinationPath Unreal\Plugins\AirSim\Content\VehicleAdv }"
@@ -108,7 +108,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.1.7 (
 REM //---------- get Eigen library ----------
 IF NOT EXIST AirLib\deps mkdir AirLib\deps
 IF NOT EXIST AirLib\deps\eigen3 (
-    powershell -command "& { iwr http://bitbucket.org/eigen/eigen/get/3.3.2.zip -OutFile eigen3.zip }"
+    powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr http://bitbucket.org/eigen/eigen/get/3.3.2.zip -OutFile eigen3.zip }"
     powershell -command "& { Expand-Archive -Path eigen3.zip -DestinationPath AirLib\deps }"
     move AirLib\deps\eigen* AirLib\deps\del_eigen
     mkdir AirLib\deps\eigen3
