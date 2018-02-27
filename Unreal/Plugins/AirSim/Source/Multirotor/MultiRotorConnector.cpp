@@ -54,6 +54,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* vehicle_pawn_wrappe
     last_pose_ = pending_pose_ = last_debug_pose_ = Pose::nanPose();
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
+    did_reset_ = false;
 
     std::string message;
     if (!vehicle_.getController()->isAvailable(message)) {
@@ -146,6 +147,7 @@ void MultiRotorConnector::updateRenderedState(float dt)
     //if reset is pending then do it first, no need to do other things until next tick
     if (reset_pending_) {
         reset_task_();
+        did_reset_ = true;
         return;
     }
 
@@ -200,8 +202,15 @@ void MultiRotorConnector::updateRendering(float dt)
 {
     //if we did reset then don't worry about synchrnozing states for this tick
     if (reset_pending_) {
-        reset_pending_ = false;
-        return;
+        // Continue to wait for reset
+        if (!did_reset_) {
+            return;
+        }
+        else {
+            reset_pending_ = false;
+            did_reset_ = false;
+            return;
+        }
     }
 
     try {
@@ -363,6 +372,7 @@ void MultiRotorConnector::reset()
         reset_task_ = std::packaged_task<void()>([this]() { resetPrivate(); });
         std::future<void> reset_result = reset_task_.get_future();
         reset_pending_ = true;
+        did_reset_ = false;
         reset_result.wait();
     }
 }
