@@ -4,7 +4,6 @@
 #include "Car/SimModeCar.h"
 #include "common/AirSimSettings.hpp"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Runtime/Engine/Public/Slate/SceneViewport.h"
 
 #include <stdexcept>
 
@@ -205,24 +204,6 @@ void ASimHUD::setUnrealEngineSettings()
     //we get error that GameThread has timed out after 30 sec waiting on render thread
     static const auto render_timeout_var = IConsoleManager::Get().FindConsoleVariable(TEXT("g.TimeoutForBlockOnRenderFence"));
     render_timeout_var->Set(300000);
-
-    const bool main_viewport_visible = AirSimSettings::singleton().main_viewport_visible;
-
-    if (!main_viewport_visible) {
-        // This disables rendering of the main viewport in the same way as the
-        // console command "show rendering" would do.
-        GetWorld()->GetGameViewport()->EngineShowFlags.SetRendering(false);
-
-        // When getting an image through the API, the image is produced after the render
-        // thread has finished rendering the current and the subsequent frame. This means
-        // that the frame rate for obtaining images through the API is only half as high as
-        // it could be, since only every other image is actually captured. We work around
-        // this by telling the viewport to flush the rendering queue at the end of each
-        // drawn frame so that it executes our render request at that point already.
-        // Do this only if the main viewport is not being rendered anyway in case there are
-        // any adverse performance effects during main rendering.
-        GetWorld()->GetGameViewport()->GetGameViewport()->IncrementFlushOnDraw();
-    }
 }
 
 void ASimHUD::setupInputBindings()

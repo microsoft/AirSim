@@ -167,7 +167,6 @@ public: //fields
     float clock_speed;
     bool engine_sound;
     bool log_messages_visible;
-    bool main_viewport_visible;
     HomeGeoPoint origin_geopoint;
 
 public: //methods
@@ -227,7 +226,6 @@ public: //methods
         clock_speed = 1.0f;
         engine_sound = true;     
         log_messages_visible = true;
-        main_viewport_visible = true;
         //0,0,0 in Unreal is mapped to this GPS coordinates
         origin_geopoint = HomeGeoPoint(GeoPoint(47.641468, -122.140165, 122)); 
     }
@@ -554,7 +552,6 @@ private:
 
         enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
         log_messages_visible = settings.getBool("LogMessagesVisible", true);
-        main_viewport_visible = settings.getBool("MainViewportVisible", true);
 
         {   //load origin geopoint
             Settings origin_geopoint_json;
