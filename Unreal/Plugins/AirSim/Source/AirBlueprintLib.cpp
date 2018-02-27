@@ -16,6 +16,7 @@
 //#include "Runtime/Foliage/Public/FoliageType.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "MessageDialog.h"
+#include "Engine/LocalPlayer.h"
 #include "Engine/Engine.h"
 
 /*
