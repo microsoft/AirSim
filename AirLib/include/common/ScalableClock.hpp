@@ -66,8 +66,6 @@ protected:
 
 
 private:
-    typedef std::chrono::high_resolution_clock clock;
-
     double scale_;
     TTimeDelta latency_;
     double offset_;
