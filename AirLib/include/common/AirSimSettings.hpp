@@ -559,7 +559,7 @@ private:
                 GeoPoint origin = origin_geopoint.home_point;
                 origin.latitude = origin_geopoint_json.getDouble("Latitude", origin.latitude);
                 origin.longitude = origin_geopoint_json.getDouble("Longitude", origin.longitude);
-                origin.altitude = origin_geopoint_json.getFloat("Latitude", origin.altitude);
+                origin.altitude = origin_geopoint_json.getFloat("Altitude", origin.altitude);
                 origin_geopoint.initialize(origin);
             }
         }

@@ -61,6 +61,38 @@ Below are complete list of settings available along with their default values. I
       "OrthoWidth": 5.12
     }
   ],
+  "OriginGeopoint": {
+    "Latitude": 47.641468,
+    "Latitude": -122.140165,
+    "Altitude": 122
+  },
+  "TimeOfDay": {
+    "Enabled": false,
+    "StartDateTime": "",
+    "CelestialClockSpeed": 1,
+    "StartDateTimeDst": false,
+    "UpdateIntervalSecs": 60
+  },
+  "SubWindows": [
+    {"WindowID": 0, "CameraID": 0, "ImageType": 3, "Visible": false},
+    {"WindowID": 1, "CameraID": 0, "ImageType": 5, "Visible": false},
+    {"WindowID": 2, "CameraID": 0, "ImageType": 0, "Visible": false}    
+  ],
+  "SimpleFlight": {
+    "FirmwareName": "SimpleFlight",
+    "DefaultVehicleState": "Armed",
+    "RC": {
+      "RemoteControlID": 0,
+      "AllowAPIWhenDisconnected": false,
+      "AllowAPIAlways": true
+    },
+    "ApiServerPort": 41451
+  },
+  "SegmentationSettings": {
+    "InitMethod": "",
+    "MeshNamingMethod": "",
+    "OverrideExisting": false
+  },
   "NoiseSettings": [
     {
       "Enabled": false,
@@ -84,26 +116,6 @@ Below are complete list of settings available along with their default values. I
       "HorzDistortionStrength": 0.002
     }
   ],
-  "SubWindows": [
-    {"WindowID": 0, "CameraID": 0, "ImageType": 3, "Visible": false},
-    {"WindowID": 1, "CameraID": 0, "ImageType": 5, "Visible": false},
-    {"WindowID": 2, "CameraID": 0, "ImageType": 0, "Visible": false}    
-  ],
-  "SimpleFlight": {
-    "FirmwareName": "SimpleFlight",
-    "DefaultVehicleState": "Armed",
-    "RC": {
-      "RemoteControlID": 0,
-      "AllowAPIWhenDisconnected": false,
-      "AllowAPIAlways": true
-    },
-    "ApiServerPort": 41451
-  },
-  "SegmentationSettings": {
-    "InitMethod": "",
-    "MeshNamingMethod": "",
-    "OverrideExisting": false
-  },
   "PX4": {
     "FirmwareName": "PX4",
     "LogViewerHostIp": "127.0.0.1",
@@ -166,6 +178,12 @@ The ViewMode determines how you will view the vehicle. For multirotors, the defa
 * Fpv: View the scene from front camera of vehicle
 * Manual: Don't move camera automatically. Use arrow keys and ASWD keys for move camera manually.
 * SpringArmChase: Chase the vehicle with camera mounted on (invisible) arm that is attached to the vehicle via spring (so it has some latency in movement).
+
+### TimeOfDay
+This section of settings controls the position of Sun in the environment. By default `Enabled` is false which means Sun's position is left at whatever was the default in the environment and it doesn't change over the time. If `Enabled` is true then Sun position is computed using longitude, latitude and altitude specified in `OriginGeopoint` section for the date specified in `StartDateTime` in the string format as `%Y-%m-%d %H:%M:%S`, for example, `2018-02-12 15:20:00`. If this string is empty then current date and time is used. If `StartDateTimeDst` is true then we adjust for day light savings time. The Sun's position is then contibuously updated at the interval specified in `UpdateIntervalSecs`. In some cases, it might be desirable to have celestial clock run faster or slower than simulation clock. This can be specified using `CelestialClockSpeed`, for example, value 100 means for every 1 second of simulation clock, Sun's position is advanced by 100 seconds so Sun will move in sky much faster.
+
+### OriginGeopoint
+This specifies the latitude, longitude and altitude of the coordinates (0, 0, 0) in Unreal Units in the Unreal Engine environment. The vehicle's home point is computed using this transformation. Note that all coordinates exposed via APIs are using NED system in SI units which means each vehicle starts at (0, 0, 0) in NED system. Time of Day settings are computed at (0, 0, 0) coordinates in Unreal Engine environment. This means that Sun position is computed for geographical coordinates specified in `OriginGeopoint` and time specified in `TimeOfDay` section in settings.json.
 
 ### EngineSound
 To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. Currently this setting applies only to car.

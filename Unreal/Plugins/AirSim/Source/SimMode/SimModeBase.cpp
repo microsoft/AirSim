@@ -97,7 +97,7 @@ void ASimModeBase::setupTimeOfDay()
             //}
 
             tod_sim_clock_start_ = ClockFactory::get()->nowNanos();
-            tod_last_update_ = tod_sim_clock_start_;
+            tod_last_update_ = 0;
             if (tod_settings.start_datetime != "")
                 tod_start_time_ = Utils::to_time_t(tod_settings.start_datetime, tod_settings.is_start_datetime_dst);
             else
@@ -161,9 +161,10 @@ void ASimModeBase::Tick(float DeltaSeconds)
 
 void ASimModeBase::advanceTimeOfDay()
 {
-    if (sky_sphere_ && sun_) {
+    const auto& settings = getSettings();
+
+    if (settings.tod_settings.enabled && sky_sphere_ && sun_) {
         auto secs = ClockFactory::get()->elapsedSince(tod_last_update_);
-        const auto& settings = getSettings();
         if (secs > settings.tod_settings.update_interval_secs) {
             tod_last_update_ = ClockFactory::get()->nowNanos();
 

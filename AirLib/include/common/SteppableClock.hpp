@@ -16,10 +16,10 @@ public:
     //TTimePoint is nano seconds passed since some fixed point in time
     //step is how much we would advance the clock by default when calling step()
     //by default we advance by 20ms
-    SteppableClock(TTimeDelta step = 20E-3f, TTimePoint start = 1000)
+    SteppableClock(TTimeDelta step = 20E-3f, TTimePoint start = 0)
         : current_(start), step_(step)
     {
-        current_ = start;
+        current_ = start ? start : Utils::getTimeSinceEpochNanos();
     }
 
     TTimePoint stepBy(TTimeDelta amount)

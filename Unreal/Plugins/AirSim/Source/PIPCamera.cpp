@@ -51,6 +51,9 @@ void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
     
+    //Computer transform using the actor that this camera is attached to
+    //if this is free floting camera like external observer camera then just use 
+    //itself to select origin point
     auto* p = this->GetAttachParentActor();
     ned_transform_.initialize(p ? p : this);
 
