@@ -75,7 +75,8 @@ private: //methods
         Output output;
         const GroundTruth& ground_truth = getGroundTruth();
 
-        auto distance = getRayLength(ground_truth.kinematics->pose + params_.relative_pose);
+        //order of Pose addition is important here because it also adds quaternions which is not commutative!
+        auto distance = getRayLength(params_.relative_pose + ground_truth.kinematics->pose);
 
         //add noise in distance (about 0.2m sigma)
         distance += uncorrelated_noise_.next();
