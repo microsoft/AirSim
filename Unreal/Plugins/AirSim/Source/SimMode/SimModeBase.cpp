@@ -79,22 +79,14 @@ void ASimModeBase::setupTimeOfDay()
 
         if (sky_spheres.Num() >= 1) {
             sky_sphere_ = sky_spheres[0];
-            //for (TFieldIterator<UProperty> PropIt(sky_sphere_->GetClass()); PropIt; ++PropIt)
-            //{
-            //    // We are iterating over all properties of Actor
-            //    UProperty* Property{ *PropIt };
-            //    FString PropertyName{ GetNameSafe(Property) };
-            //    std::string MyStdString(TCHAR_TO_UTF8(*PropertyName));
-            //    Utils::log(MyStdString);
-            //}
             static const FName sun_prop_name(TEXT("Directional light actor"));
             auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
             UObjectProperty* sun_prop = Cast<UObjectProperty>( p);
             UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
             sun_ = Cast<ADirectionalLight>(sun_obj);
-            //if (sun_) {
-            //    sun_->GetRootComponent()->Mobility = EComponentMobility::Movable;
-            //}
+            if (sun_) {
+                sun_->GetRootComponent()->Mobility = EComponentMobility::Movable;
+            }
 
             tod_sim_clock_start_ = ClockFactory::get()->nowNanos();
             tod_last_update_ = 0;
