@@ -18,8 +18,8 @@ enum class ECameraDirectorMode : uint8
     CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3	UMETA(DisplayName = "FlyWithMe"),
     CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName = "Manual"),
     CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE = 5	UMETA(DisplayName = "SpringArmChase"),
-    CAMREA_DIRECTOR_MODE_BACKUP = 6     UMETA(DisplayName = "Backup"),
-    CAMREA_DIRECTOR_MODE_NODISPLAY = 7      UMETA(DisplayName = "No Display")
+    CAMERA_DIRECTOR_MODE_BACKUP = 6     UMETA(DisplayName = "Backup"),
+    CAMERA_DIRECTOR_MODE_NODISPLAY = 7      UMETA(DisplayName = "No Display")
 };
 
 UCLASS()

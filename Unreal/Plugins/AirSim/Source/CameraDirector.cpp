@@ -1,5 +1,6 @@
 #include "CameraDirector.h"
 #include "GameFramework/PlayerController.h"
+#include "Runtime/Engine/Public/Slate/SceneViewport.h"
 #include "AirBlueprintLib.h"
 
 ACameraDirector::ACameraDirector()
@@ -34,7 +35,7 @@ void ACameraDirector::Tick(float DeltaTime)
     else if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE) {
         //do nothing, spring arm is pulling the camera with it
     }
-    else if (mode_ == ECameraDirectorMode::CAMREA_DIRECTOR_MODE_NODISPLAY) {
+    else if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY) {
         //do nothing, we have camera turned off
     }
     else { //make camera move in desired way
@@ -92,8 +93,8 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
     case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER: inputEventGroundView(); break;
     case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL: inputEventManualView(); break;
     case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE: inputEventSpringArmChaseView(); break;
-    case ECameraDirectorMode::CAMREA_DIRECTOR_MODE_BACKUP: inputEventBackupView(); break;
-    case ECameraDirectorMode::CAMREA_DIRECTOR_MODE_NODISPLAY: inputEventNoDisplayView(); break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP: inputEventBackupView(); break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY: inputEventNoDisplayView(); break;
     default:
         throw std::out_of_range("Unsupported view mode specified in CameraDirector::initializeForBeginPlay");
     }
@@ -146,6 +147,32 @@ void ACameraDirector::setMode(ECameraDirectorMode mode)
         attachSpringArm(false);
     }
 
+    // Enable/disable primary viewport rendering flag
+    if (mode_ != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY &&
+        mode == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY)
+    {
+        // This disables rendering of the main viewport in the same way as the
+        // console command "show rendering" would do.
+        GetWorld()->GetGameViewport()->EngineShowFlags.SetRendering(false);
+
+        // When getting an image through the API, the image is produced after the render
+        // thread has finished rendering the current and the subsequent frame. This means
+        // that the frame rate for obtaining images through the API is only half as high as
+        // it could be, since only every other image is actually captured. We work around
+        // this by telling the viewport to flush the rendering queue at the end of each
+        // drawn frame so that it executes our render request at that point already.
+        // Do this only if the main viewport is not being rendered anyway in case there are
+        // any adverse performance effects during main rendering.
+        GetWorld()->GetGameViewport()->GetGameViewport()->IncrementFlushOnDraw();
+    }
+    else if(mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY &&
+            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY)
+    {
+        // Re-enable rendering
+        GetWorld()->GetGameViewport()->EngineShowFlags.SetRendering(true);
+        GetWorld()->GetGameViewport()->GetGameViewport()->DecrementFlushOnDraw();
+    }
+
     mode_ = mode;
 
     //if new mode is manual mode then add key bindings
@@ -171,7 +198,7 @@ void ACameraDirector::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("inputEventManualView", EKeys::M, this, &ACameraDirector::inputEventManualView);
     UAirBlueprintLib::BindActionToKey("inputEventSpringArmChaseView", EKeys::Slash, this, &ACameraDirector::inputEventSpringArmChaseView);
     UAirBlueprintLib::BindActionToKey("inputEventBackupView", EKeys::K, this, &ACameraDirector::inputEventBackupView);
-    UAirBlueprintLib::BindActionToKey("inputEventNoDispalyView", EKeys::Hyphen, this, &ACameraDirector::inputEventNoDisplayView);
+    UAirBlueprintLib::BindActionToKey("inputEventNoDisplayView", EKeys::Hyphen, this, &ACameraDirector::inputEventNoDisplayView);
 }
 
 
@@ -229,13 +256,13 @@ void ACameraDirector::inputEventManualView()
 
 void ACameraDirector::inputEventNoDisplayView()
 {
-    setMode(ECameraDirectorMode::CAMREA_DIRECTOR_MODE_NODISPLAY);
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY);
     disableCameras(true, true, true);
 }
 
 void ACameraDirector::inputEventBackupView()
 {
-    setMode(ECameraDirectorMode::CAMREA_DIRECTOR_MODE_BACKUP);
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP);
     external_camera_->disableMain();
     if (fpv_camera_)
         fpv_camera_->disableMain();
