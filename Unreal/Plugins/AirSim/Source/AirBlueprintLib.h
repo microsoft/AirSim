@@ -101,6 +101,9 @@ public:
 
     static void enableWorldRendering(AActor* context, bool enable);
     static void enableViewportRendering(AActor* context, bool enable);
+    static void setSimulatePhysics(AActor* actor, bool simulate_physics);
+    static void resetSimulatePhysics(AActor* actor);
+    static std::vector<UPrimitiveComponent*> getPhysicsComponents(AActor* actor);
 
 private:
     template<typename T>

@@ -60,6 +60,46 @@ void UAirBlueprintLib::enableWorldRendering(AActor* context, bool enable)
     }
 }
 
+void UAirBlueprintLib::setSimulatePhysics(AActor* actor, bool simulate_physics)
+{
+    TInlineComponentArray<UPrimitiveComponent*> components;
+    actor->GetComponents(components);
+
+    for (UPrimitiveComponent* component : components)
+    {
+        component->SetSimulatePhysics(simulate_physics);
+    }
+}
+
+std::vector<UPrimitiveComponent*> UAirBlueprintLib::getPhysicsComponents(AActor* actor)
+{
+    std::vector<UPrimitiveComponent*> phys_comps;
+    TInlineComponentArray<UPrimitiveComponent*> components;
+    actor->GetComponents(components);
+
+    for (UPrimitiveComponent* component : components)
+    {
+        if (component->IsSimulatingPhysics())
+            phys_comps.push_back(component);
+    }
+
+    return phys_comps;
+}
+
+void UAirBlueprintLib::resetSimulatePhysics(AActor* actor)
+{
+    TInlineComponentArray<UPrimitiveComponent*> components;
+    actor->GetComponents(components);
+
+    for (UPrimitiveComponent* component : components)
+    {
+        if (component->IsSimulatingPhysics()) {
+            component->SetSimulatePhysics(false);
+            component->SetSimulatePhysics(true);
+        }
+    }
+}
+
 void UAirBlueprintLib::enableViewportRendering(AActor* context, bool enable)
 {
     // Enable/disable primary viewport rendering flag
