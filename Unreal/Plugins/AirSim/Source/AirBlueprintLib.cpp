@@ -17,6 +17,7 @@
 #include "Kismet/KismetStringLibrary.h"
 #include "MessageDialog.h"
 #include "Engine/LocalPlayer.h"
+#include "Slate/SceneViewport.h"
 #include "Engine/Engine.h"
 
 /*
@@ -28,6 +29,7 @@ parameters -> camel_case
 
 
 bool UAirBlueprintLib::log_messages_hidden = false;
+uint32_t UAirBlueprintLib::FlushOnDrawCount = 0;
 msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method =
     msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName;
 
@@ -56,6 +58,49 @@ void UAirBlueprintLib::enableWorldRendering(AActor* context, bool enable)
             viewport_client->bDisableWorldRendering = enable;
         }
     }
+}
+
+void UAirBlueprintLib::enableViewportRendering(AActor* context, bool enable)
+{
+    // Enable/disable primary viewport rendering flag
+    auto* viewport = context->GetWorld()->GetGameViewport();
+    if (!viewport)
+        return;
+
+    if (!enable) {
+        // This disables rendering of the main viewport in the same way as the
+        // console command "show rendering" would do.
+        viewport->EngineShowFlags.SetRendering(false);
+
+        // When getting an image through the API, the image is produced after the render
+        // thread has finished rendering the current and the subsequent frame. This means
+        // that the frame rate for obtaining images through the API is only half as high as
+        // it could be, since only every other image is actually captured. We work around
+        // this by telling the viewport to flush the rendering queue at the end of each
+        // drawn frame so that it executes our render request at that point already.
+        // Do this only if the main viewport is not being rendered anyway in case there are
+        // any adverse performance effects during main rendering.
+        //HACK: FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
+        if (FlushOnDrawCount == 0)
+            viewport->GetGameViewport()->IncrementFlushOnDraw();
+    }
+    else {
+        viewport->EngineShowFlags.SetRendering(true);
+
+        //HACK: FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
+        if (FlushOnDrawCount > 0)
+            viewport->GetGameViewport()->DecrementFlushOnDraw();
+    }
+}
+
+void UAirBlueprintLib::OnBeginPlay()
+{
+    FlushOnDrawCount = 0;
+}
+
+void UAirBlueprintLib::OnEndPlay()
+{
+    //nothing to do for now
 }
 
 void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)

@@ -21,6 +21,7 @@ void ASimHUD::BeginPlay()
     Super::BeginPlay();
 
     try {
+        UAirBlueprintLib::OnBeginPlay();
         initializeSettings();
         setUnrealEngineSettings();
         createSimMode();
@@ -51,6 +52,8 @@ void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
         simmode_->Destroy();
         simmode_ = nullptr;
     }
+
+    UAirBlueprintLib::OnEndPlay();
 
     Super::EndPlay(EndPlayReason);
 }

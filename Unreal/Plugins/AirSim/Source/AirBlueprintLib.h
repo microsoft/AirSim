@@ -34,6 +34,8 @@ class UAirBlueprintLib : public UBlueprintFunctionLibrary
     GENERATED_BODY()
 
 public:
+    static void OnBeginPlay();
+    static void OnEndPlay();
     static void LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec = 60);
     UFUNCTION(BlueprintCallable, Category = "Utils")
     static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
@@ -98,6 +100,7 @@ public:
     }
 
     static void enableWorldRendering(AActor* context, bool enable);
+    static void enableViewportRendering(AActor* context, bool enable);
 
 private:
     template<typename T>
@@ -115,6 +118,8 @@ private:
 
 private:
     static bool log_messages_hidden;
+    //FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
+    static uint32_t FlushOnDrawCount;
     static msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType mesh_naming_method;
 };
 

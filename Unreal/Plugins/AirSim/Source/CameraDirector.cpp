@@ -1,6 +1,5 @@
 #include "CameraDirector.h"
 #include "GameFramework/PlayerController.h"
-#include "Runtime/Engine/Public/Slate/SceneViewport.h"
 #include "AirBlueprintLib.h"
 
 ACameraDirector::ACameraDirector()
@@ -140,52 +139,53 @@ void ACameraDirector::attachSpringArm(bool attach)
 
 void ACameraDirector::setMode(ECameraDirectorMode mode)
 {
-    //if prev mode was spring arm but new mode isn't then detach spring arm
-    if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE &&
-        mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE)
-    {
-        attachSpringArm(false);
-    }
+    {   //first remove any settings done by previous mode
 
-    // Enable/disable primary viewport rendering flag
-    if (mode_ != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY &&
-        mode == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY)
-    {
-        // This disables rendering of the main viewport in the same way as the
-        // console command "show rendering" would do.
-        GetWorld()->GetGameViewport()->EngineShowFlags.SetRendering(false);
+        //detach spring arm
+        if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE &&
+            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE) 
+        {
+            attachSpringArm(false);
+        }
 
-        // When getting an image through the API, the image is produced after the render
-        // thread has finished rendering the current and the subsequent frame. This means
-        // that the frame rate for obtaining images through the API is only half as high as
-        // it could be, since only every other image is actually captured. We work around
-        // this by telling the viewport to flush the rendering queue at the end of each
-        // drawn frame so that it executes our render request at that point already.
-        // Do this only if the main viewport is not being rendered anyway in case there are
-        // any adverse performance effects during main rendering.
-        GetWorld()->GetGameViewport()->GetGameViewport()->IncrementFlushOnDraw();
-    }
-    else if(mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY &&
-            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY)
-    {
         // Re-enable rendering
-        GetWorld()->GetGameViewport()->EngineShowFlags.SetRendering(true);
-        GetWorld()->GetGameViewport()->GetGameViewport()->DecrementFlushOnDraw();
+        if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY &&
+            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY)
+        {
+            UAirBlueprintLib::enableViewportRendering(this, true);
+        }
+
+        //Remove any existing key bindings for manual mode
+        if (mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
+            if (external_camera_ != nullptr
+                && manual_pose_controller_->getActor() == external_camera_) {
+
+                manual_pose_controller_->enableBindings(false);
+            }
+            //else someone else is bound to manual pose controller, leave it alone
+        }
+    }
+    
+    {   //perform any settings to enter in to this mode
+
+        switch (mode) {
+        case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL:
+            //if new mode is manual mode then add key bindings
+            manual_pose_controller_->enableBindings(true); break;
+        case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE:
+            //if we switched to spring arm mode then attach to spring arm (detachment was done earlier in method)
+            attachSpringArm(true); break;
+        case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY:
+            UAirBlueprintLib::enableViewportRendering(this, false); break;
+        default:
+            //other modes don't need special setup
+            break;
+        }
+
     }
 
+    //make switch official
     mode_ = mode;
-
-    //if new mode is manual mode then add key bindings
-    if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL)
-        manual_pose_controller_->enableBindings(true);
-    //else remove any existing key bindings for manual mode
-    else if (external_camera_ != nullptr && manual_pose_controller_->getActor() == external_camera_)
-        manual_pose_controller_->enableBindings(false);
-    //else someone else is bound to manual pose controller, leave it alone
-
-    //if we switched to spring arm mode then attach to spring arm (detachment was done earlier in method)
-    if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE)
-        attachSpringArm(true);
 }
 
 void ACameraDirector::setupInputBindings()

@@ -135,9 +135,6 @@ void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureS
 
         setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
     }
-
-
-
 }
 
 void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, 
