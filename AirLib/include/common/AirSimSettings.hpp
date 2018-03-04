@@ -397,11 +397,7 @@ private:
                 if (json_parent.getChild(child_index, json_settings_child)) {
                     CaptureSetting capture_setting;
                     createCaptureSettings(json_settings_child, capture_setting);
-                    if (capture_setting.image_type >= -1 && capture_setting.image_type < static_cast<int>(capture_settings.size()))
-                        capture_settings[capture_setting.image_type] = capture_setting;
-                    else
-                        //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
-                        throw std::invalid_argument(std::string("ImageType must be >= -1 and < ") + std::to_string(capture_settings.size()));
+                    capture_settings[capture_setting.image_type] = capture_setting;
                 }
             }
         }
@@ -441,11 +437,7 @@ private:
                 if (json_parent.getChild(child_index, json_settings_child)) {
                     NoiseSetting noise_setting;
                     createNoiseSettings(json_settings_child, noise_setting);
-                    if (noise_setting.ImageType >= -1 && noise_setting.ImageType < static_cast<int>(noise_settings.size()))
-                        noise_settings[noise_setting.ImageType] = noise_setting;
-                    else
-                        //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
-                        throw std::invalid_argument("ImageType must be >= -1 and < " + std::to_string(noise_settings.size()));
+                    noise_settings[noise_setting.ImageType] = noise_setting;
                 }
             }
         }
