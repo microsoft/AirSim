@@ -55,6 +55,11 @@ class Vector3r(MsgpackMixin):
         self.y_val = y_val
         self.z_val = z_val
 
+    def __iter__(self):
+        yield self.x_val
+        yield self.y_val
+        yield self.z_val
+
 
 class Quaternionr(MsgpackMixin):
     w_val = np.float32(0)
@@ -67,6 +72,12 @@ class Quaternionr(MsgpackMixin):
         self.y_val = y_val
         self.z_val = z_val
         self.w_val = w_val
+
+    def __iter__(self):
+        yield self.x_val
+        yield self.y_val
+        yield self.z_val
+        yield self.w_val
 
 class Pose(MsgpackMixin):
     position = Vector3r()

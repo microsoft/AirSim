@@ -18,12 +18,13 @@ client.armDisarm(True)
 state = client.getMultirotorState()
 s = pprint.pformat(state)
 print("state: %s" % s)
-
+print("pry: %s" % str(AirSimClientBase.toEulerianAngle(state.kinematics_true.orientation))) 
 AirSimClientBase.wait_key('Press any key to takeoff')
 client.takeoff()
 
 state = client.getMultirotorState()
 print("state: %s" % pprint.pformat(state))
+
 
 AirSimClientBase.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
 client.moveToPosition(-10, 10, -10, 5)
