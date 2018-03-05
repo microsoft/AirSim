@@ -21,6 +21,7 @@ void ASimHUD::BeginPlay()
     Super::BeginPlay();
 
     try {
+        UAirBlueprintLib::OnBeginPlay();
         initializeSettings();
         setUnrealEngineSettings();
         createSimMode();
@@ -51,6 +52,8 @@ void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
         simmode_->Destroy();
         simmode_ = nullptr;
     }
+
+    UAirBlueprintLib::OnEndPlay();
 
     Super::EndPlay(EndPlayReason);
 }
@@ -204,7 +207,6 @@ void ASimHUD::setUnrealEngineSettings()
     //we get error that GameThread has timed out after 30 sec waiting on render thread
     static const auto render_timeout_var = IConsoleManager::Get().FindConsoleVariable(TEXT("g.TimeoutForBlockOnRenderFence"));
     render_timeout_var->Set(300000);
-
 }
 
 void ASimHUD::setupInputBindings()

@@ -114,13 +114,24 @@ CarApiBase::CarState CarPawnApi::getCarState()
 void CarPawnApi::reset()
 {
     last_controls_ = CarControls();
-    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+    auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_->getPawn());
+    UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
         pawn_->reset();
+        for (auto* phys_comp : phys_comps) {
+            phys_comp->SetPhysicsAngularVelocity(FVector::ZeroVector);
+            phys_comp->SetPhysicsLinearVelocity(FVector::ZeroVector);
+            phys_comp->SetSimulatePhysics(false);
+        }
         //movement_->ResetMoveState();
         //movement_->SetActive(false);
         //movement_->SetActive(true, true);
         setCarControls(CarControls());
         
+    }, true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
+        for (auto* phys_comp : phys_comps)
+            phys_comp->SetSimulatePhysics(true);
     }, true);
 }
 
