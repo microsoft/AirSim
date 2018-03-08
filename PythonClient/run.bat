@@ -1,1 +1,0 @@
-start MyDrone -windowed -ResX=640 -ResY=480
