@@ -74,7 +74,7 @@ class SurveyNavigator:
         self.client.land()
 
         print("disarming.")
-        self.client.armDisarm(False)
+        #self.client.armDisarm(False)
 
 if __name__ == "__main__":
     args = sys.argv

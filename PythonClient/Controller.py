@@ -81,6 +81,9 @@ class PModBase:
     def __init__(self, client, persistent_modules):
         self.client = client
         self.persistent_modules = persistent_modules
+
+    def get_name(self):
+        raise NotImplementedError
     
     def start(self):
         raise NotImplementedError
@@ -95,6 +98,9 @@ class PModConstants(PModBase):
     def __init__(self, client, persistent_modules):
         super().__init__(client, persistent_modules)
         self.standard_speed = 5 # 5m/s
+
+    def get_name(self):
+        return 'constants'
 
     def start(self):
         pass
@@ -111,6 +117,9 @@ class PModMyState(PModBase):
         super().__init__(client, persistent_modules)
         self._state = MultirotorState()
     
+    def get_name(self):
+        return 'mystate'
+
     def start(self):
         pass # not required
 
@@ -134,6 +143,9 @@ class PModCamera(PModBase): # PMod => persistent module
         self._image_dicts = [PModHCameraInfo.get_camera_type_map() for i in range(5)] + [ImagesInfo(), ]
         self._oldimage_dicts = self._image_dicts
         self._num_image_iter = 0
+
+    def get_name(self):
+        return 'camera'
 
     def start(self):
         pass # Change default camera settings here
@@ -208,6 +220,8 @@ class PModCamera(PModBase): # PMod => persistent module
 
 # TODO Continue 
 
+# 
+
 # Persistent Module Helper class
 class PModHCameraHelper:
     def __init__(self, persistent_modules):
@@ -225,6 +239,9 @@ class PModWindowsManager(PModBase):
         super().__init__(client, persistent_modules)
         self.windows = {}
     
+    def get_name(self):
+        return 'windows_manager'
+
     def start(self):
         self.camera_module = self.persistent_modules['camera']
 
@@ -413,13 +430,24 @@ class CmdTakeoff(BaseCmd):
         if line[0] in ['takeoff']:
             return True
         return False
+# 
 
 # Module
 class ModBase:
     def __init__(self, client, persistent_modules):
         self.client = client
         self.persistent_modules = persistent_modules
+        self.enabled = False
     
+    def get_name(self):
+        raise NotImplementedError
+
+    def enable(self):
+        self.enabled = True
+    
+    def disable(self):
+        self.enabled = False
+
     def update(self):
         raise NotImplementedError
 
@@ -454,7 +482,7 @@ class ChatHandler(asynchat.async_chat):
         #     if hasattr(handler, 'push'):
         #         handler.push((msg + '\n').encode('ASCII'))
         self.buffer = []
- 
+
 class ChatServer(asyncore.dispatcher):
     def __init__(self, host, port, handler, chat_room):
         asyncore.dispatcher.__init__(self, map=chat_room)
@@ -472,18 +500,28 @@ class ChatServer(asyncore.dispatcher):
             handler = ChatHandler(sock, addr, self.res_handler, self.chat_room)
             handler.push("Hello".encode("ASCII") + b'\r\nDONEPACKET\r\n')
 
-class ModCommandServer:
-    def __init__(self, add_command):
-
+class ModCommandServer(ModBase):
+    def __init__(self, client, persistent_modules, add_command):
+        super().__init__(client, persistent_modules)
         self.add_command = add_command
 
         self.engage_object_list = []
         self.chat_room = {}
+
+    def get_name(self):
+        return 'command_server'
+
+    def enable(self):
+        super().enable()
         self.server = ChatServer('localhost', 5050, self.process, self.chat_room)
         self.comm = threading.Thread(target= lambda: (asyncore.loop(map=self.chat_room)))
         self.comm.daemon = True
         self.comm.start()
         print('Serving command API on localhost:5050')
+
+    def disable(self):
+        super().disable()
+        # Note that this only stops update and not disable server
 
     # Only test method
     def later(self, msg, engage_object):
@@ -496,6 +534,15 @@ class ModCommandServer:
         pass
 
     def process(self, msg, engage_object):
+
+        # if server is disabled return msg with fail
+        if (not self.enabled):
+            engage_object.data = b"Failed: ModCommandServer disabled"
+            engage_object.status = -1
+            engage_object.done = True
+            return
+        
+        # else
         print("Processing command " + str(msg))
         self.engage_object_list.append(engage_object)
         # replace here with add_command
@@ -521,7 +568,7 @@ class ModCommandServer:
 
 # Main Controller
 class Controller:
-    def __init__(self):
+    def __init__(self, persistent_module_classes, persistent_module_helper_classes, module_classes):
         # Connect Simulator
         self.client = MultirotorClient()
         self.client.confirmConnection()
@@ -529,12 +576,9 @@ class Controller:
 
         # Persistent Modules
         self.persistent_modules = {}
-        self.mystate = PModMyState(self.client, self.persistent_modules)
-        self.persistent_modules["mystate"] = self.mystate
-        self.camera = PModCamera(self.client, self.persistent_modules)
-        self.persistent_modules["camera"] = self.camera
-        self.persistent_modules['windows_manager'] = PModWindowsManager(self.client, self.persistent_modules)
-        self.persistent_modules['constants'] = PModConstants(self.client, self.persistent_modules)
+        
+        for c in persistent_module_classes:
+            self.persistent_modules[c.get_name()] = c(self.client, self.persistent_modules)
 
         # start all persistent modules
         for k, mod in self.persistent_modules.items():
@@ -545,7 +589,8 @@ class Controller:
 
         # Modules 
         self.modules = {}
-        self.modules['command_server'] = ModCommandServer(self.add_command)
+        for c in module_classes:
+            self.modules[c.get_name()] = c(self.client, self.persistent_modules, self.add_command)
         
         # Commands
         self.commands = []
@@ -560,6 +605,7 @@ class Controller:
         ]
 
         # Test
+        self.modules['command_server'].enable()
         self.persistent_modules['windows_manager'].add_window_by_camera(0, 'scene')
         self.persistent_modules['windows_manager'].add_window_by_camera(0, 'depth')
         #self.persistent_modules['windows_manager'].add_window_by_camera(0, 'depth_perspective')
@@ -637,7 +683,11 @@ class Controller:
             if (key == 27 or key == ord('q') or key == ord('x')):
                 break
 
-ctrl = Controller()
+persistent_module_classes = [PModConstants, PModMyState, PModCamera, PModWindowsManager]
+persistent_module_helper = [PModHCameraHelper,]
+module_classes = [ModCommandServer,]
+
+ctrl = Controller(persistent_module_classes, persistent_module_helper_classes, module_classes)
 ctrl.control()
 
 '''

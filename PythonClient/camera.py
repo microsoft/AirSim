@@ -105,7 +105,7 @@ while True:
         frameCount = 0
         startTime = endTime
     
-    key = cv2.waitKey(1) & 0xFF;
+    key = cv2.waitKey(1) & 0xFF
     if (key == 27 or key == ord('q') or key == ord('x')):
         break
     if time.time() - time1 > 10.0:
