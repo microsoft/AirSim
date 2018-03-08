@@ -4,6 +4,10 @@ import numpy as np
 import time 
 import copy
 
+import asynchat
+import asyncore
+import socket
+import threading
 # Extra Classes
 
 
@@ -271,7 +275,7 @@ class BaseCmd:
 
 # Cmd
 class CmdMove(BaseCmd):
-    def __init__(self, client, persistent_modules, modules, line, engage_object):
+    def __init__(self, client, persistent_modules, modules, line, engage_object = None):
         super().__init__(client, persistent_modules, modules, line, engage_object)
         self.final_location = None
         self.constants_module = self.get_persistent_module('constants')
@@ -325,6 +329,9 @@ class CmdMove(BaseCmd):
         # Check if movement is complete or < 0.5 meters distance, anyway thats offset
         if ((self.final_location[0] - locationVec[0])**2 + (self.final_location[1] - locationVec[1])**2
             + (self.final_location[2] - locationVec[2])**2)**(1/2) < 0.5:
+            if self.engage_object:
+                self.engage_object.status = 0
+                self.engage_object.done = True
             return True
         return False
         
@@ -416,6 +423,101 @@ class ModBase:
     def update(self):
         raise NotImplementedError
 
+class EngageObject:
+    def __init__(self, id, addr = None):
+        self.addr = addr
+        self.data = b''
+        self.id = id
+        self.status = -1
+        self.done = False
+
+class ChatHandler(asynchat.async_chat):
+    def __init__(self, sock, addr, callback, chat_room):
+        asynchat.async_chat.__init__(self, sock=sock, map=chat_room)
+        self.addr = addr
+        self.set_terminator(b'\r\nDONEPACKET\r\n')
+        self.buffer = []
+        self.callback = callback
+ 
+    def collect_incoming_data(self, data):
+        self.buffer.append(data.decode('ASCII'))
+ 
+    def found_terminator(self):
+        msg = ''.join(self.buffer)
+        print('Received: %s'% msg)
+        msg = msg.split(" ")
+
+        engage_object = EngageObject(msg[0], self.addr)
+
+        self.callback(msg[1:], engage_object)
+        # for handler in chat_room.values():
+        #     if hasattr(handler, 'push'):
+        #         handler.push((msg + '\n').encode('ASCII'))
+        self.buffer = []
+ 
+class ChatServer(asyncore.dispatcher):
+    def __init__(self, host, port, handler, chat_room):
+        asyncore.dispatcher.__init__(self, map=chat_room)
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.bind((host, port))
+        self.listen(5)
+        self.res_handler = handler
+        self.chat_room = chat_room
+ 
+    def handle_accept(self):
+        pair = self.accept()
+        if pair is not None:
+            sock, addr = pair
+            print('Incoming connection from %s' % repr(addr))
+            handler = ChatHandler(sock, addr, self.res_handler, self.chat_room)
+            handler.push("Hello".encode("ASCII") + b'\r\nDONEPACKET\r\n')
+
+class ModCommandServer:
+    def __init__(self, add_command):
+
+        self.add_command = add_command
+
+        self.engage_object_list = []
+        self.chat_room = {}
+        self.server = ChatServer('localhost', 5050, self.process, self.chat_room)
+        self.comm = threading.Thread(target= lambda: (asyncore.loop(map=self.chat_room)))
+        self.comm.daemon = True
+        self.comm.start()
+        print('Serving command API on localhost:5050')
+
+    # Only test method
+    def later(self, msg, engage_object):
+        time.sleep(2)
+        engage_object.data = (str(engage_object.id) + ' done').encode('ASCII')
+        engage_object.status = 0
+        engage_object.done = True
+
+    def start(self):
+        pass
+
+    def process(self, msg, engage_object):
+        print("Processing command " + str(msg))
+        self.engage_object_list.append(engage_object)
+        # replace here with add_command
+        #threading.Thread(target=lambda: self.later(msg, engage_object)).start()
+        self.add_command(msg, engage_object)
+
+
+    def update(self):
+        #print("dispatching")
+        delete_list = []
+        for e in self.engage_object_list:
+            if e.done == True:
+                for handler in self.chat_room.values():
+                    if hasattr(handler, 'push'):
+                        packetstr = e.id + " " + str(e.status) + " "
+                        packet = packetstr.encode('ASCII') + e.data + b'\r\nDONEPACKET\r\n'
+                        handler.push(packet)
+                delete_list.append(e)
+        for e in delete_list:
+            self.engage_object_list.remove(e)
+
+
 
 # Main Controller
 class Controller:
@@ -443,25 +545,51 @@ class Controller:
 
         # Modules 
         self.modules = {}
+        self.modules['command_server'] = ModCommandServer(self.add_command)
         
         # Commands
         self.commands = []
         self.commands_buffer = []
 
+        # Vars
+        self._iteration = 0
+
+        # Command Classes
+        self.command_classes = [
+            CmdMove, CmdReset, CmdTakeoff, CmdTakePic
+        ]
+
         # Test
         self.persistent_modules['windows_manager'].add_window_by_camera(0, 'scene')
         self.persistent_modules['windows_manager'].add_window_by_camera(0, 'depth')
-        self.persistent_modules['windows_manager'].add_window_by_camera(0, 'depth_perspective')
+        #self.persistent_modules['windows_manager'].add_window_by_camera(0, 'depth_perspective')
 
-        self.commands_buffer.append(CmdReset(self.client, self.persistent_modules, self.modules, ['reset', ''], None))
+        #self.commands_buffer.append(CmdReset(self.client, self.persistent_modules, self.modules, ['reset', ''], None))
         #self.commands_buffer.append(CmdTakeoff(self.client, self.persistent_modules, self.modules, ['takeoff', ''], None))
         self.commands_buffer.append(CmdMove(self.client, self.persistent_modules, self.modules, ['up', '15m'], None))
-        self.commands_buffer.append(CmdMove(self.client, self.persistent_modules, self.modules, ['left', '69m'], None))
-        self.commands_buffer.append(CmdMove(self.client, self.persistent_modules, self.modules, ['down', '3m'], None))
+        #self.commands_buffer.append(CmdMove(self.client, self.persistent_modules, self.modules, ['left', '69m'], None))
+        #self.commands_buffer.append(CmdMove(self.client, self.persistent_modules, self.modules, ['down', '3m'], None))
         # End Test
 
-        self._iteration = 0
-    
+
+    def _get_command_object(self, line):
+        cmd = None
+        for c in self.command_classes:
+            if c.can_process(line):
+                cmd = c(self.client, self.persistent_modules, self.modules, line, None) # TODO Change engage object here
+        return cmd
+
+    # TODO update this, its a bad practice to assume that it will work -,-, be optimistic though ;)
+    def add_command(self, line, engage_object = None):
+        cmd = self._get_command_object(line)
+        if cmd is None:
+            return 
+        elif type(cmd) in [CmdMove,]:
+            print("Detected a move command " + str(line))
+            self.commands_buffer.append(cmd)
+        else:
+            self.commands.append(cmd)
+        return True
 
     def control(self):
         print(list(self.persistent_modules['mystate'].get_position()))
