@@ -13,7 +13,11 @@ client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 client.takeoff()
-
+t1 = time.time()
+while(True):
+    client.rotateToYaw(3.14)
+    if time.time() - t1 > 3:
+        break
 # you must first press "1" in the AirSim view to turn on the depth capture
 
 # get depth image
@@ -51,10 +55,10 @@ while True:
         # sanity check on what is directly in front of us (slot 2 in our hsplit)
         current = 255 - maxes[2]
 
-        if (current < 20):
-            print("woops - we are about to crash, so stopping!")
-            client.hover()
-            sys.exit(0)
+        # if (current < 2):
+        #     print("woops - we are about to crash, so stopping!")
+        #     client.hover()
+        #     sys.exit(0)
     
         pitch, roll, yaw  = client.getPitchRollYaw()
 
