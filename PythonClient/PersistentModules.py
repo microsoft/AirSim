@@ -157,7 +157,10 @@ class PModCamera(PModBase): # PMod => persistent module
                 requests.append(req[2])
                 requestsinfo.append((req[0], req[1]))
 
-        # Execute all requests
+        # Execute all requests if any
+        if (len(requests) == 0):
+            return
+         
         responses = self.client.simGetImages(requests)
         assert len(responses) == len(requests)
 
