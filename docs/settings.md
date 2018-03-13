@@ -263,4 +263,4 @@ This allows to configure cameras in addition to the [standard ones](image_apis.m
 The X, Y and Z fields specify the location of the new camera in the body frame, where X points forward, Y points to the right, and Z points downwards, and the values are given
 in SI units (meters). Yaw, Pitch, and Roll specify the orientation of the camera, where Yaw denotes rotation around the Z axis, Pitch rotation around the Y axis and Roll rotation around the X axis.
 
-This particular example adds a camera that is mounted on the right side of the drone, pointed to the right.
+This particular example adds a camera that is mounted on the right side of the drone, pointed to the right. The camera indices of the additional cameras are subsequent to the default ones, so camera index 5 is the first additional camera, camera index 6 the second additional camera, and so on.
