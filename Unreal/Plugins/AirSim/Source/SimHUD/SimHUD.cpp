@@ -286,11 +286,21 @@ void ASimHUD::initializeSubWindows()
     //setup defaults
     if (camera_count > 0) {
         subwindow_cameras_[0] = wrapper->getCamera(0);
-        subwindow_cameras_[1] = wrapper->getCamera(0); //camera_count > 3 ? 3 : 0
-        subwindow_cameras_[2] = wrapper->getCamera(0); //camera_count > 4 ? 4 : 0
+        subwindow_cameras_[1] = wrapper->getCamera(camera_count > 1 ? 1 : 0);
+        subwindow_cameras_[2] = wrapper->getCamera(camera_count > 2 ? 2 : 0);
+		subwindow_cameras_[3] = wrapper->getCamera(camera_count > 3 ? 3 : 0);
+		subwindow_cameras_[4] = wrapper->getCamera(camera_count > 4 ? 4 : 0);
     }
     else
-        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
+        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = subwindow_cameras_[3] = subwindow_cameras_[4] = nullptr;
+
+    // Make all cameras capture scene images
+    subwindow_camera_types_[0] = ImageType::Scene;
+    subwindow_camera_types_[1] = ImageType::Scene;
+    subwindow_camera_types_[2] = ImageType::Scene;
+	subwindow_camera_types_[3] = ImageType::Scene;
+	subwindow_camera_types_[4] = ImageType::Scene;
+    subwindow_visible_[0] = subwindow_visible_[1] = subwindow_visible_[2] = subwindow_visible_[3] = subwindow_visible_[4] = true;
 
 
     for (size_t window_index = 0; window_index < AirSimSettings::kSubwindowCount; ++window_index) {
