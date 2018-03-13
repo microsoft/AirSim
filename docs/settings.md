@@ -116,6 +116,9 @@ Below are complete list of settings available along with their default values. I
       "HorzDistortionStrength": 0.002
     }
   ],
+  "AdditionalCameras": [
+    { "X": 0.00, "Y": 0.5, "Z": 0.0, "Roll": 0.0, "Pitch": 0.0, "Yaw": 90.0 }
+  ],
   "PX4": {
     "FirmwareName": "PX4",
     "LogViewerHostIp": "127.0.0.1",
@@ -254,3 +257,10 @@ This adds regions of noise on horizontal lines.
 This adds fluctuations on horizontal line.
 * `HorzDistortionContrib`: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
 * `HorzDistortionStrength`: This determines how large is the distortion.
+
+### Additional Camera Settings
+This allows to configure cameras in addition to the [standard ones](image_apis.md#available-cameras). This is only implemented in the multirotor drone at the moment.
+The X, Y and Z fields specify the location of the new camera in the body frame, where X points forward, Y points to the right, and Z points downwards, and the values are given
+in SI units (meters). Yaw, Pitch, and Roll specify the orientation of the camera, where Yaw denotes rotation around the Z axis, Pitch rotation around the Y axis and Roll rotation around the X axis.
+
+This particular example adds a camera that is mounted on the right side of the drone, pointed to the right.
