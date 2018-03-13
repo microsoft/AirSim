@@ -39,6 +39,7 @@ else
     wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
     sudo apt-get update
     sudo apt-get install -y clang-3.9 clang++-3.9
+    sudo apt-get install -y unzip
 
     export C_COMPILER=clang-3.9
     export COMPILER=clang++-3.9
