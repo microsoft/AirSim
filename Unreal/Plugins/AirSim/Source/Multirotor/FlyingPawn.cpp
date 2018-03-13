@@ -8,16 +8,23 @@
 
 AFlyingPawn::AFlyingPawn()
 {
+    static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
+
     wrapper_.reset(new VehiclePawnWrapper());
 }
 
-void AFlyingPawn::initializeForBeginPlay()
+void AFlyingPawn::initializeForBeginPlay(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras)
 {
     //get references of components so we can use later
-    setupComponentReferences();
+    setupComponentReferences(additionalCameras);
 
     std::vector<APIPCamera*> cameras = {fpv_camera_front_center_, fpv_camera_front_right_, fpv_camera_front_left_, 
         fpv_camera_bottom_center_, fpv_camera_back_center_};
+    for (APIPCamera* camera : AdditionalCameras) {
+        cameras.push_back(camera);
+    }
+
     wrapper_->initialize(this, cameras);
 }
 
@@ -43,7 +50,7 @@ void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
     }
 }
 
-void AFlyingPawn::setupComponentReferences()
+void AFlyingPawn::setupComponentReferences(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras)
 {
     fpv_camera_front_right_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("FrontRightCamera")))->GetChildActor());
@@ -55,6 +62,23 @@ void AFlyingPawn::setupComponentReferences()
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("BackCenterCamera")))->GetChildActor());
     fpv_camera_bottom_center_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("BottomCenterCamera")))->GetChildActor());
+
+    //UStaticMeshComponent* bodyMesh = UAirBlueprintLib::GetActorComponent<UStaticMeshComponent>(this, TEXT("BodyMesh"));
+    USceneComponent* bodyMesh = GetRootComponent();
+    FActorSpawnParameters camera_spawn_params;
+    camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+    // Can't obtain NedTransform from wrapper because it's not initialized yet, so make our own.
+    NedTransform transform;
+    transform.initialize(this);
+
+    for (const msr::airlib::AirSimSettings::AdditionalCameraSetting& setting : additionalCameras) {
+        FVector position = transform.toNeuUU(NedTransform::Vector3r(setting.x, setting.y, setting.z)) - transform.toNeuUU(NedTransform::Vector3r(0.0, 0.0, 0.0));
+        FTransform camera_transform(FRotator(setting.pitch, setting.yaw, setting.roll), position, FVector(1., 1., 1.));
+        APIPCamera* camera = GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+        camera->AttachToComponent(bodyMesh, FAttachmentTransformRules::KeepRelativeTransform);
+        AdditionalCameras.Add(camera);
+    }
 
     for (auto i = 0; i < rotor_count; ++i) {
         rotating_movements_[i] = UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i));

@@ -117,7 +117,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         {
             //initialize each vehicle pawn we found
             TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
-            vehicle_pawn->initializeForBeginPlay();
+            vehicle_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
