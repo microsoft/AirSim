@@ -63,6 +63,16 @@ public: //types
         }
     };
 
+    struct AdditionalCameraSetting {
+        // Additional camera positions
+        float x = 0.5f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float yaw = 0.0f;
+        float pitch = 0.0f;
+        float roll = 0.0f;
+    };
+
     struct CaptureSetting {
         //below settinsg are obtained by using Unreal console command (press ~):
         // ShowFlag.VisualizeHDR 1.
@@ -146,6 +156,7 @@ public: //fields
 
     std::vector<SubwindowSetting> subwindow_settings;
 
+    std::vector<AdditionalCameraSetting> additional_camera_settings;
     std::map<int, CaptureSetting> capture_settings;
     std::map<int, NoiseSetting>  noise_settings;
 
@@ -194,6 +205,7 @@ public: //methods
         loadSubWindowsSettings(settings);
         loadViewModeSettings(settings);
         loadRecordingSettings(settings);
+        loadAdditionalCameraSettings(settings);
         loadCaptureSettings(settings);
         loadCameraNoiseSettings(settings);
         loadSegmentationSettings(settings);
@@ -461,6 +473,26 @@ private:
         noise_setting.HorzNoiseLinesDensityXY = settings.getFloat("HorzNoiseLinesDensityXY", noise_setting.HorzNoiseLinesDensityXY);
         noise_setting.HorzDistortionStrength = settings.getFloat("HorzDistortionStrength", noise_setting.HorzDistortionStrength);
         noise_setting.HorzDistortionContrib = settings.getFloat("HorzDistortionContrib", noise_setting.HorzDistortionContrib);
+    }
+
+    void loadAdditionalCameraSettings(const Settings& settings)
+    {
+        Settings json_parent;
+        if (settings.getChild("AdditionalCameras", json_parent)) {
+            for (size_t child_index = 0; child_index < json_parent.size(); ++child_index) {
+                Settings additional_camera_setting;
+                if (json_parent.getChild(child_index, additional_camera_setting)) {
+                    AdditionalCameraSetting setting;
+                    setting.x = additional_camera_setting.getFloat("X", setting.x);
+                    setting.y = additional_camera_setting.getFloat("Y", setting.y);
+                    setting.z = additional_camera_setting.getFloat("Z", setting.z);
+                    setting.yaw = additional_camera_setting.getFloat("Yaw", setting.yaw);
+                    setting.pitch = additional_camera_setting.getFloat("Pitch", setting.pitch);
+                    setting.roll = additional_camera_setting.getFloat("Roll", setting.roll);
+                    additional_camera_settings.push_back(setting);
+                }
+            }
+        }
     }
 
     void createCaptureSettings(const msr::airlib::Settings& settings, CaptureSetting& capture_setting)

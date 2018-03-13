@@ -19,15 +19,17 @@ public:
     float RotatorFactor = 1.0f;
 
     void setRotorSpeed(int rotor_index, float radsPerSec);
-    void initializeForBeginPlay();
+    void initializeForBeginPlay(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras);
     VehiclePawnWrapper* getVehiclePawnWrapper();
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 private: //methods
-    void setupComponentReferences();
+    void setupComponentReferences(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras);
 
 private: //variables
+    UPROPERTY() UClass* pip_camera_class_;
+
          //Unreal components
     static constexpr size_t rotor_count = 4;
     UPROPERTY() APIPCamera* fpv_camera_front_left_;
@@ -37,6 +39,8 @@ private: //variables
     UPROPERTY() APIPCamera* fpv_camera_bottom_center_;
 
     UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
+
+    UPROPERTY() TArray<APIPCamera*> AdditionalCameras;
 
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
 };
