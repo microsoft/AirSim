@@ -140,7 +140,7 @@ void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureS
 void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, 
     const CaptureSetting& setting, const NedTransform& ned_transform)
 {
-    render_target->InitAutoFormat(setting.width, setting.height); //256 X 144, X 480
+    render_target->InitAutoFormat(1280, 720); //256 X 144, X 480
     if (!std::isnan(setting.target_gamma))
         render_target->TargetGamma = setting.target_gamma;
 

@@ -21,7 +21,7 @@ private:
     typedef ImageCaptureBase::ImageType ImageType;
 
 public: //types
-    static constexpr int kSubwindowCount = 3; //must be >= 3 for now
+    static constexpr int kSubwindowCount = 5; // Number of subwindows
 
     struct SubwindowSetting {
         int window_index;
