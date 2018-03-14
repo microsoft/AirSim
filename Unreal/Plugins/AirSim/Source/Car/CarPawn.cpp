@@ -414,7 +414,6 @@ void ACarPawn::Tick(float Delta)
 
 void ACarPawn::updateCarControls()
 {
-    const msr::airlib::CarApiBase::CarControls* current_controls = nullptr;
     if (wrapper_->getRemoteControlID() >= 0 && joystick_state_.is_initialized) {
         joystick_.getJoyStickState(0, joystick_state_);
 
@@ -442,25 +441,25 @@ void ACarPawn::updateCarControls()
         }
 
         UAirBlueprintLib::LogMessageString("Control Mode: ", "Wheel/Joystick", LogDebugLevel::Informational);
-        current_controls = &joystick_controls_;
+        current_controls_ = joystick_controls_;
     }
     else {
         UAirBlueprintLib::LogMessageString("Control Mode: ", "Keyboard", LogDebugLevel::Informational);
-        current_controls = &keyboard_controls_;
+        current_controls_ = keyboard_controls_;
     }
 
     if (!api_->isApiControlEnabled()) {
-        api_->setCarControls(* current_controls);
+        api_->setCarControls(current_controls_);
     }
     else {
         UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
-        current_controls = & api_->getCarControls();
+        current_controls_ = api_->getCarControls();
     }
-    UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls->throttle), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls->brake), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Steering: ", std::to_string(current_controls->steering), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Handbreak: ", std::to_string(current_controls->handbrake), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls->manual_gear), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls_.throttle), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls_.brake), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Steering: ", std::to_string(current_controls_.steering), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Handbreak: ", std::to_string(current_controls_.handbrake), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls_.manual_gear), LogDebugLevel::Informational);
 }
 
 void ACarPawn::BeginPlay()
@@ -552,9 +551,9 @@ std::string ACarPawn::getLogString()
 
     std::string logString = std::to_string(timestamp_millis).append("\t")
         .append(std::to_string(KPH_int).append("\t"))
-        .append(std::to_string(keyboard_controls_.throttle)).append("\t")
-        .append(std::to_string(keyboard_controls_.steering)).append("\t")
-        .append(std::to_string(keyboard_controls_.brake)).append("\t")
+        .append(std::to_string(current_controls_.throttle)).append("\t")
+        .append(std::to_string(current_controls_.steering)).append("\t")
+        .append(std::to_string(current_controls_.brake)).append("\t")
         .append(gear).append("\t");
 
     return logString;

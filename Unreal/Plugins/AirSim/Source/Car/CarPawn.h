@@ -160,6 +160,7 @@ private:
 
     CarPawnApi::CarControls keyboard_controls_;
     CarPawnApi::CarControls joystick_controls_;
+    CarPawnApi::CarControls current_controls_;
 
     SimJoyStick joystick_;
     SimJoyStick::State joystick_state_;
