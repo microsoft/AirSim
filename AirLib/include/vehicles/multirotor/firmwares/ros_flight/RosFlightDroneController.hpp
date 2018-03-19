@@ -289,6 +289,16 @@ protected:
         //TODO: implement this
     }
 
+    virtual void commandRotorSpeed(float o0, float o1, float o2, float o3) override
+    {
+        unused(o0);
+        unused(o1);
+        unused(o2);
+        unused(o3);
+
+        //TODO: implement this
+    }
+
     virtual const VehicleParams& getVehicleParams() override
     {
         //used for safety algos. For now just use defaults

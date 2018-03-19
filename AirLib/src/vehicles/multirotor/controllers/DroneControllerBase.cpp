@@ -270,6 +270,20 @@ bool DroneControllerBase::moveToPosition(float x, float y, float z, float veloci
     return moveOnPath(path, velocity, drivetrain, yaw_mode, lookahead, adaptive_lookahead, cancelable_action);
 }
 
+bool DroneControllerBase::moveByRotorSpeed(float o0, float o1, float o2, float o3, float duration, CancelableBase & cancelable_action)
+{
+    if (duration <= 0)
+        return false;
+
+    Waiter waiter(getCommandPeriod());
+    if (!waiter.sleep(cancelable_action))
+        return false;
+
+    return !waitForFunction([&]() {
+        return !moveByRotorSpeed(o0, o1, o2, o3);
+    }, duration, cancelable_action);
+}
+
 bool DroneControllerBase::moveToZ(float z, float velocity, const YawMode& yaw_mode,
     float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action)
 {
@@ -370,6 +384,13 @@ bool DroneControllerBase::moveToPosition(const Vector3r& dest, const YawMode& ya
 {
     if (safetyCheckDestination(dest))
         commandPosition(dest.x(), dest.y(), dest.z(), yaw_mode);
+
+    return true;
+}
+
+bool DroneControllerBase::moveByRotorSpeed(float o0, float o1, float o2, float o3)
+{
+    commandRotorSpeed(o0, o1, o2, o3);
 
     return true;
 }

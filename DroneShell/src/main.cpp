@@ -449,6 +449,34 @@ public:
     }
 };
 
+class MoveByRotorSpeedCommand : public DroneCommand {
+public:
+    MoveByRotorSpeedCommand() : DroneCommand("MoveByRotorSpeed", "Move by specified rotor speeds omega0 - omega3 [rad/sec]")
+    {
+        this->addSwitch({ "-o0", "0", "rotor 0 speed radians per second (default 0)" });
+        this->addSwitch({ "-o1", "0", "rotor 1 speed radians per second (default 0)" });
+        this->addSwitch({ "-o2", "0", "rotor 2 speed radians per second (default 0)" });
+        this->addSwitch({ "-o3", "0", "rotor 3 speed radians per second (default 0)" });
+        this->addSwitch({ "-duration", "5", "the duration of this command in seconds (default 5)" });
+    }
+
+    bool execute(const DroneCommandParameters& params)
+    {
+        float o0 = getSwitch("-o0").toFloat();
+        float o1 = getSwitch("-o1").toFloat();
+        float o2 = getSwitch("-o2").toFloat();
+        float o3 = getSwitch("-o3").toFloat();
+        float duration = getSwitch("-duration").toFloat();
+        CommandContext* context = params.context;
+
+        context->tasker.execute([=]() {
+            context->client.moveByRotorSpeed(o0, o1, o2, o3, duration);
+        });
+
+        return false;
+    }
+};
+
 class MoveByManualCommand : public DroneCommand {
 public:
     MoveByManualCommand() : DroneCommand("MoveByManual", "Move using remote control manually")
@@ -1298,7 +1326,7 @@ void printUsage() {
 int main(int argc, const char *argv[]) {
 
     using namespace msr::airlib;
-    
+
 
     if (!parseCommandLine(argc, argv)) {
         printUsage();
@@ -1311,7 +1339,7 @@ int main(int argc, const char *argv[]) {
         try {
             rpc::rpc_error& rpc_ex = dynamic_cast<rpc::rpc_error&>(e);
             std::cerr << "Async RPC Error: " << rpc_ex.get_error().as<std::string>() << std::endl;
-        } 
+        }
         catch (...) {
             std::cerr << "Error occurred: " << e.what() << std::endl;
         }
@@ -1327,7 +1355,7 @@ int main(int argc, const char *argv[]) {
     )");
 
     command_context.client.confirmConnection();
-    
+
     //Shell callbacks
     // shell.beforeScriptStartCallback(std::bind(&beforeScriptStartCallback, std::placeholders::_1, std::placeholders::_2));
     // shell.afterScriptEndCallback(std::bind(&afterScriptEndCallback, std::placeholders::_1, std::placeholders::_2));
@@ -1349,6 +1377,7 @@ int main(int argc, const char *argv[]) {
     RotateToYawCommand rotateToYaw;
     HoverCommand hover;
     MoveToPositionCommand moveToPosition;
+    MoveByRotorSpeedCommand moveByRotorSpeed;
     GetPositionCommand getPosition;
     MoveByManualCommand moveByManual;
     MoveByAngleCommand moveByAngle;
@@ -1382,6 +1411,7 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(rotateToYaw);
     shell.addCommand(hover);
     shell.addCommand(moveToPosition);
+    shell.addCommand(moveByRotorSpeed);
     shell.addCommand(moveByManual);
     shell.addCommand(moveByAngle);
     shell.addCommand(moveByVelocity);

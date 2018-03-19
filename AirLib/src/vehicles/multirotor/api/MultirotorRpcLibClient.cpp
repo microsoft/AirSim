@@ -88,6 +88,11 @@ bool MultirotorRpcLibClient::moveToPosition(float x, float y, float z, float vel
     return static_cast<rpc::client*>(getClient())->call("moveToPosition", x, y, z, velocity, max_wait_seconds, drivetrain, MultirotorRpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();
 }
 
+bool MultirotorRpcLibClient::moveByRotorSpeed(float o0, float o1, float o2, float o3, float duration)
+{
+    return static_cast<rpc::client*>(getClient())->call("moveByRotorSpeed", o0, o1, o2, o3, duration).as<bool>();
+}
+
 bool MultirotorRpcLibClient::moveToZ(float z, float velocity, float max_wait_seconds, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {
     return static_cast<rpc::client*>(getClient())->call("moveToZ", z, velocity, max_wait_seconds, MultirotorRpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead).as<bool>();

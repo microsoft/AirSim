@@ -33,6 +33,7 @@ public:
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
     bool moveToPosition(float x, float y, float z, float velocity, float max_wait_seconds = 60,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
+    bool moveByRotorSpeed(float o0, float o1, float o2, float o3, float duration);
     bool moveToZ(float z, float velocity, float max_wait_seconds = 60,
         const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
     bool moveByManual(float vx_max, float vy_max, float z_min, float duration, 

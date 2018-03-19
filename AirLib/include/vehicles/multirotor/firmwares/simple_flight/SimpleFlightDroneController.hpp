@@ -16,6 +16,7 @@
 #include "AirSimSimpleFlightEstimator.hpp"
 #include "AirSimSimpleFlightCommon.hpp"
 #include "common/AirSimSettings.hpp"
+#include "common/HelperFunctions.hpp"
 
 
 namespace msr { namespace airlib {
@@ -283,6 +284,22 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
+    virtual void commandRotorSpeed(float o0, float o1, float o2, float o3) override
+    {
+        Utils::log(Utils::stringf("commandRotorSpeed %f, %f, %f, %f", o0, o1, o2, o3));
+
+        typedef simple_flight::GoalModeType GoalModeType;
+        simple_flight::GoalMode mode = simple_flight::GoalMode::getRotorSpeedMode();
+
+        simple_flight::Axis4r speedGoal(o0, o1, o2, o3);
+        simple_flight::Axis4r goal;
+
+        converter.getCommandArgumentsFromSpeed(speedGoal, goal);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
+    }
+
     virtual const VehicleParams& getVehicleParams() override
     {
         return safety_params_;
@@ -338,6 +355,7 @@ private:
     VehicleParams safety_params_;
 
     RCData last_rcData_;
+    msr::airlib::helper_func::Converter converter;
 };
 
 }} //namespace

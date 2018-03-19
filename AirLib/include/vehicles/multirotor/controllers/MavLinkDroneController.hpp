@@ -147,6 +147,7 @@ protected:
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override;
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override;
+    virtual void commandRotorSpeed(float o0, float o1, float o2, float o3) override;
     const VehicleParams& getVehicleParams() override;
     //*** End: DroneControllerBase implementation ***//
 
@@ -1198,6 +1199,16 @@ public:
         mav_vehicle_->moveToLocalPosition(x, y, z, !yaw_mode.is_rate, yaw);
     }
 
+    void commandRotorSpeed(float o0, float o1, float o2, float o3)
+    {
+        unused(o0);
+        unused(o1);
+        unused(o2);
+        unused(o3);
+
+        //TODO: implement this
+    }
+
     RCData getRCData()
     {
         throw VehicleCommandNotImplementedException("getRCData() function is not yet implemented");
@@ -1505,6 +1516,10 @@ void MavLinkDroneController::commandVelocityZ(float vx, float vy, float z, const
 void MavLinkDroneController::commandPosition(float x, float y, float z, const YawMode& yaw_mode)
 {
     return pimpl_->commandPosition(x, y, z, yaw_mode);
+}
+void MavLinkDroneController::commandRotorSpeed(float o0, float o1, float o2, float o3)
+{
+    return pimpl_->commandRotorSpeed(o0, o1, o2, o3);
 }
 
 RCData MavLinkDroneController::getRCData()

@@ -291,6 +291,13 @@ public:
         return mode;
     }
 
+    static const GoalMode& getRotorSpeedMode()
+    {
+        static const GoalMode mode = GoalMode(GoalModeType::Passthrough,
+            GoalModeType::Passthrough, GoalModeType::Passthrough, GoalModeType::Passthrough);
+        return mode;
+    }
+
     static const GoalMode& getAllRateMode()
     {
         static const GoalMode mode = GoalMode(GoalModeType::AngleRate, 

@@ -9,7 +9,6 @@
 
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
 
-
 #include "common/Common.hpp"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
@@ -66,6 +65,9 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(MultirotorApi* drone, string serv
         bind("moveToPosition", [&](float x, float y, float z, float velocity, float max_wait_seconds, DrivetrainType drivetrain,
         const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) -> 
         bool { return getDroneApi()->moveToPosition(x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("moveByRotorSpeed", [&](float o0, float o1, float o2, float o3, float duration) ->
+        bool { return getDroneApi()->moveByRotorSpeed(o0, o1, o2, o3, duration); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveToZ", [&](float z, float velocity, float max_wait_seconds, const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) ->
         bool { return getDroneApi()->moveToZ(z, velocity, max_wait_seconds, yaw_mode.to(), lookahead, adaptive_lookahead); });

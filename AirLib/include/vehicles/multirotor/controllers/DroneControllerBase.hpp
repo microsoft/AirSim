@@ -152,6 +152,12 @@ public: //interface for outside world
     virtual bool moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
         const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
 
+
+    /// Move the drone by setting the individual rotor speed [rad/sec] of the drone.
+    virtual bool moveByRotorSpeed(float o0, float o1, float o2, float o3, float duration,
+        CancelableBase & cancelable_action);
+
+
     /// moveToZ is a shortcut for moveToPosition at the current x, y location.
     virtual bool moveToZ(float z, float velocity, const YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action);
@@ -243,6 +249,7 @@ protected: //must implement interface by derived class
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) = 0;
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) = 0;
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) = 0;
+    virtual void commandRotorSpeed(float o0, float o1, float o2, float o3) = 0;
 
     //config commands
     virtual float getCommandPeriod() = 0; //time between two command required for drone in seconds
@@ -272,6 +279,7 @@ protected: //utility functions and data members for derived classes
     virtual bool moveByVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode);
     virtual bool moveToPosition(const Vector3r& dest, const YawMode& yaw_mode);
     virtual bool moveByRollPitchZ(float pitch, float roll, float z, float yaw);
+    virtual bool moveByRotorSpeed(float o0, float o1, float o2, float o3);
     //****************************************************************************************************************************
 
     /************* safety checks & emergency manuevers ************/

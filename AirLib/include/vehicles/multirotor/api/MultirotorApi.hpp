@@ -115,6 +115,12 @@ public:
         return enqueueCommandAndWait(cmd, max_wait_seconds);
     }
 
+    bool moveByRotorSpeed(float o0, float o1, float o2, float o3, float duration)
+    {
+        std::shared_ptr<OffboardCommand> cmd = std::make_shared<MoveByRotorSpeed>(controller_, o0, o1, o2, o3, duration);
+        return enqueueCommand(cmd);
+    }
+
     bool moveToZ(float z, float velocity, float max_wait_seconds, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
     {
         std::shared_ptr<OffboardCommand> cmd = std::make_shared<MoveToZ>(controller_, z, velocity, yaw_mode, lookahead, adaptive_lookahead);
@@ -484,6 +490,20 @@ private:// types
         }
     };
 
+    class MoveByRotorSpeed : public OffboardCommand {
+        float o0_, o1_, o2_, o3_, duration_;
+    public:
+        MoveByRotorSpeed(DroneControllerBase* controller, float o0, float o1, float o2, float o3, float duration) : OffboardCommand(controller) {
+            this->o0_ = o0;
+            this->o1_ = o1;
+            this->o2_ = o2;
+            this->o3_ = o3;
+            this->duration_ = duration;
+        }
+        virtual void executeImpl(DroneControllerBase* controller, CancelableBase& cancelable) override {
+            controller->moveByRotorSpeed(o0_, o1_, o2_, o3_, duration_, cancelable);
+        }
+    };
 
     class MoveToZ : public OffboardCommand {
         float z_;
