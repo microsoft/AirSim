@@ -159,6 +159,17 @@ class CarControls(MsgpackMixin):
     manual_gear = 0
     gear_immediate = True
 
+    def __init__(self, throttle = np.float32(0), steering = np.float32(0), brake = np.float32(0), 
+        handbrake = False, is_manual_gear = False, manual_gear = 0, gear_immediate = True):
+        self.throttle = throttle
+        self.steering = steering
+        self.brake = brake
+        self.handbrake = handbrake
+        self.is_manual_gear = is_manual_gear
+        self.manual_gear = manual_gear
+        self.gear_immediate = gear_immediate
+
+
     def set_throttle(self, throttle_val, forward):
         if (forward):
             is_manual_gear = False
