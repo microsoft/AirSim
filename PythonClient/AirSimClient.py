@@ -159,7 +159,7 @@ class CarControls(MsgpackMixin):
     manual_gear = 0
     gear_immediate = True
 
-    def __init__(self, throttle = np.float32(0), steering = np.float32(0), brake = np.float32(0), 
+    def __init__(self, throttle = 0, steering = 0, brake = 0, 
         handbrake = False, is_manual_gear = False, manual_gear = 0, gear_immediate = True):
         self.throttle = throttle
         self.steering = steering
