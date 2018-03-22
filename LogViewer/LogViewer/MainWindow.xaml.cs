@@ -1102,7 +1102,14 @@ namespace LogViewer
                 StringBuilder sb = new StringBuilder();
                 foreach (var value in GetSelectedDataValues(schema))
                 {
-                    sb.AppendLine(value.Label);
+                    if (!string.IsNullOrEmpty(value.Label))
+                    {
+                        sb.AppendLine(value.Label);
+                    }
+                    else
+                    {
+                        sb.AppendLine(value.Y.ToString());
+                    }
                 }
 
                 SystemConsole.Write(sb.ToString());

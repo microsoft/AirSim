@@ -46,7 +46,16 @@ namespace LogViewer.Model
                 DataValue dv = new DataValue() { X = Timestamp, Y = 0 };
                 try
                 {
-                    dv.Y = Convert.ToDouble(result.Value);
+                    if (result.Value is double)
+                    {
+                        dv.Y = (double)result.Value;
+                    }
+                    if (result.Value is string)
+                    {
+                        double y = 0;
+                        double.TryParse((string)result.Value, out y);
+                        dv.Y = y;
+                    }
                 }
                 catch { }
 
@@ -428,7 +437,11 @@ namespace LogViewer.Model
             {
                 foreach (LogEntry entry in GetRows(schema.Parent.Name, startTime, duration))
                 {
-                    yield return entry.GetDataValue(schema.Name);
+                    var dv = entry.GetDataValue(schema.Name);
+                    if (dv != null)
+                    {
+                        yield return dv;
+                    }
                 }
             }
         }
