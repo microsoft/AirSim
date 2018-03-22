@@ -77,7 +77,7 @@ namespace LogViewer.Model
                                     endTime = time;
                                     break;
                                 case "coord":
-                                    AddGpsData(current, startTime, (string)child, ' ');
+                                    AddGpsData(current, startTime, (string)child, ' ', "OrderLatLong");
                                     break;
                             }
                         }
@@ -97,7 +97,7 @@ namespace LogViewer.Model
                             // fake time, since this format has no time.
                             current = current + TimeSpan.FromMilliseconds(1);
                             endTime = current;
-                            AddGpsData(current, startTime, line, ',');
+                            AddGpsData(current, startTime, line, ',', "OrderLongLat");
                         }
                     }
 
@@ -118,7 +118,7 @@ namespace LogViewer.Model
 
         }
 
-        private void AddGpsData(DateTime current, DateTime startTime, string row, char separator)
+        private void AddGpsData(DateTime current, DateTime startTime, string row, char separator, string order)
         {
             string[] parts = row.Split(separator);
             if (parts.Length == 3)
@@ -128,13 +128,21 @@ namespace LogViewer.Model
                 double.TryParse(parts[1], out lng);
                 double.TryParse(parts[2], out alt);
 
+                if (order == "OrderLongLat")
+                {
+                    // switch them.
+                    double temp = lng;
+                    lng = lat;
+                    lat = temp;
+                }
+
                 var gps = new LogEntry()
                 {
                     Name = "GPS",
                     Timestamp = (ulong)current.Ticks
                 };
                 gps.SetField("TimeMS", (UInt32)((current - startTime).Milliseconds));
-                gps.SetField("Lat", lat);
+                gps.SetField("Lat", lat);                
                 gps.SetField("Lng", lng);
                 gps.SetField("Alt", alt);
                 log.Add(gps);

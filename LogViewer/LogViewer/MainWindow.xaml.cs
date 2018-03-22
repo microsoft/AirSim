@@ -895,7 +895,7 @@ namespace LogViewer
             {
                 try
                 {
-                    myMap.SetView(GetBoundingBox(last.Locations), new Thickness(20.0), 0);
+                    myMap.SetView(last.Locations, new Thickness(20.0), 0);
                 }
                 catch (Exception ex)
                 {
