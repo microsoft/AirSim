@@ -334,7 +334,7 @@ namespace LogViewer
             OpenButton.IsEnabled = false;
 
             Microsoft.Win32.OpenFileDialog fo = new Microsoft.Win32.OpenFileDialog();
-            fo.Filter = "PX4 Log Files (*.px4log)|*.px4log|PX4 ulog Files (*.ulg)|*.ulg|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|mavlink files (*.mavlink)|*.mavlink|JSON files (*.json)|*.json";
+            fo.Filter = "PX4 Log Files (*.px4log)|*.px4log|PX4 ulog Files (*.ulg)|*.ulg|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|mavlink files (*.mavlink)|*.mavlink|JSON files (*.json)|*.json|KML files (*.kml)|*.kml";
             fo.CheckFileExists = true;
             fo.Multiselect = true;
             if (fo.ShowDialog() == true)
@@ -360,6 +360,9 @@ namespace LogViewer
                             break;
                         case ".json":
                             await Task.Run(async () => { await LoadJSonFile(file); });
+                            break;
+                        case ".kml":
+                            await Task.Run(async () => { await LoadKmlFile(file); });
                             break;
                         default:
                             MessageBox.Show("Do not know how to read files of type : " + System.IO.Path.GetExtension(file),
@@ -414,6 +417,35 @@ namespace LogViewer
             catch (Exception ex)
             {
                 AppendMessage("### Error loading json file: " + ex.Message);
+            }
+            ShowStatus("Done Loading " + file);
+            UpdateButtons();
+        }
+
+        private async Task LoadKmlFile(string file)
+        {
+            try
+            {
+                await Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    SystemConsole.Show();
+                })).Task;
+
+                AppendMessage("Loading " + file);
+                ShowStatus("Loading " + file);
+
+                XDocument doc = XDocument.Load(file);
+                KmlDataLog data = new Model.KmlDataLog();
+                data.Load(doc);
+
+                ShowSchema();
+
+                LoadFlights(data);
+                this.logs.Add(data);
+            }
+            catch (Exception ex)
+            {
+                AppendMessage("### Error loading KML file: " + ex.Message);
             }
             ShowStatus("Done Loading " + file);
             UpdateButtons();
@@ -805,8 +837,14 @@ namespace LogViewer
                                 //Debug.WriteLine("{0},\t{1},\t{2},\t{3},\t\t{4:F2},\t{5},\t{6}", gps.GPSTime,  gps.Lat, gps.Lon, gps.nSat, gps.Alt, gps.EPH, gps.Fix);
                                 if (!(Math.Floor(gps.Lat) == 0 && Math.Floor(gps.Lon) == 0))
                                 {
+                                    // map doesn't like negative altitudes.
+                                    double alt = gps.Alt;
+                                    if (alt < 0)
+                                    {
+                                        alt = 0;
+                                    }
                                     mapData.Add(gps);
-                                    var pos = new Location() { Altitude = gps.Alt, Latitude = gps.Lat, Longitude = gps.Lon };
+                                    var pos = new Location() { Altitude = alt, Latitude = gps.Lat, Longitude = gps.Lon };
                                     points.Add(pos);
                                     ulong time = (ulong)gps.GPSTime;
                                     if (time != 0)
@@ -857,7 +895,7 @@ namespace LogViewer
             {
                 try
                 {
-                    myMap.SetView(last.Locations, new Thickness(20.0), 0);
+                    myMap.SetView(GetBoundingBox(last.Locations), new Thickness(20.0), 0);
                 }
                 catch (Exception ex)
                 {
@@ -867,6 +905,31 @@ namespace LogViewer
 
         }
 
+        private LocationCollection GetBoundingBox(LocationCollection locations)
+        {
+            if (locations.Count == 0)
+            {
+                throw new Exception("Must provide at least one location");
+            }
+            Location first = locations.First();
+            double minLat = first.Latitude;
+            double maxLat = first.Latitude;
+            double minlong = first.Longitude;
+            double maxLong = first.Longitude;
+            foreach (Location i in locations)
+            {
+                minLat = Math.Min(minLat, i.Latitude);
+                maxLat = Math.Max(maxLat, i.Latitude);
+                minlong = Math.Min(minlong, i.Longitude);
+                maxLong = Math.Max(maxLong, i.Longitude);
+            }
+            var corners = new LocationCollection();
+            corners.Add(new Location(minLat, minlong));
+            corners.Add(new Location(minLat, minlong ));
+            corners.Add(new Location(minLat, minlong ));
+            corners.Add(new Location(minLat, minlong ));
+            return corners;
+        }
 
         private void UpdateButtons()
         {
