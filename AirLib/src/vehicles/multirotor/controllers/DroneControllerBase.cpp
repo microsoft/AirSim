@@ -57,6 +57,17 @@ bool DroneControllerBase::moveByAngleZ(float pitch, float roll, float z, float y
     }, duration, cancelable_action);
 }
 
+bool DroneControllerBase::moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration
+    , CancelableBase& cancelable_action)
+{
+    if (duration <= 0)
+        return true;
+
+    return !waitForFunction([&]() {
+        return !moveByRollPitchThrottle(pitch, roll, throttle, yaw_rate);
+    }, duration, cancelable_action);
+}
+
 bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode,
     CancelableBase& cancelable_action)
 {
@@ -370,6 +381,14 @@ bool DroneControllerBase::moveToPosition(const Vector3r& dest, const YawMode& ya
 {
     if (safetyCheckDestination(dest))
         commandPosition(dest.x(), dest.y(), dest.z(), yaw_mode);
+
+    return true;
+}
+
+bool DroneControllerBase::moveByRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate)
+{
+    if (safetyCheckVelocity(getVelocity()))
+        commandRollPitchThrottle(pitch, roll, throttle, yaw_rate);
 
     return true;
 }

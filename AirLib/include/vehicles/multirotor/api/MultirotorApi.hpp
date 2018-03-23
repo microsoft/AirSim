@@ -89,6 +89,12 @@ public:
         return enqueueCommand(cmd);
     }
 
+    bool moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration)
+    {
+        std::shared_ptr<OffboardCommand> cmd = std::make_shared<MoveByAngleThrottle>(controller_, pitch, roll, throttle, yaw_rate, duration);
+        return enqueueCommand(cmd);
+    }
+
     bool moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
     {
         std::shared_ptr<OffboardCommand> cmd = std::make_shared<MoveByVelocity>(controller_, vx, vy, vz, duration, drivetrain, yaw_mode);
@@ -383,6 +389,21 @@ private:// types
         }
         return true;
     }
+
+    class MoveByAngleThrottle : public OffboardCommand {
+        float pitch_, roll_, throttle_, yaw_rate_, duration_;
+    public:
+        MoveByAngleThrottle(DroneControllerBase* controller, float pitch, float roll, float throttle, float yaw_rate, float duration) : OffboardCommand(controller) {
+            this->pitch_ = pitch;
+            this->roll_ = roll;
+            this->throttle_ = throttle;
+            this->yaw_rate_ = yaw_rate;
+            this->duration_ = duration;
+        }
+        virtual void executeImpl(DroneControllerBase* controller, CancelableBase& cancelable) override {
+            controller->moveByAngleThrottle (pitch_, roll_, throttle_, yaw_rate_, duration_, cancelable);
+        }
+    };
 
     class MoveByAngleZ : public OffboardCommand {
         float pitch_, roll_, z_, yaw_, duration_;

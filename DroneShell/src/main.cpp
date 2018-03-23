@@ -510,6 +510,35 @@ public:
     }
 };
 
+
+class MoveByAngleThrottleCommand : public DroneCommand {
+public:
+    MoveByAngleThrottleCommand() : DroneCommand("MoveByAngleThrottle", "Move with specified roll and pitch, leaving z as-is")
+    {
+        this->addSwitch({ "-pitch", "0", "pitch angle in degrees (default 0)" });
+        this->addSwitch({ "-roll", "0", "roll angle in degrees (default 0)" });
+        this->addSwitch({ "-yaw_rate", "0", "target yaw rate in degrees/sec (default is 0)" });
+        this->addSwitch({ "-throttle", "-2.5", "z position in meters (default -2.5)" });
+        this->addSwitch({ "-duration", "5", "the duration of this command in seconds (default 5)" });
+    }
+
+    bool execute(const DroneCommandParameters& params)
+    {
+        float pitch = getSwitch("-pitch").toFloat();
+        float roll = getSwitch("-roll").toFloat();
+        float yaw_rate = getSwitch("-yaw_rate").toFloat();
+        float throttle = getSwitch("-throttle").toFloat();
+        float duration = getSwitch("-duration").toFloat();
+        CommandContext* context = params.context;
+
+        context->tasker.execute([=]() {
+            context->client.moveByAngleThrottle(pitch, roll, throttle, yaw_rate, duration);
+        });
+
+        return false;
+    }
+};
+
 class MoveByVelocityCommand : public DroneCommand {
 public:
     MoveByVelocityCommand() : DroneCommand("MoveByVelocity", "Move by specified velocity components vx, vy, vz, axis wrt body")
@@ -1352,6 +1381,7 @@ int main(int argc, const char *argv[]) {
     GetPositionCommand getPosition;
     MoveByManualCommand moveByManual;
     MoveByAngleZCommand moveByAngleZ;
+    MoveByAngleThrottleCommand moveByAngleThrottle;
     MoveByVelocityCommand moveByVelocity;
     MoveByVelocityZCommand moveByVelocityZ;
     MoveOnPathCommand moveOnPath;
@@ -1384,6 +1414,7 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(moveToPosition);
     shell.addCommand(moveByManual);
     shell.addCommand(moveByAngleZ);
+    shell.addCommand(moveByAngleThrottle);
     shell.addCommand(moveByVelocity);
     shell.addCommand(moveByVelocityZ);
     shell.addCommand(moveOnPath);

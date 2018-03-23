@@ -108,6 +108,9 @@ public: //interface for outside world
     virtual bool moveByAngleZ(float pitch, float roll, float z, float yaw, float duration
         , CancelableBase& cancelable_action);
 
+    /// Move by providing angles and throttles just lik ein RC
+    virtual bool moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration
+        , CancelableBase& cancelable_action);
 
     /// Move the drone by controlling the velocity vector of the drone. A little bit of vx can
     /// make the drone move forwards, a little bit of vy can make it move sideways.  A bit of vz can move
@@ -240,6 +243,7 @@ protected: //must implement interface by derived class
     //all angles in degrees, lengths in meters, velocities in m/s, durations in seconds
     //all coordinates systems are world NED (+x is North, +y is East, +z is down)
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) = 0;
+    virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) = 0;
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) = 0;
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) = 0;
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) = 0;
@@ -272,6 +276,7 @@ protected: //utility functions and data members for derived classes
     virtual bool moveByVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode);
     virtual bool moveToPosition(const Vector3r& dest, const YawMode& yaw_mode);
     virtual bool moveByRollPitchZ(float pitch, float roll, float z, float yaw);
+    virtual bool moveByRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate);
     //****************************************************************************************************************************
 
     /************* safety checks & emergency manuevers ************/

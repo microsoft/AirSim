@@ -144,6 +144,7 @@ public:
     virtual void loopCommandPost() override;
 protected:
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override;
+    virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override;
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override;
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override;
@@ -1165,6 +1166,11 @@ public:
         return rc;
     }
 
+    void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate)
+    {
+        checkVehicle();
+        mav_vehicle_->moveByAttitude(roll, pitch, yaw_rate, 0, 0, 0, throttle);
+    }
     void commandRollPitchZ(float pitch, float roll, float z, float yaw)
     {
         if (target_height_ != -z) {
@@ -1490,6 +1496,10 @@ bool MavLinkDroneController::goHome(CancelableBase& cancelable_action)
     return pimpl_->goHome(cancelable_action);
 }
 
+void MavLinkDroneController::commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate)
+{
+    return pimpl_->commandRollPitchThrottle(pitch, roll, throttle, yaw_rate);
+}
 void MavLinkDroneController::commandRollPitchZ(float pitch, float roll, float z, float yaw)
 {
     return pimpl_->commandRollPitchZ(pitch, roll, z, yaw);
