@@ -18,7 +18,7 @@ using namespace msr::airlib;
 
 namespace msr { namespace airlib {
 
-// We want to make it possible for MultirotorRpcLibClient to call the offboard movement methods (moveByAngle, moveByVelocity, etc) at a high
+// We want to make it possible for MultirotorRpcLibClient to call the offboard movement methods (moveByAngleZ, moveByVelocity, etc) at a high
 // rate, like 30 times a second.  But we also want these movement methods to drive the drone at a reliable rate which we do inside
 // DroneControllerBase using the Waiter object so it pumps the virtual commandVelocity method at a fixed rate defined by getCommandPeriod.
 // This fixed rate is needed by the drone flight controller (for example PX4) because the flight controller usually reverts to
@@ -83,9 +83,9 @@ public:
         return controller_->goHome(*pending_);
     }
 
-    bool moveByAngle(float pitch, float roll, float z, float yaw, float duration)
+    bool moveByAngleZ(float pitch, float roll, float z, float yaw, float duration)
     {
-        std::shared_ptr<OffboardCommand> cmd = std::make_shared<MoveByAngle>(controller_, pitch, roll, z, yaw, duration);
+        std::shared_ptr<OffboardCommand> cmd = std::make_shared<MoveByAngleZ>(controller_, pitch, roll, z, yaw, duration);
         return enqueueCommand(cmd);
     }
 
@@ -384,10 +384,10 @@ private:// types
         return true;
     }
 
-    class MoveByAngle : public OffboardCommand {
+    class MoveByAngleZ : public OffboardCommand {
         float pitch_, roll_, z_, yaw_, duration_;
     public:
-        MoveByAngle(DroneControllerBase* controller, float pitch, float roll, float z, float yaw, float duration) : OffboardCommand(controller) {
+        MoveByAngleZ(DroneControllerBase* controller, float pitch, float roll, float z, float yaw, float duration) : OffboardCommand(controller) {
             this->pitch_ = pitch;
             this->roll_ = roll;
             this->z_ = z;
@@ -395,7 +395,7 @@ private:// types
             this->duration_ = duration;
         }
         virtual void executeImpl(DroneControllerBase* controller, CancelableBase& cancelable) override {
-            controller->moveByAngle(pitch_, roll_, z_, yaw_, duration_, cancelable);
+            controller->moveByAngleZ(pitch_, roll_, z_, yaw_, duration_, cancelable);
         }
     };
 

@@ -102,10 +102,10 @@ public: //interface for outside world
     /// make the drone move forwards, a little bit of roll can make it move sideways.  The yaw control can
     /// make the drone spin around on the spot.  The duration says how long you want to apply these settings
     /// before reverting to a hover command.  So you can say "fly forwards slowly for 1 second" using 
-    /// moveByAngle(0.1, 0, z, yaw, 1, ...).  The cancelable_action can be used to canel all actions.  In fact,
+    /// moveByAngleZ(0.1, 0, z, yaw, 1, ...).  The cancelable_action can be used to canel all actions.  In fact,
     /// every time you call another move* method you will automatically cancel any previous action that is
     /// happening.
-    virtual bool moveByAngle(float pitch, float roll, float z, float yaw, float duration
+    virtual bool moveByAngleZ(float pitch, float roll, float z, float yaw, float duration
         , CancelableBase& cancelable_action);
 
 

@@ -46,7 +46,7 @@ void DroneControllerBase::loopCommandPost()
     //no-op by default. derived class can override it if needed
 }
 
-bool DroneControllerBase::moveByAngle(float pitch, float roll, float z, float yaw, float duration
+bool DroneControllerBase::moveByAngleZ(float pitch, float roll, float z, float yaw, float duration
     , CancelableBase& cancelable_action)
 {
     if (duration <= 0)

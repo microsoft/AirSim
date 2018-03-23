@@ -547,8 +547,8 @@ class MultirotorClient(AirSimClientBase, object):
 
 
     # APIs for control
-    def moveByAngle(self, pitch, roll, z, yaw, duration):
-        return self.client.call('moveByAngle', pitch, roll, z, yaw, duration)
+    def moveByAngleZ(self, pitch, roll, z, yaw, duration):
+        return self.client.call('moveByAngleZ', pitch, roll, z, yaw, duration)
 
     def moveByVelocity(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
         return self.client.call('moveByVelocity', vx, vy, vz, duration, drivetrain, yaw_mode)
