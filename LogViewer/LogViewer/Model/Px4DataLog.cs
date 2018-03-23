@@ -17,6 +17,7 @@ namespace LogViewer.Model
     {
         public string Name { get; set; }
         public object Value { get; set; }
+        public LogEntry Parent { get; internal set; }
     }
 
     public class LogEntry : LogField
@@ -43,7 +44,7 @@ namespace LogViewer.Model
             }
             if (result != null)
             {
-                DataValue dv = new DataValue() { X = Timestamp, Y = 0 };
+                DataValue dv = new DataValue() { X = Timestamp, Y = 0, UserData = result };
                 try
                 {
                     if (result.Value is double)
@@ -292,12 +293,13 @@ namespace LogViewer.Model
         {
             if (cache == null)
             {
-                cache = new Dictionary<string, Model.LogField>();
+                cache = new Dictionary<string, LogField>();
             }
-            cache[name] = new Model.LogField()
+            cache[name] = new LogField()
             {
                 Name = name,
-                Value = value
+                Value = value,
+                Parent = this
             };
         }
 
@@ -401,7 +403,8 @@ namespace LogViewer.Model
                     cache[Format.Columns[k]] = new LogField()
                     {
                         Name = Format.Columns[k],
-                        Value = value
+                        Value = value,
+                        Parent = this
                     };
                 }
             }

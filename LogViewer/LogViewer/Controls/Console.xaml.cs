@@ -102,7 +102,17 @@ namespace LogViewer.Controls
 
             if ((string)run.Tag == "user")
             {
-                run = run.PreviousInline as Run;
+                var previousrun = run.PreviousInline as Run;
+                if (previousrun == null)
+                {
+                    var newrun = new Run() { Foreground = ConsoleTextBrush };
+                    last.Inlines.InsertBefore(run, newrun);
+                    run = newrun;
+                }
+                else
+                {
+                    run = previousrun;
+                }
             }
 
             // todo: process binary console commands embedded in the text...

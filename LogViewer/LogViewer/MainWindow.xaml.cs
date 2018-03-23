@@ -39,6 +39,8 @@ namespace LogViewer
         MapPolyline currentFlight;
         MavlinkLog currentFlightLog;
         long lastAttitudeMessage;
+        List<LogEntry> mappedLogEntries;
+        MapLayer annotationLayer;
 
         public MainWindow()
         {
@@ -829,6 +831,7 @@ namespace LogViewer
                             line.StrokeThickness = 4;
                             line.Stroke = new SolidColorBrush(GetRandomColor());
                             LocationCollection points = new LocationCollection();
+                            mappedLogEntries = new List<Model.LogEntry>();
 
                             //Debug.WriteLine("time,\t\tlat,\t\tlong,\t\t\tnsat,\talt,\thdop,\tfix");
                             foreach (var row in log.GetRows("GPS", flight.StartTime, flight.Duration))
@@ -844,6 +847,7 @@ namespace LogViewer
                                         alt = 0;
                                     }
                                     mapData.Add(gps);
+                                    mappedLogEntries.Add(row);
                                     var pos = new Location() { Altitude = alt, Latitude = gps.Lat, Longitude = gps.Lon };
                                     points.Add(pos);
                                     ulong time = (ulong)gps.GPSTime;
@@ -953,8 +957,6 @@ namespace LogViewer
 
         IEnumerable<DataValue> GetSelectedDataValues(LogItemSchema schema)
         {
-            List<DataValue> combined = new List<DataValue>();
-
             List<Flight> selected = GetSelectedFlights();
             if (selected.Count == 0)
             {
@@ -970,13 +972,14 @@ namespace LogViewer
                     {
                         if (flight.Log == null || flight.Log == log)
                         {
-                            combined.AddRange(log.GetDataValues(schema, flight.StartTime, flight.Duration));
+                            foreach (var dv in log.GetDataValues(schema, flight.StartTime, flight.Duration))
+                            {
+                                yield return dv;
+                            }
                         }
                     }
                 }
-            }
-
-            return combined;
+            }            
         }
 
         Thickness defaultChartMargin = new Thickness(0, 10, 0, 10);
@@ -1100,22 +1103,184 @@ namespace LogViewer
             else
             {
                 StringBuilder sb = new StringBuilder();
+                string previous = null;
+                List<DataValue> unique = new List<Model.DataValue>();
                 foreach (var value in GetSelectedDataValues(schema))
                 {
                     if (!string.IsNullOrEmpty(value.Label))
                     {
-                        sb.AppendLine(value.Label);
-                    }
-                    else
-                    {
-                        sb.AppendLine(value.Y.ToString());
+                        if (previous != value.Label)
+                        {
+                            unique.Add(value);
+                            sb.Append(((ulong)value.X).ToString());
+                            sb.Append(": ");
+                            sb.AppendLine(value.Label);
+                            previous = value.Label;
+                        }
                     }
                 }
-
                 SystemConsole.Write(sb.ToString());
                 ConsoleButton.IsChecked = true;
                 SystemConsole.Show();
             }
+        }
+
+        private void AnnotateMap(LogItemSchema schema)
+        {
+            List<DataValue> unique = new List<Model.DataValue>();
+            if (schema.IsNumeric)
+            {
+                var data = GetSelectedDataValues(schema);
+                ShowStatus(string.Format("Found {0} data values", data.Count()));
+                if (data.Count() > 0)
+                {
+                    double previous = 0;
+                    {
+                        // uniquify it.
+                        foreach (var value in data)
+                        {
+                            if (value.Y != previous)
+                            {
+                                unique.Add(value);
+                                previous = value.Y;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                string previous = null;
+                foreach (var value in GetSelectedDataValues(schema))
+                {
+                    if (!string.IsNullOrEmpty(value.Label))
+                    {
+                        if (previous != value.Label)
+                        {
+                            unique.Add(value);
+                            sb.Append(value.X.ToString());
+                            sb.Append(": ");
+                            sb.AppendLine(value.Label);
+                            previous = value.Label;
+                        }
+                    }
+                }
+            }
+
+            // if there are too many values, then limit it to an even spread of 100 items.
+            if (unique.Count > 100)
+            {
+                var summary = new List<Model.DataValue>();
+                double skip = (unique.Count / 100);
+                for (int i = 0, n = unique.Count; i < n; i++)
+                {
+                    var value = unique[i];
+                    if (i >= summary.Count * unique.Count / 100)
+                    {
+                        summary.Add(value);
+                    }
+                }
+                unique = summary;
+            }
+            AnnotateMap(unique);
+        }
+
+        private void AnnotateMap(List<DataValue> unique)
+        {
+            if (this.mappedLogEntries == null || this.mappedLogEntries.Count == 0)
+            {
+                ShowMap();
+            }
+
+            if (this.mappedLogEntries == null || this.mappedLogEntries.Count == 0)
+            {
+                MessageBox.Show("Sorry, could not find GPS map info, so cannot annotate data on the map",
+                    "GPS info is missing", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            if (annotationLayer != null)
+            {
+                myMap.Children.Remove(annotationLayer);
+            }
+            annotationLayer = new MapLayer();
+            
+            SolidColorBrush annotationBrush = new SolidColorBrush(Color.FromArgb(0x80, 0xff, 0xff, 0xB0));
+
+            foreach (var dv in unique)
+            {
+                LogEntry closest = null;
+                LogField field = dv.UserData as LogField;
+                if (field != null)
+                {
+                    // csv log
+                    LogEntry e = field.Parent;
+                    closest = FindNearestMappedItem(e.Timestamp);
+                }
+                else
+                {
+                    // px4 log?
+                    Message msg = dv.UserData as Message;
+                    if (msg != null)
+                    {
+                        closest = FindNearestMappedItem(msg.GetTimestamp());
+                    }
+                    else
+                    {
+                        // mavlink
+                        MavlinkLog.Message mavmsg = dv.UserData as MavlinkLog.Message;
+                        if (mavmsg != null)
+                        {
+                            closest = FindNearestMappedItem(mavmsg.Timestamp.Ticks / 10);
+                        }
+                    }
+                }
+
+                if (closest != null)
+                {
+                    LogEntryGPS gps = new LogEntryGPS(closest);
+                    // map doesn't like negative altitudes.
+                    double alt = gps.Alt;
+                    if (alt < 0)
+                    {
+                        alt = 0;
+                    }
+                    var pos = new Location() { Altitude = alt, Latitude = gps.Lat, Longitude = gps.Lon };
+                    string label = dv.Label;
+                    if (string.IsNullOrEmpty(label))
+                    {
+                        label = dv.Y.ToString();
+                    }
+                    annotationLayer.AddChild(new TextBlock(new Run(label) { Background = annotationBrush }), pos, PositionOrigin.BottomLeft);
+                }
+                
+            }
+            myMap.Children.Add(annotationLayer);
+
+            SystemConsole.Hide();
+            ChartStack.Visibility = Visibility.Collapsed;
+            myMap.Visibility = Visibility.Visible;
+            myMap.UpdateLayout();
+        }
+
+        private LogEntry FindNearestMappedItem(double t)
+        {
+            LogEntry closest = null;
+            double bestDiff = 0;
+            // find nearest mapped location (nearest in time).
+            foreach (var mapped in this.mappedLogEntries)
+            {
+                var time = mapped.Timestamp;
+                var diff = Math.Abs((double)time - t);
+
+                if (closest == null || diff < bestDiff)
+                {
+                    closest = mapped;
+                    bestDiff = diff;
+                }
+            }
+            return closest;
         }
 
         private void OnNewChartGenerated(object sender, List<DataValue> e)
@@ -1178,6 +1343,10 @@ namespace LogViewer
             double height = ChartStack.ActualHeight;
             double count = ChartStack.ChartCount;
             height -= (count * (defaultChartMargin.Top + defaultChartMargin.Bottom)); // remove margins
+            if (height < 0)
+            {
+                height = 0;
+            }
             double chartHeight = Math.Min(MaxChartHeight, height / count);
             bool found = false;
             foreach (FrameworkElement c in ChartStack.Charts)
@@ -1250,6 +1419,7 @@ namespace LogViewer
             }
         }
 
+
         private void OnClear(object sender, RoutedEventArgs e)
         {
             ChartStack.ClearCharts();
@@ -1294,15 +1464,7 @@ namespace LogViewer
                 }
             });
         }
-
-        //private void OnMapPointerMoved(object sender, PointerRoutedEventArgs e)
-        //{
-        //    Point mapPos = e.GetCurrentPoint(myMap).Position;
-        //    Geopoint location;
-        //    myMap.GetLocationFromOffset(mapPos, out location);
-        //    StatusText.Text = location.Position.Latitude + ", " + location.Position.Longitude;
-        //}
-
+        
         private void OnFlightViewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)
@@ -1487,6 +1649,8 @@ namespace LogViewer
 
         IncomingImage incoming_image = new IncomingImage();
 
+        public LogItemSchema rightClickedItem { get; private set; }
+
         private void OnShowConsole(object sender, RoutedEventArgs e)
         {
             SystemConsole.Show();
@@ -1583,7 +1747,6 @@ namespace LogViewer
             // find guassian lines in the map and draw them so it looks like this:
             // https://www.ngdc.noaa.gov/geomag/WMM/data/WMM2015/WMM2015_D_MERC.pdf
 
-
             for (int i = 0; i < 180; i++)
             {
                 for (int j = 0; j < 360; j++)
@@ -1618,6 +1781,31 @@ namespace LogViewer
                 ImageViewer.Source = image;
                 CameraPanel.Visibility = Visibility.Visible;
             }
+        }
+
+        private void OnAnnotateItem(object sender, RoutedEventArgs e)
+        {
+            LogItemSchema item = this.rightClickedItem;
+            if (item != null)
+            {
+                AnnotateMap(item);
+            }
+        }
+
+        private void OnRightClickCategoryList(object sender, MouseButtonEventArgs e)
+        {
+            this.rightClickedItem = null;
+            Point pos = e.GetPosition(CategoryList);
+            DependencyObject dep = (DependencyObject)e.OriginalSource;
+            while ((dep != null) && !(dep is ListViewItem))
+            {
+                dep = VisualTreeHelper.GetParent(dep);
+            }
+            if (dep == null)
+                return;
+            ListViewItem listitem = (ListViewItem)dep;
+            LogItemSchema item = listitem.DataContext as LogItemSchema;
+            this.rightClickedItem = item;
         }
     }
 }
