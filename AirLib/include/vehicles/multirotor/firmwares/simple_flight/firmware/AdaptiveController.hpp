@@ -117,13 +117,13 @@ private:
 
         // bias modification for level imu implementing deadband
 
-        if (abs(phi_in) <= 0.0001)
+        if (std::abs(phi_in) <= 0.0001)
             phi_in = 0;
 
-        if (abs(theta_in) <= 0.00001)
+        if (std::abs(theta_in) <= 0.00001)
             theta_in = 0;
 
-        if (abs(psi_in) <= 0.0001)
+        if (std::abs(psi_in) <= 0.0001)
             psi_in = 0;
     }
 
@@ -581,7 +581,7 @@ private:
 
         // Rescale such that the outputs normalize from -1,1
 
-        U1 =  sqrt(abs(U1)) / 6.20; // I used sqrt to try and allow for smoother signal
+        U1 =  sqrt(std::abs(U1)) / 6.20; // I used sqrt to try and allow for smoother signal
 
         U2 =  U2 / 80;
 
