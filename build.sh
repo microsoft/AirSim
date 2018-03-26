@@ -29,17 +29,22 @@ if [ ! -d "./cmake_build" ]; then
 fi
 
 
-# set up paths of clang compiler
-if [ "$(uname)" == "Darwin" ]; then
-    CMAKE="$(greadlink -f cmake_build/bin/cmake)"
-
-    export CC=/usr/local/opt/llvm\@3.9/bin/clang
-    export CXX=/usr/local/opt/llvm\@3.9/bin/clang++
+# set up paths of cc and cxx compiler
+if [ "$1" == "gcc" ]; then
+    export CC="gcc"
+    export CXX="g++"
 else
-    CMAKE="$(readlink -f cmake_build/bin/cmake)"
+    if [ "$(uname)" == "Darwin" ]; then
+        CMAKE="$(greadlink -f cmake_build/bin/cmake)"
 
-    export CC="clang-3.9"
-    export CXX="clang++-3.9"
+        export CC=/usr/local/opt/llvm\@3.9/bin/clang
+        export CXX=/usr/local/opt/llvm\@3.9/bin/clang++
+    else
+        CMAKE="$(readlink -f cmake_build/bin/cmake)"
+
+        export CC="clang-3.9"
+        export CXX="clang++-3.9"
+    fi
 fi
 
 #install EIGEN library
