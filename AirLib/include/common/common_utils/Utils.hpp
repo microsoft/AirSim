@@ -472,7 +472,7 @@ public:
 
     static std::time_t to_time_t(const std::string& str, bool is_dst = false, const std::string& format = "%Y-%m-%d %H:%M:%S")
     {
-        std::tm t = {0};
+        std::tm t;
         t.tm_isdst = is_dst ? 1 : 0;
         std::istringstream ss(str);
         ss >> std::get_time(&t, format.c_str());
