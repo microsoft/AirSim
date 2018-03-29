@@ -15,10 +15,11 @@ namespace LogViewer.Model
     {
         DateTime startTime = DateTime.MinValue;
         TimeSpan duration = TimeSpan.Zero;
-        XDocument data;
-        LogItemSchema schema = new LogItemSchema() { Name = "CsvDataLog", Type = "Root" };
+        LogItemSchema schema;
         List<Flight> flights = new List<Flight>();
         string timeElementName;
+        List<LogEntry> log = new List<LogEntry>();
+
 
         public DateTime StartTime { get { return startTime; } }
         public TimeSpan Duration { get { return duration; } }
@@ -27,46 +28,22 @@ namespace LogViewer.Model
 
         public IEnumerable<DataValue> GetDataValues(LogItemSchema schema, DateTime startTime, TimeSpan duration)
         {
-            if (data != null)
+            if (this.log != null && schema.Parent != null)
             {
-                bool allValues = (startTime == DateTime.MinValue && duration == TimeSpan.MaxValue);
-                DateTime endTime = allValues ? DateTime.MaxValue : startTime + duration;
-                string xname = XmlConvert.EncodeLocalName(schema.Name);
-                long defaultX = 0;
-                foreach (var row in data.Root.Elements("row"))
+                foreach (LogEntry entry in GetRows(schema.Parent.Name, startTime, duration))
                 {
-                    foreach (var e in row.Elements(xname))
+                    var dv = entry.GetDataValue(schema.Name);
+                    if (dv != null)
                     {
-                        long? us = GetTimeMicroseconds(row);
-                        long x = us.HasValue ? us.Value : defaultX++;
-                        DateTime time = this.startTime.AddMilliseconds(x / 1000);
-                        if (allValues || (us.HasValue && time > startTime && time < endTime))
-                        {
-                            string value = e.Value;
-                            double d = 0;
-                            if (double.TryParse(value, out d))
-                            {
-                                yield return new DataValue() { X = x, Y = d };
-                            }
-                        }
+                        yield return dv;
                     }
                 }
             }
         }
 
-        public IEnumerable<DataValue> LiveQuery(LogItemSchema schema, CancellationToken token)
-        {
-            throw new NotImplementedException("LiveQuery");
-        }
-
-        public IEnumerable<LogEntry> GetRows(string typeName, DateTime startTime, TimeSpan duration)
-        {
-            throw new NotImplementedException("GetRows");
-        }
-
         public DateTime GetTime(ulong timeMs)
         {
-            throw new NotImplementedException("GetTime");
+            return this.startTime + TimeSpan.FromMilliseconds(timeMs);
         }
 
         public async Task Load(string fileName, ProgressUtility progress)
@@ -75,56 +52,130 @@ namespace LogViewer.Model
             // CSV doesn't have realtime clock, so go with the file date instead.
             this.startTime = File.GetLastWriteTime(fileName);
 
-            // time (us)
+            // time (ms)
             long min = long.MaxValue;
             long max = long.MinValue;
-
 
             await Task.Run(() =>
             {
                 timeElementName = null;
                 using (Stream s = File.OpenRead(fileName))
                 {
+                    Dictionary<string, LogItemSchema> map = new Dictionary<string, LogItemSchema>();
                     XmlNameTable nametable = new NameTable();
                     using (XmlCsvReader reader = new XmlCsvReader(s, System.Text.Encoding.UTF8, new Uri(fileName), nametable))
                     {
-                        progress.ShowProgress(0, s.Length, s.Position);
                         reader.FirstRowHasColumnNames = true;
-                        data = XDocument.Load(reader);
-
-                        this.schema = new LogItemSchema() { Name = "CsvLog", Type = "Root" };
-                        var item = new LogItemSchema() { Name = System.IO.Path.GetFileName(fileName), Type = "Item" };
-                        
-                        // create the schema
-                        List<LogItemSchema> children = new List<Model.LogItemSchema>();
-                        foreach (String name in reader.ColumnNames)
+                        reader.ColumnsAsAttributes = true;
+                        while (reader.Read())
                         {
-                            if (timeElementName == null && name.Contains("time"))
+                            progress.ShowProgress(0, s.Length, s.Position);
+                            if (this.schema == null)
                             {
-                                timeElementName = name;
+                                // create the schema
+                                this.schema = new LogItemSchema() { Name = "CsvLog", Type = "Root" };
+                                List<LogItemSchema> children = new List<Model.LogItemSchema>();
+                                LogItemSchema row = null;
+
+                                foreach (String name in reader.ColumnNames)
+                                {
+                                    if (timeElementName == null && (name.ToLower().Contains("time") || name.ToLower().Contains("ticks")))
+                                    {
+                                        timeElementName = name;
+                                    }
+
+                                    if (name.Contains(":"))
+                                    {
+                                        // then we have sub-parts.
+                                        int pos = name.IndexOf(":");
+                                        string key = name.Substring(0, pos);
+                                        string field = name.Substring(pos + 1);
+                                        LogItemSchema group = null;
+                                        if (!map.ContainsKey(key))
+                                        {
+                                            group = new LogItemSchema() { Name = key, Parent = this.schema, Type = key, ChildItems = new List<LogItemSchema>() };
+                                            children.Add(group);
+                                            map[key] = group;
+                                        }
+                                        else
+                                        {
+                                            group = map[key];
+                                        }
+                                        var leaf = new LogItemSchema() { Name = field, Parent = group, Type = "Double" };
+                                        group.ChildItems.Add(leaf);
+                                        map[name] = leaf;
+                                    }
+                                    else
+                                    {
+                                        if (row == null)
+                                        {
+                                            row = new LogItemSchema() { Name = "Other", Parent = this.schema, Type = "Other", ChildItems = new List<LogItemSchema>() };
+                                            children.Add(row);
+                                        }
+                                        var leaf = new LogItemSchema() { Name = name, Parent = row, Type = "Double" };
+                                        row.ChildItems.Add(leaf);
+                                        map[name] = leaf;
+                                    }
+                                }
+                                this.schema.ChildItems = children;
                             }
-                            children.Add(new LogItemSchema() { Name = name, Parent = this.schema, Type = "Double" });
-                        }
 
-                        item.ChildItems = children;
-                        this.schema.ChildItems = new List<Model.LogItemSchema>(new LogItemSchema[] { item });
+                            if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "row")
+                            {
+                                // read a row
+                                long time = GetTicks(reader);
+                                min = Math.Min(min, time);
+                                max = Math.Max(max, time);
+                                LogEntry row = new Model.LogEntry() { Name = "Other", Timestamp = (ulong)time };
+                                log.Add(row);                                
+                                Dictionary<string, LogEntry> groups = new Dictionary<string, LogEntry>();
 
-                        progress.ShowProgress(0, s.Length, s.Position);
-                    }
-                }
+                                if (reader.MoveToFirstAttribute())
+                                {
+                                    do
+                                    {
+                                        string name = XmlConvert.DecodeName(reader.LocalName);
+                                        LogItemSchema itemSchema = map[name];
+                                        LogEntry e = row;
+                                        if (name.Contains(":"))
+                                        {
+                                            // then we have sub-parts.
+                                            int pos = name.IndexOf(":");
+                                            string key = name.Substring(0, pos);
+                                            string field = name.Substring(pos + 1);
+                                            if (!groups.ContainsKey(key))
+                                            {
+                                                e = new LogEntry() { Name = key, Timestamp = (ulong)time };
+                                                groups[key] = e;
+                                                log.Add(e);
+                                            }
+                                            else
+                                            {
+                                                e = groups[key];
+                                            }
+                                            name = field;
+                                        }
 
-                foreach (var e in data.Root.Elements())
-                {
-                    long? i = GetTimeMicroseconds(e);
-                    if (i.HasValue)
-                    {
-                        if (i.Value < min)
-                        {
-                            min = i.Value;
-                        }
-                        if (i > max)
-                        {
-                            max = i.Value;
+                                        string value = reader.Value;
+                                        double d = 0;
+                                        if (double.TryParse(value, out d))
+                                        {
+                                            e.SetField(name, d);
+                                        }
+                                        else
+                                        {
+                                            if (!string.IsNullOrEmpty(value))
+                                            {
+                                                // not a number.
+                                                itemSchema.Type = "String";
+                                                e.SetField(name, value);
+                                            }
+                                        }
+                                    }
+                                    while (reader.MoveToNextAttribute());
+                                    reader.MoveToElement();
+                                }
+                            }
                         }
                     }
                 }
@@ -138,23 +189,36 @@ namespace LogViewer.Model
 
         }
 
-        long? GetTimeMicroseconds(XElement e)
+        long GetTicks(XmlReader e)
         {
-            string time = (string)e.Attribute(timeElementName);
-            if (time == null)
+            string time = e.GetAttribute(timeElementName);
+            if (!string.IsNullOrEmpty(time))
             {
-                time = (string)e.Element(timeElementName);
-            }
-            double i = 0;
-            if (double.TryParse(time, out i))
-            {
-                if (timeElementName == "time")
+                double i = 0;
+                if (double.TryParse(time, out i))
                 {
-                    return (long)(i * 1000000);
+                    return (long)i;
                 }
-                return (long)i;
             }
-            return null;
+            return 0;
+        }
+
+        public IEnumerable<DataValue> LiveQuery(LogItemSchema schema, CancellationToken token)
+        {
+            throw new NotImplementedException("LiveQuery");
+        }
+
+        public IEnumerable<LogEntry> GetRows(string typeName, DateTime startTime, TimeSpan duration)
+        {
+            foreach (var row in this.log)
+            {
+                if (string.Compare(row.Name, typeName, StringComparison.OrdinalIgnoreCase) == 0 &&
+                    (duration == TimeSpan.MaxValue ||
+                    row.Timestamp >= (ulong)startTime.Ticks && row.Timestamp < (ulong)(startTime + duration).Ticks))
+                {
+                    yield return row;
+                }
+            }
         }
 
         /// <summary>

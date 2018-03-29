@@ -13,18 +13,17 @@ using System.Xml.Linq;
 
 namespace LogViewer.Model
 {
-    class LogField
+    public class LogField
     {
         public string Name { get; set; }
         public object Value { get; set; }
+        public LogEntry Parent { get; internal set; }
     }
 
-    public class LogEntry
+    public class LogEntry : LogField
     {
         public ulong Timestamp { get; set; }
-
-        public string Name { get; set; }
-
+                
         /// <summary>
         /// Return a data value, and try and timestamp in the x-coordinate
         /// </summary>
@@ -44,11 +43,20 @@ namespace LogViewer.Model
                 return null;
             }
             if (result != null)
-            {                
-                DataValue dv = new DataValue() { X = Timestamp, Y = 0 };
+            {
+                DataValue dv = new DataValue() { X = Timestamp, Y = 0, UserData = result };
                 try
                 {
-                    dv.Y = Convert.ToDouble(result.Value);
+                    if (result.Value is double)
+                    {
+                        dv.Y = (double)result.Value;
+                    }
+                    if (result.Value is string)
+                    {
+                        double y = 0;
+                        double.TryParse((string)result.Value, out y);
+                        dv.Y = y;
+                    }
                 }
                 catch { }
 
@@ -151,6 +159,35 @@ namespace LogViewer.Model
             NAVIGATION_STATE_AUTO_LAND = 18,
             NAVIGATION_STATE_AUTO_FOLLOW_TARGET = 19,
             NAVIGATION_STATE_MAX = 20
+        }
+
+        public bool HasFields
+        {
+            get
+            {
+                if (cache == null)
+                {
+                    cache = new Dictionary<string, Model.LogField>();
+                    // crack the blob
+                    ParseFields();
+                }
+                return this.cache != null;
+            }
+        }
+
+        public IEnumerable<LogField> GetFields()
+        {
+            if (cache == null)
+            {
+                cache = new Dictionary<string, Model.LogField>();
+                // crack the blob
+                ParseFields();
+            }
+            if (this.cache != null)
+            {
+                return this.cache.Values;
+            }
+            return null;
         }
 
         public bool HasField(string name)
@@ -256,12 +293,13 @@ namespace LogViewer.Model
         {
             if (cache == null)
             {
-                cache = new Dictionary<string, Model.LogField>();
+                cache = new Dictionary<string, LogField>();
             }
-            cache[name] = new Model.LogField()
+            cache[name] = new LogField()
             {
                 Name = name,
-                Value = value
+                Value = value,
+                Parent = this
             };
         }
 
@@ -365,7 +403,8 @@ namespace LogViewer.Model
                     cache[Format.Columns[k]] = new LogField()
                     {
                         Name = Format.Columns[k],
-                        Value = value
+                        Value = value,
+                        Parent = this
                     };
                 }
             }
@@ -401,7 +440,11 @@ namespace LogViewer.Model
             {
                 foreach (LogEntry entry in GetRows(schema.Parent.Name, startTime, duration))
                 {
-                    yield return entry.GetDataValue(schema.Name);
+                    var dv = entry.GetDataValue(schema.Name);
+                    if (dv != null)
+                    {
+                        yield return dv;
+                    }
                 }
             }
         }
@@ -593,7 +636,7 @@ namespace LogViewer.Model
             float max = float.MinValue;
 
             foreach (var row in this.data)
-            {            
+            {
                 if (row.Name == "OUT0")
                 {
                     DataValue f = row.GetDataValue("Out0");

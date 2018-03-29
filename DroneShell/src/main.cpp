@@ -482,9 +482,9 @@ public:
 };
 
 
-class MoveByAngleCommand : public DroneCommand {
+class MoveByAngleZCommand : public DroneCommand {
 public:
-    MoveByAngleCommand() : DroneCommand("MoveByAngle", "Move with specified roll and pitch, leaving z as-is")
+    MoveByAngleZCommand() : DroneCommand("MoveByAngleZ", "Move with specified roll and pitch, leaving z as-is")
     {
         this->addSwitch({"-pitch", "0", "pitch angle in degrees (default 0)" });
         this->addSwitch({"-roll", "0", "roll angle in degrees (default 0)" });
@@ -503,7 +503,36 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngle(pitch, roll, z, yaw, duration);
+            context->client.moveByAngleZ(pitch, roll, z, yaw, duration);
+        });
+
+        return false;
+    }
+};
+
+
+class MoveByAngleThrottleCommand : public DroneCommand {
+public:
+    MoveByAngleThrottleCommand() : DroneCommand("MoveByAngleThrottle", "Move with specified roll and pitch, leaving z as-is")
+    {
+        this->addSwitch({ "-pitch", "0", "pitch angle in degrees (default 0)" });
+        this->addSwitch({ "-roll", "0", "roll angle in degrees (default 0)" });
+        this->addSwitch({ "-yaw_rate", "0", "target yaw rate in degrees/sec (default is 0)" });
+        this->addSwitch({ "-throttle", "-2.5", "z position in meters (default -2.5)" });
+        this->addSwitch({ "-duration", "5", "the duration of this command in seconds (default 5)" });
+    }
+
+    bool execute(const DroneCommandParameters& params)
+    {
+        float pitch = getSwitch("-pitch").toFloat();
+        float roll = getSwitch("-roll").toFloat();
+        float yaw_rate = getSwitch("-yaw_rate").toFloat();
+        float throttle = getSwitch("-throttle").toFloat();
+        float duration = getSwitch("-duration").toFloat();
+        CommandContext* context = params.context;
+
+        context->tasker.execute([=]() {
+            context->client.moveByAngleThrottle(pitch, roll, throttle, yaw_rate, duration);
         });
 
         return false;
@@ -662,12 +691,12 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            if (!context->client.moveByAngle(pitch, roll, z, yaw, duration)) {
+            if (!context->client.moveByAngleZ(pitch, roll, z, yaw, duration)) {
                 throw std::runtime_error("BackForthByAngleCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, duration)){
+            if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, duration)){
                 throw std::runtime_error("BackForthByAngleCommand cancelled");
             }
         }, iterations);
@@ -747,22 +776,22 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            if (!context->client.moveByAngle(pitch, -roll, z, yaw, 0)) {
+            if (!context->client.moveByAngleZ(pitch, -roll, z, yaw, 0)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, 0)) {
+            if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, 0)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngle(-pitch, roll, z, yaw, 0)) {
+            if (!context->client.moveByAngleZ(-pitch, roll, z, yaw, 0)) {
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngle(-pitch, -roll, z, yaw, 0)){
+            if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, 0)){
                 throw std::runtime_error("SquareByAngleCommand cancelled");
             }
             context->client.hover();
@@ -1351,7 +1380,8 @@ int main(int argc, const char *argv[]) {
     MoveToPositionCommand moveToPosition;
     GetPositionCommand getPosition;
     MoveByManualCommand moveByManual;
-    MoveByAngleCommand moveByAngle;
+    MoveByAngleZCommand moveByAngleZ;
+    MoveByAngleThrottleCommand moveByAngleThrottle;
     MoveByVelocityCommand moveByVelocity;
     MoveByVelocityZCommand moveByVelocityZ;
     MoveOnPathCommand moveOnPath;
@@ -1383,7 +1413,8 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(hover);
     shell.addCommand(moveToPosition);
     shell.addCommand(moveByManual);
-    shell.addCommand(moveByAngle);
+    shell.addCommand(moveByAngleZ);
+    shell.addCommand(moveByAngleThrottle);
     shell.addCommand(moveByVelocity);
     shell.addCommand(moveByVelocityZ);
     shell.addCommand(moveOnPath);

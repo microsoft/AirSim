@@ -102,7 +102,7 @@
             <Button x:Name="RecordButton" Style="{StaticResource AppBarButtonStyle}" Grid.Column="8" Click="OnRecord">&#xE102;</Button>
 
             <Button x:Name="SettingsButton" Style="{StaticResource AppBarButtonStyle}" Grid.Column="9" Click="OnSettings">&#xE115;</Button>
-            
+
             <local:ConnectorControl x:Name="ConnectorControl" Grid.Column="11" Padding="0,15,0,0" Width="48" Height="48" ToolTip="Connection" MouseLeftButtonDown="OnConnectorClick" />
         </Grid>
 
@@ -122,7 +122,13 @@
                        ItemContainerStyle="{StaticResource ContainerListItemStyle}"
                        Style="{StaticResource NavigationList}"  
                        local:PassthroughMouseWheelBehavior.PassthroughMouseWheel="True"
+                       PreviewMouseRightButtonDown="OnRightClickCategoryList"
                        ScrollViewer.CanContentScroll="False">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Annotate on map" Click="OnAnnotateItem"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
         </local:ScrollViewerLite>
 
@@ -144,11 +150,11 @@
         <Grid x:Name="CameraPanel" Background="Black"  Grid.Row="2" Grid.Column="1" Visibility="Collapsed">
             <Image x:Name="ImageViewer" />
         </Grid>
-        
+
         <local:ChartStack x:Name="ChartStack" Focusable="True" Grid.Row="2" Grid.Column="1" Style="{StaticResource AppWorkspaceStack}" Background="Transparent">
         </local:ChartStack>
 
-        
+
         <local:Console  Grid.Row="2" Grid.Column="1" x:Name="SystemConsole"/>
 
         <ProgressBar x:Name="MyProgress" Height="8" Grid.ColumnSpan="2" Grid.Row="3"/>
@@ -164,5 +170,5 @@
             <TextBlock x:Name="StatusText" Text=""  Margin="5" />
         </Border>
     </Grid>
-    
+
 </Window>

@@ -23,7 +23,8 @@ public:
     bool takeoff(float max_wait_ms = 15);
     bool land(float max_wait_seconds = 60);
     bool goHome();
-    bool moveByAngle(float pitch, float roll, float z, float yaw, float duration);
+    bool moveByAngleZ(float pitch, float roll, float z, float yaw, float duration);
+    bool moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration);
 
     bool moveByVelocity(float vx, float vy, float vz, float duration, 
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());

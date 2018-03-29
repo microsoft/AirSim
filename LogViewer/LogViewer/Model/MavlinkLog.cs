@@ -94,7 +94,7 @@ namespace LogViewer.Model
                 if (fi != null)
                 {
                     object value = fi.GetValue(row);
-                    DataValue data = new DataValue() { X = msg.Timestamp.Ticks / 10, UserData = row }; // microseconds (Ticks are in 100 nanoseconds).
+                    DataValue data = new DataValue() { X = msg.Timestamp.Ticks / 10, UserData = msg }; // microseconds (Ticks are in 100 nanoseconds).
                     
                     // byte array is special (we treat this like text).
                     if (value is byte[])

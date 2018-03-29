@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace LogViewer.Model.ULog
 {
-    public class Message
+    public abstract class Message
     {
-
+        public abstract double GetTimestamp();
     }
 
     public enum FieldType
@@ -174,6 +174,11 @@ namespace LogViewer.Model.ULog
         public int id;
         public List<MessageField> fields = new List<MessageField>();
 
+        public override double GetTimestamp()
+        {
+            return 0;
+        }
+
         public MessageFormat(string fmt)
         {
             this.fmt = fmt;
@@ -218,6 +223,12 @@ namespace LogViewer.Model.ULog
             this.msg = msg;
         }
 
+        public override double GetTimestamp()
+        {
+            return timestamp;
+        }
+
+
     }
 
     class MessageData : Message
@@ -236,6 +247,16 @@ namespace LogViewer.Model.ULog
             this.format = s.format;
         }
 
+        public override double GetTimestamp()
+        {
+            object ts = null;
+            if (values.TryGetValue("timestamp", out ts))
+            {
+                return Convert.ToDouble(ts);
+            }
+            return 0;
+        }
+
         internal DataValue GetValue(MessageField field)
         {
             if (values == null)
@@ -243,13 +264,8 @@ namespace LogViewer.Model.ULog
                 ParseValues();
             }
 
-            double x = 0;
+            double x = GetTimestamp();
             double y = 0;
-            object ts = null;
-            if (values.TryGetValue("timestamp", out ts))
-            {
-                x = Convert.ToDouble(ts);
-            }
 
             object o = null;
             if (values.TryGetValue(field.name, out o))
@@ -507,8 +523,11 @@ namespace LogViewer.Model.ULog
             this.key = key;
             this.value = value;
         }
-
-
+        public override double GetTimestamp()
+        {
+            return 0;
+        }
+        
     }
 
     class MessageParameter : Message
@@ -523,6 +542,10 @@ namespace LogViewer.Model.ULog
         }
 
 
+        public override double GetTimestamp()
+        {
+            return 0;
+        }
     }
 
     class MessageSync : Message
@@ -535,6 +558,10 @@ namespace LogViewer.Model.ULog
         }
 
 
+        public override double GetTimestamp()
+        {
+            return 0;
+        }
     }
 
     class MessageDropOut : Message
@@ -547,6 +574,10 @@ namespace LogViewer.Model.ULog
         }
 
 
+        public override double GetTimestamp()
+        {
+            return 0;
+        }
     }
 
     class MessageSubscription

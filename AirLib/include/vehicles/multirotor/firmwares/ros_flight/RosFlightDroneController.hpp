@@ -249,6 +249,16 @@ public:
     }
 
 protected: 
+    virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
+    {
+        unused(pitch);
+        unused(roll);
+        unused(throttle);
+        unused(yaw_rate);
+
+        //TODO: implement this
+    }
+
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
         unused(pitch);

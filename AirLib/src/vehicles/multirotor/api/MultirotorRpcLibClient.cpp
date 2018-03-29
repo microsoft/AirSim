@@ -61,9 +61,14 @@ bool MultirotorRpcLibClient::goHome()
     return static_cast<rpc::client*>(getClient())->call("goHome").as<bool>();
 }
 
-bool MultirotorRpcLibClient::moveByAngle(float pitch, float roll, float z, float yaw, float duration)
+bool MultirotorRpcLibClient::moveByAngleZ(float pitch, float roll, float z, float yaw, float duration)
 {
-    return static_cast<rpc::client*>(getClient())->call("moveByAngle", pitch, roll, z, yaw, duration).as<bool>();
+    return static_cast<rpc::client*>(getClient())->call("moveByAngleZ", pitch, roll, z, yaw, duration).as<bool>();
+}
+
+bool MultirotorRpcLibClient::moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration)
+{
+    return static_cast<rpc::client*>(getClient())->call("moveByAngleThrottle", pitch, roll, throttle, yaw_rate, duration).as<bool>();
 }
 
 bool MultirotorRpcLibClient::moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
