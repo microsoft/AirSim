@@ -102,7 +102,7 @@ private:
 	double x_0[12];
 	GoalMode last_mode_;
 	//double error[3] = { 0 };
-	double ref_vec[10][3] = { 0 };
+	double ref_vec[10][3] = {{ 0 }};
 	double ref_sum[3] = { 0 };
 	double velocity_integrator[3] = { 0 };
 	static constexpr int array_length = 7;
