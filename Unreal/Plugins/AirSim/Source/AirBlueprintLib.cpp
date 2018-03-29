@@ -330,6 +330,27 @@ std::string UAirBlueprintLib::GetMeshName(T* mesh)
     }
 }
 
+template<>
+std::string UAirBlueprintLib::GetMeshName<USkinnedMeshComponent>(USkinnedMeshComponent* mesh)
+{
+  switch(mesh_naming_method)
+  {
+    case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName:
+      if (mesh->GetOwner())
+        return std::string(TCHAR_TO_UTF8(*(mesh->GetOwner()->GetName())));
+      else
+        return ""; // std::string(TCHAR_TO_UTF8(*(UKismetSystemLibrary::GetDisplayName(mesh))));
+    case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::StaticMeshName:
+      if (mesh->SkeletalMesh)
+        return std::string(TCHAR_TO_UTF8(*(mesh->SkeletalMesh->GetName())));
+      else
+        return "";
+    default:
+      return "";
+  }
+}
+
+
 std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
 {
     return std::string(TCHAR_TO_UTF8(*(mesh->GetName())));
@@ -338,6 +359,10 @@ std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
 void UAirBlueprintLib::InitializeMeshStencilIDs(bool ignore_existing)
 {
     for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
+    {
+        InitializeObjectStencilID(*comp, ignore_existing);
+    }
+    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp)
     {
         InitializeObjectStencilID(*comp, ignore_existing);
     }
@@ -375,6 +400,10 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
 
     int changes = 0;
     for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
+    {
+        SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
+    }
+    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp)
     {
         SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }
