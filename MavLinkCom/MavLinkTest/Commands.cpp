@@ -1607,11 +1607,11 @@ void GotoCommand::HandleMessage(const MavLinkMessage& message)
             channel->moveToLocalPosition(tx, ty, tz, is_yaw, static_cast<float>(theading * M_PI / 180));
             
             if (this->hasLocalPosition) {
-                if (!targetReached && fabsf(x - tx) < nearDelta && fabsf(y - ty) < nearDelta)
+                if (!targetReached && std::abs(x - tx) < nearDelta && std::abs(y - ty) < nearDelta)
                 {
                     targetReached = true;
                 }
-                if (targetReached && !settled && (fabs(this->vx) + fabsf(this->vy) + fabsf(this->vz) < almostStationery)) {
+                if (targetReached && !settled && (fabs(this->vx) + std::abs(this->vy) + std::abs(this->vz) < almostStationery)) {
                     settled = true;
                     // ok, now we can safely switch to loiter.
                     TargetReached();
@@ -2081,7 +2081,7 @@ void SquareCommand::UpdateTarget()
         float dy = ty - y;
         float dist = sqrtf((dx*dx) + (dy*dy));
 
-        if (fabsf(dx) < near && fabsf(dy) < near)
+        if (std::abs(dx) < near && std::abs(dy) < near)
         {
             leg_++;
             if (leg_ == 4) leg_ = 0;
