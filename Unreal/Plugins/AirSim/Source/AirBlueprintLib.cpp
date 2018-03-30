@@ -4,6 +4,7 @@
 #include "AirBlueprintLib.h"
 #include "GameFramework/WorldSettings.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Components/SkinnedMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include <exception>
@@ -17,6 +18,7 @@
 #include "Kismet/KismetStringLibrary.h"
 #include "MessageDialog.h"
 #include "Engine/LocalPlayer.h"
+#include "Engine/SkeletalMesh.h"
 #include "Slate/SceneViewport.h"
 #include "Engine/Engine.h"
 

@@ -48,6 +48,14 @@ public: //types
         }
     };
 
+    struct CarMeshPaths {
+        std::string skeletal = "/AirSim/VehicleAdv/Vehicle/Vehicle_SkelMesh.Vehicle_SkelMesh";
+        std::string bp = "/AirSim/VehicleAdv/Vehicle/VehicleAnimationBlueprint";
+        std::string slippery_mat = "/AirSim/VehicleAdv/PhysicsMaterials/Slippery.Slippery";
+        std::string non_slippery_mat = "/AirSim/VehicleAdv/PhysicsMaterials/NonSlippery.NonSlippery";
+
+    };
+
     struct VehicleSettings {
         std::string vehicle_name, firmware_name;
         int server_port;
@@ -188,6 +196,7 @@ public: //fields
     bool engine_sound;
     bool log_messages_visible;
     HomeGeoPoint origin_geopoint;
+    CarMeshPaths car_mesh_paths;
 
 public: //methods
     static AirSimSettings& singleton() 

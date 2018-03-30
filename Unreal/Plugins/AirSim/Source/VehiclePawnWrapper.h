@@ -90,6 +90,9 @@ public: //interface
 
     const NedTransform& getNedTransform() const;
 
+    void getRawVehicleSettings(msr::airlib::Settings& settings) const;
+
+
 protected:
     UPROPERTY(VisibleAnywhere)
         UParticleSystem* collision_display_template;

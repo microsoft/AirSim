@@ -1,12 +1,10 @@
 #include "CarPawn.h"
 #include "CarWheelFront.h"
 #include "CarWheelRear.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "common/common_utils/Utils.hpp"
 #include "Components/TextRenderComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "WheeledVehicleMovementComponent4W.h"
 #include "Engine/SkeletalMesh.h"
 #include "GameFramework/Controller.h"
@@ -14,7 +12,8 @@
 #include "common/ClockFactory.hpp"
 #include "PIPCamera.h"
 #include <vector>
-#include "UObject/ConstructorHelpers.h"
+
+
 
 // Needed for VR Headset
 #if HMD_MODULE_INCLUDED
@@ -33,20 +32,13 @@ ACarPawn::ACarPawn()
     this->AutoPossessPlayer = EAutoReceiveInput::Player0;
     //this->AutoReceiveInput = EAutoReceiveInput::Player0;
 
-    // Car mesh
-    static ConstructorHelpers::FObjectFinder<USkeletalMesh> CarMesh(TEXT("/AirSim/VehicleAdv/Vehicle/Vehicle_SkelMesh.Vehicle_SkelMesh"));
-    GetMesh()->SetSkeletalMesh(CarMesh.Object);
+    static MeshContructionHelpers helpers(AirSimSettings::singleton().car_mesh_paths);
 
-    static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/AirSim/VehicleAdv/Vehicle/VehicleAnimationBlueprint"));
+    GetMesh()->SetSkeletalMesh(helpers.skeleton);
     GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-    GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
-
-    // Setup friction materials
-    static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> SlipperyMat(TEXT("/AirSim/VehicleAdv/PhysicsMaterials/Slippery.Slippery"));
-    SlipperyMaterial = SlipperyMat.Object;
-
-    static ConstructorHelpers::FObjectFinder<UPhysicalMaterial> NonSlipperyMat(TEXT("/AirSim/VehicleAdv/PhysicsMaterials/NonSlippery.NonSlippery"));
-    NonSlipperyMaterial = NonSlipperyMat.Object;
+    GetMesh()->SetAnimInstanceClass(helpers.bp->GeneratedClass);
+    SlipperyMaterial = helpers.slippery_mat;
+    NonSlipperyMaterial = helpers.non_slippery_mat;
 
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;

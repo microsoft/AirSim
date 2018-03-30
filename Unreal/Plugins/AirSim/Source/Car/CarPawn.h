@@ -6,6 +6,10 @@
 #include "physics/Kinematics.hpp"
 #include "CarPawnApi.h"
 #include "SimJoyStick/SimJoyStick.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "common/AirSimSettings.hpp"
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;
@@ -151,6 +155,28 @@ public:
     FORCEINLINE UAudioComponent* GetEngineSoundComponent() const { return EngineSoundComponent; }
 
 private:
+    typedef msr::airlib::AirSimSettings AirSimSettings;
+
+    struct MeshContructionHelpers {
+        USkeletalMesh* skeleton;
+        UBlueprint* bp;
+        UPhysicalMaterial* slippery_mat;
+        UPhysicalMaterial* non_slippery_mat;
+
+        MeshContructionHelpers(const msr::airlib::AirSimSettings::CarMeshPaths& paths)
+        {
+            skeleton = Cast<USkeletalMesh>(StaticLoadObject(UObject::StaticClass(), 
+                nullptr, * (FString(paths.skeletal.c_str()))));
+            bp = Cast<UBlueprint>(StaticLoadObject(UObject::StaticClass(), 
+                nullptr, * (FString(paths.bp.c_str()))));
+            slippery_mat = Cast<UPhysicalMaterial>(StaticLoadObject(UObject::StaticClass(), 
+                nullptr, * (FString(paths.slippery_mat.c_str()))));
+            non_slippery_mat = Cast<UPhysicalMaterial>(StaticLoadObject(UObject::StaticClass(), 
+                nullptr, * (FString(paths.non_slippery_mat.c_str()))));
+        }
+    };
+
+
     UClass* pip_camera_class_;
 
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
