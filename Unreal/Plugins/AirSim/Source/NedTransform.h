@@ -28,7 +28,7 @@ private:
     Vector3r toVector3r(const FVector& vec, float scale, bool convert_to_ned) const;
 
 private:
-    FVector offset_;
-    float world_to_meters_;
     bool is_initialized_;
+    float world_to_meters_;
+    FVector offset_;
 };
