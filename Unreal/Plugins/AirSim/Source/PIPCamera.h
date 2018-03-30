@@ -27,6 +27,7 @@ public:
 
     virtual void PostInitializeComponents() override;
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     void showToScreen();
@@ -58,6 +59,8 @@ private:
 
     std::vector<bool> camera_type_enabled_;
     NedTransform ned_transform_;
+    FRotator gimbled_rotator_;
+    float gimble_stabilization_;
 
 private:
     typedef common_utils::Utils Utils;

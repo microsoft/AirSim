@@ -58,7 +58,13 @@ Below are complete list of settings available along with their default values. I
       "MotionBlurAmount": 0,
       "TargetGamma": 1.0,
       "ProjectionMode": "",
-      "OrthoWidth": 5.12
+      "OrthoWidth": 5.12,
+      "Gimble": {
+        "Stabilization": 0,
+        "Pitch": NaN,
+        "Roll": NaN,
+        "Yaw": NaN
+      }
     }
   ],
   "OriginGeopoint": {
@@ -149,6 +155,8 @@ The `CaptureSettings` determines how different image types such as scene, depth,
 For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/). 
 
 The `ImageType` element determines which image type the settings applies to. The valid values are described in [ImageType section](image_apis.md#available-imagetype). In addition, we also support special value `ImageType: -1` to apply the settings to external camera (i.e. what you are looking at on the screen).
+
+The `Gimble` element allows to freeze camera orientation for pitch, roll and/or yaw. This setting is ignored unless `ImageType` is -1. The `Stabilization` is defaulted to 0 meaning no gimble i.e. camera orientation changes with body orientation on all axis. The value of 1 means full stabilization. The value between 0 to 1 acts as a weight for fixed angles specified (in degrees, in world-frame) in `Pitch`, `Roll` and `Yaw` elements and orientation of the vehicle body. When any of the angles is ommitted from json or set to NaN, that angle is not stabilized (i.e. it moves along with vehicle body).
 
 Note that `CaptureSettings` element is json array so you can add settings for multiple image types easily.
 

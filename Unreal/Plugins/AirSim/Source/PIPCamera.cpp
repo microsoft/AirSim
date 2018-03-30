@@ -19,6 +19,8 @@ APIPCamera::APIPCamera()
     else
         UAirBlueprintLib::LogMessageString("Cannot create noise material for the PIPCamera", 
             "", LogDebugLevel::Failure);
+
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -67,6 +69,29 @@ void APIPCamera::BeginPlay()
         captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
 
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
+    }
+
+    gimble_stabilization_ = 0;
+    gimbled_rotator_ = this->GetActorRotation();
+    this->SetActorTickEnabled(false);
+}
+
+
+void APIPCamera::Tick(float DeltaTime)
+{
+    if (gimble_stabilization_ > 0) {
+        FRotator rotator = this->GetActorRotation();
+        if (!std::isnan(gimbled_rotator_.Pitch))
+            rotator.Pitch = gimbled_rotator_.Pitch * gimble_stabilization_ + 
+                rotator.Pitch * (1 - gimble_stabilization_);
+        if (!std::isnan(gimbled_rotator_.Roll))
+            rotator.Roll = gimbled_rotator_.Roll * gimble_stabilization_ +
+                rotator.Roll * (1 - gimble_stabilization_);
+        if (!std::isnan(gimbled_rotator_.Yaw))
+            rotator.Yaw = gimbled_rotator_.Yaw * gimble_stabilization_ + 
+                rotator.Yaw * (1 - gimble_stabilization_);
+
+        this->SetActorRotation(rotator);
     }
 }
 
@@ -134,6 +159,16 @@ void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureS
         updateCameraSetting(camera_, capture_setting, ned_transform_);
 
         setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
+
+        gimble_stabilization_ = Utils::clip(capture_setting.gimble.stabilization, 0.0f, 1.0f);
+        if (gimble_stabilization_ > 0) {
+            this->SetActorTickEnabled(true);
+            gimbled_rotator_.Pitch = capture_setting.gimble.pitch;
+            gimbled_rotator_.Roll = capture_setting.gimble.roll;
+            gimbled_rotator_.Yaw = capture_setting.gimble.yaw;
+        }
+        else
+            this->SetActorTickEnabled(false);
     }
 }
 

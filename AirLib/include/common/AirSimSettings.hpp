@@ -73,6 +73,14 @@ public: //types
         float roll = 0.0f;
     };
 
+    struct GimbleSetting {
+        float stabilization = 0;
+        //bool is_world_frame = false;
+        float pitch = Utils::nan<float>();
+        float roll = Utils::nan<float>();
+        float yaw = Utils::nan<float>();
+    };
+
     struct CaptureSetting {
         //below settinsg are obtained by using Unreal console command (press ~):
         // ShowFlag.VisualizeHDR 1.
@@ -99,6 +107,7 @@ public: //types
         int projection_mode = 0; // ECameraProjectionMode::Perspective
         float ortho_width = Utils::nan<float>();
 
+        GimbleSetting gimble;
     };
 
     struct NoiseSetting {
@@ -518,6 +527,15 @@ private:
             throw std::invalid_argument(std::string("CaptureSettings projection_mode has invalid value in settings ") + projection_mode);
 
         capture_setting.ortho_width = settings.getFloat("OrthoWidth", capture_setting.ortho_width);
+
+        Settings json_parent;
+        if (settings.getChild("Gimble", json_parent)) {
+            //capture_setting.gimble.is_world_frame = json_parent.getBool("IsWorldFrame", false);
+            capture_setting.gimble.stabilization = json_parent.getFloat("Stabilization", false);
+            capture_setting.gimble.pitch = json_parent.getFloat("Pitch", Utils::nan<float>());
+            capture_setting.gimble.roll = json_parent.getFloat("Roll", Utils::nan<float>());
+            capture_setting.gimble.yaw = json_parent.getFloat("Yaw", Utils::nan<float>());
+        }
     }
 
     void loadSubWindowsSettings(const Settings& settings)
