@@ -161,6 +161,8 @@ To change orientation of individial camera, you can use `setCameraOrientation` A
 client.setCameraOrientation(0, AirSimClientBase.toQuaternion(0.261799, 0, 0)); #radians
 ```
 
+You can set stabilization for pitch, roll or yaw for any camera [using settings](settings.md#gimble).
+
 Please see [example usage](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py).
 
 ## Changing Resolution and Camera Parameters
