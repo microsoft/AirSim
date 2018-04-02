@@ -140,8 +140,8 @@ private:
         const float z_vel = vcur_avg.z();
         const bool is_landing = z_vel > std::abs(vcur_avg.x()) && z_vel > std::abs(vcur_avg.y());
 
-        double restitution = body.getRestitution();
-        double friction = body.getFriction();
+        real_T restitution = body.getRestitution();
+        real_T friction = body.getFriction();
 
         if (is_ground_normal && is_landing
            // So normal_body is the collision normal translated into body coords, why does an x==1 or y==1
