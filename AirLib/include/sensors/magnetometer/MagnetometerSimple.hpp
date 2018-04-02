@@ -87,7 +87,6 @@ private: //methods
             updateReference(ground_truth); 
 
         // Calculate the magnetic field noise.
-        // Calculate the magnetic field noise.
         output.magnetic_field_body = VectorMath::transformToBodyFrame(magnetic_field_true_,
             ground_truth.kinematics->pose.orientation, true) * params_.scale_factor
             + noise_vec_.next()
