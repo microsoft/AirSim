@@ -91,7 +91,7 @@ public:
         const T error = goal_ - measured_;
 
         float dt = clock_ == nullptr ? 1 :
-            (static_cast<float>(clock_->millis()) - last_time_)
+            (clock_->millis() - last_time_)
             * config_.time_scale;
 
         float pterm = error * config_.kp;
