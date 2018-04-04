@@ -201,9 +201,10 @@ private:
         //TODO: implement better rolling friction
         next.twist.angular *= 0.9f;
 
-        //there is no acceleration during collision response
-        //next.accelerations.linear = Vector3r::Zero();
-        //next.accelerations.angular = Vector3r::Zero();
+        // there is no acceleration during collision response, this is a hack, but without it the acceleration cancels
+        // the computed impulse response too much and stops the vehicle from bouncing off the collided object.
+        next.accelerations.linear = Vector3r::Zero();
+        next.accelerations.angular = Vector3r::Zero();
 
         next.pose = current.pose;
         if (enable_ground_lock && ground_collision) {
