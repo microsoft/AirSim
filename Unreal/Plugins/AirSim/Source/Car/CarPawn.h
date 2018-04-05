@@ -65,6 +65,11 @@ class ACarPawn : public AWheeledVehicle
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     UAudioComponent* EngineSoundComponent;
 
+
+    /** Whether to load the default meshes */
+    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    bool UseDefaultMesh = false;
+
 public:
     ACarPawn();
 
