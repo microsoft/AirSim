@@ -217,7 +217,6 @@ class AirSimClientBase:
         self.client.call('reset')
 
     def confirmConnection(self):
-        print('Waiting for connection: ', end='')
         home = self.getHomeGeoPoint()
         while ((home.latitude == 0 and home.longitude == 0 and home.altitude == 0) or
                 math.isnan(home.latitude) or  math.isnan(home.longitude) or  math.isnan(home.altitude)):
