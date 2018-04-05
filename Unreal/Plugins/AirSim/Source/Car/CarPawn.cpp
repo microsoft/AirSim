@@ -32,17 +32,6 @@ ACarPawn::ACarPawn()
     this->AutoPossessPlayer = EAutoReceiveInput::Player0;
     //this->AutoReceiveInput = EAutoReceiveInput::Player0;
 
-    static MeshContructionHelpers helpers(AirSimSettings::singleton().car_mesh_paths);
-
-    GetMesh()->SetSkeletalMesh(helpers.skeleton);
-    GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-    GetMesh()->SetAnimInstanceClass(helpers.bp->GeneratedClass);
-    SlipperyMaterial = helpers.slippery_mat;
-    NonSlipperyMaterial = helpers.non_slippery_mat;
-
-    static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
-    pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
-
     UWheeledVehicleMovementComponent4W* Vehicle4W = CastChecked<UWheeledVehicleMovementComponent4W>(GetVehicleMovement());
 
     check(Vehicle4W->WheelSetups.Num() == 4);
@@ -148,7 +137,7 @@ ACarPawn::ACarPawn()
     InCarGear->SetVisibility(true);
 
     // Setup the audio component and allocate it a sound cue
-    static ConstructorHelpers::FObjectFinder<USoundCue> SoundCue(TEXT("/AirSim/VehicleAdv/Sound/Engine_Loop_Cue.Engine_Loop_Cue"));
+    ConstructorHelpers::FObjectFinder<USoundCue> SoundCue(TEXT("/AirSim/VehicleAdv/Sound/Engine_Loop_Cue.Engine_Loop_Cue"));
     EngineSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineSound"));
     EngineSoundComponent->SetSound(SoundCue.Object);
     EngineSoundComponent->SetupAttachment(GetMesh());
@@ -175,6 +164,17 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
         EngineSoundComponent->Activate();
     else
         EngineSoundComponent->Deactivate();
+
+    // load assets
+    MeshContructionHelpers helpers(AirSimSettings::singleton().car_mesh_paths);
+    GetMesh()->SetSkeletalMesh(helpers.skeleton);
+    GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+    GetMesh()->SetAnimInstanceClass(helpers.bp->GeneratedClass);
+    SlipperyMaterial = helpers.slippery_mat;
+    NonSlipperyMaterial = helpers.non_slippery_mat;
+
+    ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
 
     //put camera little bit above vehicle
     FTransform camera_transform(FVector::ZeroVector);

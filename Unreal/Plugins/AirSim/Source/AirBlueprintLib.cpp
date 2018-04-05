@@ -29,7 +29,6 @@ Methods -> CamelCase
 parameters -> camel_case
 */
 
-
 bool UAirBlueprintLib::log_messages_hidden = false;
 uint32_t UAirBlueprintLib::FlushOnDrawCount = 0;
 msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method =
@@ -150,6 +149,7 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     if (log_messages_hidden)
         return;
 
+
     static TMap<FString, int> loggingKeys;
     static int counter = 1;
 
@@ -161,13 +161,27 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
 
     FColor color;
     switch (level) {
-    case LogDebugLevel::Informational: color = FColor(147, 231, 237); break;
-    case LogDebugLevel::Success: color = FColor(156, 237, 147); break;
-    case LogDebugLevel::Failure: color = FColor(237, 147, 168); break;
-    case LogDebugLevel::Unimportant: color = FColor(237, 228, 147); break;
+    case LogDebugLevel::Informational: 
+        color = FColor(147, 231, 237); 
+        UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
+        break;
+    case LogDebugLevel::Success: 
+        color = FColor(156, 237, 147); 
+        UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
+        break;
+    case LogDebugLevel::Failure: 
+        color = FColor(237, 147, 168);
+        UE_LOG(LogAirSim, Error, TEXT("%s%s"), *prefix, *suffix); 
+        break;
+    case LogDebugLevel::Unimportant: 
+        color = FColor(237, 228, 147);
+        UE_LOG(LogAirSim, Verbose, TEXT("%s%s"), *prefix, *suffix); 
+        break;
     default: color = FColor::Black; break;
     }
-    GEngine->AddOnScreenDebugMessage(key, persist_sec, color, prefix + suffix);
+    if (GEngine) {
+        GEngine->AddOnScreenDebugMessage(key, persist_sec, color, prefix + suffix);
+    }
     //GEngine->AddOnScreenDebugMessage(key + 10, 60.0f, color, FString::FromInt(key));
 }
 
@@ -583,4 +597,17 @@ float UAirBlueprintLib::GetDisplayGamma()
 void UAirBlueprintLib::EnableInput(AActor* actor)
 {
     actor->EnableInput(actor->GetWorld()->GetFirstPlayerController());
+}
+
+UObject* UAirBlueprintLib::LoadObject(const std::string& name)
+{
+    FString str(name.c_str());
+    UObject *obj = StaticLoadObject(UObject::StaticClass(), nullptr, *str);
+    if (obj == nullptr) {
+        std::string msg = "Failed to load asset - " + name;
+        FString fmsg(msg.c_str());
+        LogMessage(TEXT("Load: "), fmsg, LogDebugLevel::Failure);
+        throw std::invalid_argument(msg);
+    }
+    return obj;
 }

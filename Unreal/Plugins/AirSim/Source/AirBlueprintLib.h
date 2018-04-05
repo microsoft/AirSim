@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/MeshComponent.h"
 #include "LandscapeProxy.h"
+#include "AirSim.h"
 #include "common/AirSimSettings.hpp"
 #include "AirBlueprintLib.generated.h"
 
@@ -104,6 +105,8 @@ public:
     static void setSimulatePhysics(AActor* actor, bool simulate_physics);
     static void resetSimulatePhysics(AActor* actor);
     static std::vector<UPrimitiveComponent*> getPhysicsComponents(AActor* actor);
+
+    static UObject* LoadObject(const std::string& name);
 
 private:
     template<typename T>
