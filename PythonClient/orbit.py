@@ -78,13 +78,29 @@ class OrbitNavigator:
         print("climbing to position: {},{},{}".format(start.x, start.y, z))
         self.client.moveToPosition(start.x, start.y, z, self.speed)
 
-        print("flying one orbit")
+        print("ramping up to speed...")
         count = 0
         self.start_angle = None
-        lookahead_angle = self.speed / self.radius
+        
+        # ramp up time
+        ramptime = self.radius / 10
+        start_time = time.time()        
 
         while count < self.iterations:
 
+            # ramp up to full speed in smooth increments so we don't start too aggresively.
+            now = time.time()
+            speed = self.speed
+            diff = now - start_time
+            if diff < ramptime:
+                speed = self.speed * diff / ramptime
+            elif ramptime > 0:
+                print("reached full speed...")
+                ramptime = 0
+                
+            lookahead_angle = speed / self.radius            
+
+            # compute current angle
             pos = self.getPosition()
             dx = pos.x - self.center.x
             dy = pos.y - self.center.y
@@ -93,6 +109,7 @@ class OrbitNavigator:
 
             camera_heading = (angle_to_center - math.pi) * 180 / math.pi 
 
+            # compute lookahead
             lookahead_x = self.center.x + self.radius * math.cos(angle_to_center + lookahead_angle)
             lookahead_y = self.center.y + self.radius * math.sin(angle_to_center + lookahead_angle)
 
@@ -101,6 +118,7 @@ class OrbitNavigator:
 
             if self.track_orbits(angle_to_center * 180 / math.pi):
                 count += 1
+                print("completed {} orbits".format(count))
             
             self.client.moveByVelocityZ(vx, vy, z, 1, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, camera_heading))
             
