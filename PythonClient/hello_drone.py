@@ -28,6 +28,8 @@ print("state: %s" % pprint.pformat(state))
 AirSimClientBase.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
 client.moveToPosition(-10, 10, -10, 5)
 
+client.hover()
+
 state = client.getMultirotorState()
 print("state: %s" % pprint.pformat(state))
 
@@ -67,6 +69,8 @@ for idx, response in enumerate(responses):
         AirSimClientBase.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png
 
 AirSimClientBase.wait_key('Press any key to reset to original state')
+
+client.armDisarm(False)
 client.reset()
 
 # that's enough fun for now. let's quit cleanly

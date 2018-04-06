@@ -18,7 +18,7 @@ class SurveyNavigator:
         self.client.armDisarm(True)
 
         landed = self.client.getLandedState()
-        if landed != 1:
+        if landed == LandedState.Landed:
             print("taking off...")
             self.client.takeoff()
         
@@ -26,7 +26,7 @@ class SurveyNavigator:
         x = -self.boxsize
         z = -self.altitude
 
-        print("climing to altitude: " + str(self.altitude))
+        print("climbing to altitude: " + str(self.altitude))
         self.client.moveToPosition(0, 0, z, self.velocity)
 
         print("flying to first corner of survey box")
@@ -56,7 +56,6 @@ class SurveyNavigator:
         trip_time = distance / self.velocity
         print("estimated survey time is " + str(trip_time))
         try:
-            self.client.enableApiControl(True)
             result = self.client.moveOnPath(path, self.velocity, trip_time, DrivetrainType.ForwardOnly, YawMode(False,0), self.velocity + (self.velocity/2), 1)
         except:
             errorType, value, traceback = sys.exc_info()

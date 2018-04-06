@@ -7,7 +7,17 @@ client.confirmConnection()
 client.enableApiControl(True)
 
 client.armDisarm(True)
-client.takeoff()
+
+landed = client.getLandedState()
+if landed == LandedState.Landed:
+    print("taking off...")
+    x = client.takeoff()
+    if not x:
+        print("take off failed")        
+        client.armDisarm(False)
+        client.enableApiControl(False)
+else:
+    client.hover()
 
 # AirSim uses NED coordinates so negative axis is up.
 # z of -7 is 7 meters above the original launch point.
