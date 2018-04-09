@@ -370,6 +370,8 @@ private:
             initial_view_mode = 6; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_BACKUP;
         else if (view_mode_string == "NoDisplay")
             initial_view_mode = 7; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_NODISPLAY;
+        else if (view_mode_string == "Front")
+			initial_view_mode = 8; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_FRONT;
         else
             warning_messages.push_back("ViewMode setting is not recognized: " + view_mode_string);
     }
