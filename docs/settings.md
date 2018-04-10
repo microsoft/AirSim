@@ -42,8 +42,8 @@ Below are complete list of settings available along with their default values. I
     "RecordOnMove": false,
     "RecordInterval": 0.05,
     "Cameras": [
-		  { "CameraID": 0, "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
-	  ]
+        { "CameraID": 0, "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
+    ]
   },
   "CaptureSettings": [
     {
@@ -126,8 +126,8 @@ Below are complete list of settings available along with their default values. I
     { "X": 0.00, "Y": 0.5, "Z": 0.0, "Roll": 0.0, "Pitch": 0.0, "Yaw": 90.0 }
   ],
   "PawnPaths": {
-	  "DefaultCar": {"PawnBP":"/AirSim/VehicleAdv/SUV/SuvCarPawn"},
-	  "DefaultQuadrotor": {"PawnBP":"/AirSim/Blueprints/BP_FlyingPawn"}
+    "DefaultCar": {"PawnBP":"/AirSim/VehicleAdv/SUV/SuvCarPawn"},
+    "DefaultQuadrotor": {"PawnBP":"/AirSim/Blueprints/BP_FlyingPawn"}
   },
   "PX4": {
     "FirmwareName": "PX4",
