@@ -25,10 +25,6 @@ class ACarPawn : public AWheeledVehicle
 {
     GENERATED_BODY()
 
-    /** Camera component that will be our viewpoint */
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    UCameraComponent* Camera;
-
     /** SCene component for the In-Car view origin */
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     class USceneComponent* InternalCameraBase1;
