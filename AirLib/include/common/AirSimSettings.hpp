@@ -461,7 +461,7 @@ private:
                 msr::airlib::Settings child;
                 pawn_paths_child.getChild(key, child);
 
-                pawn_paths.emplace(key,
+                pawn_paths.insert_or_assign(key,
                     createPathPawn(child));
             }
         }
