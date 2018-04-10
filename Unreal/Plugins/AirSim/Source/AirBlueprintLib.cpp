@@ -163,19 +163,19 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     switch (level) {
     case LogDebugLevel::Informational: 
         color = FColor(147, 231, 237); 
-        UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
+        //UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
         break;
     case LogDebugLevel::Success: 
         color = FColor(156, 237, 147); 
-        UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
+        //UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
         break;
     case LogDebugLevel::Failure: 
         color = FColor(237, 147, 168);
-        UE_LOG(LogAirSim, Error, TEXT("%s%s"), *prefix, *suffix); 
+        //UE_LOG(LogAirSim, Error, TEXT("%s%s"), *prefix, *suffix); 
         break;
     case LogDebugLevel::Unimportant: 
         color = FColor(237, 228, 147);
-        UE_LOG(LogAirSim, Verbose, TEXT("%s%s"), *prefix, *suffix); 
+        //UE_LOG(LogAirSim, Verbose, TEXT("%s%s"), *prefix, *suffix); 
         break;
     default: color = FColor::Black; break;
     }

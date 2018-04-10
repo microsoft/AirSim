@@ -13,7 +13,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/MeshComponent.h"
 #include "LandscapeProxy.h"
-#include "AirSim.h"
 #include "common/AirSimSettings.hpp"
 #include "AirBlueprintLib.generated.h"
 

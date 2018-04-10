@@ -39,7 +39,6 @@ private:
 
     UClass* external_camera_class_;
     UClass* camera_director_class_;
-    UClass* vehicle_pawn_class_;
 
     TArray<AActor*> spawned_actors_;
 

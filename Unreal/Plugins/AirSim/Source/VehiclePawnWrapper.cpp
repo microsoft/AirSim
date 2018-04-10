@@ -62,6 +62,13 @@ void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AA
         LogDebugLevel::Failure);
 }
 
+void VehiclePawnWrapper::possess()
+{
+    APlayerController* controller = pawn_->GetWorld()->GetFirstPlayerController();
+    controller->UnPossess();
+    controller->Possess(pawn_);
+}
+
 const NedTransform& VehiclePawnWrapper::getNedTransform() const
 {
     return ned_transform_;

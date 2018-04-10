@@ -11,17 +11,7 @@ ASimModeCar::ASimModeCar()
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
     camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
 
-    //Try to find the high polycount vehicle
-    //If not found, spawn the default class (go-kart)
-    static ConstructorHelpers::FClassFinder<ACarPawn> vehicle_pawn_class(TEXT("Blueprint'/AirSim/VehicleAdv/SUV/SuvCarPawn'"));
-    if (vehicle_pawn_class.Succeeded()) {
-        vehicle_pawn_class_ = vehicle_pawn_class.Class;
-        follow_distance_ = -800;
-    }
-    else {
-        vehicle_pawn_class_ = ACarPawn::StaticClass();
-        follow_distance_ = -225;
-    }
+    follow_distance_ = -800;
 }
 
 void ASimModeCar::BeginPlay()
@@ -61,29 +51,6 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
     //we will either find external camera if it already exist in evironment or create one
     APIPCamera* external_camera;
 
-    //find all BP camera directors in the environment
-    {
-        TArray<AActor*> camera_dirs;
-        UAirBlueprintLib::FindAllActor<ACameraDirector>(this, camera_dirs);
-        if (camera_dirs.Num() == 0) {
-            //create director
-            FActorSpawnParameters camera_spawn_params;
-            camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-            CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
-            CameraDirector->setFollowDistance(follow_distance_);
-            CameraDirector->setCameraRotationLagEnabled(true);
-            CameraDirector->setFpvCameraIndex(3);
-            spawned_actors_.Add(CameraDirector);
-
-            //create external camera required for the director
-            external_camera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
-            spawned_actors_.Add(external_camera);
-        }
-        else {
-            CameraDirector = static_cast<ACameraDirector*>(camera_dirs[0]);
-            external_camera = CameraDirector->getExternalCamera();
-        }
-    }
 
     //find all vehicle pawns
     {
@@ -96,8 +63,13 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             FActorSpawnParameters pawn_spawn_params;
             pawn_spawn_params.SpawnCollisionHandlingOverride =
                 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+            auto vehicle_bp = Cast<UBlueprint>(UAirBlueprintLib::LoadObject(
+                getSettings().pawn_paths.at("DefaultCar").pawn_bp));
+
             TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
-                vehicle_pawn_class_, actor_transform, pawn_spawn_params);
+                vehicle_bp->GeneratedClass, 
+                actor_transform, pawn_spawn_params);
 
             spawned_actors_.Add(spawned_pawn);
             pawns.Add(spawned_pawn);
@@ -122,6 +94,31 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
         }
     }
 
+    //find all BP camera directors in the environment
+    {
+        TArray<AActor*> camera_dirs;
+        UAirBlueprintLib::FindAllActor<ACameraDirector>(this, camera_dirs);
+        if (camera_dirs.Num() == 0) {
+            //create director
+            FActorSpawnParameters camera_spawn_params;
+            camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+            CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
+            CameraDirector->setFollowDistance(follow_distance_);
+            CameraDirector->setCameraRotationLagEnabled(true);
+            CameraDirector->setFpvCameraIndex(3);
+            spawned_actors_.Add(CameraDirector);
+
+            //create external camera required for the director
+            external_camera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
+            spawned_actors_.Add(external_camera);
+        }
+        else {
+            CameraDirector = static_cast<ACameraDirector*>(camera_dirs[0]);
+            external_camera = CameraDirector->getExternalCamera();
+        }
+    }
+
+    fpv_vehicle_pawn_wrapper_->possess();
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
 }
 

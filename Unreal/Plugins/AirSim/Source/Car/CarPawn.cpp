@@ -34,18 +34,18 @@ ACarPawn::ACarPawn()
 
     UWheeledVehicleMovementComponent4W* Vehicle4W = CastChecked<UWheeledVehicleMovementComponent4W>(GetVehicleMovement());
 
-    // load assets
-    if (UseDefaultMesh) {
-        static MeshContructionHelpers helpers(AirSimSettings::singleton().car_mesh_paths);
-        GetMesh()->SetSkeletalMesh(helpers.skeleton);
-        GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-        GetMesh()->SetAnimInstanceClass(helpers.bp->GeneratedClass);
-        SlipperyMaterial = helpers.slippery_mat;
-        NonSlipperyMaterial = helpers.non_slippery_mat;
-    }
-
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
+
+    const auto& car_mesh_paths = AirSimSettings::singleton().pawn_paths["DefaultCar"];
+    auto slippery_mat = Cast<UPhysicalMaterial>(
+        UAirBlueprintLib::LoadObject(car_mesh_paths.slippery_mat));
+    auto non_slippery_mat = Cast<UPhysicalMaterial>(
+        UAirBlueprintLib::LoadObject(car_mesh_paths.non_slippery_mat));
+    if (slippery_mat)
+        SlipperyMaterial = slippery_mat;
+    if (non_slippery_mat)
+        NonSlipperyMaterial = non_slippery_mat;
 
     check(Vehicle4W->WheelSetups.Num() == 4);
 
@@ -177,6 +177,7 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
         EngineSoundComponent->Activate();
     else
         EngineSoundComponent->Deactivate();
+
 
     //put camera little bit above vehicle
     FTransform camera_transform(FVector::ZeroVector);

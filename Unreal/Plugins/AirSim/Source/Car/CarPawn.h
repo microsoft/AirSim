@@ -65,11 +65,6 @@ class ACarPawn : public AWheeledVehicle
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     UAudioComponent* EngineSoundComponent;
 
-
-    /** Whether to load the default meshes */
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    bool UseDefaultMesh = false;
-
 public:
     ACarPawn();
 
@@ -162,23 +157,6 @@ public:
 
 private:
     typedef msr::airlib::AirSimSettings AirSimSettings;
-
-    struct MeshContructionHelpers {
-        USkeletalMesh* skeleton;
-        UBlueprint* bp;
-        UPhysicalMaterial* slippery_mat;
-        UPhysicalMaterial* non_slippery_mat;
-
-        MeshContructionHelpers(const msr::airlib::AirSimSettings::CarMeshPaths& paths)
-        {
-            skeleton = Cast<USkeletalMesh>(UAirBlueprintLib::LoadObject(paths.skeletal));
-            bp = Cast<UBlueprint>(UAirBlueprintLib::LoadObject(paths.bp));
-            slippery_mat = Cast<UPhysicalMaterial>(UAirBlueprintLib::LoadObject(paths.slippery_mat));
-            non_slippery_mat = Cast<UPhysicalMaterial>(UAirBlueprintLib::LoadObject(paths.non_slippery_mat));
-        }
-
-    };
-
 
     UClass* pip_camera_class_;
 
