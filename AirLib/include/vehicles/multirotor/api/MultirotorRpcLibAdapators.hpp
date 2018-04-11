@@ -19,8 +19,8 @@ namespace msr { namespace airlib_rpclib {
 class MultirotorRpcLibAdapators : public RpcLibAdapatorsBase {
 public:
     struct YawMode {
-        bool is_rate;
-        float yaw_or_rate;
+        bool is_rate = true;
+        float yaw_or_rate = 0;
         MSGPACK_DEFINE_MAP(is_rate, yaw_or_rate);
     
         YawMode()

@@ -227,7 +227,7 @@ public:
 protected: 
     virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
     {
-        Utils::log(Utils::stringf("commandRollPitchThrottle %f, %f, %f, %f", pitch, roll, throttle, yaw_rate));
+        //Utils::log(Utils::stringf("commandRollPitchThrottle %f, %f, %f, %f", pitch, roll, throttle, yaw_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleRate, GoalModeType::Passthrough);
@@ -240,7 +240,7 @@ protected:
 
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
-        Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
+        //Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
@@ -253,7 +253,7 @@ protected:
 
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
-        Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
+        //Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
@@ -268,7 +268,7 @@ protected:
 
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
-        Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
+        //Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
@@ -283,7 +283,7 @@ protected:
 
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
-        Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
+        //Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
