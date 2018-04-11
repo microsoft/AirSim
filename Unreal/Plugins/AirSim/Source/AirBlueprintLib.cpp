@@ -604,10 +604,23 @@ UObject* UAirBlueprintLib::LoadObject(const std::string& name)
     FString str(name.c_str());
     UObject *obj = StaticLoadObject(UObject::StaticClass(), nullptr, *str);
     if (obj == nullptr) {
-        std::string msg = "Failed to load asset - " + name;
+        std::string msg = "Failed to load asset object - " + name;
         FString fmsg(msg.c_str());
         LogMessage(TEXT("Load: "), fmsg, LogDebugLevel::Failure);
         throw std::invalid_argument(msg);
     }
     return obj;
+}
+
+UClass* UAirBlueprintLib::LoadClass(const std::string& name)
+{
+    FString str(name.c_str());
+    UClass *cls = StaticLoadClass(UObject::StaticClass(), nullptr, *str);
+    if (cls == nullptr) {
+        std::string msg = "Failed to load asset class - " + name;
+        FString fmsg(msg.c_str());
+        LogMessage(TEXT("Load: "), fmsg, LogDebugLevel::Failure);
+        throw std::invalid_argument(msg);
+    }
+    return cls;
 }

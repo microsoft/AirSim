@@ -445,11 +445,11 @@ private:
     {
         pawn_paths.clear();
         pawn_paths.emplace("BareboneCar",
-            PawnPath("/AirSim/VehicleAdv/Vehicle/VehicleAdvPawn"));
+            PawnPath("Class'/AirSim/VehicleAdv/Vehicle/VehicleAdvPawn.VehicleAdvPawn_C'"));
         pawn_paths.emplace("DefaultCar",
-            PawnPath("/AirSim/VehicleAdv/SUV/SuvCarPawn"));
+            PawnPath("Class'/AirSim/VehicleAdv/SUV/SuvCarPawn.SuvCarPawn_C'"));
         pawn_paths.emplace("DefaultQuadrotor",
-            PawnPath("/AirSim/Blueprints/BP_FlyingPawn"));
+            PawnPath("Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"));
         
 
         msr::airlib::Settings pawn_paths_child;

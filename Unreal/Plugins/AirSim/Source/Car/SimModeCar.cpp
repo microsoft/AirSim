@@ -64,12 +64,11 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             pawn_spawn_params.SpawnCollisionHandlingOverride =
                 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-            auto vehicle_bp = Cast<UBlueprint>(UAirBlueprintLib::LoadObject(
-                getSettings().pawn_paths.at("DefaultCar").pawn_bp));
+            auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                getSettings().pawn_paths.at("DefaultCar").pawn_bp);
 
             TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
-                vehicle_bp->GeneratedClass, 
-                actor_transform, pawn_spawn_params);
+                vehicle_bp_class, actor_transform, pawn_spawn_params);
 
             spawned_actors_.Add(spawned_pawn);
             pawns.Add(spawned_pawn);

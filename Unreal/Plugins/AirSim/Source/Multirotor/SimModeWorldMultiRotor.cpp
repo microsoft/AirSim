@@ -99,15 +99,15 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
 
         //if no vehicle pawns exists in environment
         if (pawns.Num() == 0) {
-            auto vehicle_bp = Cast<UBlueprint>(UAirBlueprintLib::LoadObject(
-                getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp));
+            auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp);
 
             //create vehicle pawn
             FActorSpawnParameters pawn_spawn_params;
             pawn_spawn_params.SpawnCollisionHandlingOverride =
                 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
             TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
-                vehicle_bp->GeneratedClass, actor_transform, pawn_spawn_params);
+                vehicle_bp_class, actor_transform, pawn_spawn_params);
 
             spawned_actors_.Add(spawned_pawn);
             pawns.Add(spawned_pawn);
