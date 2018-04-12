@@ -86,7 +86,7 @@ fi
 if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv" ]; then
     mkdir -p "Unreal/Plugins/AirSim/Content/VehicleAdv"
 fi
-if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/v1.1.9" ]; then
+if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/v1.1.10" ]; then
     if $downloadHighPolySuv; then
         echo "*********************************************************************************************"
         echo "Downloading high-poly car assets.... The download is ~37MB and can take some time."
