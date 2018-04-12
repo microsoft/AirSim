@@ -91,7 +91,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.1.10 (
         @echo on
         REM powershell -command "& { Start-BitsTransfer -Source https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip -Destination suv_download_tmp\car_assets.zip }"
         REM powershell -command "& { (New-Object System.Net.WebClient).DownloadFile('https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip', 'suv_download_tmp\car_assets.zip') }"
-        powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/Microsoft/AirSim/releases/download/v1.1.9/car_assets.zip -OutFile suv_download_tmp\car_assets.zip }"
+        powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip -OutFile suv_download_tmp\car_assets.zip }"
         @echo off
 		rmdir /S /Q Unreal\Plugins\AirSim\Content\VehicleAdv\SUV
         powershell -command "& { Expand-Archive -Path suv_download_tmp\car_assets.zip -DestinationPath Unreal\Plugins\AirSim\Content\VehicleAdv }"

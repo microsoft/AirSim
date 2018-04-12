@@ -98,7 +98,7 @@ if [ ! -d "Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/v1.1.10" ]; then
         fi
         mkdir -p "suv_download_tmp"
         cd suv_download_tmp
-        wget  https://github.com/Microsoft/AirSim/releases/download/v1.1.9/car_assets.zip
+        wget  https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip
         if [ -d "../Unreal/Plugins/AirSim/Content/VehicleAdv/SUV" ]; then
             rm -rf "../Unreal/Plugins/AirSim/Content/VehicleAdv/SUV"
         fi        
