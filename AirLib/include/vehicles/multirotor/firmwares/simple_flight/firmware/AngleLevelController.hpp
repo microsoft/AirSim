@@ -68,11 +68,10 @@ public:
         TReal goal_angle = level_goal[axis_];
         TReal measured_angle = state_estimator_->getAngles()[axis_];
 
-        TReal goal_angle_normd = Axis3r::normalizeAngle(goal_angle, 2*M_PI);
-        TReal measured_angle_normd = Axis3r::normalizeAngle(measured_angle, 2*M_PI);
-
-        pid_->setGoal(goal_angle_normd);
-        pid_->setMeasured(measured_angle_normd);
+        adjustToMinDistanceAngles(measured_angle, goal_angle);
+            
+        pid_->setGoal(goal_angle);
+        pid_->setMeasured(measured_angle);
         pid_->update();
 
         //use this to drive rate controller
@@ -83,6 +82,7 @@ public:
         output_ = rate_controller_->getOutput();
     }
 
+    
     virtual TReal getOutput() override
     {
         return output_;
@@ -97,6 +97,32 @@ public:
     virtual const GoalMode& getGoalMode() const  override
     {
         return rate_mode_;
+    }
+
+private:
+    static void adjustToMinDistanceAngles(TReal& angle1, TReal& angle2)
+    {
+        static constexpr TReal TwoPi = 2 * M_PIf;
+
+        //first make sure both angles are restricted from -360 to +360
+        angle1 = static_cast<TReal>(std::fmod(angle1, TwoPi));
+        angle2 = static_cast<TReal>(std::fmod(angle2, TwoPi));
+
+        //now make sure both angles are restricted from 0 to 360
+        if (angle1 < 0)
+            angle1 = TwoPi + angle1;
+        if (angle2 < 0)
+            angle2 = TwoPi + angle2;
+
+        //measure distance between two angles
+        auto dist = angle1 - angle2;
+
+        //if its > 180 then invert first angle
+        if (dist > M_PIf)
+            angle1 = angle1 - TwoPi;
+        //if two much on other side then invert second angle
+        else if (dist < -M_PIf)
+            angle2 = angle2 - TwoPi;
     }
 
 private:

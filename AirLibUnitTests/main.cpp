@@ -12,13 +12,13 @@ int main()
     using namespace msr::airlib;
 
     std::unique_ptr<TestBase> tests[] = {
+        std::unique_ptr<TestBase>(new QuaternionTest()),
         std::unique_ptr<TestBase>(new CelestialTest()),
         std::unique_ptr<TestBase>(new SettingsTest()),
         std::unique_ptr<TestBase>(new SimpleFlightTest())
         //,
         //std::unique_ptr<TestBase>(new PixhawkTest()),
         //std::unique_ptr<TestBase>(new RosFlightTest()),
-        //std::unique_ptr<TestBase>(new QuaternionTest()),
         //std::unique_ptr<TestBase>(new WorkerThreadTest())
     };
 
