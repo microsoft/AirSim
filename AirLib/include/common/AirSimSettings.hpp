@@ -460,9 +460,7 @@ private:
             for (const auto& key : keys) {
                 msr::airlib::Settings child;
                 pawn_paths_child.getChild(key, child);
-
-                pawn_paths.insert_or_assign(key,
-                    createPathPawn(child));
+                pawn_paths[key] = createPathPawn(child);
             }
         }
     }
