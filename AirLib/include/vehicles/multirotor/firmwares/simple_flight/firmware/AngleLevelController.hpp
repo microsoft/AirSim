@@ -64,8 +64,15 @@ public:
 
         //get response of level PID
         const auto& level_goal = goal_->getGoalValue();
-        pid_->setGoal(level_goal[axis_]);
-        pid_->setMeasured(state_estimator_->getAngles()[axis_]);
+
+        TReal goal_angle = level_goal[axis_];
+        TReal measured_angle = state_estimator_->getAngles()[axis_];
+
+        TReal goal_angle_normd = Axis3r::normalizeAngle(goal_angle, 2*M_PI);
+        TReal measured_angle_normd = Axis3r::normalizeAngle(measured_angle, 2*M_PI);
+
+        pid_->setGoal(goal_angle_normd);
+        pid_->setMeasured(measured_angle_normd);
         pid_->update();
 
         //use this to drive rate controller

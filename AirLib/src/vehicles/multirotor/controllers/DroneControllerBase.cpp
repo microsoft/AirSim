@@ -292,7 +292,7 @@ bool DroneControllerBase::moveToZ(float z, float velocity, const YawMode& yaw_mo
 
 bool DroneControllerBase::rotateToYaw(float yaw, float margin, CancelableBase& cancelable_action)
 {
-    YawMode yaw_mode(false, VectorMath::normalizeAngleDegrees(yaw));
+    YawMode yaw_mode(false, VectorMath::normalizeAngle(yaw));
     Waiter waiter(getCommandPeriod());
     auto start_pos = getPosition();
     bool is_yaw_reached;
@@ -646,7 +646,7 @@ void DroneControllerBase::adjustYaw(const Vector3r& heading, DrivetrainType driv
     if (drivetrain == DrivetrainType::ForwardOnly && !yaw_mode.is_rate) {
         if (heading.norm() > getDistanceAccuracy()) {
             yaw_mode.yaw_or_rate = yaw_mode.yaw_or_rate + (std::atan2(heading.y(), heading.x()) * 180 / M_PIf);
-            yaw_mode.yaw_or_rate = VectorMath::normalizeAngleDegrees(yaw_mode.yaw_or_rate);
+            yaw_mode.yaw_or_rate = VectorMath::normalizeAngle(yaw_mode.yaw_or_rate);
         }
         else
             yaw_mode.setZeroRate(); //don't change existing yaw if heading is too small because that can generate random result

@@ -70,6 +70,18 @@ public:
         return 3;
     }
 
+    //duplicate version of function in VectorMath
+    static T normalizeAngle(T angle, T max_angle = static_cast<T>(360))
+    {
+        angle = static_cast<T>(std::fmod(angle, max_angle));
+        if (angle > max_angle/2)
+            return angle - max_angle;
+        else if (angle < -max_angle/2)
+            return angle + max_angle;
+        else
+            return angle;
+    }
+
 
 private:
     T vals_[3];
