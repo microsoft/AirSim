@@ -15,6 +15,13 @@ public:
     //returns value indicating nanoseconds elapsed since some reference timepoint in history
     //typically nanoseconds from Unix epoch
     virtual TTimePoint nowNanos() const = 0;
+    virtual TTimePoint getStart() const = 0;
+
+
+    ClockBase()
+    {
+        wall_clock_start_ = Utils::getTimeSinceEpochNanos();
+    }
 
     TTimeDelta elapsedSince(TTimePoint since) const
     {
@@ -63,11 +70,23 @@ public:
             std::this_thread::sleep_for(MinSleepDuration);
     }
 
+    double getTrueScaleWrtWallClock()
+    {
+        TTimeDelta wall_clock_now = Utils::getTimeSinceEpochNanos();
+        TTimeDelta wall_clock_elapsed = elapsedBetween(wall_clock_now, wall_clock_start_);
+
+        TTimeDelta clock_now = nowNanos();
+        TTimeDelta clock_elapsed = elapsedBetween(clock_now, getStart());
+
+        return static_cast<double>(clock_elapsed) / wall_clock_elapsed;
+    }
+
 private:
     template <typename T>
     using duration = std::chrono::duration<T>;
 
     uint64_t step_count_ = 0;
+    TTimePoint wall_clock_start_;
 };
 
 }} //namespace

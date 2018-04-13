@@ -192,7 +192,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--altitude", type=float, help="altitude of orbit (in positive meters)", default=30)
     arg_parser.add_argument("--speed", type=float, help="speed of orbit (in meters/second)", default=5)
     arg_parser.add_argument("--center", help="x,y direction vector pointing to center of orbit from current starting position (default 1,0)", default="1,0")
-    arg_parser.add_argument("--iterations", type=float, help="number of 360 degree orbits (default 1)", default=1)
+    arg_parser.add_argument("--iterations", type=float, help="number of 360 degree orbits (default 1)", default=3)
     args = arg_parser.parse_args(args)
     nav = OrbitNavigator(args)
     nav.start()

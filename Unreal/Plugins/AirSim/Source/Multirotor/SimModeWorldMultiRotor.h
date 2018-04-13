@@ -28,6 +28,8 @@ protected:
 
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
     VehiclePtr createVehicle(VehiclePawnWrapper* wrapper);
+    virtual void setupClockSpeed() override;
+
 
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);

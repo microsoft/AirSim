@@ -33,6 +33,9 @@ private:
     void updateReport();
     int getRemoteControlID(const VehiclePawnWrapper& pawn);
 
+protected:
+    virtual void setupClockSpeed() override;
+
 
 private:    
     UClass* external_camera_class_;

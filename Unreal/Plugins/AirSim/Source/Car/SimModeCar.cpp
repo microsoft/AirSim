@@ -40,6 +40,17 @@ VehiclePawnWrapper* ASimModeCar::getFpvVehiclePawnWrapper()
     return fpv_vehicle_pawn_wrapper_;
 }
 
+void ASimModeCar::setupClockSpeed()
+{
+    float clock_speed = getSettings().clock_speed;
+
+    //setup clock in PhysX
+    if (clock_speed != 1.0f) {
+        this->GetWorldSettings()->SetTimeDilation(clock_speed);
+        UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(clock_speed), LogDebugLevel::Informational);
+    }
+}
+
 void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 {
     //get player controller

@@ -53,6 +53,9 @@ protected:
     virtual void setupInputBindings();
     virtual const AirSimSettings& getSettings() const;
     long long getPhysicsLoopPeriod();
+    void setPhysicsLoopPeriod(long long  period);
+
+    virtual void setupClockSpeed();
 
 protected: //settings
     int record_tick_count;
@@ -71,10 +74,13 @@ private:
     TTimePoint tod_sim_clock_start_;
     TTimePoint tod_last_update_;
     std::time_t tod_start_time_;
+    long long physics_loop_period_;
 
 private:
     void setStencilIDs();
     void setupTimeOfDay();
-    void setupClock();
     void advanceTimeOfDay();
+    void setupPhysicsLoopPeriod();
+    void showClockStats();
+
 };
