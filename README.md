@@ -1,8 +1,8 @@
 # Welcome to AirSim
 
-AirSim is a simulator for drones, cars and more built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
+AirSim is a simulator built using the Unreal Engine for drones, cars and more. It is open-source, cross-platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. AirSim is an Unreal plugin that can be dropped into any Unreal environment.
 
-Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
+AirSim is intended to be used as a platform for AI research and experimentation with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. As such, AirSim provides APIs for retrieving data and controlling vehicles in a platform independent way.
 
 **Check out the quick 1.5 minute demo**
 
@@ -26,11 +26,11 @@ Cars in AirSim
 ## How to Use It
 
 ### Choosing Your Vehicle: Car or Multirotor
-By default AirSim spawns multirotor. You can easily change this to car and use all of AirSim goodies. Please see [using car](docs/using_car.md) guide.
+By default, AirSim spawns a multirotor. You can easily change this to car and use all of AirSim's goodies. Please see the guide for [using a car](docs/using_car.md).
 
 ### Manual drive
 
-If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.
+If you have a remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, the arrow keys can be used for manual control.
 
 [More details](docs/remote_control.md)
 
@@ -41,23 +41,23 @@ If you have remote control (RC) as shown below, you can manually control the dro
 
 ### Programmatic control
 
-AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through RPC and accessible via variety of languages including C++, Python, C# and Java.
+AirSim provides APIs that allow programmatic interaction with vehicles in the simulation. These APIs can be used to retrieve images and states, control vehicles, etc. The APIs are exposed through RPC, and are accessible using languages including C++, Python, C# and Java.
 
-These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an companion computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.
+These APIs are also available as a part of a separate, independent cross-platform library, and can be deployed on an companion computer in your vehicle. This allows code to be written and tested in a simulator before it is executed on real vehicles. Transfer learning and related research is one of our focuses.
 
 [More details](docs/apis.md)
 
 ### Gathering training data
 
-There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's desire.
+There are two ways you can generate deep learning training data from AirSim. The easiest way is to press the record button in the lower right corner, which will start the writing of poses and images from each frame. The data logging code is simple and can be modified as required.
 
 ![record screenshot](docs/images/record_data.png)
 
-A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data. 
+A better way to generate training data is through the APIs, which provide full control of how, what, where and when data is logged. 
 
 ### Computer Vision mode
 
-Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode, you don't have vehicle physics and dynamics but you can use keyboard to move around and use APIs to position the vehicle in any arbitrary pose and get images such as depth, disparity, surface normals or object segmentation. 
+AirSim's "Computer Vision" mode does not have vehicle physics or dynamics, but the keyboard can be used to move around. The APIs can be used to position a vehicle in an arbitrary pose, and capture images such as depth, disparity, surface normals or object segmentation. 
 
 [More details](docs/image_apis.md)
 
@@ -84,7 +84,7 @@ Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode,
 
 ### Paper
 
-More technical details are available in [AirSim paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065). Please cite this as:
+Additional technical details on AirSim are available in the [AirSim paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065). Please cite this as:
 ```
 @inproceedings{airsim2017fsr,
   author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
@@ -98,7 +98,7 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 
 ### Contribute
 
-Please take a look at [open issues](https://github.com/microsoft/airsim/issues) and [Trello board](https://trello.com/b/1t2qCeaA/todo) if you are looking for areas to contribute to.
+If you would like to contribute to AirSim, please look at the [open issues](https://github.com/microsoft/airsim/issues) and [Trello board](https://trello.com/b/1t2qCeaA/todo).
 
 * [More on AirSim design](docs/design.md)
 * [More on code structure](docs/code_structure.md)
@@ -107,15 +107,15 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 
 ### Who is Using AirSim?
 
-We are [maintaining list](docs/who_is_using.md) of few projects, people and groups that we are aware of. If you had like to be featured in this list please [add request here](https://github.com/microsoft/airsim/issues).
+We [maintain a list](docs/who_is_using.md) of the projects, people and groups using AirSim that we are aware of. If you would like to be featured in this list, please [make a request here](https://github.com/microsoft/airsim/issues).
 
 ## Contact
 
-Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
+Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up-to-date or ask any questions.
 
 ## FAQ
 
-If you run into problems, check the [FAQ](docs/faq.md) and feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
+If you run into problems, check the [FAQ](docs/faq.md), or feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
 
 ## License
 
