@@ -8,7 +8,7 @@ CarPawnApi::CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponen
 }
 
 std::vector<ImageCaptureBase::ImageResponse> CarPawnApi::simGetImages(
-    const std::vector<ImageCaptureBase::ImageRequest>& requests)
+    const std::vector<ImageCaptureBase::ImageRequest>& requests) const
 {
     std::vector<ImageCaptureBase::ImageResponse> responses;
 
@@ -33,17 +33,17 @@ void CarPawnApi::simPrintLogMessage(const std::string& message, const std::strin
     pawn_->printLogMessage(message, message_param, severity);
 }
 
-int CarPawnApi::simGetSegmentationObjectID(const std::string& mesh_name)
+int CarPawnApi::simGetSegmentationObjectID(const std::string& mesh_name) const
 {
     return UAirBlueprintLib::GetMeshStencilID(mesh_name);
 }
 
-msr::airlib::CollisionInfo CarPawnApi::getCollisionInfo()
+msr::airlib::CollisionInfo CarPawnApi::getCollisionInfo() const
 {
     return pawn_->getCollisionInfo();
 }
 
-std::vector<uint8_t> CarPawnApi::simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type)
+std::vector<uint8_t> CarPawnApi::simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const
 {
     std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_id, image_type) };
     const std::vector<ImageCaptureBase::ImageResponse>& response = simGetImages(request);
@@ -71,7 +71,7 @@ void CarPawnApi::setCarControls(const CarApiBase::CarControls& controls)
     movement_->SetUseAutoGears(!controls.is_manual_gear);
 }
 
-msr::airlib::Pose CarPawnApi::simGetObjectPose(const std::string& actor_name)
+msr::airlib::Pose CarPawnApi::simGetObjectPose(const std::string& actor_name) const
 {
     msr::airlib::Pose pose;
 
@@ -99,7 +99,7 @@ void CarPawnApi::setCameraOrientation(int camera_id, const msr::airlib::Quaterni
     }, true);
 }
 
-CarApiBase::CarState CarPawnApi::getCarState()
+CarApiBase::CarState CarPawnApi::getCarState() const
 {
     CarApiBase::CarState state(
         movement_->GetForwardSpeed() / 100, //cm/s -> m/s
@@ -142,12 +142,12 @@ void CarPawnApi::simSetPose(const msr::airlib::Pose& pose, bool ignore_collision
     }, true);
 }
 
-msr::airlib::Pose CarPawnApi::simGetPose()
+msr::airlib::Pose CarPawnApi::simGetPose() const
 {
     return pawn_->getPose();
 }
 
-msr::airlib::GeoPoint CarPawnApi::getHomeGeoPoint()
+msr::airlib::GeoPoint CarPawnApi::getHomeGeoPoint() const
 {
     return pawn_->getHomePoint();
 }

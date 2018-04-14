@@ -62,7 +62,7 @@ public:
     };
 
     virtual void setCarControls(const CarControls& controls) = 0;
-    virtual CarState getCarState() = 0;
+    virtual CarState getCarState() const = 0;
     virtual const CarApiBase::CarControls& getCarControls() const = 0;
 
     virtual ~CarApiBase() = default;

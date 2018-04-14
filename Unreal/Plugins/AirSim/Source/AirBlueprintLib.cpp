@@ -456,7 +456,8 @@ bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, co
     return actor->GetWorld()->LineTraceTestByChannel(start, end, collision_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collision_channel) 
+bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end, 
+    FHitResult& hit,  const AActor* ignore_actor, ECollisionChannel collision_channel) 
 {
     hit = FHitResult(ForceInit);
 
@@ -468,7 +469,8 @@ bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, co
     return actor->GetWorld()->LineTraceSingleByChannel(hit, start, end, collision_channel, trace_params);
 }
 
-bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collision_channel) 
+bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, 
+    FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collision_channel) 
 {
     TArray<FHitResult> hits;
 

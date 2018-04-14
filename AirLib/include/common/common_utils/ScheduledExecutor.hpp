@@ -31,21 +31,36 @@ public:
         callback_ = callback;
         period_nanos_ = period_nanos;
         started_ = false;
+        paused_ = false;
     }
 
     void start()
     {
         started_ = true;
+        paused_ = false;
+
         sleep_time_avg_ = 0;
         period_count_ = 0;
         Utils::cleanupThread(th_);
         th_ = std::thread(&ScheduledExecutor::executorLoop, this);
     }
 
+    void pause(bool is_paused)
+    {
+        paused_ = is_paused;
+    }
+
+    bool isPaused() const
+    {
+        return paused_;
+    }
+
     void stop()
     {
         if (started_) {
             started_ = false;
+            paused_ = false;
+
             try {
                 if (th_.joinable()) {
                     th_.join();
@@ -56,12 +71,12 @@ public:
         }
     }
 
-    bool isRunning()
+    bool isRunning() const
     {
-        return started_;
+        return started_ && !paused_;
     }
 
-    double getSleepTimeAvg()
+    double getSleepTimeAvg() const
     {
         //TODO: make this function thread safe by using atomic types
         //right now this is not implemented for performance and that
@@ -69,7 +84,7 @@ public:
         return sleep_time_avg_;
     }
 
-    uint64_t getPeriodCount()
+    uint64_t getPeriodCount() const
     {
         return period_count_;
     }
@@ -126,7 +141,7 @@ private:
             TTimeDelta since_last_call = period_start - call_end;
             
             //is this first loop?
-            if (period_count_ > 0) {
+            if (period_count_ > 0 && !paused_) {
                 //when we are doing work, don't let other thread to cause contention
                 std::lock_guard<std::mutex> locker(mutex_);
 
@@ -153,7 +168,7 @@ private:
     uint64_t period_nanos_;
     std::thread th_;
     std::function<bool(uint64_t)> callback_;
-    std::atomic_bool started_;
+    std::atomic_bool started_, paused_;
 
     double sleep_time_avg_;
     uint64_t period_count_;
