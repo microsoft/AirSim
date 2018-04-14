@@ -8,6 +8,7 @@
 #include "VehiclePawnWrapper.h"
 #include "common/AirSimSettings.hpp"
 #include "Components/SkyLightComponent.h"
+#include "common/ClockFactory.hpp"
 #include "Engine/DirectionalLight.h"
 #include "SimModeBase.generated.h"
 

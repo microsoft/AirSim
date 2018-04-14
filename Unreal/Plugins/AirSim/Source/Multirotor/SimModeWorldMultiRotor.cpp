@@ -3,6 +3,7 @@
 #include "AirBlueprintLib.h"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "physics/PhysicsBody.hpp"
+#include "common/ClockFactory.hpp"
 #include <memory>
 #include "Logging/MessageLog.h"
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"

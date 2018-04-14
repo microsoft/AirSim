@@ -41,6 +41,7 @@ protected:
 private:
     typedef msr::airlib::UpdatableObject UpdatableObject;
     typedef msr::airlib::PhysicsEngineBase PhysicsEngineBase;
+    typedef msr::airlib::ClockFactory ClockFactory;
 
     PhysicsEngineBase* createPhysicsEngine();
     static std::vector<UpdatableObject*> toUpdatableObjects(const std::vector<VehiclePtr>& vehicles);

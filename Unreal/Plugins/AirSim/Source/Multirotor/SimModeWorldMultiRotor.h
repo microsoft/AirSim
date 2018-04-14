@@ -35,6 +35,7 @@ private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
 
 private:    
+    typedef msr::airlib::ClockFactory ClockFactory;
 
     TArray<uint8> image_;
     std::vector <std::unique_ptr<msr::airlib::MultiRotorParams> > vehicle_params_;
