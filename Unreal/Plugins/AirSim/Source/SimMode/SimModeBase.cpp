@@ -139,7 +139,7 @@ void ASimModeBase::setupPhysicsLoopPeriod()
         physics_loop_period_ = 3000000LL; //3ms
 }
 
-long long ASimModeBase::getPhysicsLoopPeriod() //nanoseconds
+long long ASimModeBase::getPhysicsLoopPeriod() const //nanoseconds
 {
     return physics_loop_period_;
 }
@@ -203,7 +203,7 @@ void ASimModeBase::reset()
     //Should be overridden by derived classes
 }
 
-VehiclePawnWrapper* ASimModeBase::getFpvVehiclePawnWrapper()
+VehiclePawnWrapper* ASimModeBase::getFpvVehiclePawnWrapper() const
 {
     //Should be overridden by derived classes
     return nullptr;
@@ -224,17 +224,17 @@ void ASimModeBase::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeBase::reset);
 }
 
-bool ASimModeBase::isRecording()
+bool ASimModeBase::isRecording() const
 {
     return FRecordingThread::isRecording();
 }
 
-bool ASimModeBase::isRecordUIVisible()
+bool ASimModeBase::isRecordUIVisible() const
 {
     return getSettings().is_record_ui_visible;
 }
 
-ECameraDirectorMode ASimModeBase::getInitialViewMode()
+ECameraDirectorMode ASimModeBase::getInitialViewMode() const
 {
     return Utils::toEnum<ECameraDirectorMode>(getSettings().initial_view_mode);
 }

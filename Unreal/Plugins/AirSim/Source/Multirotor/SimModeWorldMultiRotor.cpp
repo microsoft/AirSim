@@ -52,7 +52,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-VehiclePawnWrapper* ASimModeWorldMultiRotor::getFpvVehiclePawnWrapper()
+VehiclePawnWrapper* ASimModeWorldMultiRotor::getFpvVehiclePawnWrapper() const
 {
     return fpv_vehicle_pawn_wrapper_;
 }
@@ -150,7 +150,7 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
     getFpvVehiclePawnWrapper()->setLogLine(getLogString());
 }
 
-std::string ASimModeWorldMultiRotor::getLogString()
+std::string ASimModeWorldMultiRotor::getLogString() const
 {
     const msr::airlib::Kinematics::State* kinematics = getFpvVehiclePawnWrapper()->getTrueKinematics();
     uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);

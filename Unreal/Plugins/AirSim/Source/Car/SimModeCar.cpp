@@ -35,7 +35,7 @@ void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-VehiclePawnWrapper* ASimModeCar::getFpvVehiclePawnWrapper()
+VehiclePawnWrapper* ASimModeCar::getFpvVehiclePawnWrapper() const
 {
     return fpv_vehicle_pawn_wrapper_;
 }
@@ -133,7 +133,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 }
 
 
-int ASimModeCar::getRemoteControlID(const VehiclePawnWrapper& pawn)
+int ASimModeCar::getRemoteControlID(const VehiclePawnWrapper& pawn) const
 {
     msr::airlib::Settings settings;
     fpv_vehicle_pawn_wrapper_->getRawVehicleSettings(settings);

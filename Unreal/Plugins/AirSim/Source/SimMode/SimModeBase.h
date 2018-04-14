@@ -40,20 +40,20 @@ public:
     virtual std::string getReport();
     virtual void startRecording();
     virtual void stopRecording();
-    virtual bool isRecording();
-    virtual bool isRecordUIVisible();
-    virtual ECameraDirectorMode getInitialViewMode();
+    virtual bool isRecording() const;
+    virtual bool isRecordUIVisible() const;
+    virtual ECameraDirectorMode getInitialViewMode() const;
 
     //must be implemented by derived class
     //can't use pure virtual because of restriction with Unreal
-    virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper();
+    virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() const;
 
 
 protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;
     virtual void setupInputBindings();
     virtual const AirSimSettings& getSettings() const;
-    long long getPhysicsLoopPeriod();
+    long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
 
     virtual void setupClockSpeed();
