@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(HelloCar)
-
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake-modules") 
-INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../cmake-modules/CommonSetup.cmake")
-CommonSetup()
+project(HelloDrone)
 
 IncludeEigen()
 
@@ -11,7 +7,7 @@ SetupConsoleBuild()
 
 ## Specify additional locations of header files
 include_directories(
-  ${AIRSIM_ROOT}/HelloCar
+  ${AIRSIM_ROOT}/HelloDrone
   ${AIRSIM_ROOT}/AirLib/include
   ${RPC_LIB_INCLUDES}
   ${AIRSIM_ROOT}/MavLinkCom/include

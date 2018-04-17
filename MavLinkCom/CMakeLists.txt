@@ -3,10 +3,6 @@ project(MavLinkCom)
 
 add_subdirectory("MavLinkTest")
 
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake-modules") 
-INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../cmake-modules/CommonSetup.cmake")
-CommonSetup()
-
 include_directories(
   ${AIRSIM_ROOT}/MavLinkCom
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
@@ -41,7 +37,7 @@ LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/wifi.cpp")
 IF(UNIX)
     LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/linux/MavLinkFindSerialPorts.cpp")
 ELSE()
-    LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/windows/MavLinkFindSerialPorts.cpp")
+    LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/windows/WindowsFindSerialPorts.cpp")
 ENDIF()
 
 add_library(MavLinkCom STATIC ${MAVLINK_SOURCES})

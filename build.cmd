@@ -56,8 +56,7 @@ REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
 cd external\rpclib\rpclib-2.2.1\build
-REM cmake -G"Visual Studio 15 2017 Win64" ..
-cmake -G"Visual Studio 14 2015 Win64" ..
+cmake -G "Visual Studio 14 2017 Win64" ..
 cmake --build .
 cmake --build . --config Release
 if ERRORLEVEL 1 goto :buildfailed
@@ -118,12 +117,16 @@ IF NOT EXIST AirLib\deps\eigen3 (
 )
 IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
-
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
+if not exist build mkdir build 
+cd build
+cmake -G "Visual Studio 14 2017 Win64" ..
 if ERRORLEVEL 1 goto :buildfailed
-msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln 
+cmake --build . --config Debug
 if ERRORLEVEL 1 goto :buildfailed
+cmake --build . --config Release
+if ERRORLEVEL 1 goto :buildfailed
+cd ..
 
 REM //---------- copy binaries and include for MavLinkCom in deps ----------
 set MAVLINK_TARGET_LIB=AirLib\deps\MavLinkCom\lib
@@ -131,7 +134,7 @@ if NOT exist %MAVLINK_TARGET_LIB% mkdir %MAVLINK_TARGET_LIB%
 set MAVLINK_TARGET_INCLUDE=AirLib\deps\MavLinkCom\include
 if NOT exist %MAVLINK_TARGET_INCLUDE% mkdir %MAVLINK_TARGET_INCLUDE%
 robocopy /MIR MavLinkCom\include %MAVLINK_TARGET_INCLUDE%
-robocopy /MIR MavLinkCom\lib %MAVLINK_TARGET_LIB%
+robocopy /MIR build\output\lib\Debug\mavlinkcom* %MAVLINK_TARGET_LIB%
 
 REM //---------- all our output goes to Unreal/Plugin folder ----------
 if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib

@@ -28,9 +28,6 @@ macro(CommonSetup)
 
     find_package(Threads REQUIRED)
 
-    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
-    message(STATUS "found AIRSIM_ROOT=${AIRSIM_ROOT}")
-
     #setup output paths
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
     SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/output/bin)
@@ -46,12 +43,8 @@ macro(CommonSetup)
     #name of .a file with lib prefix
     set(RPC_LIB rpc)
 
-    #what is our build type debug or release?
-    string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
-
     IF(UNIX)
         set(RPC_LIB_DEFINES "-D MSGPACK_PP_VARIADICS_MSVC=0")
-        set(BUILD_TYPE "linux")
 
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             #TODO: need to check why below is needed
@@ -83,10 +76,8 @@ macro(CommonSetup)
                 #do not use experimental as it might potentially cause ABI issues
                 #set(CXX_EXP_LIB "-lc++experimental")
 
-                if("${BUILD_TYPE}" STREQUAL "debug")
-                    # set same options that Unreal sets in debug builds
-                    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funwind-tables -fdiagnostics-format=msvc -fno-inline -fno-omit-frame-pointer -fstack-protector")
-                endif()
+                # set same options that Unreal sets in debug builds
+                set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -funwind-tables -fdiagnostics-format=msvc -fno-inline -fno-omit-frame-pointer -fstack-protector")
 
             else()
                 set(CXX_EXP_LIB "-lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
@@ -101,13 +92,8 @@ macro(CommonSetup)
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WIN32_WINNT=0x0600 /GS /W4 /wd4100 /wd4505 /wd4820 /wd4464 /wd4514 /wd4710 /wd4571 /Zc:wchar_t /ZI /Zc:inline /fp:precise /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_UNICODE /DUNICODE /WX- /Zc:forScope /Gd /EHsc ")
         set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NXCOMPAT /DYNAMICBASE /INCREMENTAL:NO ")
 
-        if("${BUILD_TYPE}" STREQUAL "debug")
-          set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_DEBUG /MDd /RTC1 /Gm /Od ")
-        elseif("${BUILD_TYPE}" STREQUAL "release")
-          set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MD /O2 /Oi /GL /Gm- /Gy /TP ")
-        else()
-          message(FATAL_ERROR "Please specify '-D CMAKE_BUILD_TYPE=Debug' or Release on the cmake command line")
-        endif()
+        set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /D_DEBUG /MDd /RTC1 /Gm /Od ")
+        set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD /O2 /Oi /GL /Gm- /Gy /TP ")
     ENDIF()
 
     ## TODO: we are not using Boost any more so below shouldn't be needed
