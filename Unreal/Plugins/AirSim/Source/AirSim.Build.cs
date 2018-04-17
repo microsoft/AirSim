@@ -129,11 +129,11 @@ public class AirSim : ModuleRules
         // If we see "x64/Debug" folder then add this to the LibPath.
         if (Directory.Exists(Path.Combine(LibPath, PlatformString)))
         {
-            LibPath = Path.Combine(LibPath, PlatformString)
+            LibPath = Path.Combine(LibPath, PlatformString);
         }
         if (Directory.Exists(Path.Combine(LibPath, ConfigurationString)))
         {
-            LibPath = Path.Combine(LibPath, ConfigurationString)
+            LibPath = Path.Combine(LibPath, ConfigurationString);
         }
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
