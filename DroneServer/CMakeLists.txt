@@ -1,9 +1,21 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(DroneServer)
+set(tool_name DroneServer)
 
 IncludeEigen()
 
 SetupConsoleBuild()
+
+
+set(src
+    main.cpp
+)
+
+set(include
+)
+
+source_group("src" FILES ${src})
+source_group("include" FILES ${include})
 
 include_directories(
   ${AIRSIM_ROOT}/DroneServer
@@ -12,7 +24,7 @@ include_directories(
   ${AIRSIM_ROOT}/AirLib/include
 )
 
-AddExecutableSource()
+add_executable(${tool_name} ${src} ${include})
 			
 CommonTargetLink()
 target_link_libraries(${PROJECT_NAME} AirLib)

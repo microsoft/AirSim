@@ -102,13 +102,22 @@ public class AirSim : ModuleRules
     {
         string PlatformString = (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Mac) ? "x64" : "x86";
         string ConfigurationString = (Target.Configuration == UnrealTargetConfiguration.Debug) ? "Debug" : "Release";
-        bool isLibrarySupported = false;
+        bool isLibrarySupported = false;        
 
+        // If we see "x64/Debug" folder then add this to the LibPath.
+        if (Directory.Exists(Path.Combine(LibPath, PlatformString)))
+        {
+            LibPath = Path.Combine(LibPath, PlatformString)
+        }
+        if (Directory.Exists(Path.Combine(LibPath, ConfigurationString)))
+        {
+            LibPath = Path.Combine(LibPath, ConfigurationString)
+        }
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             isLibrarySupported = true;
-            PublicAdditionalLibraries.Add(Path.Combine(LibPath, PlatformString, ConfigurationString, LibFileName + ".lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibPath, LibFileName + ".lib"));
         } else if (Target.Platform == UnrealTargetPlatform.Linux || Target.Platform == UnrealTargetPlatform.Mac) {
             isLibrarySupported = true;
             PublicAdditionalLibraries.Add(Path.Combine(LibPath, "lib" + LibFileName + ".a"));

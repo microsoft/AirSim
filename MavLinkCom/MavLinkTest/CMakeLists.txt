@@ -9,8 +9,21 @@ include_directories(
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
 )
 
-    set(PROJECT_CPP ${PROJECT_NAME}_sources)
-    file(GLOB_RECURSE PROJECT_CPP "${AIRSIM_ROOT}/MavLinkCom/${PROJECT_NAME}/*.cpp")
-    add_executable(${PROJECT_NAME} ${PROJECT_CPP})
+set(include
+    Commands.h
+    ConsoleBase.h
+    UnitTests.h
+)
+
+set(src
+    Commands.cpp
+    main.cpp
+    UnitTests.cpp
+)
+
+source_group("src" FILES ${src})
+source_group("include" FILES ${include})
+
+add_executable(MavLinkTest ${src}  ${include})
 			
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} MavLinkCom ${CXX_EXP_LIB})
+target_link_libraries(MavLinkTest ${CMAKE_THREAD_LIBS_INIT} MavLinkCom ${CXX_EXP_LIB})

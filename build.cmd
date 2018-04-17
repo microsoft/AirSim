@@ -56,7 +56,7 @@ REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
 cd external\rpclib\rpclib-2.2.1\build
-cmake -G "Visual Studio 14 2017 Win64" ..
+cmake -G "Visual Studio 15 2017 Win64" ..
 cmake --build .
 cmake --build . --config Release
 if ERRORLEVEL 1 goto :buildfailed
@@ -120,7 +120,7 @@ IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
 if not exist build mkdir build 
 cd build
-cmake -G "Visual Studio 14 2017 Win64" ..
+cmake -G "Visual Studio 15 2017 Win64" ..
 if ERRORLEVEL 1 goto :buildfailed
 cmake --build . --config Debug
 if ERRORLEVEL 1 goto :buildfailed
@@ -130,11 +130,23 @@ cd ..
 
 REM //---------- copy binaries and include for MavLinkCom in deps ----------
 set MAVLINK_TARGET_LIB=AirLib\deps\MavLinkCom\lib
-if NOT exist %MAVLINK_TARGET_LIB% mkdir %MAVLINK_TARGET_LIB%
+if exist %MAVLINK_TARGET_LIB% rd /s /q %MAVLINK_TARGET_LIB%
+mkdir %MAVLINK_TARGET_LIB%\Debug
+mkdir %MAVLINK_TARGET_LIB%\Release
+copy build\output\lib\Debug\mavlinkcom* %MAVLINK_TARGET_LIB%\Debug
+copy build\output\lib\Release\mavlinkcom* %MAVLINK_TARGET_LIB%\Release
+
 set MAVLINK_TARGET_INCLUDE=AirLib\deps\MavLinkCom\include
 if NOT exist %MAVLINK_TARGET_INCLUDE% mkdir %MAVLINK_TARGET_INCLUDE%
 robocopy /MIR MavLinkCom\include %MAVLINK_TARGET_INCLUDE%
-robocopy /MIR build\output\lib\Debug\mavlinkcom* %MAVLINK_TARGET_LIB%
+
+REM //---------- copy binaries and include for AirLib in deps ----------
+set AIRLIB_TARGET_LIB=AirLib\lib
+if exist %AIRLIB_TARGET_LIB% rd /s /q %AIRLIB_TARGET_LIB%
+mkdir %AIRLIB_TARGET_LIB%\Debug
+mkdir %AIRLIB_TARGET_LIB%\Release
+copy build\output\lib\Debug\AirLib* %AIRLIB_TARGET_LIB%\Debug
+copy build\output\lib\Release\AirLib* %AIRLIB_TARGET_LIB%\Release
 
 REM //---------- all our output goes to Unreal/Plugin folder ----------
 if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
