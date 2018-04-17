@@ -371,10 +371,10 @@ void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state
 
 void SimJoyStick::setAutoCenter(unsigned int index, double strength)
 {
-	pimpl_->setAutoCenter(index, strength);
+    pimpl_->setAutoCenter(index, strength);
 }
 
 void SimJoyStick::setWheelRumble(unsigned int index, double strength)
 {
-	pimpl_->setWheelRumble(index, strength);
+    pimpl_->setWheelRumble(index, strength);
 }

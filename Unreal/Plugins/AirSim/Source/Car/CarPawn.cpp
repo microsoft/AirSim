@@ -477,7 +477,7 @@ void ACarPawn::updateForceFeedback() {
 		double speed = GetVehicleMovement()->GetForwardSpeed();
 
 		 joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
-			 (   1.0 - 1.0 / ( std::abs(speed / 80) + 1.0)) 
+			 (   1.0 - 1.0 / ( std::abs(speed / 120) + 1.0)) 
 			 * (joystick_state_.left_x / 3));
 	}
 }
