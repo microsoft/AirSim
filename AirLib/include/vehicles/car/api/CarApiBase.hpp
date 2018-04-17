@@ -50,13 +50,16 @@ public:
     struct CarState {
         float speed;
         int gear;
+        float rpm;
+        float maxrpm;
         CollisionInfo collision;
         Kinematics::State kinematics_true;
         uint64_t timestamp;
 
         CarState(float speed_val, int gear_val, const CollisionInfo& collision_val, 
             const Kinematics::State& kinematics_true_val, uint64_t timestamp_val)
-            : speed(speed_val), gear(gear_val), collision(collision_val), kinematics_true(kinematics_true_val), timestamp(timestamp_val)
+            : speed(speed_val), gear(gear_val), collision(collision_val), kinematics_true(kinematics_true_val), timestamp(timestamp_val),
+            rpm(rpm_val), maxrpm(maxrpm_val)
         {
         }
     };

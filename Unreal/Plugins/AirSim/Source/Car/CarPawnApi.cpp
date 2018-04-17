@@ -104,6 +104,8 @@ CarApiBase::CarState CarPawnApi::getCarState() const
     CarApiBase::CarState state(
         movement_->GetForwardSpeed() / 100, //cm/s -> m/s
         movement_->GetCurrentGear(),
+        movement_->GetEngineRotationSpeed(),
+        movement_->GetEngineMaxRotationSpeed(),
         pawn_->getCollisionInfo(),
         *pawn_->getTrueKinematics(),
         msr::airlib::ClockFactory::get()->nowNanos()
