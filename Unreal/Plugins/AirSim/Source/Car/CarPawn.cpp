@@ -416,18 +416,18 @@ void ACarPawn::updateCarControls()
 
         std::string vendorid = joystick_state_.pid_vid.substr(0, joystick_state_.pid_vid.find('&'));
 
-		// Thrustmaster devices
-		if (vendorid == "VID_044F") {
-			joystick_controls_.steering = joystick_state_.left_x;
-			joystick_controls_.throttle = (-joystick_state_.right_z + 1) / 2;
-			joystick_controls_.brake = (joystick_state_.left_y + 1) / 2;
-		}
-		// Anything else
-		else {
-			joystick_controls_.steering = joystick_state_.left_y * 1.25;
-			joystick_controls_.throttle = (-joystick_state_.right_x + 1) / 2;
-			joystick_controls_.brake = -joystick_state_.right_z + 1;
-		}
+        // Thrustmaster devices
+        if (vendorid == "VID_044F") {
+            joystick_controls_.steering = joystick_state_.left_x;
+            joystick_controls_.throttle = (-joystick_state_.right_z + 1) / 2;
+            joystick_controls_.brake = (joystick_state_.left_y + 1) / 2;
+        }
+        // Anything else
+        else {
+            joystick_controls_.steering = joystick_state_.left_y * 1.25;
+            joystick_controls_.throttle = (-joystick_state_.right_x + 1) / 2;
+            joystick_controls_.brake = -joystick_state_.right_z + 1;
+        }
         //Two steel levers behind wheel
         joystick_controls_.handbrake = (joystick_state_.buttons & 32) | (joystick_state_.buttons & 64) ? 1 : 0;
 
@@ -465,21 +465,21 @@ void ACarPawn::updateCarControls()
 }
 
 void ACarPawn::updateForceFeedback() {
-	if (joystick_state_.is_initialized) {
+    if (joystick_state_.is_initialized) {
 
-		// Update wheel rumble
-		float rumblestrength = 0.66 + (GetVehicleMovement()->GetEngineRotationSpeed()
-			/ GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
+        // Update wheel rumble
+        float rumblestrength = 0.66 + (GetVehicleMovement()->GetEngineRotationSpeed()
+            / GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
 
-		joystick_.setWheelRumble(wrapper_->getRemoteControlID(), rumblestrength);
+        joystick_.setWheelRumble(wrapper_->getRemoteControlID(), rumblestrength);
 
-		// Update autocenter
-		double speed = GetVehicleMovement()->GetForwardSpeed();
+        // Update autocenter
+        double speed = GetVehicleMovement()->GetForwardSpeed();
 
-		 joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
-			 (   1.0 - 1.0 / ( std::abs(speed / 120) + 1.0)) 
-			 * (joystick_state_.left_x / 3));
-	}
+         joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
+             (   1.0 - 1.0 / ( std::abs(speed / 120) + 1.0)) 
+             * (joystick_state_.left_x / 3));
+    }
 }
 
 
