@@ -128,6 +128,14 @@ public:
         return doc_.size();
     }
 
+    template<typename Container>
+    void getChildNames(Container& c) const
+    {
+        for (auto it = doc_.begin(); it != doc_.end(); ++it) {
+            c.push_back(it.key());
+        }
+    }
+
     bool getChild(size_t index, Settings& child) const
     {
         if (doc_.size() > index && 

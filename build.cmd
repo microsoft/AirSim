@@ -75,7 +75,7 @@ robocopy /MIR external\rpclib\rpclib-2.2.1\build\Release %RPCLIB_TARGET_LIB%\Rel
 
 REM //---------- get High PolyCount SUV Car Model ------------
 IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
-IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.1.9 (
+IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.1.10 (
     IF NOT DEFINED noFullPolyCar (
         REM //leave some blank lines because powershell shows download banner at top of console
         ECHO(   
@@ -89,9 +89,9 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.1.9 (
         IF EXIST suv_download_tmp rmdir suv_download_tmp /q /s
         mkdir suv_download_tmp
         @echo on
-        REM powershell -command "& { Start-BitsTransfer -Source https://github.com/Microsoft/AirSim/releases/download/v1.1.9/car_assets.zip -Destination suv_download_tmp\car_assets.zip }"
-        REM powershell -command "& { (New-Object System.Net.WebClient).DownloadFile('https://github.com/Microsoft/AirSim/releases/download/v1.1.9/car_assets.zip', 'suv_download_tmp\car_assets.zip') }"
-        powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/Microsoft/AirSim/releases/download/v1.1.9/car_assets.zip -OutFile suv_download_tmp\car_assets.zip }"
+        REM powershell -command "& { Start-BitsTransfer -Source https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip -Destination suv_download_tmp\car_assets.zip }"
+        REM powershell -command "& { (New-Object System.Net.WebClient).DownloadFile('https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip', 'suv_download_tmp\car_assets.zip') }"
+        powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/Microsoft/AirSim/releases/download/v1.1.10/car_assets.zip -OutFile suv_download_tmp\car_assets.zip }"
         @echo off
 		rmdir /S /Q Unreal\Plugins\AirSim\Content\VehicleAdv\SUV
         powershell -command "& { Expand-Archive -Path suv_download_tmp\car_assets.zip -DestinationPath Unreal\Plugins\AirSim\Content\VehicleAdv }"

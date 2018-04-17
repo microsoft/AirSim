@@ -81,8 +81,7 @@ public:
         const float kMaxLimit = 6.0f; // m/s
         Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, 0, kMaxLimit); //x, y, yaw, z in meters
 
-        const float kP = 0.5f;
-        Axis4r p = Axis4r(0.5f, 0.5f, 0, 2.0f);
+        Axis4r p = Axis4r(0.2f, 0.2f, 0, 2.0f);
 
         Axis4r i = Axis4r(0, 0, 0, 2.0f);
         Axis4r iterm_discount = Axis4r(1, 1, 1, 0.9999f);

@@ -52,6 +52,7 @@
     <Compile Include="objects.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="orbit.py" />
     <Compile Include="point_cloud.py" />
     <Compile Include="seg_pallete.py">
       <SubType>Code</SubType>

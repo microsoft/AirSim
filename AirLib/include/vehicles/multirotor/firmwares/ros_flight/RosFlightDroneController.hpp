@@ -61,19 +61,19 @@ public:
         firmware_->loop();
     }
 
-    virtual size_t getVertexCount() override
+    virtual size_t getVertexCount() const override
     {
         return vehicle_params_->getParams().rotor_count;
     }
 
-    virtual bool isAvailable(std::string& message) override
+    virtual bool isAvailable(std::string& message) const override
     {
         unused(message);
         return true;
     }
 
 
-    virtual real_T getVertexControlSignal(unsigned int rotor_index) override
+    virtual real_T getVertexControlSignal(unsigned int rotor_index) const override
     {
         //convert counter clockwise index to ArduCopter's QuadX style index
         unsigned int index_quadx;
@@ -97,13 +97,13 @@ public:
         comm_link_->getStatusMessages(messages);
     }
 
-    virtual bool isApiControlEnabled() override
+    virtual bool isApiControlEnabled() const override
     {
         //TODO: support offboard mode
         return false;
     }
 
-    virtual bool isSimulationMode() override
+    virtual bool isSimulationMode() const override
     {
         return true;
     }
@@ -123,38 +123,38 @@ public:
 
 //*** Start: DroneControllerBase implementation ***//
 public:
-    virtual Kinematics::State getKinematicsEstimated() override
+    virtual Kinematics::State getKinematicsEstimated() const override
     {
         return *kinematics_;
     }
     
-    virtual Vector3r getPosition() override
+    virtual Vector3r getPosition() const override
     {
         return kinematics_->pose.position;
     }
 
-    virtual Vector3r getVelocity() override
+    virtual Vector3r getVelocity() const override
     {
         return kinematics_->twist.linear;
     }
 
-    virtual Quaternionr getOrientation() override
+    virtual Quaternionr getOrientation() const override
     {
         return kinematics_->pose.orientation;
     }
 
-    virtual LandedState getLandedState() override
+    virtual LandedState getLandedState() const override
     {
         //TODO: implement this
         return LandedState::Landed;
     }
 
-    virtual int getRemoteControlID()  override
+    virtual int getRemoteControlID() const override
     { 
         return remote_control_id_;
     }
     
-    virtual RCData getRCData() override
+    virtual RCData getRCData() const override
     {
         return RCData();
     }
@@ -214,12 +214,12 @@ public:
         return true;
     }
 
-    virtual GeoPoint getHomeGeoPoint() override
+    virtual GeoPoint getHomeGeoPoint() const override
     {
         return environment_->getInitialState().geo_point;
     }
 
-    virtual GeoPoint getGpsLocation() override
+    virtual GeoPoint getGpsLocation() const override
     {
         return environment_->getState().geo_point;
     }
@@ -231,19 +231,19 @@ public:
         //TODO: implement this
     }
 
-    virtual float getCommandPeriod() override
+    virtual float getCommandPeriod() const override
     {
         return 1.0f/50; //50hz
     }
 
-    virtual float getTakeoffZ() override
+    virtual float getTakeoffZ() const override
     {
         // pick a number, 3 meters is probably safe 
         // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
         return -3.0f;  
     }
 
-    virtual float getDistanceAccuracy() override
+    virtual float getDistanceAccuracy() const override
     {
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance travelled
     }
@@ -299,7 +299,7 @@ protected:
         //TODO: implement this
     }
 
-    virtual const VehicleParams& getVehicleParams() override
+    virtual const VehicleParams& getVehicleParams() const override
     {
         //used for safety algos. For now just use defaults
         static const VehicleParams safety_params;

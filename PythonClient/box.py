@@ -18,7 +18,7 @@ z = -7
 # Fly given velocity vector for 5 seconds
 duration = 5
 speed = 1
-delay = duration * speed;
+delay = duration * speed
 
 # using DrivetrainType.MaxDegreeOfFreedom means we can control the drone yaw independently
 # from the direction the drone is flying.  I've set values here that make the drone always point inwards

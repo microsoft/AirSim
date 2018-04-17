@@ -19,7 +19,7 @@ public:
     SteppableClock(TTimeDelta step = 20E-3f, TTimePoint start = 0)
         : current_(start), step_(step)
     {
-        current_ = start ? start : Utils::getTimeSinceEpochNanos();
+        start_ = current_ = start ? start : Utils::getTimeSinceEpochNanos();
     }
 
     TTimePoint stepBy(TTimeDelta amount)
@@ -46,8 +46,16 @@ public:
         return current_;
     }
 
+    virtual TTimePoint getStart() const override
+    {
+        return start_;
+    }
+
+
 private:
     std::atomic<TTimePoint> current_;
+    std::atomic<TTimePoint> start_;
+
     TTimeDelta step_;
 };
 

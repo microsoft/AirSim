@@ -18,7 +18,7 @@ class SurveyNavigator:
         self.client.armDisarm(True)
 
         landed = self.client.getLandedState()
-        if landed != 1:
+        if landed == LandedState.Landed:
             print("taking off...")
             self.client.takeoff()
         
@@ -26,7 +26,7 @@ class SurveyNavigator:
         x = -self.boxsize
         z = -self.altitude
 
-        print("climing to altitude: " + str(self.altitude))
+        print("climbing to altitude: " + str(self.altitude))
         self.client.moveToPosition(0, 0, z, self.velocity)
 
         print("flying to first corner of survey box")
@@ -56,8 +56,7 @@ class SurveyNavigator:
         trip_time = distance / self.velocity
         print("estimated survey time is " + str(trip_time))
         try:
-            self.client.enableApiControl(True)
-            result = self.client.moveOnPath(path, self.velocity, trip_time, DrivetrainType.ForwardOnly, YawMode(False,0), self.velocity + (self.velocity/2), 1)
+            result = self.client.moveOnPath(path, self.velocity, trip_time, DrivetrainType.ForwardOnly, YawMode(True,0), self.velocity + (self.velocity/2), 1)
         except:
             errorType, value, traceback = sys.exc_info()
             print("moveOnPath threw exception: " + str(value))
@@ -80,10 +79,10 @@ if __name__ == "__main__":
     args = sys.argv
     args.pop(0)
     arg_parser = argparse.ArgumentParser("Usage: survey boxsize stripewidth altitude")
-    arg_parser.add_argument("--size", type=float, help="size of the box to survey")
-    arg_parser.add_argument("--stripewidth", type=float, help="stripe width of survey (in meters)")
-    arg_parser.add_argument("--altitude", type=float, help="altitude of survey (in positive meters)")
-    arg_parser.add_argument("--speed", type=float, help="speed of survey (in meters/second)")
+    arg_parser.add_argument("--size", type=float, help="size of the box to survey", default=50)
+    arg_parser.add_argument("--stripewidth", type=float, help="stripe width of survey (in meters)", default=10)
+    arg_parser.add_argument("--altitude", type=float, help="altitude of survey (in positive meters)", default=30)
+    arg_parser.add_argument("--speed", type=float, help="speed of survey (in meters/second)", default=5)
     args = arg_parser.parse_args(args)
     nav = SurveyNavigator(args)
     nav.start()

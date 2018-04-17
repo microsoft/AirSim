@@ -15,7 +15,7 @@
 namespace msr { namespace airlib {
 
 float DroneControllerBase::getAutoLookahead(float velocity, float adaptive_lookahead,
-        float max_factor, float min_factor)
+        float max_factor, float min_factor) const
 {
     //if auto mode requested for lookahead then calculate based on velocity
     float command_period_dist = velocity * getCommandPeriod();
@@ -24,7 +24,7 @@ float DroneControllerBase::getAutoLookahead(float velocity, float adaptive_looka
     return lookahead;
 }
 
-float DroneControllerBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel)
+float DroneControllerBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel) const
 {
     unused(risk_dist);
     return max_obs_avoidance_vel;
@@ -292,7 +292,7 @@ bool DroneControllerBase::moveToZ(float z, float velocity, const YawMode& yaw_mo
 
 bool DroneControllerBase::rotateToYaw(float yaw, float margin, CancelableBase& cancelable_action)
 {
-    YawMode yaw_mode(false, VectorMath::normalizeAngleDegrees(yaw));
+    YawMode yaw_mode(false, VectorMath::normalizeAngle(yaw));
     Waiter waiter(getCommandPeriod());
     auto start_pos = getPosition();
     bool is_yaw_reached;
@@ -499,14 +499,14 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
     return waiter.is_timeout();
 }
 
-Vector2r DroneControllerBase::getPositionXY()
+Vector2r DroneControllerBase::getPositionXY() const
 {
     const Vector3r& cur_loc3 = getPosition();
     Vector2r cur_loc(cur_loc3.x(), cur_loc3.y());
     return cur_loc;
 }
 
-float DroneControllerBase::getZ()
+float DroneControllerBase::getZ() const
 {
     return getPosition().z();
 }
@@ -646,7 +646,7 @@ void DroneControllerBase::adjustYaw(const Vector3r& heading, DrivetrainType driv
     if (drivetrain == DrivetrainType::ForwardOnly && !yaw_mode.is_rate) {
         if (heading.norm() > getDistanceAccuracy()) {
             yaw_mode.yaw_or_rate = yaw_mode.yaw_or_rate + (std::atan2(heading.y(), heading.x()) * 180 / M_PIf);
-            yaw_mode.yaw_or_rate = VectorMath::normalizeAngleDegrees(yaw_mode.yaw_or_rate);
+            yaw_mode.yaw_or_rate = VectorMath::normalizeAngle(yaw_mode.yaw_or_rate);
         }
         else
             yaw_mode.setZeroRate(); //don't change existing yaw if heading is too small because that can generate random result
@@ -699,19 +699,19 @@ void DroneControllerBase::moveToPathPosition(const Vector3r& dest, float velocit
         moveByVelocity(velocity_vect.x(), velocity_vect.y(), velocity_vect.z(), yaw_mode);
 }
 
-bool DroneControllerBase::isYawWithinMargin(float yaw_target, float margin)
+bool DroneControllerBase::isYawWithinMargin(float yaw_target, float margin) const
 {
     const float yaw_current = VectorMath::getYaw(getOrientation()) * 180 / M_PIf;
     return std::abs(yaw_current - yaw_target) <= margin;
 }    
 
-Pose DroneControllerBase::getDebugPose()
+Pose DroneControllerBase::getDebugPose() const
 {
     //by default indicate that we don't have alternative pose info
     return Pose::nanPose();
 }
 
-CollisionInfo DroneControllerBase::getCollisionInfo()
+CollisionInfo DroneControllerBase::getCollisionInfo() const
 {
     return collision_info_;
 }

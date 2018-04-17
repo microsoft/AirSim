@@ -397,13 +397,13 @@ public:
             , 1.0f - 2.0f * (q.x() * q.x() + q.y() * q.y()));
     }
 
-    static RealT normalizeAngleDegrees(RealT angle)
+    static RealT normalizeAngle(RealT angle, RealT max_angle = static_cast<RealT>(360))
     {
-        angle = static_cast<RealT>(std::fmod(angle, 360));
-        if (angle > 180)
-            return angle - 360;
-        else if (angle < -180)
-            return angle + 360;
+        angle = static_cast<RealT>(std::fmod(angle, max_angle));
+        if (angle > max_angle/2)
+            return angle - max_angle;
+        else if (angle < -max_angle/2)
+            return angle + max_angle;
         else
             return angle;
     }

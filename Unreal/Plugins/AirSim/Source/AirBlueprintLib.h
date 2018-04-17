@@ -47,9 +47,12 @@ public:
     static T* FindActor(const UObject* context, FString name);
     template<typename T>
     static void FindAllActor(const UObject* context, TArray<AActor*>& foundActors);
-    static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
-    static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
-    static bool GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+    static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end, 
+        const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+    static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end, 
+        FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+    static bool GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end, 
+        FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
     static void FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z = false, float fixed_z_val = 2.0f);
 
     static bool SetMeshStencilID(const std::string& mesh_name, int object_id,
@@ -104,6 +107,9 @@ public:
     static void setSimulatePhysics(AActor* actor, bool simulate_physics);
     static void resetSimulatePhysics(AActor* actor);
     static std::vector<UPrimitiveComponent*> getPhysicsComponents(AActor* actor);
+
+    static UObject* LoadObject(const std::string& name);
+    static UClass* LoadClass(const std::string& name);
 
 private:
     template<typename T>

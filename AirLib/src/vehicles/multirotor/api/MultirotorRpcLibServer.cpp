@@ -90,9 +90,9 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(MultirotorApi* drone, string serv
         float obs_avoidance_vel, const MultirotorRpcLibAdapators::Vector3r& origin, float xy_length, float max_z, float min_z) -> 
         bool { return getDroneApi()->setSafety(SafetyEval::SafetyViolationType(enable_reasons), obs_clearance, obs_startegy,
             obs_avoidance_vel, origin.to(), xy_length, max_z, min_z); });
-	(static_cast<rpc::server*>(getServer()))->
-		bind("setRCData", [&](const MultirotorRpcLibAdapators::RCData& data) ->
-		void { getDroneApi()->setRCData(data.to()); });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("setRCData", [&](const MultirotorRpcLibAdapators::RCData& data) ->
+        void { getDroneApi()->setRCData(data.to()); });
 
 
     //getters

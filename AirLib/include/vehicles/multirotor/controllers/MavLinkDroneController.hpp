@@ -95,7 +95,7 @@ public:
 
     //non-base interface specific to MavLinKDroneController
     void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation);
-    ConnectionInfo getMavConnectionInfo();
+    ConnectionInfo getMavConnectionInfo() const;
     static std::string findPX4();
 
     //TODO: get rid of below methods?
@@ -105,26 +105,26 @@ public:
     //*** Start: VehicleControllerBase implementation ***//
     virtual void reset() override;
     virtual void update() override;
-    virtual size_t getVertexCount() override;
-    virtual real_T getVertexControlSignal(unsigned int rotor_index) override;
+    virtual size_t getVertexCount() const override;
+    virtual real_T getVertexControlSignal(unsigned int rotor_index) const override;
     virtual void getStatusMessages(std::vector<std::string>& messages) override;
-    virtual bool isAvailable(std::string& message) override;
-    virtual bool isApiControlEnabled() override;
-    virtual bool isSimulationMode() override;
+    virtual bool isAvailable(std::string& message) const override;
+    virtual bool isApiControlEnabled() const override;
+    virtual bool isSimulationMode() const override;
     virtual void enableApiControl(bool is_enabled) override;
     virtual void setSimulationMode(bool is_set) override;
-    virtual Pose getDebugPose() override;
+    virtual Pose getDebugPose() const override;
     //*** End: VehicleControllerBase implementation ***//
 
 
     //*** Start: DroneControllerBase implementation ***//
 public:
-    virtual Kinematics::State getKinematicsEstimated() override;
-    virtual Vector3r getPosition() override;
-    virtual Vector3r getVelocity() override;
-    virtual Quaternionr getOrientation() override;
-    virtual LandedState getLandedState() override;
-    virtual RCData getRCData() override;
+    virtual Kinematics::State getKinematicsEstimated() const override;
+    virtual Vector3r getPosition() const override;
+    virtual Vector3r getVelocity() const override;
+    virtual Quaternionr getOrientation() const override;
+    virtual LandedState getLandedState() const override;
+    virtual RCData getRCData() const override;
     virtual void setRCData(const RCData& rcData) override;
 
     virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) override;
@@ -132,13 +132,13 @@ public:
     virtual bool land(float max_wait_seconds, CancelableBase& cancelable_action) override;
     virtual bool goHome(CancelableBase& cancelable_action) override;
     virtual bool hover(CancelableBase& cancelable_action) override;
-    virtual GeoPoint getHomeGeoPoint() override;
-    virtual GeoPoint getGpsLocation() override;
+    virtual GeoPoint getHomeGeoPoint() const override;
+    virtual GeoPoint getGpsLocation() const override;
     virtual void reportTelemetry(float renderTime) override;
 
-    virtual float getCommandPeriod() override;
-    virtual float getTakeoffZ() override;
-    virtual float getDistanceAccuracy() override;
+    virtual float getCommandPeriod() const override;
+    virtual float getTakeoffZ() const override;
+    virtual float getDistanceAccuracy() const override;
 
     virtual bool loopCommandPre() override;
     virtual void loopCommandPost() override;
@@ -148,7 +148,7 @@ protected:
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override;
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override;
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override;
-    const VehicleParams& getVehicleParams() override;
+    const VehicleParams& getVehicleParams() const override;
     //*** End: DroneControllerBase implementation ***//
 
 private: //pimpl
@@ -256,14 +256,14 @@ public:
         }
     }
 
-    bool isAvailable(std::string& message)
+    bool isAvailable(std::string& message) const
     {
         if (!is_available_)
             message = is_available_message_;
         return is_available_;
     }
 
-    ConnectionInfo getMavConnectionInfo()
+    ConnectionInfo getMavConnectionInfo() const
     {
         return connection_info_;
     }
@@ -752,23 +752,23 @@ public:
         setNormalMode();
     }
 
-    const ImuBase* getImu()
+    const ImuBase* getImu() const
     {
         return static_cast<const ImuBase*>(sensors_->getByType(SensorBase::SensorType::Imu));
     }
-    const MagnetometerBase* getMagnetometer()
+    const MagnetometerBase* getMagnetometer() const
     {
         return static_cast<const MagnetometerBase*>(sensors_->getByType(SensorBase::SensorType::Magnetometer));
     }
-    const BarometerBase* getBarometer()
+    const BarometerBase* getBarometer() const
     {
         return static_cast<const BarometerBase*>(sensors_->getByType(SensorBase::SensorType::Barometer));
     }
-    const DistanceBase* getDistance()
+    const DistanceBase* getDistance() const
     {
         return static_cast<const DistanceBase*>(sensors_->getByType(SensorBase::SensorType::Distance));
     }
-    const GpsBase* getGps()
+    const GpsBase* getGps() const
     {
         return static_cast<const GpsBase*>(sensors_->getByType(SensorBase::SensorType::Gps));
     }
@@ -1365,7 +1365,7 @@ void MavLinkDroneController::initialize(const ConnectionInfo& connection_info, c
     pimpl_->initialize(connection_info, sensors, is_simulation);
 }
 
-MavLinkDroneController::ConnectionInfo MavLinkDroneController::getMavConnectionInfo()
+MavLinkDroneController::ConnectionInfo MavLinkDroneController::getMavConnectionInfo() const
 {
     return pimpl_->getMavConnectionInfo();
 }
@@ -1395,11 +1395,11 @@ void MavLinkDroneController::update()
     DroneControllerBase::update();
     pimpl_->update();
 }
-real_T MavLinkDroneController::getVertexControlSignal(unsigned int rotor_index)
+real_T MavLinkDroneController::getVertexControlSignal(unsigned int rotor_index) const
 {
     return pimpl_->getVertexControlSignal(rotor_index);
 }
-size_t MavLinkDroneController::getVertexCount()
+size_t MavLinkDroneController::getVertexCount() const
 {
     return impl::RotorControlsCount;
 }
@@ -1407,7 +1407,7 @@ void MavLinkDroneController::getStatusMessages(std::vector<std::string>& message
 {
     pimpl_->getStatusMessages(messages);
 }
-bool MavLinkDroneController::isAvailable(std::string& message)
+bool MavLinkDroneController::isAvailable(std::string& message) const
 {
     return pimpl_->isAvailable(message);
 }
@@ -1417,37 +1417,37 @@ bool MavLinkDroneController::isAvailable(std::string& message)
 
 
 //DroneControlBase
-Kinematics::State MavLinkDroneController::getKinematicsEstimated()
+Kinematics::State MavLinkDroneController::getKinematicsEstimated() const
 {
     return pimpl_->getKinematicsEstimated();
 }
 
-Vector3r MavLinkDroneController::getPosition()
+Vector3r MavLinkDroneController::getPosition() const
 {
     return pimpl_->getPosition();
 }
 
-Vector3r MavLinkDroneController::getVelocity()
+Vector3r MavLinkDroneController::getVelocity() const
 {
     return pimpl_->getVelocity();
 }
 
-Quaternionr MavLinkDroneController::getOrientation()
+Quaternionr MavLinkDroneController::getOrientation() const
 {
     return pimpl_->getOrientation();
 }
 
-GeoPoint MavLinkDroneController::getHomeGeoPoint()
+GeoPoint MavLinkDroneController::getHomeGeoPoint() const
 {
     return pimpl_->getHomeGeoPoint();
 }
 
-GeoPoint MavLinkDroneController::getGpsLocation()
+GeoPoint MavLinkDroneController::getGpsLocation() const
 {
     return pimpl_->getGpsLocation();
 }
 
-DroneControllerBase::LandedState MavLinkDroneController::getLandedState()
+DroneControllerBase::LandedState MavLinkDroneController::getLandedState() const
 {
     return pimpl_->getLandedState();
 }
@@ -1467,11 +1467,11 @@ void MavLinkDroneController::setSimulationMode(bool is_set)
 {
     pimpl_->setSimulationMode(is_set);
 }
-bool MavLinkDroneController::isApiControlEnabled()
+bool MavLinkDroneController::isApiControlEnabled() const
 {
     return pimpl_->isApiControlEnabled();
 }
-bool MavLinkDroneController::isSimulationMode()
+bool MavLinkDroneController::isSimulationMode() const
 {
     return pimpl_->isSimulationMode();
 }
@@ -1517,7 +1517,7 @@ void MavLinkDroneController::commandPosition(float x, float y, float z, const Ya
     return pimpl_->commandPosition(x, y, z, yaw_mode);
 }
 
-RCData MavLinkDroneController::getRCData()
+RCData MavLinkDroneController::getRCData() const
 {
     return pimpl_->getRCData();
 }
@@ -1537,19 +1537,19 @@ void MavLinkDroneController::loopCommandPost()
 }
 
 //drone parameters
-float MavLinkDroneController::getCommandPeriod()
+float MavLinkDroneController::getCommandPeriod() const
 {
     return pimpl_->getCommandPeriod();
 }
-float MavLinkDroneController::getTakeoffZ()
+float MavLinkDroneController::getTakeoffZ() const
 {
     return pimpl_->getTakeoffZ();
 }
-float MavLinkDroneController::getDistanceAccuracy()
+float MavLinkDroneController::getDistanceAccuracy() const
 {
     return pimpl_->getDistanceAccuracy();
 }
-const VehicleParams& MavLinkDroneController::getVehicleParams()
+const VehicleParams& MavLinkDroneController::getVehicleParams() const
 {
     return pimpl_->getVehicleParams();
 }
@@ -1560,7 +1560,7 @@ void MavLinkDroneController::reportTelemetry(float renderTime)
     return pimpl_->reportTelemetry(renderTime);
 }
 
-Pose MavLinkDroneController::getDebugPose()
+Pose MavLinkDroneController::getDebugPose() const
 {
     return pimpl_->getDebugPose();
 }

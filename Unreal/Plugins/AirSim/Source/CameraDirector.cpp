@@ -78,6 +78,7 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
     external_camera_ = external_camera;
     follow_actor_ = vehicle_pawn_wrapper->getPawn();
     fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > fpv_camera_index_ ? vehicle_pawn_wrapper->getCamera(fpv_camera_index_) : nullptr;
+    front_camera_ = vehicle_pawn_wrapper->getCameraCount() > front_camera_index_ ? vehicle_pawn_wrapper->getCamera(front_camera_index_) : nullptr;
     backup_camera_ = backup_camera_index_ >= 0 && vehicle_pawn_wrapper->getCameraCount() > backup_camera_index_ ? vehicle_pawn_wrapper->getCamera(backup_camera_index_) : nullptr;
     camera_start_location_ = external_camera_->GetActorLocation();
     camera_start_rotation_ = external_camera_->GetActorRotation();
@@ -94,6 +95,7 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper
     case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE: inputEventSpringArmChaseView(); break;
     case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP: inputEventBackupView(); break;
     case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY: inputEventNoDisplayView(); break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FRONT: inputEventFrontView(); break;
     default:
         throw std::out_of_range("Unsupported view mode specified in CameraDirector::initializeForBeginPlay");
     }
@@ -199,6 +201,7 @@ void ACameraDirector::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("inputEventSpringArmChaseView", EKeys::Slash, this, &ACameraDirector::inputEventSpringArmChaseView);
     UAirBlueprintLib::BindActionToKey("inputEventBackupView", EKeys::K, this, &ACameraDirector::inputEventBackupView);
     UAirBlueprintLib::BindActionToKey("inputEventNoDisplayView", EKeys::Hyphen, this, &ACameraDirector::inputEventNoDisplayView);
+    UAirBlueprintLib::BindActionToKey("inputEventFrontView", EKeys::I, this, &ACameraDirector::inputEventFrontView);
 }
 
 
@@ -210,6 +213,16 @@ void ACameraDirector::inputEventFpvView()
         backup_camera_->disableMain();
     if (fpv_camera_)
         fpv_camera_->showToScreen();
+}
+
+void ACameraDirector::inputEventFrontView()
+{
+    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FRONT);
+    external_camera_->disableMain();
+    if (backup_camera_)
+        backup_camera_->disableMain();
+    if (front_camera_)
+        front_camera_->showToScreen();
 }
 
 void ACameraDirector::inputEventSpringArmChaseView()

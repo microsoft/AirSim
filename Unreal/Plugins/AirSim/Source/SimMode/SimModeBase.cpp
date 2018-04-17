@@ -31,7 +31,9 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    setupClock();
+    setupPhysicsLoopPeriod();
+
+    setupClockSpeed();
 
     setStencilIDs();
     
@@ -100,15 +102,11 @@ void ASimModeBase::setupTimeOfDay()
 }
 
 
-void ASimModeBase::setupClock()
+void ASimModeBase::setupClockSpeed()
 {
-    float clock_speed = getSettings().clock_speed;
+    //default setup - this should be overriden in derived modes as needed
 
-    //setup clock in PhysX
-    if (clock_speed != 1.0f) {
-        this->GetWorldSettings()->SetTimeDilation(clock_speed);
-        UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(clock_speed), LogDebugLevel::Informational);
-    }
+    float clock_speed = getSettings().clock_speed;
 
     //setup clock in ClockFactory
     std::string clock_type = getSettings().clock_type;
@@ -123,7 +121,7 @@ void ASimModeBase::setupClock()
             "clock_type %s is not recognized", clock_type.c_str()));
 }
 
-long long ASimModeBase::getPhysicsLoopPeriod() //nanoseconds
+void ASimModeBase::setupPhysicsLoopPeriod()
 {
     /*
     300Hz seems to be minimum for non-aggresive flights
@@ -136,9 +134,19 @@ long long ASimModeBase::getPhysicsLoopPeriod() //nanoseconds
     */
 
     if (getSettings().usage_scenario == kUsageScenarioComputerVision)
-        return 30000000LL; //30ms
+        physics_loop_period_ = 30000000LL; //30ms
     else
-        return 3000000LL; //3ms
+        physics_loop_period_ = 3000000LL; //3ms
+}
+
+long long ASimModeBase::getPhysicsLoopPeriod() const //nanoseconds
+{
+    return physics_loop_period_;
+}
+
+void ASimModeBase::setPhysicsLoopPeriod(long long  period)
+{
+    physics_loop_period_ = period;
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
@@ -148,7 +156,19 @@ void ASimModeBase::Tick(float DeltaSeconds)
 
     advanceTimeOfDay();
 
+    showClockStats();
+
     Super::Tick(DeltaSeconds);
+}
+
+void ASimModeBase::showClockStats()
+{
+    float clock_speed = getSettings().clock_speed;
+    if (clock_speed != 1) {
+        UAirBlueprintLib::LogMessageString("ClockSpeed config, actual: ", 
+            Utils::stringf("%f, %f", clock_speed, ClockFactory::get()->getTrueScaleWrtWallClock()), 
+            LogDebugLevel::Informational);
+    }
 }
 
 void ASimModeBase::advanceTimeOfDay()
@@ -183,7 +203,7 @@ void ASimModeBase::reset()
     //Should be overridden by derived classes
 }
 
-VehiclePawnWrapper* ASimModeBase::getFpvVehiclePawnWrapper()
+VehiclePawnWrapper* ASimModeBase::getFpvVehiclePawnWrapper() const
 {
     //Should be overridden by derived classes
     return nullptr;
@@ -204,17 +224,17 @@ void ASimModeBase::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeBase::reset);
 }
 
-bool ASimModeBase::isRecording()
+bool ASimModeBase::isRecording() const
 {
     return FRecordingThread::isRecording();
 }
 
-bool ASimModeBase::isRecordUIVisible()
+bool ASimModeBase::isRecordUIVisible() const
 {
     return getSettings().is_record_ui_visible;
 }
 
-ECameraDirectorMode ASimModeBase::getInitialViewMode()
+ECameraDirectorMode ASimModeBase::getInitialViewMode() const
 {
     return Utils::toEnum<ECameraDirectorMode>(getSettings().initial_view_mode);
 }

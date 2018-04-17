@@ -22,7 +22,7 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaSeconds) override;
 
-    virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() override;
+    virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() const override;
 
     void createVehicles(std::vector<VehiclePtr>& vehicles);
     virtual void reset() override;
@@ -31,13 +31,15 @@ public:
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
     void updateReport();
-    int getRemoteControlID(const VehiclePawnWrapper& pawn);
+    int getRemoteControlID(const VehiclePawnWrapper& pawn) const;
+
+protected:
+    virtual void setupClockSpeed() override;
 
 
 private:    
     UClass* external_camera_class_;
     UClass* camera_director_class_;
-    UClass* vehicle_pawn_class_;
 
     TArray<AActor*> spawned_actors_;
     std::vector<VehiclePtr> vehicles_;

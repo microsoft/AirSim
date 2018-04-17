@@ -64,18 +64,18 @@ public:
         firmware_->update();
     }
 
-    virtual size_t getVertexCount() override
+    virtual size_t getVertexCount() const override
     {
         return vehicle_params_->getParams().rotor_count;
     }
 
-    virtual bool isAvailable(std::string& message) override
+    virtual bool isAvailable(std::string& message) const override
     {
         unused(message);
         return true;
     }
 
-    virtual real_T getVertexControlSignal(unsigned int rotor_index) override
+    virtual real_T getVertexControlSignal(unsigned int rotor_index) const override
     {
         auto control_signal = board_->getMotorControlSignal(rotor_index);
         return control_signal;
@@ -86,12 +86,12 @@ public:
         comm_link_->getStatusMessages(messages);
     }
 
-    virtual bool isApiControlEnabled() override
+    virtual bool isApiControlEnabled() const override
     {
         return firmware_->offboardApi().hasApiControl();
     }
 
-    virtual bool isSimulationMode() override
+    virtual bool isSimulationMode() const override
     {
         //TODO: after we get real board implementation, change this
         return true;
@@ -117,42 +117,42 @@ public:
 
 //*** Start: DroneControllerBase implementation ***//
 public:
-    virtual Kinematics::State getKinematicsEstimated() override
+    virtual Kinematics::State getKinematicsEstimated() const override
     {
         return AirSimSimpleFlightCommon::toKinematicsState3r(firmware_->offboardApi().
             getStateEstimator().getKinematicsEstimated());
     }
 
-    virtual Vector3r getPosition() override
+    virtual Vector3r getPosition() const override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getPosition();
         return AirSimSimpleFlightCommon::toVector3r(val);
     }
 
-    virtual Vector3r getVelocity() override
+    virtual Vector3r getVelocity() const override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getLinearVelocity();
         return AirSimSimpleFlightCommon::toVector3r(val);
     }
 
-    virtual Quaternionr getOrientation() override
+    virtual Quaternionr getOrientation() const override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getOrientation();
         return AirSimSimpleFlightCommon::toQuaternion(val);    
     }
 
-    virtual LandedState getLandedState() override
+    virtual LandedState getLandedState() const override
     {
         //TODO: implement this
         return LandedState::Landed;
     }
 
-    virtual int getRemoteControlID()  override
+    virtual int getRemoteControlID() const override
     { 
         return remote_control_id_;
     }
     
-    virtual RCData getRCData() override
+    virtual RCData getRCData() const override
     {
         return last_rcData_;
     }
@@ -191,12 +191,12 @@ public:
             return firmware_->offboardApi().disarm(message);
     }
 
-    virtual GeoPoint getHomeGeoPoint() override
+    virtual GeoPoint getHomeGeoPoint() const override
     {
         return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getHomeGeoPoint());
     }
 
-    virtual GeoPoint getGpsLocation() override
+    virtual GeoPoint getGpsLocation() const override
     {
         return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getGeoPoint());
     }
@@ -207,19 +207,19 @@ public:
         //TODO: implement this
     }
 
-    virtual float getCommandPeriod() override
+    virtual float getCommandPeriod() const override
     {
         return 1.0f/50; //50hz
     }
 
-    virtual float getTakeoffZ() override
+    virtual float getTakeoffZ() const override
     {
         // pick a number, 3 meters is probably safe 
         // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
         return params_.takeoff.takeoff_z;
     }
 
-    virtual float getDistanceAccuracy() override
+    virtual float getDistanceAccuracy() const override
     {
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance travelled
     }
@@ -227,7 +227,7 @@ public:
 protected: 
     virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
     {
-        Utils::log(Utils::stringf("commandRollPitchThrottle %f, %f, %f, %f", pitch, roll, throttle, yaw_rate));
+        //Utils::log(Utils::stringf("commandRollPitchThrottle %f, %f, %f, %f", pitch, roll, throttle, yaw_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleRate, GoalModeType::Passthrough);
@@ -240,7 +240,7 @@ protected:
 
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
-        Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
+        //Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
@@ -253,7 +253,7 @@ protected:
 
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
-        Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
+        //Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
@@ -268,7 +268,7 @@ protected:
 
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
-        Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
+        //Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
@@ -283,7 +283,7 @@ protected:
 
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
-        Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
+        //Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
@@ -296,7 +296,7 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    virtual const VehicleParams& getVehicleParams() override
+    virtual const VehicleParams& getVehicleParams() const override
     {
         return safety_params_;
     }
