@@ -18,6 +18,8 @@ class OrbitNavigator:
         self.speed = args.speed
         self.iterations = args.iterations
         self.snapshots = args.snapshots
+        self.snapshot_delta = None
+        self.next_snapshot = None
         self.z = None
         self.snapshot_index = 0
 
@@ -166,7 +168,7 @@ class OrbitNavigator:
 
         # ignore the click over from 360 back to 0
         if self.previous_angle > 350 and angle < 10:
-            if self.next_snapshot >= 360:
+            if self.snapshot_delta and self.next_snapshot >= 360:
                 self.next_snapshot -= 360
             return False
 
