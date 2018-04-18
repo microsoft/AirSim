@@ -12,7 +12,7 @@ class Position:
 
 # Make the drone fly in a circle.
 class OrbitNavigator:
-    def __init__(self, takeoff = True, radius = 2, altitude = 10, speed = 2, iterations = 1, center = [1,0], snapshots = None):
+    def __init__(self, radius = 2, altitude = 10, speed = 2, iterations = 1, center = [1,0], snapshots = None):
         self.radius = radius
         self.altitude = altitude
         self.speed = speed
@@ -22,7 +22,7 @@ class OrbitNavigator:
         self.next_snapshot = None
         self.z = None
         self.snapshot_index = 0
-        self.takeoff = takeoff # whether to do the take off and landing.
+        self.takeoff = False # whether we did a take off
 
         if self.snapshots > 0:
             self.snapshot_delta = 360 / self.snapshots
@@ -77,7 +77,8 @@ class OrbitNavigator:
         # AirSim uses NED coordinates so negative axis is up.
         start = self.getPosition()
         landed = self.client.getLandedState()
-        if self.takeoff and landed == LandedState.Landed: 
+        if landed == LandedState.Landed: 
+            self.takeoff = True
             print("taking off...")
             self.client.takeoff()
             start = self.getPosition()
@@ -225,9 +226,6 @@ class OrbitNavigator:
             return -1
         return 1
 
-def str2bool(v):
-    return v.lower() in [ "true", "1", "yes"]
-
 if __name__ == "__main__":
     args = sys.argv
     args.pop(0)
@@ -238,7 +236,6 @@ if __name__ == "__main__":
     arg_parser.add_argument("--center", help="x,y direction vector pointing to center of orbit from current starting position (default 1,0)", default="1,0")
     arg_parser.add_argument("--iterations", type=float, help="number of 360 degree orbits (default 3)", default=3)
     arg_parser.add_argument("--snapshots", type=float, help="number of FPV snapshots to take during orbit (default 0)", default=0)    
-    arg_parser.add_argument("--takeoff", help="Whether to perform takeoff or not", default="True")
     args = arg_parser.parse_args(args)    
-    nav = OrbitNavigator(str2bool(args.takeoff), args.radius, args.altitude, args.speed, args.iterations, args.center.split(','), args.snapshots)
+    nav = OrbitNavigator(args.radius, args.altitude, args.speed, args.iterations, args.center.split(','), args.snapshots)
     nav.start()
