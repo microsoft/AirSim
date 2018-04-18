@@ -11,7 +11,6 @@ you can build and run it there.
     cd PX4
     git clone https://github.com/PX4/Firmware.git
     cd Firmware
-    git checkout tags/v1.5.5 -b v1.5.5
     make posix_sitl_default
     ```
 3. Use following command to start PX4 firmware in SITL mode:

@@ -2,7 +2,7 @@
 
 The [PX4 software stack](http://github.com/px4/firmware) is an open source very popular flight controller with support for wide variety of boards and sensors as well as built-in capability for higher level tasks such as mission planning. Please visit [px4.io](http://px4.io) for more information.
 
-**Warning**: While all releases of AirSim are always tested with PX4 to ensure the support, setting up PX4 is not a trivial task. Unless you have at least intermediate level of experience with PX4 stack, we recommend you use [simple_flight](simple_flight.md), which is now a default in AirSim. Due to bugs [such as this](https://github.com/PX4/Firmware/issues/7516) things haven't been working after PX4 release 1.5.5. With that release, you may still see wobbly drone sometimes. For issues related to PX4 setup please visit [PX4 forums](http://discuss.px4.io/).
+**Warning**: While all releases of AirSim are always tested with PX4 to ensure the support, setting up PX4 is not a trivial task. Unless you have at least intermediate level of experience with PX4 stack, we recommend you use [simple_flight](simple_flight.md), which is now a default in AirSim. 
 
 ## Supported Hardware
 
@@ -15,7 +15,7 @@ The following pixhawk hardware has been tested with AirSim:
 4. [PixRacer](https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&utm_medium=cpc_ods&utm_content=starr&utm_campaign=Smlrfpv-ds-FPVracer&gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB)
 5. [Pixhawk 2.1](http://www.proficnc.com/) (using PX4 Flight Stack)
 
-The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash with the firmware v1.5.5.
+The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash with the latest firmware.
 
 ## Setting up PX4 Hardware-in-Loop
 
@@ -53,7 +53,7 @@ The PX4 SITL mode doesn't require you to have separate device such as Pixhawk or
 
 There are few reasons that can cause this. First make sure your drone doesn't fall down large distance when starting simulator. This might happen if you have created custom Unreal environment and Player Start is placed too high above ground. It seems that when this happens internal calibration in PX4 gets confused. 
 
-Another thing to verify is to make sure you are using PX4 release 1.5.5 as later releases seems to have few issues. You should also use QGroundControl and make sure you can arm and takeoff in QGroundControl properly.
+You should also use QGroundControl and make sure you can arm and takeoff in QGroundControl properly.
 
 Finally, this also can be a machine performance issue in some rare cases, check your [hard drive performance](hard_drive.md).
 
