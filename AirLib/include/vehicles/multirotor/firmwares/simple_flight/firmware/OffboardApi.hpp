@@ -219,7 +219,7 @@ private:
         if (isAlmostZero(goal_.roll()) && isAlmostZero(goal_.pitch()) && isAlmostZero(goal_.yaw()) && isGreaterThanMinThrottle(goal_.throttle()))
         {
             // and we are not currently moving (based on current velocities)
-            auto angular = state_estimator_->getAngulerVelocity();
+            auto angular = state_estimator_->getAngularVelocity();
             auto velocity = state_estimator_->getLinearVelocity();
             if (isAlmostZero(angular.roll()) && isAlmostZero(angular.pitch()) && isAlmostZero(angular.yaw()) &&
                 isAlmostZero(velocity.roll()) && isAlmostZero(velocity.pitch()) && isAlmostZero(velocity.yaw())) {
