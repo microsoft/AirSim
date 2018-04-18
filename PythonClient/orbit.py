@@ -54,7 +54,7 @@ class OrbitNavigator:
             pos = self.home
             if abs(pos.z - self.home.z) > 1:                                
                 count = 0
-                home = pos
+                self.home = pos
                 if time.time() - start > 10:
                     print("Drone position is drifting, we are waiting for it to settle down...")
                     start = time
@@ -150,7 +150,7 @@ class OrbitNavigator:
 
             print("disarming.")
             self.client.armDisarm(False)
-            
+
 
     def track_orbits(self, angle):
         # tracking # of completed orbits is surprisingly tricky to get right in order to handle random wobbles
@@ -225,6 +225,9 @@ class OrbitNavigator:
             return -1
         return 1
 
+def str2bool(v):
+    return v.lower() in [ "true", "1", "yes"]
+
 if __name__ == "__main__":
     args = sys.argv
     args.pop(0)
@@ -234,7 +237,8 @@ if __name__ == "__main__":
     arg_parser.add_argument("--speed", type=float, help="speed of orbit (in meters/second)", default=3)
     arg_parser.add_argument("--center", help="x,y direction vector pointing to center of orbit from current starting position (default 1,0)", default="1,0")
     arg_parser.add_argument("--iterations", type=float, help="number of 360 degree orbits (default 3)", default=3)
-    arg_parser.add_argument("--snapshots", type=float, help="number of FPV snapshots to take during orbit (default 0)", default=0)
+    arg_parser.add_argument("--snapshots", type=float, help="number of FPV snapshots to take during orbit (default 0)", default=0)    
+    arg_parser.add_argument("--takeoff", help="Whether to perform takeoff or not", default="True")
     args = arg_parser.parse_args(args)    
-    nav = OrbitNavigator(True, args.radius, args.altitude, args.speed, args.iterations, args.center.split(','), args.snapshots)
+    nav = OrbitNavigator(str2bool(args.takeoff), args.radius, args.altitude, args.speed, args.iterations, args.center.split(','), args.snapshots)
     nav.start()
