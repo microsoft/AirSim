@@ -4,11 +4,14 @@ setlocal
 set ROOT_DIR=%~dp0
 
 REM // Check command line arguments
-set "noFullPolyCar="
-
+set noFullPolyCar=
+set vsGen=Visual Studio 14 2015 Win64
+:shift
 if "%1"=="" goto noargs
 if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
-
+if "%1"=="--15" set vsGen=Visual Studio 15 2017 Win64
+shift
+goto :shift
 :noargs
 
 chdir /d %ROOT_DIR% 
@@ -56,7 +59,7 @@ REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
 cd external\rpclib\rpclib-2.2.1\build
-cmake -G "Visual Studio 15 2017 Win64" ..
+cmake -G "%vsGen%" ..
 cmake --build .
 cmake --build . --config Release
 if ERRORLEVEL 1 goto :buildfailed
@@ -120,7 +123,7 @@ IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
 if not exist build mkdir build 
 cd build
-cmake -G "Visual Studio 15 2017 Win64" ..
+cmake -G "%vsGen%" ..
 if ERRORLEVEL 1 goto :buildfailed
 cmake --build . --config Debug
 if ERRORLEVEL 1 goto :buildfailed
