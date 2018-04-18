@@ -16,7 +16,7 @@ you can build and run it there.
     ```
 3. Use following command to start PX4 firmware in SITL mode:
     ```
-    ./build/posix_sitl_default/px4 ./posix-configs/SITL/init/ekf2/iris
+    ./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/ekf2/iris
     ```
 4. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is waiting for someone to connect.
 5. Now edit [AirSim settings](settings.md) file to make sure you have followings:
