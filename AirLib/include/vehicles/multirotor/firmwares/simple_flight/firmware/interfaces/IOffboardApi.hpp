@@ -18,6 +18,8 @@ public:
     virtual bool disarm(std::string& message) = 0;
     virtual VehicleStateType getVehicleState() const = 0;
 
+    virtual bool getLandedState() const = 0;
+
     virtual const IStateEstimator& getStateEstimator() = 0;
     virtual GeoPoint getHomeGeoPoint() const = 0;
     virtual GeoPoint getGeoPoint() const = 0;
