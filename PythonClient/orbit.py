@@ -12,16 +12,17 @@ class Position:
 
 # Make the drone fly in a circle.
 class OrbitNavigator:
-    def __init__(self, args):
-        self.radius = args.radius
-        self.altitude = args.altitude
-        self.speed = args.speed
-        self.iterations = args.iterations
-        self.snapshots = args.snapshots
+    def __init__(self, takeoff = True, radius = 2, altitude = 10, speed = 2, iterations = 1, center = [1,0], snapshots = None):
+        self.radius = radius
+        self.altitude = altitude
+        self.speed = speed
+        self.iterations = iterations
+        self.snapshots = snapshots
         self.snapshot_delta = None
         self.next_snapshot = None
         self.z = None
         self.snapshot_index = 0
+        self.takeoff = takeoff # whether to do the take off and landing.
 
         if self.snapshots > 0:
             self.snapshot_delta = 360 / self.snapshots
@@ -29,12 +30,12 @@ class OrbitNavigator:
         if self.iterations <= 0:
             self.iterations = 1
 
-        p = args.center.split(',')
-        if len(p) != 2:
-            raise Exception("Expecting 'x,y' for the center direction vector")
+        if len(center) != 2:
+            raise Exception("Expecting '[x,y]' for the center direction vector")
         
-        cx = float(p[0])
-        cy = float(p[1])
+        # center is just a direction vector, so normalize it to compute the actual cx,cy locations.
+        cx = float(center[0])
+        cy = float(center[1])
         length = math.sqrt(cx*cx)+(cy*cy)
         cx /= length
         cy /= length
@@ -75,15 +76,16 @@ class OrbitNavigator:
         
         # AirSim uses NED coordinates so negative axis is up.
         start = self.getPosition()
-        z = -self.altitude + self.home.z
         landed = self.client.getLandedState()
-        if landed == LandedState.Landed:            
+        if self.takeoff and landed == LandedState.Landed: 
             print("taking off...")
             self.client.takeoff()
+            start = self.getPosition()
+            z = -self.altitude + self.home.z
         else:
-            print("already flying so we will orbit at current altitude {}".format(start.z))
+            print("already flying so we will orbit at current altitude {}".format(start.z))                
             z = start.z # use current altitude then
-        
+
         print("climbing to position: {},{},{}".format(start.x, start.y, z))
         self.client.moveToPosition(start.x, start.y, z, self.speed)
         self.z = z
@@ -133,16 +135,22 @@ class OrbitNavigator:
             
             self.camera_heading = camera_heading
             self.client.moveByVelocityZ(vx, vy, z, 1, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, camera_heading))
+
+
+        self.client.moveToPosition(start.x, start.y, z, 2)
+
+        if self.takeoff:            
+            # if we did the takeoff then also do the landing.
+            if z < self.home.z:
+                print("descending")
+                self.client.moveToPosition(start.x, start.y, self.home.z - 5, 2)
+
+            print("landing...")
+            self.client.land()
+
+            print("disarming.")
+            self.client.armDisarm(False)
             
-        if z < self.home.z:
-            print("descending")
-            self.client.moveToPosition(start.x, start.y, self.home.z - 5, 2)
-
-        print("landing...")
-        self.client.land()
-
-        print("disarming.")
-        self.client.armDisarm(False)
 
     def track_orbits(self, angle):
         # tracking # of completed orbits is surprisingly tricky to get right in order to handle random wobbles
@@ -227,6 +235,6 @@ if __name__ == "__main__":
     arg_parser.add_argument("--center", help="x,y direction vector pointing to center of orbit from current starting position (default 1,0)", default="1,0")
     arg_parser.add_argument("--iterations", type=float, help="number of 360 degree orbits (default 3)", default=3)
     arg_parser.add_argument("--snapshots", type=float, help="number of FPV snapshots to take during orbit (default 0)", default=0)
-    args = arg_parser.parse_args(args)
-    nav = OrbitNavigator(args)
+    args = arg_parser.parse_args(args)    
+    nav = OrbitNavigator(True, args.radius, args.altitude, args.speed, args.iterations, args.center.split(','), args.snapshots)
     nav.start()
