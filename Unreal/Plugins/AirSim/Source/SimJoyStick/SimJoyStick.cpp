@@ -51,6 +51,14 @@ public:
         }
     }
 
+	void setAutoCenter(unsigned int index, double strength) {
+		controllers_[index]->setAutoCenter(strength);
+	}
+
+	void setWheelRumble(unsigned int index, double strength) {
+		controllers_[index]->setWheelRumble(strength);
+	}
+
 
 private:
     float getMappedValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
