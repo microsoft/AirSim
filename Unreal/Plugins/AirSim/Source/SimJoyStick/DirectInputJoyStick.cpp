@@ -14,6 +14,7 @@
 #pragma warning(pop)
 
 #include <dinputd.h>
+#include <UnrealMathUtility.h>
 
 // Stuff to filter out XInput devices
 #ifndef FALSE
@@ -688,6 +689,14 @@ DirectInputJoyStick::~DirectInputJoyStick()
 bool DirectInputJoyStick::initialize(unsigned int joystick_index)
 {
     return pimpl_->initialize(joystick_index);
+}
+void DirectInputJoyStick::setAutoCenter(double strength)
+{
+	pimpl_->setAutoCenterStrength(FMath::Clamp<double>(strength, -1.0, 1.0));
+}
+void DirectInputJoyStick::setWheelRumble(double strength)
+{
+	pimpl_->setWheelRumbleStrength(FMath::Clamp<double>(strength, 0.0, 1.0));
 }
 const DirectInputJoyStick::JoystickState& DirectInputJoyStick::getState(bool update_state)
 {
