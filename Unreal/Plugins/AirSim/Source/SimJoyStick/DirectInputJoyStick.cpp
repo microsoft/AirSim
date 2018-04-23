@@ -14,7 +14,7 @@
 #pragma warning(pop)
 
 #include <dinputd.h>
-#include <UnrealMathUtility.h>
+#include "UnrealMathUtility.h
 
 // Stuff to filter out XInput devices
 #ifndef FALSE
@@ -73,7 +73,8 @@ public:
     }
 
     // Magnitude ranges from -1 to 1
-    void setAutoCenterStrength(double magnitude) {
+    void setAutoCenterStrength(double magnitude) 
+    {
         DICONSTANTFORCE cf = { magnitude * 10000 };
         
         g_sAutoCenterConfig.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
@@ -86,7 +87,8 @@ public:
 #define FFWRMAX 0.08
 
     // Strength ranges from 0 to 1
-    void setWheelRumbleStrength(double strength) {
+    void setWheelRumbleStrength(double strength) 
+    {
         DIPERIODIC pf = { FFWRMAX * strength * 10000,0,0,0.06 * 1000000 };
         
         g_sWheelRumbleConfig.cbTypeSpecificParams = sizeof(DIPERIODIC);         
@@ -136,7 +138,8 @@ private:
         return g;
     }
 
-    HRESULT InitForceFeedback() {
+    HRESULT InitForceFeedback() 
+    {
 
         HRESULT hr;
         DWORD rgdwAxes[2] = { DIJOFS_X, DIJOFS_Y };
@@ -304,7 +307,7 @@ private:
 
     //-----------------------------------------------------------------------------
     // Enum each PNP device using WMI and check each device ID to see if it contains 
-    // "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then it’s an XInput device
+    // "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then it's an XInput device
     // Unfortunately this information can not be found by just using DirectInput.
     // Checking against a VID/PID of 0x028E/0x045E won't find 3rd party or future 
     // XInput devices.
@@ -379,7 +382,7 @@ private:
                 hr = pDevices[iDevice]->Get(bstrDeviceID, 0L, &var, nullptr, nullptr);
                 if (SUCCEEDED(hr) && var.vt == VT_BSTR && var.bstrVal != nullptr)
                 {
-                    // Check if the device ID contains "IG_".  If it does, then it’s an XInput device
+                    // Check if the device ID contains "IG_".  If it does, then it's an XInput device
                     // Unfortunately this information can not be found by just using DirectInput 
                     if (wcsstr(var.bstrVal, L"IG_"))
                     {
@@ -692,11 +695,11 @@ bool DirectInputJoyStick::initialize(unsigned int joystick_index)
 }
 void DirectInputJoyStick::setAutoCenter(double strength)
 {
-	pimpl_->setAutoCenterStrength(FMath::Clamp<double>(strength, -1.0, 1.0));
+    pimpl_->setAutoCenterStrength(FMath::Clamp<double>(strength, -1.0, 1.0));
 }
 void DirectInputJoyStick::setWheelRumble(double strength)
 {
-	pimpl_->setWheelRumbleStrength(FMath::Clamp<double>(strength, 0.0, 1.0));
+    pimpl_->setWheelRumbleStrength(FMath::Clamp<double>(strength, 0.0, 1.0));
 }
 const DirectInputJoyStick::JoystickState& DirectInputJoyStick::getState(bool update_state)
 {

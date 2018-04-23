@@ -422,7 +422,7 @@ void ACarPawn::updateCarControls()
             joystick_controls_.throttle = (-joystick_state_.right_z + 1) / 2;
             joystick_controls_.brake = (joystick_state_.left_y + 1) / 2;
         }
-        // Anything else
+        // Anything else, typically Logitech G920 wheel
         else {
             joystick_controls_.steering = joystick_state_.left_y * 1.25;
             joystick_controls_.throttle = (-joystick_state_.right_x + 1) / 2;
