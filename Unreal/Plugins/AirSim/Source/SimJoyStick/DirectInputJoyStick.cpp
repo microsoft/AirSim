@@ -14,6 +14,7 @@
 #pragma warning(pop)
 
 #include <dinputd.h>
+#include <UnrealMathUtility.h>
 
 // Stuff to filter out XInput devices
 #ifndef FALSE
@@ -52,6 +53,12 @@ private:
     LPDIRECTINPUT8          g_pDI = nullptr;
     LPDIRECTINPUTDEVICE8    g_pJoystick = nullptr;
 
+    LPDIRECTINPUTEFFECT		g_pAutoCenterHandle = nullptr;
+    DIEFFECT				g_sAutoCenterConfig;
+
+    LPDIRECTINPUTEFFECT		g_pWheelRumbleHandle = nullptr;
+    DIEFFECT				g_sWheelRumbleConfig;
+
     DIJOYCONFIG PreferredJoyCfg = { 0 };
     DI_ENUM_CONTEXT enumContext;
 
@@ -63,6 +70,30 @@ public:
     bool initialize(unsigned int joystick_index)
     {
         return InitDirectInput(joystick_index) == S_OK;
+    }
+
+    // Magnitude ranges from -1 to 1
+    void setAutoCenterStrength(double magnitude) {
+        DICONSTANTFORCE cf = { magnitude * 10000 };
+        
+        g_sAutoCenterConfig.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
+        g_sAutoCenterConfig.lpvTypeSpecificParams = &cf;
+
+        g_pAutoCenterHandle->SetParameters(&g_sAutoCenterConfig, DIEP_DIRECTION | 
+            DIEP_TYPESPECIFICPARAMS | DIEP_START);
+    }
+
+#define FFWRMAX 0.08
+
+    // Strength ranges from 0 to 1
+    void setWheelRumbleStrength(double strength) {
+        DIPERIODIC pf = { FFWRMAX * strength * 10000,0,0,0.06 * 1000000 };
+        
+        g_sWheelRumbleConfig.cbTypeSpecificParams = sizeof(DIPERIODIC);         
+        g_sWheelRumbleConfig.lpvTypeSpecificParams = &pf;
+
+        g_pWheelRumbleHandle->SetParameters(&g_sWheelRumbleConfig, DIEP_DIRECTION |
+            DIEP_TYPESPECIFICPARAMS | DIEP_START);
     }
 
     const JoystickState& getState(bool update_state = true)
@@ -104,6 +135,82 @@ private:
 
         return g;
     }
+
+    HRESULT InitForceFeedback() {
+
+        HRESULT hr;
+        DWORD rgdwAxes[2] = { DIJOFS_X, DIJOFS_Y };
+        LONG rglDirection[2] = { 0, 0 };
+
+        if (FAILED(hr = g_pJoystick->SetCooperativeLevel(GetActiveWindow(), DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
+            return hr;
+
+        if (FAILED(hr = g_pJoystick->Acquire()))
+            return hr;
+
+        // Autocenter
+        ZeroMemory(&g_sAutoCenterConfig, sizeof(g_sAutoCenterConfig));
+
+        g_sAutoCenterConfig.dwStartDelay = 0;
+
+        g_sAutoCenterConfig.dwSize = sizeof(DIEFFECT);
+        g_sAutoCenterConfig.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
+        g_sAutoCenterConfig.dwDuration = INFINITE;
+        g_sAutoCenterConfig.dwSamplePeriod = 0;
+        g_sAutoCenterConfig.dwGain = DI_FFNOMINALMAX;
+        g_sAutoCenterConfig.dwTriggerButton = DIEB_NOTRIGGER;
+        g_sAutoCenterConfig.dwTriggerRepeatInterval = 0;
+        g_sAutoCenterConfig.cAxes = 1;
+        g_sAutoCenterConfig.rgdwAxes = rgdwAxes;
+        g_sAutoCenterConfig.rglDirection = rglDirection;
+
+        g_sAutoCenterConfig.lpEnvelope = 0;
+        g_sAutoCenterConfig.dwStartDelay = 0;
+
+        DICONSTANTFORCE cf = { 0 };
+
+        g_sAutoCenterConfig.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
+        g_sAutoCenterConfig.lpvTypeSpecificParams = &cf;
+
+        if (FAILED(hr = g_pJoystick->CreateEffect(GUID_ConstantForce, &g_sAutoCenterConfig, &g_pAutoCenterHandle, nullptr)))
+            return hr;
+
+        if (FAILED(hr = g_pAutoCenterHandle->Start(INFINITE, 0)))
+            return hr;
+
+        // Rumble
+        ZeroMemory(&g_sWheelRumbleConfig, sizeof(g_sWheelRumbleConfig));
+
+        g_sWheelRumbleConfig.dwStartDelay = 0;
+
+        g_sWheelRumbleConfig.dwSize = sizeof(DIEFFECT);
+        g_sWheelRumbleConfig.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
+        g_sWheelRumbleConfig.dwDuration = INFINITE;
+        g_sWheelRumbleConfig.dwSamplePeriod = 0;
+        g_sWheelRumbleConfig.dwGain = DI_FFNOMINALMAX;
+        g_sWheelRumbleConfig.dwTriggerButton = DIEB_NOTRIGGER;
+        g_sWheelRumbleConfig.dwTriggerRepeatInterval = 0;
+        g_sWheelRumbleConfig.cAxes = 1;
+        g_sWheelRumbleConfig.rgdwAxes = rgdwAxes;
+        g_sWheelRumbleConfig.rglDirection = rglDirection;
+
+        g_sWheelRumbleConfig.lpEnvelope = 0;
+        g_sWheelRumbleConfig.dwStartDelay = 0;
+
+        DIPERIODIC pf = { 0,0,0,0.08 };
+
+        g_sWheelRumbleConfig.cbTypeSpecificParams = sizeof(DIPERIODIC);
+        g_sWheelRumbleConfig.lpvTypeSpecificParams = &pf;
+
+        if (FAILED(hr = g_pJoystick->CreateEffect(GUID_Sine, &g_sWheelRumbleConfig, &g_pWheelRumbleHandle, nullptr)))
+            return hr;
+
+        if (FAILED(hr = g_pWheelRumbleHandle->Start(INFINITE, 0)))
+            return hr;
+
+        return S_OK;
+    }
+
 
     HRESULT InitDirectInput(unsigned int joystick_index)
     {
@@ -189,13 +296,15 @@ private:
             return hr;
         }
 
+        InitForceFeedback();
+
         state.is_initialized = true;
         return S_OK;
     }
 
     //-----------------------------------------------------------------------------
     // Enum each PNP device using WMI and check each device ID to see if it contains 
-    // "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then it’s an XInput device
+    // "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then itâ€™s an XInput device
     // Unfortunately this information can not be found by just using DirectInput.
     // Checking against a VID/PID of 0x028E/0x045E won't find 3rd party or future 
     // XInput devices.
@@ -270,7 +379,7 @@ private:
                 hr = pDevices[iDevice]->Get(bstrDeviceID, 0L, &var, nullptr, nullptr);
                 if (SUCCEEDED(hr) && var.vt == VT_BSTR && var.bstrVal != nullptr)
                 {
-                    // Check if the device ID contains "IG_".  If it does, then it’s an XInput device
+                    // Check if the device ID contains "IG_".  If it does, then itâ€™s an XInput device
                     // Unfortunately this information can not be found by just using DirectInput 
                     if (wcsstr(var.bstrVal, L"IG_"))
                     {
@@ -558,6 +667,8 @@ private:
             g_pJoystick->Unacquire();
 
         // Release any DirectInput objects.
+        DIJT_SAFE_RELEASE(g_pAutoCenterHandle);
+        DIJT_SAFE_RELEASE(g_pWheelRumbleHandle);
         DIJT_SAFE_RELEASE(g_pJoystick);
         DIJT_SAFE_RELEASE(g_pDI);
     }
@@ -578,6 +689,14 @@ DirectInputJoyStick::~DirectInputJoyStick()
 bool DirectInputJoyStick::initialize(unsigned int joystick_index)
 {
     return pimpl_->initialize(joystick_index);
+}
+void DirectInputJoyStick::setAutoCenter(double strength)
+{
+	pimpl_->setAutoCenterStrength(FMath::Clamp<double>(strength, -1.0, 1.0));
+}
+void DirectInputJoyStick::setWheelRumble(double strength)
+{
+	pimpl_->setWheelRumbleStrength(FMath::Clamp<double>(strength, 0.0, 1.0));
 }
 const DirectInputJoyStick::JoystickState& DirectInputJoyStick::getState(bool update_state)
 {
