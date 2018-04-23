@@ -43,7 +43,12 @@ public:
     };
 
     void getJoyStickState(unsigned int index, State& state);
+    // strength ranges from -1 to 1
+    void setAutoCenter(unsigned int index, double strength);
 
+    // strength ranges from 0 to 1
+    void setWheelRumble(unsigned int index, double strength);
+    
     SimJoyStick();
     ~SimJoyStick();    //required for pimpl
 private:
@@ -53,4 +58,3 @@ private:
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };
-

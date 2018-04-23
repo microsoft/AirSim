@@ -129,6 +129,7 @@ private:
     bool isApiServerStarted();
     void updateKinematics(float delta);
     void updateCarControls();
+    void updateForceFeedback();
 
     std::string getLogString();
     void setupVehicleMovementComponent();
