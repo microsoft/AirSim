@@ -191,6 +191,9 @@ class KinematicsState(MsgpackMixin):
 class CarState(MsgpackMixin):
     speed = np.float32(0)
     gear = 0
+    rpm = np.float32(0)
+    maxrpm = np.float32(0)
+    handbrake = False
     collision = CollisionInfo();
     kinematics_true = KinematicsState()
     timestamp = np.uint64(0)

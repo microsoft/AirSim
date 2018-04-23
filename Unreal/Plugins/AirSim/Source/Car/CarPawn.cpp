@@ -438,7 +438,9 @@ void ACarPawn::updateCarControls()
         current_controls_ = keyboard_controls_;
     }
 
+    //if API-client control is not active then we route keyboard/jostick control to car
     if (!api_->isApiControlEnabled()) {
+        //all car controls from anywhere must be routed through API component
         api_->setCarControls(current_controls_);
     }
     else {

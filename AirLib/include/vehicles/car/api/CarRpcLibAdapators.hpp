@@ -52,7 +52,7 @@ public:
         int gear;
         float rpm;
         float maxrpm;
-		bool handbrake;
+        bool handbrake;
         CollisionInfo collision;
         KinematicsState kinematics_true; //ground truth
         uint64_t timestamp;
@@ -68,7 +68,7 @@ public:
             gear = s.gear;
             rpm = s.rpm;
             maxrpm = s.maxrpm;
-			handbrake = s.handbrake;
+            handbrake = s.handbrake;
             collision = s.collision;
             kinematics_true = s.kinematics_true;
             timestamp = s.timestamp;
