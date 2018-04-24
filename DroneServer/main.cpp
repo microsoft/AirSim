@@ -16,6 +16,22 @@ void printUsage() {
     cout << "Start the DroneServer using the 'PX4' settings in ~/Documents/AirSim/settings.json." << endl;
 }
 
+class DroneServerSimModeApi : public SimModeApiBase {
+public:
+    DroneServerSimModeApi(MultirotorApi* api)
+        : api_(api)
+    {
+    }
+
+    virtual VehicleApiBase* getVehicleApi() override
+    {
+        return api_;
+    }
+
+private:
+    MultirotorApi* api_;
+};
+
 int main(int argc, const char* argv[])
 {
     if (argc != 2) {
@@ -80,8 +96,9 @@ int main(int argc, const char* argv[])
 
     RealMultirotorConnector connector(& mav_drone);
 
-    MultirotorApi server_wrapper(& connector);
-    msr::airlib::MultirotorRpcLibServer server(&server_wrapper, connection_info.local_host_ip);
+    MultirotorApi api(& connector);
+    DroneServerSimModeApi simmode_api(&api);
+    msr::airlib::MultirotorRpcLibServer server(&simmode_api, connection_info.local_host_ip);
     
     //start server in async mode
     server.start(false);
@@ -92,7 +109,7 @@ int main(int argc, const char* argv[])
     std::vector<std::string> messages;
     while (true) {
         //check messages
-        server_wrapper.getStatusMessages(messages);
+        api.getStatusMessages(messages);
         if (messages.size() > 1) {
             for (const auto& message : messages) {
                 std::cout << message << std::endl;

@@ -27,6 +27,7 @@ void ASimHUD::BeginPlay()
         createSimMode();
         createMainWidget();
         setupInputBindings();
+        startApiServer();
     }
     catch (std::exception& ex) {
         UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
@@ -44,6 +45,8 @@ void ASimHUD::Tick(float DeltaSeconds)
 
 void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    stopApiServer();
+
     if (widget_) {
         widget_->Destruct();
         widget_ = nullptr;
@@ -72,6 +75,40 @@ void ASimHUD::inputEventToggleReport()
 {
     simmode_->EnableReport = !simmode_->EnableReport;
     widget_->setReportVisible(simmode_->EnableReport);
+}
+
+void ASimHUD::startApiServer()
+{
+    if (AirSimSettings::singleton().enable_rpc) {
+
+#ifdef AIRLIB_NO_RPC
+        api_server_.reset(new msr::airlib::DebugApiServer());
+#else
+        api_server_ = std::move(simmode_->createApiServer());
+#endif
+
+        try {
+            api_server_->start();
+        }
+        catch (std::exception& ex) {
+            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
+        }
+    }
+    else
+        UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
+
+}
+void ASimHUD::stopApiServer()
+{
+    if (api_server_ != nullptr) {
+        api_server_->stop();
+        api_server_.reset(nullptr);
+    }
+}
+
+bool ASimHUD::isApiServerStarted()
+{
+    return api_server_ != nullptr;
 }
 
 void ASimHUD::inputEventToggleHelp()

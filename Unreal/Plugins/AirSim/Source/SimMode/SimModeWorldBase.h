@@ -8,7 +8,7 @@
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "common/StateReporterWrapper.hpp"
-#include "api/ControlServerBase.hpp"
+#include "api/ApiServerBase.hpp"
 #include "SimModeBase.h"
 #include "SimModeWorldBase.generated.h"
 

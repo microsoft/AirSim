@@ -27,6 +27,7 @@ public:
     void createVehicles(std::vector<VehiclePtr>& vehicles);
     virtual void reset() override;
     virtual std::string getReport() override;
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
 
 
 private:

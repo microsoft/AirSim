@@ -10,6 +10,8 @@
 #include "Components/SkyLightComponent.h"
 #include "common/ClockFactory.hpp"
 #include "Engine/DirectionalLight.h"
+#include "api/ApiServerBase.hpp"
+#include "api/SimModeApiBase.hpp"
 #include "SimModeBase.generated.h"
 
 
@@ -49,6 +51,7 @@ public:
     virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() const;
     virtual msr::airlib::VehicleApiBase* getVehicleApi() const;
 
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
 
 protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -56,7 +59,7 @@ protected:
     virtual const AirSimSettings& getSettings() const;
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
-
+    msr::airlib::SimModeApiBase* getSimModeApi() const;
     virtual void setupClockSpeed();
 
 protected: //settings
@@ -69,6 +72,15 @@ private:
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef msr::airlib::TTimePoint TTimePoint;
 
+    class SimModeApi : public msr::airlib::SimModeApiBase  {
+    public:
+        SimModeApi(ASimModeBase* simmode);
+        virtual msr::airlib::VehicleApiBase* getVehicleApi() override;
+
+    private:
+        ASimModeBase* simmode_;
+    };
+
 private:
     UClass* sky_sphere_class_;
     UPROPERTY() AActor* sky_sphere_;
@@ -77,6 +89,7 @@ private:
     TTimePoint tod_last_update_;
     std::time_t tod_start_time_;
     long long physics_loop_period_;
+    std::unique_ptr<SimModeApi> simmode_api_;
 
 private:
     void setStencilIDs();

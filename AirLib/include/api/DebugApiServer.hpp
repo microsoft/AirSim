@@ -4,12 +4,12 @@
 #ifndef air_DebugApiServer_hpp
 #define air_DebugApiServer_hpp
 
-#include "ControlServerBase.hpp"
+#include "ApiServerBase.hpp"
 #include "common/common_utils/Utils.hpp"
 
 namespace msr { namespace airlib {
 
-    class DebugApiServer : public ControlServerBase {
+    class DebugApiServer : public ApiServerBase {
     public:
         virtual void start(bool block = false) override
         {

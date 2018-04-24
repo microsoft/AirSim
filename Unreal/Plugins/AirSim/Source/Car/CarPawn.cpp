@@ -166,7 +166,7 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
         HitNormal, NormalImpulse, Hit);
 }
 
-void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_server_address, bool engine_sound)
+void ACarPawn::initializeForBeginPlay(bool engine_sound)
 {
     if (engine_sound)
         EngineSoundComponent->Activate();
@@ -195,8 +195,8 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
     std::vector<APIPCamera*> cameras = { InternalCamera1, InternalCamera2, InternalCamera3, InternalCamera4, InternalCamera5 };
     wrapper_->initialize(this, cameras);
     wrapper_->setKinematics(&kinematics_);
-
-    startApiServer(enable_rpc, api_server_address);
+    wrapper_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>(
+        new CarPawnApi(wrapper_.get(), this->GetVehicleMovement())));
 
     //TODO: should do reset() here?
     keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
@@ -228,44 +228,8 @@ msr::airlib::CarApiBase* ACarPawn::getApi() const
     return static_cast<msr::airlib::CarApiBase*>(wrapper_->getApi());
 }
 
-void ACarPawn::startApiServer(bool enable_rpc, const std::string& api_server_address)
-{
-    if (enable_rpc) {
-        wrapper_->setApi(std::unique_ptr<msr::airlib::CarApiBase>(
-            new CarPawnApi(getVehiclePawnWrapper(), this->GetVehicleMovement())));
-
-#ifdef AIRLIB_NO_RPC
-        rpclib_server_.reset(new msr::airlib::DebugApiServer());
-#else
-        rpclib_server_.reset(new msr::airlib::CarRpcLibServer(getApi(), api_server_address));
-#endif
-
-        rpclib_server_->start();
-        UAirBlueprintLib::LogMessageString("API server started at ",
-            api_server_address == "" ? "(default)" : api_server_address.c_str(), LogDebugLevel::Informational);
-    }
-    else
-        UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
-
-}
-void ACarPawn::stopApiServer()
-{
-    if (rpclib_server_ != nullptr) {
-        rpclib_server_->stop();
-        rpclib_server_.reset(nullptr);
-        wrapper_->setApi(std::unique_ptr<msr::airlib::CarApiBase>());
-    }
-}
-
-bool ACarPawn::isApiServerStarted()
-{
-    return rpclib_server_ != nullptr;
-}
-
 void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    stopApiServer();
-
     if (InternalCamera1)
         InternalCamera1->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
     InternalCamera1 = nullptr;

@@ -9,6 +9,18 @@
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 #include "UnrealSensors/UnrealSensorFactory.h"
 
+#ifndef AIRLIB_NO_RPC
+
+#if defined _WIN32 || defined _WIN64
+#include "AllowWindowsPlatformTypes.h"
+#endif
+#include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
+#if defined _WIN32 || defined _WIN64
+#include "HideWindowsPlatformTypes.h"
+#endif
+
+#endif
+
 
 ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
 {
@@ -21,26 +33,23 @@ ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
 void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
+}
 
-    //create control server
-    for (const std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connectors_) {
-        try {
-            vehicle_connector_->startApiServer();
-        }
-        catch (std::exception& ex) {
-            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
-        }
-    }
 
+std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiServer() const
+{
+#ifdef AIRLIB_NO_RPC
+    return ASimMode::createApiServer();
+#else
+    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
+        getSimModeApi(), getSettings().api_server_address));
+#endif
 }
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //stop physics thread before we dismental
     stopAsyncUpdator();
-
-    for (const std::shared_ptr<VehicleConnectorBase>& vehicle_connector_ : fpv_vehicle_connectors_)
-        vehicle_connector_->stopApiServer();
 
     //for (AActor* actor : spawned_actors_) {
     //    actor->Destroy();
@@ -195,9 +204,7 @@ ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawn
     vehicle_params_.push_back(std::move(vehicle_params));
 
     std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
-        wrapper, vehicle_params_.back().get(), getSettings().enable_rpc, getSettings().api_server_address,
-            vehicle_params_.back()->getParams().api_server_port + vehicle_params_.size() - 1, manual_pose_controller
-    );
+        wrapper, vehicle_params_.back().get(), manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
         wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));

@@ -26,19 +26,6 @@ public:
         unused(dt);
     }
 
-    virtual void startApiServer() override
-    {
-    }
-
-    virtual void stopApiServer() override
-    {
-    }
-
-    virtual bool isApiServerStarted() override
-    {
-        return false;
-    }
-
     virtual VehicleControllerBase* getController() override
     {
         return controller_;

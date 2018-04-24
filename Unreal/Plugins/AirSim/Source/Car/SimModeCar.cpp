@@ -4,6 +4,18 @@
 #include "common/AirSimSettings.hpp"
 #include "Car/CarPawn.h"
 
+#ifndef AIRLIB_NO_RPC
+
+#if defined _WIN32 || defined _WIN64
+#include "AllowWindowsPlatformTypes.h"
+#endif
+#include "vehicles/car/api/CarRpcLibServer.hpp"
+#if defined _WIN32 || defined _WIN64
+#include "HideWindowsPlatformTypes.h"
+#endif
+
+#endif
+
 ASimModeCar::ASimModeCar()
 {
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
@@ -94,8 +106,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
-            vehicle_pawn->initializeForBeginPlay(getSettings().enable_rpc, 
-                getSettings().api_server_address, getSettings().engine_sound);
+            vehicle_pawn->initializeForBeginPlay(getSettings().engine_sound);
 
             if (getSettings().enable_collision_passthrough)
                 wrapper->getConfig().enable_passthrough_on_collisions = true;
@@ -132,6 +143,15 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
 }
 
+std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
+{
+#ifdef AIRLIB_NO_RPC
+    return ASimMode::createApiServer();
+#else
+    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::CarRpcLibServer(
+        getSimModeApi(), getSettings().api_server_address));
+#endif
+}
 
 int ASimModeCar::getRemoteControlID(const VehiclePawnWrapper& pawn) const
 {

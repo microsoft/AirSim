@@ -22,10 +22,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\api\ApiServerBase.hpp" />
     <ClInclude Include="include\api\DebugApiServer.hpp" />
     <ClInclude Include="include\api\RpcLibAdapatorsBase.hpp" />
     <ClInclude Include="include\api\RpcLibClientBase.hpp" />
     <ClInclude Include="include\api\RpcLibServerBase.hpp" />
+    <ClInclude Include="include\api\SimModeApiBase.hpp" />
     <ClInclude Include="include\api\VehicleApiBase.hpp" />
     <ClInclude Include="include\api\WorldApiBase.hpp" />
     <ClInclude Include="include\common\AirSimSettings.hpp" />
@@ -132,7 +134,6 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\VelocityController.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightDroneController.hpp" />
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp" />
-    <ClInclude Include="include\api\ControlServerBase.hpp" />
     <ClInclude Include="include\physics\PhysicsBodyWorld.hpp" />
     <ClInclude Include="include\physics\PhysicsWorld.hpp" />
     <ClInclude Include="include\safety\CubeGeoFence.hpp" />

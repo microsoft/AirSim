@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SimJoyStick/SimJoyStick.h"
 #include "Misc/OutputDeviceNull.h"
+#include "api/DebugApiServer.hpp"
 #include "common/EarthCelestial.hpp"
 
 
@@ -30,6 +31,8 @@ ASimModeBase::ASimModeBase()
 void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
+
+    simmode_api_.reset(new SimModeApi(this));
 
     setupPhysicsLoopPeriod();
 
@@ -61,6 +64,11 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
     Super::EndPlay(EndPlayReason);
+}
+
+msr::airlib::SimModeApiBase* ASimModeBase::getSimModeApi() const
+{
+    return simmode_api_.get();
 }
 
 
@@ -109,6 +117,23 @@ msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi() const
         return fpv_vehicle->getApi();
     else
         return nullptr;
+}
+
+std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const
+{
+    //should be overriden by derived class
+    //by default we return no API server
+    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::DebugApiServer());
+}
+
+ASimModeBase::SimModeApi::SimModeApi(ASimModeBase* simmode)
+    : simmode_(simmode)
+{
+}
+
+msr::airlib::VehicleApiBase* ASimModeBase::SimModeApi::getVehicleApi()
+{
+    return simmode_->getVehicleApi();
 }
 
 void ASimModeBase::setupClockSpeed()
