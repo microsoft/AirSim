@@ -23,6 +23,7 @@ public:
     VehiclePawnWrapper* getFpvVehiclePawnWrapper() const override;
     std::string getLogString() const;
 
+
 protected:
     typedef AFlyingPawn TMultiRotorPawn;
 

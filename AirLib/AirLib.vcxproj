@@ -27,6 +27,7 @@
     <ClInclude Include="include\api\RpcLibClientBase.hpp" />
     <ClInclude Include="include\api\RpcLibServerBase.hpp" />
     <ClInclude Include="include\api\VehicleApiBase.hpp" />
+    <ClInclude Include="include\api\WorldApiBase.hpp" />
     <ClInclude Include="include\common\AirSimSettings.hpp" />
     <ClInclude Include="include\common\ClockBase.hpp" />
     <ClInclude Include="include\common\Common.hpp" />

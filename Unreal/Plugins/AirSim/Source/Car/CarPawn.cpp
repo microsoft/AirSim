@@ -217,22 +217,27 @@ void ACarPawn::initializeForBeginPlay(bool enable_rpc, const std::string& api_se
 void ACarPawn::reset(bool disable_api_control)
 {
     keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
-    api_->reset();
+    wrapper_->setApi(std::unique_ptr<msr::airlib::CarApiBase>());
 
     if (disable_api_control)
-        api_->enableApiControl(false);
+        getApi()->enableApiControl(false);
+}
+
+msr::airlib::CarApiBase* ACarPawn::getApi() const
+{
+    return static_cast<msr::airlib::CarApiBase*>(wrapper_->getApi());
 }
 
 void ACarPawn::startApiServer(bool enable_rpc, const std::string& api_server_address)
 {
     if (enable_rpc) {
-        api_.reset(new CarPawnApi(getVehiclePawnWrapper(), this->GetVehicleMovement()));
-
+        wrapper_->setApi(std::unique_ptr<msr::airlib::CarApiBase>(
+            new CarPawnApi(getVehiclePawnWrapper(), this->GetVehicleMovement())));
 
 #ifdef AIRLIB_NO_RPC
         rpclib_server_.reset(new msr::airlib::DebugApiServer());
 #else
-        rpclib_server_.reset(new msr::airlib::CarRpcLibServer(api_.get(), api_server_address));
+        rpclib_server_.reset(new msr::airlib::CarRpcLibServer(getApi(), api_server_address));
 #endif
 
         rpclib_server_->start();
@@ -248,7 +253,7 @@ void ACarPawn::stopApiServer()
     if (rpclib_server_ != nullptr) {
         rpclib_server_->stop();
         rpclib_server_.reset(nullptr);
-        api_.reset(nullptr);
+        wrapper_->setApi(std::unique_ptr<msr::airlib::CarApiBase>());
     }
 }
 
@@ -451,13 +456,13 @@ void ACarPawn::updateCarControls()
     }
 
     //if API-client control is not active then we route keyboard/jostick control to car
-    if (!api_->isApiControlEnabled()) {
+    if (! getApi()->isApiControlEnabled()) {
         //all car controls from anywhere must be routed through API component
-        api_->setCarControls(current_controls_);
+        getApi()->setCarControls(current_controls_);
     }
     else {
         UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
-        current_controls_ = api_->getCarControls();
+        current_controls_ = getApi()->getCarControls();
     }
     UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls_.throttle), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls_.brake), LogDebugLevel::Informational);

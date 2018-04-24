@@ -47,6 +47,7 @@ public:
     //must be implemented by derived class
     //can't use pure virtual because of restriction with Unreal
     virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() const;
+    virtual msr::airlib::VehicleApiBase* getVehicleApi() const;
 
 
 protected:

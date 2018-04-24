@@ -73,6 +73,7 @@ private:
     void detectUsbRc();
     const msr::airlib::RCData& getRCData();  
     void resetPrivate();
+    msr::airlib::MultirotorApi* getApi() const;
 
 private:
     MultiRotor vehicle_;
@@ -81,7 +82,6 @@ private:
     VehiclePawnWrapper* vehicle_pawn_wrapper_;
 
     msr::airlib::MultiRotorParams* vehicle_params_;
-    std::unique_ptr<msr::airlib::MultirotorApi> controller_cancelable_;
     std::unique_ptr<msr::airlib::ControlServerBase> rpclib_server_;
 
     struct RotorInfo {

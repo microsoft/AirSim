@@ -327,16 +327,22 @@ void MultiRotorConnector::setCameraOrientation(int camera_id, const Quaternionr&
     }, true);
 }
 
+msr::airlib::MultirotorApi* MultiRotorConnector::getApi() const
+{
+    return static_cast<msr::airlib::MultirotorApi*>(vehicle_pawn_wrapper_->getApi());
+}
+
 void MultiRotorConnector::startApiServer()
 {
     if (enable_rpc_) {
-        controller_cancelable_.reset(new msr::airlib::MultirotorApi(this));
+        vehicle_pawn_wrapper_->setApi(
+            std::unique_ptr<msr::airlib::VehicleApiBase>(new msr::airlib::MultirotorApi(this)));
 
 #ifdef AIRLIB_NO_RPC
     rpclib_server_.reset(new msr::airlib::DebugApiServer());
 #else
     rpclib_server_.reset(new msr::airlib::MultirotorRpcLibServer(
-        controller_cancelable_.get(), api_server_address_, api_server_port_));
+        getApi(), api_server_address_, api_server_port_));
 #endif
 
         rpclib_server_->start();
@@ -350,10 +356,10 @@ void MultiRotorConnector::startApiServer()
 void MultiRotorConnector::stopApiServer()
 {
     if (rpclib_server_ != nullptr) {
-        controller_cancelable_->cancelAllTasks();
+        getApi()->cancelAllTasks();
         rpclib_server_->stop();
         rpclib_server_.reset(nullptr);
-        controller_cancelable_.reset(nullptr);
+        vehicle_pawn_wrapper_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>());
     }
 }
 

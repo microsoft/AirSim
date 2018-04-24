@@ -14,7 +14,7 @@
 #pragma warning(pop)
 
 #include <dinputd.h>
-#include "UnrealMathUtility.h
+#include "UnrealMathUtility.h"
 
 // Stuff to filter out XInput devices
 #ifndef FALSE

@@ -133,6 +133,7 @@ private:
 
     std::string getLogString();
     void setupVehicleMovementComponent();
+    msr::airlib::CarApiBase* getApi() const;
 
 
 private:
@@ -141,7 +142,6 @@ private:
     UClass* pip_camera_class_;
 
     std::unique_ptr<msr::airlib::CarRpcLibServer> rpclib_server_;
-    std::unique_ptr<msr::airlib::CarApiBase> api_;
     std::unique_ptr<VehiclePawnWrapper> wrapper_;
     msr::airlib::Kinematics::State kinematics_;
 

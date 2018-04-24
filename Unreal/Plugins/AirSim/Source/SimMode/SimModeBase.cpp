@@ -63,6 +63,7 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
+
 void ASimModeBase::setupTimeOfDay()
 {
     sky_sphere_ = nullptr;
@@ -101,6 +102,14 @@ void ASimModeBase::setupTimeOfDay()
     //else ignore
 }
 
+msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi() const
+{
+    auto fpv_vehicle = getFpvVehiclePawnWrapper();
+    if (fpv_vehicle)
+        return fpv_vehicle->getApi();
+    else
+        return nullptr;
+}
 
 void ASimModeBase::setupClockSpeed()
 {

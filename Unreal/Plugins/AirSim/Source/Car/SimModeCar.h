@@ -28,6 +28,7 @@ public:
     virtual void reset() override;
     virtual std::string getReport() override;
 
+
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
     void updateReport();

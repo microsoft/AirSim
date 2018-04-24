@@ -93,6 +93,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         }
     }
 
+ 
     //find all vehicle pawns
     {
         TArray<AActor*> pawns;
@@ -142,6 +143,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
     fpv_vehicle_pawn_wrapper_->possess();
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
 }
+
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
