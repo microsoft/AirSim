@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>clock_speed.py</StartupFile>
+    <StartupFile>pause_continue_car.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -35,6 +35,9 @@
     <Compile Include="car_collision.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="pause_continue_car.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="clock_speed.py">
       <SubType>Code</SubType>
     </Compile>
@@ -56,6 +59,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="orbit.py" />
+    <Compile Include="pause_continue_drone.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="point_cloud.py" />
     <Compile Include="seg_pallete.py">
       <SubType>Code</SubType>

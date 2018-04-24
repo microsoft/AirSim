@@ -43,6 +43,10 @@ public:
     CameraInfo getCameraInfo(int camera_id);
     void setCameraOrientation(int camera_id, const Quaternionr& orientation);
 
+    bool simIsPaused();
+    void simPause(bool is_paused);
+    void simContinueForTicks(uint32_t ticks);
+
     virtual ~RpcLibClientBase();    //required for pimpl
 
 protected:

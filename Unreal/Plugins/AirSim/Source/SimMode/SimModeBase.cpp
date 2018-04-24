@@ -144,16 +144,6 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() cons
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::DebugApiServer());
 }
 
-ASimModeBase::SimModeApi::SimModeApi(ASimModeBase* simmode)
-    : simmode_(simmode)
-{
-}
-
-msr::airlib::VehicleApiBase* ASimModeBase::SimModeApi::getVehicleApi()
-{
-    return simmode_->getVehicleApi();
-}
-
 void ASimModeBase::setupClockSpeed()
 {
     //default setup - this should be overriden in derived modes as needed
@@ -318,3 +308,31 @@ void ASimModeBase::stopRecording()
     FRecordingThread::stopRecording();
 }
 
+//************************* SimModeApi *****************************/
+
+ASimModeBase::SimModeApi::SimModeApi(ASimModeBase* simmode)
+    : simmode_(simmode)
+{
+}
+
+msr::airlib::VehicleApiBase* ASimModeBase::SimModeApi::getVehicleApi()
+{
+    return simmode_->getVehicleApi();
+}
+
+bool ASimModeBase::SimModeApi::isPaused() const
+{
+    return simmode_->isPaused();
+}
+
+void ASimModeBase::SimModeApi::pause(bool is_paused)
+{
+    simmode_->pause(is_paused);
+}
+
+void ASimModeBase::SimModeApi::continueForTicks(uint32_t ticks)
+{
+    simmode_->continueForTicks(ticks);
+}
+
+//************************* SimModeApi *****************************/

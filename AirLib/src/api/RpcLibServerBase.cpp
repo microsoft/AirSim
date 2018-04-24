@@ -122,6 +122,16 @@ RpcLibServerBase::RpcLibServerBase(SimModeApiBase* simmode_api, string server_ad
         return RpcLibAdapatorsBase::Pose(pose);
     });
     
+    pimpl_->server.bind("simPause", [&](bool is_paused) -> void { 
+        getSimModeApi()->pause(is_paused); 
+    });
+    pimpl_->server.bind("simIsPaused", [&]() -> bool { 
+        return getSimModeApi()->isPaused(); 
+    });
+    pimpl_->server.bind("simContinueForTicks", [&](uint32_t ticks) -> void { 
+        getSimModeApi()->continueForTicks(ticks); 
+    });
+
     pimpl_->server.suppress_exceptions(true);
 }
 

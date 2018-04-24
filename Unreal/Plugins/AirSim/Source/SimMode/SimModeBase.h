@@ -80,6 +80,9 @@ private:
     public:
         SimModeApi(ASimModeBase* simmode);
         virtual msr::airlib::VehicleApiBase* getVehicleApi() override;
+        virtual bool isPaused() const override;
+        virtual void pause(bool is_paused) override;
+        virtual void continueForTicks(uint32_t ticks) override;
 
     private:
         ASimModeBase* simmode_;

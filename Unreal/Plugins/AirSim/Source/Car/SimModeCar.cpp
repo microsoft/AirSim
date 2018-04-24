@@ -30,6 +30,8 @@ void ASimModeCar::BeginPlay()
 {
     Super::BeginPlay();
 
+    initializePauseState();
+
     createVehicles(vehicles_);
 
     report_wrapper_.initialize(false);
@@ -52,15 +54,42 @@ VehiclePawnWrapper* ASimModeCar::getFpvVehiclePawnWrapper() const
     return fpv_vehicle_pawn_wrapper_;
 }
 
+void ASimModeCar::initializePauseState()
+{
+    pause_countdown_ = 0;
+    pause_countdown_enabled_ = false;
+    pause(false);
+}
+
+bool ASimModeCar::isPaused() const
+{
+    return current_clockspeed_ == 0;
+}
+
+void ASimModeCar::pause(bool is_paused)
+{
+    if (is_paused)
+        current_clockspeed_ = 0;
+    else
+        current_clockspeed_ = getSettings().clock_speed;
+
+    UAirBlueprintLib::setUnrealClockSpeed(this, current_clockspeed_);
+}
+
+void ASimModeCar::continueForTicks(uint32_t ticks)
+{
+    pause_countdown_enabled_ = true;
+    pause_countdown_ = ticks;
+    pause(false);
+}
+
 void ASimModeCar::setupClockSpeed()
 {
-    float clock_speed = getSettings().clock_speed;
+    current_clockspeed_ = getSettings().clock_speed;
 
     //setup clock in PhysX
-    if (clock_speed != 1.0f) {
-        this->GetWorldSettings()->SetTimeDilation(clock_speed);
-        UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(clock_speed), LogDebugLevel::Informational);
-    }
+    UAirBlueprintLib::setUnrealClockSpeed(this, current_clockspeed_);
+    UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(current_clockspeed_), LogDebugLevel::Informational);
 }
 
 void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
@@ -192,6 +221,17 @@ void ASimModeCar::reset()
 void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
+    if (pause_countdown_enabled_) {
+        if (pause_countdown_ > 0)
+            --pause_countdown_;
+        else {
+            if (!isPaused())
+                pause(true);
+
+            pause_countdown_enabled_ = false;
+        }
+    }
 
     report_wrapper_.update();
     report_wrapper_.setEnable(EnableReport);

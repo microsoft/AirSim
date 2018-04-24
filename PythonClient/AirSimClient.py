@@ -213,67 +213,6 @@ class AirSimClientBase:
     def __init__(self, ip, port):
         self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = 3600, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
         
-    def ping(self):
-        return self.client.call('ping')
-    
-    def reset(self):
-        self.client.call('reset')
-
-    def confirmConnection(self):
-        home = self.getHomeGeoPoint()
-        while ((home.latitude == 0 and home.longitude == 0 and home.altitude == 0) or
-                math.isnan(home.latitude) or  math.isnan(home.longitude) or  math.isnan(home.altitude)):
-            time.sleep(1)
-            home = self.getHomeGeoPoint()
-            print('X', end='')
-        print('')
-
-    def getHomeGeoPoint(self):
-        return GeoPoint.from_msgpack(self.client.call('getHomeGeoPoint'))
-
-    # basic flight control
-    def enableApiControl(self, is_enabled):
-        return self.client.call('enableApiControl', is_enabled)
-    def isApiControlEnabled(self):
-        return self.client.call('isApiControlEnabled')
-
-    def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
-        return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
-    def simGetSegmentationObjectID(self, mesh_name):
-        return self.client.call('simGetSegmentationObjectID', mesh_name)
-    def simPrintLogMessage(self, message, message_param = "", severity = 0):
-        return self.client.call('simPrintLogMessage', message, message_param, severity)
-    def simGetObjectPose(self, object_name):
-        pose = self.client.call('simGetObjectPose', object_name)
-        return Pose.from_msgpack(pose)
-
-
-    # camera control
-    # simGetImage returns compressed png in array of bytes
-    # image_type uses one of the AirSimImageType members
-    def simGetImage(self, camera_id, image_type):
-        # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-        result = self.client.call('simGetImage', camera_id, image_type)
-        if (result == "" or result == "\0"):
-            return None
-        return result
-
-    # camera control
-    # simGetImage returns compressed png in array of bytes
-    # image_type uses one of the AirSimImageType members
-    def simGetImages(self, requests):
-        responses_raw = self.client.call('simGetImages', requests)
-        return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
-
-    def getCollisionInfo(self):
-        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
-
-    def getCameraInfo(self, camera_id):
-        return CameraInfo.from_msgpack(self.client.call('getCameraInfo', camera_id))
-
-    def setCameraOrientation(self, camera_id, orientation):
-        self.client.call('setCameraOrientation', camera_id, orientation)
-
     @staticmethod
     def stringToUint8Array(bstr):
         return np.fromstring(bstr, np.uint8)
@@ -496,6 +435,73 @@ class AirSimClientBase:
 
         AirSimClientBase.write_file(filename, png_bytes)
 
+    def ping(self):
+        return self.client.call('ping')
+    
+    def reset(self):
+        self.client.call('reset')
+
+    def confirmConnection(self):
+        home = self.getHomeGeoPoint()
+        while ((home.latitude == 0 and home.longitude == 0 and home.altitude == 0) or
+                math.isnan(home.latitude) or  math.isnan(home.longitude) or  math.isnan(home.altitude)):
+            time.sleep(1)
+            home = self.getHomeGeoPoint()
+            print('X', end='')
+        print('')
+
+    def getHomeGeoPoint(self):
+        return GeoPoint.from_msgpack(self.client.call('getHomeGeoPoint'))
+
+    # basic flight control
+    def enableApiControl(self, is_enabled):
+        return self.client.call('enableApiControl', is_enabled)
+    def isApiControlEnabled(self):
+        return self.client.call('isApiControlEnabled')
+
+    def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
+        return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
+    def simGetSegmentationObjectID(self, mesh_name):
+        return self.client.call('simGetSegmentationObjectID', mesh_name)
+    def simPrintLogMessage(self, message, message_param = "", severity = 0):
+        return self.client.call('simPrintLogMessage', message, message_param, severity)
+    def simGetObjectPose(self, object_name):
+        pose = self.client.call('simGetObjectPose', object_name)
+        return Pose.from_msgpack(pose)
+
+
+    # camera control
+    # simGetImage returns compressed png in array of bytes
+    # image_type uses one of the AirSimImageType members
+    def simGetImage(self, camera_id, image_type):
+        # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
+        result = self.client.call('simGetImage', camera_id, image_type)
+        if (result == "" or result == "\0"):
+            return None
+        return result
+
+    # camera control
+    # simGetImage returns compressed png in array of bytes
+    # image_type uses one of the AirSimImageType members
+    def simGetImages(self, requests):
+        responses_raw = self.client.call('simGetImages', requests)
+        return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
+
+    def getCollisionInfo(self):
+        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
+
+    def getCameraInfo(self, camera_id):
+        return CameraInfo.from_msgpack(self.client.call('getCameraInfo', camera_id))
+
+    def setCameraOrientation(self, camera_id, orientation):
+        self.client.call('setCameraOrientation', camera_id, orientation)
+
+    def simIsPause(self):
+        return self.client.call("simIsPaused")
+    def simPause(self, is_paused):
+        self.client.call('simPause', is_paused)
+    def simContinueForTicks(self, ticks):
+        self.client.call('simContinueForTicks', int(ticks))
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(AirSimClientBase, object):

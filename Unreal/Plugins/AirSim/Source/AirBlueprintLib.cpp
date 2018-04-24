@@ -185,6 +185,11 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     //GEngine->AddOnScreenDebugMessage(key + 10, 60.0f, color, FString::FromInt(key));
 }
 
+void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_speed)
+{
+    context->GetWorldSettings()->SetTimeDilation(clock_speed);
+}
+
 float UAirBlueprintLib::GetWorldToMetersScale(const AActor* context)
 {
     float w2m = 100.f;
