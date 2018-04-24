@@ -76,6 +76,21 @@ public:
         return reporter_.getOutput();
     }
 
+    void pause(bool is_paused)
+    {
+        world_.pause(is_paused);
+    }
+
+    bool isPaused() const
+    {
+        return world_.isPaused();
+    }
+
+    void continueForTicks(uint32_t ticks)
+    {
+        world_.continueForTicks(ticks);
+    }
+
 private:
     void initializeWorld(const std::vector<UpdatableObject*>& bodies, bool start_async_updator)
     {

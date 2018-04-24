@@ -28,6 +28,10 @@ public:
     virtual void reset() override;
     virtual std::string getReport() override;
 
+    virtual bool isPaused() const override;
+    virtual void pause(bool is_paused) override;
+    virtual void continueForTicks(uint32_t ticks) override;
+
 protected:
     typedef std::shared_ptr<msr::airlib::VehicleConnectorBase> VehiclePtr;
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles);

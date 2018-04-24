@@ -108,6 +108,21 @@ public:
         executor_.stop();
     }
 
+    void pause(bool is_paused)
+    {
+        executor_.pause(is_paused);
+    }
+
+    bool isPaused() const
+    {
+        return executor_.isPaused();
+    }
+
+    void continueForTicks(uint32_t ticks)
+    {
+        executor_.continueForTicks(ticks);
+    }
+
 private:
     bool worldUpdatorAsync(uint64_t dt_nanos)
     {

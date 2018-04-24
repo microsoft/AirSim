@@ -53,6 +53,10 @@ public:
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
 
+    virtual bool isPaused() const;
+    virtual void pause(bool is_paused);
+    virtual void continueForTicks(uint32_t ticks);
+
 protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;
     virtual void setupInputBindings();

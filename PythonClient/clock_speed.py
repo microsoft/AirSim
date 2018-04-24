@@ -12,7 +12,7 @@ client.moveByVelocityZ(0, 0, -2, 3)
 
 while True:
     client.moveByVelocityZ(5, 5, -2, 1)
-    time.sleep(0.1)
+    time.sleep(10)
 
 client.armDisarm(False)
 client.reset()

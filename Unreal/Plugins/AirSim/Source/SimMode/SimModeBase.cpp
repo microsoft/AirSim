@@ -119,10 +119,28 @@ msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi() const
         return nullptr;
 }
 
+bool ASimModeBase::isPaused() const
+{
+    return false;
+}
+
+void ASimModeBase::pause(bool is_paused)
+{
+    //should be overriden by derived class
+    unused(is_paused);
+    throw std::domain_error("Pause is not implemented by SimMode");
+}
+
+void ASimModeBase::continueForTicks(uint32_t ticks)
+{
+    //should be overriden by derived class
+    unused(ticks);
+    throw std::domain_error("continueForTicks is not implemented by SimMode");
+}
+
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const
 {
     //should be overriden by derived class
-    //by default we return no API server
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::DebugApiServer());
 }
 
