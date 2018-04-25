@@ -500,8 +500,8 @@ class AirSimClientBase:
         return self.client.call("simIsPaused")
     def simPause(self, is_paused):
         self.client.call('simPause', is_paused)
-    def simContinueForTicks(self, ticks):
-        self.client.call('simContinueForTicks', int(ticks))
+    def simContinueForTime(self, seconds):
+        self.client.call('simContinueForTime', seconds)
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(AirSimClientBase, object):

@@ -128,8 +128,8 @@ RpcLibServerBase::RpcLibServerBase(SimModeApiBase* simmode_api, string server_ad
     pimpl_->server.bind("simIsPaused", [&]() -> bool { 
         return getSimModeApi()->isPaused(); 
     });
-    pimpl_->server.bind("simContinueForTicks", [&](uint32_t ticks) -> void { 
-        getSimModeApi()->continueForTicks(ticks); 
+    pimpl_->server.bind("simContinueForTime", [&](double seconds) -> void { 
+        getSimModeApi()->continueForTime(seconds); 
     });
 
     pimpl_->server.suppress_exceptions(true);

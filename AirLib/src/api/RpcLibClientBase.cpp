@@ -178,9 +178,9 @@ void RpcLibClientBase::simPause(bool is_paused)
     pimpl_->client.call("simPause", is_paused);
 }
 
-void RpcLibClientBase::simContinueForTicks(uint32_t ticks)
+void RpcLibClientBase::simContinueForTime(double seconds)
 {
-    pimpl_->client.call("simContinueForTicks", ticks);
+    pimpl_->client.call("simContinueForTime", seconds);
 }
 
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name)

@@ -55,7 +55,7 @@ public:
 
     virtual bool isPaused() const;
     virtual void pause(bool is_paused);
-    virtual void continueForTicks(uint32_t ticks);
+    virtual void continueForTime(double seconds);
 
 protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -75,6 +75,8 @@ private:
     typedef common_utils::Utils Utils;
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef msr::airlib::TTimePoint TTimePoint;
+    typedef msr::airlib::TTimeDelta TTimeDelta;
+
 
     class SimModeApi : public msr::airlib::SimModeApiBase  {
     public:
@@ -82,7 +84,7 @@ private:
         virtual msr::airlib::VehicleApiBase* getVehicleApi() override;
         virtual bool isPaused() const override;
         virtual void pause(bool is_paused) override;
-        virtual void continueForTicks(uint32_t ticks) override;
+        virtual void continueForTime(double seconds) override;
 
     private:
         ASimModeBase* simmode_;

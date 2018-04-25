@@ -15,7 +15,7 @@ public:
     virtual VehicleApiBase* getVehicleApi() = 0;
     virtual bool isPaused() const = 0;
     virtual void pause(bool is_paused) = 0;
-    virtual void continueForTicks(uint32_t ticks) = 0;
+    virtual void continueForTime(double seconds) = 0;
     virtual ~SimModeApiBase() = default;
 };
 

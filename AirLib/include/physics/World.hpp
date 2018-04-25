@@ -118,9 +118,9 @@ public:
         return executor_.isPaused();
     }
 
-    void continueForTicks(uint32_t ticks)
+    void continueForTime(double seconds)
     {
-        executor_.continueForTicks(ticks);
+        executor_.continueForTime(seconds);
     }
 
 private:

@@ -17,12 +17,12 @@ for i in range(1, 6):
     print("Pausing after 5sec")
     client.simPause(True)
     time.sleep(5) #paused
-    print("Restarting command to run for 6sec")
-    client.simContinueForTicks(2000) #2000 ticks of 3ms each = 1.5sec
+    print("Restarting command to run for 7.5sec")
+    client.simContinueForTime(7.5) 
     time.sleep(10)
     print("Finishing rest of the command")
     client.simPause(False)
-    time.sleep(10)
+    time.sleep(15)
     print("Finished cycle")
 
 

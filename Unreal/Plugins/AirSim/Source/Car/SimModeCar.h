@@ -31,7 +31,7 @@ public:
 
     virtual bool isPaused() const override;
     virtual void pause(bool is_paused) override;
-    virtual void continueForTicks(uint32_t ticks) override;
+    virtual void continueForTime(double seconds) override;
 
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
@@ -44,6 +44,11 @@ protected:
 
 
 private:    
+    typedef msr::airlib::ClockFactory ClockFactory;
+    typedef common_utils::Utils Utils;
+    typedef msr::airlib::TTimePoint TTimePoint;
+    typedef msr::airlib::TTimeDelta TTimeDelta;
+
     UClass* external_camera_class_;
     UClass* camera_director_class_;
 
@@ -53,7 +58,7 @@ private:
     float follow_distance_;
     msr::airlib::StateReporterWrapper report_wrapper_;
 
-    float current_clockspeed_;
-    uint32_t pause_countdown_;
-    bool pause_countdown_enabled_;
+    std::atomic<float> current_clockspeed_;
+    std::atomic<TTimeDelta> pause_period_;
+    std::atomic<TTimePoint> pause_period_start_;
 };

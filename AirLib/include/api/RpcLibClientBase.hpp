@@ -45,7 +45,7 @@ public:
 
     bool simIsPaused();
     void simPause(bool is_paused);
-    void simContinueForTicks(uint32_t ticks);
+    void simContinueForTime(double seconds);
 
     virtual ~RpcLibClientBase();    //required for pimpl
 

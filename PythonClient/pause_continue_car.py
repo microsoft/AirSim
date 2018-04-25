@@ -17,7 +17,7 @@ for i in range(1, 6):
     client.simPause(True)
     time.sleep(5) #paused
     print("Restarting command to run for 10sec")
-    client.simContinueForTicks(600) #600 ticks of 1/60sec each = 10sec
+    client.simContinueForTime(10)
     time.sleep(20)
     print("Finishing rest of the command")
     client.simPause(False)

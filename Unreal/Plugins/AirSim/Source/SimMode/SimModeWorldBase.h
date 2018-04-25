@@ -30,7 +30,7 @@ public:
 
     virtual bool isPaused() const override;
     virtual void pause(bool is_paused) override;
-    virtual void continueForTicks(uint32_t ticks) override;
+    virtual void continueForTime(double seconds) override;
 
 protected:
     typedef std::shared_ptr<msr::airlib::VehicleConnectorBase> VehiclePtr;

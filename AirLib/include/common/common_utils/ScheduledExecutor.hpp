@@ -56,10 +56,10 @@ public:
         return paused_;
     }
 
-    void continueForTicks(uint32_t ticks)
+    void continueForTime(double seconds)
     {
-        pause_countdown_enabled_ = true;
-        pause_countdown_ = ticks;
+        pause_period_start_ = nanos();
+        pause_period_ = static_cast<TTimeDelta>(1E9 * seconds);
         paused_ = false;
     }
 
@@ -105,8 +105,8 @@ private:
     void initializePauseState()
     {
         paused_ = false;
-        pause_countdown_enabled_ = false;
-        pause_countdown_ = 0;
+        pause_period_start_ = 0;
+        pause_period_ = 0;
     }
 
 private:
@@ -151,14 +151,12 @@ private:
             TTimePoint period_start = nanos();
             TTimeDelta since_last_call = period_start - call_end;
             
-            if (pause_countdown_enabled_) {
-                if (pause_countdown_ > 0)
-                    --pause_countdown_;
-                else {
-                    if (! paused_)
-                        paused_ = true;
+            if (pause_period_start_ > 0) {
+                if (nanos() - pause_period_start_ >= pause_period_) {
+                    if (! isPaused())
+                        pause(true);
 
-                    pause_countdown_enabled_ = false;
+                    pause_period_start_ = 0;
                 }
             }
 
@@ -196,8 +194,8 @@ private:
     bool is_first_period_;
     std::atomic_bool started_;
     std::atomic_bool paused_;
-    std::atomic_uint32_t pause_countdown_;
-    std::atomic_bool pause_countdown_enabled_;
+    std::atomic<TTimeDelta> pause_period_;
+    std::atomic<TTimePoint> pause_period_start_;
     
     double sleep_time_avg_;
 

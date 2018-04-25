@@ -97,9 +97,9 @@ void ASimModeWorldBase::pause(bool is_paused)
     physics_world_->pause(is_paused);
 }
 
-void ASimModeWorldBase::continueForTicks(uint32_t ticks)
+void ASimModeWorldBase::continueForTime(double seconds)
 {
-    physics_world_->continueForTicks(ticks);
+    physics_world_->continueForTime(seconds);
 
 }
 

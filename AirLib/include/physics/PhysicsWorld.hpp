@@ -86,9 +86,9 @@ public:
         return world_.isPaused();
     }
 
-    void continueForTicks(uint32_t ticks)
+    void continueForTime(double seconds)
     {
-        world_.continueForTicks(ticks);
+        world_.continueForTime(seconds);
     }
 
 private:

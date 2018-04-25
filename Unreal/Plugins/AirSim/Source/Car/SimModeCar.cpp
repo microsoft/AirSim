@@ -56,8 +56,8 @@ VehiclePawnWrapper* ASimModeCar::getFpvVehiclePawnWrapper() const
 
 void ASimModeCar::initializePauseState()
 {
-    pause_countdown_ = 0;
-    pause_countdown_enabled_ = false;
+    pause_period_ = 0;
+    pause_period_start_ = 0;
     pause(false);
 }
 
@@ -76,10 +76,10 @@ void ASimModeCar::pause(bool is_paused)
     UAirBlueprintLib::setUnrealClockSpeed(this, current_clockspeed_);
 }
 
-void ASimModeCar::continueForTicks(uint32_t ticks)
+void ASimModeCar::continueForTime(double seconds)
 {
-    pause_countdown_enabled_ = true;
-    pause_countdown_ = ticks;
+    pause_period_start_ = ClockFactory::get()->nowNanos();
+    pause_period_ = seconds;
     pause(false);
 }
 
@@ -222,14 +222,12 @@ void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    if (pause_countdown_enabled_) {
-        if (pause_countdown_ > 0)
-            --pause_countdown_;
-        else {
+    if (pause_period_start_ > 0) {
+        if (ClockFactory::get()->elapsedSince(pause_period_start_) >= pause_period_) {
             if (!isPaused())
                 pause(true);
 
-            pause_countdown_enabled_ = false;
+            pause_period_start_ = 0;
         }
     }
 
