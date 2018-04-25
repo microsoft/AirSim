@@ -28,6 +28,21 @@ public:
         return api_;
     }
 
+    virtual bool isPaused() const override
+    {
+        return false;
+    }
+
+    virtual void pause(bool is_paused) override
+    {
+        throw std::domain_error("pause is not supported");
+    }
+
+    virtual void continueForTime(double seconds) override
+    {
+        throw std::domain_error("continueForTime is not supported");
+    }
+
 private:
     MultirotorApi* api_;
 };
