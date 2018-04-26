@@ -84,7 +84,7 @@ void ASimHUD::startApiServer()
 #ifdef AIRLIB_NO_RPC
         api_server_.reset(new msr::airlib::DebugApiServer());
 #else
-        api_server_ = std::move(simmode_->createApiServer());
+        api_server_ = simmode_->createApiServer();
 #endif
 
         try {
