@@ -111,6 +111,8 @@ public:
     static UObject* LoadObject(const std::string& name);
     static UClass* LoadClass(const std::string& name);
 
+    static void setUnrealClockSpeed(const AActor* context, float clock_speed);
+
 private:
     template<typename T>
     static void InitializeObjectStencilID(T* obj, bool ignore_existing = true);

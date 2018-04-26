@@ -55,9 +55,7 @@ std::vector<uint8_t> CarPawnApi::simGetImage(uint8_t camera_id, ImageCaptureBase
 
 void CarPawnApi::setCarControls(const CarApiBase::CarControls& controls)
 {
-    if (api_control_enabled_)
-        last_controls_ = controls;
-    //else don't save
+    last_controls_ = controls;
 
     if (!controls.is_manual_gear && movement_->GetTargetGear() < 0)
         movement_->SetTargetGear(0, true); //in auto gear we must have gear >= 0
@@ -104,6 +102,9 @@ CarApiBase::CarState CarPawnApi::getCarState() const
     CarApiBase::CarState state(
         movement_->GetForwardSpeed() / 100, //cm/s -> m/s
         movement_->GetCurrentGear(),
+        movement_->GetEngineRotationSpeed(),
+        movement_->GetEngineMaxRotationSpeed(),
+        last_controls_.handbrake,
         pawn_->getCollisionInfo(),
         *pawn_->getTrueKinematics(),
         msr::airlib::ClockFactory::get()->nowNanos()

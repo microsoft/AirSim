@@ -33,7 +33,7 @@ public:
         return angles;
     }
 
-    virtual simple_flight::Axis3r getAngulerVelocity() const override
+    virtual simple_flight::Axis3r getAngularVelocity() const override
     {
         const auto& anguler = kinematics_->twist.angular;
 
@@ -86,7 +86,7 @@ public:
         state.position = getPosition();
         state.orientation = getOrientation();
         state.linear_velocity = getLinearVelocity();
-        state.angular_velocity = getAngulerVelocity();
+        state.angular_velocity = getAngularVelocity();
         state.linear_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.linear);
         state.angular_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.angular);
         

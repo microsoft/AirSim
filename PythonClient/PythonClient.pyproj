@@ -35,6 +35,12 @@
     <Compile Include="car_collision.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="pause_continue_car.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="clock_speed.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cv_mode.py">
       <SubType>Code</SubType>
     </Compile>
@@ -53,6 +59,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="orbit.py" />
+    <Compile Include="pause_continue_drone.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="point_cloud.py" />
     <Compile Include="seg_pallete.py">
       <SubType>Code</SubType>

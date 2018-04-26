@@ -143,8 +143,7 @@ public:
 
     virtual LandedState getLandedState() const override
     {
-        //TODO: implement this
-        return LandedState::Landed;
+        return firmware_->offboardApi().getLandedState() ? LandedState::Landed : LandedState::Flying;
     }
 
     virtual int getRemoteControlID() const override

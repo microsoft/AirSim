@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SimJoyStick/SimJoyStick.h"
 #include "Misc/OutputDeviceNull.h"
+#include "api/DebugApiServer.hpp"
 #include "common/EarthCelestial.hpp"
 
 
@@ -30,6 +31,8 @@ ASimModeBase::ASimModeBase()
 void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
+
+    simmode_api_.reset(new SimModeApi(this));
 
     setupPhysicsLoopPeriod();
 
@@ -62,6 +65,12 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     FRecordingThread::stopRecording();
     Super::EndPlay(EndPlayReason);
 }
+
+msr::airlib::SimModeApiBase* ASimModeBase::getSimModeApi() const
+{
+    return simmode_api_.get();
+}
+
 
 void ASimModeBase::setupTimeOfDay()
 {
@@ -101,6 +110,39 @@ void ASimModeBase::setupTimeOfDay()
     //else ignore
 }
 
+msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi() const
+{
+    auto fpv_vehicle = getFpvVehiclePawnWrapper();
+    if (fpv_vehicle)
+        return fpv_vehicle->getApi();
+    else
+        return nullptr;
+}
+
+bool ASimModeBase::isPaused() const
+{
+    return false;
+}
+
+void ASimModeBase::pause(bool is_paused)
+{
+    //should be overriden by derived class
+    unused(is_paused);
+    throw std::domain_error("Pause is not implemented by SimMode");
+}
+
+void ASimModeBase::continueForTime(double seconds)
+{
+    //should be overriden by derived class
+    unused(seconds);
+    throw std::domain_error("continueForTime is not implemented by SimMode");
+}
+
+std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const
+{
+    //should be overriden by derived class
+    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::DebugApiServer());
+}
 
 void ASimModeBase::setupClockSpeed()
 {
@@ -266,3 +308,31 @@ void ASimModeBase::stopRecording()
     FRecordingThread::stopRecording();
 }
 
+//************************* SimModeApi *****************************/
+
+ASimModeBase::SimModeApi::SimModeApi(ASimModeBase* simmode)
+    : simmode_(simmode)
+{
+}
+
+msr::airlib::VehicleApiBase* ASimModeBase::SimModeApi::getVehicleApi()
+{
+    return simmode_->getVehicleApi();
+}
+
+bool ASimModeBase::SimModeApi::isPaused() const
+{
+    return simmode_->isPaused();
+}
+
+void ASimModeBase::SimModeApi::pause(bool is_paused)
+{
+    simmode_->pause(is_paused);
+}
+
+void ASimModeBase::SimModeApi::continueForTime(double seconds)
+{
+    simmode_->continueForTime(seconds);
+}
+
+//************************* SimModeApi *****************************/

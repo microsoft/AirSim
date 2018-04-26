@@ -47,7 +47,7 @@ public:
         IAxisController::update();
 
         pid_->setGoal(goal_->getGoalValue()[axis_]);
-        pid_->setMeasured(state_estimator_->getAngulerVelocity()[axis_]);
+        pid_->setMeasured(state_estimator_->getAngularVelocity()[axis_]);
         pid_->update();
 
         output_ = pid_->getOutput();

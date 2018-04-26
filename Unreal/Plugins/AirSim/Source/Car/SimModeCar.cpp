@@ -4,6 +4,18 @@
 #include "common/AirSimSettings.hpp"
 #include "Car/CarPawn.h"
 
+#ifndef AIRLIB_NO_RPC
+
+#if defined _WIN32 || defined _WIN64
+#include "AllowWindowsPlatformTypes.h"
+#endif
+#include "vehicles/car/api/CarRpcLibServer.hpp"
+#if defined _WIN32 || defined _WIN64
+#include "HideWindowsPlatformTypes.h"
+#endif
+
+#endif
+
 ASimModeCar::ASimModeCar()
 {
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
@@ -17,6 +29,8 @@ ASimModeCar::ASimModeCar()
 void ASimModeCar::BeginPlay()
 {
     Super::BeginPlay();
+
+    initializePauseState();
 
     createVehicles(vehicles_);
 
@@ -40,15 +54,42 @@ VehiclePawnWrapper* ASimModeCar::getFpvVehiclePawnWrapper() const
     return fpv_vehicle_pawn_wrapper_;
 }
 
+void ASimModeCar::initializePauseState()
+{
+    pause_period_ = 0;
+    pause_period_start_ = 0;
+    pause(false);
+}
+
+bool ASimModeCar::isPaused() const
+{
+    return current_clockspeed_ == 0;
+}
+
+void ASimModeCar::pause(bool is_paused)
+{
+    if (is_paused)
+        current_clockspeed_ = 0;
+    else
+        current_clockspeed_ = getSettings().clock_speed;
+
+    UAirBlueprintLib::setUnrealClockSpeed(this, current_clockspeed_);
+}
+
+void ASimModeCar::continueForTime(double seconds)
+{
+    pause_period_start_ = ClockFactory::get()->nowNanos();
+    pause_period_ = seconds;
+    pause(false);
+}
+
 void ASimModeCar::setupClockSpeed()
 {
-    float clock_speed = getSettings().clock_speed;
+    current_clockspeed_ = getSettings().clock_speed;
 
     //setup clock in PhysX
-    if (clock_speed != 1.0f) {
-        this->GetWorldSettings()->SetTimeDilation(clock_speed);
-        UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(clock_speed), LogDebugLevel::Informational);
-    }
+    UAirBlueprintLib::setUnrealClockSpeed(this, current_clockspeed_);
+    UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(current_clockspeed_), LogDebugLevel::Informational);
 }
 
 void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
@@ -94,8 +135,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
-            vehicle_pawn->initializeForBeginPlay(getSettings().enable_rpc, 
-                getSettings().api_server_address, getSettings().engine_sound);
+            vehicle_pawn->initializeForBeginPlay(getSettings().engine_sound);
 
             if (getSettings().enable_collision_passthrough)
                 wrapper->getConfig().enable_passthrough_on_collisions = true;
@@ -132,6 +172,15 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
     CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
 }
 
+std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
+{
+#ifdef AIRLIB_NO_RPC
+    return ASimMode::createApiServer();
+#else
+    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::CarRpcLibServer(
+        getSimModeApi(), getSettings().api_server_address));
+#endif
+}
 
 int ASimModeCar::getRemoteControlID(const VehiclePawnWrapper& pawn) const
 {
@@ -172,6 +221,15 @@ void ASimModeCar::reset()
 void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
+    if (pause_period_start_ > 0) {
+        if (ClockFactory::get()->elapsedSince(pause_period_start_) >= pause_period_) {
+            if (!isPaused())
+                pause(true);
+
+            pause_period_start_ = 0;
+        }
+    }
 
     report_wrapper_.update();
     report_wrapper_.setEnable(EnableReport);

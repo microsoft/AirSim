@@ -8,7 +8,7 @@
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "common/StateReporterWrapper.hpp"
-#include "api/ControlServerBase.hpp"
+#include "api/ApiServerBase.hpp"
 #include "SimModeBase.h"
 #include "SimModeWorldBase.generated.h"
 
@@ -27,6 +27,10 @@ public:
 
     virtual void reset() override;
     virtual std::string getReport() override;
+
+    virtual bool isPaused() const override;
+    virtual void pause(bool is_paused) override;
+    virtual void continueForTime(double seconds) override;
 
 protected:
     typedef std::shared_ptr<msr::airlib::VehicleConnectorBase> VehiclePtr;

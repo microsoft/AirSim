@@ -97,6 +97,16 @@ void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kin
     kinematics_ = kinematics;
 }
 
+msr::airlib::VehicleApiBase* VehiclePawnWrapper::getApi() const
+{
+    return api_.get();
+}
+
+void VehiclePawnWrapper::setApi(std::unique_ptr<msr::airlib::VehicleApiBase> api)
+{
+    api_ = std::move(api);
+}
+
 void VehiclePawnWrapper::getRawVehicleSettings(msr::airlib::Settings& settings) const
 {
     typedef msr::airlib::AirSimSettings AirSimSettings;

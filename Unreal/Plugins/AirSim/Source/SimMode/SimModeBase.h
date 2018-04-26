@@ -10,6 +10,8 @@
 #include "Components/SkyLightComponent.h"
 #include "common/ClockFactory.hpp"
 #include "Engine/DirectionalLight.h"
+#include "api/ApiServerBase.hpp"
+#include "api/SimModeApiBase.hpp"
 #include "SimModeBase.generated.h"
 
 
@@ -47,7 +49,13 @@ public:
     //must be implemented by derived class
     //can't use pure virtual because of restriction with Unreal
     virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() const;
+    virtual msr::airlib::VehicleApiBase* getVehicleApi() const;
 
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
+
+    virtual bool isPaused() const;
+    virtual void pause(bool is_paused);
+    virtual void continueForTime(double seconds);
 
 protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -55,7 +63,7 @@ protected:
     virtual const AirSimSettings& getSettings() const;
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
-
+    msr::airlib::SimModeApiBase* getSimModeApi() const;
     virtual void setupClockSpeed();
 
 protected: //settings
@@ -67,6 +75,20 @@ private:
     typedef common_utils::Utils Utils;
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef msr::airlib::TTimePoint TTimePoint;
+    typedef msr::airlib::TTimeDelta TTimeDelta;
+
+
+    class SimModeApi : public msr::airlib::SimModeApiBase  {
+    public:
+        SimModeApi(ASimModeBase* simmode);
+        virtual msr::airlib::VehicleApiBase* getVehicleApi() override;
+        virtual bool isPaused() const override;
+        virtual void pause(bool is_paused) override;
+        virtual void continueForTime(double seconds) override;
+
+    private:
+        ASimModeBase* simmode_;
+    };
 
 private:
     UClass* sky_sphere_class_;
@@ -76,6 +98,7 @@ private:
     TTimePoint tod_last_update_;
     std::time_t tod_start_time_;
     long long physics_loop_period_;
+    std::unique_ptr<SimModeApi> simmode_api_;
 
 private:
     void setStencilIDs();
