@@ -13,8 +13,6 @@ include_directories(
 GetLocalSources(PROJECT_SOURCE_FILES include)
 GetLocalSources(PROJECT_SOURCE_FILES src)
 
-message("PROJECT_SOURCE_FILES=${PROJECT_SOURCE_FILES}")
-
 add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
 
 CommonTargetLink()
