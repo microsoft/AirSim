@@ -59,8 +59,8 @@ public:
 
         CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, const CollisionInfo& collision_val, 
             const Kinematics::State& kinematics_true_val, uint64_t timestamp_val)
-            : speed(speed_val), gear(gear_val), collision(collision_val), kinematics_true(kinematics_true_val), timestamp(timestamp_val),
-            rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val)
+            : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), collision(collision_val), 
+            kinematics_true(kinematics_true_val), timestamp(timestamp_val)
         {
         }
     };
