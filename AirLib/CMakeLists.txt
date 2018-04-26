@@ -10,17 +10,12 @@ include_directories(
   ${RPC_LIB_INCLUDES}
 )
 
-file(GLOB_RECURSE ${PROJECT_NAME}_sources 
-  ${AIRSIM_ROOT}/${PROJECT_NAME}/src/api/*.cpp
-  ${AIRSIM_ROOT}/${PROJECT_NAME}/src/common/common_utils/*.cpp
-  ${AIRSIM_ROOT}/${PROJECT_NAME}/src/controllers/*.cpp
-  ${AIRSIM_ROOT}/${PROJECT_NAME}/src/safety/*.cpp
-  ${AIRSIM_ROOT}/${PROJECT_NAME}/src/vehicles/car/api/*.cpp
-  ${AIRSIM_ROOT}/${PROJECT_NAME}/src/vehicles/multirotor/api/*.cpp
-  ${AIRSIM_ROOT}/${PROJECT_NAME}/src/vehicles/multirotor/controllers/*.cpp
-)
+GetLocalSources(PROJECT_SOURCE_FILES include)
+GetLocalSources(PROJECT_SOURCE_FILES src)
 
-add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_sources})
+message("PROJECT_SOURCE_FILES=${PROJECT_SOURCE_FILES}")
+
+add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES})
 
 CommonTargetLink()
 target_link_libraries(${PROJECT_NAME} ${RPC_LIB})

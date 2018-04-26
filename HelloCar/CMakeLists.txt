@@ -16,17 +16,9 @@ include_directories(
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
 )
 
-set(src
-    main.cpp
-)
+GetLocalSources(PROJECT_SOURCE_FILES .)
 
-set(include
-)
-
-source_group("src" FILES ${src})
-source_group("include" FILES ${include})
-
-add_executable(${tool_name} ${src} ${include})
+add_executable(${tool_name} ${PROJECT_SOURCE_FILES})
 			
 CommonTargetLink()
 target_link_libraries(${PROJECT_NAME} AirLib)

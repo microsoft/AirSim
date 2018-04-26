@@ -6,16 +6,6 @@ IncludeEigen()
 
 SetupConsoleBuild()
 
-set(src
-    main.cpp
-)
-
-set(include
-)
-
-source_group("src" FILES ${src})
-source_group("include" FILES ${include})
-
 ## Specify additional locations of header files
 include_directories(
   ${AIRSIM_ROOT}/HelloDrone
@@ -25,7 +15,9 @@ include_directories(
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
 )
 
-add_executable(${tool_name} ${src} ${include})
+GetLocalSources(PROJECT_SOURCE_FILES .)
+
+add_executable(${tool_name} ${PROJECT_SOURCE_FILES})
 			
 CommonTargetLink()
 target_link_libraries(${PROJECT_NAME} AirLib)

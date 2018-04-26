@@ -11,9 +11,12 @@ include_directories(
   ${AIRSIM_ROOT}/MavLinkCom/include
 )
 
-AddExecutableSource()
+GetLocalSources(PROJECT_SOURCE_FILES .)
+
+add_executable(AirLibUnitTests ${PROJECT_SOURCE_FILES})
 
 CommonTargetLink()
+
 target_link_libraries(${PROJECT_NAME} AirLib)
 target_link_libraries(${PROJECT_NAME} MavLinkCom)
 target_link_libraries(${PROJECT_NAME} ${RPC_LIB})

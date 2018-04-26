@@ -6,18 +6,6 @@ IncludeEigen()
 
 SetupConsoleBuild()
 
-set(src
-    src/main.cpp
-)
-
-set(include
-    include/linenoise.hpp
-    include/SimpleSHell.hpp
-)
-
-source_group("src" FILES ${src})
-source_group("include" FILES ${include})
-
 include_directories(
   ${AIRSIM_ROOT}/DroneShell
   ${RPC_LIB_INCLUDES}
@@ -26,7 +14,9 @@ include_directories(
   ${AIRSIM_ROOT}/MavLinkCom/include
 )
 
-add_executable(${tool_name} ${src} ${include})
+GetLocalSources(PROJECT_SOURCE_FILES .)
+
+add_executable(${tool_name} ${PROJECT_SOURCE_FILES})
 			
 CommonTargetLink()
 target_link_libraries(${PROJECT_NAME} AirLib)

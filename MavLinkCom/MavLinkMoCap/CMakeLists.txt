@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2.2)
-project(MavLinkTest)
+project(MavLinkMoCap)
 
 SetupConsoleBuild()
 
@@ -11,6 +11,7 @@ include_directories(
 
 GetLocalSources(PROJECT_SOURCE_FILES .)
 
-add_executable(MavLinkTest ${PROJECT_SOURCE_FILES})
-			
-target_link_libraries(MavLinkTest ${CMAKE_THREAD_LIBS_INIT} MavLinkCom ${CXX_EXP_LIB})
+if (EXISTS "NPTrackingTools.lib") 
+    add_executable(MavLinkMoCap ${PROJECT_SOURCE_FILES})			
+    target_link_libraries(MavLinkTest ${CMAKE_THREAD_LIBS_INIT} NPTrackingTools.lib MavLinkCom ${CXX_EXP_LIB})
+endif()
