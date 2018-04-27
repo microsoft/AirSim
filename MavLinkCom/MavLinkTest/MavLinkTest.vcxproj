@@ -27,7 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{25EB67BE-468A-4AA5-910F-07EFD58C5516}</ProjectGuid>
