@@ -344,8 +344,6 @@ void ACarPawn::Tick(float Delta)
 
     updateCarControls();
 
-    updateForceFeedback();
-
     updateKinematics(Delta);
 
     // update phsyics material
@@ -382,6 +380,8 @@ void ACarPawn::updateCarControls()
             joystick_controls_.steering = joystick_state_.left_x;
             joystick_controls_.throttle = (-joystick_state_.right_z + 1) / 2;
             joystick_controls_.brake = (joystick_state_.left_y + 1) / 2;
+
+            updateForceFeedback();
         }
         // Anything else, typically Logitech G920 wheel
         else {
