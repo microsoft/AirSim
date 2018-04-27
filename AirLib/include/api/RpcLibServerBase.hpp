@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include "api/ApiServerBase.hpp"
-#include "api/SimModeAPiBase.hpp"
+#include "api/SimModeApiBase.hpp"
 
 
 namespace msr { namespace airlib {
