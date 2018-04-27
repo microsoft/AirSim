@@ -317,6 +317,19 @@ public:
             state.is_valid = false;
     }
 
+    
+	void setAutoCenter(unsigned int index, double strength) {
+        unused(index);
+        unused(strength);
+		//TODO: implement this for linux
+	}
+
+	void setWheelRumble(unsigned int index, double strength) {
+        unused(index);
+        unused(strength);
+		//TODO: implement this for linux
+	}
+
     // bool getJoystickInfo(int index, std::string& manufacturerID, std::string& productID, std::string& message)
     // {
     //     manufacturerID = productID = "";
