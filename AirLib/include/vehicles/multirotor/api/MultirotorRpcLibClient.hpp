@@ -18,7 +18,6 @@ class MultirotorRpcLibClient : public RpcLibClientBase {
 public:
     MultirotorRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
 
-    bool armDisarm(bool arm);
     void setSimulationMode(bool is_set);
     bool takeoff(float max_wait_ms = 15);
     bool land(float max_wait_seconds = 60);
