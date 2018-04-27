@@ -32,6 +32,7 @@ public:
     bool isApiControlEnabled();
     void enableApiControl(bool is_enabled);
     void reset();
+    bool armDisarm(bool arm);
 
     CollisionInfo getCollisionInfo();
 

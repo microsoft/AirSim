@@ -89,6 +89,8 @@ If the episode terminates then we reset the vehicle to the original state via:
 
 ```
 client.reset()
+client.enableApiControl(True)
+client.armDisarm(True)
 car_control = interpret_action(1) // Reset position and drive straight for one second
 client.setCarControls(car_control)
 time.sleep(1)

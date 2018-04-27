@@ -71,7 +71,6 @@ msr::airlib::SimModeApiBase* ASimModeBase::getSimModeApi() const
     return simmode_api_.get();
 }
 
-
 void ASimModeBase::setupTimeOfDay()
 {
     sky_sphere_ = nullptr;
@@ -308,11 +307,17 @@ void ASimModeBase::stopRecording()
     FRecordingThread::stopRecording();
 }
 
+
 //************************* SimModeApi *****************************/
 
 ASimModeBase::SimModeApi::SimModeApi(ASimModeBase* simmode)
     : simmode_(simmode)
 {
+}
+
+void ASimModeBase::SimModeApi::reset()
+{
+    simmode_->reset();
 }
 
 msr::airlib::VehicleApiBase* ASimModeBase::SimModeApi::getVehicleApi()

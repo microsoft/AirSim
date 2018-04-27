@@ -1,5 +1,6 @@
 #include "SimModeWorldBase.h"
 #include <exception>
+#include "AirBlueprintLib.h"
 
 
 void ASimModeWorldBase::BeginPlay()
@@ -131,7 +132,9 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
 
 void ASimModeWorldBase::reset()
 {
-    physics_world_->reset();
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        physics_world_->reset();
+    }, true);
     
     Super::reset();
 }

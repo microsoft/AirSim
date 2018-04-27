@@ -14,6 +14,7 @@ class VehicleApiBase {
 public:
     virtual GeoPoint getHomeGeoPoint() const = 0;
     virtual void enableApiControl(bool is_enabled) = 0;
+    virtual bool armDisarm(bool arm) = 0;
     virtual bool isApiControlEnabled() const = 0;
     virtual void reset() = 0;
 

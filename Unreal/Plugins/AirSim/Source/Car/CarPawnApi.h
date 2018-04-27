@@ -42,6 +42,7 @@ public:
 
     virtual void enableApiControl(bool is_enabled) override;
     virtual bool isApiControlEnabled() const override;
+    virtual bool armDisarm(bool arm) override;
 
     virtual const CarApiBase::CarControls& getCarControls() const override;
 

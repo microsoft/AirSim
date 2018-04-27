@@ -85,7 +85,7 @@ You can find a ready to run project in HelloCar folder in the repository.
 
 ## Common APIs
 
-* `reset`: This resets the vehicle to its original starting state.
+* `reset`: This resets the vehicle to its original starting state. Note that you must call `enableApiControl` and `armDisarm` again after the call to `reset`.
 * `confirmConnection`: Checks state of connection every 1 sec and reports it in Console so user can see the progress for connection.
 * `enableApiControl`: For safety reasons, by default API control for autonomous vehicle is not enabled and human operator has full control (usually via RC or joystick in simulator). The client must make this call to request control via API. It is likely that human operator of vehicle might have disallowed API control which would mean that enableApiControl has no effect. This can be checked by `isApiControlEnabled`.
 * `isApiControlEnabled`: Returns true if API control is established. If false (which is default) then API calls would be ignored. After a successful call to `enableApiControl`, the `isApiControlEnabled` should return true.

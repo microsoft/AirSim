@@ -34,8 +34,6 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(SimModeApiBase* simmode_api, stri
         : RpcLibServerBase(simmode_api, server_address, port)
 {
     (static_cast<rpc::server*>(getServer()))->
-        bind("armDisarm", [&](bool arm) -> bool { return getDroneApi()->armDisarm(arm); });
-    (static_cast<rpc::server*>(getServer()))->
         bind("setSimulationMode", [&](bool is_set) -> void { getDroneApi()->setSimulationMode(is_set); });
     (static_cast<rpc::server*>(getServer()))->
         bind("takeoff", [&](float max_wait_seconds) -> bool { return getDroneApi()->takeoff(max_wait_seconds); });

@@ -2,6 +2,7 @@
 #include "ConstructorHelpers.h"
 #include "AirBlueprintLib.h"
 #include "common/AirSimSettings.hpp"
+#include "AirBlueprintLib.h"
 #include "Car/CarPawn.h"
 
 #ifndef AIRLIB_NO_RPC
@@ -201,18 +202,11 @@ void ASimModeCar::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 void ASimModeCar::reset()
 {
-    //find all vehicle pawns
-    {
-        TArray<AActor*> pawns;
-        UAirBlueprintLib::FindAllActor<TVehiclePawn>(this, pawns);
-
-        //set up vehicle pawns
-        for (AActor* pawn : pawns)
-        {
-            //initialize each vehicle pawn we found
-            TVehiclePawn* vehicle_pawn = static_cast<TVehiclePawn*>(pawn);
-            vehicle_pawn->reset();
-        }
+    msr::airlib::VehicleApiBase* api = getVehicleApi();
+    if (api) {
+        UAirBlueprintLib::RunCommandOnGameThread([api]() {
+            api->reset();
+        }, true);
     }
 
     Super::reset();

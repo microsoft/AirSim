@@ -119,6 +119,11 @@ void* RpcLibClientBase::getClient()
     return &pimpl_->client;
 }
 
+bool RpcLibClientBase::armDisarm(bool arm)
+{
+    return pimpl_->client.call("armDisarm", arm).as<bool>();
+}
+
 CameraInfo RpcLibClientBase::getCameraInfo(int camera_id)
 {
     return pimpl_->client.call("getCameraInfo", camera_id).as<RpcLibAdapatorsBase::CameraInfo>().to();

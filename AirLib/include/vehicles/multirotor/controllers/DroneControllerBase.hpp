@@ -45,7 +45,7 @@ public: //types
     public:
         const SafetyEval::EvalResult result;
 
-        UnsafeMoveException(const SafetyEval::EvalResult result_val, const string message = "")
+        UnsafeMoveException(const SafetyEval::EvalResult result_val, const std::string& message = "")
             : VehicleMoveException(message), result(result_val)
         {}
     };

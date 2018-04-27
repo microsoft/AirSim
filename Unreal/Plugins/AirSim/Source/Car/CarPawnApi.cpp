@@ -1,7 +1,6 @@
 #include "CarPawnApi.h"
 #include "AirBlueprintLib.h"
 
-
 CarPawnApi::CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponent* movement)
     : pawn_(pawn), movement_(movement)
 {
@@ -41,6 +40,13 @@ int CarPawnApi::simGetSegmentationObjectID(const std::string& mesh_name) const
 msr::airlib::CollisionInfo CarPawnApi::getCollisionInfo() const
 {
     return pawn_->getCollisionInfo();
+}
+
+bool CarPawnApi::armDisarm(bool arm)
+{
+    //TODO: implement arming for car
+    unused(arm);
+    return true;
 }
 
 std::vector<uint8_t> CarPawnApi::simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const
@@ -118,6 +124,7 @@ void CarPawnApi::reset()
     auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_->getPawn());
     UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
         pawn_->reset();
+
         for (auto* phys_comp : phys_comps) {
             phys_comp->SetPhysicsAngularVelocity(FVector::ZeroVector);
             phys_comp->SetPhysicsLinearVelocity(FVector::ZeroVector);

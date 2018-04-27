@@ -453,6 +453,9 @@ class AirSimClientBase:
     def getHomeGeoPoint(self):
         return GeoPoint.from_msgpack(self.client.call('getHomeGeoPoint'))
 
+    def armDisarm(self, arm):
+        return self.client.call('armDisarm', arm)
+
     # basic flight control
     def enableApiControl(self, is_enabled):
         return self.client.call('enableApiControl', is_enabled)
@@ -509,9 +512,6 @@ class MultirotorClient(AirSimClientBase, object):
         if (ip == ""):
             ip = "127.0.0.1"
         super(MultirotorClient, self).__init__(ip, 41451)
-
-    def armDisarm(self, arm):
-        return self.client.call('armDisarm', arm)
 
     def takeoff(self, max_wait_seconds = 15):
         return self.client.call('takeoff', max_wait_seconds)
