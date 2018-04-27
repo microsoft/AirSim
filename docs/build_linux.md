@@ -39,6 +39,17 @@ Finally, you will need an Unreal project that hosts the environment for your veh
 
 ## FAQ
 
+#### I'm getting error "<MyProject> could not be compiled. Try rebuilding from source manually".
+
+This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
+```
+fatal errorfatal error: : file  '/usr/include/linux/version.h''/usr/include/linux/version.h'  has  been  modified  since  the  precompiled  header
+```
+
+If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's [relevant thread](https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html) on Unreal Engine forums.
+
+If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.
+
 #### What are the known issues with Unreal 4.16?
 
 * One of the major issues is [this bug in Unreal](https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html). We have a workaround for some parts of the code but we haven't tested if everything is covered.

@@ -40,10 +40,6 @@ MultirotorRpcLibClient::MultirotorRpcLibClient(const string&  ip_address, uint16
 MultirotorRpcLibClient::~MultirotorRpcLibClient()
 {}
 
-bool MultirotorRpcLibClient::armDisarm(bool arm)
-{
-    return static_cast<rpc::client*>(getClient())->call("armDisarm", arm).as<bool>();
-}
 void MultirotorRpcLibClient::setSimulationMode(bool is_set)
 {
     static_cast<rpc::client*>(getClient())->call("setSimulationMode", is_set);

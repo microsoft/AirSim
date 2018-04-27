@@ -24,7 +24,7 @@ class OrbitNavigator:
         self.snapshot_index = 0
         self.takeoff = False # whether we did a take off
 
-        if self.snapshots > 0:
+        if self.snapshots is not None and self.snapshots > 0:
             self.snapshot_delta = 360 / self.snapshots
 
         if self.iterations <= 0:

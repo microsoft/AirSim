@@ -94,8 +94,10 @@ public:
         g_sWheelRumbleConfig.cbTypeSpecificParams = sizeof(DIPERIODIC);         
         g_sWheelRumbleConfig.lpvTypeSpecificParams = &pf;
 
-        g_pWheelRumbleHandle->SetParameters(&g_sWheelRumbleConfig, DIEP_DIRECTION |
-            DIEP_TYPESPECIFICPARAMS | DIEP_START);
+        if (g_pWheelRumbleHandle) {
+            g_pWheelRumbleHandle->SetParameters(&g_sWheelRumbleConfig, DIEP_DIRECTION |
+                DIEP_TYPESPECIFICPARAMS | DIEP_START);
+        }
     }
 
     const JoystickState& getState(bool update_state = true)

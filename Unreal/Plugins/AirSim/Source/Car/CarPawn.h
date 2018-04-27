@@ -81,8 +81,6 @@ public:
 
     void setupInputBindings();
 
-    void reset(bool disable_api_control = true);
-
     // Begin Actor interface
     virtual void Tick(float Delta) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

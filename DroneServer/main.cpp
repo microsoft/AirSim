@@ -28,6 +28,11 @@ public:
         return api_;
     }
 
+    virtual void reset() override
+    {
+        throw std::domain_error("reset is not supported");
+    }
+
     virtual bool isPaused() const override
     {
         return false;

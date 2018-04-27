@@ -319,23 +319,14 @@ msr::airlib::MultirotorApi* MultiRotorConnector::getApi() const
 //*** Start: UpdatableState implementation ***//
 void MultiRotorConnector::reset()
 {
-    if (UAirBlueprintLib::IsInGameThread())
-        resetPrivate();
-    else {
-        //schedule the task which we will execute in tick event when World object is locked
-        reset_task_ = std::packaged_task<void()>([this]() { resetPrivate(); });
-        std::future<void> reset_result = reset_task_.get_future();
-        reset_pending_ = true;
-        did_reset_ = false;
-        reset_result.wait();
-    }
+    resetPrivate();
 }
 
 void MultiRotorConnector::resetPrivate()
 {
     VehicleConnectorBase::reset();
 
-    //TODO: should this be done in MultiRotor.hpp
+    //TODO: should this be done in MultiRotor.hpp?
     //controller_->reset();
 
     rc_data_ = RCData();

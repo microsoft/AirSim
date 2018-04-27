@@ -214,15 +214,6 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 }
 
-void ACarPawn::reset(bool disable_api_control)
-{
-    keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
-    wrapper_->setApi(std::unique_ptr<msr::airlib::CarApiBase>());
-
-    if (disable_api_control)
-        getApi()->enableApiControl(false);
-}
-
 msr::airlib::CarApiBase* ACarPawn::getApi() const
 {
     return static_cast<msr::airlib::CarApiBase*>(wrapper_->getApi());
@@ -378,10 +369,11 @@ void ACarPawn::updateCarControls()
     if (wrapper_->getRemoteControlID() >= 0 && joystick_state_.is_initialized) {
         joystick_.getJoyStickState(0, joystick_state_);
 
-        if ((joystick_state_.buttons & 4) | (joystick_state_.buttons & 1024)) { //X button or Start button
-            reset();
-            return;
-        }
+        //TODO: move this to SimModeBase
+        //if ((joystick_state_.buttons & 4) | (joystick_state_.buttons & 1024)) { //X button or Start button
+        //    reset();
+        //    return;
+        //}
 
         std::string vendorid = joystick_state_.pid_vid.substr(0, joystick_state_.pid_vid.find('&'));
 
