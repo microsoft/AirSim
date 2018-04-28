@@ -476,6 +476,7 @@ private:// types
         virtual void executeImpl(DroneControllerBase* controller, CancelableBase& cancelable) override {
             controller->moveOnPath(path_, velocity_, drivetrain_, yaw_mode_, lookahead_, adaptive_lookahead_, cancelable);
         }
+        virtual ~MoveOnPath() = default;
     };
 
 

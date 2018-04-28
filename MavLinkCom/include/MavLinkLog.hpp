@@ -16,6 +16,7 @@ namespace mavlinkcom
     {
     public:
         virtual void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) = 0;
+        virtual ~MavLinkLog() = default;
     };
 
     // This implementation of MavLinkLog reads/writes MavLinkMessages to a local file.
@@ -28,7 +29,7 @@ namespace mavlinkcom
         bool json_;
     public:
         MavLinkFileLog();
-        ~MavLinkFileLog();
+        virtual ~MavLinkFileLog();
         bool isOpen();
         void openForReading(const std::string& filename);
         void openForWriting(const std::string& filename, bool json = false);
