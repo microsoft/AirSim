@@ -2,15 +2,15 @@
 
 These instructions applies if you are already using AirSim on Unreal Engine 4.16. If you never installed AirSim, please see [How to get it](https://github.com/microsoft/airsim#how-to-get-it).
 
+**Caution:** Below steps will delete your any unsaved work in AirSim or Unreal folder.
+
 ## Do this first
 
 ### For Windows Users
 1. Install Visual Studio 2017 with VC++, Python and C#.
 2. Install UE 4.18 through Epic Games Launcher.
 3. Start `x64 Native Tools Command Prompt for VS 2017` and navigate to AirSim repo.
-4. Run `git clean -fdx` to remove all unchecked/extra stuff from your repo.
-5. Run `git pull` to get latest code from GitHub.
-6. Run `build.cmd` to build everything.
+4. Run `clean_rebuild.bat` to remove all unchecked/extra stuff and rebuild everything.
 
 ### For Linux Users
 1. From your AirSim repo folder, run 'clean_rebuild.sh`.
