@@ -3,6 +3,13 @@
 set -x
 set -e
 
+if [[ -d "llvm-source-39" ]]; then
+    echo "Hello there! We just upgraded AirSim to Unreal Engine 4.18."
+    echo "Here are few easy steps for upgrade so everything is new and shiny :)"
+    echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
+    exit 1
+fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
 

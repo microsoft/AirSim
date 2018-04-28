@@ -6,6 +6,20 @@ set ROOT_DIR=%~dp0
 REM // Check command line arguments
 set "noFullPolyCar="
 
+REM //check VS version
+if "%VisualStudioVersion%"=="" (
+    echo(
+    echo oh oh... You need to run this command from x64 Native Tools Command Prompt for VS 2017.
+    goto :buildfailed_nomsg
+)
+if "%VisualStudioVersion%"=="14.0" (
+    echo(
+    echo Hello there! We just upgraded AirSim to Unreal Engine 4.18 and Visual Studio 2017.
+    echo Here are few easy steps for upgrade so everything is new and shiny:
+    echo https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md
+    goto :buildfailed_nomsg
+)
+
 if "%1"=="" goto noargs
 if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
 
@@ -19,7 +33,7 @@ if ERRORLEVEL 1 (
   CALL check_cmake.bat
   if ERRORLEVEL 1 (
     echo(
-    echo ERROR: cmake was not installed correctly.
+    echo ERROR: cmake was not installed correctly, we tried.
     goto :buildfailed
   )
 )
@@ -141,9 +155,11 @@ REM //---------- done building ----------
 exit /b 0
 
 :buildfailed
-chdir /d %ROOT_DIR% 
 echo(
 echo #### Build failed - see messages above. 1>&2
+
+:buildfailed_nomsg
+chdir /d %ROOT_DIR% 
 exit /b 1
 
 
