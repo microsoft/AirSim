@@ -1,5 +1,4 @@
-
-# Upgrading to UE 4.18 and Visual Studio 2017
+# Upgrading to Unreal Engine 4.18
 
 These instructions applies if you are already using AirSim on Unreal Engine 4.16. If you never installed AirSim, please see [How to get it](https://github.com/microsoft/airsim#how-to-get-it).
 
@@ -14,9 +13,9 @@ These instructions applies if you are already using AirSim on Unreal Engine 4.16
 6. Run `build.cmd` to build everything.
 
 ### For Linux Users
-1. Rename or delete your exiting folder for Unreal 4.17.
-2. Rename or delete your existing folder for AirSim repo.
-2. Follow [Install steps for Linux](https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md#install-and-build).
+1. From your AirSim repo folder, run 'clean_rebuild.sh`.
+2. Rename or delete your exiting folder for Unreal Engine.
+3. Follow step 1 and 2 to [install Unreal Engine 4.18](https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md#install-and-build).
 
 ## Upgrading Your Custom Unreal Project
 If you have your own Unreal project created in older version of Unreal Engine then you need to upgrade your project to Unreal 4.18. To do this, 

@@ -15,7 +15,7 @@ if [[ ! -d "llvm-source-50" ]]; then
         echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
         exit 1
     else
-        echo "The llvm-souce-50 folder was not found! Mystery indeed.""
+        echo "The llvm-souce-50 folder was not found! Mystery indeed."
     fi
 fi
 
