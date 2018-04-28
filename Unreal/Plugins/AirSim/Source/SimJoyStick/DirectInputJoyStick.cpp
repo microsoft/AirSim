@@ -80,8 +80,11 @@ public:
         g_sAutoCenterConfig.cbTypeSpecificParams = sizeof(DICONSTANTFORCE);
         g_sAutoCenterConfig.lpvTypeSpecificParams = &cf;
 
-        g_pAutoCenterHandle->SetParameters(&g_sAutoCenterConfig, DIEP_DIRECTION | 
-            DIEP_TYPESPECIFICPARAMS | DIEP_START);
+        if (g_pAutoCenterHandle) {
+            g_pAutoCenterHandle->SetParameters(&g_sAutoCenterConfig, DIEP_DIRECTION | 
+                DIEP_TYPESPECIFICPARAMS | DIEP_START);
+        }
+
     }
 
 #define FFWRMAX 0.08
