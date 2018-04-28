@@ -14,6 +14,7 @@
 #include "Components/MeshComponent.h"
 #include "LandscapeProxy.h"
 #include "common/AirSimSettings.hpp"
+#include "IImageWrapperModule.h"
 #include "AirBlueprintLib.generated.h"
 
 
@@ -91,15 +92,15 @@ public:
 
     static bool getLogMessagesHidden()
     {
-        return log_messages_hidden;
+        return log_messages_hidden_;
     }
     static void setLogMessagesHidden(bool is_hidden)
     {
-        log_messages_hidden = is_hidden;
+        log_messages_hidden_ = is_hidden;
     }
     static void SetMeshNamingMethod(msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType method)
     {
-        mesh_naming_method = method;
+        mesh_naming_method_ = method;
     }
 
     static void enableWorldRendering(AActor* context, bool enable);
@@ -112,6 +113,8 @@ public:
     static UClass* LoadClass(const std::string& name);
 
     static void setUnrealClockSpeed(const AActor* context, float clock_speed);
+    static IImageWrapperModule* getImageWrapperModule();
+    static void CompressImageArray(int32 width, int32 height, const TArray<FColor> &src, TArray<uint8> &dest);
 
 private:
     template<typename T>
@@ -126,11 +129,14 @@ private:
     static void SetObjectStencilID(T* mesh, int object_id);
     static void SetObjectStencilID(ALandscapeProxy* mesh, int object_id);
 
+    static bool CompressUsingImageWrapper(const TArray<uint8>& uncompressed, const int32 width, const int32 height, TArray<uint8>& compressed);
 
 private:
-    static bool log_messages_hidden;
+    static bool log_messages_hidden_;
     //FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
-    static uint32_t FlushOnDrawCount;
-    static msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType mesh_naming_method;
+    static uint32_t flush_on_draw_count_;
+    static msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType mesh_naming_method_;
+    
+    static IImageWrapperModule* image_wrapper_module_;
 };
 

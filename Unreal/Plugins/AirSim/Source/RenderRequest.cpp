@@ -3,6 +3,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "TaskGraphInterfaces.h"
 #include "ImageUtils.h"
+#include "AirBlueprintLib.h"
 
 RenderRequest::RenderRequest(bool use_safe_method)
     : use_safe_method_(use_safe_method), params_(nullptr), results_(nullptr), req_size_(0), 
@@ -71,7 +72,7 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
             if (results[i]->width != 0 && results[i]->height != 0) {
                 results[i]->image_data_uint8.SetNumUninitialized(results[i]->width * results[i]->height * 4, false);
                 if (params[i]->compress)
-                    FImageUtils::CompressImageArray(results[i]->width, results[i]->height, results[i]->bmp, results[i]->image_data_uint8);
+                    UAirBlueprintLib::CompressImageArray(results[i]->width, results[i]->height, results[i]->bmp, results[i]->image_data_uint8);
                 else {
                     uint8* ptr = results[i]->image_data_uint8.GetData();
                     for (const auto& item : results[i]->bmp) {

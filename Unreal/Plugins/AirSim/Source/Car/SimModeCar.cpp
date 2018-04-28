@@ -86,6 +86,8 @@ void ASimModeCar::continueForTime(double seconds)
 
 void ASimModeCar::setupClockSpeed()
 {
+    ASimModeBase::setupClockSpeed(); //do the default setup, //TODO: may be we want explicit scalable clock?
+
     current_clockspeed_ = getSettings().clock_speed;
 
     //setup clock in PhysX

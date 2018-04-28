@@ -20,6 +20,8 @@
 #include "Engine/LocalPlayer.h"
 #include "Engine/SkeletalMesh.h"
 #include "Slate/SceneViewport.h"
+#include "IImageWrapper.h"
+#include "ObjectThumbnail.h"
 #include "Engine/Engine.h"
 
 /*
@@ -29,10 +31,11 @@ Methods -> CamelCase
 parameters -> camel_case
 */
 
-bool UAirBlueprintLib::log_messages_hidden = false;
-uint32_t UAirBlueprintLib::FlushOnDrawCount = 0;
-msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method =
+bool UAirBlueprintLib::log_messages_hidden_ = false;
+uint32_t UAirBlueprintLib::flush_on_draw_count_ = 0;
+msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method_ =
     msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName;
+IImageWrapperModule* UAirBlueprintLib::image_wrapper_module_ = nullptr;
 
 void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec)
 {
@@ -122,31 +125,38 @@ void UAirBlueprintLib::enableViewportRendering(AActor* context, bool enable)
         // Do this only if the main viewport is not being rendered anyway in case there are
         // any adverse performance effects during main rendering.
         //HACK: FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
-        if (FlushOnDrawCount == 0)
+        if (flush_on_draw_count_ == 0)
             viewport->GetGameViewport()->IncrementFlushOnDraw();
     }
     else {
         viewport->EngineShowFlags.SetRendering(true);
 
         //HACK: FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
-        if (FlushOnDrawCount > 0)
+        if (flush_on_draw_count_ > 0)
             viewport->GetGameViewport()->DecrementFlushOnDraw();
     }
 }
 
 void UAirBlueprintLib::OnBeginPlay()
 {
-    FlushOnDrawCount = 0;
+    flush_on_draw_count_ = 0;
+    image_wrapper_module_ = & FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 }
 
 void UAirBlueprintLib::OnEndPlay()
 {
     //nothing to do for now
+    image_wrapper_module_ = nullptr;
+}
+
+IImageWrapperModule* UAirBlueprintLib::getImageWrapperModule()
+{
+    return image_wrapper_module_;
 }
 
 void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
 {
-    if (log_messages_hidden)
+    if (log_messages_hidden_)
         return;
 
 
@@ -334,7 +344,7 @@ void UAirBlueprintLib::SetObjectStencilID(ALandscapeProxy* mesh, int object_id)
 template<class T>
 std::string UAirBlueprintLib::GetMeshName(T* mesh)
 {
-    switch(mesh_naming_method)
+    switch(mesh_naming_method_)
     {
     case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName:
         if (mesh->GetOwner())
@@ -354,7 +364,7 @@ std::string UAirBlueprintLib::GetMeshName(T* mesh)
 template<>
 std::string UAirBlueprintLib::GetMeshName<USkinnedMeshComponent>(USkinnedMeshComponent* mesh)
 {
-  switch(mesh_naming_method)
+  switch(mesh_naming_method_)
   {
     case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName:
       if (mesh->GetOwner())
@@ -630,4 +640,48 @@ UClass* UAirBlueprintLib::LoadClass(const std::string& name)
         throw std::invalid_argument(msg);
     }
     return cls;
+}
+
+void UAirBlueprintLib::CompressImageArray(int32 width, int32 height, const TArray<FColor> &src, TArray<uint8> &dest)
+{
+    TArray<FColor> MutableSrcData = src;
+
+    // PNGs are saved as RGBA but FColors are stored as BGRA. An option to swap the order upon compression may be added at 
+    // some point. At the moment, manually swapping Red and Blue 
+    for (int32 Index = 0; Index < width*height; Index++)
+    {
+        uint8 TempRed = MutableSrcData[Index].R;
+        MutableSrcData[Index].R = MutableSrcData[Index].B;
+        MutableSrcData[Index].B = TempRed;
+    }
+
+    FObjectThumbnail TempThumbnail;
+    TempThumbnail.SetImageSize(width, height);
+    TArray<uint8>& ThumbnailByteArray = TempThumbnail.AccessImageData();
+
+    // Copy scaled image into destination thumb
+    int32 MemorySize = width*height * sizeof(FColor);
+    ThumbnailByteArray.AddUninitialized(MemorySize);
+    FMemory::Memcpy(ThumbnailByteArray.GetData(), MutableSrcData.GetData(), MemorySize);
+
+    // Compress data - convert into a .png
+    CompressUsingImageWrapper(ThumbnailByteArray, width, height, dest);;
+}
+
+bool UAirBlueprintLib::CompressUsingImageWrapper(const TArray<uint8>& uncompressed, const int32 width, const int32 height, TArray<uint8>& compressed)
+{
+    bool bSucceeded = false;
+    compressed.Reset();
+    if (uncompressed.Num() > 0)
+    {
+        IImageWrapperModule* ImageWrapperModule = UAirBlueprintLib::getImageWrapperModule();
+        TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule->CreateImageWrapper(EImageFormat::PNG);
+        if (ImageWrapper.IsValid() && ImageWrapper->SetRaw(&uncompressed[0], uncompressed.Num(), width, height, ERGBFormat::RGBA, 8))
+        {
+            compressed = ImageWrapper->GetCompressed();
+            bSucceeded = true;
+        }
+    }
+
+    return bSucceeded;
 }

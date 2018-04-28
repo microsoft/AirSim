@@ -56,8 +56,8 @@ REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
 cd external\rpclib\rpclib-2.2.1\build
-REM cmake -G"Visual Studio 15 2017 Win64" ..
-cmake -G"Visual Studio 14 2015 Win64" ..
+REM cmake -G"Visual Studio 14 2015 Win64" ..
+cmake -G"Visual Studio 15 2017 Win64" ..
 cmake --build .
 cmake --build . --config Release
 if ERRORLEVEL 1 goto :buildfailed
