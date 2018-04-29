@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "FlyingPawn.h"
 #include "common/Common.hpp"
 #include "MultiRotorConnector.h"
 #include "vehicles/multirotor/MultiRotorParams.hpp"

@@ -1,11 +1,14 @@
 #include "SimHUD.h"
 #include "ConstructorHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Misc/FileHelper.h"
+
 #include "Multirotor/SimModeWorldMultiRotor.h"
 #include "Car/SimModeCar.h"
 #include "common/AirSimSettings.hpp"
-#include "Kismet/KismetSystemLibrary.h"
-
+#include "api/DebugApiServer.hpp"
 #include <stdexcept>
+
 
 ASimHUD* ASimHUD::instance_ = nullptr;
 

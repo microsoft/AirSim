@@ -1,17 +1,19 @@
 #include "CarPawn.h"
-#include "CarWheelFront.h"
-#include "CarWheelRear.h"
-#include "common/common_utils/Utils.hpp"
+#include "Engine/SkeletalMesh.h"
+#include "GameFramework/Controller.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "WheeledVehicleMovementComponent4W.h"
-#include "Engine/SkeletalMesh.h"
-#include "GameFramework/Controller.h"
+
+#include "CarWheelFront.h"
+#include "CarWheelRear.h"
 #include "AirBlueprintLib.h"
-#include "common/ClockFactory.hpp"
 #include "PIPCamera.h"
 #include <vector>
+#include "common/common_utils/Utils.hpp"
+#include "common/ClockFactory.hpp"
+
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -208,7 +210,7 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
             UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid == "" ?
                 "(Detected)" : joystick_state_.pid_vid, LogDebugLevel::Informational);
         else
-            UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ", 
+            UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ",
                 std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
     }
 
@@ -412,7 +414,7 @@ void ACarPawn::updateCarControls()
     }
 
     //if API-client control is not active then we route keyboard/jostick control to car
-    if (! getApi()->isApiControlEnabled()) {
+    if (!getApi()->isApiControlEnabled()) {
         //all car controls from anywhere must be routed through API component
         getApi()->setCarControls(current_controls_);
     }
@@ -439,9 +441,9 @@ void ACarPawn::updateForceFeedback() {
         // Update autocenter
         double speed = GetVehicleMovement()->GetForwardSpeed();
 
-         joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
-             (   1.0 - 1.0 / ( std::abs(speed / 120) + 1.0)) 
-             * (joystick_state_.left_x / 3));
+        joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
+            (1.0 - 1.0 / (std::abs(speed / 120) + 1.0))
+            * (joystick_state_.left_x / 3));
     }
 }
 

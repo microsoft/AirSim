@@ -1,9 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/TextureRenderTarget2D.h"
+
 #include <memory>
 #include "common/common_utils/WorkerThread.hpp"
 #include "common/Common.hpp"
+
 
 class RenderRequest : public FRenderCommand
 {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Pawn.h"
+
 #include <vector>
 #include <memory>
 #include "UnrealImageCapture.h"
@@ -10,7 +12,7 @@
 #include "physics/Kinematics.hpp"
 #include "NedTransform.h"
 #include "api/VehicleApiBase.hpp"
-#include "GameFramework/Pawn.h"
+
 
 class VehiclePawnWrapper
 {

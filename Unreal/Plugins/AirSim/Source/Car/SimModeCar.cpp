@@ -1,11 +1,13 @@
 #include "SimModeCar.h"
 #include "ConstructorHelpers.h"
+
 #include "AirBlueprintLib.h"
 #include "common/AirSimSettings.hpp"
 #include "AirBlueprintLib.h"
-#include "Car/CarPawn.h"
 
 #ifndef AIRLIB_NO_RPC
+
+#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
 
 #if defined _WIN32 || defined _WIN64
 #include "AllowWindowsPlatformTypes.h"
@@ -86,8 +88,6 @@ void ASimModeCar::continueForTime(double seconds)
 
 void ASimModeCar::setupClockSpeed()
 {
-    ASimModeBase::setupClockSpeed(); //do the default setup, //TODO: may be we want explicit scalable clock?
-
     current_clockspeed_ = getSettings().clock_speed;
 
     //setup clock in PhysX
@@ -178,7 +178,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
 {
 #ifdef AIRLIB_NO_RPC
-    return ASimMode::createApiServer();
+    return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::CarRpcLibServer(
         getSimModeApi(), getSettings().api_server_address));
@@ -240,7 +240,7 @@ void ASimModeCar::updateReport()
 {
     for (VehiclePtr vehicle : vehicles_) {
         VehiclePawnWrapper* wrapper = vehicle->getVehiclePawnWrapper();
-        msr::airlib::StateReporter& reporter = * report_wrapper_.getReporter();
+        msr::airlib::StateReporter& reporter = *report_wrapper_.getReporter();
         std::string vehicle_name = fpv_vehicle_pawn_wrapper_->getVehicleConfigName();
 
         reporter.writeHeading(std::string("Vehicle: ").append(

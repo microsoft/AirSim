@@ -1,15 +1,20 @@
 #include "SimModeWorldMultiRotor.h"
 #include "ConstructorHelpers.h"
+#include "Logging/MessageLog.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+
 #include "AirBlueprintLib.h"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include "common/ClockFactory.hpp"
 #include <memory>
-#include "Logging/MessageLog.h"
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 #include "UnrealSensors/UnrealSensorFactory.h"
 
 #ifndef AIRLIB_NO_RPC
+
+#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
 
 #if defined _WIN32 || defined _WIN64
 #include "AllowWindowsPlatformTypes.h"
@@ -39,7 +44,7 @@ void ASimModeWorldMultiRotor::BeginPlay()
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiServer() const
 {
 #ifdef AIRLIB_NO_RPC
-    return ASimMode::createApiServer();
+    return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
         getSimModeApi(), getSettings().api_server_address));
@@ -102,7 +107,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         }
     }
 
- 
+
     //find all vehicle pawns
     {
         TArray<AActor*> pawns;
@@ -198,7 +203,7 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
-    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), & wrapper->getNedTransform());
+    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), &wrapper->getNedTransform());
     auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName(), sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
@@ -245,7 +250,7 @@ void ASimModeWorldMultiRotor::setupClockSpeed()
         else {
             //for slowing down, this don't generate instability
             ClockFactory::get(std::make_shared<msr::airlib::SteppableClock>(
-            static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
+                static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
         }
     }
     else
