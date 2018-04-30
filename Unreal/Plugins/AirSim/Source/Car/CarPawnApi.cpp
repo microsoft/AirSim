@@ -126,7 +126,7 @@ void CarPawnApi::reset()
         pawn_->reset();
 
         for (auto* phys_comp : phys_comps) {
-            phys_comp->SetPhysicsAngularVelocity(FVector::ZeroVector);
+            phys_comp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
             phys_comp->SetPhysicsLinearVelocity(FVector::ZeroVector);
             phys_comp->SetSimulatePhysics(false);
         }

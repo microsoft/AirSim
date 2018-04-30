@@ -13,6 +13,7 @@
 #include "Components/MeshComponent.h"
 #include "LandscapeProxy.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetStringLibrary.h"
 
 #include "Runtime/Landscape/Classes/LandscapeComponent.h"
 #include "common/AirSimSettings.hpp"
