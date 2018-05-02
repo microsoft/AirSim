@@ -36,6 +36,7 @@ class AirSimImageType:
     DisparityNormalized = 4
     Segmentation = 5
     SurfaceNormals = 6
+    Infrared = 7
 
 class DrivetrainType:
     MaxDegreeOfFreedom = 0
