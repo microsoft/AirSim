@@ -528,7 +528,7 @@ class MultirotorClient(AirSimClientBase, object):
 
         
     # query vehicle state
-    def getMultirotorState(self) -> MultirotorState:
+    def getMultirotorState(self):
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState'))
     def getPosition(self):
         return Vector3r.from_msgpack(self.client.call('getPosition'))
