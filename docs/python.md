@@ -112,7 +112,7 @@ Make sure your drone is initially located at the start position x=310.0 cm, y=11
 ## FAQ
 
 #### Do I need any thing else on Windows?
-VS2015 Upate 3 should have everything if you installed VC++ and Python. Otherwise you may need to install the Microsoft Visual C++ 9.0 from [http://aka.ms/vcpython27](http://aka.ms/vcpython27).
+VS2017 should have everything if you installed VC++. To use APIs you will need Python 3.5 (install using Anaconda).
 
 #### I get error on `import cv2`
 We recommand [Anaconda](https://www.anaconda.com/download/) to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have [problems](https://stackoverflow.com/a/45934992/207661). You can install OpenCV using `pip install opencv-python`.
