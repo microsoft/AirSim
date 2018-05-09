@@ -1229,7 +1229,7 @@ public:
     //drone parameters
     float getCommandPeriod()
     {
-        return 1.0f / 50; //1 period of 50hz
+        return 1.0f / 1000; //1 period of 50hz
     }
     float getTakeoffZ()
     {

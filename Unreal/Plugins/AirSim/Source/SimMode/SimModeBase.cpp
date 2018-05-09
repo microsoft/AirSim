@@ -136,9 +136,9 @@ long long ASimModeBase::getPhysicsLoopPeriod() //nanoseconds
     */
 
     if (getSettings().usage_scenario == kUsageScenarioComputerVision)
-        return 30000000LL; //30ms
+        return 1000000LL; //30ms
     else
-        return 3000000LL; //3ms
+        return 1000000LL; //3ms
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)

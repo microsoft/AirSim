@@ -72,6 +72,7 @@ int main(int argc, const char *argv[])
 {
     using namespace msr::airlib;
 
+    StandAlonePhysics::testCollison();
     GaussianMarkovTest test;
     test.run();
 }

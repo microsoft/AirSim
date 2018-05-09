@@ -554,6 +554,9 @@ class MultirotorClient(AirSimClientBase, object):
     def moveToPosition(self, x, y, z, velocity, max_wait_seconds = 60, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
         return self.client.call('moveToPosition', x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode, lookahead, adaptive_lookahead)
 
+    def moveByRotorSpeed(self, o0, o1, o2, o3, duration):
+        return self.client.call('moveByRotorSpeed', o0, o1, o2, o3, duration)
+
     def moveByManual(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
         """Read current RC state and use it to control the vehicles. 
 

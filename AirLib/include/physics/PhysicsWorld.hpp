@@ -16,7 +16,7 @@ namespace msr { namespace airlib {
 class PhysicsWorld {
 public:
     PhysicsWorld(PhysicsEngineBase* physics_engine, const std::vector<UpdatableObject*>& bodies,
-            uint64_t update_period_nanos = 3000000LL, bool state_reporter_enabled = false,
+            uint64_t update_period_nanos = 1000000LL, bool state_reporter_enabled = false,
             bool start_async_updator = true
         )
         : world_(physics_engine)

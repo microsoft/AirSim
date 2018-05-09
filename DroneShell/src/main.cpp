@@ -457,7 +457,7 @@ public:
         this->addSwitch({ "-o1", "0", "rotor 1 speed radians per second (default 0)" });
         this->addSwitch({ "-o2", "0", "rotor 2 speed radians per second (default 0)" });
         this->addSwitch({ "-o3", "0", "rotor 3 speed radians per second (default 0)" });
-        this->addSwitch({ "-duration", "5", "the duration of this command in seconds (default 5)" });
+        this->addSwitch({ "-duration", "0.001", "the duration of this command in seconds (default 0.001)" });
     }
 
     bool execute(const DroneCommandParameters& params)
