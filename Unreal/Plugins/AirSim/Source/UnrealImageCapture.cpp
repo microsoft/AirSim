@@ -1,6 +1,8 @@
 #include "UnrealImageCapture.h"
-#include "RenderRequest.h"
+#include "Engine/World.h"
 #include "ImageUtils.h"
+
+#include "RenderRequest.h"
 #include "common/ClockFactory.hpp"
 
 

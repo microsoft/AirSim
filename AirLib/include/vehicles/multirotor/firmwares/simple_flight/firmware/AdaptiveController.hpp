@@ -37,7 +37,7 @@ public:
 
 		// Assign state variables to placeholder variables
 		angle = state_estimator_->getAngles();
-		angle_rate = state_estimator_->getAngulerVelocity();
+		angle_rate = state_estimator_->getAngularVelocity();
 		position = state_estimator_->getPosition();
 		velocity = state_estimator_->getLinearVelocity();
 

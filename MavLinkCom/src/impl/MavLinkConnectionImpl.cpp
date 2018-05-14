@@ -45,7 +45,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::createConnection(cons
     return con;
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const std::string& nodeName, std::string localAddr, int localPort)
+std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort)
 {
     std::shared_ptr<UdpClientPort> socket = std::make_shared<UdpClientPort>();
 
@@ -54,7 +54,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const
     return createConnection(nodeName, socket);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort)
+std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort)
 {
     std::string local = localAddr;
     // just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also. 
@@ -69,7 +69,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(cons
     return createConnection(nodeName, socket);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std::string& nodeName, std::string localAddr, const std::string& remoteIpAddr, int remotePort)
+std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort)
 {
     std::string local = localAddr;
     // just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also. 
@@ -84,13 +84,13 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std:
     return createConnection(nodeName, socket);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, std::string name, int baudRate, const std::string initString)
+std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, const std::string& portName, int baudRate, const std::string& initString)
 {
     std::shared_ptr<SerialPort> serial = std::make_shared<SerialPort>();
 
-    int hr = serial->connect(name.c_str(), baudRate);
+    int hr = serial->connect(portName.c_str(), baudRate);
     if (hr != 0)
-        throw std::runtime_error(Utils::stringf("Could not open the serial port %s, error=%d", name.c_str(), hr));
+        throw std::runtime_error(Utils::stringf("Could not open the serial port %s, error=%d", portName.c_str(), hr));
 
     // send this right away just in case serial link is not already configured 
     if (initString.size() > 0) {

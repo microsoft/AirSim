@@ -460,6 +460,10 @@ namespace LogViewer.Controls
 
         void UpdateChart()
         {
+            if (this.series == null)
+            {
+                this.series = new DataSeries() { Name = "", Values = new List<DataValue>() };
+            }
             Canvas.SetLeft(Graph, 0);
             visibleCount = 0;
             this.smoothScrollIndex = 0;

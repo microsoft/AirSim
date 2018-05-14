@@ -1,35 +1,48 @@
+# Upgrading to Unreal Engine 4.18
 
-# Upgrading Unreal Engine Version
+These instructions applies if you are already using AirSim on Unreal Engine 4.16. If you never installed AirSim, please see [How to get it](https://github.com/microsoft/airsim#how-to-get-it).
 
-## Blocks Project
+**Caution:** Below steps will delete your any unsaved work in AirSim or Unreal folder.
 
-If you are using Blocks project that comes with AirSim then you don't need to do anything other than [installling Unreal 4.16](build_windows.md).
+## Do this first
 
-## Your Own Unreal Project
-If you have your own Unreal project created in version Unreal 4.15 then you need to upgrade your project to use Unreal 4.16. 
+### For Windows Users
+1. Install Visual Studio 2017 with VC++, Python and C#.
+2. Install UE 4.18 through Epic Games Launcher.
+3. Start `x64 Native Tools Command Prompt for VS 2017` and navigate to AirSim repo.
+4. Run `clean_rebuild.bat` to remove all unchecked/extra stuff and rebuild everything.
 
-### Option 1: Just Recreate Project
+### For Linux Users
+1. From your AirSim repo folder, run 'clean_rebuild.sh`.
+2. Rename or delete your exiting folder for Unreal Engine.
+3. Follow step 1 and 2 to [install Unreal Engine 4.18](https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md#install-and-build).
 
-If your project doesn't have any code or assets other than environment you downloaded then you can also simply [recreate the project in Unreal 4.16 Editor](unreal_custenv.md) and then copy Plugins folder from `AirSim/Unreal/Plugins`. 
+## Upgrading Your Custom Unreal Project
+If you have your own Unreal project created in older version of Unreal Engine then you need to upgrade your project to Unreal 4.18. To do this, 
 
-### Option 2: Modify Few Files
+1. Open .uproject file and look for the line `"EngineAssociation"` and make sure it reads like `"EngineAssociation": "4.18"`. 
+2. Delete `Plugins/AirSim` folder in your Unreal project's folder.
+3. Go to your AirSim repo folder and copy `Unreal\Plugins` folder to your Unreal project's folder.
+4. Copy *.bat (or *.sh for Linux) from `Unreal\Environments\Blocks` to your project's folder.
+5. Run `clean.bat` (or `clean.sh` for Linux) followed by `GenerateProjectFiles.bat` (only for Windows).
 
-Unreal 4.16 Build system has breaking changes. So you need to modify your *.Build.cs and *.Target.cs which you can find in `Source` folder of your Unreal project. So what are those changes? Below is the gist of it but you should really refer to [Unreal's official 4.16 transition post](https://forums.unrealengine.com/showthread.php?145757-C-4-16-Transition-Guide).
+## FAQ
 
-#### In your project's *.Target.cs
+### I have Unreal project that is older than 4.16. How do I upgrade it?
+
+#### Option 1: Just Recreate Project
+If your project doesn't have any code or assets other than environment you downloaded then you can also simply [recreate the project in Unreal 4.18 Editor](unreal_custenv.md) and then copy Plugins folder from `AirSim/Unreal/Plugins`. 
+
+#### Option 2: Modify Few Files
+Unreal versions newer than Unreal 4.15 has breaking changes. So you need to modify your *.Build.cs and *.Target.cs which you can find in `Source` folder of your Unreal project. So what are those changes? Below is the gist of it but you should really refer to [Unreal's official 4.16 transition post](https://forums.unrealengine.com/showthread.php?145757-C-4-16-Transition-Guide).
+
+##### In your project's *.Target.cs
 1. Change the contructor from, `public MyProjectTarget(TargetInfo Target)` to `public MyProjectTarget(TargetInfo Target) : base(Target)`
 
 2. Remove `SetupBinaries` method if you have one and instead add following line in contructor above: `ExtraModuleNames.AddRange(new string[] { "MyProject" });`
 
-#### In your project's *.Build.cs
+##### In your project's *.Build.cs
 Change the constructor from `public MyProject(TargetInfo Target)` to `public MyProject(ReadOnlyTargetRules Target) : base(Target)`.
 
-#### In your *.uproject
-Remove line for `EngineAssociation`
-
-#### And finally...
-1. Make sure [Unreal 4.16 is installed](build,md).
-2. Double click on your project's `*.uproject` file.
-3. If you are asked to select Unreal version, select 4.16.
-4. The warning box might show only "Open Copy" button. Don't click that. Instead click on More Options which will reveal more buttons. Choose Convert-In-Place option. Causion: Always keep backup of your project first!
-5. If you don't have anything nasty, in place conversion should go through and you are now on new version of Unreal!
+##### And finally...
+Follow above steps to continue upgrade. The warning box might show only "Open Copy" button. Don't click that. Instead click on More Options which will reveal more buttons. Choose `Convert-In-Place option`. *Causion:* Always keep backup of your project first! If you don't have anything nasty, in place conversion should go through and you are now on new version of Unreal.

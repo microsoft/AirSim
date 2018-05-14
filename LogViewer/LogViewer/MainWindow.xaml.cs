@@ -18,7 +18,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Xml.Linq;
@@ -1522,13 +1521,7 @@ namespace LogViewer
         private void OnConnectorClick(object sender, MouseButtonEventArgs e)
         {
             ConnectionPanel.Start();
-            TranslateTransform transform = new TranslateTransform(300, 0);
-            ConnectionPanel.RenderTransform = transform;
-            transform.BeginAnimation(TranslateTransform.XProperty,
-                new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(0.2)))
-                {
-                    EasingFunction = new ExponentialEase() { EasingMode = EasingMode.EaseOut }
-                });
+            XamlExtensions.Flyout(ConnectionPanel);
         }
 
         private void OnOpenFileCommand(object sender, ExecutedRoutedEventArgs e)
@@ -1680,7 +1673,7 @@ namespace LogViewer
 
         private void OnSettings(object sender, RoutedEventArgs e)
         {
-            AppSettingsPanel.Visibility = Visibility.Visible;
+            XamlExtensions.Flyout(AppSettingsPanel);
         }
 
         private void OnMapTest(object sender, RoutedEventArgs e)

@@ -85,39 +85,6 @@ bool RpcLibClientBase::isApiControlEnabled()
     return pimpl_->client.call("isApiControlEnabled").as<bool>();
 }
 
-//sim only
-void RpcLibClientBase::simSetPose(const Pose& pose, bool ignore_collision)
-{
-    pimpl_->client.call("simSetPose", RpcLibAdapatorsBase::Pose(pose), ignore_collision);
-}
-Pose RpcLibClientBase::simGetPose()
-{
-    return pimpl_->client.call("simGetPose").as<RpcLibAdapatorsBase::Pose>().to();
-}
-vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request)
-{
-    const auto& response_adaptor = pimpl_->client.call("simGetImages", 
-        RpcLibAdapatorsBase::ImageRequest::from(request))
-        .as<vector<RpcLibAdapatorsBase::ImageResponse>>();
-
-    return RpcLibAdapatorsBase::ImageResponse::to(response_adaptor);
-}
-vector<uint8_t> RpcLibClientBase::simGetImage(int camera_id, ImageCaptureBase::ImageType type)
-{
-    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type).as<vector<uint8_t>>();
-    if (result.size() == 1) {
-        // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-        result.clear();
-    }
-    return result;
-}
-
-void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
-{
-    pimpl_->client.call("simPrintLogMessage", message, message_param, severity);
-}
-
-
 msr::airlib::GeoPoint RpcLibClientBase::getHomeGeoPoint()
 {
     return pimpl_->client.call("getHomeGeoPoint").as<RpcLibAdapatorsBase::GeoPoint>().to();
@@ -152,6 +119,11 @@ void* RpcLibClientBase::getClient()
     return &pimpl_->client;
 }
 
+bool RpcLibClientBase::armDisarm(bool arm)
+{
+    return pimpl_->client.call("armDisarm", arm).as<bool>();
+}
+
 CameraInfo RpcLibClientBase::getCameraInfo(int camera_id)
 {
     return pimpl_->client.call("getCameraInfo", camera_id).as<RpcLibAdapatorsBase::CameraInfo>().to();
@@ -165,6 +137,55 @@ void RpcLibClientBase::setCameraOrientation(int camera_id, const Quaternionr& or
 CollisionInfo RpcLibClientBase::getCollisionInfo()
 {
     return pimpl_->client.call("getCollisionInfo").as<RpcLibAdapatorsBase::CollisionInfo>().to();
+}
+
+
+//sim only
+void RpcLibClientBase::simSetPose(const Pose& pose, bool ignore_collision)
+{
+    pimpl_->client.call("simSetPose", RpcLibAdapatorsBase::Pose(pose), ignore_collision);
+}
+Pose RpcLibClientBase::simGetPose()
+{
+    return pimpl_->client.call("simGetPose").as<RpcLibAdapatorsBase::Pose>().to();
+}
+vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request)
+{
+    const auto& response_adaptor = pimpl_->client.call("simGetImages", 
+        RpcLibAdapatorsBase::ImageRequest::from(request))
+        .as<vector<RpcLibAdapatorsBase::ImageResponse>>();
+
+    return RpcLibAdapatorsBase::ImageResponse::to(response_adaptor);
+}
+vector<uint8_t> RpcLibClientBase::simGetImage(int camera_id, ImageCaptureBase::ImageType type)
+{
+    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type).as<vector<uint8_t>>();
+    if (result.size() == 1) {
+        // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
+        result.clear();
+    }
+    return result;
+}
+
+void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
+{
+    pimpl_->client.call("simPrintLogMessage", message, message_param, severity);
+}
+
+
+bool RpcLibClientBase::simIsPaused()
+{
+    return pimpl_->client.call("simIsPaused").as<bool>();
+}
+
+void RpcLibClientBase::simPause(bool is_paused)
+{
+    pimpl_->client.call("simPause", is_paused);
+}
+
+void RpcLibClientBase::simContinueForTime(double seconds)
+{
+    pimpl_->client.call("simContinueForTime", seconds);
 }
 
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name)

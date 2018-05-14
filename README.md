@@ -73,12 +73,9 @@ Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode,
 
 ## What's New
 
-* We now have the [car model](docs/using_car.md).
-* No need to build the code. Just download [binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
-* The [reinforcement learning example](docs/reinforcement_learning.md) with AirSim
-* New built-in flight controller called [simple_flight](docs/simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
-* AirSim now also generates [depth as well as disparity images](docs/image_apis.md) that is in camera plan. 
-* We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](docs/release_notes.md).
+* We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
+
+[List of newly added features](docs/whats_new.md)
 
 ## Participate
 
@@ -98,7 +95,7 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 
 ### Contribute
 
-Please take a look at [open issues](https://github.com/microsoft/airsim/issues) and [Trello board](https://trello.com/b/1t2qCeaA/todo) if you are looking for areas to contribute to.
+Please take a look at [open issues](https://github.com/microsoft/airsim/issues) if you are looking for areas to contribute to.
 
 * [More on AirSim design](docs/design.md)
 * [More on code structure](docs/code_structure.md)

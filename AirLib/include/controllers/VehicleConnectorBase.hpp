@@ -20,10 +20,6 @@ public:
     //called when render changes are required
     virtual void updateRendering(float dt) = 0;
 
-    //opens up channel to talk to vehicle via APIs
-    virtual void startApiServer() = 0;
-    virtual void stopApiServer() = 0;
-    virtual bool isApiServerStarted() = 0;
     virtual VehicleControllerBase* getController() = 0;
     virtual ImageCaptureBase* getImageCapture() = 0;
     virtual void setPose(const Pose& pose, bool ignore_collision) = 0;

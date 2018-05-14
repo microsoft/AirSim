@@ -19,12 +19,12 @@ public:
     //tells the controller to switch from human operated mode to computer operated mode
     virtual void enableApiControl(bool is_enabled) = 0;
     virtual void setSimulationMode(bool is_set) = 0;
-    virtual bool isApiControlEnabled() = 0;
-    virtual bool isSimulationMode() = 0;
+    virtual bool isApiControlEnabled() const = 0;
+    virtual bool isSimulationMode() const = 0;
 
     //if controller connects via USB/UDP and connection fails then this
     //should return false
-    virtual bool isAvailable(std::string& message) = 0;
+    virtual bool isAvailable(std::string& message) const = 0;
 
     //TODO: below method is needed to support firmwares without state estimation. In future, we should probably remove this support.
     virtual void setGroundTruth(PhysicsBody* physics_body)

@@ -51,8 +51,8 @@ public: //types
         //angular coefficient is usually 10X smaller than linear, however we should replace this with exact number
         //http://physics.stackexchange.com/q/304742/14061
         real_T angular_drag_coefficient = linear_drag_coefficient; 
-        real_T restitution = 0.15f;
-        real_T friction = 0.7f;
+        real_T restitution = 0.55f; // value of 1 would result in perfectly elastic collisions, 0 would be completely inelastic.
+        real_T friction = 0.5f;
         EnabledSensors enabled_sensors;
         RotorParams rotor_params;
 

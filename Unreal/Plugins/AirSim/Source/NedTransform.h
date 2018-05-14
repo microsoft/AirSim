@@ -1,9 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "common/Common.hpp"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Actor.h"
+
+#include "common/Common.hpp"
 
 
 class NedTransform

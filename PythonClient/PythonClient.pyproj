@@ -12,8 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>PythonClient</Name>
     <RootNamespace>PythonClient</RootNamespace>
-    <InterpreterId>
-    </InterpreterId>
+    <InterpreterId>Global|ContinuumAnalytics|Anaconda35-64</InterpreterId>
     <InterpreterVersion>
     </InterpreterVersion>
   </PropertyGroup>
@@ -35,6 +34,15 @@
     <Compile Include="car_collision.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="car_monitor.py" />
+    <Compile Include="disarm.py" />
+    <Compile Include="land.py" />
+    <Compile Include="pause_continue_car.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="clock_speed.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cv_mode.py">
       <SubType>Code</SubType>
     </Compile>
@@ -52,7 +60,15 @@
     <Compile Include="objects.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="orbit.py" />
+    <Compile Include="pause_continue_drone.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="point_cloud.py" />
+    <Compile Include="reset_test_car.py" />
+    <Compile Include="reset_test_drone.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="seg_pallete.py">
       <SubType>Code</SubType>
     </Compile>
@@ -77,6 +93,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="survey.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda35-64" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

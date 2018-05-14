@@ -210,9 +210,6 @@
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\ControlServerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\api\DebugApiServer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -487,6 +484,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\common\EarthCelestial.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\WorldApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\SimModeApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\ApiServerBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

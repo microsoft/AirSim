@@ -14,11 +14,11 @@ namespace msr { namespace airlib {
 
 class MultirotorRpcLibServer : public RpcLibServerBase {
 public:
-    MultirotorRpcLibServer(MultirotorApi* drone, string server_address, uint16_t port = 41451);
+    MultirotorRpcLibServer(SimModeApiBase* simmode_api, string server_address, uint16_t port = 41451);
     virtual ~MultirotorRpcLibServer();
 
 private:
-    MultirotorApi* getDroneApi();
+    MultirotorApi* getDroneApi() const;
 };
 
 }} //namespace

@@ -7,6 +7,18 @@ pushd "$SCRIPT_DIR"  >/dev/null
 set -e
 # set -x
 
+#check for correct verion of llvm
+if [[ ! -d "llvm-source-50" ]]; then
+    if [[ -d "llvm-source-39" ]]; then
+        echo "Hello there! We just upgraded AirSim to Unreal Engine 4.18."
+        echo "Here are few easy steps for upgrade so everything is new and shiny :)"
+        echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
+        exit 1
+    else
+        echo "The llvm-souce-50 folder was not found! Mystery indeed."
+    fi
+fi
+
 # check for libc++
 if [[ !(-d "./llvm-build/output/lib") ]]; then
     echo "ERROR: clang++ and libc++ is necessary to compile AirSim and run it in Unreal engine"
@@ -37,13 +49,13 @@ else
     if [ "$(uname)" == "Darwin" ]; then
         CMAKE="$(greadlink -f cmake_build/bin/cmake)"
 
-        export CC=/usr/local/opt/llvm\@3.9/bin/clang
-        export CXX=/usr/local/opt/llvm\@3.9/bin/clang++
+        export CC=/usr/local/opt/llvm\@5.0/bin/clang
+        export CXX=/usr/local/opt/llvm\@5.0/bin/clang++
     else
         CMAKE="$(readlink -f cmake_build/bin/cmake)"
 
-        export CC="clang-3.9"
-        export CXX="clang++-3.9"
+        export CC="clang-5.0"
+        export CXX="clang++-5.0"
     fi
 fi
 

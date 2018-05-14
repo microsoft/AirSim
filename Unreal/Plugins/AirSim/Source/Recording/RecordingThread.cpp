@@ -1,8 +1,9 @@
 #include "RecordingThread.h"
+#include "TaskGraphInterfaces.h"
 #include "HAL/RunnableThread.h"
+
 #include <thread>
 #include <mutex>
-#include "TaskGraphInterfaces.h"
 #include "RenderRequest.h"
 #include "PIPCamera.h"
 

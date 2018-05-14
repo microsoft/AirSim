@@ -12,25 +12,27 @@ namespace msr { namespace airlib {
 
 class VehicleApiBase {
 public:
-    virtual GeoPoint getHomeGeoPoint() = 0;
+    virtual GeoPoint getHomeGeoPoint() const = 0;
     virtual void enableApiControl(bool is_enabled) = 0;
+    virtual bool armDisarm(bool arm) = 0;
     virtual bool isApiControlEnabled() const = 0;
     virtual void reset() = 0;
 
-    virtual vector<ImageCaptureBase::ImageResponse> simGetImages(const vector<ImageCaptureBase::ImageRequest>& request) = 0;
-    virtual vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) = 0;
+    virtual vector<ImageCaptureBase::ImageResponse> simGetImages(const vector<ImageCaptureBase::ImageRequest>& request) const = 0;
+    virtual vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const = 0;
 
     virtual void simSetPose(const Pose& pose, bool ignore_collision) = 0;
-    virtual Pose simGetPose() = 0;
+    virtual Pose simGetPose() const = 0;
 
     virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
-    virtual int simGetSegmentationObjectID(const std::string& mesh_name) = 0;
+    virtual int simGetSegmentationObjectID(const std::string& mesh_name) const = 0;
 
-    virtual void simPrintLogMessage(const std::string& message, const std::string& message_param = "", unsigned char severity = 0) = 0;
+    virtual void simPrintLogMessage(const std::string& message, 
+        const std::string& message_param = "", unsigned char severity = 0) = 0;
     
-    virtual CollisionInfo getCollisionInfo() = 0;
+    virtual CollisionInfo getCollisionInfo() const = 0;
 
-    virtual Pose simGetObjectPose(const std::string& object_name) = 0;
+    virtual Pose simGetObjectPose(const std::string& object_name) const = 0;
 
     virtual CameraInfo getCameraInfo(int camera_id) const = 0;
     virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) = 0;

@@ -1,5 +1,6 @@
 #include "SimModeWorldBase.h"
 #include <exception>
+#include "AirBlueprintLib.h"
 
 
 void ASimModeWorldBase::BeginPlay()
@@ -87,6 +88,22 @@ ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
     return physics_engine_.get();
 }
 
+bool ASimModeWorldBase::isPaused() const
+{
+    return physics_world_->isPaused();
+}
+
+void ASimModeWorldBase::pause(bool is_paused)
+{
+    physics_world_->pause(is_paused);
+}
+
+void ASimModeWorldBase::continueForTime(double seconds)
+{
+    physics_world_->continueForTime(seconds);
+
+}
+
 size_t ASimModeWorldBase::getVehicleCount() const
 {
     return vehicles_.size();
@@ -115,7 +132,9 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
 
 void ASimModeWorldBase::reset()
 {
-    physics_world_->reset();
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        physics_world_->reset();
+    }, true);
     
     Super::reset();
 }

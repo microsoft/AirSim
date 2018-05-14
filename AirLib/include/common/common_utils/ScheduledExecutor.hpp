@@ -31,21 +31,44 @@ public:
         callback_ = callback;
         period_nanos_ = period_nanos;
         started_ = false;
+
     }
 
     void start()
     {
         started_ = true;
+        is_first_period_ = true;
+
+        initializePauseState();
+        
         sleep_time_avg_ = 0;
-        period_count_ = 0;
         Utils::cleanupThread(th_);
         th_ = std::thread(&ScheduledExecutor::executorLoop, this);
+    }
+
+    void pause(bool is_paused)
+    {
+        paused_ = is_paused;
+    }
+
+    bool isPaused() const
+    {
+        return paused_;
+    }
+
+    void continueForTime(double seconds)
+    {
+        pause_period_start_ = nanos();
+        pause_period_ = static_cast<TTimeDelta>(1E9 * seconds);
+        paused_ = false;
     }
 
     void stop()
     {
         if (started_) {
             started_ = false;
+            initializePauseState();
+
             try {
                 if (th_.joinable()) {
                     th_.join();
@@ -56,22 +79,17 @@ public:
         }
     }
 
-    bool isRunning()
+    bool isRunning() const
     {
-        return started_;
+        return started_ && !paused_;
     }
 
-    double getSleepTimeAvg()
+    double getSleepTimeAvg() const
     {
         //TODO: make this function thread safe by using atomic types
         //right now this is not implemented for performance and that
         //return of this function is purely informational/debugging purposes
         return sleep_time_avg_;
-    }
-
-    uint64_t getPeriodCount()
-    {
-        return period_count_;
     }
 
     void lock()
@@ -81,6 +99,14 @@ public:
     void unlock()
     {
         mutex_.unlock();
+    }
+
+private:
+    void initializePauseState()
+    {
+        paused_ = false;
+        pause_period_start_ = 0;
+        pause_period_ = 0;
     }
 
 private:
@@ -125,16 +151,29 @@ private:
             TTimePoint period_start = nanos();
             TTimeDelta since_last_call = period_start - call_end;
             
-            //is this first loop?
-            if (period_count_ > 0) {
-                //when we are doing work, don't let other thread to cause contention
-                std::lock_guard<std::mutex> locker(mutex_);
+            if (pause_period_start_ > 0) {
+                if (nanos() - pause_period_start_ >= pause_period_) {
+                    if (! isPaused())
+                        pause(true);
 
-                bool result = callback_(since_last_call);
-                if (!result) {
-                    started_ = result;
+                    pause_period_start_ = 0;
                 }
             }
+
+            //is this first loop?
+            if (!is_first_period_) {
+                if (!paused_) {
+                    //when we are doing work, don't let other thread to cause contention
+                    std::lock_guard<std::mutex> locker(mutex_);
+
+                    bool result = callback_(since_last_call);
+                    if (!result) {
+                        started_ = result;
+                    }
+                }
+            } 
+            else
+                is_first_period_ = false;
             
             call_end = nanos();
 
@@ -143,7 +182,6 @@ private:
             TTimeDelta delay_nanos = period_nanos_ > elapsed_period ? period_nanos_ - elapsed_period : 0;
             //moving average of how much we are sleeping
             sleep_time_avg_ = 0.25f * sleep_time_avg_ + 0.75f * delay_nanos;
-            ++period_count_;
             if (delay_nanos > 0 && started_)
                 sleep_for(delay_nanos);
         }
@@ -153,10 +191,13 @@ private:
     uint64_t period_nanos_;
     std::thread th_;
     std::function<bool(uint64_t)> callback_;
+    bool is_first_period_;
     std::atomic_bool started_;
-
+    std::atomic_bool paused_;
+    std::atomic<TTimeDelta> pause_period_;
+    std::atomic<TTimePoint> pause_period_start_;
+    
     double sleep_time_avg_;
-    uint64_t period_count_;
 
     std::mutex mutex_;
 };

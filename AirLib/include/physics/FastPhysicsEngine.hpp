@@ -84,7 +84,7 @@ private:
         const CollisionInfo collision_info = body.getCollisionInfo();
         CollisionResponseInfo& collision_response_info = body.getCollisionResponseInfo();
         //if collision was already responsed then do not respond to it until we get updated information
-        if (collision_info.has_collided && collision_response_info.collision_time_stamp != collision_info.time_stamp) {
+        if (grounded_ || (collision_info.has_collided && collision_response_info.collision_time_stamp != collision_info.time_stamp)) {
             bool is_collision_response = getNextKinematicsOnCollision(dt, collision_info, body, 
                 current, next, next_wrench, enable_ground_lock_, grounded_);
             updateCollisionResponseInfo(collision_info, next, is_collision_response, collision_response_info);
@@ -137,12 +137,26 @@ private:
         const Vector3r normal_body = VectorMath::transformToBodyFrame(collision_info.normal, current.pose.orientation);
         const bool is_ground_normal = Utils::isApproximatelyEqual(std::abs(normal_body.z()), 1.0f, kAxisTolerance);
         bool ground_collision = false;
-        if (is_ground_normal
-            || Utils::isApproximatelyEqual(std::abs(normal_body.x()), 1.0f, kAxisTolerance) 
-            || Utils::isApproximatelyEqual(std::abs(normal_body.y()), 1.0f, kAxisTolerance) 
+        const float z_vel = vcur_avg.z();
+        const bool is_landing = z_vel > std::abs(vcur_avg.x()) && z_vel > std::abs(vcur_avg.y());
+
+        real_T restitution = body.getRestitution();
+        real_T friction = body.getFriction();
+
+        if (is_ground_normal && is_landing
+           // So normal_body is the collision normal translated into body coords, why does an x==1 or y==1
+           // mean we are coliding with the ground???
+           // || Utils::isApproximatelyEqual(std::abs(normal_body.x()), 1.0f, kAxisTolerance) 
+           // || Utils::isApproximatelyEqual(std::abs(normal_body.y()), 1.0f, kAxisTolerance) 
            ) {
-            //think of collision occured along the surface, not at point
-            r = Vector3r::Zero();
+            // looks like we are coliding with the ground.  We don't want the ground to be so bouncy
+            // so we reduce the coefficient of restitution.  0 means no bounce.
+            // TODO: it would be better if we did this based on the material we are landing on.
+            // e.g. grass should be inelastic, but a hard surface like the road should be more bouncy.
+            restitution = 0;
+            // crank up friction with the ground so it doesn't try and slide across the ground
+            // again, this should depend on the type of surface we are landing on.
+            friction = 1; 
 
             //we have collided with ground straight on, we will fix orientation later
             ground_collision = is_ground_normal;
@@ -165,7 +179,7 @@ private:
             (body.getInertiaInv() * r.cross(normal_body))
             .cross(r)
             .dot(normal_body);
-        const real_T impulse_mag = -contact_vel_body.dot(normal_body) * (1 + body.getRestitution()) / impulse_mag_denom;
+        const real_T impulse_mag = -contact_vel_body.dot(normal_body) * (1 + restitution) / impulse_mag_denom;
 
         next.twist.linear = vcur_avg + collision_info.normal * (impulse_mag / body.getMass());
         next.twist.angular = angular_avg + r.cross(normal_body) * impulse_mag;
@@ -178,7 +192,7 @@ private:
             (body.getInertiaInv() * r.cross(contact_tang_unit_body))
             .cross(r)
             .dot(contact_tang_unit_body);
-        const real_T friction_mag = -contact_tang_body.norm() * body.getFriction() / friction_mag_denom;
+        const real_T friction_mag = -contact_tang_body.norm() * friction / friction_mag_denom;
 
         const Vector3r contact_tang_unit = VectorMath::transformToWorldFrame(contact_tang_unit_body, current.pose.orientation);
         next.twist.linear += contact_tang_unit * friction_mag;
@@ -187,10 +201,11 @@ private:
         //TODO: implement better rolling friction
         next.twist.angular *= 0.9f;
 
-        //there is no acceleration during collision response
+        // there is no acceleration during collision response, this is a hack, but without it the acceleration cancels
+        // the computed impulse response too much and stops the vehicle from bouncing off the collided object.
         next.accelerations.linear = Vector3r::Zero();
         next.accelerations.angular = Vector3r::Zero();
- 
+
         next.pose = current.pose;
         if (enable_ground_lock && ground_collision) {
             float pitch, roll, yaw;
@@ -205,6 +220,11 @@ private:
             next.twist.linear = Vector3r::Zero();
             next.pose.position = collision_info.position;
             grounded = true;
+
+            // but we do want to "feel" the ground when we hit it (we should see a small z-acc bump)
+            // equal and opposite our downward velocity.
+            next.accelerations.linear = -0.5 * body.getMass() * vcur_avg;
+
             //throttledLogOutput("*** Triggering ground lock", 0.1);
         }
         else
@@ -229,33 +249,6 @@ private:
             last_message_time = clock()->nowNanos();
         }
     }
-
-    //bool getNextKinematicsOnGround(TTimeDelta dt, const PhysicsBody& body, const Kinematics::State& current, Kinematics::State& next, Wrench& next_wrench)
-    //{
-    //    /************************* reset state if we have hit the ground ************************/
-    //    real_T min_z_over_ground = body.getEnvironment().getState().min_z_over_ground;
-    //    grounded_ = 0;
-    //    if (min_z_over_ground <= next.pose.position.z()) {
-    //        grounded_ = 1;
-    //        next.pose.position.z() = min_z_over_ground;
-
-    //        real_T z_proj = static_cast<real_T>(next.twist.linear.z() + next.accelerations.linear.z() * dt);
-    //        if (Utils::isDefinitelyLessThan(0.0f, z_proj)) {
-    //            grounded_ = 2;
-    //            next.twist = Twist::zero();
-    //            next.accelerations.linear = Vector3r::Zero();
-    //            next.accelerations.angular = Vector3r::Zero();
-    //            //reset roll/pitch - px4 seems to have issue with this
-    //            real_T r, p, y;
-    //            VectorMath::toEulerianAngle(current.pose.orientation, p, r, y);
-    //            next.pose.orientation = VectorMath::toQuaternion(0, 0, y);
-
-    //            next_wrench = Wrench::zero();
-    //        }
-    //    }
-
-    //    return grounded_ != 0;
-    //}
 
     static Wrench getDragWrench(const PhysicsBody& body, const Quaternionr& orientation, 
         const Vector3r& linear_vel, const Vector3r& angular_vel_body)
@@ -327,9 +320,10 @@ private:
         const Wrench body_wrench = getBodyWrench(body, current.pose.orientation);
 
         if (grounded) {
-            // make it stick to the ground until we see significant body wrench forces.
+            // make it stick to the ground until we see body wrench force greater than gravity.
             float normalizedForce = body_wrench.force.squaredNorm();
-            if (normalizedForce > kSurfaceTension)
+            float normalizedGravity = body.getEnvironment().getState().gravity.squaredNorm();
+            if (normalizedForce >= normalizedGravity)
             {
                 //throttledLogOutput("*** Losing ground lock due to body_wrench " + VectorMath::toString(body_wrench.force), 0.1);
                 grounded = false;
@@ -446,7 +440,6 @@ private:
     static constexpr float kAxisTolerance = 0.25f;
     static constexpr float kRestingVelocityMax = 0.1f;
     static constexpr float kDragMinVelocity = 0.1f;
-    static constexpr float kSurfaceTension = 1.0f;
 
     std::stringstream debug_string_;
     bool grounded_ = false;

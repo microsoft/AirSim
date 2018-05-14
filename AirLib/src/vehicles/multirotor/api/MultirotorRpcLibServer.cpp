@@ -30,11 +30,9 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::MultirotorRpcLibAdapators MultirotorRpcLibAdapators;
 
-MultirotorRpcLibServer::MultirotorRpcLibServer(MultirotorApi* drone, string server_address, uint16_t port)
-        : RpcLibServerBase(drone, server_address, port)
+MultirotorRpcLibServer::MultirotorRpcLibServer(SimModeApiBase* simmode_api, string server_address, uint16_t port)
+        : RpcLibServerBase(simmode_api, server_address, port)
 {
-    (static_cast<rpc::server*>(getServer()))->
-        bind("armDisarm", [&](bool arm) -> bool { return getDroneApi()->armDisarm(arm); });
     (static_cast<rpc::server*>(getServer()))->
         bind("setSimulationMode", [&](bool is_set) -> void { getDroneApi()->setSimulationMode(is_set); });
     (static_cast<rpc::server*>(getServer()))->
@@ -90,9 +88,9 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(MultirotorApi* drone, string serv
         float obs_avoidance_vel, const MultirotorRpcLibAdapators::Vector3r& origin, float xy_length, float max_z, float min_z) -> 
         bool { return getDroneApi()->setSafety(SafetyEval::SafetyViolationType(enable_reasons), obs_clearance, obs_startegy,
             obs_avoidance_vel, origin.to(), xy_length, max_z, min_z); });
-	(static_cast<rpc::server*>(getServer()))->
-		bind("setRCData", [&](const MultirotorRpcLibAdapators::RCData& data) ->
-		void { getDroneApi()->setRCData(data.to()); });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("setRCData", [&](const MultirotorRpcLibAdapators::RCData& data) ->
+        void { getDroneApi()->setRCData(data.to()); });
 
 
     //getters
@@ -136,9 +134,9 @@ MultirotorRpcLibServer::~MultirotorRpcLibServer()
 {
 }
 
-MultirotorApi* MultirotorRpcLibServer::getDroneApi()
+MultirotorApi* MultirotorRpcLibServer::getDroneApi() const
 {
-    return static_cast<MultirotorApi*>(RpcLibServerBase::getVehicleApi());
+    return static_cast<MultirotorApi*>(getSimModeApi()->getVehicleApi());
 }
 
 }} //namespace

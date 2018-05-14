@@ -51,6 +51,14 @@ public:
         }
     }
 
+	void setAutoCenter(unsigned int index, double strength) {
+		controllers_[index]->setAutoCenter(strength);
+	}
+
+	void setWheelRumble(unsigned int index, double strength) {
+		controllers_[index]->setWheelRumble(strength);
+	}
+
 
 private:
     float getMappedValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
@@ -309,6 +317,19 @@ public:
             state.is_valid = false;
     }
 
+    
+	void setAutoCenter(unsigned int index, double strength) {
+        unused(index);
+        unused(strength);
+		//TODO: implement this for linux
+	}
+
+	void setWheelRumble(unsigned int index, double strength) {
+        unused(index);
+        unused(strength);
+		//TODO: implement this for linux
+	}
+
     // bool getJoystickInfo(int index, std::string& manufacturerID, std::string& productID, std::string& message)
     // {
     //     manufacturerID = productID = "";
@@ -367,4 +388,14 @@ SimJoyStick::~SimJoyStick()
 void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state)
 {
     pimpl_->getJoyStickState(index, state, axis_maps);
+}
+
+void SimJoyStick::setAutoCenter(unsigned int index, double strength)
+{
+    pimpl_->setAutoCenter(index, strength);
+}
+
+void SimJoyStick::setWheelRumble(unsigned int index, double strength)
+{
+    pimpl_->setWheelRumble(index, strength);
 }

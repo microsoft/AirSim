@@ -36,6 +36,7 @@ class AirSimImageType:
     DisparityNormalized = 4
     Segmentation = 5
     SurfaceNormals = 6
+    Infrared = 7
 
 class DrivetrainType:
     MaxDegreeOfFreedom = 0
@@ -191,6 +192,9 @@ class KinematicsState(MsgpackMixin):
 class CarState(MsgpackMixin):
     speed = np.float32(0)
     gear = 0
+    rpm = np.float32(0)
+    maxrpm = np.float32(0)
+    handbrake = False
     collision = CollisionInfo();
     kinematics_true = KinematicsState()
     timestamp = np.uint64(0)
@@ -494,15 +498,85 @@ class AirSimClientBase:
 
         AirSimClientBase.write_file(filename, png_bytes)
 
+    def ping(self):
+        return self.client.call('ping')
+
+    def reset(self):
+        self.client.call('reset')
+
+    def confirmConnection(self):
+        home = self.getHomeGeoPoint()
+        while ((home.latitude == 0 and home.longitude == 0 and home.altitude == 0) or
+                math.isnan(home.latitude) or  math.isnan(home.longitude) or  math.isnan(home.altitude)):
+            time.sleep(1)
+            home = self.getHomeGeoPoint()
+            print('X', end='')
+        print('')
+
+    def getHomeGeoPoint(self):
+        return GeoPoint.from_msgpack(self.client.call('getHomeGeoPoint'))
+
+    def armDisarm(self, arm):
+        return self.client.call('armDisarm', arm)
+
+    # basic flight control
+    def enableApiControl(self, is_enabled):
+        return self.client.call('enableApiControl', is_enabled)
+    def isApiControlEnabled(self):
+        return self.client.call('isApiControlEnabled')
+
+    def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
+        return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
+    def simGetSegmentationObjectID(self, mesh_name):
+        return self.client.call('simGetSegmentationObjectID', mesh_name)
+    def simPrintLogMessage(self, message, message_param = "", severity = 0):
+        return self.client.call('simPrintLogMessage', message, message_param, severity)
+    def simGetObjectPose(self, object_name):
+        pose = self.client.call('simGetObjectPose', object_name)
+        return Pose.from_msgpack(pose)
+
+
+    # camera control
+    # simGetImage returns compressed png in array of bytes
+    # image_type uses one of the AirSimImageType members
+    def simGetImage(self, camera_id, image_type):
+        # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
+        result = self.client.call('simGetImage', camera_id, image_type)
+        if (result == "" or result == "\0"):
+            return None
+        return result
+
+    # camera control
+    # simGetImage returns compressed png in array of bytes
+    # image_type uses one of the AirSimImageType members
+    def simGetImages(self, requests):
+        responses_raw = self.client.call('simGetImages', requests)
+        return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
+
+    def getCollisionInfo(self):
+        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
+
+    def getCameraInfo(self, camera_id):
+        return CameraInfo.from_msgpack(self.client.call('getCameraInfo', camera_id))
+
+    def setCameraOrientation(self, camera_id, orientation):
+        self.client.call('setCameraOrientation', camera_id, orientation)
+
+    def simIsPause(self):
+        return self.client.call("simIsPaused")
+    def simPause(self, is_paused):
+        self.client.call('simPause', is_paused)
+    def simContinueForTime(self, seconds):
+        self.client.call('simContinueForTime', seconds)
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(AirSimClientBase, object):
-    def __init__(self, ip = "", port = ""):
+    def __init__(self, ip = "", port = "", timeout = 3600):
         if (ip == ""):
             ip = "127.0.0.1"
         if (port == ""):
             port = 41451
-        super(MultirotorClient, self).__init__(ip, port)
+        super(MultirotorClient, self).__init__(ip, port, timeout_value = timeout)
 
     def armDisarm(self, arm):
         return self.client.call('armDisarm', arm)
@@ -597,10 +671,10 @@ class MultirotorClient(AirSimClientBase, object):
 
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(AirSimClientBase, object):
-    def __init__(self, ip = ""):
+    def __init__(self, ip = "", timeout = 3600):
         if (ip == ""):
             ip = "127.0.0.1"
-        super(CarClient, self).__init__(ip, 42451)
+        super(CarClient, self).__init__(ip, 42451, timeout_value = timeout)
 
     def setCarControls(self, controls):
         self.client.call('setCarControls', controls)

@@ -17,6 +17,7 @@ IMPLEMENT_MODULE(FAirSim, AirSim)
 void FAirSim::StartupModule()
 {
     //plugin startup
+    UE_LOG(LogAirSim, Log, TEXT("StartupModule: AirSim plugin"));
 }
 
 void FAirSim::ShutdownModule()

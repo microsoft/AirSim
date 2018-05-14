@@ -2,7 +2,7 @@
 
 The [PX4 software stack](http://github.com/px4/firmware) is an open source very popular flight controller with support for wide variety of boards and sensors as well as built-in capability for higher level tasks such as mission planning. Please visit [px4.io](http://px4.io) for more information.
 
-**Warning**: While all releases of AirSim are always tested with PX4 to ensure the support, setting up PX4 is not a trivial task. Unless you have at least intermediate level of experience with PX4 stack, we recommend you use [simple_flight](simple_flight.md), which is now a default in AirSim. Due to bugs [such as this](https://github.com/PX4/Firmware/issues/7516) things haven't been working after PX4 release 1.5.5. With that release, you may still see wobbly drone sometimes. For issues related to PX4 setup please visit [PX4 forums](http://discuss.px4.io/).
+**Warning**: While all releases of AirSim are always tested with PX4 to ensure the support, setting up PX4 is not a trivial task. Unless you have at least intermediate level of experience with PX4 stack, we recommend you use [simple_flight](simple_flight.md), which is now a default in AirSim. 
 
 ## Supported Hardware
 
@@ -13,8 +13,9 @@ The following pixhawk hardware has been tested with AirSim:
 2. [Pixhawk PX4 2.4.8](http://www.banggood.com/Pixhawk-PX4-2_4_8-Flight-Controller-32-Bit-ARM-PX4FMU-PX4IO-Combo-for-Multicopters-p-1040416.html)
 3. [PixFalcon](https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us)
 4. [PixRacer](https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&utm_medium=cpc_ods&utm_content=starr&utm_campaign=Smlrfpv-ds-FPVracer&gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB)
+5. [Pixhawk 2.1](http://www.proficnc.com/) (using PX4 Flight Stack)
 
-The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash with the firmware v1.5.5.
+The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash with the latest firmware.
 
 ## Setting up PX4 Hardware-in-Loop
 
@@ -22,7 +23,8 @@ For this you will need one of the supported device listed above. For manual flig
 
 1. Make sure your RC receiver is bound with its RC transmitter. Connect the RC trasmitter to the flight controller's RC port. Refer to your RC manual and [PX4 docs](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) for more information.
 2. Download [QGroundControl](http://qgroundcontrol.com/), launch it and connect your flight controller to the USB port.
-3. Install the PX4 firmware v1.5.5 from [github](https://github.com/PX4/Firmware/releases/tag/v1.5.5). You likely have v2 device and if so use file `nuttx-px4fmu-v2-default.px4`. To check if you really have v2 device you can use [Nirsoft USBDeview](http://www.nirsoft.net/utils/usb_devices_view.html) utility. Chris Lovett also has created [initial firmware setup video](https://dev.px4.io/starting-initial-config.html) that show how to install new firmware. Note that later releases of PX4 at least up to 1.6.3 has [issue](https://github.com/PX4/Firmware/issues/7516) where vehicle doesn't takeoff after arming.
+3. Use QGroundControl to flash the latest PX4 Flight Stack.
+See also [initial firmware setup video](https://dev.px4.io/starting-initial-config.html).
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected.
 5. In QGroundControl, go to Radio tab and calibrate (make sure, remote control is on and the receiver is showing the indicator for the binding). 
 6. Go to the Flight Mode tab and chose one of the remote control switches as "Mode Channel". Then set (for example) Stabilized and Attitude flight modes for two positions of the switch.
@@ -31,11 +33,14 @@ For this you will need one of the supported device listed above. For manual flig
 ```
 {
   "SettingsVersion": 1.0,
-  "DefaultVehicleConfig": "PX4"
+  "DefaultVehicleConfig": "PX4",
+  "SimMode": "Multirotor"
 }
 ```
 
 After above setup you should be able to use RC to fly in the AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.
+
+You can also control the drone from [Python](python.md).
 
 See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0) and  [Unreal AirSim Setup  Video](https://youtu.be/1oY8Qu5maQQ) that shows you all the setup steps in this document.
 
@@ -48,7 +53,7 @@ The PX4 SITL mode doesn't require you to have separate device such as Pixhawk or
 
 There are few reasons that can cause this. First make sure your drone doesn't fall down large distance when starting simulator. This might happen if you have created custom Unreal environment and Player Start is placed too high above ground. It seems that when this happens internal calibration in PX4 gets confused. 
 
-Another thing to verify is to make sure you are using PX4 release 1.5.5 as later releases seems to have few issues. You should also use QGroundControl and make sure you can arm and takeoff in QGroundControl properly.
+You should also use QGroundControl and make sure you can arm and takeoff in QGroundControl properly.
 
 Finally, this also can be a machine performance issue in some rare cases, check your [hard drive performance](hard_drive.md).
 

@@ -5,26 +5,29 @@
 #define air_RpcLibServerBase_hpp
 
 #include "common/Common.hpp"
-#include "api/ControlServerBase.hpp"
-#include "api/VehicleApiBase.hpp"
+#include "api/ApiServerBase.hpp"
+#include "api/SimModeApiBase.hpp"
 
 
 namespace msr { namespace airlib {
 
 
-class RpcLibServerBase : public ControlServerBase {
+class RpcLibServerBase : public ApiServerBase {
 public:
-    RpcLibServerBase(VehicleApiBase* vehicle, string server_address, uint16_t port);
+    RpcLibServerBase(SimModeApiBase* simmode_api, string server_address, uint16_t port);
     virtual void start(bool block = false) override;
     virtual void stop() override;
     virtual ~RpcLibServerBase() override;
 
 protected:
-    void* getServer();
-    VehicleApiBase* getVehicleApi();
+    void* getServer() const;
+    SimModeApiBase* getSimModeApi() const;
 
 private:
-    VehicleApiBase* vehicle_;
+    VehicleApiBase* getVehicleApi() const;
+
+private:
+    SimModeApiBase* simmode_api_;
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };

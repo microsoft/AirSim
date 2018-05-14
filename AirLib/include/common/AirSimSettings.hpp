@@ -48,12 +48,17 @@ public: //types
         }
     };
 
-    struct CarMeshPaths {
-        std::string skeletal = "/AirSim/VehicleAdv/Vehicle/Vehicle_SkelMesh.Vehicle_SkelMesh";
-        std::string bp = "/AirSim/VehicleAdv/Vehicle/VehicleAnimationBlueprint";
-        std::string slippery_mat = "/AirSim/VehicleAdv/PhysicsMaterials/Slippery.Slippery";
-        std::string non_slippery_mat = "/AirSim/VehicleAdv/PhysicsMaterials/NonSlippery.NonSlippery";
+    struct PawnPath {
+        std::string pawn_bp;
+        std::string slippery_mat;
+        std::string non_slippery_mat;
 
+        PawnPath(const std::string& pawn_bp_val = "",
+            const std::string& slippery_mat_val = "/AirSim/VehicleAdv/PhysicsMaterials/Slippery.Slippery",
+            const std::string& non_slippery_mat_val = "/AirSim/VehicleAdv/PhysicsMaterials/NonSlippery.NonSlippery") 
+            : pawn_bp(pawn_bp_val), slippery_mat(slippery_mat_val), non_slippery_mat(non_slippery_mat_val)
+        {
+        }
     };
 
     struct VehicleSettings {
@@ -196,7 +201,7 @@ public: //fields
     bool engine_sound;
     bool log_messages_visible;
     HomeGeoPoint origin_geopoint;
-    CarMeshPaths car_mesh_paths;
+    std::map<std::string, PawnPath> pawn_paths;
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -227,6 +232,7 @@ public: //methods
         loadCaptureSettings(settings);
         loadCameraNoiseSettings(settings);
         loadSegmentationSettings(settings);
+        loadPawnPaths(settings);
         loadOtherSettings(settings);
 
         return static_cast<unsigned int>(warning_messages.size());
@@ -370,6 +376,8 @@ private:
             initial_view_mode = 6; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_BACKUP;
         else if (view_mode_string == "NoDisplay")
             initial_view_mode = 7; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_NODISPLAY;
+        else if (view_mode_string == "Front")
+            initial_view_mode = 8; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_FRONT;
         else
             warning_messages.push_back("ViewMode setting is not recognized: " + view_mode_string);
     }
@@ -431,6 +439,45 @@ private:
                 }
             }
         }
+    }
+
+    void loadPawnPaths(const Settings& settings)
+    {
+        pawn_paths.clear();
+        pawn_paths.emplace("BareboneCar",
+            PawnPath("Class'/AirSim/VehicleAdv/Vehicle/VehicleAdvPawn.VehicleAdvPawn_C'"));
+        pawn_paths.emplace("DefaultCar",
+            PawnPath("Class'/AirSim/VehicleAdv/SUV/SuvCarPawn.SuvCarPawn_C'"));
+        pawn_paths.emplace("DefaultQuadrotor",
+            PawnPath("Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"));
+        
+
+        msr::airlib::Settings pawn_paths_child;
+        if (settings.getChild("PawnPaths", pawn_paths_child)) {
+            std::vector<std::string> keys;
+            pawn_paths_child.getChildNames(keys);
+
+            for (const auto& key : keys) {
+                msr::airlib::Settings child;
+                pawn_paths_child.getChild(key, child);
+                pawn_paths[key] = createPathPawn(child);
+            }
+        }
+    }
+
+    PawnPath createPathPawn(const Settings& settings)
+    {
+        auto paths = PawnPath();
+        paths.pawn_bp = settings.getString("PawnBP", "");
+        auto slippery_mat = settings.getString("SlipperyMat", "");
+        auto non_slippery_mat = settings.getString("NonSlipperyMat", "");
+
+        if (slippery_mat != "")
+            paths.slippery_mat = slippery_mat;
+        if (non_slippery_mat != "")
+            paths.non_slippery_mat = non_slippery_mat;
+
+        return paths;
     }
 
     void loadSegmentationSettings(const Settings& settings)

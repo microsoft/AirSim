@@ -1,19 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace LogViewer.Utilities
 {
     public static class XamlExtensions
     {
+        public static void Flyout(this FrameworkElement e)
+        {
+            e.Visibility = Visibility.Visible;
+            e.UpdateLayout();
+            double width = e.ActualWidth;
+            TranslateTransform transform = new TranslateTransform(width, 0);
+            e.RenderTransform = transform;
+            transform.BeginAnimation(TranslateTransform.XProperty,
+                new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(0.2)))
+                {
+                    EasingFunction = new ExponentialEase() { EasingMode = EasingMode.EaseOut }
+                });
+        }
 
         public static T FindAncestorOfType<T>(this DependencyObject d) where T : DependencyObject
         {

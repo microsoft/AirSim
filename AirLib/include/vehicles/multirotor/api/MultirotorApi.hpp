@@ -44,7 +44,7 @@ public:
     }
     virtual ~MultirotorApi() = default;
 
-    bool armDisarm(bool arm)
+    virtual bool armDisarm(bool arm) override
     {
         CallLock lock(controller_, action_mutex_, cancel_mutex_, pending_);
         pending_ = std::make_shared<DirectCancelableBase>();
@@ -163,7 +163,7 @@ public:
     }
 
     /************************* State APIs *********************************/
-    MultirotorState getMultirotorState()
+    MultirotorState getMultirotorState() const
     {
         MultirotorState state;
         state.kinematics_estimated = controller_->getKinematicsEstimated();
@@ -175,44 +175,44 @@ public:
         return state;
     }
 
-    Vector3r getPosition()
+    Vector3r getPosition() const
     {
         return controller_->getPosition();
     }
 
-    Vector3r getVelocity()
+    Vector3r getVelocity() const
     {
         return controller_->getVelocity();
     }
 
-    Quaternionr getOrientation()
+    Quaternionr getOrientation() const
     {
         return controller_->getOrientation();
     }
 
-    DroneControllerBase::LandedState getLandedState()
+    DroneControllerBase::LandedState getLandedState() const
     {
         return controller_->getLandedState();
     }
 
-    virtual CollisionInfo getCollisionInfo() override
+    virtual CollisionInfo getCollisionInfo() const override
     {
         return controller_->getCollisionInfo();
     }
 
-    RCData getRCData()
+    RCData getRCData() const
     {
         return controller_->getRCData();
     }
 
 
     //TODO: add GPS health, accuracy in API
-    GeoPoint getGpsLocation()
+    GeoPoint getGpsLocation() const
     {
         return controller_->getGpsLocation();
     }
 
-    bool isSimulationMode()
+    bool isSimulationMode() const
     {
         return controller_->isSimulationMode();
     }
@@ -229,7 +229,7 @@ public:
 
 
     /******************* VehicleApiBase implementtaion ********************/
-    virtual GeoPoint getHomeGeoPoint() override
+    virtual GeoPoint getHomeGeoPoint() const override
     {
         return controller_->getHomeGeoPoint();
     }
@@ -240,14 +240,14 @@ public:
         controller_->enableApiControl(is_enabled);
     }
 
-    virtual vector<ImageCaptureBase::ImageResponse> simGetImages(const vector<ImageCaptureBase::ImageRequest>& requests) override
+    virtual vector<ImageCaptureBase::ImageResponse> simGetImages(const vector<ImageCaptureBase::ImageRequest>& requests) const override
     {
         vector<ImageCaptureBase::ImageResponse> responses;
         ImageCaptureBase* image_capture = vehicle_->getImageCapture();
         image_capture->getImages(requests, responses);
         return responses;
     }
-    virtual vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) override
+    virtual vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const override
     {
         vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_id, image_type)};
         const vector<ImageCaptureBase::ImageResponse>& response = simGetImages(request);
@@ -262,7 +262,7 @@ public:
         vehicle_->printLogMessage(message, message_param, severity);
     }
 
-    virtual Pose simGetObjectPose(const std::string& actor_name) override
+    virtual Pose simGetObjectPose(const std::string& actor_name) const override
     {
         return vehicle_->getActorPose(actor_name);
     }
@@ -271,7 +271,7 @@ public:
     {
         vehicle_->setPose(pose, ignore_collision);
     }
-    virtual Pose simGetPose() override
+    virtual Pose simGetPose() const override
     {
         return vehicle_->getPose();
     }
@@ -282,7 +282,7 @@ public:
         return vehicle_->setSegmentationObjectID(mesh_name, object_id, is_name_regex);
     }
 
-    virtual int simGetSegmentationObjectID(const std::string& mesh_name) override
+    virtual int simGetSegmentationObjectID(const std::string& mesh_name) const override
     {
         return vehicle_->getSegmentationObjectID(mesh_name);
     }
@@ -476,6 +476,7 @@ private:// types
         virtual void executeImpl(DroneControllerBase* controller, CancelableBase& cancelable) override {
             controller->moveOnPath(path_, velocity_, drivetrain_, yaw_mode_, lookahead_, adaptive_lookahead_, cancelable);
         }
+        virtual ~MoveOnPath() = default;
     };
 
 

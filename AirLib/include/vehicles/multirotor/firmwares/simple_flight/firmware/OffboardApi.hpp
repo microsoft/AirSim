@@ -18,7 +18,7 @@ public:
     OffboardApi(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, 
         IStateEstimator* state_estimator, ICommLink* comm_link)
         : params_(params), rc_(params, clock, board_inputs, &vehicle_state_, state_estimator, comm_link), 
-          state_estimator_(state_estimator), comm_link_(comm_link), clock_(clock)
+          state_estimator_(state_estimator), comm_link_(comm_link), clock_(clock), landed_(true)
     {
     }
 
@@ -28,7 +28,8 @@ public:
 
         vehicle_state_.setState(params_->default_vehicle_state, state_estimator_->getGeoPoint());
         rc_.reset();
-        has_api_control_ = false;
+        has_api_control_ = false; 
+        landed_ = true;
         goal_timestamp_ = 0;
         updateGoalFromRc();
     }
@@ -43,10 +44,9 @@ public:
         else {
             if (clock_->millis() - goal_timestamp_ > params_->api_goal_timeout) {
                 if (!is_api_timedout_) {
-                    comm_link_->log("API call timed out, entering hover mode");
+                    comm_link_->log("API call was not received, entering hover mode for safety");
                     goal_mode_ = GoalMode::getPositionMode();
                     goal_ = Axis4r::xyzToAxis4(state_estimator_->getPosition(), true);
-
                     is_api_timedout_ = true;
                 }
 
@@ -55,6 +55,8 @@ public:
 
         }
         //else leave the goal set by IOffboardApi API
+
+        detectLanding();
     }
 
     /**************** IOffboardApi ********************/
@@ -199,6 +201,10 @@ public:
         return state_estimator_->getGeoPoint();
     }
 
+    virtual bool getLandedState() const override
+    {
+        return landed_;
+    }
 
 private:
     void updateGoalFromRc()
@@ -207,7 +213,34 @@ private:
         goal_mode_ = rc_.getGoalMode();
     }
 
+    void detectLanding() {
+
+        // if we are not trying to move by setting motor outputs
+        if (isAlmostZero(goal_.roll()) && isAlmostZero(goal_.pitch()) && isAlmostZero(goal_.yaw()) && isGreaterThanMinThrottle(goal_.throttle()))
+        {
+            // and we are not currently moving (based on current velocities)
+            auto angular = state_estimator_->getAngularVelocity();
+            auto velocity = state_estimator_->getLinearVelocity();
+            if (isAlmostZero(angular.roll()) && isAlmostZero(angular.pitch()) && isAlmostZero(angular.yaw()) &&
+                isAlmostZero(velocity.roll()) && isAlmostZero(velocity.pitch()) && isAlmostZero(velocity.yaw())) {
+                // then we must be landed...
+                landed_ = true;
+                return;
+            }
+        }
+
+        landed_ = false;
+    }
+
+    bool isAlmostZero(float v) {
+        return std::abs(v) < kMovementTolerance;
+    }
+    bool isGreaterThanMinThrottle(float throttle) {
+        return std::abs(throttle) <= std::abs(params_->rc.min_angling_throttle);
+    }
+
 private:
+    const TReal kMovementTolerance = (TReal)0.08;
     const Params* params_;
     RemoteControl rc_;
     IStateEstimator* state_estimator_;
@@ -222,6 +255,7 @@ private:
 
     bool has_api_control_;
     bool is_api_timedout_;
+    bool landed_;
 };
 
 

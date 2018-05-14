@@ -10,10 +10,8 @@ It's super simple: 1-2-3!
 2. Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal 4.17 at present.
    ```bash
    # go to the folder where you clone GitHub projects
-   git clone -b 4.17 https://github.com/EpicGames/UnrealEngine.git
+   git clone -b 4.18 https://github.com/EpicGames/UnrealEngine.git
    cd UnrealEngine
-   # the Unreal build was broken a few times so we will get the commit that works
-   git checkout af96417313a908b20621a443175ba91683c238c8
    ./Setup.sh
    ./GenerateProjectFiles.sh
    make
@@ -39,17 +37,16 @@ Finally, you will need an Unreal project that hosts the environment for your veh
 
 ## FAQ
 
-#### What are the known issues with Unreal 4.16?
+#### I'm getting error "<MyProject> could not be compiled. Try rebuilding from source manually".
 
-* One of the major issues is [this bug in Unreal](https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html). We have a workaround for some parts of the code but we haven't tested if everything is covered.
-* Clicking the "End" button causes Unreal to crash.
-* The report function (when you press <kbd>R</kbd>) also causes a crash because of the above reasons.
+This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
+```
+fatal errorfatal error: : file  '/usr/include/linux/version.h''/usr/include/linux/version.h'  has  been  modified  since  the  precompiled  header
+```
 
-#### What are the known issues with Unreal 4.17?
+If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's [relevant thread](https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html) on Unreal Engine forums.
 
-* We have seen some random crashes during the startup.
-* You might get a warning that says that the AirSim plugin is incompatible, which you can ignore.
-* Clicking the "End" button freezes the Unreal Editor. When this happens you will need to manually kill the process.
+If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.
 
 #### Unreal crashed! How do I know what went wrong?
 
@@ -65,15 +62,11 @@ Yes, you can, but we haven't tested it. You can find the instructions [here](htt
 
 #### What compiler and stdlib does AirSim use?
 
-We use the same compiler, **Clang 3.9**, and stdlib, **libc++**, that Unreal uses. AirSim's `setup.sh` will automatically download them both. The libc++ source code is cloned into the `llvm-source` folder and is built into the `llvm-build` folder, from where CMake uses libc++.
-
-#### Can I use AirSim with Unreal 4.16?
-
-Yes! The `*.Build.cs` files are, however, no longer compatible (you will get a compile error). You can find files for 4.16 as `*.Build.4.16.cs` so just rename those.
+We use the same compiler that Unreal Engine uses, **Clang 5.0**, and stdlib, **libc++**. AirSim's `setup.sh` will automatically download them both. The libc++ source code is cloned into the `llvm-source-(version)` folder and is built into the `llvm-build` folder, from where CMake uses libc++.
 
 #### What version of CMake does the AirSim build use?
 
-3.5.0 or higher. This should be the default in Ubuntu 16.04. You can check your CMake version using `cmake --version`. If you have an older version, follow [these instructions](cmake_linux.md) or see the [CMake website](https://cmake.org/install/).
+3.9.0 or higher. This is *not* the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using `cmake --version`. If you have an older version, follow [these instructions](cmake_linux.md) or see the [CMake website](https://cmake.org/install/).
 
 #### Can I compile AirSim in BashOnWindows?
 

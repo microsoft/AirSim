@@ -53,6 +53,7 @@ obj/
 
 # Visual Studio 2015 cache/options directory
 .vs/
+.vscode/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

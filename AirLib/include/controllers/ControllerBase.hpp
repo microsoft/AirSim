@@ -21,8 +21,8 @@ namespace msr { namespace airlib {
 class ControllerBase : public UpdatableObject {
 public:
     //return 0 to 1 (corresponds to zero to full thrust)
-    virtual real_T getVertexControlSignal(unsigned int rotor_index) = 0;
-    virtual size_t getVertexCount() = 0;
+    virtual real_T getVertexControlSignal(unsigned int rotor_index) const = 0;
+    virtual size_t getVertexCount() const = 0;
     
     virtual void getStatusMessages(std::vector<std::string>& messages)
     {

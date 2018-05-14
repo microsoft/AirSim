@@ -32,10 +32,10 @@ IF NOT EXIST "%OutputPath%" mkdir "%OutputPath%"
 call:doOneProject "CityEnviron"
 call:doOneProject "ZhangJiaJie"
 call:doOneProject "AirSimEnvNH"
-call:doOneProject "AncientRome"
-call:doOneProject "DowntownCar"
+REM call:doOneProject "AncientRome"
+REM call:doOneProject "DowntownCar"
 call:doOneProject "LandscapeMountains"
-call:doOneProject "ModularCity"
+REM call:doOneProject "ModularCity"
 call:doOneProject "Africa_001" "Africa"
 
 goto :done
