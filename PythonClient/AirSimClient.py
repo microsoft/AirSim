@@ -571,12 +571,12 @@ class AirSimClientBase:
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(AirSimClientBase, object):
-    def __init__(self, ip = "", port = "", timeout = 3600):
+    def __init__(self, ip = "", port = ""):
         if (ip == ""):
             ip = "127.0.0.1"
         if (port == ""):
             port = 41451
-        super(MultirotorClient, self).__init__(ip, port, timeout_value = timeout)
+        super(MultirotorClient, self).__init__(ip, port)
 
     def armDisarm(self, arm):
         return self.client.call('armDisarm', arm)
