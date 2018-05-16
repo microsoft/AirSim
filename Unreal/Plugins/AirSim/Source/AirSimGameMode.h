@@ -13,7 +13,8 @@
 UCLASS()
 class AIRSIM_API AAirSimGameMode : public AGameModeBase
 {
-    GENERATED_BODY()
+public:
+	GENERATED_BODY()
     
     virtual void StartPlay() override;
     
