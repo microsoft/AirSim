@@ -211,8 +211,8 @@ class CameraInfo(MsgpackMixin):
     fov = -1
 
 class AirSimClientBase:
-    def __init__(self, ip, port):
-        self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = 3600, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
+    def __init__(self, ip, port, timeout_value = 3600):
+        self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = timeout_value, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
 
     def ping(self):
         return self.client.call('ping')
@@ -571,12 +571,12 @@ class AirSimClientBase:
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(AirSimClientBase, object):
-    def __init__(self, ip = "", port = ""):
+    def __init__(self, ip = "", port = "", timeout = 3600):
         if (ip == ""):
             ip = "127.0.0.1"
         if (port == ""):
             port = 41451
-        super(MultirotorClient, self).__init__(ip, port)
+        super(MultirotorClient, self).__init__(ip, port, timeout_value = timeout)
 
     def armDisarm(self, arm):
         return self.client.call('armDisarm', arm)
