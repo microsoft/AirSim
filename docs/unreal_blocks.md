@@ -9,7 +9,7 @@ Here are quick steps to get Blocks environment up and running:
 
 1. Make sure you have [installed Unreal and built AirSim](build_windows.md).
 2. Navigate to folder `AirSim\Unreal\Environments\Blocks` and run `update_from_git.bat`.
-3. Double click on generated .sln file to open in Visual Studio 2015 Update 3 or newer.
+3. Double click on generated .sln file to open in Visual Studio 2017 or newer.
 4. Make sure `Blocks` project is the startup project, build configuration is set to `DebugGame_Editor` and `Win64`. Hit F5 to run.
 5. Press the Play button in Unreal Editor and you will see something like in below video. Also see [how to use AirSim](https://github.com/Microsoft/AirSim/#how-to-use-it).
 
