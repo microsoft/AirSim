@@ -17,7 +17,7 @@ public:
         Initial = 0, Connected, Disconnected, Reset, Unknown
     };
 public:
-    RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = 42451, uint timeout_ms = 60000);
+    RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
     ConnectionState getConnectionState();
     bool ping();
 

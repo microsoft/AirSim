@@ -217,14 +217,14 @@ public:
 
     static VehicleStateType fromString(const std::string& val)
     {
+        if (val == "Armed")
+            return VehicleStateType::Armed;
         if (val == "Inactive")
             return VehicleStateType::Inactive;
         if (val == "Unknown")
             return VehicleStateType::Unknown;
         if (val == "BeingArmed")
             return VehicleStateType::BeingArmed;
-        if (val == "Armed")
-            return VehicleStateType::Armed;
         if (val == "Active")
             return VehicleStateType::Active;
         if (val == "BeingDisarmed")

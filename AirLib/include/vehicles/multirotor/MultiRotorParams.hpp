@@ -55,8 +55,6 @@ public: //types
         real_T friction = 0.5f;
         EnabledSensors enabled_sensors;
         RotorParams rotor_params;
-
-        uint16_t api_server_port;
     };
 
 public: //interface

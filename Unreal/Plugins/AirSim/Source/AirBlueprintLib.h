@@ -96,7 +96,7 @@ public:
             if (mesh->GetOwner())
                 return std::string(TCHAR_TO_UTF8(*(mesh->GetOwner()->GetName())));
             else
-                return ""; // std::string(TCHAR_TO_UTF8(*(UKismetSystemLibrary::GetDisplayName(mesh))));
+                return ""; //std::string(TCHAR_TO_UTF8(*(UKismetSystemLibrary::GetDisplayName(mesh))));
         case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::StaticMeshName:
             if (mesh->GetStaticMesh())
                 return std::string(TCHAR_TO_UTF8(*(mesh->GetStaticMesh()->GetName())));

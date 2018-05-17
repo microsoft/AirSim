@@ -5,7 +5,6 @@
 #include "ConstructorHelpers.h"
 #include "AirBlueprintLib.h"
 #include "common/ClockFactory.hpp"
-#include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
@@ -20,7 +19,6 @@ VehiclePawnWrapper::VehiclePawnWrapper()
 
 void VehiclePawnWrapper::setupCamerasFromSettings()
 {
-    typedef msr::airlib::Settings Settings;
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
@@ -107,46 +105,21 @@ void VehiclePawnWrapper::setApi(std::unique_ptr<msr::airlib::VehicleApiBase> api
     api_ = std::move(api);
 }
 
-void VehiclePawnWrapper::getRawVehicleSettings(msr::airlib::Settings& settings) const
-{
-    typedef msr::airlib::AirSimSettings AirSimSettings;
-
-    //find out which RC we should use
-    AirSimSettings::VehicleSettings vehicle_settings =
-        AirSimSettings::singleton().getVehicleSettings(this->getVehicleConfigName());
-
-    vehicle_settings.getRawSettings(settings);
-}
-
-std::string VehiclePawnWrapper::getVehicleConfigName() const 
-{
-    return getConfig().vehicle_config_name == "" ? msr::airlib::AirSimSettings::singleton().default_vehicle_config
-        : getConfig().vehicle_config_name;
-}
-
 int VehiclePawnWrapper::getRemoteControlID() const
 {
-    typedef msr::airlib::AirSimSettings AirSimSettings;
-
-    //find out which RC we should use
-    AirSimSettings::VehicleSettings vehicle_settings =
-        AirSimSettings::singleton().getVehicleSettings(getVehicleConfigName());
-
-    msr::airlib::Settings settings;
-    vehicle_settings.getRawSettings(settings);
-
-    msr::airlib::Settings rc_settings;
-    settings.getChild("RC", rc_settings);
-    return rc_settings.getInt("RemoteControlID", -1);
+    return vehicle_setting_->rc.remote_control_id;
 }
 
-void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config)
+void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
+    const WrapperConfig& config)
 {
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
     pawn_ = pawn;
     cameras_ = cameras;
     config_ = config;
+    vehicle_name_ = vehicle_name;
+    vehicle_setting_ = AirSimSettings::singleton().getVehicleSetting(vehicle_name_);
 
     image_capture_.reset(new UnrealImageCapture(cameras_));
 
@@ -183,6 +156,11 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
 VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig()
 {
     return config_;
+}
+
+const VehiclePawnWrapper::VehicleSetting* VehiclePawnWrapper::getVehicleSetting() const
+{
+    return vehicle_setting_;
 }
 
 const VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig() const

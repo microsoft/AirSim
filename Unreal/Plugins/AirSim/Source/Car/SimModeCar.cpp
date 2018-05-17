@@ -112,21 +112,32 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
         TArray<AActor*> pawns;
         UAirBlueprintLib::FindAllActor<TVehiclePawn>(this, pawns);
 
-        //if no vehicle pawns exists in environment
-        if (pawns.Num() == 0) {
-            //create vehicle pawn
-            FActorSpawnParameters pawn_spawn_params;
-            pawn_spawn_params.SpawnCollisionHandlingOverride =
-                ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+        //add vehicles from settings
+        for (auto const& vehicle_setting : getSettings().vehicles)
+        {
+            if (vehicle_setting.second->auto_create &&
+                vehicle_setting.second->vehicle_type == AirSimSettings::kVehicleTypePhysXCar) {
 
-            auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
-                getSettings().pawn_paths.at("DefaultCar").pawn_bp);
+                //decide which derived BP to use
+                std::string pawn_path = vehicle_setting.second->pawn_path;
+                if (pawn_path == "")
+                    pawn_path = "DefaultCar";
 
-            TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
-                vehicle_bp_class, actor_transform, pawn_spawn_params);
+                //create vehicle pawn
+                FActorSpawnParameters pawn_spawn_params;
+                pawn_spawn_params.Name = FName(vehicle_setting.second->vehicle_name.c_str());
+                pawn_spawn_params.SpawnCollisionHandlingOverride =
+                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-            spawned_actors_.Add(spawned_pawn);
-            pawns.Add(spawned_pawn);
+                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                    getSettings().pawn_paths.at(pawn_path).pawn_bp);
+
+                TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
+                    vehicle_bp_class, actor_transform, pawn_spawn_params);
+
+                spawned_actors_.Add(spawned_pawn);
+                pawns.Add(spawned_pawn);
+            }
         }
 
         //set up vehicle pawns
@@ -187,12 +198,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
 
 int ASimModeCar::getRemoteControlID(const VehiclePawnWrapper& pawn) const
 {
-    msr::airlib::Settings settings;
-    fpv_vehicle_pawn_wrapper_->getRawVehicleSettings(settings);
-
-    msr::airlib::Settings rc_settings;
-    settings.getChild("RC", rc_settings);
-    return rc_settings.getInt("RemoteControlID", -1);
+    return fpv_vehicle_pawn_wrapper_->getRemoteControlID();
 }
 
 void ASimModeCar::createVehicles(std::vector<VehiclePtr>& vehicles)
@@ -241,7 +247,7 @@ void ASimModeCar::updateReport()
     for (VehiclePtr vehicle : vehicles_) {
         VehiclePawnWrapper* wrapper = vehicle->getVehiclePawnWrapper();
         msr::airlib::StateReporter& reporter = *report_wrapper_.getReporter();
-        std::string vehicle_name = fpv_vehicle_pawn_wrapper_->getVehicleConfigName();
+        std::string vehicle_name = fpv_vehicle_pawn_wrapper_->getVehicleSetting()->vehicle_name;
 
         reporter.writeHeading(std::string("Vehicle: ").append(
             vehicle_name == "" ? "(default)" : vehicle_name));

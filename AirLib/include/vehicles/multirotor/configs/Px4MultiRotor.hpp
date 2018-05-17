@@ -13,10 +13,10 @@ namespace msr { namespace airlib {
 
 class Px4MultiRotor : public MultiRotorParams {
 public:
-    Px4MultiRotor(const AirSimSettings::VehicleSettings& vehicle_settings, std::shared_ptr<const SensorFactory> sensor_factory)
+    Px4MultiRotor(const AirSimSettings::PX4VehicleSetting& vehicle_setting, std::shared_ptr<const SensorFactory> sensor_factory)
         : sensor_factory_(sensor_factory)
     {
-        connection_info_ = getConnectionInfo(vehicle_settings);
+        connection_info_ = getConnectionInfo(vehicle_setting);
     }
 
     virtual ~Px4MultiRotor() = default;
@@ -244,49 +244,14 @@ private:
     }
 
 
-    static MavLinkDroneController::ConnectionInfo getConnectionInfo(const AirSimSettings::VehicleSettings& vehicle_settings)
+    static const MavLinkDroneController::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::PX4VehicleSetting& vehicle_setting)
     {
-        Settings child;
-        vehicle_settings.getRawSettings(child);
-
-        //start with defaults
-        MavLinkDroneController::ConnectionInfo connection_info;
-        // allow json overrides on a per-vehicle basis.
-        connection_info.sim_sysid = static_cast<uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));
-        connection_info.sim_compid = child.getInt("SimCompID", connection_info.sim_compid);
-
-        connection_info.vehicle_sysid = static_cast<uint8_t>(child.getInt("VehicleSysID", connection_info.vehicle_sysid));
-        connection_info.vehicle_compid = child.getInt("VehicleCompID", connection_info.vehicle_compid);
-
-        connection_info.offboard_sysid = static_cast<uint8_t>(child.getInt("OffboardSysID", connection_info.offboard_sysid));
-        connection_info.offboard_compid = child.getInt("OffboardCompID", connection_info.offboard_compid);
-
-        connection_info.logviewer_ip_address = child.getString("LogViewerHostIp", connection_info.logviewer_ip_address);
-        connection_info.logviewer_ip_port = child.getInt("LogViewerPort", connection_info.logviewer_ip_port);
-        connection_info.logviewer_ip_sport = child.getInt("LogViewerSendPort", connection_info.logviewer_ip_sport);
-
-        connection_info.qgc_ip_address = child.getString("QgcHostIp", connection_info.qgc_ip_address);
-        connection_info.qgc_ip_port = child.getInt("QgcPort", connection_info.qgc_ip_port);
-
-        connection_info.sitl_ip_address = child.getString("SitlIp", connection_info.sitl_ip_address);
-        connection_info.sitl_ip_port = child.getInt("SitlPort", connection_info.sitl_ip_port);
-
-        connection_info.local_host_ip = child.getString("LocalHostIp", connection_info.local_host_ip);
-
-
-        connection_info.use_serial = child.getBool("UseSerial", connection_info.use_serial);
-        connection_info.ip_address = child.getString("UdpIp", connection_info.ip_address);
-        connection_info.ip_port = child.getInt("UdpPort", connection_info.ip_port);
-        connection_info.serial_port = child.getString("SerialPort", connection_info.serial_port);
-        connection_info.baud_rate = child.getInt("SerialBaudRate", connection_info.baud_rate);
-        connection_info.model = child.getString("Model", connection_info.model);
-        
-        return connection_info;
+        return vehicle_setting.connection_info;
     }
 
 
 private:
-    MavLinkDroneController::ConnectionInfo connection_info_;
+    MavLinkDroneController::MavLinkConnectionInfo connection_info_;
     std::shared_ptr<const SensorFactory> sensor_factory_;
 
 };

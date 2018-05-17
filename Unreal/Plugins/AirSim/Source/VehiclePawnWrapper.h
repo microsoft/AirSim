@@ -11,6 +11,7 @@
 #include "PIPCamera.h"
 #include "physics/Kinematics.hpp"
 #include "NedTransform.h"
+#include "common/AirSimSettings.hpp"
 #include "api/VehicleApiBase.hpp"
 
 
@@ -25,18 +26,17 @@ public: //types
     typedef msr::airlib::VectorMath VectorMath;
     typedef msr::airlib::real_T real_T;
     typedef msr::airlib::Utils Utils;
+    typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
 
 public:
     struct WrapperConfig {
         bool is_fpv_vehicle; 
-        std::string vehicle_config_name;
         bool enable_collisions; 
         bool enable_passthrough_on_collisions; 
         bool enable_trace;
 
         WrapperConfig() :
             is_fpv_vehicle(false),
-            vehicle_config_name(""), //use the default config name
             enable_collisions(true),
             enable_passthrough_on_collisions(false),
             enable_trace(false)
@@ -48,7 +48,8 @@ public:
 
 public: //interface
     VehiclePawnWrapper();
-    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const WrapperConfig& config = WrapperConfig());
+    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
+        const WrapperConfig& config = WrapperConfig());
 
     void reset();
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
@@ -84,7 +85,7 @@ public: //interface
     const WrapperConfig& getConfig() const;
 
     msr::airlib::Pose getActorPose(std::string actor_name);
-    std::string getVehicleConfigName() const;
+    const VehicleSetting* getVehicleSetting() const;
 
     int getRemoteControlID() const;
 
@@ -92,8 +93,6 @@ public: //interface
     FRotator getUUOrientation() const;
 
     const NedTransform& getNedTransform() const;
-
-    void getRawVehicleSettings(msr::airlib::Settings& settings) const;
 
     void possess();
 
@@ -127,6 +126,8 @@ private: //vars
     WrapperConfig config_;
     NedTransform ned_transform_;
     std::unique_ptr<msr::airlib::VehicleApiBase> api_;
+    std::string vehicle_name_;
+    const VehicleSetting* vehicle_setting_;
 
     struct State {
         FVector start_location;

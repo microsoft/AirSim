@@ -14,8 +14,8 @@ namespace msr { namespace airlib {
 
 class SimpleFlightQuadX : public MultiRotorParams {
 public:
-    SimpleFlightQuadX(const AirSimSettings::VehicleSettings& vehicle_settings, std::shared_ptr<const SensorFactory> sensor_factory)
-        : vehicle_settings_(vehicle_settings), sensor_factory_(sensor_factory)
+    SimpleFlightQuadX(const AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<const SensorFactory> sensor_factory)
+        : vehicle_setting_(vehicle_setting), sensor_factory_(sensor_factory)
     {
     }
 
@@ -62,13 +62,13 @@ protected:
 
     virtual std::unique_ptr<DroneControllerBase> createController() override
     {
-        return std::unique_ptr<DroneControllerBase>(new SimpleFlightDroneController(this, vehicle_settings_));
+        return std::unique_ptr<DroneControllerBase>(new SimpleFlightDroneController(this, vehicle_setting_));
     }
 
 
 private:
     vector<unique_ptr<SensorBase>> sensor_storage_;
-    AirSimSettings::VehicleSettings vehicle_settings_;
+    const AirSimSettings::VehicleSetting* vehicle_setting_;
     std::shared_ptr<const SensorFactory> sensor_factory_;
 };
 

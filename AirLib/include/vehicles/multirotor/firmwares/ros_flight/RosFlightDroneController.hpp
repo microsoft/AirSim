@@ -23,7 +23,8 @@ namespace msr { namespace airlib {
 class RosFlightDroneController : public DroneControllerBase {
 
 public:
-    RosFlightDroneController(const SensorCollection* sensors, const MultiRotorParams* vehicle_params)
+    RosFlightDroneController(const SensorCollection* sensors, const MultiRotorParams* vehicle_params, 
+        int remote_control_id)
         : vehicle_params_(vehicle_params)
     {
         sensors_ = sensors;
@@ -33,9 +34,7 @@ public:
         firmware_.reset(new ros_flight::Firmware(board_.get(), comm_link_.get()));
         firmware_->setup();
 
-        Settings child;
-        Settings::singleton().getChild("RosFlight", child);
-        remote_control_id_ = child.getInt("RemoteControlID", 0);
+        remote_control_id_ = remote_control_id;
     }
 
     void setGroundTruth(PhysicsBody* physics_body) override

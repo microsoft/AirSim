@@ -23,10 +23,10 @@ namespace msr { namespace airlib {
 class SimpleFlightDroneController : public DroneControllerBase {
 
 public:
-    SimpleFlightDroneController(const MultiRotorParams* vehicle_params, const AirSimSettings::VehicleSettings& vehicle_settings)
+    SimpleFlightDroneController(const MultiRotorParams* vehicle_params, const AirSimSettings::VehicleSetting* vehicle_setting)
         : vehicle_params_(vehicle_params)
     {
-        readSettings(vehicle_settings);
+        readSettings(vehicle_setting);
 
         //TODO: set below properly for better high speed safety
         safety_params_.vel_to_breaking_dist = safety_params_.min_breaking_dist = 0;
@@ -214,13 +214,13 @@ public:
     virtual float getTakeoffZ() const override
     {
         // pick a number, 3 meters is probably safe 
-        // enough to get out of the backwash turbulance.  Negative due to NED coordinate system.
+        // enough to get out of the backwash turbulence.  Negative due to NED coordinate system.
         return params_.takeoff.takeoff_z;
     }
 
     virtual float getDistanceAccuracy() const override
     {
-        return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance travelled
+        return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
     }
 
 protected: 
@@ -318,21 +318,14 @@ private:
         return static_cast<uint16_t>(1000.0f * switchVal / maxSwitchVal + 1000.0f);
     }
 
-    void readSettings(const AirSimSettings::VehicleSettings& vehicle_settings)
+    void readSettings(const AirSimSettings::VehicleSetting* vehicle_setting)
     {
-        //find out which RC we should use
-        Settings simple_flight_settings;
-        vehicle_settings.getRawSettings(simple_flight_settings);
         params_.default_vehicle_state = simple_flight::VehicleState::fromString(
-            simple_flight_settings.getString("DefaultVehicleState", "Armed")); //Inactive, Armed
+            vehicle_setting->default_vehicle_state == "" ? "Armed" : vehicle_setting->default_vehicle_state);
 
-        Settings rc_settings;
-        simple_flight_settings.getChild("RC", rc_settings);
-        remote_control_id_ = rc_settings.getInt("RemoteControlID", 0);
-        params_.rc.allow_api_when_disconnected = 
-            rc_settings.getBool("AllowAPIWhenDisconnected", false);
-        params_.rc.allow_api_always = 
-            rc_settings.getBool("AllowAPIAlways", true);
+        remote_control_id_ = vehicle_setting->rc.remote_control_id;
+        params_.rc.allow_api_when_disconnected = vehicle_setting->rc.allow_api_when_disconnected;
+        params_.rc.allow_api_always = vehicle_setting->allow_api_always;
     }
 
 private:

@@ -18,12 +18,6 @@ void ASimModeWorldBase::BeginPlay()
         getPhysicsLoopPeriod()));
 
     if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
-        if (getSettings().default_vehicle_config != "SimpleFlight")
-            UAirBlueprintLib::LogMessageString("settings.json is not using simple_flight in ComputerVision mode."
-                "This can lead to unpredictable behaviour!",  
-                "", LogDebugLevel::Failure);
-
-
         manual_pose_controller->initializeForPlay();
         manual_pose_controller->setActor(getFpvVehiclePawnWrapper()->getPawn());
     }

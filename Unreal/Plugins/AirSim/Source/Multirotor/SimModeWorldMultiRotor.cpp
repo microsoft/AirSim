@@ -40,7 +40,6 @@ void ASimModeWorldMultiRotor::BeginPlay()
     Super::BeginPlay();
 }
 
-
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiServer() const
 {
 #ifdef AIRLIB_NO_RPC
@@ -113,20 +112,33 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         TArray<AActor*> pawns;
         UAirBlueprintLib::FindAllActor<TMultiRotorPawn>(this, pawns);
 
-        //if no vehicle pawns exists in environment
-        if (pawns.Num() == 0) {
-            auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
-                getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp);
+        //add vehicles from settings
+        for (auto const& vehicle_setting : getSettings().vehicles)
+        {
+            if (vehicle_setting.second->auto_create &&
+                ((vehicle_setting.second->vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) ||
+                 (vehicle_setting.second->vehicle_type == AirSimSettings::kVehicleTypePX4))) {
 
-            //create vehicle pawn
-            FActorSpawnParameters pawn_spawn_params;
-            pawn_spawn_params.SpawnCollisionHandlingOverride =
-                ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-            TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
-                vehicle_bp_class, actor_transform, pawn_spawn_params);
+                //decide which derived BP to use
+                std::string pawn_path = vehicle_setting.second->pawn_path;
+                if (pawn_path == "")
+                    pawn_path = "DefaultQuadrotor";
 
-            spawned_actors_.Add(spawned_pawn);
-            pawns.Add(spawned_pawn);
+                //create vehicle pawn
+                FActorSpawnParameters pawn_spawn_params;
+                pawn_spawn_params.Name = FName(vehicle_setting.second->vehicle_name.c_str());
+                pawn_spawn_params.SpawnCollisionHandlingOverride =
+                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                    getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp);
+
+                TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
+                    vehicle_bp_class, actor_transform, pawn_spawn_params);
+
+                spawned_actors_.Add(spawned_pawn);
+                pawns.Add(spawned_pawn);
+            }
         }
 
         //set up vehicle pawns
@@ -204,7 +216,7 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), &wrapper->getNedTransform());
-    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleConfigName(), sensor_factory);
+    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleSetting(), sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 

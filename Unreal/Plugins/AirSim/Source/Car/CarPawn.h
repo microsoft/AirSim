@@ -79,6 +79,9 @@ public:
     UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
     FColor	GearDisplayReverseColor;
 
+    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
+    FText	VehicleName;
+
     void setupInputBindings();
 
     // Begin Actor interface

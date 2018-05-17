@@ -22,6 +22,11 @@ private:
 
 public: //types
     static constexpr int kSubwindowCount = 3; //must be >= 3 for now
+    static constexpr char* kVehicleTypePX4 = "px4multirotor";
+    static constexpr char* kVehicleTypeSimpleFlight = "simpleflight";
+    static constexpr char* kVehicleTypeRosFlight = "rosflight";
+    static constexpr char* kVehicleTypePhysXCar = "physxcar";
+
 
     struct SubwindowSetting {
         int window_index;
@@ -61,19 +66,20 @@ public: //types
         }
     };
 
-    struct VehicleSettings {
-        std::string vehicle_name, firmware_name;
-        int server_port;
+    struct RCSettings {
+        int remote_control_id = -1;
+        bool allow_api_when_disconnected = false;
+    };
 
-        VehicleSettings(const std::string& vehicle_name_val = "", const std::string& firmware_name_val = "", int server_port_val = 41451)
-            : vehicle_name(vehicle_name_val), firmware_name(firmware_name_val), server_port(server_port_val)
-        {
-        }
+    struct VehicleSetting {
+        std::string vehicle_name;
+        std::string vehicle_type;
+        std::string default_vehicle_state;
+        std::string pawn_path;
+        bool allow_api_always = true;
+        bool auto_create = true;
 
-        void getRawSettings(Settings& settings) const
-        {
-            Settings::singleton().getChild(vehicle_name, settings);
-        }
+        RCSettings rc;
     };
 
     struct AdditionalCameraSetting {
@@ -144,7 +150,56 @@ public: //types
 
         float HorzDistortionContrib = 1.0f; 
         float HorzDistortionStrength = 0.002f;
+    };
 
+    struct MavLinkConnectionInfo {
+        /* Default values are requires so uninitialized instance doesn't have random values */
+
+        bool use_serial = true; // false means use UDP instead
+                                //Used to connect via HITL: needed only if use_serial = true
+        std::string serial_port = "*";
+        int baud_rate = 115200;
+
+        //Used to connect to drone over UDP: needed only if use_serial = false
+        std::string ip_address = "127.0.0.1";
+        int ip_port = 14560;
+
+        // The PX4 SITL app requires receiving drone commands over a different mavlink channel.
+        // So set this to empty string to disable this separate command channel.
+        std::string sitl_ip_address = "127.0.0.1";
+        int sitl_ip_port = 14556;
+
+        // The log viewer can be on a different machine, so you can configure it's ip address and port here.
+        int logviewer_ip_port = 14388;
+        int logviewer_ip_sport = 14389; // for logging all messages we send to the vehicle.
+        std::string logviewer_ip_address = "127.0.0.1";
+
+        // The QGroundControl app can be on a different machine, so you can configure it's ip address and port here.
+        int qgc_ip_port = 14550;
+        std::string qgc_ip_address = "127.0.0.1";
+
+        // mavlink vehicle identifiers
+        uint8_t sim_sysid = 142;
+        int sim_compid = 42;
+        uint8_t offboard_sysid = 134;
+        int offboard_compid = 1;
+        uint8_t vehicle_sysid = 135;
+        int vehicle_compid = 1;
+
+        // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet) 
+        // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
+        // same machine.  Whatever network you choose it has to be the same one for external
+        std::string local_host_ip = "127.0.0.1";
+
+        std::string model = "Generic";
+    };
+
+    struct PX4VehicleSetting : public VehicleSetting {
+        MavLinkConnectionInfo connection_info;
+    };
+
+    struct SimpleFlightVehicleSetting : public VehicleSetting {
+        MavLinkConnectionInfo connection_info;
     };
 
     struct SegmentationSettings {
@@ -192,7 +247,6 @@ public: //fields
     int initial_view_mode;
     bool enable_rpc;
     std::string api_server_address;
-    std::string default_vehicle_config;
     std::string physics_engine_name;
     std::string usage_scenario;
     bool enable_collision_passthrough;
@@ -202,6 +256,8 @@ public: //fields
     bool log_messages_visible;
     HomeGeoPoint origin_geopoint;
     std::map<std::string, PawnPath> pawn_paths;
+    std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
+
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -224,7 +280,6 @@ public: //methods
         const Settings& settings = Settings::singleton();
         checkSettingsVersion(settings);
         loadCoreSimModeSettings(settings, simmode_getter);
-        loadClockSettings(settings);
         loadSubWindowsSettings(settings);
         loadViewModeSettings(settings);
         loadRecordingSettings(settings);
@@ -234,7 +289,11 @@ public: //methods
         loadSegmentationSettings(settings);
         loadPawnPaths(settings);
         loadOtherSettings(settings);
+        loadVehicleSettings(settings);
 
+        //this should be done last because it depends on type of vehicles we have
+        loadClockSettings(settings);
+        
         return static_cast<unsigned int>(warning_messages.size());
     }
 
@@ -254,7 +313,6 @@ public: //methods
         initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
         enable_rpc = false;
         api_server_address = "";
-        default_vehicle_config = "";
         physics_engine_name = "";
         usage_scenario = "";
         enable_collision_passthrough = false;
@@ -264,18 +322,6 @@ public: //methods
         log_messages_visible = true;
         //0,0,0 in Unreal is mapped to this GPS coordinates
         origin_geopoint = HomeGeoPoint(GeoPoint(47.641468, -122.140165, 122)); 
-    }
-
-    VehicleSettings getVehicleSettings(const std::string& vehicle_name)
-    {
-        Settings& settings = Settings::singleton();
-        Settings vehicle_config_settings;
-        settings.getChild(vehicle_name, vehicle_config_settings);
-
-        std::string firmware_name = vehicle_config_settings.getString("FirmwareName", vehicle_name);
-        int server_port = vehicle_config_settings.getInt("ApiServerPort", 41451);
-
-        return VehicleSettings(vehicle_name, firmware_name, server_port);
     }
 
     static void initializeSettings(const std::string& json_settings_text)
@@ -298,9 +344,20 @@ public: //methods
         settings.saveJSonFile(settings_filename);
     }
 
+    const VehicleSetting* getVehicleSetting(const std::string& vehicle_name) const
+    {
+        auto it = vehicles.find(vehicle_name);
+        if (it == vehicles.end())
+            throw std::invalid_argument(Utils::stringf("VehicleSetting for vehicle name %s was requested but not found",
+                vehicle_name.c_str()).c_str());
+        else
+            return it->second.get();
+    }
+
 private:
     void loadCoreSimModeSettings(const Settings& settings, std::function<std::string(void)> simmode_getter)
     {
+        //get the simmode from user if not specified
         simmode_name = settings.getString("SimMode", "");
         if (simmode_name == "") {
             if (simmode_getter)
@@ -310,23 +367,23 @@ private:
         }
 
         usage_scenario = settings.getString("UsageScenario", "");
-        default_vehicle_config = settings.getString("DefaultVehicleConfig", "");
-        if (default_vehicle_config == "") {
-            if (simmode_name == "Multirotor")
-                default_vehicle_config = "SimpleFlight";
-            else if (simmode_name == "Car")
-                default_vehicle_config = "PhysXCar";
-            else       
-                warning_messages.push_back("SimMode is not valid: " + simmode_name);
-        }
 
         physics_engine_name = settings.getString("PhysicsEngineName", "");
         if (physics_engine_name == "") {
             if (simmode_name == "Multirotor")
                 physics_engine_name = "FastPhysicsEngine";
             else
-                physics_engine_name = "PhysX";
+                physics_engine_name = "PhysX"; //this value is only informational for now
         }
+    }
+
+    RCSettings loadRCSetting(const Settings& settings)
+    {
+        RCSettings rc_setting;
+        rc_setting.remote_control_id = settings.getInt("RemoteControlID", rc_setting.remote_control_id);
+        rc_setting.allow_api_when_disconnected = settings.getBool("AllowAPIWhenDisconnected",
+            rc_setting.allow_api_when_disconnected);
+        return rc_setting;
     }
 
     void checkSettingsVersion(const Settings& settings)
@@ -437,6 +494,112 @@ private:
                     createCaptureSettings(json_settings_child, capture_setting);
                     capture_settings[capture_setting.image_type] = capture_setting;
                 }
+            }
+        }
+    }
+
+    std::unique_ptr<VehicleSetting> createPX4VehicleSetting(const Settings& settings)
+    {
+        //these settings are expected in same section, not in another child
+        auto vehicle_setting = std::unique_ptr<PX4VehicleSetting>(new PX4VehicleSetting());
+       
+        MavLinkConnectionInfo &connection_info = vehicle_setting->connection_info;
+        connection_info.sim_sysid = static_cast<uint8_t>(settings.getInt("SimSysID", connection_info.sim_sysid));
+        connection_info.sim_compid = settings.getInt("SimCompID", connection_info.sim_compid);
+
+        connection_info.vehicle_sysid = static_cast<uint8_t>(settings.getInt("VehicleSysID", connection_info.vehicle_sysid));
+        connection_info.vehicle_compid = settings.getInt("VehicleCompID", connection_info.vehicle_compid);
+
+        connection_info.offboard_sysid = static_cast<uint8_t>(settings.getInt("OffboardSysID", connection_info.offboard_sysid));
+        connection_info.offboard_compid = settings.getInt("OffboardCompID", connection_info.offboard_compid);
+
+        connection_info.logviewer_ip_address = settings.getString("LogViewerHostIp", connection_info.logviewer_ip_address);
+        connection_info.logviewer_ip_port = settings.getInt("LogViewerPort", connection_info.logviewer_ip_port);
+        connection_info.logviewer_ip_sport = settings.getInt("LogViewerSendPort", connection_info.logviewer_ip_sport);
+
+        connection_info.qgc_ip_address = settings.getString("QgcHostIp", connection_info.qgc_ip_address);
+        connection_info.qgc_ip_port = settings.getInt("QgcPort", connection_info.qgc_ip_port);
+
+        connection_info.sitl_ip_address = settings.getString("SitlIp", connection_info.sitl_ip_address);
+        connection_info.sitl_ip_port = settings.getInt("SitlPort", connection_info.sitl_ip_port);
+
+        connection_info.local_host_ip = settings.getString("LocalHostIp", connection_info.local_host_ip);
+
+
+        connection_info.use_serial = settings.getBool("UseSerial", connection_info.use_serial);
+        connection_info.ip_address = settings.getString("UdpIp", connection_info.ip_address);
+        connection_info.ip_port = settings.getInt("UdpPort", connection_info.ip_port);
+        connection_info.serial_port = settings.getString("SerialPort", connection_info.serial_port);
+        connection_info.baud_rate = settings.getInt("SerialBaudRate", connection_info.baud_rate);
+        connection_info.model = settings.getString("Model", connection_info.model);
+
+        return vehicle_setting;
+    }
+
+
+    std::unique_ptr<VehicleSetting> createVehicleSetting(const Settings& settings, const std::string vehicle_name)
+    {
+        auto vehicle_type = Utils::toLower(settings.getString("VehicleType", ""));
+
+        std::unique_ptr<VehicleSetting> vehicle_setting;
+        if (vehicle_type == kVehicleTypePX4)
+            vehicle_setting = createPX4VehicleSetting(settings);
+        else //for everything else we don't need derived class yet
+            vehicle_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+        vehicle_setting->vehicle_name = vehicle_name;
+
+        //required settings
+        vehicle_setting->vehicle_type = vehicle_type;
+
+        //optional settings
+        vehicle_setting->pawn_path = settings.getString("PawnPath", "");
+        vehicle_setting->default_vehicle_state = settings.getString("DefaultVehicleState", "");
+        vehicle_setting->allow_api_always = settings.getBool("AllowAPIAlways", 
+            vehicle_setting->allow_api_always);
+        vehicle_setting->auto_create = settings.getBool("AutoCreate",
+            vehicle_setting->auto_create);
+
+        Settings rc_json;
+        if (settings.getChild("RC", rc_json)) {
+            vehicle_setting->rc = loadRCSetting(rc_json);
+        }
+
+        return vehicle_setting;
+    }
+
+    void addDefaultVehicleSettings()
+    {
+        //create simple flight as default multirotor
+        auto simple_flight_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+        simple_flight_setting->vehicle_name = "SimpleFlight";
+        simple_flight_setting->vehicle_type = kVehicleTypeSimpleFlight;
+        //TODO: we should be selecting remote if available else keyboard
+        //currently keyboard is not supported so use rc as default
+        simple_flight_setting->rc.remote_control_id = 0;
+        vehicles[simple_flight_setting->vehicle_name] = std::move(simple_flight_setting);
+
+        //create default car vehicle
+        auto physx_car_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+        physx_car_setting->vehicle_name = "PhysXCar";
+        physx_car_setting->vehicle_type = kVehicleTypePhysXCar;
+        vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
+    }
+
+    void loadVehicleSettings(const Settings& settings)
+    {
+        vehicles.clear();
+
+        addDefaultVehicleSettings();
+
+        msr::airlib::Settings vehicles_child;
+        if (settings.getChild("Vehicles", vehicles_child)) {
+            std::vector<std::string> keys;
+            vehicles_child.getChildNames(keys);
+
+            for (const auto& key : keys) {
+                msr::airlib::Settings child;
+                vehicles_child.getChild(key, child);
+                vehicles[key] = createVehicleSetting(child, key);
             }
         }
     }
@@ -679,10 +842,25 @@ private:
         clock_type = settings.getString("ClockType", "");
 
         if (clock_type == "") {
-            if (default_vehicle_config == "SimpleFlight")
+            //default value
+            clock_type = "ScalableClock";
+
+            //override if multirotor simmode with simple_flight
+            if (simmode_name == "Multirotor") {
+                //TODO: this won't work if simple_flight and PX4 is combined together!
+
+                //for multirotors we select steppable fixed interval clock unless we have
+                //PX4 enabled vehicle
                 clock_type = "SteppableClock";
-            else
-                clock_type = "ScalableClock";
+                for (auto const& vehicle : vehicles)
+                {
+                    if (vehicle.second->auto_create && 
+                        vehicle.second->vehicle_type == kVehicleTypePX4) {
+                        clock_type = "ScalableClock";
+                        break;
+                    }
+                }
+            }
         }
 
         clock_speed = settings.getFloat("ClockSpeed", 1.0f);

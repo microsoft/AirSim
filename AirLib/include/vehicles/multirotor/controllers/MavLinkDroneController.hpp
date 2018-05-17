@@ -21,6 +21,7 @@
 #include "common/common_utils/Timer.hpp"
 #include "common/CommonStructs.hpp"
 #include "common/VectorMath.hpp"
+#include "common/AirSimSettings.hpp"
 #include "vehicles/multirotor//MultiRotor.hpp"
 #include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
 #include "controllers/PidController.hpp"
@@ -45,48 +46,7 @@ public:
     typedef common_utils::Utils Utils;
     typedef msr::airlib::real_T real_T;
     typedef msr::airlib::MultiRotor MultiRotor;
-
-    struct ConnectionInfo {
-        /* Default values are requires so uninitialized instance doesn't have random values */
-
-        bool use_serial = true; // false means use UDP instead
-                                //Used to connect via HITL: needed only if use_serial = true
-        std::string serial_port = "*";
-        int baud_rate = 115200;
-
-        //Used to connect to drone over UDP: needed only if use_serial = false
-        std::string ip_address = "127.0.0.1";
-        int ip_port = 14560;
-
-        // The PX4 SITL app requires receiving drone commands over a different mavlink channel.
-        // So set this to empty string to disable this separate command channel.
-        std::string sitl_ip_address = "127.0.0.1";
-        int sitl_ip_port = 14556;
-
-        // The log viewer can be on a different machine, so you can configure it's ip address and port here.
-        int logviewer_ip_port = 14388;
-        int logviewer_ip_sport = 14389; // for logging all messages we send to the vehicle.
-        std::string logviewer_ip_address = "127.0.0.1";
-
-        // The QGroundControl app can be on a different machine, so you can configure it's ip address and port here.
-        int qgc_ip_port = 14550;
-        std::string qgc_ip_address = "127.0.0.1";
-
-        // mavlink vehicle identifiers
-        uint8_t sim_sysid = 142;
-        int sim_compid = 42;
-        uint8_t offboard_sysid = 134;
-        int offboard_compid = 1;
-        uint8_t vehicle_sysid = 135;
-        int vehicle_compid = 1;
-
-        // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet) 
-        // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
-        // same machine.  Whatever network you choose it has to be the same one for external
-        std::string local_host_ip = "127.0.0.1";
-
-        std::string model = "Generic";
-    };
+    typedef msr::airlib::AirSimSettings::MavLinkConnectionInfo MavLinkConnectionInfo;
 
 public:
     //required for pimpl
@@ -94,8 +54,8 @@ public:
     virtual ~MavLinkDroneController();
 
     //non-base interface specific to MavLinKDroneController
-    void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation);
-    ConnectionInfo getMavConnectionInfo() const;
+    void initialize(const MavLinkConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation);
+    MavLinkConnectionInfo getMavConnectionInfo() const;
     static std::string findPX4();
 
     //TODO: get rid of below methods?
@@ -214,7 +174,7 @@ public:
     }
 
     //variables required for VehicleControllerBase implementation
-    ConnectionInfo connection_info_;
+    MavLinkConnectionInfo connection_info_;
     bool is_any_heartbeat_, is_hil_mode_set_, is_armed_;
     bool is_controls_0_1_; //Are motor controls specified in 0..1 or -1..1?
     float rotor_controls_[RotorControlsCount];
@@ -240,7 +200,7 @@ public:
     common_utils::Timer hil_message_timer_;
     common_utils::Timer sitl_message_timer_;
 
-    void initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
+    void initialize(const MavLinkConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
     {
         connection_info_ = connection_info;
         sensors_ = sensors;
@@ -263,7 +223,7 @@ public:
         return is_available_;
     }
 
-    ConnectionInfo getMavConnectionInfo() const
+    MavLinkConnectionInfo getMavConnectionInfo() const
     {
         return connection_info_;
     }
@@ -431,7 +391,7 @@ public:
         initializeMavSubscriptions();
     }
 
-    void createMavConnection(const ConnectionInfo& connection_info)
+    void createMavConnection(const MavLinkConnectionInfo& connection_info)
     {
         if (connection_info.use_serial) {
             createMavSerialConnection(connection_info.serial_port, connection_info.baud_rate);
@@ -1360,12 +1320,12 @@ MavLinkDroneController::~MavLinkDroneController()
     pimpl_->closeAllConnection();
 }
 
-void MavLinkDroneController::initialize(const ConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
+void MavLinkDroneController::initialize(const MavLinkConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
 {
     pimpl_->initialize(connection_info, sensors, is_simulation);
 }
 
-MavLinkDroneController::ConnectionInfo MavLinkDroneController::getMavConnectionInfo() const
+MavLinkDroneController::MavLinkConnectionInfo MavLinkDroneController::getMavConnectionInfo() const
 {
     return pimpl_->getMavConnectionInfo();
 }

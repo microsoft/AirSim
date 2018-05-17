@@ -94,7 +94,7 @@ void ACarPawn::setupVehicleMovementComponent()
     UWheeledVehicleMovementComponent4W* movement = CastChecked<UWheeledVehicleMovementComponent4W>(GetVehicleMovement());
     check(movement->WheelSetups.Num() == 4);
 
-    // Wheels/Tyres
+    // Wheels/Tires
     // Setup the wheels
     movement->WheelSetups[0].WheelClass = UCarWheelFront::StaticClass();
     movement->WheelSetups[0].BoneName = FName("PhysWheel_FL");
@@ -195,7 +195,7 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
     setupInputBindings();
 
     std::vector<APIPCamera*> cameras = { InternalCamera1, InternalCamera2, InternalCamera3, InternalCamera4, InternalCamera5 };
-    wrapper_->initialize(this, cameras);
+    wrapper_->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
     wrapper_->setKinematics(&kinematics_);
     wrapper_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>(
         new CarPawnApi(wrapper_.get(), this->GetVehicleMovement())));
@@ -348,7 +348,7 @@ void ACarPawn::Tick(float Delta)
 
     updateKinematics(Delta);
 
-    // update phsyics material
+    // update physics material
     updatePhysicsMaterial();
 
     // Update the strings used in the hud (incar and onscreen)

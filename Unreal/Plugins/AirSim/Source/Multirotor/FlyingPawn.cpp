@@ -25,7 +25,7 @@ void AFlyingPawn::initializeForBeginPlay(const std::vector<msr::airlib::AirSimSe
         cameras.push_back(camera);
     }
 
-    wrapper_->initialize(this, cameras);
+    wrapper_->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
 }
 
 void AFlyingPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 

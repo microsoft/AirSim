@@ -95,7 +95,7 @@ while True:
 The [PythonClient folder](../PythonClient] has few other ready to run examples:
 
 - Flying a path: shows how Chris Lovett created the [moveOnPath demo](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo).
-Make sure your drone is initially located at the start position x=310.0 cm, y=11200.0 cm, z=235.0 cm of the Modular Neighbohood map.
+Make sure your drone is initially located at the start position x=310.0 cm, y=11200.0 cm, z=235.0 cm of the Modular Neighborhood map.
 - Camera: shows capturing the Depth camera view from AirSim and displaying it in an OpenCV window.
 
 ## Notes on APIs
@@ -115,5 +115,5 @@ Make sure your drone is initially located at the start position x=310.0 cm, y=11
 VS2017 should have everything if you installed VC++. To use APIs you will need Python 3.5 (install using Anaconda).
 
 #### I get error on `import cv2`
-We recommand [Anaconda](https://www.anaconda.com/download/) to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have [problems](https://stackoverflow.com/a/45934992/207661). You can install OpenCV using `pip install opencv-python`.
+We recommend [Anaconda](https://www.anaconda.com/download/) to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have [problems](https://stackoverflow.com/a/45934992/207661). You can install OpenCV using `pip install opencv-python`.
 

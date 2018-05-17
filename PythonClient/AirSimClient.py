@@ -608,7 +608,7 @@ class CarClient(AirSimClientBase, object):
     def __init__(self, ip = "", timeout = 3600):
         if (ip == ""):
             ip = "127.0.0.1"
-        super(CarClient, self).__init__(ip, 42451, timeout_value = timeout)
+        super(CarClient, self).__init__(ip, 41451, timeout_value = timeout)
 
     def setCarControls(self, controls):
         self.client.call('setCarControls', controls)
