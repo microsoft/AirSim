@@ -442,13 +442,39 @@ class AirSimClientBase:
     def reset(self):
         self.client.call('reset')
 
+    def getServerVersion(self):
+        return self.client.call('getServerVersion')
+    def getClientVersion(self):
+        return 1 # sync with C++ client
+    def getMinRequiredServerVersion(self):
+        return 1 # sync with C++ client
+    def getMinRequiredClientVersion(self):
+        return self.client.call('getMinRequiredClientVersion')
+
     def confirmConnection(self):
         home = self.getHomeGeoPoint()
         while ((home.latitude == 0 and home.longitude == 0 and home.altitude == 0) or
                 math.isnan(home.latitude) or  math.isnan(home.longitude) or  math.isnan(home.altitude)):
-            time.sleep(1)
+            time.sleep(0.2)
             home = self.getHomeGeoPoint()
             print('X', end='')
+        print(" Connected!")
+        server_ver = self.getServerVersion()
+        client_ver = self.getClientVersion()
+        server_min_ver = self.getMinRequiredServerVersion()
+        client_min_ver = self.getMinRequiredClientVersion()
+    
+        ver_info = "Client Ver:" + str(client_ver) + " (Min Req: " + str(client_min_ver) + \
+              "), Server Ver:" + str(server_ver) + " (Min Req" + str(server_min_ver) + ")"
+
+        if server_ver < server_min_ver:
+            print(ver_info, file=sys.stderr)
+            print("AirSim server is of older version and not supported by this client. Please upgrade!")
+        elif client_ver < client_min_ver:
+            print(ver_info, file=sys.stderr)
+            print("AirSim client is of older version and not supported by this server. Please upgrade!")
+        else:
+            print(ver_info)
         print('')
 
     def getHomeGeoPoint(self):

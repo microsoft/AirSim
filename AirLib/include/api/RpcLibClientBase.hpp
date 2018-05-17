@@ -20,6 +20,11 @@ public:
     RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
     ConnectionState getConnectionState();
     bool ping();
+    int getClientVersion() const;
+    int getServerVersion() const;
+    int getMinRequiredServerVersion() const;
+    int getMinRequiredClientVersion() const;
+
 
     vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request);
     vector<uint8_t> simGetImage(int camera_id, ImageCaptureBase::ImageType type);
