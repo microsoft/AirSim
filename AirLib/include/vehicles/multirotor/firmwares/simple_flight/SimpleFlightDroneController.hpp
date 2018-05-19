@@ -91,12 +91,6 @@ public:
         return firmware_->offboardApi().hasApiControl();
     }
 
-    virtual bool isSimulationMode() const override
-    {
-        //TODO: after we get real board implementation, change this
-        return true;
-    }
-
     virtual void enableApiControl(bool is_enabled) override
     {
         if (is_enabled) {

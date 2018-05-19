@@ -42,17 +42,7 @@ public:
     bool hover();
 
     MultirotorState getMultirotorState();
-    Vector3r getPosition();
-    Vector3r getVelocity();
-    Quaternionr getOrientation();
-    GeoPoint getGpsLocation();
-    bool isSimulationMode();
-    std::string getDebugInfo();
-
-    RCData getRCData();
     void setRCData(const RCData& rc_data);
-
-    DroneControllerBase::LandedState getLandedState();
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);

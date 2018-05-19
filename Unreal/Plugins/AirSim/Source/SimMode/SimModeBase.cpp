@@ -340,4 +340,10 @@ void ASimModeBase::SimModeApi::continueForTime(double seconds)
     simmode_->continueForTime(seconds);
 }
 
+bool ASimModeBase::SimModeApi::isSimulationMode() const
+{
+    return true;
+}
+
+
 //************************* SimModeApi *****************************/

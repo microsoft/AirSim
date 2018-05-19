@@ -86,6 +86,7 @@ private:
         virtual bool isPaused() const override;
         virtual void pause(bool is_paused) override;
         virtual void continueForTime(double seconds) override;
+        virtual bool isSimulationMode() const override;
 
     private:
         ASimModeBase* simmode_;

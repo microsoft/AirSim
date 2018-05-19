@@ -13,11 +13,13 @@ namespace msr { namespace airlib {
 class SimModeApiBase {
 public:
     virtual VehicleApiBase* getVehicleApi() = 0;
+    virtual ~SimModeApiBase() = default;
+
     virtual bool isPaused() const = 0;
     virtual void reset() = 0;
     virtual void pause(bool is_paused) = 0;
     virtual void continueForTime(double seconds) = 0;
-    virtual ~SimModeApiBase() = default;
+    virtual bool isSimulationMode() const = 0;
 };
 
 

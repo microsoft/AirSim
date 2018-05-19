@@ -138,6 +138,9 @@ RpcLibServerBase::RpcLibServerBase(SimModeApiBase* simmode_api, string server_ad
     pimpl_->server.bind("getMinRequiredClientVersion", []() -> int {
         return 1;
     });
+    pimpl_->server.bind("isSimulationMode", [&]() -> bool {
+        return getSimModeApi()->isSimulationMode();
+    });
     
     pimpl_->server.suppress_exceptions(true);
 }

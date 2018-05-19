@@ -102,11 +102,6 @@ public:
         return false;
     }
 
-    virtual bool isSimulationMode() const override
-    {
-        return true;
-    }
-
     virtual void enableApiControl(bool is_enabled) override
     {
         //TODO: implement this

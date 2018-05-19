@@ -122,10 +122,6 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(SimModeApiBase* simmode_api, stri
         bind("getGpsLocation", [&]() -> MultirotorRpcLibAdapators::GeoPoint { 
         return MultirotorRpcLibAdapators::GeoPoint(getDroneApi()->getGpsLocation()); 
     });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("isSimulationMode", [&]() -> bool { 
-        return getDroneApi()->isSimulationMode(); 
-    });
 
 }
 

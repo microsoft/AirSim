@@ -13,6 +13,11 @@ enum class DrivetrainType {
     ForwardOnly
 };
 
+enum class LandedState : uint {
+    Landed = 0,
+    Flying = 1
+};
+
 //Yaw mode specifies if yaw should be set as angle or angular velocity around the center of drone
 struct YawMode {
     bool is_rate = true;
@@ -43,7 +48,7 @@ struct YawMode {
 struct VehicleParams {
     VehicleParams(){}; 
     //what is the breaking distance for given velocity?
-    //Below is just proportionalty constant to convert from velocity to breaking distance
+    //Below is just proportionality constant to convert from velocity to breaking distance
     float vel_to_breaking_dist = 0.5f;   //ideally this should be 2X for very high speed but for testing we are keeping it 0.5
     float min_breaking_dist = 1; //min breaking distance
     float max_breaking_dist = 3; //min breaking distance
@@ -63,53 +68,24 @@ struct VehicleParams {
     int obs_window = 0;
 };    
 
-struct RCData {
-    TTimePoint timestamp = 0;
-    //pitch, roll, yaw should be in range -1 to 1
-    //switches should be integer value indicating its state, 0=on, 1=off for example.
-    float pitch = 0, roll = 0, throttle = 0, yaw = 0;
-    unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, 
-        switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
-    bool is_initialized = false; //is RC connected?
-    bool is_valid = false; //must be true for data to be valid
-
-
-    void add(const RCData& other)
-    {
-        pitch += other.pitch; roll += other.roll; throttle += other.throttle; yaw += other.yaw;
-    }
-    void subtract(const RCData& other)
-    {
-        pitch -= other.pitch; roll -= other.roll; throttle -= other.throttle; yaw -= other.yaw;
-    }
-    void divideBy(float k)
-    {
-        pitch /= k; roll /= k; throttle /= k; yaw /= k;   
-    }
-    bool isAnyMoreThan(float k)
-    {
-        using std::abs;
-        return abs(pitch) > k || abs(roll) > k || abs(throttle) > k || abs(yaw) > k;
-    }
-    string toString()
-    {
-        return Utils::stringf("RCData[pitch=%f, roll=%f, throttle=%f, yaw=%f]", pitch, roll, throttle, yaw);
-    }
-};
-
 struct MultirotorState {
     CollisionInfo collision;
     Kinematics::State kinematics_estimated;
     Kinematics::State kinematics_true;
     GeoPoint gps_location;
     uint64_t timestamp;
+    LandedState landed_state;
+    RCData rc_data;
+    std::vector<std::string> controller_messages;
 
     MultirotorState()
     {}
     MultirotorState(const CollisionInfo& collision_val, const Kinematics::State& kinematics_true_val, 
-        const Kinematics::State& kinematics_estimated_val, const GeoPoint& gps_location_val, uint64_t timestamp_val)
+        const Kinematics::State& kinematics_estimated_val, const GeoPoint& gps_location_val, uint64_t timestamp_val,
+        LandedState landed_state_val, const RCData& rc_data_val, const std::vector<std::string>& controller_messages_val)
         : collision(collision_val), kinematics_estimated(kinematics_estimated_val), 
-        kinematics_true(kinematics_true_val), gps_location(gps_location_val), timestamp(timestamp_val)
+        kinematics_true(kinematics_true_val), gps_location(gps_location_val), timestamp(timestamp_val), 
+        landed_state(landed_state_val), rc_data(rc_data_val), controller_messages(controller_messages_val)
     {
     }
 };

@@ -20,7 +20,6 @@ public:
     virtual void enableApiControl(bool is_enabled) = 0;
     virtual void setSimulationMode(bool is_set) = 0;
     virtual bool isApiControlEnabled() const = 0;
-    virtual bool isSimulationMode() const = 0;
 
     //if controller connects via USB/UDP and connection fails then this
     //should return false

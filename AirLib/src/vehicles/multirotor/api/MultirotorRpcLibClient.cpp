@@ -161,12 +161,6 @@ GeoPoint MultirotorRpcLibClient::getGpsLocation()
     return static_cast<rpc::client*>(getClient())->call("getGpsLocation").as<MultirotorRpcLibAdapators::GeoPoint>().to();
 }
 
-bool MultirotorRpcLibClient::isSimulationMode()
-{
-    return static_cast<rpc::client*>(getClient())->call("isSimulationMode").as<bool>();
-}
-
-
 }} //namespace
 
 #endif

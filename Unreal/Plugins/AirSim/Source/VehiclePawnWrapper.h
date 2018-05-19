@@ -13,9 +13,10 @@
 #include "NedTransform.h"
 #include "common/AirSimSettings.hpp"
 #include "api/VehicleApiBase.hpp"
+#include "controllers/VehicleConnectorBase.hpp"
 
 
-class VehiclePawnWrapper
+class VehiclePawnWrapper : public msr::airlib::VehicleConnectorBase
 {
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;

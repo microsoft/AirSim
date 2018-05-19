@@ -43,8 +43,12 @@ public:
         KinematicsState kinematics_true;
         GeoPoint gps_location;
         uint64_t timestamp;
+        LandedState landed_state;
+        RCData rc_data;
+        std::vector<std::string> controller_messages;
 
-        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, kinematics_true, gps_location, timestamp);
+
+        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, kinematics_true, gps_location, timestamp, landed_state, rc_data, controller_messages);
 
         MultirotorState()
         {}
@@ -56,12 +60,15 @@ public:
             kinematics_true = s.kinematics_true;
             gps_location = s.gps_location;
             timestamp = s.timestamp;
+            landed_state = s.landed_state;
+            rc_data = RCData(s.rc_data);
+            controller_messages = s.controller_messages;
         }
 
         msr::airlib::MultirotorState to() const
         {
             return msr::airlib::MultirotorState(collision.to(), kinematics_estimated.to(), 
-                kinematics_true.to(), gps_location.to(), timestamp);
+                kinematics_true.to(), gps_location.to(), timestamp, landed_state, rc_data.to(), controller_messages);
         }
     };
 };
@@ -69,6 +76,7 @@ public:
 }} //namespace
 
 MSGPACK_ADD_ENUM(msr::airlib::DrivetrainType);
+MSGPACK_ADD_ENUM(msr::airlib::LandedState);
 
 
 #endif

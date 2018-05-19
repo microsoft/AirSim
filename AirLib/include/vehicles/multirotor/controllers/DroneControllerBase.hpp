@@ -62,11 +62,6 @@ public: //types
         std::lock_guard<std::recursive_mutex> lock_;
     };
 
-    enum class LandedState : uint {
-        Landed = 0,
-        Flying = 1
-    };
-
 public: //interface for outside world
     /// The drone must be armed before it will fly.  Set arm to true to arm the drone.  
     /// On some drones arming may cause the motors to spin on low throttle, this is normal.
@@ -209,13 +204,10 @@ public: //interface for outside world
 
     /// Set the RC data that should be used by flight controller
     virtual void setRCData(const RCData& rcData) = 0;
-
-    /// Get the home point (where drone was armed before takeoff).  This is the location the drone 
-    /// will return to if you call goHome().
-    virtual GeoPoint getHomeGeoPoint() const = 0;
+    
 
     /// Get the current GPS location of the drone.
-    virtual GeoPoint getGpsLocation() const = 0;
+    
 
     //below are for passing information from simulator to API layer
     //in non simulation mode default would be no collision unless

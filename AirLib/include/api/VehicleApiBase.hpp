@@ -17,7 +17,9 @@ public:
     virtual bool armDisarm(bool arm) = 0;
     virtual bool isApiControlEnabled() const = 0;
     virtual void reset() = 0;
+    virtual void cancelPendingTasks() = 0;
 
+    
     virtual vector<ImageCaptureBase::ImageResponse> simGetImages(const vector<ImageCaptureBase::ImageRequest>& request) const = 0;
     virtual vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const = 0;
 

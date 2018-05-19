@@ -70,7 +70,6 @@ public:
     virtual void getStatusMessages(std::vector<std::string>& messages) override;
     virtual bool isAvailable(std::string& message) const override;
     virtual bool isApiControlEnabled() const override;
-    virtual bool isSimulationMode() const override;
     virtual void enableApiControl(bool is_enabled) override;
     virtual void setSimulationMode(bool is_set) override;
     virtual Pose getDebugPose() const override;
@@ -1016,11 +1015,6 @@ public:
         return is_api_control_enabled_;
     }
 
-    bool isSimulationMode()
-    {
-        return is_simulation_mode_;
-    }
-
     void enableApiControl(bool is_enabled)
     {
         checkVehicle();
@@ -1430,10 +1424,6 @@ void MavLinkDroneController::setSimulationMode(bool is_set)
 bool MavLinkDroneController::isApiControlEnabled() const
 {
     return pimpl_->isApiControlEnabled();
-}
-bool MavLinkDroneController::isSimulationMode() const
-{
-    return pimpl_->isSimulationMode();
 }
 
 bool MavLinkDroneController::takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
