@@ -5,7 +5,7 @@
 #define msr_airlib_vehicles_MultiRotorParamsFactory_hpp
 
 #include "vehicles/multirotor/configs/Px4MultiRotor.hpp"
-#include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
+#include "vehicles/multirotor/controllers/MavLinkMultirotorApi.hpp"
 #include "vehicles/multirotor/configs/RosFlightQuadX.hpp"
 #include "vehicles/multirotor/configs/SimpleFlightQuadX.hpp"
 

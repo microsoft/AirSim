@@ -11,7 +11,7 @@ namespace msr { namespace airlib {
 class RealMultirotorConnector : public VehicleConnectorBase
 {
 public:
-    RealMultirotorConnector(VehicleControllerBase* controller)
+    RealMultirotorConnector(VehicleApiBase* controller)
         : controller_(controller)
     {
     }
@@ -26,7 +26,7 @@ public:
         unused(dt);
     }
 
-    virtual VehicleControllerBase* getController() override
+    virtual VehicleApiBase* getController() override
     {
         return controller_;
     }
@@ -96,7 +96,7 @@ public:
     }
 
 private:
-    VehicleControllerBase* controller_;
+    VehicleApiBase* controller_;
 };
 
 

@@ -4,7 +4,7 @@
 #ifndef air_VehicleConnectorBase_hpp
 #define air_VehicleConnectorBase_hpp
 
-#include "VehicleControllerBase.hpp"
+#include "VehicleApiBase.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "common/UpdatableObject.hpp"
 
@@ -20,7 +20,7 @@ public:
     //called when render changes are required
     virtual void updateRendering(float dt) = 0;
 
-    virtual VehicleControllerBase* getController() = 0;
+    virtual VehicleApiBase* getController() = 0;
     virtual ImageCaptureBase* getImageCapture() = 0;
     virtual void setPose(const Pose& pose, bool ignore_collision) = 0;
     virtual Pose getPose() = 0;

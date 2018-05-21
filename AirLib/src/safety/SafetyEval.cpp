@@ -14,7 +14,7 @@ namespace msr { namespace airlib {
 //TODO: something defines max macro which interfears with code here
 #undef max
 
-SafetyEval::SafetyEval(VehicleParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy_ptr)
+SafetyEval::SafetyEval(MultirotorApiParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy_ptr)
     : vehicle_params_(vehicle_params), fence_ptr_(fence_ptr), obs_xy_ptr_(obs_xy_ptr)
 { 
     Utils::log(Utils::stringf("enable_reasons: %X, obs_strategy=%X", uint(enable_reasons_), uint(obs_strategy_)));

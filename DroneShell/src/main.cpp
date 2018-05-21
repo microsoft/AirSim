@@ -14,8 +14,8 @@
 #include "common/common_utils/AsyncTasker.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "common/EarthUtils.hpp"
-#include "vehicles/multirotor/controllers/DroneCommon.hpp"
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
+#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
 #include "safety/SafetyEval.hpp"
 #include "common/common_utils/Timer.hpp"
 

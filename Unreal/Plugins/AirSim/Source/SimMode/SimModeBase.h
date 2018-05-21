@@ -11,7 +11,7 @@
 #include "common/ClockFactory.hpp"
 #include "Engine/DirectionalLight.h"
 #include "api/ApiServerBase.hpp"
-#include "api/SimModeApiBase.hpp"
+#include "api/WorldSimApiBase.hpp"
 #include "SimModeBase.generated.h"
 
 
@@ -63,7 +63,7 @@ protected:
     virtual const AirSimSettings& getSettings() const;
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
-    msr::airlib::SimModeApiBase* getSimModeApi() const;
+    msr::airlib::WorldSimApiBase* getSimModeApi() const;
     virtual void setupClockSpeed();
 
 protected: //settings
@@ -78,7 +78,7 @@ private:
     typedef msr::airlib::TTimeDelta TTimeDelta;
 
 
-    class SimModeApi : public msr::airlib::SimModeApiBase  {
+    class SimModeApi : public msr::airlib::WorldSimApiBase  {
     public:
         SimModeApi(ASimModeBase* simmode);
         virtual msr::airlib::VehicleApiBase* getVehicleApi() override;

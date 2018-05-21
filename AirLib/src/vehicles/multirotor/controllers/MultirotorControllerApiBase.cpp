@@ -4,7 +4,7 @@
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
 
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include <functional>
 #include <exception>
 #include <vector>
@@ -13,63 +13,35 @@
 
 namespace msr { namespace airlib {
 
-float DroneControllerBase::getAutoLookahead(float velocity, float adaptive_lookahead,
-        float max_factor, float min_factor) const
-{
-    //if auto mode requested for lookahead then calculate based on velocity
-    float command_period_dist = velocity * getCommandPeriod();
-    float lookahead = command_period_dist * (adaptive_lookahead > 0 ? min_factor : max_factor);
-    lookahead = std::max(lookahead, getDistanceAccuracy()*1.5f); //50% more than distance accuracy
-    return lookahead;
-}
 
-float DroneControllerBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel) const
+bool MultirotorApiBase::moveByAngleZ(float pitch, float roll, float z, float yaw, float duration)
 {
-    unused(risk_dist);
-    return max_obs_avoidance_vel;
-}
+    SingleCall lock(getCancelToken());
 
-void DroneControllerBase::setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr)
-{
-    safety_eval_ptr_ = safety_eval_ptr;
-}
-
-bool DroneControllerBase::loopCommandPre()
-{
-    //no-op by default. derived class can override it if needed
-    return true;
-}
-
-void DroneControllerBase::loopCommandPost()
-{
-    //no-op by default. derived class can override it if needed
-}
-
-bool DroneControllerBase::moveByAngleZ(float pitch, float roll, float z, float yaw, float duration
-    , CancelableBase& cancelable_action)
-{
     if (duration <= 0)
         return true;
 
     return !waitForFunction([&]() {
-        return !moveByRollPitchZ(pitch, roll, z, yaw);
-    }, duration, cancelable_action);
+        return !moveByRollPitchZInternal(pitch, roll, z, yaw);
+    }, duration);
 }
 
-bool DroneControllerBase::moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration
-    , CancelableBase& cancelable_action)
+bool MultirotorApiBase::moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration)
 {
+    SingleCall lock(getCancelToken());
+
     if (duration <= 0)
         return true;
 
     return !waitForFunction([&]() {
-        return !moveByRollPitchThrottle(pitch, roll, throttle, yaw_rate);
-    }, duration, cancelable_action);
+        return !moveByRollPitchThrottleInternal(pitch, roll, throttle, yaw_rate);
+    }, duration);
 }
 
-bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode,
-    CancelableBase& cancelable_action)
+bool MultirotorApiBase::moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
+    SingleCall lock(getCancelToken());
+
     if (duration <= 0)
         return true;
 
@@ -77,13 +49,14 @@ bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, float dur
     adjustYaw(vx, vy, drivetrain, adj_yaw_mode);
 
     return !waitForFunction([&]() {
-        return !moveByVelocity(vx, vy, vz, adj_yaw_mode);
-    }, duration, cancelable_action);
+        return !moveByVelocityInternal(vx, vy, vz, adj_yaw_mode);
+    }, duration);
 }
 
-bool DroneControllerBase::moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode,
-    CancelableBase& cancelable_action)
+bool MultirotorApiBase::moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
+    SingleCall lock(getCancelToken());
+
     if (duration <= 0)
         return false;
 
@@ -91,14 +64,16 @@ bool DroneControllerBase::moveByVelocityZ(float vx, float vy, float z, float dur
     adjustYaw(vx, vy, drivetrain, adj_yaw_mode);
 
     return !waitForFunction([&]() {
-        return !moveByVelocityZ(vx, vy, z, adj_yaw_mode);
-    }, duration, cancelable_action);
+        return !moveByVelocityZInternal(vx, vy, z, adj_yaw_mode);
+    }, duration);
 
 }
 
-bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
-    float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action)
+bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
+    float lookahead, float adaptive_lookahead)
 {
+    SingleCall lock(getCancelToken());
+
     //validate path size
     if (path.size() == 0) {
         Utils::log("moveOnPath terminated because path has no points", Utils::kLogLevelWarn);
@@ -128,7 +103,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     //add current position as starting point
     vector<Vector3r> path3d;
     vector<PathSegment> path_segs;
-    path3d.push_back(getPosition());
+    path3d.push_back(getKinematicsEstimated().pose.position);
 
     Vector3r point;
     float path_length = 0;
@@ -183,7 +158,7 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
             yaw_mode, path_segs.at(cur_path_loc.seg_index).start_z);
 
         //sleep for rest of the cycle
-        if (!waiter.sleep(cancelable_action))
+        if (!waiter.sleep(getCancelToken()))
             return false;
 
         /*  Below, P is previous position on path, N is next goal and C is our current position.
@@ -273,41 +248,48 @@ bool DroneControllerBase::moveOnPath(const vector<Vector3r>& path, float velocit
     return true;
 }
 
-bool DroneControllerBase::moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
-    const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action)
+bool MultirotorApiBase::moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
+    const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {
+    SingleCall lock(getCancelToken());
+
     vector<Vector3r> path { Vector3r(x, y, z) };
-    return moveOnPath(path, velocity, drivetrain, yaw_mode, lookahead, adaptive_lookahead, cancelable_action);
+    return moveOnPath(path, velocity, drivetrain, yaw_mode, lookahead, adaptive_lookahead);
 }
 
-bool DroneControllerBase::moveToZ(float z, float velocity, const YawMode& yaw_mode,
-    float lookahead, float adaptive_lookahead, CancelableBase& cancelable_action)
+bool MultirotorApiBase::moveToZ(float z, float velocity, const YawMode& yaw_mode,
+    float lookahead, float adaptive_lookahead)
 {
-    Vector2r cur_xy = getPositionXY();
+    SingleCall lock(getCancelToken());
+
+    Vector2r cur_xy(getPosition().x, getPosition().y);
     vector<Vector3r> path { Vector3r(cur_xy.x(), cur_xy.y(), z) };
-    return moveOnPath(path, velocity, DrivetrainType::MaxDegreeOfFreedom, yaw_mode, lookahead, adaptive_lookahead,
-        cancelable_action);
+    return moveOnPath(path, velocity, DrivetrainType::MaxDegreeOfFreedom, yaw_mode, lookahead, adaptive_lookahead);
 }
 
-bool DroneControllerBase::rotateToYaw(float yaw, float margin, CancelableBase& cancelable_action)
+bool MultirotorApiBase::rotateToYaw(float yaw, float margin)
 {
+    SingleCall lock(getCancelToken());
+
     YawMode yaw_mode(false, VectorMath::normalizeAngle(yaw));
     Waiter waiter(getCommandPeriod());
     auto start_pos = getPosition();
     bool is_yaw_reached;
     while ((is_yaw_reached = isYawWithinMargin(yaw, margin)) == false) {
-        if (!moveToPosition(start_pos, yaw_mode))
+        if (!moveToPositionInternal(start_pos, yaw_mode))
             return false;
 
-        if (!waiter.sleep(cancelable_action))
+        if (!waiter.sleep(getCancelToken()))
             return false;
     }
 
     return true;
 }
 
-bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, CancelableBase& cancelable_action)
+bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
 {
+    SingleCall lock(getCancelToken());
+
     if (duration <= 0)
         return true;
 
@@ -315,17 +297,19 @@ bool DroneControllerBase::rotateByYawRate(float yaw_rate, float duration, Cancel
     YawMode yaw_mode(true, yaw_rate);
     Waiter waiter(getCommandPeriod(), duration);
     do {
-        if (!moveToPosition(start_pos, yaw_mode))
+        if (!moveToPositionInternal(start_pos, yaw_mode))
             return false;
-    } while (waiter.sleep(cancelable_action) && !waiter.is_timeout());
+    } while (waiter.sleep(getCancelToken()) && !waiter.is_timeout());
 
     return waiter.is_timeout();
 }
 
-bool DroneControllerBase::takeoff(float max_wait_seconds, CancelableBase& cancelable_action)
+bool MultirotorApiBase::takeoff(float max_wait_seconds)
 {
+    SingleCall lock(getCancelToken());
+
     unused(max_wait_seconds);
-    bool ret = moveToPosition(0, 0, getTakeoffZ(), 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1, cancelable_action);
+    bool ret = moveToPosition(0, 0, getTakeoffZ(), 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
 
     //last command is to hold on to position
     //commandPosition(0, 0, getTakeoffZ(), YawMode::Zero());
@@ -333,13 +317,17 @@ bool DroneControllerBase::takeoff(float max_wait_seconds, CancelableBase& cancel
     return ret;
 }
 
-bool DroneControllerBase::goHome(CancelableBase& cancelable_action)
+bool MultirotorApiBase::goHome()
 {
-    return moveToPosition(0, 0, 0, 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1, cancelable_action);
+    SingleCall lock(getCancelToken());
+
+    return moveToPosition(0, 0, 0, 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
 }
 
-bool DroneControllerBase::land(float max_wait_seconds, CancelableBase& cancelable_action)
+bool MultirotorApiBase::land(float max_wait_seconds)
 {
+    SingleCall lock(getCancelToken());
+
     float land_vel = 0.2f;
     float near_zero_vel = land_vel / 4;
     int near_zero_vel_count = 0;
@@ -351,16 +339,18 @@ bool DroneControllerBase::land(float max_wait_seconds, CancelableBase& cancelabl
         else
             near_zero_vel_count = 0;
 
-        return near_zero_vel_count > 10 || !moveByVelocity(0, 0, 0.2f, YawMode::Zero());
-    }, max_wait_seconds, cancelable_action);
+        return near_zero_vel_count > 10 || !moveByVelocityInternal(0, 0, 0.2f, YawMode::Zero());
+    }, max_wait_seconds);
 }
 
-bool DroneControllerBase::hover(CancelableBase& cancelable_action)
+bool MultirotorApiBase::hover()
 {
-    return moveToZ(getZ(), 0.5f, YawMode{ true,0 }, 1.0f, false, cancelable_action);
+    SingleCall lock(getCancelToken());
+
+    return moveToZ(getPosition().z, 0.5f, YawMode{ true,0 }, 1.0f, false);
 }
 
-bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, const YawMode& yaw_mode)
+bool MultirotorApiBase::moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode)
 {
     if (safetyCheckVelocity(Vector3r(vx, vy, vz)))
         commandVelocity(vx, vy, vz, yaw_mode);
@@ -368,7 +358,7 @@ bool DroneControllerBase::moveByVelocity(float vx, float vy, float vz, const Yaw
     return true;
 }
 
-bool DroneControllerBase::moveByVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode)
+bool MultirotorApiBase::moveByVelocityZInternal(float vx, float vy, float z, const YawMode& yaw_mode)
 {
     if (safetyCheckVelocityZ(vx, vy, z))
         commandVelocityZ(vx, vy, z, yaw_mode);
@@ -376,7 +366,7 @@ bool DroneControllerBase::moveByVelocityZ(float vx, float vy, float z, const Yaw
     return true;
 }
 
-bool DroneControllerBase::moveToPosition(const Vector3r& dest, const YawMode& yaw_mode)
+bool MultirotorApiBase::moveToPositionInternal(const Vector3r& dest, const YawMode& yaw_mode)
 {
     if (safetyCheckDestination(dest))
         commandPosition(dest.x(), dest.y(), dest.z(), yaw_mode);
@@ -384,7 +374,7 @@ bool DroneControllerBase::moveToPosition(const Vector3r& dest, const YawMode& ya
     return true;
 }
 
-bool DroneControllerBase::moveByRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate)
+bool MultirotorApiBase::moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate)
 {
     if (safetyCheckVelocity(getVelocity()))
         commandRollPitchThrottle(pitch, roll, throttle, yaw_rate);
@@ -392,7 +382,7 @@ bool DroneControllerBase::moveByRollPitchThrottle(float pitch, float roll, float
     return true;
 }
 
-bool DroneControllerBase::moveByRollPitchZ(float pitch, float roll, float z, float yaw)
+bool MultirotorApiBase::moveByRollPitchZInternal(float pitch, float roll, float z, float yaw)
 {
     if (safetyCheckVelocity(getVelocity()))
         commandRollPitchZ(pitch, roll, z, yaw);
@@ -400,7 +390,7 @@ bool DroneControllerBase::moveByRollPitchZ(float pitch, float roll, float z, flo
     return true;
 }
 
-bool DroneControllerBase::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy, 
+bool MultirotorApiBase::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy, 
     float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z)
 {
     if (safety_eval_ptr_ == nullptr)
@@ -416,7 +406,7 @@ bool DroneControllerBase::setSafety(SafetyEval::SafetyViolationType enable_reaso
 }
 
 
-RCData DroneControllerBase::estimateRCTrims(CancelableBase& cancelable_action, float trimduration, float minCountForTrim, float maxTrim)
+RCData MultirotorApiBase::estimateRCTrims(float trimduration, float minCountForTrim, float maxTrim)
 {
     rc_data_trims_ = RCData();
 
@@ -431,7 +421,7 @@ RCData DroneControllerBase::estimateRCTrims(CancelableBase& cancelable_action, f
             count++;
         }
 
-    } while (waiter_trim.sleep(cancelable_action) && !waiter_trim.is_timeout());
+    } while (waiter_trim.sleep(getCancelToken()) && !waiter_trim.is_timeout());
 
     rc_data_trims_.is_valid = true;
 
@@ -453,15 +443,17 @@ RCData DroneControllerBase::estimateRCTrims(CancelableBase& cancelable_action, f
     return rc_data_trims_;
 }
 
-bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode, CancelableBase& cancelable_action)
+bool MultirotorApiBase::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
+    SingleCall lock(getCancelToken());
+
     const float kMaxMessageAge = 0.1f /* 0.1 sec */, kMaxRCValue = 10000;
 
     if (duration <= 0)
         return true;
 
     //freeze the quaternion
-    Quaternionr starting_quaternion = getOrientation();
+    Quaternionr starting_quaternion = getKinematicsEstimated().pose.orientation;
 
     Waiter waiter(getCommandPeriod(), duration);
     do {
@@ -483,34 +475,22 @@ bool DroneControllerBase::moveByManual(float vx_max, float vy_max, float z_min, 
 
             //execute command
             try {
-                float vz = (rc_data.throttle / kMaxRCValue) * z_min + getZ();
-                moveByVelocityZ(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
+                float vz = (rc_data.throttle / kMaxRCValue) * z_min + getPosition().z;
+                moveByVelocityZInternal(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
             }
-            catch(const DroneControllerBase::UnsafeMoveException& ex) {
+            catch(const MultirotorApiBase::UnsafeMoveException& ex) {
                 Utils::log(Utils::stringf("Safety violation: %s", ex.result.message.c_str()), Utils::kLogLevelWarn);
             }
         }
         else
             Utils::log(Utils::stringf("RCData had too old timestamp: %f", age));
 
-    } while (waiter.sleep(cancelable_action) && !waiter.is_timeout());
+    } while (waiter.sleep(getCancelToken()) && !waiter.is_timeout());
 
     return waiter.is_timeout();
 }
 
-Vector2r DroneControllerBase::getPositionXY() const
-{
-    const Vector3r& cur_loc3 = getPosition();
-    Vector2r cur_loc(cur_loc3.x(), cur_loc3.y());
-    return cur_loc;
-}
-
-float DroneControllerBase::getZ() const
-{
-    return getPosition().z();
-}
-
-bool DroneControllerBase::waitForFunction(WaitFunction function, float max_wait_seconds, CancelableBase& cancelable_action)
+bool MultirotorApiBase::waitForFunction(WaitFunction function, float max_wait_seconds)
 {
     if (max_wait_seconds < 0)
     {
@@ -524,17 +504,17 @@ bool DroneControllerBase::waitForFunction(WaitFunction function, float max_wait_
             break;
         }
     }
-    while (waiter.sleep(cancelable_action) && !waiter.is_timeout());
+    while (waiter.sleep(getCancelToken()) && !waiter.is_timeout());
     return found;
 }
 
-bool DroneControllerBase::waitForZ(float max_wait_seconds, float z, float margin, CancelableBase& cancelable_action)
+bool MultirotorApiBase::waitForZ(float max_wait_seconds, float z, float margin)
 {
     float cur_z = 100000;
     if (!waitForFunction([&]() {
-        cur_z = getZ();
+        cur_z = getPosition().z;
         return (std::abs(cur_z - z) <= margin);
-    }, max_wait_seconds, cancelable_action))
+    }, max_wait_seconds))
     {
         //Only raise exception is time out occurred. If preempted then return status.
         throw VehicleMoveException(Utils::stringf("Drone hasn't came to expected z of %f within time %f sec within error margin %f (current z = %f)",
@@ -544,7 +524,7 @@ bool DroneControllerBase::waitForZ(float max_wait_seconds, float z, float margin
 }
 
 
-bool DroneControllerBase::emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result)
+bool MultirotorApiBase::emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result)
 {
     if (!result.is_safe) {
         if (result.reason == SafetyEval::SafetyViolationType_::Obstacle) {
@@ -554,7 +534,7 @@ bool DroneControllerBase::emergencyManeuverIfUnsafe(const SafetyEval::EvalResult
                 Vector3r avoidance_vel = getObsAvoidanceVelocity(result.cur_risk_dist, obs_avoidance_vel_) * result.suggested_vec;
 
                 //use the unchecked command
-                commandVelocityZ(avoidance_vel.x(), avoidance_vel.y(), getZ(), YawMode::Zero());
+                commandVelocityZ(avoidance_vel.x(), avoidance_vel.y(), getPosition().z, YawMode::Zero());
 
                 //tell caller not to execute planned command
                 return false;
@@ -571,7 +551,7 @@ bool DroneControllerBase::emergencyManeuverIfUnsafe(const SafetyEval::EvalResult
     return true;
 }
 
-bool DroneControllerBase::safetyCheckVelocity(const Vector3r& velocity)
+bool MultirotorApiBase::safetyCheckVelocity(const Vector3r& velocity)
 {
     if (safety_eval_ptr_ == nullptr) //safety checks disabled
         return true;
@@ -579,7 +559,7 @@ bool DroneControllerBase::safetyCheckVelocity(const Vector3r& velocity)
     const auto& result = safety_eval_ptr_->isSafeVelocity(getPosition(), velocity, getOrientation());
     return emergencyManeuverIfUnsafe(result);
 }
-bool DroneControllerBase::safetyCheckVelocityZ(float vx, float vy, float z)
+bool MultirotorApiBase::safetyCheckVelocityZ(float vx, float vy, float z)
 {
     if (safety_eval_ptr_ == nullptr) //safety checks disabled
         return true;
@@ -587,7 +567,7 @@ bool DroneControllerBase::safetyCheckVelocityZ(float vx, float vy, float z)
     const auto& result = safety_eval_ptr_->isSafeVelocityZ(getPosition(), vx, vy, z, getOrientation());
     return emergencyManeuverIfUnsafe(result);
 }
-bool DroneControllerBase::safetyCheckDestination(const Vector3r& dest_pos)
+bool MultirotorApiBase::safetyCheckDestination(const Vector3r& dest_pos)
 {
     if (safety_eval_ptr_ == nullptr) //safety checks disabled
         return true;
@@ -596,16 +576,7 @@ bool DroneControllerBase::safetyCheckDestination(const Vector3r& dest_pos)
     return emergencyManeuverIfUnsafe(result);
 }    
 
-void DroneControllerBase::logHomePoint()
-{
-    GeoPoint homepoint = getHomeGeoPoint();
-    if (std::isnan(homepoint.longitude))
-        Utils::log("Home point is not set!", Utils::kLogLevelWarn);
-    else
-        Utils::log(homepoint.to_string().c_str());
-}
-
-float DroneControllerBase::setNextPathPosition(const vector<Vector3r>& path, const vector<PathSegment>& path_segs,
+float MultirotorApiBase::setNextPathPosition(const vector<Vector3r>& path, const vector<PathSegment>& path_segs,
     const PathPosition& cur_path_loc, float next_dist, PathPosition& next_path_loc)
 {
     //note: cur_path_loc and next_path_loc may both point to same object
@@ -639,7 +610,7 @@ float DroneControllerBase::setNextPathPosition(const vector<Vector3r>& path, con
     return next_dist;
 }
 
-void DroneControllerBase::adjustYaw(const Vector3r& heading, DrivetrainType drivetrain, YawMode& yaw_mode)
+void MultirotorApiBase::adjustYaw(const Vector3r& heading, DrivetrainType drivetrain, YawMode& yaw_mode)
 {
     //adjust yaw for the direction of travel in foward-only mode
     if (drivetrain == DrivetrainType::ForwardOnly && !yaw_mode.is_rate) {
@@ -653,11 +624,11 @@ void DroneControllerBase::adjustYaw(const Vector3r& heading, DrivetrainType driv
     //else no adjustment needed
 }
 
-void DroneControllerBase::adjustYaw(float x, float y, DrivetrainType drivetrain, YawMode& yaw_mode) {
+void MultirotorApiBase::adjustYaw(float x, float y, DrivetrainType drivetrain, YawMode& yaw_mode) {
     adjustYaw(Vector3r(x, y, 0), drivetrain, yaw_mode);
 }
 
-void DroneControllerBase::moveToPathPosition(const Vector3r& dest, float velocity, DrivetrainType drivetrain, /* pass by value */ YawMode yaw_mode, float last_z)
+void MultirotorApiBase::moveToPathPosition(const Vector3r& dest, float velocity, DrivetrainType drivetrain, /* pass by value */ YawMode yaw_mode, float last_z)
 {
     unused(last_z);
     //validate dest
@@ -693,31 +664,40 @@ void DroneControllerBase::moveToPathPosition(const Vector3r& dest, float velocit
     //send commands
     //try to maintain altitude if path was in XY plan only, velocity based control is not as good
     if (std::abs(cur.z() - dest.z()) <= getDistanceAccuracy()) //for paths in XY plan current code leaves z untouched, so we can compare with strict equality
-        moveByVelocityZ(velocity_vect.x(), velocity_vect.y(), dest.z(), yaw_mode);
+        moveByVelocityZInternal(velocity_vect.x(), velocity_vect.y(), dest.z(), yaw_mode);
     else
-        moveByVelocity(velocity_vect.x(), velocity_vect.y(), velocity_vect.z(), yaw_mode);
+        moveByVelocityInternal(velocity_vect.x(), velocity_vect.y(), velocity_vect.z(), yaw_mode);
 }
 
-bool DroneControllerBase::isYawWithinMargin(float yaw_target, float margin) const
+bool MultirotorApiBase::isYawWithinMargin(float yaw_target, float margin) const
 {
     const float yaw_current = VectorMath::getYaw(getOrientation()) * 180 / M_PIf;
     return std::abs(yaw_current - yaw_target) <= margin;
-}    
-
-Pose DroneControllerBase::getDebugPose() const
-{
-    //by default indicate that we don't have alternative pose info
-    return Pose::nanPose();
 }
 
-CollisionInfo DroneControllerBase::getCollisionInfo() const
+float MultirotorApiBase::getAutoLookahead(float velocity, float adaptive_lookahead,
+        float max_factor, float min_factor) const
 {
-    return collision_info_;
+    //if auto mode requested for lookahead then calculate based on velocity
+    float command_period_dist = velocity * getCommandPeriod();
+    float lookahead = command_period_dist * (adaptive_lookahead > 0 ? min_factor : max_factor);
+    lookahead = std::max(lookahead, getDistanceAccuracy()*1.5f); //50% more than distance accuracy
+    return lookahead;
 }
-void DroneControllerBase::setCollisionInfo(const CollisionInfo& collision_info)
+
+float MultirotorApiBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel) const
 {
-    collision_info_ = collision_info;
+    unused(risk_dist);
+    return max_obs_avoidance_vel;
 }
+
+void MultirotorApiBase::setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr)
+{
+    SingleCall lock(getCancelToken());
+    safety_eval_ptr_ = safety_eval_ptr;
+}
+
+
 
 }} //namespace
 #endif

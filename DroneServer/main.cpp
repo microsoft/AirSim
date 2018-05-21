@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
-#include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
+#include "vehicles/multirotor/controllers/MavLinkMultirotorApi.hpp"
 #include "vehicles/multirotor/controllers/RealMultirotorConnector.hpp"
 #include "common/Settings.hpp"
 
@@ -16,9 +16,9 @@ void printUsage() {
     cout << "Start the DroneServer using the 'PX4' settings in ~/Documents/AirSim/settings.json." << endl;
 }
 
-class DroneServerSimModeApi : public SimModeApiBase {
+class DroneServerSimModeApi : public WorldSimApiBase {
 public:
-    DroneServerSimModeApi(MultirotorApi* api)
+    DroneServerSimModeApi(MultirotorApiBase* api)
         : api_(api)
     {
     }
@@ -49,7 +49,7 @@ public:
     }
 
 private:
-    MultirotorApi* api_;
+    MultirotorApiBase* api_;
 };
 
 int main(int argc, const char* argv[])
@@ -66,7 +66,7 @@ int main(int argc, const char* argv[])
     else
         std::cout << "WARNING: This is not simulation!" << std::endl;
 
-    MavLinkDroneController::ConnectionInfo connection_info;
+    MavLinkMultirotorApi::ConnectionInfo connection_info;
     
     // read settings and override defaults
     auto settings_full_filepath = Settings::getUserDirectoryFullPath("settings.json");
@@ -110,13 +110,13 @@ int main(int argc, const char* argv[])
 
     }
 
-    MavLinkDroneController mav_drone;
+    MavLinkMultirotorApi mav_drone;
     mav_drone.initialize(connection_info, nullptr, is_simulation);
     mav_drone.reset();
 
     RealMultirotorConnector connector(& mav_drone);
 
-    MultirotorApi api(& connector);
+    MultirotorApiBase api(& connector);
     DroneServerSimModeApi simmode_api(&api);
     msr::airlib::MultirotorRpcLibServer server(&simmode_api, connection_info.local_host_ip);
     

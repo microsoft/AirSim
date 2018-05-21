@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include <functional>
-#include "vehicles/multirotor/api/MultirotorApi.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include "api/RpcLibServerBase.hpp"
 
 
@@ -14,11 +14,11 @@ namespace msr { namespace airlib {
 
 class MultirotorRpcLibServer : public RpcLibServerBase {
 public:
-    MultirotorRpcLibServer(SimModeApiBase* simmode_api, string server_address, uint16_t port = 41451);
+    MultirotorRpcLibServer(WorldSimApiBase* simmode_api, string server_address, uint16_t port = 41451);
     virtual ~MultirotorRpcLibServer();
 
 private:
-    MultirotorApi* getDroneApi() const;
+    MultirotorApiBase* getDroneApi() const;
 };
 
 }} //namespace

@@ -66,7 +66,7 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-msr::airlib::SimModeApiBase* ASimModeBase::getSimModeApi() const
+msr::airlib::WorldSimApiBase* ASimModeBase::getSimModeApi() const
 {
     return simmode_api_.get();
 }

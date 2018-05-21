@@ -10,7 +10,7 @@
 #include "common/common_utils/FileSystem.hpp"
 #include "common/ClockFactory.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
 #include "RandomPointPoseGenerator.hpp"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK

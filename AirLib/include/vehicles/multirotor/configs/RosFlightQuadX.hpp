@@ -65,9 +65,9 @@ protected:
         return sensor_factory_->createSensor(sensor_type);
     }
 
-    virtual std::unique_ptr<DroneControllerBase> createController() override
+    virtual std::unique_ptr<MultirotorApiBase> createController() override
     {
-        return std::unique_ptr<DroneControllerBase>(new RosFlightDroneController(& getSensors(), this, 
+        return std::unique_ptr<MultirotorApiBase>(new RosFlightDroneController(& getSensors(), this, 
             vehicle_setting_->rc.remote_control_id));
     }
 

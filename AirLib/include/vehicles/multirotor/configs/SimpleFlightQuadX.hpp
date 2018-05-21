@@ -60,9 +60,9 @@ protected:
         return sensor_factory_->createSensor(sensor_type);
     }
 
-    virtual std::unique_ptr<DroneControllerBase> createController() override
+    virtual std::unique_ptr<MultirotorApiBase> createController() override
     {
-        return std::unique_ptr<DroneControllerBase>(new SimpleFlightDroneController(this, vehicle_setting_));
+        return std::unique_ptr<MultirotorApiBase>(new SimpleFlightDroneController(this, vehicle_setting_));
     }
 
 

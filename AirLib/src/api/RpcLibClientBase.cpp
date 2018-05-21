@@ -68,28 +68,14 @@ RpcLibClientBase::ConnectionState RpcLibClientBase::getConnectionState()
         return ConnectionState::Unknown;
     }
 }
-bool RpcLibClientBase::simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
-{
-    return pimpl_->client.call("simSetSegmentationObjectID", mesh_name, object_id, is_name_regex).as<bool>();
-}
-int RpcLibClientBase::simGetSegmentationObjectID(const std::string& mesh_name)
-{
-    return pimpl_->client.call("simGetSegmentationObjectID", mesh_name).as<int>();
-}
 void RpcLibClientBase::enableApiControl(bool is_enabled)
 {
     pimpl_->client.call("enableApiControl", is_enabled);
 }
-bool RpcLibClientBase::isApiControlEnabled()
+bool RpcLibClientBase::isApiControlEnabled() const
 {
     return pimpl_->client.call("isApiControlEnabled").as<bool>();
 }
-
-msr::airlib::GeoPoint RpcLibClientBase::getHomeGeoPoint()
-{
-    return pimpl_->client.call("getHomeGeoPoint").as<RpcLibAdapatorsBase::GeoPoint>().to();
-}
-
 int RpcLibClientBase::getClientVersion() const
 {
     return 1; //sync with Python client
@@ -107,10 +93,16 @@ int RpcLibClientBase::getServerVersion() const
     return pimpl_->client.call("getServerVersion").as<int>();
 }
 
-void RpcLibClientBase::reset()
+void RpcLibClientBase::resetVehicle()
 {
-    pimpl_->client.call("reset");
+    pimpl_->client.call("resetVehicle");
 }
+
+void RpcLibClientBase::simResetWorld()
+{
+    pimpl_->client.call("simResetWorld");
+}
+
 
 void RpcLibClientBase::confirmConnection()
 {
@@ -150,41 +142,41 @@ void RpcLibClientBase::confirmConnection()
         std::cout << std::endl << ver_info << std::endl;
 }
 
-void* RpcLibClientBase::getClient()
-{
-    return &pimpl_->client;
-}
-
 bool RpcLibClientBase::armDisarm(bool arm)
 {
     return pimpl_->client.call("armDisarm", arm).as<bool>();
 }
 
-CameraInfo RpcLibClientBase::getCameraInfo(int camera_id)
+msr::airlib::GeoPoint RpcLibClientBase::getHomeGeoPoint() const
 {
-    return pimpl_->client.call("getCameraInfo", camera_id).as<RpcLibAdapatorsBase::CameraInfo>().to();
+    return pimpl_->client.call("getHomeGeoPoint").as<RpcLibAdapatorsBase::GeoPoint>().to();
 }
 
-void RpcLibClientBase::setCameraOrientation(int camera_id, const Quaternionr& orientation)
+bool RpcLibClientBase::simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
-    pimpl_->client.call("setCameraOrientation", camera_id, RpcLibAdapatorsBase::Quaternionr(orientation));
+    return pimpl_->client.call("simSetSegmentationObjectID", mesh_name, object_id, is_name_regex).as<bool>();
+}
+int RpcLibClientBase::simGetSegmentationObjectID(const std::string& mesh_name) const
+{
+    return pimpl_->client.call("simGetSegmentationObjectID", mesh_name).as<int>();
 }
 
-CollisionInfo RpcLibClientBase::getCollisionInfo()
+CollisionInfo RpcLibClientBase::simGetCollisionInfo() const
 {
     return pimpl_->client.call("getCollisionInfo").as<RpcLibAdapatorsBase::CollisionInfo>().to();
 }
 
 
 //sim only
-void RpcLibClientBase::simSetPose(const Pose& pose, bool ignore_collision)
-{
-    pimpl_->client.call("simSetPose", RpcLibAdapatorsBase::Pose(pose), ignore_collision);
-}
-Pose RpcLibClientBase::simGetPose()
+Pose RpcLibClientBase::simGetVehiclePose() const
 {
     return pimpl_->client.call("simGetPose").as<RpcLibAdapatorsBase::Pose>().to();
 }
+void RpcLibClientBase::simSetVehiclePose(const Pose& pose, bool ignore_collision)
+{
+    pimpl_->client.call("simSetPose", RpcLibAdapatorsBase::Pose(pose), ignore_collision);
+}
+
 vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request)
 {
     const auto& response_adaptor = pimpl_->client.call("simGetImages", 
@@ -208,8 +200,7 @@ void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::strin
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);
 }
 
-
-bool RpcLibClientBase::simIsPaused()
+bool RpcLibClientBase::simIsPaused() const
 {
     return pimpl_->client.call("simIsPaused").as<bool>();
 }
@@ -224,11 +215,30 @@ void RpcLibClientBase::simContinueForTime(double seconds)
     pimpl_->client.call("simContinueForTime", seconds);
 }
 
-msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name)
+msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name) const
 {
     return pimpl_->client.call("simGetObjectPose", object_name).as<RpcLibAdapatorsBase::Pose>().to();
 }
 
+CameraInfo RpcLibClientBase::getCameraInfo(int camera_id) const
+{
+    return pimpl_->client.call("getCameraInfo", camera_id).as<RpcLibAdapatorsBase::CameraInfo>().to();
+}
+
+void RpcLibClientBase::setCameraOrientation(int camera_id, const Quaternionr& orientation)
+{
+    pimpl_->client.call("setCameraOrientation", camera_id, RpcLibAdapatorsBase::Quaternionr(orientation));
+}
+
+void* RpcLibClientBase::getClient()
+{
+    return &pimpl_->client;
+}
+
+const void* RpcLibClientBase::getClient() const
+{
+    return &pimpl_->client;
+}
 
 }} //namespace
 

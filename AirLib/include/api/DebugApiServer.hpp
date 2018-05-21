@@ -19,6 +19,20 @@ namespace msr { namespace airlib {
         {
             common_utils::Utils::log("Debug server stopped");
         }
+
+        virtual const VehicleApiBase* getVehicleApi() const
+        {
+            //not supported
+            return nullptr;
+        }
+
+        virtual const WorldSimApiBase* getWorldSimApi() const
+        {
+            //not supported
+            return nullptr;
+        }
+
+
         virtual ~DebugApiServer() = default;
     };
 

@@ -30,7 +30,7 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibServer::CarRpcLibServer(SimModeApiBase* simmode_api, string server_address, uint16_t port)
+CarRpcLibServer::CarRpcLibServer(WorldSimApiBase* simmode_api, string server_address, uint16_t port)
     : RpcLibServerBase(simmode_api, server_address, port)
 {
     (static_cast<rpc::server*>(getServer()))->

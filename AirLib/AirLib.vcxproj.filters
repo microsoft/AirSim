@@ -165,15 +165,6 @@
     <ClInclude Include="include\common\common_utils\StrictMode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\ControllerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\PidController.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\VehicleControllerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\safety\CubeGeoFence.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -202,9 +193,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\common\common_utils\Timer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\common\common_utils\WorkerThread.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp">
@@ -405,15 +393,6 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightDroneController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\DroneCommon.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\DroneControllerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\MavLinkDroneController.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\vehicles\car\api\CarRpcLibAdapators.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -441,19 +420,7 @@
     <ClInclude Include="include\api\RpcLibClientBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\VehicleApiBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\api\RpcLibServerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\VehicleConnectorBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\RealMultirotorConnector.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\common\AirSimSettings.hpp">
@@ -489,10 +456,40 @@
     <ClInclude Include="include\api\WorldApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\SimModeApiBase.hpp">
+    <ClInclude Include="include\api\ApiServerBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\ApiServerBase.hpp">
+    <ClInclude Include="include\api\VehicleSimApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\WorldSimApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorCommon.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\CancelToken.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\WorkerThread.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\VehicleApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApiBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\MavLinkMultirotorApi.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\RealMultirotorConnector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\VehicleConnectorBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\PidController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -524,7 +521,7 @@
     <ClCompile Include="src\api\RpcLibServerBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vehicles\multirotor\controllers\DroneControllerBase.cpp">
+    <ClCompile Include="src\vehicles\multirotor\controllers\MultirotorControllerApiBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

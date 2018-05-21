@@ -141,10 +141,10 @@ Quaternionr MultirotorRpcLibClient::getOrientation()
     return static_cast<rpc::client*>(getClient())->call("getOrientation").as<MultirotorRpcLibAdapators::Quaternionr>().to();
 }
 
-DroneControllerBase::LandedState MultirotorRpcLibClient::getLandedState()
+MultirotorApiBase::LandedState MultirotorRpcLibClient::getLandedState()
 {
     int result = static_cast<rpc::client*>(getClient())->call("getLandedState").as<int>();
-    return static_cast<DroneControllerBase::LandedState>(result);
+    return static_cast<MultirotorApiBase::LandedState>(result);
 }
 
 RCData MultirotorRpcLibClient::getRCData()

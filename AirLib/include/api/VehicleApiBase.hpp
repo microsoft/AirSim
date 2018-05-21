@@ -5,41 +5,63 @@
 #define air_VehicleApiBase_hpp
 
 #include "common/CommonStructs.hpp"
+#include "common/UpdatableObject.hpp"
+#include "common/Common.hpp"
+#include "common/Waiter.hpp"
+#include "safety/SafetyEval.hpp"
+#include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
+#include <exception>
+#include <string>
 
 namespace msr { namespace airlib {
 
-
-class VehicleApiBase {
+/*
+Vehicle controller allows to obtain state from vehicle and send control commands to the vehicle.
+State can include many things including sensor data, logs, estimated state from onboard computer etc.
+Control commands can be low level actuation commands or high level movement commands.
+The base class defines usually available methods that all vehicle controllers may implement.
+Some methods may not be applicable to specific vehicle in which case an exception may be raised or call may be ignored.
+*/
+class VehicleApiBase : public UpdatableObject {
 public:
-    virtual GeoPoint getHomeGeoPoint() const = 0;
     virtual void enableApiControl(bool is_enabled) = 0;
-    virtual bool armDisarm(bool arm) = 0;
     virtual bool isApiControlEnabled() const = 0;
-    virtual void reset() = 0;
+    virtual bool armDisarm(bool arm) = 0;
     virtual void cancelPendingTasks() = 0;
+    virtual GeoPoint getHomeGeoPoint() const = 0;
 
-    
-    virtual vector<ImageCaptureBase::ImageResponse> simGetImages(const vector<ImageCaptureBase::ImageRequest>& request) const = 0;
-    virtual vector<uint8_t> simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const = 0;
-
-    virtual void simSetPose(const Pose& pose, bool ignore_collision) = 0;
-    virtual Pose simGetPose() const = 0;
-
-    virtual bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
-    virtual int simGetSegmentationObjectID(const std::string& mesh_name) const = 0;
-
-    virtual void simPrintLogMessage(const std::string& message, 
-        const std::string& message_param = "", unsigned char severity = 0) = 0;
-    
-    virtual CollisionInfo getCollisionInfo() const = 0;
-
-    virtual Pose simGetObjectPose(const std::string& object_name) const = 0;
+    virtual void getStatusMessages(std::vector<std::string>& messages)
+    {
+        unused(messages);
+        //default implementation
+    }
 
     virtual CameraInfo getCameraInfo(int camera_id) const = 0;
     virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) = 0;
     
     virtual ~VehicleApiBase() = default;
+};
+
+class VehicleControllerException : public std::runtime_error {
+public:
+    VehicleControllerException(const std::string& message)
+        : runtime_error(message) {
+    }
+};
+
+class VehicleCommandNotImplementedException : public VehicleControllerException {
+public:
+    VehicleCommandNotImplementedException(const std::string& message)
+        : VehicleControllerException(message) {
+    }
+};
+
+class VehicleMoveException : public VehicleControllerException {
+public:
+    VehicleMoveException(const std::string& message)
+        : VehicleControllerException(message) {
+    }
 };
 
 

@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include "RotorParams.hpp"
 #include "sensors/SensorCollection.hpp"
-#include "controllers/DroneControllerBase.hpp"
+#include "controllers/MultirotorApiBase.h"
 
 
 
@@ -85,11 +85,11 @@ public: //interface
     {
         return sensors_;
     }
-    DroneControllerBase* getController()
+    MultirotorApiBase* getController()
     {
         return controller_.get();
     }
-    const DroneControllerBase* getController() const
+    const MultirotorApiBase* getController() const
     {
         return controller_.get();
     }
@@ -126,7 +126,7 @@ public: //interface
 protected: //must override by derived class
     virtual void setupParams() = 0;
     virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) = 0;
-    virtual std::unique_ptr<DroneControllerBase> createController() = 0;
+    virtual std::unique_ptr<MultirotorApiBase> createController() = 0;
 
 protected: //static utility functions for derived classes to use
 
@@ -249,7 +249,7 @@ private:
     Params params_;
     SensorCollection sensors_; //maintains sensor type indexed collection of sensors
     vector<unique_ptr<SensorBase>> sensor_storage_; //RAII for created sensors
-    std::unique_ptr<DroneControllerBase> controller_;
+    std::unique_ptr<MultirotorApiBase> controller_;
 };
 
 }} //namespace

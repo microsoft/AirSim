@@ -8,9 +8,9 @@
 #include <functional>
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
 #include "api/RpcLibClientBase.hpp"
-#include "vehicles/multirotor/controllers/DroneCommon.hpp"
+#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
 
 namespace msr { namespace airlib {
 

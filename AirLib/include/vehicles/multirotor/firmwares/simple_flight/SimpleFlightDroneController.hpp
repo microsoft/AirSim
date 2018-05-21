@@ -4,7 +4,7 @@
 #ifndef msr_airlib_SimpleFlightDroneController_hpp
 #define msr_airlib_SimpleFlightDroneController_hpp
 
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
 #include "sensors/SensorCollection.hpp"
 #include "physics/Environment.hpp"
 #include "physics/Kinematics.hpp"
@@ -20,7 +20,7 @@
 
 namespace msr { namespace airlib {
 
-class SimpleFlightDroneController : public DroneControllerBase {
+class SimpleFlightDroneController : public MultirotorApiBase {
 
 public:
     SimpleFlightDroneController(const MultiRotorParams* vehicle_params, const AirSimSettings::VehicleSetting* vehicle_setting)
@@ -49,17 +49,17 @@ public:
     }
 
 public:
-    //*** Start: VehicleControllerBase implementation ***//
+    //*** Start: VehicleApiBase implementation ***//
     virtual void reset() override
     {
-        DroneControllerBase::reset();
+        MultirotorApiBase::reset();
 
         firmware_->reset();
     }
 
     virtual void update() override
     {
-        DroneControllerBase::update();
+        MultirotorApiBase::update();
 
         firmware_->update();
     }
@@ -67,12 +67,6 @@ public:
     virtual size_t getVertexCount() const override
     {
         return vehicle_params_->getParams().rotor_count;
-    }
-
-    virtual bool isAvailable(std::string& message) const override
-    {
-        unused(message);
-        return true;
     }
 
     virtual real_T getVertexControlSignal(unsigned int rotor_index) const override
@@ -107,9 +101,9 @@ public:
         if (!is_set)
             throw VehicleCommandNotImplementedException("setting non-simulation mode is not supported yet");
     }
-    //*** End: VehicleControllerBase implementation ***//
+    //*** End: VehicleApiBase implementation ***//
 
-//*** Start: DroneControllerBase implementation ***//
+//*** Start: MultirotorApiBase implementation ***//
 public:
     virtual Kinematics::State getKinematicsEstimated() const override
     {
@@ -173,7 +167,7 @@ public:
         }
     }
 
-    virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) override
+    virtual bool armDisarm(bool arm) override
     {
         unused(cancelable_action);
 
@@ -192,12 +186,6 @@ public:
     virtual GeoPoint getGpsLocation() const override
     {
         return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getGeoPoint());
-    }
-
-    virtual void reportTelemetry(float renderTime) override
-    {
-        unused(renderTime);
-        //TODO: implement this
     }
 
     virtual float getCommandPeriod() const override
@@ -289,12 +277,12 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    virtual const VehicleParams& getVehicleParams() const override
+    virtual const MultirotorApiParams& getVehicleParams() const override
     {
         return safety_params_;
     }
 
-    //*** End: DroneControllerBase implementation ***//
+    //*** End: MultirotorApiBase implementation ***//
 
 private:
 
@@ -334,7 +322,7 @@ private:
     unique_ptr<AirSimSimpleFlightEstimator> estimator_;
     unique_ptr<simple_flight::IFirmware> firmware_;
 
-    VehicleParams safety_params_;
+    MultirotorApiParams safety_params_;
 
     RCData last_rcData_;
 };

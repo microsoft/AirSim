@@ -4,7 +4,7 @@
 #ifndef msr_airlib_RosFlightDroneController_hpp
 #define msr_airlib_RosFlightDroneController_hpp
 
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
 #include "sensors/SensorCollection.hpp"
 #include "physics/Environment.hpp"
 #include "physics/Kinematics.hpp"
@@ -20,7 +20,7 @@ STRICT_MODE_ON
 
 namespace msr { namespace airlib {
 
-class RosFlightDroneController : public DroneControllerBase {
+class RosFlightDroneController : public MultirotorApiBase {
 
 public:
     RosFlightDroneController(const SensorCollection* sensors, const MultiRotorParams* vehicle_params, 
@@ -44,17 +44,17 @@ public:
     }
 
 public:
-    //*** Start: VehicleControllerBase implementation ***//
+    //*** Start: VehicleApiBase implementation ***//
     virtual void reset() override
     {
-        DroneControllerBase::reset();
+        MultirotorApiBase::reset();
 
         board_->system_reset(false);
     }
 
     virtual void update() override
     {
-        DroneControllerBase::update();
+        MultirotorApiBase::update();
 
         board_->notifySensorUpdated(ros_flight::Board::SensorType::Imu);
         firmware_->loop();
@@ -64,13 +64,6 @@ public:
     {
         return vehicle_params_->getParams().rotor_count;
     }
-
-    virtual bool isAvailable(std::string& message) const override
-    {
-        unused(message);
-        return true;
-    }
-
 
     virtual real_T getVertexControlSignal(unsigned int rotor_index) const override
     {
@@ -113,9 +106,9 @@ public:
         if (!is_set)
             throw VehicleCommandNotImplementedException("setting non-simulation mode is not supported yet");
     }
-    //*** End: VehicleControllerBase implementation ***//
+    //*** End: VehicleApiBase implementation ***//
 
-//*** Start: DroneControllerBase implementation ***//
+//*** Start: MultirotorApiBase implementation ***//
 public:
     virtual Kinematics::State getKinematicsEstimated() const override
     {
@@ -172,7 +165,7 @@ public:
         //else we don't have RC data
     }
 
-    virtual bool armDisarm(bool arm, CancelableBase& cancelable_action) override
+    virtual bool armDisarm(bool arm) override
     {
         unused(arm);
         unused(cancelable_action);
@@ -180,7 +173,7 @@ public:
         return true;
     }
 
-    virtual bool takeoff(float max_wait_seconds, CancelableBase& cancelable_action) override
+    virtual bool takeoff(float max_wait_seconds) override
     {
         unused(max_wait_seconds);
         unused(cancelable_action);
@@ -188,7 +181,7 @@ public:
         return true;
     }
 
-    virtual bool land(float max_wait_seconds, CancelableBase& cancelable_action) override
+    virtual bool land(float max_wait_seconds) override
     {
         unused(max_wait_seconds);
         unused(cancelable_action);
@@ -196,13 +189,13 @@ public:
         return true;
     }
 
-    virtual bool goHome(CancelableBase& cancelable_action) override
+    virtual bool goHome() override
     {
         unused(cancelable_action);
         return true;
     }
 
-    virtual bool hover(CancelableBase& cancelable_action) override
+    virtual bool hover() override
     {
         unused(cancelable_action);
         return true;
@@ -216,13 +209,6 @@ public:
     virtual GeoPoint getGpsLocation() const override
     {
         return environment_->getState().geo_point;
-    }
-
-    virtual void reportTelemetry(float renderTime) override
-    {
-        unused(renderTime);
-
-        //TODO: implement this
     }
 
     virtual float getCommandPeriod() const override
@@ -293,13 +279,13 @@ protected:
         //TODO: implement this
     }
 
-    virtual const VehicleParams& getVehicleParams() const override
+    virtual const MultirotorApiParams& getVehicleParams() const override
     {
         //used for safety algos. For now just use defaults
-        static const VehicleParams safety_params;
+        static const MultirotorApiParams safety_params;
         return safety_params;
     }
-    //*** End: DroneControllerBase implementation ***//
+    //*** End: MultirotorApiBase implementation ***//
 
 private:
     //convert pitch, roll, yaw from -1 to 1 to PWM

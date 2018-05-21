@@ -6,7 +6,7 @@
 #include "TestBase.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "physics/FastPhysicsEngine.hpp"
-#include "vehicles/multirotor/api/MultirotorApi.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include "common/SteppableClock.hpp"
 
 namespace msr { namespace airlib {
@@ -33,7 +33,7 @@ public:
         PhysicsWorld physics_world(physics_engine.get(), vehicles, 
             static_cast<uint64_t>(clock->getStepSize() * 1E9));
 
-        DroneControllerBase* controller = params->getController();
+        MultirotorApiBase* controller = params->getController();
         testAssert(controller != nullptr, "Controller was null");
         std::string message;
         testAssert(controller->isAvailable(message), message);
@@ -70,10 +70,10 @@ private:
     std::vector<std::string> messages_;
     
 private:
-    class DirectCancelableBase : public CancelableBase
+    class DirectCancelableBase : public CancelableAction
     {
     public:
-        DirectCancelableBase(DroneControllerBase* controller, const MultiRotor* vehicle)
+        DirectCancelableBase(MultirotorApiBase* controller, const MultiRotor* vehicle)
             : controller_(controller), vehicle_(vehicle)
         {
         }
@@ -88,11 +88,11 @@ private:
             }
             messages_.clear();
 
-            return CancelableBase::sleep(secs);
+            return CancelableAction::sleep(secs);
         };
 
     private:
-        DroneControllerBase* controller_;
+        MultirotorApiBase* controller_;
         const MultiRotor* vehicle_;
         std::vector<std::string> messages_;
     };

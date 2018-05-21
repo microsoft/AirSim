@@ -30,7 +30,7 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::MultirotorRpcLibAdapators MultirotorRpcLibAdapators;
 
-MultirotorRpcLibServer::MultirotorRpcLibServer(SimModeApiBase* simmode_api, string server_address, uint16_t port)
+MultirotorRpcLibServer::MultirotorRpcLibServer(WorldSimApiBase* simmode_api, string server_address, uint16_t port)
         : RpcLibServerBase(simmode_api, server_address, port)
 {
     (static_cast<rpc::server*>(getServer()))->
@@ -130,9 +130,9 @@ MultirotorRpcLibServer::~MultirotorRpcLibServer()
 {
 }
 
-MultirotorApi* MultirotorRpcLibServer::getDroneApi() const
+MultirotorApiBase* MultirotorRpcLibServer::getDroneApi() const
 {
-    return static_cast<MultirotorApi*>(getSimModeApi()->getVehicleApi());
+    return static_cast<MultirotorApiBase*>(getSimModeApi()->getVehicleApi());
 }
 
 }} //namespace

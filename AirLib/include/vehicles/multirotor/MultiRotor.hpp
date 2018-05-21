@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "Rotor.hpp"
-#include "controllers/ControllerBase.hpp"
+#include "api/VehicleApiBase.hpp"
 #include "MultiRotorParams.hpp"
 #include <vector>
 #include "physics/PhysicsBody.hpp"
@@ -52,7 +52,7 @@ public:
         getController()->setGroundTruth(this);
     }
 
-    DroneControllerBase* getController()
+    MultirotorApiBase* getController()
     {
         return params_->getController();
     }

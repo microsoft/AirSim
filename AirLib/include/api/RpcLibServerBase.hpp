@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include "api/ApiServerBase.hpp"
-#include "api/SimModeApiBase.hpp"
+#include "api/WorldSimApiBase.hpp"
 
 
 namespace msr { namespace airlib {
@@ -14,20 +14,16 @@ namespace msr { namespace airlib {
 
 class RpcLibServerBase : public ApiServerBase {
 public:
-    RpcLibServerBase(SimModeApiBase* simmode_api, string server_address, uint16_t port);
+    RpcLibServerBase(const std::string& server_address, uint16_t port);
+    virtual ~RpcLibServerBase() override;
+
     virtual void start(bool block = false) override;
     virtual void stop() override;
-    virtual ~RpcLibServerBase() override;
 
 protected:
     void* getServer() const;
-    SimModeApiBase* getSimModeApi() const;
 
 private:
-    VehicleApiBase* getVehicleApi() const;
-
-private:
-    SimModeApiBase* simmode_api_;
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };

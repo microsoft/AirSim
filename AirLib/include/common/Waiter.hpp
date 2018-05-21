@@ -9,17 +9,17 @@
 #include "common/Common.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "common/ClockFactory.hpp"
-#include "common/common_utils/WorkerThread.hpp"
+#include "common/CancelToken.hpp"
 
 namespace msr { namespace airlib {
 
 class Waiter {
 private:
-
     TTimePoint proc_start_;
     TTimePoint loop_start_;
 
     TTimeDelta sleep_duration_, timeout_duration_;
+
 public:
     Waiter(TTimeDelta sleep_duration_seconds, TTimeDelta timeout_duration = std::numeric_limits<TTimeDelta>::max())
         : sleep_duration_(sleep_duration_seconds), timeout_duration_(timeout_duration)
@@ -27,7 +27,7 @@ public:
         proc_start_ = loop_start_ = clock()->nowNanos();
     }
 
-    virtual bool sleep(CancelableBase& cancelable_action)
+    virtual bool sleep(CancelToken& cancelable_action)
     {
         // Sleeps for the time needed to get current running time up to the requested sleep_duration_.
         // So this can be used to "throttle" any loop to check something every sleep_duration_ seconds.

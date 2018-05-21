@@ -10,7 +10,7 @@ namespace msr { namespace airlib {
 
 
 class WorkerThreadTest : public TestBase {
-    class WorkItem : public CancelableBase {
+    class WorkItem : public CancelableAction {
     public:
         double runTime = 2; // seconds
 

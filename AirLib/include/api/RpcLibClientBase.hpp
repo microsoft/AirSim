@@ -11,6 +11,7 @@
 
 namespace msr { namespace airlib {
 
+//common methods for RCP clients of different vehicles
 class RpcLibClientBase {
 public:
     enum class ConnectionState : uint {
@@ -18,6 +19,15 @@ public:
     };
 public:
     RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
+    virtual ~RpcLibClientBase();    //required for pimpl
+
+    void confirmConnection();
+    bool isApiControlEnabled() const;
+    void enableApiControl(bool is_enabled);
+    void resetVehicle();
+    void simResetWorld();
+    bool armDisarm(bool arm);
+
     ConnectionState getConnectionState();
     bool ping();
     int getClientVersion() const;
@@ -25,38 +35,35 @@ public:
     int getMinRequiredServerVersion() const;
     int getMinRequiredClientVersion() const;
 
-
-    vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request);
-    vector<uint8_t> simGetImage(int camera_id, ImageCaptureBase::ImageType type);
-    msr::airlib::GeoPoint getHomeGeoPoint();
-
-    void simSetPose(const Pose& pose, bool ignore_collision);
-    Pose simGetPose();
-
-    void confirmConnection();
-    bool isApiControlEnabled();
-    void enableApiControl(bool is_enabled);
-    void reset();
-    bool armDisarm(bool arm);
-
-    CollisionInfo getCollisionInfo();
-
-    bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false);
-    int simGetSegmentationObjectID(const std::string& mesh_name);
-    void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
-
-    Pose simGetObjectPose(const std::string& object_name);
-    CameraInfo getCameraInfo(int camera_id);
-    void setCameraOrientation(int camera_id, const Quaternionr& orientation);
-
-    bool simIsPaused();
+    bool simIsPaused() const;
     void simPause(bool is_paused);
     void simContinueForTime(double seconds);
 
-    virtual ~RpcLibClientBase();    //required for pimpl
+    msr::airlib::GeoPoint getHomeGeoPoint() const;
+
+    Pose simGetVehiclePose() const;
+    void simSetVehiclePose(const Pose& pose, bool ignore_collision);
+    Pose simGetObjectPose(const std::string& object_name) const;
+
+    vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request);
+    vector<uint8_t> simGetImage(int camera_id, ImageCaptureBase::ImageType type);
+
+    CollisionInfo simGetCollisionInfo() const;
+
+    bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false);
+    int simGetSegmentationObjectID(const std::string& mesh_name) const;
+    void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
+
+    CameraInfo getCameraInfo(int camera_id) const;
+    void setCameraOrientation(int camera_id, const Quaternionr& orientation);
+
 
 protected:
-    void* getClient();
+    const void* getClient() const;
+    void* getClient()
+    {
+        return const_cast<void*>(getClient());
+    }
 
 private:
     struct impl;

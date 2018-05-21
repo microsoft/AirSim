@@ -3,7 +3,7 @@
 #include "VehiclePawnWrapper.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include <memory>
-#include "vehicles/multirotor/controllers/DroneCommon.hpp"
+#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
 #include "PIPCamera.h"
 #include "FlyingPawn.generated.h"
 

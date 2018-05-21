@@ -14,7 +14,7 @@ public:
     {
         auto rosFlight = MultiRotorParamsFactory::createConfig("RosFlight", std::make_shared<SensorFactory>());
         
-        DroneControllerBase* controller = rosFlight->getController();
+        MultirotorApiBase* controller = rosFlight->getController();
         testAssert(controller != nullptr, "Couldn't get controller");
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));

@@ -4,7 +4,7 @@
 #ifndef msr_airlib_vehicles_Px4MultiRotor_hpp
 #define msr_airlib_vehicles_Px4MultiRotor_hpp
 
-#include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
+#include "vehicles/multirotor/controllers/MavLinkMultirotorApi.hpp"
 #include "common/AirSimSettings.hpp"
 #include "sensors/SensorFactory.hpp"
 
@@ -47,10 +47,10 @@ protected:
         return sensor_factory_->createSensor(sensor_type);
     }
 
-    virtual std::unique_ptr<DroneControllerBase> createController() override
+    virtual std::unique_ptr<MultirotorApiBase> createController() override
     {
-        unique_ptr<DroneControllerBase> controller(new MavLinkDroneController());
-        auto mav_controller = static_cast<MavLinkDroneController*>(controller.get());
+        unique_ptr<MultirotorApiBase> controller(new MavLinkMultirotorApi());
+        auto mav_controller = static_cast<MavLinkMultirotorApi*>(controller.get());
         mav_controller->initialize(connection_info_, & getSensors(), true);
 
         return controller;
@@ -244,14 +244,14 @@ private:
     }
 
 
-    static const MavLinkDroneController::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::PX4VehicleSetting& vehicle_setting)
+    static const MavLinkMultirotorApi::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::PX4VehicleSetting& vehicle_setting)
     {
         return vehicle_setting.connection_info;
     }
 
 
 private:
-    MavLinkDroneController::MavLinkConnectionInfo connection_info_;
+    MavLinkMultirotorApi::MavLinkConnectionInfo connection_info_;
     std::shared_ptr<const SensorFactory> sensor_factory_;
 
 };

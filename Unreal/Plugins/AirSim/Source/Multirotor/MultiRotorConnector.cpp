@@ -24,7 +24,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* wrapper,
     vehicle_.initialize(vehicle_params_, wrapper_->getPose(), 
         wrapper_->getHomePoint(), environment_);
 
-    controller_ = static_cast<msr::airlib::DroneControllerBase*>(vehicle_.getController());
+    controller_ = static_cast<msr::airlib::MultirotorApiBase*>(vehicle_.getController());
 
     if (controller_->getRemoteControlID() >= 0)
         detectUsbRc();
@@ -38,7 +38,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* wrapper,
     did_reset_ = false;
 
     wrapper_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>(
-        new MultirotorApi(this)));
+        new MultirotorApiBase(this)));
 
     std::string message;
     if (!vehicle_.getController()->isAvailable(message)) {
@@ -61,7 +61,7 @@ MultiRotorConnector::~MultiRotorConnector()
 {
 }
 
-msr::airlib::VehicleControllerBase* MultiRotorConnector::getController()
+msr::airlib::VehicleApiBase* MultiRotorConnector::getController()
 {
     return controller_;
 }
@@ -310,9 +310,9 @@ void MultiRotorConnector::setCameraOrientation(int camera_id, const Quaternionr&
     }, true);
 }
 
-msr::airlib::MultirotorApi* MultiRotorConnector::getApi() const
+msr::airlib::MultirotorApiBase* MultiRotorConnector::getApi() const
 {
-    return static_cast<msr::airlib::MultirotorApi*>(wrapper_->getApi());
+    return static_cast<msr::airlib::MultirotorApiBase*>(wrapper_->getApi());
 }
 
 

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 //TODO: all code except setRotorSpeed requires VehiclePawnBase.
 //May be we should have MultiRotorPawnBase so we don't need FlyingPawn.h
-#include "vehicles/multirotor/api/MultirotorApi.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include "VehiclePawnWrapper.h"
 #include "vehicles/multirotor/MultiRotor.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
@@ -40,7 +40,7 @@ public:
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
-    virtual msr::airlib::VehicleControllerBase* getController() override;
+    virtual msr::airlib::VehicleApiBase* getController() override;
 
     //PhysicsBody interface
     //this just wrapped around MultiRotor physics body
@@ -69,7 +69,7 @@ private:
     void detectUsbRc();
     const msr::airlib::RCData& getRCData();  
     void resetPrivate();
-    msr::airlib::MultirotorApi* getApi() const;
+    msr::airlib::MultirotorApiBase* getApi() const;
 
 private:
     MultiRotor vehicle_;
@@ -90,7 +90,7 @@ private:
 
     CollisionResponseInfo collision_response_info;
 
-    msr::airlib::DroneControllerBase* controller_;
+    msr::airlib::MultirotorApiBase* controller_;
     UManualPoseController* manual_pose_controller_;
 
     SimJoyStick joystick_;

@@ -5,8 +5,7 @@
 #include "common/CommonStructs.hpp"
 #include "physics/Kinematics.hpp"
 
-namespace msr { namespace airlib {
-
+namespace msr {  namespace airlib {
 
 enum class DrivetrainType {
     MaxDegreeOfFreedom = 0,
@@ -45,8 +44,8 @@ struct YawMode {
 };
 
 //properties of vehicle
-struct VehicleParams {
-    VehicleParams(){}; 
+struct MultirotorApiParams {
+    MultirotorApiParams() {};
     //what is the breaking distance for given velocity?
     //Below is just proportionality constant to convert from velocity to breaking distance
     float vel_to_breaking_dist = 0.5f;   //ideally this should be 2X for very high speed but for testing we are keeping it 0.5
@@ -66,30 +65,27 @@ struct VehicleParams {
     //what is the +/-window we should check on obstacle map?
     //for example 2 means check from ticks -2 to 2
     int obs_window = 0;
-};    
+};
 
 struct MultirotorState {
     CollisionInfo collision;
     Kinematics::State kinematics_estimated;
-    Kinematics::State kinematics_true;
     GeoPoint gps_location;
     uint64_t timestamp;
     LandedState landed_state;
     RCData rc_data;
-    std::vector<std::string> controller_messages;
 
     MultirotorState()
     {}
-    MultirotorState(const CollisionInfo& collision_val, const Kinematics::State& kinematics_true_val, 
+    MultirotorState(const CollisionInfo& collision_val, const Kinematics::State& kinematics_true_val,
         const Kinematics::State& kinematics_estimated_val, const GeoPoint& gps_location_val, uint64_t timestamp_val,
         LandedState landed_state_val, const RCData& rc_data_val, const std::vector<std::string>& controller_messages_val)
-        : collision(collision_val), kinematics_estimated(kinematics_estimated_val), 
-        kinematics_true(kinematics_true_val), gps_location(gps_location_val), timestamp(timestamp_val), 
-        landed_state(landed_state_val), rc_data(rc_data_val), controller_messages(controller_messages_val)
+        : collision(collision_val), kinematics_estimated(kinematics_estimated_val),
+        gps_location(gps_location_val), timestamp(timestamp_val),
+        landed_state(landed_state_val), rc_data(rc_data_val)
     {
     }
 };
 
 }} //namespace
-
 #endif
