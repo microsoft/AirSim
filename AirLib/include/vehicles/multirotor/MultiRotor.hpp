@@ -49,7 +49,7 @@ public:
 
         initSensors(*params_, getKinematics(), getEnvironment());
 
-        getController()->setGroundTruth(this);
+        getController()->setSimulatedGroundTruth(& getKinematics(), & getEnvironment());
     }
 
     MultirotorApiBase* getController()
@@ -106,7 +106,7 @@ public:
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
             rotors_.at(rotor_index).setControlSignal(
-                getController()->getVertexControlSignal(rotor_index));
+                getController()->getRotorActuation(rotor_index));
         }
     }
 

@@ -40,10 +40,6 @@ MultirotorRpcLibClient::MultirotorRpcLibClient(const string&  ip_address, uint16
 MultirotorRpcLibClient::~MultirotorRpcLibClient()
 {}
 
-void MultirotorRpcLibClient::setSimulationMode(bool is_set)
-{
-    static_cast<rpc::client*>(getClient())->call("setSimulationMode", is_set);
-}
 bool MultirotorRpcLibClient::takeoff(float max_wait_seconds)
 {
     return static_cast<rpc::client*>(getClient())->call("takeoff", max_wait_seconds).as<bool>();

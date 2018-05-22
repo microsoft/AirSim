@@ -70,8 +70,7 @@ public:
     {
         return goal_mode_;
     }
-
-
+    
     virtual bool canRequestApiControl(std::string& message) override
     {
         if (rc_.allowApiControl())
@@ -105,7 +104,7 @@ public:
     virtual void releaseApiControl() override
     {
         has_api_control_ = false;
-        comm_link_->log("releaseApiControl was sucessful", ICommLink::kLogLevelInfo);
+        comm_link_->log("releaseApiControl was successful", ICommLink::kLogLevelInfo);
     }
     virtual bool setGoalAndMode(const Axis4r* goal, const GoalMode* goal_mode, std::string& message) override
     {
@@ -137,7 +136,6 @@ public:
                 || vehicle_state_.getState() == VehicleStateType::Disarmed
                 || vehicle_state_.getState() == VehicleStateType::BeingDisarmed)) {
 
-                state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
                 vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
                 goal_ = Axis4r(0, 0, 0, params_->rc.min_angling_throttle);
                 goal_mode_ = GoalMode::getAllRateMode();

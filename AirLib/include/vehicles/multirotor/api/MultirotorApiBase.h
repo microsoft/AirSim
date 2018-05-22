@@ -34,7 +34,9 @@ public: //must be implemented
     virtual LandedState getLandedState() const = 0;
     virtual GeoPoint getGpsLocation() const = 0;
     virtual const MultirotorApiParams& getVehicleParams() const = 0;
-    virtual RCData getRCData() const = 0;
+    virtual real_T getRotorActuation(unsigned int rotor_index) const = 0;
+    virtual size_t getRotorCount() const = 0;
+    virtual RCData getRCData() const = 0; //get reading from RC bound to vehicle
 
     /************************* basic config APIs *********************************/
     virtual float getCommandPeriod() const = 0; //time between two command required for drone in seconds
@@ -43,22 +45,16 @@ public: //must be implemented
     //the difference between two position cancels out transitional errors. Typically this would be 0.1m or lower.
     virtual float getDistanceAccuracy() const = 0; 
 
-protected: //optional oveerides but recommanded, default values may work
-    virtual float getAutoLookahead(float velocity, float adaptive_lookahead,
-        float max_factor = 40, float min_factor = 30) const;
-    virtual float getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel) const;
-
-
 public: //these APIs uses above low level APIs
     virtual ~MultirotorApiBase() = default;
 
     /************************* high level move APIs *********************************/
-    //return value of these function is true if command was completed without intruption
+    //return value of these function is true if command was completed without interruption
     virtual bool takeoff(float max_wait_seconds);
     virtual bool land(float max_wait_seconds);
     virtual bool goHome();
     virtual bool moveByAngleZ(float pitch, float roll, float z, float yaw, float duration);
-    /// Move by providing angles and throttles just lik ein RC
+    /// Move by providing angles and throttles just like in RC
     virtual bool moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration);
     virtual bool moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
     virtual bool moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
@@ -99,6 +95,76 @@ public: //these APIs uses above low level APIs
         token_.cancel();
     }
 
+    //below method exist for any firmwares that may want to use ground truth for debugging purposes
+    virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment)
+    {
+        unused(kinematics);
+        unused(environment);
+    }
+
+protected: //optional overrides but recommended, default values may work
+    virtual float getAutoLookahead(float velocity, float adaptive_lookahead,
+        float max_factor = 40, float min_factor = 30) const;
+    virtual float getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel) const;
+
+    //below methods gets called by default implementations of move-related commands that would use a long 
+    //running loop. These can be used by derived classes to do some init/cleanup.
+    virtual void beforeTask()
+    {
+        //default is do nothing
+    }
+    virtual void afterTask()
+    {
+        //default is do nothing
+    }
+
+protected: //utility methods
+    typedef std::function<bool()> WaitFunction;
+
+    //*********************************safe wrapper around low level commands***************************************************
+    virtual bool moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode);
+    virtual bool moveByVelocityZInternal(float vx, float vy, float z, const YawMode& yaw_mode);
+    virtual bool moveToPositionInternal(const Vector3r& dest, const YawMode& yaw_mode);
+    virtual bool moveByRollPitchZInternal(float pitch, float roll, float z, float yaw);
+    virtual bool moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate);
+
+    /************* safety checks & emergency maneuvers ************/
+    virtual bool emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result);
+    virtual bool safetyCheckVelocity(const Vector3r& velocity);
+    virtual bool safetyCheckVelocityZ(float vx, float vy, float z);
+    virtual bool safetyCheckDestination(const Vector3r& dest_loc);
+
+    /************* wait helpers ************/
+    // helper function can wait for anything (as defined by the given function) up to the max_wait duration (in seconds).
+    // returns true if the wait function succeeded, or false if timeout occurred or the timeout is invalid.
+    bool waitForFunction(WaitFunction function, float max_wait);
+
+    //useful for derived class to check after takeoff
+    bool waitForZ(float max_wait_seconds, float z, float margin);
+
+    /************* other short hands ************/
+    virtual Vector3r getPosition() const
+    {
+        return getKinematicsEstimated().pose.position;
+    }
+    virtual Vector3r getVelocity() const
+    {
+        return getKinematicsEstimated().twist.linear;
+    }
+    virtual Quaternionr getOrientation() const
+    {
+        return getKinematicsEstimated().pose.orientation;
+    }
+    ClockBase* clock() const
+    {
+        return ClockFactory::get();
+    }
+
+
+    CancelToken& getCancelToken()
+    {
+        return token_;
+    }
 
 public: //types
     class UnsafeMoveException : public VehicleMoveException {
@@ -113,45 +179,80 @@ public: //types
 protected: //types
     class SingleCall {
     public:
-        SingleCall(CancelToken& token) 
-            : token_(token) {
+        SingleCall(MultirotorApiBase* api)
+            : api_(api) {
+            auto& token = api->getCancelToken();
 
             //if we can't get lock, cancel previous call
-            if (!token_.try_lock()) {
+            if (!token.try_lock()) {
                 //TODO: should we worry about spurious failures in try_lock?
-                token_.cancel();
-                token_.lock();
+                token.cancel();
+                token.lock();
             }
 
-            if (token_.getRecursionCount() == 1)
-                token_.reset();
+            if (isRootCall())
+                token.reset();
             //else this is not the start of the call
         }
 
-        ~SingleCall()
+        virtual ~SingleCall()
         {
-            if (token_.getRecursionCount() == 1)
-                token_.reset();
+            auto& token = api_->getCancelToken();
+
+            if (isRootCall())
+                token.reset();
             //else this is not the end of the call
 
-            token_.unlock();
+            token.unlock();
+        }
+    protected:
+        MultirotorApiBase * getApi()
+        {
+            return api_;
+        }
+
+        bool isRootCall()
+        {
+            return api_->getCancelToken().getRecursionCount() == 1;
         }
 
     private:
-        CancelToken& token_;
+        MultirotorApiBase* api_;
     };
 
+    class SingleTaskCall : public SingleCall
+    {
+        SingleTaskCall(MultirotorApiBase* api)
+            : SingleCall(api)
+        {
+            if (isRootCall())
+                api->beforeTask();
+        }
+
+        virtual ~SingleTaskCall()
+        {
+            if (isRootCall())
+                getApi()->afterTask();
+        }
+    };
+
+    //use this lock for vehicle status APIs
     struct StatusLock {
-        StatusLock(MultirotorApiBase* api)
-            : lock_(api->status_mutex_)
+        //this const correctness gymnastic is required because most
+        //status update APIs are const
+        StatusLock(const MultirotorApiBase* api)
+            : lock_(
+                * const_cast<std::recursive_mutex*>(& api->status_mutex_)
+            )
         {
         }
 
     private:
-        std::lock_guard<std::recursive_mutex> lock_;
+        //we need mutable here because status APIs are const and shouldn't change data members
+        mutable std::lock_guard<std::recursive_mutex> lock_;
     };
 
-
+private: //types
     struct PathPosition {
         uint seg_index;
         float offset;
@@ -195,55 +296,6 @@ protected: //types
             safety_eval_ptr_->setObsAvoidanceStrategy(old_strategy_);   
         }
     };
-
-
-protected: //utility methods
-    typedef std::function<bool()> WaitFunction;
-
-    //*********************************safe wrapper around low level commands***************************************************
-    virtual bool moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode);
-    virtual bool moveByVelocityZInternal(float vx, float vy, float z, const YawMode& yaw_mode);
-    virtual bool moveToPositionInternal(const Vector3r& dest, const YawMode& yaw_mode);
-    virtual bool moveByRollPitchZInternal(float pitch, float roll, float z, float yaw);
-    virtual bool moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate);
-
-    /************* safety checks & emergency manuevers ************/
-    virtual bool emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result);
-    virtual bool safetyCheckVelocity(const Vector3r& velocity);
-    virtual bool safetyCheckVelocityZ(float vx, float vy, float z);
-    virtual bool safetyCheckDestination(const Vector3r& dest_loc);
-
-    /************* wait helpers ************/
-    // helper function can wait for anything (as defined by the given function) up to the max_wait duration (in seconds).
-    // returns true if the wait function succeeded, or false if timeout occurred or the timeout is invalid.
-    bool waitForFunction(WaitFunction function, float max_wait);
-
-    //useful for derived class to check after takeoff
-    bool waitForZ(float max_wait_seconds, float z, float margin);
-
-    /************* other short hands ************/
-    virtual Vector3r getPosition() const
-    {
-        return getKinematicsEstimated().pose.position;
-    }
-    virtual Vector3r getVelocity() const
-    {
-        return getKinematicsEstimated().twist.linear;
-    }
-    virtual Quaternionr getOrientation() const
-    {
-        return getKinematicsEstimated().pose.orientation;
-    }
-    ClockBase* clock() const
-    {
-        return ClockFactory::get();
-    }
-
-
-    CancelToken& getCancelToken()
-    {
-        return token_;
-    }
 
 private: //methods
     float setNextPathPosition(const vector<Vector3r>& path, const vector<PathSegment>& path_segs,

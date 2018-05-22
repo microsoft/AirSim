@@ -16,7 +16,7 @@ namespace msr { namespace airlib {
 
 bool MultirotorApiBase::moveByAngleZ(float pitch, float roll, float z, float yaw, float duration)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     if (duration <= 0)
         return true;
@@ -28,7 +28,7 @@ bool MultirotorApiBase::moveByAngleZ(float pitch, float roll, float z, float yaw
 
 bool MultirotorApiBase::moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     if (duration <= 0)
         return true;
@@ -40,7 +40,7 @@ bool MultirotorApiBase::moveByAngleThrottle(float pitch, float roll, float throt
 
 bool MultirotorApiBase::moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     if (duration <= 0)
         return true;
@@ -55,7 +55,7 @@ bool MultirotorApiBase::moveByVelocity(float vx, float vy, float vz, float durat
 
 bool MultirotorApiBase::moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     if (duration <= 0)
         return false;
@@ -72,7 +72,7 @@ bool MultirotorApiBase::moveByVelocityZ(float vx, float vy, float z, float durat
 bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
     float lookahead, float adaptive_lookahead)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     //validate path size
     if (path.size() == 0) {
@@ -251,7 +251,7 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
 bool MultirotorApiBase::moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
     const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     vector<Vector3r> path { Vector3r(x, y, z) };
     return moveOnPath(path, velocity, drivetrain, yaw_mode, lookahead, adaptive_lookahead);
@@ -260,7 +260,7 @@ bool MultirotorApiBase::moveToPosition(float x, float y, float z, float velocity
 bool MultirotorApiBase::moveToZ(float z, float velocity, const YawMode& yaw_mode,
     float lookahead, float adaptive_lookahead)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     Vector2r cur_xy(getPosition().x, getPosition().y);
     vector<Vector3r> path { Vector3r(cur_xy.x(), cur_xy.y(), z) };
@@ -269,7 +269,7 @@ bool MultirotorApiBase::moveToZ(float z, float velocity, const YawMode& yaw_mode
 
 bool MultirotorApiBase::rotateToYaw(float yaw, float margin)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     YawMode yaw_mode(false, VectorMath::normalizeAngle(yaw));
     Waiter waiter(getCommandPeriod());
@@ -288,7 +288,7 @@ bool MultirotorApiBase::rotateToYaw(float yaw, float margin)
 
 bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     if (duration <= 0)
         return true;
@@ -306,7 +306,7 @@ bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
 
 bool MultirotorApiBase::takeoff(float max_wait_seconds)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     unused(max_wait_seconds);
     bool ret = moveToPosition(0, 0, getTakeoffZ(), 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
@@ -319,14 +319,15 @@ bool MultirotorApiBase::takeoff(float max_wait_seconds)
 
 bool MultirotorApiBase::goHome()
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
+    //TODO: won't work for multi-agents!
     return moveToPosition(0, 0, 0, 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
 }
 
 bool MultirotorApiBase::land(float max_wait_seconds)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     float land_vel = 0.2f;
     float near_zero_vel = land_vel / 4;
@@ -345,7 +346,7 @@ bool MultirotorApiBase::land(float max_wait_seconds)
 
 bool MultirotorApiBase::hover()
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     return moveToZ(getPosition().z, 0.5f, YawMode{ true,0 }, 1.0f, false);
 }
@@ -445,7 +446,7 @@ RCData MultirotorApiBase::estimateRCTrims(float trimduration, float minCountForT
 
 bool MultirotorApiBase::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
-    SingleCall lock(getCancelToken());
+    SingleTaskCall lock(this);
 
     const float kMaxMessageAge = 0.1f /* 0.1 sec */, kMaxRCValue = 10000;
 
@@ -488,6 +489,12 @@ bool MultirotorApiBase::moveByManual(float vx_max, float vy_max, float z_min, fl
     } while (waiter.sleep(getCancelToken()) && !waiter.is_timeout());
 
     return waiter.is_timeout();
+}
+
+void MultirotorApiBase::setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr)
+{
+    SingleCall lock(this);
+    safety_eval_ptr_ = safety_eval_ptr;
 }
 
 bool MultirotorApiBase::waitForFunction(WaitFunction function, float max_wait_seconds)
@@ -612,7 +619,7 @@ float MultirotorApiBase::setNextPathPosition(const vector<Vector3r>& path, const
 
 void MultirotorApiBase::adjustYaw(const Vector3r& heading, DrivetrainType drivetrain, YawMode& yaw_mode)
 {
-    //adjust yaw for the direction of travel in foward-only mode
+    //adjust yaw for the direction of travel in forward-only mode
     if (drivetrain == DrivetrainType::ForwardOnly && !yaw_mode.is_rate) {
         if (heading.norm() > getDistanceAccuracy()) {
             yaw_mode.yaw_or_rate = yaw_mode.yaw_or_rate + (std::atan2(heading.y(), heading.x()) * 180 / M_PIf);
@@ -691,11 +698,6 @@ float MultirotorApiBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_
     return max_obs_avoidance_vel;
 }
 
-void MultirotorApiBase::setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr)
-{
-    SingleCall lock(getCancelToken());
-    safety_eval_ptr_ = safety_eval_ptr;
-}
 
 
 

@@ -32,7 +32,7 @@ public:
     //called to get o/p motor signal as float value
     real_T getMotorControlSignal(uint index) const
     {
-        //convert PWM to scalled 0 to 1 control signal
+        //convert PWM to scaled 0 to 1 control signal
         return static_cast<float>(motor_output_[index]);
     }
 

@@ -4,7 +4,7 @@
 #ifndef msr_airlib_vehicles_SimpleFlightQuadX_hpp
 #define msr_airlib_vehicles_SimpleFlightQuadX_hpp
 
-#include "vehicles/multirotor/firmwares/simple_flight/SimpleFlightDroneController.hpp"
+#include "vehicles/multirotor/firmwares/simple_flight/SimpleFlightApi.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "common/AirSimSettings.hpp"
 #include "sensors/SensorFactory.hpp"
@@ -62,7 +62,7 @@ protected:
 
     virtual std::unique_ptr<MultirotorApiBase> createController() override
     {
-        return std::unique_ptr<MultirotorApiBase>(new SimpleFlightDroneController(this, vehicle_setting_));
+        return std::unique_ptr<MultirotorApiBase>(new SimpleFlightApi(this, vehicle_setting_));
     }
 
 

@@ -15,8 +15,6 @@ public:
 
     virtual KinematicsState getKinematicsEstimated() const = 0;
 
-
-    virtual void setHomeGeoPoint(const GeoPoint& geo_point) = 0;
     virtual GeoPoint getHomeGeoPoint() const = 0;
 
     virtual Axis3r transformToBodyFrame(const Axis3r& world_frame_val) const = 0;

@@ -4,7 +4,7 @@
 #ifndef msr_airlib_SimpleFlightDroneController_hpp
 #define msr_airlib_SimpleFlightDroneController_hpp
 
-#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include "sensors/SensorCollection.hpp"
 #include "physics/Environment.hpp"
 #include "physics/Kinematics.hpp"
@@ -15,15 +15,17 @@
 #include "AirSimSimpleFlightCommLink.hpp"
 #include "AirSimSimpleFlightEstimator.hpp"
 #include "AirSimSimpleFlightCommon.hpp"
+#include "physics/PhysicsBody.hpp"
 #include "common/AirSimSettings.hpp"
 
+//TODO: we need to protect contention between physics thread and API server thread
 
 namespace msr { namespace airlib {
 
-class SimpleFlightDroneController : public MultirotorApiBase {
+class SimpleFlightApi : public MultirotorApiBase {
 
 public:
-    SimpleFlightDroneController(const MultiRotorParams* vehicle_params, const AirSimSettings::VehicleSetting* vehicle_setting)
+    SimpleFlightApi(const MultiRotorParams* vehicle_params, const AirSimSettings::VehicleSetting* vehicle_setting)
         : vehicle_params_(vehicle_params)
     {
         readSettings(vehicle_setting);
@@ -40,12 +42,27 @@ public:
         firmware_.reset(new simple_flight::Firmware(&params_, board_.get(), comm_link_.get(), estimator_.get()));
     }
 
-    void setGroundTruth(PhysicsBody* physics_body) override
+    void setRCData(const RCData& rcData)
     {
-        physics_body_ = physics_body;
-
-        board_->setKinematics(& physics_body_->getKinematics());
-        estimator_->setKinematics(& physics_body_->getKinematics(), & physics_body_->getEnvironment());
+        last_rcData_ = rcData;
+        if (rcData.is_valid) {
+            board_->setIsRcConnected(true);
+            board_->setInputChannel(0, rcData.roll); //X
+            board_->setInputChannel(1, rcData.yaw); //Y
+            board_->setInputChannel(2, rcData.throttle); //F
+            board_->setInputChannel(3, -rcData.pitch); //Z
+            board_->setInputChannel(4, static_cast<float>(rcData.switch1));
+            board_->setInputChannel(5, static_cast<float>(rcData.switch2));
+            board_->setInputChannel(6, static_cast<float>(rcData.switch3));
+            board_->setInputChannel(7, static_cast<float>(rcData.switch4));
+            board_->setInputChannel(8, static_cast<float>(rcData.switch5));
+            board_->setInputChannel(9, static_cast<float>(rcData.switch6));
+            board_->setInputChannel(10, static_cast<float>(rcData.switch7));
+            board_->setInputChannel(11, static_cast<float>(rcData.switch8));
+        }
+        else { //else we don't have RC data
+            board_->setIsRcConnected(false);
+        }
     }
 
 public:
@@ -64,15 +81,19 @@ public:
         firmware_->update();
     }
 
-    virtual size_t getVertexCount() const override
-    {
-        return vehicle_params_->getParams().rotor_count;
-    }
-
-    virtual real_T getVertexControlSignal(unsigned int rotor_index) const override
+    virtual real_T getRotorActuation(unsigned int rotor_index) const override
     {
         auto control_signal = board_->getMotorControlSignal(rotor_index);
         return control_signal;
+    }
+    virtual size_t getRotorCount() const override
+    {
+        return vehicle_params_->getParams().rotor_count;
+    }
+    virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment) override
+    {
+        board_->setKinematics(kinematics);
+        estimator_->setKinematics(kinematics, environment);
     }
 
     virtual void getStatusMessages(std::vector<std::string>& messages) override
@@ -96,11 +117,6 @@ public:
             firmware_->offboardApi().releaseApiControl();
     }
     
-    virtual void setSimulationMode(bool is_set) override
-    {
-        if (!is_set)
-            throw VehicleCommandNotImplementedException("setting non-simulation mode is not supported yet");
-    }
     //*** End: VehicleApiBase implementation ***//
 
 //*** Start: MultirotorApiBase implementation ***//
@@ -133,44 +149,14 @@ public:
     {
         return firmware_->offboardApi().getLandedState() ? LandedState::Landed : LandedState::Flying;
     }
-
-    virtual int getRemoteControlID() const override
-    { 
-        return remote_control_id_;
-    }
     
     virtual RCData getRCData() const override
     {
         return last_rcData_;
     }
 
-    virtual void setRCData(const RCData& rcData) override
-    {
-        last_rcData_ = rcData;
-        if (rcData.is_valid) {
-            board_->setIsRcConnected(true);
-            board_->setInputChannel(0, rcData.roll); //X
-            board_->setInputChannel(1, rcData.yaw); //Y
-            board_->setInputChannel(2, rcData.throttle); //F
-            board_->setInputChannel(3, -rcData.pitch); //Z
-            board_->setInputChannel(4, static_cast<float>(rcData.switch1));
-            board_->setInputChannel(5, static_cast<float>(rcData.switch2));
-            board_->setInputChannel(6, static_cast<float>(rcData.switch3));
-            board_->setInputChannel(7, static_cast<float>(rcData.switch4));
-            board_->setInputChannel(8, static_cast<float>(rcData.switch5)); 
-            board_->setInputChannel(9, static_cast<float>(rcData.switch6)); 
-            board_->setInputChannel(10, static_cast<float>(rcData.switch7)); 
-            board_->setInputChannel(11, static_cast<float>(rcData.switch8)); 
-        }
-        else { //else we don't have RC data
-            board_->setIsRcConnected(false);
-        }
-    }
-
     virtual bool armDisarm(bool arm) override
     {
-        unused(cancelable_action);
-
         std::string message;
         if (arm)
             return firmware_->offboardApi().arm(message);
@@ -285,7 +271,6 @@ protected:
     //*** End: MultirotorApiBase implementation ***//
 
 private:
-
     //convert pitch, roll, yaw from -1 to 1 to PWM
     static uint16_t angleToPwm(float angle)
     {
@@ -312,7 +297,6 @@ private:
 
 private:
     const MultiRotorParams* vehicle_params_;
-    PhysicsBody* physics_body_;
 
     int remote_control_id_ = 0;
     simple_flight::Params params_;

@@ -21,17 +21,11 @@ public:
 
     virtual void setPose(const Pose& pose, bool ignore_collision) = 0;
     virtual Pose getPose() const = 0;
+
     virtual CollisionInfo getCollisionInfo() const = 0;
-    virtual void setCollisionInfo(const CollisionInfo& collision_info) = 0;
-    virtual Kinematics::State getTrueKinematics() const = 0;
+    virtual const Kinematics::State& getTrueKinematics() const = 0;
     virtual int getRemoteControlID() const { return -1; }
     virtual void setRCData(const RCData& rcData) = 0;
-
-    //TODO: need better place for below two APIs?
-    //return 0 to 1 (corresponds to zero to full thrust)
-    virtual real_T getVertexControlSignal(unsigned int rotor_index) const = 0;
-    virtual size_t getVertexCount() const = 0;
-
 };
 
 } } //namespace

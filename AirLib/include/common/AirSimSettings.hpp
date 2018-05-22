@@ -24,7 +24,6 @@ public: //types
     static constexpr int kSubwindowCount = 3; //must be >= 3 for now
     static constexpr char* kVehicleTypePX4 = "px4multirotor";
     static constexpr char* kVehicleTypeSimpleFlight = "simpleflight";
-    static constexpr char* kVehicleTypeRosFlight = "rosflight";
     static constexpr char* kVehicleTypePhysXCar = "physxcar";
 
 

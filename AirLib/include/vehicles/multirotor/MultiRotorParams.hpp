@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include "RotorParams.hpp"
 #include "sensors/SensorCollection.hpp"
-#include "controllers/MultirotorApiBase.h"
+#include "api/MultirotorApiBase.h"
 
 
 
