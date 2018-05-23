@@ -230,11 +230,15 @@ void RpcLibClientBase::setCameraOrientation(int camera_id, const Quaternionr& or
     pimpl_->client.call("setCameraOrientation", camera_id, RpcLibAdapatorsBase::Quaternionr(orientation));
 }
 
+void RpcLibClientBase::cancelPendingTasks()
+{
+    pimpl_->client.call("cancelPendingTasks");
+}
+
 void* RpcLibClientBase::getClient()
 {
     return &pimpl_->client;
 }
-
 const void* RpcLibClientBase::getClient() const
 {
     return &pimpl_->client;

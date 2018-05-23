@@ -80,7 +80,6 @@
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdapators.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibClient.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibServer.hpp" />
-    <ClInclude Include="include\vehicles\multirotor\api\RealMultirotorConnector.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightBoard.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightCommLink.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightEstimator.hpp" />
@@ -154,8 +153,8 @@
     <ClInclude Include="include\sensors\magnetometer\MagnetometerSimpleParams.hpp" />
     <ClInclude Include="include\sensors\SensorBase.hpp" />
     <ClInclude Include="include\sensors\SensorCollection.hpp" />
-    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\Px4MultiRotor.hpp" />
-    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightQuadX.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\Px4MultiRotorParams.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightQuadXParams.hpp" />
     <ClInclude Include="include\vehicles\multirotor\MultiRotor.hpp" />
     <ClInclude Include="include\vehicles\multirotor\MultiRotorParams.hpp" />
     <ClInclude Include="include\vehicles\multirotor\MultiRotorParamsFactory.hpp" />

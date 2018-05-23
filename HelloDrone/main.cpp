@@ -74,7 +74,7 @@ int main()
         std::cout << "Press Enter to fly in a 10m box pattern at 3 m/s velocity" << std::endl; std::cin.get();
         // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
         client.enableApiControl(true); 
-        auto position = client.getPosition();
+        auto position = client.getMultirotorState().getPosition();
         float z = position.z(); // current position (NED coordinate system).  
         const float speed = 3.0f;
         const float size = 10.0f; 

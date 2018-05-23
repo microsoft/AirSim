@@ -8,6 +8,7 @@
 #include "common/CommonStructs.hpp"
 #include "Rotor.hpp"
 #include "api/VehicleApiBase.hpp"
+#include "api/VehicleSimApiBase.hpp"
 #include "MultiRotorParams.hpp"
 #include <vector>
 #include "physics/PhysicsBody.hpp"
@@ -17,44 +18,23 @@ namespace msr { namespace airlib {
 
 class MultiRotor : public PhysicsBody {
 public:
-    MultiRotor()
-    {
-        //allow default constructor with later call for initialize
-    }
-    MultiRotor(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
+        const Kinematics::State& initial_kinematic_state, Environment* environment)
+        : params_(params), vehicle_api_(vehicle_api)
     {
         initialize(params, initial_kinematic_state, environment);
     }
-    void initialize(MultiRotorParams* params, const Pose& initial_pose, const GeoPoint& home_point, 
-        std::unique_ptr<Environment>& environment)
+
+    MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
+        const Pose& initial_pose, const GeoPoint& home_point, std::unique_ptr<Environment>& environment)
+        : params_(params), vehicle_api_(vehicle_api)
     {
-        //init physics vehicle
         auto initial_kinematics = Kinematics::State::zero();
         initial_kinematics.pose = initial_pose;
         Environment::State initial_environment;
         initial_environment.position = initial_kinematics.pose.position;
         initial_environment.geo_point = home_point;
         environment.reset(new Environment(initial_environment));
-        
-        initialize(params, initial_kinematics, environment.get());
-    }
-    void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
-    {
-        params_ = params;
-
-        PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
-
-        createRotors(*params_, rotors_, environment);
-        createDragVertices();
-
-        initSensors(*params_, getKinematics(), getEnvironment());
-
-        getController()->setSimulatedGroundTruth(& getKinematics(), & getEnvironment());
-    }
-
-    MultirotorApiBase* getController()
-    {
-        return params_->getController();
     }
 
     //*** Start: UpdatableState implementation ***//
@@ -64,8 +44,8 @@ public:
         PhysicsBody::reset();
 
         //reset inputs
-        if (getController())
-            getController()->reset();
+        if (vehicle_api_)
+            vehicle_api_->reset();
 
         //reset sensors last after their ground truth has been reset
         resetSensors();
@@ -101,12 +81,12 @@ public:
     {
         updateSensors(*params_, getKinematics(), getEnvironment());
 
-        getController()->update();
+        vehicle_api_->update();
 
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
             rotors_.at(rotor_index).setControlSignal(
-                getController()->getRotorActuation(rotor_index));
+                vehicle_api_->getActuation(rotor_index));
         }
     }
 
@@ -157,15 +137,19 @@ public:
         return rotors_.at(rotor_index).getOutput();
     }
 
-    virtual void setCollisionInfo(const CollisionInfo& collision_info) override
-    {
-        PhysicsBody::setCollisionInfo(collision_info);
-        getController()->setCollisionInfo(collision_info);
-    }
-
     virtual ~MultiRotor() = default;
 
 private: //methods
+    void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    {
+        PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
+
+        createRotors(*params_, rotors_, environment);
+        createDragVertices();
+
+        initSensors(*params_, getKinematics(), getEnvironment());
+    }
+
     static void createRotors(const MultiRotorParams& params, vector<Rotor>& rotors, const Environment* environment)
     {
         rotors.clear();
@@ -234,6 +218,8 @@ private: //fields
     //let us be the owner of rotors object
     vector<Rotor> rotors_;
     vector<PhysicsBodyVertex> drag_vertices_;
+
+    VehicleApiBase* vehicle_api_;
 };
 
 }} //namespace

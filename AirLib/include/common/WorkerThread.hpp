@@ -12,7 +12,7 @@
 #include <exception>
 #include <future>
 #include <mutex>
-#include "Utils.hpp"
+#include "common/common_utils/Utils.hpp"
 #include "ClockFactory.hpp" //TODO: move this out of common_utils
 #include "CancelToken.hpp"
 
@@ -35,12 +35,13 @@ public:
 
     void execute()
     {
-        is_complete_ = false;
         try {
             executeAction();
-        }
-        finally{
             is_complete_ = true;
+        }
+        catch(...) {
+            is_complete_ = false;
+            throw;
         }
     }
 
@@ -249,9 +250,6 @@ private:
                     //Utils::DebugBreak();
                     Utils::log(Utils::stringf("WorkerThread caught unhandled exception: %s", e.what()), Utils::kLogLevelError);
                 }
-
-                //we use cancel here to communicate to enqueueAndWait that the task is complete.
-                pending->complete();
             }
 
             if (!cancel_request_) {

@@ -43,7 +43,10 @@ public:
     {
         return ClockFactory::get();
     }
-
+    virtual const ClockBase* clock() const
+    {
+        return ClockFactory::get();
+    }
 
 protected:
     void clearResetUpdateAsserts()

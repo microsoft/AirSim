@@ -127,13 +127,13 @@ RpcLibServerBase::RpcLibServerBase(const std::string& server_address, uint16_t p
         return RpcLibAdapatorsBase::GeoPoint(geo_point);
     });
 
-    pimpl_->server.bind("getCameraInfo", [&](int camera_id) -> RpcLibAdapatorsBase::CameraInfo {
-        const auto& camera_info = getVehicleApi()->getCameraInfo(camera_id);
+    pimpl_->server.bind("simGetCameraInfo", [&](int camera_id) -> RpcLibAdapatorsBase::CameraInfo {
+        const auto& camera_info = getVehicleSimApi()->getCameraInfo(camera_id);
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
     });
 
-    pimpl_->server.bind("setCameraOrientation", [&](int camera_id, const RpcLibAdapatorsBase::Quaternionr& orientation) -> void {
-        getVehicleApi()->setCameraOrientation(camera_id, orientation.to());
+    pimpl_->server.bind("simSetCameraOrientation", [&](int camera_id, const RpcLibAdapatorsBase::Quaternionr& orientation) -> void {
+        getVehicleSimApi()->setCameraOrientation(camera_id, orientation.to());
     });
 
     pimpl_->server.bind("simGetCollisionInfo", [&]() -> RpcLibAdapatorsBase::CollisionInfo { 
@@ -146,6 +146,9 @@ RpcLibServerBase::RpcLibServerBase(const std::string& server_address, uint16_t p
         return RpcLibAdapatorsBase::Pose(pose);
     });
 
+    pimpl_->server.bind("cancelPendingTasks", [&]() -> void {
+        getVehicleApi()->cancelPendingTasks();
+    });
 
     //if we don't suppress then server will bomb out for exceptions raised by any method
     pimpl_->server.suppress_exceptions(true);

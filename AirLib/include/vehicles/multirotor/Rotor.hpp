@@ -50,7 +50,7 @@ public: //methods
         PhysicsBodyVertex::initialize(position, normal);   //call base initializer
     }
     
-    //0 to 1 - will be scalled to 0 to max_speed
+    //0 to 1 - will be scaled to 0 to max_speed
     void setControlSignal(real_T control_signal)
     {
         control_signal_filter_.setInput(Utils::clip(control_signal, 0.0f, 1.0f));

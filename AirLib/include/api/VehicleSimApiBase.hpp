@@ -23,9 +23,11 @@ public:
     virtual Pose getPose() const = 0;
 
     virtual CollisionInfo getCollisionInfo() const = 0;
-    virtual const Kinematics::State& getTrueKinematics() const = 0;
+    virtual Kinematics::State getGroundTruthKinematics() const = 0;
     virtual int getRemoteControlID() const { return -1; }
-    virtual void setRCData(const RCData& rcData) = 0;
+
+    virtual CameraInfo getCameraInfo(int camera_id) const = 0;
+    virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) = 0;
 };
 
 } } //namespace

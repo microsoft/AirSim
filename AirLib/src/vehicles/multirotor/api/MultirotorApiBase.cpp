@@ -66,7 +66,6 @@ bool MultirotorApiBase::moveByVelocityZ(float vx, float vy, float z, float durat
     return !waitForFunction([&]() {
         return !moveByVelocityZInternal(vx, vy, z, adj_yaw_mode);
     }, duration);
-
 }
 
 bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
@@ -121,9 +120,9 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
 
     //when path ends, we want to slow down
     float breaking_dist = 0;
-    if (velocity > getVehicleParams().breaking_vel) {
-        breaking_dist = Utils::clip(velocity * getVehicleParams().vel_to_breaking_dist, 
-            getVehicleParams().min_breaking_dist, getVehicleParams().max_breaking_dist);
+    if (velocity > getMultirotorApiParams().breaking_vel) {
+        breaking_dist = Utils::clip(velocity * getMultirotorApiParams().vel_to_breaking_dist, 
+            getMultirotorApiParams().min_breaking_dist, getMultirotorApiParams().max_breaking_dist);
     }
     //else no need to change velocities for last segments
 
@@ -148,8 +147,8 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
 
         float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
         float path_length_remaining = path_length - path_segs.at(cur_path_loc.seg_index).seg_path_length - cur_path_loc.offset;
-        if (seg_velocity > getVehicleParams().min_vel_for_breaking && path_length_remaining <= breaking_dist) {
-            seg_velocity = getVehicleParams().breaking_vel;
+        if (seg_velocity > getMultirotorApiParams().min_vel_for_breaking && path_length_remaining <= breaking_dist) {
+            seg_velocity = getMultirotorApiParams().breaking_vel;
             //Utils::logMessage("path_length_remaining = %f, Switched to breaking vel %f", path_length_remaining, seg_velocity);
         }
 
@@ -262,7 +261,7 @@ bool MultirotorApiBase::moveToZ(float z, float velocity, const YawMode& yaw_mode
 {
     SingleTaskCall lock(this);
 
-    Vector2r cur_xy(getPosition().x, getPosition().y);
+    Vector2r cur_xy(getPosition().x(), getPosition().y());
     vector<Vector3r> path { Vector3r(cur_xy.x(), cur_xy.y(), z) };
     return moveOnPath(path, velocity, DrivetrainType::MaxDegreeOfFreedom, yaw_mode, lookahead, adaptive_lookahead);
 }
@@ -348,7 +347,13 @@ bool MultirotorApiBase::hover()
 {
     SingleTaskCall lock(this);
 
-    return moveToZ(getPosition().z, 0.5f, YawMode{ true,0 }, 1.0f, false);
+    return moveToZ(getPosition().z(), 0.5f, YawMode{ true,0 }, 1.0f, false);
+}
+
+void MultirotorApiBase::moveByRC(const RCData& rc_data)
+{
+    //by default we say that this command is not supported
+    throw VehicleCommandNotImplementedException("moveByRC API is not implemented for this multirotor");
 }
 
 bool MultirotorApiBase::moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode)
@@ -476,7 +481,7 @@ bool MultirotorApiBase::moveByManual(float vx_max, float vy_max, float z_min, fl
 
             //execute command
             try {
-                float vz = (rc_data.throttle / kMaxRCValue) * z_min + getPosition().z;
+                float vz = (rc_data.throttle / kMaxRCValue) * z_min + getPosition().z();
                 moveByVelocityZInternal(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
             }
             catch(const MultirotorApiBase::UnsafeMoveException& ex) {
@@ -519,7 +524,7 @@ bool MultirotorApiBase::waitForZ(float max_wait_seconds, float z, float margin)
 {
     float cur_z = 100000;
     if (!waitForFunction([&]() {
-        cur_z = getPosition().z;
+        cur_z = getPosition().z();
         return (std::abs(cur_z - z) <= margin);
     }, max_wait_seconds))
     {
@@ -541,7 +546,7 @@ bool MultirotorApiBase::emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& 
                 Vector3r avoidance_vel = getObsAvoidanceVelocity(result.cur_risk_dist, obs_avoidance_vel_) * result.suggested_vec;
 
                 //use the unchecked command
-                commandVelocityZ(avoidance_vel.x(), avoidance_vel.y(), getPosition().z, YawMode::Zero());
+                commandVelocityZ(avoidance_vel.x(), avoidance_vel.y(), getPosition().z(), YawMode::Zero());
 
                 //tell caller not to execute planned command
                 return false;
@@ -697,9 +702,6 @@ float MultirotorApiBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_
     unused(risk_dist);
     return max_obs_avoidance_vel;
 }
-
-
-
 
 }} //namespace
 #endif

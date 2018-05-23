@@ -8,9 +8,9 @@
 #include <functional>
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
-#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include "api/RpcLibClientBase.hpp"
-#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
 
 namespace msr { namespace airlib {
 
@@ -39,9 +39,9 @@ public:
     bool rotateToYaw(float yaw, float max_wait_seconds = 60, float margin = 5);
     bool rotateByYawRate(float yaw_rate, float duration);
     bool hover();
+    void moveByRC(const RCData& rc_data);
 
     MultirotorState getMultirotorState();
-    void setRCData(const RCData& rc_data);
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);

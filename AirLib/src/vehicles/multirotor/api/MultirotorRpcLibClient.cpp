@@ -124,37 +124,9 @@ MultirotorState MultirotorRpcLibClient::getMultirotorState()
         as<MultirotorRpcLibAdapators::MultirotorState>().to();
 }
 
-Vector3r MultirotorRpcLibClient::getPosition()
+void MultirotorRpcLibClient::moveByRC(const RCData& rc_data)
 {
-    return static_cast<rpc::client*>(getClient())->call("getPosition").as<MultirotorRpcLibAdapators::Vector3r>().to();
-}
-Vector3r MultirotorRpcLibClient::getVelocity()
-{
-    return static_cast<rpc::client*>(getClient())->call("getVelocity").as<MultirotorRpcLibAdapators::Vector3r>().to();
-}
-Quaternionr MultirotorRpcLibClient::getOrientation()
-{
-    return static_cast<rpc::client*>(getClient())->call("getOrientation").as<MultirotorRpcLibAdapators::Quaternionr>().to();
-}
-
-MultirotorApiBase::LandedState MultirotorRpcLibClient::getLandedState()
-{
-    int result = static_cast<rpc::client*>(getClient())->call("getLandedState").as<int>();
-    return static_cast<MultirotorApiBase::LandedState>(result);
-}
-
-RCData MultirotorRpcLibClient::getRCData()
-{
-    return static_cast<rpc::client*>(getClient())->call("getRCData").as<MultirotorRpcLibAdapators::RCData>().to();
-}
-void MultirotorRpcLibClient::setRCData(const RCData& rc_data)
-{
-    static_cast<rpc::client*>(getClient())->call("setRCData", MultirotorRpcLibAdapators::RCData(rc_data));
-}
-
-GeoPoint MultirotorRpcLibClient::getGpsLocation()
-{
-    return static_cast<rpc::client*>(getClient())->call("getGpsLocation").as<MultirotorRpcLibAdapators::GeoPoint>().to();
+    static_cast<rpc::client*>(getClient())->call("moveByRC", MultirotorRpcLibAdapators::RCData(rc_data));
 }
 
 }} //namespace

@@ -51,7 +51,14 @@ public: //methods
         sensors_ = sensors;
         is_simulation_mode_ = is_simulation;
 
-        openAllConnections();
+        try {
+            openAllConnections();
+            is_ready_ = true;
+        }
+        catch (std::exception& ex) {
+            is_ready_ = false;
+            is_ready_message_ = Utils::stringf("Failed to connect: %s", ex.what());
+        }
     }
 
     Pose getMocapPose()
@@ -129,6 +136,13 @@ public: //methods
             was_reset_ = false;
     }
 
+    virtual bool isReady(std::string& message) const override
+    {
+        if (!is_ready_)
+            message = is_ready_message_;
+        return is_ready_;
+    }
+
     //TODO: this method can't be const yet because it clears previous messages
     virtual void getStatusMessages(std::vector<std::string>& messages) override
     {
@@ -200,7 +214,7 @@ public: //methods
         return current_state_.controls.landed ? LandedState::Landed : LandedState::Flying;
     }
 
-    virtual real_T getRotorActuation(unsigned int rotor_index) const override
+    virtual real_T getActuation(unsigned int rotor_index) const override
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to read motor controls while not in simulation mode");
@@ -208,7 +222,7 @@ public: //methods
         std::lock_guard<std::mutex> guard(hil_controls_mutex_);
         return rotor_controls_[rotor_index];
     }
-    virtual size_t getRotorCount() const override
+    virtual size_t getActuatorCount() const override
     {
         return RotorControlsCount;
     }
@@ -330,8 +344,7 @@ public: //methods
         return GeoPoint(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.global_est.pos.alt);
     }
 
-    //TODO: remove this method?
-    virtual void reportTelemetry(float renderTime)
+    virtual void sendTelemetry(float last_interval = -1) override
     {
         if (logviewer_proxy_ == nullptr || connection_ == nullptr || mav_vehicle_ == nullptr) {
             return;
@@ -375,7 +388,7 @@ public: //methods
             }
         }
 
-        data.renderTime = static_cast<int64_t>(renderTime * 1000000);// microseconds
+        data.renderTime = static_cast<int64_t>(last_interval * 1000000);// microseconds
         logviewer_proxy_->sendMessage(data);
     }
 
@@ -434,7 +447,7 @@ protected: //methods
     }
 
     //TODO: decouple MultirotorApiBase, VehicalParams and SafetyEval
-    virtual const MultirotorApiParams& getVehicleParams() const override
+    virtual const MultirotorApiParams& getMultirotorApiParams() const override
     {
         //defaults are good for PX4 generic quadcopter.
         static const MultirotorApiParams vehicle_params_;
@@ -1199,6 +1212,8 @@ private: //variables
     const SensorCollection* sensors_;
     uint64_t last_gps_time_;
     bool was_reset_;
+    bool is_ready_;
+    std::string is_ready_message_;
     Pose mocap_pose_;
 
     //additional variables required for MultirotorApiBase implementation

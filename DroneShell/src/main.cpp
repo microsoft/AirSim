@@ -14,8 +14,8 @@
 #include "common/common_utils/AsyncTasker.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "common/EarthUtils.hpp"
-#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
-#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include "safety/SafetyEval.hpp"
 #include "common/common_utils/Timer.hpp"
 
@@ -108,7 +108,7 @@ public:
 
 class DisarmCommand : public DroneCommand {
 public:
-    DisarmCommand() : DroneCommand("Disarm", "Disarm the motors so we can safly approach the drone")
+    DisarmCommand() : DroneCommand("Disarm", "Disarm the motors so we can safely approach the drone")
     {
     }
 
@@ -308,8 +308,8 @@ public:
     {
         CommandContext* context = params.context;
         context->tasker.execute([=]() {
-            auto pos = context->client.getPosition();
-            auto gps = context->client.getGpsLocation();
+            auto pos = context->client.getMultirotorState().getPosition();
+            auto gps = context->client.getMultirotorState().gps_location;
 
             std::cout << "Local position: x=" << pos.x() << ", y=" << pos.y() << ", z=" << pos.z() << std::endl;
             std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
@@ -325,7 +325,7 @@ public:
 
     MoveOnPathCommand() : DroneCommand("MoveOnPath", "Move along the given series of x,y,z coordinates with the specified velocity")
     {
-        this->addSwitch({ "-path", "", "a series of x,y,z cordinates separated by commas, e.g. 0,0,-10,100,0,-10,100,100,-10,0,100,-10,0,0,-10 will fly a square box pattern" });
+        this->addSwitch({ "-path", "", "a series of x,y,z coordinates separated by commas, e.g. 0,0,-10,100,0,-10,100,100,-10,0,100,-10,0,0,-10 will fly a square box pattern" });
         this->addSwitch({ "-velocity", "2.5", "the velocity in meters per second (default 2.5)" });
         this->addSwitch({ "-duration", "0", "maximum time to wait to reach end of path (default no wait)" });
         addYawModeSwitches();
@@ -374,7 +374,7 @@ public:
             return false;
         }
 
-        auto pos = context->client.getPosition();
+        auto pos = context->client.getMultirotorState().getPosition();
         if (getSwitch("-r").toInt() == 1) {
             for (size_t i = 0, n = path.size(); i < n; i++) {
                 Vector3r v = path[i];
@@ -427,7 +427,7 @@ public:
         float z = getSwitch("-z").toFloat();
 
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             x += pos.x();
             y += pos.y();
             z += pos.z();
@@ -652,7 +652,7 @@ public:
                 origin[1] = std::stof(parts[1]); 
                 origin[2] = std::stof(parts[2]);
             } else {
-                throw std::invalid_argument("-origin argument is expectin 'x,y,z' (separated by commas and no spaces in between)");
+                throw std::invalid_argument("-origin argument is expecting 'x,y,z' (separated by commas and no spaces in between)");
             }
         }
 
@@ -692,12 +692,12 @@ public:
 
         context->tasker.execute([=]() {
             if (!context->client.moveByAngleZ(pitch, roll, z, yaw, duration)) {
-                throw std::runtime_error("BackForthByAngleCommand cancelled");
+                throw std::runtime_error("BackForthByAngleCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, duration)){
-                throw std::runtime_error("BackForthByAngleCommand cancelled");
+                throw std::runtime_error("BackForthByAngleCommand canceled");
             }
         }, iterations);
         
@@ -736,13 +736,13 @@ public:
         context->tasker.execute([=]() {
             if (!context->client.moveToPosition(length, 0, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)) {
-                 throw std::runtime_error("BackForthByPositionCommand cancelled");
+                 throw std::runtime_error("BackForthByPositionCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveToPosition(-length, 0, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("BackForthByPositionCommand cancelled");
+                throw std::runtime_error("BackForthByPositionCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
@@ -777,22 +777,22 @@ public:
 
         context->tasker.execute([=]() {
             if (!context->client.moveByAngleZ(pitch, -roll, z, yaw, 0)) {
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, 0)) {
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveByAngleZ(-pitch, roll, z, yaw, 0)) {
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, 0)){
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
@@ -833,7 +833,7 @@ public:
 
         float x = 0, y = 0;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             x += pos.x();
             y += pos.y();
             z += pos.z();
@@ -842,25 +842,25 @@ public:
         context->tasker.execute([=]() {
             if (!context->client.moveToPosition(x + length, y - length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveToPosition(x - length, y - length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveToPosition(x - length, y + length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
             if (!context->client.moveToPosition(x + length, y + length, z, velocity, 0, drivetrain,
                 yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
             context->client.hover();
             context->sleep_for(pause_time);
@@ -902,7 +902,7 @@ public:
         float x = 0, y = 0;
         CommandContext* context = params.context;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             x += pos.x();
             y += pos.y();
             z += pos.z();
@@ -924,7 +924,7 @@ public:
                 throw std::runtime_error("SquareByPathCommand -duration reached");
             }
             if (!context->client.moveOnPath(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPathCommand cancelled");
+                throw std::runtime_error("SquareByPathCommand canceled");
             }
         }, iterations);
 
@@ -969,7 +969,7 @@ public:
         auto yawMode = getYawMode();
         float cx = 0, cy = 0;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             cx += pos.x();
             cy += pos.y();
             z += pos.z();
@@ -988,7 +988,7 @@ public:
                 float y = cy + std::sin(seg_angle * seg) * radius;
                 if (!context->client.moveToPosition(x, y, z, velocity, duration, drivetrain,
                     yawMode, lookahead, adaptive_lookahead)){
-                    throw std::runtime_error("CircleByPositionCommand cancelled");
+                    throw std::runtime_error("CircleByPositionCommand canceled");
                 }
                 context->client.hover();
                 context->sleep_for(pause_time);
@@ -1037,7 +1037,7 @@ public:
         CommandContext* context = params.context;
         float cx = 0, cy = 0;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             cx += pos.x();
             cy += pos.y();
             z_path += pos.z();
@@ -1077,7 +1077,7 @@ public:
                 throw std::runtime_error("CircleByPath -duration reached");
             }
             if (!context->client.moveOnPath(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead)) {
-                throw std::runtime_error("CircleByPath cancelled");
+                throw std::runtime_error("CircleByPath canceled");
             }
         }, iterations);
 
@@ -1096,9 +1096,9 @@ Each record is tab separated floating point numbers containing GPS lat,lon,alt,z
     bool execute(const DroneCommandParameters& params) 
     {
         //TODO: get these in one call
-        Vector3r position = params.context->client.getPosition();
-        Quaternionr quaternion = params.context->client.getOrientation();
-        GeoPoint gps_point = params.context->client.getGpsLocation();
+        Vector3r position = params.context->client.getMultirotorState().getPosition();
+        Quaternionr quaternion = params.context->client.getMultirotorState().getOrientation();
+        GeoPoint gps_point = params.context->client.getMultirotorState().gps_location;
 
         params.shell_ptr->showMessage(gps_point.to_string());
         params.shell_ptr->showMessage(VectorMath::toString(position));
@@ -1275,7 +1275,7 @@ public:
 };
 
 
-// std::string beforeScriptStartCallback(const DroneCommandParameters& params, std::string scriptFilePath) 
+// std::string beforeScriptStartCallback(const DroneCommandParameters& param, std::string scriptFilePath) 
 // {
 //     return "";
 // }

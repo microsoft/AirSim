@@ -11,7 +11,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "IGeoFence.hpp"
 #include "common/Common.hpp"
-#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
 #include "common/common_utils/EnumFlags.hpp"
 
 namespace msr { namespace airlib {
@@ -45,7 +45,7 @@ public:
         ObstacleMap::ObstacleInfo cur_obs, dest_obs, suggested_obs;
         //locations that were considered while evaluation
         Vector3r cur_pos, dest_pos;
-        //transoformed cur to destination vector in body frame
+        //transformed cur to destination vector in body frame
         Vector3r cur_dest_body;
         string message;
         //suggested unit vector without obstacle, must be zero if no suggestions available

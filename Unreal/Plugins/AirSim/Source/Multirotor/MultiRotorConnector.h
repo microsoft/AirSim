@@ -10,7 +10,7 @@
 #include "physics//Kinematics.hpp"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "controllers/VehicleConnectorBase.hpp"
+#include "controllers/VehicleSimBridgeBase.hpp"
 #include "ManualPoseController.h"
 #include <chrono>
 #include "api/ApiServerBase.hpp"
@@ -18,7 +18,7 @@
 #include <future>
 
 
-class MultiRotorConnector : public msr::airlib::VehicleConnectorBase
+class MultiRotorConnector : public msr::airlib::VehicleSimBridgeBase
 {
 public:
     typedef msr::airlib::real_T real_T;
@@ -33,14 +33,14 @@ public:
 public:
     virtual ~MultiRotorConnector();
 
-    //VehicleConnectorBase interface
+    //VehicleSimBridgeBase interface
     //implements game interface to update pawn
     MultiRotorConnector(VehiclePawnWrapper* vehicle_paw_wrapper, msr::airlib::MultiRotorParams* vehicle_params,
         UManualPoseController* manual_pose_controller);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
-    virtual msr::airlib::VehicleApiBase* getController() override;
+    virtual msr::airlib::VehicleApiBase* getVehicleApi() override;
 
     //PhysicsBody interface
     //this just wrapped around MultiRotor physics body
@@ -51,7 +51,7 @@ public:
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual Pose getPose() override;
-    virtual Kinematics::State getTrueKinematics() override;
+    virtual Kinematics::State getGroundTruthKinematics() override;
 
 
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id,

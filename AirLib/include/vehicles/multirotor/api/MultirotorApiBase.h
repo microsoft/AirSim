@@ -5,9 +5,10 @@
 #define air_DroneControlServer_hpp
 
 #include "common/Common.hpp"
-#include "MultirotorCommon.hpp";
+#include "MultirotorCommon.hpp"
 #include "safety/SafetyEval.hpp"
 #include "physics/Kinematics.hpp"
+#include "physics/Environment.hpp"
 #include "api/VehicleApiBase.hpp"
 
 #include <atomic>
@@ -20,7 +21,7 @@ namespace msr { namespace airlib {
 
 class MultirotorApiBase : public VehicleApiBase {
 
-public: //must be implemented
+protected: //must be implemented
 
     /************************* low level move APIs *********************************/
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) = 0;
@@ -33,9 +34,8 @@ public: //must be implemented
     virtual Kinematics::State getKinematicsEstimated() const = 0;
     virtual LandedState getLandedState() const = 0;
     virtual GeoPoint getGpsLocation() const = 0;
-    virtual const MultirotorApiParams& getVehicleParams() const = 0;
-    virtual real_T getRotorActuation(unsigned int rotor_index) const = 0;
-    virtual size_t getRotorCount() const = 0;
+    virtual const MultirotorApiParams& getMultirotorApiParams() const = 0;
+
     virtual RCData getRCData() const = 0; //get reading from RC bound to vehicle
 
     /************************* basic config APIs *********************************/
@@ -44,6 +44,32 @@ public: //must be implemented
     //noise in difference of two position coordinates. This is not GPS or position accuracy which can be very low such as 1m.
     //the difference between two position cancels out transitional errors. Typically this would be 0.1m or lower.
     virtual float getDistanceAccuracy() const = 0; 
+
+protected: //optional overrides but recommended, default values may work
+    virtual float getAutoLookahead(float velocity, float adaptive_lookahead,
+        float max_factor = 40, float min_factor = 30) const;
+    virtual float getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel) const;
+
+    //below methods gets called by default implementations of move-related commands that would use a long 
+    //running loop. These can be used by derived classes to do some init/cleanup.
+    virtual void beforeTask()
+    {
+        //default is do nothing
+    }
+    virtual void afterTask()
+    {
+        //default is do nothing
+    }
+
+public: //optional overrides
+    virtual void moveByRC(const RCData& rc_data);
+
+    //below method exist for any firmwares that may want to use ground truth for debugging purposes
+    virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment)
+    {
+        unused(kinematics);
+        unused(environment);
+    }
 
 public: //these APIs uses above low level APIs
     virtual ~MultirotorApiBase() = default;
@@ -69,7 +95,7 @@ public: //these APIs uses above low level APIs
     virtual bool rotateByYawRate(float yaw_rate, float duration);
     virtual bool hover();
     virtual RCData estimateRCTrims(float trimduration = 1, float minCountForTrim = 10, float maxTrim = 100);
-
+    
     /************************* Safety APIs *********************************/
     virtual void setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr);
     virtual bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
@@ -93,29 +119,6 @@ public: //these APIs uses above low level APIs
     virtual void cancelPendingTasks() override
     {
         token_.cancel();
-    }
-
-    //below method exist for any firmwares that may want to use ground truth for debugging purposes
-    virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment)
-    {
-        unused(kinematics);
-        unused(environment);
-    }
-
-protected: //optional overrides but recommended, default values may work
-    virtual float getAutoLookahead(float velocity, float adaptive_lookahead,
-        float max_factor = 40, float min_factor = 30) const;
-    virtual float getObsAvoidanceVelocity(float risk_dist, float max_obs_avoidance_vel) const;
-
-    //below methods gets called by default implementations of move-related commands that would use a long 
-    //running loop. These can be used by derived classes to do some init/cleanup.
-    virtual void beforeTask()
-    {
-        //default is do nothing
-    }
-    virtual void afterTask()
-    {
-        //default is do nothing
     }
 
 protected: //utility methods
@@ -155,11 +158,6 @@ protected: //utility methods
     {
         return getKinematicsEstimated().pose.orientation;
     }
-    ClockBase* clock() const
-    {
-        return ClockFactory::get();
-    }
-
 
     CancelToken& getCancelToken()
     {
@@ -222,6 +220,7 @@ protected: //types
 
     class SingleTaskCall : public SingleCall
     {
+    public:
         SingleTaskCall(MultirotorApiBase* api)
             : SingleCall(api)
         {

@@ -65,47 +65,23 @@ public:
         }
     }
 
-public:
-    //*** Start: VehicleApiBase implementation ***//
+public: //VehicleApiBase implementation
     virtual void reset() override
     {
         MultirotorApiBase::reset();
 
         firmware_->reset();
     }
-
     virtual void update() override
     {
         MultirotorApiBase::update();
 
         firmware_->update();
     }
-
-    virtual real_T getRotorActuation(unsigned int rotor_index) const override
-    {
-        auto control_signal = board_->getMotorControlSignal(rotor_index);
-        return control_signal;
-    }
-    virtual size_t getRotorCount() const override
-    {
-        return vehicle_params_->getParams().rotor_count;
-    }
-    virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment) override
-    {
-        board_->setKinematics(kinematics);
-        estimator_->setKinematics(kinematics, environment);
-    }
-
-    virtual void getStatusMessages(std::vector<std::string>& messages) override
-    {
-        comm_link_->getStatusMessages(messages);
-    }
-
     virtual bool isApiControlEnabled() const override
     {
         return firmware_->offboardApi().hasApiControl();
     }
-
     virtual void enableApiControl(bool is_enabled) override
     {
         if (is_enabled) {
@@ -116,11 +92,44 @@ public:
         else
             firmware_->offboardApi().releaseApiControl();
     }
-    
-    //*** End: VehicleApiBase implementation ***//
+    virtual bool armDisarm(bool arm) override
+    {
+        std::string message;
+        if (arm)
+            return firmware_->offboardApi().arm(message);
+        else
+            return firmware_->offboardApi().disarm(message);
+    }
+    virtual GeoPoint getHomeGeoPoint() const override
+    {
+        return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getHomeGeoPoint());
+    }
+    virtual void getStatusMessages(std::vector<std::string>& messages) override
+    {
+        comm_link_->getStatusMessages(messages);
+    }
 
-//*** Start: MultirotorApiBase implementation ***//
-public:
+public: //MultirotorApiBase implementation
+    virtual real_T getActuation(unsigned int rotor_index) const override
+    {
+        auto control_signal = board_->getMotorControlSignal(rotor_index);
+        return control_signal;
+    }
+    virtual size_t getActuatorCount() const override
+    {
+        return vehicle_params_->getParams().rotor_count;
+    }
+    virtual void moveByRC(const RCData& rc_data) override
+    {
+        setRCData(rc_data);
+    }
+    virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment) override
+    {
+        board_->setKinematics(kinematics);
+        estimator_->setKinematics(kinematics, environment);
+    }
+
+protected: 
     virtual Kinematics::State getKinematicsEstimated() const override
     {
         return AirSimSimpleFlightCommon::toKinematicsState3r(firmware_->offboardApi().
@@ -142,31 +151,17 @@ public:
     virtual Quaternionr getOrientation() const override
     {
         const auto& val = firmware_->offboardApi().getStateEstimator().getOrientation();
-        return AirSimSimpleFlightCommon::toQuaternion(val);    
+        return AirSimSimpleFlightCommon::toQuaternion(val);
     }
 
     virtual LandedState getLandedState() const override
     {
         return firmware_->offboardApi().getLandedState() ? LandedState::Landed : LandedState::Flying;
     }
-    
+
     virtual RCData getRCData() const override
     {
         return last_rcData_;
-    }
-
-    virtual bool armDisarm(bool arm) override
-    {
-        std::string message;
-        if (arm)
-            return firmware_->offboardApi().arm(message);
-        else
-            return firmware_->offboardApi().disarm(message);
-    }
-
-    virtual GeoPoint getHomeGeoPoint() const override
-    {
-        return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getHomeGeoPoint());
     }
 
     virtual GeoPoint getGpsLocation() const override
@@ -176,7 +171,7 @@ public:
 
     virtual float getCommandPeriod() const override
     {
-        return 1.0f/50; //50hz
+        return 1.0f / 50; //50hz
     }
 
     virtual float getTakeoffZ() const override
@@ -191,7 +186,6 @@ public:
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
     }
 
-protected: 
     virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
     {
         //Utils::log(Utils::stringf("commandRollPitchThrottle %f, %f, %f, %f", pitch, roll, throttle, yaw_rate));
@@ -263,7 +257,7 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    virtual const MultirotorApiParams& getVehicleParams() const override
+    virtual const MultirotorApiParams& getMultirotorApiParams() const override
     {
         return safety_params_;
     }

@@ -5,7 +5,7 @@
 #ifndef AIRLIB_HEADER_ONLY
 //RPC code requires C++14. If build system like Unreal doesn't support it then use compiled binaries
 #ifndef AIRLIB_NO_RPC
-//if using Unreal Build system then include precompiled header file first
+//if using Unreal Build system then include pre-compiled header file first
 
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
 
@@ -30,97 +30,70 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::MultirotorRpcLibAdapators MultirotorRpcLibAdapators;
 
-MultirotorRpcLibServer::MultirotorRpcLibServer(WorldSimApiBase* simmode_api, string server_address, uint16_t port)
-        : RpcLibServerBase(simmode_api, server_address, port)
+MultirotorRpcLibServer::MultirotorRpcLibServer(MultirotorApiBase* vehicle_api, WorldSimApiBase* world_sim_api, string server_address, uint16_t port)
+        : RpcLibServerBase(server_address, port), vehicle_api_(vehicle_api), world_sim_api_(world_sim_api)
 {
     (static_cast<rpc::server*>(getServer()))->
-        bind("takeoff", [&](float max_wait_seconds) -> bool { return getDroneApi()->takeoff(max_wait_seconds); });
+        bind("takeoff", [&](float max_wait_seconds) -> bool { return getVehicleApi()->takeoff(max_wait_seconds); });
     (static_cast<rpc::server*>(getServer()))->
-        bind("land", [&](float max_wait_seconds) -> bool { return getDroneApi()->land(max_wait_seconds); });
+        bind("land", [&](float max_wait_seconds) -> bool { return getVehicleApi()->land(max_wait_seconds); });
     (static_cast<rpc::server*>(getServer()))->
-        bind("goHome", [&]() -> bool { return getDroneApi()->goHome(); });
-
+        bind("goHome", [&]() -> bool { return getVehicleApi()->goHome(); });
 
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByAngleZ", [&](float pitch, float roll, float z, float yaw, float duration) -> 
-        bool { return getDroneApi()->moveByAngleZ(pitch, roll, z, yaw, duration); });
+        bool { return getVehicleApi()->moveByAngleZ(pitch, roll, z, yaw, duration); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByAngleThrottle", [&](float pitch, float roll, float throttle, float yaw_rate, float duration) ->
-            bool { return getDroneApi()->moveByAngleThrottle(pitch, roll, throttle, yaw_rate, duration); });
+            bool { return getVehicleApi()->moveByAngleThrottle(pitch, roll, throttle, yaw_rate, duration); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByVelocity", [&](float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode) -> 
-        bool { return getDroneApi()->moveByVelocity(vx, vy, vz, duration, drivetrain, yaw_mode.to()); });
+        bool { return getVehicleApi()->moveByVelocity(vx, vy, vz, duration, drivetrain, yaw_mode.to()); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByVelocityZ", [&](float vx, float vy, float z, float duration, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode) -> 
-        bool { return getDroneApi()->moveByVelocityZ(vx, vy, z, duration, drivetrain, yaw_mode.to()); });
+        bool { return getVehicleApi()->moveByVelocityZ(vx, vy, z, duration, drivetrain, yaw_mode.to()); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveOnPath", [&](const vector<MultirotorRpcLibAdapators::Vector3r>& path, float velocity, float max_wait_seconds, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead) ->
         bool { 
             vector<Vector3r> conv_path;
             MultirotorRpcLibAdapators::to(path, conv_path);
-            return getDroneApi()->moveOnPath(conv_path, velocity, max_wait_seconds, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead);
+            return getVehicleApi()->moveOnPath(conv_path, velocity, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead);
         });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveToPosition", [&](float x, float y, float z, float velocity, float max_wait_seconds, DrivetrainType drivetrain,
         const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) -> 
-        bool { return getDroneApi()->moveToPosition(x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); });
+        bool { return getVehicleApi()->moveToPosition(x, y, z, velocity, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveToZ", [&](float z, float velocity, float max_wait_seconds, const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) ->
-        bool { return getDroneApi()->moveToZ(z, velocity, max_wait_seconds, yaw_mode.to(), lookahead, adaptive_lookahead); });
+        bool { return getVehicleApi()->moveToZ(z, velocity, yaw_mode.to(), lookahead, adaptive_lookahead); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByManual", [&](float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode) ->
-        bool { return getDroneApi()->moveByManual(vx_max, vy_max, z_min, duration, drivetrain, yaw_mode.to()); });
+        bool { return getVehicleApi()->moveByManual(vx_max, vy_max, z_min, duration, drivetrain, yaw_mode.to()); });
 
     (static_cast<rpc::server*>(getServer()))->
         bind("rotateToYaw", [&](float yaw, float max_wait_seconds, float margin) ->
-        bool { return getDroneApi()->rotateToYaw(yaw, max_wait_seconds, margin); });
+        bool { return getVehicleApi()->rotateToYaw(yaw, margin); });
     (static_cast<rpc::server*>(getServer()))->
         bind("rotateByYawRate", [&](float yaw_rate, float duration) -> 
-        bool { return getDroneApi()->rotateByYawRate(yaw_rate, duration); });
+        bool { return getVehicleApi()->rotateByYawRate(yaw_rate, duration); });
     (static_cast<rpc::server*>(getServer()))->
-        bind("hover", [&]() -> bool { return getDroneApi()->hover(); });
+        bind("hover", [&]() -> bool { return getVehicleApi()->hover(); });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("moveByRC", [&](const MultirotorRpcLibAdapators::RCData& data) ->
+            void { getVehicleApi()->moveByRC(data.to()); });
 
     (static_cast<rpc::server*>(getServer()))->
         bind("setSafety", [&](uint enable_reasons, float obs_clearance, const SafetyEval::ObsAvoidanceStrategy& obs_startegy,
         float obs_avoidance_vel, const MultirotorRpcLibAdapators::Vector3r& origin, float xy_length, float max_z, float min_z) -> 
-        bool { return getDroneApi()->setSafety(SafetyEval::SafetyViolationType(enable_reasons), obs_clearance, obs_startegy,
+        bool { return getVehicleApi()->setSafety(SafetyEval::SafetyViolationType(enable_reasons), obs_clearance, obs_startegy,
             obs_avoidance_vel, origin.to(), xy_length, max_z, min_z); });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("setRCData", [&](const MultirotorRpcLibAdapators::RCData& data) ->
-        void { getDroneApi()->setRCData(data.to()); });
-
 
     //getters
     (static_cast<rpc::server*>(getServer()))->
         bind("getMultirotorState", [&]() -> MultirotorRpcLibAdapators::MultirotorState { 
-        return MultirotorRpcLibAdapators::MultirotorState(getDroneApi()->getMultirotorState()); 
+        return MultirotorRpcLibAdapators::MultirotorState(getVehicleApi()->getMultirotorState()); 
     });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getPosition", [&]() -> MultirotorRpcLibAdapators::Vector3r { 
-        return MultirotorRpcLibAdapators::Vector3r(getDroneApi()->getPosition()); 
-    });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getVelocity", [&]() -> MultirotorRpcLibAdapators::Vector3r { 
-        return MultirotorRpcLibAdapators::Vector3r(getDroneApi()->getVelocity()); 
-    });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getOrientation", [&]() -> MultirotorRpcLibAdapators::Quaternionr { 
-        return MultirotorRpcLibAdapators::Quaternionr(getDroneApi()->getOrientation()); 
-    });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getLandedState", [&]() -> int { 
-        return static_cast<int>(getDroneApi()->getLandedState()); 
-    });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getRCData", [&]() -> MultirotorRpcLibAdapators::RCData { 
-        return MultirotorRpcLibAdapators::RCData(getDroneApi()->getRCData()); 
-    });
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getGpsLocation", [&]() -> MultirotorRpcLibAdapators::GeoPoint { 
-        return MultirotorRpcLibAdapators::GeoPoint(getDroneApi()->getGpsLocation()); 
-    });
-
 }
 
 //required for pimpl
@@ -128,10 +101,6 @@ MultirotorRpcLibServer::~MultirotorRpcLibServer()
 {
 }
 
-MultirotorApiBase* MultirotorRpcLibServer::getDroneApi() const
-{
-    return static_cast<MultirotorApiBase*>(getSimModeApi()->getVehicleApi());
-}
 
 }} //namespace
 

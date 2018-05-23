@@ -17,7 +17,7 @@ namespace msr { namespace airlib {
 template <class Vector3T, class QuaternionT, class RealT>
 class VectorMathT {
 public:
-    //IMPORTANT: make sure fixed size vectorizable types have no alignment assumption
+    //IMPORTANT: make sure fixed size vectorization types have no alignment assumption
     //https://eigen.tuxfamily.org/dox/group__TopicUnalignedArrayAssert.html
     typedef Eigen::Matrix<float, 1, 1> Vector1f;
     typedef Eigen::Matrix<double, 1, 1> Vector1d;
@@ -36,7 +36,7 @@ public:
 
     typedef common_utils::Utils Utils;
     //use different seeds for each component
-    //TODO: below we are using double instead of RealT becaise of VC++2017 bug in random implementation
+    //TODO: below we are using double instead of RealT because of VC++2017 bug in random implementation
     typedef common_utils::RandomGenerator<RealT, std::normal_distribution<double>, 1> RandomGeneratorGausianXT;
     typedef common_utils::RandomGenerator<RealT, std::normal_distribution<double>, 2> RandomGeneratorGausianYT;
     typedef common_utils::RandomGenerator<RealT, std::normal_distribution<double>, 3> RandomGeneratorGausianZT;

@@ -50,5 +50,5 @@ private:
     TArray<AActor*> spawned_actors_;
 
     VehiclePawnWrapper* fpv_vehicle_pawn_wrapper_;
-    TArray <std::shared_ptr<VehicleConnectorBase> > fpv_vehicle_connectors_;
+    TArray <std::shared_ptr<VehicleSimBridgeBase> > fpv_vehicle_connectors_;
 };

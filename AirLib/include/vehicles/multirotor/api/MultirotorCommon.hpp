@@ -77,13 +77,23 @@ struct MultirotorState {
 
     MultirotorState()
     {}
-    MultirotorState(const CollisionInfo& collision_val, const Kinematics::State& kinematics_true_val,
-        const Kinematics::State& kinematics_estimated_val, const GeoPoint& gps_location_val, uint64_t timestamp_val,
-        LandedState landed_state_val, const RCData& rc_data_val, const std::vector<std::string>& controller_messages_val)
+    MultirotorState(const CollisionInfo& collision_val, const Kinematics::State& kinematics_estimated_val, 
+        const GeoPoint& gps_location_val, uint64_t timestamp_val,
+        LandedState landed_state_val, const RCData& rc_data_val)
         : collision(collision_val), kinematics_estimated(kinematics_estimated_val),
         gps_location(gps_location_val), timestamp(timestamp_val),
         landed_state(landed_state_val), rc_data(rc_data_val)
     {
+    }
+
+    //shortcuts
+    const Vector3r& getPosition() const
+    {
+        return kinematics_estimated.pose.position;
+    }
+    const Quaternionr& getOrientation() const
+    {
+        return kinematics_estimated.pose.orientation;
     }
 };
 

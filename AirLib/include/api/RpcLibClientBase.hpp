@@ -27,6 +27,7 @@ public:
     void resetVehicle();
     void simResetWorld();
     bool armDisarm(bool arm);
+    void cancelPendingTasks();
 
     ConnectionState getConnectionState();
     bool ping();
@@ -59,11 +60,8 @@ public:
 
 
 protected:
+    void* getClient();
     const void* getClient() const;
-    void* getClient()
-    {
-        return const_cast<void*>(getClient());
-    }
 
 private:
     struct impl;

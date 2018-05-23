@@ -28,17 +28,20 @@ public:
         return const_cast<WorldSimApiBase*>(getWorldSimApi());
     }
 
-    virtual const VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "") const = 0;
-    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "")
+    virtual const VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "") const
     {
         auto* world_sim_api = getWorldSimApi();
         if (world_sim_api) {
             auto* vehicle_sim_api = getWorldSimApi()->getVehicleSimApi(vehicle_name);
-            return const_cast<VehicleSimApiBase*>(vehicle_sim_api);
+            return vehicle_sim_api;
         }
         return nullptr;
     }
+    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "")
+    {
+        return const_cast<VehicleSimApiBase*>(getVehicleSimApi(vehicle_name));
 
+    }
 
     virtual ~ApiServerBase() = default;
 };

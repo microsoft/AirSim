@@ -5,6 +5,7 @@
 #ifndef AIRLIB_HEADER_ONLY
 
 #include "safety/SafetyEval.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
 
 #include <cmath>
 #include <sstream>
@@ -138,7 +139,7 @@ void SafetyEval::isSafeDestination(const Vector3r& dest_pos, const Vector3r& cur
 
 float SafetyEval::adjustClearanceForPrStl(float base_clearance, float obs_confidence)
 {
-    //3.2 comes from inverse CDF for epsilone = 0.05 (i.e. 95% confidence), author: akapoor
+    //3.2 comes from inverse CDF for epsilon = 0.05 (i.e. 95% confidence), author: akapoor
     float additional_clearance = (1 - obs_confidence) * 3.2f;   
     if (additional_clearance != 0)
         Utils::log(Utils::stringf("additional_clearance=%f", additional_clearance));

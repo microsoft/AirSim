@@ -24,7 +24,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* wrapper,
     vehicle_.initialize(vehicle_params_, wrapper_->getPose(), 
         wrapper_->getHomePoint(), environment_);
 
-    controller_ = static_cast<msr::airlib::MultirotorApiBase*>(vehicle_.getController());
+    controller_ = static_cast<msr::airlib::MultirotorApiBase*>(vehicle_.getVehicleApi());
 
     if (controller_->getRemoteControlID() >= 0)
         detectUsbRc();
@@ -41,7 +41,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* wrapper,
         new MultirotorApiBase(this)));
 
     std::string message;
-    if (!vehicle_.getController()->isAvailable(message)) {
+    if (!vehicle_.getApi()->isAvailable(message)) {
         UAirBlueprintLib::LogMessage(FString("Vehicle was not initialized: "), FString(message.c_str()), LogDebugLevel::Failure);
         UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
     }
@@ -52,16 +52,16 @@ msr::airlib::ImageCaptureBase* MultiRotorConnector::getImageCapture()
     return wrapper_->getImageCapture();
 }
 
-Kinematics::State MultiRotorConnector::getTrueKinematics()
+Kinematics::State MultiRotorConnector::getGroundTruthKinematics()
 {
-    return * wrapper_->getTrueKinematics();
+    return * wrapper_->getGroundTruthKinematics();
 }
 
 MultiRotorConnector::~MultiRotorConnector()
 {
 }
 
-msr::airlib::VehicleApiBase* MultiRotorConnector::getController()
+msr::airlib::VehicleApiBase* MultiRotorConnector::getVehicleApi()
 {
     return controller_;
 }
@@ -324,7 +324,7 @@ void MultiRotorConnector::reset()
 
 void MultiRotorConnector::resetPrivate()
 {
-    VehicleConnectorBase::reset();
+    VehicleSimBridgeBase::reset();
 
     //TODO: should this be done in MultiRotor.hpp?
     //controller_->reset();
@@ -336,7 +336,7 @@ void MultiRotorConnector::resetPrivate()
 
 void MultiRotorConnector::update()
 {
-    VehicleConnectorBase::update();
+    VehicleSimBridgeBase::update();
 
     //this is high frequency physics tick, flier gets ticked at rendering frame rate
     vehicle_.update();

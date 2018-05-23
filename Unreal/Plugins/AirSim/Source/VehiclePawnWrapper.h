@@ -13,10 +13,10 @@
 #include "NedTransform.h"
 #include "common/AirSimSettings.hpp"
 #include "api/VehicleApiBase.hpp"
-#include "controllers/VehicleConnectorBase.hpp"
+#include "controllers/VehicleSimBridgeBase.hpp"
 
 
-class VehiclePawnWrapper : public msr::airlib::VehicleConnectorBase
+class VehiclePawnWrapper : public msr::airlib::VehicleSimBridgeBase
 {
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
@@ -70,7 +70,7 @@ public: //interface
     void setDebugPose(const Pose& debug_pose);
 
     void setKinematics(const msr::airlib::Kinematics::State* kinematics);
-    const msr::airlib::Kinematics::State* getTrueKinematics();
+    const msr::airlib::Kinematics::State* getGroundTruthKinematics();
 
     const GeoPoint& getHomePoint() const;
     const CollisionInfo& getCollisionInfo() const;

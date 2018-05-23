@@ -7,8 +7,8 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "api/RpcLibAdapatorsBase.hpp"
-#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
-#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.h"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "rpc/msgpack.hpp"
@@ -48,7 +48,7 @@ public:
         std::vector<std::string> controller_messages;
 
 
-        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, kinematics_true, gps_location, timestamp, landed_state, rc_data, controller_messages);
+        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, gps_location, timestamp, landed_state, rc_data);
 
         MultirotorState()
         {}
@@ -57,18 +57,16 @@ public:
         {
             collision = s.collision;
             kinematics_estimated = s.kinematics_estimated;
-            kinematics_true = s.kinematics_true;
             gps_location = s.gps_location;
             timestamp = s.timestamp;
             landed_state = s.landed_state;
             rc_data = RCData(s.rc_data);
-            controller_messages = s.controller_messages;
         }
 
         msr::airlib::MultirotorState to() const
         {
             return msr::airlib::MultirotorState(collision.to(), kinematics_estimated.to(), 
-                kinematics_true.to(), gps_location.to(), timestamp, landed_state, rc_data.to(), controller_messages);
+                gps_location.to(), timestamp, landed_state, rc_data.to());
         }
     };
 };

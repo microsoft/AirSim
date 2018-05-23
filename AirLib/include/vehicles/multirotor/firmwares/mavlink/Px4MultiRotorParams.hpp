@@ -4,22 +4,31 @@
 #ifndef msr_airlib_vehicles_Px4MultiRotor_hpp
 #define msr_airlib_vehicles_Px4MultiRotor_hpp
 
-#include "vehicles/multirotor/controllers/MavLinkMultirotorApi.hpp"
+#include "vehicles/multirotor/firmwares/mavlink/MavLinkMultirotorApi.hpp"
 #include "common/AirSimSettings.hpp"
 #include "sensors/SensorFactory.hpp"
-
+#include "vehicles/multirotor/MultiRotorParams.hpp"
 
 namespace msr { namespace airlib {
 
-class Px4MultiRotor : public MultiRotorParams {
+class Px4MultiRotorParams : public MultiRotorParams {
 public:
-    Px4MultiRotor(const AirSimSettings::PX4VehicleSetting& vehicle_setting, std::shared_ptr<const SensorFactory> sensor_factory)
+    Px4MultiRotorParams(const AirSimSettings::PX4VehicleSetting& vehicle_setting, std::shared_ptr<const SensorFactory> sensor_factory)
         : sensor_factory_(sensor_factory)
     {
         connection_info_ = getConnectionInfo(vehicle_setting);
     }
 
-    virtual ~Px4MultiRotor() = default;
+    virtual ~Px4MultiRotorParams() = default;
+
+    virtual std::unique_ptr<MultirotorApiBase> createMultirotorApi() override
+    {
+        unique_ptr<MultirotorApiBase> api(new MavLinkMultirotorApi());
+        auto api_ptr = static_cast<MavLinkMultirotorApi*>(api.get());
+        api_ptr->initialize(connection_info_, &getSensors(), true);
+
+        return api;
+    }
 
     virtual void setupParams() override
     {
@@ -46,16 +55,6 @@ protected:
     {
         return sensor_factory_->createSensor(sensor_type);
     }
-
-    virtual std::unique_ptr<MultirotorApiBase> createController() override
-    {
-        unique_ptr<MultirotorApiBase> controller(new MavLinkMultirotorApi());
-        auto mav_controller = static_cast<MavLinkMultirotorApi*>(controller.get());
-        mav_controller->initialize(connection_info_, & getSensors(), true);
-
-        return controller;
-    }
-
 
 private:
     void setupFrameGenericQuad(Params& params)
@@ -244,14 +243,14 @@ private:
     }
 
 
-    static const MavLinkMultirotorApi::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::PX4VehicleSetting& vehicle_setting)
+    static const AirSimSettings::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::PX4VehicleSetting& vehicle_setting)
     {
         return vehicle_setting.connection_info;
     }
 
 
 private:
-    MavLinkMultirotorApi::MavLinkConnectionInfo connection_info_;
+    AirSimSettings::MavLinkConnectionInfo connection_info_;
     std::shared_ptr<const SensorFactory> sensor_factory_;
 
 };

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include <memory>
 #include <vector>
-#include "controllers/VehicleConnectorBase.hpp"
+#include "controllers/VehicleSimBridgeBase.hpp"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
@@ -33,7 +33,7 @@ public:
     virtual void continueForTime(double seconds) override;
 
 protected:
-    typedef std::shared_ptr<msr::airlib::VehicleConnectorBase> VehiclePtr;
+    typedef std::shared_ptr<msr::airlib::VehicleSimBridgeBase> VehiclePtr;
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
     size_t getVehicleCount() const;
 

@@ -411,9 +411,6 @@
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorApiBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\api\RealMultirotorConnector.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\api\VehicleConnectorBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -426,10 +423,10 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightApi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\Px4MultiRotor.hpp">
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\Px4MultiRotorParams.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightQuadX.hpp">
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightQuadXParams.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
