@@ -423,6 +423,7 @@ bool MultirotorApiBase::hover()
 
 void MultirotorApiBase::moveByRC(const RCData& rc_data)
 {
+    unused(rc_data);
     //by default we say that this command is not supported
     throw VehicleCommandNotImplementedException("moveByRC API is not implemented for this multirotor");
 }

@@ -19,10 +19,12 @@ public:
 
     virtual const MultirotorApiBase* getVehicleApi(const std::string& vehicle_name = "") const override
     {
+        unused(vehicle_name);
         return vehicle_api_;
     }
     virtual MultirotorApiBase* getVehicleApi(const std::string& vehicle_name = "") override
     {
+        unused(vehicle_name);
         return const_cast<MultirotorApiBase*>(getVehicleApi(vehicle_name));
     }
     virtual const WorldSimApiBase* getWorldSimApi() const override

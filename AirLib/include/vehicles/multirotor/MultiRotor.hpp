@@ -142,6 +142,7 @@ public:
 private: //methods
     void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
     {
+        params_ = params;
         PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
 
         createRotors(*params_, rotors_, environment);

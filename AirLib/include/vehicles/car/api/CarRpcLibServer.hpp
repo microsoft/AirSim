@@ -13,15 +13,17 @@ namespace msr { namespace airlib {
 
 class CarRpcLibServer : public RpcLibServerBase {
 public:
-    CarRpcLibServer(VehicleApiBase* vehicle_api, WorldSimApiBase* world_sim_api, string server_address, uint16_t port = 41451);
+    CarRpcLibServer(CarApiBase* vehicle_api, WorldSimApiBase* world_sim_api, string server_address, uint16_t port = 41451);
     virtual ~CarRpcLibServer();
 
     virtual const CarApiBase* getVehicleApi(const std::string& vehicle_name = "") const override
     {
+        unused(vehicle_name);
         return vehicle_api_;
     }
     virtual CarApiBase* getVehicleApi(const std::string& vehicle_name = "") override
     {
+        unused(vehicle_name);
         return const_cast<CarApiBase*>(getVehicleApi(vehicle_name));
     }
     virtual const WorldSimApiBase* getWorldSimApi() const override

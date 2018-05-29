@@ -30,8 +30,8 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibServer::CarRpcLibServer(VehicleApiBase* vehicle_api, WorldSimApiBase* world_sim_api, string server_address, uint16_t port)
-    : RpcLibServerBase(server_address, port)
+CarRpcLibServer::CarRpcLibServer(CarApiBase* vehicle_api, WorldSimApiBase* world_sim_api, string server_address, uint16_t port)
+    : RpcLibServerBase(server_address, port), vehicle_api_(vehicle_api), world_sim_api_(world_sim_api)
 {
     (static_cast<rpc::server*>(getServer()))->
         bind("getCarState", [&]() -> CarRpcLibAdapators::CarState {

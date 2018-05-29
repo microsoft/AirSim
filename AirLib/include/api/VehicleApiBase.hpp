@@ -33,6 +33,7 @@ public:
 
     virtual bool isReady(std::string& message) const
     {
+        unused(message);
         return true;
     }
 
@@ -47,6 +48,7 @@ public:
     //below APIs are used by FastPhysicsEngine
     virtual real_T getActuation(unsigned int actuator_index) const
     {
+        unused(actuator_index);
         throw VehicleCommandNotImplementedException("getActuation API is not supported for this vehicle");
     }
     virtual size_t getActuatorCount() const
