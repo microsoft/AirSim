@@ -22,7 +22,7 @@ MultiRotorConnector::MultiRotorConnector(VehiclePawnWrapper* wrapper,
     vehicle_params_ = vehicle_params;
 
     vehicle_.initialize(vehicle_params_, wrapper_->getPose(), 
-        wrapper_->getHomePoint(), environment_);
+        wrapper_->getHomeGeoPoint(), environment_);
 
     controller_ = static_cast<msr::airlib::MultirotorApiBase*>(vehicle_.getVehicleApi());
 

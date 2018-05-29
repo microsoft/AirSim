@@ -34,8 +34,8 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibClient::CarRpcLibClient(const string&  ip_address, uint16_t port, uint timeout_ms)
-    : RpcLibClientBase(ip_address, port, timeout_ms)
+CarRpcLibClient::CarRpcLibClient(const string&  ip_address, uint16_t port, float timeout_sec)
+    : RpcLibClientBase(ip_address, port, timeout_sec)
 {
 }
 

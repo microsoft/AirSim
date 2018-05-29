@@ -90,10 +90,10 @@ RpcLibServerBase::RpcLibServerBase(const std::string& server_address, uint16_t p
     });
 
     pimpl_->server.
-        bind("simSetPose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision) -> void {
+        bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision) -> void {
         getVehicleSimApi()->setPose(pose.to(), ignore_collision);
     });
-    pimpl_->server.bind("simGetPose", [&]() -> RpcLibAdapatorsBase::Pose { 
+    pimpl_->server.bind("simGetVehiclePose", [&]() -> RpcLibAdapatorsBase::Pose { 
         const auto& pose = getVehicleSimApi()->getPose();
         return RpcLibAdapatorsBase::Pose(pose);
     });
@@ -107,13 +107,10 @@ RpcLibServerBase::RpcLibServerBase(const std::string& server_address, uint16_t p
         return getWorldSimApi()->getSegmentationObjectID(mesh_name);
     });    
 
-    pimpl_->server.bind("simResetWorld", [&]() -> void {
-        getWorldSimApi()->reset();
-    });
-    pimpl_->server.bind("resetVehicle", [&]() -> void {
-        auto* sim_vehicle_api = getVehicleSimApi();
-        if (sim_vehicle_api)
-            sim_vehicle_api->reset();
+    pimpl_->server.bind("reset", [&]() -> void {
+        auto* sim_world_api = getWorldSimApi();
+        if (sim_world_api)
+            sim_world_api->reset();
         else
             getVehicleApi()->reset();
     });
@@ -146,8 +143,8 @@ RpcLibServerBase::RpcLibServerBase(const std::string& server_address, uint16_t p
         return RpcLibAdapatorsBase::Pose(pose);
     });
 
-    pimpl_->server.bind("cancelPendingTasks", [&]() -> void {
-        getVehicleApi()->cancelPendingTasks();
+    pimpl_->server.bind("cancelLastTask", [&]() -> void {
+        getVehicleApi()->cancelLastTask();
     });
 
     //if we don't suppress then server will bomb out for exceptions raised by any method

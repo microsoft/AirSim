@@ -4,7 +4,7 @@
 //in header only mode, control library is not available
 #ifndef AIRLIB_HEADER_ONLY
 
-#include "vehicles/multirotor/api/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include <functional>
 #include <exception>
 #include <vector>
@@ -14,6 +14,59 @@
 namespace msr { namespace airlib {
 
 
+bool MultirotorApiBase::takeoff(float timeout_sec)
+{
+    SingleTaskCall lock(this);
+
+    auto kinematics = getKinematicsEstimated();
+    if (kinematics.twist.linear.norm() > approx_zero_vel_) { 
+        throw VehicleMoveException(Utils::stringf(
+            "Cannot perform takeoff because vehicle is already moving with velocity %f m/s",
+            kinematics.twist.linear.norm()));
+    }
+
+    bool ret = moveToPosition(kinematics.pose.position.x(),
+        kinematics.pose.position.y(), kinematics.pose.position.z() + getTakeoffZ(),
+        0.5f, timeout_sec, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
+
+    //last command is to hold on to position
+    //commandPosition(0, 0, getTakeoffZ(), YawMode::Zero());
+
+    return ret;
+}
+
+bool MultirotorApiBase::land(float timeout_sec)
+{
+    SingleTaskCall lock(this);
+
+    //after landing we detect if drone has stopped moving
+    int near_zero_vel_count = 0;
+
+    return waitForFunction([&]() {
+        moveByVelocityInternal(0, 0, landing_vel_, YawMode::Zero());
+
+        float z_vel = getVelocity().z();
+        if (z_vel <= approx_zero_vel_)
+            ++near_zero_vel_count;
+        else
+            near_zero_vel_count = 0;
+
+        if (near_zero_vel_count > 10)
+            return true;
+        else {
+            moveByVelocityInternal(0, 0, landing_vel_, YawMode::Zero());
+            return false;
+        }
+    }, timeout_sec).isComplete();
+}
+
+bool MultirotorApiBase::goHome(float timeout_sec)
+{
+    SingleTaskCall lock(this);
+
+    return moveToPosition(0, 0, 0, 0.5f, timeout_sec, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
+}
+
 bool MultirotorApiBase::moveByAngleZ(float pitch, float roll, float z, float yaw, float duration)
 {
     SingleTaskCall lock(this);
@@ -21,9 +74,10 @@ bool MultirotorApiBase::moveByAngleZ(float pitch, float roll, float z, float yaw
     if (duration <= 0)
         return true;
 
-    return !waitForFunction([&]() {
-        return !moveByRollPitchZInternal(pitch, roll, z, yaw);
-    }, duration);
+    return waitForFunction([&]() {
+        moveByRollPitchZInternal(pitch, roll, z, yaw);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
 }
 
 bool MultirotorApiBase::moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration)
@@ -33,9 +87,10 @@ bool MultirotorApiBase::moveByAngleThrottle(float pitch, float roll, float throt
     if (duration <= 0)
         return true;
 
-    return !waitForFunction([&]() {
-        return !moveByRollPitchThrottleInternal(pitch, roll, throttle, yaw_rate);
-    }, duration);
+    return waitForFunction([&]() {
+        moveByRollPitchThrottleInternal(pitch, roll, throttle, yaw_rate);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
 }
 
 bool MultirotorApiBase::moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
@@ -48,9 +103,10 @@ bool MultirotorApiBase::moveByVelocity(float vx, float vy, float vz, float durat
     YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
     adjustYaw(vx, vy, drivetrain, adj_yaw_mode);
 
-    return !waitForFunction([&]() {
-        return !moveByVelocityInternal(vx, vy, vz, adj_yaw_mode);
-    }, duration);
+    return waitForFunction([&]() {
+        moveByVelocityInternal(vx, vy, vz, adj_yaw_mode);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
 }
 
 bool MultirotorApiBase::moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
@@ -63,12 +119,13 @@ bool MultirotorApiBase::moveByVelocityZ(float vx, float vy, float z, float durat
     YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
     adjustYaw(vx, vy, drivetrain, adj_yaw_mode);
 
-    return !waitForFunction([&]() {
-        return !moveByVelocityZInternal(vx, vy, z, adj_yaw_mode);
-    }, duration);
+    return waitForFunction([&]() {
+        moveByVelocityZInternal(vx, vy, z, adj_yaw_mode);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
 }
 
-bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
+bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity, float timeout_sec, DrivetrainType drivetrain, const YawMode& yaw_mode,
     float lookahead, float adaptive_lookahead)
 {
     SingleTaskCall lock(this);
@@ -134,7 +191,7 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
 
     float lookahead_error_increasing = 0;
     float lookahead_error = 0;
-    Waiter waiter(getCommandPeriod());
+    Waiter waiter(getCommandPeriod(), timeout_sec, getCancelToken());
 
     //initialize next path position
     setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
@@ -142,7 +199,7 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
     float goal_dist = 0;
 
     //until we are at the end of the path (last seg is always zero size)
-    while (next_path_loc.seg_index < path_segs.size()-1 || goal_dist > 0
+    while (!waiter.isTimeout() && (next_path_loc.seg_index < path_segs.size()-1 || goal_dist > 0)
         ) { //current position is approximately at the last end point
 
         float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
@@ -157,7 +214,7 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
             yaw_mode, path_segs.at(cur_path_loc.seg_index).start_z);
 
         //sleep for rest of the cycle
-        if (!waiter.sleep(getCancelToken()))
+        if (!waiter.sleep())
             return false;
 
         /*  Below, P is previous position on path, N is next goal and C is our current position.
@@ -223,6 +280,7 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
             lookahead_error_increasing = 0;
             goal_dist = 0;
             lookahead_error = 0; //this is not really required because we will exit
+            waiter.complete();
         }
 
         // Utils::logMessage("PF: cur=%s, goal_dist=%f, cur_path_loc=%s, next_path_loc=%s, lookahead_error=%f",
@@ -244,45 +302,99 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
         overshoot = setNextPathPosition(path3d, path_segs, cur_path_loc, lookahead + lookahead_error, next_path_loc);
     }
 
-    return true;
+    return waiter.isComplete();
 }
 
-bool MultirotorApiBase::moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
+bool MultirotorApiBase::moveToPosition(float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
     const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {
     SingleTaskCall lock(this);
 
-    vector<Vector3r> path { Vector3r(x, y, z) };
-    return moveOnPath(path, velocity, drivetrain, yaw_mode, lookahead, adaptive_lookahead);
+    vector<Vector3r> path{ Vector3r(x, y, z) };
+    return moveOnPath(path, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead);
 }
 
-bool MultirotorApiBase::moveToZ(float z, float velocity, const YawMode& yaw_mode,
+bool MultirotorApiBase::moveToZ(float z, float velocity, float timeout_sec, const YawMode& yaw_mode,
     float lookahead, float adaptive_lookahead)
 {
     SingleTaskCall lock(this);
 
     Vector2r cur_xy(getPosition().x(), getPosition().y());
     vector<Vector3r> path { Vector3r(cur_xy.x(), cur_xy.y(), z) };
-    return moveOnPath(path, velocity, DrivetrainType::MaxDegreeOfFreedom, yaw_mode, lookahead, adaptive_lookahead);
+    return moveOnPath(path, velocity, timeout_sec, DrivetrainType::MaxDegreeOfFreedom, yaw_mode, lookahead, adaptive_lookahead);
 }
 
-bool MultirotorApiBase::rotateToYaw(float yaw, float margin)
+bool MultirotorApiBase::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
     SingleTaskCall lock(this);
 
-    YawMode yaw_mode(false, VectorMath::normalizeAngle(yaw));
-    Waiter waiter(getCommandPeriod());
+    const float kMaxMessageAge = 0.1f /* 0.1 sec */, kMaxRCValue = 10000;
+
+    if (duration <= 0)
+        return true;
+
+    //freeze the quaternion
+    Quaternionr starting_quaternion = getKinematicsEstimated().pose.orientation;
+
+    Waiter waiter(getCommandPeriod(), duration, getCancelToken());
+    do {
+
+        RCData rc_data = getRCData();
+        TTimeDelta age = clock()->elapsedSince(rc_data.timestamp);
+        if (rc_data.is_valid && (rc_data.timestamp == 0 || age <= kMaxMessageAge)) { //if rc message timestamp is not set OR is not too old 
+            if (rc_data_trims_.is_valid)
+                rc_data.subtract(rc_data_trims_);
+
+            //convert RC commands to velocity vector
+            const Vector3r vel_word(rc_data.pitch * vy_max / kMaxRCValue, rc_data.roll  * vx_max / kMaxRCValue, 0);
+            Vector3r vel_body = VectorMath::transformToBodyFrame(vel_word, starting_quaternion, true);
+
+            //find yaw as per terrain and remote setting
+            YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
+            adj_yaw_mode.yaw_or_rate += rc_data.yaw * 100.0f / kMaxRCValue;
+            adjustYaw(vel_body, drivetrain, adj_yaw_mode);
+
+            //execute command
+            try {
+                float vz = (rc_data.throttle / kMaxRCValue) * z_min + getPosition().z();
+                moveByVelocityZInternal(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
+            }
+            catch (const MultirotorApiBase::UnsafeMoveException& ex) {
+                Utils::log(Utils::stringf("Safety violation: %s", ex.result.message.c_str()), Utils::kLogLevelWarn);
+            }
+        }
+        else
+            Utils::log(Utils::stringf("RCData had too old timestamp: %f", age));
+
+    } while (waiter.sleep());
+
+    //if timeout occurred then command completed successfully otherwise it was interrupted
+    return waiter.isTimeout();
+}
+
+bool MultirotorApiBase::rotateToYaw(float yaw, float timeout_sec, float margin)
+{
+    SingleTaskCall lock(this);
+
+    const YawMode yaw_mode(false, VectorMath::normalizeAngle(yaw));
+    Waiter waiter(getCommandPeriod(), timeout_sec, getCancelToken());
+
+    float estimated_pitch, estimated_roll, estimated_yaw;
+
     auto start_pos = getPosition();
-    bool is_yaw_reached;
-    while ((is_yaw_reached = isYawWithinMargin(yaw, margin)) == false) {
-        if (!moveToPositionInternal(start_pos, yaw_mode))
-            return false;
+    do {
+        auto kinematics = getKinematicsEstimated();
+        VectorMath::toEulerianAngle(kinematics.pose.orientation,
+            estimated_pitch, estimated_roll, estimated_yaw);
 
-        if (!waiter.sleep(getCancelToken()))
-            return false;
-    }
+        if (isYawWithinMargin(estimated_yaw, margin))
+            return true;
 
-    return true;
+        //change yaw by moving to same position but constant yaw mode
+        moveToPositionInternal(start_pos, yaw_mode);
+    } while (waiter.sleep());
+
+    return false; //we are not exiting because we reached yaw
 }
 
 bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
@@ -294,60 +406,19 @@ bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
 
     auto start_pos = getPosition();
     YawMode yaw_mode(true, yaw_rate);
-    Waiter waiter(getCommandPeriod(), duration);
+    Waiter waiter(getCommandPeriod(), duration, getCancelToken());
     do {
-        if (!moveToPositionInternal(start_pos, yaw_mode))
-            return false;
-    } while (waiter.sleep(getCancelToken()) && !waiter.is_timeout());
+        moveToPositionInternal(start_pos, yaw_mode);
+    } while (waiter.sleep());
 
-    return waiter.is_timeout();
-}
-
-bool MultirotorApiBase::takeoff(float max_wait_seconds)
-{
-    SingleTaskCall lock(this);
-
-    unused(max_wait_seconds);
-    bool ret = moveToPosition(0, 0, getTakeoffZ(), 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
-
-    //last command is to hold on to position
-    //commandPosition(0, 0, getTakeoffZ(), YawMode::Zero());
-
-    return ret;
-}
-
-bool MultirotorApiBase::goHome()
-{
-    SingleTaskCall lock(this);
-
-    //TODO: won't work for multi-agents!
-    return moveToPosition(0, 0, 0, 0.5f, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
-}
-
-bool MultirotorApiBase::land(float max_wait_seconds)
-{
-    SingleTaskCall lock(this);
-
-    float land_vel = 0.2f;
-    float near_zero_vel = land_vel / 4;
-    int near_zero_vel_count = 0;
-
-    return !waitForFunction([&]() {
-        float z_vel = getVelocity().z();
-        if (z_vel <= near_zero_vel)
-            ++near_zero_vel_count;
-        else
-            near_zero_vel_count = 0;
-
-        return near_zero_vel_count > 10 || !moveByVelocityInternal(0, 0, 0.2f, YawMode::Zero());
-    }, max_wait_seconds);
+    return waiter.isTimeout();
 }
 
 bool MultirotorApiBase::hover()
 {
     SingleTaskCall lock(this);
 
-    return moveToZ(getPosition().z(), 0.5f, YawMode{ true,0 }, 1.0f, false);
+    return moveToZ(getPosition().z(), 0.5f, Utils::max<float>(), YawMode{ true,0 }, 1.0f, false);
 }
 
 void MultirotorApiBase::moveByRC(const RCData& rc_data)
@@ -356,68 +427,75 @@ void MultirotorApiBase::moveByRC(const RCData& rc_data)
     throw VehicleCommandNotImplementedException("moveByRC API is not implemented for this multirotor");
 }
 
-bool MultirotorApiBase::moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode)
+void MultirotorApiBase::moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode)
 {
     if (safetyCheckVelocity(Vector3r(vx, vy, vz)))
         commandVelocity(vx, vy, vz, yaw_mode);
-
-    return true;
 }
 
-bool MultirotorApiBase::moveByVelocityZInternal(float vx, float vy, float z, const YawMode& yaw_mode)
+void MultirotorApiBase::moveByVelocityZInternal(float vx, float vy, float z, const YawMode& yaw_mode)
 {
     if (safetyCheckVelocityZ(vx, vy, z))
         commandVelocityZ(vx, vy, z, yaw_mode);
-
-    return true;
 }
 
-bool MultirotorApiBase::moveToPositionInternal(const Vector3r& dest, const YawMode& yaw_mode)
+void MultirotorApiBase::moveToPositionInternal(const Vector3r& dest, const YawMode& yaw_mode)
 {
     if (safetyCheckDestination(dest))
         commandPosition(dest.x(), dest.y(), dest.z(), yaw_mode);
-
-    return true;
 }
 
-bool MultirotorApiBase::moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate)
+void MultirotorApiBase::moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate)
 {
     if (safetyCheckVelocity(getVelocity()))
         commandRollPitchThrottle(pitch, roll, throttle, yaw_rate);
-
-    return true;
 }
 
-bool MultirotorApiBase::moveByRollPitchZInternal(float pitch, float roll, float z, float yaw)
+void MultirotorApiBase::moveByRollPitchZInternal(float pitch, float roll, float z, float yaw)
 {
     if (safetyCheckVelocity(getVelocity()))
         commandRollPitchZ(pitch, roll, z, yaw);
-
-    return true;
 }
 
-bool MultirotorApiBase::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy, 
-    float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z)
+//executes a given function until it returns true. Each execution is spaced apart at command period.
+//return value is true if exit was due to given function returning true, otherwise false (due to timeout)
+Waiter MultirotorApiBase::waitForFunction(WaitFunction function, float timeout_sec)
 {
-    if (safety_eval_ptr_ == nullptr)
-        throw std::invalid_argument("The setSafety call requires safety_eval_ptr_ to be set first");
+    Waiter waiter(getCommandPeriod(), timeout_sec, getCancelToken());
+    if (timeout_sec <= 0)
+        return waiter;
 
-    //default strategy is for move. In hover mode we set new strategy temporarily
-    safety_eval_ptr_->setSafety(enable_reasons, obs_clearance, obs_startegy, origin, xy_length, max_z, min_z);
-
-    obs_avoidance_vel_ = obs_avoidance_vel;
-    Utils::log(Utils::stringf("obs_avoidance_vel: %f", obs_avoidance_vel_));
-
-    return true;
+    do {
+        if (function()) {
+            waiter.complete();
+            break;
+        }
+    }
+    while (waiter.sleep());
+    return waiter;
 }
 
+bool MultirotorApiBase::waitForZ(float timeout_sec, float z, float margin)
+{
+    float cur_z = 100000;
+    return waitForFunction([&]() {
+        cur_z = getPosition().z();
+        return (std::abs(cur_z - z) <= margin);
+    }, timeout_sec).isComplete();
+}
+
+void MultirotorApiBase::setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr)
+{
+    SingleCall lock(this);
+    safety_eval_ptr_ = safety_eval_ptr;
+}
 
 RCData MultirotorApiBase::estimateRCTrims(float trimduration, float minCountForTrim, float maxTrim)
 {
     rc_data_trims_ = RCData();
 
     //get trims
-    Waiter waiter_trim(getCommandPeriod(), trimduration);
+    Waiter waiter_trim(getCommandPeriod(), trimduration, getCancelToken());
     uint count = 0;
     do {
 
@@ -427,7 +505,7 @@ RCData MultirotorApiBase::estimateRCTrims(float trimduration, float minCountForT
             count++;
         }
 
-    } while (waiter_trim.sleep(getCancelToken()) && !waiter_trim.is_timeout());
+    } while (waiter_trim.sleep());
 
     rc_data_trims_.is_valid = true;
 
@@ -449,92 +527,61 @@ RCData MultirotorApiBase::estimateRCTrims(float trimduration, float minCountForT
     return rc_data_trims_;
 }
 
-bool MultirotorApiBase::moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
+void MultirotorApiBase::moveToPathPosition(const Vector3r& dest, float velocity, DrivetrainType drivetrain, /* pass by value */ YawMode yaw_mode, float last_z)
 {
-    SingleTaskCall lock(this);
+    unused(last_z);
+    //validate dest
+    if (dest.hasNaN())
+        throw std::invalid_argument(VectorMath::toString(dest, "dest vector cannot have NaN: "));
 
-    const float kMaxMessageAge = 0.1f /* 0.1 sec */, kMaxRCValue = 10000;
+    //what is the distance we will travel at this velocity?
+    float expected_dist = velocity * getCommandPeriod();
 
-    if (duration <= 0)
-        return true;
+    //get velocity vector
+    const Vector3r cur = getPosition();
+    const Vector3r cur_dest = dest - cur;
+    float cur_dest_norm = cur_dest.norm();
 
-    //freeze the quaternion
-    Quaternionr starting_quaternion = getKinematicsEstimated().pose.orientation;
+    //yaw for the direction of travel
+    adjustYaw(cur_dest, drivetrain, yaw_mode);
 
-    Waiter waiter(getCommandPeriod(), duration);
-    do {
+    //find velocity vector
+    Vector3r velocity_vect;
+    if (cur_dest_norm < getDistanceAccuracy())  //our dest is approximately same as current
+        velocity_vect = Vector3r::Zero();
+    else if (cur_dest_norm >= expected_dist) {
+        velocity_vect = (cur_dest / cur_dest_norm) * velocity;
+        //Utils::logMessage("velocity_vect=%s", VectorMath::toString(velocity_vect).c_str());
+    }
+    else { //cur dest is too close than the distance we would travel
+           //generate velocity vector that is same size as cur_dest_norm / command period
+           //this velocity vect when executed for command period would yield cur_dest_norm
+        Utils::log(Utils::stringf("Too close dest: cur_dest_norm=%f, expected_dist=%f", cur_dest_norm, expected_dist));
+        velocity_vect = (cur_dest / cur_dest_norm) * (cur_dest_norm / getCommandPeriod());
+    }
 
-        RCData rc_data = getRCData();
-        TTimeDelta age = clock()->elapsedSince(rc_data.timestamp);
-        if (rc_data.is_valid && (rc_data.timestamp == 0 || age <= kMaxMessageAge)) { //if rc message timestamp is not set OR is not too old 
-            if (rc_data_trims_.is_valid)
-                rc_data.subtract(rc_data_trims_);
-
-            //convert RC commands to velocity vector
-            const Vector3r vel_word(rc_data.pitch * vy_max/kMaxRCValue, rc_data.roll  * vx_max/kMaxRCValue, 0);
-            Vector3r vel_body = VectorMath::transformToBodyFrame(vel_word, starting_quaternion, true);
-
-            //find yaw as per terrain and remote setting
-            YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
-            adj_yaw_mode.yaw_or_rate += rc_data.yaw * 100.0f/kMaxRCValue;
-            adjustYaw(vel_body, drivetrain, adj_yaw_mode);
-
-            //execute command
-            try {
-                float vz = (rc_data.throttle / kMaxRCValue) * z_min + getPosition().z();
-                moveByVelocityZInternal(vel_body.x(), vel_body.y(), vz, adj_yaw_mode);
-            }
-            catch(const MultirotorApiBase::UnsafeMoveException& ex) {
-                Utils::log(Utils::stringf("Safety violation: %s", ex.result.message.c_str()), Utils::kLogLevelWarn);
-            }
-        }
-        else
-            Utils::log(Utils::stringf("RCData had too old timestamp: %f", age));
-
-    } while (waiter.sleep(getCancelToken()) && !waiter.is_timeout());
-
-    return waiter.is_timeout();
+    //send commands
+    //try to maintain altitude if path was in XY plan only, velocity based control is not as good
+    if (std::abs(cur.z() - dest.z()) <= getDistanceAccuracy()) //for paths in XY plan current code leaves z untouched, so we can compare with strict equality
+        moveByVelocityZInternal(velocity_vect.x(), velocity_vect.y(), dest.z(), yaw_mode);
+    else
+        moveByVelocityInternal(velocity_vect.x(), velocity_vect.y(), velocity_vect.z(), yaw_mode);
 }
 
-void MultirotorApiBase::setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr)
+bool MultirotorApiBase::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
+    float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z)
 {
-    SingleCall lock(this);
-    safety_eval_ptr_ = safety_eval_ptr;
-}
+    if (safety_eval_ptr_ == nullptr)
+        throw std::invalid_argument("The setSafety call requires safety_eval_ptr_ to be set first");
 
-bool MultirotorApiBase::waitForFunction(WaitFunction function, float max_wait_seconds)
-{
-    if (max_wait_seconds < 0)
-    {
-        return false;
-    }
-    bool found = false;
-    Waiter waiter(getCommandPeriod(), max_wait_seconds);
-    do {
-        if (function()) {
-            found = true;
-            break;
-        }
-    }
-    while (waiter.sleep(getCancelToken()) && !waiter.is_timeout());
-    return found;
-}
+    //default strategy is for move. In hover mode we set new strategy temporarily
+    safety_eval_ptr_->setSafety(enable_reasons, obs_clearance, obs_startegy, origin, xy_length, max_z, min_z);
 
-bool MultirotorApiBase::waitForZ(float max_wait_seconds, float z, float margin)
-{
-    float cur_z = 100000;
-    if (!waitForFunction([&]() {
-        cur_z = getPosition().z();
-        return (std::abs(cur_z - z) <= margin);
-    }, max_wait_seconds))
-    {
-        //Only raise exception is time out occurred. If preempted then return status.
-        throw VehicleMoveException(Utils::stringf("Drone hasn't came to expected z of %f within time %f sec within error margin %f (current z = %f)",
-            z, max_wait_seconds, margin, cur_z));
-    }
+    obs_avoidance_vel_ = obs_avoidance_vel;
+    Utils::log(Utils::stringf("obs_avoidance_vel: %f", obs_avoidance_vel_));
+
     return true;
 }
-
 
 bool MultirotorApiBase::emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result)
 {
@@ -638,47 +685,6 @@ void MultirotorApiBase::adjustYaw(const Vector3r& heading, DrivetrainType drivet
 
 void MultirotorApiBase::adjustYaw(float x, float y, DrivetrainType drivetrain, YawMode& yaw_mode) {
     adjustYaw(Vector3r(x, y, 0), drivetrain, yaw_mode);
-}
-
-void MultirotorApiBase::moveToPathPosition(const Vector3r& dest, float velocity, DrivetrainType drivetrain, /* pass by value */ YawMode yaw_mode, float last_z)
-{
-    unused(last_z);
-    //validate dest
-    if (dest.hasNaN())
-        throw std::invalid_argument(VectorMath::toString(dest,"dest vector cannot have NaN: "));
-
-    //what is the distance we will travel at this velocity?
-    float expected_dist = velocity * getCommandPeriod();
-
-    //get velocity vector
-    const Vector3r cur = getPosition();
-    const Vector3r cur_dest = dest - cur;
-    float cur_dest_norm = cur_dest.norm();
-
-    //yaw for the direction of travel
-    adjustYaw(cur_dest, drivetrain, yaw_mode);
-
-    //find velocity vector
-    Vector3r velocity_vect;
-    if (cur_dest_norm < getDistanceAccuracy())  //our dest is approximately same as current
-        velocity_vect = Vector3r::Zero();
-    else if (cur_dest_norm >= expected_dist) {
-        velocity_vect = (cur_dest / cur_dest_norm) * velocity;
-        //Utils::logMessage("velocity_vect=%s", VectorMath::toString(velocity_vect).c_str());
-    }
-    else { //cur dest is too close than the distance we would travel
-            //generate velocity vector that is same size as cur_dest_norm / command period
-            //this velocity vect when executed for command period would yield cur_dest_norm
-        Utils::log(Utils::stringf("Too close dest: cur_dest_norm=%f, expected_dist=%f", cur_dest_norm, expected_dist));
-        velocity_vect = (cur_dest / cur_dest_norm) * (cur_dest_norm / getCommandPeriod());   
-    }
-
-    //send commands
-    //try to maintain altitude if path was in XY plan only, velocity based control is not as good
-    if (std::abs(cur.z() - dest.z()) <= getDistanceAccuracy()) //for paths in XY plan current code leaves z untouched, so we can compare with strict equality
-        moveByVelocityZInternal(velocity_vect.x(), velocity_vect.y(), dest.z(), yaw_mode);
-    else
-        moveByVelocityInternal(velocity_vect.x(), velocity_vect.y(), velocity_vect.z(), yaw_mode);
 }
 
 bool MultirotorApiBase::isYawWithinMargin(float yaw_target, float margin) const

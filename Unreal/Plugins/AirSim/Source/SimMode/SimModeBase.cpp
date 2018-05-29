@@ -226,8 +226,8 @@ void ASimModeBase::advanceTimeOfDay()
 
             UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(cur_time), LogDebugLevel::Informational);
 
-            auto coord = msr::airlib::EarthCelestial::getSunCoordinates(cur_time, settings.origin_geopoint.home_point.latitude,
-                settings.origin_geopoint.home_point.longitude);
+            auto coord = msr::airlib::EarthCelestial::getSunCoordinates(cur_time, settings.origin_geopoint.home_geo_point.latitude,
+                settings.origin_geopoint.home_geo_point.longitude);
 
             auto rot = FRotator(-coord.altitude, coord.azimuth, 0);
             sun_->SetActorRotation(rot);

@@ -25,7 +25,7 @@ z = -7
 
 # see https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo
 
-# this method is async and we are not waiting for the result since we are passing max_wait_seconds=0.
+# this method is async and we are not waiting for the result since we are passing timeout_sec=0.
 result = client.moveOnPath([Vector3r(0,-253,z),Vector3r(125,-253,z),Vector3r(125,0,z),Vector3r(0,0,z),Vector3r(0,0,-20)], 
                         12, 120, 
                         DrivetrainType.ForwardOnly, YawMode(False,0), 20, 1)

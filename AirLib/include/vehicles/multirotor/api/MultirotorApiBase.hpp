@@ -75,23 +75,23 @@ public: //these APIs uses above low level APIs
     virtual ~MultirotorApiBase() = default;
 
     /************************* high level move APIs *********************************/
-    //return value of these function is true if command was completed without interruption
-    virtual bool takeoff(float max_wait_seconds);
-    virtual bool land(float max_wait_seconds);
-    virtual bool goHome();
+    //return value of these function is true if command was completed without interruption or timeouts
+    virtual bool takeoff(float timeout_sec);
+    virtual bool land(float timeout_sec);
+    virtual bool goHome(float timeout_sec);
+
     virtual bool moveByAngleZ(float pitch, float roll, float z, float yaw, float duration);
-    /// Move by providing angles and throttles just like in RC
     virtual bool moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration);
     virtual bool moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
     virtual bool moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
-    virtual bool moveOnPath(const vector<Vector3r>& path, float velocity, DrivetrainType drivetrain, const YawMode& yaw_mode,
+    virtual bool moveOnPath(const vector<Vector3r>& path, float velocity, float timeout_sec, DrivetrainType drivetrain, const YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead);
-    virtual bool moveToPosition(float x, float y, float z, float velocity, DrivetrainType drivetrain,
+    virtual bool moveToPosition(float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
         const YawMode& yaw_mode, float lookahead, float adaptive_lookahead);
-    virtual bool moveToZ(float z, float velocity, const YawMode& yaw_mode,
+    virtual bool moveToZ(float z, float velocity, float timeout_sec, const YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead);
     virtual bool moveByManual(float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
-    virtual bool rotateToYaw(float yaw, float margin);
+    virtual bool rotateToYaw(float yaw, float timeout_sec, float margin);
     virtual bool rotateByYawRate(float yaw_rate, float duration);
     virtual bool hover();
     virtual RCData estimateRCTrims(float trimduration = 1, float minCountForTrim = 10, float maxTrim = 100);
@@ -116,7 +116,7 @@ public: //these APIs uses above low level APIs
     }
 
     /******************* Task management APis ********************/
-    virtual void cancelPendingTasks() override
+    virtual void cancelLastTask() override
     {
         token_.cancel();
     }
@@ -125,11 +125,11 @@ protected: //utility methods
     typedef std::function<bool()> WaitFunction;
 
     //*********************************safe wrapper around low level commands***************************************************
-    virtual bool moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode);
-    virtual bool moveByVelocityZInternal(float vx, float vy, float z, const YawMode& yaw_mode);
-    virtual bool moveToPositionInternal(const Vector3r& dest, const YawMode& yaw_mode);
-    virtual bool moveByRollPitchZInternal(float pitch, float roll, float z, float yaw);
-    virtual bool moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate);
+    virtual void moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode);
+    virtual void moveByVelocityZInternal(float vx, float vy, float z, const YawMode& yaw_mode);
+    virtual void moveToPositionInternal(const Vector3r& dest, const YawMode& yaw_mode);
+    virtual void moveByRollPitchZInternal(float pitch, float roll, float z, float yaw);
+    virtual void moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate);
 
     /************* safety checks & emergency maneuvers ************/
     virtual bool emergencyManeuverIfUnsafe(const SafetyEval::EvalResult& result);
@@ -140,10 +140,10 @@ protected: //utility methods
     /************* wait helpers ************/
     // helper function can wait for anything (as defined by the given function) up to the max_wait duration (in seconds).
     // returns true if the wait function succeeded, or false if timeout occurred or the timeout is invalid.
-    bool waitForFunction(WaitFunction function, float max_wait);
+    Waiter waitForFunction(WaitFunction function, float max_wait);
 
     //useful for derived class to check after takeoff
-    bool waitForZ(float max_wait_seconds, float z, float margin);
+    bool waitForZ(float timeout_sec, float z, float margin);
 
     /************* other short hands ************/
     virtual Vector3r getPosition() const
@@ -310,6 +310,10 @@ private: //variables
     RCData rc_data_trims_;
     shared_ptr<SafetyEval> safety_eval_ptr_;
     float obs_avoidance_vel_ = 0.5f;
+
+    //TODO: make this configurable?
+    float landing_vel_ = 0.2f; //velocity to use for landing
+    float approx_zero_vel_ = 0.05f;
 };
 
 }} //namespace

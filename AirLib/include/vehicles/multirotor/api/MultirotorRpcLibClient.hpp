@@ -8,7 +8,7 @@
 #include <functional>
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
-#include "vehicles/multirotor/api/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "api/RpcLibClientBase.hpp"
 #include "vehicles/multirotor/api/MultirotorCommon.hpp"
 
@@ -16,38 +16,47 @@ namespace msr { namespace airlib {
 
 class MultirotorRpcLibClient : public RpcLibClientBase {
 public:
-    MultirotorRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
+    MultirotorRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, float timeout_sec = 60);
 
-    bool takeoff(float max_wait_ms = 15);
-    bool land(float max_wait_seconds = 60);
-    bool goHome();
-    bool moveByAngleZ(float pitch, float roll, float z, float yaw, float duration);
-    bool moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration);
+    void takeoffAsync(float timeout_sec = 20);
+    void landAsync(float timeout_sec = 60);
+    void goHomeAsync(float timeout_sec = Utils::max<float>());
 
-    bool moveByVelocity(float vx, float vy, float vz, float duration, 
+    void moveByAngleZAsync(float pitch, float roll, float z, float yaw, float duration);
+    void moveByAngleThrottleAsync(float pitch, float roll, float throttle, float yaw_rate, float duration);
+    void moveByVelocityAsync(float vx, float vy, float vz, float duration,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
-    bool moveByVelocityZ(float vx, float vy, float z, float duration,
+    void moveByVelocityZAsync(float vx, float vy, float z, float duration,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
-    bool moveOnPath(const vector<Vector3r>& path, float velocity, float max_wait_seconds = 60,
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveToPosition(float x, float y, float z, float velocity, float max_wait_seconds = 60,
-        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveToZ(float z, float velocity, float max_wait_seconds = 60,
+    void moveOnPathAsync(const vector<Vector3r>& path, float velocity, float timeout_sec = Utils::max<float>(),
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), 
+        float lookahead = -1, float adaptive_lookahead = 1);
+    void moveToPositionAsync(float x, float y, float z, float velocity, float timeout_sec = Utils::max<float>(),
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), 
+        float lookahead = -1, float adaptive_lookahead = 1);
+    void moveToZAsync(float z, float velocity, float timeout_sec = Utils::max<float>(),
         const YawMode& yaw_mode = YawMode(), float lookahead = -1, float adaptive_lookahead = 1);
-    bool moveByManual(float vx_max, float vy_max, float z_min, float duration, 
+    void moveByManualAsync(float vx_max, float vy_max, float z_min, float duration,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode());
-    bool rotateToYaw(float yaw, float max_wait_seconds = 60, float margin = 5);
-    bool rotateByYawRate(float yaw_rate, float duration);
-    bool hover();
+    void rotateToYawAsync(float yaw, float timeout_sec = Utils::max<float>(), float margin = 5);
+    void rotateByYawRateAsync(float yaw_rate, float duration);
+    void hoverAsync();
+
     void moveByRC(const RCData& rc_data);
+
 
     MultirotorState getMultirotorState();
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
 
+    virtual bool waitOnLastTask(float timeout_sec = Utils::nan<float>()) override;
+
     virtual ~MultirotorRpcLibClient();    //required for pimpl
 
+private:
+    struct impl;
+    std::unique_ptr<impl> pimpl_;
 };
 
 }} //namespace

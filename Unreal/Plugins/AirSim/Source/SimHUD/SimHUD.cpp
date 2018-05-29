@@ -354,7 +354,8 @@ void ASimHUD::initializeSubWindows()
 // Finally, check the user's documents folder. 
 // If the settings file cannot be read, throw an exception
 
-bool ASimHUD::getSettingsText(std::string& settingsText) {
+bool ASimHUD::getSettingsText(std::string& settingsText) 
+{
     return (getSettingsTextFromCommandLine(settingsText)
         ||
         readSettingsTextFromFile(FString(Settings::getExecutableFullPath("settings.json").c_str()), settingsText)
@@ -366,7 +367,8 @@ bool ASimHUD::getSettingsText(std::string& settingsText) {
 // Looks for the flag "--settings". If it exists, settingsText will be set to the value.
 // Example: AirSim.exe -s '{"foo" : "bar"}' -> settingsText will be set to {"foo": "bar"}
 // Returns true if the argument is present, false otherwise.
-bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText) {
+bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText) 
+{
 
     bool found = false;
     FString settingsTextFString;
@@ -385,7 +387,8 @@ bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText) {
     return found;
 }
 
-bool ASimHUD::readSettingsTextFromFile(FString settingsFilepath, std::string& settingsText) {
+bool ASimHUD::readSettingsTextFromFile(FString settingsFilepath, std::string& settingsText) 
+{
 
     bool found = FPaths::FileExists(settingsFilepath);
     if (found) {

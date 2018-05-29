@@ -72,7 +72,7 @@ public: //interface
     void setKinematics(const msr::airlib::Kinematics::State* kinematics);
     const msr::airlib::Kinematics::State* getGroundTruthKinematics();
 
-    const GeoPoint& getHomePoint() const;
+    const GeoPoint& getHomeGeoPoint() const;
     const CollisionInfo& getCollisionInfo() const;
 
     void setLogLine(std::string line);
@@ -118,7 +118,7 @@ private: //methods
 private: //vars
     FVector ground_trace_end_;
     FVector ground_margin_;
-    GeoPoint home_point_;
+    GeoPoint home_geo_point_;
     APawn* pawn_;
     std::vector<APIPCamera*> cameras_;
     std::unique_ptr<UnrealImageCapture> image_capture_;

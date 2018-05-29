@@ -26,14 +26,14 @@ public:
     }
 
     MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
-        const Pose& initial_pose, const GeoPoint& home_point, std::unique_ptr<Environment>& environment)
+        const Pose& initial_pose, const GeoPoint& home_geo_point, std::unique_ptr<Environment>& environment)
         : params_(params), vehicle_api_(vehicle_api)
     {
         auto initial_kinematics = Kinematics::State::zero();
         initial_kinematics.pose = initial_pose;
         Environment::State initial_environment;
         initial_environment.position = initial_kinematics.pose.position;
-        initial_environment.geo_point = home_point;
+        initial_environment.geo_point = home_geo_point;
         environment.reset(new Environment(initial_environment));
     }
 

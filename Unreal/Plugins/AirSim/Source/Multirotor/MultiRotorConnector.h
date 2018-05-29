@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 //TODO: all code except setRotorSpeed requires VehiclePawnBase.
 //May be we should have MultiRotorPawnBase so we don't need FlyingPawn.h
-#include "vehicles/multirotor/api/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "VehiclePawnWrapper.h"
 #include "vehicles/multirotor/MultiRotor.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"

@@ -18,16 +18,14 @@ public:
         Initial = 0, Connected, Disconnected, Reset, Unknown
     };
 public:
-    RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
+    RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = 41451, float timeout_sec = 60);
     virtual ~RpcLibClientBase();    //required for pimpl
 
     void confirmConnection();
     bool isApiControlEnabled() const;
     void enableApiControl(bool is_enabled);
-    void resetVehicle();
-    void simResetWorld();
+    void reset();
     bool armDisarm(bool arm);
-    void cancelPendingTasks();
 
     ConnectionState getConnectionState();
     bool ping();
@@ -55,9 +53,12 @@ public:
     int simGetSegmentationObjectID(const std::string& mesh_name) const;
     void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
-    CameraInfo getCameraInfo(int camera_id) const;
-    void setCameraOrientation(int camera_id, const Quaternionr& orientation);
+    CameraInfo simGetCameraInfo(int camera_id) const;
+    void simSetCameraOrientation(int camera_id, const Quaternionr& orientation);
 
+    //task management APIs
+    void cancelLastTask();
+    virtual bool waitOnLastTask(float timeout_sec = Utils::nan<float>());
 
 protected:
     void* getClient();

@@ -16,7 +16,7 @@ namespace msr { namespace airlib {
 
 class CarRpcLibClient : public RpcLibClientBase {
 public:
-    CarRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, uint timeout_ms = 60000);
+    CarRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, float timeout_sec = 60);
 
     void setCarControls(const CarApiBase::CarControls& controls);
     CarApiBase::CarState getCarState();

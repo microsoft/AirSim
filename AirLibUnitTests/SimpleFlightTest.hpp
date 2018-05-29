@@ -6,7 +6,7 @@
 #include "TestBase.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "physics/FastPhysicsEngine.hpp"
-#include "vehicles/multirotor/api/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/SteppableClock.hpp"
 #include "vehicles/multirotor/MultiRotor.hpp"
 
@@ -53,7 +53,7 @@ public:
 
         Utils::getSetMinLogLevel(true);
 
-        api->moveToPosition(-5, -5, -5, 5, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
+        api->moveToPosition(-5, -5, -5, 5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
 
         clock->sleep_for(2.0f);
 

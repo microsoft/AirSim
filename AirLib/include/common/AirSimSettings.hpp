@@ -77,6 +77,7 @@ public: //types
         std::string pawn_path;
         bool allow_api_always = true;
         bool auto_create = true;
+        Vector3r home_geo_point = Vector3r::Zero();
 
         RCSettings rc;
     };
@@ -100,7 +101,7 @@ public: //types
     };
 
     struct CaptureSetting {
-        //below settinsg are obtained by using Unreal console command (press ~):
+        //below settings are obtained by using Unreal console command (press ~):
         // ShowFlag.VisualizeHDR 1.
         //to replicate camera settings to SceneCapture2D
         //TODO: should we use UAirBlueprintLib::GetDisplayGamma()?
@@ -334,7 +335,7 @@ public: //methods
     {
         std::string settings_filename = Settings::getUserDirectoryFullPath("settings.json");
         Settings& settings = Settings::loadJSonString("{}");
-        //write some settings in new file otherwise the string "null" is written if all settigs are empty
+        //write some settings in new file otherwise the string "null" is written if all settings are empty
         settings.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
         settings.setDouble("SettingsVersion", 1.0);
 
@@ -376,7 +377,7 @@ private:
         }
     }
 
-    RCSettings loadRCSetting(const Settings& settings)
+    RCSettings getRCSetting(const Settings& settings) const
     {
         RCSettings rc_setting;
         rc_setting.remote_control_id = settings.getInt("RemoteControlID", rc_setting.remote_control_id);
@@ -497,7 +498,7 @@ private:
         }
     }
 
-    std::unique_ptr<VehicleSetting> createPX4VehicleSetting(const Settings& settings)
+    std::unique_ptr<VehicleSetting> createPX4VehicleSetting(const Settings& settings) const
     {
         //these settings are expected in same section, not in another child
         auto vehicle_setting = std::unique_ptr<PX4VehicleSetting>(new PX4VehicleSetting());
@@ -535,8 +536,12 @@ private:
         return vehicle_setting;
     }
 
+    Vector3r getVectorSetting(const Settings& settings) const
+    {
+        return Vector3r(settings.getFloat("x", 0), settings.getFloat("y", 0), settings.getFloat("z", 0));
+    }
 
-    std::unique_ptr<VehicleSetting> createVehicleSetting(const Settings& settings, const std::string vehicle_name)
+    std::unique_ptr<VehicleSetting> createVehicleSetting(const Settings& settings, const std::string vehicle_name) const
     {
         auto vehicle_type = Utils::toLower(settings.getString("VehicleType", ""));
 
@@ -560,7 +565,12 @@ private:
 
         Settings rc_json;
         if (settings.getChild("RC", rc_json)) {
-            vehicle_setting->rc = loadRCSetting(rc_json);
+            vehicle_setting->rc = getRCSetting(rc_json);
+        }
+
+        Settings homepoint_json;
+        if (settings.getChild("HomePoint", homepoint_json)) {
+            vehicle_setting->home_geo_point = getVectorSetting(homepoint_json);
         }
 
         return vehicle_setting;
@@ -816,7 +826,7 @@ private:
         {   //load origin geopoint
             Settings origin_geopoint_json;
             if (settings.getChild("OriginGeopoint", origin_geopoint_json)) {
-                GeoPoint origin = origin_geopoint.home_point;
+                GeoPoint origin = origin_geopoint.home_geo_point;
                 origin.latitude = origin_geopoint_json.getDouble("Latitude", origin.latitude);
                 origin.longitude = origin_geopoint_json.getDouble("Longitude", origin.longitude);
                 origin.altitude = origin_geopoint_json.getFloat("Altitude", origin.altitude);

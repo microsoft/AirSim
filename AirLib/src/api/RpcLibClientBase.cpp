@@ -33,11 +33,11 @@ __pragma(warning( disable : 4239))
 namespace msr { namespace airlib {
 
 struct RpcLibClientBase::impl {
-    impl(const string&  ip_address, uint16_t port, uint timeout_ms)
+    impl(const string&  ip_address, uint16_t port, float timeout_sec)
         : client(ip_address, port)
     {
         // some long flight path commands can take a while, so we give it up to 1 hour max.
-        client.set_timeout(timeout_ms);
+        client.set_timeout(static_cast<int64_t>(timeout_sec/1E3));
     }
 
     rpc::client client;
@@ -45,9 +45,9 @@ struct RpcLibClientBase::impl {
 
 typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
 
-RpcLibClientBase::RpcLibClientBase(const string&  ip_address, uint16_t port, uint timeout_ms)
+RpcLibClientBase::RpcLibClientBase(const string&  ip_address, uint16_t port, float timeout_sec)
 {
-    pimpl_.reset(new impl(ip_address, port, timeout_ms));
+    pimpl_.reset(new impl(ip_address, port, timeout_sec));
 }
 
 RpcLibClientBase::~RpcLibClientBase()
@@ -93,16 +93,10 @@ int RpcLibClientBase::getServerVersion() const
     return pimpl_->client.call("getServerVersion").as<int>();
 }
 
-void RpcLibClientBase::resetVehicle()
+void RpcLibClientBase::reset()
 {
-    pimpl_->client.call("resetVehicle");
+    pimpl_->client.call("reset");
 }
-
-void RpcLibClientBase::simResetWorld()
-{
-    pimpl_->client.call("simResetWorld");
-}
-
 
 void RpcLibClientBase::confirmConnection()
 {
@@ -170,11 +164,11 @@ CollisionInfo RpcLibClientBase::simGetCollisionInfo() const
 //sim only
 Pose RpcLibClientBase::simGetVehiclePose() const
 {
-    return pimpl_->client.call("simGetPose").as<RpcLibAdapatorsBase::Pose>().to();
+    return pimpl_->client.call("simGetVehiclePose").as<RpcLibAdapatorsBase::Pose>().to();
 }
 void RpcLibClientBase::simSetVehiclePose(const Pose& pose, bool ignore_collision)
 {
-    pimpl_->client.call("simSetPose", RpcLibAdapatorsBase::Pose(pose), ignore_collision);
+    pimpl_->client.call("simSetVehiclePose", RpcLibAdapatorsBase::Pose(pose), ignore_collision);
 }
 
 vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request)
@@ -220,19 +214,28 @@ msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_n
     return pimpl_->client.call("simGetObjectPose", object_name).as<RpcLibAdapatorsBase::Pose>().to();
 }
 
-CameraInfo RpcLibClientBase::getCameraInfo(int camera_id) const
+CameraInfo RpcLibClientBase::simGetCameraInfo(int camera_id) const
 {
-    return pimpl_->client.call("getCameraInfo", camera_id).as<RpcLibAdapatorsBase::CameraInfo>().to();
+    return pimpl_->client.call("simGetCameraInfo", camera_id).as<RpcLibAdapatorsBase::CameraInfo>().to();
+}
+void RpcLibClientBase::simSetCameraOrientation(int camera_id, const Quaternionr& orientation)
+{
+    pimpl_->client.call("simSetCameraOrientation", camera_id, RpcLibAdapatorsBase::Quaternionr(orientation));
 }
 
-void RpcLibClientBase::setCameraOrientation(int camera_id, const Quaternionr& orientation)
+void RpcLibClientBase::cancelLastTask()
 {
-    pimpl_->client.call("setCameraOrientation", camera_id, RpcLibAdapatorsBase::Quaternionr(orientation));
+    pimpl_->client.call("cancelLastTask");
 }
 
-void RpcLibClientBase::cancelPendingTasks()
+//return value of last task. It should be true if task completed without
+//cancellation or timeout
+bool RpcLibClientBase::waitOnLastTask(float timeout_sec)
 {
-    pimpl_->client.call("cancelPendingTasks");
+    //should be implemented by derived class if it supports async task,
+    //for example using futures
+    unused(timeout_sec);
+    return true;
 }
 
 void* RpcLibClientBase::getClient()

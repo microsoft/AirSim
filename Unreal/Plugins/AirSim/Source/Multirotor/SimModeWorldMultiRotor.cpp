@@ -5,7 +5,7 @@
 #include "GameFramework/PlayerController.h"
 
 #include "AirBlueprintLib.h"
-#include "vehicles/multirotor/controllers/MultirotorApiBase.h"
+#include "vehicles/multirotor/controllers/MultirotorApiBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include "common/ClockFactory.hpp"
 #include <memory>

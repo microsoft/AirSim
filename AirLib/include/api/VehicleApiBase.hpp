@@ -28,7 +28,7 @@ public:
     virtual void enableApiControl(bool is_enabled) = 0;
     virtual bool isApiControlEnabled() const = 0;
     virtual bool armDisarm(bool arm) = 0;
-    virtual void cancelPendingTasks() = 0;
+    virtual void cancelLastTask() = 0;
     virtual GeoPoint getHomeGeoPoint() const = 0;
 
     virtual bool isReady(std::string& message) const

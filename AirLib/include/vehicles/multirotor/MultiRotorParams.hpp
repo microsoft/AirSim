@@ -7,7 +7,7 @@
 #include "common/Common.hpp"
 #include "RotorParams.hpp"
 #include "sensors/SensorCollection.hpp"
-#include "vehicles/multirotor/api/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 
 namespace msr { namespace airlib {
 

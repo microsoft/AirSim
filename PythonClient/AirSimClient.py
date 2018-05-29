@@ -102,7 +102,7 @@ class YawMode(MsgpackMixin):
 
 class RCData(MsgpackMixin):
     timestamp = 0
-    pitch, roll, throttle, yaw = (0.0,)*4 #init 4 variable to to 0.0
+    pitch, roll, throttle, yaw = (0.0,)*4 #init 4 variable to 0.0
     switch1, switch2, switch3, switch4 = (0,)*4
     switch5, switch6, switch7, switch8 = (0,)*4
     is_initialized = False
@@ -202,9 +202,10 @@ class CarState(MsgpackMixin):
 class MultirotorState(MsgpackMixin):
     collision = CollisionInfo();
     kinematics_estimated = KinematicsState()
-    kinematics_true = KinematicsState()
     gps_location = GeoPoint()
     timestamp = np.uint64(0)
+    landed_state = LandedState.Landed
+    rc_data = RCData()
 
 class CameraInfo(MsgpackMixin):
     pose = Pose()
@@ -248,13 +249,6 @@ class AirSimClientBase:
     def write_file(filename, bstr):
         with open(filename, 'wb') as afile:
             afile.write(bstr)
-
-    def simSetPose(self, pose, ignore_collison):
-        self.client.call('simSetPose', pose, ignore_collison)
-
-    def simGetPose(self):
-        pose = self.client.call('simGetPose')
-        return Pose.from_msgpack(pose)
 
     # helper method for converting getOrientation to roll/pitch/yaw
     # https:#en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -436,20 +430,40 @@ class AirSimClientBase:
 
         AirSimClientBase.write_file(filename, png_bytes)
 
-    def ping(self):
-        return self.client.call('ping')
-    
+
+# -----------------------------------  Common vehicle APIs ---------------------------------------------
     def reset(self):
         self.client.call('reset')
 
-    def getServerVersion(self):
-        return self.client.call('getServerVersion')
+    def ping(self):
+        return self.client.call('ping')
+
     def getClientVersion(self):
         return 1 # sync with C++ client
+    def getServerVersion(self):
+        return self.client.call('getServerVersion')
     def getMinRequiredServerVersion(self):
         return 1 # sync with C++ client
     def getMinRequiredClientVersion(self):
         return self.client.call('getMinRequiredClientVersion')
+
+    # basic flight control
+    def enableApiControl(self, is_enabled):
+        return self.client.call('enableApiControl', is_enabled)
+    def isApiControlEnabled(self):
+        return self.client.call('isApiControlEnabled')
+    def armDisarm(self, arm):
+        return self.client.call('armDisarm', arm)
+ 
+    def simPause(self, is_paused):
+        self.client.call('simPause', is_paused)
+    def simIsPause(self):
+        return self.client.call("simIsPaused")
+    def simContinueForTime(self, seconds):
+        self.client.call('simContinueForTime', seconds)
+
+    def getHomeGeoPoint(self):
+        return GeoPoint.from_msgpack(self.client.call('getHomeGeoPoint'))
 
     def confirmConnection(self):
         home = self.getHomeGeoPoint()
@@ -477,29 +491,6 @@ class AirSimClientBase:
             print(ver_info)
         print('')
 
-    def getHomeGeoPoint(self):
-        return GeoPoint.from_msgpack(self.client.call('getHomeGeoPoint'))
-
-    def armDisarm(self, arm):
-        return self.client.call('armDisarm', arm)
-
-    # basic flight control
-    def enableApiControl(self, is_enabled):
-        return self.client.call('enableApiControl', is_enabled)
-    def isApiControlEnabled(self):
-        return self.client.call('isApiControlEnabled')
-
-    def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
-        return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
-    def simGetSegmentationObjectID(self, mesh_name):
-        return self.client.call('simGetSegmentationObjectID', mesh_name)
-    def simPrintLogMessage(self, message, message_param = "", severity = 0):
-        return self.client.call('simPrintLogMessage', message, message_param, severity)
-    def simGetObjectPose(self, object_name):
-        pose = self.client.call('simGetObjectPose', object_name)
-        return Pose.from_msgpack(pose)
-
-
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the AirSimImageType members
@@ -517,21 +508,34 @@ class AirSimClientBase:
         responses_raw = self.client.call('simGetImages', requests)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
 
-    def getCollisionInfo(self):
-        return CollisionInfo.from_msgpack(self.client.call('getCollisionInfo'))
+    def simGetCollisionInfo(self):
+        return CollisionInfo.from_msgpack(self.client.call('simGetCollisionInfo'))
 
-    def getCameraInfo(self, camera_id):
-        return CameraInfo.from_msgpack(self.client.call('getCameraInfo', camera_id))
+    def simSetVehiclePose(self, pose, ignore_collison):
+        self.client.call('simSetVehiclePose', pose, ignore_collison)
+    def simGetVehiclePose(self):
+        pose = self.client.call('simGetVehiclePose')
+        return Pose.from_msgpack(pose)
+    def simGetObjectPose(self, object_name):
+        pose = self.client.call('simGetObjectPose', object_name)
+        return Pose.from_msgpack(pose)
 
-    def setCameraOrientation(self, camera_id, orientation):
-        self.client.call('setCameraOrientation', camera_id, orientation)
+    def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
+        return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
+    def simGetSegmentationObjectID(self, mesh_name):
+        return self.client.call('simGetSegmentationObjectID', mesh_name)
+    def simPrintLogMessage(self, message, message_param = "", severity = 0):
+        return self.client.call('simPrintLogMessage', message, message_param, severity)
 
-    def simIsPause(self):
-        return self.client.call("simIsPaused")
-    def simPause(self, is_paused):
-        self.client.call('simPause', is_paused)
-    def simContinueForTime(self, seconds):
-        self.client.call('simContinueForTime', seconds)
+    def simGetCameraInfo(self, camera_id):
+        return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', camera_id))
+    def simSetCameraOrientation(self, camera_id, orientation):
+        self.client.call('simSetCameraOrientation', camera_id, orientation)
+
+    def cancelLastTask():
+        self.client.call('cancelLastTask')
+    def waitOnLastTask(timeout_sec = float('nan')):
+        return self.client.call('waitOnLastTask', timeout_sec)
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(AirSimClientBase, object):
@@ -540,71 +544,29 @@ class MultirotorClient(AirSimClientBase, object):
             ip = "127.0.0.1"
         super(MultirotorClient, self).__init__(ip, 41451, timeout_value = timeout)
 
-    def takeoff(self, max_wait_seconds = 15):
-        return self.client.call('takeoff', max_wait_seconds)
-        
-    def land(self, max_wait_seconds = 60):
-        return self.client.call('land', max_wait_seconds)
-        
-    def goHome(self):
-        return self.client.call('goHome')
-
-    def hover(self):
-        return self.client.call('hover')
-
-        
-    # query vehicle state
-    def getMultirotorState(self):
-        return MultirotorState.from_msgpack(self.client.call('getMultirotorState'))
-    getMultirotorState.__annotations__ = {'return': MultirotorState}
-    def getPosition(self):
-        return Vector3r.from_msgpack(self.client.call('getPosition'))
-    def getVelocity(self):
-        return Vector3r.from_msgpack(self.client.call('getVelocity'))
-    def getOrientation(self):
-        return Quaternionr.from_msgpack(self.client.call('getOrientation'))
-    def getLandedState(self):
-        return self.client.call('getLandedState')
-    def getGpsLocation(self):
-        return GeoPoint.from_msgpack(self.client.call('getGpsLocation'))
-    def getPitchRollYaw(self):
-        return self.toEulerianAngle(self.getOrientation())
-
-    def getRCData(self):
-        return self.client.call('getRCData')
-    def timestampNow(self):
-        return self.client.call('timestampNow')
-    def isApiControlEnabled(self):
-        return self.client.call('isApiControlEnabled')
-    def isSimulationMode(self):
-        return self.client.call('isSimulationMode')
-    def getServerDebugInfo(self):
-        return self.client.call('getServerDebugInfo')
-
+    def takeoffAsync(self, timeout_sec = 20):
+        return self.client.call_async('takeoff', timeout_sec)  
+    def landAsync(self, timeout_sec = 60):
+        return self.client.call_async('land', timeout_sec)   
+    def goHomeAsync(self, timeout_sec = 3e+38):
+        return self.client.call_async('goHome', timeout_sec)
 
     # APIs for control
-    def moveByAngleZ(self, pitch, roll, z, yaw, duration):
-        return self.client.call('moveByAngleZ', pitch, roll, z, yaw, duration)
-
-    def moveByAngleThrottle(self, pitch, roll, throttle, yaw_rate, duration):
-        return self.client.call('moveByAngleThrottle', pitch, roll, throttle, yaw_rate, duration)
-
-    def moveByVelocity(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
-        return self.client.call('moveByVelocity', vx, vy, vz, duration, drivetrain, yaw_mode)
-
-    def moveByVelocityZ(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
-        return self.client.call('moveByVelocityZ', vx, vy, z, duration, drivetrain, yaw_mode)
-
-    def moveOnPath(self, path, velocity, max_wait_seconds = 60, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
-        return self.client.call('moveOnPath', path, velocity, max_wait_seconds, drivetrain, yaw_mode, lookahead, adaptive_lookahead)
-
-    def moveToZ(self, z, velocity, max_wait_seconds = 60, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
-        return self.client.call('moveToZ', z, velocity, max_wait_seconds, yaw_mode, lookahead, adaptive_lookahead)
-
-    def moveToPosition(self, x, y, z, velocity, max_wait_seconds = 60, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
-        return self.client.call('moveToPosition', x, y, z, velocity, max_wait_seconds, drivetrain, yaw_mode, lookahead, adaptive_lookahead)
-
-    def moveByManual(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
+    def moveByAngleZAsync(self, pitch, roll, z, yaw, duration):
+        return self.client.call_async('moveByAngleZ', pitch, roll, z, yaw, duration)
+    def moveByAngleThrottleAsync(self, pitch, roll, throttle, yaw_rate, duration):
+        return self.client.call_async('moveByAngleThrottle', pitch, roll, throttle, yaw_rate, duration)
+    def moveByVelocityAsync(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
+        return self.client.call_async('moveByVelocity', vx, vy, vz, duration, drivetrain, yaw_mode)
+    def moveByVelocityZAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
+        return self.client.call_async('moveByVelocityZ', vx, vy, z, duration, drivetrain, yaw_mode)
+    def moveOnPathAsync(self, path, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
+        return self.client.call_async('moveOnPath', path, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead)
+    def moveToPositionAsync(self, x, y, z, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
+        return self.client.call_async('moveToPosition', x, y, z, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead)
+    def moveToZAsync(self, z, velocity, timeout_sec = 3e+38, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
+        return self.client.call_async('moveToZ', z, velocity, timeout_sec, yaw_mode, lookahead, adaptive_lookahead)
+    def moveByManualAsync(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
         """Read current RC state and use it to control the vehicles. 
 
         Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints
@@ -613,21 +575,29 @@ class MultirotorClient(AirSimClientBase, object):
         :param vx_max: max velocity allowed in x direction
         :param vy_max: max velocity allowed in y direction
         :param vz_max: max velocity allowed in z direction
-        :param z_min: min z allowed allowed for vehicle position
+        :param z_min: min z allowed for vehicle position
         :param duration: after this duration vehicle would switch back to non-manual mode
         :param drivetrain: when ForwardOnly, vehicle rotates itself so that its front is always facing the direction of travel. If MaxDegreeOfFreedom then it doesn't do that (crab-like movement)
         :param yaw_mode: Specifies if vehicle should face at given angle (is_rate=False) or should be rotating around its axis at given rate (is_rate=True)
         """
-        return self.client.call('moveByManual', vx_max, vy_max, z_min, duration, drivetrain, yaw_mode)
+        return self.client.call_async('moveByManual', vx_max, vy_max, z_min, duration, drivetrain, yaw_mode)
+    def rotateToYawAsync(self, yaw, timeout_sec = 3e+38, margin = 5):
+        return self.client.call_async('rotateToYaw', yaw, timeout_sec, margin)
+    def rotateByYawRateAsync(self, yaw_rate, duration):
+        return self.client.call_async('rotateByYawRate', yaw_rate, duration)
+    def hoverAsync(self):
+        return self.client.call_async('hover')
 
-    def rotateToYaw(self, yaw, max_wait_seconds = 60, margin = 5):
-        return self.client.call('rotateToYaw', yaw, max_wait_seconds, margin)
+    def moveByRC(self, rcdata = RCData()):
+        return self.client.call('moveByRC', rcdata)
+        
+    # query vehicle state
+    def getMultirotorState(self):
+        return MultirotorState.from_msgpack(self.client.call('getMultirotorState'))
 
-    def rotateByYawRate(self, yaw_rate, duration):
-        return self.client.call('rotateByYawRate', yaw_rate, duration)
-
-    def setRCData(self, rcdata = RCData()):
-        return self.client.call('setRCData', rcdata)
+    def getPitchRollYawAsync(self):
+        return self.toEulerianAngle(self.getOrientation())
+    getMultirotorState.__annotations__ = {'return': MultirotorState}
 
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(AirSimClientBase, object):

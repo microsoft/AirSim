@@ -44,6 +44,9 @@ DerivedDataCache/
 UnrealHeaderTool/
 UnrealPak/
 obj/
+.vs/
+.vscode/
+.visuallint/
 *.VC.opendb
 *.VC.db
 *.opensdf

@@ -23,8 +23,8 @@ protected:
     virtual void executeAction() = 0;
 
 public:
-    CancelableAction() 
-        : is_complete_(false) 
+    CancelableAction()
+        : is_complete_(false)
     {
     }
 
@@ -39,7 +39,7 @@ public:
             executeAction();
             is_complete_ = true;
         }
-        catch(...) {
+        catch (...) {
             is_complete_ = false;
             throw;
         }
@@ -50,7 +50,7 @@ public:
         return is_complete_;
     }
 
- private:
+private:
     std::atomic<bool> is_complete_;
 
 };
@@ -89,13 +89,13 @@ public:
         signaled_ = false;
     }
 
-    bool waitFor(double max_wait_seconds)
+    bool waitFor(double timeout_sec)
     {
         // wait for signal or timeout or cancel predicate
         while (!signaled_) {
             std::unique_lock<std::mutex> lock(mutex_);
             cv_.wait_for(lock, std::chrono::milliseconds(
-                static_cast<long long>(max_wait_seconds * 1000)));
+                static_cast<long long>(timeout_sec * 1000)));
         }
         signaled_ = false;
         return true;
@@ -146,7 +146,7 @@ public:
         }
     }
 
-    bool enqueueAndWait(std::shared_ptr<CancelableAction> item, float max_wait_seconds) 
+    bool enqueueAndWait(std::shared_ptr<CancelableAction> item, float timeout_sec) 
     {
         //cancel previous item
         {
@@ -173,7 +173,7 @@ public:
             start();
         }
 
-        item->sleep(max_wait_seconds);
+        item->sleep(timeout_sec);
 
         //after the wait if item is still running then cancel it
         if (!item->isCancelled() && !item->isComplete())

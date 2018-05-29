@@ -173,21 +173,21 @@ struct GeoPoint {
 };
 
 struct HomeGeoPoint {
-    GeoPoint home_point;
+    GeoPoint home_geo_point;
     double lat_rad, lon_rad;
     double cos_lat, sin_lat;
 
     HomeGeoPoint()
     {}
-    HomeGeoPoint(const GeoPoint& home_point_val)
+    HomeGeoPoint(const GeoPoint& home_geo_point_val)
     {
-        initialize(home_point_val);
+        initialize(home_geo_point_val);
     }
-    void initialize(const GeoPoint& home_point_val)
+    void initialize(const GeoPoint& home_geo_point_val)
     {
-        home_point = home_point_val;
-        lat_rad = Utils::degreesToRadians(home_point.latitude);
-        lon_rad = Utils::degreesToRadians(home_point.longitude);
+        home_geo_point = home_geo_point_val;
+        lat_rad = Utils::degreesToRadians(home_geo_point.latitude);
+        lon_rad = Utils::degreesToRadians(home_geo_point.longitude);
         cos_lat = cos(lat_rad);
         sin_lat = sin(lat_rad);
     }

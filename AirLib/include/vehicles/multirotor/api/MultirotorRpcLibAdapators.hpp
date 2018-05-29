@@ -8,7 +8,7 @@
 #include "common/CommonStructs.hpp"
 #include "api/RpcLibAdapatorsBase.hpp"
 #include "vehicles/multirotor/api/MultirotorCommon.hpp"
-#include "vehicles/multirotor/api/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "rpc/msgpack.hpp"

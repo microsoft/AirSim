@@ -34,11 +34,11 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(MultirotorApiBase* vehicle_api, W
         : RpcLibServerBase(server_address, port), vehicle_api_(vehicle_api), world_sim_api_(world_sim_api)
 {
     (static_cast<rpc::server*>(getServer()))->
-        bind("takeoff", [&](float max_wait_seconds) -> bool { return getVehicleApi()->takeoff(max_wait_seconds); });
+        bind("takeoff", [&](float timeout_sec) -> bool { return getVehicleApi()->takeoff(timeout_sec); });
     (static_cast<rpc::server*>(getServer()))->
-        bind("land", [&](float max_wait_seconds) -> bool { return getVehicleApi()->land(max_wait_seconds); });
+        bind("land", [&](float timeout_sec) -> bool { return getVehicleApi()->land(timeout_sec); });
     (static_cast<rpc::server*>(getServer()))->
-        bind("goHome", [&]() -> bool { return getVehicleApi()->goHome(); });
+        bind("goHome", [&](float timeout_sec) -> bool { return getVehicleApi()->goHome(timeout_sec); });
 
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByAngleZ", [&](float pitch, float roll, float z, float yaw, float duration) -> 
@@ -53,27 +53,27 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(MultirotorApiBase* vehicle_api, W
         bind("moveByVelocityZ", [&](float vx, float vy, float z, float duration, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode) -> 
         bool { return getVehicleApi()->moveByVelocityZ(vx, vy, z, duration, drivetrain, yaw_mode.to()); });
     (static_cast<rpc::server*>(getServer()))->
-        bind("moveOnPath", [&](const vector<MultirotorRpcLibAdapators::Vector3r>& path, float velocity, float max_wait_seconds, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode,
+        bind("moveOnPath", [&](const vector<MultirotorRpcLibAdapators::Vector3r>& path, float velocity, float timeout_sec, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode,
         float lookahead, float adaptive_lookahead) ->
         bool { 
             vector<Vector3r> conv_path;
             MultirotorRpcLibAdapators::to(path, conv_path);
-            return getVehicleApi()->moveOnPath(conv_path, velocity, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead);
+            return getVehicleApi()->moveOnPath(conv_path, velocity, timeout_sec, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead);
         });
     (static_cast<rpc::server*>(getServer()))->
-        bind("moveToPosition", [&](float x, float y, float z, float velocity, float max_wait_seconds, DrivetrainType drivetrain,
+        bind("moveToPosition", [&](float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
         const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) -> 
-        bool { return getVehicleApi()->moveToPosition(x, y, z, velocity, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); });
+        bool { return getVehicleApi()->moveToPosition(x, y, z, velocity, timeout_sec, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); });
     (static_cast<rpc::server*>(getServer()))->
-        bind("moveToZ", [&](float z, float velocity, float max_wait_seconds, const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) ->
-        bool { return getVehicleApi()->moveToZ(z, velocity, yaw_mode.to(), lookahead, adaptive_lookahead); });
+        bind("moveToZ", [&](float z, float velocity, float timeout_sec, const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead) ->
+        bool { return getVehicleApi()->moveToZ(z, velocity, timeout_sec, yaw_mode.to(), lookahead, adaptive_lookahead); });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByManual", [&](float vx_max, float vy_max, float z_min, float duration, DrivetrainType drivetrain, const MultirotorRpcLibAdapators::YawMode& yaw_mode) ->
         bool { return getVehicleApi()->moveByManual(vx_max, vy_max, z_min, duration, drivetrain, yaw_mode.to()); });
 
     (static_cast<rpc::server*>(getServer()))->
-        bind("rotateToYaw", [&](float yaw, float max_wait_seconds, float margin) ->
-        bool { return getVehicleApi()->rotateToYaw(yaw, margin); });
+        bind("rotateToYaw", [&](float yaw, float timeout_sec, float margin) ->
+        bool { return getVehicleApi()->rotateToYaw(yaw, timeout_sec, margin); });
     (static_cast<rpc::server*>(getServer()))->
         bind("rotateByYawRate", [&](float yaw_rate, float duration) -> 
         bool { return getVehicleApi()->rotateByYawRate(yaw_rate, duration); });

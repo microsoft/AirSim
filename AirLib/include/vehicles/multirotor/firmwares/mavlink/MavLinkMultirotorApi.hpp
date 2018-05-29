@@ -22,7 +22,7 @@
 #include "common/CommonStructs.hpp"
 #include "common/VectorMath.hpp"
 #include "common/AirSimSettings.hpp"
-#include "vehicles/multirotor/api/MultirotorApiBase.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/PidController.hpp"
 #include "sensors/SensorCollection.hpp"
 
@@ -243,7 +243,7 @@ public: //methods
         return rc;
     }
 
-    virtual bool takeoff(float max_wait_seconds) override
+    virtual bool takeoff(float timeout_sec) override
     {
         SingleCall lock(this);
 
@@ -251,20 +251,20 @@ public: //methods
         bool rc = false;
         auto vec = getPosition();
         float z = vec.z() + getTakeoffZ();
-        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, 0.0f /* yaw */).wait(static_cast<int>(max_wait_seconds * 1000), &rc))
+        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, 0.0f /* yaw */).wait(static_cast<int>(timeout_sec * 1000), &rc))
         {
             throw VehicleMoveException("TakeOff command - timeout waiting for response");
         }
         if (!rc) {
             throw VehicleMoveException("TakeOff command rejected by drone");
         }
-        if (max_wait_seconds <= 0)
+        if (timeout_sec <= 0)
             return true; // client doesn't want to wait.
 
-        return waitForZ(max_wait_seconds, z, getDistanceAccuracy());
+        return waitForZ(timeout_sec, z, getDistanceAccuracy());
     }
 
-    virtual bool land(float max_wait_seconds) override
+    virtual bool land(float timeout_sec) override
     {
         SingleCall lock(this);
 
@@ -288,24 +288,27 @@ public: //methods
             throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
         }
 
-        // Wait for landed state (or user cancellation)
-        if (!waitForFunction([&]() {
+        const auto& waiter = waitForFunction([&]() {
             updateState();
             return current_state_.controls.landed;
-        }, max_wait_seconds))
+        }, timeout_sec);
+
+        // Wait for landed state (or user cancellation)
+        if (!waiter.isComplete())
         {
             throw VehicleMoveException("Drone hasn't reported a landing state");
         }
-        return true;
+        return waiter.isComplete();
     }
 
-    virtual bool goHome() override
+    virtual bool goHome(float timeout_sec) override
     {
         SingleCall lock(this);
 
         checkValidVehicle();
         bool rc = false;
-        if (mav_vehicle_ != nullptr && !mav_vehicle_->returnToHome().wait(10000, &rc)) {
+        if (mav_vehicle_ != nullptr && !mav_vehicle_->returnToHome().wait(
+            static_cast<int>(timeout_sec) * 1000, &rc)) {
             throw VehicleMoveException("goHome - timeout waiting for response from drone");
         }
         return rc;

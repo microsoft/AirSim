@@ -14,13 +14,14 @@ namespace msr { namespace airlib {
 class CancelToken {
 public:
     CancelToken()
-        : is_cancelled_(false), recursion_count_(0)
+        : is_cancelled_(false), is_complete_(false), recursion_count_(0)
     {
     }
 
     void reset()
     {
         is_cancelled_ = false;
+        is_complete_ = false;
         recursion_count_ = 0;
     }
 
@@ -55,6 +56,16 @@ public:
         return !isCancelled();
     }
 
+    void complete(bool is_complete = true)
+    {
+        is_complete_ = is_complete;
+    }
+
+    bool isComplete()  const
+    {
+        return is_complete_;
+    }
+
     int getRecursionCount()
     {
         return recursion_count_;
@@ -83,8 +94,10 @@ public:
 
 private:
     std::atomic<bool> is_cancelled_;
-    std::recursive_mutex wait_mutex_;
+    std::atomic<bool> is_complete_;
     std::atomic<int> recursion_count_;
+
+    std::recursive_mutex wait_mutex_;
 };
 
 }} //namespace

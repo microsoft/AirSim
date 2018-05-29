@@ -348,9 +348,6 @@
     <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\RpcLibClientBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\api\RpcLibServerBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -408,9 +405,6 @@
     <ClInclude Include="include\api\VehicleApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApiBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\api\VehicleConnectorBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -427,6 +421,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightQuadXParams.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\RpcLibClientBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
