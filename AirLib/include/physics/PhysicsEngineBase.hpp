@@ -41,7 +41,7 @@ public:
     const_iterator begin() const { return members_.begin(); }
     const_iterator end() const { return members_.end(); }
     uint size() const { return static_cast<uint>(members_.size()); }
-    const TUpdatableObjectPtr &at(uint index) const { members_.at(index);  }
+    const TUpdatableObjectPtr &at(uint index) const { return members_.at(index);  }
     TUpdatableObjectPtr &at(uint index) { return members_.at(index);  }
     //allow to override membership modifications
     virtual void clear() { members_.clear(); }
