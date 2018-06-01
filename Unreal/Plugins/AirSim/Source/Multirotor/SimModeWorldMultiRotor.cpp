@@ -46,7 +46,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiSe
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
-        getSimModeApi(), getSettings().api_server_address));
+        getApiProvider(), getSettings().api_server_address));
 #endif
 }
 
@@ -67,7 +67,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 VehicleSimApi* ASimModeWorldMultiRotor::getFpvVehicleSimApi() const
 {
-    return fpv_vehicle_pawn_wrapper_;
+    return fpv_vehicle_pawn_sim_api_;
 }
 
 void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
@@ -146,18 +146,19 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         {
             //initialize each vehicle pawn we found
             TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
+            std::unique_ptr<VehicleSimApi> sim_api = std::unique_ptr<VehicleSimApi>(new VehicleSimApi())
+            sim_api_->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
             vehicle_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
 
-            //chose first pawn as FPV if none is designated as FPV
-            VehicleSimApi* wrapper = vehicle_pawn->getVehiclePawnWrapper();
-
             if (getSettings().enable_collision_passthrough)
-                wrapper->getConfig().enable_passthrough_on_collisions = true;
-            if (wrapper->getConfig().is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
-                fpv_vehicle_pawn_wrapper_ = wrapper;
+                sim_api->getConfig().enable_passthrough_on_collisions = true;
+
+            //chose first pawn as FPV if none is designated as FPV
+            if (sim_api->getConfig().is_fpv_vehicle || fpv_vehicle_pawn_sim_api_ == nullptr)
+                fpv_vehicle_pawn_sim_api_ = sim_api;
 
             //now create the connector for each pawn
-            VehiclePtr vehicle = createVehicle(wrapper);
+            VehiclePtr vehicle = createVehicle(sim_api);
             if (vehicle != nullptr) {
                 vehicles.push_back(vehicle);
                 fpv_vehicle_connectors_.Add(vehicle);
@@ -166,8 +167,8 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         }
     }
 
-    fpv_vehicle_pawn_wrapper_->possess();
-    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
+    fpv_vehicle_pawn_sim_api_->possess();
+    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_sim_api_, external_camera);
 }
 
 
@@ -213,18 +214,18 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
     setupVehiclesAndCamera(vehicles);
 }
 
-ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehicleSimApi* wrapper)
+ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehicleSimApi* sim_api)
 {
-    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), &wrapper->getNedTransform());
-    auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleSetting(), sensor_factory);
+    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(sim_api->getPawn(), &sim_api->getNedTransform());
+    auto vehicle_params = MultiRotorParamsFactory::createConfig(sim_api->getVehicleSetting(), sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 
     std::shared_ptr<MultirotorSimApi> vehicle = std::make_shared<MultirotorSimApi>(
-        wrapper, vehicle_params_.back().get(), manual_pose_controller);
+        sim_api, vehicle_params_.back().get(), manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
-        wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
+        sim_api->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
 
     return std::static_pointer_cast<VehicleSimApiBase>(vehicle);
 }

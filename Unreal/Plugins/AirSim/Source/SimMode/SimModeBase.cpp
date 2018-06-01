@@ -15,6 +15,10 @@
 #include "common/SteppableClock.hpp"
 #include "SimJoyStick/SimJoyStick.h"
 #include "common/EarthCelestial.hpp"
+
+//TODO: this is going to cause circular references which is fine here but
+//in future we should consider moving SimMode not derived from AActor and move
+//it to AirLib and directly implement WorldSimApiBase interface
 #include "WorldSimApi.h"
 
 
@@ -47,7 +51,22 @@ void ASimModeBase::BeginPlay()
 
     setupTimeOfDay();
 
+    checkVehicleReady();
+
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
+}
+
+void ASimModeBase::checkVehicleReady()
+{
+    const auto& vehicle_apis = api_provider_->getVehicleApis();
+    for (auto it = vehicle_apis.begin(); it != vehicle_apis.end(); ++it) {
+        std::string message;
+        if (!it->second->isReady(message)) {
+            UAirBlueprintLib::LogMessage(common_utils::Utils::stringf("Vehicle %s was not initialized: ", 
+                it->first.c_str()).c_str(), message.c_str(), LogDebugLevel::Failure);
+            UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
+        }
+    }
 }
 
 void ASimModeBase::setStencilIDs()
@@ -66,11 +85,6 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
     Super::EndPlay(EndPlayReason);
-}
-
-msr::airlib::WorldSimApiBase* ASimModeBase::getWorldSimApi() const
-{
-    return world_sim_api_.get();
 }
 
 void ASimModeBase::setupTimeOfDay()
@@ -132,7 +146,8 @@ void ASimModeBase::continueForTime(double seconds)
 
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const
 {
-    throw std::domain_error("createApiServer is not implemented by SimMode");
+    //this will be the case when compilation with RPCLIB is disabled or simmode doesn't support APIs
+    return nullptr;
 }
 
 void ASimModeBase::setupClockSpeed()
@@ -190,6 +205,8 @@ void ASimModeBase::Tick(float DeltaSeconds)
     advanceTimeOfDay();
 
     showClockStats();
+
+    showVehicleMessages();
 
     Super::Tick(DeltaSeconds);
 }
@@ -308,6 +325,8 @@ void ASimModeBase::startApiServer()
 #ifdef AIRLIB_NO_RPC
         api_server_.reset();
 #else
+        world_sim_api_.reset(new WorldSimApi(this));
+        api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
         api_server_ = createApiServer();
 #endif
 
@@ -327,6 +346,8 @@ void ASimModeBase::stopApiServer()
     if (api_server_ != nullptr) {
         api_server_->stop();
         api_server_.reset(nullptr);
+        api_provider_.reset(nullptr);
+        world_sim_api_.reset(nullptr);
     }
 }
 bool ASimModeBase::isApiServerStarted()

@@ -85,8 +85,6 @@ ACarPawn::ACarPawn()
     GearDisplayColor = FColor(255, 255, 255, 255);
 
     is_low_friction_ = false;
-
-    wrapper_.reset(new VehicleSimApi());
 }
 
 void ACarPawn::setupVehicleMovementComponent()
@@ -164,12 +162,14 @@ void ACarPawn::setupVehicleMovementComponent()
 void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-    wrapper_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
+    sim_api_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
         HitNormal, NormalImpulse, Hit);
 }
 
-void ACarPawn::initializeForBeginPlay(bool engine_sound)
+void ACarPawn::initializeForBeginPlay(msr::airlib::VehicleSimApiBase* sim_api, const msr::airlib::GeoPoint& home_geopoint, bool engine_sound)
 {
+    sim_api_ = sim_api;
+
     if (engine_sound)
         EngineSoundComponent->Activate();
     else
@@ -195,17 +195,15 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
     setupInputBindings();
 
     std::vector<APIPCamera*> cameras = { InternalCamera1, InternalCamera2, InternalCamera3, InternalCamera4, InternalCamera5 };
-    wrapper_->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
-    wrapper_->setKinematics(&kinematics_);
-    wrapper_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>(
-        new CarPawnApi(wrapper_.get(), this->GetVehicleMovement())));
+    sim_api_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>(
+        new CarPawnApi(this->GetVehicleMovement(), home_geopoint)));
 
     //TODO: should do reset() here?
     keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
 
     //joystick
-    if (wrapper_->getRemoteControlID() >= 0) {
-        joystick_.getJoyStickState(wrapper_->getRemoteControlID(), joystick_state_);
+    if (sim_api_->getRemoteControlID() >= 0) {
+        joystick_.getJoyStickState(sim_api_->getRemoteControlID(), joystick_state_);
         if (joystick_state_.is_initialized)
             UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid == "" ?
                 "(Detected)" : joystick_state_.pid_vid, LogDebugLevel::Informational);
@@ -218,7 +216,7 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 msr::airlib::CarApiBase* ACarPawn::getApi() const
 {
-    return static_cast<msr::airlib::CarApiBase*>(wrapper_->getApi());
+    return static_cast<msr::airlib::CarApiBase*>(sim_api_->getApi());
 }
 
 void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -235,9 +233,9 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 
-VehicleSimApi* ACarPawn::getVehiclePawnWrapper()
+VehicleSimApi* ACarPawn::getVehicleSimApi()
 {
-    return wrapper_.get();
+    return sim_api_.get();
 }
 
 void ACarPawn::setupInputBindings()
@@ -328,8 +326,8 @@ void ACarPawn::updateKinematics(float delta)
 {
     auto last_kinematics = kinematics_;
 
-    kinematics_.pose = getVehiclePawnWrapper()->getPose();
-    kinematics_.twist.linear = wrapper_->getNedTransform().toNedMeters(this->GetVelocity(), false);
+    kinematics_.pose = getVehicleSimApi()->getPose();
+    kinematics_.twist.linear = sim_api_->getNedTransform().toNedMeters(this->GetVelocity(), false);
     kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
         kinematics_.pose.orientation, last_kinematics.pose.orientation, delta);
 
@@ -361,12 +359,12 @@ void ACarPawn::Tick(float Delta)
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
     EngineSoundComponent->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
 
-    getVehiclePawnWrapper()->setLogLine(getLogString());
+    getVehicleSimApi()->setLogLine(getLogString());
 }
 
 void ACarPawn::updateCarControls()
 {
-    if (wrapper_->getRemoteControlID() >= 0 && joystick_state_.is_initialized) {
+    if (sim_api_->getRemoteControlID() >= 0 && joystick_state_.is_initialized) {
         joystick_.getJoyStickState(0, joystick_state_);
 
         //TODO: move this to SimModeBase
@@ -436,12 +434,12 @@ void ACarPawn::updateForceFeedback() {
         float rumblestrength = 0.66 + (GetVehicleMovement()->GetEngineRotationSpeed()
             / GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
 
-        joystick_.setWheelRumble(wrapper_->getRemoteControlID(), rumblestrength);
+        joystick_.setWheelRumble(sim_api_->getRemoteControlID(), rumblestrength);
 
         // Update autocenter
         double speed = GetVehicleMovement()->GetForwardSpeed();
 
-        joystick_.setAutoCenter(wrapper_->getRemoteControlID(),
+        joystick_.setAutoCenter(sim_api_->getRemoteControlID(),
             (1.0 - 1.0 / (std::abs(speed / 120) + 1.0))
             * (joystick_state_.left_x / 3));
     }

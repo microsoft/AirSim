@@ -9,7 +9,6 @@
 #include "common/CommonStructs.hpp"
 #include "ManualPoseController.h"
 #include <chrono>
-#include "api/ApiServerBase.hpp"
 #include "SimJoyStick/SimJoyStick.h"
 #include <future>
 
@@ -30,8 +29,9 @@ public:
 
     //VehicleSimApiBase interface
     //implements game interface to update pawn
-    MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, msr::airlib::MultiRotorParams* vehicle_params,
-        UManualPoseController* manual_pose_controller);
+    MultirotorSimApi(const msr::airlib::GeoPoint& home_geopoint, msr::airlib::MultiRotorParams* vehicle_params, 
+        UManualPoseController* manual_pose_controller, APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
+        const Config& config = Config());
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
@@ -55,8 +55,6 @@ private:
     UManualPoseController* manual_pose_controller_;
 
     std::unique_ptr<MultiRotor> phys_vehicle_;
-    std::vector<std::string> vehicle_api_messages_;
-    std::unique_ptr<msr::airlib::Environment> environment_;
 
     struct RotorInfo {
         real_T rotor_speed = 0;
@@ -85,4 +83,6 @@ private:
     std::packaged_task<void()> reset_task_;
 
     Pose last_pose_; //for trace lines showing vehicle path
+    std::vector<std::string> vehicle_api_messages_;
+
 };

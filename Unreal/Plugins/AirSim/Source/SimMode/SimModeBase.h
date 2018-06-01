@@ -64,7 +64,7 @@ protected:
     virtual void setupClockSpeed();
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
-    msr::airlib::ApiProvider* getApiProvider()
+    msr::airlib::ApiProvider* getApiProvider() const
     {
         return api_provider_.get();
     }
@@ -99,5 +99,5 @@ private:
     void advanceTimeOfDay();
     void setupPhysicsLoopPeriod();
     void showClockStats();
-
+    void checkVehicleReady();
 };

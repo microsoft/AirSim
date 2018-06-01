@@ -2,7 +2,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
-#include "MultirotorSimApi.h"
 #include "common/Common.hpp"
 
 
@@ -10,12 +9,12 @@ AFlyingPawn::AFlyingPawn()
 {
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
-
-    wrapper_.reset(new VehicleSimApi());
 }
 
-void AFlyingPawn::initializeForBeginPlay(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras)
+void AFlyingPawn::initializeForBeginPlay(msr::airlib::VehicleSimApiBase* sim_api, const AdditionalCameraSettings& additionalCameras)
 {
+    sim_api_ = sim_api;
+
     //get references of components so we can use later
     setupComponentReferences(additionalCameras);
 
@@ -24,20 +23,13 @@ void AFlyingPawn::initializeForBeginPlay(const std::vector<msr::airlib::AirSimSe
     for (APIPCamera* camera : AdditionalCameras) {
         cameras.push_back(camera);
     }
-
-    wrapper_->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
 }
 
 void AFlyingPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-    wrapper_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
+    sim_api_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
         HitNormal, NormalImpulse, Hit);
-}
-
-VehicleSimApi* AFlyingPawn::getVehiclePawnWrapper()
-{
-    return wrapper_.get();
 }
 
 void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
@@ -68,7 +60,7 @@ void AFlyingPawn::setupComponentReferences(const std::vector<msr::airlib::AirSim
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    // Can't obtain NedTransform from wrapper because it's not initialized yet, so make our own.
+    // Can't obtain NedTransform from sim_api because it's not initialized yet, so make our own.
     NedTransform transform;
     transform.initialize(this);
 

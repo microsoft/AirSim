@@ -5,9 +5,11 @@
 
 using namespace msr::airlib;
 
-MultirotorSimApi::MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, msr::airlib::MultiRotorParams* vehicle_params,
-    UManualPoseController* manual_pose_controller)
-    : vehicle_api_(vehicle_api), vehicle_params_(vehicle_params), manual_pose_controller_(manual_pose_controller)
+MultirotorSimApi::MultirotorSimApi(const msr::airlib::GeoPoint& home_geopoint, msr::airlib::MultiRotorParams* vehicle_params,
+    UManualPoseController* manual_pose_controller, APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
+        const Config& config)
+    : VehicleSimApi(pawn, cameras, vehicle_name),
+      vehicle_params_(vehicle_params), manual_pose_controller_(manual_pose_controller)
 {
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     Pose pose = getPose();
@@ -18,7 +20,7 @@ MultirotorSimApi::MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, 
 
     //setup physics vehicle
     phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_, vehicle_api_, 
-        getPose(), vehicle_api_->getHomeGeoPoint(), environment_));
+        getPose(), home_geopoint));
     rotor_count_ = phys_vehicle_->wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
 
@@ -31,12 +33,6 @@ MultirotorSimApi::MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, 
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
     did_reset_ = false;
-
-    std::string message;
-    if (!vehicle_api_->isReady(message)) {
-        UAirBlueprintLib::LogMessage(FString("Vehicle was not initialized: "), FString(message.c_str()), LogDebugLevel::Failure);
-        UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
-    }
 }
 
 void MultirotorSimApi::detectUsbRc()
@@ -146,8 +142,6 @@ void MultirotorSimApi::updateRenderedState(float dt)
         info->rotor_thrust = rotor_output.thrust;
         info->rotor_control_filtered = rotor_output.control_signal_filtered;
     }
-
-    vehicle_api_->getStatusMessages(vehicle_api_messages_);
 }
 
 void MultirotorSimApi::updateRendering(float dt)
@@ -163,13 +157,6 @@ void MultirotorSimApi::updateRendering(float dt)
             did_reset_ = false;
             return;
         }
-    }
-
-    try {
-        vehicle_api_->sendTelemetry(dt);
-    }
-    catch (std::exception &e) {
-        UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
     }
 
     if (!VectorMath::hasNan(last_pose_)) {
@@ -188,10 +175,6 @@ void MultirotorSimApi::updateRendering(float dt)
             setRotorSpeed(i, info->rotor_speed * info->rotor_direction);
     }
 
-    for (auto i = 0; i < vehicle_api_messages_.size(); ++i) {
-        UAirBlueprintLib::LogMessage(FString(vehicle_api_messages_[i].c_str()), TEXT(""), LogDebugLevel::Success, 30);
-    }
-
     if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == getPawn()) {
         UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(getCollisionInfo().collision_count), LogDebugLevel::Failure);
     }
@@ -200,26 +183,17 @@ void MultirotorSimApi::updateRendering(float dt)
         UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(collision_response_info.collision_count_non_resting), LogDebugLevel::Failure);
     }
 
-    /************************************************           for debugging        *****************************************************/
-    //Kinematics::State kinematics_estimated = vehicle_api_->getKinematicsEstimated();
-    //Kinematics::State kinematics_true = phys_vehicle_->getKinematics();
-    //UAirBlueprintLib::LogMessageString("Position (true): ", VectorMath::toString(kinematics_true.pose.position), LogDebugLevel::Informational);
-    //UAirBlueprintLib::LogMessageString("Position (est): ", VectorMath::toString(kinematics_estimated.pose.position), LogDebugLevel::Informational);
+    vehicle_api_->getStatusMessages(vehicle_api_messages_);
+    for (auto i = 0; i < vehicle_api_messages_.size(); ++i) {
+        UAirBlueprintLib::LogMessage(FString(vehicle_api_messages_[i].c_str()), TEXT(""), LogDebugLevel::Success, 30);
+    }
 
-    //UAirBlueprintLib::LogMessageString("Lin Velocity (true): ", VectorMath::toString(kinematics_true.twist.linear), LogDebugLevel::Informational);
-    //UAirBlueprintLib::LogMessageString("Lin Velocity (est): ", VectorMath::toString(kinematics_estimated.twist.linear), LogDebugLevel::Informational);
-
-    //UAirBlueprintLib::LogMessageString("Ang Velocity (true): ", VectorMath::toString(kinematics_true.twist.angular), LogDebugLevel::Informational);
-    //UAirBlueprintLib::LogMessageString("Ang Velocity (est): ", VectorMath::toString(kinematics_estimated.twist.angular), LogDebugLevel::Informational);
-
-    //UAirBlueprintLib::LogMessageString("Lin Accel (true): ", VectorMath::toString(kinematics_true.accelerations.linear), LogDebugLevel::Informational);
-    //UAirBlueprintLib::LogMessageString("Lin Accel (est): ", VectorMath::toString(kinematics_estimated.accelerations.linear), LogDebugLevel::Informational);
-
-    //UAirBlueprintLib::LogMessageString("Ang Accel (true): ", VectorMath::toString(kinematics_true.accelerations.angular), LogDebugLevel::Informational);
-    //UAirBlueprintLib::LogMessageString("Ang Accel (est): ", VectorMath::toString(kinematics_estimated.accelerations.angular), LogDebugLevel::Informational);
-
-    //UAirBlueprintLib::LogMessageString("Orien (true): ", VectorMath::toString(kinematics_true.pose.orientation), LogDebugLevel::Informational);
-    //UAirBlueprintLib::LogMessageString("Orien (est): ", VectorMath::toString(kinematics_estimated.pose.orientation), LogDebugLevel::Informational);
+    try {
+        vehicle_api_->sendTelemetry(dt);
+    }
+    catch (std::exception &e) {
+        UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
+    }
 }
 
 void MultirotorSimApi::setPose(const Pose& pose, bool ignore_collision)

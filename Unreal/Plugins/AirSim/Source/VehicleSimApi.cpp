@@ -8,13 +8,53 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
-VehicleSimApi::VehicleSimApi()
+VehicleSimApi::VehicleSimApi(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
+        const Config& config = Config())
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
     if (!collision_display.Succeeded())
         collision_display_template = collision_display.Object;
     else
         collision_display_template = nullptr;
+
+        typedef msr::airlib::AirSimSettings AirSimSettings;
+
+    pawn_ = pawn;
+    cameras_ = cameras;
+    config_ = config;
+    vehicle_name_ = vehicle_name;
+    vehicle_setting_ = AirSimSettings::singleton().getVehicleSetting(vehicle_name_);
+
+    image_capture_.reset(new UnrealImageCapture(cameras_));
+
+    ned_transform_.initialize(pawn);
+
+    //initialize state
+    pawn_->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
+    initial_state_.ground_offset = FVector(0, 0, initial_state_.mesh_bounds.Z);
+    initial_state_.transformation_offset = pawn_->GetActorLocation() - initial_state_.ground_offset;
+    ground_margin_ = FVector(0, 0, 20); //TODO: can we explain pawn_ experimental setting? 7 seems to be minimum
+    ground_trace_end_ = initial_state_.ground_offset + ground_margin_; 
+
+    initial_state_.start_location = getUUPosition();
+    initial_state_.last_position = initial_state_.start_location;
+    initial_state_.last_debug_position = initial_state_.start_location;
+    initial_state_.start_rotation = getUUOrientation();
+
+    //compute our home point
+    Vector3r nedWrtOrigin = ned_transform_.toNedMeters(getUUPosition(), false);
+    home_geo_point_ = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin, AirSimSettings::singleton().origin_geopoint);
+
+    initial_state_.tracing_enabled = config.enable_trace;
+    initial_state_.collisions_enabled = config.enable_collisions;
+    initial_state_.passthrough_enabled = config.enable_passthrough_on_collisions;
+
+    initial_state_.collision_info = CollisionInfo();
+
+    initial_state_.was_last_move_teleport = false;
+    initial_state_.was_last_move_teleport = canTeleportWhileMove();
+
+    setupCamerasFromSettings();
 }
 
 void VehicleSimApi::setupCamerasFromSettings()
@@ -121,50 +161,7 @@ int VehicleSimApi::getRemoteControlID() const
     return vehicle_setting_->rc.remote_control_id;
 }
 
-void VehicleSimApi::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
-    const WrapperConfig& config)
-{
-    typedef msr::airlib::AirSimSettings AirSimSettings;
-
-    pawn_ = pawn;
-    cameras_ = cameras;
-    config_ = config;
-    vehicle_name_ = vehicle_name;
-    vehicle_setting_ = AirSimSettings::singleton().getVehicleSetting(vehicle_name_);
-
-    image_capture_.reset(new UnrealImageCapture(cameras_));
-
-    ned_transform_.initialize(pawn);
-
-    //initialize state
-    pawn_->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
-    initial_state_.ground_offset = FVector(0, 0, initial_state_.mesh_bounds.Z);
-    initial_state_.transformation_offset = pawn_->GetActorLocation() - initial_state_.ground_offset;
-    ground_margin_ = FVector(0, 0, 20); //TODO: can we explain pawn_ experimental setting? 7 seems to be minimum
-    ground_trace_end_ = initial_state_.ground_offset + ground_margin_; 
-
-    initial_state_.start_location = getUUPosition();
-    initial_state_.last_position = initial_state_.start_location;
-    initial_state_.last_debug_position = initial_state_.start_location;
-    initial_state_.start_rotation = getUUOrientation();
-
-    //compute our home point
-    Vector3r nedWrtOrigin = ned_transform_.toNedMeters(getUUPosition(), false);
-    home_geo_point_ = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin, AirSimSettings::singleton().origin_geopoint);
-
-    initial_state_.tracing_enabled = config.enable_trace;
-    initial_state_.collisions_enabled = config.enable_collisions;
-    initial_state_.passthrough_enabled = config.enable_passthrough_on_collisions;
-
-    initial_state_.collision_info = CollisionInfo();
-
-    initial_state_.was_last_move_teleport = false;
-    initial_state_.was_last_move_teleport = canTeleportWhileMove();
-
-    setupCamerasFromSettings();
-}
-
-VehicleSimApi::WrapperConfig& VehicleSimApi::getConfig()
+VehicleSimApi::Config& VehicleSimApi::getConfig()
 {
     return config_;
 }
@@ -174,7 +171,7 @@ const VehicleSimApi::VehicleSetting* VehicleSimApi::getVehicleSetting() const
     return vehicle_setting_;
 }
 
-const VehicleSimApi::WrapperConfig& VehicleSimApi::getConfig() const
+const VehicleSimApi::Config& VehicleSimApi::getConfig() const
 {
     return config_;
 }

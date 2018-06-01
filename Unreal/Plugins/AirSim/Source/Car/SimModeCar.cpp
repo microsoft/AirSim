@@ -148,13 +148,16 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             vehicles.push_back(vehicle_pawn);
 
             //chose first pawn as FPV if none is designated as FPV
-            VehicleSimApi* wrapper = vehicle_pawn->getVehiclePawnWrapper();
+            VehicleSimApi* sim_api = vehicle_pawn->getVehicleSimApi();
+            sim_api->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
+            sim_api->setKinematics(&kinematics_);
+
             vehicle_pawn->initializeForBeginPlay(getSettings().engine_sound);
 
             if (getSettings().enable_collision_passthrough)
-                wrapper->getConfig().enable_passthrough_on_collisions = true;
-            if (wrapper->getConfig().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
-                fpv_vehicle_sim_api_ = wrapper;
+                sim_api->getConfig().enable_passthrough_on_collisions = true;
+            if (sim_api->getConfig().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
+                fpv_vehicle_sim_api_ = sim_api;
         }
     }
 
@@ -192,7 +195,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::CarRpcLibServer(
-        getSimModeApi(), getSettings().api_server_address));
+        getApiProvider(), getSettings().api_server_address));
 #endif
 }
 
@@ -245,14 +248,14 @@ void ASimModeCar::Tick(float DeltaSeconds)
 void ASimModeCar::updateDebugReport()
 {
     for (VehiclePtr vehicle : vehicles_) {
-        VehicleSimApi* wrapper = vehicle->getVehiclePawnWrapper();
+        VehicleSimApi* sim_api = vehicle->getVehicleSimApi();
         msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
         std::string vehicle_name = fpv_vehicle_sim_api_->getVehicleSetting()->vehicle_name;
 
         reporter.writeHeading(std::string("Vehicle: ").append(
             vehicle_name == "" ? "(default)" : vehicle_name));
 
-        const msr::airlib::Kinematics::State* kinematics = wrapper->getGroundTruthKinematics();
+        const msr::airlib::Kinematics::State* kinematics = sim_api->getGroundTruthKinematics();
 
         reporter.writeValue("Position", kinematics->pose.position);
         reporter.writeValue("Orientation", kinematics->pose.orientation);

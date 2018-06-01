@@ -28,13 +28,13 @@ public: //types
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
-    struct WrapperConfig {
+    struct Config {
         bool is_fpv_vehicle;
         bool enable_collisions;
         bool enable_passthrough_on_collisions;
         bool enable_trace;
 
-        WrapperConfig() :
+        Config() :
             is_fpv_vehicle(false),
             enable_collisions(true),
             enable_passthrough_on_collisions(false),
@@ -58,11 +58,8 @@ public: //implementation of VehicleSimApiBase
 
 
 public: //Unreal specific methods
-    VehicleSimApi();
-
-    //this class should be constructed on BeginPlay and initialize method should be the first call
-    void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
-        const WrapperConfig& config = WrapperConfig());
+    VehicleSimApi(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
+        const Config& config = Config());
 
     //on collision, pawns should update this
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
@@ -86,8 +83,8 @@ public: //Unreal specific methods
     void setLogLine(std::string line);
     std::string getLogLine();
 
-    WrapperConfig& getConfig();
-    const WrapperConfig& getConfig() const;
+    Config& getConfig();
+    const Config& getConfig() const;
 
     const VehicleSetting* getVehicleSetting() const;
 
@@ -125,7 +122,7 @@ private: //vars
     std::unique_ptr<UnrealImageCapture> image_capture_;
     const msr::airlib::Kinematics::State* kinematics_;
     std::string log_line_;
-    WrapperConfig config_;
+    Config config_;
     NedTransform ned_transform_;
     std::string vehicle_name_;
     const VehicleSetting* vehicle_setting_;

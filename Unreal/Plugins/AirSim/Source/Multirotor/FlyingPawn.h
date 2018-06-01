@@ -5,6 +5,7 @@
 #include <memory>
 #include "vehicles/multirotor/api/MultirotorCommon.hpp"
 #include "PIPCamera.h"
+#include "api/VehicleSimApiBase.hpp"
 #include "FlyingPawn.generated.h"
 
 UCLASS()
@@ -13,19 +14,19 @@ class AIRSIM_API AFlyingPawn : public APawn
     GENERATED_BODY()
 
 public:
+    typedef std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting> AdditionalCameraSettings;
     AFlyingPawn();
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
     float RotatorFactor = 1.0f;
 
     void setRotorSpeed(int rotor_index, float radsPerSec);
-    void initializeForBeginPlay(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras);
-    VehicleSimApi* getVehiclePawnWrapper();
+    void initializeForBeginPlay(msr::airlib::VehicleSimApiBase* sim_api, const AdditionalCameraSettings& additionalCameras);
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 private: //methods
-    void setupComponentReferences(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras);
+    void setupComponentReferences(const AdditionalCameraSettings& additionalCameras);
 
 private: //variables
     UPROPERTY() UClass* pip_camera_class_;
@@ -42,5 +43,5 @@ private: //variables
 
     UPROPERTY() TArray<APIPCamera*> AdditionalCameras;
 
-    std::unique_ptr<VehicleSimApi> wrapper_;
+    VehicleSimApiBase* sim_api_;
 };

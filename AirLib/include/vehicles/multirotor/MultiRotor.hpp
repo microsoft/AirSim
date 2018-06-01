@@ -19,14 +19,15 @@ namespace msr { namespace airlib {
 class MultiRotor : public PhysicsBody {
 public:
     MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
-        const Kinematics::State& initial_kinematic_state, Environment* environment)
+        const Kinematics::State& initial_kinematic_state, const Environment::State& initial_environment)
         : params_(params), vehicle_api_(vehicle_api)
     {
-        initialize(params, initial_kinematic_state, environment);
+        environment_.reset(new Environment(initial_environment));
+        initialize(params, initial_kinematic_state, environment_.get());
     }
 
     MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
-        const Pose& initial_pose, const GeoPoint& home_geo_point, std::unique_ptr<Environment>& environment)
+        const Pose& initial_pose, const GeoPoint& home_geo_point)
         : params_(params), vehicle_api_(vehicle_api)
     {
         auto initial_kinematics = Kinematics::State::zero();
@@ -34,7 +35,9 @@ public:
         Environment::State initial_environment;
         initial_environment.position = initial_kinematics.pose.position;
         initial_environment.geo_point = home_geo_point;
-        environment.reset(new Environment(initial_environment));
+        environment_.reset(new Environment(initial_environment));
+
+        initialize(params, initial_kinematics, environment_.get());
     }
 
     //*** Start: UpdatableState implementation ***//
@@ -142,7 +145,6 @@ public:
 private: //methods
     void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
     {
-        params_ = params;
         PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
 
         createRotors(*params_, rotors_, environment);
@@ -220,6 +222,7 @@ private: //fields
     vector<Rotor> rotors_;
     vector<PhysicsBodyVertex> drag_vertices_;
 
+    std::unique_ptr<Environment> environment_;
     VehicleApiBase* vehicle_api_;
 };
 
