@@ -59,7 +59,7 @@ public: //types
     };
 
 public: //methods
-    virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) = 0;
+    virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const = 0;
 };
 
 

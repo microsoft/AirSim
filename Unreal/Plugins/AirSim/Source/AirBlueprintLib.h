@@ -109,7 +109,6 @@ public:
 
     static std::string GetMeshName(ALandscapeProxy* mesh);
 
-
     template<class UserClass>
     static FInputActionBinding& BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,
         typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func, bool on_press_or_release = false,

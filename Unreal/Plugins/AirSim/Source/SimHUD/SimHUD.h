@@ -74,11 +74,6 @@ private:
     bool readSettingsTextFromFile(FString fileName, std::string& settingsText);
     std::string getSimModeFromUser();
 
-
-    void startApiServer();
-    void stopApiServer();
-    bool isApiServerStarted();
-
 private:
     typedef common_utils::Utils Utils;
     UClass* widget_class_;
@@ -87,7 +82,6 @@ private:
     UPROPERTY() ASimModeBase* simmode_;
 
     APIPCamera* subwindow_cameras_[AirSimSettings::kSubwindowCount];
-    std::unique_ptr<msr::airlib::ApiServerBase> api_server_;
 
     static ASimHUD* instance_;
 };

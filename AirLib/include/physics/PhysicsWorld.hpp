@@ -71,7 +71,7 @@ public:
         }
     }
 
-    std::string getReport()
+    std::string getDebugReport()
     {
         return reporter_.getOutput();
     }

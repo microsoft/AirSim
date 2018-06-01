@@ -18,7 +18,7 @@ UnrealImageCapture::~UnrealImageCapture()
 {}
 
 void UnrealImageCapture::getImages(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
-    std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses)
+    std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const
 {
     if (cameras_.size() == 0) {
         for (unsigned int i = 0; i < requests.size(); ++i) {
@@ -32,7 +32,7 @@ void UnrealImageCapture::getImages(const std::vector<msr::airlib::ImageCaptureBa
 
 
 void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
-    std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method)
+    std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method) const
 {
     std::vector<std::shared_ptr<RenderRequest::RenderParams>> render_params;
     std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
@@ -42,8 +42,9 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
         responses.push_back(ImageResponse());
         ImageResponse& response = responses.at(i);
 
-
-        updateCameraVisibility(camera, requests[i]);
+        //TODO: may be we should have these methods non-const?
+        const_cast<UnrealImageCapture*>(this)->
+            updateCameraVisibility(camera, requests[i]);
 
         UTextureRenderTarget2D* textureTarget = nullptr;
         USceneCaptureComponent2D* capture = camera->getCaptureComponent(requests[i].image_type, false);

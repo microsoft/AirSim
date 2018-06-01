@@ -19,7 +19,7 @@ void ASimModeWorldBase::BeginPlay()
 
     if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
         manual_pose_controller->initializeForPlay();
-        manual_pose_controller->setActor(getFpvVehiclePawnWrapper()->getPawn());
+        manual_pose_controller->setActor(getFpvVehicleSimApi()->getPawn());
     }
 }
 
@@ -133,9 +133,9 @@ void ASimModeWorldBase::reset()
     Super::reset();
 }
 
-std::string ASimModeWorldBase::getReport()
+std::string ASimModeWorldBase::getDebugReport()
 {
-    return physics_world_->getReport();
+    return physics_world_->getDebugReport();
 }
 
 void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles)

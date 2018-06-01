@@ -19,7 +19,7 @@ FRecordingThread::FRecordingThread()
 
 
 void FRecordingThread::startRecording(msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics, 
-    const RecordingSettings& settings, VehiclePawnWrapper* wrapper)
+    const RecordingSettings& settings, VehicleSimApi* wrapper)
 {
     stopRecording();
 

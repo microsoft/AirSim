@@ -5,7 +5,7 @@
 #include "CarPawn.h"
 #include "common/Common.hpp"
 #include "SimMode/SimModeWorldBase.h"
-#include "VehiclePawnWrapper.h"
+#include "api/VehicleSimApiBase.hpp"
 #include "common/StateReporterWrapper.hpp"
 #include "SimModeCar.generated.h"
 
@@ -24,12 +24,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaSeconds) override;
 
-    virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() const override;
-
-    void createVehicles(std::vector<VehiclePtr>& vehicles);
     virtual void reset() override;
-    virtual std::string getReport() override;
-    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
+    virtual std::string getDebugReport() override;
 
     virtual bool isPaused() const override;
     virtual void pause(bool is_paused) override;
@@ -37,13 +33,14 @@ public:
 
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
-    void updateReport();
-    int getRemoteControlID(const VehiclePawnWrapper& pawn) const;
+    void updateDebugReport();
+    int getRemoteControlID(const VehicleSimApi& pawn) const;
     void initializePauseState();
 
 protected:
     virtual void setupClockSpeed() override;
-
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
+    virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
 
 private:    
     typedef msr::airlib::ClockFactory ClockFactory;
@@ -56,9 +53,9 @@ private:
 
     TArray<AActor*> spawned_actors_;
     std::vector<VehiclePtr> vehicles_;
-    VehiclePawnWrapper* fpv_vehicle_pawn_wrapper_;
+    VehicleSimApiBase* fpv_vehicle_sim_api_;
     float follow_distance_;
-    msr::airlib::StateReporterWrapper report_wrapper_;
+    msr::airlib::StateReporterWrapper debug_reporter_;
 
     std::atomic<float> current_clockspeed_;
     std::atomic<TTimeDelta> pause_period_;

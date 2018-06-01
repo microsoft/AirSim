@@ -385,7 +385,7 @@ SimJoyStick::~SimJoyStick()
     //required for pimpl
 }
 
-void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state)
+void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state) const
 {
     pimpl_->getJoyStickState(index, state, axis_maps);
 }

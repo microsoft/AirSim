@@ -1,19 +1,21 @@
 #include "SimModeBase.h"
-#include <memory>
+#include "Recording/RecordingThread.h"
 #include "Misc/MessageDialog.h"
 #include "Misc/EngineVersion.h"
-#include "AirBlueprintLib.h"
 #include "Runtime/Launch/Resources/Version.h"
-#include "common/AirSimSettings.hpp"
-#include "Recording/RecordingThread.h"
-#include "common/ScalableClock.hpp"
-#include "common/SteppableClock.hpp"
 #include "ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "SimJoyStick/SimJoyStick.h"
 #include "Misc/OutputDeviceNull.h"
-#include "api/DebugApiServer.hpp"
+
+
+#include <memory>
+#include "AirBlueprintLib.h"
+#include "common/AirSimSettings.hpp"
+#include "common/ScalableClock.hpp"
+#include "common/SteppableClock.hpp"
+#include "SimJoyStick/SimJoyStick.h"
 #include "common/EarthCelestial.hpp"
+#include "WorldSimApi.h"
 
 
 const char ASimModeBase::kUsageScenarioComputerVision[] = "ComputerVision";
@@ -32,7 +34,7 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    simmode_api_.reset(new SimModeApi(this));
+    world_sim_api_.reset(new WorldSimApi(this));
 
     setupPhysicsLoopPeriod();
 
@@ -66,9 +68,9 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-msr::airlib::WorldSimApiBase* ASimModeBase::getSimModeApi() const
+msr::airlib::WorldSimApiBase* ASimModeBase::getWorldSimApi() const
 {
-    return simmode_api_.get();
+    return world_sim_api_.get();
 }
 
 void ASimModeBase::setupTimeOfDay()
@@ -109,15 +111,6 @@ void ASimModeBase::setupTimeOfDay()
     //else ignore
 }
 
-msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi() const
-{
-    auto fpv_vehicle = getFpvVehiclePawnWrapper();
-    if (fpv_vehicle)
-        return fpv_vehicle->getApi();
-    else
-        return nullptr;
-}
-
 bool ASimModeBase::isPaused() const
 {
     return false;
@@ -125,27 +118,26 @@ bool ASimModeBase::isPaused() const
 
 void ASimModeBase::pause(bool is_paused)
 {
-    //should be overriden by derived class
+    //should be overridden by derived class
     unused(is_paused);
     throw std::domain_error("Pause is not implemented by SimMode");
 }
 
 void ASimModeBase::continueForTime(double seconds)
 {
-    //should be overriden by derived class
+    //should be overridden by derived class
     unused(seconds);
     throw std::domain_error("continueForTime is not implemented by SimMode");
 }
 
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const
 {
-    //should be overriden by derived class
-    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::DebugApiServer());
+    throw std::domain_error("createApiServer is not implemented by SimMode");
 }
 
 void ASimModeBase::setupClockSpeed()
 {
-    //default setup - this should be overriden in derived modes as needed
+    //default setup - this should be overridden in derived modes as needed
 
     float clock_speed = getSettings().clock_speed;
 
@@ -165,10 +157,10 @@ void ASimModeBase::setupClockSpeed()
 void ASimModeBase::setupPhysicsLoopPeriod()
 {
     /*
-    300Hz seems to be minimum for non-aggresive flights
+    300Hz seems to be minimum for non-aggressive flights
     400Hz is needed for moderately aggressive flights (such as
     high yaw rate with simultaneous back move)
-    500Hz is recommanded for more aggressive flights
+    500Hz is recommended for more aggressive flights
     Lenovo P50 high-end config laptop seems to be topping out at 400Hz.
     HP Z840 desktop high-end config seems to be able to go up to 500Hz.
     To increase freq with limited CPU power, switch Barometer to constant ref mode.
@@ -244,14 +236,14 @@ void ASimModeBase::reset()
     //Should be overridden by derived classes
 }
 
-VehiclePawnWrapper* ASimModeBase::getFpvVehiclePawnWrapper() const
+VehicleSimApi* ASimModeBase::getFpvVehicleSimApi()
 {
     //Should be overridden by derived classes
     return nullptr;
 }
 
 
-std::string ASimModeBase::getReport()
+std::string ASimModeBase::getDebugReport()
 {
     static const std::string empty_string = std::string();
     //Should be overridden by derived classes
@@ -265,32 +257,21 @@ void ASimModeBase::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventResetAll", EKeys::BackSpace, this, &ASimModeBase::reset);
 }
 
-bool ASimModeBase::isRecording() const
-{
-    return FRecordingThread::isRecording();
-}
-
-bool ASimModeBase::isRecordUIVisible() const
-{
-    return getSettings().is_record_ui_visible;
-}
-
 ECameraDirectorMode ASimModeBase::getInitialViewMode() const
 {
     return Utils::toEnum<ECameraDirectorMode>(getSettings().initial_view_mode);
 }
 
-void ASimModeBase::startRecording()
+bool ASimModeBase::toggleRecording()
 {
-    FRecordingThread::startRecording(getFpvVehiclePawnWrapper()->getImageCapture(),
-        getFpvVehiclePawnWrapper()->getGroundTruthKinematics(), getSettings().recording_settings, getFpvVehiclePawnWrapper());
+    world_sim_api_->toggleRecording();
 }
 
-const AirSimSettings& ASimModeBase::getSettings() const
+
+const msr::airlib::AirSimSettings& ASimModeBase::getSettings() const
 {
     return AirSimSettings::singleton();
 }
-
 
 bool ASimModeBase::toggleRecording()
 {
@@ -307,43 +288,48 @@ void ASimModeBase::stopRecording()
     FRecordingThread::stopRecording();
 }
 
-
-//************************* SimModeApi *****************************/
-
-ASimModeBase::SimModeApi::SimModeApi(ASimModeBase* simmode)
-    : simmode_(simmode)
+void ASimModeBase::startRecording()
 {
+    FRecordingThread::startRecording(getFpvVehicleSimApi()->getImageCapture(),
+        getFpvVehicleSimApi()->getGroundTruthKinematics(), simmode_->getSettings().recording_settings,
+        simmode_->getFpvVehicleSimApi());
 }
 
-void ASimModeBase::SimModeApi::reset()
+bool ASimModeBase::isRecording() const
 {
-    simmode_->reset();
+    return FRecordingThread::isRecording();
 }
 
-msr::airlib::VehicleApiBase* ASimModeBase::SimModeApi::getVehicleApi()
+//API server start/stop
+void ASimModeBase::startApiServer()
 {
-    return simmode_->getVehicleApi();
-}
+    if (getSettings().enable_rpc) {
 
-bool ASimModeBase::SimModeApi::isPaused() const
+#ifdef AIRLIB_NO_RPC
+        api_server_.reset();
+#else
+        api_server_ = createApiServer();
+#endif
+
+        try {
+            api_server_->start();
+        }
+        catch (std::exception& ex) {
+            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
+        }
+    }
+    else
+        UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
+
+}
+void ASimModeBase::stopApiServer()
 {
-    return simmode_->isPaused();
+    if (api_server_ != nullptr) {
+        api_server_->stop();
+        api_server_.reset(nullptr);
+    }
 }
-
-void ASimModeBase::SimModeApi::pause(bool is_paused)
+bool ASimModeBase::isApiServerStarted()
 {
-    simmode_->pause(is_paused);
+    return api_server_ != nullptr;
 }
-
-void ASimModeBase::SimModeApi::continueForTime(double seconds)
-{
-    simmode_->continueForTime(seconds);
-}
-
-bool ASimModeBase::SimModeApi::isSimulationMode() const
-{
-    return true;
-}
-
-
-//************************* SimModeApi *****************************/

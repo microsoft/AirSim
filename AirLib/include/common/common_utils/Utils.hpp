@@ -126,6 +126,15 @@ public:
         return s.size() <= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
     }
 
+    template <template<class, class, class...> class TContainer, typename TKey, typename TVal, typename... Args>
+    static TVal findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal & default_val)
+    {
+        typename TContainer<TKey, TVal, Args...>::const_iterator it = m.find(key);
+        if (it == m.end())
+            return default_val;
+        return it->second;
+    }
+
     static Logger* getSetLogger(Logger* logger = nullptr)
     {
         static Logger logger_default_;

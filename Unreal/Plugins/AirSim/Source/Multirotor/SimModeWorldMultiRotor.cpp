@@ -5,7 +5,7 @@
 #include "GameFramework/PlayerController.h"
 
 #include "AirBlueprintLib.h"
-#include "vehicles/multirotor/controllers/MultirotorApiBase.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "physics/PhysicsBody.hpp"
 #include "common/ClockFactory.hpp"
 #include <memory>
@@ -52,7 +52,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiSe
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    //stop physics thread before we dismental
+    //stop physics thread before we dismantle
     stopAsyncUpdator();
 
     //for (AActor* actor : spawned_actors_) {
@@ -65,7 +65,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-VehiclePawnWrapper* ASimModeWorldMultiRotor::getFpvVehiclePawnWrapper() const
+VehicleSimApi* ASimModeWorldMultiRotor::getFpvVehicleSimApi() const
 {
     return fpv_vehicle_pawn_wrapper_;
 }
@@ -78,7 +78,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
     //put camera little bit above vehicle
     FTransform camera_transform(actor_transform.GetLocation() + FVector(-300, 0, 200));
 
-    //we will either find external camera if it already exist in evironment or create one
+    //we will either find external camera if it already exist in environment or create one
     APIPCamera* external_camera;
 
     //find all BP camera directors in the environment
@@ -149,7 +149,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             vehicle_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
 
             //chose first pawn as FPV if none is designated as FPV
-            VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
+            VehicleSimApi* wrapper = vehicle_pawn->getVehiclePawnWrapper();
 
             if (getSettings().enable_collision_passthrough)
                 wrapper->getConfig().enable_passthrough_on_collisions = true;
@@ -175,12 +175,12 @@ void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    getFpvVehiclePawnWrapper()->setLogLine(getLogString());
+    getFpvVehicleSimApi()->setLogLine(getLogString());
 }
 
 std::string ASimModeWorldMultiRotor::getLogString() const
 {
-    const msr::airlib::Kinematics::State* kinematics = getFpvVehiclePawnWrapper()->getGroundTruthKinematics();
+    const msr::airlib::Kinematics::State* kinematics = getFpvVehicleSimApi()->getGroundTruthKinematics();
     uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
     //TODO: because this bug we are using alternative code with stringstream
@@ -213,20 +213,20 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
     setupVehiclesAndCamera(vehicles);
 }
 
-ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
+ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehicleSimApi* wrapper)
 {
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), &wrapper->getNedTransform());
     auto vehicle_params = MultiRotorParamsFactory::createConfig(wrapper->getVehicleSetting(), sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 
-    std::shared_ptr<MultiRotorConnector> vehicle = std::make_shared<MultiRotorConnector>(
+    std::shared_ptr<MultirotorSimApi> vehicle = std::make_shared<MultirotorSimApi>(
         wrapper, vehicle_params_.back().get(), manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
         wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
 
-    return std::static_pointer_cast<VehicleSimBridgeBase>(vehicle);
+    return std::static_pointer_cast<VehicleSimApiBase>(vehicle);
 }
 
 void ASimModeWorldMultiRotor::setupClockSpeed()
@@ -248,7 +248,7 @@ void ASimModeWorldMultiRotor::setupClockSpeed()
         //depending on compute power available, we will max out control loop frequency and therefore can no longer
         //get increase in clock speed
 
-        //Approach 1: scale clock period, no longer used now due to quadrotor unstability
+        //Approach 1: scale clock period, no longer used now due to quadrotor instability
         //ClockFactory::get(std::make_shared<msr::airlib::SteppableClock>(
         //static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
 

@@ -4,10 +4,10 @@
 
 #include "FlyingPawn.h"
 #include "common/Common.hpp"
-#include "MultiRotorConnector.h"
+#include "MultirotorSimApi.h"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "SimMode/SimModeWorldBase.h"
-#include "VehiclePawnWrapper.h"
+#include "VehicleSimApi.h"
 #include "SimModeWorldMultiRotor.generated.h"
 
 
@@ -22,18 +22,17 @@ public:
 
     virtual void Tick( float DeltaSeconds ) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-    VehiclePawnWrapper* getFpvVehiclePawnWrapper() const override;
+    VehicleSimApi* getFpvVehicleSimApi() const override;
     std::string getLogString() const;
-    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
 
 
 protected:
     typedef AFlyingPawn TMultiRotorPawn;
 
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
-    VehiclePtr createVehicle(VehiclePawnWrapper* wrapper);
+    VehiclePtr createVehicle(VehicleSimApi* wrapper);
     virtual void setupClockSpeed() override;
-
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
 
 private:
     void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
@@ -49,6 +48,6 @@ private:
 
     TArray<AActor*> spawned_actors_;
 
-    VehiclePawnWrapper* fpv_vehicle_pawn_wrapper_;
-    TArray <std::shared_ptr<VehicleSimBridgeBase> > fpv_vehicle_connectors_;
+    VehicleSimApi* fpv_vehicle_pawn_wrapper_;
+    TArray <std::shared_ptr<VehicleSimApiBase> > fpv_vehicle_connectors_;
 };

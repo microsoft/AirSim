@@ -1,45 +1,9 @@
 #include "CarPawnApi.h"
 #include "AirBlueprintLib.h"
 
-CarPawnApi::CarPawnApi(VehiclePawnWrapper* pawn, UWheeledVehicleMovementComponent* movement)
-    : pawn_(pawn), movement_(movement)
+CarPawnApi::CarPawnApi(UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
+    : movement_(movement), home_geopoint_(home_geopoint)
 {
-}
-
-std::vector<ImageCaptureBase::ImageResponse> CarPawnApi::simGetImages(
-    const std::vector<ImageCaptureBase::ImageRequest>& requests) const
-{
-    std::vector<ImageCaptureBase::ImageResponse> responses;
-
-    ImageCaptureBase* camera = pawn_->getImageCapture();
-    camera->getImages(requests, responses);
-
-    return responses;
-}
-
-bool CarPawnApi::simSetSegmentationObjectID(const std::string& mesh_name, int object_id, 
-    bool is_name_regex)
-{
-    bool success;
-    UAirBlueprintLib::RunCommandOnGameThread([mesh_name, object_id, is_name_regex, &success]() {
-        success = UAirBlueprintLib::SetMeshStencilID(mesh_name, object_id, is_name_regex);
-    }, true);
-    return success;
-}
-
-void CarPawnApi::simPrintLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
-{
-    pawn_->printLogMessage(message, message_param, severity);
-}
-
-int CarPawnApi::simGetSegmentationObjectID(const std::string& mesh_name) const
-{
-    return UAirBlueprintLib::GetMeshStencilID(mesh_name);
-}
-
-msr::airlib::CollisionInfo CarPawnApi::getCollisionInfo() const
-{
-    return pawn_->getCollisionInfo();
 }
 
 bool CarPawnApi::armDisarm(bool arm)
@@ -47,16 +11,6 @@ bool CarPawnApi::armDisarm(bool arm)
     //TODO: implement arming for car
     unused(arm);
     return true;
-}
-
-std::vector<uint8_t> CarPawnApi::simGetImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const
-{
-    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_id, image_type) };
-    const std::vector<ImageCaptureBase::ImageResponse>& response = simGetImages(request);
-    if (response.size() > 0)
-        return response.at(0).image_data_uint8;
-    else
-        return std::vector<uint8_t>();
 }
 
 void CarPawnApi::setCarControls(const CarApiBase::CarControls& controls)
@@ -75,35 +29,12 @@ void CarPawnApi::setCarControls(const CarApiBase::CarControls& controls)
     movement_->SetUseAutoGears(!controls.is_manual_gear);
 }
 
-msr::airlib::Pose CarPawnApi::simGetObjectPose(const std::string& actor_name) const
-{
-    msr::airlib::Pose pose;
-
-    UAirBlueprintLib::RunCommandOnGameThread([&pose, &actor_name, this]() {
-        pose = pawn_->getActorPose(actor_name);
-    }, true);
-
-    return pose;
-}
-
-const CarApiBase::CarControls& CarPawnApi::getCarControls() const
+const msr::airlib::CarApiBase::CarControls& CarPawnApi::getCarControls() const
 {
     return last_controls_;
 }
 
-msr::airlib::CameraInfo CarPawnApi::getCameraInfo(int camera_id) const
-{
-    return pawn_->getCameraInfo(camera_id);
-}
-
-void CarPawnApi::setCameraOrientation(int camera_id, const msr::airlib::Quaternionr& orientation)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([&camera_id, &orientation, this]() {
-        pawn_->setCameraOrientation(camera_id, orientation);
-    }, true);
-}
-
-CarApiBase::CarState CarPawnApi::getCarState() const
+msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 {
     CarApiBase::CarState state(
         movement_->GetForwardSpeed() / 100, //cm/s -> m/s
@@ -111,8 +42,6 @@ CarApiBase::CarState CarPawnApi::getCarState() const
         movement_->GetEngineRotationSpeed(),
         movement_->GetEngineMaxRotationSpeed(),
         last_controls_.handbrake,
-        pawn_->getCollisionInfo(),
-        *pawn_->getTrueKinematics(),
         msr::airlib::ClockFactory::get()->nowNanos()
     );
     return state;
@@ -121,15 +50,15 @@ CarApiBase::CarState CarPawnApi::getCarState() const
 void CarPawnApi::reset()
 {
     last_controls_ = CarControls();
-    auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_->getPawn());
-    UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
-        pawn_->reset();
+    //auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_->getPawn());
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        //pawn_->reset();
 
-        for (auto* phys_comp : phys_comps) {
-            phys_comp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-            phys_comp->SetPhysicsLinearVelocity(FVector::ZeroVector);
-            phys_comp->SetSimulatePhysics(false);
-        }
+        //for (auto* phys_comp : phys_comps) {
+        //    phys_comp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+        //    phys_comp->SetPhysicsLinearVelocity(FVector::ZeroVector);
+        //    phys_comp->SetSimulatePhysics(false);
+        //}
         //movement_->ResetMoveState();
         //movement_->SetActive(false);
         //movement_->SetActive(true, true);
@@ -137,27 +66,15 @@ void CarPawnApi::reset()
         
     }, true);
 
-    UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
-        for (auto* phys_comp : phys_comps)
-            phys_comp->SetSimulatePhysics(true);
-    }, true);
-}
-
-void CarPawnApi::simSetPose(const msr::airlib::Pose& pose, bool ignore_collision)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this, pose, ignore_collision]() {
-        pawn_->setPose(pose, ignore_collision);
-    }, true);
-}
-
-msr::airlib::Pose CarPawnApi::simGetPose() const
-{
-    return pawn_->getPose();
+    //UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
+    //    for (auto* phys_comp : phys_comps)
+    //        phys_comp->SetSimulatePhysics(true);
+    //}, true);
 }
 
 msr::airlib::GeoPoint CarPawnApi::getHomeGeoPoint() const
 {
-    return pawn_->getHomePoint();
+    return home_geopoint_;
 }
 
 void CarPawnApi::enableApiControl(bool is_enabled)

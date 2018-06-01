@@ -47,7 +47,7 @@ ECameraDirectorMode ACameraDirector::getMode()
     return mode_;
 }
 
-void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, VehiclePawnWrapper* vehicle_pawn_wrapper, APIPCamera* external_camera)
+void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, VehicleSimApi* vehicle_pawn_wrapper, APIPCamera* external_camera)
 {
     manual_pose_controller_ = NewObject<UManualPoseController>();
     manual_pose_controller_->initializeForPlay();
@@ -73,7 +73,7 @@ void ACameraDirector::setupCameraFromSettings()
     }
 }
 
-void ACameraDirector::setCameras(APIPCamera* external_camera, VehiclePawnWrapper* vehicle_pawn_wrapper)
+void ACameraDirector::setCameras(APIPCamera* external_camera, VehicleSimApi* vehicle_pawn_wrapper)
 {
     external_camera_ = external_camera;
     follow_actor_ = vehicle_pawn_wrapper->getPawn();

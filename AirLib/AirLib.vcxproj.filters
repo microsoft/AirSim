@@ -198,9 +198,6 @@
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\DebugApiServer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\physics\PhysicsBodyWorld.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -427,6 +424,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\ApiProvider.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

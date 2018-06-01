@@ -11,7 +11,7 @@ RecordingFile::RecordingFile(const std::vector <std::string>& columns)
 {
     this->columns_ = columns;
 }
-void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehiclePawnWrapper* wrapper)
+void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehicleSimApi* wrapper)
 {   bool save_success = false;
     std::stringstream image_file_names;
 

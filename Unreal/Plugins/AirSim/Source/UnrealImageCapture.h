@@ -13,11 +13,11 @@ public:
     UnrealImageCapture(const std::vector<APIPCamera*>& cameras);
     virtual ~UnrealImageCapture();
 
-    virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) override;
+    virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const override;
 
 private:
     void getSceneCaptureImage(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
-        std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method);
+        std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method) const;
 
     void addScreenCaptureHandler(UWorld *world);
     bool getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng);

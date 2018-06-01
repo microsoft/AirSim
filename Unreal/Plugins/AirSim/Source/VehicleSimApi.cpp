@@ -1,4 +1,4 @@
-#include "VehiclePawnWrapper.h"
+#include "VehicleSimApi.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -8,7 +8,7 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
-VehiclePawnWrapper::VehiclePawnWrapper()
+VehicleSimApi::VehicleSimApi()
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
     if (!collision_display.Succeeded())
@@ -17,7 +17,7 @@ VehiclePawnWrapper::VehiclePawnWrapper()
         collision_display_template = nullptr;
 }
 
-void VehiclePawnWrapper::setupCamerasFromSettings()
+void VehicleSimApi::setupCamerasFromSettings()
 {
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -32,8 +32,7 @@ void VehiclePawnWrapper::setupCamerasFromSettings()
     }
 }
 
-
-void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
+void VehicleSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
     // Deflect along the surface when we collide.
@@ -60,57 +59,69 @@ void VehiclePawnWrapper::onCollision(class UPrimitiveComponent* MyComp, class AA
         LogDebugLevel::Failure);
 }
 
-void VehiclePawnWrapper::possess()
+void VehicleSimApi::possess()
 {
     APlayerController* controller = pawn_->GetWorld()->GetFirstPlayerController();
     controller->UnPossess();
     controller->Possess(pawn_);
 }
 
-const NedTransform& VehiclePawnWrapper::getNedTransform() const
+const NedTransform& VehicleSimApi::getNedTransform() const
 {
     return ned_transform_;
 }
 
-APawn* VehiclePawnWrapper::getPawn()
+APawn* VehicleSimApi::getPawn()
 {
     return pawn_;
 }
 
-void VehiclePawnWrapper::displayCollisionEffect(FVector hit_location, const FHitResult& hit)
+std::vector<VehicleSimApi::ImageCaptureBase::ImageResponse> VehicleSimApi::getImages(
+    const std::vector<ImageCaptureBase::ImageRequest>& requests) const
+{
+    std::vector<ImageCaptureBase::ImageResponse> responses;
+
+    const ImageCaptureBase* camera = getImageCapture();
+    camera->getImages(requests, responses);
+
+    return responses;
+}
+
+std::vector<uint8_t> VehicleSimApi::getImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const
+{
+    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_id, image_type) };
+    const std::vector<ImageCaptureBase::ImageResponse>& response = getImages(request);
+    if (response.size() > 0)
+        return response.at(0).image_data_uint8;
+    else
+        return std::vector<uint8_t>();
+}
+
+void VehicleSimApi::displayCollisionEffect(FVector hit_location, const FHitResult& hit)
 {
     if (collision_display_template != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
-        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(pawn_->GetWorld(), collision_display_template, hit_location);
+        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(pawn_->GetWorld(), 
+            collision_display_template, FTransform(hit_location), true);
         particles->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
     }
 }
 
-const msr::airlib::Kinematics::State* VehiclePawnWrapper::getGroundTruthKinematics()
+const msr::airlib::Kinematics::State* VehicleSimApi::getGroundTruthKinematics() const
 {
     return kinematics_;
 }
 
-void VehiclePawnWrapper::setKinematics(const msr::airlib::Kinematics::State* kinematics)
+void VehicleSimApi::setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics)
 {
     kinematics_ = kinematics;
 }
 
-msr::airlib::VehicleApiBase* VehiclePawnWrapper::getApi() const
-{
-    return api_.get();
-}
-
-void VehiclePawnWrapper::setApi(std::unique_ptr<msr::airlib::VehicleApiBase> api)
-{
-    api_ = std::move(api);
-}
-
-int VehiclePawnWrapper::getRemoteControlID() const
+int VehicleSimApi::getRemoteControlID() const
 {
     return vehicle_setting_->rc.remote_control_id;
 }
 
-void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
+void VehicleSimApi::initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
     const WrapperConfig& config)
 {
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -153,22 +164,22 @@ void VehiclePawnWrapper::initialize(APawn* pawn, const std::vector<APIPCamera*>&
     setupCamerasFromSettings();
 }
 
-VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig()
+VehicleSimApi::WrapperConfig& VehicleSimApi::getConfig()
 {
     return config_;
 }
 
-const VehiclePawnWrapper::VehicleSetting* VehiclePawnWrapper::getVehicleSetting() const
+const VehicleSimApi::VehicleSetting* VehicleSimApi::getVehicleSetting() const
 {
     return vehicle_setting_;
 }
 
-const VehiclePawnWrapper::WrapperConfig& VehiclePawnWrapper::getConfig() const
+const VehicleSimApi::WrapperConfig& VehicleSimApi::getConfig() const
 {
     return config_;
 }
 
-const APIPCamera* VehiclePawnWrapper::getCamera(int index) const
+const APIPCamera* VehicleSimApi::getCamera(int index) const
 {
     if (index < 0 || index >= cameras_.size())
         throw std::out_of_range("Camera id is not valid");
@@ -176,23 +187,23 @@ const APIPCamera* VehiclePawnWrapper::getCamera(int index) const
     return cameras_.at(index);
 }
 
-APIPCamera* VehiclePawnWrapper::getCamera(int index)
+APIPCamera* VehicleSimApi::getCamera(int index)
 {
     return const_cast<APIPCamera*>(
-        static_cast<const VehiclePawnWrapper*>(this)->getCamera(index));
+        static_cast<const VehicleSimApi*>(this)->getCamera(index));
 }
 
-UnrealImageCapture* VehiclePawnWrapper::getImageCapture()
+const UnrealImageCapture* VehicleSimApi::getImageCapture() const
 {
     return image_capture_.get();
 }
 
-int VehiclePawnWrapper::getCameraCount()
+int VehicleSimApi::getCameraCount()
 {
     return cameras_.size();
 }
 
-void VehiclePawnWrapper::reset()
+void VehicleSimApi::reset()
 {
     state_ = initial_state_;
     pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
@@ -216,27 +227,23 @@ void VehiclePawnWrapper::reset()
     //plot(real_log, FColor::Yellow, Vector3r(0, 0, -3));
 //}
 
-const VehiclePawnWrapper::GeoPoint& VehiclePawnWrapper::getHomeGeoPoint() const
-{
-    return home_geo_point_;
-}
 
-const VehiclePawnWrapper::CollisionInfo& VehiclePawnWrapper::getCollisionInfo() const
+VehicleSimApi::CollisionInfo VehicleSimApi::getCollisionInfo() const
 {
     return state_.collision_info;
 }
 
-FVector VehiclePawnWrapper::getUUPosition() const
+FVector VehicleSimApi::getUUPosition() const
 {
     return pawn_->GetActorLocation(); // - state_.mesh_origin
 }
 
-FRotator VehiclePawnWrapper::getUUOrientation() const
+FRotator VehicleSimApi::getUUOrientation() const
 {
     return pawn_->GetActorRotation();
 }
 
-void VehiclePawnWrapper::toggleTrace()
+void VehicleSimApi::toggleTrace()
 {
     state_.tracing_enabled = !state_.tracing_enabled;
 
@@ -248,14 +255,14 @@ void VehiclePawnWrapper::toggleTrace()
     }
 }
 
-void VehiclePawnWrapper::allowPassthroughToggleInput()
+void VehicleSimApi::allowPassthroughToggleInput()
 {
     state_.passthrough_enabled = !state_.passthrough_enabled;
     UAirBlueprintLib::LogMessage("enable_passthrough_on_collisions: ", FString::FromInt(state_.passthrough_enabled), LogDebugLevel::Informational);
 }
 
 
-void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& offset)
+void VehicleSimApi::plot(std::istream& s, FColor color, const Vector3r& offset)
 {
     using namespace msr::airlib;
 
@@ -276,12 +283,7 @@ void VehiclePawnWrapper::plot(std::istream& s, FColor color, const Vector3r& off
 
 }
 
-void VehiclePawnWrapper::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
-{
-    UAirBlueprintLib::LogMessageString(message, message_param, static_cast<LogDebugLevel>(severity));
-}
-
-msr::airlib::CameraInfo VehiclePawnWrapper::getCameraInfo(int camera_id) const
+msr::airlib::CameraInfo VehicleSimApi::getCameraInfo(int camera_id) const
 {
     msr::airlib::CameraInfo camera_info;
 
@@ -292,7 +294,7 @@ msr::airlib::CameraInfo VehiclePawnWrapper::getCameraInfo(int camera_id) const
     return camera_info;
 }
 
-void VehiclePawnWrapper::setCameraOrientation(int camera_id, const msr::airlib::Quaternionr& orientation)
+void VehicleSimApi::setCameraOrientation(int camera_id, const msr::airlib::Quaternionr& orientation)
 {
     APIPCamera* camera = getCamera(camera_id);
     FQuat quat = ned_transform_.toFQuat(orientation, true);
@@ -300,21 +302,21 @@ void VehiclePawnWrapper::setCameraOrientation(int camera_id, const msr::airlib::
 }
 
 //parameters in NED frame
-VehiclePawnWrapper::Pose VehiclePawnWrapper::getPose() const
+VehicleSimApi::Pose VehicleSimApi::getPose() const
 {
     return toPose(getUUPosition(), getUUOrientation().Quaternion());
 }
 
-VehiclePawnWrapper::Pose VehiclePawnWrapper::toPose(const FVector& u_position, const FQuat& u_quat) const
+VehicleSimApi::Pose VehicleSimApi::toPose(const FVector& u_position, const FQuat& u_quat) const
 {
     const Vector3r& position = ned_transform_.toNedMeters(u_position);
     const Quaternionr& orientation = ned_transform_.toQuaternionr(u_quat, true);
     return Pose(position, orientation);
 }
 
-void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collision)
+void VehicleSimApi::setPose(const Pose& pose, bool ignore_collision)
 {
-    //translate to new VehiclePawnWrapper position & orientation from NED to NEU
+    //translate to new VehicleSimApi position & orientation from NED to NEU
     FVector position = ned_transform_.toNeuUU(pose.position);
     state_.current_position = position;
 
@@ -343,7 +345,7 @@ void VehiclePawnWrapper::setPose(const Pose& pose, bool ignore_collision)
     }
 }
 
-void VehiclePawnWrapper::setDebugPose(const Pose& debug_pose)
+void VehicleSimApi::setDebugPose(const Pose& debug_pose)
 {
     state_.current_debug_position = ned_transform_.toNeuUU(debug_pose.position);
     if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
@@ -359,7 +361,7 @@ void VehiclePawnWrapper::setDebugPose(const Pose& debug_pose)
     }
 }
 
-bool VehiclePawnWrapper::canTeleportWhileMove()  const
+bool VehicleSimApi::canTeleportWhileMove()  const
 {
     //allow teleportation
     //  if collisions are not enabled
@@ -369,21 +371,17 @@ bool VehiclePawnWrapper::canTeleportWhileMove()  const
     return !state_.collisions_enabled || (state_.collision_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
-void VehiclePawnWrapper::setLogLine(std::string line)
+void VehicleSimApi::setLogLine(std::string line)
 {
     log_line_ = line;
 }
 
-std::string VehiclePawnWrapper::getLogLine()
+std::string VehicleSimApi::getLogLine()
 {
     return log_line_;
 }
 
-msr::airlib::Pose VehiclePawnWrapper::getActorPose(std::string actor_name)
-{
-    AActor* actor = UAirBlueprintLib::FindActor<AActor>(pawn_, FString(actor_name.c_str()));
-    return actor ? toPose(actor->GetActorLocation(), actor->GetActorQuat())
-        : Pose::nanPose();
-}
+
+
 
 

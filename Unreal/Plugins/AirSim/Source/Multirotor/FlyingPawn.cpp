@@ -2,7 +2,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
-#include "MultiRotorConnector.h"
+#include "MultirotorSimApi.h"
 #include "common/Common.hpp"
 
 
@@ -11,7 +11,7 @@ AFlyingPawn::AFlyingPawn()
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
 
-    wrapper_.reset(new VehiclePawnWrapper());
+    wrapper_.reset(new VehicleSimApi());
 }
 
 void AFlyingPawn::initializeForBeginPlay(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras)
@@ -35,7 +35,7 @@ void AFlyingPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Oth
         HitNormal, NormalImpulse, Hit);
 }
 
-VehiclePawnWrapper* AFlyingPawn::getVehiclePawnWrapper()
+VehicleSimApi* AFlyingPawn::getVehiclePawnWrapper()
 {
     return wrapper_.get();
 }

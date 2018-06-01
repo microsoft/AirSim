@@ -12,12 +12,10 @@
 #include "physics/Kinematics.hpp"
 #include "NedTransform.h"
 #include "common/AirSimSettings.hpp"
-#include "api/VehicleApiBase.hpp"
-#include "controllers/VehicleSimBridgeBase.hpp"
+#include "api/VehicleSimApiBase.hpp"
 
 
-class VehiclePawnWrapper : public msr::airlib::VehicleSimBridgeBase
-{
+class VehicleSimApi : public msr::airlib::VehicleSimApiBase {
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
     typedef msr::airlib::Vector3r Vector3r;
@@ -28,12 +26,12 @@ public: //types
     typedef msr::airlib::real_T real_T;
     typedef msr::airlib::Utils Utils;
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
+    typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
-public:
     struct WrapperConfig {
-        bool is_fpv_vehicle; 
-        bool enable_collisions; 
-        bool enable_passthrough_on_collisions; 
+        bool is_fpv_vehicle;
+        bool enable_collisions;
+        bool enable_passthrough_on_collisions;
         bool enable_trace;
 
         WrapperConfig() :
@@ -43,52 +41,55 @@ public:
             enable_trace(false)
         {
         }
-    };
+    }; 
 
-    void toggleTrace();
+public: //implementation of VehicleSimApiBase
+    virtual void reset() override;
+    virtual const UnrealImageCapture* getImageCapture() const override;
+    virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const override;
+    virtual std::vector<uint8_t> getImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const override;
+    virtual Pose getPose() const override;
+    virtual void setPose(const Pose& pose, bool ignore_collision) override;
+    virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+    virtual msr::airlib::CameraInfo getCameraInfo(int camera_id) const override;
+    virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) override;
+    virtual CollisionInfo getCollisionInfo() const override;
+    virtual int getRemoteControlID() const override;
 
-public: //interface
-    VehiclePawnWrapper();
+
+public: //Unreal specific methods
+    VehicleSimApi();
+
+    //this class should be constructed on BeginPlay and initialize method should be the first call
     void initialize(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
         const WrapperConfig& config = WrapperConfig());
 
-    void reset();
+    //on collision, pawns should update this
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
         bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
+    //returns one of the cameras attached to the pawn
     const APIPCamera* getCamera(int index = 0) const;
     APIPCamera* getCamera(int index = 0);
-    UnrealImageCapture* getImageCapture();
     int getCameraCount();
+
+    //if enabled, this would show some flares
     void displayCollisionEffect(FVector hit_location, const FHitResult& hit);
+
+    //return the attached pawn
     APawn* getPawn();
 
     //get/set pose
     //parameters in NED frame
-    Pose getPose() const;
-    void setPose(const Pose& pose, bool ignore_collision);
     void setDebugPose(const Pose& debug_pose);
-
-    void setKinematics(const msr::airlib::Kinematics::State* kinematics);
-    const msr::airlib::Kinematics::State* getGroundTruthKinematics();
-
-    const GeoPoint& getHomeGeoPoint() const;
-    const CollisionInfo& getCollisionInfo() const;
 
     void setLogLine(std::string line);
     std::string getLogLine();
 
-    void printLogMessage(const std::string& message, const std::string& message_param = "", unsigned char severity = 0);
-    msr::airlib::CameraInfo getCameraInfo(int camera_id) const;
-    void setCameraOrientation(int camera_id, const Quaternionr& orientation);
-
     WrapperConfig& getConfig();
     const WrapperConfig& getConfig() const;
 
-    msr::airlib::Pose getActorPose(std::string actor_name);
     const VehicleSetting* getVehicleSetting() const;
-
-    int getRemoteControlID() const;
 
     FVector getUUPosition() const;
     FRotator getUUOrientation() const;
@@ -97,13 +98,14 @@ public: //interface
 
     void possess();
 
-    msr::airlib::VehicleApiBase* getApi() const;
-    void setApi(std::unique_ptr<msr::airlib::VehicleApiBase> api);
+    void toggleTrace();
 
 protected:
     UPROPERTY(VisibleAnywhere)
         UParticleSystem* collision_display_template;
 
+    //allows setting ground truth from physics engine
+    void setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics);
 
 private: //methods
     bool canTeleportWhileMove()  const;
@@ -112,8 +114,7 @@ private: //methods
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
-    VehiclePawnWrapper::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
-
+    VehicleSimApi::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
 
 private: //vars
     FVector ground_trace_end_;
@@ -126,7 +127,6 @@ private: //vars
     std::string log_line_;
     WrapperConfig config_;
     NedTransform ned_transform_;
-    std::unique_ptr<msr::airlib::VehicleApiBase> api_;
     std::string vehicle_name_;
     const VehicleSetting* vehicle_setting_;
 

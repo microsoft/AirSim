@@ -5,7 +5,7 @@
 #include "AirBlueprintLib.h"
 #include "physics/Kinematics.hpp"
 #include "FileManager.h"
-#include "VehiclePawnWrapper.h"
+#include "VehicleSimApi.h"
 
 
 class RecordingFile {
@@ -13,7 +13,7 @@ public:
     RecordingFile(const std::vector <std::string>& columns);
     ~RecordingFile();
 
-    void appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehiclePawnWrapper* wrapper);
+    void appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehicleSimApi* wrapper);
     void appendColumnHeader(const std::vector <std::string>& columns);
     void startRecording();
     void stopRecording(bool ignore_if_stopped);

@@ -79,7 +79,10 @@ int main(int argc, const char* argv[])
     api.initialize(connection_info, nullptr, is_simulation);
     api.reset();
 
-    msr::airlib::MultirotorRpcLibServer server(&api, nullptr, connection_info.local_host_ip);
+
+    ApiProvider api_provider(nullptr);
+    api_provider.insert_or_assign("", &api);
+    msr::airlib::MultirotorRpcLibServer server(&api_provider, connection_info.local_host_ip);
     
     //start server in async mode
     server.start(false);

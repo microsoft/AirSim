@@ -22,8 +22,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\api\ApiProvider.hpp" />
     <ClInclude Include="include\api\ApiServerBase.hpp" />
-    <ClInclude Include="include\api\DebugApiServer.hpp" />
     <ClInclude Include="include\api\RpcLibAdapatorsBase.hpp" />
     <ClInclude Include="include\api\RpcLibClientBase.hpp" />
     <ClInclude Include="include\api\RpcLibServerBase.hpp" />

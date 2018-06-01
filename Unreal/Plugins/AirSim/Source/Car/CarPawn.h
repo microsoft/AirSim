@@ -88,7 +88,7 @@ public:
     virtual void Tick(float Delta) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-    VehiclePawnWrapper* getVehiclePawnWrapper();
+    VehicleSimApi* getVehiclePawnWrapper();
     void initializeForBeginPlay(bool engine_sound);
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
@@ -137,7 +137,7 @@ private:
 
     UClass* pip_camera_class_;
 
-    std::unique_ptr<VehiclePawnWrapper> wrapper_;
+    std::unique_ptr<VehicleSimApi> wrapper_;
     msr::airlib::Kinematics::State kinematics_;
 
     CarPawnApi::CarControls keyboard_controls_;

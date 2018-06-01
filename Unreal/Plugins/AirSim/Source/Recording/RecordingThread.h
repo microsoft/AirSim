@@ -5,7 +5,7 @@
 
 #include "AirBlueprintLib.h"
 #include "UnrealImageCapture.h"
-#include "VehiclePawnWrapper.h"
+#include "VehicleSimApi.h"
 #include "Recording/RecordingFile.h"
 #include "physics/Kinematics.hpp"
 #include <memory>
@@ -21,7 +21,7 @@ public:
     FRecordingThread();
     virtual ~FRecordingThread();
     static void startRecording(msr::airlib::ImageCaptureBase* camera, const msr::airlib::Kinematics::State* kinematics, 
-        const RecordingSettings& settings, VehiclePawnWrapper* wrapper);
+        const RecordingSettings& settings, VehicleSimApi* wrapper);
     static void stopRecording(); 
     static bool isRecording();
 
@@ -46,7 +46,7 @@ private:
     msr::airlib::ImageCaptureBase* image_capture_;
     std::unique_ptr<RecordingFile> recording_file_;
     const msr::airlib::Kinematics::State* kinematics_;
-    VehiclePawnWrapper* wrapper_;
+    VehicleSimApi* wrapper_;
 
     msr::airlib::TTimePoint last_screenshot_on_;
     msr::airlib::Pose last_pose_;

@@ -14,31 +14,15 @@ namespace msr { namespace airlib {
 
 class MultirotorRpcLibServer : public RpcLibServerBase {
 public:
-    MultirotorRpcLibServer(MultirotorApiBase* vehicle_api, WorldSimApiBase* world_sim_api, string server_address, uint16_t port = 41451);
+    MultirotorRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port = 41451);
     virtual ~MultirotorRpcLibServer();
 
-    virtual const MultirotorApiBase* getVehicleApi(const std::string& vehicle_name = "") const override
-    {
-        unused(vehicle_name);
-        return vehicle_api_;
-    }
+protected:
     virtual MultirotorApiBase* getVehicleApi(const std::string& vehicle_name = "") override
     {
-        unused(vehicle_name);
-        return const_cast<MultirotorApiBase*>(getVehicleApi(vehicle_name));
-    }
-    virtual const WorldSimApiBase* getWorldSimApi() const override
-    {
-        return world_sim_api_;
-    }
-    virtual WorldSimApiBase* getWorldSimApi() override
-    {
-        return const_cast<WorldSimApiBase*>(getWorldSimApi());
+        return static_cast<MultirotorApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
     }
 
-private:
-    MultirotorApiBase* vehicle_api_;
-    WorldSimApiBase* world_sim_api_;
 };
 
 }} //namespace

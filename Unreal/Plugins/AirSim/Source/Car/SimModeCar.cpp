@@ -37,24 +37,24 @@ void ASimModeCar::BeginPlay()
 
     createVehicles(vehicles_);
 
-    report_wrapper_.initialize(false);
-    report_wrapper_.reset();
+    debug_reporter_.initialize(false);
+    debug_reporter_.reset();
 }
 
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     spawned_actors_.Empty();
     if (CameraDirector != nullptr) {
-        fpv_vehicle_pawn_wrapper_ = nullptr;
+        fpv_vehicle_sim_api_ = nullptr;
         CameraDirector = nullptr;
     }
 
     Super::EndPlay(EndPlayReason);
 }
 
-VehiclePawnWrapper* ASimModeCar::getFpvVehiclePawnWrapper() const
+const msr::airlib::VehicleSimApiBase* ASimModeCar::getVehicleSimApi() const
 {
-    return fpv_vehicle_pawn_wrapper_;
+    return fpv_vehicle_sim_api_;
 }
 
 void ASimModeCar::initializePauseState()
@@ -103,7 +103,7 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
     //put camera little bit above vehicle
     FTransform camera_transform(actor_transform.GetLocation() + FVector(follow_distance_, 0, 400));
 
-    //we will either find external camera if it already exist in evironment or create one
+    //we will either find external camera if it already exist in environment or create one
     APIPCamera* external_camera;
 
 
@@ -148,13 +148,13 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             vehicles.push_back(vehicle_pawn);
 
             //chose first pawn as FPV if none is designated as FPV
-            VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
+            VehicleSimApi* wrapper = vehicle_pawn->getVehiclePawnWrapper();
             vehicle_pawn->initializeForBeginPlay(getSettings().engine_sound);
 
             if (getSettings().enable_collision_passthrough)
                 wrapper->getConfig().enable_passthrough_on_collisions = true;
-            if (wrapper->getConfig().is_fpv_vehicle || fpv_vehicle_pawn_wrapper_ == nullptr)
-                fpv_vehicle_pawn_wrapper_ = wrapper;
+            if (wrapper->getConfig().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
+                fpv_vehicle_sim_api_ = wrapper;
         }
     }
 
@@ -182,8 +182,8 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
         }
     }
 
-    fpv_vehicle_pawn_wrapper_->possess();
-    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_wrapper_, external_camera);
+    fpv_vehicle_sim_api_->possess();
+    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_sim_api_, external_camera);
 }
 
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
@@ -196,9 +196,9 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
 #endif
 }
 
-int ASimModeCar::getRemoteControlID(const VehiclePawnWrapper& pawn) const
+int ASimModeCar::getRemoteControlID(const VehicleSimApi& pawn) const
 {
-    return fpv_vehicle_pawn_wrapper_->getRemoteControlID();
+    return fpv_vehicle_sim_api_->getRemoteControlID();
 }
 
 void ASimModeCar::createVehicles(std::vector<VehiclePtr>& vehicles)
@@ -233,21 +233,21 @@ void ASimModeCar::Tick(float DeltaSeconds)
         }
     }
 
-    report_wrapper_.update();
-    report_wrapper_.setEnable(EnableReport);
+    debug_reporter_.update();
+    debug_reporter_.setEnable(EnableReport);
 
-    if (report_wrapper_.canReport()) {
-        report_wrapper_.clearReport();
-        updateReport();
+    if (debug_reporter_.canReport()) {
+        debug_reporter_.clearReport();
+        updateDebugReport();
     }
 }
 
-void ASimModeCar::updateReport()
+void ASimModeCar::updateDebugReport()
 {
     for (VehiclePtr vehicle : vehicles_) {
-        VehiclePawnWrapper* wrapper = vehicle->getVehiclePawnWrapper();
-        msr::airlib::StateReporter& reporter = *report_wrapper_.getReporter();
-        std::string vehicle_name = fpv_vehicle_pawn_wrapper_->getVehicleSetting()->vehicle_name;
+        VehicleSimApi* wrapper = vehicle->getVehiclePawnWrapper();
+        msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
+        std::string vehicle_name = fpv_vehicle_sim_api_->getVehicleSetting()->vehicle_name;
 
         reporter.writeHeading(std::string("Vehicle: ").append(
             vehicle_name == "" ? "(default)" : vehicle_name));
@@ -263,7 +263,7 @@ void ASimModeCar::updateReport()
     }
 }
 
-std::string ASimModeCar::getReport()
+std::string ASimModeCar::getDebugReport()
 {
-    return report_wrapper_.getOutput();
+    return debug_reporter_.getOutput();
 }

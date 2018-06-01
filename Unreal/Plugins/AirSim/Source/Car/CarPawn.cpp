@@ -86,7 +86,7 @@ ACarPawn::ACarPawn()
 
     is_low_friction_ = false;
 
-    wrapper_.reset(new VehiclePawnWrapper());
+    wrapper_.reset(new VehicleSimApi());
 }
 
 void ACarPawn::setupVehicleMovementComponent()
@@ -235,7 +235,7 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 
-VehiclePawnWrapper* ACarPawn::getVehiclePawnWrapper()
+VehicleSimApi* ACarPawn::getVehiclePawnWrapper()
 {
     return wrapper_.get();
 }

@@ -1,16 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//TODO: all code except setRotorSpeed requires VehiclePawnBase.
-//May be we should have MultiRotorPawnBase so we don't need FlyingPawn.h
-#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
-#include "VehiclePawnWrapper.h"
+#include "VehicleSimApi.h"
 #include "vehicles/multirotor/MultiRotor.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "controllers/VehicleSimBridgeBase.hpp"
 #include "ManualPoseController.h"
 #include <chrono>
 #include "api/ApiServerBase.hpp"
@@ -18,12 +14,11 @@
 #include <future>
 
 
-class MultiRotorConnector : public msr::airlib::VehicleSimBridgeBase
+class MultirotorSimApi : public VehicleSimApi
 {
 public:
     typedef msr::airlib::real_T real_T;
     typedef msr::airlib::Utils Utils;
-    typedef msr::airlib::ControllerBase ControllerBase;
     typedef msr::airlib::MultiRotor MultiRotor;
     typedef msr::airlib::StateReporter StateReporter;
     typedef msr::airlib::UpdatableObject UpdatableObject;
@@ -31,16 +26,14 @@ public:
 
 
 public:
-    virtual ~MultiRotorConnector();
+    virtual ~MultirotorSimApi() = default;
 
-    //VehicleSimBridgeBase interface
+    //VehicleSimApiBase interface
     //implements game interface to update pawn
-    MultiRotorConnector(VehiclePawnWrapper* vehicle_paw_wrapper, msr::airlib::MultiRotorParams* vehicle_params,
+    MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, msr::airlib::MultiRotorParams* vehicle_params,
         UManualPoseController* manual_pose_controller);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
-
-    virtual msr::airlib::VehicleApiBase* getVehicleApi() override;
 
     //PhysicsBody interface
     //this just wrapped around MultiRotor physics body
@@ -48,36 +41,22 @@ public:
     virtual void update() override;
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
+    virtual msr::airlib::RCData getRCData() const override;
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
-    virtual Pose getPose() override;
-    virtual Kinematics::State getGroundTruthKinematics() override;
 
-
-    virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id,
-        bool is_name_regex = false) override;
-    virtual int getSegmentationObjectID(const std::string& mesh_name) override;
-
-    virtual msr::airlib::ImageCaptureBase* getImageCapture() override;
-
-    virtual void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) override;
-    virtual Pose getActorPose(const std::string& actor_name) override;
-    virtual CameraInfo getCameraInfo(int camera_id) const override;
-    virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) override;
 
 private:
     void detectUsbRc();
-    const msr::airlib::RCData& getRCData();  
-    void resetPrivate();
-    msr::airlib::MultirotorApiBase* getApi() const;
 
 private:
-    MultiRotor vehicle_;
-    std::vector<std::string> controller_messages_;
-    std::unique_ptr<msr::airlib::Environment> environment_;
-    VehiclePawnWrapper* wrapper_;
-
+    msr::airlib::MultirotorApiBase* vehicle_api_;
     msr::airlib::MultiRotorParams* vehicle_params_;
+    UManualPoseController* manual_pose_controller_;
+
+    std::unique_ptr<MultiRotor> phys_vehicle_;
+    std::vector<std::string> vehicle_api_messages_;
+    std::unique_ptr<msr::airlib::Environment> environment_;
 
     struct RotorInfo {
         real_T rotor_speed = 0;
@@ -90,12 +69,9 @@ private:
 
     CollisionResponseInfo collision_response_info;
 
-    msr::airlib::MultirotorApiBase* controller_;
-    UManualPoseController* manual_pose_controller_;
-
-    SimJoyStick joystick_;
-    SimJoyStick::State joystick_state_;
-    msr::airlib::RCData rc_data_;
+    mutable msr::airlib::RCData rc_data_;
+    mutable SimJoyStick joystick_;
+    mutable SimJoyStick::State joystick_state_;
 
     bool pending_pose_collisions_;
     enum class PendingPoseStatus {
@@ -109,5 +85,4 @@ private:
     std::packaged_task<void()> reset_task_;
 
     Pose last_pose_; //for trace lines showing vehicle path
-    Pose last_debug_pose_; //for purposes such as comparing recorded trajectory
 };

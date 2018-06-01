@@ -45,7 +45,8 @@ struct RpcLibServerBase::impl {
 
 typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
 
-RpcLibServerBase::RpcLibServerBase(const std::string& server_address, uint16_t port)
+RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port)
+    : api_provider_(api_provider)
 {
     pimpl_->server.bind("getServerVersion", []() -> int {
         return 1;
@@ -174,7 +175,6 @@ void* RpcLibServerBase::getServer() const
 {
     return &pimpl_->server;
 }
-
 
 }} //namespace
 #endif

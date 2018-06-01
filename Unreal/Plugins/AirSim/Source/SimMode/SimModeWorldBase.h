@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include <memory>
 #include <vector>
-#include "controllers/VehicleSimBridgeBase.hpp"
+#include "controllers/VehicleSimApiBase.hpp"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
@@ -26,14 +26,14 @@ public:
 
 
     virtual void reset() override;
-    virtual std::string getReport() override;
+    virtual std::string getDebugReport() override;
 
     virtual bool isPaused() const override;
     virtual void pause(bool is_paused) override;
     virtual void continueForTime(double seconds) override;
 
 protected:
-    typedef std::shared_ptr<msr::airlib::VehicleSimBridgeBase> VehiclePtr;
+    typedef std::shared_ptr<msr::airlib::VehicleSimApiBase> VehiclePtr;
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
     size_t getVehicleCount() const;
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "VehiclePawnWrapper.h"
+#include "VehicleSimApi.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include <memory>
-#include "vehicles/multirotor/controllers/MultirotorCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
 #include "PIPCamera.h"
 #include "FlyingPawn.generated.h"
 
@@ -20,7 +20,7 @@ public:
 
     void setRotorSpeed(int rotor_index, float radsPerSec);
     void initializeForBeginPlay(const std::vector<msr::airlib::AirSimSettings::AdditionalCameraSetting>& additionalCameras);
-    VehiclePawnWrapper* getVehiclePawnWrapper();
+    VehicleSimApi* getVehiclePawnWrapper();
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -42,5 +42,5 @@ private: //variables
 
     UPROPERTY() TArray<APIPCamera*> AdditionalCameras;
 
-    std::unique_ptr<VehiclePawnWrapper> wrapper_;
+    std::unique_ptr<VehicleSimApi> wrapper_;
 };

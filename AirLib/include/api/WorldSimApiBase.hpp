@@ -5,7 +5,7 @@
 #define air_WorldSimApiBase_hpp
 
 #include "common/CommonStructs.hpp"
-#include "VehicleSimApiBase.hpp"
+
 
 namespace msr { namespace airlib {
 
@@ -19,18 +19,13 @@ public:
     virtual void pause(bool is_paused) = 0;
     virtual void continueForTime(double seconds) = 0;
 
-    virtual const VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "") const = 0;
-    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "")
-    {
-        return const_cast<VehicleSimApiBase*>(getVehicleSimApi(vehicle_name));
-    }
-    
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int getSegmentationObjectID(const std::string& mesh_name) const = 0;
+
     virtual void printLogMessage(const std::string& message,
         const std::string& message_param = "", unsigned char severity = 0) = 0;
-    virtual Pose getObjectPose(const std::string& object_name) const = 0;
 
+    virtual Pose getObjectPose(const std::string& object_name) const = 0;
 };
 
 

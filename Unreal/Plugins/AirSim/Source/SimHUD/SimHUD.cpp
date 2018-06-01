@@ -6,7 +6,6 @@
 #include "Multirotor/SimModeWorldMultiRotor.h"
 #include "Car/SimModeCar.h"
 #include "common/AirSimSettings.hpp"
-#include "api/DebugApiServer.hpp"
 #include <stdexcept>
 
 
@@ -30,7 +29,7 @@ void ASimHUD::BeginPlay()
         createSimMode();
         createMainWidget();
         setupInputBindings();
-        startApiServer();
+        simmode_->startApiServer();
     }
     catch (std::exception& ex) {
         UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
@@ -43,12 +42,12 @@ void ASimHUD::BeginPlay()
 void ASimHUD::Tick(float DeltaSeconds)
 {
     if (simmode_ && simmode_->EnableReport)
-        widget_->updateReport(simmode_->getReport());
+        widget_->updateDebugReport(simmode_->getDebugReport());
 }
 
 void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    stopApiServer();
+    simmode_->stopApiServer();
 
     if (widget_) {
         widget_->Destruct();
@@ -80,40 +79,6 @@ void ASimHUD::inputEventToggleReport()
     widget_->setReportVisible(simmode_->EnableReport);
 }
 
-void ASimHUD::startApiServer()
-{
-    if (AirSimSettings::singleton().enable_rpc) {
-
-#ifdef AIRLIB_NO_RPC
-        api_server_.reset(new msr::airlib::DebugApiServer());
-#else
-        api_server_ = simmode_->createApiServer();
-#endif
-
-        try {
-            api_server_->start();
-        }
-        catch (std::exception& ex) {
-            UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
-        }
-    }
-    else
-        UAirBlueprintLib::LogMessageString("API server is disabled in settings", "", LogDebugLevel::Informational);
-
-}
-void ASimHUD::stopApiServer()
-{
-    if (api_server_ != nullptr) {
-        api_server_->stop();
-        api_server_.reset(nullptr);
-    }
-}
-
-bool ASimHUD::isApiServerStarted()
-{
-    return api_server_ != nullptr;
-}
-
 void ASimHUD::inputEventToggleHelp()
 {
     widget_->toggleHelpVisibility();
@@ -121,7 +86,7 @@ void ASimHUD::inputEventToggleHelp()
 
 void ASimHUD::inputEventToggleTrace()
 {
-    simmode_->getFpvVehiclePawnWrapper()->toggleTrace();
+    simmode_->getFpvVehicleSimApi()->toggleTrace();
 }
 
 ASimHUD::ImageType ASimHUD::getSubwindowCameraType(int window_index)
@@ -225,7 +190,7 @@ void ASimHUD::createMainWidget()
     widget_->initializeForPlay();
     widget_->setReportVisible(simmode_->EnableReport);
     widget_->setOnToggleRecordingHandler(std::bind(&ASimHUD::toggleRecordHandler, this));
-    widget_->setRecordButtonVisibility(simmode_->isRecordUIVisible());
+    widget_->setRecordButtonVisibility(AirSimSettings::singleton().is_record_ui_visible);
     updateWidgetSubwindowVisibility();
 }
 
@@ -309,6 +274,7 @@ void ASimHUD::createSimMode()
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
+    //spawn at origin. We will use this to do NED transforms for non-vehicle objects in environment
     if (simmode_name == "Multirotor")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
     else if (simmode_name == "Car")
@@ -320,7 +286,7 @@ void ASimHUD::createSimMode()
 
 void ASimHUD::initializeSubWindows()
 {
-    auto wrapper = simmode_->getFpvVehiclePawnWrapper();
+    auto wrapper = simmode_->getFpvVehicleSimApi();
     auto camera_count = wrapper->getCameraCount();
 
     //setup defaults
