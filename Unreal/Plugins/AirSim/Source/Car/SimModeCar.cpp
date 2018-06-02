@@ -148,16 +148,16 @@ void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
             vehicles.push_back(vehicle_pawn);
 
             //chose first pawn as FPV if none is designated as FPV
-            VehicleSimApi* sim_api = vehicle_pawn->getVehicleSimApi();
-            sim_api->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
-            sim_api->setKinematics(&kinematics_);
+            VehicleSimApi* vehicle_sim_api = vehicle_pawn->getVehicleSimApi();
+            vehicle_sim_api->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
+            vehicle_sim_api->setKinematics(&kinematics_);
 
             vehicle_pawn->initializeForBeginPlay(getSettings().engine_sound);
 
             if (getSettings().enable_collision_passthrough)
-                sim_api->getConfig().enable_passthrough_on_collisions = true;
-            if (sim_api->getConfig().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
-                fpv_vehicle_sim_api_ = sim_api;
+                vehicle_sim_api->getConfig().enable_passthrough_on_collisions = true;
+            if (vehicle_sim_api->getConfig().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
+                fpv_vehicle_sim_api_ = vehicle_sim_api;
         }
     }
 
@@ -248,14 +248,14 @@ void ASimModeCar::Tick(float DeltaSeconds)
 void ASimModeCar::updateDebugReport()
 {
     for (VehiclePtr vehicle : vehicles_) {
-        VehicleSimApi* sim_api = vehicle->getVehicleSimApi();
+        VehicleSimApi* vehicle_sim_api = vehicle->getVehicleSimApi();
         msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
         std::string vehicle_name = fpv_vehicle_sim_api_->getVehicleSetting()->vehicle_name;
 
         reporter.writeHeading(std::string("Vehicle: ").append(
             vehicle_name == "" ? "(default)" : vehicle_name));
 
-        const msr::airlib::Kinematics::State* kinematics = sim_api->getGroundTruthKinematics();
+        const msr::airlib::Kinematics::State* kinematics = vehicle_sim_api->getGroundTruthKinematics();
 
         reporter.writeValue("Position", kinematics->pose.position);
         reporter.writeValue("Orientation", kinematics->pose.orientation);

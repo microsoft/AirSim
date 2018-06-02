@@ -73,8 +73,6 @@ private:
     void setupInputBindings();
     void attachSpringArm(bool attach);
     void disableCameras(bool fpv, bool backup, bool external);
-    void setupCameraFromSettings();
-
 
 private:
     typedef common_utils::Utils Utils;

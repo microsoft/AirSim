@@ -42,28 +42,6 @@ public:
         firmware_.reset(new simple_flight::Firmware(&params_, board_.get(), comm_link_.get(), estimator_.get()));
     }
 
-    void setRCData(const RCData& rcData)
-    {
-        last_rcData_ = rcData;
-        if (rcData.is_valid) {
-            board_->setIsRcConnected(true);
-            board_->setInputChannel(0, rcData.roll); //X
-            board_->setInputChannel(1, rcData.yaw); //Y
-            board_->setInputChannel(2, rcData.throttle); //F
-            board_->setInputChannel(3, -rcData.pitch); //Z
-            board_->setInputChannel(4, static_cast<float>(rcData.switch1));
-            board_->setInputChannel(5, static_cast<float>(rcData.switch2));
-            board_->setInputChannel(6, static_cast<float>(rcData.switch3));
-            board_->setInputChannel(7, static_cast<float>(rcData.switch4));
-            board_->setInputChannel(8, static_cast<float>(rcData.switch5));
-            board_->setInputChannel(9, static_cast<float>(rcData.switch6));
-            board_->setInputChannel(10, static_cast<float>(rcData.switch7));
-            board_->setInputChannel(11, static_cast<float>(rcData.switch8));
-        }
-        else { //else we don't have RC data
-            board_->setIsRcConnected(false);
-        }
-    }
 
 public: //VehicleApiBase implementation
     virtual void reset() override
@@ -128,6 +106,28 @@ public: //MultirotorApiBase implementation
         board_->setKinematics(kinematics);
         estimator_->setKinematics(kinematics, environment);
     }
+    virtual bool setRCData(const RCData& rc_data) override
+    {
+        last_rcData_ = rc_data;
+        if (rc_data.is_valid) {
+            board_->setIsRcConnected(true);
+            board_->setInputChannel(0, rc_data.roll); //X
+            board_->setInputChannel(1, rc_data.yaw); //Y
+            board_->setInputChannel(2, rc_data.throttle); //F
+            board_->setInputChannel(3, -rc_data.pitch); //Z
+            board_->setInputChannel(4, static_cast<float>(rc_data.switch1));
+            board_->setInputChannel(5, static_cast<float>(rc_data.switch2));
+            board_->setInputChannel(6, static_cast<float>(rc_data.switch3));
+            board_->setInputChannel(7, static_cast<float>(rc_data.switch4));
+            board_->setInputChannel(8, static_cast<float>(rc_data.switch5));
+            board_->setInputChannel(9, static_cast<float>(rc_data.switch6));
+            board_->setInputChannel(10, static_cast<float>(rc_data.switch7));
+            board_->setInputChannel(11, static_cast<float>(rc_data.switch8));
+        }
+        else { //else we don't have RC data
+            board_->setIsRcConnected(false);
+        }
+    }
 
 protected: 
     virtual Kinematics::State getKinematicsEstimated() const override
@@ -161,6 +161,7 @@ protected:
 
     virtual RCData getRCData() const override
     {
+        //return what we received last time through setRCData
         return last_rcData_;
     }
 

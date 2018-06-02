@@ -8,6 +8,7 @@
 #include "common/UpdatableObject.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "physics/Kinematics.hpp"
+#include "common/AirSimSettings.hpp"
 
 namespace msr { namespace airlib {
 
@@ -35,18 +36,25 @@ public:
     }
 
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const = 0;
-    virtual std::vector<uint8_t> getImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const = 0;
+    virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const = 0;
 
     virtual Pose getPose() const = 0;
     virtual void setPose(const Pose& pose, bool ignore_collision) = 0;
     virtual const Kinematics::State* getGroundTruthKinematics() const = 0;
 
-    virtual CameraInfo getCameraInfo(int camera_id) const = 0;
-    virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) = 0;
+    virtual CameraInfo getCameraInfo(const std::string& camera_name) const = 0;
+    virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) = 0;
 
     virtual CollisionInfo getCollisionInfo() const = 0;
     virtual int getRemoteControlID() const { return -1; }
     virtual RCData getRCData() const = 0; //get reading from RC from simulator
+    virtual std::string getVehicleName() const = 0;
+    virtual std::string getLogLine() const = 0;
+
+    const AirSimSettings::VehicleSetting& getVehicleSetting() const
+    {
+        return *(AirSimSettings::singleton().getVehicleSetting(getVehicleName()));
+    }
 
 };
 

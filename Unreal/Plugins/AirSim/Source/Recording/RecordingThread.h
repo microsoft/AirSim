@@ -4,8 +4,7 @@
 #include "HAL/Runnable.h"
 
 #include "AirBlueprintLib.h"
-#include "UnrealImageCapture.h"
-#include "VehicleSimApi.h"
+#include "api/VehicleSimApiBase.hpp"
 #include "Recording/RecordingFile.h"
 #include "physics/Kinematics.hpp"
 #include <memory>
@@ -15,13 +14,13 @@
 class FRecordingThread : public FRunnable
 {
 public:
-    typedef msr::airlib::AirSimSettings::RecordingSettings RecordingSettings;
+    typedef msr::airlib::AirSimSettings::RecordingSetting RecordingSetting;
 
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
     static void startRecording(msr::airlib::ImageCaptureBase* camera, const msr::airlib::Kinematics::State* kinematics, 
-        const RecordingSettings& settings, VehicleSimApi* wrapper);
+        const RecordingSetting& settings, msr::airlib::VehicleSimApiBase* vehicle_sim_api);
     static void stopRecording(); 
     static bool isRecording();
 
@@ -42,11 +41,11 @@ private:
 
     std::unique_ptr<FRunnableThread> thread_;
 
-    RecordingSettings settings_;
+    RecordingSetting settings_;
     msr::airlib::ImageCaptureBase* image_capture_;
     std::unique_ptr<RecordingFile> recording_file_;
     const msr::airlib::Kinematics::State* kinematics_;
-    VehicleSimApi* wrapper_;
+    msr::airlib::VehicleSimApiBase* vehicle_sim_api_;
 
     msr::airlib::TTimePoint last_screenshot_on_;
     msr::airlib::Pose last_pose_;

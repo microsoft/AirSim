@@ -13,7 +13,7 @@ public:
     RecordingFile(const std::vector <std::string>& columns);
     ~RecordingFile();
 
-    void appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehicleSimApi* wrapper);
+    void appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, msr::airlib::VehicleSimApiBase* vehicle_sim_api);
     void appendColumnHeader(const std::vector <std::string>& columns);
     void startRecording();
     void stopRecording(bool ignore_if_stopped);

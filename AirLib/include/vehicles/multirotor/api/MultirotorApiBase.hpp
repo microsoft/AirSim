@@ -36,8 +36,6 @@ protected: //must be implemented
     virtual GeoPoint getGpsLocation() const = 0;
     virtual const MultirotorApiParams& getMultirotorApiParams() const = 0;
 
-    virtual RCData getRCData() const = 0; //get reading from RC bound to vehicle
-
     /************************* basic config APIs *********************************/
     virtual float getCommandPeriod() const = 0; //time between two command required for drone in seconds
     virtual float getTakeoffZ() const = 0;  // the height above ground for the drone after successful takeoff (Z above ground is negative due to NED coordinate system).
@@ -69,6 +67,23 @@ public: //optional overrides
     {
         unused(kinematics);
         unused(environment);
+    }
+
+    //For RCs, there are two cases: (1) vehicle may be configured to use
+    //RC bound to its hardware (2) vehicle may be configured to get RC data
+    //supplied via API calls. Below two APIs are not symmetrical, i.e.,
+    //getRCData() may or may not return same thing as setRCData().
+    //get reading from RC bound to vehicle (if unsupported then RCData::is_valid = false)
+    virtual RCData getRCData() const
+    {
+        static const RCData invalid_rc_data;
+        return invalid_rc_data;
+    }
+    //set external RC data to vehicle (if unsupported then returns false)
+    virtual bool setRCData(const RCData& rc_data)
+    {
+        unused(rc_data);
+        return false;
     }
 
 public: //these APIs uses above low level APIs
@@ -204,7 +219,7 @@ protected: //types
             token.unlock();
         }
     protected:
-        MultirotorApiBase * getApi()
+        MultirotorApiBase * getVehicleApi()
         {
             return api_;
         }
@@ -231,7 +246,7 @@ protected: //types
         virtual ~SingleTaskCall()
         {
             if (isRootCall())
-                getApi()->afterTask();
+                getVehicleApi()->afterTask();
         }
     };
 

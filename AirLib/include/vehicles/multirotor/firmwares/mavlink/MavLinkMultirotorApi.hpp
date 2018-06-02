@@ -227,12 +227,6 @@ public: //methods
         return RotorControlsCount;
     }
 
-    virtual RCData getRCData() const override
-    {
-        //TODO: implement this for mavlink
-        throw VehicleCommandNotImplementedException("getRCData() function is not yet implemented");
-    }
-
     virtual bool armDisarm(bool arm) override
     {
         SingleCall lock(this);

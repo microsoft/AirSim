@@ -38,6 +38,8 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    global_ned_transform_ = NedTransform(GetActorLocation(), 
+        UAirBlueprintLib::GetWorldToMetersScale(this));
     world_sim_api_.reset(new WorldSimApi(this));
 
     setupPhysicsLoopPeriod();
@@ -56,6 +58,11 @@ void ASimModeBase::BeginPlay()
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 }
 
+const NedTransform& ASimModeBase::getGlobalNedTransform()
+{
+    return global_ned_transform_;
+}
+
 void ASimModeBase::checkVehicleReady()
 {
     const auto& vehicle_apis = api_provider_->getVehicleApis();
@@ -71,12 +78,12 @@ void ASimModeBase::checkVehicleReady()
 
 void ASimModeBase::setStencilIDs()
 {
-    UAirBlueprintLib::SetMeshNamingMethod(getSettings().segmentation_settings.mesh_naming_method);
+    UAirBlueprintLib::SetMeshNamingMethod(getSettings().segmentation_setting.mesh_naming_method);
 
-    if (getSettings().segmentation_settings.init_method ==
-        AirSimSettings::SegmentationSettings::InitMethodType::CommonObjectsRandomIDs) {
+    if (getSettings().segmentation_setting.init_method ==
+        AirSimSettings::SegmentationSetting::InitMethodType::CommonObjectsRandomIDs) {
      
-        UAirBlueprintLib::InitializeMeshStencilIDs(!getSettings().segmentation_settings.override_existing);
+        UAirBlueprintLib::InitializeMeshStencilIDs(!getSettings().segmentation_setting.override_existing);
     }
     //else don't init
 }
@@ -84,6 +91,7 @@ void ASimModeBase::setStencilIDs()
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
+    world_sim_api_.reset(nullptr);
     Super::EndPlay(EndPlayReason);
 }
 
@@ -91,9 +99,9 @@ void ASimModeBase::setupTimeOfDay()
 {
     sky_sphere_ = nullptr;
 
-    const auto& tod_settings = getSettings().tod_settings;
+    const auto& tod_setting = getSettings().tod_setting;
 
-    if (tod_settings.enabled) {
+    if (tod_setting.enabled) {
         TArray<AActor*> sky_spheres;
         UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), sky_sphere_class_, sky_spheres);
         if (sky_spheres.Num() == 0)
@@ -116,8 +124,8 @@ void ASimModeBase::setupTimeOfDay()
 
             tod_sim_clock_start_ = ClockFactory::get()->nowNanos();
             tod_last_update_ = 0;
-            if (tod_settings.start_datetime != "")
-                tod_start_time_ = Utils::to_time_t(tod_settings.start_datetime, tod_settings.is_start_datetime_dst);
+            if (tod_setting.start_datetime != "")
+                tod_start_time_ = Utils::to_time_t(tod_setting.start_datetime, tod_setting.is_start_datetime_dst);
             else
                 tod_start_time_ = std::time(nullptr);
         }
@@ -205,9 +213,7 @@ void ASimModeBase::Tick(float DeltaSeconds)
     advanceTimeOfDay();
 
     showClockStats();
-
-    showVehicleMessages();
-
+    
     Super::Tick(DeltaSeconds);
 }
 
@@ -225,12 +231,12 @@ void ASimModeBase::advanceTimeOfDay()
 {
     const auto& settings = getSettings();
 
-    if (settings.tod_settings.enabled && sky_sphere_ && sun_) {
+    if (settings.tod_setting.enabled && sky_sphere_ && sun_) {
         auto secs = ClockFactory::get()->elapsedSince(tod_last_update_);
-        if (secs > settings.tod_settings.update_interval_secs) {
+        if (secs > settings.tod_setting.update_interval_secs) {
             tod_last_update_ = ClockFactory::get()->nowNanos();
 
-            auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * settings.tod_settings.celestial_clock_speed;
+            auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * settings.tod_setting.celestial_clock_speed;
             uint64_t cur_time = ClockFactory::get()->addTo(tod_sim_clock_start_, interval)  / 1E9;
 
             UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(cur_time), LogDebugLevel::Informational);
@@ -253,7 +259,7 @@ void ASimModeBase::reset()
     //Should be overridden by derived classes
 }
 
-VehicleSimApi* ASimModeBase::getFpvVehicleSimApi()
+msr::airlib::VehicleSimApiBase* ASimModeBase::getFpvVehicleSimApi()
 {
     //Should be overridden by derived classes
     return nullptr;
@@ -279,12 +285,6 @@ ECameraDirectorMode ASimModeBase::getInitialViewMode() const
     return Utils::toEnum<ECameraDirectorMode>(getSettings().initial_view_mode);
 }
 
-bool ASimModeBase::toggleRecording()
-{
-    world_sim_api_->toggleRecording();
-}
-
-
 const msr::airlib::AirSimSettings& ASimModeBase::getSettings() const
 {
     return AirSimSettings::singleton();
@@ -308,8 +308,8 @@ void ASimModeBase::stopRecording()
 void ASimModeBase::startRecording()
 {
     FRecordingThread::startRecording(getFpvVehicleSimApi()->getImageCapture(),
-        getFpvVehicleSimApi()->getGroundTruthKinematics(), simmode_->getSettings().recording_settings,
-        simmode_->getFpvVehicleSimApi());
+        getFpvVehicleSimApi()->getGroundTruthKinematics(), getSettings().segmentation_setting,
+        getFpvVehicleSimApi());
 }
 
 bool ASimModeBase::isRecording() const
@@ -325,7 +325,6 @@ void ASimModeBase::startApiServer()
 #ifdef AIRLIB_NO_RPC
         api_server_.reset();
 #else
-        world_sim_api_.reset(new WorldSimApi(this));
         api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
         api_server_ = createApiServer();
 #endif
@@ -347,7 +346,6 @@ void ASimModeBase::stopApiServer()
         api_server_->stop();
         api_server_.reset(nullptr);
         api_provider_.reset(nullptr);
-        world_sim_api_.reset(nullptr);
     }
 }
 bool ASimModeBase::isApiServerStarted()

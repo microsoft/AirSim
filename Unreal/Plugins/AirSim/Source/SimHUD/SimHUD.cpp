@@ -271,29 +271,34 @@ void ASimHUD::createSimMode()
 {
     std::string simmode_name = AirSimSettings::singleton().simmode_name;
 
+    //get player controller
+    APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
+    FTransform actor_transform = player_controller->GetViewTarget()->GetActorTransform();
+
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    //spawn at origin. We will use this to do NED transforms for non-vehicle objects in environment
+    //spawn at origin. We will use this to do global NED transforms, for ex, non-vehicle objects in environment
     if (simmode_name == "Multirotor")
-        simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(actor_transform.GetLocation(), 
+            actor_transform.Rotator(), simmode_spawn_params);
     else if (simmode_name == "Car")
-        simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(actor_transform.GetLocation(),
+            actor_transform.Rotator(), simmode_spawn_params);
     else
         UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
 }
 
-
 void ASimHUD::initializeSubWindows()
 {
-    auto wrapper = simmode_->getFpvVehicleSimApi();
-    auto camera_count = wrapper->getCameraCount();
+    auto vehicle_sim_api = simmode_->getFpvVehicleSimApi();
+    auto camera_count = vehicle_sim_api->getCameraCount();
 
     //setup defaults
     if (camera_count > 0) {
-        subwindow_cameras_[0] = wrapper->getCamera(0);
-        subwindow_cameras_[1] = wrapper->getCamera(0); //camera_count > 3 ? 3 : 0
-        subwindow_cameras_[2] = wrapper->getCamera(0); //camera_count > 4 ? 4 : 0
+        subwindow_cameras_[0] = vehicle_sim_api->getCamera(0);
+        subwindow_cameras_[1] = vehicle_sim_api->getCamera(0); //camera_count > 3 ? 3 : 0
+        subwindow_cameras_[2] = vehicle_sim_api->getCamera(0); //camera_count > 4 ? 4 : 0
     }
     else
         subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
@@ -304,7 +309,7 @@ void ASimHUD::initializeSubWindows()
         const auto& subwindow_setting = AirSimSettings::singleton().subwindow_settings.at(window_index);
 
         if (subwindow_setting.camera_id >= 0 && subwindow_setting.camera_id < camera_count)
-            subwindow_cameras_[subwindow_setting.window_index] = wrapper->getCamera(subwindow_setting.camera_id);
+            subwindow_cameras_[subwindow_setting.window_index] = vehicle_sim_api->getCamera(subwindow_setting.camera_id);
         else
             UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid",
                 std::to_string(window_index), LogDebugLevel::Failure);

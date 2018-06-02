@@ -5,7 +5,6 @@
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode)
 {
-    ned_transform_.initialize(simmode_);
 }
 
 bool WorldSimApi::isPaused() const
@@ -51,13 +50,7 @@ void WorldSimApi::printLogMessage(const std::string& message,
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
     AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
-    return actor ? toPose(actor->GetActorLocation(), actor->GetActorQuat())
+    return actor ? simmode_->getGlobalNedTransform().toLocalNed(actor->GetActorLocation(), actor->GetActorQuat())
         : Pose::nanPose();
 }
 
-WorldSimApi::Pose WorldSimApi::toPose(const FVector& u_position, const FQuat& u_quat) const
-{
-    const msr::airlib::Vector3r& position = ned_transform_.toNedMeters(u_position);
-    const msr::airlib::Quaternionr& orientation = ned_transform_.toQuaternionr(u_quat, true);
-    return Pose(position, orientation);
-}

@@ -7,7 +7,7 @@
 
 
 
-UnrealImageCapture::UnrealImageCapture(const std::vector<APIPCamera*>& cameras) 
+UnrealImageCapture::UnrealImageCapture(const std::map<std::string, APIPCamera*>* cameras)
     : cameras_(cameras)
 {
     //TODO: explore screenshot option
@@ -20,7 +20,7 @@ UnrealImageCapture::~UnrealImageCapture()
 void UnrealImageCapture::getImages(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
     std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const
 {
-    if (cameras_.size() == 0) {
+    if (cameras_->size() == 0) {
         for (unsigned int i = 0; i < requests.size(); ++i) {
             responses.push_back(ImageResponse());
             responses[responses.size() - 1].message = "camera is not set";
@@ -38,7 +38,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
 
     for (unsigned int i = 0; i < requests.size(); ++i) {
-        APIPCamera* camera = cameras_[requests.at(i).camera_id];
+        APIPCamera* camera = cameras_->at(requests.at(i).camera_name);
         responses.push_back(ImageResponse());
         ImageResponse& response = responses.at(i);
 
@@ -66,9 +66,9 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     for (unsigned int i = 0; i < requests.size(); ++i) {
         const ImageRequest& request = requests.at(i);
         ImageResponse& response = responses.at(i);
-        APIPCamera* camera = cameras_[request.camera_id];
+        APIPCamera* camera = cameras_->at(request.camera_name);
               
-        response.camera_id = request.camera_id;
+        response.camera_name = request.camera_name;
         response.time_stamp = render_results[i]->time_stamp;
         response.image_data_uint8 = std::vector<uint8_t>(render_results[i]->image_data_uint8.GetData(), render_results[i]->image_data_uint8.GetData() + render_results[i]->image_data_uint8.Num());
         response.image_data_float = std::vector<float>(render_results[i]->image_data_float.GetData(), render_results[i]->image_data_float.GetData() + render_results[i]->image_data_float.Num());

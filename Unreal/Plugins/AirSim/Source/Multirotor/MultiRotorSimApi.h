@@ -9,7 +9,6 @@
 #include "common/CommonStructs.hpp"
 #include "ManualPoseController.h"
 #include <chrono>
-#include "SimJoyStick/SimJoyStick.h"
 #include <future>
 
 
@@ -29,9 +28,10 @@ public:
 
     //VehicleSimApiBase interface
     //implements game interface to update pawn
-    MultirotorSimApi(const msr::airlib::GeoPoint& home_geopoint, msr::airlib::MultiRotorParams* vehicle_params, 
-        UManualPoseController* manual_pose_controller, APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
-        const Config& config = Config());
+    MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, msr::airlib::MultiRotorParams* vehicle_params,
+        UManualPoseController* manual_pose_controller,
+        APawn* pawn, const std::map<std::string, APIPCamera*>* cameras, const NedTransform& global_transform,
+        const std::string& vehicle_name);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
@@ -41,13 +41,8 @@ public:
     virtual void update() override;
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
-    virtual msr::airlib::RCData getRCData() const override;
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
-
-
-private:
-    void detectUsbRc();
 
 private:
     msr::airlib::MultirotorApiBase* vehicle_api_;
@@ -66,10 +61,6 @@ private:
     std::vector<RotorInfo> rotor_info_;
 
     CollisionResponseInfo collision_response_info;
-
-    mutable msr::airlib::RCData rc_data_;
-    mutable SimJoyStick joystick_;
-    mutable SimJoyStick::State joystick_state_;
 
     bool pending_pose_collisions_;
     enum class PendingPoseStatus {

@@ -89,7 +89,7 @@ public:
     virtual void Tick(float Delta) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-    void initializeForBeginPlay(msr::airlib::VehicleSimApiBase* sim_api, const msr::airlib::GeoPoint& home_geopoint, bool engine_sound);
+    void initializeForBeginPlay(msr::airlib::VehicleSimApiBase* vehicle_sim_api, const msr::airlib::GeoPoint& home_geopoint, bool engine_sound);
 
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
@@ -130,14 +130,14 @@ private:
 
     std::string getLogString();
     void setupVehicleMovementComponent();
-    msr::airlib::CarApiBase* getApi() const;
+    msr::airlib::CarApiBase* getVehicleApi() const;
 
 private:
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
     UClass* pip_camera_class_;
 
-    VehicleSimApiBase* sim_api_;
+    VehicleSimApiBase* vehicle_sim_api_;
     msr::airlib::Kinematics::State kinematics_;
 
     CarPawnApi::CarControls keyboard_controls_;

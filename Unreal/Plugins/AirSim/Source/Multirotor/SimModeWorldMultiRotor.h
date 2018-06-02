@@ -30,7 +30,7 @@ protected:
     typedef AFlyingPawn TMultiRotorPawn;
 
     virtual void createVehicles(std::vector<VehiclePtr>& vehicles) override;
-    VehiclePtr createVehicle(VehicleSimApi* wrapper);
+    VehiclePtr createVehicle(VehicleSimApi* vehicle_sim_api);
     virtual void setupClockSpeed() override;
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
 

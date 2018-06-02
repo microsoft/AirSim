@@ -3,9 +3,7 @@
 #include "CoreMinimal.h"
 #include "common/CommonStructs.hpp"
 #include "api/WorldSimApiBase.hpp"
-#include "api/VehicleSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
-#include "NedTransform.h"
 
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase {
@@ -29,11 +27,6 @@ public:
     virtual Pose getObjectPose(const std::string& object_name) const override;
 
 private:
-    Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
-
-
-private:
     ASimModeBase* simmode_;
-    NedTransform ned_transform_;
 
 };

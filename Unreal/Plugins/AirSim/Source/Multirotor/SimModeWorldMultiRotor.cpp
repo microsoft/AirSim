@@ -67,16 +67,15 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 VehicleSimApi* ASimModeWorldMultiRotor::getFpvVehicleSimApi() const
 {
-    return fpv_vehicle_pawn_sim_api_;
+    return fpv_vehicle_sim_api_;
 }
 
 void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 {
-    //get player controller
-    APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
-    FTransform actor_transform = player_controller->GetViewTarget()->GetActorTransform();
     //put camera little bit above vehicle
-    FTransform camera_transform(actor_transform.GetLocation() + FVector(-300, 0, 200));
+    //TODO: allow setting camera pose from settings
+    FVector uu_origin = getGlobalNedTransform().getLocalOffset();
+    FTransform camera_transform(uu_origin + FVector(-300, 0, 200));
 
     //we will either find external camera if it already exist in environment or create one
     APIPCamera* external_camera;
@@ -113,28 +112,41 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         UAirBlueprintLib::FindAllActor<TMultiRotorPawn>(this, pawns);
 
         //add vehicles from settings
-        for (auto const& vehicle_setting : getSettings().vehicles)
+        for (auto const& vehicle_setting_pair : getSettings().vehicles)
         {
-            if (vehicle_setting.second->auto_create &&
-                ((vehicle_setting.second->vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) ||
-                 (vehicle_setting.second->vehicle_type == AirSimSettings::kVehicleTypePX4))) {
+            const auto& vehicle_setting = *vehicle_setting_pair.second;
+            if (vehicle_setting.auto_create &&
+                ((vehicle_setting.vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) ||
+                 (vehicle_setting.vehicle_type == AirSimSettings::kVehicleTypePX4))) {
 
                 //decide which derived BP to use
-                std::string pawn_path = vehicle_setting.second->pawn_path;
+                std::string pawn_path = vehicle_setting.pawn_path;
                 if (pawn_path == "")
                     pawn_path = "DefaultQuadrotor";
 
                 //create vehicle pawn
                 FActorSpawnParameters pawn_spawn_params;
-                pawn_spawn_params.Name = FName(vehicle_setting.second->vehicle_name.c_str());
+                pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
                 pawn_spawn_params.SpawnCollisionHandlingOverride =
                     ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
                 auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
                     getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp);
 
+                FVector spawn_position = uu_origin;
+                FRotator spawn_rotation = FRotator::ZeroRotator;
+                Vector3r settings_position = vehicle_setting.position;
+                if (!VectorMath::hasNan(settings_position))
+                    spawn_position = getGlobalNedTransform().fromLocalNed(settings_position);
+                const auto& rotation = vehicle_setting.rotation;
+                if (!std::isnan(rotation.yaw))
+                    spawn_rotation.Yaw = rotation.yaw;
+                if (!std::isnan(rotation.pitch))
+                    spawn_rotation.Pitch = rotation.pitch;
+                if (!std::isnan(rotation.roll))
+                    spawn_rotation.Roll = rotation.roll;
                 TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
-                    vehicle_bp_class, actor_transform, pawn_spawn_params);
+                    vehicle_bp_class, FTransform(spawn_rotation, spawn_position), pawn_spawn_params);
 
                 spawned_actors_.Add(spawned_pawn);
                 pawns.Add(spawned_pawn);
@@ -142,23 +154,19 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         }
 
         //set up vehicle pawns
+        fpv_vehicle_sim_api_ = nullptr;
         for (AActor* pawn : pawns)
         {
             //initialize each vehicle pawn we found
             TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
-            std::unique_ptr<VehicleSimApi> sim_api = std::unique_ptr<VehicleSimApi>(new VehicleSimApi())
-            sim_api_->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
-            vehicle_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
-
-            if (getSettings().enable_collision_passthrough)
-                sim_api->getConfig().enable_passthrough_on_collisions = true;
-
+            vehicle_pawn->initializeForBeginPlay(getGlobalNedTransform(), std::string(TCHAR_TO_UTF8(*this->GetName())));
+            const auto* vehicle_sim_api = vehicle_pawn->getVehicleSimApi();
             //chose first pawn as FPV if none is designated as FPV
-            if (sim_api->getConfig().is_fpv_vehicle || fpv_vehicle_pawn_sim_api_ == nullptr)
-                fpv_vehicle_pawn_sim_api_ = sim_api;
+            if (vehicle_sim_api->getVehicleSetting().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
+                fpv_vehicle_sim_api_ = vehicle_sim_api;
 
             //now create the connector for each pawn
-            VehiclePtr vehicle = createVehicle(sim_api);
+            VehiclePtr vehicle = createVehicle(vehicle_sim_api);
             if (vehicle != nullptr) {
                 vehicles.push_back(vehicle);
                 fpv_vehicle_connectors_.Add(vehicle);
@@ -167,8 +175,8 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         }
     }
 
-    fpv_vehicle_pawn_sim_api_->possess();
-    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_pawn_sim_api_, external_camera);
+    fpv_vehicle_sim_api_->possess();
+    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_sim_api_, external_camera);
 }
 
 
@@ -214,18 +222,18 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
     setupVehiclesAndCamera(vehicles);
 }
 
-ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehicleSimApi* sim_api)
+ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehicleSimApi* vehicle_sim_api)
 {
-    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(sim_api->getPawn(), &sim_api->getNedTransform());
-    auto vehicle_params = MultiRotorParamsFactory::createConfig(sim_api->getVehicleSetting(), sensor_factory);
+    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(vehicle_sim_api->getPawn(), &vehicle_sim_api->getNedTransform());
+    auto vehicle_params = MultiRotorParamsFactory::createConfig(vehicle_sim_api->getVehicleSetting(), sensor_factory);
 
     vehicle_params_.push_back(std::move(vehicle_params));
 
     std::shared_ptr<MultirotorSimApi> vehicle = std::make_shared<MultirotorSimApi>(
-        sim_api, vehicle_params_.back().get(), manual_pose_controller);
+        vehicle_sim_api, vehicle_params_.back().get(), manual_pose_controller);
 
     if (vehicle->getPhysicsBody() != nullptr)
-        sim_api->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
+        vehicle_sim_api->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
 
     return std::static_pointer_cast<VehicleSimApiBase>(vehicle);
 }

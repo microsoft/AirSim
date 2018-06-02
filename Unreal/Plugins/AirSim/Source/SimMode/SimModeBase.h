@@ -11,6 +11,7 @@
 #include "common/ClockFactory.hpp"
 #include "api/ApiServerBase.hpp"
 #include "api/ApiProvider.hpp"
+#include "api/VehicleSimApiBase.hpp"
 #include "SimModeBase.generated.h"
 
 
@@ -40,7 +41,7 @@ public:
     //additional overridable methods
     virtual void reset();
     virtual std::string getDebugReport();
-    VehicleSimApi* ASimModeBase::getFpvVehicleSimApi();
+    msr::airlib::VehicleSimApiBase* ASimModeBase::getFpvVehicleSimApi();
 
     virtual ECameraDirectorMode getInitialViewMode() const;
 
@@ -55,6 +56,8 @@ public:
     void startApiServer();
     void stopApiServer();
     bool isApiServerStarted();
+
+    const NedTransform& getGlobalNedTransform();
 
 protected:
     virtual void setupInputBindings();
@@ -89,6 +92,7 @@ private:
     TTimePoint tod_last_update_;
     std::time_t tod_start_time_;
     long long physics_loop_period_;
+    NedTransform global_ned_transform_;
     std::unique_ptr<msr::airlib::WorldSimApiBase> world_sim_api_;
     std::unique_ptr<msr::airlib::ApiProvider> api_provider_;
     std::unique_ptr<msr::airlib::ApiServerBase> api_server_;

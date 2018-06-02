@@ -8,8 +8,9 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
-VehicleSimApi::VehicleSimApi(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
-        const Config& config = Config())
+VehicleSimApi::VehicleSimApi(APawn* pawn, const std::map<std::string, APIPCamera*>* cameras, const NedTransform& global_transform,
+    const std::string& vehicle_name)
+    : pawn_(pawn), cameras_(cameras), vehicle_name_(vehicle_name), ned_transform_(pawn, global_transform)
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
     if (!collision_display.Succeeded())
@@ -17,17 +18,7 @@ VehicleSimApi::VehicleSimApi(APawn* pawn, const std::vector<APIPCamera*>& camera
     else
         collision_display_template = nullptr;
 
-        typedef msr::airlib::AirSimSettings AirSimSettings;
-
-    pawn_ = pawn;
-    cameras_ = cameras;
-    config_ = config;
-    vehicle_name_ = vehicle_name;
-    vehicle_setting_ = AirSimSettings::singleton().getVehicleSetting(vehicle_name_);
-
     image_capture_.reset(new UnrealImageCapture(cameras_));
-
-    ned_transform_.initialize(pawn);
 
     //initialize state
     pawn_->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
@@ -42,33 +33,47 @@ VehicleSimApi::VehicleSimApi(APawn* pawn, const std::vector<APIPCamera*>& camera
     initial_state_.start_rotation = getUUOrientation();
 
     //compute our home point
-    Vector3r nedWrtOrigin = ned_transform_.toNedMeters(getUUPosition(), false);
+    Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(getUUPosition());
     home_geo_point_ = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin, AirSimSettings::singleton().origin_geopoint);
 
-    initial_state_.tracing_enabled = config.enable_trace;
-    initial_state_.collisions_enabled = config.enable_collisions;
-    initial_state_.passthrough_enabled = config.enable_passthrough_on_collisions;
+    initial_state_.tracing_enabled = getVehicleSetting().enable_trace;
+    initial_state_.collisions_enabled = getVehicleSetting().enable_collisions;
+    initial_state_.passthrough_enabled = getVehicleSetting().enable_collision_passthrough;
 
     initial_state_.collision_info = CollisionInfo();
 
     initial_state_.was_last_move_teleport = false;
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
 
-    setupCamerasFromSettings();
+    //setup RC
+    if (getRemoteControlID() >= 0)
+        detectUsbRc();
+}
+
+void VehicleSimApi::detectUsbRc()
+{
+    joystick_.getJoyStickState(getRemoteControlID(), joystick_state_);
+
+    rc_data_.is_initialized = joystick_state_.is_initialized;
+
+    if (rc_data_.is_initialized)
+        UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid, LogDebugLevel::Informational);
+    else
+        UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ",
+            std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
 }
 
 void VehicleSimApi::setupCamerasFromSettings()
 {
-    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
-    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
-    for (int image_type = -1; image_type < image_count; ++image_type) {
-        for (int camera_index = 0; camera_index < getCameraCount(); ++camera_index) {
-            APIPCamera* camera = getCamera(camera_index);
-            camera->setImageTypeSettings(image_type, AirSimSettings::singleton().capture_settings[image_type], 
-                AirSimSettings::singleton().noise_settings[image_type]);
-        }
+    const auto& vehicle_setting = AirSimSettings::singleton().getVehicleSetting(vehicle_name_);
+    const auto& camera_defaults = AirSimSettings::singleton().camera_defaults;
+
+    for (auto& pair : *cameras_) {
+        const auto& camera_setting = Utils::findOrDefault(vehicle_setting->cameras, pair.first, camera_defaults);
+        APIPCamera* camera = pair.second;
+        camera->setupCameraFromSettings(camera_setting, getNedTransform());
     }
 }
 
@@ -83,9 +88,9 @@ void VehicleSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor*
 
     state_.collision_info.has_collided = true;
     state_.collision_info.normal = Vector3r(Hit.ImpactNormal.X, Hit.ImpactNormal.Y, - Hit.ImpactNormal.Z);
-    state_.collision_info.impact_point = ned_transform_.toNedMeters(Hit.ImpactPoint);
-    state_.collision_info.position = ned_transform_.toNedMeters(getUUPosition());
-    state_.collision_info.penetration_depth = ned_transform_.toNedMeters(Hit.PenetrationDepth);
+    state_.collision_info.impact_point = ned_transform_.toLocalNed(Hit.ImpactPoint);
+    state_.collision_info.position = ned_transform_.toLocalNed(getUUPosition());
+    state_.collision_info.penetration_depth = ned_transform_.toNed(Hit.PenetrationDepth);
     state_.collision_info.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
     state_.collision_info.object_name = std::string(Other ? TCHAR_TO_UTF8(*(Other->GetName())) : "(null)");
     state_.collision_info.object_id = comp ? comp->CustomDepthStencilValue : -1;
@@ -127,14 +132,59 @@ std::vector<VehicleSimApi::ImageCaptureBase::ImageResponse> VehicleSimApi::getIm
     return responses;
 }
 
-std::vector<uint8_t> VehicleSimApi::getImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const
+std::vector<uint8_t> VehicleSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
 {
-    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_id, image_type) };
+    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_name, image_type) };
     const std::vector<ImageCaptureBase::ImageResponse>& response = getImages(request);
     if (response.size() > 0)
         return response.at(0).image_data_uint8;
     else
         return std::vector<uint8_t>();
+}
+
+
+msr::airlib::RCData VehicleSimApi::getRCData() const
+{
+    joystick_.getJoyStickState(getRemoteControlID(), joystick_state_);
+
+    rc_data_.is_valid = joystick_state_.is_valid;
+
+    if (rc_data_.is_valid) {
+        //-1 to 1 --> 0 to 1
+        rc_data_.throttle = (joystick_state_.left_y + 1) / 2;
+
+        //convert 0 to 1 -> -1 to 1
+        rc_data_.yaw = joystick_state_.left_x;
+        rc_data_.roll = joystick_state_.right_x;
+        rc_data_.pitch = -joystick_state_.right_y;
+
+        //TODO: add fields for z axis?
+
+        //last 8 bits are not used for now
+        rc_data_.switch1 = joystick_state_.buttons & 0x0001 ? 1 : 0; //front-upper-left
+        rc_data_.switch2 = joystick_state_.buttons & 0x0002 ? 1 : 0; //front-upper-right
+        rc_data_.switch3 = joystick_state_.buttons & 0x0004 ? 1 : 0; //top-right-left
+        rc_data_.switch4 = joystick_state_.buttons & 0x0008 ? 1 : 0; //top-right-left
+        rc_data_.switch5 = joystick_state_.buttons & 0x0010 ? 1 : 0; //top-left-right
+        rc_data_.switch6 = joystick_state_.buttons & 0x0020 ? 1 : 0; //top-right-right
+        rc_data_.switch7 = joystick_state_.buttons & 0x0040 ? 1 : 0; //top-left-left
+        rc_data_.switch8 = joystick_state_.buttons & 0x0080 ? 1 : 0; //top-right-left
+
+
+        UAirBlueprintLib::LogMessageString("Joystick (T,R,P,Y,Buttons): ", Utils::stringf("%f, %f, %f %f, %d",
+            rc_data_.throttle, rc_data_.roll, rc_data_.pitch, rc_data_.yaw, joystick_state_.buttons), LogDebugLevel::Informational);
+
+        //TODO: should below be at controller level info?
+        UAirBlueprintLib::LogMessageString("RC Mode: ", rc_data_.switch1 == 0 ? "Angle" : "Rate", LogDebugLevel::Informational);
+
+        UAirBlueprintLib::LogMessage(FString("Joystick (Switches): "), FString::FromInt(joystick_state_.buttons) + ", " +
+            FString::FromInt(rc_data_.switch1) + ", " + FString::FromInt(rc_data_.switch2) + ", " + FString::FromInt(rc_data_.switch3) + ", " + FString::FromInt(rc_data_.switch4)
+            + ", " + FString::FromInt(rc_data_.switch5) + ", " + FString::FromInt(rc_data_.switch6) + ", " + FString::FromInt(rc_data_.switch7) + ", " + FString::FromInt(rc_data_.switch8),
+            LogDebugLevel::Informational);
+    }
+    //else don't waste time
+
+    return rc_data_;
 }
 
 void VehicleSimApi::displayCollisionEffect(FVector hit_location, const FHitResult& hit)
@@ -158,36 +208,18 @@ void VehicleSimApi::setGroundTruthKinematics(const msr::airlib::Kinematics::Stat
 
 int VehicleSimApi::getRemoteControlID() const
 {
-    return vehicle_setting_->rc.remote_control_id;
+    return getVehicleSetting().rc.remote_control_id;
 }
 
-VehicleSimApi::Config& VehicleSimApi::getConfig()
+const APIPCamera* VehicleSimApi::getCamera(const std::string& camera_name) const
 {
-    return config_;
+    return cameras_->at(camera_name);
 }
 
-const VehicleSimApi::VehicleSetting* VehicleSimApi::getVehicleSetting() const
-{
-    return vehicle_setting_;
-}
-
-const VehicleSimApi::Config& VehicleSimApi::getConfig() const
-{
-    return config_;
-}
-
-const APIPCamera* VehicleSimApi::getCamera(int index) const
-{
-    if (index < 0 || index >= cameras_.size())
-        throw std::out_of_range("Camera id is not valid");
-    //should be overridden in derived class
-    return cameras_.at(index);
-}
-
-APIPCamera* VehicleSimApi::getCamera(int index)
+APIPCamera* VehicleSimApi::getCamera(const std::string& camera_name)
 {
     return const_cast<APIPCamera*>(
-        static_cast<const VehicleSimApi*>(this)->getCamera(index));
+        static_cast<const VehicleSimApi*>(this)->getCamera(camera_name));
 }
 
 const UnrealImageCapture* VehicleSimApi::getImageCapture() const
@@ -197,12 +229,13 @@ const UnrealImageCapture* VehicleSimApi::getImageCapture() const
 
 int VehicleSimApi::getCameraCount()
 {
-    return cameras_.size();
+    return cameras_->size();
 }
 
 void VehicleSimApi::reset()
 {
     state_ = initial_state_;
+    rc_data_ = msr::airlib::RCData();
     pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
@@ -273,28 +306,28 @@ void VehicleSimApi::plot(std::istream& s, FColor color, const Vector3r& offset)
         Vector3r current_point(x, y, z);
         current_point += offset;
         if (!VectorMath::hasNan(last_point)) {
-            UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), ned_transform_.toNeuUU(last_point), ned_transform_.toNeuUU(current_point), color, 0, 3.0F);
+            UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), ned_transform_.fromLocalNed(last_point), ned_transform_.fromLocalNed(current_point), color, 0, 3.0F);
         }
         last_point = current_point;
     }
 
 }
 
-msr::airlib::CameraInfo VehicleSimApi::getCameraInfo(int camera_id) const
+msr::airlib::CameraInfo VehicleSimApi::getCameraInfo(const std::string& camera_name) const
 {
     msr::airlib::CameraInfo camera_info;
 
-    const APIPCamera* camera = getCamera(camera_id);
-    camera_info.pose.position = ned_transform_.toNedMeters(camera->GetActorLocation(), true);
-    camera_info.pose.orientation = ned_transform_.toQuaternionr(camera->GetActorRotation().Quaternion(), true);
+    const APIPCamera* camera = getCamera(camera_name);
+    camera_info.pose.position = ned_transform_.toLocalNed(camera->GetActorLocation());
+    camera_info.pose.orientation = ned_transform_.toNed(camera->GetActorRotation().Quaternion());
     camera_info.fov = camera->GetCameraComponent()->FieldOfView;
     return camera_info;
 }
 
-void VehicleSimApi::setCameraOrientation(int camera_id, const msr::airlib::Quaternionr& orientation)
+void VehicleSimApi::setCameraOrientation(const std::string& camera_name, const msr::airlib::Quaternionr& orientation)
 {
-    APIPCamera* camera = getCamera(camera_id);
-    FQuat quat = ned_transform_.toFQuat(orientation, true);
+    APIPCamera* camera = getCamera(camera_name);
+    FQuat quat = ned_transform_.fromNed(orientation);
     camera->SetActorRelativeRotation(quat);
 }
 
@@ -306,19 +339,19 @@ VehicleSimApi::Pose VehicleSimApi::getPose() const
 
 VehicleSimApi::Pose VehicleSimApi::toPose(const FVector& u_position, const FQuat& u_quat) const
 {
-    const Vector3r& position = ned_transform_.toNedMeters(u_position);
-    const Quaternionr& orientation = ned_transform_.toQuaternionr(u_quat, true);
+    const Vector3r& position = ned_transform_.toLocalNed(u_position);
+    const Quaternionr& orientation = ned_transform_.toNed(u_quat);
     return Pose(position, orientation);
 }
 
 void VehicleSimApi::setPose(const Pose& pose, bool ignore_collision)
 {
     //translate to new VehicleSimApi position & orientation from NED to NEU
-    FVector position = ned_transform_.toNeuUU(pose.position);
+    FVector position = ned_transform_.fromLocalNed(pose.position);
     state_.current_position = position;
 
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
-    FQuat orientation = ned_transform_.toFQuat(pose.orientation, true);
+    FQuat orientation = ned_transform_.fromNed(pose.orientation);
 
     bool enable_teleport = ignore_collision || canTeleportWhileMove();
 
@@ -344,7 +377,7 @@ void VehicleSimApi::setPose(const Pose& pose, bool ignore_collision)
 
 void VehicleSimApi::setDebugPose(const Pose& debug_pose)
 {
-    state_.current_debug_position = ned_transform_.toNeuUU(debug_pose.position);
+    state_.current_debug_position = ned_transform_.fromLocalNed(debug_pose.position);
     if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
         FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
@@ -373,7 +406,7 @@ void VehicleSimApi::setLogLine(std::string line)
     log_line_ = line;
 }
 
-std::string VehicleSimApi::getLogLine()
+std::string VehicleSimApi::getLogLine() const
 {
     return log_line_;
 }

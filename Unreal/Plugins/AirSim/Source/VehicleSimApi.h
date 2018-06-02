@@ -12,6 +12,7 @@
 #include "physics/Kinematics.hpp"
 #include "NedTransform.h"
 #include "common/AirSimSettings.hpp"
+#include "SimJoyStick/SimJoyStick.h"
 #include "api/VehicleSimApiBase.hpp"
 
 
@@ -28,46 +29,37 @@ public: //types
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
-    struct Config {
-        bool is_fpv_vehicle;
-        bool enable_collisions;
-        bool enable_passthrough_on_collisions;
-        bool enable_trace;
-
-        Config() :
-            is_fpv_vehicle(false),
-            enable_collisions(true),
-            enable_passthrough_on_collisions(false),
-            enable_trace(false)
-        {
-        }
-    }; 
 
 public: //implementation of VehicleSimApiBase
     virtual void reset() override;
     virtual const UnrealImageCapture* getImageCapture() const override;
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const override;
-    virtual std::vector<uint8_t> getImage(uint8_t camera_id, ImageCaptureBase::ImageType image_type) const override;
+    virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
-    virtual msr::airlib::CameraInfo getCameraInfo(int camera_id) const override;
-    virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) override;
+    virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
+    virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) override;
     virtual CollisionInfo getCollisionInfo() const override;
     virtual int getRemoteControlID() const override;
-
+    virtual msr::airlib::RCData getRCData() const override;
+    virtual std::string getVehicleName() const override
+    {
+        return vehicle_name_;
+    }
+    virtual std::string getLogLine() const override;
 
 public: //Unreal specific methods
-    VehicleSimApi(APawn* pawn, const std::vector<APIPCamera*>& cameras, const std::string& vehicle_name, 
-        const Config& config = Config());
+    VehicleSimApi(APawn* pawn, const std::map<std::string, APIPCamera*>* cameras, const NedTransform& global_transform,
+        const std::string& vehicle_name);
 
     //on collision, pawns should update this
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
         bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
     //returns one of the cameras attached to the pawn
-    const APIPCamera* getCamera(int index = 0) const;
-    APIPCamera* getCamera(int index = 0);
+    const APIPCamera* getCamera(const std::string& camera_name) const;
+    APIPCamera* getCamera(const std::string& camera_name);
     int getCameraCount();
 
     //if enabled, this would show some flares
@@ -81,12 +73,6 @@ public: //Unreal specific methods
     void setDebugPose(const Pose& debug_pose);
 
     void setLogLine(std::string line);
-    std::string getLogLine();
-
-    Config& getConfig();
-    const Config& getConfig() const;
-
-    const VehicleSetting* getVehicleSetting() const;
 
     FVector getUUPosition() const;
     FRotator getUUOrientation() const;
@@ -94,6 +80,7 @@ public: //Unreal specific methods
     const NedTransform& getNedTransform() const;
 
     void possess();
+    void setupCamerasFromSettings();
 
     void toggleTrace();
 
@@ -107,25 +94,30 @@ protected:
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
-    void setupCamerasFromSettings();
+    void detectUsbRc();
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
     VehicleSimApi::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
 
 private: //vars
+    typedef msr::airlib::AirSimSettings AirSimSettings;
+
+    APawn* pawn_;
+    const std::map<std::string, APIPCamera*>* cameras_;
+    std::string vehicle_name_;
+    NedTransform ned_transform_;
+
     FVector ground_trace_end_;
     FVector ground_margin_;
     GeoPoint home_geo_point_;
-    APawn* pawn_;
-    std::vector<APIPCamera*> cameras_;
     std::unique_ptr<UnrealImageCapture> image_capture_;
     const msr::airlib::Kinematics::State* kinematics_;
     std::string log_line_;
-    Config config_;
-    NedTransform ned_transform_;
-    std::string vehicle_name_;
-    const VehicleSetting* vehicle_setting_;
+
+    mutable msr::airlib::RCData rc_data_;
+    mutable SimJoyStick joystick_;
+    mutable SimJoyStick::State joystick_state_;
 
     struct State {
         FVector start_location;

@@ -11,7 +11,7 @@ RecordingFile::RecordingFile(const std::vector <std::string>& columns)
 {
     this->columns_ = columns;
 }
-void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, VehicleSimApi* wrapper)
+void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, msr::airlib::VehicleSimApiBase* vehicle_sim_api)
 {   bool save_success = false;
     std::stringstream image_file_names;
 
@@ -19,7 +19,7 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
         const auto& response = responses.at(i);
 
         std::stringstream image_file_name;
-        image_file_name << "img_" << response.camera_id << "_" <<
+        image_file_name << "img_" << response.camera_name << "_" <<
             common_utils::Utils::toNumeric(response.image_type) << "_" <<
             common_utils::Utils::getTimeSinceEpochNanos() << 
             (response.pixels_as_float ? ".pfm" : ".png");
@@ -50,7 +50,7 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
     }
 
     if (save_success) {
-        writeString(wrapper->getLogLine().append(image_file_names.str()).append("\n"));
+        writeString(vehicle_sim_api->getLogLine().append(image_file_names.str()).append("\n"));
 
         //UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;

@@ -23,7 +23,7 @@ public:
     virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name = "")
     {
         return Utils::findOrDefault(vehicle_apis_, vehicle_name, 
-            kNullPtrVehicleApi).get();
+            static_cast<VehicleApiBase*>(nullptr));
     }
 
     //world simulation API
@@ -36,35 +36,33 @@ public:
     virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "")
     {
         return Utils::findOrDefault(vehicle_sim_apis_, vehicle_name,
-            kNullPtrVehicleSimApi).get();
+            static_cast<VehicleSimApiBase*>(nullptr));
     }
 
     size_t getVehicleCount() const
     {
         return vehicle_apis_.size();
     }
-    void insert_or_assign(const std::string& vehicle_name, std::unique_ptr<VehicleApiBase> vehicle_api, 
-        std::unique_ptr<VehicleSimApiBase> vehicle_sim_api)
+    void insert_or_assign(const std::string& vehicle_name, VehicleApiBase* vehicle_api, 
+        VehicleSimApiBase* vehicle_sim_api)
     {
         vehicle_apis_[vehicle_name] = std::move(vehicle_api);
         vehicle_sim_apis_[vehicle_name] = std::move(vehicle_sim_api);
     }
-    const std::map<std::string, std::unique_ptr<VehicleApiBase>>& getVehicleApis()
+    const std::map<std::string, VehicleApiBase*>& getVehicleApis()
     {
         return vehicle_apis_;
     }
-    const std::map<std::string, std::unique_ptr<VehicleSimApiBase>>& getVehicleSimApis()
+    const std::map<std::string, VehicleSimApiBase*>& getVehicleSimApis()
     {
         return vehicle_sim_apis_;
     }
 
 private:
     WorldSimApiBase* world_sim_api_;
-    const std::unique_ptr<VehicleApiBase> kNullPtrVehicleApi = std::unique_ptr<VehicleApiBase>();
-    const std::unique_ptr<VehicleSimApiBase> kNullPtrVehicleSimApi = std::unique_ptr<VehicleSimApiBase>();
 
-    std::map<std::string, std::unique_ptr<VehicleApiBase>> vehicle_apis_;
-    std::map<std::string, std::unique_ptr<VehicleSimApiBase>> vehicle_sim_apis_;
+    std::map<std::string, VehicleApiBase*> vehicle_apis_;
+    std::map<std::string, VehicleSimApiBase*> vehicle_sim_apis_;
 };
 
 }} //namespace

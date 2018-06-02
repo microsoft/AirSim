@@ -58,21 +58,6 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, Vehi
     setCameras(external_camera, vehicle_pawn_wrapper);
 }
 
-void ACameraDirector::setupCameraFromSettings()
-{
-    typedef msr::airlib::AirSimSettings AirSimSettings;
-    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
-
-    if (!external_camera_)
-        return;
-
-    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
-    for (int image_type = -1; image_type < image_count; ++image_type) {
-        external_camera_->setImageTypeSettings(image_type, AirSimSettings::singleton().capture_settings[image_type], 
-            AirSimSettings::singleton().noise_settings[image_type]);
-    }
-}
-
 void ACameraDirector::setCameras(APIPCamera* external_camera, VehicleSimApi* vehicle_pawn_wrapper)
 {
     external_camera_ = external_camera;
