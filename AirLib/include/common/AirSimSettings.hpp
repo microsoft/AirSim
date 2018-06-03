@@ -31,10 +31,10 @@ public: //types
         int window_index;
         ImageType image_type;
         bool visible;
-        int camera_id;
+        std::string camera_name;
 
-        SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, bool visible_val = false, int camera_id_val = 0)
-            : window_index(window_index_val), image_type(image_type_val), visible(visible_val), camera_id(camera_id_val)
+        SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, bool visible_val = false, const std::string& camera_name_val = 0)
+            : window_index(window_index_val), image_type(image_type_val), visible(visible_val), camera_name(camera_name_val)
         {
         }
     };
@@ -848,7 +848,7 @@ private:
                     subwindow_setting.image_type = Utils::toEnum<ImageType>(
                         json_settings_child.getInt("ImageType", 0));
                     subwindow_setting.visible = json_settings_child.getBool("Visible", false);
-                    subwindow_setting.camera_id = json_settings_child.getInt("CameraID", 0);
+                    subwindow_setting.camera_name = json_settings_child.getString("CameraName", "");
                 }
             }
         }

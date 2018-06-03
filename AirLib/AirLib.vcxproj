@@ -50,6 +50,7 @@
     <ClInclude Include="include\common\common_utils\ProsumerQueue.hpp" />
     <ClInclude Include="include\common\common_utils\RandomGenerator.hpp" />
     <ClInclude Include="include\common\common_utils\ScheduledExecutor.hpp" />
+    <ClInclude Include="include\common\common_utils\Signal.hpp" />
     <ClInclude Include="include\common\common_utils\sincos.hpp" />
     <ClInclude Include="include\common\common_utils\StrictMode.hpp" />
     <ClInclude Include="include\common\common_utils\Timer.hpp" />

@@ -53,9 +53,21 @@ public:
     {
         return vehicle_apis_;
     }
-    const std::map<std::string, VehicleSimApiBase*>& getVehicleSimApis()
+    const std::map<std::string, VehicleSimApiBase*>& geVehicleSimApis()
     {
         return vehicle_sim_apis_;
+    }
+
+    bool hasDefaultVehicle() const
+    {
+        return Utils::findOrDefault<std::string, VehicleApiBase*>(vehicle_apis_, "") == nullptr &&
+            Utils::findOrDefault<std::string, VehicleSimApiBase*>(vehicle_sim_apis_, "") == nullptr;
+    }
+
+    void makeDefaultVehicle(const std::string& vehicle_name)
+    {
+        vehicle_apis_[""] = vehicle_apis_[vehicle_name];
+        vehicle_sim_apis_[""] = vehicle_sim_apis_[vehicle_name];
     }
 
 private:

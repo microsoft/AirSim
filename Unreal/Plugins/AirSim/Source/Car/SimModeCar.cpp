@@ -95,7 +95,7 @@ void ASimModeCar::setupClockSpeed()
     UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(current_clockspeed_), LogDebugLevel::Informational);
 }
 
-void ASimModeCar::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
+void ASimModeCar::setupVehiclesAndCamera(std::vector<TVehiclePawn*>& vehicles)
 {
     //get player controller
     APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
@@ -204,7 +204,7 @@ int ASimModeCar::getRemoteControlID(const VehicleSimApi& pawn) const
     return fpv_vehicle_sim_api_->getRemoteControlID();
 }
 
-void ASimModeCar::createVehicles(std::vector<VehiclePtr>& vehicles)
+void ASimModeCar::createVehicles(std::vector<TVehiclePawn*>& vehicles)
 {
     //find vehicles and cameras available in environment
     //if none available then we will create one
@@ -247,7 +247,7 @@ void ASimModeCar::Tick(float DeltaSeconds)
 
 void ASimModeCar::updateDebugReport()
 {
-    for (VehiclePtr vehicle : vehicles_) {
+    for (TVehiclePawn* vehicle : vehicles_) {
         VehicleSimApi* vehicle_sim_api = vehicle->getVehicleSimApi();
         msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
         std::string vehicle_name = fpv_vehicle_sim_api_->getVehicleSetting()->vehicle_name;

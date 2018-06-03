@@ -11,7 +11,7 @@
 #include "common/ClockFactory.hpp"
 #include "api/ApiServerBase.hpp"
 #include "api/ApiProvider.hpp"
-#include "api/VehicleSimApiBase.hpp"
+#include "VehicleSimApi.h"
 #include "SimModeBase.generated.h"
 
 
@@ -41,8 +41,6 @@ public:
     //additional overridable methods
     virtual void reset();
     virtual std::string getDebugReport();
-    msr::airlib::VehicleSimApiBase* ASimModeBase::getFpvVehicleSimApi();
-
     virtual ECameraDirectorMode getInitialViewMode() const;
 
     virtual bool isPaused() const;
@@ -59,6 +57,20 @@ public:
 
     const NedTransform& getGlobalNedTransform();
 
+    msr::airlib::ApiProvider* getApiProvider() const
+    {
+        return api_provider_.get();
+    }
+
+    const VehicleSimApi* getVehicleSimApi(const std::string& vehicle_name = "") const
+    {
+        return static_cast<VehicleSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
+    }
+    VehicleSimApi* getVehicleSimApi(const std::string& vehicle_name = "")
+    {
+        return static_cast<VehicleSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
+    }
+
 protected:
     virtual void setupInputBindings();
     virtual const msr::airlib::AirSimSettings& getSettings() const;
@@ -67,10 +79,6 @@ protected:
     virtual void setupClockSpeed();
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
-    msr::airlib::ApiProvider* getApiProvider() const
-    {
-        return api_provider_.get();
-    }
 
 protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;

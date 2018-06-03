@@ -45,7 +45,7 @@ public:
     Pose simGetObjectPose(const std::string& object_name) const;
 
     vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request);
-    vector<uint8_t> simGetImage(int camera_id, ImageCaptureBase::ImageType type);
+    vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type);
 
     CollisionInfo simGetCollisionInfo() const;
 
@@ -53,8 +53,8 @@ public:
     int simGetSegmentationObjectID(const std::string& mesh_name) const;
     void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
-    CameraInfo simGetCameraInfo(int camera_id) const;
-    void simSetCameraOrientation(int camera_id, const Quaternionr& orientation);
+    CameraInfo simGetCameraInfo(const std::string& camera_name) const;
+    void simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation);
 
     //task management APIs
     void cancelLastTask();

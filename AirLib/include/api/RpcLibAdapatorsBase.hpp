@@ -264,19 +264,19 @@ public:
     };
 
     struct ImageRequest {
-        uint8_t camera_id;
+        std::string camera_name;
         msr::airlib::ImageCaptureBase::ImageType image_type;
         bool pixels_as_float;
         bool compress;
 
-        MSGPACK_DEFINE_MAP(camera_id, image_type, pixels_as_float, compress);
+        MSGPACK_DEFINE_MAP(camera_name, image_type, pixels_as_float, compress);
 
         ImageRequest()
         {}
 
         ImageRequest(const msr::airlib::ImageCaptureBase::ImageRequest& s)
         {
-            camera_id = s.camera_id;
+            camera_name = s.camera_name;
             image_type = s.image_type;
             pixels_as_float = s.pixels_as_float;
             compress = s.compress;
@@ -285,7 +285,7 @@ public:
         msr::airlib::ImageCaptureBase::ImageRequest to() const
         {
             msr::airlib::ImageCaptureBase::ImageRequest d;
-            d.camera_id = camera_id;
+            d.camera_name = camera_name;
             d.image_type = image_type;
             d.pixels_as_float = pixels_as_float;
             d.compress = compress;

@@ -7,6 +7,7 @@
 #include <memory>
 #include "UnrealImageCapture.h"
 #include "common/Common.hpp"
+#include "common/common_utils/Signal.hpp"
 #include "common/CommonStructs.hpp"
 #include "PIPCamera.h"
 #include "physics/Kinematics.hpp"
@@ -28,7 +29,8 @@ public: //types
     typedef msr::airlib::Utils Utils;
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
-
+    typedef common_utils::Signal<class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
+        FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit> CollisionSignal;
 
 public: //implementation of VehicleSimApiBase
     virtual void reset() override;
@@ -48,14 +50,12 @@ public: //implementation of VehicleSimApiBase
         return vehicle_name_;
     }
     virtual std::string getLogLine() const override;
+    virtual void setLogLine(std::string line) override;
+    virtual void toggleTrace() override;
 
 public: //Unreal specific methods
-    VehicleSimApi(APawn* pawn, const std::map<std::string, APIPCamera*>* cameras, const NedTransform& global_transform,
-        const std::string& vehicle_name);
-
-    //on collision, pawns should update this
-    void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
-        bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
+    VehicleSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+        const std::map<std::string, APIPCamera*>& cameras);
 
     //returns one of the cameras attached to the pawn
     const APIPCamera* getCamera(const std::string& camera_name) const;
@@ -72,29 +72,29 @@ public: //Unreal specific methods
     //parameters in NED frame
     void setDebugPose(const Pose& debug_pose);
 
-    void setLogLine(std::string line);
-
     FVector getUUPosition() const;
     FRotator getUUOrientation() const;
 
     const NedTransform& getNedTransform() const;
 
     void possess();
-    void setupCamerasFromSettings();
 
-    void toggleTrace();
+    //allows setting ground truth from physics engine
+    void setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics);
 
 protected:
     UPROPERTY(VisibleAnywhere)
         UParticleSystem* collision_display_template;
 
-    //allows setting ground truth from physics engine
-    void setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics);
-
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
     void detectUsbRc();
+    void setupCamerasFromSettings(const std::map<std::string, APIPCamera*>& cameras);
+    void createCamerasFromSettings();
+    //on collision, pawns should update this
+    void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp,
+        bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
@@ -103,8 +103,11 @@ private: //methods
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
+    UPROPERTY() UClass* pip_camera_class_;
+
     APawn* pawn_;
-    const std::map<std::string, APIPCamera*>* cameras_;
+    //TODO: should below be TMap to keep refs alive?
+    std::map<std::string, APIPCamera*> cameras_;
     std::string vehicle_name_;
     NedTransform ned_transform_;
 

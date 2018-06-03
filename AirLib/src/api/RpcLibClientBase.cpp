@@ -179,9 +179,9 @@ vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<Im
 
     return RpcLibAdapatorsBase::ImageResponse::to(response_adaptor);
 }
-vector<uint8_t> RpcLibClientBase::simGetImage(int camera_id, ImageCaptureBase::ImageType type)
+vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type)
 {
-    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_id, type).as<vector<uint8_t>>();
+    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_name, type).as<vector<uint8_t>>();
     if (result.size() == 1) {
         // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
         result.clear();
@@ -214,13 +214,13 @@ msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_n
     return pimpl_->client.call("simGetObjectPose", object_name).as<RpcLibAdapatorsBase::Pose>().to();
 }
 
-CameraInfo RpcLibClientBase::simGetCameraInfo(int camera_id) const
+CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name) const
 {
-    return pimpl_->client.call("simGetCameraInfo", camera_id).as<RpcLibAdapatorsBase::CameraInfo>().to();
+    return pimpl_->client.call("simGetCameraInfo", camera_name).as<RpcLibAdapatorsBase::CameraInfo>().to();
 }
-void RpcLibClientBase::simSetCameraOrientation(int camera_id, const Quaternionr& orientation)
+void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation)
 {
-    pimpl_->client.call("simSetCameraOrientation", camera_id, RpcLibAdapatorsBase::Quaternionr(orientation));
+    pimpl_->client.call("simSetCameraOrientation", camera_name, RpcLibAdapatorsBase::Quaternionr(orientation));
 }
 
 void RpcLibClientBase::cancelLastTask()

@@ -81,7 +81,7 @@ int main(int argc, const char* argv[])
 
 
     ApiProvider api_provider(nullptr);
-    api_provider.insert_or_assign("", &api);
+    api_provider.insert_or_assign("", &api, nullptr);
     msr::airlib::MultirotorRpcLibServer server(&api_provider, connection_info.local_host_ip);
     
     //start server in async mode

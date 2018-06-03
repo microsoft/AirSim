@@ -1,16 +1,16 @@
 #include "MultirotorSimApi.h"
-#include "FlyingPawn.h" 
 #include "AirBlueprintLib.h"
+#include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
+#include "UnrealSensors/UnrealSensorFactory.h"
 #include <exception>
 
 using namespace msr::airlib;
 
-MultirotorSimApi::MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, msr::airlib::MultiRotorParams* vehicle_params,
-    UManualPoseController* manual_pose_controller, 
-    APawn* pawn, const std::map<std::string, APIPCamera*>* cameras, const NedTransform& global_transform,
-    const std::string& vehicle_name)
-    : VehicleSimApi(pawn, cameras, global_transform, vehicle_name), vehicle_api_(vehicle_api),
-      vehicle_params_(vehicle_params), manual_pose_controller_(manual_pose_controller)
+MultirotorSimApi::MultirotorSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+    const std::map<std::string, APIPCamera*>& cameras,
+    UManualPoseController* manual_pose_controller)
+    : VehicleSimApi(pawn, global_transform, collision_signal, cameras),
+      manual_pose_controller_(manual_pose_controller)
 {
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     Pose pose = getPose();
@@ -18,6 +18,8 @@ MultirotorSimApi::MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, 
     VectorMath::toEulerianAngle(pose.orientation, pitch, roll, yaw);
     pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
     setPose(pose, false);
+
+    createVehicleApi();
 
     //setup physics vehicle
     phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_, vehicle_api_, 
@@ -30,6 +32,19 @@ MultirotorSimApi::MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, 
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
     did_reset_ = false;
+}
+
+void MultirotorSimApi::createVehicleApi()
+{
+    //create vehicle params
+    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
+    vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
+    vehicle_api_ = vehicle_params_->createMultirotorApi();
+}
+
+const msr::airlib::Kinematics::State* MultirotorSimApi::getGroundTruthKinematics() const
+{
+    return & phys_vehicle_->getKinematics();
 }
 
 void MultirotorSimApi::updateRenderedState(float dt)

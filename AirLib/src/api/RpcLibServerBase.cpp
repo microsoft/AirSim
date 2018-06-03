@@ -81,8 +81,8 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         const auto& response = getVehicleSimApi()->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));
         return RpcLibAdapatorsBase::ImageResponse::from(response);
     });
-    pimpl_->server.bind("simGetImage", [&](uint8_t camera_id, ImageCaptureBase::ImageType type) -> vector<uint8_t> {
-        auto result = getVehicleSimApi()->getImage(camera_id, type);
+    pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type) -> vector<uint8_t> {
+        auto result = getVehicleSimApi()->getImage(camera_name, type);
         if (result.size() == 0) {
             // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
             result.push_back(0);
@@ -125,13 +125,13 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::GeoPoint(geo_point);
     });
 
-    pimpl_->server.bind("simGetCameraInfo", [&](int camera_id) -> RpcLibAdapatorsBase::CameraInfo {
-        const auto& camera_info = getVehicleSimApi()->getCameraInfo(camera_id);
+    pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name) -> RpcLibAdapatorsBase::CameraInfo {
+        const auto& camera_info = getVehicleSimApi()->getCameraInfo(camera_name);
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
     });
 
-    pimpl_->server.bind("simSetCameraOrientation", [&](int camera_id, const RpcLibAdapatorsBase::Quaternionr& orientation) -> void {
-        getVehicleSimApi()->setCameraOrientation(camera_id, orientation.to());
+    pimpl_->server.bind("simSetCameraOrientation", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Quaternionr& orientation) -> void {
+        getVehicleSimApi()->setCameraOrientation(camera_name, orientation.to());
     });
 
     pimpl_->server.bind("simGetCollisionInfo", [&]() -> RpcLibAdapatorsBase::CollisionInfo { 

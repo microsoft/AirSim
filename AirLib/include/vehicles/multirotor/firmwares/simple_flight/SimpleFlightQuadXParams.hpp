@@ -68,7 +68,7 @@ protected:
 
 private:
     vector<unique_ptr<SensorBase>> sensor_storage_;
-    const AirSimSettings::VehicleSetting* vehicle_setting_;
+    const AirSimSettings::VehicleSetting* vehicle_setting_; //store as pointer because of derived classes
     std::shared_ptr<const SensorFactory> sensor_factory_;
 };
 

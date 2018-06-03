@@ -50,10 +50,13 @@ public:
     virtual RCData getRCData() const = 0; //get reading from RC from simulator
     virtual std::string getVehicleName() const = 0;
     virtual std::string getLogLine() const = 0;
+    virtual void setLogLine(std::string line) = 0;
+    virtual void toggleTrace() = 0;
 
-    const AirSimSettings::VehicleSetting& getVehicleSetting() const
+    //use pointer here because of derived classes for VehicleSetting
+    const AirSimSettings::VehicleSetting* getVehicleSetting() const
     {
-        return *(AirSimSettings::singleton().getVehicleSetting(getVehicleName()));
+        return AirSimSettings::singleton().getVehicleSetting(getVehicleName());
     }
 
 };

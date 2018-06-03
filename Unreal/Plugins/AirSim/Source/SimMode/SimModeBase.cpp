@@ -92,6 +92,8 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
     world_sim_api_.reset(nullptr);
+    CameraDirector = nullptr;
+
     Super::EndPlay(EndPlayReason);
 }
 
@@ -259,13 +261,6 @@ void ASimModeBase::reset()
     //Should be overridden by derived classes
 }
 
-msr::airlib::VehicleSimApiBase* ASimModeBase::getFpvVehicleSimApi()
-{
-    //Should be overridden by derived classes
-    return nullptr;
-}
-
-
 std::string ASimModeBase::getDebugReport()
 {
     static const std::string empty_string = std::string();
@@ -307,9 +302,9 @@ void ASimModeBase::stopRecording()
 
 void ASimModeBase::startRecording()
 {
-    FRecordingThread::startRecording(getFpvVehicleSimApi()->getImageCapture(),
-        getFpvVehicleSimApi()->getGroundTruthKinematics(), getSettings().segmentation_setting,
-        getFpvVehicleSimApi());
+    FRecordingThread::startRecording(getVehicleSimApi()->getImageCapture(),
+        getVehicleSimApi()->getGroundTruthKinematics(), getSettings().recording_setting ,
+        getVehicleSimApi());
 }
 
 bool ASimModeBase::isRecording() const
@@ -325,7 +320,7 @@ void ASimModeBase::startApiServer()
 #ifdef AIRLIB_NO_RPC
         api_server_.reset();
 #else
-        api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
+        api_provider_.reset(new msr::airlib::ApiProvider<VehicleSimApi>(world_sim_api_.get()));
         api_server_ = createApiServer();
 #endif
 

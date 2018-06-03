@@ -1,22 +1,27 @@
 #include "VehicleSimApi.h"
+#include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "ConstructorHelpers.h"
+
 #include "AirBlueprintLib.h"
 #include "common/ClockFactory.hpp"
+#include "PIPCamera.h"
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
-VehicleSimApi::VehicleSimApi(APawn* pawn, const std::map<std::string, APIPCamera*>* cameras, const NedTransform& global_transform,
-    const std::string& vehicle_name)
-    : pawn_(pawn), cameras_(cameras), vehicle_name_(vehicle_name), ned_transform_(pawn, global_transform)
+VehicleSimApi::VehicleSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+    const std::map<std::string, APIPCamera*>& cameras)
+    : pawn_(pawn), vehicle_name_(TCHAR_TO_UTF8(*pawn->GetName())), ned_transform_(pawn, global_transform)
 {
     static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
     if (!collision_display.Succeeded())
         collision_display_template = collision_display.Object;
     else
         collision_display_template = nullptr;
+    static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
 
     image_capture_.reset(new UnrealImageCapture(cameras_));
 
@@ -36,9 +41,9 @@ VehicleSimApi::VehicleSimApi(APawn* pawn, const std::map<std::string, APIPCamera
     Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(getUUPosition());
     home_geo_point_ = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin, AirSimSettings::singleton().origin_geopoint);
 
-    initial_state_.tracing_enabled = getVehicleSetting().enable_trace;
-    initial_state_.collisions_enabled = getVehicleSetting().enable_collisions;
-    initial_state_.passthrough_enabled = getVehicleSetting().enable_collision_passthrough;
+    initial_state_.tracing_enabled = getVehicleSetting()->enable_trace;
+    initial_state_.collisions_enabled = getVehicleSetting()->enable_collisions;
+    initial_state_.passthrough_enabled = getVehicleSetting()->enable_collision_passthrough;
 
     initial_state_.collision_info = CollisionInfo();
 
@@ -48,6 +53,10 @@ VehicleSimApi::VehicleSimApi(APawn* pawn, const std::map<std::string, APIPCamera
     //setup RC
     if (getRemoteControlID() >= 0)
         detectUsbRc();
+
+    setupCamerasFromSettings(cameras);
+    //add listener for pawn's collision event
+    collision_signal.connect(this, &VehicleSimApi::onCollision);
 }
 
 void VehicleSimApi::detectUsbRc()
@@ -63,17 +72,51 @@ void VehicleSimApi::detectUsbRc()
             std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
 }
 
-void VehicleSimApi::setupCamerasFromSettings()
+void VehicleSimApi::setupCamerasFromSettings(const std::map<std::string, APIPCamera*>& cameras)
 {
+    //add cameras that already exists in pawn
+    cameras_.clear();
+    for (const auto& p : cameras)
+        cameras_[p.first] = p.second;
+
+    //create or replace cameras specified in settings
+    createCamerasFromSettings();
+
+    //setup individual cameras
     typedef msr::airlib::AirSimSettings AirSimSettings;
-
-    const auto& vehicle_setting = AirSimSettings::singleton().getVehicleSetting(vehicle_name_);
     const auto& camera_defaults = AirSimSettings::singleton().camera_defaults;
-
-    for (auto& pair : *cameras_) {
-        const auto& camera_setting = Utils::findOrDefault(vehicle_setting->cameras, pair.first, camera_defaults);
+    for (auto& pair : cameras_) {
+        const auto& camera_setting = Utils::findOrDefault(getVehicleSetting()->cameras, pair.first, camera_defaults);
         APIPCamera* camera = pair.second;
         camera->setupCameraFromSettings(camera_setting, getNedTransform());
+    }
+}
+
+void VehicleSimApi::createCamerasFromSettings()
+{
+    //UStaticMeshComponent* bodyMesh = UAirBlueprintLib::GetActorComponent<UStaticMeshComponent>(this, TEXT("BodyMesh"));
+    USceneComponent* bodyMesh = pawn_->GetRootComponent();
+    FActorSpawnParameters camera_spawn_params;
+    camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    const auto& transform = getNedTransform();
+
+    //for each camera in settings
+    for (const auto& camera_setting_pair : getVehicleSetting()->cameras) {
+        const auto& setting = camera_setting_pair.second;
+
+        //get pose
+        FVector position = transform.fromLocalNed(
+            NedTransform::Vector3r(setting.position.x, setting.position.y, setting.position.z))
+            - transform.fromLocalNed(NedTransform::Vector3r(0.0, 0.0, 0.0));
+        FTransform camera_transform(FRotator(setting.rotation.pitch, setting.rotation.yaw, setting.rotation.roll),
+            position, FVector(1., 1., 1.));
+
+        //spawn and attach camera to pawn
+        APIPCamera* camera = pawn_->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+        camera->AttachToComponent(bodyMesh, FAttachmentTransformRules::KeepRelativeTransform);
+
+        //add on to our collection
+        cameras_[camera_setting_pair.first] = camera;
     }
 }
 
@@ -208,7 +251,7 @@ void VehicleSimApi::setGroundTruthKinematics(const msr::airlib::Kinematics::Stat
 
 int VehicleSimApi::getRemoteControlID() const
 {
-    return getVehicleSetting().rc.remote_control_id;
+    return getVehicleSetting()->rc.remote_control_id;
 }
 
 const APIPCamera* VehicleSimApi::getCamera(const std::string& camera_name) const

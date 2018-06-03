@@ -61,9 +61,9 @@ public:
                 auto start_nanos = clock->nowNanos();
 
                 std::vector<ImageRequest> request = { 
-                    ImageRequest(0, ImageType::Scene), 
-                    ImageRequest(1, ImageType::Scene),
-                    ImageRequest(1, ImageType::DisparityNormalized, true)
+                    ImageRequest("0", ImageType::Scene), 
+                    ImageRequest("1", ImageType::Scene),
+                    ImageRequest("1", ImageType::DisparityNormalized, true)
                 };
                 const std::vector<ImageResponse>& response = client.simGetImages(request);
                 if (response.size() != 3) {

@@ -107,7 +107,7 @@ public:
     void onHandbrakePressed();
     /** Handle handbrake released */
     void onHandbrakeReleased();
-    /** Handle pressiong footbrake */
+    /** Handle processing footbrake */
     void FootBrake(float Val);
     /** Handle Reverse pressed */
     void onReversePressed();
@@ -115,7 +115,7 @@ public:
     void onReverseReleased();
     /** Handle Handbrake pressed */
 
-    /** Setup the strings used on the hud */
+    /** Setup the strings used on the HUD */
     void updateInCarHUD();
 
     /** update the physics material used by the vehicle mesh */
@@ -137,7 +137,7 @@ private:
 
     UClass* pip_camera_class_;
 
-    VehicleSimApiBase* vehicle_sim_api_;
+    msr::airlib::VehicleSimApiBase* vehicle_sim_api_;
     msr::airlib::Kinematics::State kinematics_;
 
     CarPawnApi::CarControls keyboard_controls_;

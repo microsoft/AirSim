@@ -86,7 +86,7 @@ void ASimHUD::inputEventToggleHelp()
 
 void ASimHUD::inputEventToggleTrace()
 {
-    simmode_->getFpvVehicleSimApi()->toggleTrace();
+    simmode_->getVehicleSimApi()->toggleTrace();
 }
 
 ASimHUD::ImageType ASimHUD::getSubwindowCameraType(int window_index)
@@ -291,7 +291,7 @@ void ASimHUD::createSimMode()
 
 void ASimHUD::initializeSubWindows()
 {
-    auto vehicle_sim_api = simmode_->getFpvVehicleSimApi();
+    auto vehicle_sim_api = simmode_->getVehicleSimApi();
     auto camera_count = vehicle_sim_api->getCameraCount();
 
     //setup defaults

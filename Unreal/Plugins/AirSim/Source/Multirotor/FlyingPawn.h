@@ -1,11 +1,9 @@
 #pragma once
 
-#include "VehicleSimApi.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include <memory>
-#include "vehicles/multirotor/api/MultirotorCommon.hpp"
 #include "PIPCamera.h"
-#include "api/VehicleSimApiBase.hpp"
+#include "common/common_utils/Signal.hpp"
 #include "FlyingPawn.generated.h"
 
 UCLASS()
@@ -14,28 +12,27 @@ class AIRSIM_API AFlyingPawn : public APawn
     GENERATED_BODY()
 
 public:
-    AFlyingPawn();
+    typedef common_utils::Signal<class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
+        FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit> CollisionSignal;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
     float RotatorFactor = 1.0f;
-
-    void setRotorSpeed(int rotor_index, float radsPerSec);
-    void initializeForBeginPlay(const NedTransform& global_transform, const std::string& vehicle_name);
 
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
-    msr::airlib::VehicleSimApiBase* getVehicleSimApi()
-    {
-        return vehicle_sim_api_.get();
-    }
+    //interface
+    void initializeForBeginPlay();
+    std::map<std::string, APIPCamera*> getCameras() const;
+    CollisionSignal& getCollisionSignal();
+    //called by API to set rotor speed
+    void setRotorSpeed(int rotor_index, float radsPerSec);
+
 
 private: //variables
-    UPROPERTY() UClass* pip_camera_class_;
-
-         //Unreal components
+    //Unreal components
     static constexpr size_t rotor_count = 4;
     UPROPERTY() APIPCamera* fpv_camera_front_left_;
     UPROPERTY() APIPCamera* fpv_camera_front_right_;
@@ -45,6 +42,5 @@ private: //variables
 
     UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
 
-    std::map<std::string, APIPCamera*> cameras_;
-    std::_Unique_ptr_base<msr::airlib::VehicleSimApiBase> vehicle_sim_api_;
+    CollisionSignal collision_signal_;
 };

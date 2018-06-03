@@ -13,7 +13,7 @@ namespace msr { namespace airlib {
 class ImageCaptureBase
 {
 public: //types
-    enum class ImageType : uint { //this indexes to array
+    enum class ImageType : int { //this indexes to array, -1 is special to indicate main camera
         Scene = 0, 
         DepthPlanner, 
         DepthPerspective,

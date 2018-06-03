@@ -16,9 +16,6 @@ class AIRSIM_API ASimModeCar : public ASimModeBase
     GENERATED_BODY()
 
 public:
-    typedef ACarPawn* VehiclePtr;
-    typedef ACarPawn TVehiclePawn;
-
     ASimModeCar();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -32,28 +29,31 @@ public:
     virtual void continueForTime(double seconds) override;
 
 private:
-    void setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles);
-    void updateDebugReport();
-    int getRemoteControlID(const VehicleSimApi& pawn) const;
-    void initializePauseState();
-
-protected:
-    virtual void setupClockSpeed() override;
-    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
-    virtual void createVehicles(std::vector<VehiclePtr>& vehicles);
-
-private:    
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef common_utils::Utils Utils;
     typedef msr::airlib::TTimePoint TTimePoint;
     typedef msr::airlib::TTimeDelta TTimeDelta;
+    typedef ACarPawn TVehiclePawn;
 
+private:
+    void setupVehiclesAndCamera(std::vector<TVehiclePawn*>& vehicles);
+    void updateDebugReport();
+    int getRemoteControlID(const VehicleSimApi& pawn) const;
+    void initializePauseState();
+    void createVehicles(std::vector<TVehiclePawn*>& vehicles);
+
+protected:
+    virtual void setupClockSpeed() override;
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
+
+private:
     UClass* external_camera_class_;
     UClass* camera_director_class_;
 
-    TArray<AActor*> spawned_actors_;
-    std::vector<VehiclePtr> vehicles_;
-    VehicleSimApiBase* fpv_vehicle_sim_api_;
+    UPROPERTY()
+    TArray<AActor*> spawned_actors_; //keep refs alive from Unreal GC
+
+    std::vector<TVehiclePawn*> vehicles_;
     float follow_distance_;
     msr::airlib::StateReporterWrapper debug_reporter_;
 

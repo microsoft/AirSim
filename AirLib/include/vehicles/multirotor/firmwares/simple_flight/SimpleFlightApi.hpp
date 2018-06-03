@@ -28,7 +28,7 @@ public:
     SimpleFlightApi(const MultiRotorParams* vehicle_params, const AirSimSettings::VehicleSetting* vehicle_setting)
         : vehicle_params_(vehicle_params)
     {
-        readSettings(vehicle_setting);
+        readSettings(*vehicle_setting);
 
         //TODO: set below properly for better high speed safety
         safety_params_.vel_to_breaking_dist = safety_params_.min_breaking_dist = 0;
@@ -127,6 +127,8 @@ public: //MultirotorApiBase implementation
         else { //else we don't have RC data
             board_->setIsRcConnected(false);
         }
+
+        return true;
     }
 
 protected: 
@@ -280,14 +282,14 @@ private:
         return static_cast<uint16_t>(1000.0f * switchVal / maxSwitchVal + 1000.0f);
     }
 
-    void readSettings(const AirSimSettings::VehicleSetting* vehicle_setting)
+    void readSettings(const AirSimSettings::VehicleSetting& vehicle_setting)
     {
         params_.default_vehicle_state = simple_flight::VehicleState::fromString(
-            vehicle_setting->default_vehicle_state == "" ? "Armed" : vehicle_setting->default_vehicle_state);
+            vehicle_setting.default_vehicle_state == "" ? "Armed" : vehicle_setting.default_vehicle_state);
 
-        remote_control_id_ = vehicle_setting->rc.remote_control_id;
-        params_.rc.allow_api_when_disconnected = vehicle_setting->rc.allow_api_when_disconnected;
-        params_.rc.allow_api_always = vehicle_setting->allow_api_always;
+        remote_control_id_ = vehicle_setting.rc.remote_control_id;
+        params_.rc.allow_api_when_disconnected = vehicle_setting.rc.allow_api_when_disconnected;
+        params_.rc.allow_api_always = vehicle_setting.allow_api_always;
     }
 
 private:

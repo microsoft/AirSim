@@ -9,27 +9,25 @@ void ASimModeWorldBase::BeginPlay()
 
     manual_pose_controller = NewObject<UManualPoseController>();
     setupInputBindings();
+}
 
-    //call virtual method in derived class
-    createVehicles(vehicles_);
-
+void ASimModeWorldBase::initializeForPlay()
+{
     physics_world_.reset(new msr::airlib::PhysicsWorld(
         createPhysicsEngine(), toUpdatableObjects(vehicles_), 
         getPhysicsLoopPeriod()));
 
     if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
         manual_pose_controller->initializeForPlay();
-        manual_pose_controller->setActor(getFpvVehicleSimApi()->getPawn());
+        manual_pose_controller->setActor(getVehicleSimApi()->getPawn());
     }
 }
-
 
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //remove everything that we created in BeginPlay
     physics_world_.reset();
     physics_engine_.reset();
-    vehicles_.clear();
     manual_pose_controller = nullptr;
 
     Super::EndPlay(EndPlayReason);
@@ -98,11 +96,6 @@ void ASimModeWorldBase::continueForTime(double seconds)
 
 }
 
-size_t ASimModeWorldBase::getVehicleCount() const
-{
-    return vehicles_.size();
-}
-
 void ASimModeWorldBase::Tick(float DeltaSeconds)
 {
     { //keep this lock as short as possible
@@ -111,15 +104,15 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
         physics_world_->enableStateReport(EnableReport);
         physics_world_->updateStateReport();
 
-        for (auto& vehicle : vehicles_)
-            vehicle->updateRenderedState(DeltaSeconds);
+        for (auto& pair : getApiProvider()->getVehicleSimApis())
+            pair.second->updateRenderedState(DeltaSeconds);
 
         physics_world_->unlock();
     }
 
-    //perfom any expensive rendering update outside of lock region
-    for (auto& vehicle : vehicles_)
-        vehicle->updateRendering(DeltaSeconds);
+    //perform any expensive rendering update outside of lock region
+    for (auto& pair : getApiProvider()->getVehicleSimApis())
+        pair.second->updateRendering(DeltaSeconds);
 
     Super::Tick(DeltaSeconds);
 }
@@ -138,9 +131,4 @@ std::string ASimModeWorldBase::getDebugReport()
     return physics_world_->getDebugReport();
 }
 
-void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles)
-{
-    //should be overridden by derived class
-    //Unreal doesn't allow pure abstract methods in actors
-}
 

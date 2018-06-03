@@ -8,8 +8,6 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "ManualPoseController.h"
-#include <chrono>
-#include <future>
 
 
 class MultirotorSimApi : public VehicleSimApi
@@ -28,10 +26,9 @@ public:
 
     //VehicleSimApiBase interface
     //implements game interface to update pawn
-    MultirotorSimApi(msr::airlib::MultirotorApiBase* vehicle_api, msr::airlib::MultiRotorParams* vehicle_params,
-        UManualPoseController* manual_pose_controller,
-        APawn* pawn, const std::map<std::string, APIPCamera*>* cameras, const NedTransform& global_transform,
-        const std::string& vehicle_name);
+    MultirotorSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+        const std::map<std::string, APIPCamera*>& cameras,
+        UManualPoseController* manual_pose_controller);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
@@ -43,10 +40,19 @@ public:
     virtual UpdatableObject* getPhysicsBody() override;
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
+    virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+
+    msr::airlib::MultirotorApiBase* getVehicleApi()
+    {
+        return vehicle_api_.get();
+    }
 
 private:
-    msr::airlib::MultirotorApiBase* vehicle_api_;
-    msr::airlib::MultiRotorParams* vehicle_params_;
+    void createVehicleApi();
+
+private:
+    std::unique_ptr<msr::airlib::MultirotorApiBase> vehicle_api_;
+    std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
     UManualPoseController* manual_pose_controller_;
 
     std::unique_ptr<MultiRotor> phys_vehicle_;

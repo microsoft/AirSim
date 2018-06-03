@@ -6,11 +6,11 @@
 
 #include "AirBlueprintLib.h"
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
+#include "MultirotorSimApi.h"
 #include "physics/PhysicsBody.hpp"
 #include "common/ClockFactory.hpp"
 #include <memory>
-#include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
-#include "UnrealSensors/UnrealSensorFactory.h"
+
 
 #ifndef AIRLIB_NO_RPC
 
@@ -38,16 +38,11 @@ ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
 void ASimModeWorldMultiRotor::BeginPlay()
 {
     Super::BeginPlay();
-}
 
-std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiServer() const
-{
-#ifdef AIRLIB_NO_RPC
-    return ASimModeBase::createApiServer();
-#else
-    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
-        getApiProvider(), getSettings().api_server_address));
-#endif
+    setupVehiclesAndCamera();
+
+    //let base class setup physics world
+    initializeForPlay();
 }
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -55,26 +50,21 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     //stop physics thread before we dismantle
     stopAsyncUpdator();
 
-    //for (AActor* actor : spawned_actors_) {
-    //    actor->Destroy();
-    //}
-    spawned_actors_.Empty();
-    //fpv_vehicle_connectors_.Empty();
-    CameraDirector = nullptr;
+    external_camera_class_ = nullptr;
+    camera_director_class_ = nullptr;
+
+    vehicle_sim_apis_.clear();
+    spawned_actors_.RemoveAll();
 
     Super::EndPlay(EndPlayReason);
 }
 
-VehicleSimApi* ASimModeWorldMultiRotor::getFpvVehicleSimApi() const
+void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
 {
-    return fpv_vehicle_sim_api_;
-}
-
-void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
-{
-    //put camera little bit above vehicle
-    //TODO: allow setting camera pose from settings
+    //get UU origin of global NED frame
     FVector uu_origin = getGlobalNedTransform().getLocalOffset();
+
+    //TODO:make this configurable
     FTransform camera_transform(uu_origin + FVector(-300, 0, 200));
 
     //we will either find external camera if it already exist in environment or create one
@@ -111,9 +101,12 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         TArray<AActor*> pawns;
         UAirBlueprintLib::FindAllActor<TMultiRotorPawn>(this, pawns);
 
+        TMultiRotorPawn* fpv_pawn = nullptr;
+
         //add vehicles from settings
         for (auto const& vehicle_setting_pair : getSettings().vehicles)
         {
+            //if vehicle is of multirotor type and auto creatable
             const auto& vehicle_setting = *vehicle_setting_pair.second;
             if (vehicle_setting.auto_create &&
                 ((vehicle_setting.vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) ||
@@ -124,15 +117,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
                 if (pawn_path == "")
                     pawn_path = "DefaultQuadrotor";
 
-                //create vehicle pawn
-                FActorSpawnParameters pawn_spawn_params;
-                pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
-                pawn_spawn_params.SpawnCollisionHandlingOverride =
-                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
-                    getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp);
-
+                //compute initial pose
                 FVector spawn_position = uu_origin;
                 FRotator spawn_rotation = FRotator::ZeroRotator;
                 Vector3r settings_position = vehicle_setting.position;
@@ -145,51 +130,76 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
                     spawn_rotation.Pitch = rotation.pitch;
                 if (!std::isnan(rotation.roll))
                     spawn_rotation.Roll = rotation.roll;
+
+                //spawn vehicle pawn
+                FActorSpawnParameters pawn_spawn_params;
+                pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
+                pawn_spawn_params.SpawnCollisionHandlingOverride =
+                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                    getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp);
                 TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
                     vehicle_bp_class, FTransform(spawn_rotation, spawn_position), pawn_spawn_params);
 
                 spawned_actors_.Add(spawned_pawn);
                 pawns.Add(spawned_pawn);
+
+                if (vehicle_setting.is_fpv_vehicle)
+                    fpv_pawn = spawned_pawn;
             }
         }
 
-        //set up vehicle pawns
-        fpv_vehicle_sim_api_ = nullptr;
+        //create API objects for each pawn we have
         for (AActor* pawn : pawns)
         {
-            //initialize each vehicle pawn we found
+            //initialize the pawn
             TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
-            vehicle_pawn->initializeForBeginPlay(getGlobalNedTransform(), std::string(TCHAR_TO_UTF8(*this->GetName())));
-            const auto* vehicle_sim_api = vehicle_pawn->getVehicleSimApi();
-            //chose first pawn as FPV if none is designated as FPV
-            if (vehicle_sim_api->getVehicleSetting().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
-                fpv_vehicle_sim_api_ = vehicle_sim_api;
+            vehicle_pawn->initializeForBeginPlay();
 
-            //now create the connector for each pawn
-            VehiclePtr vehicle = createVehicle(vehicle_sim_api);
-            if (vehicle != nullptr) {
-                vehicles.push_back(vehicle);
-                fpv_vehicle_connectors_.Add(vehicle);
-            }
-            //else we don't have vehicle for this pawn
+            //create vehicle sim api
+            auto vehicle_sim_api = std::unique_ptr<MultirotorSimApi>(new MultirotorSimApi(
+                vehicle_pawn, getGlobalNedTransform(),
+                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(),
+                manual_pose_controller));
+
+            std::string vehicle_name = vehicle_sim_api->getVehicleName();
+
+            getApiProvider()->insert_or_assign(vehicle_name, vehicle_sim_api->getVehicleApi(),
+                vehicle_sim_api.get());
+            if ((fpv_pawn == vehicle_pawn || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
+                getApiProvider()->makeDefaultVehicle(vehicle_name);
+
+            vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));
         }
     }
 
-    fpv_vehicle_sim_api_->possess();
-    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_sim_api_, external_camera);
+    if (getApiProvider()->hasDefaultVehicle()) {
+        //TODO: better handle no FPV vehicles scenario
+        getVehicleSimApi()->possess();
+        CameraDirector->initializeForBeginPlay(getInitialViewMode(), getVehicleSimApi(), external_camera);
+    }
 }
-
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    getFpvVehicleSimApi()->setLogLine(getLogString());
+    getVehicleSimApi()->setLogLine(getLogString());
+}
+
+std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiServer() const
+{
+#ifdef AIRLIB_NO_RPC
+    return ASimModeBase::createApiServer();
+#else
+    return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
+        getApiProvider(), getSettings().api_server_address));
+#endif
 }
 
 std::string ASimModeWorldMultiRotor::getLogString() const
 {
-    const msr::airlib::Kinematics::State* kinematics = getFpvVehicleSimApi()->getGroundTruthKinematics();
+    const msr::airlib::Kinematics::State* kinematics = getVehicleSimApi()->getGroundTruthKinematics();
     uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
     //TODO: because this bug we are using alternative code with stringstream
@@ -215,31 +225,10 @@ std::string ASimModeWorldMultiRotor::getLogString() const
     //return ss.str();
 }
 
-void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
-{
-    //find vehicles and cameras available in environment
-    //if none available then we will create one
-    setupVehiclesAndCamera(vehicles);
-}
-
-ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehicleSimApi* vehicle_sim_api)
-{
-    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(vehicle_sim_api->getPawn(), &vehicle_sim_api->getNedTransform());
-    auto vehicle_params = MultiRotorParamsFactory::createConfig(vehicle_sim_api->getVehicleSetting(), sensor_factory);
-
-    vehicle_params_.push_back(std::move(vehicle_params));
-
-    std::shared_ptr<MultirotorSimApi> vehicle = std::make_shared<MultirotorSimApi>(
-        vehicle_sim_api, vehicle_params_.back().get(), manual_pose_controller);
-
-    if (vehicle->getPhysicsBody() != nullptr)
-        vehicle_sim_api->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
-
-    return std::static_pointer_cast<VehicleSimApiBase>(vehicle);
-}
-
 void ASimModeWorldMultiRotor::setupClockSpeed()
 {
+    typedef msr::airlib::ClockFactory ClockFactory;
+
     float clock_speed = getSettings().clock_speed;
 
     //setup clock in ClockFactory
