@@ -71,6 +71,36 @@ VehiclePawnWrapper* ASimModeWorldMultiRotor::getFpvVehiclePawnWrapper() const
     return fpv_vehicle_pawn_wrapper_;
 }
 
+std::vector<std::string> split(const std::string &string, const char separator, const bool keepEmptyParts = false)
+{
+    std::istringstream ss(string);
+    std::vector<std::string> stringList;
+    while (!ss.eof())
+    {
+        std::string str;
+        std::getline(ss, str, separator);
+        if ((!keepEmptyParts) && str.empty())
+        {
+            continue;
+        }
+
+        stringList.push_back(str);
+    }
+
+    return stringList;
+}
+
+std::string w2a(const std::wstring &wstring)
+{
+    std::string string(wstring.size(), 0);
+    for (size_t i = 0; i < wstring.size(); ++i)
+    {
+        string[i] = wstring[i];  // TODO only support ASCII strings
+    }
+
+    return string;
+}
+
 void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& vehicles)
 {
     //get player controller
@@ -110,8 +140,90 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
 
     //find all vehicle pawns
     {
+        TArray<AActor*> unrealProjectPawns;
+        UAirBlueprintLib::FindAllActor<TMultiRotorPawn>(this, unrealProjectPawns);
+        for (AActor* pawn : unrealProjectPawns)
+        {
+            TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
+            if (!vehicle_pawn)
+            {
+                continue;
+            }
+
+            vehicle_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
+            VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
+            wrapper->getConfig().vehicle_config_name = w2a(std::wstring(*pawn->GetName()));
+        }
+
+        TArray<AActor*> additionalPawns;
+        const std::string additionalVehicleConfigs_ = Settings::singleton().getString("AdditionalVehicleConfigs", "");
+        const std::vector<std::string> additionalVehicleConfigs = split(additionalVehicleConfigs_, ';');
+        if (!additionalVehicleConfigs.empty())
+        {
+            std::vector<std::vector<double> > additionalVehiclePositions(additionalVehicleConfigs.size());
+            for (size_t i = 0; i < additionalVehiclePositions.size(); ++i)
+            {
+                std::vector<double> &additionalVehiclePosition = additionalVehiclePositions[i];
+                additionalVehiclePosition.resize(3);
+                additionalVehiclePosition[0] = 5 * i;
+                additionalVehiclePosition[1] = 0;
+                additionalVehiclePosition[2] = 0;
+            }
+            const std::string additionalVehiclePositions__ = Settings::singleton().getString("AdditionalVehiclePositions", "");
+            const std::vector<std::string> additionalVehiclePositions_ = split(additionalVehiclePositions__, ';');
+            for (size_t i = 0; i < std::min(additionalVehiclePositions.size(), additionalVehiclePositions_.size()); ++i)
+            {
+                const std::string &additionalVehiclePosition__ = additionalVehiclePositions_[i];
+                const std::vector<std::string> additionalVehiclePosition_ = split(additionalVehiclePosition__, ',');
+                std::vector<double> &additionalVehiclePosition = additionalVehiclePositions[i];
+                for (size_t j = 0; j < std::min(additionalVehiclePosition.size(), additionalVehiclePosition_.size()); ++j)
+                {
+                    additionalVehiclePosition[j] = atof(additionalVehiclePosition_[j].c_str());
+                }
+            }
+
+            auto vehicle_bp_class = UAirBlueprintLib::LoadClass(getSettings().pawn_paths.at("DefaultQuadrotor").pawn_bp);
+
+            for (size_t i = 0; i < additionalVehicleConfigs.size(); ++i)
+            {
+                const std::string &additionalVehicleConfig = additionalVehicleConfigs[i];
+                const std::vector<double> &additionalVehiclePosition = additionalVehiclePositions[i];
+
+                //create vehicle pawn
+                FActorSpawnParameters pawn_spawn_params;
+                pawn_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+                FTransform actor_transform_ = actor_transform;
+                actor_transform_.AddToTranslation(FVector(100 * additionalVehiclePosition[0], 100 * additionalVehiclePosition[1], 100 * additionalVehiclePosition[2]));  // 100: cm -> m
+                TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(vehicle_bp_class, actor_transform_, pawn_spawn_params);
+
+                spawned_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
+                VehiclePawnWrapper* wrapper = spawned_pawn->getVehiclePawnWrapper();
+                wrapper->getConfig().vehicle_config_name = additionalVehicleConfig;
+
+                spawned_actors_.Add(spawned_pawn);
+                additionalPawns.Add(spawned_pawn);
+            }
+        }
+
         TArray<AActor*> pawns;
-        UAirBlueprintLib::FindAllActor<TMultiRotorPawn>(this, pawns);
+        pawns.Append(unrealProjectPawns);
+        pawns.Append(additionalPawns);
+
+        const std::string fpvVehicleConfig = Settings::singleton().getString("FPVVehicleConfig", "");
+        if (!fpvVehicleConfig.empty())
+        {
+            for (AActor* pawn : pawns)
+            {
+                TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
+                VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
+
+                if (wrapper->getConfig().vehicle_config_name == fpvVehicleConfig)
+                {
+                    wrapper->getConfig().is_fpv_vehicle = true;
+                    break;
+                }
+            }
+        }
 
         //if no vehicle pawns exists in environment
         if (pawns.Num() == 0) {
@@ -125,6 +237,8 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
             TMultiRotorPawn* spawned_pawn = this->GetWorld()->SpawnActor<TMultiRotorPawn>(
                 vehicle_bp_class, actor_transform, pawn_spawn_params);
 
+            spawned_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
+
             spawned_actors_.Add(spawned_pawn);
             pawns.Add(spawned_pawn);
         }
@@ -134,7 +248,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera(std::vector<VehiclePtr>& ve
         {
             //initialize each vehicle pawn we found
             TMultiRotorPawn* vehicle_pawn = static_cast<TMultiRotorPawn*>(pawn);
-            vehicle_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
+//            vehicle_pawn->initializeForBeginPlay(getSettings().additional_camera_settings);
 
             //chose first pawn as FPV if none is designated as FPV
             VehiclePawnWrapper* wrapper = vehicle_pawn->getVehiclePawnWrapper();
@@ -201,6 +315,40 @@ void ASimModeWorldMultiRotor::createVehicles(std::vector<VehiclePtr>& vehicles)
     setupVehiclesAndCamera(vehicles);
 }
 
+class SimModeApi_ : public SimModeApiBase
+{
+public:
+    SimModeApi_(ASimModeBase* simMode, VehiclePawnWrapper *vehiclePawnWrapper)
+        : mSimMode(simMode)
+        , mVehiclePawnWrapper(vehiclePawnWrapper)
+    {
+    }
+    virtual VehicleApiBase* getVehicleApi() override
+    {
+        return mVehiclePawnWrapper ? mVehiclePawnWrapper->getApi() : mSimMode->getVehicleApi();
+    }
+    virtual void reset() override
+    {
+        mSimMode->reset();
+    }
+    virtual bool isPaused() const override
+    {
+        return mSimMode->isPaused();
+    }
+    virtual void pause(bool is_paused) override
+    {
+        mSimMode->pause(is_paused);
+    }
+    virtual void continueForTime(double seconds) override
+    {
+        mSimMode->continueForTime(seconds);
+    }
+
+private:
+    ASimModeBase *mSimMode;
+    VehiclePawnWrapper *mVehiclePawnWrapper;
+};
+
 ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawnWrapper* wrapper)
 {
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(wrapper->getPawn(), &wrapper->getNedTransform());
@@ -213,6 +361,23 @@ ASimModeWorldBase::VehiclePtr ASimModeWorldMultiRotor::createVehicle(VehiclePawn
 
     if (vehicle->getPhysicsBody() != nullptr)
         wrapper->setKinematics(&(static_cast<PhysicsBody*>(vehicle->getPhysicsBody())->getKinematics()));
+
+    AirSimSettings::VehicleSettings vehicle_settings = AirSimSettings::singleton().getVehicleSettings(wrapper->getVehicleConfigName());
+    static std::vector<std::unique_ptr<ApiServerBase> > apiServers;
+#ifdef AIRLIB_NO_RPC
+    apiServers.push_back(ASimModeBase::createApiServer());
+#else
+    apiServers.push_back(std::unique_ptr<ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(new SimModeApi_(this, wrapper), getSettings().api_server_address, vehicle_settings.server_port)));
+#endif
+    try
+    {
+        apiServers.back()->start();
+        UAirBlueprintLib::LogMessageString("Started RpcLib Server at " + getSettings().api_server_address + ":" + std::to_string(vehicle_settings.server_port), "", LogDebugLevel::Informational);
+    }
+    catch (std::exception& ex)
+    {
+        UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
+    }
 
     return std::static_pointer_cast<VehicleConnectorBase>(vehicle);
 }
