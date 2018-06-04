@@ -204,6 +204,11 @@ void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     
+    for (auto& pair : getApiProvider()->getVehicleSimApis()) {
+        pair.second->updateRenderedState(DeltaSeconds);
+        pair.second->updateRendering(DeltaSeconds);
+    }
+    
     if (pause_period_start_ > 0) {
         if (ClockFactory::get()->elapsedSince(pause_period_start_) >= pause_period_) {
             if (!isPaused())
