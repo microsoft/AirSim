@@ -92,12 +92,12 @@ public:
     {
         switch (mesh_naming_method_)
         {
-        case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName:
+        case msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName:
             if (mesh->GetOwner())
                 return std::string(TCHAR_TO_UTF8(*(mesh->GetOwner()->GetName())));
             else
                 return ""; //std::string(TCHAR_TO_UTF8(*(UKismetSystemLibrary::GetDisplayName(mesh))));
-        case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::StaticMeshName:
+        case msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::StaticMeshName:
             if (mesh->GetStaticMesh())
                 return std::string(TCHAR_TO_UTF8(*(mesh->GetStaticMesh()->GetName())));
             else
@@ -161,7 +161,7 @@ public:
     {
         log_messages_hidden_ = is_hidden;
     }
-    static void SetMeshNamingMethod(msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType method)
+    static void SetMeshNamingMethod(msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType method)
     {
         mesh_naming_method_ = method;
     }
@@ -269,7 +269,7 @@ private:
     static bool log_messages_hidden_;
     //FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
     static uint32_t flush_on_draw_count_;
-    static msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType mesh_naming_method_;
+    static msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType mesh_naming_method_;
 
     static IImageWrapperModule* image_wrapper_module_;
 };

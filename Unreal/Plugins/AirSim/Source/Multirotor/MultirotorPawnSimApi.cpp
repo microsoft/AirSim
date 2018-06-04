@@ -1,4 +1,4 @@
-#include "MultirotorSimApi.h"
+#include "MultirotorPawnSimApi.h"
 #include "AirBlueprintLib.h"
 #include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 #include "UnrealSensors/UnrealSensorFactory.h"
@@ -6,10 +6,10 @@
 
 using namespace msr::airlib;
 
-MultirotorSimApi::MultirotorSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
     const std::map<std::string, APIPCamera*>& cameras,
-    UManualPoseController* manual_pose_controller)
-    : VehicleSimApi(pawn, global_transform, collision_signal, cameras),
+    UManualPoseController* manual_pose_controller, const GeoPoint& home_geopoint)
+    : PawnSimApi(pawn, global_transform, collision_signal, cameras),
       manual_pose_controller_(manual_pose_controller)
 {
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
@@ -22,19 +22,19 @@ MultirotorSimApi::MultirotorSimApi(APawn* pawn, const NedTransform& global_trans
     createVehicleApi();
 
     //setup physics vehicle
-    phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_, vehicle_api_, 
-        getPose()));
+    phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(), 
+        getPose(), home_geopoint));
     rotor_count_ = phys_vehicle_->wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
 
     //initialize private vars
-    last_pose_ = pending_pose_ = Pose::nanPose();
+    last_phys_pose_ = pending_phys_pose_ = Pose::nanPose();
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
     did_reset_ = false;
 }
 
-void MultirotorSimApi::createVehicleApi()
+void MultirotorPawnSimApi::createVehicleApi()
 {
     //create vehicle params
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
@@ -42,12 +42,41 @@ void MultirotorSimApi::createVehicleApi()
     vehicle_api_ = vehicle_params_->createMultirotorApi();
 }
 
-const msr::airlib::Kinematics::State* MultirotorSimApi::getGroundTruthKinematics() const
+std::string MultirotorPawnSimApi::getLogLine() const
+{
+    const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
+    uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
+
+    //TODO: because this bug we are using alternative code with stringstream
+    //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
+
+    std::string line;
+    line.append(std::to_string(timestamp_millis)).append("\t")
+        .append(std::to_string(kinematics->pose.position.x())).append("\t")
+        .append(std::to_string(kinematics->pose.position.y())).append("\t")
+        .append(std::to_string(kinematics->pose.position.z())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.w())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.x())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.y())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.z())).append("\t");
+
+    return line;
+
+    //std::stringstream ss;
+    //ss << timestamp_millis << "\t";
+    //ss << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
+    //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
+    //ss << "\n";
+    //return ss.str();
+
+}
+
+const msr::airlib::Kinematics::State* MultirotorPawnSimApi::getGroundTruthKinematics() const
 {
     return & phys_vehicle_->getKinematics();
 }
 
-void MultirotorSimApi::updateRenderedState(float dt)
+void MultirotorPawnSimApi::updateRenderedState(float dt)
 {
     //Utils::log("------Render tick-------");
 
@@ -82,11 +111,11 @@ void MultirotorSimApi::updateRenderedState(float dt)
     }
 
     if (pending_pose_status_ == PendingPoseStatus::RenderStatePending)
-        phys_vehicle_->setPose(pending_pose_);
+        phys_vehicle_->setPose(pending_phys_pose_);
         
-    last_pose_ = phys_vehicle_->getPose();
+    last_phys_pose_ = phys_vehicle_->getPose();
     
-    collision_response_info = phys_vehicle_->getCollisionResponseInfo();
+    collision_response = phys_vehicle_->getCollisionResponseInfo();
 
     //update rotor poses
     for (unsigned int i = 0; i < rotor_count_; ++i) {
@@ -104,7 +133,7 @@ void MultirotorSimApi::updateRenderedState(float dt)
         vehicle_api_->setRCData(getRCData());
 }
 
-void MultirotorSimApi::updateRendering(float dt)
+void MultirotorPawnSimApi::updateRendering(float dt)
 {
     //if we did reset then don't worry about synchronizing states for this tick
     if (reset_pending_) {
@@ -119,13 +148,13 @@ void MultirotorSimApi::updateRendering(float dt)
         }
     }
 
-    if (!VectorMath::hasNan(last_pose_)) {
+    if (!VectorMath::hasNan(last_phys_pose_)) {
         if (pending_pose_status_ ==  PendingPoseStatus::RenderPending) {
-            VehicleSimApi::setPose(last_pose_, pending_pose_collisions_);
+            PawnSimApi::setPose(last_phys_pose_, pending_pose_collisions_);
             pending_pose_status_ = PendingPoseStatus::NonePending;
         }
         else
-            VehicleSimApi::setPose(last_pose_, false);
+            PawnSimApi::setPose(last_phys_pose_, false);
     }
 
     //update rotor animations
@@ -139,8 +168,8 @@ void MultirotorSimApi::updateRendering(float dt)
         UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(getCollisionInfo().collision_count), LogDebugLevel::Failure);
     }
     else {
-        //UAirBlueprintLib::LogMessage(TEXT("Collision (raw) Count:"), FString::FromInt(collision_response_info.collision_count_raw), LogDebugLevel::Unimportant);
-        UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(collision_response_info.collision_count_non_resting), LogDebugLevel::Failure);
+        //UAirBlueprintLib::LogMessage(TEXT("Collision (raw) Count:"), FString::FromInt(collision_response.collision_count_raw), LogDebugLevel::Unimportant);
+        UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(collision_response.collision_count_non_resting), LogDebugLevel::Failure);
     }
 
     for (auto i = 0; i < vehicle_api_messages_.size(); ++i) {
@@ -155,29 +184,29 @@ void MultirotorSimApi::updateRendering(float dt)
     }
 }
 
-void MultirotorSimApi::setPose(const Pose& pose, bool ignore_collision)
+void MultirotorPawnSimApi::setPose(const Pose& pose, bool ignore_collision)
 {
-    pending_pose_ = pose;
+    pending_phys_pose_ = pose;
     pending_pose_collisions_ = ignore_collision;
     pending_pose_status_ = PendingPoseStatus::RenderStatePending;
 }
 
 //*** Start: UpdatableState implementation ***//
-void MultirotorSimApi::reset()
+void MultirotorPawnSimApi::reset()
 {
-    VehicleSimApi::reset();
+    PawnSimApi::reset();
     phys_vehicle_->reset();
 }
 
-void MultirotorSimApi::update()
+void MultirotorPawnSimApi::update()
 {
-    VehicleSimApi::update();
+    PawnSimApi::update();
 
     //this is high frequency physics tick, flier gets ticked at rendering frame rate
     phys_vehicle_->update();
 }
 
-void MultirotorSimApi::reportState(StateReporter& reporter)
+void MultirotorPawnSimApi::reportState(StateReporter& reporter)
 {
     // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
     FVector unrealPosition = getUUPosition();
@@ -185,7 +214,7 @@ void MultirotorSimApi::reportState(StateReporter& reporter)
     phys_vehicle_->reportState(reporter);
 }
 
-MultirotorSimApi::UpdatableObject* MultirotorSimApi::getPhysicsBody()
+MultirotorPawnSimApi::UpdatableObject* MultirotorPawnSimApi::getPhysicsBody()
 {
     return phys_vehicle_->getPhysicsBody();
 }

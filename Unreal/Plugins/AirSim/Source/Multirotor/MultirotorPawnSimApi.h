@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VehicleSimApi.h"
+#include "PawnSimApi.h"
 #include "vehicles/multirotor/MultiRotor.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
@@ -10,7 +10,7 @@
 #include "ManualPoseController.h"
 
 
-class MultirotorSimApi : public VehicleSimApi
+class MultirotorPawnSimApi : public PawnSimApi
 {
 public:
     typedef msr::airlib::real_T real_T;
@@ -22,13 +22,13 @@ public:
 
 
 public:
-    virtual ~MultirotorSimApi() = default;
+    virtual ~MultirotorPawnSimApi() = default;
 
     //VehicleSimApiBase interface
     //implements game interface to update pawn
-    MultirotorSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+    MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
         const std::map<std::string, APIPCamera*>& cameras,
-        UManualPoseController* manual_pose_controller);
+        UManualPoseController* manual_pose_controller, const GeoPoint& home_geopoint);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
@@ -41,6 +41,8 @@ public:
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+
+    virtual std::string getLogLine() const override;
 
     msr::airlib::MultirotorApiBase* getVehicleApi()
     {
@@ -56,7 +58,6 @@ private:
     UManualPoseController* manual_pose_controller_;
 
     std::unique_ptr<MultiRotor> phys_vehicle_;
-
     struct RotorInfo {
         real_T rotor_speed = 0;
         int rotor_direction = 0;
@@ -66,20 +67,21 @@ private:
     unsigned int rotor_count_;
     std::vector<RotorInfo> rotor_info_;
 
-    CollisionResponseInfo collision_response_info;
+    //show info on collision response from physics engine
+    CollisionResponse collision_response;
 
+    //when pose needs to set from non-physics thread, we set it as pending
     bool pending_pose_collisions_;
     enum class PendingPoseStatus {
         NonePending, RenderStatePending, RenderPending
     } pending_pose_status_;
-    Pose pending_pose_; //force new pose through API
+    Pose pending_phys_pose_; //force new pose through API
 
     //reset must happen while World is locked so its async task initiated from API thread
     bool reset_pending_;
     bool did_reset_;
     std::packaged_task<void()> reset_task_;
 
-    Pose last_pose_; //for trace lines showing vehicle path
+    Pose last_phys_pose_; //for trace lines showing vehicle path
     std::vector<std::string> vehicle_api_messages_;
-
 };

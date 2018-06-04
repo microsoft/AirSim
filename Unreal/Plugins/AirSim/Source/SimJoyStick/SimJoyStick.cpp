@@ -387,7 +387,8 @@ SimJoyStick::~SimJoyStick()
 
 void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state) const
 {
-    pimpl_->getJoyStickState(index, state, axis_maps);
+    //TODO: anyway to workaround const_cast?
+    const_cast<SimJoyStick*>(this)->pimpl_->getJoyStickState(index, state, axis_maps);
 }
 
 void SimJoyStick::setAutoCenter(unsigned int index, double strength)

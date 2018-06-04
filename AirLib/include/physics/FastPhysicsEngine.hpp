@@ -82,12 +82,12 @@ private:
 
         //if there is collision, see if we need collision response
         const CollisionInfo collision_info = body.getCollisionInfo();
-        CollisionResponseInfo& collision_response_info = body.getCollisionResponseInfo();
+        CollisionResponse& collision_response = body.getCollisionResponseInfo();
         //if collision was already responsed then do not respond to it until we get updated information
-        if (grounded_ || (collision_info.has_collided && collision_response_info.collision_time_stamp != collision_info.time_stamp)) {
+        if (grounded_ || (collision_info.has_collided && collision_response.collision_time_stamp != collision_info.time_stamp)) {
             bool is_collision_response = getNextKinematicsOnCollision(dt, collision_info, body, 
                 current, next, next_wrench, enable_ground_lock_, grounded_);
-            updateCollisionResponseInfo(collision_info, next, is_collision_response, collision_response_info);
+            updateCollisionResponseInfo(collision_info, next, is_collision_response, collision_response);
             //throttledLogOutput("*** has collision", 0.1);
         }
         //else throttledLogOutput("*** no collision", 0.1);
@@ -101,14 +101,14 @@ private:
     }
 
     static void updateCollisionResponseInfo(const CollisionInfo& collision_info, const Kinematics::State& next, 
-        bool is_collision_response, CollisionResponseInfo& collision_response_info)
+        bool is_collision_response, CollisionResponse& collision_response)
     {
-        collision_response_info.collision_time_stamp = collision_info.time_stamp;
-        ++collision_response_info.collision_count_raw;
+        collision_response.collision_time_stamp = collision_info.time_stamp;
+        ++collision_response.collision_count_raw;
 
         //increment counter if we didn't collided with high velocity (like resting on ground)
         if (is_collision_response && next.twist.linear.squaredNorm() > kRestingVelocityMax * kRestingVelocityMax)
-            ++collision_response_info.collision_count_non_resting;
+            ++collision_response.collision_count_non_resting;
 
     }
 

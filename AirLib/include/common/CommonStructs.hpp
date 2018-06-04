@@ -232,7 +232,7 @@ struct CameraInfo {
     }
 };
 
-struct CollisionResponseInfo {
+struct CollisionResponse {
     unsigned int collision_count_raw = 0;
     unsigned int collision_count_non_resting = 0;
     TTimePoint collision_time_stamp = 0;
@@ -249,11 +249,16 @@ struct RCData {
     //pitch, roll, yaw should be in range -1 to 1
     //switches should be integer value indicating its state, 0=on, 1=off for example.
     float pitch = 0, roll = 0, throttle = 0, yaw = 0;
-    unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0,
-        switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
+    float left_z = 0, right_z = 0;
+    uint16_t switches = 0;
+    std::string vendor_id = "";
     bool is_initialized = false; //is RC connected?
     bool is_valid = false; //must be true for data to be valid
 
+    unsigned int getSwitch(uint16_t index) const
+    {
+        return switches && (1 << index) ? 1 : 0;
+    }
 
     void add(const RCData& other)
     {

@@ -46,8 +46,6 @@ public:
     msr::airlib::Pose getPose() const;
     
 private:
-
-
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
     UPROPERTY() TArray<UTextureRenderTarget2D*> render_targets_;
 

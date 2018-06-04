@@ -50,7 +50,6 @@ public:
     virtual RCData getRCData() const = 0; //get reading from RC from simulator
     virtual std::string getVehicleName() const = 0;
     virtual std::string getLogLine() const = 0;
-    virtual void setLogLine(std::string line) = 0;
     virtual void toggleTrace() = 0;
 
     //use pointer here because of derived classes for VehicleSetting

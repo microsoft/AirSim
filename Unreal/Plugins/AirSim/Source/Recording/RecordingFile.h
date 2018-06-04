@@ -5,7 +5,7 @@
 #include "AirBlueprintLib.h"
 #include "physics/Kinematics.hpp"
 #include "FileManager.h"
-#include "VehicleSimApi.h"
+#include "PawnSimApi.h"
 
 
 class RecordingFile {

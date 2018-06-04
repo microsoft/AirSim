@@ -18,6 +18,8 @@ public:
         : world_sim_api_(world_sim_api)
     {
     }
+    virtual ~ApiProvider() = default;
+
 
     //vehicle API
     virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name = "")
@@ -53,15 +55,15 @@ public:
     {
         return vehicle_apis_;
     }
-    const std::map<std::string, VehicleSimApiBase*>& geVehicleSimApis()
+    const std::map<std::string, VehicleSimApiBase*>& getVehicleSimApis()
     {
         return vehicle_sim_apis_;
     }
 
     bool hasDefaultVehicle() const
     {
-        return Utils::findOrDefault<std::string, VehicleApiBase*>(vehicle_apis_, "") == nullptr &&
-            Utils::findOrDefault<std::string, VehicleSimApiBase*>(vehicle_sim_apis_, "") == nullptr;
+        return Utils::findOrDefault(vehicle_apis_, Utils::emptyString(), static_cast<VehicleApiBase*>(nullptr)) == nullptr &&
+            Utils::findOrDefault(vehicle_sim_apis_, Utils::emptyString(), static_cast<VehicleSimApiBase*>(nullptr)) == nullptr;
     }
 
     void makeDefaultVehicle(const std::string& vehicle_name)

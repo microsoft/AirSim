@@ -27,7 +27,7 @@ void WorldSimApi::continueForTime(double seconds)
     simmode_->continueForTime(seconds);
 }
 
-bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false)
+bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
     bool success;
     UAirBlueprintLib::RunCommandOnGameThread([mesh_name, object_id, is_name_regex, &success]() {
@@ -42,7 +42,7 @@ int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
 }
 
 void WorldSimApi::printLogMessage(const std::string& message,
-    const std::string& message_param = "", unsigned char severity)
+    const std::string& message_param, unsigned char severity)
 {
     UAirBlueprintLib::LogMessageString(message, message_param, static_cast<LogDebugLevel>(severity));
 }
@@ -50,7 +50,7 @@ void WorldSimApi::printLogMessage(const std::string& message,
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
     AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
-    return actor ? simmode_->getGlobalNedTransform().toLocalNed(actor->GetActorLocation(), actor->GetActorQuat())
+    return actor ? simmode_->getGlobalNedTransform().toLocalNed(actor->GetActorTransform())
         : Pose::nanPose();
 }
 

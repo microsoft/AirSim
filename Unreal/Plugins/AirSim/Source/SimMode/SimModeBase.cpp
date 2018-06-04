@@ -6,6 +6,7 @@
 #include "ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/OutputDeviceNull.h"
+#include "Engine/World.h"
 
 
 #include <memory>
@@ -27,19 +28,23 @@ const char ASimModeBase::kUsageScenarioComputerVision[] = "ComputerVision";
 
 ASimModeBase::ASimModeBase()
 {
+    static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
+    static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
+    camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
+
     PrimaryActorTick.bCanEverTick = true;
 
     static ConstructorHelpers::FClassFinder<AActor> sky_sphere_class(TEXT("Blueprint'/Engine/EngineSky/BP_Sky_Sphere'"));
     sky_sphere_class_ = sky_sphere_class.Succeeded() ? sky_sphere_class.Class : nullptr;
-    
 }
 
 void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    global_ned_transform_ = NedTransform(GetActorLocation(), 
-        UAirBlueprintLib::GetWorldToMetersScale(this));
+    global_ned_transform_.reset(new NedTransform(GetActorLocation(), 
+        UAirBlueprintLib::GetWorldToMetersScale(this)));
     world_sim_api_.reset(new WorldSimApi(this));
 
     setupPhysicsLoopPeriod();
@@ -60,7 +65,7 @@ void ASimModeBase::BeginPlay()
 
 const NedTransform& ASimModeBase::getGlobalNedTransform()
 {
-    return global_ned_transform_;
+    return *global_ned_transform_;
 }
 
 void ASimModeBase::checkVehicleReady()
@@ -285,6 +290,25 @@ const msr::airlib::AirSimSettings& ASimModeBase::getSettings() const
     return AirSimSettings::singleton();
 }
 
+void ASimModeBase::initializeCameraDirector(const FTransform& camera_transform)
+{
+    TArray<AActor*> camera_dirs;
+    UAirBlueprintLib::FindAllActor<ACameraDirector>(this, camera_dirs);
+    if (camera_dirs.Num() == 0) {
+        //create director
+        FActorSpawnParameters camera_spawn_params;
+        camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+        CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
+        CameraDirector->setFollowDistance(225);
+        CameraDirector->setCameraRotationLagEnabled(false);
+        //create external camera required for the director
+        CameraDirector->ExternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
+    }
+    else {
+        CameraDirector = static_cast<ACameraDirector*>(camera_dirs[0]);
+    }
+}
+
 bool ASimModeBase::toggleRecording()
 {
     if (isRecording())
@@ -320,7 +344,7 @@ void ASimModeBase::startApiServer()
 #ifdef AIRLIB_NO_RPC
         api_server_.reset();
 #else
-        api_provider_.reset(new msr::airlib::ApiProvider<VehicleSimApi>(world_sim_api_.get()));
+        api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
         api_server_ = createApiServer();
 #endif
 

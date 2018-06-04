@@ -17,7 +17,7 @@
 #include "api/VehicleSimApiBase.hpp"
 
 
-class VehicleSimApi : public msr::airlib::VehicleSimApiBase {
+class PawnSimApi : public msr::airlib::VehicleSimApiBase {
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
     typedef msr::airlib::Vector3r Vector3r;
@@ -29,8 +29,8 @@ public: //types
     typedef msr::airlib::Utils Utils;
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
-    typedef common_utils::Signal<class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
-        FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit> CollisionSignal;
+    typedef common_utils::Signal<UPrimitiveComponent*, AActor*, UPrimitiveComponent*, bool, FVector,
+        FVector, FVector, const FHitResult&> CollisionSignal;
 
 public: //implementation of VehicleSimApiBase
     virtual void reset() override;
@@ -49,12 +49,10 @@ public: //implementation of VehicleSimApiBase
     {
         return vehicle_name_;
     }
-    virtual std::string getLogLine() const override;
-    virtual void setLogLine(std::string line) override;
     virtual void toggleTrace() override;
 
 public: //Unreal specific methods
-    VehicleSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+    PawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
         const std::map<std::string, APIPCamera*>& cameras);
 
     //returns one of the cameras attached to the pawn
@@ -78,6 +76,7 @@ public: //Unreal specific methods
     const NedTransform& getNedTransform() const;
 
     void possess();
+    void setRCForceFeedback(float rumble_strength, float auto_center);
 
     //allows setting ground truth from physics engine
     void setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics);
@@ -98,7 +97,7 @@ private: //methods
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
-    VehicleSimApi::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
+    PawnSimApi::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
 
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;

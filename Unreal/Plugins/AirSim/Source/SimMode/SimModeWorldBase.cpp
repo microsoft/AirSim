@@ -13,8 +13,12 @@ void ASimModeWorldBase::BeginPlay()
 
 void ASimModeWorldBase::initializeForPlay()
 {
+    std::vector<msr::airlib::UpdatableObject*> vehicles;
+    for (auto& p : getApiProvider()->getVehicleSimApis())
+        vehicles.push_back(p.second);
+
     physics_world_.reset(new msr::airlib::PhysicsWorld(
-        createPhysicsEngine(), toUpdatableObjects(vehicles_), 
+        createPhysicsEngine(), vehicles,
         getPhysicsLoopPeriod()));
 
     if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
@@ -42,16 +46,6 @@ void ASimModeWorldBase::stopAsyncUpdator()
     physics_world_->stopAsyncUpdator();
 }
 
-
-std::vector<ASimModeWorldBase::UpdatableObject*> ASimModeWorldBase::toUpdatableObjects(
-    const std::vector<ASimModeWorldBase::VehiclePtr>& vehicles)
-{
-    std::vector<UpdatableObject*> bodies;
-    for (const VehiclePtr& body : vehicles)
-        bodies.push_back(body.get());
-
-    return bodies;
-}
 
 
 ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
@@ -130,5 +124,3 @@ std::string ASimModeWorldBase::getDebugReport()
 {
     return physics_world_->getDebugReport();
 }
-
-

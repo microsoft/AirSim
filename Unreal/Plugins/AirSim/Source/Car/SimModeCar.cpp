@@ -3,7 +3,10 @@
 
 #include "AirBlueprintLib.h"
 #include "common/AirSimSettings.hpp"
+#include "CarPawnSimAPi.h"
 #include "AirBlueprintLib.h"
+#include "common/Common.hpp"
+#include "common/EarthUtils.hpp"
 
 #ifndef AIRLIB_NO_RPC
 
@@ -26,6 +29,7 @@ ASimModeCar::ASimModeCar()
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
     camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
 
+    //TODO: get this from settings
     follow_distance_ = -800;
 }
 
@@ -35,7 +39,7 @@ void ASimModeCar::BeginPlay()
 
     initializePauseState();
 
-    createVehicles(vehicles_);
+    setupVehiclesAndCamera();
 
     debug_reporter_.initialize(false);
     debug_reporter_.reset();
@@ -44,17 +48,8 @@ void ASimModeCar::BeginPlay()
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     spawned_actors_.Empty();
-    if (CameraDirector != nullptr) {
-        fpv_vehicle_sim_api_ = nullptr;
-        CameraDirector = nullptr;
-    }
-
+    
     Super::EndPlay(EndPlayReason);
-}
-
-const msr::airlib::VehicleSimApiBase* ASimModeCar::getVehicleSimApi() const
-{
-    return fpv_vehicle_sim_api_;
 }
 
 void ASimModeCar::initializePauseState()
@@ -95,98 +90,104 @@ void ASimModeCar::setupClockSpeed()
     UAirBlueprintLib::LogMessageString("Clock Speed: ", std::to_string(current_clockspeed_), LogDebugLevel::Informational);
 }
 
-void ASimModeCar::setupVehiclesAndCamera(std::vector<TVehiclePawn*>& vehicles)
+UClass* ASimModeCar::getExternalCameraClass()
 {
-    //get player controller
-    APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
-    FTransform actor_transform = player_controller->GetViewTarget()->GetActorTransform();
-    //put camera little bit above vehicle
-    FTransform camera_transform(actor_transform.GetLocation() + FVector(follow_distance_, 0, 400));
+    return external_camera_class_;
+}
 
-    //we will either find external camera if it already exist in environment or create one
-    APIPCamera* external_camera;
-
+void ASimModeCar::setupVehiclesAndCamera()
+{
+    //get UU origin of global NED frame
+    FVector uu_origin = getGlobalNedTransform().getLocalOffset();
+    //TODO:make this configurable
+    FTransform camera_transform(uu_origin + FVector(follow_distance_, 0, 400));
+    initializeCameraDirector(camera_transform);
 
     //find all vehicle pawns
     {
         TArray<AActor*> pawns;
         UAirBlueprintLib::FindAllActor<TVehiclePawn>(this, pawns);
 
+        TVehiclePawn* fpv_pawn = nullptr;
+
         //add vehicles from settings
-        for (auto const& vehicle_setting : getSettings().vehicles)
+        for (auto const& vehicle_setting_pair : getSettings().vehicles)
         {
-            if (vehicle_setting.second->auto_create &&
-                vehicle_setting.second->vehicle_type == AirSimSettings::kVehicleTypePhysXCar) {
+            //if vehicle is of multirotor type and auto creatable
+            const auto& vehicle_setting = *vehicle_setting_pair.second;
+            if (vehicle_setting.auto_create &&
+                ((vehicle_setting.vehicle_type == AirSimSettings::kVehicleTypePhysXCar) )) {
 
                 //decide which derived BP to use
-                std::string pawn_path = vehicle_setting.second->pawn_path;
+                std::string pawn_path = vehicle_setting.pawn_path;
                 if (pawn_path == "")
                     pawn_path = "DefaultCar";
 
-                //create vehicle pawn
+                //compute initial pose
+                FVector spawn_position = uu_origin;
+                FRotator spawn_rotation = FRotator::ZeroRotator;
+                Vector3r settings_position = vehicle_setting.position;
+                if (!VectorMath::hasNan(settings_position))
+                    spawn_position = getGlobalNedTransform().fromLocalNed(settings_position);
+                const auto& rotation = vehicle_setting.rotation;
+                if (!std::isnan(rotation.yaw))
+                    spawn_rotation.Yaw = rotation.yaw;
+                if (!std::isnan(rotation.pitch))
+                    spawn_rotation.Pitch = rotation.pitch;
+                if (!std::isnan(rotation.roll))
+                    spawn_rotation.Roll = rotation.roll;
+
+                //spawn vehicle pawn
                 FActorSpawnParameters pawn_spawn_params;
-                pawn_spawn_params.Name = FName(vehicle_setting.second->vehicle_name.c_str());
+                pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
                 pawn_spawn_params.SpawnCollisionHandlingOverride =
                     ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
                 auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
                     getSettings().pawn_paths.at(pawn_path).pawn_bp);
-
                 TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
-                    vehicle_bp_class, actor_transform, pawn_spawn_params);
+                    vehicle_bp_class, FTransform(spawn_rotation, spawn_position), pawn_spawn_params);
 
                 spawned_actors_.Add(spawned_pawn);
                 pawns.Add(spawned_pawn);
+
+                if (vehicle_setting.is_fpv_vehicle)
+                    fpv_pawn = spawned_pawn;
             }
         }
 
-        //set up vehicle pawns
+        //create API objects for each pawn we have
         for (AActor* pawn : pawns)
         {
             //initialize each vehicle pawn we found
             TVehiclePawn* vehicle_pawn = static_cast<TVehiclePawn*>(pawn);
-            vehicles.push_back(vehicle_pawn);
-
-            //chose first pawn as FPV if none is designated as FPV
-            VehicleSimApi* vehicle_sim_api = vehicle_pawn->getVehicleSimApi();
-            vehicle_sim_api->initialize(this, cameras, std::string(TCHAR_TO_UTF8(*this->GetName())));
-            vehicle_sim_api->setKinematics(&kinematics_);
-
             vehicle_pawn->initializeForBeginPlay(getSettings().engine_sound);
 
-            if (getSettings().enable_collision_passthrough)
-                vehicle_sim_api->getConfig().enable_passthrough_on_collisions = true;
-            if (vehicle_sim_api->getConfig().is_fpv_vehicle || fpv_vehicle_sim_api_ == nullptr)
-                fpv_vehicle_sim_api_ = vehicle_sim_api;
+            //create vehicle sim api
+            const auto& ned_transform = getGlobalNedTransform();
+            const auto& pawn_ned_pos = ned_transform.toLocalNed(vehicle_pawn->GetActorLocation());
+            const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
+            auto vehicle_sim_api = std::unique_ptr<CarPawnSimApi>(new CarPawnSimApi(
+                vehicle_pawn, getGlobalNedTransform(),
+                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(), vehicle_pawn->getKeyBoardControls(),
+                vehicle_pawn->getVehicleMovementComponent(), home_geopoint));
+
+            std::string vehicle_name = vehicle_sim_api->getVehicleName();
+
+            getApiProvider()->insert_or_assign(vehicle_name, vehicle_sim_api->getVehicleApi(),
+                vehicle_sim_api.get());
+            if ((fpv_pawn == vehicle_pawn || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
+                getApiProvider()->makeDefaultVehicle(vehicle_name);
+
+            vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));
         }
     }
-
-    //find all BP camera directors in the environment
-    {
-        TArray<AActor*> camera_dirs;
-        UAirBlueprintLib::FindAllActor<ACameraDirector>(this, camera_dirs);
-        if (camera_dirs.Num() == 0) {
-            //create director
-            FActorSpawnParameters camera_spawn_params;
-            camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-            CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
-            CameraDirector->setFollowDistance(follow_distance_);
-            CameraDirector->setCameraRotationLagEnabled(true);
-            CameraDirector->setFpvCameraIndex(3);
-            spawned_actors_.Add(CameraDirector);
-
-            //create external camera required for the director
-            external_camera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
-            spawned_actors_.Add(external_camera);
-        }
-        else {
-            CameraDirector = static_cast<ACameraDirector*>(camera_dirs[0]);
-            external_camera = CameraDirector->getExternalCamera();
-        }
+    
+    if (getApiProvider()->hasDefaultVehicle()) {
+        //TODO: better handle no FPV vehicles scenario
+        getVehicleSimApi()->possess();
+        CameraDirector->initializeForBeginPlay(getInitialViewMode(), getVehicleSimApi()->getPawn(),
+            getVehicleSimApi()->getCamera("fpv"), getVehicleSimApi()->getCamera(""), getVehicleSimApi()->getCamera("back_center"));
     }
-
-    fpv_vehicle_sim_api_->possess();
-    CameraDirector->initializeForBeginPlay(getInitialViewMode(), fpv_vehicle_sim_api_, external_camera);
 }
 
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
@@ -199,34 +200,10 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
 #endif
 }
 
-int ASimModeCar::getRemoteControlID(const VehicleSimApi& pawn) const
-{
-    return fpv_vehicle_sim_api_->getRemoteControlID();
-}
-
-void ASimModeCar::createVehicles(std::vector<TVehiclePawn*>& vehicles)
-{
-    //find vehicles and cameras available in environment
-    //if none available then we will create one
-    setupVehiclesAndCamera(vehicles);
-}
-
-void ASimModeCar::reset()
-{
-    msr::airlib::VehicleApiBase* api = getVehicleApi();
-    if (api) {
-        UAirBlueprintLib::RunCommandOnGameThread([api]() {
-            api->reset();
-        }, true);
-    }
-
-    Super::reset();
-}
-
 void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-
+    
     if (pause_period_start_ > 0) {
         if (ClockFactory::get()->elapsedSince(pause_period_start_) >= pause_period_) {
             if (!isPaused())
@@ -245,12 +222,24 @@ void ASimModeCar::Tick(float DeltaSeconds)
     }
 }
 
+void ASimModeCar::reset()
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        for (auto& pair : getApiProvider()->getVehicleSimApis()) {
+            if (pair.second)
+                pair.second->reset();
+        }
+    }, true);
+
+    Super::reset();
+}
+
 void ASimModeCar::updateDebugReport()
 {
-    for (TVehiclePawn* vehicle : vehicles_) {
-        VehicleSimApi* vehicle_sim_api = vehicle->getVehicleSimApi();
+    for (auto& pair : getApiProvider()->getVehicleSimApis()) {
+        PawnSimApi* vehicle_sim_api = static_cast<PawnSimApi*>(pair.second);
         msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
-        std::string vehicle_name = fpv_vehicle_sim_api_->getVehicleSetting()->vehicle_name;
+        std::string vehicle_name = vehicle_sim_api->getVehicleName();
 
         reporter.writeHeading(std::string("Vehicle: ").append(
             vehicle_name == "" ? "(default)" : vehicle_name));

@@ -17,25 +17,25 @@ void AFlyingPawn::BeginPlay()
 void AFlyingPawn::initializeForBeginPlay()
 {    
     //get references of existing camera
-    fpv_camera_front_right_ = Cast<APIPCamera>(
+    camera_front_right_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("FrontRightCamera")))->GetChildActor());
-    fpv_camera_front_left_ = Cast<APIPCamera>(
+    camera_front_left_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("FrontLeftCamera")))->GetChildActor());
-    fpv_camera_front_center_ = Cast<APIPCamera>(
+    camera_front_center_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("FrontCenterCamera")))->GetChildActor());
-    fpv_camera_back_center_ = Cast<APIPCamera>(
+    camera_back_center_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("BackCenterCamera")))->GetChildActor());
-    fpv_camera_bottom_center_ = Cast<APIPCamera>(
+    camera_bottom_center_ = Cast<APIPCamera>(
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("BottomCenterCamera")))->GetChildActor());
 }
 
 void AFlyingPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    fpv_camera_front_right_ = nullptr;
-    fpv_camera_front_left_ = nullptr;
-    fpv_camera_front_center_ = nullptr;
-    fpv_camera_back_center_ = nullptr;
-    fpv_camera_bottom_center_ = nullptr;
+    camera_front_right_ = nullptr;
+    camera_front_left_ = nullptr;
+    camera_front_center_ = nullptr;
+    camera_back_center_ = nullptr;
+    camera_bottom_center_ = nullptr;
 
     Super::EndPlay(EndPlayReason);
 }
@@ -44,11 +44,14 @@ std::map<std::string, APIPCamera*> AFlyingPawn::getCameras() const
 {
     std::map<std::string, APIPCamera*> cameras;
 
-    cameras["0"] = cameras["front_center"] = fpv_camera_front_center_;
-    cameras["1"] = cameras["front_right"] = fpv_camera_front_right_;
-    cameras["2"] = cameras["front_left"] = fpv_camera_front_left_;
-    cameras["3"] = cameras["bottom_center"] = fpv_camera_bottom_center_;
-    cameras["4"] = cameras["back_center"] = fpv_camera_back_center_;
+    cameras["0"] = cameras["front_center"] = camera_front_center_;
+    cameras["1"] = cameras["front_right"] = camera_front_right_;
+    cameras["2"] = cameras["front_left"] = camera_front_left_;
+    cameras["3"] = cameras["bottom_center"] = camera_bottom_center_;
+    cameras["4"] = cameras["back_center"] = camera_back_center_;
+
+    cameras[""] = cameras["0"]; //default camera
+    cameras["fpv"] = cameras["0"];
 
     return cameras;
 }

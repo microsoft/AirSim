@@ -11,7 +11,7 @@
 #include "common/ClockFactory.hpp"
 #include "api/ApiServerBase.hpp"
 #include "api/ApiProvider.hpp"
-#include "VehicleSimApi.h"
+#include "PawnSimApi.h"
 #include "SimModeBase.generated.h"
 
 
@@ -62,13 +62,13 @@ public:
         return api_provider_.get();
     }
 
-    const VehicleSimApi* getVehicleSimApi(const std::string& vehicle_name = "") const
+    const PawnSimApi* getVehicleSimApi(const std::string& vehicle_name = "") const
     {
-        return static_cast<VehicleSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
+        return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
     }
-    VehicleSimApi* getVehicleSimApi(const std::string& vehicle_name = "")
+    PawnSimApi* getVehicleSimApi(const std::string& vehicle_name = "")
     {
-        return static_cast<VehicleSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
+        return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
     }
 
 protected:
@@ -77,6 +77,7 @@ protected:
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
     virtual void setupClockSpeed();
+    void initializeCameraDirector(const FTransform& camera_transform);
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
 
@@ -93,14 +94,18 @@ private:
     typedef msr::airlib::TTimeDelta TTimeDelta;
 
 private:
+    //assets loaded in constructor
+    UClass* external_camera_class_;
+    UClass* camera_director_class_;
     UClass* sky_sphere_class_;
+
     UPROPERTY() AActor* sky_sphere_;
     UPROPERTY() ADirectionalLight* sun_;;
     TTimePoint tod_sim_clock_start_;
     TTimePoint tod_last_update_;
     std::time_t tod_start_time_;
     long long physics_loop_period_;
-    NedTransform global_ned_transform_;
+    std::unique_ptr<NedTransform> global_ned_transform_;
     std::unique_ptr<msr::airlib::WorldSimApiBase> world_sim_api_;
     std::unique_ptr<msr::airlib::ApiProvider> api_provider_;
     std::unique_ptr<msr::airlib::ApiServerBase> api_server_;

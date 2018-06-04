@@ -146,12 +146,13 @@ public:
     struct RCData {
         uint64_t timestamp = 0;
         float pitch = 0, roll = 0, throttle = 0, yaw = 0;
-        unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0, 
-            switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0;
+        float left_z = 0, right_z = 0;
+        uint16_t switches = 0;
+        std::string vendor_id = "";
         bool is_initialized = false; //is RC connected?
         bool is_valid = false; //must be true for data to be valid
 
-        MSGPACK_DEFINE_MAP(timestamp, pitch, roll, throttle, yaw, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8, is_initialized, is_valid);
+        MSGPACK_DEFINE_MAP(timestamp, pitch, roll, throttle, yaw, left_z, right_z, switches, vendor_id, is_initialized, is_valid);
 
         RCData()
         {}
@@ -163,14 +164,10 @@ public:
             roll = s.roll;
             throttle = s.throttle;
             yaw = s.yaw;
-            switch1 = s.switch1;
-            switch2 = s.switch2;
-            switch3 = s.switch3;
-            switch4 = s.switch4;
-            switch5 = s.switch5;
-            switch6 = s.switch6;
-            switch7 = s.switch7;
-            switch8 = s.switch8;
+            left_z = s.left_z;
+            right_z = s.right_z;
+            switches = s.switches;
+            vendor_id = s.vendor_id;
             is_initialized = s.is_initialized;
             is_valid = s.is_valid;
 
@@ -183,14 +180,10 @@ public:
             d.roll = roll;
             d.throttle = throttle;
             d.yaw = yaw;
-            d.switch1 = switch1;
-            d.switch2 = switch2;
-            d.switch3 = switch3;
-            d.switch4 = switch4;
-            d.switch5 = switch5;
-            d.switch6 = switch6;
-            d.switch7 = switch7;
-            d.switch8 = switch8;
+            d.left_z = left_z;
+            d.right_z = right_z;
+            d.switches = switches;
+            d.vendor_id = vendor_id;
             d.is_initialized = is_initialized;
             d.is_valid = is_valid;
             

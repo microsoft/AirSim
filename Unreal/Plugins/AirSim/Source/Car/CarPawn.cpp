@@ -40,56 +40,56 @@ ACarPawn::ACarPawn()
 
 
     // Create In-Car camera component 
-    InternalCameraBase1 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase1"));
-    InternalCameraBase1->SetRelativeLocation(FVector(36.0f, 0, 50.0f)); //center
-    InternalCameraBase1->SetupAttachment(GetMesh());
-    InternalCameraBase2 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase2"));
-    InternalCameraBase2->SetRelativeLocation(FVector(36.0f, -10, 50.0f)); //left
-    InternalCameraBase2->SetupAttachment(GetMesh());
-    InternalCameraBase3 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase3"));
-    InternalCameraBase3->SetRelativeLocation(FVector(36.0f, 10, 50.0f)); //right
-    InternalCameraBase3->SetupAttachment(GetMesh());
-    InternalCameraBase4 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase4"));
-    InternalCameraBase4->SetRelativeLocation(FVector(25, -10, 75.0f)); //driver
-    InternalCameraBase4->SetupAttachment(GetMesh());
-    InternalCameraBase5 = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase5"));
-    InternalCameraBase5->SetRelativeLocation(FVector(-36.0f, 0, 50.0f)); //rear
-    InternalCameraBase5->SetRelativeRotation(FRotator(0, 180, 0));
-    InternalCameraBase5->SetupAttachment(GetMesh());
+    camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
+    camera_front_center_base_->SetRelativeLocation(FVector(36.0f, 0, 50.0f)); //center
+    camera_front_center_base_->SetupAttachment(GetMesh());
+    camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
+    camera_front_left_base_->SetRelativeLocation(FVector(36.0f, -10, 50.0f)); //left
+    camera_front_left_base_->SetupAttachment(GetMesh());
+    camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
+    camera_front_right_base_->SetRelativeLocation(FVector(36.0f, 10, 50.0f)); //right
+    camera_front_right_base_->SetupAttachment(GetMesh());
+    camera_driver_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_driver_base_"));
+    camera_driver_base_->SetRelativeLocation(FVector(25, -10, 75.0f)); //driver
+    camera_driver_base_->SetupAttachment(GetMesh());
+    camera_back_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_center_base_"));
+    camera_back_center_base_->SetRelativeLocation(FVector(-36.0f, 0, 50.0f)); //rear
+    camera_back_center_base_->SetRelativeRotation(FRotator(0, 180, 0));
+    camera_back_center_base_->SetupAttachment(GetMesh());
 
     // In car HUD
     // Create text render component for in car speed display
-    InCarSpeed = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarSpeed"));
-    InCarSpeed->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-    InCarSpeed->SetRelativeLocation(FVector(35.0f, -6.0f, 20.0f));
-    InCarSpeed->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
-    InCarSpeed->SetupAttachment(GetMesh());
-    InCarSpeed->SetVisibility(true);
+    speed_text_render_ = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarSpeed"));
+    speed_text_render_->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+    speed_text_render_->SetRelativeLocation(FVector(35.0f, -6.0f, 20.0f));
+    speed_text_render_->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+    speed_text_render_->SetupAttachment(GetMesh());
+    speed_text_render_->SetVisibility(true);
 
     // Create text render component for in car gear display
-    InCarGear = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarGear"));
-    InCarGear->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-    InCarGear->SetRelativeLocation(FVector(35.0f, 5.0f, 20.0f));
-    InCarGear->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
-    InCarGear->SetupAttachment(GetMesh());
-    InCarGear->SetVisibility(true);
+    gear_text_render_ = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarGear"));
+    gear_text_render_->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+    gear_text_render_->SetRelativeLocation(FVector(35.0f, 5.0f, 20.0f));
+    gear_text_render_->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+    gear_text_render_->SetupAttachment(GetMesh());
+    gear_text_render_->SetVisibility(true);
 
     // Setup the audio component and allocate it a sound cue
     ConstructorHelpers::FObjectFinder<USoundCue> SoundCue(TEXT("/AirSim/VehicleAdv/Sound/Engine_Loop_Cue.Engine_Loop_Cue"));
-    EngineSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineSound"));
-    EngineSoundComponent->SetSound(SoundCue.Object);
-    EngineSoundComponent->SetupAttachment(GetMesh());
+    engine_sound_audio_ = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineSound"));
+    engine_sound_audio_->SetSound(SoundCue.Object);
+    engine_sound_audio_->SetupAttachment(GetMesh());
 
     // Colors for the in-car gear display. One for normal one for reverse
-    GearDisplayReverseColor = FColor(255, 0, 0, 255);
-    GearDisplayColor = FColor(255, 255, 255, 255);
+    last_gear_display_reverse_color_ = FColor(255, 0, 0, 255);
+    last_gear_display_color_ = FColor(255, 255, 255, 255);
 
     is_low_friction_ = false;
 }
 
 void ACarPawn::setupVehicleMovementComponent()
 {
-    UWheeledVehicleMovementComponent4W* movement = CastChecked<UWheeledVehicleMovementComponent4W>(GetVehicleMovement());
+    UWheeledVehicleMovementComponent4W* movement = CastChecked<UWheeledVehicleMovementComponent4W>(getVehicleMovementComponent());
     check(movement->WheelSetups.Num() == 4);
 
     // Wheels/Tires
@@ -162,119 +162,201 @@ void ACarPawn::setupVehicleMovementComponent()
 void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-    vehicle_sim_api_->onCollision(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
+    collision_signal_.emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
         HitNormal, NormalImpulse, Hit);
 }
 
-void ACarPawn::initializeForBeginPlay(msr::airlib::VehicleSimApiBase* vehicle_sim_api, const msr::airlib::GeoPoint& home_geopoint, bool engine_sound)
+UWheeledVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
 {
-    vehicle_sim_api_ = vehicle_sim_api;
+    return GetVehicleMovement();
+}
 
+
+void ACarPawn::initializeForBeginPlay(bool engine_sound)
+{
     if (engine_sound)
-        EngineSoundComponent->Activate();
+        engine_sound_audio_->Activate();
     else
-        EngineSoundComponent->Deactivate();
+        engine_sound_audio_->Deactivate();
 
 
     //put camera little bit above vehicle
     FTransform camera_transform(FVector::ZeroVector);
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    InternalCamera1 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
-    InternalCamera1->AttachToComponent(InternalCameraBase1, FAttachmentTransformRules::KeepRelativeTransform);
-    InternalCamera2 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
-    InternalCamera2->AttachToComponent(InternalCameraBase2, FAttachmentTransformRules::KeepRelativeTransform);
-    InternalCamera3 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
-    InternalCamera3->AttachToComponent(InternalCameraBase3, FAttachmentTransformRules::KeepRelativeTransform);
-    InternalCamera4 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
-    InternalCamera4->AttachToComponent(InternalCameraBase4, FAttachmentTransformRules::KeepRelativeTransform);
-    InternalCamera5 = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, FTransform(FRotator(0, 180, 0), FVector::ZeroVector), camera_spawn_params);
-    InternalCamera5->AttachToComponent(InternalCameraBase5, FAttachmentTransformRules::KeepRelativeTransform);
+    camera_front_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_front_center_->AttachToComponent(camera_front_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
+    camera_front_left_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_front_left_->AttachToComponent(camera_front_left_base_, FAttachmentTransformRules::KeepRelativeTransform);
+    camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
+    camera_driver_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_driver_->AttachToComponent(camera_driver_base_, FAttachmentTransformRules::KeepRelativeTransform);
+    camera_back_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, FTransform(FRotator(0, 180, 0), FVector::ZeroVector), camera_spawn_params);
+    camera_back_center_->AttachToComponent(camera_back_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
+    std::vector<APIPCamera*> cameras = { camera_front_center_, camera_front_left_, camera_front_right_, camera_driver_, camera_back_center_ };
 
     setupInputBindings();
-
-    std::vector<APIPCamera*> cameras = { InternalCamera1, InternalCamera2, InternalCamera3, InternalCamera4, InternalCamera5 };
-    vehicle_sim_api_->setApi(std::unique_ptr<msr::airlib::VehicleApiBase>(
-        new CarPawnApi(this->GetVehicleMovement(), home_geopoint)));
-
-    //TODO: should do reset() here?
-    keyboard_controls_ = joystick_controls_ = CarPawnApi::CarControls();
-
-    //joystick
-    if (vehicle_sim_api_->getRemoteControlID() >= 0) {
-        joystick_.getJoyStickState(vehicle_sim_api_->getRemoteControlID(), joystick_state_);
-        if (joystick_state_.is_initialized)
-            UAirBlueprintLib::LogMessageString("RC Controller on USB: ", joystick_state_.pid_vid == "" ?
-                "(Detected)" : joystick_state_.pid_vid, LogDebugLevel::Informational);
-        else
-            UAirBlueprintLib::LogMessageString("RC Controller on USB not detected: ",
-                std::to_string(joystick_state_.connection_error_code), LogDebugLevel::Informational);
-    }
-
 }
 
-msr::airlib::CarApiBase* ACarPawn::getVehicleApi() const
+std::map<std::string, APIPCamera*> ACarPawn::getCameras() const
 {
-    return static_cast<msr::airlib::CarApiBase*>(vehicle_sim_api_->getVehicleApi());
+    std::map<std::string, APIPCamera*> cameras;
+
+    cameras["0"] = cameras["front_center"] = camera_front_center_;
+    cameras["1"] = cameras["front_right"] = camera_front_right_;
+    cameras["2"] = cameras["front_left"] = camera_front_left_;
+    cameras["3"] = cameras["fpv"] = camera_driver_;
+    cameras["4"] = cameras["back_center"] = camera_back_center_;
+
+    cameras[""] = cameras["0"];
+
+    return cameras;
 }
 
 void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    if (InternalCamera1)
-        InternalCamera1->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-    InternalCamera1 = nullptr;
-    if (InternalCamera2)
-        InternalCamera2->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-    InternalCamera2 = nullptr;
-    if (InternalCamera3)
-        InternalCamera3->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-    InternalCamera3 = nullptr;
+    if (camera_front_center_)
+        camera_front_center_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+    camera_front_center_ = nullptr;
+    if (camera_front_left_)
+        camera_front_left_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+    camera_front_left_ = nullptr;
+    if (camera_front_right_)
+        camera_front_right_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+    camera_front_right_ = nullptr;
 }
 
-
-VehicleSimApi* ACarPawn::getVehicleSimApi()
+void ACarPawn::Tick(float Delta)
 {
-    return vehicle_sim_api_.get();
+    Super::Tick(Delta);
+
+    // update physics material
+    updatePhysicsMaterial();
+
+    // Update the strings used in the hud (incar and onscreen)
+    updateHUDStrings();
+
+    // Set the string in the incar hud
+    updateInCarHUD();
+
+    // Pass the engine RPM to the sound component
+    float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
+    engine_sound_audio_->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
 }
 
+void ACarPawn::BeginPlay()
+{
+    Super::BeginPlay();
+
+    // Start an engine sound playing
+    engine_sound_audio_->Play();
+}
+
+void ACarPawn::updateHUDStrings()
+{
+    float vel = FMath::Abs(GetVehicleMovement()->GetForwardSpeed() / 100); //cm/s -> m/s
+    float vel_rounded = FMath::FloorToInt(vel * 10) / 10.0f;
+    int32 Gear = GetVehicleMovement()->GetCurrentGear();
+
+    // Using FText because this is display text that should be localizable
+    last_speed_ = FText::Format(LOCTEXT("SpeedFormat", "{0} m/s"), FText::AsNumber(vel_rounded));
+
+
+    if (GetVehicleMovement()->GetCurrentGear() < 0)
+    {
+        last_gear_ = FText(LOCTEXT("ReverseGear", "R"));
+    }
+    else
+    {
+        last_gear_ = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
+    }
+
+
+    UAirBlueprintLib::LogMessage(TEXT("Speed: "), last_speed_.ToString(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage(TEXT("Gear: "), last_gear_.ToString(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage(TEXT("RPM: "), FText::AsNumber(GetVehicleMovement()->GetEngineRotationSpeed()).ToString(), LogDebugLevel::Informational);
+}
+
+void ACarPawn::updateInCarHUD()
+{
+    APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    if ((PlayerController != nullptr) && (speed_text_render_ != nullptr) && (gear_text_render_ != nullptr))
+    {
+        // Setup the text render component strings
+        speed_text_render_->SetText(last_speed_);
+        gear_text_render_->SetText(last_gear_);
+
+        if (GetVehicleMovement()->GetCurrentGear() >= 0)
+        {
+            gear_text_render_->SetTextRenderColor(last_gear_display_color_);
+        }
+        else
+        {
+            gear_text_render_->SetTextRenderColor(last_gear_display_reverse_color_);
+        }
+    }
+}
+
+
+
+void ACarPawn::updatePhysicsMaterial()
+{
+    if (GetActorUpVector().Z < 0)
+    {
+        if (is_low_friction_ == true)
+        {
+            GetMesh()->SetPhysMaterialOverride(non_slippery_mat_);
+            is_low_friction_ = false;
+        }
+        else
+        {
+            GetMesh()->SetPhysMaterialOverride(slippery_mat_);
+            is_low_friction_ = true;
+        }
+    }
+}
+
+/******************* Keyboard bindings*******************/
+//This method must be in pawn because Unreal doesn't allow key bindings to non UObject pointers
 void ACarPawn::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this,
-        this, &ACarPawn::MoveForward);
+        this, &ACarPawn::onMoveForward);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this,
-        this, &ACarPawn::MoveForward);
+        this, &ACarPawn::onMoveForward);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 0.5), this,
-        this, &ACarPawn::MoveRight);
+        this, &ACarPawn::onMoveRight);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -0.5), this,
-        this, &ACarPawn::MoveRight);
+        this, &ACarPawn::onMoveRight);
 
     UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::End, this, &ACarPawn::onHandbrakePressed, true);
     UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::End, this, &ACarPawn::onHandbrakeReleased, false);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::SpaceBar, 1), this,
-        this, &ACarPawn::FootBrake);
+        this, &ACarPawn::onFootBrake);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this,
-        this, &ACarPawn::MoveRight);
+        this, &ACarPawn::onMoveRight);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightTriggerAxis, 1), this,
-        this, &ACarPawn::MoveForward);
+        this, &ACarPawn::onMoveForward);
 
     UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_LeftTriggerAxis, 1), this,
-        this, &ACarPawn::FootBrake);
+        this, &ACarPawn::onFootBrake);
 
     //below is not needed
     //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::onReversePressed, true);
     //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::onReverseReleased, false);
 }
 
-void ACarPawn::MoveForward(float Val)
+void ACarPawn::onMoveForward(float Val)
 {
     if (Val < 0)
         onReversePressed();
@@ -284,7 +366,7 @@ void ACarPawn::MoveForward(float Val)
     keyboard_controls_.throttle = Val;
 }
 
-void ACarPawn::MoveRight(float Val)
+void ACarPawn::onMoveRight(float Val)
 {
     keyboard_controls_.steering = Val;
 }
@@ -299,7 +381,7 @@ void ACarPawn::onHandbrakeReleased()
     keyboard_controls_.handbrake = false;
 }
 
-void ACarPawn::FootBrake(float Val)
+void ACarPawn::onFootBrake(float Val)
 {
     keyboard_controls_.brake = Val;
 }
@@ -320,227 +402,6 @@ void ACarPawn::onReverseReleased()
         keyboard_controls_.manual_gear = 0;
         keyboard_controls_.gear_immediate = true;
     }
-}
-
-void ACarPawn::updateKinematics(float delta)
-{
-    auto last_kinematics = kinematics_;
-
-    kinematics_.pose = getVehicleSimApi()->getPose();
-    kinematics_.twist.linear = vehicle_sim_api_->getNedTransform().toNedMeters(this->GetVelocity(), false);
-    kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
-        kinematics_.pose.orientation, last_kinematics.pose.orientation, delta);
-
-    kinematics_.accelerations.linear = (kinematics_.twist.linear - last_kinematics.twist.linear) / delta;
-    kinematics_.accelerations.angular = (kinematics_.twist.angular - last_kinematics.twist.angular) / delta;
-
-    //TODO: update other fields
-
-}
-
-void ACarPawn::Tick(float Delta)
-{
-    Super::Tick(Delta);
-
-    updateCarControls();
-
-    updateKinematics(Delta);
-
-    // update physics material
-    updatePhysicsMaterial();
-
-    // Update the strings used in the hud (incar and onscreen)
-    updateHUDStrings();
-
-    // Set the string in the incar hud
-    updateInCarHUD();
-
-    // Pass the engine RPM to the sound component
-    float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
-    EngineSoundComponent->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
-
-    getVehicleSimApi()->setLogLine(getLogString());
-}
-
-void ACarPawn::updateCarControls()
-{
-    if (vehicle_sim_api_->getRemoteControlID() >= 0 && joystick_state_.is_initialized) {
-        joystick_.getJoyStickState(0, joystick_state_);
-
-        //TODO: move this to SimModeBase
-        //if ((joystick_state_.buttons & 4) | (joystick_state_.buttons & 1024)) { //X button or Start button
-        //    reset();
-        //    return;
-        //}
-
-        std::string vendorid = joystick_state_.pid_vid.substr(0, joystick_state_.pid_vid.find('&'));
-
-        // Thrustmaster devices
-        if (vendorid == "VID_044F") {
-            joystick_controls_.steering = joystick_state_.left_x;
-            joystick_controls_.throttle = (-joystick_state_.right_z + 1) / 2;
-            joystick_controls_.brake = (joystick_state_.left_y + 1) / 2;
-
-            updateForceFeedback();
-        }
-        // Anything else, typically Logitech G920 wheel
-        else {
-            joystick_controls_.steering = joystick_state_.left_y * 1.25;
-            joystick_controls_.throttle = (-joystick_state_.right_x + 1) / 2;
-            joystick_controls_.brake = -joystick_state_.right_z + 1;
-        }
-        //Two steel levers behind wheel
-        joystick_controls_.handbrake = (joystick_state_.buttons & 32) | (joystick_state_.buttons & 64) ? 1 : 0;
-
-        if ((joystick_state_.buttons & 256) | (joystick_state_.buttons & 2)) { //RSB button or B button
-            joystick_controls_.manual_gear = -1;
-            joystick_controls_.is_manual_gear = true;
-            joystick_controls_.gear_immediate = true;
-        }
-        else if ((joystick_state_.buttons & 512) | (joystick_state_.buttons & 1)) { //LSB button or A button
-            joystick_controls_.manual_gear = 0;
-            joystick_controls_.is_manual_gear = false;
-            joystick_controls_.gear_immediate = true;
-        }
-
-        UAirBlueprintLib::LogMessageString("Control Mode: ", "Wheel/Joystick", LogDebugLevel::Informational);
-        current_controls_ = joystick_controls_;
-    }
-    else {
-        UAirBlueprintLib::LogMessageString("Control Mode: ", "Keyboard", LogDebugLevel::Informational);
-        current_controls_ = keyboard_controls_;
-    }
-
-    //if API-client control is not active then we route keyboard/joystick control to car
-    if (!getVehicleApi()->isApiControlEnabled()) {
-        //all car controls from anywhere must be routed through API component
-        getVehicleApi()->setCarControls(current_controls_);
-    }
-    else {
-        UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
-        current_controls_ = getVehicleApi()->getCarControls();
-    }
-    UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls_.throttle), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls_.brake), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Steering: ", std::to_string(current_controls_.steering), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Handbreak: ", std::to_string(current_controls_.handbrake), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls_.manual_gear), LogDebugLevel::Informational);
-}
-
-void ACarPawn::updateForceFeedback() {
-    if (joystick_state_.is_initialized) {
-
-        // Update wheel rumble
-        float rumblestrength = 0.66 + (GetVehicleMovement()->GetEngineRotationSpeed()
-            / GetVehicleMovement()->GetEngineMaxRotationSpeed()) / 3;
-
-        joystick_.setWheelRumble(vehicle_sim_api_->getRemoteControlID(), rumblestrength);
-
-        // Update autocenter
-        double speed = GetVehicleMovement()->GetForwardSpeed();
-
-        joystick_.setAutoCenter(vehicle_sim_api_->getRemoteControlID(),
-            (1.0 - 1.0 / (std::abs(speed / 120) + 1.0))
-            * (joystick_state_.left_x / 3));
-    }
-}
-
-
-void ACarPawn::BeginPlay()
-{
-    Super::BeginPlay();
-
-    // Start an engine sound playing
-    EngineSoundComponent->Play();
-}
-
-void ACarPawn::updateHUDStrings()
-{
-    float vel = FMath::Abs(GetVehicleMovement()->GetForwardSpeed() / 100); //cm/s -> m/s
-    float vel_rounded = FMath::FloorToInt(vel * 10) / 10.0f;
-    int32 Gear = GetVehicleMovement()->GetCurrentGear();
-
-    // Using FText because this is display text that should be localizable
-    SpeedDisplayString = FText::Format(LOCTEXT("SpeedFormat", "{0} m/s"), FText::AsNumber(vel_rounded));
-
-
-    if (GetVehicleMovement()->GetCurrentGear() < 0)
-    {
-        GearDisplayString = FText(LOCTEXT("ReverseGear", "R"));
-    }
-    else
-    {
-        GearDisplayString = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
-    }
-
-
-    UAirBlueprintLib::LogMessage(TEXT("Speed: "), SpeedDisplayString.ToString(), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessage(TEXT("Gear: "), GearDisplayString.ToString(), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessage(TEXT("RPM: "), FText::AsNumber(GetVehicleMovement()->GetEngineRotationSpeed()).ToString(), LogDebugLevel::Informational);
-
-
-}
-
-void ACarPawn::updateInCarHUD()
-{
-    APlayerController* PlayerController = Cast<APlayerController>(GetController());
-    if ((PlayerController != nullptr) && (InCarSpeed != nullptr) && (InCarGear != nullptr))
-    {
-        // Setup the text render component strings
-        InCarSpeed->SetText(SpeedDisplayString);
-        InCarGear->SetText(GearDisplayString);
-
-        if (GetVehicleMovement()->GetCurrentGear() >= 0)
-        {
-            InCarGear->SetTextRenderColor(GearDisplayColor);
-        }
-        else
-        {
-            InCarGear->SetTextRenderColor(GearDisplayReverseColor);
-        }
-    }
-}
-
-void ACarPawn::updatePhysicsMaterial()
-{
-    if (GetActorUpVector().Z < 0)
-    {
-        if (is_low_friction_ == true)
-        {
-            GetMesh()->SetPhysMaterialOverride(non_slippery_mat_);
-            is_low_friction_ = false;
-        }
-        else
-        {
-            GetMesh()->SetPhysMaterialOverride(slippery_mat_);
-            is_low_friction_ = true;
-        }
-    }
-}
-
-std::string ACarPawn::getLogString()
-{
-    // Timestamp \t Speed \t Throttle \t Steering \t Brake \t gear
-
-    // timestamp
-    uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
-
-    // Speed
-    float KPH = FMath::Abs(GetVehicleMovement()->GetForwardSpeed()) * 0.036f;
-    int32 KPH_int = FMath::FloorToInt(KPH);
-
-    // Gear
-    FString gearString = GearDisplayString.ToString();
-    std::string gear = std::string(TCHAR_TO_UTF8(*gearString));
-
-    std::string logString = std::to_string(timestamp_millis).append("\t")
-        .append(std::to_string(KPH_int).append("\t"))
-        .append(std::to_string(current_controls_.throttle)).append("\t")
-        .append(std::to_string(current_controls_.steering)).append("\t")
-        .append(std::to_string(current_controls_.brake)).append("\t")
-        .append(gear).append("\t");
-
-    return logString;
 }
 
 #undef LOCTEXT_NAMESPACE

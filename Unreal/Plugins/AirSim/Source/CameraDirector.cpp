@@ -38,7 +38,7 @@ void ACameraDirector::Tick(float DeltaTime)
         //do nothing, we have camera turned off
     }
     else { //make camera move in desired way
-        UAirBlueprintLib::FollowActor(external_camera_, follow_actor_, initial_ground_obs_offset_, ext_obs_fixed_z_);
+        UAirBlueprintLib::FollowActor(ExternalCamera, follow_actor_, initial_ground_obs_offset_, ext_obs_fixed_z_);
     }
 }
 
@@ -47,7 +47,8 @@ ECameraDirectorMode ACameraDirector::getMode()
     return mode_;
 }
 
-void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, VehicleSimApi* vehicle_pawn_wrapper, APIPCamera* external_camera)
+void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
+    AActor* follow_actor, APIPCamera* fpv_camera, APIPCamera* front_camera, APIPCamera* back_camera)
 {
     manual_pose_controller_ = NewObject<UManualPoseController>();
     manual_pose_controller_->initializeForPlay();
@@ -55,21 +56,16 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode, Vehi
     setupInputBindings();
 
     mode_ = view_mode;
-    setCameras(external_camera, vehicle_pawn_wrapper);
-}
 
-void ACameraDirector::setCameras(APIPCamera* external_camera, VehicleSimApi* vehicle_pawn_wrapper)
-{
-    external_camera_ = external_camera;
-    follow_actor_ = vehicle_pawn_wrapper->getPawn();
-    fpv_camera_ = vehicle_pawn_wrapper->getCameraCount() > fpv_camera_index_ ? vehicle_pawn_wrapper->getCamera(fpv_camera_index_) : nullptr;
-    front_camera_ = vehicle_pawn_wrapper->getCameraCount() > front_camera_index_ ? vehicle_pawn_wrapper->getCamera(front_camera_index_) : nullptr;
-    backup_camera_ = backup_camera_index_ >= 0 && vehicle_pawn_wrapper->getCameraCount() > backup_camera_index_ ? vehicle_pawn_wrapper->getCamera(backup_camera_index_) : nullptr;
-    camera_start_location_ = external_camera_->GetActorLocation();
-    camera_start_rotation_ = external_camera_->GetActorRotation();
+    follow_actor_ = follow_actor;
+    fpv_camera_ = fpv_camera;
+    front_camera_ = front_camera;
+    backup_camera_ = back_camera;
+    camera_start_location_ = ExternalCamera->GetActorLocation();
+    camera_start_rotation_ = ExternalCamera->GetActorRotation();
     initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
 
-    manual_pose_controller_->setActor(external_camera_, false);
+    manual_pose_controller_->setActor(ExternalCamera, false);
 
     //set initial view mode
     switch (mode_) {
@@ -84,15 +80,13 @@ void ACameraDirector::setCameras(APIPCamera* external_camera, VehicleSimApi* veh
     default:
         throw std::out_of_range("Unsupported view mode specified in CameraDirector::initializeForBeginPlay");
     }
-
-    setupCameraFromSettings();
 }
 
 void ACameraDirector::attachSpringArm(bool attach)
 {
     if (attach) {
         //If we do have actor to follow AND don't have sprint arm attached to that actor, we will attach it
-        if (follow_actor_ && external_camera_->GetRootComponent()->GetAttachParent() != SpringArm) {
+        if (follow_actor_ && ExternalCamera->GetRootComponent()->GetAttachParent() != SpringArm) {
             //For car, we want a bit of camera lag, as that is customary of racing video games
             //If the lag is missing, the camera will also occasionally shake.
             //But, lag is not desired when piloting a drone
@@ -104,22 +98,22 @@ void ACameraDirector::attachSpringArm(bool attach)
 
             //remember current parent for external camera. Later when we remove external
             //camera from spring arm, we will attach it back to its last parent
-            last_parent_ = external_camera_->GetRootComponent()->GetAttachParent();
-            external_camera_->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+            last_parent_ = ExternalCamera->GetRootComponent()->GetAttachParent();
+            ExternalCamera->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
             //now attach camera to spring arm
-            external_camera_->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
+            ExternalCamera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
         }
 
         //For car, we need to move the camera back a little more than for a drone. 
         //Otherwise, the camera will be stuck inside the car
-        external_camera_->SetActorRelativeLocation(FVector(follow_distance_, 0.0f, 0.0f));
-        external_camera_->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
-        //external_camera_->bUsePawnControlRotation = false;
+        ExternalCamera->SetActorRelativeLocation(FVector(follow_distance_, 0.0f, 0.0f));
+        ExternalCamera->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
+        //ExternalCamera->bUsePawnControlRotation = false;
     }
     else { //detach
-        if (last_parent_ && external_camera_->GetRootComponent()->GetAttachParent() == SpringArm) {
-            external_camera_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-            external_camera_->AttachToComponent(last_parent_, FAttachmentTransformRules::KeepRelativeTransform);
+        if (last_parent_ && ExternalCamera->GetRootComponent()->GetAttachParent() == SpringArm) {
+            ExternalCamera->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+            ExternalCamera->AttachToComponent(last_parent_, FAttachmentTransformRules::KeepRelativeTransform);
         }
     }
 }
@@ -144,8 +138,8 @@ void ACameraDirector::setMode(ECameraDirectorMode mode)
 
         //Remove any existing key bindings for manual mode
         if (mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
-            if (external_camera_ != nullptr
-                && manual_pose_controller_->getActor() == external_camera_) {
+            if (ExternalCamera != nullptr
+                && manual_pose_controller_->getActor() == ExternalCamera) {
 
                 manual_pose_controller_->enableBindings(false);
             }
@@ -193,7 +187,7 @@ void ACameraDirector::setupInputBindings()
 void ACameraDirector::inputEventFpvView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV);
-    external_camera_->disableMain();
+    ExternalCamera->disableMain();
     if (backup_camera_)
         backup_camera_->disableMain();
     if (fpv_camera_)
@@ -203,7 +197,7 @@ void ACameraDirector::inputEventFpvView()
 void ACameraDirector::inputEventFrontView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FRONT);
-    external_camera_->disableMain();
+    ExternalCamera->disableMain();
     if (backup_camera_)
         backup_camera_->disableMain();
     if (front_camera_)
@@ -213,14 +207,14 @@ void ACameraDirector::inputEventFrontView()
 void ACameraDirector::inputEventSpringArmChaseView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE);
-    external_camera_->showToScreen();
+    ExternalCamera->showToScreen();
     disableCameras(true, true, false);
 }
 
 void ACameraDirector::inputEventGroundView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER);
-    external_camera_->showToScreen();
+    ExternalCamera->showToScreen();
     disableCameras(true, true, false);
     ext_obs_fixed_z_ = true;
 }
@@ -228,7 +222,7 @@ void ACameraDirector::inputEventGroundView()
 void ACameraDirector::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     fpv_camera_ = nullptr;
-    external_camera_ = nullptr;
+    ExternalCamera = nullptr;
     follow_actor_ = nullptr;
 }
 
@@ -239,7 +233,7 @@ APIPCamera* ACameraDirector::getFpvCamera() const
 
 APIPCamera* ACameraDirector::getExternalCamera() const
 {
-    return external_camera_;
+    return ExternalCamera;
 }
 
 APIPCamera* ACameraDirector::getBackupCamera() const
@@ -261,7 +255,7 @@ void ACameraDirector::inputEventNoDisplayView()
 void ACameraDirector::inputEventBackupView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP);
-    external_camera_->disableMain();
+    ExternalCamera->disableMain();
     if (fpv_camera_)
         fpv_camera_->disableMain();
     if (backup_camera_)
@@ -271,10 +265,10 @@ void ACameraDirector::inputEventBackupView()
 void ACameraDirector::inputEventFlyWithView()
 {
     setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
-    external_camera_->showToScreen();
+    ExternalCamera->showToScreen();
 
     if (follow_actor_)
-        external_camera_->SetActorLocationAndRotation(
+        ExternalCamera->SetActorLocationAndRotation(
             follow_actor_->GetActorLocation() + initial_ground_obs_offset_, camera_start_rotation_);
     disableCameras(true, true, false);
     ext_obs_fixed_z_ = false;
@@ -286,8 +280,8 @@ void ACameraDirector::disableCameras(bool fpv, bool backup, bool external)
         fpv_camera_->disableMain();
     if (backup && backup_camera_)
         backup_camera_->disableMain();
-    if (external && external_camera_)
-        external_camera_->disableMain();
+    if (external && ExternalCamera)
+        ExternalCamera->disableMain();
 }
 
 

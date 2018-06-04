@@ -21,6 +21,7 @@
 #include <iostream>
 #include <limits>
 #include <queue>
+#include <bitset>
 #include "type_utils.hpp"
 
 #ifndef _WIN32
@@ -127,17 +128,9 @@ public:
     }
 
     template <template<class, class, class...> class TContainer, typename TKey, typename TVal, typename... Args>
-    static TVal findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal& default_val)
+    static TVal findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal& default_val = TVal())
     {
         typename TContainer<TKey, TVal, Args...>::const_iterator it = m.find(key);
-        if (it == m.end())
-            return default_val;
-        return it->second;
-    }
-    template <typename TKey, typename TVal>
-    static TVal findOrDefault(const std::map<TKey, TVal>& m, TKey const& key, const TVal& default_val = TVal())
-    {
-        typename TContainer<TKey, TVal>::const_iterator it = m.find(key);
         if (it == m.end())
             return default_val;
         return it->second;
@@ -571,6 +564,11 @@ public:
         return empty_vector;
     }
 
+    static const std::string& emptyString()
+    {
+        static std::string empty = "";
+        return empty;
+    }
 
     static constexpr float kelvinToCelcius(float kelvin)
     {
@@ -701,6 +699,12 @@ public:
                 }
             }
         }
+    }
+
+    template<typename T>
+    static std::string toBinaryString(const T& x)
+    {
+        return std::bitset<sizeof(T)*8>(x).to_string();
     }
 };
 

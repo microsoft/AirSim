@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include <memory>
 #include <vector>
-#include "controllers/VehicleSimApiBase.hpp"
+#include "api/VehicleSimApiBase.hpp"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
@@ -48,9 +48,6 @@ private:
 
     //create the physics engine as needed from settings
     PhysicsEngineBase* createPhysicsEngine();
-
-
-    static std::vector<UpdatableObject*> toUpdatableObjects(const std::vector<VehiclePtr>& vehicles);
 
 private:
     std::unique_ptr<msr::airlib::PhysicsWorld> physics_world_;

@@ -2,15 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehicle.h"
-#include "physics/Kinematics.hpp"
-#include "CarPawnApi.h"
-#include "SimJoyStick/SimJoyStick.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "UObject/ConstructorHelpers.h"
+
+#include "physics/Kinematics.hpp"
+#include "CarPawnApi.h"
 #include "common/AirSimSettings.hpp"
 #include "AirBlueprintLib.h"
 #include "api/VehicleSimApiBase.hpp"
+#include "common/common_utils/Signal.hpp"
+
 #include "CarPawn.generated.h"
 
 class UPhysicalMaterial;
@@ -25,133 +27,77 @@ class ACarPawn : public AWheeledVehicle
 {
     GENERATED_BODY()
 
-    /** SCene component for the In-Car view origin */
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    class USceneComponent* InternalCameraBase1;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    class USceneComponent* InternalCameraBase2;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    class USceneComponent* InternalCameraBase3;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    class USceneComponent* InternalCameraBase4;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    class USceneComponent* InternalCameraBase5;
-
-    /** Camera component for the In-Car view */
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    APIPCamera* InternalCamera1;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    APIPCamera* InternalCamera2;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    APIPCamera* InternalCamera3;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    APIPCamera* InternalCamera4;
-    UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    APIPCamera* InternalCamera5;
-
-    /** Text component for the In-Car speed */
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    UTextRenderComponent* InCarSpeed;
-
-    /** Text component for the In-Car gear */
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    UTextRenderComponent* InCarGear;
-
-    /** Audio component for the engine sound */
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    UAudioComponent* EngineSoundComponent;
-
 public:
+    typedef common_utils::Signal<UPrimitiveComponent*, AActor*, UPrimitiveComponent*, bool, FVector,
+        FVector, FVector, const FHitResult&> CollisionSignal;
+
     ACarPawn();
 
-    /** The current speed as a string eg 10 km/h */
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
-    FText SpeedDisplayString;
-
-    /** The current gear as a string (R,N, 1,2 etc) */
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
-    FText GearDisplayString;
-
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
-    /** The color of the incar gear text in forward gears */
-    FColor	GearDisplayColor;
-
-    /** The color of the incar gear text when in reverse */
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
-    FColor	GearDisplayReverseColor;
-
-    UPROPERTY(Category = Display, VisibleDefaultsOnly, BlueprintReadOnly)
-    FText	VehicleName;
-
-    void setupInputBindings();
-
-    // Begin Actor interface
+    virtual void BeginPlay() override;
     virtual void Tick(float Delta) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-    void initializeForBeginPlay(msr::airlib::VehicleSimApiBase* vehicle_sim_api, const msr::airlib::GeoPoint& home_geopoint, bool engine_sound);
-
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
-protected:
-    virtual void BeginPlay() override;
 
-public:
-    // End Actor interface
-
-    /** Handle pressing forwards */
-    void MoveForward(float Val);
-    /** Handle pressing right */
-    void MoveRight(float Val);
-    /** Handle handbrake pressed */
-    void onHandbrakePressed();
-    /** Handle handbrake released */
-    void onHandbrakeReleased();
-    /** Handle processing footbrake */
-    void FootBrake(float Val);
-    /** Handle Reverse pressed */
-    void onReversePressed();
-    /** Handle Reverse released */
-    void onReverseReleased();
-    /** Handle Handbrake pressed */
-
-    /** Setup the strings used on the HUD */
-    void updateInCarHUD();
-
-    /** update the physics material used by the vehicle mesh */
-    void updatePhysicsMaterial();
+    //interface
+    void initializeForBeginPlay(bool engine_sound);
+    std::map<std::string, APIPCamera*> getCameras() const;
+    CollisionSignal& getCollisionSignal()
+    {
+        return collision_signal_;
+    }
+    UWheeledVehicleMovementComponent* getVehicleMovementComponent() const;
+    const CarPawnApi::CarControls& getKeyBoardControls() const
+    {
+        return keyboard_controls_;
+    }
 
 private:
-    /** update the gear and speed strings */
     void updateHUDStrings();
-    void updateKinematics(float delta);
-    void updateCarControls();
-    void updateForceFeedback();
-
-    std::string getLogString();
     void setupVehicleMovementComponent();
-    msr::airlib::CarApiBase* getVehicleApi() const;
+    void updateInCarHUD();
+    void updatePhysicsMaterial();
+
+    void setupInputBindings();
+    void onMoveForward(float Val);
+    void onMoveRight(float Val);
+    void onHandbrakePressed();
+    void onHandbrakeReleased();
+    void onFootBrake(float Val);
+    void onReversePressed();
+    void onReverseReleased();
 
 private:
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
     UClass* pip_camera_class_;
+    
+    CollisionSignal collision_signal_;
 
-    msr::airlib::VehicleSimApiBase* vehicle_sim_api_;
-    msr::airlib::Kinematics::State kinematics_;
-
-    CarPawnApi::CarControls keyboard_controls_;
-    CarPawnApi::CarControls joystick_controls_;
-    CarPawnApi::CarControls current_controls_;
-
-    SimJoyStick joystick_;
-    SimJoyStick::State joystick_state_;
-
-
-    /* Are we on a 'slippery' surface */
     bool is_low_friction_;
-    /** Slippery Material instance */
     UPhysicalMaterial* slippery_mat_;
-    /** Non Slippery Material instance */
     UPhysicalMaterial* non_slippery_mat_;
+
+    USceneComponent* camera_front_center_base_;
+    USceneComponent* camera_front_left_base_;
+    USceneComponent* camera_front_right_base_;
+    USceneComponent* camera_driver_base_;
+    USceneComponent* camera_back_center_base_;
+
+    APIPCamera* camera_front_center_;
+    APIPCamera* camera_front_left_;
+    APIPCamera* camera_front_right_;
+    APIPCamera* camera_driver_;
+    APIPCamera* camera_back_center_;
+
+    UTextRenderComponent* speed_text_render_;
+    UTextRenderComponent* gear_text_render_;
+    UAudioComponent* engine_sound_audio_;
+    
+    CarPawnApi::CarControls keyboard_controls_;
+
+    FText last_speed_;
+    FText last_gear_;
+    FColor	last_gear_display_color_;
+    FColor	last_gear_display_reverse_color_;
 };

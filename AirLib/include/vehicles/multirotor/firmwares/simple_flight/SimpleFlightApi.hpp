@@ -115,14 +115,14 @@ public: //MultirotorApiBase implementation
             board_->setInputChannel(1, rc_data.yaw); //Y
             board_->setInputChannel(2, rc_data.throttle); //F
             board_->setInputChannel(3, -rc_data.pitch); //Z
-            board_->setInputChannel(4, static_cast<float>(rc_data.switch1));
-            board_->setInputChannel(5, static_cast<float>(rc_data.switch2));
-            board_->setInputChannel(6, static_cast<float>(rc_data.switch3));
-            board_->setInputChannel(7, static_cast<float>(rc_data.switch4));
-            board_->setInputChannel(8, static_cast<float>(rc_data.switch5));
-            board_->setInputChannel(9, static_cast<float>(rc_data.switch6));
-            board_->setInputChannel(10, static_cast<float>(rc_data.switch7));
-            board_->setInputChannel(11, static_cast<float>(rc_data.switch8));
+            board_->setInputChannel(4, static_cast<float>(rc_data.getSwitch(0)));
+            board_->setInputChannel(5, static_cast<float>(rc_data.getSwitch(1)));
+            board_->setInputChannel(6, static_cast<float>(rc_data.getSwitch(2)));
+            board_->setInputChannel(7, static_cast<float>(rc_data.getSwitch(3)));
+            board_->setInputChannel(8, static_cast<float>(rc_data.getSwitch(4)));
+            board_->setInputChannel(9, static_cast<float>(rc_data.getSwitch(5)));
+            board_->setInputChannel(10, static_cast<float>(rc_data.getSwitch(6)));
+            board_->setInputChannel(11, static_cast<float>(rc_data.getSwitch(7)));
         }
         else { //else we don't have RC data
             board_->setIsRcConnected(false);

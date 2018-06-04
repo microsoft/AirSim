@@ -308,8 +308,8 @@ void ASimHUD::initializeSubWindows()
 
         const auto& subwindow_setting = AirSimSettings::singleton().subwindow_settings.at(window_index);
 
-        if (subwindow_setting.camera_id >= 0 && subwindow_setting.camera_id < camera_count)
-            subwindow_cameras_[subwindow_setting.window_index] = vehicle_sim_api->getCamera(subwindow_setting.camera_id);
+        if (vehicle_sim_api->getCamera(subwindow_setting.camera_name) != nullptr)
+            subwindow_cameras_[subwindow_setting.window_index] = vehicle_sim_api->getCamera(subwindow_setting.camera_name);
         else
             UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid",
                 std::to_string(window_index), LogDebugLevel::Failure);

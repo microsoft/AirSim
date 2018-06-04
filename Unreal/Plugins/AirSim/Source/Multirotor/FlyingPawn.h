@@ -12,8 +12,8 @@ class AIRSIM_API AFlyingPawn : public APawn
     GENERATED_BODY()
 
 public:
-    typedef common_utils::Signal<class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
-        FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit> CollisionSignal;
+    typedef common_utils::Signal<UPrimitiveComponent*, AActor*, UPrimitiveComponent*, bool, FVector,
+        FVector, FVector, const FHitResult&> CollisionSignal;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
     float RotatorFactor = 1.0f;
@@ -26,7 +26,10 @@ public:
     //interface
     void initializeForBeginPlay();
     std::map<std::string, APIPCamera*> getCameras() const;
-    CollisionSignal& getCollisionSignal();
+    CollisionSignal& getCollisionSignal()
+    {
+        return collision_signal_;
+    }
     //called by API to set rotor speed
     void setRotorSpeed(int rotor_index, float radsPerSec);
 
@@ -34,11 +37,11 @@ public:
 private: //variables
     //Unreal components
     static constexpr size_t rotor_count = 4;
-    UPROPERTY() APIPCamera* fpv_camera_front_left_;
-    UPROPERTY() APIPCamera* fpv_camera_front_right_;
-    UPROPERTY() APIPCamera* fpv_camera_front_center_;
-    UPROPERTY() APIPCamera* fpv_camera_back_center_;
-    UPROPERTY() APIPCamera* fpv_camera_bottom_center_;
+    UPROPERTY() APIPCamera* camera_front_left_;
+    UPROPERTY() APIPCamera* camera_front_right_;
+    UPROPERTY() APIPCamera* camera_front_center_;
+    UPROPERTY() APIPCamera* camera_back_center_;
+    UPROPERTY() APIPCamera* camera_bottom_center_;
 
     UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
 

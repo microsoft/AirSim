@@ -42,7 +42,7 @@ public:
         unsigned long connection_error_code = std::numeric_limits<unsigned long>::max();
     };
 
-    void getJoyStickState(unsigned int index, State& state);
+    void getJoyStickState(unsigned int index, State& state) const;
     // strength ranges from -1 to 1
     void setAutoCenter(unsigned int index, double strength);
 

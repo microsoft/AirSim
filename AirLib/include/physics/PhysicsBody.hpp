@@ -96,7 +96,7 @@ public: //methods
             environment_->reset();
         wrench_ = Wrench::zero();
         collision_info_ = CollisionInfo();
-        collision_response_info_ = CollisionResponseInfo();
+        collision_response_ = CollisionResponse();
 
         //update individual vertices
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
@@ -215,13 +215,13 @@ public: //methods
         return collision_info_;
     }
 
-    const CollisionResponseInfo& getCollisionResponseInfo() const
+    const CollisionResponse& getCollisionResponseInfo() const
     {
-        return collision_response_info_;
+        return collision_response_;
     }
-    CollisionResponseInfo& getCollisionResponseInfo()
+    CollisionResponse& getCollisionResponseInfo()
     {
-        return collision_response_info_;
+        return collision_response_;
     }
 
 
@@ -239,7 +239,7 @@ private:
     Wrench wrench_;
 
     CollisionInfo collision_info_;
-    CollisionResponseInfo collision_response_info_;
+    CollisionResponse collision_response_;
 
     Environment* environment_ = nullptr;
 };

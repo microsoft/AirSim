@@ -27,6 +27,7 @@ public:
         : is_complete_(false)
     {
     }
+    virtual ~CancelableAction();
 
     void reset()
     {
@@ -105,10 +106,10 @@ public:
 
 // This class provides a synchronized worker thread that guarantees to execute
 // cancelable tasks on a background thread one at a time.
-// It guarantees that previous task is cancelled before new task is started.
+// It guarantees that previous task is canceled before new task is started.
 // The queue size is 1, which means it does NOT guarantee all queued tasks are executed.
 // If enqueue is called very quickly the thread will not have a chance to execute each
-// task before they get cancelled, worst case in a tight loop all tasks are starved and
+// task before they get canceled, worst case in a tight loop all tasks are starved and
 // nothing executes. 
 class WorkerThread {
 public:
