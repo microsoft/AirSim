@@ -33,7 +33,7 @@ public: //types
         bool visible;
         std::string camera_name;
 
-        SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, bool visible_val = false, const std::string& camera_name_val = 0)
+        SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, bool visible_val = false, const std::string& camera_name_val = "")
             : window_index(window_index_val), image_type(image_type_val), visible(visible_val), camera_name(camera_name_val)
         {
         }
@@ -476,7 +476,7 @@ private:
         }
         if (recording_setting.requests.size() == 0)
             recording_setting.requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(
-                0, ImageType::Scene, false, true));
+                "", ImageType::Scene, false, true));
 
         if (simmode_name == "Multirotor") {
             recording_setting.header_columns = std::vector<std::string> {
@@ -857,9 +857,9 @@ private:
     static void initializeSubwindowSettings(std::vector<SubwindowSetting>& subwindow_settings)
     {
         subwindow_settings.clear();
-        subwindow_settings.push_back(SubwindowSetting(0, ImageType::DepthVis, false, 0)); //depth
-        subwindow_settings.push_back(SubwindowSetting(0, ImageType::Segmentation, false, 0)); //seg
-        subwindow_settings.push_back(SubwindowSetting(0, ImageType::Scene, false, 0)); //vis
+        subwindow_settings.push_back(SubwindowSetting(0, ImageType::DepthVis, false, "")); //depth
+        subwindow_settings.push_back(SubwindowSetting(0, ImageType::Segmentation, false, "")); //seg
+        subwindow_settings.push_back(SubwindowSetting(0, ImageType::Scene, false, "")); //vis
     }
 
     void loadOtherSettings(const Settings& settings_json)

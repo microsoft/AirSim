@@ -123,6 +123,7 @@ void APIPCamera::showToScreen()
     camera_->Activate();
     APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
     controller->SetViewTarget(this);
+    UAirBlueprintLib::LogMessage(TEXT("Camera: "), GetName(), LogDebugLevel::Informational);
 }
 
 void APIPCamera::disableAll()

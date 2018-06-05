@@ -77,7 +77,8 @@ protected:
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
     virtual void setupClockSpeed();
-    void initializeCameraDirector(const FTransform& camera_transform);
+    void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
+    void checkVehicleReady();
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
 
@@ -87,6 +88,8 @@ protected:
     static const char kUsageScenarioComputerVision[];
     int record_tick_count;
 
+    UPROPERTY() UClass* pip_camera_class;
+    UPROPERTY() UParticleSystem* collision_display_template;
 private:
     typedef common_utils::Utils Utils;
     typedef msr::airlib::ClockFactory ClockFactory;
@@ -95,9 +98,10 @@ private:
 
 private:
     //assets loaded in constructor
-    UClass* external_camera_class_;
-    UClass* camera_director_class_;
-    UClass* sky_sphere_class_;
+    UPROPERTY() UClass* external_camera_class_;
+    UPROPERTY() UClass* camera_director_class_;
+    UPROPERTY() UClass* sky_sphere_class_;
+
 
     UPROPERTY() AActor* sky_sphere_;
     UPROPERTY() ADirectionalLight* sun_;;
@@ -116,5 +120,4 @@ private:
     void advanceTimeOfDay();
     void setupPhysicsLoopPeriod();
     void showClockStats();
-    void checkVehicleReady();
 };

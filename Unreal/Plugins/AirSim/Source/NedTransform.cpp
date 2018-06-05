@@ -1,16 +1,16 @@
 #include "NedTransform.h"
 #include "AirBlueprintLib.h"
 
-NedTransform::NedTransform(const FVector& global_ned_offset, float world_to_meters)
-    : NedTransform(nullptr, global_ned_offset, world_to_meters)
+NedTransform::NedTransform(const FTransform& global_transform, float world_to_meters)
+    : NedTransform(nullptr, global_transform, world_to_meters)
 {
 }
 NedTransform::NedTransform(const AActor* pivot, const NedTransform& global_transform)
-    : NedTransform(pivot, global_transform.global_ned_offset_, global_transform.world_to_meters_)
+    : NedTransform(pivot, global_transform.global_transform_, global_transform.world_to_meters_)
 {
 }
-NedTransform::NedTransform(const AActor* pivot, const FVector& global_ned_offset, float world_to_meters)
-    : global_ned_offset_(global_ned_offset), world_to_meters_(world_to_meters)
+NedTransform::NedTransform(const AActor* pivot, const FTransform& global_transform, float world_to_meters)
+    : global_transform_(global_transform), world_to_meters_(world_to_meters)
 {
     if (pivot != nullptr) {
         //normally pawns have their center as origin. If we use this as 0,0,0 in NED then
@@ -33,7 +33,7 @@ NedTransform::Vector3r NedTransform::toLocalNed(const FVector& position) const
 }
 NedTransform::Vector3r NedTransform::toGlobalNed(const FVector& position) const
 {
-    return NedTransform::toVector3r(position - global_ned_offset_,
+    return NedTransform::toVector3r(position - global_transform_.GetLocation(),
         1 / world_to_meters_, true);
 }
 NedTransform::Quaternionr NedTransform::toNed(const FQuat& q) const
@@ -63,7 +63,7 @@ FVector NedTransform::fromLocalNed(const NedTransform::Vector3r& position) const
 }
 FVector NedTransform::fromGlobalNed(const NedTransform::Vector3r& position) const
 {
-    return NedTransform::toFVector(position, world_to_meters_, true) + global_ned_offset_;
+    return NedTransform::toFVector(position, world_to_meters_, true) + global_transform_.GetLocation();
 }
 FQuat NedTransform::fromNed(const Quaternionr& q) const
 {
@@ -80,11 +80,15 @@ FTransform NedTransform::fromGlobalNed(const Pose& pose) const
 
 FVector NedTransform::getGlobalOffset() const
 {
-    return global_ned_offset_;
+    return global_transform_.GetLocation();
 }
 FVector NedTransform::getLocalOffset() const
 {
     return local_ned_offset_;
+}
+FTransform NedTransform::getGlobalTransform() const
+{
+    return global_transform_;
 }
 
 FVector NedTransform::toFVector(const Vector3r& vec, float scale, bool convert_from_ned) const

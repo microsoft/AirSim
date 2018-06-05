@@ -53,7 +53,7 @@ public: //implementation of VehicleSimApiBase
 
 public: //Unreal specific methods
     PawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-        const std::map<std::string, APIPCamera*>& cameras);
+        const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template);
 
     //returns one of the cameras attached to the pawn
     const APIPCamera* getCamera(const std::string& camera_name) const;
@@ -81,10 +81,6 @@ public: //Unreal specific methods
     //allows setting ground truth from physics engine
     void setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics);
 
-protected:
-    UPROPERTY(VisibleAnywhere)
-        UParticleSystem* collision_display_template;
-
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
@@ -101,8 +97,6 @@ private: //methods
 
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;
-
-    UPROPERTY() UClass* pip_camera_class_;
 
     APawn* pawn_;
     //TODO: should below be TMap to keep refs alive?
@@ -142,4 +136,9 @@ private: //vars
     };
     
     State state_, initial_state_;
+
+
+    UPROPERTY() UClass* pip_camera_class_;
+    UPROPERTY() UParticleSystem* collision_display_template_;
+
 };

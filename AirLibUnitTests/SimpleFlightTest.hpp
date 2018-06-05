@@ -28,7 +28,7 @@ public:
             std::make_shared<SensorFactory>());
         auto api = params->createMultirotorApi();
 
-        MultiRotor vehicle(params.get(), api.get(), Pose());
+        MultiRotor vehicle(params.get(), api.get(), Pose(), GeoPoint());
 
         std::vector<UpdatableObject*> vehicles = { &vehicle };
         std::unique_ptr<PhysicsEngineBase> physics_engine(new FastPhysicsEngine());

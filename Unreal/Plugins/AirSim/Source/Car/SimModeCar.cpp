@@ -43,6 +43,8 @@ void ASimModeCar::BeginPlay()
 
     debug_reporter_.initialize(false);
     debug_reporter_.reset();
+
+    checkVehicleReady();
 }
 
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -98,10 +100,10 @@ UClass* ASimModeCar::getExternalCameraClass()
 void ASimModeCar::setupVehiclesAndCamera()
 {
     //get UU origin of global NED frame
-    FVector uu_origin = getGlobalNedTransform().getLocalOffset();
+    FTransform uu_origin = getGlobalNedTransform().getGlobalTransform();
     //TODO:make this configurable
-    FTransform camera_transform(uu_origin + FVector(follow_distance_, 0, 400));
-    initializeCameraDirector(camera_transform);
+    FTransform camera_transform(FRotator::ZeroRotator, uu_origin.GetLocation() + FVector(follow_distance_, 0, 400));
+    initializeCameraDirector(camera_transform, follow_distance_);
 
     //find all vehicle pawns
     {
@@ -124,8 +126,8 @@ void ASimModeCar::setupVehiclesAndCamera()
                     pawn_path = "DefaultCar";
 
                 //compute initial pose
-                FVector spawn_position = uu_origin;
-                FRotator spawn_rotation = FRotator::ZeroRotator;
+                FVector spawn_position = uu_origin.GetLocation();
+                FRotator spawn_rotation = uu_origin.Rotator();
                 Vector3r settings_position = vehicle_setting.position;
                 if (!VectorMath::hasNan(settings_position))
                     spawn_position = getGlobalNedTransform().fromLocalNed(settings_position);
@@ -168,13 +170,14 @@ void ASimModeCar::setupVehiclesAndCamera()
             const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
             auto vehicle_sim_api = std::unique_ptr<CarPawnSimApi>(new CarPawnSimApi(
                 vehicle_pawn, getGlobalNedTransform(),
-                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(), vehicle_pawn->getKeyBoardControls(),
-                vehicle_pawn->getVehicleMovementComponent(), home_geopoint));
+                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(), pip_camera_class, collision_display_template,
+                vehicle_pawn->getKeyBoardControls(), vehicle_pawn->getVehicleMovementComponent(), home_geopoint));
 
             std::string vehicle_name = vehicle_sim_api->getVehicleName();
 
-            getApiProvider()->insert_or_assign(vehicle_name, vehicle_sim_api->getVehicleApi(),
-                vehicle_sim_api.get());
+            auto vehicle_api = vehicle_sim_api->getVehicleApi();
+            auto vehicle_sim_api_p = vehicle_sim_api.get();
+            getApiProvider()->insert_or_assign(vehicle_name, vehicle_api, vehicle_sim_api_p);
             if ((fpv_pawn == vehicle_pawn || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
                 getApiProvider()->makeDefaultVehicle(vehicle_name);
 

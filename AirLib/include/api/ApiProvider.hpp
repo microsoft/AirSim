@@ -35,7 +35,7 @@ public:
     }
 
     //vehicle simulation API
-    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "")
+    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "") const
     {
         return Utils::findOrDefault(vehicle_sim_apis_, vehicle_name,
             static_cast<VehicleSimApiBase*>(nullptr));
@@ -48,8 +48,8 @@ public:
     void insert_or_assign(const std::string& vehicle_name, VehicleApiBase* vehicle_api, 
         VehicleSimApiBase* vehicle_sim_api)
     {
-        vehicle_apis_[vehicle_name] = std::move(vehicle_api);
-        vehicle_sim_apis_[vehicle_name] = std::move(vehicle_sim_api);
+        vehicle_apis_[vehicle_name] = vehicle_api;
+        vehicle_sim_apis_[vehicle_name] = vehicle_sim_api;
     }
     const std::map<std::string, VehicleApiBase*>& getVehicleApis()
     {
@@ -62,8 +62,8 @@ public:
 
     bool hasDefaultVehicle() const
     {
-        return Utils::findOrDefault(vehicle_apis_, Utils::emptyString(), static_cast<VehicleApiBase*>(nullptr)) == nullptr &&
-            Utils::findOrDefault(vehicle_sim_apis_, Utils::emptyString(), static_cast<VehicleSimApiBase*>(nullptr)) == nullptr;
+        return !(Utils::findOrDefault(vehicle_apis_, Utils::emptyString(), static_cast<VehicleApiBase*>(nullptr)) == nullptr &&
+            Utils::findOrDefault(vehicle_sim_apis_, Utils::emptyString(), static_cast<VehicleSimApiBase*>(nullptr)) == nullptr);
     }
 
     void makeDefaultVehicle(const std::string& vehicle_name)

@@ -48,14 +48,6 @@ typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
 RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port)
     : api_provider_(api_provider)
 {
-    pimpl_->server.bind("getServerVersion", []() -> int {
-        return 1;
-    });
-    pimpl_->server.bind("getMinRequiredClientVersion", []() -> int {
-        return 1;
-    });
-
-
     if (server_address == "")
         pimpl_.reset(new impl(port));
     else
@@ -65,6 +57,12 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("isApiControlEnabled", [&]() -> bool { return getVehicleApi()->isApiControlEnabled(); });
     pimpl_->server.bind("armDisarm", [&](bool arm) -> bool { return getVehicleApi()->armDisarm(arm); });
 
+    pimpl_->server.bind("getServerVersion", []() -> int {
+        return 1;
+    });
+    pimpl_->server.bind("getMinRequiredClientVersion", []() -> int {
+        return 1;
+    });
        
     pimpl_->server.bind("simPause", [&](bool is_paused) -> void { 
         getWorldSimApi()->pause(is_paused); 

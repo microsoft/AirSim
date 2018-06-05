@@ -33,6 +33,14 @@ ASimModeBase::ASimModeBase()
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
     camera_director_class_ = camera_director_class.Succeeded() ? camera_director_class.Class : nullptr;
 
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
+    if (!collision_display.Succeeded())
+        collision_display_template = collision_display.Object;
+    else
+        collision_display_template = nullptr;
+    static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class_val(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    pip_camera_class = pip_camera_class_val.Succeeded() ? pip_camera_class_val.Class : nullptr;
+
     PrimaryActorTick.bCanEverTick = true;
 
     static ConstructorHelpers::FClassFinder<AActor> sky_sphere_class(TEXT("Blueprint'/Engine/EngineSky/BP_Sky_Sphere'"));
@@ -43,10 +51,10 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    global_ned_transform_.reset(new NedTransform(GetActorLocation(), 
+    global_ned_transform_.reset(new NedTransform(GetActorTransform(), 
         UAirBlueprintLib::GetWorldToMetersScale(this)));
     world_sim_api_.reset(new WorldSimApi(this));
-
+    api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
     setupPhysicsLoopPeriod();
 
     setupClockSpeed();
@@ -57,8 +65,6 @@ void ASimModeBase::BeginPlay()
     setupInputBindings();
 
     setupTimeOfDay();
-
-    checkVehicleReady();
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 }
@@ -97,6 +103,7 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
     world_sim_api_.reset(nullptr);
+    api_provider_.reset(nullptr);
     CameraDirector = nullptr;
 
     Super::EndPlay(EndPlayReason);
@@ -290,7 +297,7 @@ const msr::airlib::AirSimSettings& ASimModeBase::getSettings() const
     return AirSimSettings::singleton();
 }
 
-void ASimModeBase::initializeCameraDirector(const FTransform& camera_transform)
+void ASimModeBase::initializeCameraDirector(const FTransform& camera_transform, float follow_distance)
 {
     TArray<AActor*> camera_dirs;
     UAirBlueprintLib::FindAllActor<ACameraDirector>(this, camera_dirs);
@@ -298,10 +305,12 @@ void ASimModeBase::initializeCameraDirector(const FTransform& camera_transform)
         //create director
         FActorSpawnParameters camera_spawn_params;
         camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+        camera_spawn_params.Name = "CameraDirector";
         CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, camera_transform, camera_spawn_params);
-        CameraDirector->setFollowDistance(225);
+        CameraDirector->setFollowDistance(follow_distance);
         CameraDirector->setCameraRotationLagEnabled(false);
         //create external camera required for the director
+        camera_spawn_params.Name = "ExternalCamera";
         CameraDirector->ExternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, camera_transform, camera_spawn_params);
     }
     else {
@@ -344,7 +353,6 @@ void ASimModeBase::startApiServer()
 #ifdef AIRLIB_NO_RPC
         api_server_.reset();
 #else
-        api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
         api_server_ = createApiServer();
 #endif
 
@@ -364,7 +372,6 @@ void ASimModeBase::stopApiServer()
     if (api_server_ != nullptr) {
         api_server_->stop();
         api_server_.reset(nullptr);
-        api_provider_.reset(nullptr);
     }
 }
 bool ASimModeBase::isApiServerStarted()

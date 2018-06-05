@@ -26,7 +26,7 @@ public:
     typedef msr::airlib::Pose Pose;
 
 public:
-    NedTransform(const FVector& global_ned_offset, float world_to_meters);
+    NedTransform(const FTransform& global_transform, float world_to_meters);
     NedTransform(const AActor* pivot, const NedTransform& global_transform);
 
     //UU -> local NED
@@ -48,14 +48,15 @@ public:
 
     FVector getGlobalOffset() const;
     FVector getLocalOffset() const;
+    FTransform getGlobalTransform() const;
 
 private:
-    NedTransform(const AActor* pivot, const FVector& global_ned_offset, float world_to_meters); //create only through static factory methods
+    NedTransform(const AActor* pivot, const FTransform& global_transform, float world_to_meters); //create only through static factory methods
     FVector toFVector(const Vector3r& vec, float scale, bool convert_from_ned) const;
     Vector3r toVector3r(const FVector& vec, float scale, bool convert_to_ned) const;
 
 private:
-    FVector global_ned_offset_;
+    FTransform global_transform_;
     float world_to_meters_;
     FVector local_ned_offset_;
 };

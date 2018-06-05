@@ -183,47 +183,13 @@ void ACameraDirector::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("inputEventFrontView", EKeys::I, this, &ACameraDirector::inputEventFrontView);
 }
 
-
-void ACameraDirector::inputEventFpvView()
-{
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV);
-    ExternalCamera->disableMain();
-    if (backup_camera_)
-        backup_camera_->disableMain();
-    if (fpv_camera_)
-        fpv_camera_->showToScreen();
-}
-
-void ACameraDirector::inputEventFrontView()
-{
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FRONT);
-    ExternalCamera->disableMain();
-    if (backup_camera_)
-        backup_camera_->disableMain();
-    if (front_camera_)
-        front_camera_->showToScreen();
-}
-
-void ACameraDirector::inputEventSpringArmChaseView()
-{
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE);
-    ExternalCamera->showToScreen();
-    disableCameras(true, true, false);
-}
-
-void ACameraDirector::inputEventGroundView()
-{
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER);
-    ExternalCamera->showToScreen();
-    disableCameras(true, true, false);
-    ext_obs_fixed_z_ = true;
-}
-
 void ACameraDirector::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     fpv_camera_ = nullptr;
     ExternalCamera = nullptr;
     follow_actor_ = nullptr;
+    front_camera_ = nullptr;
+    backup_camera_ = nullptr;
 }
 
 APIPCamera* ACameraDirector::getFpvCamera() const
@@ -241,40 +207,100 @@ APIPCamera* ACameraDirector::getBackupCamera() const
     return backup_camera_;
 }
 
+void ACameraDirector::inputEventSpringArmChaseView()
+{
+    if (ExternalCamera) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE);
+        ExternalCamera->showToScreen();
+        disableCameras(true, true, false, true);
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
+}
+
+void ACameraDirector::inputEventGroundView()
+{
+    if (ExternalCamera) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER);
+        ExternalCamera->showToScreen();
+        disableCameras(true, true, false, true);
+        ext_obs_fixed_z_ = true;
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
+}
+
 void ACameraDirector::inputEventManualView()
 {
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL);
+    if (ExternalCamera) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL);
+        ExternalCamera->showToScreen();
+        disableCameras(true, true, false, true);
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
 }
 
 void ACameraDirector::inputEventNoDisplayView()
 {
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY);
-    disableCameras(true, true, true);
+    if (ExternalCamera) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY);
+        disableCameras(true, true, true, true);
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
 }
 
 void ACameraDirector::inputEventBackupView()
 {
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP);
-    ExternalCamera->disableMain();
-    if (fpv_camera_)
-        fpv_camera_->disableMain();
-    if (backup_camera_)
+    if (backup_camera_) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP);
         backup_camera_->showToScreen();
+        disableCameras(true, false, true, true);
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "backup_camera", LogDebugLevel::Failure);
+}
+
+void ACameraDirector::inputEventFrontView()
+{
+    if (front_camera_) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FRONT);
+        front_camera_->showToScreen();
+        disableCameras(true, true, true, false);
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "backup_camera", LogDebugLevel::Failure);
 }
 
 void ACameraDirector::inputEventFlyWithView()
 {
-    setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
-    ExternalCamera->showToScreen();
+    if (ExternalCamera) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME);
+        ExternalCamera->showToScreen();
 
-    if (follow_actor_)
-        ExternalCamera->SetActorLocationAndRotation(
-            follow_actor_->GetActorLocation() + initial_ground_obs_offset_, camera_start_rotation_);
-    disableCameras(true, true, false);
-    ext_obs_fixed_z_ = false;
+        if (follow_actor_)
+            ExternalCamera->SetActorLocationAndRotation(
+                follow_actor_->GetActorLocation() + initial_ground_obs_offset_, camera_start_rotation_);
+        disableCameras(true, true, false, true);
+        ext_obs_fixed_z_ = false;
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
 }
 
-void ACameraDirector::disableCameras(bool fpv, bool backup, bool external)
+void ACameraDirector::inputEventFpvView()
+{
+    if (fpv_camera_) {
+        setMode(ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV);
+        fpv_camera_->showToScreen();
+        disableCameras(false, true, true, true);
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "fpv_camera", LogDebugLevel::Failure);
+}
+
+void ACameraDirector::disableCameras(bool fpv, bool backup, bool external, bool front)
 {
     if (fpv && fpv_camera_)
         fpv_camera_->disableMain();
@@ -282,6 +308,8 @@ void ACameraDirector::disableCameras(bool fpv, bool backup, bool external)
         backup_camera_->disableMain();
     if (external && ExternalCamera)
         ExternalCamera->disableMain();
+    if (front && front_camera_)
+        front_camera_->disableMain();
 }
 
 

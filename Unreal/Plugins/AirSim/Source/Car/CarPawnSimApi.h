@@ -24,7 +24,7 @@ public:
     //VehicleSimApiBase interface
     //implements game interface to update pawn
     CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-        const std::map<std::string, APIPCamera*>& cameras, 
+        const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
         const CarPawnApi::CarControls&  keyboard_controls,
         UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint);
 

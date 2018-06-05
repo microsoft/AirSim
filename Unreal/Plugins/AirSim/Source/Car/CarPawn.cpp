@@ -41,20 +41,19 @@ ACarPawn::ACarPawn()
 
     // Create In-Car camera component 
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
-    camera_front_center_base_->SetRelativeLocation(FVector(36.0f, 0, 50.0f)); //center
+    camera_front_center_base_->SetRelativeLocation(FVector(200, 0, 100)); //center
     camera_front_center_base_->SetupAttachment(GetMesh());
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(36.0f, -10, 50.0f)); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(200, -100, 100)); //left
     camera_front_left_base_->SetupAttachment(GetMesh());
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
-    camera_front_right_base_->SetRelativeLocation(FVector(36.0f, 10, 50.0f)); //right
+    camera_front_right_base_->SetRelativeLocation(FVector(200, 100, 100)); //right
     camera_front_right_base_->SetupAttachment(GetMesh());
     camera_driver_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_driver_base_"));
-    camera_driver_base_->SetRelativeLocation(FVector(25, -10, 75.0f)); //driver
+    camera_driver_base_->SetRelativeLocation(FVector(0, -25, 125)); //driver
     camera_driver_base_->SetupAttachment(GetMesh());
     camera_back_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_center_base_"));
-    camera_back_center_base_->SetRelativeLocation(FVector(-36.0f, 0, 50.0f)); //rear
-    camera_back_center_base_->SetRelativeRotation(FRotator(0, 180, 0));
+    camera_back_center_base_->SetRelativeLocation(FVector(-200, 0, 100)); //rear
     camera_back_center_base_->SetupAttachment(GetMesh());
 
     // In car HUD
@@ -184,18 +183,27 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
     FTransform camera_transform(FVector::ZeroVector);
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+    camera_spawn_params.Name = "camera_front_center";
     camera_front_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_center_->AttachToComponent(camera_front_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
+    camera_spawn_params.Name = "camera_front_left";
     camera_front_left_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_left_->AttachToComponent(camera_front_left_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
+    camera_spawn_params.Name = "camera_front_right";
     camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
+    camera_spawn_params.Name = "camera_driver";
     camera_driver_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_driver_->AttachToComponent(camera_driver_base_, FAttachmentTransformRules::KeepRelativeTransform);
-    camera_back_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, FTransform(FRotator(0, 180, 0), FVector::ZeroVector), camera_spawn_params);
-    camera_back_center_->AttachToComponent(camera_back_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
-    std::vector<APIPCamera*> cameras = { camera_front_center_, camera_front_left_, camera_front_right_, camera_driver_, camera_back_center_ };
+    camera_spawn_params.Name = "camera_back_center";
+    camera_back_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_,
+        FTransform(FRotator(0, -180, 0), FVector::ZeroVector), camera_spawn_params);
+    camera_back_center_->AttachToComponent(camera_back_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
     setupInputBindings();
 }
@@ -217,15 +225,17 @@ std::map<std::string, APIPCamera*> ACarPawn::getCameras() const
 
 void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    if (camera_front_center_)
-        camera_front_center_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
     camera_front_center_ = nullptr;
-    if (camera_front_left_)
-        camera_front_left_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
     camera_front_left_ = nullptr;
-    if (camera_front_right_)
-        camera_front_right_->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
     camera_front_right_ = nullptr;
+    camera_driver_ = nullptr;
+    camera_back_center_ = nullptr;
+
+    camera_front_center_base_ = nullptr;
+    camera_front_left_base_ = nullptr;
+    camera_front_right_base_ = nullptr;
+    camera_driver_base_ = nullptr;
+    camera_back_center_base_ = nullptr;
 }
 
 void ACarPawn::Tick(float Delta)
@@ -235,10 +245,10 @@ void ACarPawn::Tick(float Delta)
     // update physics material
     updatePhysicsMaterial();
 
-    // Update the strings used in the hud (incar and onscreen)
+    // Update the strings used in the HUD (in-car and on-screen)
     updateHUDStrings();
 
-    // Set the string in the incar hud
+    // Set the string in the in-car HUD
     updateInCarHUD();
 
     // Pass the engine RPM to the sound component

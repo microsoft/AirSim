@@ -29,6 +29,8 @@
 
 ASimModeWorldMultiRotor::ASimModeWorldMultiRotor()
 {
+    //TODO: get this from settings
+    follow_distance_ = -225;
 }
 
 void ASimModeWorldMultiRotor::BeginPlay()
@@ -39,6 +41,8 @@ void ASimModeWorldMultiRotor::BeginPlay()
 
     //let base class setup physics world
     initializeForPlay();
+
+    checkVehicleReady();
 }
 
 void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -59,7 +63,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
 
     //TODO:make this configurable
     FTransform camera_transform(uu_origin + FVector(-300, 0, 200));
-    initializeCameraDirector(camera_transform);
+    initializeCameraDirector(camera_transform, follow_distance_);
 
     //find all vehicle pawns
     {
@@ -127,7 +131,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
             const auto& home_geopoint= EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
             auto vehicle_sim_api = std::unique_ptr<MultirotorPawnSimApi>(new MultirotorPawnSimApi(
                 vehicle_pawn, ned_transform,
-                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(),
+                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(), pip_camera_class, collision_display_template,
                 manual_pose_controller, home_geopoint));
 
             std::string vehicle_name = vehicle_sim_api->getVehicleName();

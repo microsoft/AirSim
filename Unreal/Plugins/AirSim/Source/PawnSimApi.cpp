@@ -3,7 +3,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "ConstructorHelpers.h"
 
 #include "AirBlueprintLib.h"
 #include "common/ClockFactory.hpp"
@@ -12,17 +11,11 @@
 #include "common/EarthUtils.hpp"
 
 PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-    const std::map<std::string, APIPCamera*>& cameras)
-    : pawn_(pawn), vehicle_name_(TCHAR_TO_UTF8(*pawn->GetName())), ned_transform_(pawn, global_transform)
+    const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template)
+    : pawn_(pawn), ned_transform_(pawn, global_transform),
+      pip_camera_class_(pip_camera_class), collision_display_template_(collision_display_template)
 {
-    static ConstructorHelpers::FObjectFinder<UParticleSystem> collision_display(TEXT("ParticleSystem'/AirSim/StarterContent/Particles/P_Explosion.P_Explosion'"));
-    if (!collision_display.Succeeded())
-        collision_display_template = collision_display.Object;
-    else
-        collision_display_template = nullptr;
-    static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
-    pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
-
+    vehicle_name_ = std::string(TCHAR_TO_UTF8(*(pawn->GetName())));
     image_capture_.reset(new UnrealImageCapture(&cameras_));
 
     //initialize state
@@ -231,9 +224,9 @@ msr::airlib::RCData PawnSimApi::getRCData() const
 
 void PawnSimApi::displayCollisionEffect(FVector hit_location, const FHitResult& hit)
 {
-    if (collision_display_template != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
+    if (collision_display_template_ != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
         UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(pawn_->GetWorld(), 
-            collision_display_template, FTransform(hit_location), true);
+            collision_display_template_, FTransform(hit_location), true);
         particles->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
     }
 }

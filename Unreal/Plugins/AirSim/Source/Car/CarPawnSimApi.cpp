@@ -7,10 +7,11 @@
 using namespace msr::airlib;
 
 CarPawnSimApi::CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-    const std::map<std::string, APIPCamera*>& cameras, 
+    const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
     const CarPawnApi::CarControls&  keyboard_controls,
     UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
-    : PawnSimApi(pawn, global_transform, collision_signal, cameras), keyboard_controls_(keyboard_controls)
+    : PawnSimApi(pawn, global_transform, collision_signal, cameras, pip_camera_class, collision_display_template), 
+      keyboard_controls_(keyboard_controls)
 {
     createVehicleApi(movement, home_geopoint);
 

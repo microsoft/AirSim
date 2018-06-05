@@ -69,8 +69,7 @@ public:
 private:
     void setupInputBindings();
     void attachSpringArm(bool attach);
-    void disableCameras(bool fpv, bool backup, bool external);
-    void setCameras(APIPCamera* external_camera, PawnSimApi* vehicle_pawn_wrapper);
+    void disableCameras(bool fpv, bool backup, bool external, bool front);
 
 private:
     typedef common_utils::Utils Utils;

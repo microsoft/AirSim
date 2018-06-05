@@ -32,6 +32,7 @@ private:
     typedef AFlyingPawn TVehiclePawn;
 
     std::vector<std::unique_ptr<msr::airlib::VehicleSimApiBase>> vehicle_sim_apis_;
+    float follow_distance_;
 
     UPROPERTY()
     TArray<AActor*> spawned_actors_; //keep refs alive from Unreal GC
