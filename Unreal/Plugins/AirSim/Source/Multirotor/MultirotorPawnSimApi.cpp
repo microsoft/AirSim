@@ -19,27 +19,23 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& glob
     pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
     setPose(pose, false);
 
-    createVehicleApi();
-
     //setup physics vehicle
+    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
+    vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
     phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(), 
         getPose(), home_geopoint));
     rotor_count_ = phys_vehicle_->wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
+
+    //create vehicle API
+    vehicle_api_ = vehicle_params_->createMultirotorApi();
+    vehicle_api_->setSimulatedGroundTruth(getGroundTruthKinematics(), getGroundTruthEnvironment());
 
     //initialize private vars
     last_phys_pose_ = pending_phys_pose_ = Pose::nanPose();
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
     did_reset_ = false;
-}
-
-void MultirotorPawnSimApi::createVehicleApi()
-{
-    //create vehicle params
-    std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
-    vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
-    vehicle_api_ = vehicle_params_->createMultirotorApi();
 }
 
 std::string MultirotorPawnSimApi::getLogLine() const
@@ -75,6 +71,11 @@ const msr::airlib::Kinematics::State* MultirotorPawnSimApi::getGroundTruthKinema
 {
     return & phys_vehicle_->getKinematics();
 }
+const msr::airlib::Environment* MultirotorPawnSimApi::getGroundTruthEnvironment() const
+{
+    return & phys_vehicle_->getEnvironment();
+}
+
 
 void MultirotorPawnSimApi::updateRenderedState(float dt)
 {
@@ -157,13 +158,6 @@ void MultirotorPawnSimApi::updateRendering(float dt)
             PawnSimApi::setPose(last_phys_pose_, false);
     }
 
-    //update rotor animations
-    for (unsigned int i = 0; i < rotor_count_; ++i) {
-        RotorInfo* info = &rotor_info_[i];
-        static_cast<AFlyingPawn*>(getPawn())->
-            setRotorSpeed(i, info->rotor_speed * info->rotor_direction);
-    }
-
     if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == getPawn()) {
         UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(getCollisionInfo().collision_count), LogDebugLevel::Failure);
     }
@@ -194,6 +188,7 @@ void MultirotorPawnSimApi::setPose(const Pose& pose, bool ignore_collision)
 //*** Start: UpdatableState implementation ***//
 void MultirotorPawnSimApi::reset()
 {
+    vehicle_api_->reset();
     PawnSimApi::reset();
     phys_vehicle_->reset();
 }

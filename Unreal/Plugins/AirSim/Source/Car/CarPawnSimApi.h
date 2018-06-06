@@ -38,6 +38,7 @@ public:
     virtual void updateRendering(float dt) override;
 
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+    virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
 
     msr::airlib::CarApiBase* getVehicleApi()
     {
@@ -54,6 +55,7 @@ private:
     std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;
     std::vector<std::string> vehicle_api_messages_;
     msr::airlib::Kinematics::State kinematics_;
+    std::unique_ptr<Environment> environment_;
 
     //storing reference from pawn
     const CarPawnApi::CarControls& keyboard_controls_;

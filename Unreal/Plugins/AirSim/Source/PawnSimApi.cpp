@@ -231,16 +231,6 @@ void PawnSimApi::displayCollisionEffect(FVector hit_location, const FHitResult& 
     }
 }
 
-const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() const
-{
-    return kinematics_;
-}
-
-void PawnSimApi::setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics)
-{
-    kinematics_ = kinematics;
-}
-
 int PawnSimApi::getRemoteControlID() const
 {
     return getVehicleSetting()->rc.remote_control_id;

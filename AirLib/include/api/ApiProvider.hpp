@@ -51,15 +51,28 @@ public:
         vehicle_apis_[vehicle_name] = vehicle_api;
         vehicle_sim_apis_[vehicle_name] = vehicle_sim_api;
     }
-    const std::map<std::string, VehicleApiBase*>& getVehicleApis()
+    const std::map<std::string, VehicleApiBase*>& getVehicleApiMap()
     {
         return vehicle_apis_;
     }
-    const std::map<std::string, VehicleSimApiBase*>& getVehicleSimApis()
+    const std::map<std::string, VehicleSimApiBase*>& getVehicleSimApiMap()
     {
         return vehicle_sim_apis_;
     }
-
+    const std::unordered_set<VehicleApiBase*> getUniqueVehicleApis()
+    {
+        std::unordered_set<VehicleApiBase*> apis;
+        for (auto& pair : vehicle_apis_)
+            apis.insert(pair.second);
+        return apis;
+    }
+    const std::unordered_set<VehicleSimApiBase*> getUniqueVehicleSimApis()
+    {
+        std::unordered_set<VehicleSimApiBase*> apis;
+        for (auto& pair : vehicle_sim_apis_)
+            apis.insert(pair.second);
+        return apis;
+    } 
     bool hasDefaultVehicle() const
     {
         return !(Utils::findOrDefault(vehicle_apis_, Utils::emptyString(), static_cast<VehicleApiBase*>(nullptr)) == nullptr &&

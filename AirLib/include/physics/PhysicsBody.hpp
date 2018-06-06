@@ -177,7 +177,7 @@ public: //methods
     {
         return kinematics_.getState();
     }
-    void setKinematics(const Kinematics::State& state)
+    void getGroundTruthKinematics(const Kinematics::State& state)
     {
         if (VectorMath::hasNan(state.twist.linear)) {
             //Utils::DebugBreak();
@@ -226,7 +226,7 @@ public: //methods
 
 
 public:
-    //for use in physics angine: //TODO: use getter/setter or friend method?
+    //for use in physics engine: //TODO: use getter/setter or friend method?
     TTimePoint last_kinematics_time;
 
 private:

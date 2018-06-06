@@ -19,6 +19,7 @@ public:
     float RotatorFactor = 1.0f;
 
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;

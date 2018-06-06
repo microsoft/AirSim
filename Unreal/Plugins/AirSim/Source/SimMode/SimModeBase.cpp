@@ -76,12 +76,11 @@ const NedTransform& ASimModeBase::getGlobalNedTransform()
 
 void ASimModeBase::checkVehicleReady()
 {
-    const auto& vehicle_apis = api_provider_->getVehicleApis();
-    for (auto it = vehicle_apis.begin(); it != vehicle_apis.end(); ++it) {
+    for (auto& api : api_provider_->getUniqueVehicleApis()) {
         std::string message;
-        if (!it->second->isReady(message)) {
-            UAirBlueprintLib::LogMessage(common_utils::Utils::stringf("Vehicle %s was not initialized: ", 
-                it->first.c_str()).c_str(), message.c_str(), LogDebugLevel::Failure);
+        if (!api->isReady(message)) {
+            UAirBlueprintLib::LogMessage("Vehicle %s was not initialized: ", 
+                "", LogDebugLevel::Failure); //TODO: add vehicle name in message
             UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
         }
     }

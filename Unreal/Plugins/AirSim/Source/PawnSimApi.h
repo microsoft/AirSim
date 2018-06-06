@@ -39,7 +39,6 @@ public: //implementation of VehicleSimApiBase
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
-    virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
     virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) override;
     virtual CollisionInfo getCollisionInfo() const override;
@@ -78,9 +77,6 @@ public: //Unreal specific methods
     void possess();
     void setRCForceFeedback(float rumble_strength, float auto_center);
 
-    //allows setting ground truth from physics engine
-    void setGroundTruthKinematics(const msr::airlib::Kinematics::State* kinematics);
-
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
@@ -108,7 +104,6 @@ private: //vars
     FVector ground_margin_;
     GeoPoint home_geo_point_;
     std::unique_ptr<UnrealImageCapture> image_capture_;
-    const msr::airlib::Kinematics::State* kinematics_;
     std::string log_line_;
 
     mutable msr::airlib::RCData rc_data_;

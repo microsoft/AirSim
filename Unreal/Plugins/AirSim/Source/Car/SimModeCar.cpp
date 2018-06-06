@@ -207,9 +207,9 @@ void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     
-    for (auto& pair : getApiProvider()->getVehicleSimApis()) {
-        pair.second->updateRenderedState(DeltaSeconds);
-        pair.second->updateRendering(DeltaSeconds);
+    for (auto* api : getApiProvider()->getUniqueVehicleSimApis()) {
+        api->updateRenderedState(DeltaSeconds);
+        api->updateRendering(DeltaSeconds);
     }
     
     if (pause_period_start_ > 0) {
@@ -233,9 +233,8 @@ void ASimModeCar::Tick(float DeltaSeconds)
 void ASimModeCar::reset()
 {
     UAirBlueprintLib::RunCommandOnGameThread([this]() {
-        for (auto& pair : getApiProvider()->getVehicleSimApis()) {
-            if (pair.second)
-                pair.second->reset();
+        for (auto& api : getApiProvider()->getUniqueVehicleSimApis()) {
+            api->reset();
         }
     }, true);
 
@@ -244,8 +243,8 @@ void ASimModeCar::reset()
 
 void ASimModeCar::updateDebugReport()
 {
-    for (auto& pair : getApiProvider()->getVehicleSimApis()) {
-        PawnSimApi* vehicle_sim_api = static_cast<PawnSimApi*>(pair.second);
+    for (auto& api : getApiProvider()->getUniqueVehicleSimApis()) {
+        PawnSimApi* vehicle_sim_api = static_cast<PawnSimApi*>(api);
         msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
         std::string vehicle_name = vehicle_sim_api->getVehicleName();
 

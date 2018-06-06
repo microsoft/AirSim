@@ -41,6 +41,7 @@ public:
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+    virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
 
     virtual std::string getLogLine() const override;
 
@@ -49,8 +50,6 @@ public:
         return vehicle_api_.get();
     }
 
-private:
-    void createVehicleApi();
 
 private:
     std::unique_ptr<msr::airlib::MultirotorApiBase> vehicle_api_;

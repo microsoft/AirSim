@@ -29,6 +29,12 @@ void AFlyingPawn::initializeForBeginPlay()
         (UAirBlueprintLib::GetActorComponent<UChildActorComponent>(this, TEXT("BottomCenterCamera")))->GetChildActor());
 }
 
+void AFlyingPawn::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+}
+
+
 void AFlyingPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     camera_front_right_ = nullptr;

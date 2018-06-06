@@ -17,6 +17,11 @@ CarPawnSimApi::CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, 
 
     //TODO: should do reset() here?
     joystick_controls_ = CarPawnApi::CarControls();
+
+    Environment::State initial_environment;
+    initial_environment.position = getPose().position;
+    initial_environment.geo_point = home_geopoint;
+    environment_.reset(new Environment(initial_environment));
 }
 
 void CarPawnSimApi::createVehicleApi(UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
@@ -67,6 +72,10 @@ std::string CarPawnSimApi::getLogLine() const
 const msr::airlib::Kinematics::State* CarPawnSimApi::getGroundTruthKinematics() const
 {
     return &kinematics_;
+}
+const msr::airlib::Environment* CarPawnSimApi::getGroundTruthEnvironment() const
+{
+    return environment_.get();
 }
 
 void CarPawnSimApi::updateKinematics(float dt)
@@ -181,7 +190,7 @@ void CarPawnSimApi::updateCarControls()
     UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls_.throttle), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls_.brake), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessageString("Steering: ", std::to_string(current_controls_.steering), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessageString("Handbreak: ", std::to_string(current_controls_.handbrake), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessageString("Handbrake: ", std::to_string(current_controls_.handbrake), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls_.manual_gear), LogDebugLevel::Informational);
 }
 
@@ -189,12 +198,17 @@ void CarPawnSimApi::updateCarControls()
 //*** Start: UpdatableState implementation ***//
 void CarPawnSimApi::reset()
 {
+    vehicle_api_->reset();
     PawnSimApi::reset();
+    environment_->reset();
 }
 
 void CarPawnSimApi::update()
 {
     PawnSimApi::update();
+    //update position from kinematics so we have latest position after physics update
+    environment_->setPosition(kinematics_.pose.position);
+    environment_->update();
 }
 
 void CarPawnSimApi::reportState(StateReporter& reporter)
