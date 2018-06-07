@@ -31,7 +31,7 @@ private: //variables
     UPROPERTY() UClass* pip_camera_class_;
 
          //Unreal components
-    static constexpr size_t rotor_count = 4;
+    static constexpr size_t rotor_count = 8;
     UPROPERTY() APIPCamera* fpv_camera_front_left_;
     UPROPERTY() APIPCamera* fpv_camera_front_right_;
     UPROPERTY() APIPCamera* fpv_camera_front_center_;
