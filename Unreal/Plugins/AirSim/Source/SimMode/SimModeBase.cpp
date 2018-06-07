@@ -76,7 +76,7 @@ const NedTransform& ASimModeBase::getGlobalNedTransform()
 
 void ASimModeBase::checkVehicleReady()
 {
-    for (auto& api : api_provider_->getUniqueVehicleApis()) {
+    for (auto& api : api_provider_->getVehicleApis()) {
         std::string message;
         if (!api->isReady(message)) {
             UAirBlueprintLib::LogMessage("Vehicle %s was not initialized: ", 

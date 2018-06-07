@@ -128,7 +128,7 @@ public:
     }
 
     template <template<class, class, class...> class TContainer, typename TKey, typename TVal, typename... Args>
-    static TVal findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal& default_val = TVal())
+    static const TVal& findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal& default_val = TVal())
     {
         typename TContainer<TKey, TVal, Args...>::const_iterator it = m.find(key);
         if (it == m.end())

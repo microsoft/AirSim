@@ -22,11 +22,13 @@ public:
     //this happens, this method should do minimal processing
     virtual void updateRenderedState(float dt)
     {
+        unused(dt);
         //derived class should override if needed
     }
     //called when render changes are required at every render tick
     virtual void updateRendering(float dt)
     {
+        unused(dt);
         //derived class should override if needed
     }
 

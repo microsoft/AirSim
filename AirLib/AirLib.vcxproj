@@ -42,6 +42,7 @@
     <ClInclude Include="include\common\common_utils\ExceptionUtils.hpp" />
     <ClInclude Include="include\common\common_utils\FileSystem.hpp" />
     <ClInclude Include="include\common\common_utils\json.hpp" />
+    <ClInclude Include="include\common\common_utils\UniqueValueMap.hpp" />
     <ClInclude Include="include\common\common_utils\MedianFilter.hpp" />
     <ClInclude Include="include\common\common_utils\MinWinDefines.hpp" />
     <ClInclude Include="include\common\common_utils\OnlineStats.hpp" />

@@ -8,6 +8,7 @@
 #include "VehicleSimApiBase.hpp"
 #include "WorldSimApiBase.hpp"
 #include <map>
+#include "common/common_utils/UniqueValueMap.hpp"
 
 
 namespace msr { namespace airlib {
@@ -24,8 +25,7 @@ public:
     //vehicle API
     virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name = "")
     {
-        return Utils::findOrDefault(vehicle_apis_, vehicle_name, 
-            static_cast<VehicleApiBase*>(nullptr));
+        return vehicle_apis_.findOrDefault(vehicle_name, nullptr);
     }
 
     //world simulation API
@@ -37,59 +37,44 @@ public:
     //vehicle simulation API
     virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "") const
     {
-        return Utils::findOrDefault(vehicle_sim_apis_, vehicle_name,
-            static_cast<VehicleSimApiBase*>(nullptr));
+        return vehicle_sim_apis_.findOrDefault(vehicle_name, nullptr);
     }
 
     size_t getVehicleCount() const
     {
-        return vehicle_apis_.size();
+        return vehicle_apis_.valsSize();
     }
     void insert_or_assign(const std::string& vehicle_name, VehicleApiBase* vehicle_api, 
         VehicleSimApiBase* vehicle_sim_api)
     {
-        vehicle_apis_[vehicle_name] = vehicle_api;
-        vehicle_sim_apis_[vehicle_name] = vehicle_sim_api;
+        vehicle_apis_.insert_or_assign(vehicle_name, vehicle_api);
+        vehicle_sim_apis_.insert_or_assign(vehicle_name, vehicle_sim_api);
     }
-    const std::map<std::string, VehicleApiBase*>& getVehicleApiMap()
+    const common_utils::UniqueValueMap<std::string, VehicleApiBase*>& getVehicleApis()
     {
         return vehicle_apis_;
     }
-    const std::map<std::string, VehicleSimApiBase*>& getVehicleSimApiMap()
+    const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& getVehicleSimApis()
     {
         return vehicle_sim_apis_;
-    }
-    const std::unordered_set<VehicleApiBase*> getUniqueVehicleApis()
-    {
-        std::unordered_set<VehicleApiBase*> apis;
-        for (auto& pair : vehicle_apis_)
-            apis.insert(pair.second);
-        return apis;
-    }
-    const std::unordered_set<VehicleSimApiBase*> getUniqueVehicleSimApis()
-    {
-        std::unordered_set<VehicleSimApiBase*> apis;
-        for (auto& pair : vehicle_sim_apis_)
-            apis.insert(pair.second);
-        return apis;
     } 
     bool hasDefaultVehicle() const
     {
-        return !(Utils::findOrDefault(vehicle_apis_, Utils::emptyString(), static_cast<VehicleApiBase*>(nullptr)) == nullptr &&
-            Utils::findOrDefault(vehicle_sim_apis_, Utils::emptyString(), static_cast<VehicleSimApiBase*>(nullptr)) == nullptr);
+        return !(vehicle_apis_.findOrDefault("", nullptr) == nullptr &&
+            vehicle_sim_apis_.findOrDefault("", nullptr) == nullptr);
     }
 
     void makeDefaultVehicle(const std::string& vehicle_name)
     {
-        vehicle_apis_[""] = vehicle_apis_[vehicle_name];
-        vehicle_sim_apis_[""] = vehicle_sim_apis_[vehicle_name];
+        vehicle_apis_.insert_or_assign("", vehicle_apis_.at(vehicle_name));
+        vehicle_sim_apis_.insert_or_assign("", vehicle_sim_apis_.at(vehicle_name));
     }
 
 private:
     WorldSimApiBase* world_sim_api_;
 
-    std::map<std::string, VehicleApiBase*> vehicle_apis_;
-    std::map<std::string, VehicleSimApiBase*> vehicle_sim_apis_;
+    common_utils::UniqueValueMap<std::string, VehicleApiBase*> vehicle_apis_;
+    common_utils::UniqueValueMap<std::string, VehicleSimApiBase*> vehicle_sim_apis_;
 };
 
 }} //namespace

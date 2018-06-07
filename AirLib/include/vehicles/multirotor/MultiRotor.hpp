@@ -23,7 +23,7 @@ public:
         : params_(params), vehicle_api_(vehicle_api)
     {
         environment_.reset(new Environment(initial_environment));
-        initialize(params, initial_kinematic_state, environment_.get());
+        initialize(initial_kinematic_state, environment_.get());
     }
 
     MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
@@ -37,7 +37,7 @@ public:
         initial_environment.geo_point = home_geopoint;
         environment_.reset(new Environment(initial_environment));
 
-        initialize(params, initial_kinematics, environment_.get());
+        initialize(initial_kinematics, environment_.get());
     }
 
     //*** Start: UpdatableState implementation ***//
@@ -143,7 +143,7 @@ public:
     virtual ~MultiRotor() = default;
 
 private: //methods
-    void initialize(MultiRotorParams* params, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    void initialize(const Kinematics::State& initial_kinematic_state, Environment* environment)
     {
         PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
 
