@@ -7,7 +7,7 @@
 
 
 
-UnrealImageCapture::UnrealImageCapture(const std::map<std::string, APIPCamera*>* cameras)
+UnrealImageCapture::UnrealImageCapture(const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras)
     : cameras_(cameras)
 {
     //TODO: explore screenshot option
@@ -20,7 +20,7 @@ UnrealImageCapture::~UnrealImageCapture()
 void UnrealImageCapture::getImages(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
     std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const
 {
-    if (cameras_->size() == 0) {
+    if (cameras_->valsSize() == 0) {
         for (unsigned int i = 0; i < requests.size(); ++i) {
             responses.push_back(ImageResponse());
             responses[responses.size() - 1].message = "camera is not set";

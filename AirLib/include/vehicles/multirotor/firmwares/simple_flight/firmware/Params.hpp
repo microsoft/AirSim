@@ -25,8 +25,8 @@ public:
     struct Rc {
         uint16_t channel_count = 12;
         uint16_t read_interval_ms = 10;
-        int16_t rate_level_mode_channel = 4; //corresponds to switch 1 in rc_data
-        int16_t allow_api_control_channel = 5; //corresponds to switch 2 in rc_data
+        int16_t rate_level_mode_channel = 4; //corresponds to switch 0 in rc_data
+        int16_t allow_api_control_channel = 5; //corresponds to switch 1 in rc_data
 
         //When actions such as arming/unarming, how much tolerance can be allowed in stick positions from 0 to 1?
         float action_request_tolerance = 0.1f;

@@ -4,6 +4,8 @@
 #include <memory>
 #include "PIPCamera.h"
 #include "common/common_utils/Signal.hpp"
+#include "common/common_utils/UniqueValueMap.hpp"
+
 #include "FlyingPawn.generated.h"
 
 UCLASS()
@@ -26,7 +28,7 @@ public:
 
     //interface
     void initializeForBeginPlay();
-    std::map<std::string, APIPCamera*> getCameras() const;
+    common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
     CollisionSignal& getCollisionSignal()
     {
         return collision_signal_;

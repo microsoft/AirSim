@@ -8,6 +8,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "ManualPoseController.h"
+#include "common/common_utils/UniqueValueMap.hpp"
 
 
 class MultirotorPawnSimApi : public PawnSimApi
@@ -27,7 +28,7 @@ public:
     //VehicleSimApiBase interface
     //implements game interface to update pawn
     MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-        const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
+        const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
         UManualPoseController* manual_pose_controller, const GeoPoint& home_geopoint);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;

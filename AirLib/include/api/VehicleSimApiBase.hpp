@@ -50,8 +50,8 @@ public:
     virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) = 0;
 
     virtual CollisionInfo getCollisionInfo() const = 0;
-    virtual int getRemoteControlID() const { return -1; }
-    virtual RCData getRCData() const = 0; //get reading from RC from simulator
+    virtual int getRemoteControlID() const = 0; //which RC to use, 0 is first one, -1 means disable RC (use keyborad)
+    virtual RCData getRCData() const = 0; //get reading from RC from simulator's host OS
     virtual std::string getVehicleName() const = 0;
     virtual std::string getLogLine() const = 0;
     virtual void toggleTrace() = 0;

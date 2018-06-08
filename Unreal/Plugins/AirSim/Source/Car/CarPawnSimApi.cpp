@@ -7,7 +7,7 @@
 using namespace msr::airlib;
 
 CarPawnSimApi::CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-    const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
+    const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
     const CarPawnApi::CarControls&  keyboard_controls,
     UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
     : PawnSimApi(pawn, global_transform, collision_signal, cameras, pip_camera_class, collision_display_template), 
@@ -101,8 +101,8 @@ void CarPawnSimApi::updateRenderedState(float dt)
     vehicle_api_->getStatusMessages(vehicle_api_messages_);
 
     //TODO: do we need this for cars?
-    //if (getRemoteControlID() >= 0)
-    //    vehicle_api_->setRCData(getRCData());
+    if (getRemoteControlID() >= 0)
+        vehicle_api_->setRCData(getRCData());
 }
 
 void CarPawnSimApi::updateRendering(float dt)

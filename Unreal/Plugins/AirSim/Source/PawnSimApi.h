@@ -15,6 +15,7 @@
 #include "common/AirSimSettings.hpp"
 #include "SimJoyStick/SimJoyStick.h"
 #include "api/VehicleSimApiBase.hpp"
+#include "common/common_utils/UniqueValueMap.hpp"
 
 
 class PawnSimApi : public msr::airlib::VehicleSimApiBase {
@@ -52,7 +53,7 @@ public: //implementation of VehicleSimApiBase
 
 public: //Unreal specific methods
     PawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-        const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template);
+        const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template);
 
     //returns one of the cameras attached to the pawn
     const APIPCamera* getCamera(const std::string& camera_name) const;
@@ -81,7 +82,7 @@ private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();
     void detectUsbRc();
-    void setupCamerasFromSettings(const std::map<std::string, APIPCamera*>& cameras);
+    void setupCamerasFromSettings(const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras);
     void createCamerasFromSettings();
     //on collision, pawns should update this
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp,
@@ -96,7 +97,7 @@ private: //vars
 
     APawn* pawn_;
     //TODO: should below be TMap to keep refs alive?
-    std::map<std::string, APIPCamera*> cameras_;
+    common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_;
     std::string vehicle_name_;
     NedTransform ned_transform_;
 

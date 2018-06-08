@@ -12,6 +12,8 @@
 #include "AirBlueprintLib.h"
 #include "api/VehicleSimApiBase.hpp"
 #include "common/common_utils/Signal.hpp"
+#include "common/common_utils/UniqueValueMap.hpp"
+#include "common/common_utils/UniqueValueMap.hpp"
 
 #include "CarPawn.generated.h"
 
@@ -41,7 +43,7 @@ public:
 
     //interface
     void initializeForBeginPlay(bool engine_sound);
-    std::map<std::string, APIPCamera*> getCameras() const;
+    common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
     CollisionSignal& getCollisionSignal()
     {
         return collision_signal_;

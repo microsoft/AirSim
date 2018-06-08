@@ -11,7 +11,7 @@
 #include "common/EarthUtils.hpp"
 
 PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
-    const std::map<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template)
+    const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template)
     : pawn_(pawn), ned_transform_(pawn, global_transform),
       pip_camera_class_(pip_camera_class), collision_display_template_(collision_display_template)
 {
@@ -64,12 +64,12 @@ void PawnSimApi::detectUsbRc()
     }
 }
 
-void PawnSimApi::setupCamerasFromSettings(const std::map<std::string, APIPCamera*>& cameras)
+void PawnSimApi::setupCamerasFromSettings(const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras)
 {
     //add cameras that already exists in pawn
     cameras_.clear();
-    for (const auto& p : cameras)
-        cameras_[p.first] = p.second;
+    for (const auto& p : cameras.getMap())
+        cameras_.insert_or_assign(p.first, p.second);
 
     //create or replace cameras specified in settings
     createCamerasFromSettings();
@@ -77,7 +77,7 @@ void PawnSimApi::setupCamerasFromSettings(const std::map<std::string, APIPCamera
     //setup individual cameras
     typedef msr::airlib::AirSimSettings AirSimSettings;
     const auto& camera_defaults = AirSimSettings::singleton().camera_defaults;
-    for (auto& pair : cameras_) {
+    for (auto& pair : cameras_.getMap()) {
         const auto& camera_setting = Utils::findOrDefault(getVehicleSetting()->cameras, pair.first, camera_defaults);
         APIPCamera* camera = pair.second;
         camera->setupCameraFromSettings(camera_setting, getNedTransform());
@@ -108,7 +108,7 @@ void PawnSimApi::createCamerasFromSettings()
         camera->AttachToComponent(bodyMesh, FAttachmentTransformRules::KeepRelativeTransform);
 
         //add on to our collection
-        cameras_[camera_setting_pair.first] = camera;
+        cameras_.insert_or_assign(camera_setting_pair.first, camera);
     }
 }
 
@@ -238,7 +238,7 @@ int PawnSimApi::getRemoteControlID() const
 
 const APIPCamera* PawnSimApi::getCamera(const std::string& camera_name) const
 {
-    return Utils::findOrDefault(cameras_, camera_name, static_cast<APIPCamera*>(nullptr));
+    return cameras_.findOrDefault(camera_name, nullptr);
 }
 
 APIPCamera* PawnSimApi::getCamera(const std::string& camera_name)
@@ -254,7 +254,7 @@ const UnrealImageCapture* PawnSimApi::getImageCapture() const
 
 int PawnSimApi::getCameraCount()
 {
-    return cameras_.size();
+    return cameras_.valsSize();
 }
 
 void PawnSimApi::reset()

@@ -46,18 +46,23 @@ void AFlyingPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-std::map<std::string, APIPCamera*> AFlyingPawn::getCameras() const
+common_utils::UniqueValueMap<std::string, APIPCamera*> AFlyingPawn::getCameras() const
 {
-    std::map<std::string, APIPCamera*> cameras;
+    common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
+    cameras.insert_or_assign("front_center", camera_front_center_);
+    cameras.insert_or_assign("front_right", camera_front_right_);
+    cameras.insert_or_assign("front_left", camera_front_left_);
+    cameras.insert_or_assign("bottom_center", camera_bottom_center_);
+    cameras.insert_or_assign("back_center", camera_back_center_);
 
-    cameras["0"] = cameras["front_center"] = camera_front_center_;
-    cameras["1"] = cameras["front_right"] = camera_front_right_;
-    cameras["2"] = cameras["front_left"] = camera_front_left_;
-    cameras["3"] = cameras["bottom_center"] = camera_bottom_center_;
-    cameras["4"] = cameras["back_center"] = camera_back_center_;
+    cameras.insert_or_assign("0", camera_front_center_);
+    cameras.insert_or_assign("1", camera_front_right_);
+    cameras.insert_or_assign("2", camera_front_left_);
+    cameras.insert_or_assign("3", camera_bottom_center_);
+    cameras.insert_or_assign("4", camera_back_center_);
 
-    cameras[""] = cameras["0"]; //default camera
-    cameras["fpv"] = cameras["0"];
+    cameras.insert_or_assign("", camera_front_center_);
+    cameras.insert_or_assign("fpv", camera_front_center_);
 
     return cameras;
 }

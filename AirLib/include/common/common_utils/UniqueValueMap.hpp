@@ -35,6 +35,11 @@ public:
         return map_.find(key);
     }
 
+    typename const std::map<TKey, TVal>& getMap() const
+    {
+        return map_;
+    }
+
     typename std::set<TVal>::const_iterator begin() const
     {
         return vals_.begin();

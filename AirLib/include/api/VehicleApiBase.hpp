@@ -65,6 +65,25 @@ public:
         //default implementation
     }
 
+    /*
+    For RCs, there are two cases: (1) vehicle may be configured to use
+    RC bound to its hardware (2) vehicle may be configured to get RC data
+    supplied via API calls. Below two APIs are not symmetrical, i.e.,
+    getRCData() may or may not return same thing as setRCData().
+    */
+    //get reading from RC bound to vehicle (if unsupported then RCData::is_valid = false)
+    virtual RCData getRCData() const
+    {
+        static const RCData invalid_rc_data;
+        return invalid_rc_data;
+    }
+    //set external RC data to vehicle (if unsupported then returns false)
+    virtual bool setRCData(const RCData& rc_data)
+    {
+        unused(rc_data);
+        return false;
+    }
+
     virtual ~VehicleApiBase() = default;
 
     //exceptions
