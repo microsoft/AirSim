@@ -185,11 +185,9 @@ void ACameraDirector::setupInputBindings()
 
 void ACameraDirector::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    fpv_camera_ = nullptr;
+    manual_pose_controller_ = nullptr;
+    SpringArm = nullptr;
     ExternalCamera = nullptr;
-    follow_actor_ = nullptr;
-    front_camera_ = nullptr;
-    backup_camera_ = nullptr;
 }
 
 APIPCamera* ACameraDirector::getFpvCamera() const

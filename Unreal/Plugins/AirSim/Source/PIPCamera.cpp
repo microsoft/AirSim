@@ -102,7 +102,7 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
     }
 
     noise_material_static_ = nullptr;
-    noise_materials_.Reset();
+    noise_materials_.Empty();
 
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         //use final color for all calculations
@@ -110,7 +110,6 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
         render_targets_[image_type] = nullptr;
     }
 }
-
 
 unsigned int APIPCamera::imageTypeCount()
 {

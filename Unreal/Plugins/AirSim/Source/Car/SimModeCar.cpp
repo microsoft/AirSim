@@ -50,7 +50,7 @@ void ASimModeCar::BeginPlay()
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     spawned_actors_.Empty();
-    
+    vehicle_sim_apis_.clear();
     Super::EndPlay(EndPlayReason);
 }
 

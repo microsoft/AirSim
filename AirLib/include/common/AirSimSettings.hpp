@@ -324,7 +324,7 @@ public: //methods
         loadSegmentationSetting(settings_json, segmentation_setting);
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
-        loadVehicleSettings(settings_json, vehicles);
+        loadVehicleSettings(simmode_name, settings_json, vehicles);
 
         //this should be done last because it depends on type of vehicles we have
         loadClockSettings(settings_json);
@@ -438,11 +438,12 @@ private:
             warning_messages.push_back("ViewMode setting is not recognized: " + view_mode_string);
     }
 
-    static void loadRCSetting(const Settings& settings_json, RCSettings& rc_setting)
+    static void loadRCSetting(const std::string& simmode_name, const Settings& settings_json, RCSettings& rc_setting)
     {
         Settings rc_json;
         if (settings_json.getChild("RC", rc_json)) {
-            rc_setting.remote_control_id = rc_json.getInt("RemoteControlID", rc_setting.remote_control_id);
+            rc_setting.remote_control_id = rc_json.getInt("RemoteControlID", 
+                simmode_name == "Multirotor" ? 0 : -1);
             rc_setting.allow_api_when_disconnected = rc_json.getBool("AllowAPIWhenDisconnected",
                 rc_setting.allow_api_when_disconnected);
         }
@@ -570,7 +571,7 @@ private:
             settings_json.getFloat("Roll", default_rot.roll));
     }
 
-    static std::unique_ptr<VehicleSetting> createVehicleSetting(const Settings& settings_json, 
+    static std::unique_ptr<VehicleSetting> createVehicleSetting(const std::string& simmode_name,  const Settings& settings_json,
         const std::string vehicle_name)
     {
         auto vehicle_type = Utils::toLower(settings_json.getString("VehicleType", ""));
@@ -603,7 +604,7 @@ private:
 
         Settings rc_json;
         if (settings_json.getChild("RC", rc_json)) {
-            loadRCSetting(rc_json, vehicle_setting->rc);
+            loadRCSetting(simmode_name, rc_json, vehicle_setting->rc);
         }
 
         vehicle_setting->position = createVectorSetting(settings_json, vehicle_setting->position);
@@ -634,7 +635,7 @@ private:
         vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
     }
 
-    static void loadVehicleSettings(const Settings& settings_json,
+    static void loadVehicleSettings(const std::string& simmode_name, const Settings& settings_json,
         std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
     {
         initializeVehicleSettings(vehicles);
@@ -647,7 +648,7 @@ private:
             for (const auto& key : keys) {
                 msr::airlib::Settings child;
                 vehicles_child.getChild(key, child);
-                vehicles[key] = createVehicleSetting(child, key);
+                vehicles[key] = createVehicleSetting(simmode_name, child, key);
             }
         }
     }

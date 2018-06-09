@@ -46,10 +46,6 @@ public:
         //reset rotors, kinematics and environment
         PhysicsBody::reset();
 
-        //reset inputs
-        if (vehicle_api_)
-            vehicle_api_->reset();
-
         //reset sensors last after their ground truth has been reset
         resetSensors();
     }

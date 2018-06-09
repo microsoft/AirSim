@@ -19,16 +19,16 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& glob
     pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
     setPose(pose, false);
 
-    //setup physics vehicle
+    //create vehicle API
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
     vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
-    phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(), 
+    vehicle_api_ = vehicle_params_->createMultirotorApi();
+    //setup physics vehicle
+    phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(),
         getPose(), home_geopoint));
     rotor_count_ = phys_vehicle_->wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
 
-    //create vehicle API
-    vehicle_api_ = vehicle_params_->createMultirotorApi();
     vehicle_api_->setSimulatedGroundTruth(getGroundTruthKinematics(), getGroundTruthEnvironment());
 
     //initialize private vars
@@ -191,6 +191,7 @@ void MultirotorPawnSimApi::reset()
     vehicle_api_->reset();
     PawnSimApi::reset();
     phys_vehicle_->reset();
+    vehicle_api_messages_.clear();
 }
 
 void MultirotorPawnSimApi::update()

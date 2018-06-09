@@ -17,9 +17,11 @@ void ASimModeWorldBase::initializeForPlay()
     for (auto& api : getApiProvider()->getVehicleSimApis())
         vehicles.push_back(api);
     //TODO: directly accept getVehicleSimApis() using generic container
-    physics_world_.reset(new msr::airlib::PhysicsWorld(
-        createPhysicsEngine(), vehicles,
-        getPhysicsLoopPeriod()));
+
+    std::unique_ptr<PhysicsEngineBase> physics_engine = createPhysicsEngine();
+    physics_engine_ = physics_engine.get();
+    physics_world_.reset(new msr::airlib::PhysicsWorld(std::move(physics_engine),
+        vehicles, getPhysicsLoopPeriod()));
 
     if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
         manual_pose_controller->initializeForPlay();
@@ -31,7 +33,6 @@ void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //remove everything that we created in BeginPlay
     physics_world_.reset();
-    physics_engine_.reset();
     manual_pose_controller = nullptr;
 
     Super::EndPlay(EndPlayReason);
@@ -46,32 +47,27 @@ void ASimModeWorldBase::stopAsyncUpdator()
     physics_world_->stopAsyncUpdator();
 }
 
-
-
-ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
+std::unique_ptr<ASimModeWorldBase::PhysicsEngineBase> ASimModeWorldBase::createPhysicsEngine()
 {
+    std::unique_ptr<PhysicsEngineBase> physics_engine;
     std::string physics_engine_name = getSettings().physics_engine_name;
     if (physics_engine_name == "" || getSettings().usage_scenario == kUsageScenarioComputerVision)
-        physics_engine_.reset(); //no physics engine
+        physics_engine.reset(); //no physics engine
     else if (physics_engine_name == "FastPhysicsEngine") {
         msr::airlib::Settings fast_phys_settings;
         if (msr::airlib::Settings::singleton().getChild("FastPhysicsEngine", fast_phys_settings)) {
-            physics_engine_.reset(
-                new msr::airlib::FastPhysicsEngine(fast_phys_settings.getBool("EnableGroundLock", true))
-            );
+            physics_engine.reset(new msr::airlib::FastPhysicsEngine(fast_phys_settings.getBool("EnableGroundLock", true)));
         }
         else {
-            physics_engine_.reset(
-                new msr::airlib::FastPhysicsEngine()
-            );
+            physics_engine.reset(new msr::airlib::FastPhysicsEngine());
         }
     }
     else {
-        physics_engine_.reset();
+        physics_engine.reset();
         UAirBlueprintLib::LogMessageString("Unrecognized physics engine name: ",  physics_engine_name, LogDebugLevel::Failure);
     }
 
-    return physics_engine_.get();
+    return std::move(physics_engine);
 }
 
 bool ASimModeWorldBase::isPaused() const

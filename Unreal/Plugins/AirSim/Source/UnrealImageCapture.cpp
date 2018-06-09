@@ -6,7 +6,6 @@
 #include "common/ClockFactory.hpp"
 
 
-
 UnrealImageCapture::UnrealImageCapture(const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras)
     : cameras_(cameras)
 {

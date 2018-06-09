@@ -24,7 +24,6 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick( float DeltaSeconds ) override;
 
-
     virtual void reset() override;
     virtual std::string getDebugReport() override;
 
@@ -47,9 +46,9 @@ private:
     typedef msr::airlib::ClockFactory ClockFactory;
 
     //create the physics engine as needed from settings
-    PhysicsEngineBase* createPhysicsEngine();
+    std::unique_ptr<PhysicsEngineBase> createPhysicsEngine();
 
 private:
     std::unique_ptr<msr::airlib::PhysicsWorld> physics_world_;
-    std::unique_ptr<PhysicsEngineBase> physics_engine_;
+    PhysicsEngineBase* physics_engine_;
 };

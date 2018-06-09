@@ -101,9 +101,14 @@ void ASimModeBase::setStencilIDs()
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
-    world_sim_api_.reset(nullptr);
-    api_provider_.reset(nullptr);
+    world_sim_api_.reset();
+    api_provider_.reset();
+    api_server_.reset();
+    global_ned_transform_.reset();
+
     CameraDirector = nullptr;
+    sky_sphere_ = nullptr;
+    sun_ = nullptr;
 
     Super::EndPlay(EndPlayReason);
 }

@@ -115,8 +115,8 @@ public: //MultirotorApiBase implementation
             board_->setInputChannel(1, rc_data.yaw); //Y
             board_->setInputChannel(2, rc_data.throttle); //F
             board_->setInputChannel(3, -rc_data.pitch); //Z
-            board_->setInputChannel(4, static_cast<float>(rc_data.getSwitch(0)));
-            board_->setInputChannel(5, static_cast<float>(rc_data.getSwitch(1)));
+            board_->setInputChannel(4, static_cast<float>(rc_data.getSwitch(0))); //angle rate or level
+            board_->setInputChannel(5, static_cast<float>(rc_data.getSwitch(1))); //Allow API control
             board_->setInputChannel(6, static_cast<float>(rc_data.getSwitch(2)));
             board_->setInputChannel(7, static_cast<float>(rc_data.getSwitch(3)));
             board_->setInputChannel(8, static_cast<float>(rc_data.getSwitch(4)));
