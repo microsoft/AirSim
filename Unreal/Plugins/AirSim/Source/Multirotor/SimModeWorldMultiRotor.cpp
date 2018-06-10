@@ -59,7 +59,7 @@ void ASimModeWorldMultiRotor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
 {
     //get UU origin of global NED frame
-    FVector uu_origin = getGlobalNedTransform().getLocalOffset();
+    FVector uu_origin = getGlobalNedTransform().getGlobalOffset();
 
     //TODO:make this configurable
     FTransform camera_transform(uu_origin + FVector(-300, 0, 200));

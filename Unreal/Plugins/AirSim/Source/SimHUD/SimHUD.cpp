@@ -271,20 +271,16 @@ void ASimHUD::createSimMode()
 {
     std::string simmode_name = AirSimSettings::singleton().simmode_name;
 
-    //get player controller
-    APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
-    FTransform actor_transform = player_controller->GetViewTarget()->GetActorTransform();
-
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
     //spawn at origin. We will use this to do global NED transforms, for ex, non-vehicle objects in environment
     if (simmode_name == "Multirotor")
-        simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(actor_transform.GetLocation(), 
-            actor_transform.Rotator(), simmode_spawn_params);
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, 
+            FRotator::ZeroRotator, simmode_spawn_params);
     else if (simmode_name == "Car")
-        simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(actor_transform.GetLocation(),
-            actor_transform.Rotator(), simmode_spawn_params);
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector,
+            FRotator::ZeroRotator, simmode_spawn_params);
     else
         UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
 }

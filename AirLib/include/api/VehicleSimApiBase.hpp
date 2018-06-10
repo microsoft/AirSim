@@ -17,6 +17,18 @@ class VehicleSimApiBase : public msr::airlib::UpdatableObject {
 public:
     virtual ~VehicleSimApiBase() = default;
 
+    //default implementation so derived class doesn't have to call on UpdatableObject
+    virtual void reset() override
+    {
+        UpdatableObject::reset();
+    }
+    virtual void update() override
+    {
+        UpdatableObject::update();
+    }
+
+
+
     //this method is called at every render tick when we want to transfer state from
     //physics engine to render engine. As physics engine is halted while 
     //this happens, this method should do minimal processing

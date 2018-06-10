@@ -194,18 +194,19 @@ void CarPawnSimApi::updateCarControls()
     UAirBlueprintLib::LogMessageString("Target Gear: ", std::to_string(current_controls_.manual_gear), LogDebugLevel::Informational);
 }
 
-
 //*** Start: UpdatableState implementation ***//
 void CarPawnSimApi::reset()
 {
-    vehicle_api_->reset();
     PawnSimApi::reset();
+
+    vehicle_api_->reset();
     environment_->reset();
 }
 
 void CarPawnSimApi::update()
 {
     PawnSimApi::update();
+
     //update position from kinematics so we have latest position after physics update
     environment_->setPosition(kinematics_.pose.position);
     environment_->update();

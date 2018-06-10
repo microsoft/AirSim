@@ -259,9 +259,16 @@ int PawnSimApi::getCameraCount()
 
 void PawnSimApi::reset()
 {
+    VehicleSimApiBase::reset();
+
     state_ = initial_state_;
     rc_data_ = msr::airlib::RCData();
     pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
+}
+
+void PawnSimApi::update()
+{
+    VehicleSimApiBase::update();
 }
 
 //void playBack()

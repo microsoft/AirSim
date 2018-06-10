@@ -51,8 +51,13 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    global_ned_transform_.reset(new NedTransform(GetActorTransform(), 
+    //get player start
+    //this must be done from within actor otherwise we don't get player start
+    APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
+    FTransform player_start_transform = player_controller->GetViewTarget()->GetActorTransform();
+    global_ned_transform_.reset(new NedTransform(player_start_transform, 
         UAirBlueprintLib::GetWorldToMetersScale(this)));
+
     world_sim_api_.reset(new WorldSimApi(this));
     api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
     setupPhysicsLoopPeriod();
