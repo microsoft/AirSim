@@ -6,11 +6,11 @@
 
 using namespace msr::airlib;
 
-CarPawnSimApi::CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+CarPawnSimApi::CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
     const CarPawnApi::CarControls&  keyboard_controls,
     UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
-    : PawnSimApi(pawn, global_transform, collision_signal, cameras, pip_camera_class, collision_display_template), 
+    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template),
       keyboard_controls_(keyboard_controls)
 {
     createVehicleApi(movement, home_geopoint);
@@ -205,11 +205,13 @@ void CarPawnSimApi::reset()
 
 void CarPawnSimApi::update()
 {
-    PawnSimApi::update();
-
     //update position from kinematics so we have latest position after physics update
     environment_->setPosition(kinematics_.pose.position);
     environment_->update();
+
+    vehicle_api_->update();
+
+    PawnSimApi::update();
 }
 
 void CarPawnSimApi::reportState(StateReporter& reporter)

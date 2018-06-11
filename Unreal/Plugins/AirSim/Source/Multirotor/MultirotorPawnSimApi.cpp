@@ -6,11 +6,11 @@
 
 using namespace msr::airlib;
 
-MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, MultirotorPawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
     UManualPoseController* manual_pose_controller, const GeoPoint& home_geopoint)
-    : PawnSimApi(pawn, global_transform, collision_signal, cameras, pip_camera_class, collision_display_template),
-      manual_pose_controller_(manual_pose_controller)
+    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template),
+      manual_pose_controller_(manual_pose_controller), pawn_events_(pawn_events)
 {
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     Pose pose = getPose();
@@ -176,6 +176,8 @@ void MultirotorPawnSimApi::updateRendering(float dt)
     catch (std::exception &e) {
         UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
     }
+
+    pawn_events_->getActuatorSignal().emit(rotor_info_);
 }
 
 void MultirotorPawnSimApi::setPose(const Pose& pose, bool ignore_collision)
@@ -197,10 +199,13 @@ void MultirotorPawnSimApi::reset()
 
 void MultirotorPawnSimApi::update()
 {
-    PawnSimApi::update();
 
     //this is high frequency physics tick, flier gets ticked at rendering frame rate
     phys_vehicle_->update();
+
+    vehicle_api_->update();
+
+    PawnSimApi::update();
 }
 
 void MultirotorPawnSimApi::reportState(StateReporter& reporter)

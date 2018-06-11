@@ -4,6 +4,10 @@
 #include "common/CommonStructs.hpp"
 #include "common/Common.hpp"
 
+AFlyingPawn::AFlyingPawn()
+{
+    pawn_events_.getActuatorSignal().connect_member(this, &AFlyingPawn::setRotorSpeed);
+}
 
 void AFlyingPawn::BeginPlay()
 {
@@ -70,16 +74,19 @@ common_utils::UniqueValueMap<std::string, APIPCamera*> AFlyingPawn::getCameras()
 void AFlyingPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-    collision_signal_.emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
+    pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
         HitNormal, NormalImpulse, Hit);
 }
 
-void AFlyingPawn::setRotorSpeed(int rotor_index, float radsPerSec)
+void AFlyingPawn::setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorInfo>& rotor_infos)
 {
-    if (rotor_index >= 0 && rotor_index < rotor_count) {
+    const float RotatorFactor = 1;
+    for (auto rotor_index = 0; rotor_index < rotor_infos.size(); ++rotor_index) {
         auto comp = rotating_movements_[rotor_index];
         if (comp != nullptr) {
-            comp->RotationRate.Yaw = radsPerSec * 180.0f / M_PIf * RotatorFactor;
+            comp->RotationRate.Yaw = 
+                rotor_infos.at(rotor_index).rotor_speed * rotor_infos.at(rotor_index).rotor_direction *
+                180.0f / M_PIf * RotatorFactor;
         }
     }
 }

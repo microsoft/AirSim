@@ -8,7 +8,9 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "ManualPoseController.h"
-#include "common/common_utils/UniqueValueMap.hpp"
+#include "common/common_utils/UniqueValueMap.hpp" 
+#include "MultirotorPawnEvents.h"
+
 
 
 class MultirotorPawnSimApi : public PawnSimApi
@@ -21,13 +23,14 @@ public:
     typedef msr::airlib::UpdatableObject UpdatableObject;
     typedef msr::airlib::Pose Pose;
 
+    typedef MultirotorPawnEvents::RotorInfo RotorInfo;
 
 public:
     virtual ~MultirotorPawnSimApi() = default;
 
     //VehicleSimApiBase interface
     //implements game interface to update pawn
-    MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+    MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, MultirotorPawnEvents* pawn_events,
         const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
         UManualPoseController* manual_pose_controller, const GeoPoint& home_geopoint);
     virtual void updateRenderedState(float dt) override;
@@ -58,17 +61,13 @@ private:
     UManualPoseController* manual_pose_controller_;
 
     std::unique_ptr<MultiRotor> phys_vehicle_;
-    struct RotorInfo {
-        real_T rotor_speed = 0;
-        int rotor_direction = 0;
-        real_T rotor_thrust = 0;
-        real_T rotor_control_filtered = 0;
-    };
     unsigned int rotor_count_;
     std::vector<RotorInfo> rotor_info_;
 
     //show info on collision response from physics engine
     CollisionResponse collision_response;
+
+    MultirotorPawnEvents* pawn_events_;
 
     //when pose needs to set from non-physics thread, we set it as pending
     bool pending_pose_collisions_;

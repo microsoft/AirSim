@@ -1,10 +1,12 @@
 #pragma once
 
 #include "GameFramework/RotatingMovementComponent.h"
+
 #include <memory>
 #include "PIPCamera.h"
 #include "common/common_utils/Signal.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
+#include "MultirotorPawnEvents.h"
 
 #include "FlyingPawn.generated.h"
 
@@ -14,12 +16,10 @@ class AIRSIM_API AFlyingPawn : public APawn
     GENERATED_BODY()
 
 public:
-    typedef common_utils::Signal<UPrimitiveComponent*, AActor*, UPrimitiveComponent*, bool, FVector,
-        FVector, FVector, const FHitResult&> CollisionSignal;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
     float RotatorFactor = 1.0f;
 
+    AFlyingPawn();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -29,12 +29,12 @@ public:
     //interface
     void initializeForBeginPlay();
     common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
-    CollisionSignal& getCollisionSignal()
+    MultirotorPawnEvents* getPawnEvents()
     {
-        return collision_signal_;
+        return &pawn_events_;
     }
     //called by API to set rotor speed
-    void setRotorSpeed(int rotor_index, float radsPerSec);
+    void setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorInfo>& rotor_infos);
 
 
 private: //variables
@@ -48,5 +48,5 @@ private: //variables
 
     UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
 
-    CollisionSignal collision_signal_;
+    MultirotorPawnEvents pawn_events_;
 };

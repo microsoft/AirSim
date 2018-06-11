@@ -14,6 +14,7 @@
 #include "common/common_utils/Signal.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
+#include "PawnEvents.h"
 
 #include "CarPawn.generated.h"
 
@@ -30,9 +31,6 @@ class ACarPawn : public AWheeledVehicle
     GENERATED_BODY()
 
 public:
-    typedef common_utils::Signal<UPrimitiveComponent*, AActor*, UPrimitiveComponent*, bool, FVector,
-        FVector, FVector, const FHitResult&> CollisionSignal;
-
     ACarPawn();
 
     virtual void BeginPlay() override;
@@ -44,9 +42,9 @@ public:
     //interface
     void initializeForBeginPlay(bool engine_sound);
     common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
-    CollisionSignal& getCollisionSignal()
+    PawnEvents* getPawnEvents()
     {
-        return collision_signal_;
+        return &pawn_events_;
     }
     UWheeledVehicleMovementComponent* getVehicleMovementComponent() const;
     const CarPawnApi::CarControls& getKeyBoardControls() const
@@ -74,7 +72,7 @@ private:
 
     UClass* pip_camera_class_;
     
-    CollisionSignal collision_signal_;
+    PawnEvents pawn_events_;
 
     bool is_low_friction_;
     UPhysicalMaterial* slippery_mat_;

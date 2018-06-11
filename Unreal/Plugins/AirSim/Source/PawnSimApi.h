@@ -16,7 +16,7 @@
 #include "SimJoyStick/SimJoyStick.h"
 #include "api/VehicleSimApiBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
-
+#include "PawnEvents.h"
 
 class PawnSimApi : public msr::airlib::VehicleSimApiBase {
 public: //types
@@ -30,8 +30,6 @@ public: //types
     typedef msr::airlib::Utils Utils;
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
-    typedef common_utils::Signal<UPrimitiveComponent*, AActor*, UPrimitiveComponent*, bool, FVector,
-        FVector, FVector, const FHitResult&> CollisionSignal;
 
 public: //implementation of VehicleSimApiBase
     virtual void reset() override;
@@ -54,7 +52,7 @@ public: //implementation of VehicleSimApiBase
     virtual void toggleTrace() override;
 
 public: //Unreal specific methods
-    PawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+    PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
         const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template);
 
     //returns one of the cameras attached to the pawn

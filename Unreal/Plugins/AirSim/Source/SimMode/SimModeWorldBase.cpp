@@ -67,7 +67,7 @@ std::unique_ptr<ASimModeWorldBase::PhysicsEngineBase> ASimModeWorldBase::createP
         UAirBlueprintLib::LogMessageString("Unrecognized physics engine name: ",  physics_engine_name, LogDebugLevel::Failure);
     }
 
-    return std::move(physics_engine);
+    return physics_engine;
 }
 
 bool ASimModeWorldBase::isPaused() const

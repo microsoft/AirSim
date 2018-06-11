@@ -10,7 +10,7 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
-PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, CollisionSignal& collision_signal,
+PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template)
     : pawn_(pawn), ned_transform_(pawn, global_transform),
       pip_camera_class_(pip_camera_class), collision_display_template_(collision_display_template)
@@ -45,7 +45,7 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, Collis
 
     setupCamerasFromSettings(cameras);
     //add listener for pawn's collision event
-    collision_signal.connect_member(this, &PawnSimApi::onCollision);
+    pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
 }
 
 void PawnSimApi::detectUsbRc()

@@ -170,7 +170,7 @@ void ASimModeCar::setupVehiclesAndCamera()
             const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
             auto vehicle_sim_api = std::unique_ptr<CarPawnSimApi>(new CarPawnSimApi(
                 vehicle_pawn, getGlobalNedTransform(),
-                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(), pip_camera_class, collision_display_template,
+                vehicle_pawn->getPawnEvents(), vehicle_pawn->getCameras(), pip_camera_class, collision_display_template,
                 vehicle_pawn->getKeyBoardControls(), vehicle_pawn->getVehicleMovementComponent(), home_geopoint));
 
             std::string vehicle_name = vehicle_sim_api->getVehicleName();

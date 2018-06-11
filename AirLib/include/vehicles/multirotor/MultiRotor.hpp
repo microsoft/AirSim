@@ -80,8 +80,6 @@ public:
     {
         updateSensors(*params_, getKinematics(), getEnvironment());
 
-        vehicle_api_->update();
-
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
             rotors_.at(rotor_index).setControlSignal(

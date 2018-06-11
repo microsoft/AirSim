@@ -157,11 +157,10 @@ void ACarPawn::setupVehicleMovementComponent()
     movement->bDeprecatedSpringOffsetMode = true;
 }
 
-
 void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
     FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-    collision_signal_.emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
+    pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
         HitNormal, NormalImpulse, Hit);
 }
 
@@ -169,7 +168,6 @@ UWheeledVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
 {
     return GetVehicleMovement();
 }
-
 
 void ACarPawn::initializeForBeginPlay(bool engine_sound)
 {

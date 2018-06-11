@@ -131,7 +131,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
             const auto& home_geopoint= EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
             auto vehicle_sim_api = std::unique_ptr<MultirotorPawnSimApi>(new MultirotorPawnSimApi(
                 vehicle_pawn, ned_transform,
-                vehicle_pawn->getCollisionSignal(), vehicle_pawn->getCameras(), pip_camera_class, collision_display_template,
+                vehicle_pawn->getPawnEvents(), vehicle_pawn->getCameras(), pip_camera_class, collision_display_template,
                 manual_pose_controller, home_geopoint));
 
             std::string vehicle_name = vehicle_sim_api->getVehicleName();

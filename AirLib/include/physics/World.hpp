@@ -17,8 +17,9 @@ namespace msr { namespace airlib {
 class World : public UpdatableContainer<UpdatableObject*> {
 public:
     World(std::unique_ptr<PhysicsEngineBase> physics_engine)
-        : physics_engine_(std::move(physics_engine))
     { 
+        physics_engine_ = std::move(physics_engine);
+
         World::clear();
 
         if (physics_engine)
