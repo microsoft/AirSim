@@ -257,6 +257,8 @@ void ACarPawn::Tick(float Delta)
     // Pass the engine RPM to the sound component
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
     engine_sound_audio_->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
+
+    pawn_events_.getPawnTickSignal().emit(Delta);
 }
 
 void ACarPawn::BeginPlay()

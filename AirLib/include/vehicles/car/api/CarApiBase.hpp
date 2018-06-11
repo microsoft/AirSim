@@ -61,6 +61,16 @@ public:
         }
     };
 
+    //default implementation so derived class doesn't have to call on VehicleApiBase
+    virtual void reset() override
+    {
+        VehicleApiBase::reset();
+    }
+    virtual void update() override
+    {
+        VehicleApiBase::update();
+    }
+
     virtual void setCarControls(const CarControls& controls) = 0;
     virtual CarState getCarState() const = 0;
     virtual const CarApiBase::CarControls& getCarControls() const = 0;

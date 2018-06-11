@@ -7,7 +7,7 @@
 #include "UObject/ConstructorHelpers.h"
 
 #include "physics/Kinematics.hpp"
-#include "CarPawnApi.h"
+#include "vehicles/car/api/CarApiBase.hpp"
 #include "common/AirSimSettings.hpp"
 #include "AirBlueprintLib.h"
 #include "api/VehicleSimApiBase.hpp"
@@ -47,7 +47,7 @@ public:
         return &pawn_events_;
     }
     UWheeledVehicleMovementComponent* getVehicleMovementComponent() const;
-    const CarPawnApi::CarControls& getKeyBoardControls() const
+    const msr::airlib::CarApiBase::CarControls& getKeyBoardControls() const
     {
         return keyboard_controls_;
     }
@@ -94,7 +94,7 @@ private:
     UTextRenderComponent* gear_text_render_;
     UAudioComponent* engine_sound_audio_;
     
-    CarPawnApi::CarControls keyboard_controls_;
+    msr::airlib::CarApiBase::CarControls keyboard_controls_;
 
     FText last_speed_;
     FText last_gear_;

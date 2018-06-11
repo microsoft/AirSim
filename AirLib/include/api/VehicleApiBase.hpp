@@ -30,6 +30,16 @@ public:
     virtual bool armDisarm(bool arm) = 0;
     virtual GeoPoint getHomeGeoPoint() const = 0;
 
+    //default implementation so derived class doesn't have to call on UpdatableObject
+    virtual void reset() override
+    {
+        UpdatableObject::reset();
+    }
+    virtual void update() override
+    {
+        UpdatableObject::update();
+    }
+
     virtual void cancelLastTask()
     {
         //if derived class supports async task then override this method

@@ -6,14 +6,14 @@
 
 using namespace msr::airlib;
 
-CarPawnSimApi::CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
+CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
     const CarPawnApi::CarControls&  keyboard_controls,
     UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
     : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template),
       keyboard_controls_(keyboard_controls)
 {
-    createVehicleApi(movement, home_geopoint);
+    createVehicleApi(pawn, home_geopoint);
 
     //TODO: should do reset() here?
     joystick_controls_ = CarPawnApi::CarControls();
@@ -22,13 +22,21 @@ CarPawnSimApi::CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, 
     initial_environment.position = getPose().position;
     initial_environment.geo_point = home_geopoint;
     environment_.reset(new Environment(initial_environment));
+
+    reset();
+    pawn_events->getPawnTickSignal().connect_member(this, &CarPawnSimApi::pawnTick);
 }
 
-void CarPawnSimApi::createVehicleApi(UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
+void CarPawnSimApi::pawnTick(float dt)
+{
+   update();
+}
+
+void CarPawnSimApi::createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
 {
     //create vehicle params
     //std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
-    vehicle_api_ = std::unique_ptr<CarApiBase>(new CarPawnApi(movement, home_geopoint));
+    vehicle_api_ = std::unique_ptr<CarApiBase>(new CarPawnApi(pawn, home_geopoint));
 }
 
 std::string CarPawnSimApi::getLogLine() const

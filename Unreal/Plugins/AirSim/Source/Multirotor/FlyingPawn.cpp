@@ -36,6 +36,7 @@ void AFlyingPawn::initializeForBeginPlay()
 void AFlyingPawn::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    pawn_events_.getPawnTickSignal().emit(DeltaSeconds);
 }
 
 

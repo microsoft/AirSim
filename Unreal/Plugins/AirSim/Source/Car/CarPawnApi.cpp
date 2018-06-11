@@ -1,9 +1,10 @@
 #include "CarPawnApi.h"
 #include "AirBlueprintLib.h"
 
-CarPawnApi::CarPawnApi(UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
-    : movement_(movement), home_geopoint_(home_geopoint)
+CarPawnApi::CarPawnApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
+    : pawn_(pawn), home_geopoint_(home_geopoint)
 {
+    movement_ = pawn->GetVehicleMovement();
 }
 
 bool CarPawnApi::armDisarm(bool arm)
@@ -49,27 +50,32 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 
 void CarPawnApi::reset()
 {
-    last_controls_ = CarControls();
-    //auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_->getPawn());
-    UAirBlueprintLib::RunCommandOnGameThread([this]() {
-        //pawn_->reset();
+    msr::airlib::CarApiBase::reset();
 
-        //for (auto* phys_comp : phys_comps) {
-        //    phys_comp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-        //    phys_comp->SetPhysicsLinearVelocity(FVector::ZeroVector);
-        //    phys_comp->SetSimulatePhysics(false);
-        //}
-        //movement_->ResetMoveState();
-        //movement_->SetActive(false);
-        //movement_->SetActive(true, true);
+    last_controls_ = CarControls();
+    auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_);
+    UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
+        for (auto* phys_comp : phys_comps) {
+            phys_comp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+            phys_comp->SetPhysicsLinearVelocity(FVector::ZeroVector);
+            phys_comp->SetSimulatePhysics(false);
+        }
+        movement_->ResetMoveState();
+        movement_->SetActive(false);
+        movement_->SetActive(true, true);
         setCarControls(CarControls());
         
     }, true);
 
-    //UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
-    //    for (auto* phys_comp : phys_comps)
-    //        phys_comp->SetSimulatePhysics(true);
-    //}, true);
+    UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
+        for (auto* phys_comp : phys_comps)
+            phys_comp->SetSimulatePhysics(true);
+    }, true);
+}
+
+void CarPawnApi::update()
+{
+    msr::airlib::CarApiBase::update();
 }
 
 msr::airlib::GeoPoint CarPawnApi::getHomeGeoPoint() const

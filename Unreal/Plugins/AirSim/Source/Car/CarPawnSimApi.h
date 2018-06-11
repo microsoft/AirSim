@@ -24,7 +24,7 @@ public:
 
     //VehicleSimApiBase interface
     //implements game interface to update pawn
-    CarPawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
+    CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
         const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
         const CarPawnApi::CarControls&  keyboard_controls,
         UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint);
@@ -47,10 +47,11 @@ public:
     }
 
 private:
-    void createVehicleApi(UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint);
+    void createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint);
     void updateKinematics(float dt);
 
     void updateCarControls();
+    void pawnTick(float dt);
 
 private:
     std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;
