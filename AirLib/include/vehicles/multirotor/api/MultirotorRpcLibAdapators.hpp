@@ -60,8 +60,8 @@ public:
 
         msr::airlib::MultirotorState to() const
         {
-            return msr::airlib::MultirotorState(collision.to(), kinematics_estimated.to(), 
-                kinematics_true.to(), gps_location.to(), timestamp);
+            return msr::airlib::MultirotorState(collision.to(), kinematics_true.to(), 
+                kinematics_estimated.to(), gps_location.to(), timestamp);
         }
     };
 };
