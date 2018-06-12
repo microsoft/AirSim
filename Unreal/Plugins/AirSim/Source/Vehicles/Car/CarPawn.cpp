@@ -9,7 +9,6 @@
 #include "CarWheelFront.h"
 #include "CarWheelRear.h"
 #include "AirBlueprintLib.h"
-#include "PIPCamera.h"
 #include <vector>
 #include "common/common_utils/Utils.hpp"
 #include "common/ClockFactory.hpp"

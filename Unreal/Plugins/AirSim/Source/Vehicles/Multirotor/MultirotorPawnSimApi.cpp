@@ -8,9 +8,9 @@ using namespace msr::airlib;
 
 MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, MultirotorPawnEvents* pawn_events,
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
-    UManualPoseController* manual_pose_controller, const GeoPoint& home_geopoint)
-    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template),
-      manual_pose_controller_(manual_pose_controller), pawn_events_(pawn_events)
+    const GeoPoint& home_geopoint)
+    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template, home_geopoint),
+      pawn_events_(pawn_events)
 {
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     Pose pose = getPose();
@@ -92,25 +92,6 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
     const CollisionInfo& collision_info = getCollisionInfo();
     phys_vehicle_->setCollisionInfo(collision_info);
 
-    //update ground level
-    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == getPawn()) {
-        FVector delta_position;
-        FRotator delta_rotation;
-
-        manual_pose_controller_->updateDeltaPosition(dt);
-        manual_pose_controller_->getDeltaPose(delta_position, delta_rotation);
-        manual_pose_controller_->resetDelta();
-        Vector3r delta_position_ned = getNedTransform().toLocalNed(delta_position);
-        Quaternionr delta_rotation_ned = getNedTransform().toNed(delta_rotation.Quaternion());
-
-        auto pose = phys_vehicle_->getPose();
-        pose.position += delta_position_ned;
-        pose.orientation = pose.orientation * delta_rotation_ned;
-        pose.orientation.normalize();
-
-        phys_vehicle_->setPose(pose);
-    }
-
     if (pending_pose_status_ == PendingPoseStatus::RenderStatePending)
         phys_vehicle_->setPose(pending_phys_pose_);
         
@@ -158,13 +139,8 @@ void MultirotorPawnSimApi::updateRendering(float dt)
             PawnSimApi::setPose(last_phys_pose_, false);
     }
 
-    if (manual_pose_controller_ != nullptr && manual_pose_controller_->getActor() == getPawn()) {
-        UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(getCollisionInfo().collision_count), LogDebugLevel::Failure);
-    }
-    else {
-        //UAirBlueprintLib::LogMessage(TEXT("Collision (raw) Count:"), FString::FromInt(collision_response.collision_count_raw), LogDebugLevel::Unimportant);
-        UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(collision_response.collision_count_non_resting), LogDebugLevel::Failure);
-    }
+    //UAirBlueprintLib::LogMessage(TEXT("Collision (raw) Count:"), FString::FromInt(collision_response.collision_count_raw), LogDebugLevel::Unimportant);
+    UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), FString::FromInt(collision_response.collision_count_non_resting), LogDebugLevel::Failure);
 
     for (auto i = 0; i < vehicle_api_messages_.size(); ++i) {
         UAirBlueprintLib::LogMessage(FString(vehicle_api_messages_[i].c_str()), TEXT(""), LogDebugLevel::Success, 30);

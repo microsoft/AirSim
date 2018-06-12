@@ -38,6 +38,7 @@ ASimModeBase::ASimModeBase()
         collision_display_template = collision_display.Object;
     else
         collision_display_template = nullptr;
+
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class_val(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class = pip_camera_class_val.Succeeded() ? pip_camera_class_val.Class : nullptr;
 
@@ -211,11 +212,8 @@ void ASimModeBase::setupPhysicsLoopPeriod()
     HP Z840 desktop high-end config seems to be able to go up to 500Hz.
     To increase freq with limited CPU power, switch Barometer to constant ref mode.
     */
-
-    if (getSettings().usage_scenario == kUsageScenarioComputerVision)
-        physics_loop_period_ = 30000000LL; //30ms
-    else
-        physics_loop_period_ = 3000000LL; //3ms
+        
+    physics_loop_period_ = 30000000LL; //30ms
 }
 
 long long ASimModeBase::getPhysicsLoopPeriod() const //nanoseconds

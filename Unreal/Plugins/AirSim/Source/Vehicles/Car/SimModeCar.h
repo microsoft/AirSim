@@ -4,7 +4,6 @@
 
 #include "CarPawn.h"
 #include "common/Common.hpp"
-#include "SimMode/SimModeWorldBase.h"
 #include "api/VehicleSimApiBase.hpp"
 #include "common/StateReporterWrapper.hpp"
 #include "SimModeCar.generated.h"
@@ -28,9 +27,6 @@ public:
     virtual void pause(bool is_paused) override;
     virtual void continueForTime(double seconds) override;
 
-    UClass* getExternalCameraClass();
-
-
 private:
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef common_utils::Utils Utils;
@@ -52,9 +48,6 @@ protected:
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
 
 private:
-    UClass* external_camera_class_;
-    UClass* camera_director_class_;
-
     std::vector<std::unique_ptr<msr::airlib::VehicleSimApiBase>> vehicle_sim_apis_;
 
     UPROPERTY()

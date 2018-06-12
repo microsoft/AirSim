@@ -132,7 +132,7 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
             auto vehicle_sim_api = std::unique_ptr<MultirotorPawnSimApi>(new MultirotorPawnSimApi(
                 vehicle_pawn, ned_transform,
                 vehicle_pawn->getPawnEvents(), vehicle_pawn->getCameras(), pip_camera_class, collision_display_template,
-                manual_pose_controller, home_geopoint));
+                home_geopoint));
 
             std::string vehicle_name = vehicle_sim_api->getVehicleName();
 

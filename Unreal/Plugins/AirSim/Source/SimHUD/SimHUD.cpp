@@ -3,8 +3,10 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/FileHelper.h"
 
-#include "Multirotor/SimModeWorldMultiRotor.h"
-#include "Car/SimModeCar.h"
+#include "Vehicles/Multirotor/SimModeWorldMultiRotor.h"
+#include "Vehicles/Car/SimModeCar.h"
+#include "Vehicles/ComputerVision/SimModeComputerVision.h"
+
 #include "common/AirSimSettings.hpp"
 #include <stdexcept>
 
@@ -280,6 +282,9 @@ void ASimHUD::createSimMode()
             FRotator::ZeroRotator, simmode_spawn_params);
     else if (simmode_name == "Car")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector,
+            FRotator::ZeroRotator, simmode_spawn_params);
+    else if (simmode_name == "ComputerVision")
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeComputerVision>(FVector::ZeroVector,
             FRotator::ZeroRotator, simmode_spawn_params);
     else
         UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);

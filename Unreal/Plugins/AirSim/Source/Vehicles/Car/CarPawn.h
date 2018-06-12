@@ -13,8 +13,8 @@
 #include "api/VehicleSimApiBase.hpp"
 #include "common/common_utils/Signal.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
-#include "common/common_utils/UniqueValueMap.hpp"
 #include "PawnEvents.h"
+#include "PIPCamera.h"
 
 #include "CarPawn.generated.h"
 

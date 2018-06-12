@@ -11,12 +11,18 @@
 #include "common/EarthUtils.hpp"
 
 PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
-    const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template)
+    const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 
+    UParticleSystem* collision_display_template, const msr::airlib::GeoPoint& home_geopoint)
     : pawn_(pawn), ned_transform_(pawn, global_transform),
       pip_camera_class_(pip_camera_class), collision_display_template_(collision_display_template)
 {
     vehicle_name_ = std::string(TCHAR_TO_UTF8(*(pawn->GetName())));
     image_capture_.reset(new UnrealImageCapture(&cameras_));
+
+    msr::airlib::Environment::State initial_environment;
+    initial_environment.position = getPose().position;
+    initial_environment.geo_point = home_geopoint;
+    environment_.reset(new msr::airlib::Environment(initial_environment));
 
     //initialize state
     pawn_->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
@@ -264,10 +270,16 @@ void PawnSimApi::reset()
     state_ = initial_state_;
     rc_data_ = msr::airlib::RCData();
     pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
+
+    environment_->reset();
 }
 
 void PawnSimApi::update()
 {
+    //update position from kinematics so we have latest position after physics update
+    environment_->setPosition(kinematics_.pose.position);
+    environment_->update();
+
     VehicleSimApiBase::update();
 }
 
@@ -433,8 +445,70 @@ bool PawnSimApi::canTeleportWhileMove()  const
     return !state_.collisions_enabled || (state_.collision_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
+void PawnSimApi::updateKinematics(float dt)
+{
+    const auto last_kinematics = kinematics_;
 
+    kinematics_.pose = getPose();
 
+    kinematics_.twist.linear = getNedTransform().toLocalNed(getPawn()->GetVelocity());
+    kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
+        kinematics_.pose.orientation, last_kinematics.pose.orientation, dt);
 
+    kinematics_.accelerations.linear = (kinematics_.twist.linear - last_kinematics.twist.linear) / dt;
+    kinematics_.accelerations.angular = (kinematics_.twist.angular - last_kinematics.twist.angular) / dt;
 
+    //TODO: update other fields?
+
+}
+
+void PawnSimApi::updateRenderedState(float dt)
+{
+    updateKinematics(dt);
+}
+
+void PawnSimApi::updateRendering(float dt)
+{
+    unused(dt);
+    //no default action in this base class
+}
+
+const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() const
+{
+    return &kinematics_;
+}
+const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
+{
+    return environment_.get();
+}
+
+std::string PawnSimApi::getLogLine() const
+{
+    const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
+    uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
+
+    //TODO: because this bug we are using alternative code with stringstream
+    //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
+
+    std::string line;
+    line.append(std::to_string(timestamp_millis)).append("\t")
+        .append(std::to_string(kinematics->pose.position.x())).append("\t")
+        .append(std::to_string(kinematics->pose.position.y())).append("\t")
+        .append(std::to_string(kinematics->pose.position.z())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.w())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.x())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.y())).append("\t")
+        .append(std::to_string(kinematics->pose.orientation.z())).append("\t")
+        ;
+
+    return line;
+
+    //std::stringstream ss;
+    //ss << timestamp_millis << "\t";
+    //ss << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
+    //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
+    //ss << "\n";
+    //return ss.str();
+
+}
 

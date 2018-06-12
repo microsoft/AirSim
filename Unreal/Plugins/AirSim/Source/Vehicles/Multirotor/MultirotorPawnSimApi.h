@@ -32,7 +32,7 @@ public:
     //implements game interface to update pawn
     MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, MultirotorPawnEvents* pawn_events,
         const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
-        UManualPoseController* manual_pose_controller, const GeoPoint& home_geopoint);
+        const GeoPoint& home_geopoint);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
@@ -58,7 +58,6 @@ public:
 private:
     std::unique_ptr<msr::airlib::MultirotorApiBase> vehicle_api_;
     std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
-    UManualPoseController* manual_pose_controller_;
 
     std::unique_ptr<MultiRotor> phys_vehicle_;
     unsigned int rotor_count_;

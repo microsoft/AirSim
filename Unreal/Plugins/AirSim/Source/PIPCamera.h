@@ -9,6 +9,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
+
 #include "PIPCamera.generated.h"
 
 
@@ -45,7 +46,7 @@ public:
 
     msr::airlib::Pose getPose() const;
     
-private:
+private: //members
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
     UPROPERTY() TArray<UTextureRenderTarget2D*> render_targets_;
 
@@ -60,7 +61,7 @@ private:
     float gimbal_stabilization_;
     const NedTransform* ned_transform_;
 
-private:
+private: //methods
     typedef common_utils::Utils Utils;
     typedef AirSimSettings::CaptureSetting CaptureSetting;
     typedef AirSimSettings::NoiseSetting NoiseSetting;
@@ -72,6 +73,4 @@ private:
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
     static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
-
-
 };

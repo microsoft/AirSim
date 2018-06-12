@@ -32,8 +32,6 @@ public:
     virtual void continueForTime(double seconds) override;
 
 protected:
-    UPROPERTY() UManualPoseController* manual_pose_controller;
-
     void startAsyncUpdator();
     void stopAsyncUpdator();
 

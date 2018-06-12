@@ -25,6 +25,8 @@ public: //types
     static constexpr char* kVehicleTypePX4 = "px4multirotor";
     static constexpr char* kVehicleTypeSimpleFlight = "simpleflight";
     static constexpr char* kVehicleTypePhysXCar = "physxcar";
+    static constexpr char* kVehicleTypeComputerVision = "computervision";
+
 
 
     struct SubwindowSetting {
@@ -284,7 +286,6 @@ public: //fields
     bool enable_rpc = true;
     std::string api_server_address = "";
     std::string physics_engine_name = "";
-    std::string usage_scenario = "";
 
     std::string clock_type = "";
     float clock_speed = 1.0f;
@@ -392,8 +393,6 @@ private:
                 throw std::invalid_argument("simmode_name is not expected empty in SimModeBase");
         }
 
-        usage_scenario = settings_json.getString("UsageScenario", "");
-
         physics_engine_name = settings_json.getString("PhysicsEngineName", "");
         if (physics_engine_name == "") {
             if (simmode_name == "Multirotor")
@@ -408,12 +407,10 @@ private:
         std::string view_mode_string = settings_json.getString("ViewMode", "");
 
         if (view_mode_string == "") {
-            if (usage_scenario == "") {
-                if (simmode_name == "Multirotor")
-                    view_mode_string = "FlyWithMe";
-                else
-                    view_mode_string = "SpringArmChase";
-            }
+            if (simmode_name == "Multirotor")
+                view_mode_string = "FlyWithMe";
+            if (simmode_name == "ComputerVision")
+                view_mode_string = "Fpv";
             else
                 view_mode_string = "SpringArmChase";
         }

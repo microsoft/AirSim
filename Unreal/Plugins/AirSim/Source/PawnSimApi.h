@@ -51,9 +51,16 @@ public: //implementation of VehicleSimApiBase
     }
     virtual void toggleTrace() override;
 
+    virtual void updateRenderedState(float dt) override;
+    virtual void updateRendering(float dt) override;
+    virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+    virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
+    virtual std::string PawnSimApi::getLogLine() const override;
+
 public: //Unreal specific methods
     PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
-        const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template);
+        const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 
+        UParticleSystem* collision_display_template, const msr::airlib::GeoPoint& home_geopoint);
 
     //returns one of the cameras attached to the pawn
     const APIPCamera* getCamera(const std::string& camera_name) const;
@@ -91,6 +98,7 @@ private: //methods
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
     PawnSimApi::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
+    void updateKinematics(float dt);
 
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -133,8 +141,10 @@ private: //vars
     
     State state_, initial_state_;
 
-
     UPROPERTY() UClass* pip_camera_class_;
     UPROPERTY() UParticleSystem* collision_display_template_;
+
+    msr::airlib::Kinematics::State kinematics_;
+    std::unique_ptr<msr::airlib::Environment> environment_;
 
 };

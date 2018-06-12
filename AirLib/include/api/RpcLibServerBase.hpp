@@ -14,7 +14,7 @@ namespace msr { namespace airlib {
 
 class RpcLibServerBase : public ApiServerBase {
 public:
-    RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port);
+    RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = 41451);
     virtual ~RpcLibServerBase() override;
 
     virtual void start(bool block = false) override;

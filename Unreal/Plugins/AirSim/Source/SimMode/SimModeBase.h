@@ -76,7 +76,9 @@ protected:
     virtual const msr::airlib::AirSimSettings& getSettings() const;
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
+    //called when simmode should do something about clock speed
     virtual void setupClockSpeed();
+
     void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
     void checkVehicleReady();
 

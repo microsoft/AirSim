@@ -10,7 +10,7 @@ CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transfor
     const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
     const CarPawnApi::CarControls&  keyboard_controls,
     UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
-    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template),
+    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template, home_geopoint),
       keyboard_controls_(keyboard_controls)
 {
     createVehicleApi(pawn, home_geopoint);
@@ -18,12 +18,6 @@ CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transfor
     //TODO: should do reset() here?
     joystick_controls_ = CarPawnApi::CarControls();
 
-    Environment::State initial_environment;
-    initial_environment.position = getPose().position;
-    initial_environment.geo_point = home_geopoint;
-    environment_.reset(new Environment(initial_environment));
-
-    reset();
     pawn_events->getPawnTickSignal().connect_member(this, &CarPawnSimApi::pawnTick);
 }
 
@@ -77,34 +71,9 @@ std::string CarPawnSimApi::getLogLine() const
 
 }
 
-const msr::airlib::Kinematics::State* CarPawnSimApi::getGroundTruthKinematics() const
-{
-    return &kinematics_;
-}
-const msr::airlib::Environment* CarPawnSimApi::getGroundTruthEnvironment() const
-{
-    return environment_.get();
-}
-
-void CarPawnSimApi::updateKinematics(float dt)
-{
-    const auto last_kinematics = kinematics_;
-
-    kinematics_.pose = getPose();
-    kinematics_.twist.linear = getNedTransform().toLocalNed(getPawn()->GetVelocity());
-    kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
-        kinematics_.pose.orientation, last_kinematics.pose.orientation, dt);
-
-    kinematics_.accelerations.linear = (kinematics_.twist.linear - last_kinematics.twist.linear) / dt;
-    kinematics_.accelerations.angular = (kinematics_.twist.angular - last_kinematics.twist.angular) / dt;
-
-    //TODO: update other fields
-
-}
-
 void CarPawnSimApi::updateRenderedState(float dt)
 {
-    updateKinematics(dt);
+    PawnSimApi::updateRenderedState(dt);
     
     vehicle_api_->getStatusMessages(vehicle_api_messages_);
 
@@ -115,6 +84,8 @@ void CarPawnSimApi::updateRenderedState(float dt)
 
 void CarPawnSimApi::updateRendering(float dt)
 {
+    PawnSimApi::updateRendering(dt);
+
     updateCarControls();
 
     for (auto i = 0; i < vehicle_api_messages_.size(); ++i) {
@@ -208,15 +179,10 @@ void CarPawnSimApi::reset()
     PawnSimApi::reset();
 
     vehicle_api_->reset();
-    environment_->reset();
 }
 
 void CarPawnSimApi::update()
 {
-    //update position from kinematics so we have latest position after physics update
-    environment_->setPosition(kinematics_.pose.position);
-    environment_->update();
-
     vehicle_api_->update();
 
     PawnSimApi::update();

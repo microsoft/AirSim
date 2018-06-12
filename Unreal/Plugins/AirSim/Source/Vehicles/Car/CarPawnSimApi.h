@@ -17,8 +17,7 @@ public:
     typedef msr::airlib::StateReporter StateReporter;
     typedef msr::airlib::UpdatableObject UpdatableObject;
     typedef msr::airlib::Pose Pose;
-
-
+    
 public:
     virtual ~CarPawnSimApi() = default;
 
@@ -38,9 +37,6 @@ public:
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
-    virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
-    virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
-
     msr::airlib::CarApiBase* getVehicleApi()
     {
         return vehicle_api_.get();
@@ -48,7 +44,6 @@ public:
 
 private:
     void createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint);
-    void updateKinematics(float dt);
 
     void updateCarControls();
     void pawnTick(float dt);
@@ -56,8 +51,6 @@ private:
 private:
     std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;
     std::vector<std::string> vehicle_api_messages_;
-    msr::airlib::Kinematics::State kinematics_;
-    std::unique_ptr<Environment> environment_;
 
     //storing reference from pawn
     const CarPawnApi::CarControls& keyboard_controls_;

@@ -7,7 +7,6 @@ void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    manual_pose_controller = NewObject<UManualPoseController>();
     setupInputBindings();
 }
 
@@ -22,18 +21,12 @@ void ASimModeWorldBase::initializeForPlay()
     physics_engine_ = physics_engine.get();
     physics_world_.reset(new msr::airlib::PhysicsWorld(std::move(physics_engine),
         vehicles, getPhysicsLoopPeriod()));
-
-    if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
-        manual_pose_controller->initializeForPlay();
-        manual_pose_controller->setActor(getVehicleSimApi()->getPawn());
-    }
 }
 
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //remove everything that we created in BeginPlay
     physics_world_.reset();
-    manual_pose_controller = nullptr;
 
     Super::EndPlay(EndPlayReason);
 }
@@ -51,7 +44,7 @@ std::unique_ptr<ASimModeWorldBase::PhysicsEngineBase> ASimModeWorldBase::createP
 {
     std::unique_ptr<PhysicsEngineBase> physics_engine;
     std::string physics_engine_name = getSettings().physics_engine_name;
-    if (physics_engine_name == "" || getSettings().usage_scenario == kUsageScenarioComputerVision)
+    if (physics_engine_name == "")
         physics_engine.reset(); //no physics engine
     else if (physics_engine_name == "FastPhysicsEngine") {
         msr::airlib::Settings fast_phys_settings;
