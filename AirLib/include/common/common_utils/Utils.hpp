@@ -704,7 +704,9 @@ public:
     template<typename T>
     static std::string toBinaryString(const T& x)
     {
-        return std::bitset<sizeof(T)*8>(x).to_string();
+        std::stringstream ss;
+        ss << std::bitset<sizeof(T) * 8>(x);
+        return ss.str();
     }
 };
 
