@@ -157,8 +157,10 @@ void MultiRotorConnector::updateRenderedState(float dt)
         vehicle_.setPose(pose);
     }
 
-    if (pending_pose_status_ == PendingPoseStatus::RenderStatePending)
+    if (pending_pose_status_ == PendingPoseStatus::RenderStatePending) {
         vehicle_.setPose(pending_pose_);
+        pending_pose_status_ = PendingPoseStatus::NonePending;
+    }
         
     last_pose_ = vehicle_.getPose();
     
