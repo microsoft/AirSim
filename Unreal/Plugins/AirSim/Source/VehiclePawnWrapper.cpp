@@ -408,4 +408,13 @@ msr::airlib::Pose VehiclePawnWrapper::getActorPose(std::string actor_name)
         : Pose::nanPose();
 }
 
-
+void VehiclePawnWrapper::setActorPose(std::string actor_name, const msr::airlib::Pose& pose)
+{
+    AActor* actor = UAirBlueprintLib::FindActor<AActor>(pawn_, FString(actor_name.c_str()));
+    if (actor)
+    {
+        FVector location = ned_transform_.toNeuUU(pose.position);
+        FQuat quat = ned_transform_.toFQuat(pose.orientation, true);
+        actor->SetActorLocationAndRotation(location, quat, false, nullptr, ETeleportType::TeleportPhysics);
+    }
+}

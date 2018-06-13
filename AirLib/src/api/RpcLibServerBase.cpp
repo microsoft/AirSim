@@ -121,6 +121,10 @@ RpcLibServerBase::RpcLibServerBase(SimModeApiBase* simmode_api, string server_ad
         const auto& pose = getVehicleApi()->simGetObjectPose(object_name); 
         return RpcLibAdapatorsBase::Pose(pose);
     });
+
+    pimpl_->server.bind("simSetObjectPose", [&](const std::string& object_name, const RpcLibAdapatorsBase::Pose &pose) {
+        getVehicleApi()->simSetObjectPose(object_name, pose.to());
+    });
     
     pimpl_->server.bind("simPause", [&](bool is_paused) -> void { 
         getSimModeApi()->pause(is_paused); 
