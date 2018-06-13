@@ -10,6 +10,7 @@
 #include "common/common_utils/UniqueValueMap.hpp"
 #include "PawnEvents.h"
 #include "PIPCamera.h"
+#include "ManualPoseController.h"
 
 #include "ComputerVisionPawn.generated.h"
 

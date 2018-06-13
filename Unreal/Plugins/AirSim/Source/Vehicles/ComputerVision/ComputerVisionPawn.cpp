@@ -48,7 +48,7 @@ void AComputerVisionPawn::initializeForBeginPlay()
     camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
-    manual_pose_controller_ = NewObject<UManualPoseController>();
+    manual_pose_controller_ = NewObject<UManualPoseController>(this, "ComputerVision_ManualPoseController");
     manual_pose_controller_->initializeForPlay();
     manual_pose_controller_->setActor(this);
 }

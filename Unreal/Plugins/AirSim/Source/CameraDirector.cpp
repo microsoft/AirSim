@@ -50,7 +50,7 @@ ECameraDirectorMode ACameraDirector::getMode()
 void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
     AActor* follow_actor, APIPCamera* fpv_camera, APIPCamera* front_camera, APIPCamera* back_camera)
 {
-    manual_pose_controller_ = NewObject<UManualPoseController>();
+    manual_pose_controller_ = NewObject<UManualPoseController>(this, "CameraDirector_ManualPoseController");
     manual_pose_controller_->initializeForPlay();
 
     setupInputBindings();
@@ -64,8 +64,6 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
     camera_start_location_ = ExternalCamera->GetActorLocation();
     camera_start_rotation_ = ExternalCamera->GetActorRotation();
     initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
-
-    manual_pose_controller_->setActor(ExternalCamera, false);
 
     //set initial view mode
     switch (mode_) {
@@ -141,7 +139,7 @@ void ACameraDirector::setMode(ECameraDirectorMode mode)
             if (ExternalCamera != nullptr
                 && manual_pose_controller_->getActor() == ExternalCamera) {
 
-                manual_pose_controller_->enableBindings(false);
+                manual_pose_controller_->setActor(nullptr);
             }
             //else someone else is bound to manual pose controller, leave it alone
         }
@@ -152,7 +150,7 @@ void ACameraDirector::setMode(ECameraDirectorMode mode)
         switch (mode) {
         case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL:
             //if new mode is manual mode then add key bindings
-            manual_pose_controller_->enableBindings(true); break;
+            manual_pose_controller_->setActor(ExternalCamera); break;
         case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE:
             //if we switched to spring arm mode then attach to spring arm (detachment was done earlier in method)
             attachSpringArm(true); break;

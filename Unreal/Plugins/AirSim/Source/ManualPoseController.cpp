@@ -4,10 +4,8 @@
 
 void UManualPoseController::initializeForPlay()
 {
-    actor_ = last_actor_ = nullptr;
-    left_binding_ = right_binding_ = up_binding_ = down_binding_ = nullptr;
-    forward_binding_ = backward_binding_ = left_yaw_binding_ = up_pitch_binding_ = nullptr;
-    right_yaw_binding_ = down_pitch_binding_ = nullptr;
+    actor_ = nullptr;
+    clearBindings();
 
     left_mapping_ = FInputAxisKeyMapping("inputManualArrowLeft", EKeys::Left); right_mapping_ = FInputAxisKeyMapping("inputManualArrowRight", EKeys::Right); 
     forward_mapping_= FInputAxisKeyMapping("inputManualForward", EKeys::Up); backward_mapping_ = FInputAxisKeyMapping("inputManualBackward", EKeys::Down);
@@ -18,23 +16,25 @@ void UManualPoseController::initializeForPlay()
     input_positive_ = inpute_negative_ = last_velocity_ = FVector::ZeroVector;
 }
 
-void UManualPoseController::restoreLastActor()
+void UManualPoseController::clearBindings()
 {
-    setActor(last_actor_);
+    left_binding_ = right_binding_ = up_binding_ = down_binding_ = nullptr;
+    forward_binding_ = backward_binding_ = left_yaw_binding_ = up_pitch_binding_ = nullptr;
+    right_yaw_binding_ = down_pitch_binding_ = nullptr;
 }
 
-void UManualPoseController::setActor(AActor* actor, bool enable_binding)
+void UManualPoseController::setActor(AActor* actor)
 {
-    //TODO: can't do remove because there is no "stamp" on who established binding
-    //removeInputBindings();
+    //if we already have attached actor
+    if (actor_) {
+        removeInputBindings();
+    }
 
-    last_actor_ = actor_;
     actor_ = actor;
 
     if (actor_ != nullptr) {
         resetDelta();
         setupInputBindings();
-        enableBindings(enable_binding);
     }
 }
 
@@ -72,22 +72,33 @@ void UManualPoseController::resetDelta()
 
 void UManualPoseController::removeInputBindings()
 {
-    UAirBlueprintLib::RemoveAxisBinding(left_mapping_, left_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(right_mapping_, right_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(forward_mapping_, forward_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(backward_mapping_, backward_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(up_mapping_, up_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(down_mapping_, down_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(left_yaw_mapping_, left_yaw_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(up_pitch_mapping_, up_pitch_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(right_yaw_mapping_, right_yaw_binding_, actor_);
-    UAirBlueprintLib::RemoveAxisBinding(down_pitch_mapping_, down_pitch_binding_, actor_);
+    if (left_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(left_mapping_, left_binding_, actor_);
+    if (right_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(right_mapping_, right_binding_, actor_);
+    if (forward_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(forward_mapping_, forward_binding_, actor_);
+    if (backward_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(backward_mapping_, backward_binding_, actor_);
+    if (up_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(up_mapping_, up_binding_, actor_);
+    if (down_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(down_mapping_, down_binding_, actor_);
+    if (left_yaw_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(left_yaw_mapping_, left_yaw_binding_, actor_);
+    if (up_pitch_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(up_pitch_mapping_, up_pitch_binding_, actor_);
+    if (right_yaw_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(right_yaw_mapping_, right_yaw_binding_, actor_);
+    if (down_pitch_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(down_pitch_mapping_, down_pitch_binding_, actor_);
+
+    clearBindings();
 }
 
 void UManualPoseController::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(actor_);
-
 
     left_binding_ = & UAirBlueprintLib::BindAxisToKey(left_mapping_, actor_, this, &UManualPoseController::inputManualLeft);
     right_binding_ = & UAirBlueprintLib::BindAxisToKey(right_mapping_, actor_, this, &UManualPoseController::inputManualRight);
@@ -99,13 +110,6 @@ void UManualPoseController::setupInputBindings()
     up_pitch_binding_ = & UAirBlueprintLib::BindAxisToKey(up_pitch_mapping_, actor_, this, &UManualPoseController::inputManualUpPitch);
     right_yaw_binding_ = & UAirBlueprintLib::BindAxisToKey(right_yaw_mapping_, actor_, this, &UManualPoseController::inputManualRightYaw);
     down_pitch_binding_ = & UAirBlueprintLib::BindAxisToKey(down_pitch_mapping_, actor_, this, &UManualPoseController::inputManualDownPitch);
-}
-
-void UManualPoseController::enableBindings(bool enable)
-{
-    left_binding_->bConsumeInput = right_binding_->bConsumeInput = up_binding_->bConsumeInput = down_binding_->bConsumeInput = enable;
-    forward_binding_->bConsumeInput = backward_binding_->bConsumeInput = left_yaw_binding_->bConsumeInput = up_pitch_binding_->bConsumeInput = enable;
-    right_yaw_binding_->bConsumeInput = down_pitch_binding_->bConsumeInput = enable;
 }
 
 void UManualPoseController::updateDeltaPosition(float dt)
