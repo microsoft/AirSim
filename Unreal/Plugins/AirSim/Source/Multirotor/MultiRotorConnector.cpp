@@ -278,6 +278,13 @@ Pose MultiRotorConnector::getActorPose(const std::string& actor_name)
     return pose;
 }
 
+void MultiRotorConnector::setActorPose(const std::string& actor_name, const Pose& pose)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([&pose, &actor_name, this]() {
+        wrapper_->setActorPose(actor_name, pose);
+    }, true);
+}
+
 bool MultiRotorConnector::setSegmentationObjectID(const std::string& mesh_name, int object_id,
     bool is_name_regex)
 {

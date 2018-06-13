@@ -267,6 +267,11 @@ public:
         return vehicle_->getActorPose(actor_name);
     }
 
+    virtual void simSetObjectPose(const std::string& actor_name, const Pose& pose) override
+    {
+        vehicle_->setActorPose(actor_name, pose);
+    }
+
     virtual void simSetPose(const Pose& pose, bool ignore_collision) override
     {
         vehicle_->setPose(pose, ignore_collision);

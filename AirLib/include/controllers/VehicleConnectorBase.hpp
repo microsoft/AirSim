@@ -29,6 +29,7 @@ public:
     virtual int getSegmentationObjectID(const std::string& mesh_name) = 0;
     virtual void printLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0) = 0;
     virtual Pose getActorPose(const std::string& actor_name) = 0;
+    virtual void setActorPose(const std::string& actor_name, const Pose& pose) = 0;
     virtual Kinematics::State getTrueKinematics() = 0;
     virtual CameraInfo getCameraInfo(int camera_id) const = 0;
     virtual void setCameraOrientation(int camera_id, const Quaternionr& orientation) = 0;
