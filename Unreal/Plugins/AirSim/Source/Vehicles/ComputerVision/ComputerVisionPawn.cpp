@@ -1,5 +1,6 @@
 #include "ComputerVisionPawn.h"
 #include "Engine/World.h"
+#include "ManualPoseController.h"
 
 
 AComputerVisionPawn::AComputerVisionPawn()
@@ -7,18 +8,18 @@ AComputerVisionPawn::AComputerVisionPawn()
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
 
-    // Create In-Car camera component 
-    camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
-    camera_front_center_base_->SetRelativeLocation(FVector(200, 0, 100)); //center
-    camera_front_center_base_->SetupAttachment(GetRootComponent());
-    camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(200, -100, 100)); //left
-    camera_front_left_base_->SetupAttachment(GetRootComponent());
-    camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
-    camera_front_right_base_->SetRelativeLocation(FVector(200, 100, 100)); //right
-    camera_front_right_base_->SetupAttachment(GetRootComponent());
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
-    manual_pose_controller_ = NewObject<UManualPoseController>();
+    camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
+    camera_front_center_base_->SetRelativeLocation(FVector(0, 0, 0)); //center
+    camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
+    camera_front_left_base_->SetRelativeLocation(FVector(0, -10, 0)); //left
+    camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
+    camera_front_right_base_->SetRelativeLocation(FVector(0, 10, 0)); //right
+
+    camera_front_center_base_->SetupAttachment(RootComponent);
+    camera_front_left_base_->SetupAttachment(RootComponent);
+    camera_front_right_base_->SetupAttachment(RootComponent);
 }
 
 void AComputerVisionPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
@@ -47,8 +48,7 @@ void AComputerVisionPawn::initializeForBeginPlay()
     camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
-    setupInputBindings();
-
+    manual_pose_controller_ = NewObject<UManualPoseController>();
     manual_pose_controller_->initializeForPlay();
     manual_pose_controller_->setActor(this);
 }
@@ -90,15 +90,7 @@ void AComputerVisionPawn::Tick(float Delta)
 
     //update ground level
     if (manual_pose_controller_->getActor() == this) {
-        FVector delta_position;
-        FRotator delta_rotation;
-
-        manual_pose_controller_->updateDeltaPosition(Delta);
-        manual_pose_controller_->getDeltaPose(delta_position, delta_rotation);
-        manual_pose_controller_->resetDelta();
-
-        SetActorRelativeLocation(delta_position);
-        SetActorRelativeRotation(delta_rotation);
+        manual_pose_controller_->updateActorPose(Delta);
     }
 }
 
@@ -108,9 +100,4 @@ void AComputerVisionPawn::BeginPlay()
 }
 
 
-/******************* Keyboard bindings*******************/
-//This method must be in pawn because Unreal doesn't allow key bindings to non UObject pointers
-void AComputerVisionPawn::setupInputBindings()
-{
 
-}

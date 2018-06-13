@@ -52,6 +52,9 @@ void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    debug_reporter_.initialize(false);
+    debug_reporter_.reset();
+
     //get player start
     //this must be done from within actor otherwise we don't get player start
     APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
@@ -83,12 +86,15 @@ const NedTransform& ASimModeBase::getGlobalNedTransform()
 void ASimModeBase::checkVehicleReady()
 {
     for (auto& api : api_provider_->getVehicleApis()) {
-        std::string message;
-        if (!api->isReady(message)) {
-            UAirBlueprintLib::LogMessage("Vehicle %s was not initialized: ", 
-                "", LogDebugLevel::Failure); //TODO: add vehicle name in message
-            UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
+        if (api) { //sim-only vehicles may have api as null
+            std::string message;
+            if (!api->isReady(message)) {
+                UAirBlueprintLib::LogMessage("Vehicle %s was not initialized: ", 
+                    "", LogDebugLevel::Failure); //TODO: add vehicle name in message
+                UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
+            }
         }
+
     }
 }
 
@@ -234,7 +240,9 @@ void ASimModeBase::Tick(float DeltaSeconds)
     advanceTimeOfDay();
 
     showClockStats();
-    
+
+    updateDebugReport(debug_reporter_);
+
     Super::Tick(DeltaSeconds);
 }
 
@@ -277,14 +285,17 @@ void ASimModeBase::advanceTimeOfDay()
 
 void ASimModeBase::reset()
 {
-    //Should be overridden by derived classes
+    //default implementation
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        for (auto& api : getApiProvider()->getVehicleSimApis()) {
+            api->reset();
+        }
+    }, true);
 }
 
 std::string ASimModeBase::getDebugReport()
 {
-    static const std::string empty_string = std::string();
-    //Should be overridden by derived classes
-    return empty_string;
+    return debug_reporter_.getOutput();
 }
 
 void ASimModeBase::setupInputBindings()
@@ -384,4 +395,32 @@ void ASimModeBase::stopApiServer()
 bool ASimModeBase::isApiServerStarted()
 {
     return api_server_ != nullptr;
+}
+
+void ASimModeBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter)
+{
+    debug_reporter.update();
+    debug_reporter.setEnable(EnableReport);
+
+    if (debug_reporter.canReport()) {
+        debug_reporter.clearReport();
+
+        for (auto& api : getApiProvider()->getVehicleSimApis()) {
+            PawnSimApi* vehicle_sim_api = static_cast<PawnSimApi*>(api);
+            msr::airlib::StateReporter& reporter = *debug_reporter.getReporter();
+            std::string vehicle_name = vehicle_sim_api->getVehicleName();
+
+            reporter.writeHeading(std::string("Vehicle: ").append(
+                vehicle_name == "" ? "(default)" : vehicle_name));
+
+            const msr::airlib::Kinematics::State* kinematics = vehicle_sim_api->getGroundTruthKinematics();
+
+            reporter.writeValue("Position", kinematics->pose.position);
+            reporter.writeValue("Orientation", kinematics->pose.orientation);
+            reporter.writeValue("Lin-Vel", kinematics->twist.linear);
+            reporter.writeValue("Lin-Accl", kinematics->accelerations.linear);
+            reporter.writeValue("Ang-Vel", kinematics->twist.angular);
+            reporter.writeValue("Ang-Accl", kinematics->accelerations.angular);
+        }
+    }
 }

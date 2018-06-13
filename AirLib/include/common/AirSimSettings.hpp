@@ -630,6 +630,12 @@ private:
         physx_car_setting->vehicle_name = "PhysXCar";
         physx_car_setting->vehicle_type = kVehicleTypePhysXCar;
         vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
+
+        //create default computer vision vehicle
+        auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+        cv_setting->vehicle_name = "ComputerVision";
+        cv_setting->vehicle_type = kVehicleTypeComputerVision;
+        vehicles[cv_setting->vehicle_name] = std::move(cv_setting);
     }
 
     static void loadVehicleSettings(const std::string& simmode_name, const Settings& settings_json,
@@ -659,6 +665,9 @@ private:
             PawnPath("Class'/AirSim/VehicleAdv/SUV/SuvCarPawn.SuvCarPawn_C'"));
         pawn_paths.emplace("DefaultQuadrotor",
             PawnPath("Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"));
+        pawn_paths.emplace("DefaultComputerVision",
+            PawnPath("Class'/AirSim/Blueprints/BP_ComputerVisionPawn.BP_ComputerVisionPawn_C'"));
+        
     }
 
     static void loadPawnPaths(const Settings& settings_json, std::map<std::string, PawnPath>& pawn_paths)

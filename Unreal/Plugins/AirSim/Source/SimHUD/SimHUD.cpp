@@ -11,13 +11,10 @@
 #include <stdexcept>
 
 
-ASimHUD* ASimHUD::instance_ = nullptr;
-
 ASimHUD::ASimHUD()
 {
     static ConstructorHelpers::FClassFinder<UUserWidget> hud_widget_class(TEXT("WidgetBlueprint'/AirSim/Blueprints/BP_SimHUDWidget'"));
     widget_class_ = hud_widget_class.Succeeded() ? hud_widget_class.Class : nullptr;
-    instance_ = this;
 }
 
 void ASimHUD::BeginPlay()
@@ -177,7 +174,10 @@ void ASimHUD::createMainWidget()
 {
     //create main widget
     if (widget_class_ != nullptr) {
-        widget_ = CreateWidget<USimHUDWidget>(this->GetOwningPlayerController(), widget_class_);
+        APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
+        std::string pawn_name = std::string(TCHAR_TO_ANSI(*player_controller->GetPawn()->GetName()));
+        Utils::log(pawn_name);
+        widget_ = CreateWidget<USimHUDWidget>(player_controller, widget_class_);
     }
     else {
         widget_ = nullptr;

@@ -44,9 +44,7 @@ public:
 
 private:
     void createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint);
-
     void updateCarControls();
-    void pawnTick(float dt);
 
 private:
     std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;

@@ -57,6 +57,9 @@ public: //implementation of VehicleSimApiBase
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
     virtual std::string PawnSimApi::getLogLine() const override;
 
+protected: //additional interface for derived class
+    virtual void pawnTick(float dt);
+
 public: //Unreal specific methods
     PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
         const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 

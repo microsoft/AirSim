@@ -7,7 +7,6 @@
 #include "physics//Kinematics.hpp"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "ManualPoseController.h"
 #include "common/common_utils/UniqueValueMap.hpp" 
 #include "MultirotorPawnEvents.h"
 
@@ -48,6 +47,7 @@ public:
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
 
     virtual std::string getLogLine() const override;
+    virtual void pawnTick(float dt) override;
 
     msr::airlib::MultirotorApiBase* getVehicleApi()
     {

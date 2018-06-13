@@ -52,6 +52,15 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     setupCamerasFromSettings(cameras);
     //add listener for pawn's collision event
     pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
+    pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
+}
+
+void PawnSimApi::pawnTick(float dt)
+{
+
+    update();
+    updateRenderedState(dt);
+    updateRendering(dt);
 }
 
 void PawnSimApi::detectUsbRc()

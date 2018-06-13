@@ -79,6 +79,12 @@ void ASimModeWorldBase::continueForTime(double seconds)
 
 }
 
+void ASimModeWorldBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter)
+{
+    unused(debug_reporter);
+    //we use custom debug reporting for this class
+}
+
 void ASimModeWorldBase::Tick(float DeltaSeconds)
 {
     { //keep this lock as short as possible
@@ -106,7 +112,7 @@ void ASimModeWorldBase::reset()
         physics_world_->reset();
     }, true);
     
-    Super::reset();
+    //no need to call base reset because of our custom implementation
 }
 
 std::string ASimModeWorldBase::getDebugReport()

@@ -76,6 +76,11 @@ const msr::airlib::Environment* MultirotorPawnSimApi::getGroundTruthEnvironment(
     return & phys_vehicle_->getEnvironment();
 }
 
+void MultirotorPawnSimApi::pawnTick(float dt)
+{
+    unused(dt);
+    //calls to update* are handled by physics engine and in SimModeWorldBase
+}
 
 void MultirotorPawnSimApi::updateRenderedState(float dt)
 {

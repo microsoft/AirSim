@@ -48,13 +48,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaSeconds) override;
 
-    static ASimHUD* GetInstance() {
-        return instance_;
-    }
-
 protected:
     virtual void setupInputBindings();
-    std::string reportRefreshHandler();
     void toggleRecordHandler();
     void updateWidgetSubwindowVisibility();
     bool isWidgetSubwindowVisible(int window_index);
@@ -82,6 +77,4 @@ private:
     UPROPERTY() ASimModeBase* simmode_;
 
     APIPCamera* subwindow_cameras_[AirSimSettings::kSubwindowCount];
-
-    static ASimHUD* instance_;
 };

@@ -32,18 +32,13 @@ void ASimModeCar::BeginPlay()
 {
     Super::BeginPlay();
 
-    initializePauseState();
-
     setupVehiclesAndCamera();
-
     for (auto* api : getApiProvider()->getVehicleSimApis()) {
         api->reset();
     }
-
-    debug_reporter_.initialize(false);
-    debug_reporter_.reset();
-
     checkVehicleReady();
+
+    initializePauseState();
 }
 
 void ASimModeCar::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -201,11 +196,6 @@ void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     
-    for (auto* api : getApiProvider()->getVehicleSimApis()) {
-        api->updateRenderedState(DeltaSeconds);
-        api->updateRendering(DeltaSeconds);
-    }
-    
     if (pause_period_start_ > 0) {
         if (ClockFactory::get()->elapsedSince(pause_period_start_) >= pause_period_) {
             if (!isPaused())
@@ -214,49 +204,6 @@ void ASimModeCar::Tick(float DeltaSeconds)
             pause_period_start_ = 0;
         }
     }
-
-    debug_reporter_.update();
-    debug_reporter_.setEnable(EnableReport);
-
-    if (debug_reporter_.canReport()) {
-        debug_reporter_.clearReport();
-        updateDebugReport();
-    }
 }
 
-void ASimModeCar::reset()
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this]() {
-        for (auto& api : getApiProvider()->getVehicleSimApis()) {
-            api->reset();
-        }
-    }, true);
 
-    Super::reset();
-}
-
-void ASimModeCar::updateDebugReport()
-{
-    for (auto& api : getApiProvider()->getVehicleSimApis()) {
-        PawnSimApi* vehicle_sim_api = static_cast<PawnSimApi*>(api);
-        msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
-        std::string vehicle_name = vehicle_sim_api->getVehicleName();
-
-        reporter.writeHeading(std::string("Vehicle: ").append(
-            vehicle_name == "" ? "(default)" : vehicle_name));
-
-        const msr::airlib::Kinematics::State* kinematics = vehicle_sim_api->getGroundTruthKinematics();
-
-        reporter.writeValue("Position", kinematics->pose.position);
-        reporter.writeValue("Orientation", kinematics->pose.orientation);
-        reporter.writeValue("Lin-Vel", kinematics->twist.linear);
-        reporter.writeValue("Lin-Accl", kinematics->accelerations.linear);
-        reporter.writeValue("Ang-Vel", kinematics->twist.angular);
-        reporter.writeValue("Ang-Accl", kinematics->accelerations.angular);
-    }
-}
-
-std::string ASimModeCar::getDebugReport()
-{
-    return debug_reporter_.getOutput();
-}

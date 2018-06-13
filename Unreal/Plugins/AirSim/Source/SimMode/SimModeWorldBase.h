@@ -34,6 +34,7 @@ public:
 protected:
     void startAsyncUpdator();
     void stopAsyncUpdator();
+    virtual void updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter) override;
 
     //should be called by derived class once all api_provider_ is ready to use
     void initializeForPlay();

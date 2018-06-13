@@ -12,6 +12,8 @@
 #include "api/ApiServerBase.hpp"
 #include "api/ApiProvider.hpp"
 #include "PawnSimApi.h"
+#include "common/StateReporterWrapper.hpp"
+
 #include "SimModeBase.generated.h"
 
 
@@ -80,7 +82,8 @@ protected:
     virtual void setupClockSpeed();
 
     void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
-    void checkVehicleReady();
+    void checkVehicleReady(); //checks if vehicle is available to use
+    virtual void updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter);
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
 
@@ -115,6 +118,7 @@ private:
     std::unique_ptr<msr::airlib::WorldSimApiBase> world_sim_api_;
     std::unique_ptr<msr::airlib::ApiProvider> api_provider_;
     std::unique_ptr<msr::airlib::ApiServerBase> api_server_;
+    msr::airlib::StateReporterWrapper debug_reporter_;
 
 private:
     void setStencilIDs();

@@ -41,9 +41,7 @@ void ASimModeComputerVision::BeginPlay()
     for (auto* api : getApiProvider()->getVehicleSimApis()) {
         api->reset();
     }
-
-    debug_reporter_.initialize(false);
-    debug_reporter_.reset();
+    checkVehicleReady();
 }
 
 void ASimModeComputerVision::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -89,6 +87,11 @@ void ASimModeComputerVision::setupVehiclesAndCamera()
             if (vehicle_setting.auto_create &&
                 ((vehicle_setting.vehicle_type == msr::airlib::AirSimSettings::kVehicleTypeComputerVision) )) {
 
+                //decide which derived BP to use
+                std::string pawn_path = vehicle_setting.pawn_path;
+                if (pawn_path == "")
+                    pawn_path = "DefaultComputerVision";
+
                 //compute initial pose
                 FVector spawn_position = uu_origin.GetLocation();
                 FRotator spawn_rotation = uu_origin.Rotator();
@@ -108,8 +111,10 @@ void ASimModeComputerVision::setupVehiclesAndCamera()
                 pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
                 pawn_spawn_params.SpawnCollisionHandlingOverride =
                     ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                    getSettings().pawn_paths.at(pawn_path).pawn_bp);
                 TVehiclePawn* spawned_pawn = this->GetWorld()->SpawnActor<TVehiclePawn>(
-                    spawn_position, spawn_rotation, pawn_spawn_params);
+                    vehicle_bp_class, FTransform(spawn_rotation, spawn_position), pawn_spawn_params);
 
                 spawned_actors_.Add(spawned_pawn);
                 pawns.Add(spawned_pawn);
@@ -166,54 +171,6 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeComputerVision::createApiSer
 void ASimModeComputerVision::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    
-    for (auto* api : getApiProvider()->getVehicleSimApis()) {
-        api->updateRenderedState(DeltaSeconds);
-        api->updateRendering(DeltaSeconds);
-    }
-
-    debug_reporter_.update();
-    debug_reporter_.setEnable(EnableReport);
-
-    if (debug_reporter_.canReport()) {
-        debug_reporter_.clearReport();
-        updateDebugReport();
-    }
 }
 
-void ASimModeComputerVision::reset()
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this]() {
-        for (auto& api : getApiProvider()->getVehicleSimApis()) {
-            api->reset();
-        }
-    }, true);
 
-    Super::reset();
-}
-
-void ASimModeComputerVision::updateDebugReport()
-{
-    for (auto& api : getApiProvider()->getVehicleSimApis()) {
-        PawnSimApi* vehicle_sim_api = static_cast<PawnSimApi*>(api);
-        msr::airlib::StateReporter& reporter = *debug_reporter_.getReporter();
-        std::string vehicle_name = vehicle_sim_api->getVehicleName();
-
-        reporter.writeHeading(std::string("Vehicle: ").append(
-            vehicle_name == "" ? "(default)" : vehicle_name));
-
-        const msr::airlib::Kinematics::State* kinematics = vehicle_sim_api->getGroundTruthKinematics();
-
-        reporter.writeValue("Position", kinematics->pose.position);
-        reporter.writeValue("Orientation", kinematics->pose.orientation);
-        reporter.writeValue("Lin-Vel", kinematics->twist.linear);
-        reporter.writeValue("Lin-Accl", kinematics->accelerations.linear);
-        reporter.writeValue("Ang-Vel", kinematics->twist.angular);
-        reporter.writeValue("Ang-Accl", kinematics->accelerations.angular);
-    }
-}
-
-std::string ASimModeComputerVision::getDebugReport()
-{
-    return debug_reporter_.getOutput();
-}

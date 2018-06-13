@@ -17,13 +17,6 @@ CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transfor
 
     //TODO: should do reset() here?
     joystick_controls_ = CarPawnApi::CarControls();
-
-    pawn_events->getPawnTickSignal().connect_member(this, &CarPawnSimApi::pawnTick);
-}
-
-void CarPawnSimApi::pawnTick(float dt)
-{
-   update();
 }
 
 void CarPawnSimApi::createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
@@ -71,6 +64,7 @@ std::string CarPawnSimApi::getLogLine() const
 
 }
 
+//these are called on render ticks
 void CarPawnSimApi::updateRenderedState(float dt)
 {
     PawnSimApi::updateRenderedState(dt);
@@ -81,7 +75,6 @@ void CarPawnSimApi::updateRenderedState(float dt)
     if (getRemoteControlID() >= 0)
         vehicle_api_->setRCData(getRCData());
 }
-
 void CarPawnSimApi::updateRendering(float dt)
 {
     PawnSimApi::updateRendering(dt);
@@ -181,6 +174,7 @@ void CarPawnSimApi::reset()
     vehicle_api_->reset();
 }
 
+//physics tick
 void CarPawnSimApi::update()
 {
     vehicle_api_->update();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/ConstructorHelpers.h"
 
 #include "physics/Kinematics.hpp"
 #include "common/AirSimSettings.hpp"
@@ -13,7 +14,7 @@
 #include "ComputerVisionPawn.generated.h"
 
 
-UCLASS(config = Game)
+UCLASS()
 class AComputerVisionPawn : public APawn
 {
     GENERATED_BODY()
@@ -36,10 +37,7 @@ public:
     }
 
 private:
-    void setupInputBindings();
-
-private:
-    UClass* pip_camera_class_;
+    UPROPERTY() UClass* pip_camera_class_;
     
     PawnEvents pawn_events_;
 
