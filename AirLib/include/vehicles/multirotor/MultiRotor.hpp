@@ -75,7 +75,7 @@ public:
     //*** End: UpdatableState implementation ***//
 
 
-    //implement abstract methods from PhysicsBody
+    //After physics engine updates kinematics, this method gets called
     virtual void kinematicsUpdated() override
     {
         updateSensors(*params_, getKinematics(), getEnvironment());

@@ -288,6 +288,7 @@ void PawnSimApi::update()
     //update position from kinematics so we have latest position after physics update
     environment_->setPosition(kinematics_.pose.position);
     environment_->update();
+    //kinematics_->update();
 
     VehicleSimApiBase::update();
 }

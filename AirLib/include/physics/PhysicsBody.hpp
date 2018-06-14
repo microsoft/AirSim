@@ -111,9 +111,9 @@ public: //methods
     {
         UpdatableObject::update();
 
-        //update position from kinematics so we have latest position after physics update
-        environment_->setPosition(getKinematics().pose.position);
-        environment_->update();
+        //TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
+        //environment_->setPosition(getKinematics().pose.position);
+        //environment_->update();
 
         kinematics_.update();
 

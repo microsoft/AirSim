@@ -219,7 +219,7 @@ void ASimModeBase::setupPhysicsLoopPeriod()
     To increase freq with limited CPU power, switch Barometer to constant ref mode.
     */
         
-    physics_loop_period_ = 30000000LL; //30ms
+    physics_loop_period_ = 3000000LL; //3ms
 }
 
 long long ASimModeBase::getPhysicsLoopPeriod() const //nanoseconds
