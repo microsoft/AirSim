@@ -53,10 +53,6 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     else
         pimpl_.reset(new impl(server_address, port));
     pimpl_->server.bind("ping", [&]() -> bool { return true; });
-    pimpl_->server.bind("enableApiControl", [&](bool is_enabled) -> void { getVehicleApi()->enableApiControl(is_enabled); });
-    pimpl_->server.bind("isApiControlEnabled", [&]() -> bool { return getVehicleApi()->isApiControlEnabled(); });
-    pimpl_->server.bind("armDisarm", [&](bool arm) -> bool { return getVehicleApi()->armDisarm(arm); });
-
     pimpl_->server.bind("getServerVersion", []() -> int {
         return 1;
     });
@@ -74,13 +70,23 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         getWorldSimApi()->continueForTime(seconds); 
     });
 
-
-    pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter) -> vector<RpcLibAdapatorsBase::ImageResponse> {
-        const auto& response = getVehicleSimApi()->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));
-        return RpcLibAdapatorsBase::ImageResponse::from(response);
+    pimpl_->server.bind("enableApiControl", [&](bool is_enabled, const std::string& vehicle_name) -> void { 
+        getVehicleApi(vehicle_name)->enableApiControl(is_enabled);
     });
-    pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type) -> vector<uint8_t> {
-        auto result = getVehicleSimApi()->getImage(camera_name, type);
+    pimpl_->server.bind("isApiControlEnabled", [&](const std::string& vehicle_name) -> bool { 
+        return getVehicleApi(vehicle_name)->isApiControlEnabled();
+    });
+    pimpl_->server.bind("armDisarm", [&](bool arm, const std::string& vehicle_name) -> bool { 
+        return getVehicleApi(vehicle_name)->armDisarm(arm);
+    });
+
+    pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name) -> 
+        vector<RpcLibAdapatorsBase::ImageResponse> {
+            const auto& response = getVehicleSimApi(vehicle_name)->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));
+            return RpcLibAdapatorsBase::ImageResponse::from(response);
+    });
+    pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<uint8_t> {
+        auto result = getVehicleSimApi(vehicle_name)->getImage(camera_name, type);
         if (result.size() == 0) {
             // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
             result.push_back(0);
@@ -89,11 +95,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     });
 
     pimpl_->server.
-        bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision) -> void {
-        getVehicleSimApi()->setPose(pose.to(), ignore_collision);
+        bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision, const std::string& vehicle_name) -> void {
+        getVehicleSimApi(vehicle_name)->setPose(pose.to(), ignore_collision);
     });
-    pimpl_->server.bind("simGetVehiclePose", [&]() -> RpcLibAdapatorsBase::Pose { 
-        const auto& pose = getVehicleSimApi()->getPose();
+    pimpl_->server.bind("simGetVehiclePose", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::Pose {
+        const auto& pose = getVehicleSimApi(vehicle_name)->getPose();
         return RpcLibAdapatorsBase::Pose(pose);
     });
 
@@ -111,39 +117,40 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         if (sim_world_api)
             sim_world_api->reset();
         else
-            getVehicleApi()->reset();
+            getVehicleApi("")->reset();
     });
 
     pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, const std::string& message_param, unsigned char severity) -> void {
         getWorldSimApi()->printLogMessage(message, message_param, severity);
     });
 
-    pimpl_->server.bind("getHomeGeoPoint", [&]() -> RpcLibAdapatorsBase::GeoPoint {
-        const auto& geo_point = getVehicleApi()->getHomeGeoPoint();
+    pimpl_->server.bind("getHomeGeoPoint", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::GeoPoint {
+        const auto& geo_point = getVehicleApi(vehicle_name)->getHomeGeoPoint();
         return RpcLibAdapatorsBase::GeoPoint(geo_point);
     });
 
-    pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name) -> RpcLibAdapatorsBase::CameraInfo {
-        const auto& camera_info = getVehicleSimApi()->getCameraInfo(camera_name);
+    pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::CameraInfo {
+        const auto& camera_info = getVehicleSimApi(vehicle_name)->getCameraInfo(camera_name);
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
     });
 
-    pimpl_->server.bind("simSetCameraOrientation", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Quaternionr& orientation) -> void {
-        getVehicleSimApi()->setCameraOrientation(camera_name, orientation.to());
+    pimpl_->server.bind("simSetCameraOrientation", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Quaternionr& orientation, 
+        const std::string& vehicle_name) -> void {
+        getVehicleSimApi(vehicle_name)->setCameraOrientation(camera_name, orientation.to());
     });
 
-    pimpl_->server.bind("simGetCollisionInfo", [&]() -> RpcLibAdapatorsBase::CollisionInfo { 
-        const auto& collision_info = getVehicleSimApi()->getCollisionInfo(); 
+    pimpl_->server.bind("simGetCollisionInfo", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::CollisionInfo {
+        const auto& collision_info = getVehicleSimApi(vehicle_name)->getCollisionInfo(); 
         return RpcLibAdapatorsBase::CollisionInfo(collision_info);
     });
 
-    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Pose { 
+    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::Pose {
         const auto& pose = getWorldSimApi()->getObjectPose(object_name); 
         return RpcLibAdapatorsBase::Pose(pose);
     });
 
-    pimpl_->server.bind("cancelLastTask", [&]() -> void {
-        getVehicleApi()->cancelLastTask();
+    pimpl_->server.bind("cancelLastTask", [&](const std::string& vehicle_name) -> void {
+        getVehicleApi(vehicle_name)->cancelLastTask();
     });
 
     //if we don't suppress then server will bomb out for exceptions raised by any method

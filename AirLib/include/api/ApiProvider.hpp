@@ -23,7 +23,7 @@ public:
 
 
     //vehicle API
-    virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name = "")
+    virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name)
     {
         return vehicle_apis_.findOrDefault(vehicle_name, nullptr);
     }
@@ -35,7 +35,7 @@ public:
     }
 
     //vehicle simulation API
-    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "") const
+    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name) const
     {
         return vehicle_sim_apis_.findOrDefault(vehicle_name, nullptr);
     }

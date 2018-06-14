@@ -17,7 +17,7 @@ public:
     virtual ~CarRpcLibServer();
 
 protected:
-    virtual CarApiBase* getVehicleApi(const std::string& vehicle_name = "") override
+    virtual CarApiBase* getVehicleApi(const std::string& vehicle_name) override
     {
         return static_cast<CarApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
     }

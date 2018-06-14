@@ -22,10 +22,7 @@ public:
     virtual ~RpcLibClientBase();    //required for pimpl
 
     void confirmConnection();
-    bool isApiControlEnabled() const;
-    void enableApiControl(bool is_enabled);
     void reset();
-    bool armDisarm(bool arm);
 
     ConnectionState getConnectionState();
     bool ping();
@@ -38,27 +35,33 @@ public:
     void simPause(bool is_paused);
     void simContinueForTime(double seconds);
 
-    msr::airlib::GeoPoint getHomeGeoPoint() const;
-
-    Pose simGetVehiclePose() const;
-    void simSetVehiclePose(const Pose& pose, bool ignore_collision);
     Pose simGetObjectPose(const std::string& object_name) const;
 
-    vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request);
-    vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type);
-
-    CollisionInfo simGetCollisionInfo() const;
+    //task management APIs
+    void cancelLastTask(const std::string& vehicle_name = "");
+    virtual bool waitOnLastTask(float timeout_sec = Utils::nan<float>());
 
     bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false);
     int simGetSegmentationObjectID(const std::string& mesh_name) const;
     void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
-    CameraInfo simGetCameraInfo(const std::string& camera_name) const;
-    void simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation);
 
-    //task management APIs
-    void cancelLastTask();
-    virtual bool waitOnLastTask(float timeout_sec = Utils::nan<float>());
+    bool armDisarm(bool arm, const std::string& vehicle_name = "");
+    bool isApiControlEnabled(const std::string& vehicle_name = "") const;
+    void enableApiControl(bool is_enabled, const std::string& vehicle_name = "");
+
+    msr::airlib::GeoPoint getHomeGeoPoint(const std::string& vehicle_name = "") const;
+    Pose simGetVehiclePose(const std::string& vehicle_name = "") const;
+    void simSetVehiclePose(const Pose& pose, bool ignore_collision, const std::string& vehicle_name = "");
+
+    vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name = "");
+    vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "");
+
+    CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
+
+    CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;
+    void simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name = "");
+
 
 protected:
     void* getClient();

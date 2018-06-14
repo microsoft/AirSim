@@ -18,7 +18,7 @@ public:
     virtual ~MultirotorRpcLibServer();
 
 protected:
-    virtual MultirotorApiBase* getVehicleApi(const std::string& vehicle_name = "") override
+    virtual MultirotorApiBase* getVehicleApi(const std::string& vehicle_name) override
     {
         return static_cast<MultirotorApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
     }

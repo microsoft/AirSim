@@ -18,8 +18,8 @@ class CarRpcLibClient : public RpcLibClientBase {
 public:
     CarRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, float timeout_sec = 60);
 
-    void setCarControls(const CarApiBase::CarControls& controls);
-    CarApiBase::CarState getCarState();
+    void setCarControls(const CarApiBase::CarControls& controls, const std::string& vehicle_name = "");
+    CarApiBase::CarState getCarState(const std::string& vehicle_name = "");
 
     virtual ~CarRpcLibClient();    //required for pimpl
 };

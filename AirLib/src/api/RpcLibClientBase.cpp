@@ -68,13 +68,13 @@ RpcLibClientBase::ConnectionState RpcLibClientBase::getConnectionState()
         return ConnectionState::Unknown;
     }
 }
-void RpcLibClientBase::enableApiControl(bool is_enabled)
+void RpcLibClientBase::enableApiControl(bool is_enabled, const std::string& vehicle_name)
 {
-    pimpl_->client.call("enableApiControl", is_enabled);
+    pimpl_->client.call("enableApiControl", is_enabled, vehicle_name);
 }
-bool RpcLibClientBase::isApiControlEnabled() const
+bool RpcLibClientBase::isApiControlEnabled(const std::string& vehicle_name) const
 {
-    return pimpl_->client.call("isApiControlEnabled").as<bool>();
+    return pimpl_->client.call("isApiControlEnabled", vehicle_name).as<bool>();
 }
 int RpcLibClientBase::getClientVersion() const
 {
@@ -136,14 +136,14 @@ void RpcLibClientBase::confirmConnection()
         std::cout << std::endl << ver_info << std::endl;
 }
 
-bool RpcLibClientBase::armDisarm(bool arm)
+bool RpcLibClientBase::armDisarm(bool arm, const std::string& vehicle_name)
 {
-    return pimpl_->client.call("armDisarm", arm).as<bool>();
+    return pimpl_->client.call("armDisarm", arm, vehicle_name).as<bool>();
 }
 
-msr::airlib::GeoPoint RpcLibClientBase::getHomeGeoPoint() const
+msr::airlib::GeoPoint RpcLibClientBase::getHomeGeoPoint(const std::string& vehicle_name) const
 {
-    return pimpl_->client.call("getHomeGeoPoint").as<RpcLibAdapatorsBase::GeoPoint>().to();
+    return pimpl_->client.call("getHomeGeoPoint", vehicle_name).as<RpcLibAdapatorsBase::GeoPoint>().to();
 }
 
 bool RpcLibClientBase::simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
@@ -155,33 +155,33 @@ int RpcLibClientBase::simGetSegmentationObjectID(const std::string& mesh_name) c
     return pimpl_->client.call("simGetSegmentationObjectID", mesh_name).as<int>();
 }
 
-CollisionInfo RpcLibClientBase::simGetCollisionInfo() const
+CollisionInfo RpcLibClientBase::simGetCollisionInfo(const std::string& vehicle_name) const
 {
-    return pimpl_->client.call("getCollisionInfo").as<RpcLibAdapatorsBase::CollisionInfo>().to();
+    return pimpl_->client.call("getCollisionInfo", vehicle_name).as<RpcLibAdapatorsBase::CollisionInfo>().to();
 }
 
 
 //sim only
-Pose RpcLibClientBase::simGetVehiclePose() const
+Pose RpcLibClientBase::simGetVehiclePose(const std::string& vehicle_name) const
 {
-    return pimpl_->client.call("simGetVehiclePose").as<RpcLibAdapatorsBase::Pose>().to();
+    return pimpl_->client.call("simGetVehiclePose", vehicle_name).as<RpcLibAdapatorsBase::Pose>().to();
 }
-void RpcLibClientBase::simSetVehiclePose(const Pose& pose, bool ignore_collision)
+void RpcLibClientBase::simSetVehiclePose(const Pose& pose, bool ignore_collision, const std::string& vehicle_name)
 {
-    pimpl_->client.call("simSetVehiclePose", RpcLibAdapatorsBase::Pose(pose), ignore_collision);
+    pimpl_->client.call("simSetVehiclePose", RpcLibAdapatorsBase::Pose(pose), ignore_collision, vehicle_name);
 }
 
-vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request)
+vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name)
 {
     const auto& response_adaptor = pimpl_->client.call("simGetImages", 
-        RpcLibAdapatorsBase::ImageRequest::from(request))
+        RpcLibAdapatorsBase::ImageRequest::from(request), vehicle_name)
         .as<vector<RpcLibAdapatorsBase::ImageResponse>>();
 
     return RpcLibAdapatorsBase::ImageResponse::to(response_adaptor);
 }
-vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type)
+vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name)
 {
-    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_name, type).as<vector<uint8_t>>();
+    vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_name, type, vehicle_name).as<vector<uint8_t>>();
     if (result.size() == 1) {
         // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
         result.clear();
@@ -214,18 +214,18 @@ msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_n
     return pimpl_->client.call("simGetObjectPose", object_name).as<RpcLibAdapatorsBase::Pose>().to();
 }
 
-CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name) const
+CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name) const
 {
-    return pimpl_->client.call("simGetCameraInfo", camera_name).as<RpcLibAdapatorsBase::CameraInfo>().to();
+    return pimpl_->client.call("simGetCameraInfo", camera_name, vehicle_name).as<RpcLibAdapatorsBase::CameraInfo>().to();
 }
-void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation)
+void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name)
 {
-    pimpl_->client.call("simSetCameraOrientation", camera_name, RpcLibAdapatorsBase::Quaternionr(orientation));
+    pimpl_->client.call("simSetCameraOrientation", camera_name, RpcLibAdapatorsBase::Quaternionr(orientation), vehicle_name);
 }
 
-void RpcLibClientBase::cancelLastTask()
+void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
 {
-    pimpl_->client.call("cancelLastTask");
+    pimpl_->client.call("cancelLastTask", vehicle_name);
 }
 
 //return value of last task. It should be true if task completed without

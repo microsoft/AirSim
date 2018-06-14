@@ -24,11 +24,11 @@ protected:
     void* getServer() const;
 
 
-    virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name = "")
+    virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name)
     {
         return api_provider_->getVehicleApi(vehicle_name);
     }
-    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name = "")
+    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name)
     {
         return api_provider_->getVehicleSimApi(vehicle_name);
     }

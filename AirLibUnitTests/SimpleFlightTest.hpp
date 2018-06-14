@@ -32,7 +32,7 @@ public:
 
         std::vector<UpdatableObject*> vehicles = { &vehicle };
         std::unique_ptr<PhysicsEngineBase> physics_engine(new FastPhysicsEngine());
-        PhysicsWorld physics_world(physics_engine.get(), vehicles, 
+        PhysicsWorld physics_world(std::move(physics_engine), vehicles,
             static_cast<uint64_t>(clock->getStepSize() * 1E9));
 
         testAssert(api != nullptr, "api was null");
