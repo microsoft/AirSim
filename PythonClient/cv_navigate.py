@@ -20,6 +20,9 @@ def get_angle (x_dst, y_dst, x_src, y_src):
         angle += 2*math.pi
     return angle
 
+def get_local_goal (v, pos, theta):
+    return goal
+
 pp = pprint.PrettyPrinter(indent=4)
 
 client = MultirotorClient()
@@ -36,9 +39,11 @@ coll_thres = 25
 yaw = 0;
 step = 0.1
 x = 40
-y = 0
-x_goal = 20
-y_goal = -3
+y = 3
+goal = [120,3] 
+timer = 0
+time_obs = 50
+bObstacle = False
 
 w_mtx = np.ones((roi_h,roi_w))
 #for j in range(0,roi_w):
@@ -85,10 +90,16 @@ for z in range(10000): # do few times
     #print ('Box Max: ',np.max(img2d_box))
     #print('Box Img Sz: ',np.size(img2d_box))
 
-    target_angle = get_angle(x_goal,y_goal,x,y)
-    target_vec,target_dist = get_vec_dist(x_goal,y_goal,x,y)
-    yaw = target_angle
-    print (target_angle,target_vec,target_dist,x,y,x_goal,y_goal)
+    target_angle = get_angle(goal[0],goal[1],x,y)
+    target_vec,target_dist = get_vec_dist(goal[0],goal[1],x,y)
+    if (bObstacle):
+        timer = timer + 1
+        if timer > time_obs:
+            bObstacle = False
+            timer = 0
+    else:
+        yaw = target_angle
+    print (target_angle,target_vec,target_dist,x,y,goal[0],goal[1])
 
     if (np.average(img2d_box) < coll_thres):
         img2d_box_l = img2d_box = img2d[int((h-roi_h)/2):int((h+roi_h)/2),int((w-roi_w)/2)-50:int((w+roi_w)/2)-50]
@@ -101,10 +112,12 @@ for z in range(10000): # do few times
             ##Go LEFT
             #y_offset = y_offset-1
             yaw = yaw - radians(10)
+            bObstacle = True
         else:
             ##Go RIGHT
             #y_offset = y_offset+1
             yaw = yaw + radians(10)
+            bObstacle = true
         print('yaw: ', yaw)
 
     # write to png 
