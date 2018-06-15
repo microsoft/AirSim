@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>samples\computer_vision\objects.py</StartupFile>
+    <StartupFile>samples\computer_vision\segmentation.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -64,7 +64,7 @@
     <Compile Include="samples\car\drive_straight.py" />
     <Compile Include="samples\car\hello_car.py" />
     <Compile Include="samples\car\reset_test_car.py" />
-    <Compile Include="samples\computer_vision\opencv_show.py" />
+    <Compile Include="samples\multirotor\opencv_show.py" />
     <Compile Include="samples\computer_vision\cv_mode.py" />
     <Compile Include="samples\multirotor\point_cloud.py" />
     <Compile Include="samples\computer_vision\segmentation.py" />

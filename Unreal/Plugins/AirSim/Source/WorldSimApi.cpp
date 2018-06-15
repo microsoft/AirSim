@@ -38,7 +38,11 @@ bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int obje
 
 int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
 {
-    return UAirBlueprintLib::GetMeshStencilID(mesh_name);
+    int result;
+    UAirBlueprintLib::RunCommandOnGameThread([&mesh_name, &result]() {
+        result = UAirBlueprintLib::GetMeshStencilID(mesh_name);
+    }, true);
+    return result;
 }
 
 void WorldSimApi::printLogMessage(const std::string& message,
@@ -49,8 +53,12 @@ void WorldSimApi::printLogMessage(const std::string& message,
 
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
-    AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
-    return actor ? simmode_->getGlobalNedTransform().toLocalNed(actor->GetActorTransform())
-        : Pose::nanPose();
+    Pose result;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
+        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        result = actor ? simmode_->getGlobalNedTransform().toLocalNed(actor->GetActorTransform())
+            : Pose::nanPose();
+    }, true);
+    return result;
 }
 

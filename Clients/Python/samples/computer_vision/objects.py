@@ -4,6 +4,8 @@
 import setup_path 
 import airsim
 
+import pprint
+
 client = airsim.VehicleClient()
 client.confirmConnection()
 
