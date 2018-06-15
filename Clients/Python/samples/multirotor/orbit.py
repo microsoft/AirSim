@@ -213,11 +213,11 @@ class OrbitNavigator:
         # first hold our current position so drone doesn't try and keep flying while we take the picture.
         pos = self.getPosition()
         self.client.moveToPosition(pos.x, pos.y, self.z, 0.5, 10, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, self.camera_heading))
-        responses = self.client.simGetImages([ImageRequest(1, AirSimImageType.Scene)]) #scene vision image in png format
+        responses = self.client.simGetImages([airsim.ImageRequest(1, airsim.ImageType.Scene)]) #scene vision image in png format
         response = responses[0]
         filename = "photo_" + str(self.snapshot_index)
         self.snapshot_index += 1
-        AirSimClientBase.write_file(os.path.normpath(filename + '.png'), response.image_data_uint8)        
+        airsim.write_file(os.path.normpath(filename + '.png'), response.image_data_uint8)        
         print("Saved snapshot: {}".format(filename))
         self.start_time = time.time()  # cause smooth ramp up to happen again after photo is taken.
 

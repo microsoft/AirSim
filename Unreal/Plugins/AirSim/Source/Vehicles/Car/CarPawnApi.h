@@ -10,7 +10,7 @@ class CarPawnApi : public msr::airlib::CarApiBase {
 public:
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
-    CarPawnApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint);
+    CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint);
 
     virtual void setCarControls(const CarApiBase::CarControls& controls) override;
 
@@ -31,8 +31,9 @@ public:
 
 private:
     UWheeledVehicleMovementComponent* movement_;
-    msr::airlib::GeoPoint  home_geopoint_;
     bool api_control_enabled_ = false;
     CarControls last_controls_;
     ACarPawn* pawn_;
+    const msr::airlib::Kinematics::State* pawn_kinematics_;
+    msr::airlib::GeoPoint  home_geopoint_;
 };

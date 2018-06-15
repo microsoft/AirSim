@@ -1,11 +1,13 @@
-from AirSimClient import *
-import cv2
+import setup_path 
+import airsim
+
+import cv2 #conda install opencv
 import time
 
 # connect to the AirSim simulator 
-client = CarClient()
+client = airsim.CarClient()
 client.confirmConnection()
-car_controls = CarControls()
+car_controls = airsim.CarControls()
 
 start = time.time()
 
@@ -15,8 +17,8 @@ print("Time,Speed,Gear,PX,PY,PZ,OW,OX,OY,OZ")
 while (cv2.waitKey(1) & 0xFF) == 0xFF:
     # get state of the car
     car_state = client.getCarState()
-    pos = car_state.kinematics_true.position
-    orientation = car_state.kinematics_true.orientation
+    pos = car_state.kinematics_estimated.position
+    orientation = car_state.kinematics_estimated.orientation
     milliseconds = (time.time() - start) * 1000
     print("%s,%d,%d,%f,%f,%f,%f,%f,%f,%f" % \
        (milliseconds, car_state.speed, car_state.gear, pos.x_val, pos.y_val, pos.z_val, 

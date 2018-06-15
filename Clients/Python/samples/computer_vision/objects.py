@@ -1,8 +1,10 @@
-from AirSimClient import *
-import pprint
+# In settings.json first activate computer vision mode: 
+# https://github.com/Microsoft/AirSim/blob/master/docs/image_apis.md#computer-vision-mode
 
+import setup_path 
+import airsim
 
-client = MultirotorClient()
+client = airsim.VehicleClient()
 client.confirmConnection()
 
 #Go to object in Unreal Editor, click on it and then look for Tags property. 

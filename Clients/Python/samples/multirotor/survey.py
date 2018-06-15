@@ -41,15 +41,15 @@ class SurveyNavigator:
         distance = 0
         while x < self.boxsize:
             distance += self.boxsize 
-            path.append(Vector3r(x, self.boxsize, z))
+            path.append(airsim.Vector3r(x, self.boxsize, z))
             x += self.stripewidth            
             distance += self.stripewidth 
-            path.append(Vector3r(x, self.boxsize, z))
+            path.append(airsim.Vector3r(x, self.boxsize, z))
             distance += self.boxsize 
-            path.append(Vector3r(x, -self.boxsize, z)) 
+            path.append(airsim.Vector3r(x, -self.boxsize, z)) 
             x += self.stripewidth  
             distance += self.stripewidth 
-            path.append(Vector3r(x, -self.boxsize, z))
+            path.append(airsim.Vector3r(x, -self.boxsize, z))
             distance += self.boxsize 
         
         print("starting survey, estimated distance is " + str(distance))

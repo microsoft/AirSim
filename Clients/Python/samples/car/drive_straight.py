@@ -1,4 +1,6 @@
-from AirSimClient import *
+import setup_path 
+import airsim
+
 #from keras.models import load_model
 import sys
 import numpy as np
@@ -11,10 +13,10 @@ import numpy as np
 #model = load_model(sys.argv[1])
 
 # connect to the AirSim simulator 
-client = CarClient()
+client = airsim.CarClient()
 client.confirmConnection()
 client.enableApiControl(True)
-car_controls = CarControls()
+car_controls = airsim.CarControls()
 
 car_controls.steering = 0
 car_controls.throttle = 0
@@ -24,7 +26,7 @@ image_buf = np.zeros((1, 144, 256, 3))
 state_buf = np.zeros((1,4))
 
 def get_image():
-    image = client.simGetImages([ImageRequest(0, AirSimImageType.Scene, False, False)])[0]
+    image = client.simGetImages([airsim.ImageRequest(0, airsim.ImageType.Scene, False, False)])[0]
     image1d = np.fromstring(image.image_data_uint8, dtype=np.uint8)
     image_rgba = image1d.reshape(image.height, image.width, 4)
     image_rgba = np.flipud(image_rgba)

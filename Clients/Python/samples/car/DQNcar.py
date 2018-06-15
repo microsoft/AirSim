@@ -1,9 +1,13 @@
-from AirSimClient import *
+import setup_path 
+import airsim
 
+import math
+import time
 from argparse import ArgumentParser
 
+#import gym #pip install gym
 import numpy as np
-from cntk.core import Value
+from cntk.core import Value #pip install cntk-gpu
 from cntk.initializer import he_uniform
 from cntk.layers import Sequential, Convolution2D, Dense, default_options
 from cntk.layers.typing import Signature, Tensor
@@ -13,7 +17,7 @@ from cntk.ops import abs, argmax, element_select, less, relu, reduce_max, reduce
 from cntk.ops.functions import CloneMethod, Function
 from cntk.train import Trainer
 
-import csv
+import pickle
 
 class ReplayMemory(object):
     """
@@ -250,7 +254,7 @@ class DeepQAgent(object):
     def __init__(self, input_shape, nb_actions,
                  gamma=0.99, explorer=LinearEpsilonAnnealingExplorer(1, 0.1, 1000000),
                  learning_rate=0.00025, momentum=0.95, minibatch_size=32,
-                 memory_size=500000, train_after=10000, train_interval=4, target_update_interval=10000,
+                 memory_size=500000, train_after=200000, train_interval=4, target_update_interval=10000,
                  monitor=True):
         self.input_shape = input_shape
         self.nb_actions = nb_actions
@@ -318,6 +322,8 @@ class DeepQAgent(object):
         self._metrics_writer = TensorBoardProgressWriter(freq=1, log_dir='metrics', model=criterion) if monitor else None
         self._learner = l_sgd
         self._trainer = Trainer(criterion, (criterion, None), l_sgd, self._metrics_writer)
+
+        #self._trainer.restore_from_checkpoint('models/oldmodels/model800000')
 
     def act(self, state):
         """ This allows the agent to select the next action to perform in regard of the current state of the environment.
@@ -392,7 +398,6 @@ class DeepQAgent(object):
         if agent_step >= self._train_after:
             if (agent_step % self._train_interval) == 0:
                 pre_states, actions, post_states, rewards, terminals = self._memory.minibatch(self._minibatch_size)
-
                 self._trainer.train_minibatch(
                     self._trainer.loss_function.argument_map(
                         pre_states=pre_states,
@@ -408,7 +413,7 @@ class DeepQAgent(object):
                     self._target_net = self._action_value_net.clone(CloneMethod.freeze)
                     filename = "models\model%d" % agent_step
                     self._trainer.save_checkpoint(filename)
-
+    
     def _plot_metrics(self):
         """Plot current buffers accumulated values to visualize agent learning
         """
@@ -422,6 +427,7 @@ class DeepQAgent(object):
 
         self._metrics_writer.write_value('Sum rewards per ep.', sum(self._episode_rewards), self._num_actions_taken)
 
+
 def transform_input(responses):
     img1d = np.array(responses[0].image_data_float, dtype=np.float)
     img1d = 255/np.maximum(np.ones(img1d.size), img1d)
@@ -434,76 +440,68 @@ def transform_input(responses):
     return im_final
 
 def interpret_action(action):
-    scaling_factor = 0.25
+    car_controls.brake = 0
+    car_controls.throttle = 1
     if action == 0:
-        quad_offset = (0, 0, 0)
+        car_controls.throttle = 0
+        car_controls.brake = 1
     elif action == 1:
-        quad_offset = (scaling_factor, 0, 0)
+        car_controls.steering = 0
     elif action == 2:
-        quad_offset = (0, scaling_factor, 0)
+        car_controls.steering = 0.5
     elif action == 3:
-        quad_offset = (0, 0, scaling_factor)
+        car_controls.steering = -0.5
     elif action == 4:
-        quad_offset = (-scaling_factor, 0, 0)    
-    elif action == 5:
-        quad_offset = (0, -scaling_factor, 0)
-    elif action == 6:
-        quad_offset = (0, 0, -scaling_factor)
-    
-    return quad_offset
+        car_controls.steering = 0.25
+    else:
+        car_controls.steering = -0.25
+    return car_controls
 
-def compute_reward(quad_state, quad_vel, collision_info):
-    thresh_dist = 7
-    beta = 1
 
-    z = -10
-    pts = [np.array([-.55265, -31.9786, -19.0225]), np.array([48.59735, -63.3286, -60.07256]), np.array([193.5974, -55.0786, -46.32256]), np.array([369.2474, 35.32137, -62.5725]), np.array([541.3474, 143.6714, -32.07256])]
+def compute_reward(car_state):
+    MAX_SPEED = 300
+    MIN_SPEED = 10
+    thresh_dist = 3.5
+    beta = 3
 
-    quad_pt = np.array(list((quad_state.x_val, quad_state.y_val, quad_state.z_val)))
+    z = 0
+    pts = [np.array([0, -1, z]), np.array([130, -1, z]), np.array([130, 125, z]), np.array([0, 125, z]), np.array([0, -1, z]), np.array([130, -1, z]), np.array([130, -128, z]), np.array([0, -128, z]), np.array([0, -1, z])]
+    pd = car_state.kinematics_estimated.position
+    car_pt = np.array([pd.x_val, pd.y_val, pd.z_val])
 
-    if collision_info.has_collided:
-        reward = -100
-    else:    
-        dist = 10000000
-        for i in range(0, len(pts)-1):
-            dist = min(dist, np.linalg.norm(np.cross((quad_pt - pts[i]), (quad_pt - pts[i+1])))/np.linalg.norm(pts[i]-pts[i+1]))
+    dist = 10000000
+    for i in range(0, len(pts)-1):
+        dist = min(dist, np.linalg.norm(np.cross((car_pt - pts[i]), (car_pt - pts[i+1])))/np.linalg.norm(pts[i]-pts[i+1]))
 
-        #print(dist)
-        if dist > thresh_dist:
-            reward = -10
-        else:
-            reward_dist = (math.exp(-beta*dist) - 0.5) 
-            reward_speed = (np.linalg.norm([quad_vel.x_val, quad_vel.y_val, quad_vel.z_val]) - 0.5)
-            reward = reward_dist + reward_speed
+    #print(dist)
+    if dist > thresh_dist:
+        reward = -3
+    else:
+        reward_dist = (math.exp(-beta*dist) - 0.5)
+        reward_speed = (((car_state.speed - MIN_SPEED)/(MAX_SPEED - MIN_SPEED)) - 0.5)
+        reward = reward_dist + reward_speed
 
     return reward
 
-def isDone(reward):
+def isDone(car_state, car_controls, reward):
     done = 0
-    if  reward <= -10:
+    if reward < -1:
         done = 1
+    if car_controls.brake == 0:
+        if car_state.speed <= 5:
+            done = 1
     return done
 
-initX = -.55265
-initY = -31.9786
-initZ = -19.0225
-
-# connect to the AirSim simulator 
-client = MultirotorClient()
+client = airsim.CarClient()
 client.confirmConnection()
 client.enableApiControl(True)
-client.armDisarm(True)
-
-client.takeoff()
-client.moveToPosition(initX, initY, initZ, 5)
-client.moveByVelocity(1, -0.67, -0.8, 5)
-time.sleep(0.5)
+car_controls = airsim.CarControls()
 
 # Make RL agent
 NumBufferFrames = 4
 SizeRows = 84
 SizeCols = 84
-NumActions = 7
+NumActions = 6
 agent = DeepQAgent((NumBufferFrames, SizeRows, SizeCols), NumActions, monitor=True)
 
 # Train
@@ -511,31 +509,28 @@ epoch = 100
 current_step = 0
 max_steps = epoch * 250000
 
-responses = client.simGetImages([ImageRequest(3, AirSimImageType.DepthPerspective, True, False)])
+responses = client.simGetImages([airsim.ImageRequest(0, airsim.ImageType.DepthPerspective, True, False)])
 current_state = transform_input(responses)
-
 while True:
     action = agent.act(current_state)
-    quad_offset = interpret_action(action)
-    quad_vel = client.getVelocity()
-    client.moveByVelocity(quad_vel.x_val+quad_offset[0], quad_vel.y_val+quad_offset[1], quad_vel.z_val+quad_offset[2], 5)
-    time.sleep(0.5)
- 
-    quad_state = client.getPosition()
-    quad_vel = client.getVelocity()
-    collision_info = client.getCollisionInfo()
-    reward = compute_reward(quad_state, quad_vel, collision_info)
-    done = isDone(reward)
-    print('Action, Reward, Done:', action, reward, done)
+    car_controls = interpret_action(action)
+    client.setCarControls(car_controls)
+
+    car_state = client.getCarState()
+    reward = compute_reward(car_state) 
+    done = isDone(car_state, car_controls, reward)
+    if done == 1:
+        reward = -10
 
     agent.observe(current_state, action, reward, done)
     agent.train()
 
     if done:
-        client.moveToPosition(initX, initY, initZ, 5)
-        client.moveByVelocity(1, -0.67, -0.8, 5)
-        time.sleep(0.5)
+        client.reset()
+        car_control = interpret_action(1)
+        client.setCarControls(car_control)
+        time.sleep(1)
         current_step +=1
 
-    responses = client.simGetImages([ImageRequest(3, AirSimImageType.DepthPerspective, True, False)])
+    responses = client.simGetImages([airsim.ImageRequest(0, airsim.ImageType.DepthPerspective, True, False)])
     current_state = transform_input(responses)

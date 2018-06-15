@@ -1,11 +1,14 @@
-from AirSimClient import *
+import setup_path 
+import airsim
+
 import pprint
+import time
 
 # connect to the AirSim simulator 
-client = CarClient()
+client = airsim.CarClient()
 client.confirmConnection()
 client.enableApiControl(True)
-car_controls = CarControls()
+car_controls = airsim.CarControls()
 
 client.reset()
 
@@ -21,7 +24,7 @@ while True:
     car_state = client.getCarState()
     print("Speed %d, Gear %d" % (car_state.speed, car_state.gear))
 
-    collision_info = client.getCollisionInfo()
+    collision_info = client.simGetCollisionInfo()
 
     if collision_info.has_collided:
         print("Collision at pos %s, normal %s, impact pt %s, penetration %f, name %s, obj id %d" % (

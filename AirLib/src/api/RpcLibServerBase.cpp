@@ -144,7 +144,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::CollisionInfo(collision_info);
     });
 
-    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::Pose {
+    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Pose {
         const auto& pose = getWorldSimApi()->getObjectPose(object_name); 
         return RpcLibAdapatorsBase::Pose(pose);
     });

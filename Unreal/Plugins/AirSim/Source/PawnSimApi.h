@@ -59,6 +59,8 @@ public: //implementation of VehicleSimApiBase
 
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);
+    const msr::airlib::Kinematics::State* getPawnKinematics() const;
+    void setPoseInternal(const Pose& pose, bool ignore_collision);
 
 public: //Unreal specific methods
     PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,

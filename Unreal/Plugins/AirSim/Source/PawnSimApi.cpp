@@ -380,9 +380,11 @@ msr::airlib::CameraInfo PawnSimApi::getCameraInfo(const std::string& camera_name
 
 void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr::airlib::Quaternionr& orientation)
 {
-    APIPCamera* camera = getCamera(camera_name);
-    FQuat quat = ned_transform_.fromNed(orientation);
-    camera->SetActorRelativeRotation(quat);
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, orientation]() {
+        APIPCamera* camera = getCamera(camera_name);
+        FQuat quat = ned_transform_.fromNed(orientation);
+        camera->SetActorRelativeRotation(quat);
+    }, true);
 }
 
 //parameters in NED frame
@@ -399,6 +401,13 @@ PawnSimApi::Pose PawnSimApi::toPose(const FVector& u_position, const FQuat& u_qu
 }
 
 void PawnSimApi::setPose(const Pose& pose, bool ignore_collision)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, pose, ignore_collision]() {
+        setPoseInternal(pose, ignore_collision);
+    }, true);
+}
+
+void PawnSimApi::setPoseInternal(const Pose& pose, bool ignore_collision)
 {
     //translate to new PawnSimApi position & orientation from NED to NEU
     FVector position = ned_transform_.fromLocalNed(pose.position);
@@ -453,6 +462,11 @@ bool PawnSimApi::canTeleportWhileMove()  const
     //     we will flip-flop was_last_move_teleport flag so on one tick we have passthrough and other tick we don't
     //     without flip flopping, collisions can't be detected
     return !state_.collisions_enabled || (state_.collision_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
+}
+
+const msr::airlib::Kinematics::State* PawnSimApi::getPawnKinematics() const
+{
+    return &kinematics_;
 }
 
 void PawnSimApi::updateKinematics(float dt)
