@@ -1,15 +1,15 @@
 from AirSimClient import *
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 
 client.armDisarm(True)
 
-landed = client.getLandedState()
-if landed == LandedState.Landed:
+landed = client.getMultirotorState().landed_state
+if landed == airsim.LandedState.Landed:
     print("taking off...")
-    client.takeoff()
+    client.takeoffAsync().join()
 else:
     print("already flying...")
-    client.hover()
+    client.hoverAsync().join()

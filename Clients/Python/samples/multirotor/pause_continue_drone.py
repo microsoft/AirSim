@@ -1,18 +1,18 @@
 from AirSimClient import *
 
 # connect to the AirSim simulator
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
 print("Taking off")
-client.moveByVelocityZ(0, 0, -20, 8)
+client.moveByVelocityZAsync(0, 0, -20, 8).join()
 time.sleep(3)    
 
 for i in range(1, 6):
     print("Starting command to run for 15sec")
-    client.moveByVelocityZ(-1*i, -1*i, -20-i, 15)
+    client.moveByVelocityZAsync(-1*i, -1*i, -20-i, 15).join()
     time.sleep(5) #run
     print("Pausing after 5sec")
     client.simPause(True)

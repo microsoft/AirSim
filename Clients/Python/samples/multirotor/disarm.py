@@ -1,4 +1,5 @@
-from AirSimClient import *
+import setup_path 
+import airsim
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.armDisarm(False)

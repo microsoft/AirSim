@@ -9,7 +9,7 @@ class SurveyNavigator:
         self.stripewidth = args.stripewidth
         self.altitude = args.altitude
         self.velocity = args.speed
-        self.client = MultirotorClient()
+        self.client = airsim.MultirotorClient()
         self.client.confirmConnection()
         self.client.enableApiControl(True)
 
@@ -17,23 +17,23 @@ class SurveyNavigator:
         print("arming the drone...")
         self.client.armDisarm(True)
 
-        landed = self.client.getLandedState()
-        if landed == LandedState.Landed:
+        landed = self.client.getMultirotorState().landed_state
+        if landed == airsim.LandedState.Landed:
             print("taking off...")
-            self.client.takeoff()
+            self.client.takeoffAsync().join()
         
         # AirSim uses NED coordinates so negative axis is up.
         x = -self.boxsize
         z = -self.altitude
 
         print("climbing to altitude: " + str(self.altitude))
-        self.client.moveToPosition(0, 0, z, self.velocity)
+        self.client.moveToPositionAsync(0, 0, z, self.velocity).join()
 
         print("flying to first corner of survey box")
-        self.client.moveToPosition(x, -self.boxsize, z, self.velocity)
+        self.client.moveToPositionAsync(x, -self.boxsize, z, self.velocity).join()
         
         # let it settle there a bit.
-        self.client.hover()
+        self.client.hoverAsync().join()
         time.sleep(2)
 
         # now compute the survey path required to fill the box 
@@ -56,18 +56,18 @@ class SurveyNavigator:
         trip_time = distance / self.velocity
         print("estimated survey time is " + str(trip_time))
         try:
-            result = self.client.moveOnPath(path, self.velocity, trip_time, DrivetrainType.ForwardOnly, YawMode(True,0), self.velocity + (self.velocity/2), 1)
+            result = self.client.moveOnPath(path, self.velocity, trip_time, airsim.DrivetrainType.ForwardOnly, airsim.YawMode(True,0), self.velocity + (self.velocity/2), 1)
         except:
             errorType, value, traceback = sys.exc_info()
             print("moveOnPath threw exception: " + str(value))
             pass
 
         print("flying back home")
-        self.client.moveToPosition(0, 0, z, self.velocity)
+        self.client.moveToPositionAsync(0, 0, z, self.velocity).join()
         
         if z < -5:
             print("descending")
-            self.client.moveToPosition(0, 0, -5, 2)
+            self.client.moveToPositionAsync(0, 0, -5, 2).join()
 
         print("landing...")
         self.client.land()

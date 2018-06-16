@@ -1,14 +1,15 @@
-from AirSimClient import *
+import setup_path 
+import airsim
 
 # connect to the AirSim simulator 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
 
 for idx in range(3000):
-    client.moveToPosition(-10, 10, -10, 5)
+    client.moveToPositionAsync(0, 0, -10, 5).join()
     client.reset()
     client.enableApiControl(True)
     print("%d" % idx)

@@ -2,13 +2,13 @@ from AirSimClient import *
 
 
 # connect to the AirSim simulator
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
 print("fly")
-client.moveToPosition(0, 0, -10, 5)
+client.moveToPositionAsync(0, 0, -10, 5).join()
 time.sleep(5)   # let car drive a bit
 
 print("reset")
@@ -19,5 +19,5 @@ time.sleep(5)   # let car drive a bit
 
 
 print("fly")
-client.moveToPosition(0, 0, -10, 5)
+client.moveToPositionAsync(0, 0, -10, 5).join()
 time.sleep(5)   # let car drive a bit

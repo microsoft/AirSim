@@ -2,15 +2,16 @@
 For connecting to the AirSim drone environment and testing API functionality
 """
 
+import setup_path 
+import airsim
+
+import numpy as np
 import os
 import tempfile
 import pprint
 
-from AirSimClient import *
-
-
 # connect to the AirSim simulator
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
@@ -36,10 +37,10 @@ print("state: %s" % pprint.pformat(state))
 airsim.wait_key('Press any key to take images')
 # get camera images from the car
 responses = client.simGetImages([
-    airsim.ImageRequest(0, airsim.ImageType.DepthVis),  #depth visualization image
-    airsim.ImageRequest(1, airsim.ImageType.DepthPerspective, True), #depth in perspective projection
-    airsim.ImageRequest(1, airsim.ImageType.Scene), #scene vision image in png format
-    airsim.ImageRequest(1, airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
+    airsim.ImageRequest("0", airsim.ImageType.DepthVis),  #depth visualization image
+    airsim.ImageRequest("1", airsim.ImageType.DepthPerspective, True), #depth in perspective projection
+    airsim.ImageRequest("1", airsim.ImageType.Scene), #scene vision image in png format
+    airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
 print('Retrieved images: %d' % len(responses))
 
 tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_drone")
@@ -66,7 +67,7 @@ for idx, response in enumerate(responses):
         img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
         img_rgba = np.flipud(img_rgba) #original image is flipped vertically
         img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
-        airsim.VehicleClient.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png
+        airsim.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png
 
 airsim.wait_key('Press any key to reset to original state')
 

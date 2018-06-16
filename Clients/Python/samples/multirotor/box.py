@@ -1,12 +1,14 @@
-from AirSimClient import *
+import setup_path 
+import airsim
+
 import sys
 import time
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
-client.takeoff()
+client.takeoffAsync().join()
 
 print("Flying a small square box using moveByVelocityZ")
 print("Try pressing 't' in the AirSim view to see a pink trace of the flight")
@@ -26,21 +28,21 @@ delay = duration * speed
 vx = speed
 vy = 0
 print("moving by velocity vx=" + str(vx) + ", vy=" + str(vy) + ", yaw=90")
-client.moveByVelocityZ(vx,vy,z,duration, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, 90))
+client.moveByVelocityZAsync(vx,vy,z,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, 90)).join()
 time.sleep(delay)
 vx = 0
 vy = speed
 print("moving by velocity vx=" + str(vx) + ", vy=" + str(vy)+ ", yaw=180")
-client.moveByVelocityZ(vx,vy,z,duration, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, 180))
+client.moveByVelocityZAsync(vx,vy,z,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, 180)).join()
 time.sleep(delay)
 vx = -speed
 vy = 0
 print("moving by velocity vx=" + str(vx) + ", vy=" + str(vy)+ ", yaw=270")
-client.moveByVelocityZ(vx, vy, z,duration, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, 270))
+client.moveByVelocityZAsync(vx, vy, z,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, 270)).join()
 time.sleep(delay)
 vx = 0
 vy = -speed
 print("moving by velocity vx=" + str(vx) + ", vy=" + str(vy) + ", yaw=0")
-client.moveByVelocityZ(vx, vy,z,duration, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, 0))
+client.moveByVelocityZAsync(vx, vy,z,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, 0)).join()
 time.sleep(delay)
-client.hover()
+client.hoverAsync().join()

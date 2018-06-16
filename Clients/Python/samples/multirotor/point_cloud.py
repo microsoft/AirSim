@@ -41,10 +41,10 @@ def savePointCloud(image, fileName):
 for arg in sys.argv[1:]:
   cloud.txt = arg
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 
 while True:
-    rawImage = client.simGetImage(0, airsim.ImageType.DepthPerspective)
+    rawImage = client.simGetImage("0", airsim.ImageType.DepthPerspective)
     if (rawImage is None):
         print("Camera is not returning image, please check airsim for error messages")
         sys.exit(0)

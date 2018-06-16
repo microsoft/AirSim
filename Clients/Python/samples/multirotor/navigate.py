@@ -1,18 +1,21 @@
 # use open cv to show new images from AirSim 
 
-from AirSimClient import *
+import setup_path 
+import airsim
+
 # requires Python 3.5.3 :: Anaconda 4.4.0
 # pip install opencv-python
 import cv2
 import time
 import math
 import sys
+import numpy as np
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
-client.takeoff()
+client.takeoffAsync().join()
 
 # you must first press "1" in the AirSim view to turn on the depth capture
 
@@ -26,7 +29,7 @@ help = False
 
 while True:
     # this will return png width= 256, height= 144
-    result = client.simGetImage(0, airsim.ImageType.DepthVis)
+    result = client.simGetImage("0", airsim.ImageType.DepthVis)
     if (result == "\0"):
         if (not help):
             help = True
@@ -52,11 +55,10 @@ while True:
         current = 255 - maxes[2]
 
         if (current < 20):
-            print("woops - we are about to crash, so stopping!")
-            client.hover()
-            sys.exit(0)
+            client.hoverAsync().join()
+            airsim.wait_key("whoops - we are about to crash, so stopping!")
     
-        pitch, roll, yaw  = client.getPitchRollYaw()
+        pitch, roll, yaw  = airsim.to_eularian_angles(client.simGetVehiclePose().orientation)
 
         if (distance > current + 30):
         
@@ -85,7 +87,7 @@ while True:
             vy = math.sin(yaw);
 
         print ("distance=", current)
-        client.moveByVelocityZ(vx, vy,-6, 1, DrivetrainType.ForwardOnly, YawMode(False, 0))
+        client.moveByVelocityZAsync(vx, vy,-6, 1, airsim.DrivetrainType.ForwardOnly, airsim.YawMode(False, 0)).join()
 
         x = int(driving * 50)
         cv2.rectangle(png, (x,0), (x+50,50), (0,255,0), 2)

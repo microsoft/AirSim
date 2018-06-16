@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>samples\computer_vision\segmentation.py</StartupFile>
+    <StartupFile>samples\multirotor\orbit.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -78,6 +78,7 @@
     <Compile Include="samples\multirotor\path.py" />
     <Compile Include="samples\multirotor\pause_continue_drone.py" />
     <Compile Include="samples\multirotor\reset_test_drone.py" />
+    <Compile Include="samples\multirotor\setup_path.py" />
     <Compile Include="samples\multirotor\survey.py" />
     <Compile Include="samples\multirotor\takeoff.py" />
     <Compile Include="setup.py">

@@ -2,22 +2,22 @@ from AirSimClient import *
 import sys
 import time
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 
 client.armDisarm(True)
 
-landed = client.getLandedState()
-if landed == LandedState.Landed:
+landed = client.getMultirotorState().landed_state
+if landed == airsim.LandedState.Landed:
     print("taking off...")
-    x = client.takeoff()
+    x = client.takeoffAsync().join()
     if not x:
         print("take off failed")        
         client.armDisarm(False)
         client.enableApiControl(False)
 else:
-    client.hover()
+    client.hoverAsync().join()
 
 # AirSim uses NED coordinates so negative axis is up.
 # z of -7 is 7 meters above the original launch point.
@@ -28,8 +28,8 @@ z = -7
 # this method is async and we are not waiting for the result since we are passing timeout_sec=0.
 result = client.moveOnPath([airsim.Vector3r(0,-253,z),airsim.Vector3r(125,-253,z),airsim.Vector3r(125,0,z),airsim.Vector3r(0,0,z),airsim.Vector3r(0,0,-20)], 
                         12, 120, 
-                        DrivetrainType.ForwardOnly, YawMode(False,0), 20, 1)
-client.moveToPosition(0,0,z,1)
+                        DrivetrainType.ForwardOnly, airsim.YawMode(False,0), 20, 1)
+client.moveToPositionAsync(0,0,z,1).join()
 client.land()
 client.armDisarm(False)
 client.enableApiControl(False)

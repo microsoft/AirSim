@@ -1,8 +1,12 @@
-from AirSimClient import *
+import setup_path 
+import airsim
 
 from argparse import ArgumentParser
 
 import numpy as np
+import time
+import math
+
 from cntk.core import Value
 from cntk.initializer import he_uniform
 from cntk.layers import Sequential, Convolution2D, Dense, default_options
@@ -19,7 +23,7 @@ class ReplayMemory(object):
     """
     ReplayMemory keeps track of the environment dynamic.
     We store all the transitions (s(t), action, s(t+1), reward, done).
-    The replay memory allows us to efficiently sample minibatches from it, and generate the correct state representation
+    The replay memory allows us to efficiently sample mini-batches from it, and generate the correct state representation
     (w.r.t the number of previous frames needed).
     """
     def __init__(self, size, sample_shape, history_length=4):
@@ -62,10 +66,10 @@ class ReplayMemory(object):
     def sample(self, size):
         """ Generate size random integers mapping indices in the memory.
             The returned indices can be retrieved using #get_state().
-            See the method #minibatch() if you want to retrieve samples directly.
+            See the method #mini-batch() if you want to retrieve samples directly.
 
         Attributes:
-            size (int): The minibatch size
+            size (int): The mini-batch size
 
         Returns:
              Indexes of the sampled states ([int])
@@ -489,14 +493,14 @@ initY = -31.9786
 initZ = -19.0225
 
 # connect to the AirSim simulator 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
-client.takeoff()
-client.moveToPosition(initX, initY, initZ, 5)
-client.moveByVelocity(1, -0.67, -0.8, 5)
+client.takeoffAsync().join()
+client.moveToPositionAsync(initX, initY, initZ, 5).join()
+client.moveByVelocityAsync(1, -0.67, -0.8, 5).join()
 time.sleep(0.5)
 
 # Make RL agent
@@ -517,12 +521,12 @@ current_state = transform_input(responses)
 while True:
     action = agent.act(current_state)
     quad_offset = interpret_action(action)
-    quad_vel = client.getVelocity()
-    client.moveByVelocity(quad_vel.x_val+quad_offset[0], quad_vel.y_val+quad_offset[1], quad_vel.z_val+quad_offset[2], 5)
+    quad_vel = client.getMultirotorState().kinematics_estimated.linear_velocity
+    client.moveByVelocityAsync(quad_vel.x_val+quad_offset[0], quad_vel.y_val+quad_offset[1], quad_vel.z_val+quad_offset[2], 5).join()
     time.sleep(0.5)
  
-    quad_state = client.getPosition()
-    quad_vel = client.getVelocity()
+    quad_state = client.getMultirotorState().kinematics_estimated.position
+    quad_vel = client.getMultirotorState().kinematics_estimated.linear_velocity
     collision_info = client.simGetCollisionInfo()
     reward = compute_reward(quad_state, quad_vel, collision_info)
     done = isDone(reward)
@@ -532,8 +536,8 @@ while True:
     agent.train()
 
     if done:
-        client.moveToPosition(initX, initY, initZ, 5)
-        client.moveByVelocity(1, -0.67, -0.8, 5)
+        client.moveToPositionAsync(initX, initY, initZ, 5).join()
+        client.moveByVelocityAsync(1, -0.67, -0.8, 5).join()
         time.sleep(0.5)
         current_step +=1
 

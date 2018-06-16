@@ -56,7 +56,7 @@ for idx, response in enumerate(responses):
         img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
         img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
         img_rgba = np.flipud(img_rgba) #original image is flipped vertically
-        #airsim.VehicleClient.write_png(os.path.normpath(filename + '.numpy.png'), img_rgba) #write to png 
+        #airsim.write_png(os.path.normpath(filename + '.numpy.png'), img_rgba) #write to png 
 
         #find unique colors
         print(np.unique(img_rgba[:,:,0], return_counts=True)) #red

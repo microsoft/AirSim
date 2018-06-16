@@ -2,16 +2,16 @@ from AirSimClient import *
 
 
 # connect to the AirSim simulator
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
-client.moveByVelocityZ(0, 0, -2, 3)
+client.moveByVelocityZAsync(0, 0, -2, 3)
 
 
 while True:
-    client.moveByVelocityZ(5, 5, -2, 1)
+    client.moveByVelocityZAsync(5, 5, -2, 1).join()
     time.sleep(10)
 
 client.armDisarm(False)

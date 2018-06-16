@@ -1,4 +1,6 @@
-from AirSimClient import *
+import setup_path 
+import airsim
+
 import sys
 import math
 import time
@@ -42,17 +44,17 @@ class OrbitNavigator:
         cx *= self.radius
         cy *= self.radius
 
-        self.client = MultirotorClient()
+        self.client = airsim.MultirotorClient()
         self.client.confirmConnection()
         self.client.enableApiControl(True)
 
-        self.home = self.getPosition()
+        self.home = self.client.getMultirotorState().kinematics_estimated.position
         # check that our home position is stable
         start = time.time()
         count = 0
         while count < 100:
             pos = self.home
-            if abs(pos.z - self.home.z) > 1:                                
+            if abs(pos.z_val - self.home.z_val) > 1:                                
                 count = 0
                 self.home = pos
                 if time.time() - start > 10:
@@ -61,34 +63,29 @@ class OrbitNavigator:
             else:
                 count += 1
 
-        self.center = self.getPosition()
-        self.center.x += cx
-        self.center.y += cy
-
-
-    def getPosition(self):
-        pos = self.client.getPosition()
-        return Position(pos)
+        self.center = self.client.getMultirotorState().kinematics_estimated.position
+        self.center.x_val += cx
+        self.center.y_val += cy
 
     def start(self):
         print("arming the drone...")
         self.client.armDisarm(True)
         
         # AirSim uses NED coordinates so negative axis is up.
-        start = self.getPosition()
-        landed = self.client.getLandedState()
-        if landed == LandedState.Landed: 
+        start = self.client.getMultirotorState().kinematics_estimated.position
+        landed = self.client.getMultirotorState().landed_state
+        if landed == airsim.LandedState.Landed: 
             self.takeoff = True
             print("taking off...")
-            self.client.takeoff()
-            start = self.getPosition()
-            z = -self.altitude + self.home.z
+            self.client.takeoffAsync().join()
+            start = self.client.getMultirotorState().kinematics_estimated.position
+            z = -self.altitude + self.home.z_val
         else:
             print("already flying so we will orbit at current altitude {}".format(start.z))                
-            z = start.z # use current altitude then
+            z = start.z_val # use current altitude then
 
-        print("climbing to position: {},{},{}".format(start.x, start.y, z))
-        self.client.moveToPosition(start.x, start.y, z, self.speed)
+        print("climbing to position: {},{},{}".format(start.x_val, start.y_val, z))
+        self.client.moveToPositionAsync(start.x_val, start.y_val, z, self.speed).join()
         self.z = z
         
         print("ramping up to speed...")
@@ -102,7 +99,7 @@ class OrbitNavigator:
 
         while count < self.iterations:
 
-            # ramp up to full speed in smooth increments so we don't start too aggresively.
+            # ramp up to full speed in smooth increments so we don't start too aggressively.
             now = time.time()
             speed = self.speed
             diff = now - self.start_time
@@ -115,36 +112,36 @@ class OrbitNavigator:
             lookahead_angle = speed / self.radius            
 
             # compute current angle
-            pos = self.getPosition()
-            dx = pos.x - self.center.x
-            dy = pos.y - self.center.y
+            pos = self.client.getMultirotorState().kinematics_estimated.position
+            dx = pos.x_val - self.center.x_val
+            dy = pos.y_val - self.center.y_val
             actual_radius = math.sqrt((dx*dx) + (dy*dy))
             angle_to_center = math.atan2(dy, dx)
 
             camera_heading = (angle_to_center - math.pi) * 180 / math.pi 
 
             # compute lookahead
-            lookahead_x = self.center.x + self.radius * math.cos(angle_to_center + lookahead_angle)
-            lookahead_y = self.center.y + self.radius * math.sin(angle_to_center + lookahead_angle)
+            lookahead_x = self.center.x_val + self.radius * math.cos(angle_to_center + lookahead_angle)
+            lookahead_y = self.center.y_val + self.radius * math.sin(angle_to_center + lookahead_angle)
 
-            vx = lookahead_x - pos.x
-            vy = lookahead_y - pos.y
+            vx = lookahead_x - pos.x_val
+            vy = lookahead_y - pos.y_val
 
             if self.track_orbits(angle_to_center * 180 / math.pi):
                 count += 1
                 print("completed {} orbits".format(count))
             
             self.camera_heading = camera_heading
-            self.client.moveByVelocityZ(vx, vy, z, 1, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, camera_heading))
+            self.client.moveByVelocityZAsync(vx, vy, z, 1, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, camera_heading)).join()
 
 
-        self.client.moveToPosition(start.x, start.y, z, 2)
+        self.client.moveToPositionAsync(start.x_val, start.y_val, z, 2).join()
 
         if self.takeoff:            
             # if we did the takeoff then also do the landing.
-            if z < self.home.z:
+            if z < self.home.z_val:
                 print("descending")
-                self.client.moveToPosition(start.x, start.y, self.home.z - 5, 2)
+                self.client.moveToPositionAsync(start.x_val, start.y_val, self.home.z_val - 5, 2).join()
 
             print("landing...")
             self.client.land()
@@ -211,8 +208,9 @@ class OrbitNavigator:
 
     def take_snapshot(self):
         # first hold our current position so drone doesn't try and keep flying while we take the picture.
-        pos = self.getPosition()
-        self.client.moveToPosition(pos.x, pos.y, self.z, 0.5, 10, DrivetrainType.MaxDegreeOfFreedom, YawMode(False, self.camera_heading))
+        pos = self.client.getMultirotorState().kinematics_estimated.position
+        self.client.moveToPositionAsync(pos.x_val, pos.y_val, self.z, 0.5, 10, airsim.DrivetrainType.MaxDegreeOfFreedom, 
+            airsim.YawMode(False, self.camera_heading)).join()
         responses = self.client.simGetImages([airsim.ImageRequest(1, airsim.ImageType.Scene)]) #scene vision image in png format
         response = responses[0]
         filename = "photo_" + str(self.snapshot_index)

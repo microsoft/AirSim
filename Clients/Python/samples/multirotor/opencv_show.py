@@ -33,11 +33,11 @@ if (not cameraType in cameraTypeMap):
 
 print (cameraTypeMap[cameraType])
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
-client.takeoff()
+client.takeoffAsync().join()
 
 help = False
 

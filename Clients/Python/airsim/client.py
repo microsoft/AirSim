@@ -60,7 +60,7 @@ class VehicleClient:
         client_min_ver = self.getMinRequiredClientVersion()
     
         ver_info = "Client Ver:" + str(client_ver) + " (Min Req: " + str(client_min_ver) + \
-              "), Server Ver:" + str(server_ver) + " (Min Req" + str(server_min_ver) + ")"
+              "), Server Ver:" + str(server_ver) + " (Min Req: " + str(server_min_ver) + ")"
 
         if server_ver < server_min_ver:
             print(ver_info, file=sys.stderr)
@@ -129,7 +129,7 @@ class VehicleClient:
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self):
-        super(MultirotorClient, self).__init__(ip, 41451, timeout_value = timeout)
+        super(MultirotorClient, self).__init__()
 
     def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
         return self.client.call_async('takeoff', timeout_sec, vehicle_name)  
@@ -189,9 +189,7 @@ class MultirotorClient(VehicleClient, object):
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):
     def __init__(self):
-        if (ip == ""):
-            ip = "127.0.0.1"
-        super(CarClient, self).__init__(ip, 41451, timeout_value = timeout)
+        super(CarClient, self).__init__()
 
     def setCarControls(self, controls, vehicle_name = ''):
         self.client.call('setCarControls', controls, vehicle_name)

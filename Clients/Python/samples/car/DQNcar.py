@@ -509,7 +509,7 @@ epoch = 100
 current_step = 0
 max_steps = epoch * 250000
 
-responses = client.simGetImages([airsim.ImageRequest(0, airsim.ImageType.DepthPerspective, True, False)])
+responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.DepthPerspective, True, False)])
 current_state = transform_input(responses)
 while True:
     action = agent.act(current_state)
@@ -532,5 +532,5 @@ while True:
         time.sleep(1)
         current_step +=1
 
-    responses = client.simGetImages([airsim.ImageRequest(0, airsim.ImageType.DepthPerspective, True, False)])
+    responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.DepthPerspective, True, False)])
     current_state = transform_input(responses)

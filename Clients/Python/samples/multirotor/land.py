@@ -1,12 +1,13 @@
-from AirSimClient import *
+import setup_path 
+import airsim
 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
-landed = client.getLandedState()
-if landed == LandedState.Landed:
+landed = client.getMultirotorState().landed_state
+if landed == airsim.LandedState.Landed:
     print("already landed...")
 else:
     print("landing...")

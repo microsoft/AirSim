@@ -50,10 +50,10 @@ for idx in range(3):
     
     # get camera images from the car
     responses = client.simGetImages([
-        airsim.ImageRequest(0, airsim.ImageType.DepthVis),  #depth visualization image
-        airsim.ImageRequest(1, airsim.ImageType.DepthPerspective, True), #depth in perspective projection
-        airsim.ImageRequest(1, airsim.ImageType.Scene), #scene vision image in png format
-        airsim.ImageRequest(1, airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
+        airsim.ImageRequest("0", airsim.ImageType.DepthVis),  #depth visualization image
+        airsim.ImageRequest("1", airsim.ImageType.DepthPerspective, True), #depth in perspective projection
+        airsim.ImageRequest("1", airsim.ImageType.Scene), #scene vision image in png format
+        airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
     print('Retrieved images: %d', len(responses))
 
     for response in responses:
