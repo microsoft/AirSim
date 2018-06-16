@@ -5,14 +5,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>hello_car.py</StartupFile>
+    <StartupFile>cv_navigate.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>PythonClient</Name>
     <RootNamespace>PythonClient</RootNamespace>
-    <InterpreterId>Global|ContinuumAnalytics|Anaconda35-64</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|airsim</InterpreterId>
     <InterpreterVersion>
     </InterpreterVersion>
   </PropertyGroup>
@@ -35,6 +35,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="car_monitor.py" />
+    <Compile Include="cv_capture.py" />
+    <Compile Include="cv_navigate.py" />
     <Compile Include="disarm.py" />
     <Compile Include="land.py" />
     <Compile Include="pause_continue_car.py">
@@ -95,7 +97,7 @@
     <Compile Include="survey.py" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda35-64" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|airsim" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
