@@ -129,7 +129,7 @@ For a more complete ready to run sample code please see [sample code in AirSimCl
 The camera ID 0 to 4 corresponds to center front, left front, right front, driver head, center rear respectively.
 
 ### Multirotor
-The camera ID 0 to 4 corresponds to center front, left front, right front, center downward, center rear respectively.
+The camera ID 0 to 4 corresponds to center front, right front, left front, center downward, center rear respectively.
 
 ## "Computer Vision" Mode
 
