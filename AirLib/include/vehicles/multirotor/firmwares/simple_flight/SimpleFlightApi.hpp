@@ -54,6 +54,7 @@ public: //VehicleApiBase implementation
     {
         MultirotorApiBase::update();
 
+        //update controller which will update actuator control signal
         firmware_->update();
     }
     virtual bool isApiControlEnabled() const override

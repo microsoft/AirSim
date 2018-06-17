@@ -52,7 +52,7 @@ public:
 
     virtual void update() override
     {
-        //update forces and environment as a result of last dt
+        //update forces on vertices that we will use next
         PhysicsBody::update();
 
         //Note that controller gets updated after kinematics gets updated in kinematicsUpdated

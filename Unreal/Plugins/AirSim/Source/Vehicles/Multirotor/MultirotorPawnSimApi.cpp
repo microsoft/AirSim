@@ -178,13 +178,16 @@ void MultirotorPawnSimApi::reset()
     vehicle_api_messages_.clear();
 }
 
+//this is high frequency physics tick, flier gets ticked at rendering frame rate
 void MultirotorPawnSimApi::update()
 {
+    //environment update for current position
     PawnSimApi::update();
 
-    //this is high frequency physics tick, flier gets ticked at rendering frame rate
+    //update forces on vertices
     phys_vehicle_->update();
 
+    //update controller which will update actuator control signal
     vehicle_api_->update();
 }
 

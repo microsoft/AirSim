@@ -117,7 +117,8 @@ public: //methods
 
         kinematics_.update();
 
-        //update individual vertices
+        //update individual vertices - each vertex takes control signal as input and
+        //produces force and thrust as output
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
             getWrenchVertex(vertex_index).update();
         }

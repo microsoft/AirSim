@@ -15,6 +15,9 @@
 
 namespace msr { namespace airlib {
 
+//Rotor gets control signal as input (PWM or voltage represented from 0 to 1) which causes 
+//change in rotation speed and turning direction and ultimately produces force and thrust as
+//output
 class Rotor : public PhysicsBodyVertex {
 public: //types
     struct Output {

@@ -53,7 +53,7 @@ public:
         case 3:
             //not really required
             //output of parent controller is -1 to 1 which
-            //we will transofrm to 0 to 1
+            //we will transform to 0 to 1
             child_controller_.reset(new PassthroughController());
             child_mode_[axis_] = GoalModeType::Passthrough;
             break;
@@ -91,6 +91,10 @@ public:
             state_estimator_->transformToBodyFrame(measured_velocity_world), true);
         pid_->setMeasured(measured_velocity_local[axis_]);
         pid_->update();
+
+        msr::airlib::Utils::log(msr::airlib::Utils::stringf("VC: %i\t%f\t%f", 
+            axis_, goal_velocity_local[axis_], 
+            measured_velocity_local[axis_]));
 
         //use this to drive child controller
         switch (axis_)
