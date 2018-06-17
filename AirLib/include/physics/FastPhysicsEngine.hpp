@@ -95,7 +95,7 @@ private:
         //Utils::log(Utils::stringf("T-VEL %s %" PRIu64 ": ", 
         //    VectorMath::toString(next.twist.linear).c_str(), clock()->getStepCount()));
 
-        body.getGroundTruthKinematics(next);
+        body.setKinematics(next);
         body.setWrench(next_wrench);
         body.kinematicsUpdated();
     }

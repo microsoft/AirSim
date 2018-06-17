@@ -178,7 +178,7 @@ public: //methods
     {
         return kinematics_.getState();
     }
-    void getGroundTruthKinematics(const Kinematics::State& state)
+    void setKinematics(const Kinematics::State& state)
     {
         if (VectorMath::hasNan(state.twist.linear)) {
             //Utils::DebugBreak();

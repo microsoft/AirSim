@@ -187,8 +187,7 @@ void MultirotorPawnSimApi::update()
     //update forces on vertices
     phys_vehicle_->update();
 
-    //update controller which will update actuator control signal
-    vehicle_api_->update();
+    //update to controller must be done after kinematics have been updated by physics engine
 }
 
 void MultirotorPawnSimApi::reportState(StateReporter& reporter)

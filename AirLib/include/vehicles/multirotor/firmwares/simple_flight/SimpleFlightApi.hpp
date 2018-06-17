@@ -104,7 +104,7 @@ public: //MultirotorApiBase implementation
     }
     virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment) override
     {
-        board_->getGroundTruthKinematics(kinematics);
+        board_->setGroundTruthKinematics(kinematics);
         estimator_->setGroundTruthKinematics(kinematics, environment);
     }
     virtual bool setRCData(const RCData& rc_data) override

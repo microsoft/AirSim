@@ -153,7 +153,6 @@ void ASimModeWorldMultiRotor::setupVehiclesAndCamera()
     }
     else
         CameraDirector->initializeForBeginPlay(getInitialViewMode(), nullptr, nullptr, nullptr, nullptr);
-
 }
 
 void ASimModeWorldMultiRotor::Tick(float DeltaSeconds)

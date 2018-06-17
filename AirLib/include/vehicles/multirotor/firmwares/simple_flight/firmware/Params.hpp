@@ -53,8 +53,8 @@ public:
         const float kMaxLimit = 2.5f;
         Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //roll, pitch, yaw - in radians/sec
 
-        //p_xxx_rate params are sensetive to gyro noise. Values higher than 0.5 would require 
-        //noise filteration
+        //p_xxx_rate params are sensitive to gyro noise. Values higher than 0.5 would require 
+        //noise filtration
         const float kP = 0.25f;
         Axis4r p = Axis4r(kP, kP, kP, 1.0f);
     } angle_rate_pid;
@@ -62,7 +62,7 @@ public:
     struct AngleLevelPid {
         const float pi = 3.14159265359f; //180-degrees
         
-        //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremeities of controls
+        //max_pitch/roll_angle > 5.5 would produce versicle thrust that is not enough to keep vehicle in air at extremities of controls
         Axis4r max_limit = Axis4r(pi / 5.5f, pi / 5.5f, pi, 1.0f); //roll, pitch, yaw - in radians/sec
 
         const float kP = 2.5f;

@@ -56,6 +56,8 @@ public:
         PhysicsBody::update();
 
         //Note that controller gets updated after kinematics gets updated in kinematicsUpdated
+        //otherwise sensors will have values from previous cycle causing lags which will appear
+        //as crazy jerks whenever commands like velocity is issued
     }
     virtual void reportState(StateReporter& reporter) override
     {
@@ -79,6 +81,9 @@ public:
     virtual void kinematicsUpdated() override
     {
         updateSensors(*params_, getKinematics(), getEnvironment());
+
+        //update controller which will update actuator control signal
+        vehicle_api_->update();
 
         //transfer new input values from controller to rotors
         for (uint rotor_index = 0; rotor_index < rotors_.size(); ++rotor_index) {
