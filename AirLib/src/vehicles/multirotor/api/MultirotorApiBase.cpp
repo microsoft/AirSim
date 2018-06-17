@@ -13,6 +13,13 @@
 
 namespace msr { namespace airlib {
 
+void MultirotorApiBase::reset()
+{
+    cancelLastTask();
+    SingleTaskCall lock(this); //cancel previous tasks
+
+    VehicleApiBase::reset();
+}
 
 bool MultirotorApiBase::takeoff(float timeout_sec)
 {

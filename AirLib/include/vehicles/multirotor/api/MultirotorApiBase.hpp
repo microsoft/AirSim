@@ -69,6 +69,9 @@ public: //optional overrides
         unused(environment);
     }
 
+    virtual void reset() override;
+
+
 public: //these APIs uses above low level APIs
     virtual ~MultirotorApiBase() = default;
 

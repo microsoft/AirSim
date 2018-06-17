@@ -1,4 +1,6 @@
-from AirSimClient import *
+import setup_path 
+import airsim
+
 import sys
 import time
 import argparse
@@ -56,7 +58,8 @@ class SurveyNavigator:
         trip_time = distance / self.velocity
         print("estimated survey time is " + str(trip_time))
         try:
-            result = self.client.moveOnPath(path, self.velocity, trip_time, airsim.DrivetrainType.ForwardOnly, airsim.YawMode(True,0), self.velocity + (self.velocity/2), 1)
+            result = self.client.moveOnPathAsync(path, self.velocity, trip_time, airsim.DrivetrainType.ForwardOnly, 
+                airsim.YawMode(True,0), self.velocity + (self.velocity/2), 1).join()
         except:
             errorType, value, traceback = sys.exc_info()
             print("moveOnPath threw exception: " + str(value))
@@ -70,7 +73,7 @@ class SurveyNavigator:
             self.client.moveToPositionAsync(0, 0, -5, 2).join()
 
         print("landing...")
-        self.client.land()
+        self.client.landAsync().join()
 
         print("disarming.")
         self.client.armDisarm(False)

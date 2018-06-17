@@ -22,7 +22,7 @@ duration = 5
 speed = 1
 delay = duration * speed
 
-# using DrivetrainType.MaxDegreeOfFreedom means we can control the drone yaw independently
+# using airsim.DrivetrainType.MaxDegreeOfFreedom means we can control the drone yaw independently
 # from the direction the drone is flying.  I've set values here that make the drone always point inwards
 # towards the inside of the box (which would be handy if you are building a 3d scan of an object in the real world).
 vx = speed

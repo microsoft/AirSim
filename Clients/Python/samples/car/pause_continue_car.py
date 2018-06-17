@@ -1,11 +1,14 @@
-from AirSimClient import *
+import setup_path 
+import airsim
+
+import time
 
 # connect to the AirSim simulator
-client = CarClient()
+client = airsim.CarClient()
 client.confirmConnection()
 client.enableApiControl(True)
 
-car_controls = CarControls()
+car_controls = airsim.CarControls()
 
 for i in range(1, 6):
     print("Starting command")

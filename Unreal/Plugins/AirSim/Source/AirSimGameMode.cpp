@@ -6,7 +6,6 @@
 #include "AirBlueprintLib.h"
 
 
-
 class AUnrealLog : public msr::airlib::Utils::Logger
 {
 public:

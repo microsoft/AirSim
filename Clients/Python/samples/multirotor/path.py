@@ -1,4 +1,6 @@
-from AirSimClient import *
+import setup_path 
+import airsim
+
 import sys
 import time
 
@@ -11,11 +13,7 @@ client.armDisarm(True)
 landed = client.getMultirotorState().landed_state
 if landed == airsim.LandedState.Landed:
     print("taking off...")
-    x = client.takeoffAsync().join()
-    if not x:
-        print("take off failed")        
-        client.armDisarm(False)
-        client.enableApiControl(False)
+    client.takeoffAsync().join()
 else:
     client.hoverAsync().join()
 
@@ -26,9 +24,9 @@ z = -7
 # see https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo
 
 # this method is async and we are not waiting for the result since we are passing timeout_sec=0.
-result = client.moveOnPath([airsim.Vector3r(0,-253,z),airsim.Vector3r(125,-253,z),airsim.Vector3r(125,0,z),airsim.Vector3r(0,0,z),airsim.Vector3r(0,0,-20)], 
+result = client.moveOnPathAsync([airsim.Vector3r(0,-253,z),airsim.Vector3r(125,-253,z),airsim.Vector3r(125,0,z),airsim.Vector3r(0,0,z),airsim.Vector3r(0,0,-20)], 
                         12, 120, 
-                        DrivetrainType.ForwardOnly, airsim.YawMode(False,0), 20, 1)
+                        airsim.DrivetrainType.ForwardOnly, airsim.YawMode(False,0), 20, 1).join()
 client.moveToPositionAsync(0,0,z,1).join()
 client.land()
 client.armDisarm(False)
