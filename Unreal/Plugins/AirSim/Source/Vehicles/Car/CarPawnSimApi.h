@@ -32,7 +32,7 @@ public:
     virtual void update() override;
     virtual void reportState(StateReporter& reporter) override;
 
-    virtual std::string getLogLine() const override;
+    virtual std::string getRecordFileLine(bool is_header_line) const override;
 
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;

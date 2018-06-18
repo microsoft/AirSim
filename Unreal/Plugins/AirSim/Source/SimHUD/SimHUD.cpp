@@ -239,11 +239,12 @@ void ASimHUD::initializeSettings()
     else
         AirSimSettings::createDefaultSettingsFile();
 
-    int warning_count = AirSimSettings::singleton().load(std::bind(&ASimHUD::getSimModeFromUser, this));
-    if (warning_count > 0) {
-        for (const auto& warning : AirSimSettings::singleton().warning_messages) {
-            UAirBlueprintLib::LogMessageString(warning, "", LogDebugLevel::Failure);
-        }
+    AirSimSettings::singleton().load(std::bind(&ASimHUD::getSimModeFromUser, this));
+    for (const auto& warning : AirSimSettings::singleton().warning_messages) {
+        UAirBlueprintLib::LogMessageString(warning, "", LogDebugLevel::Failure);
+    }
+    for (const auto& error : AirSimSettings::singleton().error_messages) {
+        UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, error, "settings.json");
     }
 }
 

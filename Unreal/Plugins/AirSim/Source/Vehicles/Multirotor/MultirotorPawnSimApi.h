@@ -46,7 +46,6 @@ public:
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
 
-    virtual std::string getLogLine() const override;
     virtual void pawnTick(float dt) override;
 
     msr::airlib::MultirotorApiBase* getVehicleApi()

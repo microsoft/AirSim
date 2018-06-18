@@ -26,24 +26,18 @@ void CarPawnSimApi::createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint
     vehicle_api_ = std::unique_ptr<CarApiBase>(new CarPawnApi(pawn, getPawnKinematics(), home_geopoint));
 }
 
-std::string CarPawnSimApi::getLogLine() const
+std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
 {
+    std::string common_line = PawnSimApi::getRecordFileLine(is_header_line);
+    if (is_header_line) {
+        return common_line +
+               "Throttle\tSteering\tBrake\tGear\tHandbrake\tRPM\tSpeed\t";
+    }
+
     const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
     const auto state = vehicle_api_->getCarState();
-    uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
-    //TODO: because this bug we are using alternative code with stringstream
-    //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
-
-    std::string line;
-    line.append(std::to_string(timestamp_millis)).append("\t")
-        .append(std::to_string(kinematics->pose.position.x())).append("\t")
-        .append(std::to_string(kinematics->pose.position.y())).append("\t")
-        .append(std::to_string(kinematics->pose.position.z())).append("\t")
-        .append(std::to_string(kinematics->pose.orientation.w())).append("\t")
-        .append(std::to_string(kinematics->pose.orientation.x())).append("\t")
-        .append(std::to_string(kinematics->pose.orientation.y())).append("\t")
-        .append(std::to_string(kinematics->pose.orientation.z())).append("\t")
+    common_line
         .append(std::to_string(current_controls_.throttle)).append("\t")
         .append(std::to_string(current_controls_.steering)).append("\t")
         .append(std::to_string(current_controls_.brake)).append("\t")
@@ -53,15 +47,7 @@ std::string CarPawnSimApi::getLogLine() const
         .append(std::to_string(state.speed)).append("\t")
         ;
 
-    return line;
-
-    //std::stringstream ss;
-    //ss << timestamp_millis << "\t";
-    //ss << kinematics.pose.position.x() << "\t" << kinematics.pose.position.y() << "\t" << kinematics.pose.position.z() << "\t";
-    //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
-    //ss << "\n";
-    //return ss.str();
-
+    return common_line;
 }
 
 //these are called on render ticks

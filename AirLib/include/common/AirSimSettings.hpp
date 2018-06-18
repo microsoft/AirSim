@@ -44,7 +44,6 @@ public: //types
     struct RecordingSetting {
         bool record_on_move;
         float record_interval;
-        std::vector<std::string> header_columns;
 
         std::vector<msr::airlib::ImageCaptureBase::ImageRequest> requests;
 
@@ -269,7 +268,7 @@ public: //types
 
 private: //fields
     float settings_version_actual;
-    float settings_version_minimum = 1;
+    float settings_version_minimum = 1.2;
 
 public: //fields
     std::string simmode_name = "";
@@ -280,7 +279,8 @@ public: //fields
     TimeOfDaySetting tod_setting;
 
     std::vector<std::string> warning_messages;
-
+    std::vector<std::string> error_messages;
+    
     bool is_record_ui_visible = false;
     int initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
     bool enable_rpc = true;
@@ -311,9 +311,10 @@ public: //methods
     }
 
     //returns number of warnings
-    unsigned int load(std::function<std::string(void)> simmode_getter)
+    void load(std::function<std::string(void)> simmode_getter)
     {
         warning_messages.clear();
+        error_messages.clear();
         const Settings& settings_json = Settings::singleton();
         checkSettingsVersion(settings_json);
 
@@ -321,7 +322,7 @@ public: //methods
         loadDefaultCameraSetting(settings_json, camera_defaults);
         loadSubWindowsSettings(settings_json, subwindow_settings);
         loadViewModeSettings(settings_json);
-        loadRecordingSetting(settings_json, recording_setting, simmode_name, warning_messages);
+        loadRecordingSetting(settings_json, recording_setting, simmode_name);
         loadSegmentationSetting(settings_json, segmentation_setting);
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
@@ -329,8 +330,6 @@ public: //methods
 
         //this should be done last because it depends on type of vehicles we have
         loadClockSettings(settings_json);
-        
-        return static_cast<unsigned int>(warning_messages.size());
     }
 
     static void initializeSettings(const std::string& json_settings_text)
@@ -366,20 +365,74 @@ public: //methods
 private:
     void checkSettingsVersion(const Settings& settings_json)
     {
-        //we had spelling mistake so we are currently supporting SettingsVersion or SettingdVersion :(
-        settings_version_actual = settings_json.getFloat("SettingsVersion", settings_json.getFloat("SettingdVersion", 0));
+        float settings_version_actual;
+        bool has_default_settings = hasDefaultSettings(settings_json, settings_version_actual);
+        bool upgrade_required = settings_version_actual < settings_version_minimum;
+        if (upgrade_required) {
+            bool auto_upgrade = false;
 
-        if (settings_version_actual < settings_version_minimum) {
-            if ((settings_json.size() == 1 &&
-                ((settings_json.getString("SeeDocsAt", "") != "") || settings_json.getString("see_docs_at", "") != ""))
-                || (settings_json.size() == 0)) {
-                //no warnings because we have default settings_json
+            //if we have default setting file not modified by user then we will 
+            //just auto-upgrade it
+            if (has_default_settings) {
+                auto_upgrade = true;
             }
             else {
-                warning_messages.push_back("Your settings_json file does not have SettingsVersion element. This probably means you have old format settings_json file.");
-                warning_messages.push_back("Please look at new settings_json and update your settings_json.json: https://git.io/v9mYY");
+                //check if auto-upgrade is possible
+                if (settings_version_actual == 1) {
+                    const std::vector<std::string> all_changed_keys = {
+                        "AdditionalCameras", "CaptureSettings", "NoiseSettings",
+                        "UsageScenario", "DefaultVehicleConfig",
+                        "EnableCollisionPassthrogh", "SimpleFlight", "PX4"
+                    };
+                    std::stringstream detected_keys_ss;
+                    for (const auto& changed_key : all_changed_keys) {
+                        if (settings_json.hasKey(changed_key))
+                            detected_keys_ss << changed_key << ",";
+                    }
+                    std::string detected_keys = detected_keys_ss.str();
+                    if (detected_keys.length()) {
+                        std::string error_message =
+                            "You are using newer version of AirSim with older version of settings.json. "
+                            "You can either delete your settings.json and restart AirSim or use the upgrade "
+                            "instructions at https://git.io/vjefh. \n\n"
+                            "Following keys in your settings.json needs updating: "
+                            ;
+
+                        error_messages.push_back(error_message + detected_keys);
+                    }
+                    else
+                        auto_upgrade = true;
+                }
+                else
+                    auto_upgrade = true;
+            }
+
+            if (auto_upgrade) {
+                warning_messages.push_back(
+                    "You are using newer version of AirSim with older version of settings.json. "
+                    "You should delete your settings.json file and restart AirSim.");
             }
         }
+        //else no action necessary
+    }
+
+    bool hasDefaultSettings(const Settings& settings_json, float& version)
+    {
+        //if empty settings file
+        bool has_default = settings_json.size() == 0;
+
+        bool has_docs = settings_json.getString("SeeDocsAt", "") != ""
+            || settings_json.getString("see_docs_at", "") != "";
+        //we had spelling mistake so we are currently supporting SettingsVersion or SettingdVersion :(
+        version = settings_json.getFloat("SettingsVersion", settings_json.getFloat("SettingdVersion", 0));
+
+        //If we have pre-V1 settings and only element is docs link
+        has_default |= settings_json.size() == 1 && has_docs;
+
+        //if we have V1 settings and only elements are docs link and version
+        has_default |= settings_json.size() == 2 && has_docs && version > 0;
+
+        return has_default;
     }
 
     void loadCoreSimModeSettings(const Settings& settings_json, std::function<std::string(void)> simmode_getter)
@@ -432,7 +485,7 @@ private:
         else if (view_mode_string == "Front")
             initial_view_mode = 8; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_FRONT;
         else
-            warning_messages.push_back("ViewMode setting is not recognized: " + view_mode_string);
+            error_messages.push_back("ViewMode setting is not recognized: " + view_mode_string);
     }
 
     static void loadRCSetting(const std::string& simmode_name, const Settings& settings_json, RCSettings& rc_setting)
@@ -446,8 +499,15 @@ private:
         }
     }
 
+    static std::string getCameraName(const Settings& settings_json)
+    {
+        return settings_json.getString("CameraName", 
+            //TODO: below exist only due to legacy reason and can be replaced by "" in future
+            std::to_string(settings_json.getInt("CameraID", 0)));
+    }
+
     static void loadRecordingSetting(const Settings& settings_json, RecordingSetting& recording_setting,
-        const std::string& simmode_name, std::vector<std::string>& warning_messages)
+        const std::string& simmode_name)
     {
         Settings recording_json;
         if (settings_json.getChild("Recording", recording_json)) {
@@ -459,7 +519,7 @@ private:
                 for (size_t child_index = 0; child_index < req_cameras_settings.size(); ++child_index) {
                     Settings req_camera_settings;
                     if (req_cameras_settings.getChild(child_index, req_camera_settings)) {
-                        std::string camera_name = req_camera_settings.getString("CameraName", "");
+                        std::string camera_name = getCameraName(req_camera_settings);
                         ImageType image_type =
                             Utils::toEnum<ImageType>(
                                 req_camera_settings.getInt("ImageType", 0));
@@ -475,20 +535,6 @@ private:
         if (recording_setting.requests.size() == 0)
             recording_setting.requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(
                 "", ImageType::Scene, false, true));
-
-        if (simmode_name == "Multirotor") {
-            recording_setting.header_columns = std::vector<std::string> {
-                "Timestamp", "Position(x)", "Position(y)", "Position(z)", "Orientation(w)",
-                "Orientation(x)", "Orientation(y)", "Orientation(z)", "ImageName"
-            };
-        }
-        else if (simmode_name == "Car") {
-            recording_setting.header_columns = std::vector<std::string> {
-                "Timestamp", "Speed (kmph)", "Throttle" , "Steering", "Brake", "Gear", "ImageName"
-            };
-        }
-        else 
-            warning_messages.push_back("SimMode is not valid: " + simmode_name);
     }
 
     static void initializeCaptureSettings(std::map<int, CaptureSetting>& capture_settings)
@@ -705,7 +751,7 @@ private:
     static void loadSegmentationSetting(const Settings& settings_json, SegmentationSetting& segmentation_setting)
     {
         Settings json_parent;
-        if (settings_json.getChild("SegmentationSetting", json_parent)) {
+        if (settings_json.getChild("SegmentationSettings", json_parent)) {
             std::string init_method = Utils::toLower(json_parent.getString("InitMethod", ""));
             if (init_method == "" || init_method == "commonobjectsrandomids")
                 segmentation_setting.init_method = SegmentationSetting::InitMethodType::CommonObjectsRandomIDs;
@@ -855,7 +901,7 @@ private:
                     subwindow_setting.image_type = Utils::toEnum<ImageType>(
                         json_settings_child.getInt("ImageType", 0));
                     subwindow_setting.visible = json_settings_child.getBool("Visible", false);
-                    subwindow_setting.camera_name = json_settings_child.getString("CameraName", "");
+                    subwindow_setting.camera_name = getCameraName(json_settings_child);
                 }
             }
         }

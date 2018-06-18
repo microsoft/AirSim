@@ -23,9 +23,6 @@
 #include "WorldSimApi.h"
 
 
-const char ASimModeBase::kUsageScenarioComputerVision[] = "ComputerVision";
-
-
 ASimModeBase::ASimModeBase()
 {
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));

@@ -90,7 +90,6 @@ protected:
 protected:
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
-    static const char kUsageScenarioComputerVision[];
     int record_tick_count;
 
     UPROPERTY() UClass* pip_camera_class;

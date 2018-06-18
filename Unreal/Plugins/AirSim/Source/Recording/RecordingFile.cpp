@@ -7,10 +7,6 @@
 #include "common/common_utils/FileSystem.hpp"
 
 
-RecordingFile::RecordingFile(const std::vector <std::string>& columns)
-{
-    this->columns_ = columns;
-}
 void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, msr::airlib::VehicleSimApiBase* vehicle_sim_api)
 {   bool save_success = false;
     std::stringstream image_file_names;
@@ -18,6 +14,7 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
     for (auto i = 0; i < responses.size(); ++i) {
         const auto& response = responses.at(i);
 
+        //build image file name
         std::stringstream image_file_name;
         image_file_name << "img_" << response.camera_name << "_" <<
             common_utils::Utils::toNumeric(response.image_type) << "_" <<
@@ -27,9 +24,9 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
         if (i > 0)
             image_file_names << ";";
         image_file_names << image_file_name.str();
-
         std::string image_full_file_path = common_utils::FileSystem::combine(image_path_, image_file_name.str());
 
+        //write image file
         try {
             if (response.pixels_as_float) {
                 common_utils::Utils::writePfmFile(response.image_data_float.data(), response.width, response.height,
@@ -49,34 +46,28 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
         }
     }
 
+    //write to CSV file
     if (save_success) {
-        writeString(vehicle_sim_api->getLogLine().append(image_file_names.str()).append("\n"));
+        writeString(vehicle_sim_api->getRecordFileLine(false).append(image_file_names.str()).append("\n"));
 
         //UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
         images_saved_++;
     }
 }
 
-void RecordingFile::appendColumnHeader(const std::vector<std::string>& columns)
+void RecordingFile::appendColumnHeader(const std::string& header_columns)
 {
-    std::string line;
-    for (int i = 0; i < columns.size()-1; i++) 
-    {
-        line.append(columns[i]).append("\t");
-    }
-    line.append(columns[columns.size() - 1]).append("\n");
-
-    writeString(line);
+    writeString(header_columns + "ImageFile" + "\n");
 }
 
-void RecordingFile::createFile(const std::string& file_path)
+void RecordingFile::createFile(const std::string& file_path, const std::string& header_columns)
 {
     try {
         closeFile();
 
         IPlatformFile& platform_file = FPlatformFileManager::Get().GetPlatformFile();
         log_file_handle_ = platform_file.OpenWrite(*FString(file_path.c_str()));
-        appendColumnHeader(this->columns_);
+        appendColumnHeader(header_columns);
     }
     catch(std::exception& ex) {
         UAirBlueprintLib::LogMessageString(std::string("createFile Failed for ") + file_path, ex.what(), LogDebugLevel::Failure);        
@@ -116,14 +107,14 @@ RecordingFile::~RecordingFile()
     stopRecording(true);
 }
 
-void RecordingFile::startRecording()
+void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_api)
 {
     try {
         std::string log_folderpath = common_utils::FileSystem::getLogFolderPath(true);
         image_path_ = common_utils::FileSystem::ensureFolder(log_folderpath, "images");
         std::string log_filepath = common_utils::FileSystem::getLogFileNamePath(log_folderpath, record_filename, "", ".txt", false);
         if (log_filepath != "")
-            createFile(log_filepath);
+            createFile(log_filepath, vehicle_sim_api->getRecordFileLine(true));
         else {
             UAirBlueprintLib::LogMessageString("Cannot start recording because path for log file is not available", "", LogDebugLevel::Failure);
             return;

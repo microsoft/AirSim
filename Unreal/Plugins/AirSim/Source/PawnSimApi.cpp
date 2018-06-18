@@ -151,7 +151,7 @@ void PawnSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor* Ot
     UAirBlueprintLib::LogMessageString("Collision", Utils::stringf("#%d with %s - ObjID %d", 
         state_.collision_info.collision_count, 
         state_.collision_info.object_name.c_str(), state_.collision_info.object_id),
-        LogDebugLevel::Failure);
+        LogDebugLevel::Informational);
 }
 
 void PawnSimApi::possess()
@@ -506,8 +506,12 @@ const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
     return environment_.get();
 }
 
-std::string PawnSimApi::getLogLine() const
+std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
 {
+    if (is_header_line) {
+        return "TimeStamp\tPOS_X\tPOS_Y\tPOS_Z\tQ_W\tQ_X\tQ_Y\tQ_Z\t";
+    }
+
     const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
     uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
@@ -533,6 +537,4 @@ std::string PawnSimApi::getLogLine() const
     //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
     //ss << "\n";
     //return ss.str();
-
 }
-

@@ -36,8 +36,8 @@ void FRecordingThread::startRecording(const msr::airlib::ImageCaptureBase* image
 
     instance_->is_ready_ = true;
 
-    instance_->recording_file_.reset(new RecordingFile(instance_->settings_.header_columns));
-    instance_->recording_file_->startRecording();
+    instance_->recording_file_.reset(new RecordingFile());
+    instance_->recording_file_->startRecording(vehicle_sim_api);
 }
 
 FRecordingThread::~FRecordingThread()
