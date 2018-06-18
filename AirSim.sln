@@ -37,6 +37,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloCar", "HelloCar\HelloC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnrealPluginFiles", "UnrealPluginFiles.vcxproj", "{39683523-C864-4D47-8350-33FC3EC0F00F}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonClient", "PythonClient\PythonClient.pyproj", "{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,12 @@ Global
 		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|Any CPU.ActiveCfg = Release|Win32
 		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|x64.ActiveCfg = Release|x64
 		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|x86.ActiveCfg = Release|Win32
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|x64.ActiveCfg = Release|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,6 +26,13 @@ class SetupPath:
         return ''
 
     @staticmethod
+    def getParentDir():
+        cur_path = SetupPath.getCurrentPath()
+        if SetupPath.getDirLevels(cur_path) >= 1:
+            return os.path.dirname(cur_path)
+        return ''
+
+    @staticmethod
     def addAirSimModulePath():
         # if airsim module is installed then don't do anything else
         import pkgutil
@@ -33,7 +40,7 @@ class SetupPath:
         if airsim_loader is not None:
             return
 
-        grand_parent = SetupPath.getGrandParentDir()
+        grand_parent = SetupPath.getParentDir()
         if grand_parent !=  '':
             airsim_path = os.path.join(grand_parent, 'airsim')
             client_path = os.path.join(airsim_path, 'client.py')
