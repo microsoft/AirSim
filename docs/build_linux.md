@@ -7,7 +7,7 @@ The current recommended and tested environment is **Ubuntu 16.04 LTS**. Theoreti
 It's super simple: 1-2-3!
 
 1. Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
-2. Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal 4.17 at present.
+2. Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal 4.18 at present.
    ```bash
    # go to the folder where you clone GitHub projects
    git clone -b 4.18 https://github.com/EpicGames/UnrealEngine.git
