@@ -279,7 +279,7 @@ public: //fields
     TimeOfDaySetting tod_setting;
 
     std::vector<std::string> warning_messages;
-    std::vector<std::string> error_messages;
+	std::vector<std::string> error_messages;
     
     bool is_record_ui_visible = false;
     int initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
@@ -295,6 +295,7 @@ public: //fields
     std::map<std::string, PawnPath> pawn_paths; //path for pawn blueprint
     std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
     CameraSetting camera_defaults;
+	bool speed_in_mph = false;
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -334,6 +335,32 @@ public: //methods
 
     static void initializeSettings(const std::string& json_settings_text)
     {
+        warning_messages.clear();
+
+        initializeSubwindowSettings();
+        initializeImageTypeSettings();
+        segmentation_settings = SegmentationSettings();
+        noise_settings.clear();
+        capture_settings.clear();
+
+        simmode_name = "";
+        recording_settings = RecordingSettings();
+        is_record_ui_visible = false;
+        initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
+        enable_rpc = false;
+        api_server_address = "";
+        default_vehicle_config = "";
+        physics_engine_name = "";
+        usage_scenario = "";
+        enable_collision_passthrough = false;
+        clock_type = "";
+        clock_speed = 1.0f;
+        engine_sound = true;     
+        log_messages_visible = true;
+        //0,0,0 in Unreal is mapped to this GPS coordinates
+        origin_geopoint = HomeGeoPoint(GeoPoint(47.641468, -122.140165, 122)); 
+		speed_in_mph = false;
+
         Settings& settings_json = Settings::loadJSonString(json_settings_text);
         if (! settings_json.isLoadSuccess())
             throw std::invalid_argument("Cannot parse JSON settings_json string.");
@@ -935,10 +962,12 @@ private:
         //by default we spawn server at local endpoint. Do not use 127.0.0.1 as default below
         //because for docker container default is 0.0.0.0 and people get really confused why things
         //don't work
-        api_server_address = settings_json.getString("LocalHostIp", "");
-        is_record_ui_visible = settings_json.getBool("RecordUIVisible", true);
-        engine_sound = settings_json.getBool("EngineSound", false);
-        enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);
+
+        api_server_address = settings.getString("LocalHostIp", "");
+        is_record_ui_visible = settings.getBool("RecordUIVisible", true);
+        engine_sound = settings.getBool("EngineSound", false);
+		enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);
+		speed_in_mph = settings.getBool("SpeedInMph", false);
 
         log_messages_visible = settings_json.getBool("LogMessagesVisible", true);
 
