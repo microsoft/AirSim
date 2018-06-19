@@ -4,7 +4,7 @@
 
 #include "AirBlueprintLib.h"
 #include "common/AirSimSettings.hpp"
-#include "PawnSimAPi.h"
+#include "PawnSimApi.h"
 #include "AirBlueprintLib.h"
 #include "common/Common.hpp"
 #include "common/EarthUtils.hpp"

@@ -116,7 +116,7 @@ public: //these APIs uses above low level APIs
         return state;
     }
 
-    /******************* Task management APis ********************/
+    /******************* Task management Apis ********************/
     virtual void cancelLastTask() override
     {
         token_.cancel();
