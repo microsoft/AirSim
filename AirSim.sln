@@ -19,8 +19,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Examples", "Examples\Exampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AirLibUnitTests", "AirLibUnitTests\AirLibUnitTests.vcxproj", "{2A61ED54-2B66-4B9B-99FA-299DD0EF57CD}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonClient", "PythonClient\PythonClient.pyproj", "{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11C1B3C5-35A0-46EA-B532-100A14FDAAC6}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
@@ -38,6 +36,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloCar", "HelloCar\HelloCar.vcxproj", "{4358ED90-CCA1-47A8-8D68-A260F212931E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnrealPluginFiles", "UnrealPluginFiles.vcxproj", "{39683523-C864-4D47-8350-33FC3EC0F00F}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonClient", "PythonClient\PythonClient.pyproj", "{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,12 +129,6 @@ Global
 		{2A61ED54-2B66-4B9B-99FA-299DD0EF57CD}.Release|x64.Build.0 = Release|x64
 		{2A61ED54-2B66-4B9B-99FA-299DD0EF57CD}.Release|x86.ActiveCfg = Release|Win32
 		{2A61ED54-2B66-4B9B-99FA-299DD0EF57CD}.Release|x86.Build.0 = Release|Win32
-		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|x64.ActiveCfg = Release|Any CPU
-		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|x86.ActiveCfg = Release|Any CPU
 		{4358ED90-CCA1-47A8-8D68-A260F212931E}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{4358ED90-CCA1-47A8-8D68-A260F212931E}.Debug|x64.ActiveCfg = Debug|x64
 		{4358ED90-CCA1-47A8-8D68-A260F212931E}.Debug|x64.Build.0 = Debug|x64
@@ -151,6 +145,12 @@ Global
 		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|Any CPU.ActiveCfg = Release|Win32
 		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|x64.ActiveCfg = Release|x64
 		{39683523-C864-4D47-8350-33FC3EC0F00F}.Release|x86.ActiveCfg = Release|Win32
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|x64.ActiveCfg = Release|Any CPU
+		{E2049E20-B6DD-474E-8BCA-1C8DC54725AA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

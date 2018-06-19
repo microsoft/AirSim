@@ -1,48 +1,94 @@
 #include "NedTransform.h"
 #include "AirBlueprintLib.h"
 
-
-NedTransform::NedTransform()
-    : is_initialized_(false), world_to_meters_(100.0f), offset_(FVector::ZeroVector)
+NedTransform::NedTransform(const FTransform& global_transform, float world_to_meters)
+    : NedTransform(nullptr, global_transform, world_to_meters)
 {
 }
-
-void NedTransform::initialize(const AActor* pivot)
+NedTransform::NedTransform(const AActor* pivot, const NedTransform& global_transform)
+    : NedTransform(pivot, global_transform.global_transform_, global_transform.world_to_meters_)
 {
-    FVector mesh_origin, mesh_bounds;
-    pivot->GetActorBounds(true, mesh_origin, mesh_bounds);
+}
+NedTransform::NedTransform(const AActor* pivot, const FTransform& global_transform, float world_to_meters)
+    : global_transform_(global_transform), world_to_meters_(world_to_meters)
+{
+    if (pivot != nullptr) {
+        //normally pawns have their center as origin. If we use this as 0,0,0 in NED then
+        //when we tell vehicle to go to 0,0,0 - it will try to go in the ground
+        //so we get the bounds and subtract z to get bottom as 0,0,0
+        FVector mesh_origin, mesh_bounds;
+        pivot->GetActorBounds(true, mesh_origin, mesh_bounds);
 
-    FVector ground_offset = FVector(0, 0, mesh_bounds.Z);
-    offset_ = pivot->GetActorLocation() - ground_offset;
-
-    world_to_meters_ = UAirBlueprintLib::GetWorldToMetersScale(pivot);
-
-    is_initialized_ = true;
+        FVector ground_offset = FVector(0, 0, mesh_bounds.Z);
+        local_ned_offset_ = pivot->GetActorLocation() - ground_offset;
+    }
+    else
+        local_ned_offset_ = FVector::ZeroVector;
 }
 
-bool NedTransform::isInitialized() const
+NedTransform::Vector3r NedTransform::toLocalNed(const FVector& position) const
 {
-    return is_initialized_;
+    return NedTransform::toVector3r(position - local_ned_offset_,
+        1 / world_to_meters_, true);
 }
-
-float NedTransform::toNedMeters(float length) const
+NedTransform::Vector3r NedTransform::toGlobalNed(const FVector& position) const
+{
+    return NedTransform::toVector3r(position - global_transform_.GetLocation(),
+        1 / world_to_meters_, true);
+}
+NedTransform::Quaternionr NedTransform::toNed(const FQuat& q) const
+{
+    return Quaternionr(q.W, -q.X, -q.Y, q.Z);
+}
+float NedTransform::toNed(float length) const
 {
     return length / world_to_meters_;
 }
+NedTransform::Pose NedTransform::toLocalNed(const FTransform& pose) const
+{
+    return Pose(toLocalNed(pose.GetLocation()), toNed(pose.GetRotation()));
+}
+NedTransform::Pose NedTransform::toGlobalNed(const FTransform& pose) const
+{
+    return Pose(toGlobalNed(pose.GetLocation()), toNed(pose.GetRotation()));
+}
 
-float NedTransform::toNeuUU(float length) const
+float NedTransform::fromNed(float length) const
 {
     return length * world_to_meters_;
 }
-
-NedTransform::Vector3r NedTransform::toNedMeters(const FVector& position, bool use_offset) const
+FVector NedTransform::fromLocalNed(const NedTransform::Vector3r& position) const
 {
-    return NedTransform::toVector3r(position - (use_offset ? offset_ : FVector::ZeroVector), 1 / world_to_meters_, true);
+    return NedTransform::toFVector(position, world_to_meters_, true) + local_ned_offset_;
+}
+FVector NedTransform::fromGlobalNed(const NedTransform::Vector3r& position) const
+{
+    return NedTransform::toFVector(position, world_to_meters_, true) + global_transform_.GetLocation();
+}
+FQuat NedTransform::fromNed(const Quaternionr& q) const
+{
+    return FQuat(-q.x(), -q.y(), q.z(), q.w());
+}
+FTransform NedTransform::fromLocalNed(const Pose& pose) const
+{
+    return FTransform(fromNed(pose.orientation), fromLocalNed(pose.position));
+}
+FTransform NedTransform::fromGlobalNed(const Pose& pose) const
+{
+    return FTransform(fromNed(pose.orientation), fromGlobalNed(pose.position));
 }
 
-FVector NedTransform::toNeuUU(const NedTransform::Vector3r& position) const
+FVector NedTransform::getGlobalOffset() const
 {
-    return NedTransform::toFVector(position, world_to_meters_, true) + offset_;
+    return global_transform_.GetLocation();
+}
+FVector NedTransform::getLocalOffset() const
+{
+    return local_ned_offset_;
+}
+FTransform NedTransform::getGlobalTransform() const
+{
+    return global_transform_;
 }
 
 FVector NedTransform::toFVector(const Vector3r& vec, float scale, bool convert_from_ned) const
@@ -51,25 +97,8 @@ FVector NedTransform::toFVector(const Vector3r& vec, float scale, bool convert_f
         (convert_from_ned ? -vec.z() : vec.z()) * scale);
 }
 
-FQuat NedTransform::toFQuat(const Quaternionr& q, bool convert_from_ned) const
-{
-    return FQuat(
-        convert_from_ned ? -q.x() : q.x(), 
-        convert_from_ned ? -q.y() : q.y(), 
-        q.z(), q.w());
-}
-
-
 NedTransform::Vector3r NedTransform::toVector3r(const FVector& vec, float scale, bool convert_to_ned) const
 {
-    return Vector3r(vec.X * scale, vec.Y * scale, 
+    return Vector3r(vec.X * scale, vec.Y * scale,
         (convert_to_ned ? -vec.Z : vec.Z)  * scale);
-}
-
-NedTransform::Quaternionr NedTransform::toQuaternionr(const FQuat& q, bool convert_to_ned) const
-{
-    return Quaternionr(q.W, 
-        convert_to_ned ? -q.X : q.X, 
-        convert_to_ned ? -q.Y : q.Y, 
-        q.Z);
 }

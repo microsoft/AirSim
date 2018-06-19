@@ -96,7 +96,7 @@ public: //methods
             environment_->reset();
         wrench_ = Wrench::zero();
         collision_info_ = CollisionInfo();
-        collision_response_info_ = CollisionResponseInfo();
+        collision_response_ = CollisionResponse();
 
         //update individual vertices
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
@@ -111,13 +111,14 @@ public: //methods
     {
         UpdatableObject::update();
 
-        //update position from kinematics so we have latest position after physics update
-        environment_->setPosition(getKinematics().pose.position);
-        environment_->update();
+        //TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
+        //environment_->setPosition(getKinematics().pose.position);
+        //environment_->update();
 
         kinematics_.update();
 
-        //update individual vertices
+        //update individual vertices - each vertex takes control signal as input and
+        //produces force and thrust as output
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
             getWrenchVertex(vertex_index).update();
         }
@@ -215,18 +216,18 @@ public: //methods
         return collision_info_;
     }
 
-    const CollisionResponseInfo& getCollisionResponseInfo() const
+    const CollisionResponse& getCollisionResponseInfo() const
     {
-        return collision_response_info_;
+        return collision_response_;
     }
-    CollisionResponseInfo& getCollisionResponseInfo()
+    CollisionResponse& getCollisionResponseInfo()
     {
-        return collision_response_info_;
+        return collision_response_;
     }
 
 
 public:
-    //for use in physics angine: //TODO: use getter/setter or friend method?
+    //for use in physics engine: //TODO: use getter/setter or friend method?
     TTimePoint last_kinematics_time;
 
 private:
@@ -239,7 +240,7 @@ private:
     Wrench wrench_;
 
     CollisionInfo collision_info_;
-    CollisionResponseInfo collision_response_info_;
+    CollisionResponse collision_response_;
 
     Environment* environment_ = nullptr;
 };

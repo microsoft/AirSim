@@ -80,8 +80,8 @@
     <ClCompile Include="unreal\plugins\airsim\source\car\SimModeCar.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\ManualPoseController.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\multirotor\FlyingPawn.cpp" />
-    <ClCompile Include="unreal\plugins\airsim\source\multirotor\MultiRotorConnector.cpp" />
-    <ClCompile Include="unreal\plugins\airsim\source\multirotor\SimModeWorldMultiRotor.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\Multirotor\MultirotorSimApi.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\Multirotor\SimModeWorldMultirotor.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\NedTransform.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\PIPCamera.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingFile.cpp" />
@@ -93,9 +93,12 @@
     <ClCompile Include="unreal\plugins\airsim\source\simjoystick\SimJoyStick.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeBase.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealDistanceSensor.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealSensorFactory.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\VehicleCameraConnector.cpp" />
-    <ClCompile Include="unreal\plugins\airsim\source\VehicleConnectorBase.cpp" />
-    <ClCompile Include="unreal\plugins\airsim\source\VehiclePawnWrapper.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\WorldSimApi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="unreal\plugins\airsim\source\AirBlueprintLib.h" />
@@ -109,6 +112,7 @@
     <ClInclude Include="unreal\plugins\airsim\source\ManualPoseController.h" />
     <ClInclude Include="unreal\plugins\airsim\source\multirotor\FlyingPawn.h" />
     <ClInclude Include="unreal\plugins\airsim\source\multirotor\MultiRotorConnector.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\Multirotor\MultirotorSimApi.h" />
     <ClInclude Include="unreal\plugins\airsim\source\multirotor\SimModeWorldMultiRotor.h" />
     <ClInclude Include="unreal\plugins\airsim\source\NedTransform.h" />
     <ClInclude Include="unreal\plugins\airsim\source\PIPCamera.h" />
@@ -121,8 +125,17 @@
     <ClInclude Include="unreal\plugins\airsim\source\simjoystick\SimJoyStick.h" />
     <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeBase.h" />
     <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealDistanceSensor.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealSensorFactory.h" />
     <ClInclude Include="unreal\plugins\airsim\source\VehicleCameraConnector.h" />
     <ClInclude Include="unreal\plugins\airsim\source\VehiclePawnWrapper.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\WorldSimApi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Unreal\Plugins\AirSim\Source\AirSim.Build.4.15.cs" />
+    <None Include="Unreal\Plugins\AirSim\Source\AirSim.Build.cs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

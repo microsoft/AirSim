@@ -4,59 +4,24 @@
 #include <iostream>
 #include <string>
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
-#include "vehicles/multirotor/controllers/MavLinkDroneController.hpp"
-#include "vehicles/multirotor/controllers/RealMultirotorConnector.hpp"
+#include "vehicles/multirotor/firmwares/mavlink/MavLinkMultirotorApi.hpp"
 #include "common/Settings.hpp"
 
 using namespace std;
 using namespace msr::airlib;
 
-void printUsage() {
-    cout << "Usage: DroneServer" << endl;
-    cout << "Start the DroneServer using the 'PX4' settings in ~/Documents/AirSim/settings.json." << endl;
-}
-
-class DroneServerSimModeApi : public SimModeApiBase {
-public:
-    DroneServerSimModeApi(MultirotorApi* api)
-        : api_(api)
-    {
-    }
-
-    virtual VehicleApiBase* getVehicleApi() override
-    {
-        return api_;
-    }
-
-    virtual void reset() override
-    {
-        throw std::domain_error("reset is not supported");
-    }
-
-    virtual bool isPaused() const override
-    {
-        return false;
-    }
-
-    virtual void pause(bool is_paused) override
-    {
-        throw std::domain_error("pause is not supported");
-    }
-
-    virtual void continueForTime(double seconds) override
-    {
-        throw std::domain_error("continueForTime is not supported");
-    }
-
-private:
-    MultirotorApi* api_;
-};
+/*
+    This is a sample code demonstrating how to deploy rpc server on-board 
+    real drone so we can use same APIs on real vehicle that we used in simulation.
+    This demonstration is designed for PX4 powered drone.
+*/
 
 int main(int argc, const char* argv[])
 {
     if (argc != 2) {
         std::cout << "Usage: " << argv[0] << " is_simulation" << std::endl;
         std::cout << "\t where is_simulation = 0 or 1" << std::endl;
+        cout << "Start the DroneServer using the 'PX4' settings in ~/Documents/AirSim/settings.json." << endl;
         return 1;
     }
 
@@ -66,7 +31,7 @@ int main(int argc, const char* argv[])
     else
         std::cout << "WARNING: This is not simulation!" << std::endl;
 
-    MavLinkDroneController::ConnectionInfo connection_info;
+    AirSimSettings::MavLinkConnectionInfo connection_info;
     
     // read settings and override defaults
     auto settings_full_filepath = Settings::getUserDirectoryFullPath("settings.json");
@@ -110,15 +75,14 @@ int main(int argc, const char* argv[])
 
     }
 
-    MavLinkDroneController mav_drone;
-    mav_drone.initialize(connection_info, nullptr, is_simulation);
-    mav_drone.reset();
+    MavLinkMultirotorApi api;
+    api.initialize(connection_info, nullptr, is_simulation);
+    api.reset();
 
-    RealMultirotorConnector connector(& mav_drone);
 
-    MultirotorApi api(& connector);
-    DroneServerSimModeApi simmode_api(&api);
-    msr::airlib::MultirotorRpcLibServer server(&simmode_api, connection_info.local_host_ip);
+    ApiProvider api_provider(nullptr);
+    api_provider.insert_or_assign("", &api, nullptr);
+    msr::airlib::MultirotorRpcLibServer server(&api_provider, connection_info.local_host_ip);
     
     //start server in async mode
     server.start(false);
@@ -139,7 +103,7 @@ int main(int argc, const char* argv[])
         constexpr static std::chrono::milliseconds MessageCheckDurationMillis(100);
         std::this_thread::sleep_for(MessageCheckDurationMillis);
 
-        mav_drone.reportTelemetry(100);
+        api.sendTelemetry();
     }
 
     return 0;

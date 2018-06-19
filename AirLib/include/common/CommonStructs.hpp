@@ -173,21 +173,21 @@ struct GeoPoint {
 };
 
 struct HomeGeoPoint {
-    GeoPoint home_point;
+    GeoPoint home_geo_point;
     double lat_rad, lon_rad;
     double cos_lat, sin_lat;
 
     HomeGeoPoint()
     {}
-    HomeGeoPoint(const GeoPoint& home_point_val)
+    HomeGeoPoint(const GeoPoint& home_geo_point_val)
     {
-        initialize(home_point_val);
+        initialize(home_geo_point_val);
     }
-    void initialize(const GeoPoint& home_point_val)
+    void initialize(const GeoPoint& home_geo_point_val)
     {
-        home_point = home_point_val;
-        lat_rad = Utils::degreesToRadians(home_point.latitude);
-        lon_rad = Utils::degreesToRadians(home_point.longitude);
+        home_geo_point = home_geo_point_val;
+        lat_rad = Utils::degreesToRadians(home_geo_point.latitude);
+        lon_rad = Utils::degreesToRadians(home_geo_point.longitude);
         cos_lat = cos(lat_rad);
         sin_lat = sin(lat_rad);
     }
@@ -232,7 +232,7 @@ struct CameraInfo {
     }
 };
 
-struct CollisionResponseInfo {
+struct CollisionResponse {
     unsigned int collision_count_raw = 0;
     unsigned int collision_count_non_resting = 0;
     TTimePoint collision_time_stamp = 0;
@@ -244,7 +244,44 @@ struct GeoPose {
     GeoPoint position;
 };
 
+struct RCData {
+    TTimePoint timestamp = 0;
+    //pitch, roll, yaw should be in range -1 to 1
+    //switches should be integer value indicating its state, 0=on, 1=off for example.
+    float pitch = 0, roll = 0, throttle = 0, yaw = 0;
+    float left_z = 0, right_z = 0;
+    uint16_t switches = 0;
+    std::string vendor_id = "";
+    bool is_initialized = false; //is RC connected?
+    bool is_valid = false; //must be true for data to be valid
 
+    unsigned int getSwitch(uint16_t index) const
+    {
+        return switches && (1 << index) ? 1 : 0;
+    }
+
+    void add(const RCData& other)
+    {
+        pitch += other.pitch; roll += other.roll; throttle += other.throttle; yaw += other.yaw;
+    }
+    void subtract(const RCData& other)
+    {
+        pitch -= other.pitch; roll -= other.roll; throttle -= other.throttle; yaw -= other.yaw;
+    }
+    void divideBy(float k)
+    {
+        pitch /= k; roll /= k; throttle /= k; yaw /= k;
+    }
+    bool isAnyMoreThan(float k)
+    {
+        using std::abs;
+        return abs(pitch) > k || abs(roll) > k || abs(throttle) > k || abs(yaw) > k;
+    }
+    string toString()
+    {
+        return Utils::stringf("RCData[pitch=%f, roll=%f, throttle=%f, yaw=%f]", pitch, roll, throttle, yaw);
+    }
+};
 
 }} //namespace
 #endif

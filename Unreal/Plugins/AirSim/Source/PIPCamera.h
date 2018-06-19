@@ -9,6 +9,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
+
 #include "PIPCamera.generated.h"
 
 
@@ -21,8 +22,7 @@ class AIRSIM_API APIPCamera : public ACameraActor
 public:
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
     typedef msr::airlib::AirSimSettings AirSimSettings;
-    typedef AirSimSettings::CaptureSetting CaptureSetting;
-    typedef AirSimSettings::NoiseSetting NoiseSetting;
+    typedef AirSimSettings::CameraSetting CameraSetting;
 
 
     APIPCamera();
@@ -39,17 +39,14 @@ public:
 
     void setCameraTypeEnabled(ImageType type, bool enabled);
     bool getCameraTypeEnabled(ImageType type) const;
-    void setImageTypeSettings(int image_type, const APIPCamera::CaptureSetting& capture_setting,
-        const APIPCamera::NoiseSetting& noise_setting);
+    void setupCameraFromSettings(const APIPCamera::CameraSetting& camera_setting, const NedTransform& ned_transform);
 
     USceneCaptureComponent2D* getCaptureComponent(const ImageType type, bool if_active);
     UTextureRenderTarget2D* getRenderTarget(const ImageType type, bool if_active);
 
     msr::airlib::Pose getPose() const;
     
-private:
-
-
+private: //members
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
     UPROPERTY() TArray<UTextureRenderTarget2D*> render_targets_;
 
@@ -60,12 +57,14 @@ private:
     UPROPERTY() UMaterial* noise_material_static_;
 
     std::vector<bool> camera_type_enabled_;
-    NedTransform ned_transform_;
-    FRotator gimbled_rotator_;
-    float gimble_stabilization_;
+    FRotator gimbald_rotator_;
+    float gimbal_stabilization_;
+    const NedTransform* ned_transform_;
 
-private:
+private: //methods
     typedef common_utils::Utils Utils;
+    typedef AirSimSettings::CaptureSetting CaptureSetting;
+    typedef AirSimSettings::NoiseSetting NoiseSetting;
 
     static unsigned int imageTypeCount();
     void enableCaptureComponent(const ImageType type, bool is_enabled);
@@ -74,6 +73,4 @@ private:
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
     static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
-
-
 };

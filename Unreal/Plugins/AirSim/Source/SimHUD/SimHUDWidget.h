@@ -23,7 +23,7 @@ public:
     //TODO: Tick is not working
     //virtual void Tick_Implementation(FGeometry MyGeometry, float InDeltaTime) override;
     
-    void updateReport(const std::string& text);
+    void updateDebugReport(const std::string& text);
     void setReportVisible(bool is_visible);
     void toggleHelpVisibility();
 

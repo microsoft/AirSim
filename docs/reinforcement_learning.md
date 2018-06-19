@@ -9,7 +9,7 @@ This is still in active development. What we share below is a framework that can
 
 ## RL with Car
 
-[Source code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/DQNcar.py)
+[Source code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/DQNcar.py)
 
 This example works with AirSimNeighborhood environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
@@ -102,11 +102,11 @@ Note that the simulation needs to be up and running before you execute DQNcar.py
 
 ## RL with Quadrotor
 
-[Source code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/DQNdrone.py)
+[Source code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/DQNdrone.py)
 
 This example works with AirSimMountainLandscape environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
-We can similarly apply RL for various autonomous flight scenarios with quadrotors. Below is an example on how RL could be used to train quadrotors to follow high tension powerlines (e.g. application for energy infrastructure inspection).
+We can similarly apply RL for various autonomous flight scenarios with quadrotors. Below is an example on how RL could be used to train quadrotors to follow high tension power lines (e.g. application for energy infrastructure inspection).
 There are seven actions here that correspond to different directions in which the quadrotor can move in (six directions + one hovering action).
 
 ```
@@ -154,15 +154,15 @@ def compute_reward(quad_state, quad_vel, collision_info):
     return reward
 ```
 
-We consider an episode to terminate if it drifts too much away from the known powerline coordinates. 
+We consider an episode to terminate if it drifts too much away from the known power line coordinates. 
 
 The reset function here flies the quadrotor to the initial starting point:
 
 ```
     if done:
-        client.moveToZ(clearZ, 2)
-        client.moveToPosition(initX, initY, clearZ, 2)
-        client.moveToPosition(initZ, initY, initZ, 2)
+        client.moveToZAsync(clearZ, 2).join()
+        client.moveToPositionAsync(initX, initY, clearZ, 2).join()
+        client.moveToPositionAsync(initZ, initY, initZ, 2).join()
         current_step +=1
 ```
 

@@ -5,6 +5,7 @@
 #ifndef AIRLIB_HEADER_ONLY
 
 #include "safety/SafetyEval.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
 
 #include <cmath>
 #include <sstream>
@@ -14,7 +15,7 @@ namespace msr { namespace airlib {
 //TODO: something defines max macro which interfears with code here
 #undef max
 
-SafetyEval::SafetyEval(VehicleParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy_ptr)
+SafetyEval::SafetyEval(MultirotorApiParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy_ptr)
     : vehicle_params_(vehicle_params), fence_ptr_(fence_ptr), obs_xy_ptr_(obs_xy_ptr)
 { 
     Utils::log(Utils::stringf("enable_reasons: %X, obs_strategy=%X", uint(enable_reasons_), uint(obs_strategy_)));
@@ -138,7 +139,7 @@ void SafetyEval::isSafeDestination(const Vector3r& dest_pos, const Vector3r& cur
 
 float SafetyEval::adjustClearanceForPrStl(float base_clearance, float obs_confidence)
 {
-    //3.2 comes from inverse CDF for epsilone = 0.05 (i.e. 95% confidence), author: akapoor
+    //3.2 comes from inverse CDF for epsilon = 0.05 (i.e. 95% confidence), author: akapoor
     float additional_clearance = (1 - obs_confidence) * 3.2f;   
     if (additional_clearance != 0)
         Utils::log(Utils::stringf("additional_clearance=%f", additional_clearance));

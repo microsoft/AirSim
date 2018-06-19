@@ -41,7 +41,7 @@ public:
 public:
     DirectInputJoyStick();
     ~DirectInputJoyStick();
-    bool initialize(unsigned int joystick_index);
+    bool initialize(int joystick_index);
     // strength ranges from -1 to 1
     void setAutoCenter(double strength);
 

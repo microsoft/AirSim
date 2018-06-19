@@ -30,17 +30,17 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibServer::CarRpcLibServer(SimModeApiBase* simmode_api, string server_address, uint16_t port)
-    : RpcLibServerBase(simmode_api, server_address, port)
+CarRpcLibServer::CarRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port)
+    : RpcLibServerBase(api_provider, server_address, port)
 {
     (static_cast<rpc::server*>(getServer()))->
-        bind("getCarState", [&]() -> CarRpcLibAdapators::CarState {
-        return CarRpcLibAdapators::CarState(getCarApi()->getCarState());
+        bind("getCarState", [&](const std::string& vehicle_name) -> CarRpcLibAdapators::CarState {
+        return CarRpcLibAdapators::CarState(getVehicleApi(vehicle_name)->getCarState());
     });
 
     (static_cast<rpc::server*>(getServer()))->
-        bind("setCarControls", [&](const CarRpcLibAdapators::CarControls& controls) -> void {
-        getCarApi()->setCarControls(controls.to());
+        bind("setCarControls", [&](const CarRpcLibAdapators::CarControls& controls, const std::string& vehicle_name) -> void {
+        getVehicleApi(vehicle_name)->setCarControls(controls.to());
     });
 
 }
@@ -49,12 +49,6 @@ CarRpcLibServer::CarRpcLibServer(SimModeApiBase* simmode_api, string server_addr
 CarRpcLibServer::~CarRpcLibServer()
 {
 }
-
-CarApiBase* CarRpcLibServer::getCarApi() const
-{
-    return static_cast<CarApiBase*>(getSimModeApi()->getVehicleApi());
-}
-
 
 }} //namespace
 

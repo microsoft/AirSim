@@ -32,9 +32,13 @@ See also [initial firmware setup video](https://dev.px4.io/starting-initial-conf
 8. In [AirSim settings](settings.md) file, specify PX4 for your vehicle config like this:
 ```
 {
-  "SettingsVersion": 1.0,
-  "DefaultVehicleConfig": "PX4",
-  "SimMode": "Multirotor"
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "Vehicles": {
+    "PX4": {
+      "VehicleType": "PX4Multirotor"
+    }
+  }
 }
 ```
 

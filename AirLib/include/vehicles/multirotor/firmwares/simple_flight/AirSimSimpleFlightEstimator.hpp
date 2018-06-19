@@ -16,7 +16,7 @@ namespace msr { namespace airlib {
 class AirSimSimpleFlightEstimator : public simple_flight::IStateEstimator {
 public:
     //for now we don't do any state estimation and use ground truth (i.e. assume perfect sensors)
-    void setKinematics(const Kinematics::State* kinematics, Environment* environment)
+    void setGroundTruthKinematics(const Kinematics::State* kinematics, const Environment* environment)
     {
         kinematics_ = kinematics;
         environment_ = environment;
@@ -70,11 +70,6 @@ public:
         return AirSimSimpleFlightCommon::toSimpleFlightGeoPoint(environment_->getState().geo_point);
     }
 
-    virtual void setHomeGeoPoint(const simple_flight::GeoPoint& geo_point) override
-    {
-        environment_->setHomeGeoPoint(AirSimSimpleFlightCommon::toGeoPoint(geo_point));
-    }
-
     virtual simple_flight::GeoPoint getHomeGeoPoint() const override
     {
         return AirSimSimpleFlightCommon::toSimpleFlightGeoPoint(environment_->getHomeGeoPoint());
@@ -96,7 +91,7 @@ public:
 
 private:
     const Kinematics::State* kinematics_;
-    Environment* environment_;
+    const Environment* environment_;
 };
 
 

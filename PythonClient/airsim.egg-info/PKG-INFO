@@ -1,0 +1,34 @@
+Metadata-Version: 2.1
+Name: airsim
+Version: 1.2.1
+Summary: Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research
+Home-page: https://github.com/microsoft/airsim
+Author: Shital Shah
+Author-email: shitals@microsoft.com
+License: UNKNOWN
+Description: # Python API for AirSim
+        
+        This package contains Python APIs for [AirSim](https://github.com/microsoft/airsim).
+        
+        ## How to Use
+        See examples at [car/hello_car.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/hello_car.py) or [multirotor\hello_drone.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/hello_drone.py). 
+        
+        ## Dependencies
+        This package depends on `msgpack` and would automatically install `msgpack-rpc-python` (this may need administrator/sudo prompt):
+        ```
+        pip install msgpack-rpc-python
+        ```
+        
+        Some examples also requires opencv.
+        
+        ## More Info
+        
+        More information on AirSim Python APIs can be found at:
+        https://github.com/Microsoft/AirSim/blob/master/docs/python.md
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown

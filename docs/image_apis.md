@@ -2,7 +2,7 @@
 
 ## Getting a Single Image
 
-Here's a sample code to get a single image. Below returned value is bytes of png format image. To get uncompressed and other format please see next section.
+Here's a sample code to get a single image from camera named "0". The returned value is bytes of png format image. To get uncompressed and other format as well as available cameras please see next sections.
 
 ### C++
 
@@ -17,20 +17,20 @@ int getOneImage()
     //for car use CarRpcLibClient
     msr::airlib::MultirotorRpcLibClient client;
 
-    vector<uint8_t> png_image = client.simGetImage(0, VehicleCameraBase::ImageType::Scene);
+    vector<uint8_t> png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
     //do something with images
 }
 ```
 
 ### Python
 
-```cpp
-from AirSimClient import *
+```python
+import airsim #pip install airsim
 
 # for car use CarClient() 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 
-png_image = client.simGetImage(0, AirSimImageType.Scene)
+png_image = client.simGetImage("0", airsim.AirSimImageType.Scene)
 # do something with image
 ```
 
@@ -57,11 +57,11 @@ int getStereoAndDepthImages()
     //get right, left and depth images. First two as png, second as float16.
     vector<ImageRequest> request = { 
         //png format
-        ImageRequest(0, ImageType::Scene),
+        ImageRequest("0", ImageType::Scene),
         //uncompressed RGBA array bytes
-        ImageRequest(1, ImageType::Scene, false, false),       
+        ImageRequest("1", ImageType::Scene, false, false),       
         //floating point uncompressed image  
-        ImageRequest(1, ImageType::DepthPlanner, true) 
+        ImageRequest("1", ImageType::DepthPlanner, true) 
     };
 
     const vector<ImageResponse>& response = client.simGetImages(request);
@@ -72,18 +72,18 @@ int getStereoAndDepthImages()
 ### Python
 
 ```python
-from AirSimClient import *
+import airsim #pip install airsim
 
 # for car use CarClient() 
-client = MultirotorClient()
+client = airsim.MultirotorClient()
 
 responses = client.simGetImages([
     # png format
-    ImageRequest(0, AirSimImageType.Scene), 
+    airsim.ImageRequest(0, airsim.AirSimImageType.Scene), 
     # uncompressed RGBA array bytes
-    ImageRequest(1, AirSimImageType.Scene, False, False),
+    airsim.ImageRequest(1, airsim.AirSimImageType.Scene, False, False),
     # floating point uncompressed image
-    ImageRequest(1, AirSimImageType.DepthPlanner, True)])
+    airsim.ImageRequest(1, airsim.AirSimImageType.DepthPlanner, True)])
  
  # do something with response which contains image data, pose, timestamp etc
 ```
@@ -93,7 +93,7 @@ responses = client.simGetImages([
 If you plan to use numpy for image manipulation, you should get uncompressed RGBA image and then convert to numpy like this:
 
 ```python
-responses = client.simGetImages([ImageRequest(0, AirSimImageType.Scene, False, False)])
+responses = client.simGetImages([ImageRequest("0", AirSimImageType.Scene, False, False)])
 response = responses[0]
 
 # get numpy array
@@ -109,7 +109,7 @@ img_rgba = np.flipud(img_rgba)
 img_rgba[:,:,1:2] = 100
 
 # write to png 
-Client.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) 
+airsim.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) 
 ```
 
 ## Ready to Run Complete Examples
@@ -122,73 +122,76 @@ See also [other example code](../Examples/StereoImageGenerator.hpp) that generat
 
 ### Python
 
-For a more complete ready to run sample code please see [sample code in AirSimClient project](../PythonClient/hello_drone.py) for multirotors or [HelloCar sample](../PythonClient/hello_car.py). This code also demonstrates simple activities such as saving images in files or using `numpy` to manipulate images.
+For a more complete ready to run sample code please see [sample code in AirSimClient project](../PythonClient/multirotor/hello_drone.py) for multirotors or [HelloCar sample](../PythonClient/car/hello_car.py). This code also demonstrates simple activities such as saving images in files or using `numpy` to manipulate images.
 
 ## Available Cameras
 ### Car
-The camera ID 0 to 4 corresponds to center front, left front, right front, driver head, center rear respectively.
-
+The cameras on car can be accessed by following names in API calls: `front_center`, `front_right`, `front_left`, `fpv` and `back_center`. Here FPV camera is driver's head position in the car.
 ### Multirotor
-The camera ID 0 to 4 corresponds to center front, left front, right front, center downward, center rear respectively.
+The cameras in CV mode can be accessed by following names in API calls: `front_center`, `front_right`, `front_left`, `bottom_center` and `back_center`. 
+### Computer Vision Mode
+Camera names are same as in multirotor.
+
+### Backward compatibility for camera names
+Before AirSim v1.2, cameras were accessed using ID numbers instead of names. For backward compatibility you can still use following ID numbers for above camera names in same order as above: `"0"`, `"1"`, `"2"`, `"3"`, `"4"`. In addition, camera name `""` is also available to access the default camera which is generally the camera `"0"`.
 
 ## "Computer Vision" Mode
 
-You can use AirSim in so-called "Computer Vision" mode. In this mode, physics engine is disabled and there is no flight controller active. This means when you start AirSim, vehicle would just hang in the air. However you can move around using keyboard (use F1 to see help on keys). You can press Record button to continuously generate images. Or you can call APIs to move around and take images.
+You can use AirSim in so-called "Computer Vision" mode. In this mode, physics engine is disabled and there is no vehicle, just cameras. You can move around using keyboard (use F1 to see help on keys). You can press Record button to continuously generate images. Or you can call APIs to move cameras around and take images.
 
-To active this mode, edit [settings.json](settings.json) that you can find in your `Documents\AirSim` folder (or `~/Documents/AirSim` on Linux) and make sure following values exist at root level:
+To active this mode, edit [settings.json](settings.md) that you can find in your `Documents\AirSim` folder (or `~/Documents/AirSim` on Linux) and make sure following values exist at root level:
 
 ```json
 {
-  "SettingsVersion": 1.0,
-  "UsageScenario": "ComputerVision"
+  "SettingsVersion": 1.2,
+  "SimMode": "ComputerVision"
 }
 ```
 
-When you start AirSim and prompted to choose car or drone, select drone by pressing No button.
+[Here's the Python code example](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/cv_mode.py) to move camera around and capture images.
 
-[Here's the Python code example](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py) to move camera around and capture images.
+This mode was inspired from [UnrealCV project](http://unrealcv.org/).
 
-If you are only interested in this mode, you might also want to take a look at [UnrealCV project](http://unrealcv.org/).
+### Setting Pose in Computer Vision Mode
+To move around the environment using APIs you can use `simSetVehiclePose` API. This API takes position and orientation and sets that on the invisible vehicle where the front-center camera is located. All rest of the cameras move along keeping the relative position. If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values. The `simGetVehiclePose` allows to retrieve the current pose. You can also use `simGetGroundTruthKinematics` to get the quantities kinematics quantities for the movement. Many other non-vehicle specific APIs are also available such as segmentation APIs, collision APIs and camera APIs.
 
-## How to Set Position and Orientation (Pose)?
+## Camera APIs
+The `simGetCameraInfo` returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see [example usage](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/cv_mode.py).
 
-### Vehicle Pose
-To move around the environment using APIs you can use `simSetPose` API. This API takes position and orientation and sets that on the vehicle. If you don't want to change position (or orientation) then set components of position (or orientation) to floating point nan values.
-
-### Camera Orientation (Gimble)
-To change orientation of individial camera, you can use `setCameraOrientation` API. It takes camera ID which is zero-based [index of camera](#available-cameras) and quaternion relative to body in NED frame. For example, to set camera-0 to 15-degree pitch, you can use:
+The `simSetCameraOrientation` sets the orientation for the specified camera as quaternion in NED frame. The handy `airsim.to_quaternion()` function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch, you can use:
 ```
-client.setCameraOrientation(0, AirSimClientBase.toQuaternion(0.261799, 0, 0)); #radians
+client.simSetCameraOrientation(0, airsim.toQuaternion(0.261799, 0, 0)); #radians
 ```
 
-You can set stabilization for pitch, roll or yaw for any camera [using settings](settings.md#gimble).
+### Gimbal
+You can set stabilization for pitch, roll or yaw for any camera [using settings](settings.md#gimbal).
 
-Please see [example usage](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py).
+Please see [example usage](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/cv_mode.py).
 
 ## Changing Resolution and Camera Parameters
-To change resolution, FOV etc, you can use [settings.json](settings.md). For example, below is the complete content of settings.json that sets parameters for scene capture and uses "Computer Vision" mode described above. If you omit any setting then below default values will be used. For more information see [settings doc](settings.md). If you are using stereo camera, currently the distance between left and right is fixed at 25 cm.
+To change resolution, FOV etc, you can use [settings.json](settings.md). For example, below addition in settings.json sets parameters for scene capture and uses "Computer Vision" mode described above. If you omit any setting then below default values will be used. For more information see [settings doc](settings.md). If you are using stereo camera, currently the distance between left and right is fixed at 25 cm.
 
 ```json
 {
-  "CaptureSettings": [
-    {
-      "ImageType": 0,
-      "Width": 256,
-      "Height": 144,
-      "FOV_Degrees": 90,
-      "AutoExposureSpeed": 100,
-      "MotionBlurAmount": 0
-    }
-  ],
-  "UsageScenario": "ComputerVision"
+  "SettingsVersion": 1.2,
+  "CameraDefaults": {
+      "CaptureSettings": [
+        {
+          "ImageType": 0,
+          "Width": 256,
+          "Height": 144,
+          "FOV_Degrees": 90,
+          "AutoExposureSpeed": 100,
+          "MotionBlurAmount": 0
+        }
+    ]
+  },
+  "SimMode": "ComputerVision"
 }
 ```
 
-### Getting Camera Parameters
-The `getCameraInfo(camera_id)` API call returns pose (in world frame, NED coordinates, SI units) and FOV (in degrees) of specified camera. Camera ID is zero-based [index of camera](#available-cameras). Please see [example usage](https://github.com/Microsoft/AirSim/blob/master/PythonClient/cv_mode.py).
-
 ## What Does Pixel Values Mean in Different Image Types?
-### Available ImageType
+### Available ImageType Values
 ```cpp
   Scene = 0, 
   DepthPlanner = 1, 
@@ -241,7 +244,7 @@ print(np.unique(img_rgba[:,:,1], return_counts=True)) #green
 print(np.unique(img_rgba[:,:,2], return_counts=True)) #blue  
 ```
 
-A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/segmentation.py).
+A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/segmentation.py).
 
 #### Unsetting object ID
 An object's ID can be set to -1 to make it not show up on the segmentation image.
@@ -256,7 +259,7 @@ If you don't know how to open Unreal Environment in Unreal Editor then try follo
 Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs. There are [few settings](settings.md#segmentation-settings) available to change object ID generation behavior.
 
 #### Changing Colors for Object IDs
-At present the color for each object ID is fixed as in [this pallete](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the meantime you can open the segmentation image in your favorite image editor and get the RGB values you are interested in.
+At present the color for each object ID is fixed as in [this palate](../Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the meantime you can open the segmentation image in your favorite image editor and get the RGB values you are interested in.
 
 #### Startup Object IDs
 At the start, AirSim assigns object ID to each object found in environment of type `UStaticMeshComponent` or `ALandscapeProxy`. It then either uses mesh name or owner name (depending on settings), lower cases it, removes any chars below ASCII 97 to remove numbers and some punctuations, sums int value of all chars and modulo 255 to generate the object ID. In other words, all object with same alphabet chars would get same object ID. This heuristic is simple and effective for many Unreal environments but may not be what you want. In that case, please use above APIs to change object IDs to your desired values. There are [few settings](settings.md#segmentation-settings) available to change this behavior.
@@ -268,7 +271,7 @@ The `simGetSegmentationObjectID` API allows you get object ID for given mesh nam
 Currently this is just a map from object ID to grey scale 0-255. So any mesh with object ID 42 shows up with color (42, 42, 42). Please see [segmentation section](#segmentation) for more details on how to set object IDs. Typically noise setting can be applied for this image type to get slightly more realistic effect. We are still working on adding other infrared artifacts and any contributions are welcome.
 
 ## Collision API
-The collision information can be obtained using `getCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.
+The collision information can be obtained using `simGetCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.
 
 ## Example Code
 A complete example of setting vehicle positions at random locations and orientations and then taking images can be found in [GenerateImageGenerator.hpp](../Examples/StereoImageGenerator.hpp). This example generates specified number of stereo images and ground truth disparity image and saving it to [pfm format](pfm.md).

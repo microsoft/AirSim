@@ -34,24 +34,24 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibClient::CarRpcLibClient(const string&  ip_address, uint16_t port, uint timeout_ms)
-    : RpcLibClientBase(ip_address, port, timeout_ms)
+CarRpcLibClient::CarRpcLibClient(const string&  ip_address, uint16_t port, float timeout_sec)
+    : RpcLibClientBase(ip_address, port, timeout_sec)
 {
 }
 
 CarRpcLibClient::~CarRpcLibClient()
 {}
 
-void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls)
+void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls, const std::string& vehicle_name)
 {
     static_cast<rpc::client*>(getClient())->
-        call("setCarControls", CarRpcLibAdapators::CarControls(controls));
+        call("setCarControls", CarRpcLibAdapators::CarControls(controls), vehicle_name);
 }
 
-CarApiBase::CarState CarRpcLibClient::getCarState()
+CarApiBase::CarState CarRpcLibClient::getCarState(const std::string& vehicle_name)
 {
     return static_cast<rpc::client*>(getClient())->
-        call("getCarState").as<CarRpcLibAdapators::CarState>().to();
+        call("getCarState", vehicle_name).as<CarRpcLibAdapators::CarState>().to();
 }
 
 

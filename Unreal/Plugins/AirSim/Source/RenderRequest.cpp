@@ -14,7 +14,6 @@ RenderRequest::RenderRequest(bool use_safe_method)
 
 RenderRequest::~RenderRequest()
 {
-
 }
 
 // read pixels from render target using render thread, then compress the result into PNG

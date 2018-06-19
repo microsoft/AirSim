@@ -4,7 +4,6 @@
 #ifndef air_CarApiBase_hpp
 #define air_CarApiBase_hpp
 
-#include "common/ImageCaptureBase.hpp"
 #include "common/VectorMath.hpp"
 #include "common/CommonStructs.hpp"
 #include "api/VehicleApiBase.hpp"
@@ -53,17 +52,26 @@ public:
         float rpm;
         float maxrpm;
         bool handbrake;
-        CollisionInfo collision;
-        Kinematics::State kinematics_true;
+        Kinematics::State kinematics_estimated;
         uint64_t timestamp;
 
-        CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, const CollisionInfo& collision_val, 
-            const Kinematics::State& kinematics_true_val, uint64_t timestamp_val)
-            : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), collision(collision_val), 
-            kinematics_true(kinematics_true_val), timestamp(timestamp_val)
+        CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, 
+            const Kinematics::State& kinematics_estimated_val, uint64_t timestamp_val)
+            : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), 
+              kinematics_estimated(kinematics_estimated_val), timestamp(timestamp_val)
         {
         }
     };
+
+    //default implementation so derived class doesn't have to call on VehicleApiBase
+    virtual void reset() override
+    {
+        VehicleApiBase::reset();
+    }
+    virtual void update() override
+    {
+        VehicleApiBase::update();
+    }
 
     virtual void setCarControls(const CarControls& controls) = 0;
     virtual CarState getCarState() const = 0;

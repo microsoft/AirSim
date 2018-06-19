@@ -7,36 +7,26 @@ void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    manual_pose_controller = NewObject<UManualPoseController>();
     setupInputBindings();
-
-    //call virtual method in derived class
-    createVehicles(vehicles_);
-
-    physics_world_.reset(new msr::airlib::PhysicsWorld(
-        createPhysicsEngine(), toUpdatableObjects(vehicles_), 
-        getPhysicsLoopPeriod()));
-
-    if (getSettings().usage_scenario == kUsageScenarioComputerVision) {
-        if (getSettings().default_vehicle_config != "SimpleFlight")
-            UAirBlueprintLib::LogMessageString("settings.json is not using simple_flight in ComputerVision mode."
-                "This can lead to unpredictable behaviour!",  
-                "", LogDebugLevel::Failure);
-
-
-        manual_pose_controller->initializeForPlay();
-        manual_pose_controller->setActor(getFpvVehiclePawnWrapper()->getPawn());
-    }
 }
 
+void ASimModeWorldBase::initializeForPlay()
+{
+    std::vector<msr::airlib::UpdatableObject*> vehicles;
+    for (auto& api : getApiProvider()->getVehicleSimApis())
+        vehicles.push_back(api);
+    //TODO: directly accept getVehicleSimApis() using generic container
+
+    std::unique_ptr<PhysicsEngineBase> physics_engine = createPhysicsEngine();
+    physics_engine_ = physics_engine.get();
+    physics_world_.reset(new msr::airlib::PhysicsWorld(std::move(physics_engine),
+        vehicles, getPhysicsLoopPeriod()));
+}
 
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //remove everything that we created in BeginPlay
     physics_world_.reset();
-    physics_engine_.reset();
-    vehicles_.clear();
-    manual_pose_controller = nullptr;
 
     Super::EndPlay(EndPlayReason);
 }
@@ -50,42 +40,27 @@ void ASimModeWorldBase::stopAsyncUpdator()
     physics_world_->stopAsyncUpdator();
 }
 
-
-std::vector<ASimModeWorldBase::UpdatableObject*> ASimModeWorldBase::toUpdatableObjects(
-    const std::vector<ASimModeWorldBase::VehiclePtr>& vehicles)
+std::unique_ptr<ASimModeWorldBase::PhysicsEngineBase> ASimModeWorldBase::createPhysicsEngine()
 {
-    std::vector<UpdatableObject*> bodies;
-    for (const VehiclePtr& body : vehicles)
-        bodies.push_back(body.get());
-
-    return bodies;
-}
-
-
-ASimModeWorldBase::PhysicsEngineBase* ASimModeWorldBase::createPhysicsEngine()
-{
+    std::unique_ptr<PhysicsEngineBase> physics_engine;
     std::string physics_engine_name = getSettings().physics_engine_name;
-    if (physics_engine_name == "" || getSettings().usage_scenario == kUsageScenarioComputerVision)
-        physics_engine_.reset(); //no physics engine
+    if (physics_engine_name == "")
+        physics_engine.reset(); //no physics engine
     else if (physics_engine_name == "FastPhysicsEngine") {
         msr::airlib::Settings fast_phys_settings;
         if (msr::airlib::Settings::singleton().getChild("FastPhysicsEngine", fast_phys_settings)) {
-            physics_engine_.reset(
-                new msr::airlib::FastPhysicsEngine(fast_phys_settings.getBool("EnableGroundLock", true))
-            );
+            physics_engine.reset(new msr::airlib::FastPhysicsEngine(fast_phys_settings.getBool("EnableGroundLock", true)));
         }
         else {
-            physics_engine_.reset(
-                new msr::airlib::FastPhysicsEngine()
-            );
+            physics_engine.reset(new msr::airlib::FastPhysicsEngine());
         }
     }
     else {
-        physics_engine_.reset();
+        physics_engine.reset();
         UAirBlueprintLib::LogMessageString("Unrecognized physics engine name: ",  physics_engine_name, LogDebugLevel::Failure);
     }
 
-    return physics_engine_.get();
+    return physics_engine;
 }
 
 bool ASimModeWorldBase::isPaused() const
@@ -104,9 +79,10 @@ void ASimModeWorldBase::continueForTime(double seconds)
 
 }
 
-size_t ASimModeWorldBase::getVehicleCount() const
+void ASimModeWorldBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter)
 {
-    return vehicles_.size();
+    unused(debug_reporter);
+    //we use custom debug reporting for this class
 }
 
 void ASimModeWorldBase::Tick(float DeltaSeconds)
@@ -117,15 +93,15 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
         physics_world_->enableStateReport(EnableReport);
         physics_world_->updateStateReport();
 
-        for (auto& vehicle : vehicles_)
-            vehicle->updateRenderedState(DeltaSeconds);
+        for (auto& api : getApiProvider()->getVehicleSimApis())
+            api->updateRenderedState(DeltaSeconds);
 
         physics_world_->unlock();
     }
 
-    //perfom any expensive rendering update outside of lock region
-    for (auto& vehicle : vehicles_)
-        vehicle->updateRendering(DeltaSeconds);
+    //perform any expensive rendering update outside of lock region
+    for (auto& api : getApiProvider()->getVehicleSimApis())
+        api->updateRendering(DeltaSeconds);
 
     Super::Tick(DeltaSeconds);
 }
@@ -136,17 +112,10 @@ void ASimModeWorldBase::reset()
         physics_world_->reset();
     }, true);
     
-    Super::reset();
+    //no need to call base reset because of our custom implementation
 }
 
-std::string ASimModeWorldBase::getReport()
+std::string ASimModeWorldBase::getDebugReport()
 {
-    return physics_world_->getReport();
+    return physics_world_->getDebugReport();
 }
-
-void ASimModeWorldBase::createVehicles(std::vector<VehiclePtr>& vehicles)
-{
-    //should be overridden by derived class
-    //Unreal doesn't allow pure abstract methods in actors
-}
-

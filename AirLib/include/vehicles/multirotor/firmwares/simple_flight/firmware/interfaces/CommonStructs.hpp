@@ -207,24 +207,24 @@ public:
     {
         return state_;
     }
-    void setState(VehicleStateType state, const GeoPoint& home_point = GeoPoint::nan())
+    void setState(VehicleStateType state, const GeoPoint& home_geo_point = GeoPoint::nan())
     {
-        if (state == VehicleStateType::Armed && std::isnan(home_point.latitude))
-            throw std::invalid_argument("home_point must be supplied to set armed state");
+        if (state == VehicleStateType::Armed && std::isnan(home_geo_point.latitude))
+            throw std::invalid_argument("home_geo_point must be supplied to set armed state");
 
         state_ = state;
     }
 
     static VehicleStateType fromString(const std::string& val)
     {
+        if (val == "Armed")
+            return VehicleStateType::Armed;
         if (val == "Inactive")
             return VehicleStateType::Inactive;
         if (val == "Unknown")
             return VehicleStateType::Unknown;
         if (val == "BeingArmed")
             return VehicleStateType::BeingArmed;
-        if (val == "Armed")
-            return VehicleStateType::Armed;
         if (val == "Active")
             return VehicleStateType::Active;
         if (val == "BeingDisarmed")
@@ -238,12 +238,12 @@ public:
 
     const GeoPoint& getHomeGeoPoint() const
     {
-        return home_point_;
+        return home_geo_point_;
     }
 
 private:
     VehicleStateType state_ = VehicleStateType::Unknown;
-    GeoPoint home_point_;
+    GeoPoint home_geo_point_;
 };
 
 enum class GoalModeType : int {

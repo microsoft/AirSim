@@ -1,26 +1,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SkyLightComponent.h"
+#include "Engine/DirectionalLight.h"
+#include "GameFramework/Actor.h"
+
 #include <string>
 #include "CameraDirector.h"
-#include "GameFramework/Actor.h"
-#include "ManualPoseController.h"
-#include "VehiclePawnWrapper.h"
 #include "common/AirSimSettings.hpp"
-#include "Components/SkyLightComponent.h"
 #include "common/ClockFactory.hpp"
-#include "Engine/DirectionalLight.h"
 #include "api/ApiServerBase.hpp"
-#include "api/SimModeApiBase.hpp"
+#include "api/ApiProvider.hpp"
+#include "PawnSimApi.h"
+#include "common/StateReporterWrapper.hpp"
+
 #include "SimModeBase.generated.h"
 
 
 UCLASS()
 class AIRSIM_API ASimModeBase : public AActor
 {
+public:
+
     GENERATED_BODY()
 
-public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Refs")
     ACameraDirector* CameraDirector;
 
@@ -39,67 +42,82 @@ public:
 
     //additional overridable methods
     virtual void reset();
-    virtual std::string getReport();
-    virtual void startRecording();
-    virtual void stopRecording();
-    virtual bool isRecording() const;
-    virtual bool isRecordUIVisible() const;
+    virtual std::string getDebugReport();
     virtual ECameraDirectorMode getInitialViewMode() const;
-
-    //must be implemented by derived class
-    //can't use pure virtual because of restriction with Unreal
-    virtual VehiclePawnWrapper* getFpvVehiclePawnWrapper() const;
-    virtual msr::airlib::VehicleApiBase* getVehicleApi() const;
-
-    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
 
     virtual bool isPaused() const;
     virtual void pause(bool is_paused);
     virtual void continueForTime(double seconds);
 
+    virtual void startRecording();
+    virtual void stopRecording();
+    virtual bool isRecording() const;
+
+    void startApiServer();
+    void stopApiServer();
+    bool isApiServerStarted();
+
+    const NedTransform& getGlobalNedTransform();
+
+    msr::airlib::ApiProvider* getApiProvider() const
+    {
+        return api_provider_.get();
+    }
+
+    const PawnSimApi* getVehicleSimApi(const std::string& vehicle_name = "") const
+    {
+        return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
+    }
+    PawnSimApi* getVehicleSimApi(const std::string& vehicle_name = "")
+    {
+        return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
+    }
+
 protected:
-    typedef msr::airlib::AirSimSettings AirSimSettings;
     virtual void setupInputBindings();
-    virtual const AirSimSettings& getSettings() const;
+    virtual const msr::airlib::AirSimSettings& getSettings() const;
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);
-    msr::airlib::SimModeApiBase* getSimModeApi() const;
+    //called when simmode should do something about clock speed
     virtual void setupClockSpeed();
 
-protected: //settings
+    void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
+    void checkVehicleReady(); //checks if vehicle is available to use
+    virtual void updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter);
+
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
+
+protected:
+    typedef msr::airlib::AirSimSettings AirSimSettings;
+
     int record_tick_count;
-    static const char kUsageScenarioComputerVision[];
 
-
+    UPROPERTY() UClass* pip_camera_class;
+    UPROPERTY() UParticleSystem* collision_display_template;
 private:
     typedef common_utils::Utils Utils;
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef msr::airlib::TTimePoint TTimePoint;
     typedef msr::airlib::TTimeDelta TTimeDelta;
 
-
-    class SimModeApi : public msr::airlib::SimModeApiBase  {
-    public:
-        SimModeApi(ASimModeBase* simmode);
-        virtual msr::airlib::VehicleApiBase* getVehicleApi() override;
-        virtual void reset() override;
-        virtual bool isPaused() const override;
-        virtual void pause(bool is_paused) override;
-        virtual void continueForTime(double seconds) override;
-
-    private:
-        ASimModeBase* simmode_;
-    };
-
 private:
-    UClass* sky_sphere_class_;
+    //assets loaded in constructor
+    UPROPERTY() UClass* external_camera_class_;
+    UPROPERTY() UClass* camera_director_class_;
+    UPROPERTY() UClass* sky_sphere_class_;
+
+
     UPROPERTY() AActor* sky_sphere_;
     UPROPERTY() ADirectionalLight* sun_;;
     TTimePoint tod_sim_clock_start_;
     TTimePoint tod_last_update_;
     std::time_t tod_start_time_;
     long long physics_loop_period_;
-    std::unique_ptr<SimModeApi> simmode_api_;
+    std::unique_ptr<NedTransform> global_ned_transform_;
+    std::unique_ptr<msr::airlib::WorldSimApiBase> world_sim_api_;
+    std::unique_ptr<msr::airlib::ApiProvider> api_provider_;
+    std::unique_ptr<msr::airlib::ApiServerBase> api_server_;
+    msr::airlib::StateReporterWrapper debug_reporter_;
 
 private:
     void setStencilIDs();
@@ -107,5 +125,4 @@ private:
     void advanceTimeOfDay();
     void setupPhysicsLoopPeriod();
     void showClockStats();
-
 };

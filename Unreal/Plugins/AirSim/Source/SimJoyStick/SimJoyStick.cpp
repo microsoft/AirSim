@@ -6,7 +6,7 @@
 
 struct SimJoyStick::impl {
 public:
-    void getJoyStickState(unsigned int index, SimJoyStick::State& state, const AxisMaps& maps)
+    void getJoyStickState(int index, SimJoyStick::State& state, const AxisMaps& maps)
     {
         if (index >= kMaxControllers) {
             state.is_initialized = false;
@@ -51,12 +51,14 @@ public:
         }
     }
 
-	void setAutoCenter(unsigned int index, double strength) {
-		controllers_[index]->setAutoCenter(strength);
+	void setAutoCenter(int index, double strength) {
+        if (index >= 0)
+		    controllers_[index]->setAutoCenter(strength);
 	}
 
-	void setWheelRumble(unsigned int index, double strength) {
-		controllers_[index]->setWheelRumble(strength);
+	void setWheelRumble(int index, double strength) {
+        if (index >= 0)
+    		controllers_[index]->setWheelRumble(strength);
 	}
 
 
@@ -243,17 +245,17 @@ public:
         return val;
     }
 
-    void getJoyStickState(unsigned int index, SimJoyStick::State& state, const AxisMaps& maps)
+    void getJoyStickState(int index, SimJoyStick::State& state, const AxisMaps& maps)
     {
         unused(maps);
 
         static constexpr bool blocking = false;
 
-        //if this is new indec
+        //if this is new index
         if (index != last_index_) {
              //getJoystickInfo(1, manufacturerID, productID, state.message);
 
-            //close previos one
+            //close previous one
             if (fd_ >= 0)
                 close(fd_);
 
@@ -266,7 +268,7 @@ public:
             last_index_ = index;
         }
 
-        //if open was sucessfull
+        //if open was successful
         if (fd_ >= 0) {
             //read the device
             int bytes = read(fd_, &event_, sizeof(event_)); 
@@ -367,7 +369,7 @@ public:
     // }
 
 private:
-    unsigned int last_index_ = -1;
+    int last_index_ = -1;
     int fd_ = -1;
     JoystickEvent event_;
     std::string manufacturerID, productID;
@@ -385,17 +387,24 @@ SimJoyStick::~SimJoyStick()
     //required for pimpl
 }
 
-void SimJoyStick::getJoyStickState(unsigned int index, SimJoyStick::State& state)
+void SimJoyStick::getJoyStickState(int index, SimJoyStick::State& state) const
 {
-    pimpl_->getJoyStickState(index, state, axis_maps);
+    if (index < 0) {
+        state.is_initialized = false;
+        state.is_valid = false;
+        return;
+    }
+
+    //TODO: anyway to workaround const_cast?
+    const_cast<SimJoyStick*>(this)->pimpl_->getJoyStickState(index, state, axis_maps);
 }
 
-void SimJoyStick::setAutoCenter(unsigned int index, double strength)
+void SimJoyStick::setAutoCenter(int index, double strength)
 {
     pimpl_->setAutoCenter(index, strength);
 }
 
-void SimJoyStick::setWheelRumble(unsigned int index, double strength)
+void SimJoyStick::setWheelRumble(int index, double strength)
 {
     pimpl_->setWheelRumble(index, strength);
 }

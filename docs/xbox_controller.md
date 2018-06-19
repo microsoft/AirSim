@@ -27,13 +27,19 @@ MavLinkTest.exe -serial:*,115200 -proxy:127.0.0.1:14550 -server:127.0.0.1:14570
 ````
 
 4. Run AirSim Unreal simulator with these `~/Documents/AirSim/settings.json` settings:
-````
-    "SitlIp": "",
-    "SitlPort": 14560,
-    "UdpIp": "127.0.0.1",
-    "UdpPort": 14570,
-    "UseSerial": false,
-````
+```
+"Vehicles": {
+    "PX4": {
+        "VehicleType": "PX4Multirotor",
+
+        "SitlIp": "",
+        "SitlPort": 14560,
+        "UdpIp": "127.0.0.1",
+        "UdpPort": 14570,
+        "UseSerial": false
+    }
+}
+```
 
 ## Advanced
 

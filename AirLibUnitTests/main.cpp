@@ -1,6 +1,5 @@
 
 #include "SettingsTest.hpp"
-#include "RosFlightTest.hpp"
 #include "PixhawkTest.hpp"
 #include "SimpleFlightTest.hpp"
 #include "WorkerThreadTest.hpp"
@@ -18,7 +17,6 @@ int main()
         std::unique_ptr<TestBase>(new SimpleFlightTest())
         //,
         //std::unique_ptr<TestBase>(new PixhawkTest()),
-        //std::unique_ptr<TestBase>(new RosFlightTest()),
         //std::unique_ptr<TestBase>(new WorkerThreadTest())
     };
 

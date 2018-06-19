@@ -21,6 +21,7 @@
 #include <iostream>
 #include <limits>
 #include <queue>
+#include <bitset>
 #include "type_utils.hpp"
 
 #ifndef _WIN32
@@ -124,6 +125,15 @@ public:
 
     static bool startsWith(const string& s, const string& prefix) {
         return s.size() <= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
+    }
+
+    template <template<class, class, class...> class TContainer, typename TKey, typename TVal, typename... Args>
+    static const TVal& findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal& default_val = TVal())
+    {
+        typename TContainer<TKey, TVal, Args...>::const_iterator it = m.find(key);
+        if (it == m.end())
+            return default_val;
+        return it->second;
     }
 
     static Logger* getSetLogger(Logger* logger = nullptr)
@@ -554,6 +564,11 @@ public:
         return empty_vector;
     }
 
+    static const std::string& emptyString()
+    {
+        static std::string empty = "";
+        return empty;
+    }
 
     static constexpr float kelvinToCelcius(float kelvin)
     {
@@ -684,6 +699,14 @@ public:
                 }
             }
         }
+    }
+
+    template<typename T>
+    static std::string toBinaryString(const T& x)
+    {
+        std::stringstream ss;
+        ss << std::bitset<sizeof(T) * 8>(x);
+        return ss.str();
     }
 };
 

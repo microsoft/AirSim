@@ -1,7 +1,7 @@
 #ifndef msr_AirLibUnitTests_WorkerThreadThreadTest_hpp
 #define msr_AirLibUnitTests_WorkerThreadThreadTest_hpp
 
-#include "common/common_utils/WorkerThread.hpp"
+#include "common/WorkerThread.hpp"
 #include "common/common_utils/Timer.hpp"
 #include <chrono>
 #include "TestBase.hpp"
@@ -10,11 +10,11 @@ namespace msr { namespace airlib {
 
 
 class WorkerThreadTest : public TestBase {
-    class WorkItem : public CancelableBase {
+    class WorkItem : public CancelableAction {
     public:
         double runTime = 2; // seconds
 
-        virtual void execute() {
+        virtual void executeAction() override {
             common_utils::Timer timer;
             timer.start();
             while (!this->isCancelled())
@@ -26,12 +26,12 @@ class WorkerThreadTest : public TestBase {
                 }
             }
         }
-        void reset(bool reset_counter = true) {
+        void reset(bool reset_counter = true) 
+        {
             // reset for next test
             if (reset_counter)
                 counter_ = 0;
-            is_cancelled_ = false;
-            is_complete_ = false;
+            CancelableAction::reset();
         }
         unsigned int getCount() {
             return counter_;

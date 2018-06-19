@@ -9,7 +9,7 @@
 
 ## Do and Don't
 - Rebase your branch frequently with master (once every 2-3 days is ideal).
-- Use same style and formating as rest of code even if it's not your preferred one.
+- Use same style and formatting as rest of code even if it's not your preferred one.
 - Change any documentation that goes with code changes.
 - Do not include OS specific header files.
 - Keep your pull request small, ideally under 10 files.

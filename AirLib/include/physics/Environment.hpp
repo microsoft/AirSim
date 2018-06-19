@@ -49,14 +49,14 @@ public:
         updateState(initial_, home_geo_point_);
     }
     
-    void setHomeGeoPoint(const GeoPoint& home_point)
+    void setHomeGeoPoint(const GeoPoint& home_geo_point)
     {
-        home_geo_point_ = HomeGeoPoint(home_point);
+        home_geo_point_ = HomeGeoPoint(home_geo_point);
     }
 
     GeoPoint getHomeGeoPoint() const
     {
-        return home_geo_point_.home_point;
+        return home_geo_point_.home_geo_point;
     }
 
     //in local NED coordinates
