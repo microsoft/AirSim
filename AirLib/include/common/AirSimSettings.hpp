@@ -380,8 +380,7 @@ private:
                 if (settings_version_actual == 1) {
                     const std::vector<std::string> all_changed_keys = {
                         "AdditionalCameras", "CaptureSettings", "NoiseSettings",
-                        "UsageScenario", "DefaultVehicleConfig",
-                        "EnableCollisionPassthrogh", "SimpleFlight", "PX4"
+                        "UsageScenario", "SimpleFlight", "PX4"
                     };
                     std::stringstream detected_keys_ss;
                     for (const auto& changed_key : all_changed_keys) {
