@@ -7,6 +7,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "physics/Kinematics.hpp"
+#include "physics/Environment.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "rpc/msgpack.hpp"
@@ -251,6 +252,45 @@ public:
             s.twist.angular = angular_velocity.to();
             s.accelerations.linear = linear_acceleration.to();
             s.accelerations.angular = angular_acceleration.to();
+
+            return s;
+        }
+    };
+
+    struct EnvironmentState {
+        Vector3r position;
+        GeoPoint geo_point;
+
+        //these fields are computed
+        Vector3r gravity;
+        float air_pressure;
+        float temperature;
+        float air_density;
+
+        MSGPACK_DEFINE_MAP(position, geo_point, gravity, air_pressure, temperature, air_density);
+
+        EnvironmentState()
+        {}
+
+        EnvironmentState(const msr::airlib::Environment::State& s)
+        {
+            position = s.position;
+            geo_point = s.geo_point;
+            gravity = s.gravity;
+            air_pressure = s.air_pressure;
+            temperature = s.temperature;
+            air_density = s.air_density;
+        }
+
+        msr::airlib::Environment::State to() const
+        {
+            msr::airlib::Environment::State s;
+            s.position = position.to();
+            s.geo_point = geo_point.to();
+            s.gravity = gravity.to();
+            s.air_pressure = air_pressure;
+            s.temperature = temperature;
+            s.air_density = air_density;
 
             return s;
         }

@@ -268,7 +268,7 @@ public: //types
 
 private: //fields
     float settings_version_actual;
-    float settings_version_minimum = 1.2;
+    float settings_version_minimum = 1.2f;
 
 public: //fields
     std::string simmode_name = "";
@@ -322,7 +322,7 @@ public: //methods
         loadDefaultCameraSetting(settings_json, camera_defaults);
         loadSubWindowsSettings(settings_json, subwindow_settings);
         loadViewModeSettings(settings_json);
-        loadRecordingSetting(settings_json, recording_setting, simmode_name);
+        loadRecordingSetting(settings_json, recording_setting);
         loadSegmentationSetting(settings_json, segmentation_setting);
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
@@ -365,7 +365,6 @@ public: //methods
 private:
     void checkSettingsVersion(const Settings& settings_json)
     {
-        float settings_version_actual;
         bool has_default_settings = hasDefaultSettings(settings_json, settings_version_actual);
         bool upgrade_required = settings_version_actual < settings_version_minimum;
         if (upgrade_required) {
@@ -506,8 +505,7 @@ private:
             std::to_string(settings_json.getInt("CameraID", 0)));
     }
 
-    static void loadRecordingSetting(const Settings& settings_json, RecordingSetting& recording_setting,
-        const std::string& simmode_name)
+    static void loadRecordingSetting(const Settings& settings_json, RecordingSetting& recording_setting)
     {
         Settings recording_json;
         if (settings_json.getChild("Recording", recording_json)) {

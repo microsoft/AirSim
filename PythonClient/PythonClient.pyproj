@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>car\pause_continue_car.py</StartupFile>
+    <StartupFile>car\hello_car.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -35,10 +35,16 @@
     <Compile Include="airsim\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="car\legacy_hello_car.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="car\setup_path.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\getpos.py" />
+    <Compile Include="computer_vision\ground_truth.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="computer_vision\setup_path.py" />
     <Compile Include="multirotor\land.py" />
     <Compile Include="car\pause_continue_car.py">

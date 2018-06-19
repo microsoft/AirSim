@@ -7,7 +7,8 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
-
+#include "physics/Kinematics.hpp"
+#include "physics/Environment.hpp"
 
 namespace msr { namespace airlib {
 
@@ -62,6 +63,8 @@ public:
     CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;
     void simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name = "");
 
+    msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
+    msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
 
 protected:
     void* getClient();

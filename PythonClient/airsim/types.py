@@ -181,6 +181,14 @@ class KinematicsState(MsgpackMixin):
     linear_acceleration = Vector3r()
     angular_acceleration = Vector3r()
 
+class EnvironmentState(MsgpackMixin):
+    position = Vector3r()
+    geo_point = GeoPoint()
+    gravity = Vector3r()
+    air_pressure = np.float32(0)
+    temperature = np.float32(0)
+    air_density = np.float32(0)
+
 class CarState(MsgpackMixin):
     speed = np.float32(0)
     gear = 0
