@@ -47,86 +47,100 @@ MultirotorRpcLibClient::MultirotorRpcLibClient(const string&  ip_address, uint16
 MultirotorRpcLibClient::~MultirotorRpcLibClient()
 {}
 
-void MultirotorRpcLibClient::takeoffAsync(float timeout_sec, const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::takeoffAsync(float timeout_sec, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("takeoff", timeout_sec, vehicle_name);
+    return this;
 }
-void MultirotorRpcLibClient::landAsync(float timeout_sec, const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::landAsync(float timeout_sec, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("land", timeout_sec, vehicle_name);
+    return this;
 }
-void MultirotorRpcLibClient::goHomeAsync(float timeout_sec, const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::goHomeAsync(float timeout_sec, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("goHome", timeout_sec, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveByAngleZAsync(float pitch, float roll, float z, float yaw, float duration, const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByAngleZAsync(float pitch, float roll, float z, float yaw, float duration, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByAngleZ", pitch, roll, z, yaw, duration, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveByAngleThrottleAsync(float pitch, float roll, float throttle, float yaw_rate, float duration, const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByAngleThrottleAsync(float pitch, float roll, float throttle, float yaw_rate, float duration, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByAngleThrottle", pitch, roll, throttle, yaw_rate, duration, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveByVelocityAsync(float vx, float vy, float vz, float duration, 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByVelocityAsync(float vx, float vy, float vz, float duration, 
     DrivetrainType drivetrain, const YawMode& yaw_mode, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByVelocity", vx, vy, vz, duration, 
         drivetrain, MultirotorRpcLibAdapators::YawMode(yaw_mode), vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveByVelocityZAsync(float vx, float vy, float z, float duration, 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByVelocityZAsync(float vx, float vy, float z, float duration, 
     DrivetrainType drivetrain, const YawMode& yaw_mode, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByVelocityZ", vx, vy, z, duration, 
         drivetrain, MultirotorRpcLibAdapators::YawMode(yaw_mode), vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveOnPathAsync(const vector<Vector3r>& path, float velocity, float duration, 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveOnPathAsync(const vector<Vector3r>& path, float velocity, float duration, 
     DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name)
 {
     vector<MultirotorRpcLibAdapators::Vector3r> conv_path;
     MultirotorRpcLibAdapators::from(path, conv_path);
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveOnPath", conv_path, velocity, duration, 
         drivetrain, MultirotorRpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveToPositionAsync(float x, float y, float z, float velocity, float timeout_sec, 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveToPositionAsync(float x, float y, float z, float velocity, float timeout_sec, 
     DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveToPosition", x, y, z, velocity, timeout_sec, 
         drivetrain, MultirotorRpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveToZAsync(float z, float velocity, float timeout_sec, const 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveToZAsync(float z, float velocity, float timeout_sec, const 
     YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveToZ", z, velocity, timeout_sec, 
         MultirotorRpcLibAdapators::YawMode(yaw_mode), lookahead, adaptive_lookahead, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::moveByManualAsync(float vx_max, float vy_max, float z_min, float duration, 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByManualAsync(float vx_max, float vy_max, float z_min, float duration, 
     DrivetrainType drivetrain, const YawMode& yaw_mode, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByManual", vx_max, vy_max, z_min, duration, 
         drivetrain, MultirotorRpcLibAdapators::YawMode(yaw_mode), vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::rotateToYawAsync(float yaw, float timeout_sec, float margin, const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::rotateToYawAsync(float yaw, float timeout_sec, float margin, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("rotateToYaw", yaw, timeout_sec, margin, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::rotateByYawRateAsync(float yaw_rate, float duration, const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::rotateByYawRateAsync(float yaw_rate, float duration, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("rotateByYawRate", yaw_rate, duration, vehicle_name);
+    return this;
 }
 
-void MultirotorRpcLibClient::hoverAsync(const std::string& vehicle_name)
+MultirotorRpcLibClient* MultirotorRpcLibClient::hoverAsync(const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("hover", vehicle_name);
+    return this;
 }
 
 bool MultirotorRpcLibClient::setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
@@ -150,17 +164,23 @@ void MultirotorRpcLibClient::moveByRC(const RCData& rc_data, const std::string& 
 
 //return value of last task. It should be true if task completed without
 //cancellation or timeout
-bool MultirotorRpcLibClient::waitOnLastTask(float timeout_sec)
+MultirotorRpcLibClient* MultirotorRpcLibClient::waitOnLastTask(bool* task_result, float timeout_sec)
 {
+    bool result;
     if (std::isnan(timeout_sec) || timeout_sec == Utils::max<float>())
-        return pimpl_->last_future.get().as<bool>();
+        result = pimpl_->last_future.get().as<bool>();
     else {
         auto future_status = pimpl_->last_future.wait_for(std::chrono::duration<double>(timeout_sec));
         if (future_status == std::future_status::ready)
-            return pimpl_->last_future.get().as<bool>();
+            result = pimpl_->last_future.get().as<bool>();
         else
-            return false;
+            result = false;
     }
+
+    if (task_result)
+        *task_result = result;
+
+    return this;
 }
 
 }} //namespace

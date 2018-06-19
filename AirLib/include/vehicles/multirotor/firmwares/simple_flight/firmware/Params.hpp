@@ -92,7 +92,7 @@ public:
     } velocity_pid;
 
     struct Takeoff {
-        float takeoff_z = -1.5f;
+        float takeoff_z = -2.0f;
         //float velocity = -1.0f;
     } takeoff;
 

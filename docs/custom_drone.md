@@ -1,6 +1,6 @@
 # AirLib on a Real Drone
 
-The AirLib library can be compiled and deployed on the companion computer on a real drone. For our testing we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB. The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wifi: 
+The AirLib library can be compiled and deployed on the companion computer on a real drone. For our testing we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB. The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wi-Fi: 
 
 ![Flamewheel](images/Flamewheel.png)
 
@@ -21,7 +21,7 @@ takeoff 5
 orbit 10 2
 ````
 
-This will arm the drone, takeoff ot 5 meters, then do an orbit pattern radius 10 meters, at 2 m/s.
+This will arm the drone, takeoff of 5 meters, then do an orbit pattern radius 10 meters, at 2 m/s.
 Type '?' to find all available commands.
 
 **Note:** Some commands (for example, `orbit`) are named differently and have different syntax in MavLinkTest and DroneShell (for example, `circlebypath -radius 10 -velocity 21`).
@@ -65,6 +65,6 @@ between your companion computer and flight controller.
 ## How Does This Work?
 AirSim uses MavLinkCom component developed by @lovettchris. The MavLinkCom has proxy architecture where by you can open connection to PX4 either using serial or UDP and then other components shares this connection. When PX4 sends MavLink message, all components receives that message. If any component sends message then its received by PX4 only. This allows you to connect any number of components to PX4 [This code](https://github.com/Microsoft/AirSim/blob/master/AirLib/include/vehicles/multirotor/controllers/MavLinkDroneController.hpp#L793) opens connection for LogViewer and QGC. You can add something more if you like.
 
-If you want to use QGC + AirSim togather than you will need QGC to let own the serial port. QGC opens up TCP connection that acts as proxy so any other component can connect to QGC and send MavLinkMessage to QGC and then QGC forwards that message to PX4. So you tell AirSim to connect to QGC and let QGC own serial port.
+If you want to use QGC + AirSim together than you will need QGC to let own the serial port. QGC opens up TCP connection that acts as proxy so any other component can connect to QGC and send MavLinkMessage to QGC and then QGC forwards that message to PX4. So you tell AirSim to connect to QGC and let QGC own serial port.
 
 For companion board, the way we did it earlier was to have Gigabyte Brix on the drone. This x86 full fledged computer that will connect to PX4 through USB. We had Ubuntu on Brix and ran [DroneServer](https://github.com/Microsoft/AirSim/tree/master/DroneServer). The DroneServer created API end point that we can talk to via C++ client code (or Python code) and it translated API calls to MavLink messages. That way you can write your code against same API, test it in simulator and then ran same code on actual vehicle. So the companion computer has DroneServer running along with client code. 

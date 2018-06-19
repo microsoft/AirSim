@@ -17,8 +17,8 @@ Now you can select what is shown by each of above sub windows. For instance, you
 ```
 {
   "SubWindows": [
-	{"Index": 1, "ImageType": 5},
-	{"Index": 2, "ImageType": 3}
+    {"Index": 1, "ImageType": 5},
+    {"Index": 2, "ImageType": 3}
   ]
 }
 ```

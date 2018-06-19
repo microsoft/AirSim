@@ -40,7 +40,7 @@ public:
 
     //task management APIs
     void cancelLastTask(const std::string& vehicle_name = "");
-    virtual bool waitOnLastTask(float timeout_sec = Utils::nan<float>());
+    virtual RpcLibClientBase* waitOnLastTask(bool* task_result = nullptr, float timeout_sec = Utils::nan<float>());
 
     bool simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false);
     int simGetSegmentationObjectID(const std::string& mesh_name) const;

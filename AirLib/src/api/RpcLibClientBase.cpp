@@ -37,7 +37,7 @@ struct RpcLibClientBase::impl {
         : client(ip_address, port)
     {
         // some long flight path commands can take a while, so we give it up to 1 hour max.
-        client.set_timeout(static_cast<int64_t>(timeout_sec/1E3));
+        client.set_timeout(static_cast<int64_t>(timeout_sec * 1.0E3));
     }
 
     rpc::client client;
@@ -239,12 +239,14 @@ void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
 
 //return value of last task. It should be true if task completed without
 //cancellation or timeout
-bool RpcLibClientBase::waitOnLastTask(float timeout_sec)
+RpcLibClientBase* RpcLibClientBase::waitOnLastTask(bool* task_result, float timeout_sec)
 {
     //should be implemented by derived class if it supports async task,
     //for example using futures
     unused(timeout_sec);
-    return true;
+    unused(task_result);
+
+    return this;
 }
 
 void* RpcLibClientBase::getClient()

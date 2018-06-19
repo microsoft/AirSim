@@ -64,14 +64,12 @@ int main()
 
         std::cout << "Press Enter to takeoff" << std::endl; std::cin.get();
         float takeoffTimeout = 5; 
-        client.takeoffAsync(takeoffTimeout);
-        client.waitOnLastTask();
+        client.takeoffAsync(takeoffTimeout)->waitOnLastTask();
 
         // switch to explicit hover mode so that this is the fall back when 
         // move* commands are finished.
         std::this_thread::sleep_for(std::chrono::duration<double>(5));
-        client.hoverAsync();
-        client.waitOnLastTask();
+        client.hoverAsync()->waitOnLastTask();
 
         std::cout << "Press Enter to fly in a 10m box pattern at 3 m/s velocity" << std::endl; std::cin.get();
         // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
@@ -96,12 +94,10 @@ int main()
         client.moveByVelocityZAsync(0, -speed, z, duration, driveTrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
 
-        client.hoverAsync();
-        client.waitOnLastTask();
+        client.hoverAsync()->waitOnLastTask();
 
         std::cout << "Press Enter to land" << std::endl; std::cin.get();
-        client.landAsync();
-        client.waitOnLastTask();
+        client.landAsync()->waitOnLastTask();
 
         std::cout << "Press Enter to disarm" << std::endl; std::cin.get();
         client.armDisarm(false);
