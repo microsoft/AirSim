@@ -35,7 +35,7 @@ public:
         return map_.find(key);
     }
 
-    typename const std::map<TKey, TVal>& getMap() const
+    const std::map<TKey, TVal>& getMap() const
     {
         return map_;
     }

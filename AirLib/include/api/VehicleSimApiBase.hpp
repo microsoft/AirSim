@@ -45,7 +45,7 @@ public:
     virtual const ImageCaptureBase* getImageCapture() const = 0;
     virtual ImageCaptureBase* getImageCapture()
     {
-        return const_cast<ImageCaptureBase*>(getImageCapture());
+        return const_cast<ImageCaptureBase*>(static_cast<const VehicleSimApiBase*>(this)->getImageCapture());
     }
 
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const = 0;

@@ -22,10 +22,10 @@ private:
 
 public: //types
     static constexpr int kSubwindowCount = 3; //must be >= 3 for now
-    static constexpr char* kVehicleTypePX4 = "px4multirotor";
-    static constexpr char* kVehicleTypeSimpleFlight = "simpleflight";
-    static constexpr char* kVehicleTypePhysXCar = "physxcar";
-    static constexpr char* kVehicleTypeComputerVision = "computervision";
+    static constexpr char const * kVehicleTypePX4 = "px4multirotor";
+    static constexpr char const * kVehicleTypeSimpleFlight = "simpleflight";
+    static constexpr char const * kVehicleTypePhysXCar = "physxcar";
+    static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
 
 
