@@ -13,9 +13,9 @@ AComputerVisionPawn::AComputerVisionPawn()
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
     camera_front_center_base_->SetRelativeLocation(FVector(0, 0, 0)); //center
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(0, -10, 0)); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(0, -12.5, 0)); //left
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
-    camera_front_right_base_->SetRelativeLocation(FVector(0, 10, 0)); //right
+    camera_front_right_base_->SetRelativeLocation(FVector(0, 12.5, 0)); //right
     camera_bottom_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_bottom_center_base_"));
     camera_bottom_center_base_->SetRelativeLocation(FVector(0, 0, 0)); //right
     camera_back_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_center_base_"));

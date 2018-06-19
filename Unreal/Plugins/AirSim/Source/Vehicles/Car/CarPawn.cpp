@@ -43,10 +43,10 @@ ACarPawn::ACarPawn()
     camera_front_center_base_->SetRelativeLocation(FVector(200, 0, 100)); //center
     camera_front_center_base_->SetupAttachment(GetMesh());
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(200, -100, 100)); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(200, -12.5, 100)); //left
     camera_front_left_base_->SetupAttachment(GetMesh());
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
-    camera_front_right_base_->SetRelativeLocation(FVector(200, 100, 100)); //right
+    camera_front_right_base_->SetRelativeLocation(FVector(200, 12.5, 100)); //right
     camera_front_right_base_->SetupAttachment(GetMesh());
     camera_driver_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_driver_base_"));
     camera_driver_base_->SetRelativeLocation(FVector(0, -25, 125)); //driver
