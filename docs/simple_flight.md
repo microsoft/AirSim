@@ -31,19 +31,21 @@ Currently we have implemented simple_flight interfaces for simulated board. We p
 To have AirSim use simple_flight, you can specify it in [settings.json](settings.md) as shown below. Note that this is default so you don't have to do it explicitly.
 
 ```
-{
-  "DefaultVehicleConfig": "SimpleFlight"
+"Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+    }
 }
 ```
 
 By default, vehicle using simple_flight is already armed which is why you would see propellers spinning. However if you don't want that than set `DefaultVehicleState` to `Inactive` like this:
 
 ```
-{
-  "DefaultVehicleConfig": "SimpleFlight",
-  "SimpleFlight": {
-        "DefaultVehicleState": "Inactive"
-  }
+"Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Inactive"
+    }
 }
 ```
 
@@ -52,22 +54,21 @@ In this case, you will need to either manually arm using RC sticks in down inwar
 For safety reasons, flight controllers would disallow API control unless human operator has consented using a switch on RC. Also, when RC control is lost, vehicle should disable API control and enter hover mode for safety reasons. To simplify things a bit, simple_flight enables API control without human consent using RC and even when RC is not detected by default however you can change this using following setting:
 
 ```
-{
-    "DefaultVehicleConfig": "SimpleFlight",
+"Vehicles": {
     "SimpleFlight": {
-    "RemoteControlID": 0,
-    "RC": {
-        "AllowAPIWhenDisconnected": true,
-        "AllowAPIAlways": true
+      "VehicleType": "SimpleFlight",
+
+      "AllowAPIAlways": true,
+      "RC": {
+        "RemoteControlID": 0,      
+        "AllowAPIWhenDisconnected": true
+      }
     }
-  }
 }
 ```
 
 Finally, simple_flight uses steppable clock by default which means clock advances when simulator tells it to advance (unlike wall clock which advances strictly according to passage of time). This means clock can be paused, for example, if code hits the break point and there is zero variance in clock (clock APIs provides by operating system might have significant variance unless its "real time" OS). If you want simple_flight to use wall clock instead than use following settings:
 
 ```
-{
-    "ClockType": "ScalableClock"
-}
+  "ClockType": "ScalableClock"
 ```

@@ -21,9 +21,13 @@ you can build and run it there.
 5. Now edit [AirSim settings](settings.md) file to make sure you have followings:
     ```
     {
-        "DefaultVehicleConfig": "PX4",
-        "PX4": {
-            "UseSerial": false
+        "SettingsVersion": 1.2,
+        "SimMode": "Multirotor",
+        "Vehicles": {
+            "PX4": {
+                "VehicleType": "PX4Multirotor",
+                "UseSerial": false
+            }
         }
     }
     ```

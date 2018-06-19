@@ -566,6 +566,10 @@ private:
         //these settings_json are expected in same section, not in another child
         auto vehicle_setting = std::unique_ptr<PX4VehicleSetting>(new PX4VehicleSetting());
 
+        //TODO: we should be selecting remote if available else keyboard
+        //currently keyboard is not supported so use rc as default
+        vehicle_setting->rc.remote_control_id = 0;
+
         MavLinkConnectionInfo &connection_info = vehicle_setting->connection_info;
         connection_info.sim_sysid = static_cast<uint8_t>(settings_json.getInt("SimSysID", connection_info.sim_sysid));
         connection_info.sim_compid = settings_json.getInt("SimCompID", connection_info.sim_compid);
@@ -620,8 +624,15 @@ private:
         std::unique_ptr<VehicleSetting> vehicle_setting;
         if (vehicle_type == kVehicleTypePX4)
             vehicle_setting = createPX4VehicleSetting(settings_json);
-        else //for everything else we don't need derived class yet
+        //for everything else we don't need derived class yet
+        else {
             vehicle_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+            if (vehicle_type == kVehicleTypeSimpleFlight) {
+                //TODO: we should be selecting remote if available else keyboard
+                //currently keyboard is not supported so use rc as default
+                vehicle_setting->rc.remote_control_id = 0;
+            }
+        }
         vehicle_setting->vehicle_name = vehicle_name;
 
         //required settings_json
@@ -660,6 +671,9 @@ private:
     {
         vehicles.clear();
 
+        //NOTE: Do not set defaults for vehicle type here. If you do then make sure
+        //to sync code in createVehicleSetting() as well.
+
         //create simple flight as default multirotor
         auto simple_flight_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
         simple_flight_setting->vehicle_name = "SimpleFlight";
@@ -691,6 +705,10 @@ private:
         if (settings_json.getChild("Vehicles", vehicles_child)) {
             std::vector<std::string> keys;
             vehicles_child.getChildNames(keys);
+
+            //remove default vehicles, if values are specified in settings
+            if (keys.size())
+                vehicles.clear();
 
             for (const auto& key : keys) {
                 msr::airlib::Settings child;
