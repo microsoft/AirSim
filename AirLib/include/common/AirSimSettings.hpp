@@ -202,6 +202,7 @@ public: //fields
     bool log_messages_visible;
     HomeGeoPoint origin_geopoint;
     std::map<std::string, PawnPath> pawn_paths;
+	bool speed_in_mph;
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -264,6 +265,7 @@ public: //methods
         log_messages_visible = true;
         //0,0,0 in Unreal is mapped to this GPS coordinates
         origin_geopoint = HomeGeoPoint(GeoPoint(47.641468, -122.140165, 122)); 
+		speed_in_mph = false;
     }
 
     VehicleSettings getVehicleSettings(const std::string& vehicle_name)
@@ -647,6 +649,7 @@ private:
         api_server_address = settings.getString("LocalHostIp", "");
         is_record_ui_visible = settings.getBool("RecordUIVisible", true);
         engine_sound = settings.getBool("EngineSound", false);
+		speed_in_mph = settings.getBool("SpeedInMph", false);
 
         enable_collision_passthrough = settings.getBool("EnableCollisionPassthrogh", false);
         log_messages_visible = settings.getBool("LogMessagesVisible", true);
