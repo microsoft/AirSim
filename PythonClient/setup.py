@@ -5,14 +5,15 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="airsim",
-    version="1.2.0",
+    version="1.2.2",
     author="Shital Shah",
-    author_email="sytelus@gmail.com",
+    author_email="shitals@microsoft.com",
     description="Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/microsoft/airsim",
     packages=setuptools.find_packages(),
+	license='MIT',
     classifiers=(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
