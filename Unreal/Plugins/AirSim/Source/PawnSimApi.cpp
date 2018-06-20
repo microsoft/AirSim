@@ -2,7 +2,7 @@
 #include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
+#include "Camera/CameraComponent.h"
 
 #include "AirBlueprintLib.h"
 #include "common/ClockFactory.hpp"

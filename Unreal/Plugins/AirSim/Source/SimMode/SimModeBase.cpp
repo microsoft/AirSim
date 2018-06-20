@@ -8,7 +8,6 @@
 #include "Misc/OutputDeviceNull.h"
 #include "Engine/World.h"
 
-
 #include <memory>
 #include "AirBlueprintLib.h"
 #include "common/AirSimSettings.hpp"

@@ -16,6 +16,8 @@
 #include "SimJoyStick/SimJoyStick.h"
 #include "api/VehicleSimApiBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
+#include "Particles/ParticleSystemComponent.h"
+
 #include "PawnEvents.h"
 
 class PawnSimApi : public msr::airlib::VehicleSimApiBase {

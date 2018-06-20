@@ -4,6 +4,7 @@
 #include "Components/SkyLightComponent.h"
 #include "Engine/DirectionalLight.h"
 #include "GameFramework/Actor.h"
+#include "ParticleDefinitions.h"
 
 #include <string>
 #include "CameraDirector.h"

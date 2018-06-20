@@ -27,7 +27,7 @@ Below are complete list of settings available along with their default values. I
 {
   "SimMode": "",
   "ClockType": "",
-  "ClockSpeed": "1",
+  "ClockSpeed": 1,
   "LocalHostIp": "127.0.0.1",
   "RecordUIVisible": true,
   "LogMessagesVisible": true,

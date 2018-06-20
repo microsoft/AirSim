@@ -1,4 +1,5 @@
 #include "AirSimGameMode.h"
+#include "AirSim.h"
 #include "Misc/FileHelper.h"
 #include "IImageWrapperModule.h"
 #include "SimHUD/SimHUD.h"
@@ -54,14 +55,14 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 }
 
-UGameUserSettings* AAirSimGameMode::GetGameUserSettings()
-{
-    if (GEngine != nullptr)
-    {
-        return GEngine->GameUserSettings;
-    }
-    return nullptr;
-}
+//UGameUserSettings* AAirSimGameMode::GetGameUserSettings()
+//{
+//    if (GEngine != nullptr)
+//    {
+//        return GEngine->GameUserSettings;
+//    }
+//    return nullptr;
+//}
 
 void AAirSimGameMode::StartPlay() 
 {

@@ -248,12 +248,12 @@ void ASimHUD::initializeSettings()
     }
 }
 
-const std::vector<AirSimSettings::SubwindowSetting>& ASimHUD::getSubWindowSettings() const
+const std::vector<ASimHUD::AirSimSettings::SubwindowSetting>& ASimHUD::getSubWindowSettings() const
 {
     return AirSimSettings::singleton().subwindow_settings;
 }
 
-std::vector<AirSimSettings::SubwindowSetting>& ASimHUD::getSubWindowSettings()
+std::vector<ASimHUD::AirSimSettings::SubwindowSetting>& ASimHUD::getSubWindowSettings()
 {
     return AirSimSettings::singleton().subwindow_settings;
 }
@@ -331,9 +331,9 @@ bool ASimHUD::getSettingsText(std::string& settingsText)
 {
     return (getSettingsTextFromCommandLine(settingsText)
         ||
-        readSettingsTextFromFile(FString(Settings::getExecutableFullPath("settings.json").c_str()), settingsText)
+        readSettingsTextFromFile(FString(msr::airlib::Settings::getExecutableFullPath("settings.json").c_str()), settingsText)
         ||
-        readSettingsTextFromFile(FString(Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
+        readSettingsTextFromFile(FString(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
 }
 
 // Attempts to parse the settings text from the command line

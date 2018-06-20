@@ -5,6 +5,8 @@
 #include "ComputerVisionPawn.h"
 #include "common/Common.hpp"
 #include "api/VehicleSimApiBase.hpp"
+#include "SimMode/SimModeBase.h"
+
 #include "SimModeComputerVision.generated.h"
 
 

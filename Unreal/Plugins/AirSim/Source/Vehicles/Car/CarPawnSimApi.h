@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "WheeledVehicleMovementComponent4W.h"
 
+#include "CarPawn.h"
+#include "CarPawnApi.h"
 #include "PawnEvents.h"
 #include "PawnSimApi.h"
 #include "vehicles/car/api/CarApiBase.hpp"
