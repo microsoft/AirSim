@@ -35,13 +35,13 @@ public:
         state.right_z = getAxisValue(AxisMap::AxisType::RightZ, maps.right_z, di_state, joystick_info.pid_vid);
         state.left_z = getAxisValue(AxisMap::AxisType::LeftZ, maps.left_z, di_state, joystick_info.pid_vid);
 
-        state.slider0 = di_state.slider0;
-        state.slider1 = di_state.slider1;
+        state.slider0 = static_cast<float>(di_state.slider0);
+        state.slider1 = static_cast<float>(di_state.slider1);
 
-        state.pov0 = di_state.pov0;
-        state.pov1 = di_state.pov1;
-        state.pov2 = di_state.pov2;
-        state.pov3 = di_state.pov3;
+        state.pov0 = static_cast<float>(di_state.pov0);
+        state.pov1 = static_cast<float>(di_state.pov1);
+        state.pov2 = static_cast<float>(di_state.pov2);
+        state.pov3 = static_cast<float>(di_state.pov3);
 
         state.pid_vid = joystick_info.pid_vid;
 
@@ -86,18 +86,20 @@ private:
         else
             rc_axis = map.rc_axis;
 
-
+        float result;
         switch (rc_axis)
         {
-        case AxisMap::AxisType::LeftX: return di_state.x;
-        case AxisMap::AxisType::LeftY: return di_state.y;
-        case AxisMap::AxisType::LeftZ: return di_state.z;
-        case AxisMap::AxisType::RightX: return di_state.rx;
-        case AxisMap::AxisType::RightY: return di_state.ry;
-        case AxisMap::AxisType::RightZ: return di_state.rz;
+        case AxisMap::AxisType::LeftX: result = di_state.x; break;
+        case AxisMap::AxisType::LeftY: result = di_state.y; break;
+        case AxisMap::AxisType::LeftZ: result = di_state.z; break;
+        case AxisMap::AxisType::RightX: result = di_state.rx; break;
+        case AxisMap::AxisType::RightY: result = di_state.ry; break;
+        case AxisMap::AxisType::RightZ: result = di_state.rz; break;
         default:
             throw std::invalid_argument("Unsupported rc_axis in getMappedValue");
         }
+
+        return static_cast<float>(result);
     }
 
     float getAxisValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
