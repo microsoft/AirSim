@@ -28,6 +28,14 @@ Cars in AirSim
 ### Choosing Your Vehicle: Car or Multirotor
 By default AirSim spawns multirotor. You can easily change this to car and use all of AirSim goodies. Please see [using car](docs/using_car.md) guide.
 
+
+## What's New
+
+* AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
+* We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
+
+[List of newly added features](docs/whats_new.md)
+
 ### Manual drive
 
 If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.
@@ -69,13 +77,6 @@ Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode,
 - [Reinforcement Learning with AirSim](docs/reinforcement_learning.md) by Ashish Kapoor
 - [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
 - [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
-
-
-## What's New
-
-* We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
-
-[List of newly added features](docs/whats_new.md)
 
 ## Participate
 
