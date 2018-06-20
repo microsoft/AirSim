@@ -273,10 +273,16 @@ void ACarPawn::updateHUDStrings()
     float vel = FMath::Abs(GetVehicleMovement()->GetForwardSpeed() / 100); //cm/s -> m/s
     float vel_rounded = FMath::FloorToInt(vel * 10) / 10.0f;
     int32 Gear = GetVehicleMovement()->GetCurrentGear();
+	bool speed_in_mph = AirSimSettings::singleton().speed_in_mph;
+	FText speed_units = FText::FromString("m/s");
 
+	if (speed_in_mph == true){
+		vel_rounded = FMath::FloorToInt(vel_rounded * 2.23694f);
+		speed_units = FText::FromString("mph");
+	}
+	
     // Using FText because this is display text that should be localizable
-    last_speed_ = FText::Format(LOCTEXT("SpeedFormat", "{0} m/s"), FText::AsNumber(vel_rounded));
-
+    last_speed_ = FText::Format(LOCTEXT("SpeedFormat", "{0} {1}"), FText::AsNumber(vel_rounded), speed_units);
 
     if (GetVehicleMovement()->GetCurrentGear() < 0)
     {

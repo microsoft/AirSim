@@ -295,6 +295,7 @@ public: //fields
     std::map<std::string, PawnPath> pawn_paths; //path for pawn blueprint
     std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
     CameraSetting camera_defaults;
+	bool speed_in_mph = false;
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -939,7 +940,7 @@ private:
         is_record_ui_visible = settings_json.getBool("RecordUIVisible", true);
         engine_sound = settings_json.getBool("EngineSound", false);
         enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);
-
+		speed_in_mph = settings_json.getBool("SpeedInMph", false);
         log_messages_visible = settings_json.getBool("LogMessagesVisible", true);
 
         {   //load origin geopoint
