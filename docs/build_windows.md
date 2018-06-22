@@ -7,11 +7,9 @@
 
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
-   ![Unreal Versions](images/unreal_versions.png)
-
 ## Build AirSim
 
-  1. You will need Visual Studio 2017 (make sure to install VC++) or newer.
+  1. You will need Visual Studio 2017 (make sure to install VC++ and Windows SDK).
   2. Start `x64 Native Tools Command Prompt for VS 2017`. Create a folder for the repo and run `git clone https://github.com/Microsoft/AirSim.git`.
   3. Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
 
@@ -26,6 +24,9 @@ Alternatively, you can use [APIs](apis.md) for programmatic control or use the s
 Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see [setting up Unreal Environment](unreal_proj.md).
 
 ## FAQ
+
+#### I get error "'corecrt.h': No such file or directory"
+Very likely you don't have [Windows SDK](https://developercommunity.visualstudio.com/content/problem/3754/cant-compile-c-program-because-of-sdk-81cant-add-a.html) installed with Visual Studio. 
 
 #### How do I use PX4 firmware with AirSim?
 By default, AirSim uses its own built-in firmware called [simple_flight](simple_flight.md). There is no additional setup if you just want to go with it. If you want to switch to using PX4 instead then please see [this guide](px4_setup.md).
