@@ -47,6 +47,9 @@ class Vector3r(MsgpackMixin):
         self.y_val = y_val
         self.z_val = z_val
 
+    def __add__(self, other):
+        return Vector3r(self.x_val + other.x_val, self.y_val + other.y_val, self.z_val + other.z_val)
+
 
 class Quaternionr(MsgpackMixin):
     w_val = np.float32(0)
