@@ -114,7 +114,13 @@ This API returns the state of the vehicle in one call. The state includes, colli
 Many API methods has parameters named `duration` or `max_wait_seconds` and they have *Async* as suffix, for example, `takeoffAsync`. These methods will return immediately after starting the task in AirSim so that your client code can do something else while that task is being executed. If you want to wait for this task to complete then you can call `waitOnLastTask` like this:
 
 ```cpp
+//C++
 client.takeoffAsync()->waitOnLastTask();
+```
+
+```cpp
+# Python
+client.takeoffAsync().join()
 ```
 
 If you start another command then it automatically cancels the previous task and starts new command. This allows to use pattern where your coded continuously does the sensing, computes a new trajectory to follow and issues that path to vehicle in AirSim. Each newly issued trajectory cancels the previous trajectory allowing your code to continuously do the update as new sensor data arrives.
