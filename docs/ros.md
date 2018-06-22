@@ -1,14 +1,13 @@
 # How to use AirSim with Robot Operating System (ROS)
 
-AirSim and ROS can be integrated using C++ or Python.  Some example ROS nodes are provided demonstrating how to publish
-data from AirSim as ROS topics.
+AirSim and ROS can be integrated using C++ or Python.  Some example ROS nodes are provided demonstrating how to publish data from AirSim as ROS topics.
 
 # Python
 
 ## Prerequisites
 
 These instructions are for Ubuntu 16.04, ROS Kinetic, UE4 4.18 or higher, and latest AirSim release.
-You should have these components installed and working before proceding.
+You should have these components installed and working before proceeding
 
 ## Setup
 
@@ -23,11 +22,16 @@ If you don't already have a catkin workspace, you should first work through the 
 
 ### Add AirSim ROS node examples to ROS package
 
-In the ROS package directory you made, run '''mkdir scripts''' to create a folder for your Python code.
-Copy the ros examples from the AirSim/PythonClient directory to your ROS package. Change the code below to match
-your AirSim and catkin workspace paths.
+In the ROS package directory you made, copy the ros examples from the AirSim/PythonClient directory to your ROS package. Change the code below to match your AirSim and catkin workspace paths.
 
-```cp AirSim/PythonClient/ROS/*.py ../catkin_ws/src/airsim/scripts```
+```
+# copy package
+mkdir -p ../catkin_ws/src/airsim/scripts/airsim
+cp AirSim/PythonClient/airsim/*.py ../catkin_ws/src/airsim/scripts/airsim
+
+# copy ROS examples
+cp AirSim/PythonClient/ros/*.py ../catkin_ws/src/airsim/scripts
+```
 
 
 ### Build ROS AirSim package

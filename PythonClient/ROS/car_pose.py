@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+import setup_path 
+import airsim
+
 import rospy
 import tf
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped
-from AirSimClient import *
+
 import time
 
 
@@ -14,7 +17,7 @@ def airpub():
     rate = rospy.Rate(10) # 10hz
 
     # connect to the AirSim simulator 
-    client = CarClient()
+    client = airsim.CarClient()
     client.confirmConnection()
 
 #    start = time.time()
@@ -24,8 +27,8 @@ def airpub():
 
         # get state of the car
         car_state = client.getCarState()
-        pos = car_state.kinematics_true.position
-        orientation = car_state.kinematics_true.orientation
+        pos = car_state.kinematics_estimated.position
+        orientation = car_state.kinematics_estimated.orientation
 #        milliseconds = (time.time() - start) * 1000
 
 

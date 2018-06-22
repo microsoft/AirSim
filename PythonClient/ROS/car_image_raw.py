@@ -2,13 +2,13 @@
 
 # Example ROS node for publishing AirSim images.
 
+import setup_path 
+import airsim
+
 import rospy
 
 # ROS Image message
 from sensor_msgs.msg import Image
-
-# AirSim Python API
-from AirSimClient import *
 
 def airpub():
     pub = rospy.Publisher("airsim/image_raw", Image, queue_size=1)
@@ -16,13 +16,13 @@ def airpub():
     rate = rospy.Rate(10) # 10hz
 
     # connect to the AirSim simulator 
-    client = CarClient()
+    client = airsim.CarClient()
     client.confirmConnection()
 
     while not rospy.is_shutdown():
          # get camera images from the car
         responses = client.simGetImages([
-            ImageRequest(1, AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
+            airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
 
         for response in responses:
             img_rgba_string = response.image_data_uint8
