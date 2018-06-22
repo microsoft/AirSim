@@ -33,3 +33,15 @@ By default, AirSim uses its own built-in firmware called [simple_flight](simple_
 #### I made changes in Visual Studio but there is no effect
 
 Sometimes the Unreal + VS build system doesn't recompile if you make changes to only header files. To ensure a recompile, make some Unreal based cpp file "dirty" like AirSimGameMode.cpp.
+
+#### Unreal still uses VS2015 or I'm getting some link error
+Running serveral versions of VS can lead to issues when compiling UE projects. One problem that may arise is that UE will try to compile with an older version of VS which may or may not work. There are two settings in Unreal, one for for the engine and one for the project, to adjust the version of VS to be used.
+1. Edit -> Editor preferences -> General -> Source code
+2. Edit -> Project Settings -> Platforms -> Windows -> Toolchain ->CompilerVersion
+
+In some cases, these settings will still not lead to the desired result and errors such as the following might be produced: LINK : fatal error LNK1181: cannot open input file 'ws2_32.lib'
+
+To resolve such issues the following procedure can be applied:
+1. Uninstall all old versions of VS using the [VisualStudioUninstaller](https://github.com/Microsoft/VisualStudioUninstaller/releases)
+2. Repair/Install VS2017
+3. Restart machine and install Epic launcher and desired version of the engine

@@ -41,6 +41,12 @@
     <Compile Include="car\setup_path.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="computer_vision\cv_capture.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="computer_vision\cv_navigate.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="computer_vision\getpos.py" />
     <Compile Include="computer_vision\ground_truth.py">
       <SubType>Code</SubType>
