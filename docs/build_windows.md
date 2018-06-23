@@ -55,6 +55,8 @@ Assuming you have python installed already (anaconda):
   2. Install the remote procedure call library with 'pip install msgpack-python'
   3. Install the AirSim library with 'pip install airsim'
   4. Run a simple example.  'python hello_drone.py'
+  
+  Please see [the API documentation for more details](apis.md).
 
 ## Setup Unreal Environment
 
