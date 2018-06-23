@@ -2,6 +2,8 @@
 ## Introduction
 AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs use [msgpack-rpc protocol](https://github.com/msgpack-rpc/msgpack-rpc) over TCP/IP which allows you to use variety of programming languages including C++, C#, Python, Java etc.
 
+Note: When controlling AirSim from an external program such as these through this API, AirSim frame rate may appear to drop.  To fix this, [follow these instructions](https://answers.unrealengine.com/questions/474269/keeping-editor-running-as-normal-when-not-in-focus.html) to enable full frame rate when Unreal Engine Editor does not have the focus.  
+
 ## Hello Car
 Here's how to use AirSim APIs using C++ to control simulated car (see also [Python example](python.md)):
 
