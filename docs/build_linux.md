@@ -25,15 +25,27 @@ It's super simple: 1-2-3!
    ./build.sh
    ```
 
-## Setup Remote Control
+
+## Build Unreal Environment
+
+Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see [setting up Unreal Environment](unreal_proj.md).
+
+## Setup Remote Control (Multirotor Only)
 
 A remote control is required if you want to fly manually. See the [remote control setup](remote_control.md) for more details.
 
 Alternatively, you can use [APIs](apis.md) for programmatic control or use the so-called [Computer Vision mode](image_apis.md) to move around using the keyboard.
 
-## Setup Unreal Environment
+## How to Use AirSim
 
-Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see [setting up Unreal Environment](unreal_proj.md).
+Once AirSim is set up by following above steps, you can,
+
+1. Go to `UnrealEngine` folder and start Unreal by running `UnrealEngine/Engine/Binaries/Linux/UE4Editor`.
+2. When Unreal Engine prompts for opening or creating project, select Browse and choose `AirSim/Unreal/Environments/Blocks` (or your [custom](unreal_custenv.md) Unreal project).
+3. If you get prompts to convert project, look for More Options or Convert-In-Place option. If you get prompted to build, chose Yes. If you get prompted to disable AirSim plugin, choose No.
+4. After Unreal Editor loads, press Play button. Tip: go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
+
+See [Using APIs](apis.md) and [settings.json](settings.md) for various options available.
 
 ## FAQ
 

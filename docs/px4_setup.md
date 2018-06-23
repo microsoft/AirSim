@@ -44,7 +44,7 @@ See also [initial firmware setup video](https://dev.px4.io/starting-initial-conf
 
 After above setup you should be able to use RC to fly in the AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.
 
-You can also control the drone from [Python](python.md).
+You can also control the drone from [Python APIs](apis.md).
 
 See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0) and  [Unreal AirSim Setup  Video](https://youtu.be/1oY8Qu5maQQ) that shows you all the setup steps in this document.
 
