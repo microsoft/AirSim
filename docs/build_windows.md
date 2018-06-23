@@ -53,7 +53,7 @@ Assuming you have python installed already (anaconda):
 
   1. Open anaconda prompt and navigate to the 'AirSim\PythonClient\multirotor' directory.
   2. Install the remote procedure call library with 'pip install msgpack-python'
-  3. Install the AirSim librayr with 'pip install airsim'
+  3. Install the AirSim library with 'pip install airsim'
   4. Run a simple example.  'python hello_drone.py'
 
 ## Setup Unreal Environment
