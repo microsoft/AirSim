@@ -9,7 +9,7 @@
 
 ## Build AirSim
 
-  1. You will need Visual Studio 2017 (make sure to install VC++ and Windows SDK).
+  1. You will need Visual Studio 2017 (**make sure** to install VC++ and Windows SDK 8.x).
   2. Start `x64 Native Tools Command Prompt for VS 2017`. Create a folder for the repo and run `git clone https://github.com/Microsoft/AirSim.git`.
   3. Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
 
@@ -25,7 +25,7 @@ Finally, you will need an Unreal project that hosts the environment for your veh
 
 ## FAQ
 
-#### I get error "'corecrt.h': No such file or directory"
+#### I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"
 Very likely you don't have [Windows SDK](https://developercommunity.visualstudio.com/content/problem/3754/cant-compile-c-program-because-of-sdk-81cant-add-a.html) installed with Visual Studio. 
 
 #### How do I use PX4 firmware with AirSim?
