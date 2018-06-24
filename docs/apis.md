@@ -65,8 +65,8 @@ while True:
 
     # get camera images from the car
     responses = client.simGetImages([
-        airsim.ImageRequest(0, airsim.AirSimImageType.DepthVis),
-        airsim.ImageRequest(1, airsim.AirSimImageType.DepthPlanner, True)]) 
+        airsim.ImageRequest(0, airsim.ImageType.DepthVis),
+        airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)]) 
     print('Retrieved images: %d', len(responses))
 
     # do something with images
@@ -99,8 +99,8 @@ client.moveToPositionAsync(-10, 10, -10, 5).join()
 
 # take images
 responses = client.simGetImages([
-    airsim.ImageRequest("0", airsim.AirSimImageType.DepthVis), 
-    airsim.ImageRequest("1", airsim.AirSimImageType.DepthPlanner, True)])
+    airsim.ImageRequest("0", airsim.ImageType.DepthVis), 
+    airsim.ImageRequest("1", airsim.ImageType.DepthPlanner, True)])
 print('Retrieved images: %d', len(responses))
 
 # do something with the images
