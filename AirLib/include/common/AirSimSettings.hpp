@@ -341,11 +341,11 @@ public: //methods
 
     static void createDefaultSettingsFile()
     {
-        std::string settings_filename = Settings::getUserDirectoryFullPath("settings_json.json");
+        std::string settings_filename = Settings::getUserDirectoryFullPath("settings.json");
         Settings& settings_json = Settings::loadJSonString("{}");
         //write some settings_json in new file otherwise the string "null" is written if all settings_json are empty
         settings_json.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md");
-        settings_json.setDouble("SettingsVersion", 1.0);
+        settings_json.setDouble("SettingsVersion", 1.2);
 
         //TODO: there is a crash in Linux due to settings_json.saveJSonString(). Remove this workaround after we only support Unreal 4.17
         //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
