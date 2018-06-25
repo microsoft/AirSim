@@ -5,6 +5,26 @@ import time
 import os
 import numpy as np
 
+# Use below in settings.json with blocks environment
+"""
+{
+	"SettingsVersion": 1.2,
+	"SimMode": "Car",
+	
+	"Vehicles": {
+		"Car1": {
+		  "VehicleType": "PhysXCar",
+		  "X": 4, "Y": 0, "Z": -2
+		},
+		"Car2": {
+		  "VehicleType": "PhysXCar",
+		  "X": -4, "Y": 0, "Z": -2
+		}
+
+    }
+}
+"""
+
 # connect to the AirSim simulator 
 client = airsim.CarClient()
 client.confirmConnection()
