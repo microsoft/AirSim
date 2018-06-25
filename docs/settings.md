@@ -23,7 +23,7 @@ Below are complete list of settings available along with their default values. I
 
 **WARNING:** Do not copy paste all of below in your settings.json. We strongly recommend adding only those settings that you don't want default values. Only required element is `"SettingsVersion"`.
 
-````
+````json
 {
   "SimMode": "",
   "ClockType": "",
@@ -132,7 +132,9 @@ Below are complete list of settings available along with their default values. I
       },
       "Cameras": {   
         //same elements as CameraDefaults above, key as name
-      }
+      },
+      "X": NaN, "Y": NaN, "Z": NaN,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
     },
     "PhysXCar": {
       "VehicleType": "PhysXCar",
@@ -146,7 +148,9 @@ Below are complete list of settings available along with their default values. I
       },
       "Cameras": {   
         //same elements as CameraDefaults above, key as name
-      }
+      },
+      "X": NaN, "Y": NaN, "Z": NaN,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN      
     },
 	"SpeedUnitFactor": 1.0,
 	"SpeedUnitLabel": "m/s"
@@ -260,9 +264,11 @@ Each simulation mode will go through the list of vehicles specified in this sett
 - `DefaultVehicleState`: Possible value for multirotors is `Armed` or `Disarmed`.
 - `AutoCreate`: If true then this vehicle would be spawned (if supported by selected sim mode).
 - `RC`: This sub-element allows to specify which remote controller to use for vehicle using `RemoteControlID`. The value of -1 means use keyboard (not supported yet for multirotors). The value >= 0 specifies one of many remote controllers connected to the system. The list of available RCs can be seen in Game Controllers panel in Windows, for example.
+- `X, Y, Z, Yaw, Roll, Pitch`: These elements allows you to specify the initial position and orientation of the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.
+- `IsFpvVehicle`: This setting allows to specify which vehicle camera will follow and the view that will be shown when ViewMode is set to Fpv. By default, AirSim selects the first vehicle in settings as FPV vehicle.
 - `Cameras`: This element specifies camera settings for vehicle. The key in this element is name of the [available camera](image_apis.md#available_cameras) and the value is same as `CameraDefaults` as described above. For example, to change FOV for the front center camera to 120 degrees, you can use this for `Vehicles` setting:
 
-```
+```json
 "Vehicles": {
     "FishEyeDrone": {
       "VehicleType": "SimpleFlight",

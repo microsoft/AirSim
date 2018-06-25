@@ -1,11 +1,11 @@
 Metadata-Version: 2.1
 Name: airsim
-Version: 1.2.1
+Version: 1.2.2
 Summary: Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research
 Home-page: https://github.com/microsoft/airsim
 Author: Shital Shah
 Author-email: shitals@microsoft.com
-License: UNKNOWN
+License: MIT
 Description: # Python API for AirSim
         
         This package contains Python APIs for [AirSim](https://github.com/microsoft/airsim).

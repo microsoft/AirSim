@@ -104,6 +104,8 @@ class VehicleClient:
     def simGetObjectPose(self, object_name):
         pose = self.client.call('simGetObjectPose', object_name)
         return Pose.from_msgpack(pose)
+    def simSetObjectPose(self, object_name, pose, teleport = True):
+        return self.client.call('simSetObjectPose', object_name, pose, teleport)
 
     def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
         return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
@@ -196,8 +198,8 @@ class VehicleClient:
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
-    def __init__(self):
-        super(MultirotorClient, self).__init__()
+    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
+        super(MultirotorClient, self).__init__(ip, port, timeout_value)
 
     def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
         return self.client.call_async('takeoff', timeout_sec, vehicle_name)  
@@ -256,8 +258,8 @@ class MultirotorClient(VehicleClient, object):
 
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):
-    def __init__(self):
-        super(CarClient, self).__init__()
+    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
+        super(CarClient, self).__init__(ip, port, timeout_value)
 
     def setCarControls(self, controls, vehicle_name = ''):
         self.client.call('setCarControls', controls, vehicle_name)

@@ -63,7 +63,8 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
     backup_camera_ = back_camera;
     camera_start_location_ = ExternalCamera->GetActorLocation();
     camera_start_rotation_ = ExternalCamera->GetActorRotation();
-    initial_ground_obs_offset_ = camera_start_location_ - follow_actor_->GetActorLocation();
+    initial_ground_obs_offset_ = camera_start_location_ - 
+        (follow_actor_ ? follow_actor_->GetActorLocation() : FVector::ZeroVector);
 
     //set initial view mode
     switch (mode_) {

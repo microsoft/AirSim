@@ -37,8 +37,22 @@ Instead of,
 
 ```python
 client1 = CarClient()
+```
 
-responses = client.simGetImages([ImageRequest(0, AirSimImageType.DepthVis)])
+use this:
+
+```python
+client1 = airsim.CarClient()
+```
+
+## AirSim Types
+
+We have moved all types in `airsim` namespace.
+
+Instead of,
+
+```python
+image_type = AirSimImageType.DepthVis
 
 d = DrivetrainType.MaxDegreeOfFreedom
 ```
@@ -46,11 +60,25 @@ d = DrivetrainType.MaxDegreeOfFreedom
 use this:
 
 ```python
-client1 = airsim.CarClient()
-
-responses = client.simGetImages([airsim.ImageRequest(0, airsim.AirSimImageType.DepthVis)])
+image_type = airsim.ImageType.DepthVis
 
 d = airsim.DrivetrainType.MaxDegreeOfFreedom
+```
+
+## Getting Images
+
+Nothing new below, it's just combination of above. Note that all APIs that previously took `camera_id`, now takes `camera_name` instead. You can take a look at [available cameras](image_apis.md#avilable_cameras) here.
+
+Instead of,
+
+```python
+responses = client.simGetImages([ImageRequest(0, AirSimImageType.DepthVis)])
+```
+
+use this:
+
+```python
+responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.DepthVis)])
 ```
 
 ## Utility Methods

@@ -35,18 +35,18 @@ class SetupPath:
     @staticmethod
     def addAirSimModulePath():
         # if airsim module is installed then don't do anything else
-        import pkgutil
-        airsim_loader = pkgutil.find_loader('airsim')
-        if airsim_loader is not None:
-            return
+        #import pkgutil
+        #airsim_loader = pkgutil.find_loader('airsim')
+        #if airsim_loader is not None:
+        #    return
 
-        grand_parent = SetupPath.getParentDir()
-        if grand_parent !=  '':
-            airsim_path = os.path.join(grand_parent, 'airsim')
+        parent = SetupPath.getParentDir()
+        if parent !=  '':
+            airsim_path = os.path.join(parent, 'airsim')
             client_path = os.path.join(airsim_path, 'client.py')
             if os.path.exists(client_path):
-                sys.path.insert(0, grand_parent)
+                sys.path.insert(0, parent)
         else:
-            logging.warning("airsim module not found in grand parent folder. Using default installed module (if any).")
+            logging.warning("airsim module not found in parent folder. Using installed package (pip install airsim).")
 
 SetupPath.addAirSimModulePath()

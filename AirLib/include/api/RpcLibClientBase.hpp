@@ -37,7 +37,8 @@ public:
     void simContinueForTime(double seconds);
 
     Pose simGetObjectPose(const std::string& object_name) const;
-
+    bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
+    
     //task management APIs
     void cancelLastTask(const std::string& vehicle_name = "");
     virtual RpcLibClientBase* waitOnLastTask(bool* task_result = nullptr, float timeout_sec = Utils::nan<float>());

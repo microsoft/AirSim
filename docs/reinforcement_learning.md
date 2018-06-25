@@ -9,7 +9,7 @@ This is still in active development. What we share below is a framework that can
 
 ## RL with Car
 
-[Source code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/DQNcar.py)
+[Source code](../PythonClient/car/DQNcar.py)
 
 This example works with AirSimNeighborhood environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
@@ -102,7 +102,7 @@ Note that the simulation needs to be up and running before you execute DQNcar.py
 
 ## RL with Quadrotor
 
-[Source code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/DQNdrone.py)
+[Source code](../multirotor/DQNdrone.py)
 
 This example works with AirSimMountainLandscape environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 

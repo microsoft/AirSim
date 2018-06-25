@@ -181,23 +181,23 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    camera_spawn_params.Name = "camera_front_center";
+    camera_spawn_params.Name = FName(* (this->GetName() + "_camera_front_center"));
     camera_front_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_center_->AttachToComponent(camera_front_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
-    camera_spawn_params.Name = "camera_front_left";
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_left"));
     camera_front_left_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_left_->AttachToComponent(camera_front_left_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
-    camera_spawn_params.Name = "camera_front_right";
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_right"));
     camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
-    camera_spawn_params.Name = "camera_driver";
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_driver"));
     camera_driver_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_driver_->AttachToComponent(camera_driver_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
-    camera_spawn_params.Name = "camera_back_center";
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_back_center"));
     camera_back_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_,
         FTransform(FRotator(0, -180, 0), FVector::ZeroVector), camera_spawn_params);
     camera_back_center_->AttachToComponent(camera_back_center_base_, FAttachmentTransformRules::KeepRelativeTransform);

@@ -1,7 +1,3 @@
-"""
-For connecting to the AirSim drone environment and testing API functionality
-"""
-
 import setup_path 
 import airsim
 

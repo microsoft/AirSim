@@ -38,7 +38,16 @@
     <Compile Include="car\legacy_hello_car.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="car\multi_agent_car.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="car\setup_path.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="computer_vision\cv_capture.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="computer_vision\cv_navigate.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\getpos.py" />
@@ -57,6 +66,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\objects.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="multirotor\multi_agent_drone.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="multirotor\navigate.py">
@@ -87,6 +99,10 @@
     <Compile Include="multirotor\setup_path.py" />
     <Compile Include="multirotor\survey.py" />
     <Compile Include="multirotor\takeoff.py" />
+    <Compile Include="ros\car_image_raw.py" />
+    <Compile Include="ros\car_pose.py" />
+    <Compile Include="ros\drone_image_raw.py" />
+    <Compile Include="ros\setup_path.py" />
     <Compile Include="setup.py">
       <SubType>Code</SubType>
     </Compile>
@@ -99,6 +115,7 @@
     <Folder Include="car\" />
     <Folder Include="computer_vision\" />
     <Folder Include="multirotor\" />
+    <Folder Include="ros\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="install_packages.bat">

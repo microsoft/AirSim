@@ -47,6 +47,18 @@ class Vector3r(MsgpackMixin):
         self.y_val = y_val
         self.z_val = z_val
 
+    def __add__(self, other):
+        return Vector3r(self.x_val + other.x_val, self.y_val + other.y_val, self.z_val + other.z_val)
+
+    def __sub__(self, other):
+        return Vector3r(self.x_val - other.x_val, self.y_val - other.y_val, self.z_val - other.z_val)
+
+    def distance_to(self, other):
+        return ( (self.x_val-other.x_val)**2 + (self.y_val-other.y_val)**2 + (self.z_val-other.z_val)**2 )**0.5
+
+    def to_Quaternionr(self):
+        return Quaternionr(self.x_val, self.y_val, self.z_val, 0)
+
 
 class Quaternionr(MsgpackMixin):
     w_val = np.float32(0)
@@ -59,6 +71,32 @@ class Quaternionr(MsgpackMixin):
         self.y_val = y_val
         self.z_val = z_val
         self.w_val = w_val
+
+    def inverse(self):
+        q_star = Quaternionr(-self.x_val, -self.y_val, -self.z_val, self.w_val)
+        return q_star / self.dot(self)
+
+    def dot(self, other):
+        t, x, y, z = self.w_val, self.x_val, self.y_val, self.z_val
+        a, b, c, d = other.w_val, other.x_val, other.y_val, other.z_val
+        return a * t + b * x + c * y + d * z
+
+    def __mul__(self, other):
+        t, x, y, z = self.w_val, self.x_val, self.y_val, self.z_val
+        a, b, c, d = other.w_val, other.x_val, other.y_val, other.z_val
+        return Quaternionr( w_val = a*t - b*x - c*y - d*z,
+                            x_val = b*t + a*x + d*y - c*z,
+                            y_val = c*t + a*y + b*z - d*x,
+                            z_val = d*t + z*a + c*x - b*y)
+
+    def __truediv__(self, other): 
+        if type(other) == type(self): 
+            return self * other.inverse()
+        elif type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+            return Quaternionr( self.x_val / other, self.y_val / other, self.z_val / other, self.w_val / other)
+        else: 
+            raise TypeError('unsupported operand type(s) for /: \'Quaternionr\' and ' + str(type(other)) )
+
 
 class Pose(MsgpackMixin):
     position = Vector3r()

@@ -25,6 +25,7 @@ public:
         const std::string& message_param = "", unsigned char severity = 0) override;
 
     virtual Pose getObjectPose(const std::string& object_name) const override;
+    virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
 
 private:
     ASimModeBase* simmode_;
