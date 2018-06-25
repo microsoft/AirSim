@@ -28,7 +28,8 @@ void ASimHUD::BeginPlay()
         createSimMode();
         createMainWidget();
         setupInputBindings();
-        simmode_->startApiServer();
+        if (simmode_)
+            simmode_->startApiServer();
     }
     catch (std::exception& ex) {
         UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
@@ -46,7 +47,8 @@ void ASimHUD::Tick(float DeltaSeconds)
 
 void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    simmode_->stopApiServer();
+    if (simmode_)
+        simmode_->stopApiServer();
 
     if (widget_) {
         widget_->Destruct();
@@ -175,13 +177,22 @@ void ASimHUD::createMainWidget()
     //create main widget
     if (widget_class_ != nullptr) {
         APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
-        std::string pawn_name = std::string(TCHAR_TO_ANSI(*player_controller->GetPawn()->GetName()));
-        Utils::log(pawn_name);
+        auto* pawn = player_controller->GetPawn();
+        if (pawn) {
+            std::string pawn_name = std::string(TCHAR_TO_ANSI(*pawn->GetName()));
+            Utils::log(pawn_name);
+        }
+        else {
+            UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("There were no compatible vehicles created for current SimMode! Check your settings.json."), "Error");
+            UAirBlueprintLib::LogMessage(TEXT("There were no compatible vehicles created for current SimMode! Check your settings.json."), TEXT(""), LogDebugLevel::Failure);
+        }
+
+
         widget_ = CreateWidget<USimHUDWidget>(player_controller, widget_class_);
     }
     else {
         widget_ = nullptr;
-        UAirBlueprintLib::LogMessage(TEXT("Cannot instantiate BP_SimHUDWidget blueprint!"), TEXT(""), LogDebugLevel::Failure, 180);
+        UAirBlueprintLib::LogMessage(TEXT("Cannot instantiate BP_SimHUDWidget blueprint!"), TEXT(""), LogDebugLevel::Failure);
     }
 
     initializeSubWindows();
@@ -190,7 +201,8 @@ void ASimHUD::createMainWidget()
 
     //synchronize PIP views
     widget_->initializeForPlay();
-    widget_->setReportVisible(simmode_->EnableReport);
+    if (simmode_)
+        widget_->setReportVisible(simmode_->EnableReport);
     widget_->setOnToggleRecordingHandler(std::bind(&ASimHUD::toggleRecordHandler, this));
     widget_->setRecordButtonVisibility(AirSimSettings::singleton().is_record_ui_visible);
     updateWidgetSubwindowVisibility();
@@ -287,35 +299,44 @@ void ASimHUD::createSimMode()
     else if (simmode_name == "ComputerVision")
         simmode_ = this->GetWorld()->SpawnActor<ASimModeComputerVision>(FVector::ZeroVector,
             FRotator::ZeroRotator, simmode_spawn_params);
-    else
+    else {
+        UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("SimMode is not valid: ") + simmode_name, "Error");
         UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
+    }
 }
 
 void ASimHUD::initializeSubWindows()
 {
+    if (!simmode_)
+        return;
+
     auto vehicle_sim_api = simmode_->getVehicleSimApi();
-    auto camera_count = vehicle_sim_api->getCameraCount();
 
-    //setup defaults
-    if (camera_count > 0) {
-        subwindow_cameras_[0] = vehicle_sim_api->getCamera("");
-        subwindow_cameras_[1] = vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
-        subwindow_cameras_[2] = vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
-    }
-    else
-        subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
+    if (vehicle_sim_api) {
+        auto camera_count = vehicle_sim_api->getCameraCount();
 
-
-    for (size_t window_index = 0; window_index < AirSimSettings::kSubwindowCount; ++window_index) {
-
-        const auto& subwindow_setting = AirSimSettings::singleton().subwindow_settings.at(window_index);
-
-        if (vehicle_sim_api->getCamera(subwindow_setting.camera_name) != nullptr)
-            subwindow_cameras_[subwindow_setting.window_index] = vehicle_sim_api->getCamera(subwindow_setting.camera_name);
+        //setup defaults
+        if (camera_count > 0) {
+            subwindow_cameras_[0] = vehicle_sim_api->getCamera("");
+            subwindow_cameras_[1] = vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
+            subwindow_cameras_[2] = vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
+        }
         else
-            UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid",
-                std::to_string(window_index), LogDebugLevel::Failure);
+            subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
+
+
+        for (size_t window_index = 0; window_index < AirSimSettings::kSubwindowCount; ++window_index) {
+
+            const auto& subwindow_setting = AirSimSettings::singleton().subwindow_settings.at(window_index);
+
+            if (vehicle_sim_api->getCamera(subwindow_setting.camera_name) != nullptr)
+                subwindow_cameras_[subwindow_setting.window_index] = vehicle_sim_api->getCamera(subwindow_setting.camera_name);
+            else
+                UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid",
+                    std::to_string(window_index), LogDebugLevel::Failure);
+        }
     }
+
 
 }
 
