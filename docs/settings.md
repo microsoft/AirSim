@@ -91,7 +91,7 @@ Below are complete list of settings available along with their default values. I
   },
   "OriginGeopoint": {
     "Latitude": 47.641468,
-    "Latitude": -122.140165,
+    "Longitude": -122.140165,
     "Altitude": 122
   },
   "TimeOfDay": {
