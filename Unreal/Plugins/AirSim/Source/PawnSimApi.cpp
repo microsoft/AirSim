@@ -31,14 +31,7 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     ground_margin_ = FVector(0, 0, 20); //TODO: can we explain pawn_ experimental setting? 7 seems to be minimum
     ground_trace_end_ = initial_state_.ground_offset + ground_margin_; 
 
-    initial_state_.start_location = getUUPosition();
-    initial_state_.last_position = initial_state_.start_location;
-    initial_state_.last_debug_position = initial_state_.start_location;
-    initial_state_.start_rotation = getUUOrientation();
-
-    //compute our home point
-    Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(getUUPosition());
-    home_geo_point_ = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin, AirSimSettings::singleton().origin_geopoint);
+    setStartPosition(getUUPosition(), getUUOrientation());
 
     initial_state_.tracing_enabled = getVehicleSetting()->enable_trace;
     initial_state_.collisions_enabled = getVehicleSetting()->enable_collisions;
@@ -53,6 +46,20 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     //add listener for pawn's collision event
     pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
     pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
+}
+
+void PawnSimApi::setStartPosition(const FVector& position, const FRotator& rotator)
+{
+    initial_state_.start_location = getUUPosition();
+    initial_state_.start_rotation = getUUOrientation();
+
+    initial_state_.last_position = initial_state_.start_location;
+    initial_state_.last_debug_position = initial_state_.start_location;
+
+    //compute our home point
+    Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(initial_state_.start_location);
+    home_geo_point_ = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin, 
+        AirSimSettings::singleton().origin_geopoint);
 }
 
 void PawnSimApi::pawnTick(float dt)

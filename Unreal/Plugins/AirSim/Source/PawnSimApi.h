@@ -106,6 +106,7 @@ private: //methods
     void plot(std::istream& s, FColor color, const Vector3r& offset);
     PawnSimApi::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
     void updateKinematics(float dt);
+    void setStartPosition(const FVector& position, const FRotator& rotator);
 
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;
