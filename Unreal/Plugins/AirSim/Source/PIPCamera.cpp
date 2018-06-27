@@ -143,6 +143,16 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
+void APIPCamera::setCameraOrientation(const FRotator& rotator)
+{
+    if (gimbal_stabilization_ > 0) {
+        gimbald_rotator_.Pitch = rotator.Pitch;
+        gimbald_rotator_.Roll = rotator.Roll;
+        gimbald_rotator_.Yaw = rotator.Yaw;
+    }
+    this->SetActorRelativeRotation(rotator);
+}
+
 void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera_setting, const NedTransform& ned_transform)
 {
     //TODO: should we be ignoring position and orientation settings here?

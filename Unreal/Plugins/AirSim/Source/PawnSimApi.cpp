@@ -383,7 +383,7 @@ void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr:
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, orientation]() {
         APIPCamera* camera = getCamera(camera_name);
         FQuat quat = ned_transform_.fromNed(orientation);
-        camera->SetActorRelativeRotation(quat);
+        camera->setCameraOrientation(quat.Rotator());
     }, true);
 }
 

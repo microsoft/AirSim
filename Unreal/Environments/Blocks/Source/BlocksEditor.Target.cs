@@ -9,5 +9,8 @@ public class BlocksEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		ExtraModuleNames.AddRange(new string[] { "Blocks" });
-	}
+
+        bUseUnityBuild = false;
+        bUsePCHFiles = false;
+    }
 }
