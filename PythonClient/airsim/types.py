@@ -245,6 +245,10 @@ class MultirotorState(MsgpackMixin):
     landed_state = LandedState.Landed
     rc_data = RCData()
 
+class ProjectionMatrix(MsgpackMixin):
+    matrix = []
+
 class CameraInfo(MsgpackMixin):
     pose = Pose()
     fov = -1
+    proj_mat = ProjectionMatrix()
