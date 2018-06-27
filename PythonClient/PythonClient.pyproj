@@ -55,6 +55,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\setup_path.py" />
+    <Compile Include="multirotor\gimbal.py" />
     <Compile Include="multirotor\land.py" />
     <Compile Include="car\pause_continue_car.py">
       <SubType>Code</SubType>
