@@ -563,7 +563,8 @@ private:
     static std::unique_ptr<VehicleSetting> createPX4VehicleSetting(const Settings& settings_json) 
     {
         //these settings_json are expected in same section, not in another child
-        auto vehicle_setting = std::unique_ptr<PX4VehicleSetting>(new PX4VehicleSetting());
+        std::unique_ptr<VehicleSetting> vehicle_setting_p = std::unique_ptr<VehicleSetting>(new PX4VehicleSetting());
+        PX4VehicleSetting* vehicle_setting = static_cast<PX4VehicleSetting*>(vehicle_setting_p.get());
 
         //TODO: we should be selecting remote if available else keyboard
         //currently keyboard is not supported so use rc as default
@@ -599,7 +600,7 @@ private:
         connection_info.baud_rate = settings_json.getInt("SerialBaudRate", connection_info.baud_rate);
         connection_info.model = settings_json.getString("Model", connection_info.model);
 
-        return vehicle_setting;
+        return vehicle_setting_p;
     }
 
     static Vector3r createVectorSetting(const Settings& settings_json, const Vector3r& default_vec)
