@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+ #include "common/Common.hpp"
+
 class SimJoyStick
 {
 public:
