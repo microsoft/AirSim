@@ -88,7 +88,7 @@ class Vector3r(MsgpackMixin):
         return Quaternionr(self.x_val, self.y_val, self.z_val, 0)
 
     def to_numpy_array(self):
-        return numpy.array([self.x_val, self.y_val, self.z_val], type=np.float32)
+        return np.array([self.x_val, self.y_val, self.z_val], dtype=np.float32)
 
 
 class Quaternionr(MsgpackMixin):
@@ -171,7 +171,7 @@ class Quaternionr(MsgpackMixin):
         return ( self.x_val**2 + self.y_val**2 + self.z_val**2 + self.w_val**2 )**0.5
 
     def to_numpy_array(self):
-        return numpy.array([self.x_val, self.y_val, self.z_val, self.w_val], type=np.float32)
+        return np.array([self.x_val, self.y_val, self.z_val, self.w_val], dtype=np.float32)
 
 
 class Pose(MsgpackMixin):
