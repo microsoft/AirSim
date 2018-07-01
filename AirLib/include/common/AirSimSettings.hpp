@@ -170,6 +170,12 @@ public: //types
         }
     };
 
+    struct CameraDirectorSetting {
+        Vector3r position = VectorMath::nanVector();
+        Rotation rotation = Rotation::nanRotation();
+        float follow_distance = Utils::nan<float>();
+    };
+
     struct VehicleSetting {
         //required
         std::string vehicle_name;
@@ -295,6 +301,7 @@ public: //fields
     std::map<std::string, PawnPath> pawn_paths; //path for pawn blueprint
     std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
     CameraSetting camera_defaults;
+    CameraDirectorSetting camera_director;
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -320,6 +327,7 @@ public: //methods
 
         loadCoreSimModeSettings(settings_json, simmode_getter);
         loadDefaultCameraSetting(settings_json, camera_defaults);
+        loadCameraDirectorSetting(settings_json, camera_director, simmode_name);
         loadSubWindowsSettings(settings_json, subwindow_settings);
         loadViewModeSettings(settings_json);
         loadRecordingSetting(settings_json, recording_setting);
@@ -974,6 +982,35 @@ private:
         }
     }
 
+    static void loadCameraDirectorSetting(const Settings& settings_json, 
+        CameraDirectorSetting& camera_director, const std::string& simmode_name)
+    {
+        camera_director = CameraDirectorSetting();
+
+        Settings child_json;
+        if (settings_json.getChild("CameraDirector", child_json)) {
+            camera_director.position = createVectorSetting(settings_json, camera_director.position);
+            camera_director.rotation = createRotationSetting(settings_json, camera_director.rotation);
+            camera_director.follow_distance = child_json.getFloat("FollowDistance", camera_director.follow_distance);
+        }
+
+        if (std::isnan(camera_director.follow_distance)) {
+            if (simmode_name == "Car")
+                camera_director.follow_distance = -800;
+            else
+                camera_director.follow_distance = -300;
+        }
+        if (std::isnan(camera_director.position.x()))
+            camera_director.position.x() = camera_director.follow_distance;
+        if (std::isnan(camera_director.position.y()))
+            camera_director.position.y() = 0;
+        if (std::isnan(camera_director.position.z())) {
+            if (simmode_name == "Car")
+                camera_director.position.z() = -400;
+            else
+                camera_director.position.z() = -200;
+        }
+    }
 
     void loadClockSettings(const Settings& settings_json)
     {

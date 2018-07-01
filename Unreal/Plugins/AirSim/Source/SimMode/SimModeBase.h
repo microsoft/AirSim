@@ -64,7 +64,6 @@ public:
     {
         return api_provider_.get();
     }
-
     const PawnSimApi* getVehicleSimApi(const std::string& vehicle_name = "") const
     {
         return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
@@ -74,23 +73,34 @@ public:
         return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
     }
 
-protected:
-    virtual void setupInputBindings();
-    virtual const msr::airlib::AirSimSettings& getSettings() const;
-    long long getPhysicsLoopPeriod() const;
-    void setPhysicsLoopPeriod(long long  period);
-    //called when simmode should do something about clock speed
-    virtual void setupClockSpeed();
+protected: //must overrides
+    typedef msr::airlib::AirSimSettings AirSimSettings;
 
+    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
+    virtual void getExistingVehiclePawns(TArray<AActor*>& pawns) const;
+    virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const;
+    virtual std::string getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const;
+    virtual PawnEvents* getVehiclePawnEvents(APawn* pawn) const;
+    virtual const common_utils::UniqueValueMap<std::string, APIPCamera*> getVehiclePawnCameras(APawn* pawn) const;
+    virtual void initializeVehiclePawn(APawn* pawn);
+    virtual std::unique_ptr<PawnSimApi> createVehicleSimApi(
+        const PawnSimApi::Params& pawn_sim_api_params) const;
+
+protected: //optional overrides
+    virtual void setupVehiclesAndCamera();
+    virtual void setupInputBindings();
+    //called when SimMode should handle clock speed setting
+    virtual void setupClockSpeed();
     void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
     void checkVehicleReady(); //checks if vehicle is available to use
     virtual void updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter);
 
-    virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
+protected: //Utility methods for derived classes
+    virtual const msr::airlib::AirSimSettings& getSettings() const;
+    FRotator toFRotator(const AirSimSettings::Rotation& rotation, const FRotator& default_val);
+
 
 protected:
-    typedef msr::airlib::AirSimSettings AirSimSettings;
-
     int record_tick_count;
 
     UPROPERTY() UClass* pip_camera_class;
@@ -113,12 +123,17 @@ private:
     TTimePoint tod_sim_clock_start_;
     TTimePoint tod_last_update_;
     std::time_t tod_start_time_;
-    long long physics_loop_period_;
     std::unique_ptr<NedTransform> global_ned_transform_;
     std::unique_ptr<msr::airlib::WorldSimApiBase> world_sim_api_;
     std::unique_ptr<msr::airlib::ApiProvider> api_provider_;
     std::unique_ptr<msr::airlib::ApiServerBase> api_server_;
     msr::airlib::StateReporterWrapper debug_reporter_;
+
+    std::vector<std::unique_ptr<msr::airlib::VehicleSimApiBase>> vehicle_sim_apis_;
+
+    UPROPERTY()
+        TArray<AActor*> spawned_actors_; //keep refs alive from Unreal GC
+
 
 private:
     void setStencilIDs();

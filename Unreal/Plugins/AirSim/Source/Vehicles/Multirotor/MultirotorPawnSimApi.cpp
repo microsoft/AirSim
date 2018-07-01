@@ -6,11 +6,9 @@
 
 using namespace msr::airlib;
 
-MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, MultirotorPawnEvents* pawn_events,
-    const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
-    const GeoPoint& home_geopoint)
-    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template, home_geopoint),
-      pawn_events_(pawn_events)
+MultirotorPawnSimApi::MultirotorPawnSimApi(const Params& params)
+    : PawnSimApi(params),
+      pawn_events_(static_cast<MultirotorPawnEvents*>(params.pawn_events))
 {
     //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     Pose pose = getPose();
@@ -25,7 +23,7 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(APawn* pawn, const NedTransform& glob
     vehicle_api_ = vehicle_params_->createMultirotorApi();
     //setup physics vehicle
     phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(),
-        getPose(), home_geopoint));
+        getPose(), params.home_geopoint));
     rotor_count_ = phys_vehicle_->wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
 

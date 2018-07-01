@@ -10,25 +10,21 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
-PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
-    const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 
-    UParticleSystem* collision_display_template, const msr::airlib::GeoPoint& home_geopoint)
-    : pawn_(pawn), ned_transform_(pawn, global_transform),
-      pip_camera_class_(pip_camera_class), collision_display_template_(collision_display_template)
+PawnSimApi::PawnSimApi(const Params& params)
+    : params_(params), ned_transform_(params.pawn, *params.global_transform)
 {
-    vehicle_name_ = std::string(TCHAR_TO_UTF8(*(pawn->GetName())));
-    image_capture_.reset(new UnrealImageCapture(&cameras_));
+    image_capture_.reset(new UnrealImageCapture(&params_.cameras));
 
     msr::airlib::Environment::State initial_environment;
     initial_environment.position = getPose().position;
-    initial_environment.geo_point = home_geopoint;
+    initial_environment.geo_point = params_.home_geopoint;
     environment_.reset(new msr::airlib::Environment(initial_environment));
 
     //initialize state
-    pawn_->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
+    params_.pawn->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
     initial_state_.ground_offset = FVector(0, 0, initial_state_.mesh_bounds.Z);
-    initial_state_.transformation_offset = pawn_->GetActorLocation() - initial_state_.ground_offset;
-    ground_margin_ = FVector(0, 0, 20); //TODO: can we explain pawn_ experimental setting? 7 seems to be minimum
+    initial_state_.transformation_offset = params_.pawn->GetActorLocation() - initial_state_.ground_offset;
+    ground_margin_ = FVector(0, 0, 20); //TODO: can we explain params_.pawn experimental setting? 7 seems to be minimum
     ground_trace_end_ = initial_state_.ground_offset + ground_margin_; 
 
     setStartPosition(getUUPosition(), getUUOrientation());
@@ -42,10 +38,10 @@ PawnSimApi::PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEv
     initial_state_.was_last_move_teleport = false;
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
 
-    setupCamerasFromSettings(cameras);
+    setupCamerasFromSettings(params_.cameras);
     //add listener for pawn's collision event
-    pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
-    pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
+    params_.pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
+    params_.pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
 }
 
 void PawnSimApi::setStartPosition(const FVector& position, const FRotator& rotator)
@@ -109,7 +105,7 @@ void PawnSimApi::setupCamerasFromSettings(const common_utils::UniqueValueMap<std
 void PawnSimApi::createCamerasFromSettings()
 {
     //UStaticMeshComponent* bodyMesh = UAirBlueprintLib::GetActorComponent<UStaticMeshComponent>(this, TEXT("BodyMesh"));
-    USceneComponent* bodyMesh = pawn_->GetRootComponent();
+    USceneComponent* bodyMesh = params_.pawn->GetRootComponent();
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     const auto& transform = getNedTransform();
@@ -126,7 +122,7 @@ void PawnSimApi::createCamerasFromSettings()
             position, FVector(1., 1., 1.));
 
         //spawn and attach camera to pawn
-        APIPCamera* camera = pawn_->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+        APIPCamera* camera = params_.pawn->GetWorld()->SpawnActor<APIPCamera>(params_.pip_camera_class, camera_transform, camera_spawn_params);
         camera->AttachToComponent(bodyMesh, FAttachmentTransformRules::KeepRelativeTransform);
 
         //add on to our collection
@@ -134,8 +130,8 @@ void PawnSimApi::createCamerasFromSettings()
     }
 }
 
-void PawnSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
-    FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+void PawnSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, 
+    bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
     // Deflect along the surface when we collide.
     //FRotator CurrentRotation = GetActorRotation(RootComponent);
@@ -163,9 +159,9 @@ void PawnSimApi::onCollision(class UPrimitiveComponent* MyComp, class AActor* Ot
 
 void PawnSimApi::possess()
 {
-    APlayerController* controller = pawn_->GetWorld()->GetFirstPlayerController();
+    APlayerController* controller = params_.pawn->GetWorld()->GetFirstPlayerController();
     controller->UnPossess();
-    controller->Possess(pawn_);
+    controller->Possess(params_.pawn);
 }
 
 const NedTransform& PawnSimApi::getNedTransform() const
@@ -175,7 +171,7 @@ const NedTransform& PawnSimApi::getNedTransform() const
 
 APawn* PawnSimApi::getPawn()
 {
-    return pawn_;
+    return params_.pawn;
 }
 
 std::vector<PawnSimApi::ImageCaptureBase::ImageResponse> PawnSimApi::getImages(
@@ -246,9 +242,9 @@ msr::airlib::RCData PawnSimApi::getRCData() const
 
 void PawnSimApi::displayCollisionEffect(FVector hit_location, const FHitResult& hit)
 {
-    if (collision_display_template_ != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
-        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(pawn_->GetWorld(), 
-            collision_display_template_, FTransform(hit_location), true);
+    if (params_.collision_display_template != nullptr && Utils::isDefinitelyLessThan(hit.ImpactNormal.Z, 0.0f)) {
+        UParticleSystemComponent* particles = UGameplayStatics::SpawnEmitterAtLocation(params_.pawn->GetWorld(), 
+            params_.collision_display_template, FTransform(hit_location), true);
         particles->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
     }
 }
@@ -285,7 +281,7 @@ void PawnSimApi::reset()
 
     state_ = initial_state_;
     rc_data_ = msr::airlib::RCData();
-    pawn_->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
+    params_.pawn->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
 
     environment_->reset();
 }
@@ -302,9 +298,9 @@ void PawnSimApi::update()
 
 //void playBack()
 //{
-    //if (pawn_->GetRootPrimitiveComponent()->IsAnySimulatingPhysics()) {
-    //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(false);
-    //    pawn_->GetRootPrimitiveComponent()->SetSimulatePhysics(true);
+    //if (params_.pawn->GetRootPrimitiveComponent()->IsAnySimulatingPhysics()) {
+    //    params_.pawn->GetRootPrimitiveComponent()->SetSimulatePhysics(false);
+    //    params_.pawn->GetRootPrimitiveComponent()->SetSimulatePhysics(true);
     //}
     //TODO: refactor below code used for playback
     //std::ifstream sim_log("C:\\temp\\mavlogs\\circle\\sim_cmd_006_orbit 5 1.txt.pos.txt");
@@ -326,12 +322,12 @@ PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfo() const
 
 FVector PawnSimApi::getUUPosition() const
 {
-    return pawn_->GetActorLocation(); // - state_.mesh_origin
+    return params_.pawn->GetActorLocation(); // - state_.mesh_origin
 }
 
 FRotator PawnSimApi::getUUOrientation() const
 {
-    return pawn_->GetActorRotation();
+    return params_.pawn->GetActorRotation();
 }
 
 void PawnSimApi::toggleTrace()
@@ -339,7 +335,7 @@ void PawnSimApi::toggleTrace()
     state_.tracing_enabled = !state_.tracing_enabled;
 
     if (!state_.tracing_enabled)
-        UKismetSystemLibrary::FlushPersistentDebugLines(pawn_->GetWorld());
+        UKismetSystemLibrary::FlushPersistentDebugLines(params_.pawn->GetWorld());
     else {     
         state_.debug_position_offset = state_.current_debug_position - state_.current_position;
         state_.last_debug_position = state_.last_position;
@@ -367,7 +363,7 @@ void PawnSimApi::plot(std::istream& s, FColor color, const Vector3r& offset)
         Vector3r current_point(x, y, z);
         current_point += offset;
         if (!VectorMath::hasNan(last_point)) {
-            UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), ned_transform_.fromLocalNed(last_point), ned_transform_.fromLocalNed(current_point), color, 0, 3.0F);
+            UKismetSystemLibrary::DrawDebugLine(params_.pawn->GetWorld(), ned_transform_.fromLocalNed(last_point), ned_transform_.fromLocalNed(current_point), color, 0, 3.0F);
         }
         last_point = current_point;
     }
@@ -433,12 +429,12 @@ void PawnSimApi::setPoseInternal(const Pose& pose, bool ignore_collision)
     state_.was_last_move_teleport = enable_teleport;
 
     if (enable_teleport)
-        pawn_->SetActorLocationAndRotation(position, orientation, false, nullptr, ETeleportType::TeleportPhysics);
+        params_.pawn->SetActorLocationAndRotation(position, orientation, false, nullptr, ETeleportType::TeleportPhysics);
     else
-        pawn_->SetActorLocationAndRotation(position, orientation, true);
+        params_.pawn->SetActorLocationAndRotation(position, orientation, true);
 
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
-        UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), state_.last_position, position, FColor::Purple, -1, 3.0f);
+        UKismetSystemLibrary::DrawDebugLine(params_.pawn->GetWorld(), state_.last_position, position, FColor::Purple, -1, 3.0f);
         state_.last_position = position;
     }
     else if (!state_.tracing_enabled) {
@@ -452,7 +448,7 @@ void PawnSimApi::setDebugPose(const Pose& debug_pose)
     if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
         FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
-            UKismetSystemLibrary::DrawDebugLine(pawn_->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), -1, 10.0F);
+            UKismetSystemLibrary::DrawDebugLine(params_.pawn->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), -1, 10.0F);
             UAirBlueprintLib::LogMessage(FString("Debug Pose: "), debug_position.ToCompactString(), LogDebugLevel::Informational);
             state_.last_debug_position = debug_position;
         }

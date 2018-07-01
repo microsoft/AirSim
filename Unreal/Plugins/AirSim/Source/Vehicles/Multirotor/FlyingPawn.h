@@ -28,7 +28,7 @@ public:
 
     //interface
     void initializeForBeginPlay();
-    common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
+    const common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
     MultirotorPawnEvents* getPawnEvents()
     {
         return &pawn_events_;

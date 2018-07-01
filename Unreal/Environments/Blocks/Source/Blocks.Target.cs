@@ -10,7 +10,7 @@ public class BlocksTarget : TargetRules
 		Type = TargetType.Game;
 		ExtraModuleNames.AddRange(new string[] { "Blocks" });
 
-        bUseUnityBuild = false;
-        bUsePCHFiles = false;
+        //bUseUnityBuild = false;
+        //bUsePCHFiles = false;
     }
 }
