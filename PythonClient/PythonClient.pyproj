@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>car\hello_car.py</StartupFile>
+    <StartupFile>computer_vision\character_control.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -42,6 +42,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="car\setup_path.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="computer_vision\character_control.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\cv_capture.py">
