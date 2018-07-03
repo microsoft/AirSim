@@ -38,14 +38,18 @@ class LandedState:
     Flying = 1
 
 class Vector3r(MsgpackMixin):
-    x_val = np.float32(0)
-    y_val = np.float32(0)
-    z_val = np.float32(0)
+    x_val = 0.0
+    y_val = 0.0
+    z_val = 0.0
 
-    def __init__(self, x_val = np.float32(0), y_val = np.float32(0), z_val = np.float32(0)):
+    def __init__(self, x_val = 0.0, y_val = 0.0, z_val = 0.0):
         self.x_val = x_val
         self.y_val = y_val
         self.z_val = z_val
+
+    @staticmethod
+    def nanVector3r():
+        return Vector3r(np.nan, np.nan, np.nan)
 
     def __add__(self, other):
         return Vector3r(self.x_val + other.x_val, self.y_val + other.y_val, self.z_val + other.z_val)
@@ -92,16 +96,20 @@ class Vector3r(MsgpackMixin):
 
 
 class Quaternionr(MsgpackMixin):
-    w_val = np.float32(0)
-    x_val = np.float32(0)
-    y_val = np.float32(0)
-    z_val = np.float32(0)
+    w_val = 0.0
+    x_val = 0.0
+    y_val = 0.0
+    z_val = 0.0
 
-    def __init__(self, x_val = np.float32(0), y_val = np.float32(0), z_val = np.float32(0), w_val = np.float32(1)):
+    def __init__(self, x_val = 0.0, y_val = 0.0, z_val = 0.0, w_val = 1.0):
         self.x_val = x_val
         self.y_val = y_val
         self.z_val = z_val
         self.w_val = w_val
+
+    @staticmethod
+    def nanQuaternionr():
+        return Quaternionr(np.nan, np.nan, np.nan, np.nan)
 
     def __add__(self, other):
         if type(self) == type(other):
@@ -182,14 +190,18 @@ class Pose(MsgpackMixin):
         self.position = position_val
         self.orientation = orientation_val
 
+    @staticmethod
+    def nanPose():
+        return Pose(Vector3r.nanVector3r(), Quaternionr.nanQuaternionr())
+
 
 class CollisionInfo(MsgpackMixin):
     has_collided = False
     normal = Vector3r()
     impact_point = Vector3r()
     position = Vector3r()
-    penetration_depth = np.float32(0)
-    time_stamp = np.float32(0)
+    penetration_depth = 0.0
+    time_stamp = 0.0
     object_name = ""
     object_id = -1
 
@@ -246,21 +258,21 @@ class ImageRequest(MsgpackMixin):
 
 class ImageResponse(MsgpackMixin):
     image_data_uint8 = np.uint8(0)
-    image_data_float = np.float32(0)
+    image_data_float = 0.0
     camera_position = Vector3r()
     camera_orientation = Quaternionr()
     time_stamp = np.uint64(0)
     message = ''
-    pixels_as_float = np.float32(0)
+    pixels_as_float = 0.0
     compress = True
     width = 0
     height = 0
     image_type = ImageType.Scene
 
 class CarControls(MsgpackMixin):
-    throttle = np.float32(0)
-    steering = np.float32(0)
-    brake = np.float32(0)
+    throttle = 0.0
+    steering = 0.0
+    brake = 0.0
     handbrake = False
     is_manual_gear = False
     manual_gear = 0
@@ -299,15 +311,15 @@ class EnvironmentState(MsgpackMixin):
     position = Vector3r()
     geo_point = GeoPoint()
     gravity = Vector3r()
-    air_pressure = np.float32(0)
-    temperature = np.float32(0)
-    air_density = np.float32(0)
+    air_pressure = 0.0
+    temperature = 0.0
+    air_density = 0.0
 
 class CarState(MsgpackMixin):
-    speed = np.float32(0)
+    speed = 0.0
     gear = 0
-    rpm = np.float32(0)
-    maxrpm = np.float32(0)
+    rpm = 0.0
+    maxrpm = 0.0
     handbrake = False
     collision = CollisionInfo();
     kinematics_estimated = KinematicsState()

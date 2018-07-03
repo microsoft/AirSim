@@ -15,15 +15,24 @@ pp = pprint.PrettyPrinter(indent=4)
 client = airsim.VehicleClient()
 client.confirmConnection()
 
-airsim.wait_key('Press any key to set skin age to 0.9')
-client.simCharSetSkinAgeing(0.9)
+#airsim.wait_key('Press any key to set skin age to 0.9')
+#client.simCharSetSkinAgeing(0.9)
 
-airsim.wait_key('Press any key to set skin color to 0.5')
-client.simCharSetSkinDarkness(0.5)
+#airsim.wait_key('Press any key to set skin color to 0.1')
+#client.simCharSetSkinDarkness(0.1)
+
+#airsim.wait_key('Press any key to set face expression')
+#client.simCharSetFaceExpression("BlendShapeNode_Smile", 1);
+
+#airsim.wait_key('Press any key to set bone pose')
+jaw_pose = airsim.Pose()
+#jaw_pose.position = airsim.Vector3r(0.002, 0.001, -0.003)
+#jaw_pose.orientation = airsim.to_quaternion(0, 0, -.15)
+client.simCharSetBonePose( "Jaw", jaw_pose);
 
 airsim.wait_key('Press any key to turn head around')
 for pitch in range(-15, 15, 3):
-    for yaw in range(-60, 60, 4):
+    for yaw in range(-30, 30, 2):
         q = airsim.to_quaternion(pitch/10.0, 0, yaw/10.0)
         client.simCharSetHeadRotation(q)
         time.sleep(0.1)
