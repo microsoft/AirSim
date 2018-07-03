@@ -10,6 +10,8 @@
 #include "physics/Environment.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
+
+#undef check
 #include "rpc/msgpack.hpp"
 
 

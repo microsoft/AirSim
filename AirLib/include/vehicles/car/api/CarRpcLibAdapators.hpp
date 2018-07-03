@@ -9,6 +9,8 @@
 #include "api/RpcLibAdapatorsBase.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
+
+#undef check
 #include "rpc/msgpack.hpp"
 
 
