@@ -153,7 +153,8 @@ class VehicleClient:
         return self.client.call('simCharGetBonePose', bone_name, character_name)
     def simCharResetBonePose(self, bone_name, character_name = ""):
         self.client.call('simCharResetBonePose', bone_name, character_name)
-
+    def simCharSetFacePreset(self, preset_name, value, character_name = ""):
+        self.client.call('simCharSetFacePreset', preset_name, value, character_name)
 
     def cancelLastTask():
         self.client.call('cancelLastTask')

@@ -15,23 +15,26 @@ pp = pprint.PrettyPrinter(indent=4)
 client = airsim.VehicleClient()
 client.confirmConnection()
 
-#airsim.wait_key('Press any key to set skin age to 0.9')
-#client.simCharSetSkinAgeing(0.9)
+airsim.wait_key('Press any key to set skin age to 0.9')
+client.simCharSetSkinAgeing(0.9)
 
-#airsim.wait_key('Press any key to set skin color to 0.1')
-#client.simCharSetSkinDarkness(0.1)
+airsim.wait_key('Press any key to set skin color to 0.1')
+client.simCharSetSkinDarkness(0.1)
 
-#airsim.wait_key('Press any key to set face expression')
-#client.simCharSetFaceExpression("BlendShapeNode_Smile", 1);
+airsim.wait_key('Press any key to set face expression')
+client.simCharSetFaceExpression("BlendShapeNode_Smile", 1);
 
-#airsim.wait_key('Press any key to set bone pose')
+airsim.wait_key('Press any key to set bone pose')
 jaw_pose = airsim.Pose()
-#jaw_pose.position = airsim.Vector3r(0.002, 0.001, -0.003)
-#jaw_pose.orientation = airsim.to_quaternion(0, 0, -.15)
+jaw_pose.position = airsim.Vector3r(0.002, 0.001, -0.003)
+jaw_pose.orientation = airsim.to_quaternion(0, 0, -.15)
 client.simCharSetBonePose( "Jaw", jaw_pose);
 
+airsim.wait_key('Press any key to set preset')
+client.simCharSetFacePreset("FACS_01", 1);
+
 airsim.wait_key('Press any key to turn head around')
-for pitch in range(-15, 15, 3):
+for pitch in range(-15, 15, 5):
     for yaw in range(-30, 30, 2):
         q = airsim.to_quaternion(pitch/10.0, 0, yaw/10.0)
         client.simCharSetHeadRotation(q)
@@ -53,8 +56,11 @@ for x in range(3): # do few times
             print("Type %d, size %d, pos %s" % (response.image_type, len(response.image_data_uint8), pprint.pformat(response.camera_position)))
             airsim.write_file(os.path.normpath('/temp/cv_mode_' + str(x) + "_" + str(i) + '.png'), response.image_data_uint8)
 
-    z = x * -20 - 5 # some random number
-    client.simSetVehiclePose(airsim.Pose(airsim.Vector3r(z, z, z), airsim.to_quaternion(x / 3.0, 0, x / 3.0)), True)
+    pose = client.simGetVehiclePose()
+    pose.position.x_val = pose.position.x_val + 1
+    pose.position.y_val = pose.position.y_val - 0.5
+    pose.position.z_val = pose.position.z_val - 0.5
+    client.simSetVehiclePose(pose, True)
 
     time.sleep(3)
 
