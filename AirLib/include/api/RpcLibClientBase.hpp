@@ -80,7 +80,7 @@ public:
     void simCharSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name = "");
     msr::airlib::Pose simCharGetBonePose(const std::string& bone_name, const std::string& character_name = "") const;
     void simCharResetBonePose(const std::string& bone_name, const std::string& character_name = "");
-
+    void simCharSetFacePreset(const std::string& preset_name, float value, const std::string& character_name = "");
 
 protected:
     void* getClient();

@@ -325,6 +325,11 @@ void RpcLibClientBase::simCharResetBonePose(const std::string& bone_name, const 
     pimpl_->client.call("simCharResetBonePose", bone_name, character_name);
 }
 
+void RpcLibClientBase::simCharSetFacePreset(const std::string& preset_name, float value, const std::string& character_name)
+{
+    pimpl_->client.call("simCharSetFacePreset", preset_name, value, character_name);
+}
+
 
 }} //namespace
 

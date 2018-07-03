@@ -66,3 +66,13 @@ void AAirSimCharacter::resetBonePose(const std::string& bone_name)
     unused(bone_name);
     //derived class should override this
 }
+void AAirSimCharacter::setFacePreset(const std::string& preset_name, float value)
+{
+    unused(preset_name);
+    unused(value);
+    //derived class should override this
+}
+void AAirSimCharacter::reset()
+{
+    //derived class should override this
+}

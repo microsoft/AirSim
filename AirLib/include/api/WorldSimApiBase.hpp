@@ -41,6 +41,7 @@ public:
     virtual void charSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name) = 0;
     virtual msr::airlib::Pose charGetBonePose(const std::string& bone_name, const std::string& character_name) const = 0;
     virtual void charResetBonePose(const std::string& bone_name, const std::string& character_name) = 0;
+    virtual void charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name) = 0;
 
 };
 
