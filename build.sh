@@ -49,8 +49,8 @@ else
     if [ "$(uname)" == "Darwin" ]; then
         CMAKE="$(greadlink -f cmake_build/bin/cmake)"
 
-        export CC=/usr/local/opt/llvm\@5.0/bin/clang
-        export CXX=/usr/local/opt/llvm\@5.0/bin/clang++
+        export CC=/usr/local/opt/llvm-5.0/bin/clang-5.0
+        export CXX=/usr/local/opt/llvm-5.0/bin/clang++-5.0
     else
         CMAKE="$(readlink -f cmake_build/bin/cmake)"
 
