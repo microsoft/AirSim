@@ -500,17 +500,17 @@ public:
     {
         Vector3T toVector = (destPoint - sourcePoint);
 
-        RealT dot = VectorMath::front().dot(toVector);
+        RealT dot = VectorMathT::front().dot(toVector);
         dot = Utils::clip<RealT>(dot, -1, 1);
         RealT ang = std::acosf(dot);
 
-        Vector3T axis = VectorMath::front().cross(toVector);
+        Vector3T axis = VectorMathT::front().cross(toVector);
         if (axis == Vector3T::Zero())
-            axis = VectorMath::up();
+            axis = VectorMathT::up();
         else
             axis = axis.normalized();
 
-        return VectorMath::toQuaternion(axis, ang);
+        return VectorMathT::toQuaternion(axis, ang);
     }
 
     static const Vector3T front() 
