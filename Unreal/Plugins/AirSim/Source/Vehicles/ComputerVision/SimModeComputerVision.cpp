@@ -78,3 +78,10 @@ std::unique_ptr<PawnSimApi> ASimModeComputerVision::createVehicleSimApi(
     vehicle_sim_api->reset();
     return vehicle_sim_api;
 }
+
+msr::airlib::VehicleApiBase* ASimModeComputerVision::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
+    const PawnSimApi* sim_api) const
+{
+    //we don't have real vehicle so no vehicle API
+    return nullptr;
+}

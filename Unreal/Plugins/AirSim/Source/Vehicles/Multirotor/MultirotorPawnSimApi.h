@@ -47,7 +47,7 @@ public:
 
     virtual void pawnTick(float dt) override;
 
-    msr::airlib::MultirotorApiBase* getVehicleApi()
+    msr::airlib::MultirotorApiBase* getVehicleApi() const
     {
         return vehicle_api_.get();
     }

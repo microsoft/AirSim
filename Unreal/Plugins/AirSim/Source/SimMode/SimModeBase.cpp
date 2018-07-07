@@ -490,8 +490,8 @@ void ASimModeBase::setupVehiclesAndCamera()
 
             auto vehicle_sim_api = createVehicleSimApi(pawn_sim_api_params);
             auto vehicle_sim_api_p = vehicle_sim_api.get();
-            getApiProvider()->insert_or_assign(vehicle_name, 
-                static_cast<msr::airlib::VehicleApiBase*>(nullptr), vehicle_sim_api_p);
+            auto vehicle_Api = getVehicleApi(pawn_sim_api_params, vehicle_sim_api_p);
+            getApiProvider()->insert_or_assign(vehicle_name, vehicle_Api, vehicle_sim_api_p);
             if ((fpv_pawn == vehicle_pawn || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
                 getApiProvider()->makeDefaultVehicle(vehicle_name);
 
@@ -551,4 +551,10 @@ std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleSimApi(
 {
     unused(pawn_sim_api_params);
     return std::unique_ptr<PawnSimApi>();
+}
+msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
+    const PawnSimApi* sim_api) const
+{
+    //derived class should override this method to retrieve types of pawns they support
+    return nullptr;
 }

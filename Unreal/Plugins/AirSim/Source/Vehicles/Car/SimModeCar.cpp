@@ -136,3 +136,9 @@ std::unique_ptr<PawnSimApi> ASimModeCar::createVehicleSimApi(
     vehicle_sim_api->reset();
     return vehicle_sim_api;
 }
+msr::airlib::VehicleApiBase* ASimModeCar::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
+    const PawnSimApi* sim_api) const
+{
+    const auto car_sim_api = static_cast<const CarPawnSimApi*>(sim_api);
+    return car_sim_api->getVehicleApi();
+}

@@ -37,7 +37,7 @@ public:
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
-    msr::airlib::CarApiBase* getVehicleApi()
+    msr::airlib::CarApiBase* getVehicleApi() const
     {
         return vehicle_api_.get();
     }
