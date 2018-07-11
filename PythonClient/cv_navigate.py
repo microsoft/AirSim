@@ -41,7 +41,7 @@ class AvoidLeft(AbstractClassGetNextVec):
 
         # compute box of interest
         img2d_box = img2d[int((h-roi_h)/2):int((h+roi_h)/2),int((w-roi_w)/2):int((w+roi_w)/2)]
-        print(img2d_box)
+
         # scale by weight matrix (optional)
         #img2d_box = np.multiply(img2d_box,w_mtx)
     
@@ -67,7 +67,7 @@ def get_vec_dist_angle (goal, pos):
     angle = math.atan2(math.sqrt(cross[0]**2 + cross[1]**2 + cross[2]**2), dot)
 
     angle = math.atan2(vec[1],vec[0])
-    print (angle)
+    #print (angle)
 
     if angle > math.pi:
         angle -= 2*math.pi
@@ -170,6 +170,7 @@ for z in range(10000): # do few times
     img2d = np.reshape(img1d,(response.height, response.width)) 
     
     [currentPose.position,yaw,target_dist] = predictControl.get_next_vec(img2d, uav_size, goalPose, currentPose)
+    currentPose.orientation = AirSimClientBase.toQuaternion(0, 0, yaw)
     client.simSetPose(currentPose, True)
 
     if (target_dist < 1):
