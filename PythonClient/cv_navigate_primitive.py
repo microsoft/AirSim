@@ -37,11 +37,11 @@ class AvoidLeft(AbstractClassGetNextVec):
         [roi_h,roi_w] = compute_bb((h,w), obj_sz, self.hfov, self.coll_thres)
 
         # compute vector, distance and angle to goal
-        t_vec, t_dist, t_angle = get_vec_dist_angle (np.array([goal.position.x_val, goal.position.y_val, goal.position.z_val]), np.array([pos.position.x_val, pos.position.y_val, pos.position.z_val]))
+        t_vec, t_dist, t_angle = get_vec_dist_angle (goal, pos[:-1])
 
         # compute box of interest
         img2d_box = img2d[int((h-roi_h)/2):int((h+roi_h)/2),int((w-roi_w)/2):int((w+roi_w)/2)]
-        print(img2d_box)
+
         # scale by weight matrix (optional)
         #img2d_box = np.multiply(img2d_box,w_mtx)
     
@@ -51,24 +51,49 @@ class AvoidLeft(AbstractClassGetNextVec):
         else:
             self.yaw = self.yaw + min (t_angle-self.yaw, radians(self.limit_yaw))
 
-        pos.position.x_val = pos.position.x_val + self.step*cos(self.yaw)
-        pos.position.y_val = pos.position.y_val + self.step*sin(self.yaw)
+        pos[0] = pos[0] + self.step*cos(self.yaw)
+        pos[1] = pos[1] + self.step*sin(self.yaw)
 
-        return pos.position, self.yaw,t_dist
+        return pos, self.yaw,t_dist
+
+class AvoidLeftIgonreGoal(AbstractClassGetNextVec):
+
+    def __init__(self, hfov=radians(90), coll_thres=5, yaw=0, limit_yaw=5, step=0.1):
+        self.hfov = hfov
+        self.coll_thres = coll_thres
+        self.yaw = yaw
+        self.limit_yaw = limit_yaw
+        self.step = step
+
+    def get_next_vec(self, depth, obj_sz, goal, pos):
+
+        [h,w] = np.shape(depth)
+        [roi_h,roi_w] = compute_bb((h,w), obj_sz, self.hfov, self.coll_thres)
+
+        # compute box of interest
+        img2d_box = img2d[int((h-roi_h)/2):int((h+roi_h)/2),int((w-roi_w)/2):int((w+roi_w)/2)]
+
+        # detect collision
+        if (np.min(img2d_box) < coll_thres):
+            self.yaw = self.yaw - radians(self.limit_yaw)
+
+        pos[0] = pos[0] + self.step*cos(self.yaw)
+        pos[1] = pos[1] + self.step*sin(self.yaw)
+
+        return pos, self.yaw, 100
+
+class AvoidLeftRight(AbstractClassGetNextVec):
+    def get_next_vec(self, depth, obj_sz, goal, pos):
+        print("Some implementation!")
+        #Same as above but decide to go left or right based on average or some metric like that
+        return
 
 
 #compute resultant normalized vector, distance and angle
 def get_vec_dist_angle (goal, pos):
-    vec = goal - pos
-    dist = math.sqrt(vec[0]**2 + vec[1]**2 + vec[2]**2)
-    cross = np.cross(goal,pos)
-    dot = np.dot(goal,pos)
-
-    angle = math.atan2(math.sqrt(cross[0]**2 + cross[1]**2 + cross[2]**2), dot)
-
+    vec = np.array(goal) - np.array(pos)
+    dist = math.sqrt(vec[0]**2 + vec[1]**2)
     angle = math.atan2(vec[1],vec[0])
-    print (angle)
-
     if angle > math.pi:
         angle -= 2*math.pi
     elif angle < -math.pi:
@@ -124,6 +149,9 @@ def generate_depth_viz(img,thres=0):
         img = np.reciprocal(img)
     return img 
 
+def moveUAV(client,pos,yaw):
+    client.simSetPose(Pose(Vector3r(pos[0], pos[1], pos[2]), AirSimClientBase.toQuaternion(0, 0, yaw)), True) 
+    
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -135,8 +163,8 @@ tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_drone")
 #AirSimClientBase.wait_key('Press any key to start')
 
 #Define start position, goal and size of UAV
-startPose = Pose(Vector3r(0,5,-1), AirSimClientBase.toQuaternion(0, 0, 0)); #start pose x,y,z, pitch,roll,yaw
-goalPose = Pose(Vector3r(120,0,-1), AirSimClientBase.toQuaternion(0, 0, 0)); #final pose x,y,z, pitch,roll,yaw
+pos = [0,5,-1] #start position x,y,z
+goal = [120,0] #x,y
 
 uav_size = [0.29*3,0.98*2] #height:0.29 x width:0.98 - allow some tolerance
 
@@ -147,9 +175,12 @@ yaw = 0
 limit_yaw = 5
 step = 0.1
 
+responses = client.simGetImages([
+    ImageRequest(1, AirSimImageType.DepthPlanner, True)])
+response = responses[0]
+
 #initial position
-client.simSetPose(startPose, True)
-currentPose = startPose
+moveUAV(client,pos,yaw)
 
 #predictControl = AvoidLeftIgonreGoal(hfov, coll_thres, yaw, limit_yaw, step)
 predictControl = AvoidLeft(hfov, coll_thres, yaw, limit_yaw, step)
@@ -169,8 +200,8 @@ for z in range(10000): # do few times
     # reshape array to 2D array H X W
     img2d = np.reshape(img1d,(response.height, response.width)) 
     
-    [currentPose.position,yaw,target_dist] = predictControl.get_next_vec(img2d, uav_size, goalPose, currentPose)
-    client.simSetPose(currentPose, True)
+    [pos,yaw,target_dist] = predictControl.get_next_vec(img2d, uav_size, goal, pos)
+    moveUAV(client,pos,yaw)
 
     if (target_dist < 1):
         print('Target reached.')

@@ -6,9 +6,10 @@ client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
+client.takeoff()
 
 for idx in range(3000):
-    client.moveToPosition(-10, 10, -10, 5)
+    client.moveToPosition(-2, 2, -2, 5)
     client.reset()
     client.enableApiControl(True)
     print("%d" % idx)

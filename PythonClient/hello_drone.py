@@ -26,20 +26,25 @@ state = client.getMultirotorState()
 print("state: %s" % pprint.pformat(state))
 
 AirSimClientBase.wait_key('Press any key to move vehicle to (-10, 10, -10) at 5 m/s')
-client.moveToPosition(-10, 10, -10, 5)
+client.moveToPosition(10, 0, -10, 5)
 
 client.hover()
 
 state = client.getMultirotorState()
 print("state: %s" % pprint.pformat(state))
 
+
+
 AirSimClientBase.wait_key('Press any key to take images')
 # get camera images from the car
 responses = client.simGetImages([
-    ImageRequest(0, AirSimImageType.DepthVis),  #depth visualiztion image
-    ImageRequest(1, AirSimImageType.DepthPerspective, True), #depth in perspective projection
+    #ImageRequest(0, AirSimImageType.DepthVis),  #depth visualiztion image
+    #ImageRequest(1, AirSimImageType.DepthPerspective, True), #depth in perspective projection
+    #ImageRequest(1, AirSimImageType.Scene), #scene vision image in png format
+    #ImageRequest(1, AirSimImageType.Scene, False, False),  #scene vision image in uncompressed RGBA array
+    ImageRequest(0, AirSimImageType.Scene), #scene vision image in png format
     ImageRequest(1, AirSimImageType.Scene), #scene vision image in png format
-    ImageRequest(1, AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
+    ImageRequest(2, AirSimImageType.Scene)]) #scene vision image in png format
 print('Retrieved images: %d' % len(responses))
 
 tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_drone")
