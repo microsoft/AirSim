@@ -69,8 +69,9 @@ namespace msr {
 			*Build a unit quaternion representing the rotation
 			* from u to v. The input vectors need not be normalised.
 			*/
-			Quaternionr getQuatFromVecs(Vector3r u, Vector3r v)
+			Quaternionr getQuatBetweenVecs(Vector3r u, Vector3r v)
 			{
+
 				float norm_u_norm_v = sqrt(u.dot(u) * v.dot(v));
 				float real_part = norm_u_norm_v + u.dot(v);
 				Vector3r w;
@@ -81,7 +82,8 @@ namespace msr {
 					* around an arbitrary orthogonal axis. Axis normalisation
 					* can happen later, when we normalise the quaternion. */
 					real_part = 0.0f;
-					w = abs(u.x()) > abs(u.z()) ? Vector3r(-u.y(), u.x(), 0.f) : Vector3r(0.f, -u.z(), u.y());
+					//w = abs(u.x()) > abs(u.z()) ? Vector3r(-u.y(), u.x(), 0.f) : Vector3r(0.f, -u.z(), u.y());
+					w = abs(u.x()) > abs(u.z()) ? Vector3r(0.f, -u.y(), u.x()) : Vector3r(-u.z(), u.y(), 0.f);
 				}
 				else
 				{
@@ -89,7 +91,14 @@ namespace msr {
 					w = u.cross(v);
 				}
 
-				return Quaternionr(real_part, w.x(), w.y(), w.z()).normalized();
+				Quaternionr q(real_part, w.x(), w.y(), w.z());
+
+				return q.normalized();
+			}
+
+			float getNorm2(Vector3r u)
+			{		
+				return sqrt(u.dot(u));
 			}
 
 			//compute bounding box size

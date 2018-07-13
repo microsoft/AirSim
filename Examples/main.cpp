@@ -98,25 +98,32 @@ int main(int argc, const char *argv[])
 	//GaussianMarkovTest test;
 	//test.run();
 	DepthNav depthNav;
-	Vector3r x = Vector3r(1, 2, 3);
-	Vector3r y = Vector3r(2, 3, 4);
+
 	//Size of UAV
 	Vector2r uav_size = Vector2r(0.29 * 3, 0.98 * 2); //height:0.29 x width : 0.98 - allow some tolerance
-													  //Define start and goal poses
-	Pose startPose = Pose(Vector3r(0, 5, -1), Quaternionr(0, 0, 0, 0)); //start pose
-	Pose goalPose = Pose(Vector3r(120, 0, -1), Quaternionr(0, 0, 0, 0)); //final pose
+	
+	float threshold = 5.f;
 
-	Quaternionr quat;
-	quat = depthNav.getQuatFromVecs(x, y);
+    //Define start and goal poses
+	Pose startPose = Pose(Vector3r(5, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
+	Pose currentPose;
+	Pose goalPose = Pose(Vector3r(-50, 80, -1), Quaternionr(1, 0, 0, 0)); //final pose
+
+	Quaternionr currentQuat;
+	Quaternionr nextQuat;
+	Quaternionr goalQuat;
+	Vector3r forwardVec = Vector3r(1, 0, 0);
+	Vector3r goalVec;
+	float step = 0.1f;
+	bool bSafeToMove = true;
+
 	float vfov = depthNav.hfov2vfov(Utils::degreesToRadians(90.0f), Vector2r(480, 640));
-
-	std::cout << "Quaternion: " << quat.w() << quat.x() << quat.y() << quat.z() << std::endl;
 	std::cout << Utils::radiansToDegrees(vfov) << std::endl;
-	std::cout << std::endl;
 
 	try {
 		client.confirmConnection();
 		client.simSetPose(startPose, true);
+		currentPose = startPose;
 
 		bool bGoalReached = false;
 
@@ -138,10 +145,12 @@ int main(int argc, const char *argv[])
 				std::cout << "# of images recieved: " << response.size() << std::endl;
 			}
 
+			float min_depth = 1000.f;
+
 			for (const ImageResponse& image_info : response) {
 				if (image_info.image_type == ImageType::DepthPlanner)
 				{
-					if (image_info.image_data_float.size() > 0) 
+					if (image_info.image_data_float.size() > 0)
 					{
 						std::cout << "Image float size: " << image_info.image_data_float.size() << std::endl;
 						Vector2r image_sz = Vector2r(image_info.height, image_info.width);
@@ -149,31 +158,83 @@ int main(int argc, const char *argv[])
 
 						//compute box of interest
 						std::vector<float> crop;
-						float min_depth = 1000.f;
 
 						for (int i = int((image_sz.x() - bb_sz.x()) / 2); i < int((image_sz.x() + bb_sz.x()) / 2); i++) {
 							for (int j = int((image_sz.y() - bb_sz.y()) / 2); j<int((image_sz.y() + bb_sz.y()) / 2); j++) {
 								int idx = i * int(image_sz.y()) + j;
 								crop.push_back(image_info.image_data_float.data()[idx]);
-								std::cout << idx << "  " << image_info.image_data_float.data()[idx] << std::endl;
+								//std::cout << idx << "  " << image_info.image_data_float.data()[idx] << std::endl;
 								if (image_info.image_data_float.data()[idx] < min_depth) {
 									min_depth = image_info.image_data_float.data()[idx];
 								}
 							}
 						}
-						std::cout <<  std::endl;
 					}
-					else 
+
+					else
 					{
 						std::cout << "No image data. Make sure pixels_as_float_val is set to true. " << std::endl;
 					}
-
 				}
-
 			}
 
-			bGoalReached = true;
+				goalVec = goalPose.position - currentPose.position;
+				goalQuat = depthNav.getQuatBetweenVecs(forwardVec, goalVec);
+				currentQuat = currentPose.orientation;
 
+
+				if (min_depth < threshold)
+				{
+					//Turn to avoid obstacle
+					goalQuat = VectorMath::coordOrientationAdd(currentPose.orientation, VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(5.f)));
+					bSafeToMove = false;
+				}
+				else
+				{
+					//Turn towards goal
+					goalQuat = currentPose.orientation;
+					bSafeToMove = true;
+					//std::cout << "Quaternion: " << goalQuat.w() << " " << goalQuat.x() << " " << goalQuat.y() << " " << goalQuat.z() << std::endl;
+				}
+
+				real_T p_current, r_current, y_current;
+				VectorMath::toEulerianAngle(currentQuat, p_current, r_current, y_current);
+
+				real_T p_goal, r_goal, y_goal;
+				VectorMath::toEulerianAngle(goalQuat, p_goal, r_goal, y_goal);
+
+				//UAV rate in rad/s
+				real_T p_rate = Utils::degreesToRadians(45.0f);
+				real_T r_rate = Utils::degreesToRadians(45.0f);
+				real_T y_rate = Utils::degreesToRadians(90.0f);
+
+				real_T p_diff, r_diff, y_diff;
+				p_diff = p_goal - p_current;
+				r_diff = r_goal - r_current;
+				y_diff = y_goal - y_current;
+
+				real_T dt = 1 / 30;
+
+
+				//currentPose.position = currentPose.position + goalVec.normalized() * step;
+				if (bSafeToMove) 
+				{
+					currentPose.position = currentPose.position + VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation) * step;
+				}
+
+				currentPose.orientation = nextQuat;
+
+				client.simSetPose(currentPose, true);
+
+				std::cout << "Distance to target: " << depthNav.getNorm2(goalVec) << std::endl;
+
+				if (depthNav.getNorm2(goalVec) < 1) {
+					std::cout << "Target reached." << std::endl; std::cin.get();
+					return 0;
+				}
+
+			//Add some sleep
+			//std::this_thread::sleep_for(std::chrono::duration<double>(1));
 		}
 	}
 	catch (rpc::rpc_error&  e) {

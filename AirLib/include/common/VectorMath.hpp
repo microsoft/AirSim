@@ -419,7 +419,8 @@ public:
     }
 
     static QuaternionT quaternionFromYaw(RealT yaw) {
-        return QuaternionT(Eigen::AngleAxisd(yaw, Vector3T::UnitZ()));
+		//return QuaternionT(Eigen::AngleAxisd(yaw, Vector3T::UnitZ()));
+		return QuaternionT (std::cos(yaw * 0.5f), 0, 0, std::sin(yaw * 0.5f));
     }
 
     static const Vector3T front() 
