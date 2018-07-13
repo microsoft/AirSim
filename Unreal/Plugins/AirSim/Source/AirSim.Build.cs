@@ -101,6 +101,13 @@ public class AirSim : ModuleRules
             PublicAdditionalLibraries.Add("dinput8.lib");
             PublicAdditionalLibraries.Add("dxguid.lib");
         }
+
+		if (Target.Platform == UnrealTargetPlatform.Linux)
+		{
+			// needed when packaging
+			PublicAdditionalLibraries.Add("stdc++");
+			PublicAdditionalLibraries.Add("supc++");
+		}
     }
 
     static void CopyFileIfNewer(string srcFilePath, string destFolder)
