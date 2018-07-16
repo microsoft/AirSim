@@ -30,7 +30,8 @@ public:
         rc_.reset();
         has_api_control_ = false; 
         landed_ = true;
-        goal_timestamp_ = 0;
+        takenoff_ = false;
+        goal_timestamp_ = clock_->millis();
         updateGoalFromRc();
     }
 
@@ -42,7 +43,8 @@ public:
         if (!has_api_control_)
             updateGoalFromRc();
         else {
-            if (clock_->millis() - goal_timestamp_ > params_->api_goal_timeout) {
+            if (takenoff_ &&
+                (clock_->millis() - goal_timestamp_ > params_->api_goal_timeout)) {
                 if (!is_api_timedout_) {
                     comm_link_->log("API call was not received, entering hover mode for safety");
                     goal_mode_ = GoalMode::getPositionMode();
@@ -57,6 +59,7 @@ public:
         //else leave the goal set by IOffboardApi API
 
         detectLanding();
+        detectTakingOff();
     }
 
     /**************** IOffboardApi ********************/
@@ -70,8 +73,7 @@ public:
     {
         return goal_mode_;
     }
-
-
+    
     virtual bool canRequestApiControl(std::string& message) override
     {
         if (rc_.allowApiControl())
@@ -105,7 +107,7 @@ public:
     virtual void releaseApiControl() override
     {
         has_api_control_ = false;
-        comm_link_->log("releaseApiControl was sucessful", ICommLink::kLogLevelInfo);
+        comm_link_->log("releaseApiControl was successful", ICommLink::kLogLevelInfo);
     }
     virtual bool setGoalAndMode(const Axis4r* goal, const GoalMode* goal_mode, std::string& message) override
     {
@@ -137,7 +139,6 @@ public:
                 || vehicle_state_.getState() == VehicleStateType::Disarmed
                 || vehicle_state_.getState() == VehicleStateType::BeingDisarmed)) {
 
-                state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
                 vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
                 goal_ = Axis4r(0, 0, 0, params_->rc.min_angling_throttle);
                 goal_mode_ = GoalMode::getAllRateMode();
@@ -216,27 +217,42 @@ private:
     void detectLanding() {
 
         // if we are not trying to move by setting motor outputs
-        if (isAlmostZero(goal_.roll()) && isAlmostZero(goal_.pitch()) && isAlmostZero(goal_.yaw()) && isGreaterThanMinThrottle(goal_.throttle()))
+        if (takenoff_)
         {
-            // and we are not currently moving (based on current velocities)
-            auto angular = state_estimator_->getAngularVelocity();
-            auto velocity = state_estimator_->getLinearVelocity();
-            if (isAlmostZero(angular.roll()) && isAlmostZero(angular.pitch()) && isAlmostZero(angular.yaw()) &&
-                isAlmostZero(velocity.roll()) && isAlmostZero(velocity.pitch()) && isAlmostZero(velocity.yaw())) {
-                // then we must be landed...
-                landed_ = true;
-                return;
+            if (!isGreaterThanArmedThrottle(goal_.throttle())) {
+                // and we are not currently moving (based on current velocities)
+                auto angular = state_estimator_->getAngularVelocity();
+                auto velocity = state_estimator_->getLinearVelocity();
+                if (isAlmostZero(angular.roll()) && isAlmostZero(angular.pitch()) && isAlmostZero(angular.yaw()) &&
+                    isAlmostZero(velocity.x()) && isAlmostZero(velocity.y()) && isAlmostZero(velocity.z())) {
+                    // then we must be landed...
+                    landed_ = true;
+                    takenoff_ = false;
+                }
             }
         }
+    }
 
-        landed_ = false;
+    void detectTakingOff()
+    {
+        // if we are not trying to move by setting motor outputs
+        if (!takenoff_)
+        {
+            //TODO: better handling of landed & takenoff states 
+            if (isGreaterThanArmedThrottle(goal_.throttle()) &&
+                std::abs(state_estimator_->getLinearVelocity().z()) > 0.01f) {
+                takenoff_ = true;
+                landed_ = false;
+            }
+
+        }
     }
 
     bool isAlmostZero(float v) {
         return std::abs(v) < kMovementTolerance;
     }
-    bool isGreaterThanMinThrottle(float throttle) {
-        return std::abs(throttle) <= std::abs(params_->rc.min_angling_throttle);
+    bool isGreaterThanArmedThrottle(float throttle) {
+        return throttle > params_->min_armed_throttle();
     }
 
 private:
@@ -255,7 +271,7 @@ private:
 
     bool has_api_control_;
     bool is_api_timedout_;
-    bool landed_;
+    bool landed_, takenoff_;
 };
 
 

@@ -44,6 +44,9 @@ DerivedDataCache/
 UnrealHeaderTool/
 UnrealPak/
 obj/
+.vs/
+.vscode/
+.visuallint/
 *.VC.opendb
 *.VC.db
 *.opensdf
@@ -322,13 +325,15 @@ cmake_build/
 /cmake-3.7.2-win64-x64
 /cmake-3.7.2-win64-x64.zip
 /3.3.2.zip
-/PythonClient/cloud.txt
+/PythonClient/**/cloud.txt
+/PythonClient/**/cloud.asc
 /Unreal/Plugins/AirSim/Content/VehicleAdv/SUV/
 /suv_download_tmp
 car_assets.zip
-/PythonClient/cloud.txt
 __pycache__/
-/PythonClient/metrics/
+/PythonClient/**/metrics/
+/PythonClient/**/airsim.egg-info/
+/PythonClient/**/dist/
 
 ### Xcode ###
 build/

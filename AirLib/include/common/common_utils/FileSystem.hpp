@@ -14,6 +14,10 @@
 #ifndef ProductFolderName
 #define ProductFolderName "AirSim" 
 #endif
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif
     
 namespace common_utils { 
 class FileSystem

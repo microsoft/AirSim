@@ -165,15 +165,6 @@
     <ClInclude Include="include\common\common_utils\StrictMode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\ControllerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\PidController.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\VehicleControllerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\safety\CubeGeoFence.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -204,13 +195,7 @@
     <ClInclude Include="include\common\common_utils\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\common\common_utils\WorkerThread.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\physics\DebugPhysicsBody.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\api\DebugApiServer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\physics\PhysicsBodyWorld.hpp">
@@ -241,72 +226,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\RotorParams.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\configs\Px4MultiRotor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\configs\RosFlightQuadX.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\configs\SimpleFlightQuadX.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\turbotrig\turbotrig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\turbotrig\turbovec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\board.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\commlink.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\commonstate.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\controller.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\dummyboard.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\dummycommlink.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\estimator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\firmware.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\mixer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\mode.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\mux.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\param.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\rc.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\firmware\sensors.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\AirSimRosFlightBoard.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\AirSimRosFlightCommLink.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\ros_flight\RosFlightDroneController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\firmware\interfaces\CommonStructs.hpp">
@@ -402,18 +321,6 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightEstimator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightDroneController.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\DroneCommon.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\DroneControllerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\MavLinkDroneController.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\vehicles\car\api\CarRpcLibAdapators.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -438,22 +345,7 @@
     <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\RpcLibClientBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\api\VehicleApiBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\api\RpcLibServerBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\controllers\VehicleConnectorBase.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\controllers\RealMultirotorConnector.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\common\AirSimSettings.hpp">
@@ -489,10 +381,58 @@
     <ClInclude Include="include\api\WorldApiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\SimModeApiBase.hpp">
+    <ClInclude Include="include\api\ApiServerBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\ApiServerBase.hpp">
+    <ClInclude Include="include\api\VehicleSimApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\WorldSimApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorCommon.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\CancelToken.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\WorkerThread.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\VehicleApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\VehicleConnectorBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\PidController.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\MavLinkMultirotorApi.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightApi.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\Px4MultiRotorParams.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightQuadXParams.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\RpcLibClientBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorApiBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\api\ApiProvider.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\common_utils\Signal.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\common_utils\UniqueValueMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -524,7 +464,7 @@
     <ClCompile Include="src\api\RpcLibServerBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vehicles\multirotor\controllers\DroneControllerBase.cpp">
+    <ClCompile Include="src\vehicles\multirotor\api\MultirotorApiBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

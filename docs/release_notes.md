@@ -1,5 +1,8 @@
 # Release Notes
 
+**Please see [What's new](whats_new.md). This page is not maintained currently.**
+
+
 ## v1.1 - 2017-09-28
 - We have added [car model](using_car.md)!
 

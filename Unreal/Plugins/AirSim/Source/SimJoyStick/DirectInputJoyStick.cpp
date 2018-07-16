@@ -76,8 +76,10 @@ public:
     JoystickState state;
     JoystickInfo joystick_info;
 
-    bool initialize(unsigned int joystick_index)
+    bool initialize(int joystick_index)
     {
+        if (joystick_index < 0)
+            return false;
         return InitDirectInput(joystick_index) == S_OK;
     }
 
@@ -703,7 +705,7 @@ DirectInputJoyStick::~DirectInputJoyStick()
     //nop
 }
 
-bool DirectInputJoyStick::initialize(unsigned int joystick_index)
+bool DirectInputJoyStick::initialize(int joystick_index)
 {
     return pimpl_->initialize(joystick_index);
 }

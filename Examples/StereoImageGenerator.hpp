@@ -10,7 +10,7 @@
 #include "common/common_utils/FileSystem.hpp"
 #include "common/ClockFactory.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "RandomPointPoseGenerator.hpp"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
@@ -50,7 +50,7 @@ public:
                 //    pose_generator.next();
                 //    client.simSetPose(pose_generator.position, pose_generator.orientation);
 
-                //    std::cout << "Collison at " << VectorMath::toString(collision_info.position)
+                //    std::cout << "Collision at " << VectorMath::toString(collision_info.position)
                 //        << "Moving to next pose: "  << VectorMath::toString(pose_generator.position)
                 //        << std::endl;
 
@@ -61,13 +61,13 @@ public:
                 auto start_nanos = clock->nowNanos();
 
                 std::vector<ImageRequest> request = { 
-                    ImageRequest(0, ImageType::Scene), 
-                    ImageRequest(1, ImageType::Scene),
-                    ImageRequest(1, ImageType::DisparityNormalized, true)
+                    ImageRequest("0", ImageType::Scene), 
+                    ImageRequest("1", ImageType::Scene),
+                    ImageRequest("1", ImageType::DisparityNormalized, true)
                 };
                 const std::vector<ImageResponse>& response = client.simGetImages(request);
                 if (response.size() != 3) {
-                    std::cout << "Images were not recieved!" << std::endl;
+                    std::cout << "Images were not received!" << std::endl;
                     start_nanos = clock->nowNanos();
                     continue;
                 }
@@ -85,7 +85,7 @@ public:
                 results.push(result);
 
                 pose_generator.next();
-                client.simSetPose(Pose(pose_generator.position, pose_generator.orientation), true);
+                client.simSetVehiclePose(Pose(pose_generator.position, pose_generator.orientation), true);
             }
         } catch (rpc::timeout &t) {
             // will display a message like
@@ -135,7 +135,7 @@ private:
         if (file_list.eof())
             file_list.clear();  //otherwise we can't do any further I/O
         else if (file_list.bad()) {
-            throw  std::runtime_error("Error occured while reading files_list.txt");
+            throw  std::runtime_error("Error occurred while reading files_list.txt");
         }
 
         return sample;

@@ -30,7 +30,7 @@ public:
             controller_ = std::unique_ptr<AdaptiveController>(new AdaptiveController());
             break;
         default:
-            throw std::invalid_argument("Cannot regonize controller specified by params->controller_type");
+            throw std::invalid_argument("Cannot recognize controller specified by params->controller_type");
         }
         
 

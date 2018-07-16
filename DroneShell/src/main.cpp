@@ -14,8 +14,8 @@
 #include "common/common_utils/AsyncTasker.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "common/EarthUtils.hpp"
-#include "vehicles/multirotor/controllers/DroneCommon.hpp"
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "safety/SafetyEval.hpp"
 #include "common/common_utils/Timer.hpp"
 
@@ -108,7 +108,7 @@ public:
 
 class DisarmCommand : public DroneCommand {
 public:
-    DisarmCommand() : DroneCommand("Disarm", "Disarm the motors so we can safly approach the drone")
+    DisarmCommand() : DroneCommand("Disarm", "Disarm the motors so we can safely approach the drone")
     {
     }
 
@@ -149,12 +149,12 @@ class TakeOffCommand : public DroneCommand {
 public:
     TakeOffCommand() : DroneCommand("TakeOff", "Drone takeoff to a default altitude")
     {
-        this->addSwitch({"-takeoff_wait", "15", "specify time to wait after issuing command (default 15 seconds)" });
+        this->addSwitch({"-timeout_sec", "30", "specify time to wait after issuing command (default 30 seconds)" });
     }
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.takeoff(getSwitch("-takeoff_wait").toFloat());
+        params.context->client.takeoffAsync(getSwitch("-timeout_sec").toFloat());
         return false;
     }
 };
@@ -164,11 +164,12 @@ class LandCommand : public DroneCommand {
 public:
     LandCommand() : DroneCommand("Land", "Land the drone")
     {
+        this->addSwitch({ "-timeout_sec", "30", "specify time to wait after issuing command (default 30 seconds)" });
     }
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.land();
+        params.context->client.landAsync(getSwitch("-timeout_sec").toFloat());
         return false;
     }
 };
@@ -177,28 +178,29 @@ class GoHomeCommand : public DroneCommand {
 public:
     GoHomeCommand() : DroneCommand("GoHome", "Go back to takeoff point and land")
     {
+        this->addSwitch({ "-timeout_sec", "30000", "specify time to wait after issuing command (default 30000 seconds)" });
     }
 
     bool execute(const DroneCommandParameters& params) 
     {
-        params.context->client.goHome();
+        params.context->client.goHomeAsync(getSwitch("-timeout_sec").toFloat());
         return false;
     }
 };
 
-class GetHomePointCommand : public DroneCommand {
+class GetHomeGeoPointCommand : public DroneCommand {
 public:
-    GetHomePointCommand() : DroneCommand("GetHomePoint", "Display the homepoint set in the drone")
+    GetHomeGeoPointCommand() : DroneCommand("GetGeoHomePoint", "Display the home geo_point set in the drone")
     {
     }
 
     bool execute(const DroneCommandParameters& params) 
     {
-        auto homepoint = params.context->client.getHomeGeoPoint();
-        if (std::isnan(homepoint.longitude))
+        auto geo_point = params.context->client.getHomeGeoPoint();
+        if (std::isnan(geo_point.longitude))
             params.shell_ptr->showMessage("Home point is not set!");
         else
-            params.shell_ptr->showMessage(homepoint.to_string().c_str());
+            params.shell_ptr->showMessage(geo_point.to_string().c_str());
 
         return false;
     }
@@ -228,7 +230,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveToZ(z, velocity, duration, getYawMode(), lookahead, adaptive_lookahead);
+            context->client.moveToZAsync(z, velocity, duration, getYawMode(), lookahead, adaptive_lookahead);
         });
 
         return false;
@@ -250,7 +252,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.rotateByYawRate(yaw_rate, duration);
+            context->client.rotateByYawRateAsync(yaw_rate, duration);
         });
 
         return false;
@@ -274,7 +276,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.rotateToYaw(yaw, duration, margin);
+            context->client.rotateToYawAsync(yaw, duration, margin);
         });
 
         return false;
@@ -291,7 +293,7 @@ public:
     {
         CommandContext* context = params.context;
         context->tasker.execute([=]() {
-            context->client.hover();
+            context->client.hoverAsync();
         });
 
         return false;
@@ -308,8 +310,8 @@ public:
     {
         CommandContext* context = params.context;
         context->tasker.execute([=]() {
-            auto pos = context->client.getPosition();
-            auto gps = context->client.getGpsLocation();
+            auto pos = context->client.getMultirotorState().getPosition();
+            auto gps = context->client.getMultirotorState().gps_location;
 
             std::cout << "Local position: x=" << pos.x() << ", y=" << pos.y() << ", z=" << pos.z() << std::endl;
             std::cout << "Global position: lat=" << gps.latitude << ", lon=" << gps.longitude << ", alt=" << gps.altitude << std::endl;
@@ -325,7 +327,7 @@ public:
 
     MoveOnPathCommand() : DroneCommand("MoveOnPath", "Move along the given series of x,y,z coordinates with the specified velocity")
     {
-        this->addSwitch({ "-path", "", "a series of x,y,z cordinates separated by commas, e.g. 0,0,-10,100,0,-10,100,100,-10,0,100,-10,0,0,-10 will fly a square box pattern" });
+        this->addSwitch({ "-path", "", "a series of x,y,z coordinates separated by commas, e.g. 0,0,-10,100,0,-10,100,100,-10,0,100,-10,0,0,-10 will fly a square box pattern" });
         this->addSwitch({ "-velocity", "2.5", "the velocity in meters per second (default 2.5)" });
         this->addSwitch({ "-duration", "0", "maximum time to wait to reach end of path (default no wait)" });
         addYawModeSwitches();
@@ -374,7 +376,7 @@ public:
             return false;
         }
 
-        auto pos = context->client.getPosition();
+        auto pos = context->client.getMultirotorState().getPosition();
         if (getSwitch("-r").toInt() == 1) {
             for (size_t i = 0, n = path.size(); i < n; i++) {
                 Vector3r v = path[i];
@@ -390,7 +392,7 @@ public:
         auto yawMode = getYawMode();
 
         context->tasker.execute([=]() {
-            context->client.moveOnPath(path, velocity, duration,
+            context->client.moveOnPathAsync(path, velocity, duration,
                 drivetrain, yawMode, lookahead, adaptive_lookahead);
         });
 
@@ -415,7 +417,7 @@ public:
 
     void MoveToPosition(CommandContext* context, float x, float y, float z, float velocity, float duration, DrivetrainType drivetrain, YawMode yawMode, float lookahead, float adaptive_lookahead)
     {
-        context->client.moveToPosition(x, y, z, velocity, duration,
+        context->client.moveToPositionAsync(x, y, z, velocity, duration,
             drivetrain, yawMode, lookahead, adaptive_lookahead);
     }
 
@@ -427,7 +429,7 @@ public:
         float z = getSwitch("-z").toFloat();
 
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             x += pos.x();
             y += pos.y();
             z += pos.z();
@@ -474,7 +476,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByManual(vx, vy, z, duration, drivetrain, yawMode);
+            context->client.moveByManualAsync(vx, vy, z, duration, drivetrain, yawMode);
         });
 
         return false;
@@ -503,7 +505,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngleZ(pitch, roll, z, yaw, duration);
+            context->client.moveByAngleZAsync(pitch, roll, z, yaw, duration);
         });
 
         return false;
@@ -532,7 +534,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngleThrottle(pitch, roll, throttle, yaw_rate, duration);
+            context->client.moveByAngleThrottleAsync(pitch, roll, throttle, yaw_rate, duration);
         });
 
         return false;
@@ -563,7 +565,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByVelocity(vx, vy, vz, duration, drivetrain, yawMode);
+            context->client.moveByVelocityAsync(vx, vy, vz, duration, drivetrain, yawMode);
         });
 
         return false;
@@ -593,7 +595,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByVelocityZ(vx, vy, z, duration, drivetrain, yawMode);
+            context->client.moveByVelocityZAsync(vx, vy, z, duration, drivetrain, yawMode);
         });
 
         return false;
@@ -652,7 +654,7 @@ public:
                 origin[1] = std::stof(parts[1]); 
                 origin[2] = std::stof(parts[2]);
             } else {
-                throw std::invalid_argument("-origin argument is expectin 'x,y,z' (separated by commas and no spaces in between)");
+                throw std::invalid_argument("-origin argument is expecting 'x,y,z' (separated by commas and no spaces in between)");
             }
         }
 
@@ -691,13 +693,15 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            if (!context->client.moveByAngleZ(pitch, roll, z, yaw, duration)) {
-                throw std::runtime_error("BackForthByAngleCommand cancelled");
+            context->client.moveByAngleZAsync(pitch, roll, z, yaw, duration);
+            if (!context->client.waitOnLastTask()) {
+                throw std::runtime_error("BackForthByAngleCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, duration)){
-                throw std::runtime_error("BackForthByAngleCommand cancelled");
+            context->client.moveByAngleZAsync(-pitch, -roll, z, yaw, duration);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("BackForthByAngleCommand canceled");
             }
         }, iterations);
         
@@ -734,17 +738,19 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            if (!context->client.moveToPosition(length, 0, z, velocity, 0, drivetrain,
-                yawMode, lookahead, adaptive_lookahead)) {
-                 throw std::runtime_error("BackForthByPositionCommand cancelled");
+            context->client.moveToPositionAsync(length, 0, z, velocity, 0, drivetrain,
+                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()) {
+                 throw std::runtime_error("BackForthByPositionCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(-length, 0, z, velocity, 0, drivetrain,
-                yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("BackForthByPositionCommand cancelled");
+            context->client.moveToPositionAsync(-length, 0, z, velocity, 0, drivetrain,
+                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("BackForthByPositionCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
         }, iterations);
 
@@ -776,25 +782,32 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            if (!context->client.moveByAngleZ(pitch, -roll, z, yaw, 0)) {
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+            context->client.moveByAngleZAsync(pitch, -roll, z, yaw, 0);
+            if (!context->client.waitOnLastTask()) {
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, 0)) {
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+
+            context->client.moveByAngleZAsync(-pitch, -roll, z, yaw, 0);
+            if (!context->client.waitOnLastTask()) {
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngleZ(-pitch, roll, z, yaw, 0)) {
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+
+            context->client.moveByAngleZAsync(-pitch, roll, z, yaw, 0);
+            if (!context->client.waitOnLastTask()) {
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveByAngleZ(-pitch, -roll, z, yaw, 0)){
-                throw std::runtime_error("SquareByAngleCommand cancelled");
+
+            context->client.moveByAngleZAsync(-pitch, -roll, z, yaw, 0);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("SquareByAngleCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
         }, iterations);
 
@@ -833,36 +846,43 @@ public:
 
         float x = 0, y = 0;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             x += pos.x();
             y += pos.y();
             z += pos.z();
         }
 
         context->tasker.execute([=]() {
-            if (!context->client.moveToPosition(x + length, y - length, z, velocity, 0, drivetrain,
-                yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+            context->client.moveToPositionAsync(x + length, y - length, z, velocity, 0, drivetrain,
+                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(x - length, y - length, z, velocity, 0, drivetrain,
-                yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+
+            context->client.moveToPositionAsync(x - length, y - length, z, velocity, 0, drivetrain,
+                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(x - length, y + length, z, velocity, 0, drivetrain,
-                yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+
+            context->client.moveToPositionAsync(x - length, y + length, z, velocity, 0, drivetrain,
+                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
-            if (!context->client.moveToPosition(x + length, y + length, z, velocity, 0, drivetrain,
-                yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPositionCommand cancelled");
+
+            context->client.moveToPositionAsync(x + length, y + length, z, velocity, 0, drivetrain,
+                yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("SquareByPositionCommand canceled");
             }
-            context->client.hover();
+            context->client.hoverAsync();
             context->sleep_for(pause_time);
         }, iterations);
 
@@ -902,7 +922,7 @@ public:
         float x = 0, y = 0;
         CommandContext* context = params.context;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             x += pos.x();
             y += pos.y();
             z += pos.z();
@@ -920,11 +940,12 @@ public:
 
         context->tasker.execute([=]() {
             if (timer.seconds() > duration) {
-                context->client.hover();
+                context->client.hoverAsync();
                 throw std::runtime_error("SquareByPathCommand -duration reached");
             }
-            if (!context->client.moveOnPath(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead)){
-                throw std::runtime_error("SquareByPathCommand cancelled");
+            context->client.moveOnPathAsync(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()){
+                throw std::runtime_error("SquareByPathCommand canceled");
             }
         }, iterations);
 
@@ -969,7 +990,7 @@ public:
         auto yawMode = getYawMode();
         float cx = 0, cy = 0;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             cx += pos.x();
             cy += pos.y();
             z += pos.z();
@@ -986,11 +1007,12 @@ public:
             for(float seg = 0; seg < seg_count; ++seg) {
                 float x = cx + std::cos(seg_angle * seg) * radius;
                 float y = cy + std::sin(seg_angle * seg) * radius;
-                if (!context->client.moveToPosition(x, y, z, velocity, duration, drivetrain,
-                    yawMode, lookahead, adaptive_lookahead)){
-                    throw std::runtime_error("CircleByPositionCommand cancelled");
+                context->client.moveToPositionAsync(x, y, z, velocity, duration, drivetrain,
+                    yawMode, lookahead, adaptive_lookahead);
+                if (!context->client.waitOnLastTask()){
+                    throw std::runtime_error("CircleByPositionCommand canceled");
                 }
-                context->client.hover();
+                context->client.hoverAsync();
                 context->sleep_for(pause_time);
             }
         }, iterations);
@@ -1037,7 +1059,7 @@ public:
         CommandContext* context = params.context;
         float cx = 0, cy = 0;
         if (getSwitch("-r").toInt() == 1) {
-            auto pos = context->client.getPosition();
+            auto pos = context->client.getMultirotorState().getPosition();
             cx += pos.x();
             cy += pos.y();
             z_path += pos.z();
@@ -1073,11 +1095,12 @@ public:
         timer.start();
         context->tasker.execute([=]() {
             if (timer.seconds() > duration) {
-                context->client.hover();
+                context->client.hoverAsync();
                 throw std::runtime_error("CircleByPath -duration reached");
             }
-            if (!context->client.moveOnPath(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead)) {
-                throw std::runtime_error("CircleByPath cancelled");
+            context->client.moveOnPathAsync(path, velocity, duration, drivetrain, yawMode, lookahead, adaptive_lookahead);
+            if (!context->client.waitOnLastTask()) {
+                throw std::runtime_error("CircleByPath canceled");
             }
         }, iterations);
 
@@ -1096,9 +1119,9 @@ Each record is tab separated floating point numbers containing GPS lat,lon,alt,z
     bool execute(const DroneCommandParameters& params) 
     {
         //TODO: get these in one call
-        Vector3r position = params.context->client.getPosition();
-        Quaternionr quaternion = params.context->client.getOrientation();
-        GeoPoint gps_point = params.context->client.getGpsLocation();
+        Vector3r position = params.context->client.getMultirotorState().getPosition();
+        Quaternionr quaternion = params.context->client.getMultirotorState().getOrientation();
+        GeoPoint gps_point = params.context->client.getMultirotorState().gps_location;
 
         params.shell_ptr->showMessage(gps_point.to_string());
         params.shell_ptr->showMessage(VectorMath::toString(position));
@@ -1163,12 +1186,13 @@ See RecordPose for information about log file format")
                     params.shell_ptr->showMessage(VectorMath::toString(position));
                     params.shell_ptr->showMessage(VectorMath::toString(quaternion));
 
-                    GeoPoint home_point = context->client.getHomeGeoPoint();
-                    Vector3r local_point = EarthUtils::GeodeticToNedFast(gps_point, home_point);
+                    GeoPoint home_geo_point = context->client.getHomeGeoPoint();
+                    Vector3r local_point = EarthUtils::GeodeticToNedFast(gps_point, home_geo_point);
                     VectorMath::toEulerianAngle(quaternion, pitch, roll, yaw);
 
-                    context->client.moveToPosition(local_point.x(), local_point.y(), local_point.z(), velocity, 0,
+                    context->client.moveToPositionAsync(local_point.x(), local_point.y(), local_point.z(), velocity, 0,
                         DrivetrainType::MaxDegreeOfFreedom, YawMode(false, yaw), lookahead, adaptive_lookahead);
+                    context->client.waitOnLastTask();
                 }
             }
         });
@@ -1275,7 +1299,7 @@ public:
 };
 
 
-// std::string beforeScriptStartCallback(const DroneCommandParameters& params, std::string scriptFilePath) 
+// std::string beforeScriptStartCallback(const DroneCommandParameters& param, std::string scriptFilePath) 
 // {
 //     return "";
 // }
@@ -1372,7 +1396,7 @@ int main(int argc, const char *argv[]) {
     LandCommand land;
     GoHomeCommand goHome;
     //TODO: add WaitForCompletion command
-    GetHomePointCommand getHomePoint;
+    GetHomeGeoPointCommand getHomeGeoPoint;
     MoveToZCommand moveToZ;
     RotateByYawRateCommand rotateByYawRate;
     RotateToYawCommand rotateToYaw;
@@ -1406,7 +1430,7 @@ int main(int argc, const char *argv[]) {
     shell.addCommand(land);
     shell.addCommand(getPosition);
     shell.addCommand(goHome);
-    shell.addCommand(getHomePoint);
+    shell.addCommand(getHomeGeoPoint);
     shell.addCommand(moveToZ);
     shell.addCommand(rotateByYawRate);
     shell.addCommand(rotateToYaw);

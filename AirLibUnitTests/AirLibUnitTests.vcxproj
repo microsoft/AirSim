@@ -189,7 +189,6 @@
   <ItemGroup>
     <ClInclude Include="CelestialTests.hpp" />
     <ClInclude Include="QuaternionTest.hpp" />
-    <ClInclude Include="RosFlightTest.hpp" />
     <ClInclude Include="SettingsTest.hpp" />
     <ClInclude Include="SimpleFlightTest.hpp" />
     <ClInclude Include="TestBase.hpp" />

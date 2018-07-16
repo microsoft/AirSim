@@ -6,7 +6,7 @@
 
 #include "common/Common.hpp"
 #include "api/ApiServerBase.hpp"
-#include "api/SimModeApiBase.hpp"
+#include "api/ApiProvider.hpp"
 
 
 namespace msr { namespace airlib {
@@ -14,20 +14,55 @@ namespace msr { namespace airlib {
 
 class RpcLibServerBase : public ApiServerBase {
 public:
-    RpcLibServerBase(SimModeApiBase* simmode_api, string server_address, uint16_t port);
+    RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = 41451);
+    virtual ~RpcLibServerBase() override;
+
     virtual void start(bool block = false) override;
     virtual void stop() override;
-    virtual ~RpcLibServerBase() override;
+
+    class ApiNotSupported : public std::runtime_error {
+    public:
+        ApiNotSupported(const std::string& message)
+            : std::runtime_error(message) {
+        }
+    };
 
 protected:
     void* getServer() const;
-    SimModeApiBase* getSimModeApi() const;
+
+
+    virtual VehicleApiBase* getVehicleApi(const std::string& vehicle_name)
+    {
+        auto* api = api_provider_->getVehicleApi(vehicle_name);
+        if (api)
+            return api;
+        else
+            throw ApiNotSupported("Vehicle API for '" + vehicle_name + 
+                "' is not available. This could either because this is simulation-only API or this vehicle does not exist");
+    }
+    virtual VehicleSimApiBase* getVehicleSimApi(const std::string& vehicle_name)
+    {
+        auto* api = api_provider_->getVehicleSimApi(vehicle_name);
+        if (api)
+            return api;
+        else
+            throw ApiNotSupported("Vehicle Sim-API for '" + vehicle_name +
+                "' is not available. This could either because this is not a simulation or this vehicle does not exist");
+    }
+    virtual WorldSimApiBase* getWorldSimApi()
+    {
+        auto* api = api_provider_->getWorldSimApi();
+        if (api)
+            return api;
+        else
+            throw ApiNotSupported("World-Sim API "
+                "' is not available. This could be because this is not a simulation");
+    }
+
 
 private:
-    VehicleApiBase* getVehicleApi() const;
+    ApiProvider* api_provider_;
 
-private:
-    SimModeApiBase* simmode_api_;
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };

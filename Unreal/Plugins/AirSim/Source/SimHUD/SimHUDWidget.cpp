@@ -1,6 +1,6 @@
 #include "SimHUDWidget.h"
 
-void USimHUDWidget::updateReport(const std::string& text)
+void USimHUDWidget::updateDebugReport(const std::string& text)
 {
     setReportText(FString(text.c_str()));
 }

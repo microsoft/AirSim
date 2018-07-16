@@ -6,8 +6,9 @@
 #include "TestBase.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "physics/FastPhysicsEngine.hpp"
-#include "vehicles/multirotor/api/MultirotorApi.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/SteppableClock.hpp"
+#include "vehicles/multirotor/MultiRotor.hpp"
 
 namespace msr { namespace airlib {
 
@@ -22,43 +23,42 @@ public:
 
         SensorFactory sensor_factory;
 
-        std::unique_ptr<MultiRotorParams> params = MultiRotorParamsFactory::createConfig("SimpleFlight", std::make_shared<SensorFactory>());
-        MultiRotor vehicle;
-        std::unique_ptr<Environment> environment;
-        vehicle.initialize(params.get(), Pose(), 
-            GeoPoint(), environment);
+        std::unique_ptr<MultiRotorParams> params = MultiRotorParamsFactory::createConfig(
+            AirSimSettings::singleton().getVehicleSetting("SimpleFlight"), 
+            std::make_shared<SensorFactory>());
+        auto api = params->createMultirotorApi();
+
+        MultiRotor vehicle(params.get(), api.get(), Pose(), GeoPoint());
 
         std::vector<UpdatableObject*> vehicles = { &vehicle };
         std::unique_ptr<PhysicsEngineBase> physics_engine(new FastPhysicsEngine());
-        PhysicsWorld physics_world(physics_engine.get(), vehicles, 
+        PhysicsWorld physics_world(std::move(physics_engine), vehicles,
             static_cast<uint64_t>(clock->getStepSize() * 1E9));
 
-        DroneControllerBase* controller = params->getController();
-        testAssert(controller != nullptr, "Controller was null");
+        testAssert(api != nullptr, "api was null");
         std::string message;
-        testAssert(controller->isAvailable(message), message);
+        testAssert(api->isReady(message), message);
 
         clock->sleep_for(0.04f);
         
         Utils::getSetMinLogLevel(true, 100);
 
-        DirectCancelableBase cancellable(controller, &vehicle);
-        controller->enableApiControl(true);
-        controller->armDisarm(true, cancellable);
-        controller->takeoff(10, cancellable);
+        api->enableApiControl(true);
+        api->armDisarm(true);
+        api->takeoff(10);
 
         clock->sleep_for(2.0f);
 
         Utils::getSetMinLogLevel(true);
 
-        controller->moveToPosition(-5, -5, -5, 5, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0, cancellable);
+        api->moveToPosition(-5, -5, -5, 5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
 
         clock->sleep_for(2.0f);
 
 
         while (true) {
             clock->sleep_for(0.1f);
-            controller->getStatusMessages(messages_);
+            api->getStatusMessages(messages_);
             for (const auto& status_message : messages_) {
                 std::cout << status_message << std::endl;
             }
@@ -68,34 +68,6 @@ public:
 
 private:
     std::vector<std::string> messages_;
-    
-private:
-    class DirectCancelableBase : public CancelableBase
-    {
-    public:
-        DirectCancelableBase(DroneControllerBase* controller, const MultiRotor* vehicle)
-            : controller_(controller), vehicle_(vehicle)
-        {
-        }
-        virtual void execute() override
-        {}
-
-        virtual bool sleep(double secs) override 
-        {
-            controller_->getStatusMessages(messages_);
-            for (const auto& status_message : messages_) {
-                std::cout << status_message << std::endl;
-            }
-            messages_.clear();
-
-            return CancelableBase::sleep(secs);
-        };
-
-    private:
-        DroneControllerBase* controller_;
-        const MultiRotor* vehicle_;
-        std::vector<std::string> messages_;
-    };
 
 };
 

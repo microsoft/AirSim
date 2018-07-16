@@ -15,11 +15,11 @@ namespace msr { namespace airlib {
 
 class PhysicsWorld {
 public:
-    PhysicsWorld(PhysicsEngineBase* physics_engine, const std::vector<UpdatableObject*>& bodies,
+    PhysicsWorld(std::unique_ptr<PhysicsEngineBase> physics_engine, const std::vector<UpdatableObject*>& bodies,
             uint64_t update_period_nanos = 3000000LL, bool state_reporter_enabled = false,
             bool start_async_updator = true
         )
-        : world_(physics_engine)
+        : world_(std::move(physics_engine))
     {
         enableStateReport(state_reporter_enabled);
         update_period_nanos_ = update_period_nanos;
@@ -71,7 +71,7 @@ public:
         }
     }
 
-    std::string getReport()
+    std::string getDebugReport()
     {
         return reporter_.getOutput();
     }

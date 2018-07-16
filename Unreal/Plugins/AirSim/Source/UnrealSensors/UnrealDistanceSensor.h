@@ -6,6 +6,7 @@
 #include "common/Common.hpp"
 #include "GameFramework/Actor.h"
 #include "sensors/distance/DistanceSimple.hpp"
+#include "NedTransform.h"
 
 class UnrealDistanceSensor : public msr::airlib::DistanceSimple {
 public:

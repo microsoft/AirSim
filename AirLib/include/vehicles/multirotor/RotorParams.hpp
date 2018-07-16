@@ -37,7 +37,7 @@ namespace msr {
             real_T air_density = 1.225f; //  kg/m^3
             real_T max_rpm = 6396.667f; // revolutions per minute
             real_T propeller_diameter = 0.2286f;   //diameter in meters, default is for DJI Phantom 2
-            real_T propeller_height = 1 / 100.0f;   //height of cylinderical area when propeller rotates, 1 cm
+            real_T propeller_height = 1 / 100.0f;   //height of cylindrical area when propeller rotates, 1 cm
             real_T control_signal_filter_tc = 0.005f;    //time constant for low pass filter
 
             real_T revolutions_per_second;
@@ -46,7 +46,7 @@ namespace msr {
             real_T max_thrust = 4.179446268f; //computed from above formula for the given constants
             real_T max_torque = 0.055562f; //computed from above formula
 
-            // call this method to recaculate thrust if you want to use different numbers for C_T, C_P, max_rpm, etc.
+            // call this method to recalculate thrust if you want to use different numbers for C_T, C_P, max_rpm, etc.
             void calculateMaxThrust() {
                 revolutions_per_second = max_rpm / 60;
                 max_speed = revolutions_per_second * 2 * M_PIf;  // radians / sec

@@ -11,7 +11,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "IGeoFence.hpp"
 #include "common/Common.hpp"
-#include "vehicles/multirotor/controllers/DroneCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
 #include "common/common_utils/EnumFlags.hpp"
 
 namespace msr { namespace airlib {
@@ -45,7 +45,7 @@ public:
         ObstacleMap::ObstacleInfo cur_obs, dest_obs, suggested_obs;
         //locations that were considered while evaluation
         Vector3r cur_pos, dest_pos;
-        //transoformed cur to destination vector in body frame
+        //transformed cur to destination vector in body frame
         Vector3r cur_dest_body;
         string message;
         //suggested unit vector without obstacle, must be zero if no suggestions available
@@ -72,7 +72,7 @@ public:
     };
 
 private:
-    VehicleParams vehicle_params_;
+    MultirotorApiParams vehicle_params_;
     shared_ptr<IGeoFence> fence_ptr_;
     shared_ptr<ObstacleMap> obs_xy_ptr_;
     SafetyViolationType enable_reasons_ = SafetyEval::SafetyViolationType_::GeoFence;
@@ -86,7 +86,7 @@ private:
     void setSuggestedVelocity(SafetyEval::EvalResult& result, const Quaternionr& quaternion);
     float adjustClearanceForPrStl(float base_clearance, float obs_confidence);
 public:
-    SafetyEval(VehicleParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy);
+    SafetyEval(MultirotorApiParams vehicle_params, shared_ptr<IGeoFence> fence_ptr, shared_ptr<ObstacleMap> obs_xy);
     EvalResult isSafeVelocity(const Vector3r& cur_pos, const Vector3r& velocity, const Quaternionr& quaternion);
     EvalResult isSafeVelocityZ(const Vector3r& cur_pos, float vx, float vy, float z, const Quaternionr& quaternion);
     EvalResult isSafeDestination(const Vector3r& dest,const Vector3r& cur_pos, const Quaternionr& quaternion);

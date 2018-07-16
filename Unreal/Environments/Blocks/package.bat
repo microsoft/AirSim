@@ -6,7 +6,7 @@ set ROOT_DIR=%~dp0
 set OutPath=%1
 set ToolPath=%2
 
-if "%ToolPath%"=="" set "ToolPath=%PROGRAMFILES%\Epic Games\UE_4.16\Engine\Build\BatchFiles"
+if "%ToolPath%"=="" set "ToolPath=%PROGRAMFILES%\Epic Games\UE_4.18\Engine\Build\BatchFiles"
 IF NOT EXIST "%ToolPath%" (
 	echo "Unreal Engine build path %ToolPath% was not found"
 	goto :failed

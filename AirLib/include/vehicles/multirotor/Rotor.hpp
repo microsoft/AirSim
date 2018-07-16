@@ -15,6 +15,9 @@
 
 namespace msr { namespace airlib {
 
+//Rotor gets control signal as input (PWM or voltage represented from 0 to 1) which causes 
+//change in rotation speed and turning direction and ultimately produces force and thrust as
+//output
 class Rotor : public PhysicsBodyVertex {
 public: //types
     struct Output {
@@ -50,7 +53,7 @@ public: //methods
         PhysicsBodyVertex::initialize(position, normal);   //call base initializer
     }
     
-    //0 to 1 - will be scalled to 0 to max_speed
+    //0 to 1 - will be scaled to 0 to max_speed
     void setControlSignal(real_T control_signal)
     {
         control_signal_filter_.setInput(Utils::clip(control_signal, 0.0f, 1.0f));

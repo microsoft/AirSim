@@ -112,7 +112,7 @@ public:
         s << std::setw(2) << doc_ << std::endl;
     }
 
-    bool getChild(std::string name, Settings& child) const
+    bool getChild(const std::string& name, Settings& child) const
     {
         if (doc_.count(name) == 1 && 
             ( doc_[name].type() == nlohmann::detail::value_t::object ||
@@ -149,7 +149,7 @@ public:
         return false;
     }
 
-    std::string getString(std::string name, std::string defaultValue) const
+    std::string getString(const std::string& name, std::string defaultValue) const
     {
         if (doc_.count(name) == 1) {
             return doc_[name].get<std::string>();
@@ -159,7 +159,7 @@ public:
         }
     }
 
-    double getDouble(std::string name, double defaultValue) const
+    double getDouble(const std::string& name, double defaultValue) const
     {
         if (doc_.count(name) == 1) {
             return doc_[name].get<double>();
@@ -169,7 +169,7 @@ public:
         }
     }
 
-    float getFloat(std::string name, float defaultValue) const
+    float getFloat(const std::string& name, float defaultValue) const
     {
         if (doc_.count(name) == 1) {
             return doc_[name].get<float>();
@@ -179,7 +179,7 @@ public:
         }
     }
 
-    bool getBool(std::string name, bool defaultValue) const
+    bool getBool(const std::string& name, bool defaultValue) const
     {
         if (doc_.count(name) == 1) {
             return doc_[name].get<bool>();
@@ -189,7 +189,12 @@ public:
         }
     }
 
-    int getInt(std::string name, int defaultValue) const
+    bool hasKey(const std::string& key) const
+    {
+        return doc_.find(key) != doc_.end();
+    }
+
+    int getInt(const std::string& name, int defaultValue) const
     {
         if (doc_.count(name) == 1) {
             return doc_[name].get<int>();
@@ -199,7 +204,7 @@ public:
         }
     }
 
-    bool setString(std::string name, std::string value)
+    bool setString(const std::string& name, std::string value)
     {
         if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::string || doc_[name] != value) {
             doc_[name] = value;
@@ -207,7 +212,7 @@ public:
         }
         return false;
     }
-    bool setDouble(std::string name, double value)
+    bool setDouble(const std::string& name, double value)
     {
         if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_float || static_cast<double>(doc_[name]) != value) {
             doc_[name] = value;
@@ -215,7 +220,7 @@ public:
         }
         return false;
     }
-    bool setBool(std::string name, bool value)
+    bool setBool(const std::string& name, bool value)
     {
         if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::boolean || static_cast<bool>(doc_[name]) != value) {
             doc_[name] = value;
@@ -223,7 +228,7 @@ public:
         }
         return false;
     }
-    bool setInt(std::string name, int value)
+    bool setInt(const std::string& name, int value)
     {
         if (doc_.count(name) != 1 || doc_[name].type() != nlohmann::detail::value_t::number_integer || static_cast<int>(doc_[name]) != value) {
             doc_[name] = value;
@@ -232,7 +237,7 @@ public:
         return false;
     }
 
-    void setChild(std::string name, Settings& value)
+    void setChild(const std::string& name, Settings& value)
     {
         doc_[name] = value.doc_;
     }
