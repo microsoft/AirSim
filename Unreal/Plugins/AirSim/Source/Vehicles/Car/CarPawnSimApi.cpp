@@ -6,14 +6,12 @@
 
 using namespace msr::airlib;
 
-CarPawnSimApi::CarPawnSimApi(ACarPawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
-    const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
-    const CarPawnApi::CarControls&  keyboard_controls,
-    UWheeledVehicleMovementComponent* movement, const msr::airlib::GeoPoint& home_geopoint)
-    : PawnSimApi(pawn, global_transform, pawn_events, cameras, pip_camera_class, collision_display_template, home_geopoint),
+CarPawnSimApi::CarPawnSimApi(const Params& params,
+    const CarPawnApi::CarControls&  keyboard_controls, UWheeledVehicleMovementComponent* movement)
+    : PawnSimApi(params),
       keyboard_controls_(keyboard_controls)
 {
-    createVehicleApi(pawn, home_geopoint);
+    createVehicleApi(static_cast<ACarPawn*>(params.pawn), params.home_geopoint);
 
     //TODO: should do reset() here?
     joystick_controls_ = CarPawnApi::CarControls();

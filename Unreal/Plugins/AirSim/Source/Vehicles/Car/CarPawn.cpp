@@ -205,7 +205,7 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
     setupInputBindings();
 }
 
-common_utils::UniqueValueMap<std::string, APIPCamera*> ACarPawn::getCameras() const
+const common_utils::UniqueValueMap<std::string, APIPCamera*> ACarPawn::getCameras() const
 {
     common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
     cameras.insert_or_assign("front_center", camera_front_center_);

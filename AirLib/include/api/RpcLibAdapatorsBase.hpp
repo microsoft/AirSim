@@ -10,6 +10,8 @@
 #include "physics/Environment.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
+
+#undef check
 #include "rpc/msgpack.hpp"
 
 
@@ -192,11 +194,38 @@ public:
         }
     };
 
+    struct ProjectionMatrix {
+        float matrix[4][4];
+
+        MSGPACK_DEFINE_MAP(matrix);
+
+        ProjectionMatrix()
+        {
+        }
+
+        ProjectionMatrix(const msr::airlib::ProjectionMatrix& s)
+        {
+            for (auto i = 0; i < 4; ++i)
+                for (auto j = 0; j < 4; ++j)
+                    matrix[i][j] = s.matrix[i][j];
+        }
+
+        msr::airlib::ProjectionMatrix to() const
+        {
+            msr::airlib::ProjectionMatrix s;
+            for (auto i = 0; i < 4; ++i)
+                for (auto j = 0; j < 4; ++j)
+                    s.matrix[i][j] = matrix[i][j];
+            return s;
+        }
+    };
+
     struct CameraInfo {
         Pose pose;
         float fov;
+        ProjectionMatrix proj_mat;
 
-        MSGPACK_DEFINE_MAP(pose, fov);
+        MSGPACK_DEFINE_MAP(pose, fov, proj_mat);
 
         CameraInfo()
         {}
@@ -205,6 +234,7 @@ public:
         {
             pose = s.pose;
             fov = s.fov;
+            proj_mat = ProjectionMatrix(s.proj_mat);
         }
 
         msr::airlib::CameraInfo to() const
@@ -212,6 +242,7 @@ public:
             msr::airlib::CameraInfo s;
             s.pose = pose.to();
             s.fov = fov;
+            s.proj_mat = proj_mat.to();
 
             return s;
         }

@@ -262,6 +262,75 @@ const void* RpcLibClientBase::getClient() const
     return &pimpl_->client;
 }
 
+//----------- APIs to control ACharacter in scene ----------/
+void RpcLibClientBase::simCharSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name)
+{
+    pimpl_->client.call("simCharSetFaceExpression", expression_name, value, character_name);
+}
+
+float RpcLibClientBase::simCharGetFaceExpression(const std::string& expression_name, const std::string& character_name) const
+{
+    return pimpl_->client.call("simCharGetFaceExpression", expression_name, character_name).as<float>();
+}
+
+std::vector<std::string> RpcLibClientBase::simCharGetAvailableFaceExpressions()
+{
+    return pimpl_->client.call("simCharGetAvailableFaceExpressions").as<std::vector<std::string>>();
+}
+
+void RpcLibClientBase::simCharSetSkinDarkness(float value, const std::string& character_name)
+{
+    pimpl_->client.call("simCharSetSkinDarkness", character_name, value);
+}
+
+float RpcLibClientBase::simCharGetSkinDarkness(const std::string& character_name) const
+{
+    return pimpl_->client.call("simCharGetSkinDarkness", character_name).as<float>();
+}
+
+void RpcLibClientBase::simCharSetSkinAgeing(float value, const std::string& character_name)
+{
+    pimpl_->client.call("simCharSetSkinAgeing", character_name, value);
+}
+
+float RpcLibClientBase::simCharGetSkinAgeing(const std::string& character_name) const
+{
+    return pimpl_->client.call("simCharGetSkinAgeing", character_name).as<float>();
+}
+
+void RpcLibClientBase::simCharSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name)
+{
+    pimpl_->client.call("simCharSetHeadRotation", RpcLibAdapatorsBase::Quaternionr(q), character_name);
+}
+
+msr::airlib::Quaternionr RpcLibClientBase::simCharGetHeadRotation(const std::string& character_name) const
+{
+    return pimpl_->client.call("simCharGetHeadRotation", character_name)
+        .as<RpcLibAdapatorsBase::Quaternionr>().to();
+}
+
+void RpcLibClientBase::simCharSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name)
+{
+    pimpl_->client.call("simCharSetBonePose", bone_name, RpcLibAdapatorsBase::Pose(pose), character_name);
+}
+
+msr::airlib::Pose RpcLibClientBase::simCharGetBonePose(const std::string& bone_name, const std::string& character_name) const
+{
+    return pimpl_->client.call("simCharGetBonePose", bone_name, character_name)
+        .as<RpcLibAdapatorsBase::Pose>().to();
+}
+
+void RpcLibClientBase::simCharResetBonePose(const std::string& bone_name, const std::string& character_name)
+{
+    pimpl_->client.call("simCharResetBonePose", bone_name, character_name);
+}
+
+void RpcLibClientBase::simCharSetFacePreset(const std::string& preset_name, float value, const std::string& character_name)
+{
+    pimpl_->client.call("simCharSetFacePreset", preset_name, value, character_name);
+}
+
+
 }} //namespace
 
 #endif

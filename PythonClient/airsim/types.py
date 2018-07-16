@@ -38,14 +38,18 @@ class LandedState:
     Flying = 1
 
 class Vector3r(MsgpackMixin):
-    x_val = np.float32(0)
-    y_val = np.float32(0)
-    z_val = np.float32(0)
+    x_val = 0.0
+    y_val = 0.0
+    z_val = 0.0
 
-    def __init__(self, x_val = np.float32(0), y_val = np.float32(0), z_val = np.float32(0)):
+    def __init__(self, x_val = 0.0, y_val = 0.0, z_val = 0.0):
         self.x_val = x_val
         self.y_val = y_val
         self.z_val = z_val
+
+    @staticmethod
+    def nanVector3r():
+        return Vector3r(np.nan, np.nan, np.nan)
 
     def __add__(self, other):
         return Vector3r(self.x_val + other.x_val, self.y_val + other.y_val, self.z_val + other.z_val)
@@ -53,41 +57,76 @@ class Vector3r(MsgpackMixin):
     def __sub__(self, other):
         return Vector3r(self.x_val - other.x_val, self.y_val - other.y_val, self.z_val - other.z_val)
 
+    def __truediv__(self, other):
+        if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+            return Vector3r( self.x_val / other, self.y_val / other, self.z_val / other)
+        else: 
+            raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def __mul__(self, other):
+        if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+            return Vector3r(self.x_val*other, self.y_val*other, self.z_val)
+        else: 
+            raise TypeError('unsupported operand type(s) for *: %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def dot(self, other):
+        if type(self) == type(other):
+            return self.x_val*other.x_val + self.y_val*other.y_val + self.z_val*other.z_val
+        else:
+            raise TypeError('unsupported operand type(s) for \'dot\': %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def cross(self, other):
+        if type(self) == type(other):
+            cross_product = np.cross(self.to_numpy_array(), other.to_numpy_array)
+            return Vector3r(cross_product[0], cross_product[1], cross_product[2])
+        else:
+            raise TypeError('unsupported operand type(s) for \'cross\': %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def get_length(self):
+        return ( self.x_val**2 + self.y_val**2 + self.z_val**2 )**0.5
+
     def distance_to(self, other):
         return ( (self.x_val-other.x_val)**2 + (self.y_val-other.y_val)**2 + (self.z_val-other.z_val)**2 )**0.5
 
     def to_Quaternionr(self):
         return Quaternionr(self.x_val, self.y_val, self.z_val, 0)
 
+    def to_numpy_array(self):
+        return np.array([self.x_val, self.y_val, self.z_val], dtype=np.float32)
+
 
 class Quaternionr(MsgpackMixin):
-    w_val = np.float32(0)
-    x_val = np.float32(0)
-    y_val = np.float32(0)
-    z_val = np.float32(0)
+    w_val = 0.0
+    x_val = 0.0
+    y_val = 0.0
+    z_val = 0.0
 
-    def __init__(self, x_val = np.float32(0), y_val = np.float32(0), z_val = np.float32(0), w_val = np.float32(1)):
+    def __init__(self, x_val = 0.0, y_val = 0.0, z_val = 0.0, w_val = 1.0):
         self.x_val = x_val
         self.y_val = y_val
         self.z_val = z_val
         self.w_val = w_val
 
-    def inverse(self):
-        q_star = Quaternionr(-self.x_val, -self.y_val, -self.z_val, self.w_val)
-        return q_star / self.dot(self)
+    @staticmethod
+    def nanQuaternionr():
+        return Quaternionr(np.nan, np.nan, np.nan, np.nan)
 
-    def dot(self, other):
-        t, x, y, z = self.w_val, self.x_val, self.y_val, self.z_val
-        a, b, c, d = other.w_val, other.x_val, other.y_val, other.z_val
-        return a * t + b * x + c * y + d * z
+    def __add__(self, other):
+        if type(self) == type(other):
+            return Quaternionr( self.x_val+other.x_val, self.y_val+other.y_val, self.z_val+other.z_val, self.w_val+other.w_val )
+        else:
+            raise TypeError('unsupported operand type(s) for +: %s and %s' % ( str(type(self)), str(type(other))) )
 
     def __mul__(self, other):
-        t, x, y, z = self.w_val, self.x_val, self.y_val, self.z_val
-        a, b, c, d = other.w_val, other.x_val, other.y_val, other.z_val
-        return Quaternionr( w_val = a*t - b*x - c*y - d*z,
-                            x_val = b*t + a*x + d*y - c*z,
-                            y_val = c*t + a*y + b*z - d*x,
-                            z_val = d*t + z*a + c*x - b*y)
+        if type(self) == type(other):
+            t, x, y, z = self.w_val, self.x_val, self.y_val, self.z_val
+            a, b, c, d = other.w_val, other.x_val, other.y_val, other.z_val
+            return Quaternionr( w_val = a*t - b*x - c*y - d*z,
+                                x_val = b*t + a*x + d*y - c*z,
+                                y_val = c*t + a*y + b*z - d*x,
+                                z_val = d*t + z*a + c*x - b*y)
+        else:
+            raise TypeError('unsupported operand type(s) for *: %s and %s' % ( str(type(self)), str(type(other))) )
 
     def __truediv__(self, other): 
         if type(other) == type(self): 
@@ -95,7 +134,52 @@ class Quaternionr(MsgpackMixin):
         elif type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
             return Quaternionr( self.x_val / other, self.y_val / other, self.z_val / other, self.w_val / other)
         else: 
-            raise TypeError('unsupported operand type(s) for /: \'Quaternionr\' and ' + str(type(other)) )
+            raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def dot(self, other):
+        if type(self) == type(other):
+            return self.x_val*other.x_val + self.y_val*other.y_val + self.z_val*other.z_val + self.w_val*other.w_val
+        else:
+            raise TypeError('unsupported operand type(s) for \'dot\': %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def cross(self, other):
+        if type(self) == typer(other):
+            return (self * other - other * self) / 2
+        else:
+            raise TypeError('unsupported operand type(s) for \'cross\': %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def outer_product(self, other):
+        if type(self) == typer(other):
+            return ( self.inverse()*other - other.inverse()*self ) / 2
+        else:
+            raise TypeError('unsupported operand type(s) for \'outer_product\': %s and %s' % ( str(type(self)), str(type(other))) )
+
+    def rotate(self, other):
+        if type(self) == typer(other):
+            if other.get_length() == 1:
+                return other * self * other.inverse()
+            else:
+                raise ValueError('length of the other Quaternionr must be 1')
+        else:
+            raise TypeError('unsupported operand type(s) for \'rotate\': %s and %s' % ( str(type(self)), str(type(other))) )        
+
+    def conjugate(self):
+        return Quaternionr(-self.x_val, -self.y_val, -self.z_val, self.w_val)
+
+    def star(self):
+        return self.conjugate()
+
+    def inverse(self):
+        return self.star() / self.dot(self)
+
+    def sgn(self):
+        return self/self.get_length()
+
+    def get_length(self):
+        return ( self.x_val**2 + self.y_val**2 + self.z_val**2 + self.w_val**2 )**0.5
+
+    def to_numpy_array(self):
+        return np.array([self.x_val, self.y_val, self.z_val, self.w_val], dtype=np.float32)
 
 
 class Pose(MsgpackMixin):
@@ -106,14 +190,18 @@ class Pose(MsgpackMixin):
         self.position = position_val
         self.orientation = orientation_val
 
+    @staticmethod
+    def nanPose():
+        return Pose(Vector3r.nanVector3r(), Quaternionr.nanQuaternionr())
+
 
 class CollisionInfo(MsgpackMixin):
     has_collided = False
     normal = Vector3r()
     impact_point = Vector3r()
     position = Vector3r()
-    penetration_depth = np.float32(0)
-    time_stamp = np.float32(0)
+    penetration_depth = 0.0
+    time_stamp = 0.0
     object_name = ""
     object_id = -1
 
@@ -170,21 +258,21 @@ class ImageRequest(MsgpackMixin):
 
 class ImageResponse(MsgpackMixin):
     image_data_uint8 = np.uint8(0)
-    image_data_float = np.float32(0)
+    image_data_float = 0.0
     camera_position = Vector3r()
     camera_orientation = Quaternionr()
     time_stamp = np.uint64(0)
     message = ''
-    pixels_as_float = np.float32(0)
+    pixels_as_float = 0.0
     compress = True
     width = 0
     height = 0
     image_type = ImageType.Scene
 
 class CarControls(MsgpackMixin):
-    throttle = np.float32(0)
-    steering = np.float32(0)
-    brake = np.float32(0)
+    throttle = 0.0
+    steering = 0.0
+    brake = 0.0
     handbrake = False
     is_manual_gear = False
     manual_gear = 0
@@ -223,15 +311,15 @@ class EnvironmentState(MsgpackMixin):
     position = Vector3r()
     geo_point = GeoPoint()
     gravity = Vector3r()
-    air_pressure = np.float32(0)
-    temperature = np.float32(0)
-    air_density = np.float32(0)
+    air_pressure = 0.0
+    temperature = 0.0
+    air_density = 0.0
 
 class CarState(MsgpackMixin):
-    speed = np.float32(0)
+    speed = 0.0
     gear = 0
-    rpm = np.float32(0)
-    maxrpm = np.float32(0)
+    rpm = 0.0
+    maxrpm = 0.0
     handbrake = False
     collision = CollisionInfo();
     kinematics_estimated = KinematicsState()
@@ -245,6 +333,10 @@ class MultirotorState(MsgpackMixin):
     landed_state = LandedState.Landed
     rc_data = RCData()
 
+class ProjectionMatrix(MsgpackMixin):
+    matrix = []
+
 class CameraInfo(MsgpackMixin):
     pose = Pose()
     fov = -1
+    proj_mat = ProjectionMatrix()

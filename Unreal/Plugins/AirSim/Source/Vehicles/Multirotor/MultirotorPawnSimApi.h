@@ -30,9 +30,7 @@ public:
 
     //VehicleSimApiBase interface
     //implements game interface to update pawn
-    MultirotorPawnSimApi(APawn* pawn, const NedTransform& global_transform, MultirotorPawnEvents* pawn_events,
-        const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, UParticleSystem* collision_display_template,
-        const GeoPoint& home_geopoint);
+    MultirotorPawnSimApi(const Params& params);
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
 
@@ -49,7 +47,7 @@ public:
 
     virtual void pawnTick(float dt) override;
 
-    msr::airlib::MultirotorApiBase* getVehicleApi()
+    msr::airlib::MultirotorApiBase* getVehicleApi() const
     {
         return vehicle_api_.get();
     }

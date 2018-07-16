@@ -33,6 +33,36 @@ public: //types
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
+    struct Params {
+        APawn* pawn; 
+        const NedTransform* global_transform;
+        PawnEvents* pawn_events;
+        common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
+        UClass* pip_camera_class;
+        UParticleSystem* collision_display_template;
+        msr::airlib::GeoPoint home_geopoint;
+        std::string vehicle_name;
+
+        Params()
+        {
+        }
+
+        Params(APawn* pawn_val, const NedTransform* global_transform_val, PawnEvents* pawn_events_val,
+            const common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_val, UClass* pip_camera_class_val,
+            UParticleSystem* collision_display_template_val, const msr::airlib::GeoPoint home_geopoint_val,
+            std::string vehicle_name_val)
+        {
+            pawn = pawn_val; 
+            global_transform = global_transform_val;
+            pawn_events = pawn_events_val;
+            cameras = cameras_val;
+            pip_camera_class = pip_camera_class_val;
+            collision_display_template = collision_display_template_val;
+            home_geopoint = home_geopoint_val;
+            vehicle_name = vehicle_name_val;
+        }
+    };
+
 public: //implementation of VehicleSimApiBase
     virtual void reset() override;
     virtual void update() override;
@@ -49,7 +79,7 @@ public: //implementation of VehicleSimApiBase
     virtual msr::airlib::RCData getRCData() const override;
     virtual std::string getVehicleName() const override
     {
-        return vehicle_name_;
+        return params_.vehicle_name;
     }
     virtual void toggleTrace() override;
 
@@ -65,9 +95,7 @@ protected: //additional interface for derived class
     void setPoseInternal(const Pose& pose, bool ignore_collision);
 
 public: //Unreal specific methods
-    PawnSimApi(APawn* pawn, const NedTransform& global_transform, PawnEvents* pawn_events,
-        const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras, UClass* pip_camera_class, 
-        UParticleSystem* collision_display_template, const msr::airlib::GeoPoint& home_geopoint);
+    PawnSimApi(const Params& params);
 
     //returns one of the cameras attached to the pawn
     const APIPCamera* getCamera(const std::string& camera_name) const;
@@ -106,19 +134,20 @@ private: //methods
     void plot(std::istream& s, FColor color, const Vector3r& offset);
     PawnSimApi::Pose toPose(const FVector& u_position, const FQuat& u_quat) const;
     void updateKinematics(float dt);
+    void setStartPosition(const FVector& position, const FRotator& rotator);
 
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
-    APawn* pawn_;
-    //TODO: should below be TMap to keep refs alive?
+    Params params_;
     common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_;
+    msr::airlib::GeoPoint home_geo_point_;
+
     std::string vehicle_name_;
     NedTransform ned_transform_;
 
     FVector ground_trace_end_;
     FVector ground_margin_;
-    GeoPoint home_geo_point_;
     std::unique_ptr<UnrealImageCapture> image_capture_;
     std::string log_line_;
 
@@ -148,10 +177,6 @@ private: //vars
     
     State state_, initial_state_;
 
-    UPROPERTY() UClass* pip_camera_class_;
-    UPROPERTY() UParticleSystem* collision_display_template_;
-
     msr::airlib::Kinematics::State kinematics_;
     std::unique_ptr<msr::airlib::Environment> environment_;
-
 };

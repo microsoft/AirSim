@@ -1,6 +1,8 @@
 #include "CarPawnApi.h"
 #include "AirBlueprintLib.h"
 
+#include "PhysXVehicleManager.h"
+
 CarPawnApi::CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint)
     : pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint)
 {
@@ -65,7 +67,15 @@ void CarPawnApi::reset()
         movement_->SetActive(false);
         movement_->SetActive(true, true);
         setCarControls(CarControls());
-        
+
+	auto pv = movement_->PVehicle;
+	if (pv) {
+	  pv->mWheelsDynData.setToRestState();
+	}
+	auto pvd = movement_->PVehicleDrive;
+	if (pvd) {
+	  pvd->mDriveDynData.setToRestState();
+	}
     }, true);
 
     UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {

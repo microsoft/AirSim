@@ -75,7 +75,7 @@ public class AirSim : ModuleRules
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         bEnableExceptions = true;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "PhysXVehicles", "Landscape" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "PhysXVehicles", "PhysXVehicleLib", "PhysX", "APEX", "Landscape" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
@@ -83,8 +83,8 @@ public class AirSim : ModuleRules
         Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
         Definitions.Add("HMD_MODULE_INCLUDED=0");
 
-        PrivateIncludePaths.Add(Path.Combine(AirLibPath, "include"));
-        PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
+        PublicIncludePaths.Add(Path.Combine(AirLibPath, "include"));
+        PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
 
         SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
@@ -140,7 +140,7 @@ public class AirSim : ModuleRules
         if (isLibrarySupported && IsAddLibInclude)
         {
             // Include path
-            PrivateIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
+            PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
         }
 
         Definitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));

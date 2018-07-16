@@ -1,6 +1,6 @@
 #include "WorldSimApi.h"
 #include "AirBlueprintLib.h"
-
+#include "common/common_utils/Utils.hpp"
 
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode)
@@ -14,7 +14,13 @@ bool WorldSimApi::isPaused() const
 
 void WorldSimApi::reset()
 {
-    simmode_->reset();
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        simmode_->reset();
+
+        //reset any chars we have
+        for (auto& c : chars_)
+            c.second->reset();
+    }, true);
 }
 
 void WorldSimApi::pause(bool is_paused)
@@ -78,5 +84,119 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
             result = false;
     }, true);
     return result;
+}
+
+void WorldSimApi::charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setFaceExpression(expression_name, value);
+}
+
+float WorldSimApi::charGetFaceExpression(const std::string& expression_name, const std::string& character_name) const
+{
+    const AAirSimCharacter* character = getAirSimCharacter(character_name);
+    return character->getFaceExpression(expression_name);
+}
+
+std::vector<std::string> WorldSimApi::charGetAvailableFaceExpressions()
+{
+    const AAirSimCharacter* character = getAirSimCharacter("");
+    return character->getAvailableFaceExpressions();
+}
+
+void WorldSimApi::charSetSkinDarkness(float value, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setSkinDarkness(value);
+}
+
+float WorldSimApi::charGetSkinDarkness(const std::string& character_name) const
+{
+    const AAirSimCharacter* character = getAirSimCharacter(character_name);
+    return character->getSkinDarkness();
+}
+
+void WorldSimApi::charSetSkinAgeing(float value, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setSkinAgeing(value);
+}
+
+float WorldSimApi::charGetSkinAgeing(const std::string& character_name) const
+{
+    const AAirSimCharacter* character = getAirSimCharacter(character_name);
+    return character->getSkinAgeing();
+}
+
+void WorldSimApi::charSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setHeadRotation(q);
+}
+
+msr::airlib::Quaternionr WorldSimApi::charGetHeadRotation(const std::string& character_name) const
+{
+    const AAirSimCharacter* character = getAirSimCharacter(character_name);
+    return character->getHeadRotation();
+}
+
+void WorldSimApi::charSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setBonePose(bone_name, pose);
+}
+
+msr::airlib::Pose WorldSimApi::charGetBonePose(const std::string& bone_name, const std::string& character_name) const
+{
+    const AAirSimCharacter* character = getAirSimCharacter(character_name);
+    return character->getBonePose(bone_name);
+}
+
+void WorldSimApi::charResetBonePose(const std::string& bone_name, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->resetBonePose(bone_name);
+}
+
+void WorldSimApi::charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setFacePreset(preset_name, value);
+}
+
+AAirSimCharacter* WorldSimApi::getAirSimCharacter(const std::string& character_name)
+{
+    AAirSimCharacter* character = nullptr;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &character_name, &character]() {
+        if (chars_.size() == 0) {
+            TArray<AActor*> characters;
+            UAirBlueprintLib::FindAllActor<AAirSimCharacter>(simmode_, characters);
+            for (AActor* actor : characters) {
+                AAirSimCharacter* character = static_cast<AAirSimCharacter*>(actor);
+                chars_[std::string(
+                    TCHAR_TO_UTF8(*character->GetName()))] = character;
+            }
+        }
+
+        if (chars_.size() == 0) {
+            throw std::invalid_argument(
+                "There were no actors of class ACharactor found in the environment");
+        }
+
+        character = character_name == "" ? chars_.begin()->second
+            : common_utils::Utils::findOrDefault(chars_, character_name);
+
+        if (!character) {
+            throw std::invalid_argument(common_utils::Utils::stringf(
+                "Character with name %s was not found in the environment", character_name.c_str()).c_str());
+        }
+    }, true);
+
+    return character;
+}
+
+const AAirSimCharacter* WorldSimApi::getAirSimCharacter(const std::string& character_name) const
+{
+    return const_cast<WorldSimApi*>(this)->getAirSimCharacter(character_name);
 }
 

@@ -51,7 +51,7 @@ void AFlyingPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-common_utils::UniqueValueMap<std::string, APIPCamera*> AFlyingPawn::getCameras() const
+const common_utils::UniqueValueMap<std::string, APIPCamera*> AFlyingPawn::getCameras() const
 {
     common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
     cameras.insert_or_assign("front_center", camera_front_center_);

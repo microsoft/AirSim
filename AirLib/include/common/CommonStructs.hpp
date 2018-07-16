@@ -193,6 +193,17 @@ struct HomeGeoPoint {
     }
 };
 
+struct ProjectionMatrix {
+    float matrix[4][4];
+
+    void setTo(float val)
+    {
+        for (auto i = 0; i < 4; ++i)
+            for (auto j = 0; j < 4; ++j)
+                matrix[i][j] = val;
+    }
+};
+
 struct CollisionInfo {
     bool has_collided = false;
     Vector3r normal = Vector3r::Zero();
@@ -222,12 +233,13 @@ struct CollisionInfo {
 struct CameraInfo {
     Pose pose;
     float fov;
+    ProjectionMatrix proj_mat;
 
     CameraInfo()
     {}
 
-    CameraInfo(const Pose& pose_val, float fov_val)
-        : pose(pose_val), fov(fov_val)
+    CameraInfo(const Pose& pose_val, float fov_val, const ProjectionMatrix& proj_mat_val)
+        : pose(pose_val), fov(fov_val), proj_mat(proj_mat_val)
     {
     }
 };

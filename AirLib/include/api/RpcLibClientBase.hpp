@@ -67,6 +67,21 @@ public:
     msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
     msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
 
+    //----------- APIs to control ACharacter in scene ----------/
+    void simCharSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name = "");
+    float simCharGetFaceExpression(const std::string& expression_name, const std::string& character_name = "") const;
+    std::vector<std::string> simCharGetAvailableFaceExpressions();
+    void simCharSetSkinDarkness(float value, const std::string& character_name = "");
+    float simCharGetSkinDarkness(const std::string& character_name = "") const;
+    void simCharSetSkinAgeing(float value, const std::string& character_name = "");
+    float simCharGetSkinAgeing(const std::string& character_name = "") const;
+    void simCharSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name = "");
+    msr::airlib::Quaternionr simCharGetHeadRotation(const std::string& character_name = "") const;
+    void simCharSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name = "");
+    msr::airlib::Pose simCharGetBonePose(const std::string& bone_name, const std::string& character_name = "") const;
+    void simCharResetBonePose(const std::string& bone_name, const std::string& character_name = "");
+    void simCharSetFacePreset(const std::string& preset_name, float value, const std::string& character_name = "");
+
 protected:
     void* getClient();
     const void* getClient() const;

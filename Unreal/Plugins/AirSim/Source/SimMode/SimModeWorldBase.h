@@ -39,6 +39,8 @@ protected:
     //should be called by derived class once all api_provider_ is ready to use
     void initializeForPlay();
 
+    long long getPhysicsLoopPeriod() const;
+    void setPhysicsLoopPeriod(long long  period);
 private:
     typedef msr::airlib::UpdatableObject UpdatableObject;
     typedef msr::airlib::PhysicsEngineBase PhysicsEngineBase;
@@ -50,4 +52,16 @@ private:
 private:
     std::unique_ptr<msr::airlib::PhysicsWorld> physics_world_;
     PhysicsEngineBase* physics_engine_;
+
+    /*
+    300Hz seems to be minimum for non-aggressive flights
+    400Hz is needed for moderately aggressive flights (such as
+    high yaw rate with simultaneous back move)
+    500Hz is recommended for more aggressive flights
+    Lenovo P50 high-end config laptop seems to be topping out at 400Hz.
+    HP Z840 desktop high-end config seems to be able to go up to 500Hz.
+    To increase freq with limited CPU power, switch Barometer to constant ref mode.
+    */
+    long long physics_loop_period_ = 3000000LL; //3ms
+
 };

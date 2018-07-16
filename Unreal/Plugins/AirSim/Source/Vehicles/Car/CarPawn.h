@@ -41,7 +41,7 @@ public:
 
     //interface
     void initializeForBeginPlay(bool engine_sound);
-    common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
+    const common_utils::UniqueValueMap<std::string, APIPCamera*> getCameras() const;
     PawnEvents* getPawnEvents()
     {
         return &pawn_events_;

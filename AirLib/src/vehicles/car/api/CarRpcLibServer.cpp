@@ -18,7 +18,7 @@ STRICT_MODE_OFF
 #include "common/common_utils/MinWinDefines.hpp"
 #undef NOUSER
 //TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
-//#undef check
+#undef check
 #include "rpc/server.h"
 #include "vehicles/car/api/CarRpcLibAdapators.hpp"
 //TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library

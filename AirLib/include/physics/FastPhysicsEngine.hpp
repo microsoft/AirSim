@@ -31,6 +31,8 @@ public:
         for (PhysicsBody* body_ptr : *this) {
             initPhysicsBody(body_ptr);
         }
+
+        grounded_ = false;
     }
 
     virtual void insert(PhysicsBody* body_ptr) override

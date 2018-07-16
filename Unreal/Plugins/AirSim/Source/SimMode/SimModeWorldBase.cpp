@@ -40,6 +40,15 @@ void ASimModeWorldBase::stopAsyncUpdator()
     physics_world_->stopAsyncUpdator();
 }
 
+long long ASimModeWorldBase::getPhysicsLoopPeriod() const //nanoseconds
+{
+    return physics_loop_period_;
+}
+void ASimModeWorldBase::setPhysicsLoopPeriod(long long  period)
+{
+    physics_loop_period_ = period;
+}
+
 std::unique_ptr<ASimModeWorldBase::PhysicsEngineBase> ASimModeWorldBase::createPhysicsEngine()
 {
     std::unique_ptr<PhysicsEngineBase> physics_engine;

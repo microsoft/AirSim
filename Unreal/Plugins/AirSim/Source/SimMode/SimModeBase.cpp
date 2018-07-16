@@ -72,6 +72,8 @@ void ASimModeBase::BeginPlay()
     setupTimeOfDay();
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
+
+    setupVehiclesAndCamera();
 }
 
 const NedTransform& ASimModeBase::getGlobalNedTransform()
@@ -117,6 +119,9 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     CameraDirector = nullptr;
     sky_sphere_ = nullptr;
     sun_ = nullptr;
+
+    spawned_actors_.Empty();
+    vehicle_sim_apis_.clear();
 
     Super::EndPlay(EndPlayReason);
 }
@@ -197,7 +202,7 @@ void ASimModeBase::setupClockSpeed()
         ClockFactory::get(std::make_shared<msr::airlib::ScalableClock>(clock_speed == 1 ? 1 : 1 / clock_speed));
     else if (clock_type == "SteppableClock")
         ClockFactory::get(std::make_shared<msr::airlib::SteppableClock>(
-            static_cast<msr::airlib::TTimeDelta>(getPhysicsLoopPeriod() * 1E-9 * clock_speed)));
+            static_cast<msr::airlib::TTimeDelta>(msr::airlib::SteppableClock::DefaultStepSize * clock_speed)));
     else
         throw std::invalid_argument(common_utils::Utils::stringf(
             "clock_type %s is not recognized", clock_type.c_str()));
@@ -205,27 +210,6 @@ void ASimModeBase::setupClockSpeed()
 
 void ASimModeBase::setupPhysicsLoopPeriod()
 {
-    /*
-    300Hz seems to be minimum for non-aggressive flights
-    400Hz is needed for moderately aggressive flights (such as
-    high yaw rate with simultaneous back move)
-    500Hz is recommended for more aggressive flights
-    Lenovo P50 high-end config laptop seems to be topping out at 400Hz.
-    HP Z840 desktop high-end config seems to be able to go up to 500Hz.
-    To increase freq with limited CPU power, switch Barometer to constant ref mode.
-    */
-        
-    physics_loop_period_ = 3000000LL; //3ms
-}
-
-long long ASimModeBase::getPhysicsLoopPeriod() const //nanoseconds
-{
-    return physics_loop_period_;
-}
-
-void ASimModeBase::setPhysicsLoopPeriod(long long  period)
-{
-    physics_loop_period_ = period;
 }
 
 void ASimModeBase::Tick(float DeltaSeconds)
@@ -419,4 +403,158 @@ void ASimModeBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_re
             reporter.writeValue("Ang-Accl", kinematics->accelerations.angular);
         }
     }
+}
+
+FRotator ASimModeBase::toFRotator(const msr::airlib::AirSimSettings::Rotation& rotation, const FRotator& default_val)
+{
+    FRotator frotator = default_val;
+    if (!std::isnan(rotation.yaw))
+        frotator.Yaw = rotation.yaw;
+    if (!std::isnan(rotation.pitch))
+        frotator.Pitch = rotation.pitch;
+    if (!std::isnan(rotation.roll))
+        frotator.Roll = rotation.roll;
+
+    return frotator;
+}
+
+void ASimModeBase::setupVehiclesAndCamera()
+{
+    //get UU origin of global NED frame
+    const FTransform uu_origin = getGlobalNedTransform().getGlobalTransform();
+
+    //determine camera director camera default pose and spawn it
+    const auto& camera_director_setting = getSettings().camera_director;
+    FVector camera_director_position_uu = uu_origin.GetLocation() + 
+        getGlobalNedTransform().fromLocalNed(camera_director_setting.position);
+    FTransform camera_transform(toFRotator(camera_director_setting.rotation, FRotator::ZeroRotator), 
+        camera_director_position_uu);
+    initializeCameraDirector(camera_transform, camera_director_setting.follow_distance);
+
+    //find all vehicle pawns
+    {
+        TArray<AActor*> pawns;
+        getExistingVehiclePawns(pawns);
+
+        APawn* fpv_pawn = nullptr;
+
+        //add vehicles from settings
+        for (auto const& vehicle_setting_pair : getSettings().vehicles)
+        {
+            //if vehicle is of type for derived SimMode and auto creatable
+            const auto& vehicle_setting = *vehicle_setting_pair.second;
+            if (vehicle_setting.auto_create &&
+                isVehicleTypeSupported(vehicle_setting.vehicle_type)) {
+
+                //compute initial pose
+                FVector spawn_position = uu_origin.GetLocation();
+                msr::airlib::Vector3r settings_position = vehicle_setting.position;
+                if (!msr::airlib::VectorMath::hasNan(settings_position))
+                    spawn_position = getGlobalNedTransform().fromLocalNed(settings_position);
+                FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
+
+                //spawn vehicle pawn
+                FActorSpawnParameters pawn_spawn_params;
+                pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
+                pawn_spawn_params.SpawnCollisionHandlingOverride =
+                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                    getSettings().pawn_paths.at(getVehiclePawnPathName(vehicle_setting)).pawn_bp);
+                APawn* spawned_pawn = static_cast<APawn*>( this->GetWorld()->SpawnActor(
+                    vehicle_bp_class, &spawn_position, &spawn_rotation, pawn_spawn_params));
+
+                spawned_actors_.Add(spawned_pawn);
+                pawns.Add(spawned_pawn);
+
+                if (vehicle_setting.is_fpv_vehicle)
+                    fpv_pawn = spawned_pawn;
+            }
+        }
+
+        //create API objects for each pawn we have
+        for (AActor* pawn : pawns)
+        {
+            APawn* vehicle_pawn = static_cast<APawn*>(pawn);
+
+            initializeVehiclePawn(vehicle_pawn);
+
+            //create vehicle sim api
+            const auto& ned_transform = getGlobalNedTransform();
+            const auto& pawn_ned_pos = ned_transform.toLocalNed(vehicle_pawn->GetActorLocation());
+            const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
+            const std::string vehicle_name = std::string(TCHAR_TO_UTF8(*(vehicle_pawn->GetName())));
+
+            PawnSimApi::Params pawn_sim_api_params(vehicle_pawn, &getGlobalNedTransform(),
+                getVehiclePawnEvents(vehicle_pawn), getVehiclePawnCameras(vehicle_pawn), pip_camera_class, 
+                collision_display_template, home_geopoint, vehicle_name);
+
+            auto vehicle_sim_api = createVehicleSimApi(pawn_sim_api_params);
+            auto vehicle_sim_api_p = vehicle_sim_api.get();
+            auto vehicle_Api = getVehicleApi(pawn_sim_api_params, vehicle_sim_api_p);
+            getApiProvider()->insert_or_assign(vehicle_name, vehicle_Api, vehicle_sim_api_p);
+            if ((fpv_pawn == vehicle_pawn || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
+                getApiProvider()->makeDefaultVehicle(vehicle_name);
+
+            vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));
+        }
+    }
+
+    if (getApiProvider()->hasDefaultVehicle()) {
+        //TODO: better handle no FPV vehicles scenario
+        getVehicleSimApi()->possess();
+        CameraDirector->initializeForBeginPlay(getInitialViewMode(), getVehicleSimApi()->getPawn(),
+            getVehicleSimApi()->getCamera("fpv"), getVehicleSimApi()->getCamera("back_center"), nullptr);
+    }
+    else
+        CameraDirector->initializeForBeginPlay(getInitialViewMode(), nullptr, nullptr, nullptr, nullptr);
+
+    checkVehicleReady();
+}
+
+void ASimModeBase::getExistingVehiclePawns(TArray<AActor*>& pawns) const
+{
+    //derived class should override this method to retrieve types of pawns they support
+}
+
+bool ASimModeBase::isVehicleTypeSupported(const std::string& vehicle_type) const
+{
+    //derived class should override this method to retrieve types of pawns they support
+    return false;
+}
+
+std::string ASimModeBase::getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const
+{
+    //derived class should override this method to retrieve types of pawns they support
+    return "";
+}
+PawnEvents* ASimModeBase::getVehiclePawnEvents(APawn* pawn) const
+{
+    unused(pawn);
+
+    //derived class should override this method to retrieve types of pawns they support
+    return nullptr;
+}
+const common_utils::UniqueValueMap<std::string, APIPCamera*> ASimModeBase::getVehiclePawnCameras(APawn* pawn) const
+{
+    unused(pawn);
+
+    //derived class should override this method to retrieve types of pawns they support
+    return common_utils::UniqueValueMap<std::string, APIPCamera*>();
+}
+void ASimModeBase::initializeVehiclePawn(APawn* pawn)
+{
+    unused(pawn);
+    //derived class should override this method to retrieve types of pawns they support
+}
+std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleSimApi(
+    const PawnSimApi::Params& pawn_sim_api_params) const
+{
+    unused(pawn_sim_api_params);
+    return std::unique_ptr<PawnSimApi>();
+}
+msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
+    const PawnSimApi* sim_api) const
+{
+    //derived class should override this method to retrieve types of pawns they support
+    return nullptr;
 }
