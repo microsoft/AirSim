@@ -112,7 +112,7 @@ int main(int argc, const char *argv[])
 	Quaternionr currentQuat;
 	Quaternionr nextQuat;
 	Quaternionr goalQuat;
-	Vector3r forwardVec = Vector3r(1, 0, 0);
+	Vector3r forwardVec = VectorMath::front();
 	Vector3r goalVec;
 	float step = 0.1f;
 	bool bSafeToMove = true;
@@ -180,25 +180,24 @@ int main(int argc, const char *argv[])
 
 				goalVec = goalPose.position - currentPose.position;
 				goalQuat = depthNav.getQuatBetweenVecs(forwardVec, goalVec);
-				currentQuat = currentPose.orientation;
-
 
 				if (min_depth < threshold)
 				{
 					//Turn to avoid obstacle
-					goalQuat = VectorMath::coordOrientationAdd(currentPose.orientation, VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(5.f)));
-					bSafeToMove = false;
+					currentPose.orientation = VectorMath::coordOrientationAdd(currentPose.orientation, VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(5.f)));
+					bSafeToMove = true;
 				}
 				else
 				{
 					//Turn towards goal
-					goalQuat = currentPose.orientation;
+					currentPose.orientation = goalQuat;
 					bSafeToMove = true;
 					//std::cout << "Quaternion: " << goalQuat.w() << " " << goalQuat.x() << " " << goalQuat.y() << " " << goalQuat.z() << std::endl;
 				}
 
+				/*
 				real_T p_current, r_current, y_current;
-				VectorMath::toEulerianAngle(currentQuat, p_current, r_current, y_current);
+				VectorMath::toEulerianAngle(currentPose.orientation, p_current, r_current, y_current);
 
 				real_T p_goal, r_goal, y_goal;
 				VectorMath::toEulerianAngle(goalQuat, p_goal, r_goal, y_goal);
@@ -215,14 +214,21 @@ int main(int argc, const char *argv[])
 
 				real_T dt = 1 / 30;
 
+				real_T p_feasible, r_feasible, y_feasible;
+				p_feasible = abs(p_diff) > abs(p_rate*dt) ? copysignf(p_rate, p_diff) * dt : p_diff;
+				r_feasible = abs(r_diff) > abs(r_rate*dt) ? copysignf(r_rate, r_diff) * dt : r_diff;
+				y_feasible = abs(y_diff) > abs(y_rate*dt) ? copysignf(y_rate, y_diff) * dt : y_diff;
 
-				//currentPose.position = currentPose.position + goalVec.normalized() * step;
+				nextQuat = VectorMath::toQuaternion(p_feasible, r_feasible, y_feasible);
+				currentPose.orientation = nextQuat * currentPose.orientation;
+				*/
+
+				
 				if (bSafeToMove) 
 				{
 					currentPose.position = currentPose.position + VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation) * step;
+					//currentPose.position = currentPose.position + goalVec.normalized() * step;
 				}
-
-				currentPose.orientation = nextQuat;
 
 				client.simSetPose(currentPose, true);
 

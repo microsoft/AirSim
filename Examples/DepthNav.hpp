@@ -1,31 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-
 // Licensed under the MIT License.
 
 #pragma once
 
 // includes needed to call RPC APIs
-
 #include "common/common_utils/StrictMode.hpp"
-
 STRICT_MODE_OFF
-
 #ifndef RPCLIB_MSGPACK
-
 #define RPCLIB_MSGPACK clmdep_msgpack
-
 #endif // !RPCLIB_MSGPACK
-
 #include "rpc/rpc_error.h"
-
 STRICT_MODE_ON
 
-
-
 //includes for vector math and other common types
-
 #include "common/Common.hpp"
-
 
 
 namespace msr {
