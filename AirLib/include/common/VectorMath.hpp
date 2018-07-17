@@ -453,10 +453,10 @@ public:
     {
         QuaternionT r;
         RealT n_alpha = 1 - alpha;
-        r.x = n_alpha * from.x + alpha * to.x;
-        r.y = n_alpha * from.y + alpha * to.y;
-        r.z = n_alpha * from.z + alpha * to.z;
-        r.w = n_alpha * from.w + alpha * to.w;
+        r.x() = n_alpha * from.x() + alpha * to.x();
+        r.y() = n_alpha * from.y() + alpha * to.y();
+        r.z() = n_alpha * from.z() + alpha * to.z();
+        r.w() = n_alpha * from.w() + alpha * to.w();
         return r.normalized();
     }
 
@@ -466,14 +466,14 @@ public:
         QuaternionT r;
         RealT n_alpha = 1 - alpha;
         RealT Wa, Wb;
-        RealT theta = acos(from.x*to.x + from.y*to.y + from.z*to.z + from.w*to.w);
+        RealT theta = acos(from.x()*to.x() + from.y()*to.y() + from.z()*to.z() + from.w()*to.w());
         RealT sn = sin(theta);
         Wa = sin(n_alpha*theta) / sn;
         Wb = sin(alpha*theta) / sn;
-        r.x = Wa * from.x + Wb * to.x;
-        r.y = Wa * from.y + Wb * to.y;
-        r.z = Wa * from.z + Wb * to.z;
-        r.w = Wa * from.w + Wb * to.w;
+        r.x() = Wa * from.x() + Wb * to.x();
+        r.y() = Wa * from.y() + Wb * to.y();
+        r.z() = Wa * from.z() + Wb * to.z();
+        r.w() = Wa * from.w() + Wb * to.w();
         return r.normalized();
     }
 
