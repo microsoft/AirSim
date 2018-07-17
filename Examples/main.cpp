@@ -117,12 +117,10 @@ int main(int argc, const char *argv[])
 	float step = 0.1f;
 	bool bSafeToMove = true;
 
-	float vfov = depthNav.hfov2vfov(Utils::degreesToRadians(90.0f), Vector2r(480, 640));
-	std::cout << Utils::radiansToDegrees(vfov) << std::endl;
 
 	try {
 		client.confirmConnection();
-		client.simSetPose(startPose, true);
+		client.simSetVehiclePose(startPose, true);
 		currentPose = startPose;
 
 		bool bGoalReached = false;
@@ -130,9 +128,9 @@ int main(int argc, const char *argv[])
 		while (bGoalReached != true) {
 
 			std::vector<ImageRequest> request = {
-				ImageRequest(1, ImageType::DepthPlanner, true),
-				ImageRequest(1, ImageType::Scene),
-				ImageRequest(1, ImageType::DisparityNormalized, true)
+				ImageRequest("1", ImageType::DepthPlanner, true),
+				ImageRequest("1", ImageType::Scene),
+				ImageRequest("1", ImageType::DisparityNormalized, true)
 			};
 
 			const std::vector<ImageResponse>& response = client.simGetImages(request);
@@ -190,7 +188,7 @@ int main(int argc, const char *argv[])
 				else
 				{
 					//Turn towards goal
-					currentPose.orientation = goalQuat;
+					currentPose.orientation = VectorMath::slerp(currentPose.orientation, goalQuat, 0.1f);
 					bSafeToMove = true;
 					//std::cout << "Quaternion: " << goalQuat.w() << " " << goalQuat.x() << " " << goalQuat.y() << " " << goalQuat.z() << std::endl;
 				}
@@ -230,7 +228,7 @@ int main(int argc, const char *argv[])
 					//currentPose.position = currentPose.position + goalVec.normalized() * step;
 				}
 
-				client.simSetPose(currentPose, true);
+				client.simSetVehiclePose(currentPose, true);
 
 				std::cout << "Distance to target: " << depthNav.getNorm2(goalVec) << std::endl;
 
@@ -239,13 +237,13 @@ int main(int argc, const char *argv[])
 					return 0;
 				}
 
-			//Add some sleep
-			//std::this_thread::sleep_for(std::chrono::duration<double>(1));
 		}
 	}
 	catch (rpc::rpc_error&  e) {
 		std::string msg = e.get_error().as<std::string>();
 		std::cout << "Exception raised by the API, something went wrong." << std::endl << msg << std::endl;
+		//Add some sleep
+		std::this_thread::sleep_for(std::chrono::duration<double>(5));
 	}
 
 
