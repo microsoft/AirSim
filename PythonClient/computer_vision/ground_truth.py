@@ -6,7 +6,7 @@ import airsim
 
 import pprint
 import time
-import cv2
+import cv2 #conda install opencv
 
 client = airsim.VehicleClient()
 client.confirmConnection()
