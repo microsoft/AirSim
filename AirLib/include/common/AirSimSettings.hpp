@@ -468,7 +468,7 @@ private:
         if (view_mode_string == "") {
             if (simmode_name == "Multirotor")
                 view_mode_string = "FlyWithMe";
-            if (simmode_name == "ComputerVision")
+            else if (simmode_name == "ComputerVision")
                 view_mode_string = "Fpv";
             else
                 view_mode_string = "SpringArmChase";
@@ -996,9 +996,9 @@ private:
 
         if (std::isnan(camera_director.follow_distance)) {
             if (simmode_name == "Car")
-                camera_director.follow_distance = -800;
+                camera_director.follow_distance = -8;
             else
-                camera_director.follow_distance = -300;
+                camera_director.follow_distance = -3;
         }
         if (std::isnan(camera_director.position.x()))
             camera_director.position.x() = camera_director.follow_distance;
@@ -1006,9 +1006,9 @@ private:
             camera_director.position.y() = 0;
         if (std::isnan(camera_director.position.z())) {
             if (simmode_name == "Car")
-                camera_director.position.z() = -400;
+                camera_director.position.z() = -4;
             else
-                camera_director.position.z() = -200;
+                camera_director.position.z() = -2;
         }
     }
 

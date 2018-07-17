@@ -122,10 +122,12 @@ class VehicleClient:
         self.client.call('simSetCameraOrientation', str(camera_name), orientation, vehicle_name)
 
     def simGetGroundTruthKinematics(self, vehicle_name = ''):
-        return self.client.call('simGetGroundTruthKinematics', vehicle_name)
+        kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
+        return KinematicsState.from_msgpack(kinematics_state)
     simGetGroundTruthKinematics.__annotations__ = {'return': KinematicsState}
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
-        return self.client.call('simGetGroundTruthEnvironment', vehicle_name)
+        env_state = self.client.call('simGetGroundTruthEnvironment', vehicle_name)
+        return EnvironmentState.from_msgpack(env_state)
     simGetGroundTruthEnvironment.__annotations__ = {'return': EnvironmentState}
 
     #----------- APIs to control ACharacter in scene ----------/
