@@ -105,7 +105,7 @@ void ACameraDirector::attachSpringArm(bool attach)
 
         //For car, we need to move the camera back a little more than for a drone. 
         //Otherwise, the camera will be stuck inside the car
-        ExternalCamera->SetActorRelativeLocation(FVector(follow_distance_, 0.0f, 0.0f));
+        ExternalCamera->SetActorRelativeLocation(FVector(follow_distance_ * 100.0f, 0.0f, 0.0f));
         ExternalCamera->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
         //ExternalCamera->bUsePawnControlRotation = false;
     }
