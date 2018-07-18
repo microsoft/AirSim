@@ -20,7 +20,6 @@ namespace msr {
 	namespace airlib {
 
 
-
 		class DepthNav {
 
 		public: //types
@@ -40,8 +39,6 @@ namespace msr {
 
 			};
 
-
-
 		public:
 
 			DepthNav(const Params& params = Params())
@@ -52,6 +49,54 @@ namespace msr {
 
 			}
 			
+
+			/*
+			*Adapted from https://en.wikipedia.org/wiki/Slerp
+			*/
+			Quaternionr slerp(Quaternionr q0, Quaternionr q1, double t) {
+				// Only unit quaternions are valid rotations.
+				// Normalize to avoid undefined behavior.
+				q0.normalize();
+				q1.normalize();
+				Quaternionr result;
+
+				// Compute the cosine of the angle between the two vectors.
+				double dot = q0.coeffs().dot(q1.coeffs());
+
+				// If the dot product is negative, slerp won't take
+				// the shorter path. Note that v1 and -v1 are equivalent when
+				// the negation is applied to all four components. Fix by 
+				// reversing one quaternion.
+				if (dot < 0.0f) {
+					q1.coeffs() = -q1.coeffs();
+					dot = -dot;
+				}
+
+				const double DOT_THRESHOLD = 0.9995;
+
+				if (dot > DOT_THRESHOLD) {
+					// If the inputs are too close for comfort, linearly interpolate
+					// and normalize the result.
+					result.coeffs() = (1 - t) * q0.coeffs() + t * q1.coeffs();
+				}
+
+				else
+				{
+					// Since dot is in range [0, DOT_THRESHOLD], acos is safe
+					double theta_0 = acos(dot);        // theta_0 = angle between input vectors
+					double theta = theta_0 * t;          // theta = angle between v0 and result
+					double sin_theta = sin(theta);     // compute this value only once
+					double sin_theta_0 = sin(theta_0); // compute this value only once
+
+					double s0 = cos(theta) - dot * sin_theta / sin_theta_0;  // == sin(theta_0 - theta) / sin(theta_0)
+					double s1 = sin_theta / sin_theta_0;
+					result.coeffs() = s0 * q0.coeffs() + s1 * q1.coeffs();
+				}
+
+				result.normalize();
+				return result;
+			}
+
 			/*
 			*Adapted from http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
 			*Build a unit quaternion representing the rotation
@@ -90,13 +135,13 @@ namespace msr {
 			}
 
 			//compute bounding box size
-			Vector2r compute_bb(Vector2r image_sz, Vector2r obj_sz, float hfov, float distance)
+			Vector2r compute_bb_sz(Vector2r image_sz, Vector2r obj_sz, float hfov, float distance)
 			{
 				float vfov = hfov2vfov(hfov, image_sz);
-				Vector2r box;
-				box.x() = ceil(obj_sz.x() * image_sz.x() / (tan(hfov / 2)*distance * 2)); //height
-				box.y() = ceil(obj_sz.y() * image_sz.y() / (tan(vfov / 2)*distance * 2)); //width
-				return box;
+				Vector2r box_sz;
+				box_sz.x() = ceil(obj_sz.x() * image_sz.x() / (tan(hfov / 2)*distance * 2)); //height
+				box_sz.y() = ceil(obj_sz.y() * image_sz.y() / (tan(vfov / 2)*distance * 2)); //width
+				return box_sz;
 			}
 
 			//convert horizonal fov to vertical fov
@@ -119,13 +164,10 @@ namespace msr {
 			{
 
 				//get goal in body frame
-
 				auto goal_body = VectorMath::transformToBodyFrame(goal_pose.position, current_pose.orientation);
 
 
-
 				//is goal inside frustum?
-
 				float frustrum_alignment = std::fabsf(goal_body.dot(VectorMath::front()));
 
 				if (frustrum_alignment >= params_.min_frustrum_alignment) {
@@ -135,42 +177,11 @@ namespace msr {
 
 				else {
 
-					//goal is not in the frustum. Let's rotate ourselves until we get 
-
-					//goal in the frustum
-
-
+					//goal is not in the frustum. Let's rotate ourselves until we get goal in the frustum
 
 				}
 
 			}
-
-/*
-			def get_next_vec(self, depth, obj_sz, goal, pos) :
-
-				[h, w] = np.shape(depth)
-				[roi_h, roi_w] = compute_bb((h, w), obj_sz, self.hfov, self.coll_thres)
-
-				# compute vector, distance and angle to goal
-				t_vec, t_dist, t_angle = get_vec_dist_angle(np.array([goal.position.x_val, goal.position.y_val, goal.position.z_val]), np.array([pos.position.x_val, pos.position.y_val, pos.position.z_val]))
-
-				# compute box of interest
-				img2d_box = img2d[int((h - roi_h) / 2) : int((h + roi_h) / 2), int((w - roi_w) / 2) : int((w + roi_w) / 2)]
-
-				# scale by weight matrix(optional)
-				#img2d_box = np.multiply(img2d_box, w_mtx)
-
-				# detect collision
-				if (np.min(img2d_box) < coll_thres) :
-					self.yaw = self.yaw - radians(self.limit_yaw)
-				else:
-			self.yaw = self.yaw + min(t_angle - self.yaw, radians(self.limit_yaw))
-
-				pos.position.x_val = pos.position.x_val + self.step*cos(self.yaw)
-				pos.position.y_val = pos.position.y_val + self.step*sin(self.yaw)
-
-				return pos.position, self.yaw, t_dist
-*/
 
 		private:
 
@@ -185,7 +196,7 @@ namespace msr {
 				real_T fov = Utils::degreesToRadians(90.0f);
 				//min dot product required for goal vector to be
 				//considered so goal is inside frustum
-				real_T min_frustrum_alighment = (1.0f + 0.75f) / 2;
+				real_T min_frustrum_alignment = (1.0f + 0.75f) / 2;
 
 				//When goal is outside of frustum, we need to rotate
 				//below specifies how much increment to get to required rotation
@@ -214,6 +225,8 @@ namespace msr {
 			DepthNavT(const Params& params = Params())
 				: params_(params)
 			{
+				//msr::airlib::MultirotorRpcLibClient client;
+				//client.confirmConnection();
 			}
 
 			//depth_image is 2D float array for which width and height are specified in Params
@@ -221,7 +234,8 @@ namespace msr {
 			//current_pose is current pose of the vehicle in world frame
 			//dt is time passed since last call in seconds
 			//return next pose that vehicle should be in
-			Pose getNextPose(const real_T ** const depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
+			//Pose getNextPose(const real_T ** const depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
+			Pose getNextPose(real_T ** const depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
 			{
 				auto goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
 				if (isInFrustrum(goal_body, params_.fov)) {
@@ -251,6 +265,7 @@ namespace msr {
 					11. Compute next position along vector (i_x_center, j_y_center, 1) and transform it to world frame
 					12. return pose using result from step 10 and 11
 					*/
+					return Pose::nanPose();
 				}
 				else {
 					//get rotation we need
@@ -274,6 +289,7 @@ namespace msr {
 				//front is +X so get the dot product of unit +X with goal_body
 				//if dot product < pre-calculated value then goal_body is outside
 				//frustum
+				return true;
 			}
 
 		private:

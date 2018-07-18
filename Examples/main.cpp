@@ -98,6 +98,7 @@ int main(int argc, const char *argv[])
 	//GaussianMarkovTest test;
 	//test.run();
 	DepthNav depthNav;
+	DepthNavT depthNavT;
 
 	//Size of UAV
 	Vector2r uav_size = Vector2r(0.29 * 3, 0.98 * 2); //height:0.29 x width : 0.98 - allow some tolerance
@@ -107,7 +108,7 @@ int main(int argc, const char *argv[])
     //Define start and goal poses
 	Pose startPose = Pose(Vector3r(5, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
 	Pose currentPose;
-	Pose goalPose = Pose(Vector3r(-50, 80, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	Pose goalPose = Pose(Vector3r(-50, 5, -1), Quaternionr(1, 0, 0, 0)); //final pose
 
 	Quaternionr currentQuat;
 	Quaternionr nextQuat;
@@ -117,6 +118,22 @@ int main(int argc, const char *argv[])
 	float step = 0.1f;
 	bool bSafeToMove = true;
 
+	/*Using 2D array
+	int M = 256;
+	int N = 144;
+	
+	//dynamic alloc
+	real_T ** depth_image = new real_T *[N];
+	for (int i = 0; i < N; i++)
+		depth_image[i] = new real_T[M];
+
+	//fill
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < M; j++)
+			depth_image[i][j] = image_info.image_data_float.data()[i*M + j];
+
+	currentPose = depthNavT.getNextPose(depth_image, goalPose.position, currentPose, step);
+	*/
 
 	try {
 		client.confirmConnection();
@@ -145,14 +162,16 @@ int main(int argc, const char *argv[])
 
 			float min_depth = 1000.f;
 
+
 			for (const ImageResponse& image_info : response) {
 				if (image_info.image_type == ImageType::DepthPlanner)
 				{
 					if (image_info.image_data_float.size() > 0)
 					{
+
 						std::cout << "Image float size: " << image_info.image_data_float.size() << std::endl;
 						Vector2r image_sz = Vector2r(image_info.height, image_info.width);
-						Vector2r bb_sz = depthNav.compute_bb(image_sz, uav_size, Utils::degreesToRadians(90.0f), 5.f);
+						Vector2r bb_sz = depthNav.compute_bb_sz(image_sz, uav_size, Utils::degreesToRadians(90.0f), 5.f);
 
 						//compute box of interest
 						std::vector<float> crop;
@@ -177,7 +196,8 @@ int main(int argc, const char *argv[])
 			}
 
 				goalVec = goalPose.position - currentPose.position;
-				goalQuat = depthNav.getQuatBetweenVecs(forwardVec, goalVec);
+				goalQuat = VectorMath::lookAt(currentPose.position, goalPose.position);
+				//goalQuat = depthNav.getQuatBetweenVecs(forwardVec, goalVec);
 
 				if (min_depth < threshold)
 				{
@@ -193,7 +213,7 @@ int main(int argc, const char *argv[])
 					//std::cout << "Quaternion: " << goalQuat.w() << " " << goalQuat.x() << " " << goalQuat.y() << " " << goalQuat.z() << std::endl;
 				}
 
-				/*
+				/* To do rather than interpolate take physical constraints into account
 				real_T p_current, r_current, y_current;
 				VectorMath::toEulerianAngle(currentPose.orientation, p_current, r_current, y_current);
 
