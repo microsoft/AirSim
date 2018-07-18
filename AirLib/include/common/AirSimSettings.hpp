@@ -352,7 +352,7 @@ public: //methods
         std::string settings_filename = Settings::getUserDirectoryFullPath("settings.json");
         Settings& settings_json = Settings::loadJSonString("{}");
         //write some settings_json in new file otherwise the string "null" is written if all settings_json are empty
-        settings_json.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md");
+        settings_json.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
         settings_json.setDouble("SettingsVersion", 1.2);
 
         //TODO: there is a crash in Linux due to settings_json.saveJSonString(). Remove this workaround after we only support Unreal 4.17
