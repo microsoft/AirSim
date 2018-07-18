@@ -183,6 +183,41 @@ namespace msr {
 
 			}
 
+			/*
+			*https://www.edmundoptics.com/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/
+			*/
+			Vector2r getPlaneSize(float working_distance, float hfov, float vfov) {
+				float height_world = 2 * working_distance * tanf(vfov / 2);
+				float width_world = 2 * working_distance * tanf(hfov / 2);
+				return Vector2r(height_world, width_world);
+			}
+
+			/*
+			contact = the contact point on the plane
+			ray = B - A, simply the line from A to B
+			rayOrigin = A, the origin of the line segement
+			normal = normal of the plane(normal of a triangle)
+			coord = a point on the plane(vertice of a triangle)
+			*/
+
+			bool linePlaneIntersection(Vector3r& contact, Vector3r ray, Vector3r rayOrigin,
+				Vector3r normal, Vector3r coord) {
+				// get d value
+				float d = normal.dot(coord);
+
+				if (normal.dot(ray) < FLT_MIN) {
+					contact = VectorMath::nanVector();
+					return false; // No intersection, the line is parallel to the plane
+				}
+
+				// Compute the X value for the directed line ray intersecting the plane
+				float x = (d - normal.dot(rayOrigin)) / normal.dot(ray);
+
+				// output contact point
+				contact = rayOrigin + ray.normalized()*x; //Make sure your ray vector is normalized
+				return true;
+			}
+
 		private:
 
 			Params params_;

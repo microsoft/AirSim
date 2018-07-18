@@ -199,6 +199,10 @@ int main(int argc, const char *argv[])
 				goalQuat = VectorMath::lookAt(currentPose.position, goalPose.position);
 				//goalQuat = depthNav.getQuatBetweenVecs(forwardVec, goalVec);
 
+				Vector3r contact;
+				bool linePlaneIntersection = depthNav.linePlaneIntersection(contact, goalVec, currentPose.position, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation), VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation) + currentPose.position);
+				std::cout << "Plane Intersection: " << linePlaneIntersection << std::endl;
+
 				if (min_depth < threshold)
 				{
 					//Turn to avoid obstacle
