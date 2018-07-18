@@ -463,18 +463,27 @@ public:
     //spherical lerp
     static QuaternionT slerp(const QuaternionT& from, const QuaternionT& to, RealT alpha)
     {
-        QuaternionT r;
         RealT n_alpha = 1 - alpha;
-        RealT Wa, Wb;
         RealT theta = acos(from.x()*to.x() + from.y()*to.y() + from.z()*to.z() + from.w()*to.w());
-        RealT sn = sin(theta);
-        Wa = sin(n_alpha*theta) / sn;
-        Wb = sin(alpha*theta) / sn;
-        r.x() = Wa * from.x() + Wb * to.x();
-        r.y() = Wa * from.y() + Wb * to.y();
-        r.z() = Wa * from.z() + Wb * to.z();
-        r.w() = Wa * from.w() + Wb * to.w();
-        return r.normalized();
+		//Check for theta > 0 to avoid division by 0.
+		if (theta > FLT_MIN)
+		{
+			RealT sn = sin(theta);
+			RealT Wa = sin(n_alpha*theta) / sn;
+			RealT Wb = sin(alpha*theta) / sn;
+			QuaternionT r;
+			r.x() = Wa * from.x() + Wb * to.x();
+			r.y() = Wa * from.y() + Wb * to.y();
+			r.z() = Wa * from.z() + Wb * to.z();
+			r.w() = Wa * from.w() + Wb * to.w();
+			return r.normalized();
+		}
+		//Theta is 0. Return "to" quaternion.
+		else
+		{
+			return to.normalized();
+		}
+
     }
 
     Vector3T lerp(const Vector3T& from, const Vector3T& to, RealT alpha)
@@ -499,9 +508,9 @@ public:
     static QuaternionT lookAt(Vector3T sourcePoint, Vector3T destPoint)
     {
         Vector3T toVector = (destPoint - sourcePoint);
+		toVector.normalize(); //this is important!
 
         RealT dot = VectorMathT::front().dot(toVector);
-        dot = Utils::clip<RealT>(dot, -1, 1);
         RealT ang = std::acosf(dot);
 
         Vector3T axis = VectorMathT::front().cross(toVector);
