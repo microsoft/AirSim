@@ -13,7 +13,7 @@ This is still in active development. What we share below is a framework that can
 
 This example works with AirSimNeighborhood environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
-First, we need to get the images from simulation and transform it appropriately. Below, we show how a depth image can be obtained from the ego camera and transformed to a 84X84 input to the network. (you can use other sensor modalities, and sensor inputs as well – of course you’ll have to modify the code accordingly).
+First, we need to get the images from simulation and transform them appropriately. Below, we show how a depth image can be obtained from the ego camera and transformed to an 84X84 input to the network. (you can use other sensor modalities, and sensor inputs as well – of course you’ll have to modify the code accordingly).
 
 ```
 responses = client.simGetImages([ImageRequest(0, AirSimImageType.DepthPerspective, True, False)])
