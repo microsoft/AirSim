@@ -186,32 +186,41 @@ namespace msr {
 			/*
 			*https://www.edmundoptics.com/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/
 			*/
-			Vector2r getPlaneSize(float working_distance, float hfov, float vfov) {
-				float height_world = 2 * working_distance * tanf(vfov / 2);
-				float width_world = 2 * working_distance * tanf(hfov / 2);
+			Vector2r getPlaneSize(float workingDistance, float hfov, float vfov) {
+				float height_world = 2 * workingDistance * tanf(vfov / 2);
+				float width_world = 2 * workingDistance * tanf(hfov / 2);
 				return Vector2r(height_world, width_world);
 			}
 
+			void getPlaneBoundary(Vector2r planeSize, Vector3r planeOrigin, float& z_min, float& z_max, float& y_min, float& y_max){
+				z_min = planeOrigin.z() - planeSize.x() / 2;
+				z_max = planeOrigin.z() + planeSize.x() / 2;
+				y_min = planeOrigin.y() - planeSize.y() / 2;
+				y_max = planeOrigin.y() + planeSize.y() / 2;
+			}
+
 			/*
-			contact = the contact point on the plane
-			ray = B - A, simply the line from A to B
-			rayOrigin = A, the origin of the line segement
-			normal = normal of the plane(normal of a triangle)
-			coord = a point on the plane(vertice of a triangle)
+			Output:
+			*contact = the contact point on the plane
+			Input:
+			*ray = B - A, simply the line from A to B
+			*rayOrigin = A, the origin of the line segement
+			*planeNormal = normal of the plane
+			*planeOrigin = a point on the plane
 			*/
 
 			bool linePlaneIntersection(Vector3r& contact, Vector3r ray, Vector3r rayOrigin,
-				Vector3r normal, Vector3r coord) {
+				Vector3r planeNormal, Vector3r planeOrigin) {
 				// get d value
-				float d = normal.dot(coord);
+				float d = planeNormal.dot(planeOrigin);
 
-				if (normal.dot(ray) < FLT_MIN) {
+				if (planeNormal.dot(ray) < FLT_MIN) {
 					contact = VectorMath::nanVector();
 					return false; // No intersection, the line is parallel to the plane
 				}
 
 				// Compute the X value for the directed line ray intersecting the plane
-				float x = (d - normal.dot(rayOrigin)) / normal.dot(ray);
+				float x = (d - planeNormal.dot(rayOrigin)) / planeNormal.dot(ray);
 
 				// output contact point
 				contact = rayOrigin + ray.normalized()*x; //Make sure your ray vector is normalized
@@ -238,7 +247,7 @@ namespace msr {
 				//TODO: we should slerp by max allowed rotation for dt
 				real_T rotation_slerp_alpha = 0.5f;
 
-				unsigned int depth_width = 300, depth_height = 300;
+				unsigned int depth_width = 256, depth_height = 144;
 
 				//Number of cells the depth image gets divided in to. Each cell is square.
 				unsigned int M, N;

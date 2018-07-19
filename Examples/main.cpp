@@ -115,6 +115,7 @@ int main(int argc, const char *argv[])
 	Quaternionr goalQuat;
 	Vector3r forwardVec = VectorMath::front();
 	Vector3r goalVec;
+	float hfov = Utils::degreesToRadians(90.0f);
 	float step = 0.1f;
 	bool bSafeToMove = true;
 
@@ -171,7 +172,7 @@ int main(int argc, const char *argv[])
 
 						std::cout << "Image float size: " << image_info.image_data_float.size() << std::endl;
 						Vector2r image_sz = Vector2r(image_info.height, image_info.width);
-						Vector2r bb_sz = depthNav.compute_bb_sz(image_sz, uav_size, Utils::degreesToRadians(90.0f), 5.f);
+						Vector2r bb_sz = depthNav.compute_bb_sz(image_sz, uav_size, hfov, 5.f);
 
 						//compute box of interest
 						std::vector<float> crop;
@@ -200,8 +201,14 @@ int main(int argc, const char *argv[])
 				//goalQuat = depthNav.getQuatBetweenVecs(forwardVec, goalVec);
 
 				Vector3r contact;
-				bool linePlaneIntersection = depthNav.linePlaneIntersection(contact, goalVec, currentPose.position, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation), VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation) + currentPose.position);
-				std::cout << "Plane Intersection: " << linePlaneIntersection << std::endl;
+				bool linePlaneIntersection = depthNav.linePlaneIntersection(contact, goalVec, currentPose.position, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation), VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation)*threshold + currentPose.position);
+				Vector2r planeSz = depthNav.getPlaneSize(threshold, hfov, depthNav.hfov2vfov(hfov, Vector2r(144, 256)));
+				planeSz = depthNav.getPlaneSize(threshold, hfov, depthNav.hfov2vfov(hfov, Vector2r(144, 256)));
+				float z_min, z_max, y_min, y_max;
+				depthNav.getPlaneBoundary(planeSz, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation)*threshold + currentPose.position,z_min,z_max,y_min,y_max);
+				std::cout << "Plane Intersection: " << linePlaneIntersection << " at " << contact << std::endl;
+				std::cout << "Plane Size: " << planeSz << std::endl;
+				std::cout << "Plane Boundary: " << z_min << z_max << y_min << y_max << std::endl;
 
 				if (min_depth < threshold)
 				{
