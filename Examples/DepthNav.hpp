@@ -208,7 +208,6 @@ namespace msr {
 			*planeNormal = normal of the plane
 			*planeOrigin = a point on the plane
 			*/
-
 			bool linePlaneIntersection(Vector3r& contact, Vector3r ray, Vector3r rayOrigin,
 				Vector3r planeNormal, Vector3r planeOrigin) {
 				// get d value
@@ -273,6 +272,63 @@ namespace msr {
 				//client.confirmConnection();
 			}
 
+			/*
+			Input:
+			*ray = B - A, simply the line from A to B
+			*rayOrigin = A, the origin of the line segement
+			*planeNormal = normal of the plane
+			*planeOrigin = a point on the plane
+			Output:
+			*contact = the contact point on the plane
+			*/
+			Vector3r linePlaneIntersection(Vector3r ray, Vector3r rayOrigin, Vector3r planeNormal, Vector3r planeOrigin) {
+				// get d value
+				float d = planeNormal.dot(planeOrigin);
+
+				if (planeNormal.dot(ray) < FLT_MIN) {
+					return VectorMath::nanVector();; // No intersection, the line is parallel to the plane
+				}
+
+				// Compute the X value for the directed line ray intersecting the plane
+				float x = (d - planeNormal.dot(rayOrigin)) / planeNormal.dot(ray);
+
+				// output contact point
+				return rayOrigin + ray.normalized()*x; //Make sure your ray vector is normalized
+			}
+
+			//compute bounding box size
+			Vector2r compute_bb_sz(float img_h, float img_w, float vehicle_h, float vehicle_w, float hfov, float distance)
+			{
+				float vfov = hfov2vfov(hfov, img_h, img_w);
+				float box_h = ceil(vehicle_h * img_h / (tan (hfov / 2) * distance * 2)); //height
+				float box_w = ceil(img_w * vehicle_w / (tan (vfov / 2) * distance * 2)); //width
+				return Vector2r(box_h,box_w);
+			}
+
+			//convert horizonal fov to vertical fov
+			float hfov2vfov(float hfov, float img_h, float img_w)
+			{
+				float aspect = img_h / img_w;
+				float vfov = 2 * atan(tan(hfov / 2) * aspect);
+				return vfov;
+			}
+
+			/*
+			*https://www.edmundoptics.com/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/
+			*/
+			Vector2r getPlaneSize(float distance, float hfov, float vfov) {
+				float height_world = 2 * distance * tanf(vfov / 2);
+				float width_world = 2 * distance * tanf(hfov / 2);
+				return Vector2r(height_world, width_world);
+			}
+
+			void getPlaneBoundary(Vector2r planeSize, Vector3r planeOrigin, float& z_min, float& z_max, float& y_min, float& y_max) {
+				z_min = planeOrigin.z() - planeSize.x() / 2;
+				z_max = planeOrigin.z() + planeSize.x() / 2;
+				y_min = planeOrigin.y() - planeSize.y() / 2;
+				y_max = planeOrigin.y() + planeSize.y() / 2;
+			}
+
 			//depth_image is 2D float array for which width and height are specified in Params
 			//goal is specified in world frame and typically provided by the global planner
 			//current_pose is current pose of the vehicle in world frame
@@ -286,14 +342,18 @@ namespace msr {
 					/*
 					Note: It would be good to have an individual function for many of below steps
 					so we can test it individual from bottom up and improve each sub-algorithm
-
-					1. Let's have a plane that fits in our frustum at x = 1 (remember +X is front, +Y is right in NED)
-					2. We will compute x_min, y_min, x_max, y_max for this plane in body frame.
-					3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
-					4. So now we have a rectangle and a point within it
-					5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
-					6. Compute cell coordinates i, j for x_goal and y_goal.
-					7. Until free space is found
+					*/
+					//1. Let's have a plane that fits in our frustum at x = 1 (remember +X is front, +Y is right in NED)
+					//2. We will compute x_min, y_min, x_max, y_max for this plane in body frame.
+					Vector2r planeSize = getPlaneSize(params_.max_allowed_obs_dist, params_.fov, hfov2vfov(params_.fov, params_.depth_height, params_.depth_width));
+					//3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
+					Vector3r goal_vec = goal - current_pose.position;
+					Vector3r forward_vec = VectorMath::transformToWorldFrame(VectorMath::front(), current_pose.orientation);
+					Vector3r intersect_point = linePlaneIntersection(goal_vec, current_pose.position, forward_vec, current_pose.position + forward_vec*params_.max_allowed_obs_dist);
+					//4. So now we have a rectangle and a point within it
+					//5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
+					//6. Compute cell coordinates i, j for x_goal and y_goal.
+					/*7. Until free space is found
 					For p = -params.req_free_width to +params.req_free_width
 					For q = -params.req_free_height to +params.req_free_height
 					Query block (i + p, j + q) in depth image to see if it is free
@@ -303,12 +363,14 @@ namespace msr {
 					then move i,j spirally within the rectangle (or do something more simple?)
 					If all blocks have been marked as occupied
 					then return Pose::nanPose() indicating no more moves possible
-					8. We are here if we have found cell coordinates i, j as center of the free window from step #7
-					9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
-					10. Compute next orientation with similar algorithm as in else section below
-					11. Compute next position along vector (i_x_center, j_y_center, 1) and transform it to world frame
-					12. return pose using result from step 10 and 11
 					*/
+					compute_bb_sz(params_.depth_height, params_.depth_width, params_.req_free_height, params_.req_free_width, params_.fov, params_.max_allowed_obs_dist);
+					//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
+					//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
+					//10. Compute next orientation with similar algorithm as in else section below
+					//11. Compute next position along vector (i_x_center, j_y_center, 1) and transform it to world frame
+					//12. return pose using result from step 10 and 11
+					
 					return Pose::nanPose();
 				}
 				else {

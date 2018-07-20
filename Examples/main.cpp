@@ -208,7 +208,7 @@ int main(int argc, const char *argv[])
 				depthNav.getPlaneBoundary(planeSz, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation)*threshold + currentPose.position,z_min,z_max,y_min,y_max);
 				std::cout << "Plane Intersection: " << linePlaneIntersection << " at " << contact << std::endl;
 				std::cout << "Plane Size: " << planeSz << std::endl;
-				std::cout << "Plane Boundary: " << z_min << z_max << y_min << y_max << std::endl;
+				std::cout << "Plane Boundary: " << "z_min:" << z_min << " z_max:" << z_max << " y_min:" << y_min << " y_max:" << y_max << std::endl;
 
 				if (min_depth < threshold)
 				{
