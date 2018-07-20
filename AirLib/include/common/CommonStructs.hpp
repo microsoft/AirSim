@@ -267,6 +267,21 @@ struct RCData {
     bool is_initialized = false; //is RC connected?
     bool is_valid = false; //must be true for data to be valid
 
+    RCData()
+    {
+    	timestamp = 0;
+    	pitch = 0;
+	roll = 0;
+	throttle = 0;
+	yaw = 0;
+    	left_z = 0;
+	right_z = 0;
+    	switches = 0;
+    	vendor_id = "";
+    	is_initialized = false;
+    	is_valid = false;
+    }
+
     unsigned int getSwitch(uint16_t index) const
     {
         return switches && (1 << index) ? 1 : 0;
