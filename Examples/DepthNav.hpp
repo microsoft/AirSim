@@ -262,6 +262,9 @@ namespace msr {
 
 				//Number of free cells for width and height required for the vehicle to pass through
 				unsigned int req_free_width = 3, req_free_height = 1;
+
+				//Vehicle dimensions
+				float vehicle_width = 0.98f, vehicle_height = 0.26f;
 			};
 
 		public:
@@ -297,7 +300,7 @@ namespace msr {
 			}
 
 			//compute bounding box size
-			Vector2r compute_bb_sz(float img_h, float img_w, float vehicle_h, float vehicle_w, float hfov, float distance)
+			Vector2r compute_bb_sz(unsigned int img_h, unsigned int img_w, float vehicle_h, float vehicle_w, float hfov, float distance)
 			{
 				float vfov = hfov2vfov(hfov, img_h, img_w);
 				float box_h = ceil(vehicle_h * img_h / (tan (hfov / 2) * distance * 2)); //height
@@ -306,9 +309,9 @@ namespace msr {
 			}
 
 			//convert horizonal fov to vertical fov
-			float hfov2vfov(float hfov, float img_h, float img_w)
+			float hfov2vfov(float hfov, unsigned int img_h, unsigned int img_w)
 			{
-				float aspect = img_h / img_w;
+				float aspect = float (img_h / img_w);
 				float vfov = 2 * atan(tan(hfov / 2) * aspect);
 				return vfov;
 			}
@@ -364,7 +367,7 @@ namespace msr {
 					If all blocks have been marked as occupied
 					then return Pose::nanPose() indicating no more moves possible
 					*/
-					compute_bb_sz(params_.depth_height, params_.depth_width, params_.req_free_height, params_.req_free_width, params_.fov, params_.max_allowed_obs_dist);
+					compute_bb_sz(params_.depth_height, params_.depth_width, params_.vehicle_height, params_.vehicle_width, params_.fov, params_.max_allowed_obs_dist);
 					//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
 					//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
 					//10. Compute next orientation with similar algorithm as in else section below
