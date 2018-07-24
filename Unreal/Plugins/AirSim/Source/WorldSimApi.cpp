@@ -168,11 +168,11 @@ AAirSimCharacter* WorldSimApi::getAirSimCharacter(const std::string& character_n
 {
     AAirSimCharacter* character = nullptr;
     UAirBlueprintLib::RunCommandOnGameThread([this, &character_name, &character]() {
-        if (chars_.size() == 0) {
+        if (chars_.size() == 0) { //not found in the cache
             TArray<AActor*> characters;
             UAirBlueprintLib::FindAllActor<AAirSimCharacter>(simmode_, characters);
             for (AActor* actor : characters) {
-                AAirSimCharacter* character = static_cast<AAirSimCharacter*>(actor);
+                character = static_cast<AAirSimCharacter*>(actor);
                 chars_[std::string(
                     TCHAR_TO_UTF8(*character->GetName()))] = character;
             }
@@ -183,6 +183,7 @@ AAirSimCharacter* WorldSimApi::getAirSimCharacter(const std::string& character_n
                 "There were no actors of class ACharactor found in the environment");
         }
 
+        //choose first character if name was blank or find by name
         character = character_name == "" ? chars_.begin()->second
             : common_utils::Utils::findOrDefault(chars_, character_name);
 

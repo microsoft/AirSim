@@ -13,6 +13,7 @@
 #include "common/ClockFactory.hpp"
 #include <thread>
 STRICT_MODE_OFF
+
 #ifndef RPCLIB_MSGPACK
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
@@ -22,6 +23,9 @@ STRICT_MODE_OFF
 #endif // nil
 #include "rpc/client.h"
 #include "vehicles/car/api/CarRpcLibAdapators.hpp"
+//TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
+#define check(expr) (static_cast<void>((expr)))
+
 STRICT_MODE_ON
 #ifdef _MSC_VER
 __pragma(warning( disable : 4239))

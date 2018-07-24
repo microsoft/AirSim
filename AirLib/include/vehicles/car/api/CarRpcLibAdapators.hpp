@@ -12,7 +12,8 @@
 
 #undef check
 #include "rpc/msgpack.hpp"
-
+//TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
+#define check(expr) (static_cast<void>((expr)))
 
 namespace msr { namespace airlib_rpclib {
 

@@ -14,7 +14,7 @@
 
 #include "AllowWindowsPlatformTypes.h"
 #include "common/common_utils/MinWinDefines.hpp"
-#include <windows.h>
+#include "WindowsHWrapper.h" //recommended include for UE instead of Windows.h
 #include "HideWindowsPlatformTypes.h"
 
 #pragma warning(push)

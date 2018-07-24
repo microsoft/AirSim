@@ -12,6 +12,7 @@
 
 #include "common/Common.hpp"
 STRICT_MODE_OFF
+
 #ifndef RPCLIB_MSGPACK
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
@@ -23,6 +24,7 @@ STRICT_MODE_OFF
 #include "vehicles/multirotor/api/MultirotorRpcLibAdapators.hpp"
 //TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
 #define check(expr) (static_cast<void>((expr)))
+
 STRICT_MODE_ON
 
 
