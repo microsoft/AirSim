@@ -232,6 +232,12 @@ namespace msr {
 		};
 
 
+
+
+
+
+
+
 		class DepthNavT {
 		public: //types
 			struct Params {
@@ -278,25 +284,22 @@ namespace msr {
 			/*
 			Input:
 			*ray = B - A, simply the line from A to B
-			*rayOrigin = A, the origin of the line segement
 			*planeNormal = normal of the plane
-			*planeOrigin = a point on the plane
+			*max_allowed_obs_dist = obstacle distance threshold
 			Output:
-			*contact = the contact point on the plane
+			*contact = the contact point on the plane in body frame
 			*/
-			Vector3r linePlaneIntersection(Vector3r ray, Vector3r rayOrigin, Vector3r planeNormal, Vector3r planeOrigin) {
-				// get d value
-				float d = planeNormal.dot(planeOrigin);
+			Vector3r linePlaneIntersection(Vector3r ray, Vector3r planeNormal, float max_allowed_obs_dist) {
 
 				if (planeNormal.dot(ray) < FLT_MIN) {
-					return VectorMath::nanVector();; // No intersection, the line is parallel to the plane
+					return VectorMath::nanVector(); // No intersection, the line is parallel to the plane
 				}
 
 				// Compute the X value for the directed line ray intersecting the plane
-				float x = (d - planeNormal.dot(rayOrigin)) / planeNormal.dot(ray);
+				float x = max_allowed_obs_dist / planeNormal.dot(ray);
 
 				// output contact point
-				return rayOrigin + ray.normalized()*x; //Make sure your ray vector is normalized
+				return ray.normalized()*x; //Make sure your ray vector is normalized
 			}
 
 			//compute bounding box size
@@ -325,13 +328,6 @@ namespace msr {
 				return Vector2r(height_world, width_world);
 			}
 
-			void getPlaneBoundary(Vector2r planeSize, Vector3r planeOrigin, float& z_min, float& z_max, float& y_min, float& y_max) {
-				z_min = planeOrigin.z() - planeSize.x() / 2;
-				z_max = planeOrigin.z() + planeSize.x() / 2;
-				y_min = planeOrigin.y() - planeSize.y() / 2;
-				y_max = planeOrigin.y() + planeSize.y() / 2;
-			}
-
 			//depth_image is 2D float array for which width and height are specified in Params
 			//goal is specified in world frame and typically provided by the global planner
 			//current_pose is current pose of the vehicle in world frame
@@ -347,14 +343,30 @@ namespace msr {
 					so we can test it individual from bottom up and improve each sub-algorithm
 					*/
 					//1. Let's have a plane that fits in our frustum at x = 1 (remember +X is front, +Y is right in NED)
-					//2. We will compute x_min, y_min, x_max, y_max for this plane in body frame.
 					Vector2r planeSize = getPlaneSize(params_.max_allowed_obs_dist, params_.fov, hfov2vfov(params_.fov, params_.depth_height, params_.depth_width));
+					//2. We will compute x_min, y_min, x_max, y_max for this plane in body frame.
+					float z_min = -planeSize.x() / 2;
+					float y_min = -planeSize.y() / 2;
+					float z_max = planeSize.x() / 2;
+					float y_max = planeSize.y() / 2;
 					//3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
 					Vector3r goal_vec = goal - current_pose.position;
 					Vector3r forward_vec = VectorMath::transformToWorldFrame(VectorMath::front(), current_pose.orientation);
-					Vector3r intersect_point = linePlaneIntersection(goal_vec, current_pose.position, forward_vec, current_pose.position + forward_vec*params_.max_allowed_obs_dist);
+					Vector3r intersect_point = linePlaneIntersection(goal_vec, forward_vec, params_.max_allowed_obs_dist);
+					//Check if intersection is valid
+					if (intersect_point == VectorMath::nanVector()) 
+					{
+						return rotateToGoal(current_pose, goal);
+					}
+					else if (intersect_point.z() < z_min || intersect_point.z() > z_max || intersect_point.y() < y_min || intersect_point.y() > y_max)
+					{
+						return rotateToGoal(current_pose, goal);
+					}
+					else
+					{
 					//4. So now we have a rectangle and a point within it
 					//5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
+					
 					//6. Compute cell coordinates i, j for x_goal and y_goal.
 					/*7. Until free space is found
 					For p = -params.req_free_width to +params.req_free_width
@@ -368,6 +380,7 @@ namespace msr {
 					then return Pose::nanPose() indicating no more moves possible
 					*/
 					compute_bb_sz(params_.depth_height, params_.depth_width, params_.vehicle_height, params_.vehicle_width, params_.fov, params_.max_allowed_obs_dist);
+
 					//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
 					//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
 					//10. Compute next orientation with similar algorithm as in else section below
@@ -375,20 +388,50 @@ namespace msr {
 					//12. return pose using result from step 10 and 11
 					
 					return Pose::nanPose();
+					}
 				}
 				else {
-					//get rotation we need
-					//TODO: below is toQuat to center but we only need somewhere at the edge of frustum
-					Quaternionr toQuat = VectorMath::lookAt(current_pose.position, goal);
-					Quaternionr fromQuat = current_pose.orientation;
-
-					//using spherical interpolation compute fraction of quaternion
-					Quaternionr stepQuat = VectorMath::slerp(fromQuat, toQuat, params_.rotation_slerp_alpha);
-
-					//add fraction of quaternion to current orientation
-					return Pose(current_pose.position,
-						(current_pose.orientation * stepQuat).normalized());
+					return rotateToGoal(current_pose, goal);
 				}
+			}
+
+			Pose rotateToGoal(Pose current_pose, Vector3r goal) {
+				//get rotation we need
+				//TODO: below is toQuat to center but we only need somewhere at the edge of frustum
+				Quaternionr toQuat = VectorMath::lookAt(current_pose.position, goal);
+				Quaternionr fromQuat = current_pose.orientation;
+
+				//using spherical interpolation compute fraction of quaternion
+				Quaternionr stepQuat = VectorMath::slerp(fromQuat, toQuat, params_.rotation_slerp_alpha);
+
+				//add fraction of quaternion to current orientation
+				return Pose(current_pose.position, (current_pose.orientation * stepQuat).normalized());
+			}
+
+			bool isWindowFree(std::vector<float>& img, unsigned int img_h, unsigned int img_w, unsigned int crop_h, unsigned int crop_w) {
+			
+				//std::vector<float> crop;
+				unsigned int counter = 0;
+
+				for (int i = int((img_h - crop_h) / 2); i < int((img_h + crop_h) / 2); i++) {
+					for (int j = int((img_w - crop_w) / 2); j<int((img_w + crop_w) / 2); j++) {
+						int idx = i * int(img_w) + j;
+						//crop.push_back(img[idx]);
+						if (img[idx] < params_.max_allowed_obs_dist) {
+							counter++;
+						}
+					}
+				}
+
+				if (counter > params_.max_allowed_obs_per_block)
+				{
+					return false;
+				}
+				else 
+				{
+					return true;
+				}
+
 			}
 
 			//returns true if goal in body frame in within frustum
