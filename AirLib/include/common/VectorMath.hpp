@@ -478,7 +478,8 @@ public:
 			r.w() = Wa * from.w() + Wb * to.w();
 			return r.normalized();
 		}
-		//Theta is 0. Return "to" quaternion.
+		//Theta is almost 0. Return "to" quaternion.
+		//Alternatively, could also do lerp.
 		else
 		{
 			return to.normalized();
