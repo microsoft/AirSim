@@ -18,7 +18,7 @@
     Vehicles are spawned at position specified in settings in global NED
 */
 
-class NedTransform
+class AIRSIM_API NedTransform
 {
 public:
     typedef msr::airlib::Vector3r Vector3r;
