@@ -252,7 +252,8 @@ namespace msr {
 				//TODO: we should slerp by max allowed rotation for dt
 				real_T rotation_slerp_alpha = 0.5f;
 
-				unsigned int depth_width = 256, depth_height = 144;
+				//unsigned int depth_width = 256, depth_height = 144;
+				unsigned int depth_width = 100, depth_height = 50;
 
 				//Number of cells the depth image gets divided in to. Each cell is square.
 				unsigned int M, N;
@@ -267,10 +268,11 @@ namespace msr {
 				unsigned int max_allowed_obs_per_block = 1;
 
 				//Number of free cells for width and height required for the vehicle to pass through
-				unsigned int req_free_width = 3, req_free_height = 1;
+				unsigned int req_free_width = 20, req_free_height = 10;
 
 				//Vehicle dimensions
 				float vehicle_width = 0.98f, vehicle_height = 0.26f;
+				unsigned int vehicle_width_px = 20, vehicle_height_px = 10;
 			};
 
 		public:
@@ -292,12 +294,13 @@ namespace msr {
 			Vector3r linePlaneIntersection(Vector3r ray, Vector3r planeNormal, float max_allowed_obs_dist) {
 
 				if (planeNormal.dot(ray) < FLT_MIN) {
-					return VectorMath::nanVector(); // No intersection, the line is parallel to the plane
+					return VectorMath::nanVector(); // No intersection, the line is parallel to the plane or behind
 				}
 
 				// Compute the X value for the directed line ray intersecting the plane
 				float x = max_allowed_obs_dist / planeNormal.dot(ray);
-
+				float y = max_allowed_obs_dist * ray.y() / ray.x();
+				float z = max_allowed_obs_dist * ray.y() / ray.x();
 				// output contact point
 				return ray.normalized()*x; //Make sure your ray vector is normalized
 			}
@@ -314,7 +317,7 @@ namespace msr {
 			//convert horizonal fov to vertical fov
 			float hfov2vfov(float hfov, unsigned int img_h, unsigned int img_w)
 			{
-				float aspect = float (img_h / img_w);
+				float aspect = float (img_h) / float (img_w);
 				float vfov = 2 * atan(tan(hfov / 2) * aspect);
 				return vfov;
 			}
@@ -366,8 +369,12 @@ namespace msr {
 					{
 					//4. So now we have a rectangle and a point within it
 					//5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
-					
+					std::vector<Vector2r> cell_centers = getCellCenters();
 					//6. Compute cell coordinates i, j for x_goal and y_goal.
+					
+					//unsigned int cell_idx = nearest_neighbor(cell_centers, intersect_point);
+					//Vector2r new_goal = cell_centers[cell_idx];
+
 					/*7. Until free space is found
 					For p = -params.req_free_width to +params.req_free_width
 					For q = -params.req_free_height to +params.req_free_height
@@ -395,6 +402,21 @@ namespace msr {
 				}
 			}
 
+			//Returns index of nearest neighbor
+			unsigned int nearest_neighbor(std::vector<Vector2r> arr, Vector2r query) {
+				float min_dist = UINT16_MAX;
+				unsigned int index = 0;
+				for (unsigned int i = 0; i < arr.size(); i++) {
+					Vector2r diff = arr[i] - query;
+					float dist = sqrt(diff.dot(diff));
+					if (dist < min_dist) {
+						min_dist = dist;
+					index = i;
+					}
+				}
+				return index;
+			}
+
 			Pose rotateToGoal(Pose current_pose, Vector3r goal) {
 				//get rotation we need
 				//TODO: below is toQuat to center but we only need somewhere at the edge of frustum
@@ -408,14 +430,14 @@ namespace msr {
 				return Pose(current_pose.position, (current_pose.orientation * stepQuat).normalized());
 			}
 
-			bool isWindowFree(std::vector<float>& img, unsigned int img_h, unsigned int img_w, unsigned int crop_h, unsigned int crop_w) {
+			bool isCellFree(std::vector<float>& img, Vector2r cell_center) {
 			
 				//std::vector<float> crop;
 				unsigned int counter = 0;
 
-				for (int i = int((img_h - crop_h) / 2); i < int((img_h + crop_h) / 2); i++) {
-					for (int j = int((img_w - crop_w) / 2); j<int((img_w + crop_w) / 2); j++) {
-						int idx = i * int(img_w) + j;
+				for (int i = int(cell_center.y() - params_.req_free_height / 2); i < int(cell_center.y() + params_.req_free_height / 2); i++) {
+					for (int j = int(cell_center.x() - params_.req_free_width / 2); j<int(cell_center.x() + params_.req_free_width / 2); j++) {
+						int idx = i * params_.depth_width + j;
 						//crop.push_back(img[idx]);
 						if (img[idx] < params_.max_allowed_obs_dist) {
 							counter++;
@@ -433,6 +455,30 @@ namespace msr {
 				}
 
 			}
+
+			std::vector<Vector2r> getCellCenters() {
+				//float hfov = params_.fov;
+				//float vfov = hfov2vfov(hfov, params_.depth_height, params_.depth_width);
+				//params_.vehicle_height_px = ceil(params_.depth_height * params_.vehicle_height / (tan(hfov / 2) * params_.max_allowed_obs_dist * 2)); //height
+				//params_.vehicle_width_px = ceil(params_.depth_width * params_.vehicle_width / (tan(vfov / 2) * params_.max_allowed_obs_dist * 2)); //width
+
+				params_.M = params_.depth_height / params_.req_free_height;
+				params_.N = params_.depth_width / params_.req_free_width;
+				unsigned int M_offset = params_.depth_height - params_.req_free_height * params_.M;
+				unsigned int N_offset = params_.depth_width - params_.req_free_width * params_.N;
+				std::vector<Vector2r> cell_centers;
+				Vector2r cell_center;
+
+				for (unsigned int i = 0; i < params_.M; i++) {
+					for (unsigned int j = 0; j < params_.N; j++) {
+						cell_center.x() = float(j*params_.req_free_width + 0.5f * (params_.req_free_width + N_offset));
+						cell_center.y() = float(i*params_.req_free_height + 0.5f * (params_.req_free_height + M_offset));
+						cell_centers.push_back(cell_center);
+					}
+				}
+				return cell_centers;
+			}
+
 
 			//returns true if goal in body frame in within frustum
 			bool isInFrustrum(const Vector3r& goal_body, real_T fov)

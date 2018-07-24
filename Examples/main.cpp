@@ -86,6 +86,39 @@ void runSteroImageGenerator(int argc, const char *argv[])
 
 int main(int argc, const char *argv[])
 {
+	DepthNavT depthNavT;
+	std::vector<Vector2r> cell_centers = depthNavT.getCellCenters();
+	unsigned int cell_idx = depthNavT.nearest_neighbor(cell_centers, Vector2r(43, 23));
+	std::cout << cell_centers[cell_idx] << std::endl;
+	std::cout << cell_idx << std::endl;
+
+	std::vector<float> img(5000, 10.0f);
+	img[2] = 0.5f;
+	img[3] = 0.5f;
+	img[4] = 0.5f;
+	std::cout << depthNavT.isCellFree(img, cell_centers[0]) << std::endl;
+	std::cout << depthNavT.isCellFree(img, cell_centers[1]) << std::endl;
+
+
+	//1. Let's have a plane that fits in our frustum at x = 1 (remember +X is front, +Y is right in NED)
+	Vector2r planeSize = depthNavT.getPlaneSize(1, Utils::degreesToRadians(90.0f), depthNavT.hfov2vfov(Utils::degreesToRadians(90.0f), 144, 256));
+	//2. We will compute x_min, y_min, x_max, y_max for this plane in body frame.
+	float z_min = -planeSize.x() / 2;
+	float y_min = -planeSize.y() / 2;
+	float z_max = planeSize.x() / 2;
+	float y_max = planeSize.y() / 2;
+	std::cout << "Plane Boundary: " << "z_min:" << z_min << " z_max:" << z_max << " y_min:" << y_min << " y_max:" << y_max << std::endl;
+	//3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
+	Vector3r goal_vec = Vector3r(5,2,0);
+	Vector3r forward_vec = VectorMath::transformToWorldFrame(VectorMath::front(), Quaternionr(1,0,0,0));
+	Vector3r intersect_point = depthNavT.linePlaneIntersection(goal_vec, forward_vec, 1);
+
+	return 0;
+}
+
+/*
+int main(int argc, const char *argv[])
+{
     using namespace msr::airlib;
 
 	typedef ImageCaptureBase::ImageRequest ImageRequest;
@@ -119,22 +152,22 @@ int main(int argc, const char *argv[])
 	float step = 0.1f;
 	bool bSafeToMove = true;
 
-	/*Using 2D array
-	int M = 256;
-	int N = 144;
-	
-	//dynamic alloc
-	real_T ** depth_image = new real_T *[N];
-	for (int i = 0; i < N; i++)
-		depth_image[i] = new real_T[M];
+	//Using 2D array
+	//int M = 256;
+	//int N = 144;
+	//
+	////dynamic alloc
+	//real_T ** depth_image = new real_T *[N];
+	//for (int i = 0; i < N; i++)
+	//	depth_image[i] = new real_T[M];
 
-	//fill
-	for (int i = 0; i < N; i++)
-		for (int j = 0; j < M; j++)
-			depth_image[i][j] = image_info.image_data_float.data()[i*M + j];
+	////fill
+	//for (int i = 0; i < N; i++)
+	//	for (int j = 0; j < M; j++)
+	//		depth_image[i][j] = image_info.image_data_float.data()[i*M + j];
 
-	currentPose = depthNavT.getNextPose(depth_image, goalPose.position, currentPose, step);
-	*/
+	//currentPose = depthNavT.getNextPose(depth_image, goalPose.position, currentPose, step);
+	//
 
 	try {
 		client.confirmConnection();
@@ -224,33 +257,33 @@ int main(int argc, const char *argv[])
 					//std::cout << "Quaternion: " << goalQuat.w() << " " << goalQuat.x() << " " << goalQuat.y() << " " << goalQuat.z() << std::endl;
 				}
 
-				/* To do rather than interpolate take physical constraints into account
-				real_T p_current, r_current, y_current;
-				VectorMath::toEulerianAngle(currentPose.orientation, p_current, r_current, y_current);
+				//// To do rather than interpolate take physical constraints into account
+				//real_T p_current, r_current, y_current;
+				//VectorMath::toEulerianAngle(currentPose.orientation, p_current, r_current, y_current);
 
-				real_T p_goal, r_goal, y_goal;
-				VectorMath::toEulerianAngle(goalQuat, p_goal, r_goal, y_goal);
+				//real_T p_goal, r_goal, y_goal;
+				//VectorMath::toEulerianAngle(goalQuat, p_goal, r_goal, y_goal);
 
-				//UAV rate in rad/s
-				real_T p_rate = Utils::degreesToRadians(45.0f);
-				real_T r_rate = Utils::degreesToRadians(45.0f);
-				real_T y_rate = Utils::degreesToRadians(90.0f);
+				////UAV rate in rad/s
+				//real_T p_rate = Utils::degreesToRadians(45.0f);
+				//real_T r_rate = Utils::degreesToRadians(45.0f);
+				//real_T y_rate = Utils::degreesToRadians(90.0f);
 
-				real_T p_diff, r_diff, y_diff;
-				p_diff = p_goal - p_current;
-				r_diff = r_goal - r_current;
-				y_diff = y_goal - y_current;
+				//real_T p_diff, r_diff, y_diff;
+				//p_diff = p_goal - p_current;
+				//r_diff = r_goal - r_current;
+				//y_diff = y_goal - y_current;
 
-				real_T dt = 1 / 30;
+				//real_T dt = 1 / 30;
 
-				real_T p_feasible, r_feasible, y_feasible;
-				p_feasible = abs(p_diff) > abs(p_rate*dt) ? copysignf(p_rate, p_diff) * dt : p_diff;
-				r_feasible = abs(r_diff) > abs(r_rate*dt) ? copysignf(r_rate, r_diff) * dt : r_diff;
-				y_feasible = abs(y_diff) > abs(y_rate*dt) ? copysignf(y_rate, y_diff) * dt : y_diff;
+				//real_T p_feasible, r_feasible, y_feasible;
+				//p_feasible = abs(p_diff) > abs(p_rate*dt) ? copysignf(p_rate, p_diff) * dt : p_diff;
+				//r_feasible = abs(r_diff) > abs(r_rate*dt) ? copysignf(r_rate, r_diff) * dt : r_diff;
+				//y_feasible = abs(y_diff) > abs(y_rate*dt) ? copysignf(y_rate, y_diff) * dt : y_diff;
 
-				nextQuat = VectorMath::toQuaternion(p_feasible, r_feasible, y_feasible);
-				currentPose.orientation = nextQuat * currentPose.orientation;
-				*/
+				//nextQuat = VectorMath::toQuaternion(p_feasible, r_feasible, y_feasible);
+				//currentPose.orientation = nextQuat * currentPose.orientation;
+				//
 
 				
 				if (bSafeToMove) 
@@ -277,9 +310,7 @@ int main(int argc, const char *argv[])
 		std::this_thread::sleep_for(std::chrono::duration<double>(5));
 	}
 
-
-	
-
 	
 }
+*/
 
