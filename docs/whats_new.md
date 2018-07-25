@@ -2,6 +2,11 @@
 
 Below is highly summerized curated list of important changes. This does not include minor/less important changes or bug fixes or things like documentation update. This list updated every few months. For full list of changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### June, 2018
+* Development workflow doc
+* Better Python 2 compatibility
+* OSX setup fixes
+* Almost complete rewrite of our APIs with new threading model, merging old APIs and creating few newer ones
 
 ### April, 2018
 * Upgraded to Unreal Engine 4.18 and Visual Studio 2017

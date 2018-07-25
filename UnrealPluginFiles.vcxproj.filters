@@ -42,12 +42,6 @@
     <ClCompile Include="unreal\plugins\airsim\source\VehicleCameraConnector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unreal\plugins\airsim\source\VehicleConnectorBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="unreal\plugins\airsim\source\VehiclePawnWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="unreal\plugins\airsim\source\car\CarPawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -61,12 +55,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="unreal\plugins\airsim\source\multirotor\FlyingPawn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="unreal\plugins\airsim\source\multirotor\MultiRotorConnector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="unreal\plugins\airsim\source\multirotor\SimModeWorldMultiRotor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="unreal\plugins\airsim\source\recording\RecordingFile.cpp">
@@ -91,6 +79,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\WorldSimApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealDistanceSensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealSensorFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\Multirotor\MultirotorSimApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\Multirotor\SimModeWorldMultirotor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,5 +179,31 @@
     <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\WorldSimApi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealDistanceSensor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealSensorFactory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\Multirotor\MultirotorSimApi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Unreal\Plugins\AirSim\Source\AirSim.Build.4.15.cs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Unreal\Plugins\AirSim\Source\AirSim.Build.cs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -49,8 +49,8 @@ else
     if [ "$(uname)" == "Darwin" ]; then
         CMAKE="$(greadlink -f cmake_build/bin/cmake)"
 
-        export CC=/usr/local/opt/llvm\@5.0/bin/clang
-        export CXX=/usr/local/opt/llvm\@5.0/bin/clang++
+        export CC=/usr/local/opt/llvm-5.0/bin/clang-5.0
+        export CXX=/usr/local/opt/llvm-5.0/bin/clang++-5.0
     else
         CMAKE="$(readlink -f cmake_build/bin/cmake)"
 
@@ -122,7 +122,7 @@ echo " AirSim plugin is built! Here's how to build Unreal project."
 echo "=================================================================="
 echo "If you are using Blocks environment, its already updated."
 echo "If you are using your own environment, update plugin using,"
-echo "rsync -t -r Unreal/Plugins path/to/MyUnrealProject"
+echo "rsync -a --delete Unreal/Plugins path/to/MyUnrealProject"
 echo ""
 echo "For help see:"
 echo "https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md"

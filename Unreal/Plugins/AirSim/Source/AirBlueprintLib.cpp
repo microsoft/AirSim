@@ -31,8 +31,8 @@ parameters -> camel_case
 
 bool UAirBlueprintLib::log_messages_hidden_ = false;
 uint32_t UAirBlueprintLib::flush_on_draw_count_ = 0;
-msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method_ =
-    msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName;
+msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method_ =
+    msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName;
 IImageWrapperModule* UAirBlueprintLib::image_wrapper_module_ = nullptr;
 
 void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec)
@@ -171,11 +171,11 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     switch (level) {
     case LogDebugLevel::Informational:
         color = FColor(147, 231, 237);
-        //UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
+        //UE_LOG(LogTemp, Log, TEXT("%s%s"), *prefix, *suffix);
         break;
     case LogDebugLevel::Success:
         color = FColor(156, 237, 147);
-        //UE_LOG(LogAirSim, Log, TEXT("%s%s"), *prefix, *suffix);
+        //UE_LOG(LogTemp, Log, TEXT("%s%s"), *prefix, *suffix);
         break;
     case LogDebugLevel::Failure:
         color = FColor(237, 147, 168);
@@ -183,7 +183,7 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
         break;
     case LogDebugLevel::Unimportant:
         color = FColor(237, 228, 147);
-        //UE_LOG(LogAirSim, Verbose, TEXT("%s%s"), *prefix, *suffix); 
+        //UE_LOG(LogTemp, Verbose, TEXT("%s%s"), *prefix, *suffix); 
         break;
     default: color = FColor::Black; break;
     }
@@ -195,7 +195,13 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
 
 void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_speed)
 {
-    context->GetWorldSettings()->SetTimeDilation(clock_speed);
+    UAirBlueprintLib::RunCommandOnGameThread([context, clock_speed]() {
+        auto* world_settings = context->GetWorldSettings();
+        if (world_settings)
+            world_settings->SetTimeDilation(clock_speed);
+        else
+            LogMessageString("Failed:", "WorldSettings was nullptr", LogDebugLevel::Failure);
+    }, true);
 }
 
 float UAirBlueprintLib::GetWorldToMetersScale(const AActor* context)
@@ -255,12 +261,12 @@ std::string UAirBlueprintLib::GetMeshName<USkinnedMeshComponent>(USkinnedMeshCom
 {
     switch (mesh_naming_method_)
     {
-    case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::OwnerName:
+    case msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName:
         if (mesh->GetOwner())
             return std::string(TCHAR_TO_UTF8(*(mesh->GetOwner()->GetName())));
         else
             return ""; // std::string(TCHAR_TO_UTF8(*(UKismetSystemLibrary::GetDisplayName(mesh))));
-    case msr::airlib::AirSimSettings::SegmentationSettings::MeshNamingMethodType::StaticMeshName:
+    case msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::StaticMeshName:
         if (mesh->SkeletalMesh)
             return std::string(TCHAR_TO_UTF8(*(mesh->SkeletalMesh->GetName())));
         else

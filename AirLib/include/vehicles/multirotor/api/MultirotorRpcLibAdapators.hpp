@@ -7,12 +7,15 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "api/RpcLibAdapatorsBase.hpp"
-#include "vehicles/multirotor/controllers/DroneCommon.hpp"
-#include "vehicles/multirotor/controllers/DroneControllerBase.hpp"
+#include "vehicles/multirotor/api/MultirotorCommon.hpp"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
-#include "rpc/msgpack.hpp"
 
+#undef check
+#include "rpc/msgpack.hpp"
+//TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
+#define check(expr) (static_cast<void>((expr)))
 
 namespace msr { namespace airlib_rpclib {
 
@@ -43,8 +46,12 @@ public:
         KinematicsState kinematics_true;
         GeoPoint gps_location;
         uint64_t timestamp;
+        LandedState landed_state;
+        RCData rc_data;
+        std::vector<std::string> controller_messages;
 
-        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, kinematics_true, gps_location, timestamp);
+
+        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, gps_location, timestamp, landed_state, rc_data);
 
         MultirotorState()
         {}
@@ -53,15 +60,16 @@ public:
         {
             collision = s.collision;
             kinematics_estimated = s.kinematics_estimated;
-            kinematics_true = s.kinematics_true;
             gps_location = s.gps_location;
             timestamp = s.timestamp;
+            landed_state = s.landed_state;
+            rc_data = RCData(s.rc_data);
         }
 
         msr::airlib::MultirotorState to() const
         {
             return msr::airlib::MultirotorState(collision.to(), kinematics_estimated.to(), 
-                kinematics_true.to(), gps_location.to(), timestamp);
+                gps_location.to(), timestamp, landed_state, rc_data.to());
         }
     };
 };
@@ -69,6 +77,7 @@ public:
 }} //namespace
 
 MSGPACK_ADD_ENUM(msr::airlib::DrivetrainType);
+MSGPACK_ADD_ENUM(msr::airlib::LandedState);
 
 
 #endif

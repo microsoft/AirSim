@@ -25,8 +25,8 @@ public:
     struct Rc {
         uint16_t channel_count = 12;
         uint16_t read_interval_ms = 10;
-        int16_t rate_level_mode_channel = 4; //corresponds to switch 1 in rc_data
-        int16_t allow_api_control_channel = 5; //corresponds to switch 2 in rc_data
+        int16_t rate_level_mode_channel = 4; //corresponds to switch 0 in rc_data
+        int16_t allow_api_control_channel = 5; //corresponds to switch 1 in rc_data
 
         //When actions such as arming/unarming, how much tolerance can be allowed in stick positions from 0 to 1?
         float action_request_tolerance = 0.1f;
@@ -53,8 +53,8 @@ public:
         const float kMaxLimit = 2.5f;
         Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //roll, pitch, yaw - in radians/sec
 
-        //p_xxx_rate params are sensetive to gyro noise. Values higher than 0.5 would require 
-        //noise filteration
+        //p_xxx_rate params are sensitive to gyro noise. Values higher than 0.5 would require 
+        //noise filtration
         const float kP = 0.25f;
         Axis4r p = Axis4r(kP, kP, kP, 1.0f);
     } angle_rate_pid;
@@ -62,7 +62,7 @@ public:
     struct AngleLevelPid {
         const float pi = 3.14159265359f; //180-degrees
         
-        //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremeities of controls
+        //max_pitch/roll_angle > 5.5 would produce versicle thrust that is not enough to keep vehicle in air at extremities of controls
         Axis4r max_limit = Axis4r(pi / 5.5f, pi / 5.5f, pi, 1.0f); //roll, pitch, yaw - in radians/sec
 
         const float kP = 2.5f;
@@ -92,7 +92,7 @@ public:
     } velocity_pid;
 
     struct Takeoff {
-        float takeoff_z = -1.5f;
+        float takeoff_z = -2.0f;
         //float velocity = -1.0f;
     } takeoff;
 

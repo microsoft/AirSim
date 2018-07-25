@@ -18,8 +18,8 @@ FRecordingThread::FRecordingThread()
 }
 
 
-void FRecordingThread::startRecording(msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics, 
-    const RecordingSettings& settings, VehiclePawnWrapper* wrapper)
+void FRecordingThread::startRecording(const msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics, 
+    const RecordingSetting& settings, msr::airlib::VehicleSimApiBase* vehicle_sim_api)
 {
     stopRecording();
 
@@ -29,15 +29,15 @@ void FRecordingThread::startRecording(msr::airlib::ImageCaptureBase* image_captu
     instance_->image_capture_ = image_capture;
     instance_->kinematics_ = kinematics;
     instance_->settings_ = settings;
-    instance_->wrapper_ = wrapper;
+    instance_->vehicle_sim_api_ = vehicle_sim_api;
 
     instance_->last_screenshot_on_ = 0;
     instance_->last_pose_ = msr::airlib::Pose();
 
     instance_->is_ready_ = true;
 
-    instance_->recording_file_.reset(new RecordingFile(instance_->settings_.header_columns));
-    instance_->recording_file_->startRecording();
+    instance_->recording_file_.reset(new RecordingFile());
+    instance_->recording_file_->startRecording(vehicle_sim_api);
 }
 
 FRecordingThread::~FRecordingThread()
@@ -83,12 +83,12 @@ uint32 FRecordingThread::Run()
                 last_screenshot_on_ = msr::airlib::ClockFactory::get()->nowNanos();
                 last_pose_ = kinematics_->pose;
 
-                // todo: should we go as fast as possible, or should we limit this to a particular number of
+                //TODO: should we go as fast as possible, or should we limit this to a particular number of
                 // frames per second?
                 
                 std::vector<msr::airlib::ImageCaptureBase::ImageResponse> responses;
                 image_capture_->getImages(settings_.requests, responses);
-                recording_file_->appendRecord(responses, wrapper_);
+                recording_file_->appendRecord(responses, vehicle_sim_api_);
             }
         }
     }

@@ -65,7 +65,7 @@ public:
             //comm_link_->log(std::string("State:\t ").append("Inactive state"));
 
             if (rc_action == RcRequestType::ArmRequest) {
-                comm_link_->log(std::string("State:\t ").append("Inactive state, Arm request recieved"));
+                comm_link_->log(std::string("State:\t ").append("Inactive state, Arm request received"));
                 request_duration_ += dt;
 
                 if (request_duration_ > params_->rc.arm_duration) {
@@ -82,12 +82,12 @@ public:
             goal_ = Axis4r::zero(); //neural activation while still being armed
             goal_.throttle() = params_->Params::min_armed_throttle();
 
-            //we must wait until sticks are at neutral or we will have random behaviour
+            //we must wait until sticks are at neutral or we will have random behavior
             if (rc_action == RcRequestType::NeutralRequest) {
                 request_duration_ += dt;
 
                 if (request_duration_ > params_->rc.neutral_duration) {
-                    state_estimator_->setHomeGeoPoint(state_estimator_->getGeoPoint());
+                    //TODO: this code should be reused in OffboardApi
                     vehicle_state_->setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
                     comm_link_->log(std::string("State:\t ").append("Armed"));
                     request_duration_ = 0;
@@ -96,9 +96,9 @@ public:
             //else ignore
             break;
         case VehicleStateType::Armed:
-            //unless diarm is being requested, set goal from stick position
+            //unless disarm is being requested, set goal from stick position
             if (rc_action == RcRequestType::DisarmRequest) {
-                comm_link_->log(std::string("State:\t ").append("Armed state, disarm request recieved"));
+                comm_link_->log(std::string("State:\t ").append("Armed state, disarm request received"));
                 request_duration_ += dt;
 
                 if (request_duration_ > params_->rc.disarm_duration) {
@@ -114,6 +114,7 @@ public:
         case VehicleStateType::BeingDisarmed:
             comm_link_->log(std::string("State:\t ").append("Being state"));
 
+            //TODO: this code should be reused in OffboardApi
             goal_.setAxis3(Axis3r::zero()); //neutral activation while being disarmed
             vehicle_state_->setState(VehicleStateType::Disarmed);
             request_duration_ = 0;

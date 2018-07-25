@@ -30,9 +30,6 @@
     <ClInclude Include="PixhawkTest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RosFlightTest.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SimpleFlightTest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

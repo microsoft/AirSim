@@ -19,11 +19,15 @@ you can build and run it there.
     ```
 4. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is waiting for someone to connect.
 5. Now edit [AirSim settings](settings.md) file to make sure you have followings:
-    ```
+    ```json
     {
-        "DefaultVehicleConfig": "PX4",
-        "PX4": {
-            "UseSerial": false
+        "SettingsVersion": 1.2,
+        "SimMode": "Multirotor",
+        "Vehicles": {
+            "PX4": {
+                "VehicleType": "PX4Multirotor",
+                "UseSerial": false
+            }
         }
     }
     ```

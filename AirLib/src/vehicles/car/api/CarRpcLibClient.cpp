@@ -13,6 +13,7 @@
 #include "common/ClockFactory.hpp"
 #include <thread>
 STRICT_MODE_OFF
+
 #ifndef RPCLIB_MSGPACK
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
@@ -22,6 +23,9 @@ STRICT_MODE_OFF
 #endif // nil
 #include "rpc/client.h"
 #include "vehicles/car/api/CarRpcLibAdapators.hpp"
+//TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
+#define check(expr) (static_cast<void>((expr)))
+
 STRICT_MODE_ON
 #ifdef _MSC_VER
 __pragma(warning( disable : 4239))
@@ -34,24 +38,24 @@ namespace msr { namespace airlib {
 
 typedef msr::airlib_rpclib::CarRpcLibAdapators CarRpcLibAdapators;
 
-CarRpcLibClient::CarRpcLibClient(const string&  ip_address, uint16_t port, uint timeout_ms)
-    : RpcLibClientBase(ip_address, port, timeout_ms)
+CarRpcLibClient::CarRpcLibClient(const string&  ip_address, uint16_t port, float timeout_sec)
+    : RpcLibClientBase(ip_address, port, timeout_sec)
 {
 }
 
 CarRpcLibClient::~CarRpcLibClient()
 {}
 
-void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls)
+void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls, const std::string& vehicle_name)
 {
     static_cast<rpc::client*>(getClient())->
-        call("setCarControls", CarRpcLibAdapators::CarControls(controls));
+        call("setCarControls", CarRpcLibAdapators::CarControls(controls), vehicle_name);
 }
 
-CarApiBase::CarState CarRpcLibClient::getCarState()
+CarApiBase::CarState CarRpcLibClient::getCarState(const std::string& vehicle_name)
 {
     return static_cast<rpc::client*>(getClient())->
-        call("getCarState").as<CarRpcLibAdapators::CarState>().to();
+        call("getCarState", vehicle_name).as<CarRpcLibAdapators::CarState>().to();
 }
 
 

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>hello_car.py</StartupFile>
+    <StartupFile>car\hello_car.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,77 +25,110 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="box.py">
+    <Compile Include="airsim\client.py" />
+    <Compile Include="airsim\types.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="camera.py">
+    <Compile Include="airsim\utils.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="car_collision.py">
+    <Compile Include="airsim\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="car_monitor.py" />
-    <Compile Include="disarm.py" />
-    <Compile Include="land.py" />
-    <Compile Include="pause_continue_car.py">
+    <Compile Include="car\legacy_hello_car.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="clock_speed.py">
+    <Compile Include="car\multi_agent_car.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="cv_mode.py">
+    <Compile Include="car\setup_path.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DQNcar.py" />
-    <Compile Include="DQNdrone.py" />
-    <Compile Include="drive_straight.py">
+    <Compile Include="computer_vision\character_control.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="drone_stress_test.py">
+    <Compile Include="computer_vision\cv_capture.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="manual_mode_demo.py">
+    <Compile Include="computer_vision\cv_navigate.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="objects.py">
+    <Compile Include="computer_vision\getpos.py" />
+    <Compile Include="computer_vision\ground_truth.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="orbit.py" />
-    <Compile Include="pause_continue_drone.py">
+    <Compile Include="computer_vision\setup_path.py" />
+    <Compile Include="multirotor\gimbal.py" />
+    <Compile Include="multirotor\land.py" />
+    <Compile Include="car\pause_continue_car.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="point_cloud.py" />
-    <Compile Include="reset_test_car.py" />
-    <Compile Include="reset_test_drone.py">
+    <Compile Include="multirotor\clock_speed.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="seg_pallete.py">
+    <Compile Include="multirotor\manual_mode_demo.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="hello_car.py">
+    <Compile Include="computer_vision\objects.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="hello_drone.py">
+    <Compile Include="multirotor\multi_agent_drone.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="navigate.py">
+    <Compile Include="multirotor\navigate.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="path.py">
+    <Compile Include="airsim\pfm.py" />
+    <Compile Include="car\car_collision.py" />
+    <Compile Include="car\car_monitor.py" />
+    <Compile Include="car\car_stress_test.py" />
+    <Compile Include="car\DQNcar.py" />
+    <Compile Include="car\drive_straight.py" />
+    <Compile Include="car\hello_car.py" />
+    <Compile Include="car\reset_test_car.py" />
+    <Compile Include="multirotor\opencv_show.py" />
+    <Compile Include="computer_vision\cv_mode.py" />
+    <Compile Include="multirotor\point_cloud.py" />
+    <Compile Include="computer_vision\segmentation.py" />
+    <Compile Include="computer_vision\seg_pallete.py" />
+    <Compile Include="multirotor\box.py" />
+    <Compile Include="multirotor\disarm.py" />
+    <Compile Include="multirotor\DQNdrone.py" />
+    <Compile Include="multirotor\drone_stress_test.py" />
+    <Compile Include="multirotor\hello_drone.py" />
+    <Compile Include="multirotor\orbit.py" />
+    <Compile Include="multirotor\path.py" />
+    <Compile Include="multirotor\pause_continue_drone.py" />
+    <Compile Include="multirotor\reset_test_drone.py" />
+    <Compile Include="multirotor\setup_path.py" />
+    <Compile Include="multirotor\survey.py" />
+    <Compile Include="multirotor\takeoff.py" />
+    <Compile Include="ros\car_image_raw.py" />
+    <Compile Include="ros\car_pose.py" />
+    <Compile Include="ros\drone_image_raw.py" />
+    <Compile Include="ros\setup_path.py" />
+    <Compile Include="setup.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="pfm.py" />
-    <Compile Include="AirSimClient.py" />
-    <Compile Include="segmentation.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="car_stress_test.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="survey.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda35-64" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="airsim\" />
+    <Folder Include="car\" />
+    <Folder Include="computer_vision\" />
+    <Folder Include="multirotor\" />
+    <Folder Include="ros\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="install_packages.bat">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="LICENSE" />
+    <Content Include="README.md">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

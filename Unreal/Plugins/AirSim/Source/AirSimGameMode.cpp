@@ -6,7 +6,6 @@
 #include "AirBlueprintLib.h"
 
 
-
 class AUnrealLog : public msr::airlib::Utils::Logger
 {
 public:
@@ -22,13 +21,13 @@ public:
         }
 
         if (level == msr::airlib::Utils::kLogLevelError) {
-            UE_LOG(LogAirSim, Error, TEXT("%s"), *FString(message.c_str()));
+            UE_LOG(LogTemp, Error, TEXT("%s"), *FString(message.c_str()));
         }
         else if (level == msr::airlib::Utils::kLogLevelWarn) {
-            UE_LOG(LogAirSim, Warning, TEXT("%s"), *FString(message.c_str()));
+            UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(message.c_str()));
         }
         else {
-            UE_LOG(LogAirSim, Log, TEXT("%s"), *FString(message.c_str()));
+            UE_LOG(LogTemp, Log, TEXT("%s"), *FString(message.c_str()));
         }
   
 //#ifdef _MSC_VER
@@ -55,14 +54,14 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));
 }
 
-UGameUserSettings* AAirSimGameMode::GetGameUserSettings()
-{
-    if (GEngine != nullptr)
-    {
-        return GEngine->GameUserSettings;
-    }
-    return nullptr;
-}
+//UGameUserSettings* AAirSimGameMode::GetGameUserSettings()
+//{
+//    if (GEngine != nullptr)
+//    {
+//        return GEngine->GameUserSettings;
+//    }
+//    return nullptr;
+//}
 
 void AAirSimGameMode::StartPlay() 
 {

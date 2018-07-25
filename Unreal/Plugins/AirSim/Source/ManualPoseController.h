@@ -12,11 +12,9 @@ class AIRSIM_API UManualPoseController : public UObject {
 
 public:
     void initializeForPlay();
-    void setActor(AActor* actor, bool enable_binding = true);
+    void setActor(AActor* actor);
     AActor* getActor() const;
     void updateActorPose(float dt);
-    void restoreLastActor();
-    void enableBindings(bool enable);
     void getDeltaPose(FVector& delta_position, FRotator& delta_rotation) const;
     void resetDelta();
     void updateDeltaPosition(float dt);
@@ -35,7 +33,8 @@ private:
 
     void setupInputBindings();	
     void removeInputBindings();
-    
+    void clearBindings();
+
 private:
     FInputAxisBinding *left_binding_, *right_binding_, *up_binding_, *down_binding_;
     FInputAxisBinding *forward_binding_, *backward_binding_, *left_yaw_binding_, *up_pitch_binding_;
@@ -49,7 +48,7 @@ private:
     FVector delta_position_;
     FRotator delta_rotation_;
 
-    AActor *actor_, *last_actor_;
+    AActor *actor_;
 
     float acceleration_ = 0;
     FVector input_positive_, inpute_negative_;

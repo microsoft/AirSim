@@ -91,7 +91,7 @@ namespace mavlinkcom_impl {
 		MavLinkVideoServerImpl(int localSystemId, int localComponentId);
 		~MavLinkVideoServerImpl();
 
-		bool hasVideoRequest(MavLinkVideoServer::MavLinkVideoRequest& req);
+        bool hasVideoRequest(MavLinkVideoServer::MavLinkVideoRequest& req);
 
 		void sendFrame(uint8_t data[], uint32_t data_size, uint16_t width, uint16_t height, uint8_t image_type, uint8_t image_quality);
 

@@ -57,9 +57,9 @@ void ObstacleMap::setBlindspot(int tick, bool blindspot)
 
 ObstacleMap::ObstacleInfo ObstacleMap::hasObstacle_(int from_tick, int to_tick) const
 {
-    //make dure from <= to
+    //make sure from <= to
     if (from_tick > to_tick) {
-        //normalize the ticks so bothe are valid indices
+        //normalize the ticks so both are valid indices
         from_tick = wrap(from_tick);
         to_tick = wrap(to_tick);
         

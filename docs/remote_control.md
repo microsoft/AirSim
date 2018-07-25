@@ -48,15 +48,22 @@ Nils Tijtgat wrote an excellent blog on how to get the [DJI controller working w
 This typically happens if you have multiple RCs and or XBox/Playstation gamepads etc connected. In Windows, hit Windows+S key and search for "Set up USB Game controllers" (in older versions of Windows try "joystick"). This will show you all game controllers connected to your PC. If you don't see yours than Windows haven't detected it and so you need to first solve that issue. If you do see yours but not at the top of the list (i.e. index 0) than you need to tell AirSim because AirSim by default tries to use RC at index 0. To do this, navigate to your `~/Documents/AirSim` folder, open up `settings.json` and add/modify following setting. Below tells AirSim to use RC at index = 2.
 ```
 {
-  "SimpleFlight": {
-    "RemoteControlID": 2
-  }
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "Vehicles": {
+        "SimpleFlight": {
+            "VehicleType": "SimpleFlight",
+            "RC": {
+              "RemoteControlID": 2
+            }
+        }
+    }
 }
 ```
 
-#### Vehicle seems unstable when using XBox/PS3 contoller.
+#### Vehicle seems unstable when using XBox/PS3 controller
 
-Regular gamepads are not very precise and have lot of random noise. Most of the times you may see significant offsets as well (i.e. output is not zero when sticks are at zero). So this behaviour is expected.
+Regular gamepads are not very precise and have lot of random noise. Most of the times you may see significant offsets as well (i.e. output is not zero when sticks are at zero). So this behavior is expected.
 
 #### Where is RC calibration in AirSim?
 

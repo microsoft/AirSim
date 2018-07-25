@@ -3,8 +3,8 @@
 
 #include "AirSim.h"
 #include "Misc/Paths.h"
-
-DEFINE_LOG_CATEGORY(LogAirSim);
+#include "Modules/ModuleManager.h"
+#include "Modules/ModuleInterface.h"
 
 class FAirSim : public IModuleInterface
 {
@@ -17,7 +17,7 @@ IMPLEMENT_MODULE(FAirSim, AirSim)
 void FAirSim::StartupModule()
 {
     //plugin startup
-    UE_LOG(LogAirSim, Log, TEXT("StartupModule: AirSim plugin"));
+    UE_LOG(LogTemp, Log, TEXT("StartupModule: AirSim plugin"));
 }
 
 void FAirSim::ShutdownModule()

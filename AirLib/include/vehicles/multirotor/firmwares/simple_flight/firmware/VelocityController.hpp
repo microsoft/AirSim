@@ -53,7 +53,7 @@ public:
         case 3:
             //not really required
             //output of parent controller is -1 to 1 which
-            //we will transofrm to 0 to 1
+            //we will transform to 0 to 1
             child_controller_.reset(new PassthroughController());
             child_mode_[axis_] = GoalModeType::Passthrough;
             break;
@@ -99,6 +99,12 @@ public:
             child_goal_[axis_] = pid_->getOutput() * params_->angle_level_pid.max_limit[axis_];
             child_controller_->update();
             output_ = child_controller_->getOutput();
+
+            //if (std::abs(goal_velocity_local[axis_] - measured_velocity_local[axis_]) > 1)
+            //    msr::airlib::Utils::log(msr::airlib::Utils::stringf("VC: %i\t%f\t%f\t%f",
+            //        axis_, goal_velocity_local[axis_],
+            //        measured_velocity_local[axis_], output_));
+
             break;
         case 1: //+vx is -ve pitch
             child_goal_[axis_] = - pid_->getOutput() * params_->angle_level_pid.max_limit[axis_];

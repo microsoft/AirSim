@@ -1,12 +1,15 @@
 #include "PIPCamera.h"
+#include "ConstructorHelpers.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "Engine/World.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "ImageUtils.h"
+
 #include <string>
 #include <exception>
-#include "Materials/MaterialInstanceDynamic.h"
 #include "AirBlueprintLib.h"
-#include "ImageUtils.h"
 
 
 APIPCamera::APIPCamera()
@@ -52,12 +55,6 @@ void APIPCamera::PostInitializeComponents()
 void APIPCamera::BeginPlay()
 {
     Super::BeginPlay();
-    
-    //Computer transform using the actor that this camera is attached to
-    //if this is free floting camera like external observer camera then just use 
-    //itself to select origin point
-    auto* p = this->GetAttachParentActor();
-    ned_transform_.initialize(p ? p : this);
 
     noise_materials_.AddZeroed(imageTypeCount() + 1);
 
@@ -71,25 +68,107 @@ void APIPCamera::BeginPlay()
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 
-    gimble_stabilization_ = 0;
-    gimbled_rotator_ = this->GetActorRotation();
+    gimbal_stabilization_ = 0;
+    gimbald_rotator_ = this->GetActorRotation();
     this->SetActorTickEnabled(false);
 }
 
+msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::ImageType image_type) const
+{
+    //TODO: avoid the need to override const cast here
+    const_cast<APIPCamera*>(this)->setCameraTypeEnabled(image_type, true);
+    const USceneCaptureComponent2D* capture = const_cast<APIPCamera*>(this)->getCaptureComponent(image_type, false);
+    if (capture) {
+        FMatrix proj_mat;
+
+	    float x_axis_multiplier;
+	    float y_axis_multiplier;
+		FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
+
+	    if (render_target_size.X > render_target_size.Y)
+	    {
+		    // if the viewport is wider than it is tall
+		    x_axis_multiplier = 1.0f;
+		    y_axis_multiplier = render_target_size.X / static_cast<float>(render_target_size.Y);
+	    }
+	    else
+	    {
+		    // if the viewport is taller than it is wide
+		    x_axis_multiplier = render_target_size.Y / static_cast<float>(render_target_size.X);
+		    y_axis_multiplier = 1.0f;
+	    }
+
+	    if (capture->ProjectionType == ECameraProjectionMode::Orthographic)
+	    {
+		    check((int32)ERHIZBuffer::IsInverted);
+		    const float OrthoWidth = capture->OrthoWidth / 2.0f;
+		    const float OrthoHeight = capture->OrthoWidth / 2.0f * x_axis_multiplier / y_axis_multiplier;
+
+		    const float NearPlane = 0;
+		    const float FarPlane = WORLD_MAX / 8.0f;
+
+		    const float ZScale = 1.0f / (FarPlane - NearPlane);
+		    const float ZOffset = -NearPlane;
+
+		    proj_mat = FReversedZOrthoMatrix(
+			    OrthoWidth,
+			    OrthoHeight,
+			    ZScale,
+			    ZOffset
+			    );
+	    }
+	    else
+	    {
+            float fov = Utils::degreesToRadians(capture->FOVAngle);
+		    if ((int32)ERHIZBuffer::IsInverted)
+		    {
+			    proj_mat = FReversedZPerspectiveMatrix(
+				    fov,
+				    fov,
+				    x_axis_multiplier,
+				    y_axis_multiplier,
+				    GNearClippingPlane,
+				    GNearClippingPlane
+				    );
+		    }
+		    else
+		    {
+			    proj_mat = FPerspectiveMatrix(
+				    fov,
+				    fov,
+				    x_axis_multiplier,
+				    y_axis_multiplier,
+				    GNearClippingPlane,
+				    GNearClippingPlane
+				    );
+		    }
+	    }
+        msr::airlib::ProjectionMatrix mat;
+        for (auto i = 0; i < 4; ++i)
+            for (auto j = 0; j < 4; ++j)
+                mat.matrix[i][j] = proj_mat.M[i][j];
+        return mat;
+    }
+    else {
+        msr::airlib::ProjectionMatrix mat;
+        mat.setTo(Utils::nan<float>());
+        return mat;
+    }
+}
 
 void APIPCamera::Tick(float DeltaTime)
 {
-    if (gimble_stabilization_ > 0) {
+    if (gimbal_stabilization_ > 0) {
         FRotator rotator = this->GetActorRotation();
-        if (!std::isnan(gimbled_rotator_.Pitch))
-            rotator.Pitch = gimbled_rotator_.Pitch * gimble_stabilization_ + 
-                rotator.Pitch * (1 - gimble_stabilization_);
-        if (!std::isnan(gimbled_rotator_.Roll))
-            rotator.Roll = gimbled_rotator_.Roll * gimble_stabilization_ +
-                rotator.Roll * (1 - gimble_stabilization_);
-        if (!std::isnan(gimbled_rotator_.Yaw))
-            rotator.Yaw = gimbled_rotator_.Yaw * gimble_stabilization_ + 
-                rotator.Yaw * (1 - gimble_stabilization_);
+        if (!std::isnan(gimbald_rotator_.Pitch))
+            rotator.Pitch = gimbald_rotator_.Pitch * gimbal_stabilization_ + 
+                rotator.Pitch * (1 - gimbal_stabilization_);
+        if (!std::isnan(gimbald_rotator_.Roll))
+            rotator.Roll = gimbald_rotator_.Roll * gimbal_stabilization_ +
+                rotator.Roll * (1 - gimbal_stabilization_);
+        if (!std::isnan(gimbald_rotator_.Yaw))
+            rotator.Yaw = gimbald_rotator_.Yaw * gimbal_stabilization_ + 
+                rotator.Yaw * (1 - gimbal_stabilization_);
 
         this->SetActorRotation(rotator);
     }
@@ -107,7 +186,7 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
     }
 
     noise_material_static_ = nullptr;
-    noise_materials_.Reset();
+    noise_materials_.Empty();
 
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         //use final color for all calculations
@@ -115,7 +194,6 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
         render_targets_[image_type] = nullptr;
     }
 }
-
 
 unsigned int APIPCamera::imageTypeCount()
 {
@@ -128,6 +206,7 @@ void APIPCamera::showToScreen()
     camera_->Activate();
     APlayerController* controller = this->GetWorld()->GetFirstPlayerController();
     controller->SetViewTarget(this);
+    UAirBlueprintLib::LogMessage(TEXT("Camera: "), GetName(), LogDebugLevel::Informational);
 }
 
 void APIPCamera::disableAll()
@@ -146,29 +225,49 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
-void APIPCamera::setImageTypeSettings(int image_type, const APIPCamera::CaptureSetting& capture_setting, 
-    const APIPCamera::NoiseSetting& noise_setting)
+void APIPCamera::setCameraOrientation(const FRotator& rotator)
 {
-    if (image_type >= 0) { //scene captue components
-        updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type],
-            capture_setting, ned_transform_);
-
-        setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
+    if (gimbal_stabilization_ > 0) {
+        gimbald_rotator_.Pitch = rotator.Pitch;
+        gimbald_rotator_.Roll = rotator.Roll;
+        gimbald_rotator_.Yaw = rotator.Yaw;
     }
-    else { //camera component
-        updateCameraSetting(camera_, capture_setting, ned_transform_);
+    this->SetActorRelativeRotation(rotator);
+}
 
-        setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
+void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera_setting, const NedTransform& ned_transform)
+{
+    //TODO: should we be ignoring position and orientation settings here?
 
-        gimble_stabilization_ = Utils::clip(capture_setting.gimble.stabilization, 0.0f, 1.0f);
-        if (gimble_stabilization_ > 0) {
-            this->SetActorTickEnabled(true);
-            gimbled_rotator_.Pitch = capture_setting.gimble.pitch;
-            gimbled_rotator_.Roll = capture_setting.gimble.roll;
-            gimbled_rotator_.Yaw = capture_setting.gimble.yaw;
+    //TODO: can we eliminate storing NedTransform?
+    ned_transform_ = &ned_transform;
+
+    gimbal_stabilization_ = Utils::clip(camera_setting.gimbal.stabilization, 0.0f, 1.0f);
+    if (gimbal_stabilization_ > 0) {
+        this->SetActorTickEnabled(true);
+        gimbald_rotator_.Pitch = camera_setting.gimbal.rotation.pitch;
+        gimbald_rotator_.Roll = camera_setting.gimbal.rotation.roll;
+        gimbald_rotator_.Yaw = camera_setting.gimbal.rotation.yaw;
+    }
+    else
+        this->SetActorTickEnabled(false);
+
+    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
+    for (int image_type = -1; image_type < image_count; ++image_type) {
+        const auto& capture_setting = camera_setting.capture_settings.at(image_type);
+        const auto& noise_setting = camera_setting.noise_settings.at(image_type);
+
+        if (image_type >= 0) { //scene capture components
+            updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type],
+                capture_setting, ned_transform);
+
+            setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
         }
-        else
-            this->SetActorTickEnabled(false);
+        else { //camera component
+            updateCameraSetting(camera_, capture_setting, ned_transform);
+
+            setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
+        }
     }
 }
 
@@ -184,7 +283,7 @@ void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture
     if (!std::isnan(setting.fov_degrees))
         capture->FOVAngle = setting.fov_degrees;
     if (capture->ProjectionType == ECameraProjectionMode::Orthographic && !std::isnan(setting.ortho_width))
-        capture->OrthoWidth = ned_transform.toNeuUU(setting.ortho_width);
+        capture->OrthoWidth = ned_transform.fromNed(setting.ortho_width);
 
     updateCameraPostProcessingSetting(capture->PostProcessSettings, setting);
 }
@@ -199,15 +298,14 @@ void APIPCamera::updateCameraSetting(UCameraComponent* camera, const CaptureSett
     if (!std::isnan(setting.fov_degrees))
         camera->SetFieldOfView(setting.fov_degrees);
     if (camera->ProjectionMode == ECameraProjectionMode::Orthographic && !std::isnan(setting.ortho_width))
-        camera->SetOrthoWidth(ned_transform.toNeuUU(setting.ortho_width));
+        camera->SetOrthoWidth(ned_transform.fromNed(setting.ortho_width));
 
     updateCameraPostProcessingSetting(camera->PostProcessSettings, setting);
 }
 
 msr::airlib::Pose APIPCamera::getPose() const
 {
-    return Pose(ned_transform_.toNedMeters(this->GetActorLocation()),
-        ned_transform_.toQuaternionr(this->GetActorRotation().Quaternion(), true));
+    return ned_transform_->toLocalNed(this->GetActorTransform());
 }
 
 void APIPCamera::updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting)
@@ -265,7 +363,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
     USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
     if (capture != nullptr) {
         if (is_enabled) {
-            //do not make unnecessory calls to Activate() which otherwise causes crash in Unreal
+            //do not make unnecessary calls to Activate() which otherwise causes crash in Unreal
             if (!capture->IsActive() || capture->TextureTarget == nullptr) {
                 capture->TextureTarget = getRenderTarget(type, false);
                 capture->Activate();

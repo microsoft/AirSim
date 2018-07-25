@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+ #include "common/Common.hpp"
+
 class SimJoyStick
 {
 public:
@@ -42,12 +44,12 @@ public:
         unsigned long connection_error_code = std::numeric_limits<unsigned long>::max();
     };
 
-    void getJoyStickState(unsigned int index, State& state);
+    void getJoyStickState(int index, State& state) const;
     // strength ranges from -1 to 1
-    void setAutoCenter(unsigned int index, double strength);
+    void setAutoCenter(int index, double strength);
 
     // strength ranges from 0 to 1
-    void setWheelRumble(unsigned int index, double strength);
+    void setWheelRumble(int index, double strength);
     
     SimJoyStick();
     ~SimJoyStick();    //required for pimpl

@@ -12,11 +12,13 @@ namespace msr { namespace airlib {
 
 class SteppableClock : public ClockBase {
 public:
+    static constexpr real_T DefaultStepSize = 20E-3f;
+
     //Debug clock allows to advance the clock manually in arbitrary way
     //TTimePoint is nano seconds passed since some fixed point in time
     //step is how much we would advance the clock by default when calling step()
     //by default we advance by 20ms
-    SteppableClock(TTimeDelta step = 20E-3f, TTimePoint start = 0)
+    SteppableClock(TTimeDelta step = DefaultStepSize, TTimePoint start = 0)
         : current_(start), step_(step)
     {
         start_ = current_ = start ? start : Utils::getTimeSinceEpochNanos();

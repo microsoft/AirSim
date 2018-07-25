@@ -20,7 +20,7 @@ public:
     
     AAirSimGameMode(const FObjectInitializer& ObjectInitializer);
     
-private:
-    UGameUserSettings* GetGameUserSettings();
+//private:
+    //UGameUserSettings* GetGameUserSettings();
 
 };

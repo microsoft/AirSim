@@ -17,7 +17,7 @@ namespace msr { namespace airlib {
 template <class Vector3T, class QuaternionT, class RealT>
 class VectorMathT {
 public:
-    //IMPORTANT: make sure fixed size vectorizable types have no alignment assumption
+    //IMPORTANT: make sure fixed size vectorization types have no alignment assumption
     //https://eigen.tuxfamily.org/dox/group__TopicUnalignedArrayAssert.html
     typedef Eigen::Matrix<float, 1, 1> Vector1f;
     typedef Eigen::Matrix<double, 1, 1> Vector1d;
@@ -36,7 +36,7 @@ public:
 
     typedef common_utils::Utils Utils;
     //use different seeds for each component
-    //TODO: below we are using double instead of RealT becaise of VC++2017 bug in random implementation
+    //TODO: below we are using double instead of RealT because of VC++2017 bug in random implementation
     typedef common_utils::RandomGenerator<RealT, std::normal_distribution<double>, 1> RandomGeneratorGausianXT;
     typedef common_utils::RandomGenerator<RealT, std::normal_distribution<double>, 2> RandomGeneratorGausianYT;
     typedef common_utils::RandomGenerator<RealT, std::normal_distribution<double>, 3> RandomGeneratorGausianZT;
@@ -188,17 +188,25 @@ public:
         return rotateVectorReverse(v_world, q, assume_unit_quat);
     }
 
+    static Vector3T transformToBodyFrame(const Vector3T& v_world, const Pose& body_pose, bool assume_unit_quat = true)
+    {
+        //translate
+        Vector3T translated = v_world - body_pose.position;
+        //rotate
+        return transformToBodyFrame(translated, body_pose.orientation, assume_unit_quat);
+    }
+
     static Vector3T transformToWorldFrame(const Vector3T& v_body, const QuaternionT& q, bool assume_unit_quat = true)
     {
         return rotateVector(v_body, q, assume_unit_quat);
     }
 
-    static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& pose, bool assume_unit_quat = true)
+    static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& body_pose, bool assume_unit_quat = true)
     {
         //translate
-        Vector3T translated = v_body + pose.position;
+        Vector3T translated = v_body + body_pose.position;
         //rotate
-        return transformToWorldFrame(translated, pose.orientation, assume_unit_quat);
+        return transformToWorldFrame(translated, body_pose.orientation, assume_unit_quat);
     }
 
     static QuaternionT negate(const QuaternionT& q)
@@ -226,6 +234,9 @@ public:
     static void toEulerianAngle(const QuaternionT& q
         , RealT& pitch, RealT& roll, RealT& yaw)
     {
+        //z-y-x rotation convention (Tait-Bryan angles) 
+        //http://www.sedris.org/wg8home/Documents/WG80485.pdf
+
         RealT ysqr = q.y() * q.y();
 
         // roll (x-axis rotation)
@@ -300,6 +311,9 @@ public:
     //all angles in radians
     static QuaternionT toQuaternion(RealT pitch, RealT roll, RealT yaw)
     {
+        //z-y-x rotation convention (Tait-Bryan angles) 
+        //http://www.sedris.org/wg8home/Documents/WG80485.pdf
+
         QuaternionT q;
         RealT t0 = std::cos(yaw * 0.5f);
         RealT t1 = std::sin(yaw * 0.5f);
@@ -413,13 +427,90 @@ public:
     * RPY rotates about the fixed axes in the order x-y-z,
     * which is the same as euler angles in the order z-y'-x''.
     */
-    static RealT yawFromQuaternion(const QuaternionT& q) {
+    static RealT yawFromQuaternion(const QuaternionT& q) 
+    {
         return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
             1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
     }
 
-    static QuaternionT quaternionFromYaw(RealT yaw) {
-        return QuaternionT(Eigen::AngleAxisd(yaw, Vector3T::UnitZ()));
+    static QuaternionT quaternionFromYaw(RealT yaw) 
+    {
+        return QuaternionT(Eigen::AngleAxis<RealT>(yaw, Vector3T::UnitZ()));
+    }
+
+    static QuaternionT toQuaternion(const Vector3T& axis, RealT angle) 
+    {
+        //Alternative:
+        //auto s = std::sinf(angle / 2);
+        //auto u = axis.normalized();
+        //return Quaternionr(std::cosf(angle / 2), u.x() * s, u.y() * s, u.z() * s);
+
+        return QuaternionT(Eigen::AngleAxis<RealT>(angle, axis));
+    }
+
+    //linear interpolate
+    static QuaternionT lerp(const QuaternionT& from, const QuaternionT& to, RealT alpha)
+    {
+        QuaternionT r;
+        RealT n_alpha = 1 - alpha;
+        r.x = n_alpha * from.x + alpha * to.x;
+        r.y = n_alpha * from.y + alpha * to.y;
+        r.z = n_alpha * from.z + alpha * to.z;
+        r.w = n_alpha * from.w + alpha * to.w;
+        return r.normalized();
+    }
+
+    //spherical lerp
+    static QuaternionT slerp(const QuaternionT& from, const QuaternionT& to, RealT alpha)
+    {
+        QuaternionT r;
+        RealT n_alpha = 1 - alpha;
+        RealT Wa, Wb;
+        RealT theta = acos(from.x*to.x + from.y*to.y + from.z*to.z + from.w*to.w);
+        RealT sn = sin(theta);
+        Wa = sin(n_alpha*theta) / sn;
+        Wb = sin(alpha*theta) / sn;
+        r.x = Wa * from.x + Wb * to.x;
+        r.y = Wa * from.y + Wb * to.y;
+        r.z = Wa * from.z + Wb * to.z;
+        r.w = Wa * from.w + Wb * to.w;
+        return r.normalized();
+    }
+
+    Vector3T lerp(const Vector3T& from, const Vector3T& to, RealT alpha)
+    {
+        return (from + alpha * (to - from));
+    }
+
+    Vector3T slerp(const Vector3T& from, const Vector3T& to, RealT alpha)
+    {
+        RealT dot = from.dot(to);
+        dot = Utils::clip<RealT>(dot, -1, 1);
+        RealT theta = std::acos(dot)*alpha;
+        Vector3T relative = (to - from * dot).normalized();
+        return from * std::cos(theta) + relative * std::sin(theta);
+    }
+
+    Vector3T nlerp(const Vector3T& from, const Vector3T& to, float alpha)
+    {
+        return lerp(from, to, alpha).normalized();
+    }
+
+    static QuaternionT lookAt(Vector3T sourcePoint, Vector3T destPoint)
+    {
+        Vector3T toVector = (destPoint - sourcePoint);
+
+        RealT dot = VectorMathT::front().dot(toVector);
+        dot = Utils::clip<RealT>(dot, -1, 1);
+        RealT ang = std::acosf(dot);
+
+        Vector3T axis = VectorMathT::front().cross(toVector);
+        if (axis == Vector3T::Zero())
+            axis = VectorMathT::up();
+        else
+            axis = axis.normalized();
+
+        return VectorMathT::toQuaternion(axis, ang);
     }
 
     static const Vector3T front() 
@@ -427,16 +518,29 @@ public:
         static Vector3T v(1, 0, 0);
         return v;
     }
-
+    static const Vector3T back()
+    {
+        static Vector3T v(-1, 0, 0);
+        return v;
+    }
     static const Vector3T down() 
     {
         static Vector3T v(0, 0, 1);
         return v;
     }
-
+    static const Vector3T up()
+    {
+        static Vector3T v(0, 0, -1);
+        return v;
+    }
     static const Vector3T right() 
     {
         static Vector3T v(0, 1, 0);
+        return v;
+    }
+    static const Vector3T left()
+    {
+        static Vector3T v(0, -1, 0);
         return v;
     }
 };
