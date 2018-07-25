@@ -435,6 +435,12 @@
     <ClInclude Include="include\common\common_utils\UniqueValueMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\common\common_utils\WindowsApisCommonPre.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\common_utils\WindowsApisCommonPost.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\safety\ObstacleMap.cpp">

@@ -10,10 +10,9 @@
 #include "common/ImageCaptureBase.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
 
-#undef check
+#include "common/common_utils/WindowsApisCommonPre.hpp"
 #include "rpc/msgpack.hpp"
-//TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
-#define check(expr) (static_cast<void>((expr)))
+#include "common/common_utils/WindowsApisCommonPost.hpp"
 
 namespace msr { namespace airlib_rpclib {
 

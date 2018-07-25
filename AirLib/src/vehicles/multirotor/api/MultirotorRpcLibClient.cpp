@@ -13,17 +13,15 @@
 #include <thread>
 STRICT_MODE_OFF
 
-#ifndef RPCLIB_MSGPACK
-#define RPCLIB_MSGPACK clmdep_msgpack
-#endif // !RPCLIB_MSGPACK
-#undef check
 #ifdef nil
 #undef nil
 #endif // nil
+
+#include "common/common_utils/WindowsApisCommonPre.hpp"
 #include "rpc/client.h"
+#include "common/common_utils/WindowsApisCommonPost.hpp"
+
 #include "vehicles/multirotor/api/MultirotorRpcLibAdapators.hpp"
-//TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
-#define check(expr) (static_cast<void>((expr)))
 
 STRICT_MODE_ON
 #ifdef _MSC_VER

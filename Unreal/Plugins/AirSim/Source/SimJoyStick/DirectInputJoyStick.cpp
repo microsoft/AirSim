@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #include "DirectInputJoystick.h"
 #include "UnrealMathUtility.h"
 
@@ -7,16 +10,7 @@
 #define DIRECTINPUT_VERSION 0x0800
 #endif
 
-#include "CoreTypes.h"
-#include "PreWindowsApi.h"
-#include "AllowWindowsPlatformTypes.h"
-#include "AllowWindowsPlatformAtomics.h"
-
-//remove warnings for VC++
-#pragma warning(push)
-#pragma warning(disable:4191 6000 28251)
-#pragma warning(disable:4996) //warning C4996: This function or variable may be unsafe. Consider using xxx instead.
-#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
+#include "common/common_utils/WindowsApisCommonPre.hpp"
 
 #include "common/common_utils/MinWinDefines.hpp"
 #include <windows.h>
@@ -36,10 +30,8 @@
 #endif
 #include <wbemidl.h>
 
-#pragma warning(pop)
-#include "HideWindowsPlatformAtomics.h"
-#include "HideWindowsPlatformTypes.h"
-#include "PostWindowsApi.h"
+#include "common/common_utils/WindowsApisCommonPost.hpp"
+
 
 
 //-----------------------------------------------------------------------------

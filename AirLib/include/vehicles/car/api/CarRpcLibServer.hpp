@@ -4,6 +4,8 @@
 #ifndef air_CarRpcLibServer_hpp
 #define air_CarRpcLibServer_hpp
 
+#ifndef AIRLIB_NO_RPC
+
 #include "common/Common.hpp"
 #include <functional>
 #include "api/RpcLibServerBase.hpp"
@@ -22,6 +24,8 @@ protected:
         return static_cast<CarApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
     }
 };
+
+#endif
 
 }} //namespace
 #endif
