@@ -7,20 +7,21 @@
 #define DIRECTINPUT_VERSION 0x0800
 #endif
 
-//remove warnings for using safe VC++ APIs
-#define _CRT_SECURE_NO_WARNINGS 1
+#include "CoreTypes.h"
+#include "PreWindowsApi.h"
+#include "AllowWindowsPlatformTypes.h"
+#include "AllowWindowsPlatformAtomics.h"
+
+//remove warnings for VC++
+#pragma warning(push)
+#pragma warning(disable:4191 6000 28251)
 #pragma warning(disable:4996) //warning C4996: This function or variable may be unsafe. Consider using xxx instead.
 #pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
 
-#include "AllowWindowsPlatformTypes.h"
 #include "common/common_utils/MinWinDefines.hpp"
-#include <windows.h> //should we be using WindowsHWrapper.h?
-#include "HideWindowsPlatformTypes.h"
+#include <windows.h>
 
-#pragma warning(push)
-#pragma warning(disable:6000 28251)
 #include <dinput.h>
-#pragma warning(pop)
 
 #include <dinputd.h>
 #include <ole2.h> //SysAllocString
@@ -34,6 +35,11 @@
 #define TRUE                1
 #endif
 #include <wbemidl.h>
+
+#pragma warning(pop)
+#include "HideWindowsPlatformAtomics.h"
+#include "HideWindowsPlatformTypes.h"
+#include "PostWindowsApi.h"
 
 
 //-----------------------------------------------------------------------------

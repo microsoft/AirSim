@@ -12,17 +12,29 @@
 #include "common/AirSimSettings.hpp"
 #include "physics/Kinematics.hpp"
 
-
 #ifndef AIRLIB_NO_RPC
 
 #pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
 
 #if defined _WIN32 || defined _WIN64
+#include "CoreTypes.h"
+#include "PreWindowsApi.h"
 #include "AllowWindowsPlatformTypes.h"
+#include "AllowWindowsPlatformAtomics.h"
+//remove warnings for VC++
+#pragma warning(push)
+#pragma warning(disable:4191 6000 28251)
+#pragma warning(disable:4996) //warning C4996: This function or variable may be unsafe. Consider using xxx instead.
+#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
 #endif
+
 #include "api/RpcLibServerBase.hpp"
+
 #if defined _WIN32 || defined _WIN64
+#pragma warning(pop)
+#include "HideWindowsPlatformAtomics.h"
 #include "HideWindowsPlatformTypes.h"
+#include "PostWindowsApi.h"
 #endif
 
 #endif
