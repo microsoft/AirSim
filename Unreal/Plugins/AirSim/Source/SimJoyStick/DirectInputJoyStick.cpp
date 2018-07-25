@@ -10,6 +10,10 @@
 #define DIRECTINPUT_VERSION 0x0800
 #endif
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif
+
 #include "common/common_utils/WindowsApisCommonPre.hpp"
 
 #include "common/common_utils/MinWinDefines.hpp"
