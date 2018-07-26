@@ -502,7 +502,7 @@ public:
 
         RealT dot = VectorMathT::front().dot(toVector);
         dot = Utils::clip<RealT>(dot, -1, 1);
-        RealT ang = acosf(dot);
+        RealT ang = std::acos(dot);
 
         Vector3T axis = VectorMathT::front().cross(toVector);
         if (axis == Vector3T::Zero())
