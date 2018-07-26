@@ -10,6 +10,9 @@
 #include <string>
 
 #if defined _WIN32 || defined _WIN64
+
+#include "common/common_utils/WindowsApisCommonPre.hpp"
+
 #include "common/common_utils/MinWinDefines.hpp"
 
 #undef NOWINMESSAGES			// WM_*, EM_*, LB_*, CB_*
@@ -19,10 +22,14 @@
 #undef NOUSER				    // All USER #undefs and routines
 #undef NOMSG					// typedef MSG and associated routines
 
+//#include <fileapi.h>
 #include <Shlobj.h>
 #include <direct.h>
 #include <stdlib.h>
 #include <direct.h>
+
+#include "common/common_utils/WindowsApisCommonPost.hpp"
+
 
 #else
 #include <unistd.h>
@@ -45,7 +52,7 @@ std::string FileSystem::createDirectory(const std::string& fullPath) {
 #ifdef _WIN32
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
     std::wstring wide_path = converter.from_bytes(fullPath);
-    int hr = CreateDirectory(wide_path.c_str(), NULL);
+    int hr = CreateDirectoryW(wide_path.c_str(), NULL);
     if (hr == 0) {
         hr = GetLastError();
         if (hr != ERROR_ALREADY_EXISTS) {

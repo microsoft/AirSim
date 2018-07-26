@@ -73,14 +73,17 @@ public class AirSim : ModuleRules
     {
         //bEnforceIWYU = true; //to support 4.16
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        bEnableExceptions = true;
+
+        //for some reason this is required on Windows but not on Linux
+        if (Target.Platform == UnrealTargetPlatform.Win64)
+            bEnableExceptions = true;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "PhysXVehicles", "PhysXVehicleLib", "PhysX", "APEX", "Landscape" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
         Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
-        Definitions.Add("CRT_SECURE_NO_WARNINGS=1");
+        Definitions.Add("_CRT_SECURE_NO_WARNINGS=1");
         Definitions.Add("HMD_MODULE_INCLUDED=0");
 
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "include"));

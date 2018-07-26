@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #include "SimModeComputerVision.h"
 #include "ConstructorHelpers.h"
 #include "Engine/World.h"
@@ -11,21 +14,8 @@
 #include "api/VehicleSimApiBase.hpp"
 #include "common/AirSimSettings.hpp"
 #include "physics/Kinematics.hpp"
-
-
-#ifndef AIRLIB_NO_RPC
-
-#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
-
-#if defined _WIN32 || defined _WIN64
-#include "AllowWindowsPlatformTypes.h"
-#endif
 #include "api/RpcLibServerBase.hpp"
-#if defined _WIN32 || defined _WIN64
-#include "HideWindowsPlatformTypes.h"
-#endif
 
-#endif
 
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeComputerVision::createApiServer() const
 {

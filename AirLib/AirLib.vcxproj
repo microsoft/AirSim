@@ -57,6 +57,8 @@
     <ClInclude Include="include\common\common_utils\Timer.hpp" />
     <ClInclude Include="include\common\common_utils\type_utils.hpp" />
     <ClInclude Include="include\common\common_utils\Utils.hpp" />
+    <ClInclude Include="include\common\common_utils\WindowsApisCommonPost.hpp" />
+    <ClInclude Include="include\common\common_utils\WindowsApisCommonPre.hpp" />
     <ClInclude Include="include\common\WorkerThread.hpp" />
     <ClInclude Include="include\common\EarthCelestial.hpp" />
     <ClInclude Include="include\common\SteppableClock.hpp" />

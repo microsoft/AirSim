@@ -7,20 +7,8 @@
 #include "AirBlueprintLib.h"
 #include "common/Common.hpp"
 #include "common/EarthUtils.hpp"
-
-#ifndef AIRLIB_NO_RPC
-
-#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
-
-#if defined _WIN32 || defined _WIN64
-#include "AllowWindowsPlatformTypes.h"
-#endif
 #include "vehicles/car/api/CarRpcLibServer.hpp"
-#if defined _WIN32 || defined _WIN64
-#include "HideWindowsPlatformTypes.h"
-#endif
 
-#endif
 
 void ASimModeCar::BeginPlay()
 {
