@@ -12,14 +12,7 @@ First install this package:
 pip install msgpack-rpc-python
 ```
 
-You can either get AirSim binaries from [releases](https://github.com/Microsoft/AirSim/releases) or compile from the source ([Windows](https://github.com/Microsoft/AirSim/blob/master/docs/build_windows.md), [Linux](https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md)). 
-
-The AirSim binaries, like CityEnviron, require a beefy system to run smoothly. You can run them in low resolution mode by editing the `run.bat` file on Windows like this:
-```
-start CityEnviron -ResX=640 -ResY=480 -windowed
-```
-
-Once you can run AirSim, choose Car as vehicle and then navigate to `PythonClient\car\` folder and run:
+You can either get AirSim binaries from [releases](https://github.com/Microsoft/AirSim/releases) or compile from the source ([Windows](https://github.com/Microsoft/AirSim/blob/master/docs/build_windows.md), [Linux](https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md)). Once you can run AirSim, choose Car as vehicle and then navigate to `PythonClient\car\` folder and run:
 
 ```
 python hello_car.py
