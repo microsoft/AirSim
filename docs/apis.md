@@ -73,7 +73,7 @@ while True:
     for response in responses:
         if response.pixels_as_float:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-            airsim.write_pfm('py1.pfm', airsim.getPfmArray(response))
+            airsim.write_pfm('py1.pfm', airsim.get_pfm_array(response))
         else:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
             airsim.write_file('py1.png', response.image_data_uint8)
