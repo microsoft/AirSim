@@ -12,7 +12,7 @@ STRICT_MODE_OFF
 #include "Eigen/Dense"
 STRICT_MODE_ON
 
-namespace msr {namespace airlib {
+namespace msr { namespace airlib {
 
 template <class Vector3T, class QuaternionT, class RealT>
 class VectorMathT {
@@ -466,7 +466,7 @@ public:
 		RealT n_alpha = 1 - alpha;
 		RealT theta = acos(from.x()*to.x() + from.y()*to.y() + from.z()*to.z() + from.w()*to.w());
 		//Check for theta > 0 to avoid division by 0.
-		if (theta > FLT_MIN)
+		if (theta > std::numeric_limits<RealT>::epsilon())
 		{
 			RealT sn = sin(theta);
 			RealT Wa = sin(n_alpha*theta) / sn;
@@ -480,8 +480,7 @@ public:
 		}
 		//Theta is almost 0. Return "to" quaternion.
 		//Alternatively, could also do lerp.
-		else
-		{
+		else {
 			return to.normalized();
 		}
 
@@ -512,7 +511,7 @@ public:
 		toVector.normalize(); //this is important!
 
 		RealT dot = VectorMathT::front().dot(toVector);
-		RealT ang = std::acosf(dot);
+		RealT ang = std::acos(dot);
 
 		Vector3T axis = VectorMathT::front().cross(toVector);
 		if (axis == Vector3T::Zero())
