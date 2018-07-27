@@ -88,14 +88,10 @@ int main(int argc, const char *argv[])
 {
 	DepthNavT depthNavT;
 	std::vector<Vector2r> cell_centers = depthNavT.getCellCenters();
-	unsigned int cell_idx = depthNavT.nearest_neighbor(cell_centers, Vector2r(43, 23));
-	std::cout << cell_centers[cell_idx] << std::endl;
-	std::cout << cell_idx << std::endl;
-
-	std::vector<float> img(5000, 10.0f);
-	img[2] = 0.5f;
-	img[3] = 0.5f;
-	img[4] = 0.5f;
+	std::vector<float> img(256*144, 0.5f);
+	img[2] = 5.5f;
+	img[3] = 5.5f;
+	img[4] = 5.5f;
 	std::cout << depthNavT.isCellFree(img, cell_centers[0]) << std::endl;
 	std::cout << depthNavT.isCellFree(img, cell_centers[1]) << std::endl;
 
@@ -109,12 +105,23 @@ int main(int argc, const char *argv[])
 	float y_max = planeSize.y() / 2;
 	std::cout << "Plane Boundary: " << "z_min:" << z_min << " z_max:" << z_max << " y_min:" << y_min << " y_max:" << y_max << std::endl;
 	//3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
-	Vector3r goal_vec = Vector3r(5,2,0);
+	Vector3r goal_vec = Vector3r(5,-5,0);
 	Vector3r forward_vec = VectorMath::transformToWorldFrame(VectorMath::front(), Quaternionr(1,0,0,0));
 	Vector3r intersect_point = depthNavT.linePlaneIntersection(goal_vec, forward_vec, 1);
+	float y_px = intersect_point.y() * 256 / planeSize.y() + 256 / 2;
+	float z_px = intersect_point.z() * 144 / planeSize.x() + 144 / 2;
+	std::cout << y_px << ", "<< z_px << std::endl;
+	unsigned int cell_idx = depthNavT.nearest_neighbor(cell_centers, Vector2r(y_px, z_px));
+	std::cout << cell_centers[cell_idx].x() << ", " << cell_centers[cell_idx].y() << std::endl;
 
+	std::cout <<  depthNavT.isCellFree(img, cell_centers[cell_idx]) << std::endl;
+
+	std::vector<int> spiral_idxs = depthNavT.spiralOrder(12, 14, cell_idx);
+
+	//std::cout << cell_idx << std::endl;
 	return 0;
 }
+
 
 /*
 int main(int argc, const char *argv[])
@@ -141,7 +148,9 @@ int main(int argc, const char *argv[])
     //Define start and goal poses
 	Pose startPose = Pose(Vector3r(5, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
 	Pose currentPose;
-	Pose goalPose = Pose(Vector3r(-50, 5, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	Pose goalPose = Pose(Vector3r(-50, 4, -15), Quaternionr(1, 0, 0, 0)); //final pose
+	//Pose goalPose = Pose(Vector3r(50, -12, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	//Pose goalPose = Pose(Vector3r(50, 4, -1), Quaternionr(1, 0, 0, 0)); //final pose
 
 	Quaternionr currentQuat;
 	Quaternionr nextQuat;
@@ -171,6 +180,7 @@ int main(int argc, const char *argv[])
 
 	try {
 		client.confirmConnection();
+		client.reset();
 		client.simSetVehiclePose(startPose, true);
 		currentPose = startPose;
 
@@ -246,7 +256,7 @@ int main(int argc, const char *argv[])
 				if (min_depth < threshold)
 				{
 					//Turn to avoid obstacle
-					currentPose.orientation = VectorMath::coordOrientationAdd(currentPose.orientation, VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(5.f)));
+					currentPose.orientation = VectorMath::coordOrientationAdd(currentPose.orientation, VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(3.f)));
 					bSafeToMove = true;
 				}
 				else
@@ -312,5 +322,5 @@ int main(int argc, const char *argv[])
 
 	
 }
-*/
 
+*/

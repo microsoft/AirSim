@@ -252,8 +252,7 @@ namespace msr {
 				//TODO: we should slerp by max allowed rotation for dt
 				real_T rotation_slerp_alpha = 0.5f;
 
-				//unsigned int depth_width = 256, depth_height = 144;
-				unsigned int depth_width = 100, depth_height = 50;
+				unsigned int depth_width = 256, depth_height = 144;
 
 				//Number of cells the depth image gets divided in to. Each cell is square.
 				unsigned int M, N;
@@ -297,12 +296,12 @@ namespace msr {
 					return VectorMath::nanVector(); // No intersection, the line is parallel to the plane or behind
 				}
 
-				// Compute the X value for the directed line ray intersecting the plane
-				float x = max_allowed_obs_dist / planeNormal.dot(ray);
+				// Compute the intersection point on the plane
+				float x = max_allowed_obs_dist;
 				float y = max_allowed_obs_dist * ray.y() / ray.x();
-				float z = max_allowed_obs_dist * ray.y() / ray.x();
+				float z = max_allowed_obs_dist * ray.z() / ray.x();
 				// output contact point
-				return ray.normalized()*x; //Make sure your ray vector is normalized
+				return Vector3r(x, y, z);
 			}
 
 			//compute bounding box size
@@ -371,9 +370,12 @@ namespace msr {
 					//5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
 					std::vector<Vector2r> cell_centers = getCellCenters();
 					//6. Compute cell coordinates i, j for x_goal and y_goal.
-					
-					//unsigned int cell_idx = nearest_neighbor(cell_centers, intersect_point);
-					//Vector2r new_goal = cell_centers[cell_idx];
+					float y_px = intersect_point.y() * params_.depth_width / planeSize.y() + params_.depth_width / 2;
+					float z_px = intersect_point.z() * params_.depth_height / planeSize.x() + params_.depth_height / 2;
+					unsigned int cell_idx = nearest_neighbor(cell_centers, Vector2r(y_px, z_px));
+					Vector2r new_goal = cell_centers[cell_idx];
+					//Get spiral indexes
+					std::vector<int> spiral_idxs = spiralOrder(params_.M, params_.N, cell_idx);
 
 					/*7. Until free space is found
 					For p = -params.req_free_width to +params.req_free_width
@@ -400,6 +402,34 @@ namespace msr {
 				else {
 					return rotateToGoal(current_pose, goal);
 				}
+			}
+
+			std::vector<int> spiralOrder(int m, int n, int idx) {
+				std::vector<int> spiral_idx;
+				enum Dirs_ { right, down, left, up };
+
+				if (0 == m || 0 == n) return spiral_idx;
+				int r = idx / m, c = idx - r * m, rmin = r - 1, rmax = r + 1, cmin = c - 1, cmax = c + 1;
+
+				int cnt = m * n;
+				int dx[4] = { 1, 0, -1,  0 };
+				int dy[4] = { 0, 1,  0, -1 };
+				int current_idx = idx;
+
+				Dirs_ dir = right;
+				int i = 0;
+				while (i < cnt) {
+					if (0 <= r && r < n && 0 <= c && c < m) { spiral_idx.push_back(current_idx); ++i; }
+					r += dy[dir]; 
+					c += dx[dir]; 
+					current_idx = r * m + c;
+
+					if (right == dir && c == cmax) { dir = down; cmax++;} //right
+					else if (down == dir && r == rmax) { dir = left; rmax++;} //down
+					else if (left == dir && c == cmin) { dir = up; cmin--;} //left
+					else if (up == dir && r == rmin) { dir = right; rmin--;} //up
+				}
+				return spiral_idx;
 			}
 
 			//Returns index of nearest neighbor
