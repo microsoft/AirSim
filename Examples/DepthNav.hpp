@@ -20,7 +20,7 @@ namespace msr {
 	namespace airlib {
 
 
-		class DepthNav {
+		class DepthNavTest {
 
 		public: //types
 
@@ -41,7 +41,7 @@ namespace msr {
 
 		public:
 
-			DepthNav(const Params& params = Params())
+			DepthNavTest(const Params& params = Params())
 
 				: params_(params)
 
@@ -238,7 +238,19 @@ namespace msr {
 
 
 
-		class DepthNavT {
+
+
+
+
+
+
+
+
+
+
+
+
+		class DepthNav {
 		public: //types
 			struct Params {
 				//Camera FOV
@@ -275,59 +287,11 @@ namespace msr {
 			};
 
 		public:
-			DepthNavT(const Params& params = Params())
+			DepthNav(const Params& params = Params())
 				: params_(params)
 			{
 				//msr::airlib::MultirotorRpcLibClient client;
 				//client.confirmConnection();
-			}
-
-			/*
-			Input:
-			*ray = B - A, simply the line from A to B
-			*planeNormal = normal of the plane
-			*max_allowed_obs_dist = obstacle distance threshold
-			Output:
-			*contact = the contact point on the plane in body frame
-			*/
-			Vector3r linePlaneIntersection(Vector3r ray, Vector3r planeNormal, float max_allowed_obs_dist) {
-
-				if (planeNormal.dot(ray) < FLT_MIN) {
-					return VectorMath::nanVector(); // No intersection, the line is parallel to the plane or behind
-				}
-
-				// Compute the intersection point on the plane
-				float x = max_allowed_obs_dist;
-				float y = max_allowed_obs_dist * ray.y() / ray.x();
-				float z = max_allowed_obs_dist * ray.z() / ray.x();
-				// output contact point
-				return Vector3r(x, y, z);
-			}
-
-			//compute bounding box size
-			Vector2r compute_bb_sz(unsigned int img_h, unsigned int img_w, float vehicle_h, float vehicle_w, float hfov, float distance)
-			{
-				float vfov = hfov2vfov(hfov, img_h, img_w);
-				float box_h = ceil(vehicle_h * img_h / (tan (hfov / 2) * distance * 2)); //height
-				float box_w = ceil(img_w * vehicle_w / (tan (vfov / 2) * distance * 2)); //width
-				return Vector2r(box_h,box_w);
-			}
-
-			//convert horizonal fov to vertical fov
-			float hfov2vfov(float hfov, unsigned int img_h, unsigned int img_w)
-			{
-				float aspect = float (img_h) / float (img_w);
-				float vfov = 2 * atan(tan(hfov / 2) * aspect);
-				return vfov;
-			}
-
-			/*
-			*https://www.edmundoptics.com/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/
-			*/
-			Vector2r getPlaneSize(float distance, float hfov, float vfov) {
-				float height_world = 2 * distance * tanf(vfov / 2);
-				float width_world = 2 * distance * tanf(hfov / 2);
-				return Vector2r(height_world, width_world);
 			}
 
 			//depth_image is 2D float array for which width and height are specified in Params
@@ -336,9 +300,10 @@ namespace msr {
 			//dt is time passed since last call in seconds
 			//return next pose that vehicle should be in
 			//Pose getNextPose(const real_T ** const depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
-			Pose getNextPose(real_T ** const depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
+			Pose getNextPose(std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
 			{
 				auto goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
+				//Vector3r goal_body = goal - current_pose.position;
 				if (isInFrustrum(goal_body, params_.fov)) {
 					/*
 					Note: It would be good to have an individual function for many of below steps
@@ -352,9 +317,7 @@ namespace msr {
 					float z_max = planeSize.x() / 2;
 					float y_max = planeSize.y() / 2;
 					//3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
-					Vector3r goal_vec = goal - current_pose.position;
-					Vector3r forward_vec = VectorMath::transformToWorldFrame(VectorMath::front(), current_pose.orientation);
-					Vector3r intersect_point = linePlaneIntersection(goal_vec, forward_vec, params_.max_allowed_obs_dist);
+					Vector3r intersect_point = linePlaneIntersection(goal_body, VectorMath::front(), params_.max_allowed_obs_dist);
 					//Check if intersection is valid
 					if (intersect_point == VectorMath::nanVector()) 
 					{
@@ -372,11 +335,10 @@ namespace msr {
 					//6. Compute cell coordinates i, j for x_goal and y_goal.
 					float y_px = intersect_point.y() * params_.depth_width / planeSize.y() + params_.depth_width / 2;
 					float z_px = intersect_point.z() * params_.depth_height / planeSize.x() + params_.depth_height / 2;
+					//Get nearest neighbor to goal
 					unsigned int cell_idx = nearest_neighbor(cell_centers, Vector2r(y_px, z_px));
-					Vector2r new_goal = cell_centers[cell_idx];
 					//Get spiral indexes
 					std::vector<int> spiral_idxs = spiralOrder(params_.M, params_.N, cell_idx);
-
 					/*7. Until free space is found
 					For p = -params.req_free_width to +params.req_free_width
 					For q = -params.req_free_height to +params.req_free_height
@@ -388,20 +350,77 @@ namespace msr {
 					If all blocks have been marked as occupied
 					then return Pose::nanPose() indicating no more moves possible
 					*/
-					compute_bb_sz(params_.depth_height, params_.depth_width, params_.vehicle_height, params_.vehicle_width, params_.fov, params_.max_allowed_obs_dist);
+					Vector2r goal_px;
+					for (int i = 0; i < cell_centers.size(); i++) {
+						if (isCellFree(depth_image, cell_centers[spiral_idxs[i]])) {
+							//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
+							//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
+							goal_px = cell_centers[spiral_idxs[i]];
 
-					//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
-					//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
-					//10. Compute next orientation with similar algorithm as in else section below
-					//11. Compute next position along vector (i_x_center, j_y_center, 1) and transform it to world frame
-					//12. return pose using result from step 10 and 11
-					
+							///TO DO
+							////Body frame in meters
+							float goal_y = (goal_px.x() - params_.depth_width / 2) * planeSize.y() / params_.depth_width;
+							float goal_z = (goal_px.y() - params_.depth_height / 2) * planeSize.x() / params_.depth_height;
+							//Vector3r goal_world = VectorMath::transformToWorldFrame(Vector3r(1.0f, goal_y, goal_z), current_pose);
+							Vector3r goal_world = Vector3r(1.0f, goal_y, goal_z) + current_pose.position;
+
+							Pose goal_pose;
+							//10. Compute next orientation with similar algorithm as in else section below
+							goal_pose = rotateToGoal(current_pose, goal_world);
+							
+							//11. Compute next position along vector (i_x_center, j_y_center, 1) and transform it to world frame
+							goal_pose.position = current_pose.position + goal_world * dt;
+
+							//12. return pose using result from step 10 and 11
+							return goal_pose;
+						}
+					}
+			
 					return Pose::nanPose();
 					}
 				}
 				else {
 					return rotateToGoal(current_pose, goal);
 				}
+			}
+
+			/*
+			Input:
+			*ray = ray from origin to goal
+			*planeNormal = normal of the plane
+			*max_allowed_obs_dist = obstacle distance threshold
+			Output:
+			*intersection_point = the intersection point on the plane in body frame
+			*/
+			Vector3r linePlaneIntersection(Vector3r ray, Vector3r planeNormal, float max_allowed_obs_dist) {
+
+				if (planeNormal.dot(ray) < FLT_MIN) {
+					return VectorMath::nanVector(); // No intersection, the line is parallel to the plane or behind
+				}
+
+				// Compute the intersection point on the plane
+				float x = max_allowed_obs_dist;
+				float y = max_allowed_obs_dist * ray.y() / ray.x();
+				float z = max_allowed_obs_dist * ray.z() / ray.x();
+				// output contact point
+				return Vector3r(x, y, z);
+			}
+
+			//convert horizonal fov to vertical fov
+			float hfov2vfov(float hfov, unsigned int img_h, unsigned int img_w)
+			{
+				float aspect = float(img_h) / float(img_w);
+				float vfov = 2 * atan(tan(hfov / 2) * aspect);
+				return vfov;
+			}
+
+			/*
+			*https://www.edmundoptics.com/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/
+			*/
+			Vector2r getPlaneSize(float distance, float hfov, float vfov) {
+				float height_world = 2 * distance * tanf(vfov / 2);
+				float width_world = 2 * distance * tanf(hfov / 2);
+				return Vector2r(height_world, width_world);
 			}
 
 			std::vector<int> spiralOrder(int m, int n, int idx) {
@@ -499,6 +518,9 @@ namespace msr {
 				std::vector<Vector2r> cell_centers;
 				Vector2r cell_center;
 
+				//Add center of frame
+				cell_centers.push_back(Vector2r(params_.depth_width/2, params_.depth_height/2));
+
 				for (unsigned int i = 0; i < params_.M; i++) {
 					for (unsigned int j = 0; j < params_.N; j++) {
 						cell_center.x() = float(j*params_.req_free_width + 0.5f * (params_.req_free_width + N_offset));
@@ -509,6 +531,15 @@ namespace msr {
 				return cell_centers;
 			}
 
+			float getDistanceToGoal(Vector3r current_position, Vector3r goal)
+			{
+				return getNorm2(goal - current_position);
+			}
+
+			float getNorm2(Vector3r u)
+			{
+				return sqrt(u.dot(u));
+			}
 
 			//returns true if goal in body frame in within frustum
 			bool isInFrustrum(const Vector3r& goal_body, real_T fov)

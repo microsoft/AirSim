@@ -83,47 +83,128 @@ void runSteroImageGenerator(int argc, const char *argv[])
 
 }
 
-
-int main(int argc, const char *argv[])
+void unitTestsDepthNav()
 {
-	DepthNavT depthNavT;
-	std::vector<Vector2r> cell_centers = depthNavT.getCellCenters();
-	std::vector<float> img(256*144, 0.5f);
-	img[2] = 5.5f;
-	img[3] = 5.5f;
-	img[4] = 5.5f;
-	std::cout << depthNavT.isCellFree(img, cell_centers[0]) << std::endl;
-	std::cout << depthNavT.isCellFree(img, cell_centers[1]) << std::endl;
+	DepthNav depthNav;
+	//Test getCellCenters
+	std::vector<Vector2r> cell_centers = depthNav.getCellCenters();
+	std::vector<float> img(256 * 144, 5.5f);
+	img[2] = 0.5f;
+	img[3] = 0.5f;
+	img[4] = 0.5f;
+	std::cout << depthNav.isCellFree(img, cell_centers[0]) << std::endl;
+	std::cout << depthNav.isCellFree(img, cell_centers[1]) << std::endl;
 
-
-	//1. Let's have a plane that fits in our frustum at x = 1 (remember +X is front, +Y is right in NED)
-	Vector2r planeSize = depthNavT.getPlaneSize(1, Utils::degreesToRadians(90.0f), depthNavT.hfov2vfov(Utils::degreesToRadians(90.0f), 144, 256));
-	//2. We will compute x_min, y_min, x_max, y_max for this plane in body frame.
+	//Test planeSize
+	Vector2r planeSize = depthNav.getPlaneSize(1, Utils::degreesToRadians(90.0f), depthNav.hfov2vfov(Utils::degreesToRadians(90.0f), 144, 256));
+	//x_min, y_min, x_max, y_max for this plane in body frame.
 	float z_min = -planeSize.x() / 2;
 	float y_min = -planeSize.y() / 2;
 	float z_max = planeSize.x() / 2;
 	float y_max = planeSize.y() / 2;
 	std::cout << "Plane Boundary: " << "z_min:" << z_min << " z_max:" << z_max << " y_min:" << y_min << " y_max:" << y_max << std::endl;
-	//3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
-	Vector3r goal_vec = Vector3r(5,-5,0);
-	Vector3r forward_vec = VectorMath::transformToWorldFrame(VectorMath::front(), Quaternionr(1,0,0,0));
-	Vector3r intersect_point = depthNavT.linePlaneIntersection(goal_vec, forward_vec, 1);
+	
+	//Test planeIntersection, nearest neighbor, isCellFree and spiralOrder.
+	Vector3r goal_vec = Vector3r(5, -5, 0);
+	Vector3r forward_vec = VectorMath::transformToWorldFrame(VectorMath::front(), Quaternionr(1, 0, 0, 0));
+	Vector3r intersect_point = depthNav.linePlaneIntersection(goal_vec, forward_vec, 1);
 	float y_px = intersect_point.y() * 256 / planeSize.y() + 256 / 2;
 	float z_px = intersect_point.z() * 144 / planeSize.x() + 144 / 2;
-	std::cout << y_px << ", "<< z_px << std::endl;
-	unsigned int cell_idx = depthNavT.nearest_neighbor(cell_centers, Vector2r(y_px, z_px));
+	std::cout << y_px << ", " << z_px << std::endl;
+	unsigned int cell_idx = depthNav.nearest_neighbor(cell_centers, Vector2r(y_px, z_px));
 	std::cout << cell_centers[cell_idx].x() << ", " << cell_centers[cell_idx].y() << std::endl;
 
-	std::cout <<  depthNavT.isCellFree(img, cell_centers[cell_idx]) << std::endl;
+	std::cout << depthNav.isCellFree(img, cell_centers[cell_idx]) << std::endl;
 
-	std::vector<int> spiral_idxs = depthNavT.spiralOrder(12, 14, cell_idx);
-
-	//std::cout << cell_idx << std::endl;
-	return 0;
+	std::vector<int> spiral_idxs = depthNav.spiralOrder(12, 14, cell_idx);
 }
 
-
 /*
+int main(int argc, const char *argv[])
+{
+	DepthNav depthNav;
+
+	using namespace msr::airlib;
+
+	typedef ImageCaptureBase::ImageRequest ImageRequest;
+	typedef ImageCaptureBase::ImageResponse ImageResponse;
+	typedef ImageCaptureBase::ImageType ImageType;
+	typedef common_utils::FileSystem FileSystem;
+
+	MultirotorRpcLibClient client;
+
+	Pose startPose = Pose(Vector3r(5, 0, 0), Quaternionr(1, 0, 0, 0)); //start pose
+	Pose currentPose;
+	Pose goalPose = Pose(Vector3r(50, 0, 0), Quaternionr(1, 0, 0, 0)); //final pose
+	
+	try {
+		client.confirmConnection();
+		client.reset();
+		client.simSetVehiclePose(startPose, true);
+		currentPose = startPose;
+
+		bool bGoalReached = false;
+
+		while (bGoalReached != true) {
+
+			std::vector<ImageRequest> request = {
+				ImageRequest("1", ImageType::DepthPlanner, true),
+				ImageRequest("1", ImageType::Scene),
+				ImageRequest("1", ImageType::DisparityNormalized, true)
+			};
+
+			const std::vector<ImageResponse>& response = client.simGetImages(request);
+
+			if (response.size() == 0) {
+				std::cout << "No images recieved!" << std::endl;
+				continue;
+			}
+			else {
+				std::cout << "# of images recieved: " << response.size() << std::endl;
+			}
+
+			for (const ImageResponse& image_info : response) {
+				if (image_info.image_type == ImageType::DepthPlanner)
+				{
+					if (image_info.image_data_float.size() > 0)
+					{
+						std::vector<float> img;
+
+						for (int i=0; i<image_info.image_data_float.size();i++){ img.push_back(image_info.image_data_float.data()[i]); }
+						
+						currentPose = depthNav.getNextPose(img, goalPose.position, currentPose, 0.1f);
+
+						client.simSetVehiclePose(currentPose, true);
+
+						float dist2goal = depthNav.getDistanceToGoal(currentPose.position, goalPose.position);
+						
+						if (dist2goal < 1) {
+							std::cout << "Target reached." << std::endl; std::cin.get();
+							return 0;
+						}
+						else {
+							std::cout << "Distance to target: " << dist2goal << std::endl;
+						}
+						
+
+					}
+				}
+			}
+		}
+	}
+
+	catch (rpc::rpc_error&  e) {
+		std::string msg = e.get_error().as<std::string>();
+		std::cout << "Exception raised by the API, something went wrong." << std::endl << msg << std::endl;
+		//Add some sleep
+		std::this_thread::sleep_for(std::chrono::duration<double>(5));
+	}
+
+	return 0;
+}
+*/
+
+
 int main(int argc, const char *argv[])
 {
     using namespace msr::airlib;
@@ -137,8 +218,7 @@ int main(int argc, const char *argv[])
 
 	//GaussianMarkovTest test;
 	//test.run();
-	DepthNav depthNav;
-	DepthNavT depthNavT;
+	DepthNavTest depthNavTest;
 
 	//Size of UAV
 	Vector2r uav_size = Vector2r(0.29 * 3, 0.98 * 2); //height:0.29 x width : 0.98 - allow some tolerance
@@ -160,23 +240,6 @@ int main(int argc, const char *argv[])
 	float hfov = Utils::degreesToRadians(90.0f);
 	float step = 0.1f;
 	bool bSafeToMove = true;
-
-	//Using 2D array
-	//int M = 256;
-	//int N = 144;
-	//
-	////dynamic alloc
-	//real_T ** depth_image = new real_T *[N];
-	//for (int i = 0; i < N; i++)
-	//	depth_image[i] = new real_T[M];
-
-	////fill
-	//for (int i = 0; i < N; i++)
-	//	for (int j = 0; j < M; j++)
-	//		depth_image[i][j] = image_info.image_data_float.data()[i*M + j];
-
-	//currentPose = depthNavT.getNextPose(depth_image, goalPose.position, currentPose, step);
-	//
 
 	try {
 		client.confirmConnection();
@@ -215,7 +278,7 @@ int main(int argc, const char *argv[])
 
 						std::cout << "Image float size: " << image_info.image_data_float.size() << std::endl;
 						Vector2r image_sz = Vector2r(image_info.height, image_info.width);
-						Vector2r bb_sz = depthNav.compute_bb_sz(image_sz, uav_size, hfov, 5.f);
+						Vector2r bb_sz = depthNavTest.compute_bb_sz(image_sz, uav_size, hfov, 5.f);
 
 						//compute box of interest
 						std::vector<float> crop;
@@ -241,14 +304,14 @@ int main(int argc, const char *argv[])
 
 				goalVec = goalPose.position - currentPose.position;
 				goalQuat = VectorMath::lookAt(currentPose.position, goalPose.position);
-				//goalQuat = depthNav.getQuatBetweenVecs(forwardVec, goalVec);
+				//goalQuat = depthNavTest.getQuatBetweenVecs(forwardVec, goalVec);
 
 				Vector3r contact;
-				bool linePlaneIntersection = depthNav.linePlaneIntersection(contact, goalVec, currentPose.position, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation), VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation)*threshold + currentPose.position);
-				Vector2r planeSz = depthNav.getPlaneSize(threshold, hfov, depthNav.hfov2vfov(hfov, Vector2r(144, 256)));
-				planeSz = depthNav.getPlaneSize(threshold, hfov, depthNav.hfov2vfov(hfov, Vector2r(144, 256)));
+				bool linePlaneIntersection = depthNavTest.linePlaneIntersection(contact, goalVec, currentPose.position, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation), VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation)*threshold + currentPose.position);
+				Vector2r planeSz = depthNavTest.getPlaneSize(threshold, hfov, depthNavTest.hfov2vfov(hfov, Vector2r(144, 256)));
+				planeSz = depthNavTest.getPlaneSize(threshold, hfov, depthNavTest.hfov2vfov(hfov, Vector2r(144, 256)));
 				float z_min, z_max, y_min, y_max;
-				depthNav.getPlaneBoundary(planeSz, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation)*threshold + currentPose.position,z_min,z_max,y_min,y_max);
+				depthNavTest.getPlaneBoundary(planeSz, VectorMath::transformToWorldFrame(forwardVec, currentPose.orientation)*threshold + currentPose.position,z_min,z_max,y_min,y_max);
 				std::cout << "Plane Intersection: " << linePlaneIntersection << " at " << contact << std::endl;
 				std::cout << "Plane Size: " << planeSz << std::endl;
 				std::cout << "Plane Boundary: " << "z_min:" << z_min << " z_max:" << z_max << " y_min:" << y_min << " y_max:" << y_max << std::endl;
@@ -304,9 +367,9 @@ int main(int argc, const char *argv[])
 
 				client.simSetVehiclePose(currentPose, true);
 
-				std::cout << "Distance to target: " << depthNav.getNorm2(goalVec) << std::endl;
+				std::cout << "Distance to target: " << depthNavTest.getNorm2(goalVec) << std::endl;
 
-				if (depthNav.getNorm2(goalVec) < 1) {
+				if (depthNavTest.getNorm2(goalVec) < 1) {
 					std::cout << "Target reached." << std::endl; std::cin.get();
 					return 0;
 				}
@@ -323,4 +386,3 @@ int main(int argc, const char *argv[])
 	
 }
 
-*/
