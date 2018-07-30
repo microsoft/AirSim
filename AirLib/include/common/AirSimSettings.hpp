@@ -27,8 +27,6 @@ public: //types
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
     static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
-
-
     struct SubwindowSetting {
         int window_index;
         ImageType image_type;
@@ -297,6 +295,7 @@ public: //fields
     float clock_speed = 1.0f;
     bool engine_sound = false;
     bool log_messages_visible = true;
+    bool offscreen_mode = false;
     HomeGeoPoint origin_geopoint{ GeoPoint(47.641468, -122.140165, 122) }; //The geo-coordinate assigned to Unreal coordinate 0,0,0
     std::map<std::string, PawnPath> pawn_paths; //path for pawn blueprint
     std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
@@ -324,6 +323,8 @@ public: //methods
         error_messages.clear();
         const Settings& settings_json = Settings::singleton();
         checkSettingsVersion(settings_json);
+
+        offscreen_mode = settings_json.getBool("OffscreenMode", false);
 
         loadCoreSimModeSettings(settings_json, simmode_getter);
         loadDefaultCameraSetting(settings_json, camera_defaults);

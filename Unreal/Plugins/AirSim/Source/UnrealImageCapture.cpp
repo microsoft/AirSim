@@ -4,13 +4,15 @@
 
 #include "RenderRequest.h"
 #include "common/ClockFactory.hpp"
+#include "CameraDirector.h"
 
-
-UnrealImageCapture::UnrealImageCapture(const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras)
+UnrealImageCapture::UnrealImageCapture(ACameraDirector * camera_director, const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras)
     : cameras_(cameras)
+    , camera_director_(camera_director)
 {
     //TODO: explore screenshot option
     //addScreenCaptureHandler(camera->GetWorld());
+    offscreen_mode_ = ::msr::airlib::AirSimSettings::singleton().offscreen_mode;
 }
 
 UnrealImageCapture::~UnrealImageCapture()
@@ -36,14 +38,22 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     std::vector<std::shared_ptr<RenderRequest::RenderParams>> render_params;
     std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
 
+    bool visibilityChanged = false;
+    for (unsigned int i = 0; i < requests.size(); ++i) {
+        APIPCamera* camera = cameras_->at(requests.at(i).camera_name);
+        //TODO: may be we should have these methods non-const?
+        visibilityChanged = const_cast<UnrealImageCapture*>(this)->
+            updateCameraVisibility(camera, requests[i]) || visibilityChanged;
+    }
+    if (!offscreen_mode_ && visibilityChanged) {
+        // Wait for render so that view is ready for capture
+        std::this_thread::sleep_for(std::chrono::duration<double>(0.2));
+    }
+
     for (unsigned int i = 0; i < requests.size(); ++i) {
         APIPCamera* camera = cameras_->at(requests.at(i).camera_name);
         responses.push_back(ImageResponse());
         ImageResponse& response = responses.at(i);
-
-        //TODO: may be we should have these methods non-const?
-        const_cast<UnrealImageCapture*>(this)->
-            updateCameraVisibility(camera, requests[i]);
 
         UTextureRenderTarget2D* textureTarget = nullptr;
         USceneCaptureComponent2D* capture = camera->getCaptureComponent(requests[i].image_type, false);
@@ -56,11 +66,11 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
         else 
             textureTarget = capture->TextureTarget;
 
-        render_params.push_back(std::make_shared<RenderRequest::RenderParams>(textureTarget, requests[i].pixels_as_float, requests[i].compress));
+        render_params.push_back(std::make_shared<RenderRequest::RenderParams>(capture, textureTarget, requests[i].pixels_as_float, requests[i].compress));
     }
 
     RenderRequest render_request(use_safe_method);
-    render_request.getScreenshot(render_params.data(), render_results, render_params.size());
+    render_request.getScreenshot(render_params.data(), render_results, render_params.size(), offscreen_mode_? camera_director_: NULL);
 
     for (unsigned int i = 0; i < requests.size(); ++i) {
         const ImageRequest& request = requests.at(i);
@@ -85,7 +95,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
 }
 
 
-void UnrealImageCapture::updateCameraVisibility(APIPCamera* camera, const msr::airlib::ImageCaptureBase::ImageRequest& request)
+bool UnrealImageCapture::updateCameraVisibility(APIPCamera* camera, const msr::airlib::ImageCaptureBase::ImageRequest& request)
 {
     bool visibilityChanged = false;
     if (! camera->getCameraTypeEnabled(request.image_type)) {
@@ -93,14 +103,7 @@ void UnrealImageCapture::updateCameraVisibility(APIPCamera* camera, const msr::a
         visibilityChanged = true;
     }
 
-    if (visibilityChanged) {
-        // Wait for render so that view is ready for capture
-        std::this_thread::sleep_for(std::chrono::duration<double>(0.2));
-        // not sure why this doesn't work.
-        //DECLARE_CYCLE_STAT(TEXT("FNullGraphTask.CheckRenderStatus"), STAT_FNullGraphTask_CheckRenderStatus, STATGROUP_TaskGraphTasks);
-        //auto renderStatus = TGraphTask<FNullGraphTask>::CreateTask(NULL).ConstructAndDispatchWhenReady(GET_STATID(STAT_FNullGraphTask_CheckRenderStatus), ENamedThreads::RenderThread);
-        //FTaskGraphInterface::Get().WaitUntilTaskCompletes(renderStatus);
-    }
+    return visibilityChanged;
 }
 
 bool UnrealImageCapture::getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng)

@@ -13,7 +13,7 @@
 PawnSimApi::PawnSimApi(const Params& params)
     : params_(params), ned_transform_(params.pawn, *params.global_transform)
 {
-    image_capture_.reset(new UnrealImageCapture(&params_.cameras));
+    image_capture_.reset(new UnrealImageCapture(params.camera_director, &params_.cameras));
 
     msr::airlib::Environment::State initial_environment;
     initial_environment.position = getPose().position;

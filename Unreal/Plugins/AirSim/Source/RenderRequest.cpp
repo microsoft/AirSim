@@ -5,6 +5,8 @@
 #include "ImageUtils.h"
 
 #include "AirBlueprintLib.h"
+#include "Async/Async.h"
+#include "CameraDirector.h"
 
 RenderRequest::RenderRequest(bool use_safe_method)
     : use_safe_method_(use_safe_method), params_(nullptr), results_(nullptr), req_size_(0),
@@ -18,7 +20,9 @@ RenderRequest::~RenderRequest()
 
 // read pixels from render target using render thread, then compress the result into PNG
 // argument on the thread that calls this method.
-void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size)
+void RenderRequest::getScreenshot(
+    std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size,
+    ACameraDirector * camera_director)
 {
     //TODO: is below really needed?
     for (unsigned int i = 0; i < req_size; ++i) {
@@ -34,7 +38,41 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
     //make sure we are not on the rendering thread
     CheckNotBlockedOnRenderThread();
 
-    if (use_safe_method_) {
+    if (camera_director != NULL) {
+        params_ = params;
+        results_ = results.data();
+        req_size_ = req_size;
+
+        AsyncTask(ENamedThreads::GameThread, [camera_director, this]() {
+            camera_director->CaptureOneshot([this]() {
+                // The completion is called immeidately after GameThread sends the
+                // rendering commands to RenderThread. Hence, our ExecuteTask will
+                // execute *immediately* after RenderThread renders the scene!
+                ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
+                    SceneDrawCompletion,
+                    RenderRequest *, This, this,
+                    {
+                        This->ExecuteTask();
+                    }
+                );
+            });
+
+            // while we're still on GameThread, enqueue request for capture the scene!
+            for (unsigned int i = 0; i < req_size_; ++i) {
+                params_[i]->render_component->CaptureSceneDeferred();
+            }
+        });
+
+        // wait for this task to complete
+        while (!wait_signal_->waitFor(5)) {
+            // log a message and continue wait
+            // Throwing a catchable exception isn't the right solution. 'this' pointer is still
+            // referenced by the task. Memory corruption (much more difficult to debug) will occur
+            // when rendering thread complete!
+            UE_LOG(LogTemp, Warning, TEXT("Failed: timeout waiting for screenshot"));
+        }
+    }
+    else if (use_safe_method_) {
         for (unsigned int i = 0; i < req_size; ++i) {
             //TODO: below doesn't work right now because it must be running in game thread
             FIntPoint img_size;

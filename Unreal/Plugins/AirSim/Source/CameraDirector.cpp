@@ -22,6 +22,14 @@ ACameraDirector::ACameraDirector()
 void ACameraDirector::BeginPlay()
 {
     Super::BeginPlay();
+    offscreen_mode_ = ::msr::airlib::AirSimSettings::singleton().offscreen_mode;
+
+    if (offscreen_mode_) {
+        UWorld * world = GetWorld();
+        UGameViewportClient * gameViewport = world->GetGameViewport();
+        gameViewport->bDisableWorldRendering = 1;
+        gameViewport->OnEndDraw().AddUObject(this, &ACameraDirector::OnEndDraw);
+    }
 }
 
 void ACameraDirector::Tick(float DeltaTime)
@@ -309,4 +317,32 @@ void ACameraDirector::disableCameras(bool fpv, bool backup, bool external, bool 
         front_camera_->disableMain();
 }
 
+void ACameraDirector::CaptureOneshot(capture_completion_callback_t&& completion_callback)
+{
+    check(IsInGameThread());
+    UWorld * world = GetWorld();
+    UGameViewportClient * gameViewport = world->GetGameViewport();
 
+    // enable rendering for current frame
+    gameViewport->bDisableWorldRendering = 0;
+    capture_callbacks_.push_back(std::move(completion_callback));
+}
+
+void ACameraDirector::OnEndDraw()
+{
+    check(IsInGameThread());
+
+    UWorld * world = GetWorld();
+    UGameViewportClient * gameViewport = world->GetGameViewport();
+
+    // disable rendering for the next frame
+    // this is done before making the callback since the callback
+    // may choose to capture the next frame
+    gameViewport->bDisableWorldRendering = 1;
+
+    // make the callback
+    std::vector<capture_completion_callback_t> callbacks = std::move(capture_callbacks_);
+    for(auto cb: callbacks) {
+        cb();
+    }
+}
