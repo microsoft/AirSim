@@ -137,7 +137,8 @@ int main(int argc, const char *argv[])
 	Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
 	Pose currentPose;
 	//Pose goalPose = Pose(Vector3r(25, 10, -1), Quaternionr(1, 0, 0, 0)); //final pose
-	Pose goalPose = Pose(Vector3r(-25, 0, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	Pose goalPose = Pose(Vector3r(-25, -10, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	//Pose goalPose = Pose(Vector3r(-25, 0, -1), Quaternionr(1, 0, 0, 0)); //final pose
 
 	try {
 		client.confirmConnection();
