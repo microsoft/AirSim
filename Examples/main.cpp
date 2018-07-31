@@ -83,7 +83,7 @@ void runSteroImageGenerator(int argc, const char *argv[])
 
 }
 
-void unitTestsDepthNav()
+void testDepthNav()
 {
 	DepthNav depthNav;
 	//Test getCellCenters
@@ -119,7 +119,8 @@ void unitTestsDepthNav()
 	std::vector<int> spiral_idxs = depthNav.spiralOrder(12, 14, cell_idx);
 }
 
-/*
+
+
 int main(int argc, const char *argv[])
 {
 	DepthNav depthNav;
@@ -133,10 +134,11 @@ int main(int argc, const char *argv[])
 
 	MultirotorRpcLibClient client;
 
-	Pose startPose = Pose(Vector3r(5, 0, 0), Quaternionr(1, 0, 0, 0)); //start pose
+	Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
 	Pose currentPose;
-	Pose goalPose = Pose(Vector3r(50, 0, 0), Quaternionr(1, 0, 0, 0)); //final pose
-	
+	//Pose goalPose = Pose(Vector3r(25, 10, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	Pose goalPose = Pose(Vector3r(-25, 0, -1), Quaternionr(1, 0, 0, 0)); //final pose
+
 	try {
 		client.confirmConnection();
 		client.reset();
@@ -160,7 +162,7 @@ int main(int argc, const char *argv[])
 				continue;
 			}
 			else {
-				std::cout << "# of images recieved: " << response.size() << std::endl;
+				//std::cout << "# of images recieved: " << response.size() << std::endl;
 			}
 
 			for (const ImageResponse& image_info : response) {
@@ -173,6 +175,7 @@ int main(int argc, const char *argv[])
 						for (int i=0; i<image_info.image_data_float.size();i++){ img.push_back(image_info.image_data_float.data()[i]); }
 						
 						currentPose = depthNav.getNextPose(img, goalPose.position, currentPose, 0.1f);
+					    std::cout << "Position: " << currentPose.position << " Orientation: " << currentPose.orientation  << std::endl;
 
 						client.simSetVehiclePose(currentPose, true);
 
@@ -202,9 +205,12 @@ int main(int argc, const char *argv[])
 
 	return 0;
 }
-*/
 
 
+
+
+
+/*
 int main(int argc, const char *argv[])
 {
     using namespace msr::airlib;
@@ -228,9 +234,9 @@ int main(int argc, const char *argv[])
     //Define start and goal poses
 	Pose startPose = Pose(Vector3r(5, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
 	Pose currentPose;
-	Pose goalPose = Pose(Vector3r(-50, 4, -15), Quaternionr(1, 0, 0, 0)); //final pose
+	//Pose goalPose = Pose(Vector3r(-50, 4, -15), Quaternionr(1, 0, 0, 0)); //final pose
 	//Pose goalPose = Pose(Vector3r(50, -12, -1), Quaternionr(1, 0, 0, 0)); //final pose
-	//Pose goalPose = Pose(Vector3r(50, 4, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	Pose goalPose = Pose(Vector3r(50, 4, -1), Quaternionr(1, 0, 0, 0)); //final pose
 
 	Quaternionr currentQuat;
 	Quaternionr nextQuat;
@@ -386,3 +392,4 @@ int main(int argc, const char *argv[])
 	
 }
 
+*/

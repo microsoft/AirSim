@@ -260,9 +260,8 @@ namespace msr {
 				real_T min_frustrum_alignment = (1.0f + 0.75f) / 2;
 
 				//When goal is outside of frustum, we need to rotate
-				//below specifies how much increment to get to required rotation
-				//TODO: we should slerp by max allowed rotation for dt
-				real_T rotation_slerp_alpha = 0.5f;
+				//below specifies max angle per step
+				real_T rotation_step_limit = Utils::degreesToRadians(5.0f);;
 
 				unsigned int depth_width = 256, depth_height = 144;
 
@@ -272,7 +271,7 @@ namespace msr {
 				//In a cell in depth image, what is the distance we consider for a pixel
 				//that would qualify it as an obstacle that needs to be avoided
 				//TODO: we should use current velocity to determine this
-				real_T max_allowed_obs_dist = 1; //in meters
+				real_T max_allowed_obs_dist = 5; //in meters
 
 												 //In a cell in depth image, how many pixels should be closer than max_allowed_obs_dist
 												 //to consider that cell to be avoided. Otherwise we consider that cell to be free
@@ -319,7 +318,7 @@ namespace msr {
 					//3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
 					Vector3r intersect_point = linePlaneIntersection(goal_body, VectorMath::front(), params_.max_allowed_obs_dist);
 					//Check if intersection is valid
-					if (intersect_point == VectorMath::nanVector()) 
+					if (VectorMath::hasNan(intersect_point))
 					{
 						return rotateToGoal(current_pose, goal);
 					}
@@ -329,58 +328,57 @@ namespace msr {
 					}
 					else
 					{
-					//4. So now we have a rectangle and a point within it
-					//5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
-					std::vector<Vector2r> cell_centers = getCellCenters();
-					//6. Compute cell coordinates i, j for x_goal and y_goal.
-					float y_px = intersect_point.y() * params_.depth_width / planeSize.y() + params_.depth_width / 2;
-					float z_px = intersect_point.z() * params_.depth_height / planeSize.x() + params_.depth_height / 2;
-					//Get nearest neighbor to goal
-					unsigned int cell_idx = nearest_neighbor(cell_centers, Vector2r(y_px, z_px));
-					//Get spiral indexes
-					std::vector<int> spiral_idxs = spiralOrder(params_.M, params_.N, cell_idx);
-					/*7. Until free space is found
-					For p = -params.req_free_width to +params.req_free_width
-					For q = -params.req_free_height to +params.req_free_height
-					Query block (i + p, j + q) in depth image to see if it is free
-					We can use params.max_allowed_obs_per_block and params.max_allowed_obs_dist
-					Make sure to cache result of the query for each block
-					If all blocks in above for-for loop where not free
-					then move i,j spirally within the rectangle (or do something more simple?)
-					If all blocks have been marked as occupied
-					then return Pose::nanPose() indicating no more moves possible
-					*/
-					Vector2r goal_px;
-					for (int i = 0; i < cell_centers.size(); i++) {
-						if (isCellFree(depth_image, cell_centers[spiral_idxs[i]])) {
-							//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
-							//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
-							goal_px = cell_centers[spiral_idxs[i]];
+						//4. So now we have a rectangle and a point within it
+						//5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
+						std::vector<Vector2r> cell_centers = getCellCenters();
+						//6. Compute cell coordinates i, j for x_goal and y_goal.
+						float y_px = intersect_point.y() * params_.depth_width / planeSize.y() + params_.depth_width / 2;
+						float z_px = intersect_point.z() * params_.depth_height / planeSize.x() + params_.depth_height / 2;
+						//Get nearest neighbor to goal
+						unsigned int cell_idx = nearest_neighbor(cell_centers, Vector2r(y_px, z_px));
+						//Get spiral indexes
+						std::vector<int> spiral_idxs = spiralOrder(params_.M, params_.N, cell_idx);
+						/*7. Until free space is found
+						For p = -params.req_free_width to +params.req_free_width
+						For q = -params.req_free_height to +params.req_free_height
+						Query block (i + p, j + q) in depth image to see if it is free
+						We can use params.max_allowed_obs_per_block and params.max_allowed_obs_dist
+						Make sure to cache result of the query for each block
+						If all blocks in above for-for loop where not free
+						then move i,j spirally within the rectangle (or do something more simple?)
+						If all blocks have been marked as occupied
+						then return Pose::nanPose() indicating no more moves possible
+						*/
+						Vector2r goal_px;
+						for (int i = 0; i < cell_centers.size(); i++) {
+							if (isCellFree(depth_image, cell_centers[spiral_idxs[i]])) {
+								//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
+								//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
+								goal_px = cell_centers[spiral_idxs[i]];
 
-							///TO DO
-							////Body frame in meters
-							float goal_y = (goal_px.x() - params_.depth_width / 2) * planeSize.y() / params_.depth_width;
-							float goal_z = (goal_px.y() - params_.depth_height / 2) * planeSize.x() / params_.depth_height;
-							//Vector3r goal_world = VectorMath::transformToWorldFrame(Vector3r(1.0f, goal_y, goal_z), current_pose);
-							Vector3r goal_world = Vector3r(1.0f, goal_y, goal_z) + current_pose.position;
+								////Body frame in meters
+								float goal_y = (goal_px.x() - params_.depth_width / 2) * planeSize.y() / params_.depth_width;
+								float goal_z = (goal_px.y() - params_.depth_height / 2) * planeSize.x() / params_.depth_height;
+								Vector3r goal_world = VectorMath::transformToWorldFrame(Vector3r(params_.max_allowed_obs_dist, goal_y, goal_z).normalized(), current_pose);
 
-							Pose goal_pose;
-							//10. Compute next orientation with similar algorithm as in else section below
-							goal_pose = rotateToGoal(current_pose, goal_world);
+								Pose goal_pose = current_pose;
+								//10. Compute next orientation with similar algorithm as in else section below
+								goal_pose = rotateToGoal(current_pose, goal_world);
 							
-							//11. Compute next position along vector (i_x_center, j_y_center, 1) and transform it to world frame
-							goal_pose.position = current_pose.position + goal_world * dt;
+								//11. Compute next position along vector (i_x_center, j_y_center, 1) and transform it to world frame
+								goal_pose.position = VectorMath::transformToWorldFrame(Vector3r(params_.max_allowed_obs_dist, goal_y, goal_z).normalized()*dt, goal_pose);
 
-							//12. return pose using result from step 10 and 11
-							return goal_pose;
+								//12. return pose using result from step 10 and 11
+								return goal_pose;
+							}
 						}
-					}
-			
-					return Pose::nanPose();
+						//If no free space was found
+						return Pose::nanPose();
 					}
 				}
+				//Not in frustrum
 				else {
-					return rotateToGoal(current_pose, goal);
+					return Pose::nanPose();
 				}
 			}
 
@@ -467,16 +465,25 @@ namespace msr {
 			}
 
 			Pose rotateToGoal(Pose current_pose, Vector3r goal) {
-				//get rotation we need
-				//TODO: below is toQuat to center but we only need somewhere at the edge of frustum
-				Quaternionr toQuat = VectorMath::lookAt(current_pose.position, goal);
+				
 				Quaternionr fromQuat = current_pose.orientation;
+				//get rotation we need
+				Quaternionr toQuat = VectorMath::lookAt(current_pose.position, goal);
+				//Remove roll component
+				//toQuat = VectorMath::toQuaternion(VectorMath::getPitch(toQuat), 0, VectorMath::getYaw(toQuat));
+
+				//Compute angle between quats
+				Quaternionr diffQuat = VectorMath::coordOrientationSubtract(toQuat, fromQuat);
+				float diffAngle = 2 * std::acosf(diffQuat.w());
+				float slerp_alpha = 0;
+				if (diffAngle > 0) { slerp_alpha = params_.rotation_step_limit / diffAngle; }	
+				if (slerp_alpha > 1) { slerp_alpha = 1; }
 
 				//using spherical interpolation compute fraction of quaternion
-				Quaternionr stepQuat = VectorMath::slerp(fromQuat, toQuat, params_.rotation_slerp_alpha);
+				Quaternionr stepQuat = VectorMath::slerp(fromQuat, toQuat, slerp_alpha);
 
 				//add fraction of quaternion to current orientation
-				return Pose(current_pose.position, (current_pose.orientation * stepQuat).normalized());
+				return Pose(current_pose.position, stepQuat.normalized());
 			}
 
 			bool isCellFree(std::vector<float>& img, Vector2r cell_center) {
@@ -533,12 +540,8 @@ namespace msr {
 
 			float getDistanceToGoal(Vector3r current_position, Vector3r goal)
 			{
-				return getNorm2(goal - current_position);
-			}
-
-			float getNorm2(Vector3r u)
-			{
-				return sqrt(u.dot(u));
+				Vector3r goalVec = goal - current_position;
+				return goalVec.norm();
 			}
 
 			//returns true if goal in body frame in within frustum
