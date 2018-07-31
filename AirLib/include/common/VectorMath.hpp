@@ -203,10 +203,10 @@ public:
 
     static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& body_pose, bool assume_unit_quat = true)
     {
-        //translate
-        Vector3T translated = v_body + body_pose.position;
         //rotate
-        return transformToWorldFrame(translated, body_pose.orientation, assume_unit_quat);
+        Vector3T v_world = transformToWorldFrame(v_body, body_pose.orientation, assume_unit_quat);
+        //translate
+        return v_world + body_pose.position;
     }
 
     static QuaternionT negate(const QuaternionT& q)
