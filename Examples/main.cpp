@@ -87,7 +87,7 @@ int main(int argc, const char *argv[])
 
 	Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
 	Pose currentPose;
-	Pose goalPose = Pose(Vector3r(25, 10, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	Pose goalPose = Pose(Vector3r(50, 20, -1), Quaternionr(1, 0, 0, 0)); //final pose
 
 	try {
 		client.confirmConnection();
@@ -124,10 +124,15 @@ int main(int argc, const char *argv[])
 
 						for (int i = 0; i<image_info.image_data_float.size();i++) { img.push_back(image_info.image_data_float.data()[i]); }
 
-						currentPose = depthNav.getNextPose(img, goalPose.position, currentPose, 0.1f);
-						std::cout << "Position: " << currentPose.position << " Orientation: " << currentPose.orientation << std::endl;
+						currentPose = depthNav.getNextPose(img, goalPose.position, currentPose, 0.5f);
+						//std::cout << "Position: " << currentPose.position << " Orientation: " << currentPose.orientation << std::endl;
 
-						client.simSetVehiclePose(currentPose, true);
+						if (VectorMath::hasNan(currentPose)) {
+							std::cout << "I'm stuck." << std::endl; std::cin.get(); return 0; 
+						}
+						else {
+							client.simSetVehiclePose(currentPose, true);
+						}
 
 						float dist2goal = depthNav.getDistanceToGoal(currentPose.position, goalPose.position);
 

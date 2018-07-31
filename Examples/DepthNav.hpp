@@ -40,24 +40,26 @@ namespace msr { namespace airlib {
 			//TODO: we should use current velocity to determine this
 			real_T max_allowed_obs_dist = 5; //in meters
 
-											 //In a cell in depth image, how many pixels should be closer than max_allowed_obs_dist
-											 //to consider that cell to be avoided. Otherwise we consider that cell to be free
+			//In a cell in depth image, how many pixels should be closer than max_allowed_obs_dist
+			//to consider that cell to be avoided. Otherwise we consider that cell to be free
 			unsigned int max_allowed_obs_per_block = 1;
 
 			//Number of free cells for width and height required for the vehicle to pass through
-			unsigned int req_free_width = 20, req_free_height = 10;
+			unsigned int req_free_width = 40, req_free_height = 10;
 
 			//Vehicle dimensions
-			float vehicle_width = 0.98f, vehicle_height = 0.26f;
-			unsigned int vehicle_width_px = 20, vehicle_height_px = 10;
+			float margin = 1.2f;
+			float vehicle_width = 0.98f * margin, vehicle_height = 0.26f * margin;
+			unsigned int vehicle_width_px, vehicle_height_px;
+
 		};
 
 	public:
 		DepthNav(const Params& params = Params())
 			: params_(params)
 		{
-			//msr::airlib::MultirotorRpcLibClient client;
-			//client.confirmConnection();
+			params_.vehicle_height_px = int(ceil(params_.depth_height * params_.vehicle_height / (tan(params_.fov / 2) * params_.max_allowed_obs_dist * 2))); //height
+			params_.vehicle_width_px = int(ceil(params_.depth_width * params_.vehicle_width / (tan(hfov2vfov(params_.fov, params_.depth_height, params_.depth_width) / 2) * params_.max_allowed_obs_dist * 2))); //width
 		}
 
 		//depth_image is 2D float array for which width and height are specified in Params
@@ -117,7 +119,7 @@ namespace msr { namespace airlib {
 					then return Pose::nanPose() indicating no more moves possible
 					*/
 					Vector2r goal_px;
-					for (int i = 0; i < cell_centers.size(); i++) {
+					for (int i = 0; i < cell_centers.size(); ++i) {
 						if (isCellFree(depth_image, cell_centers[spiral_idxs[i]])) {
 							//8. We are here if we have found cell coordinates i, j as center of the free window from step #7
 							//9. Compute i_x_center, j_y_center that would be center pixel of this cell in the plane for x = 1
@@ -258,8 +260,8 @@ namespace msr { namespace airlib {
 			//std::vector<float> crop;
 			unsigned int counter = 0;
 
-			for (int i = int(cell_center.y() - params_.req_free_height / 2); i < int(cell_center.y() + params_.req_free_height / 2); i++) {
-				for (int j = int(cell_center.x() - params_.req_free_width / 2); j<int(cell_center.x() + params_.req_free_width / 2); j++) {
+			for (int i = int(cell_center.y() - params_.vehicle_height_px / 2); i < int(cell_center.y() + params_.vehicle_height_px / 2); i++) {
+				for (int j = int(cell_center.x() - params_.vehicle_width_px / 2); j<int(cell_center.x() + params_.vehicle_width_px / 2); j++) {
 					int idx = i * params_.depth_width + j;
 					//crop.push_back(img[idx]);
 					if (img[idx] < params_.max_allowed_obs_dist) {
@@ -280,25 +282,18 @@ namespace msr { namespace airlib {
 		}
 
 		std::vector<Vector2r> getCellCenters() {
-			//float hfov = params_.fov;
-			//float vfov = hfov2vfov(hfov, params_.depth_height, params_.depth_width);
-			//params_.vehicle_height_px = ceil(params_.depth_height * params_.vehicle_height / (tan(hfov / 2) * params_.max_allowed_obs_dist * 2)); //height
-			//params_.vehicle_width_px = ceil(params_.depth_width * params_.vehicle_width / (tan(vfov / 2) * params_.max_allowed_obs_dist * 2)); //width
-
-			params_.M = params_.depth_height / params_.req_free_height;
-			params_.N = params_.depth_width / params_.req_free_width;
-			unsigned int M_offset = params_.depth_height - params_.req_free_height * params_.M;
-			unsigned int N_offset = params_.depth_width - params_.req_free_width * params_.N;
+			params_.M = params_.depth_height / params_.vehicle_height_px;
+			params_.N = params_.depth_width / params_.vehicle_width_px;
+			unsigned int M_offset = params_.depth_height - params_.vehicle_height_px * params_.M;
+			unsigned int N_offset = params_.depth_width - params_.vehicle_width_px * params_.N;
 			std::vector<Vector2r> cell_centers;
 			Vector2r cell_center;
 
-			//Add center of frame
-			cell_centers.push_back(Vector2r(params_.depth_width / 2, params_.depth_height / 2));
-
+			//Leave one cell free at boundaries
 			for (unsigned int i = 0; i < params_.M; i++) {
 				for (unsigned int j = 0; j < params_.N; j++) {
-					cell_center.x() = float(j*params_.req_free_width + 0.5f * (params_.req_free_width + N_offset));
-					cell_center.y() = float(i*params_.req_free_height + 0.5f * (params_.req_free_height + M_offset));
+					cell_center.x() = float(j*params_.vehicle_width_px + 0.5f * (params_.vehicle_width_px + N_offset));
+					cell_center.y() = float(i*params_.vehicle_height_px + 0.5f * (params_.vehicle_height_px + M_offset));
 					cell_centers.push_back(cell_center);
 				}
 			}
