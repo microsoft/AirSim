@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 #include "SimModeWorldMultiRotor.h"
 #include "ConstructorHelpers.h"
 #include "Logging/MessageLog.h"
@@ -10,21 +13,7 @@
 #include "physics/PhysicsBody.hpp"
 #include "common/ClockFactory.hpp"
 #include <memory>
-
-
-#ifndef AIRLIB_NO_RPC
-
-#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
-
-#if defined _WIN32 || defined _WIN64
-#include "AllowWindowsPlatformTypes.h"
-#endif
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
-#if defined _WIN32 || defined _WIN64
-#include "HideWindowsPlatformTypes.h"
-#endif
-
-#endif
 
 
 void ASimModeWorldMultiRotor::BeginPlay()

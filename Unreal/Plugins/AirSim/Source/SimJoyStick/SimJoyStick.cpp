@@ -86,7 +86,7 @@ private:
         else
             rc_axis = map.rc_axis;
 
-        float result;
+        long result;
         switch (rc_axis)
         {
         case AxisMap::AxisType::LeftX: result = di_state.x; break;

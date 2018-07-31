@@ -17,7 +17,7 @@ Cars in AirSim
 
 ## What's New
 
-* AirSim is now full featured for [multiple vehicles](multi_vehicle.md)!
+* AirSim is now full featured for [multiple vehicles](docs/multi_vehicle.md)!
 * AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
 * We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
 

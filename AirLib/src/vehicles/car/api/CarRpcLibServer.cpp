@@ -12,17 +12,26 @@
 
 #include "common/Common.hpp"
 STRICT_MODE_OFF
+
 #ifndef RPCLIB_MSGPACK
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 #include "common/common_utils/MinWinDefines.hpp"
 #undef NOUSER
-//TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
+
+#include "common/common_utils/WindowsApisCommonPre.hpp"
+#undef FLOAT
 #undef check
 #include "rpc/server.h"
-#include "vehicles/car/api/CarRpcLibAdapators.hpp"
 //TODO: HACK: UE4 defines macro with stupid names like "check" that conflicts with msgpack library
+#ifndef check
 #define check(expr) (static_cast<void>((expr)))
+#endif
+#include "common/common_utils/WindowsApisCommonPost.hpp"
+
+#include "vehicles/car/api/CarRpcLibAdapators.hpp"
+
+
 STRICT_MODE_ON
 
 
