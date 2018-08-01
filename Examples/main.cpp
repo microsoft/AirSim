@@ -88,7 +88,7 @@ void runDepthNavTest()
 
     client.simSetVehiclePose(startPose, true);
 
-    DepthNav depthNav;
+    DepthNavThreshold depthNav;
     depthNav.gotoGoal(goalPose, client);
 }
 
