@@ -5,14 +5,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>computer_vision\cv_navigate.py</StartupFile>
+    <StartupFile>car\hello_car.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>PythonClient</Name>
     <RootNamespace>PythonClient</RootNamespace>
-    <InterpreterId>CondaEnv|CondaEnv|airsim</InterpreterId>
+    <InterpreterId>Global|ContinuumAnalytics|Anaconda35-64</InterpreterId>
     <InterpreterVersion>
     </InterpreterVersion>
   </PropertyGroup>
@@ -112,7 +112,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|airsim" />
+    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda35-64" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="airsim\" />
