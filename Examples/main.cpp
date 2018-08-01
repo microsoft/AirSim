@@ -2,6 +2,7 @@
 #include "StandAlonePhysics.hpp"
 #include "StereoImageGenerator.hpp"
 #include "GaussianMarkovTest.hpp"
+#include "DepthNav.hpp"
 #include <iostream>
 #include <string>
 
@@ -70,9 +71,92 @@ void runSteroImageGenerator(int argc, const char *argv[])
 
 int main(int argc, const char *argv[])
 {
-    using namespace msr::airlib;
 
-    GaussianMarkovTest test;
-    test.run();
+	using namespace msr::airlib;
+
+	//GaussianMarkovTest test;
+	//test.run();
+	DepthNav depthNav;
+
+	typedef ImageCaptureBase::ImageRequest ImageRequest;
+	typedef ImageCaptureBase::ImageResponse ImageResponse;
+	typedef ImageCaptureBase::ImageType ImageType;
+	typedef common_utils::FileSystem FileSystem;
+
+	MultirotorRpcLibClient client;
+
+	Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
+	Pose currentPose;
+	Pose goalPose = Pose(Vector3r(50, 20, -1), Quaternionr(1, 0, 0, 0)); //final pose
+
+	try {
+		client.confirmConnection();
+		client.reset();
+		client.simSetVehiclePose(startPose, true);
+		currentPose = startPose;
+
+		bool bGoalReached = false;
+
+		while (bGoalReached != true) {
+
+			std::vector<ImageRequest> request = {
+				ImageRequest("1", ImageType::DepthPlanner, true),
+				ImageRequest("1", ImageType::Scene),
+				ImageRequest("1", ImageType::DisparityNormalized, true)
+			};
+
+			const std::vector<ImageResponse>& response = client.simGetImages(request);
+
+			if (response.size() == 0) {
+				std::cout << "No images recieved!" << std::endl;
+				continue;
+			}
+			else {
+				//std::cout << "# of images recieved: " << response.size() << std::endl;
+			}
+
+			for (const ImageResponse& image_info : response) {
+				if (image_info.image_type == ImageType::DepthPlanner)
+				{
+					if (image_info.image_data_float.size() > 0)
+					{
+						std::vector<float> img;
+
+						for (int i = 0; i<image_info.image_data_float.size();i++) { img.push_back(image_info.image_data_float.data()[i]); }
+
+						currentPose = depthNav.getNextPose(img, goalPose.position, currentPose, 0.5f);
+						//std::cout << "Position: " << currentPose.position << " Orientation: " << currentPose.orientation << std::endl;
+
+						if (VectorMath::hasNan(currentPose)) {
+							std::cout << "I'm stuck." << std::endl; std::cin.get(); return 0; 
+						}
+						else {
+							client.simSetVehiclePose(currentPose, true);
+						}
+
+						float dist2goal = depthNav.getDistanceToGoal(currentPose.position, goalPose.position);
+
+						if (dist2goal < 1) {
+							std::cout << "Target reached." << std::endl; std::cin.get();
+							return 0;
+						}
+						else {
+							std::cout << "Distance to target: " << dist2goal << std::endl;
+						}
+
+
+					}
+				}
+			}
+		}
+	}
+
+	catch (rpc::rpc_error&  e) {
+		std::string msg = e.get_error().as<std::string>();
+		std::cout << "Exception raised by the API, something went wrong." << std::endl << msg << std::endl;
+		//Add some sleep
+		std::this_thread::sleep_for(std::chrono::duration<double>(5));
+	}
+
+	return 0;
 }
-
