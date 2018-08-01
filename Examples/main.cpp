@@ -85,7 +85,7 @@ void runSteroImageGenerator(int argc, const char *argv[])
 
 void testDepthNav()
 {
-	DepthNav depthNav;
+	DepthNavThreshold depthNav;
 	//Test getCellCenters
 	std::vector<Vector2r> cell_centers = depthNav.getCellCenters();
 	std::vector<float> img(256 * 144, 5.5f);
@@ -123,9 +123,13 @@ void testDepthNav()
 
 int main(int argc, const char *argv[])
 {
-	DepthNav depthNav;
 
 	using namespace msr::airlib;
+
+	//GaussianMarkovTest test;
+	//test.run();
+	//DepthNavThreshold depthNav;
+    DepthNavCost depthNav;
 
 	typedef ImageCaptureBase::ImageRequest ImageRequest;
 	typedef ImageCaptureBase::ImageResponse ImageResponse;
@@ -136,9 +140,7 @@ int main(int argc, const char *argv[])
 
 	Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
 	Pose currentPose;
-	//Pose goalPose = Pose(Vector3r(25, 10, -1), Quaternionr(1, 0, 0, 0)); //final pose
-	Pose goalPose = Pose(Vector3r(-25, -10, -1), Quaternionr(1, 0, 0, 0)); //final pose
-	//Pose goalPose = Pose(Vector3r(-25, 0, -1), Quaternionr(1, 0, 0, 0)); //final pose
+	Pose goalPose = Pose(Vector3r(50, 105, -1), Quaternionr(1, 0, 0, 0)); //final pose
 
 	try {
 		client.confirmConnection();
@@ -173,15 +175,20 @@ int main(int argc, const char *argv[])
 					{
 						std::vector<float> img;
 
-						for (int i=0; i<image_info.image_data_float.size();i++){ img.push_back(image_info.image_data_float.data()[i]); }
-						
-						currentPose = depthNav.getNextPose(img, goalPose.position, currentPose, 0.1f);
-					    std::cout << "Position: " << currentPose.position << " Orientation: " << currentPose.orientation  << std::endl;
+						for (int i = 0; i<image_info.image_data_float.size();i++) { img.push_back(image_info.image_data_float.data()[i]); }
 
-						client.simSetVehiclePose(currentPose, true);
+						currentPose = depthNav.getNextPose(img, goalPose.position, currentPose, 0.5f);
+						//std::cout << "Position: " << currentPose.position << " Orientation: " << currentPose.orientation << std::endl;
+
+						if (VectorMath::hasNan(currentPose)) {
+							std::cout << "I'm stuck." << std::endl; std::cin.get(); return 0;
+						}
+						else {
+							client.simSetVehiclePose(currentPose, true);
+						}
 
 						float dist2goal = depthNav.getDistanceToGoal(currentPose.position, goalPose.position);
-						
+
 						if (dist2goal < 1) {
 							std::cout << "Target reached." << std::endl; std::cin.get();
 							return 0;
@@ -189,7 +196,7 @@ int main(int argc, const char *argv[])
 						else {
 							std::cout << "Distance to target: " << dist2goal << std::endl;
 						}
-						
+
 
 					}
 				}
