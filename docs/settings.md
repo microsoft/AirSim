@@ -151,7 +151,9 @@ Below are complete list of settings available along with their default values. I
       },
       "X": NaN, "Y": NaN, "Z": NaN,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN      
-    }
+    },
+	"SpeedUnitFactor": 1.0,
+	"SpeedUnitLabel": "m/s"
   }
 }
 ````
@@ -356,3 +358,8 @@ be allowed to talk to each other, in which case the UDP messages from one networ
 So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines, 
 this default is only used when everything you are talking to is contained on a single PC.
 
+### SpeedUnitFactor
+Applies a scale factor to the speed units displayed. Used in conjunction with SpeedUnitLabel.
+
+### SpeedUnitLabel
+Specifies the units for speed that are displayed.  Used in conjunction with SpeedUnitFactor.

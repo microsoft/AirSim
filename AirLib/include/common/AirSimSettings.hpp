@@ -302,6 +302,8 @@ public: //fields
     std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
     CameraSetting camera_defaults;
     CameraDirectorSetting camera_director;
+	  float speed_unit_factor =  1.0f;
+	  std::string speed_unit_label = "m\\s";
 
 public: //methods
     static AirSimSettings& singleton() 
@@ -948,7 +950,8 @@ private:
         is_record_ui_visible = settings_json.getBool("RecordUIVisible", true);
         engine_sound = settings_json.getBool("EngineSound", false);
         enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);
-
+		speed_unit_factor = settings_json.getFloat("SpeedUnitFactor", 1.0f);
+		speed_unit_label = settings_json.getString("SpeedUnitLabel", "m\\s");
         log_messages_visible = settings_json.getBool("LogMessagesVisible", true);
 
         {   //load origin geopoint
