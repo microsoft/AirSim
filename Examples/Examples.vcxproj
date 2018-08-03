@@ -185,7 +185,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DepthNav.hpp" />
+    <ClInclude Include="DepthNav\DepthNav.hpp" />
+    <ClInclude Include="DepthNav\DepthNavCost.hpp" />
+    <ClInclude Include="DepthNav\DepthNavThreshold.hpp" />
     <ClInclude Include="GaussianMarkovTest.hpp" />
     <ClInclude Include="RandomPointPoseGenerator.hpp" />
     <ClInclude Include="StandAlonePhysics.hpp" />

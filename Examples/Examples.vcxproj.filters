@@ -35,7 +35,13 @@
     <ClInclude Include="GaussianMarkovTest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthNav.hpp">
+    <ClInclude Include="DepthNav\DepthNav.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthNav\DepthNavThreshold.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthNav\DepthNavCost.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

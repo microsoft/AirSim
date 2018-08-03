@@ -2,7 +2,7 @@
 #include "StandAlonePhysics.hpp"
 #include "StereoImageGenerator.hpp"
 #include "GaussianMarkovTest.hpp"
-#include "DepthNav.hpp"
+#include "DepthNav/DepthNavCost.hpp"
 #include <iostream>
 #include <string>
 
