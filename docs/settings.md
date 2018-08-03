@@ -35,6 +35,8 @@ Below are complete list of settings available along with their default values. I
   "RpcEnabled": true,
   "EngineSound": true,
   "PhysicsEngineName": "",
+  "SpeedUnitFactor": 1.0,
+	"SpeedUnitLabel": "m/s",
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
@@ -151,9 +153,7 @@ Below are complete list of settings available along with their default values. I
       },
       "X": NaN, "Y": NaN, "Z": NaN,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN      
-    },
-	"SpeedUnitFactor": 1.0,
-	"SpeedUnitLabel": "m/s"
+    }
   }
 }
 ````
@@ -359,7 +359,7 @@ So the LocalHostIp allows you to configure how you are reaching those machines. 
 this default is only used when everything you are talking to is contained on a single PC.
 
 ### SpeedUnitFactor
-Applies a scale factor to the speed units displayed. Used in conjunction with SpeedUnitLabel.
+Unit conversion factor for speed related to `m/s`, default is 1. Used in conjunction with SpeedUnitLabel. This may be only used for display purposes for example on-display speed when car is being driven. For example, to get speed in `miles/hr` use factor 2.23694.
 
 ### SpeedUnitLabel
-Specifies the units for speed that are displayed.  Used in conjunction with SpeedUnitFactor.
+Unit label for speed, default is `m/s`.  Used in conjunction with SpeedUnitFactor.
