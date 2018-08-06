@@ -6,8 +6,8 @@ namespace msr { namespace airlib {
 
 class DepthNavThreshold : public DepthNav
 {
-public:
-    Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
+protected:
+    virtual Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt) override
     {
         auto goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
         if (isInFrustrum(goal_body, params_.fov)) {

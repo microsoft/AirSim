@@ -106,6 +106,7 @@ public:
         } while (true);
     }
 
+protected:    
 	/* 
     depth_image is 2D float array for which width and height are specified in Params
 	goal is specified in world frame and typically provided by the global planner
