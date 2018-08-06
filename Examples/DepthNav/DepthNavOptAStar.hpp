@@ -4,8 +4,7 @@
 
 namespace msr { namespace airlib {
 
-class DepthNavCost : public DepthNav
-{
+class DepthNavOptAStar : public DepthNav {
 protected:
     virtual Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt) override
     {
@@ -32,7 +31,7 @@ protected:
             else
             {
                 //4. So now we have a rectangle and a point within it
-                //5. Then descretise the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
+                //5. Then descretize the rectangle in M * N cells. This is simply truncation after division. For each pixel we can now get cell coordinates.
                 std::vector<Vector2r> cell_centers = getCellCenters();
                 //6. Compute cell coordinates i, j for x_goal and y_goal.
                 float y_px = intersect_point.y() * params_.depth_width / planeSize.y() + params_.depth_width / 2;

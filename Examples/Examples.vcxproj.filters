@@ -44,5 +44,8 @@
     <ClInclude Include="DepthNav\DepthNavCost.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DepthNav\DepthNavOptAStar.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

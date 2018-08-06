@@ -23,9 +23,6 @@ public: //types
 	struct Params {
 		//Camera FOV
 		real_T fov = Utils::degreesToRadians(90.0f);
-		//min dot product required for goal vector to be
-		//considered so goal is inside frustum
-		real_T min_frustrum_alignment = (1.0f + 0.75f) / 2;
 
 		//When goal is outside of frustum, we need to rotate
 		//below specifies max angle per step
@@ -41,18 +38,16 @@ public: //types
 		//TODO: we should use current velocity to determine this
 		real_T max_allowed_obs_dist = 5; //in meters
 
-		//In a cell in depth image, how many pixels should be closer than max_allowed_obs_dist
-		//to consider that cell to be avoided. Otherwise we consider that cell to be free
-		unsigned int max_allowed_obs_per_block = 1;
-
-		//Number of free cells for width and height required for the vehicle to pass through
-		unsigned int req_free_width = 40, req_free_height = 10;
-
 		//Vehicle dimensions
 		float margin_w = 1.25f, margin_h = 2.0f;
 		float vehicle_width = 0.98f * margin_w, vehicle_height = 0.26f * margin_h;
 		unsigned int vehicle_width_px, vehicle_height_px;
 
+        float min_exit_dist_from_goal = 1.0f;
+
+        float control_loop_period = 30.0f / 1000; //sec
+        float max_linear_speed = 10; // m/s
+        float max_angular_speed = 6; // rad/s
 	};
 
     class DepthNavException : public std::runtime_error {
@@ -70,14 +65,13 @@ public:
 		params_.vehicle_width_px = int(ceil(params_.depth_width * params_.vehicle_width / (tan(hfov2vfov(params_.fov, params_.depth_height, params_.depth_width) / 2) * params_.max_allowed_obs_dist * 2))); //width
 	}
 
-    void gotoGoal(const Pose& goal_pose, RpcLibClientBase& client)
+    virtual void gotoGoal(const Pose& goal_pose, RpcLibClientBase& client)
     {
         typedef ImageCaptureBase::ImageRequest ImageRequest;
         typedef ImageCaptureBase::ImageResponse ImageResponse;
         typedef ImageCaptureBase::ImageType ImageType;
-        typedef common_utils::FileSystem FileSystem;
 
-        Pose current_pose = client.simGetVehiclePose();
+        const Pose current_pose = client.simGetVehiclePose();
 
         do {
             std::vector<ImageRequest> request = {
@@ -91,15 +85,38 @@ public:
             if (response.size() == 0)
                 throw std::length_error("No images received!");
 
-            current_pose = getNextPose(response.at(0).image_data_float, goal_pose.position, current_pose, 0.5f);
+            const Pose next_pose = getNextPose(response.at(0).image_data_float, goal_pose.position, 
+                current_pose, params_.control_loop_period);
 
-            if (VectorMath::hasNan(current_pose))
+            if (VectorMath::hasNan(next_pose))
                 throw DepthNavException("No further path can be found.");
-            else
-                client.simSetVehiclePose(current_pose, true);
+            else { //convert pose to velocity commands
+                //obey max linear speed constraint
+                Vector3r linear_vel = (next_pose.position - current_pose.position) / params_.control_loop_period;
+                if (linear_vel.norm() > params_.max_linear_speed) {
+                    linear_vel = linear_vel.normalized() * params_.max_linear_speed;
+                }
 
-            float dist2goal = getDistanceToGoal(current_pose.position, goal_pose.position);
-            if (dist2goal < 1)
+                //obey max angular speed constraint
+                Quaternionr to_orientation = next_pose.orientation;
+                Vector3r angular_vel = VectorMath::toAngularVelocity(current_pose.orientation,
+                    next_pose.orientation, params_.control_loop_period);
+                float angular_vel_norm = angular_vel.norm();
+                if (angular_vel_norm > params_.max_angular_speed) {
+                    float slerp_alpha = params_.max_angular_speed / angular_vel_norm;
+                    to_orientation = VectorMath::slerp(current_pose.orientation, to_orientation, slerp_alpha);
+                }
+
+                //Now we can use (linear_vel, to_orientation) for vehicle commands
+                
+                //For ComputerVision mode, we will just create new pose
+                Pose contrained_next_pose(current_pose.position + linear_vel * params_.control_loop_period,
+                    to_orientation);
+                client.simSetVehiclePose(contrained_next_pose, true);
+            }
+
+            float dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
+            if (dist2goal <= params_.min_exit_dist_from_goal)
                 return;
             Utils::log(Utils::stringf("Distance to target: %f", dist2goal));
 

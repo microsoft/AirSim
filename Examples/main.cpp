@@ -3,6 +3,7 @@
 #include "StereoImageGenerator.hpp"
 #include "GaussianMarkovTest.hpp"
 #include "DepthNav/DepthNavCost.hpp"
+#include "DepthNav/DepthNavOptAStar.hpp"
 #include <iostream>
 #include <string>
 
@@ -90,7 +91,8 @@ void runDepthNavTest()
     std::cout << "Press Enter to start" << std::endl; std::cin.get(); //Allow some time to reach startPose
 
     //DepthNavThreshold depthNav;
-    DepthNavCost depthNav;
+    //DepthNavCost depthNav;
+    DepthNavOptAStar depthNav;
     depthNav.gotoGoal(goalPose, client);
 }
 
