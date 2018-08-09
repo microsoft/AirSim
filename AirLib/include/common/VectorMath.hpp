@@ -256,6 +256,18 @@ public:
 		yaw = std::atan2(t3, t4);
 	}
 
+    static RealT angleBetween(const Vector3T& v1, const Vector3T& v2, bool assume_normalized = false)
+    {
+        Vector3T v1n = v1;
+        Vector3T v2n = v2;
+        if (!assume_normalized) {
+            v1n.normalize();
+            v2n.normalize();
+        }
+
+        return std::acos(v1n.dot(v2n));
+    }
+
 	static Vector3T toAngularVelocity(const QuaternionT& start, const QuaternionT& end, RealT dt)
 	{
 		RealT p_s, r_s, y_s;
@@ -486,21 +498,47 @@ public:
 
 	}
 
-	Vector3T lerp(const Vector3T& from, const Vector3T& to, RealT alpha)
+    static Vector3T lerp(const Vector3T& from, const Vector3T& to, RealT alpha)
 	{
 		return (from + alpha * (to - from));
 	}
 
-	Vector3T slerp(const Vector3T& from, const Vector3T& to, RealT alpha)
+    static Vector3T slerp(const Vector3T& from, const Vector3T& to, RealT alpha, bool assume_normalized)
 	{
-		RealT dot = from.dot(to);
-		dot = Utils::clip<RealT>(dot, -1, 1);
+        Vector3T from_ortho, to_ortho;
+        RealT dot;
+        getPlaneOrthoVectors(from, to, assume_normalized, from_ortho, to_ortho, dot);
+
 		RealT theta = std::acos(dot)*alpha;
-		Vector3T relative = (to - from * dot).normalized();
-		return from * std::cos(theta) + relative * std::sin(theta);
+
+		return from_ortho * std::cos(theta) + to_ortho * std::sin(theta);
 	}
 
-	Vector3T nlerp(const Vector3T& from, const Vector3T& to, float alpha)
+    static void getPlaneOrthoVectors(const Vector3T& from, const Vector3T& to, bool assume_normalized,
+        Vector3T& from_ortho, Vector3T& to_ortho, RealT& dot)
+    {
+        Vector3T to_n = to;
+
+        if (!assume_normalized) {
+            from_ortho.normalize();
+            to_n.normalize();
+        }
+
+        dot = from_ortho.dot(to_n);
+        dot = Utils::clip<RealT>(dot, -1, 1);
+        to_ortho = (to_n - from_ortho * dot).normalized();
+    }
+
+    static Vector3T slerpByAngle(const Vector3T& from, const Vector3T& to, RealT angle, bool assume_normalized = false)
+    {
+        Vector3T from_ortho, to_ortho;
+        RealT dot;
+        getPlaneOrthoVectors(from, to, assume_normalized, from_ortho, to_ortho, dot);
+
+        return from_ortho * std::cos(angle) + to_ortho * std::sin(angle);
+    }
+
+    static Vector3T nlerp(const Vector3T& from, const Vector3T& to, float alpha)
 	{
 		return lerp(from, to, alpha).normalized();
 	}

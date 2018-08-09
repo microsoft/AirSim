@@ -39,15 +39,15 @@ public: //types
 		real_T max_allowed_obs_dist = 5; //in meters
 
 		//Vehicle dimensions
-		float margin_w = 1.25f, margin_h = 2.0f;
-		float vehicle_width = 0.98f * margin_w, vehicle_height = 0.26f * margin_h;
+		real_T margin_w = 1.25f, margin_h = 2.0f;
+		real_T vehicle_width = 0.98f * margin_w, vehicle_height = 0.26f * margin_h;
 		unsigned int vehicle_width_px, vehicle_height_px;
 
-        float min_exit_dist_from_goal = 1.0f;
+        real_T min_exit_dist_from_goal = 1.0f;
 
-        float control_loop_period = 30.0f / 1000; //sec
-        float max_linear_speed = 10; // m/s
-        float max_angular_speed = 6; // rad/s
+        real_T control_loop_period = 30.0f / 1000; //sec
+        real_T max_linear_speed = 10; // m/s
+        real_T max_angular_speed = 6; // rad/s
 	};
 
     class DepthNavException : public std::runtime_error {
@@ -101,9 +101,9 @@ public:
                 Quaternionr to_orientation = next_pose.orientation;
                 Vector3r angular_vel = VectorMath::toAngularVelocity(current_pose.orientation,
                     next_pose.orientation, params_.control_loop_period);
-                float angular_vel_norm = angular_vel.norm();
+                real_T angular_vel_norm = angular_vel.norm();
                 if (angular_vel_norm > params_.max_angular_speed) {
-                    float slerp_alpha = params_.max_angular_speed / angular_vel_norm;
+                    real_T slerp_alpha = params_.max_angular_speed / angular_vel_norm;
                     to_orientation = VectorMath::slerp(current_pose.orientation, to_orientation, slerp_alpha);
                 }
 
@@ -115,7 +115,7 @@ public:
                 client.simSetVehiclePose(contrained_next_pose, true);
             }
 
-            float dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
+            real_T dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
             if (dist2goal <= params_.min_exit_dist_from_goal)
                 return;
             Utils::log(Utils::stringf("Distance to target: %f", dist2goal));
@@ -142,34 +142,34 @@ protected:
 	Output:
 	*intersection_point = the intersection point on the plane in body frame
 	*/
-	Vector3r linePlaneIntersection(Vector3r ray, Vector3r planeNormal, float max_allowed_obs_dist) {
+    virtual Vector3r linePlaneIntersection(const Vector3r& ray_n, const Vector3r& planeNormal, real_T dist)
+    {
+        if (planeNormal.dot(ray_n) < Utils::epsilon<real_T>()) {
+            return VectorMath::nanVector(); // No intersection, the line is parallel to the plane or behind
+        }
 
-		if (planeNormal.dot(ray) < FLT_MIN) {
-			return VectorMath::nanVector(); // No intersection, the line is parallel to the plane or behind
-		}
-
-		// Compute the intersection point on the plane
-		float x = max_allowed_obs_dist;
-		float y = max_allowed_obs_dist * ray.y() / ray.x();
-		float z = max_allowed_obs_dist * ray.z() / ray.x();
-		// output contact point
-		return Vector3r(x, y, z);
-	}
+        // Compute the intersection point on the plane
+        real_T x = dist;
+        real_T y = dist * ray_n.y() / ray_n.x();
+        real_T z = dist * ray_n.z() / ray_n.x();
+        // output contact point
+        return Vector3r(x, y, z);
+    }
 
 	//convert horizontal fov to vertical fov
-	float hfov2vfov(float hfov, unsigned int img_h, unsigned int img_w)
+	real_T hfov2vfov(real_T hfov, unsigned int img_h, unsigned int img_w)
 	{
-		float aspect = float(img_h) / float(img_w);
-		float vfov = 2 * atan(tan(hfov / 2) * aspect);
+		real_T aspect = real_T(img_h) / real_T(img_w);
+		real_T vfov = 2 * std::atan(std::tan(hfov / 2) * aspect);
 		return vfov;
 	}
 
 	/*
 	*https://www.edmundoptics.com/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/
 	*/
-	Vector2r getPlaneSize(float distance, float hfov, float vfov) {
-		float height_world = 2 * distance * tanf(vfov / 2);
-		float width_world = 2 * distance * tanf(hfov / 2);
+	Vector2r getPlaneSize(real_T distance, real_T hfov, real_T vfov) {
+		real_T height_world = 2 * distance * std::tan(vfov / 2);
+		real_T width_world = 2 * distance * std::tan(hfov / 2);
 		return Vector2r(height_world, width_world);
 	}
 
@@ -203,11 +203,11 @@ protected:
 
 	//Returns index of nearest neighbor
 	unsigned int nearest_neighbor(std::vector<Vector2r> arr, Vector2r query) {
-		float min_dist = UINT16_MAX;
+		real_T min_dist = static_cast<real_T>(Utils::max<uint16_t>());
 		unsigned int index = 0;
 		for (unsigned int i = 0; i < arr.size(); i++) {
 			Vector2r diff = arr[i] - query;
-			float dist = sqrt(diff.dot(diff));
+			real_T dist = std::sqrt(diff.dot(diff));
 			if (dist < min_dist) {
 				min_dist = dist;
 				index = i;
@@ -226,8 +226,8 @@ protected:
 
 		//Compute angle between quats
 		Quaternionr diffQuat = VectorMath::coordOrientationSubtract(toQuat, fromQuat);
-		float diffAngle = 2 * std::acosf(diffQuat.w());
-		float slerp_alpha = 0;
+		real_T diffAngle = 2 * std::acos(diffQuat.w());
+		real_T slerp_alpha = 0;
 		if (diffAngle > 0) { slerp_alpha = params_.rotation_step_limit / diffAngle; }
 		if (slerp_alpha > 1) { slerp_alpha = 1; }
 
@@ -249,28 +249,30 @@ protected:
 		//Leave one cell free at boundaries
 		for (unsigned int i = 0; i < params_.M; i++) {
 			for (unsigned int j = 0; j < params_.N; j++) {
-				cell_center.x() = float(j*params_.vehicle_width_px + 0.5f * (params_.vehicle_width_px + N_offset));
-				cell_center.y() = float(i*params_.vehicle_height_px + 0.5f * (params_.vehicle_height_px + M_offset));
+				cell_center.x() = real_T(j*params_.vehicle_width_px + 0.5f * (params_.vehicle_width_px + N_offset));
+				cell_center.y() = real_T(i*params_.vehicle_height_px + 0.5f * (params_.vehicle_height_px + M_offset));
 				cell_centers.push_back(cell_center);
 			}
 		}
 		return cell_centers;
 	}
 
-	float getDistanceToGoal(Vector3r current_position, Vector3r goal)
+	real_T getDistanceToGoal(Vector3r current_position, Vector3r goal)
 	{
 		Vector3r goalVec = goal - current_position;
 		return goalVec.norm();
 	}
 
 	//returns true if goal in body frame in within frustum
-	bool isInFrustrum(const Vector3r& goal_body, real_T fov)
+	bool isInFrustrum(const Vector3r& goal_body)
 	{
 		//for simplicity, assume frustum is circular
 		//front is +X so get the dot product of unit +X with goal_body
 		//if dot product < pre-calculated value then goal_body is outside
 		//frustum
-		return true;
+        
+        real_T angle = VectorMath::angleBetween(VectorMath::front(), goal_body.normalized(), true);
+        return std::abs(angle) <= params_.fov;
 	}
 
 //private:

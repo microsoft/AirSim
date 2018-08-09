@@ -10,7 +10,7 @@ protected:
     virtual Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt) override
     {
         auto goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
-        if (isInFrustrum(goal_body, params_.fov)) {
+        if (true) {
             //1. Let's have a plane that fits in our frustum at x = 1 (remember +X is front, +Y is right in NED)
             Vector2r planeSize = getPlaneSize(params_.max_allowed_obs_dist, params_.fov, hfov2vfov(params_.fov, params_.depth_height, params_.depth_width));
             //2. We will compute x_min, y_min, x_max, y_max for this plane in body frame.
@@ -19,6 +19,7 @@ protected:
             float z_max = planeSize.x() / 2;
             float y_max = planeSize.y() / 2;
             //3. Then we will compute x_goal,y_goal where the vector goal_body intersects this plane.
+            //ERROR: goal_body should be normalized?
             Vector3r intersect_point = linePlaneIntersection(goal_body, VectorMath::front(), params_.max_allowed_obs_dist);
             //Check if intersection is valid
             if (VectorMath::hasNan(intersect_point))
