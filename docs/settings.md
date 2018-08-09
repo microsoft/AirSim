@@ -23,7 +23,7 @@ Below are complete list of settings available along with their default values. I
 
 **WARNING:** Do not copy paste all of below in your settings.json. We strongly recommend adding only those settings that you don't want default values. Only required element is `"SettingsVersion"`.
 
-````json
+```
 {
   "SimMode": "",
   "ClockType": "",
@@ -119,7 +119,7 @@ Below are complete list of settings available along with their default values. I
     "DefaultQuadrotor": {"PawnBP": "Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"},
     "DefaultComputerVision": {"PawnBP": "Class'/AirSim/Blueprints/BP_ComputerVisionPawn.BP_ComputerVisionPawn_C'"}
   },
-  "Vehicles":
+  "Vehicles": {
     "SimpleFlight": {
       "VehicleType": "SimpleFlight",
       "DefaultVehicleState": "Armed",
@@ -149,14 +149,19 @@ Below are complete list of settings available along with their default values. I
         "RemoteControlID": -1
       },
       "Cameras": {   
-        //same elements as CameraDefaults above, key as name
+        "MyCamera1": {
+          //same elements as elements inside CameraDefaults above
+        },
+        "MyCamera2": {
+          //same elements as elements inside CameraDefaults above
+        },        
       },
       "X": NaN, "Y": NaN, "Z": NaN,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN      
     }
   }
 }
-````
+```
 
 ## SimMode
 SimMode determines which simulation mode will be used. Below are currently supported values: 
