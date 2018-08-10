@@ -61,11 +61,19 @@ void APIPCamera::BeginPlay()
     //by default all image types are disabled
     camera_type_enabled_.assign(imageTypeCount(), false);
 
+    bool offscreen_mode = ::msr::airlib::AirSimSettings::singleton().offscreen_mode;
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         //use final color for all calculations
         captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
 
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
+        if (offscreen_mode) {
+            USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
+            if (capture != NULL) {
+                capture->bCaptureEveryFrame = false;
+                capture->bCaptureOnMovement = false;
+            }
+        }
     }
 
     gimbal_stabilization_ = 0;

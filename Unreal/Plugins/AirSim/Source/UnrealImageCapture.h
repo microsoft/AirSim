@@ -11,7 +11,7 @@ class UnrealImageCapture : public msr::airlib::ImageCaptureBase
 public:
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
-    UnrealImageCapture(const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras);
+    UnrealImageCapture(class ACameraDirector * camera_director, const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras);
     virtual ~UnrealImageCapture();
 
     virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const override;
@@ -23,9 +23,11 @@ private:
     void addScreenCaptureHandler(UWorld *world);
     bool getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng);
 
-    void updateCameraVisibility(APIPCamera* camera, const msr::airlib::ImageCaptureBase::ImageRequest& request);
+    bool updateCameraVisibility(APIPCamera* camera, const msr::airlib::ImageCaptureBase::ImageRequest& request);
 
 private:
     const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras_;
     std::vector<uint8_t> last_compressed_png_;
+    bool offscreen_mode_;
+    class ACameraDirector * const camera_director_;
 };
