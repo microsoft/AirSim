@@ -11,9 +11,9 @@ protected:
         Vector3r goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
 
         if (!isInFrustrum(goal_body)) {
-            //project goal vector on FOV cone
-            goal_body = VectorMath::slerpByAngle(VectorMath::front(), goal_body.normalized(), params_.fov/2, true)
-                * goal_body.norm();
+            Quaternionr rotate_to = VectorMath::lookAt(Vector3r::Zero(), goal_body);
+            //Pose next_body_pose = (Vector3r::Zero(), rotate_to);
+            return Pose(); // VectorMath::transformToWorldFrame()
         }
 
         Vector3r goal_body_n = goal_body.normalized();
