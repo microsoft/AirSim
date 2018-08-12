@@ -98,7 +98,7 @@ class AvoidLeftRight(AbstractClassGetNextVec):
 
 #compute resultant normalized vector, distance and angle
 def get_vec_dist_angle (goal, pos):
-    vec = np.array(goal - np.array(pos))
+    vec = np.array(goal) - np.array(pos)
     dist = math.sqrt(vec[0]**2 + vec[1]**2)
     angle = math.atan2(vec[1],vec[0])
     if angle > math.pi:

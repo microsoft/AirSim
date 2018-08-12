@@ -23,7 +23,7 @@ Below are complete list of settings available along with their default values. I
 
 **WARNING:** Do not copy paste all of below in your settings.json. We strongly recommend adding only those settings that you don't want default values. Only required element is `"SettingsVersion"`.
 
-````json
+```
 {
   "SimMode": "",
   "ClockType": "",
@@ -35,6 +35,8 @@ Below are complete list of settings available along with their default values. I
   "RpcEnabled": true,
   "EngineSound": true,
   "PhysicsEngineName": "",
+  "SpeedUnitFactor": 1.0,
+	"SpeedUnitLabel": "m/s",
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
@@ -117,7 +119,7 @@ Below are complete list of settings available along with their default values. I
     "DefaultQuadrotor": {"PawnBP": "Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"},
     "DefaultComputerVision": {"PawnBP": "Class'/AirSim/Blueprints/BP_ComputerVisionPawn.BP_ComputerVisionPawn_C'"}
   },
-  "Vehicles":
+  "Vehicles": {
     "SimpleFlight": {
       "VehicleType": "SimpleFlight",
       "DefaultVehicleState": "Armed",
@@ -147,14 +149,19 @@ Below are complete list of settings available along with their default values. I
         "RemoteControlID": -1
       },
       "Cameras": {   
-        //same elements as CameraDefaults above, key as name
+        "MyCamera1": {
+          //same elements as elements inside CameraDefaults above
+        },
+        "MyCamera2": {
+          //same elements as elements inside CameraDefaults above
+        },        
       },
       "X": NaN, "Y": NaN, "Z": NaN,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN      
     }
   }
 }
-````
+```
 
 ## SimMode
 SimMode determines which simulation mode will be used. Below are currently supported values: 
@@ -356,3 +363,8 @@ be allowed to talk to each other, in which case the UDP messages from one networ
 So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines, 
 this default is only used when everything you are talking to is contained on a single PC.
 
+### SpeedUnitFactor
+Unit conversion factor for speed related to `m/s`, default is 1. Used in conjunction with SpeedUnitLabel. This may be only used for display purposes for example on-display speed when car is being driven. For example, to get speed in `miles/hr` use factor 2.23694.
+
+### SpeedUnitLabel
+Unit label for speed, default is `m/s`.  Used in conjunction with SpeedUnitFactor.

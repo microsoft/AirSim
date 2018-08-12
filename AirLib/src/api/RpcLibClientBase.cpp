@@ -103,7 +103,7 @@ int RpcLibClientBase::getMinRequiredClientVersion() const
 }
 int RpcLibClientBase::getServerVersion() const
 {
-    return pimpl_->client.call("getServerVersion").as<int>();
+	return pimpl_->client.call("getServerVersion").as<int>();
 }
 
 void RpcLibClientBase::reset()
@@ -170,7 +170,7 @@ int RpcLibClientBase::simGetSegmentationObjectID(const std::string& mesh_name) c
 
 CollisionInfo RpcLibClientBase::simGetCollisionInfo(const std::string& vehicle_name) const
 {
-    return pimpl_->client.call("getCollisionInfo", vehicle_name).as<RpcLibAdapatorsBase::CollisionInfo>().to();
+    return pimpl_->client.call("simGetCollisionInfo", vehicle_name).as<RpcLibAdapatorsBase::CollisionInfo>().to();
 }
 
 
