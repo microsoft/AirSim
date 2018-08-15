@@ -1,47 +1,62 @@
 #pragma once
 
-#include "DepthNav.hpp"
+#include "common/Common.hpp"
 
 namespace msr { namespace airlib {
 
-class DepthNavOptAStar : public DepthNav {
-protected:
-    virtual Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt) override
-    {
-        Vector3r goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
+class DepthNavOptAStar  {
+public:
+    struct Params {
+        //Camera FOV
+        real_T hfov = Utils::degreesToRadians(90.0f);
 
-        if (!isInFrustrum(goal_body)) {
-            Quaternionr rotate_to = VectorMath::lookAt(Vector3r::Zero(), goal_body);
-            //Pose next_body_pose = (Vector3r::Zero(), rotate_to);
-            return Pose(); // VectorMath::transformToWorldFrame()
+        //depth image dimension, index of pixel x,y = x*width + y 
+        unsigned int depth_width = 256, depth_height = 144;
+        //flight envelop width, height
+        real_T env_width = 0.8f, env_height = 0.8f;
+
+        unsigned int ray_samples_count = 25;
+
+        real_T vfov, aspect;
+
+        void recompute()
+        {
+            aspect = real_T(depth_height) / real_T(depth_width);
+            vfov = 2 * std::atan(std::tan(hfov / 2) * aspect);
         }
 
-        Vector3r goal_body_n = goal_body.normalized();
+    private:
+        void hfov2vfov()
+        {
+        }
+    };
 
-        //find where goal ray intersects with plane
-        rayToDepthPlaneIntersection(goal_body_n, 1);
+public:
+    DepthNavOptAStar(const Params& params = Params())
+        : params_(params), sample_rays(params.ray_samples_count),
+            rnd_width_(0, params.depth_width-1)
+    {
+    }
 
-        //get extents of the plane
-        real_T vfov = hfov2vfov(params_.fov, params_.depth_height, params_.depth_width);
-        Vector2r planeSize = getPlaneSize(1, params_.fov, vfov);
-        //real_T z_min = -planeSize.x() / 2, z_max = planeSize.x() / 2;
-        //real_T y_min = -planeSize.y() / 2, y_max = planeSize.y() / 2;
+    Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
+    {
 
+        Vector3r goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
 
+        
 
         return Pose();
     }
 
-    Vector3r rayToDepthPlaneIntersection(const Vector3r& ray_n, real_T dist)
-    {
-        // Compute the intersection point on the plane
-        real_T x = dist;
-        real_T y = dist * ray_n.y() / ray_n.x();
-        real_T z = dist * ray_n.z() / ray_n.x();
-        // output contact point
-        return Vector3r(x, y, z);
-    }
+private:
+    struct SampleRay {
 
+    };
+
+private:
+    const Params params_;
+    std::vector<SampleRay> sample_rays;
+    common_utils::RandomGeneratorI rnd_width_, rnd_height_;
 };
 
 }}

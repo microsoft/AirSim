@@ -28,6 +28,7 @@ public: //types
 		//below specifies max angle per step
 		real_T rotation_step_limit = Utils::degreesToRadians(5.0f);;
 
+        //depth image dimension, index of pixel x,y = x*width + y 
 		unsigned int depth_width = 256, depth_height = 144;
 
 		//Number of cells the depth image gets divided in to. Each cell is square.

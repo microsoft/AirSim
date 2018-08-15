@@ -93,7 +93,7 @@ void runDepthNavTest()
     //DepthNavThreshold depthNav;
     //DepthNavCost depthNav;
     DepthNavOptAStar depthNav;
-    depthNav.gotoGoal(goalPose, client);
+    //depthNav.gotoGoal(goalPose, client);
 }
 
 int main(int argc, const char *argv[])
