@@ -24,11 +24,29 @@ public:
         real_T collision_cost = 1.0E8f;
 
         unsigned int ray_samples_count = 25;
-        unsigned int env_x_oofset, env_y_oofset;
+        
+        real_T d2_panelty = 6;
+        real_T turn_panelty = 10;
+
+        real_T d1_zero_epsilon = 0.1f;
+
+        real_T min_exit_dist_from_goal = 1.0f;
+        
+        real_T control_loop_period = 30.0f / 1000; //sec
+        real_T max_linear_speed = 10; // m/s
+        real_T max_angular_speed = 6; // rad/s
+
         real_T vfov, aspect;
+        unsigned int env_x_oofset, env_y_oofset;
         real_T tan_hfov_by_2, tan_vfov_by_2;
     };
 
+    class DepthNavException : public std::runtime_error {
+    public:
+        DepthNavException(const std::string& message)
+            : std::runtime_error(message)
+        {}
+    };
 
 private:
     struct SampleRay {
@@ -37,8 +55,12 @@ private:
         real_T cost;
         Vector3r ray;
         real_T obs_dist;
+        Vector3r d1_v;
+        Vector3r d2_v;
+        bool has_collision;
     };
     const unsigned int extra_rays = 1;
+
 public:
     DepthNavOptAStar(const Params& params = Params())
         : params_(params),
@@ -58,35 +80,105 @@ public:
         sample_ray.pixel_y = params_.depth_height / 2;
     }
 
+    virtual void gotoGoal(const Pose& goal_pose, RpcLibClientBase& client)
+    {
+        typedef ImageCaptureBase::ImageRequest ImageRequest;
+        typedef ImageCaptureBase::ImageResponse ImageResponse;
+        typedef ImageCaptureBase::ImageType ImageType;
+
+        do {
+            std::vector<ImageRequest> request = {
+                ImageRequest("1", ImageType::DepthPlanner, true) /*,
+                                                                 ImageRequest("1", ImageType::Scene),
+                                                                 ImageRequest("1", ImageType::DisparityNormalized, true) */
+            };
+
+            const std::vector<ImageResponse>& response = client.simGetImages(request);
+
+            if (response.size() == 0)
+                throw std::length_error("No images received!");
+
+            const Pose current_pose(response.at(0).camera_position, response.at(0).camera_orientation);
+            const Pose next_pose = getNextPose(response.at(0).image_data_float, goal_pose.position,
+                current_pose, params_.control_loop_period);
+
+            if (VectorMath::hasNan(next_pose))
+                throw DepthNavException("No further path can be found.");
+            else { //convert pose to velocity commands
+                   //obey max linear speed constraint
+                Vector3r linear_vel = (next_pose.position - current_pose.position) / params_.control_loop_period;
+                if (linear_vel.norm() > params_.max_linear_speed) {
+                    linear_vel = linear_vel.normalized() * params_.max_linear_speed;
+                }
+
+                //obey max angular speed constraint
+                Quaternionr to_orientation = next_pose.orientation;
+                Vector3r angular_vel = VectorMath::toAngularVelocity(current_pose.orientation,
+                    next_pose.orientation, params_.control_loop_period);
+                real_T angular_vel_norm = angular_vel.norm();
+                if (angular_vel_norm > params_.max_angular_speed) {
+                    real_T slerp_alpha = params_.max_angular_speed / angular_vel_norm;
+                    to_orientation = VectorMath::slerp(current_pose.orientation, to_orientation, slerp_alpha);
+                }
+
+                //Now we can use (linear_vel, to_orientation) for vehicle commands
+
+                //For ComputerVision mode, we will just create new pose
+                Pose contrained_next_pose(current_pose.position + linear_vel * params_.control_loop_period,
+                    to_orientation);
+                client.simSetVehiclePose(contrained_next_pose, true);
+            }
+
+            real_T dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
+            if (dist2goal <= params_.min_exit_dist_from_goal)
+                return;
+            Utils::log(Utils::stringf("Distance to target: %f", dist2goal));
+
+        } while (true);
+    }
+
+protected:
     Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt)
     {
         Vector3r goal_body = VectorMath::transformToBodyFrame(goal, current_pose, true);
         real_T goal_dist = goal_body.norm();
 
         SampleRay* min_cost_ray = &sample_rays.at(0);
-        setupRay(*min_cost_ray, depth_image, goal_dist);
+        setupRay(*min_cost_ray, depth_image, goal_body, goal_dist);
 
         //sample rays
         for (unsigned int ray_index = 0; ray_index < params_.ray_samples_count; ++ray_index) {
             SampleRay& sample_ray = sample_rays.at(ray_index + extra_rays);
             sample_ray.pixel_x = params_.env_x_oofset + rnd_width_.next();
             sample_ray.pixel_y = params_.env_y_oofset + rnd_height_.next();
-            setupRay(sample_ray, depth_image, goal_dist);
+            setupRay(sample_ray, depth_image, goal_body, goal_dist);
 
             if (min_cost_ray->cost > sample_ray.cost)
                 min_cost_ray = &sample_ray;
         }
 
-        return Pose();
+        Vector3r next_pos = min_cost_ray->d1_v;
+        Quaternionr next_q = min_cost_ray->d1_v.isZero(params_.d1_zero_epsilon) ?
+            VectorMath::toQuaternion(VectorMath::front(), min_cost_ray->d2_v.normalized()) :
+            VectorMath::toQuaternion(VectorMath::front(), min_cost_ray->d1_v.normalized());
+
+        Pose local_pose(next_pos, next_q);
+        Pose global_pose = VectorMath::transformToWorldFrame(local_pose, current_pose, true);
+        return global_pose;
     }
 
-private:
-    void setupRay(SampleRay& sample_ray, const std::vector<float>& depth_image, real_T goal_dist)
+    void setupRay(SampleRay& sample_ray, const std::vector<float>& depth_image, const Vector3r& goal_body, real_T goal_dist)
     {
         sample_ray.index = sample_ray.pixel_y * params_.env_width + sample_ray.pixel_x;
         sample_ray.obs_dist = depth_image.at(sample_ray.index);
         sample_ray.ray = pixel2ray(sample_ray.pixel_x, sample_ray.pixel_y);
-        sample_ray.cost = computeRayCost(sample_ray, goal_dist);
+        setRayCost(sample_ray, goal_body, goal_dist);
+    }
+
+    real_T getDistanceToGoal(Vector3r current_position, Vector3r goal)
+    {
+        Vector3r goalVec = goal - current_position;
+        return goalVec.norm();
     }
 
     Vector3r pixel2ray(unsigned int x, unsigned y)
@@ -100,26 +192,25 @@ private:
         return ray;
     }
 
-    real_T computeRayCost(const SampleRay& sample_ray, real_T goal_dist)
+    void setRayCost(SampleRay& sample_ray, const Vector3r& goal_body, real_T goal_dist)
     {
-        real_T goal_dist_2 = goal_dist * goal_dist;
-        real_T cost = goal_dist;
-        real_T turn_dot = sample_ray.ray.dot(VectorMath::front());
-        real_T turn_dot_n = (1 - turn_dot) / 2;
-        real_T turn_cost = goal_dist_2 * turn_dot_n;
+        real_T goal_on_ray = std::min(goal_body.dot(sample_ray.ray), 0.0f);
+        real_T d1 = std::min(sample_ray.obs_dist, goal_on_ray);
 
-        cost += turn_cost;
+        sample_ray.d1_v = sample_ray.ray * d1;
+        sample_ray.d2_v = goal_body - sample_ray.d1_v;
+        real_T d2 = sample_ray.d2_v.norm();
+        real_T d2_penalized = d2 * params_.d2_panelty;
 
-        real_T p_no_opening = 1 - std::pow(1 - params_.p_opening_per_meter, sample_ray.obs_dist);
-        real_T off_fov_cost = 2 * goal_dist + goal_dist_2;
-        real_T backtrack_cost = (cost + off_fov_cost) * p_no_opening;
+        real_T turn_dot1 = (1 - sample_ray.ray.dot(VectorMath::front())) / 2;
+        real_T turn_dot2 = (1 - sample_ray.ray.dot(sample_ray.d2_v)) / 2;
 
-        cost += backtrack_cost;
+        sample_ray.cost = d1 + d2_penalized + params_.turn_panelty * (turn_dot1 + turn_dot2);
 
-        if (sample_ray.obs_dist < params_.max_obs_dist)
-            cost += params_.collision_cost;
-
-        return cost;
+        if (sample_ray.obs_dist < params_.max_obs_dist) {
+            sample_ray.has_collision = true; 
+            sample_ray.cost += 1.0E15f;
+        }
     }
 
 private:

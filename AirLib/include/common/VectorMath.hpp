@@ -183,14 +183,14 @@ public:
 			return q.conjugate()._transformVector(v);
 	}
 
-    static Vector3T rotateQuaternion(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
+    static QuaternionT rotateQuaternion(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
     {
         QuaternionT ref_n = assume_unit_quat ? ref : ref.normalized();
         QuaternionT ref_n_i = assume_unit_quat ? ref.conjugate() : ref.inverse();
         return ref_n * q * ref_n_i;
     }
 
-    static Vector3T rotateQuaternionReverse(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
+    static QuaternionT rotateQuaternionReverse(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
     {
         QuaternionT ref_n = assume_unit_quat ? ref : ref.normalized();
         QuaternionT ref_n_i = assume_unit_quat ? ref.conjugate() : ref.inverse();
@@ -210,7 +210,7 @@ public:
 		return transformToBodyFrame(translated, body_world.orientation, assume_unit_quat);
 	}
 
-    static Vector3T transformToBodyFrame(const Pose& pose_world, const Pose& body_world, bool assume_unit_quat = true)
+    static Pose transformToBodyFrame(const Pose& pose_world, const Pose& body_world, bool assume_unit_quat = true)
     {
         //translate
         Vector3T translated = pose_world.position - body_world.position;
@@ -236,7 +236,7 @@ public:
 	}
 
     //transform pose specified in body frame to world frame. The body frame in world coordinate is at body_world
-    static Vector3T transformToWorldFrame(const Pose& pose_body, const Pose& body_world, bool assume_unit_quat = true)
+    static Pose transformToWorldFrame(const Pose& pose_body, const Pose& body_world, bool assume_unit_quat = true)
     {
         //rotate position
         Vector3T v_world = transformToWorldFrame(pose_body.position, body_world.orientation, assume_unit_quat);
