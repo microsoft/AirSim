@@ -164,6 +164,22 @@ void WorldSimApi::charSetFacePreset(const std::string& preset_name, float value,
     character->setFacePreset(preset_name, value);
 }
 
+void WorldSimApi::charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setFacePresets(presets);
+}
+void WorldSimApi::charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name)
+{
+    AAirSimCharacter* character = getAirSimCharacter(character_name);
+    character->setBonePoses(poses);
+}
+std::unordered_map<std::string, msr::airlib::Pose> WorldSimApi::charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const
+{
+    const AAirSimCharacter* character = getAirSimCharacter(character_name);
+    return character->getBonePoses(bone_names);
+}
+
 AAirSimCharacter* WorldSimApi::getAirSimCharacter(const std::string& character_name)
 {
     AAirSimCharacter* character = nullptr;

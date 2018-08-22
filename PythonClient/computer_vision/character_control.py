@@ -38,6 +38,10 @@ for x in range(0, 10, 3):
     client.simCharSetFacePreset("FACS_0" + str(x), 5);
     time.sleep(1)
 
+airsim.wait_key('Press any key to set multiple presets')
+presets = {"Phoneme_l":0.5, "Phoneme_ae": 1, "Phoneme_ooo":0.0}
+client.simCharSetFacePresets(presets)
+
 airsim.wait_key('Press any key to turn head around')
 client.reset()
 for pitch in range(-5, 5, 5):

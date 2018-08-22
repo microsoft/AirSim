@@ -5,7 +5,6 @@
 #include "Engine/DataTable.h"
 
 #include "common/Common.hpp"
-
 #include "AirSimCharacter.generated.h"
 
 UCLASS()
@@ -24,8 +23,11 @@ public:
     virtual void setHeadRotation(const msr::airlib::Quaternionr& q);
     virtual msr::airlib::Quaternionr getHeadRotation() const;
     virtual void setBonePose(const std::string& bone_name, const msr::airlib::Pose& pose);
+    virtual void setBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses);
+    virtual std::unordered_map<std::string, msr::airlib::Pose> getBonePoses(const std::vector<std::string>& bone_names) const;
     virtual msr::airlib::Pose getBonePose(const std::string& bone_name) const;
     virtual void resetBonePose(const std::string& bone_name);
     virtual void setFacePreset(const std::string& preset_name, float value);
+    virtual void setFacePresets(const std::unordered_map<std::string, float>& presets);
     virtual void reset();
 };

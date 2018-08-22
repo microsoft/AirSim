@@ -5,7 +5,6 @@
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
 #include "AirSimCharacter.h"
-#include <map>
 #include <string>
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase {
@@ -43,6 +42,9 @@ public:
     virtual msr::airlib::Pose charGetBonePose(const std::string& bone_name, const std::string& character_name) const override;
     virtual void charResetBonePose(const std::string& bone_name, const std::string& character_name) override;
     virtual void charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name) override;
+    virtual void charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name) override;
+    virtual void charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name) override;
+    virtual std::unordered_map<std::string, msr::airlib::Pose> charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const override;
 
 private:
     AAirSimCharacter* getAirSimCharacter(const std::string& character_name);

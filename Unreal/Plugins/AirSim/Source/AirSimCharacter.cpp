@@ -55,11 +55,22 @@ void AAirSimCharacter::setBonePose(const std::string& bone_name, const msr::airl
     unused(pose);
     //derived class should override this
 }
+void AAirSimCharacter::setBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses)
+{
+    unused(poses);
+}
 msr::airlib::Pose AAirSimCharacter::getBonePose(const std::string& bone_name) const
 {
     unused(bone_name);
     //derived class should override this
     return msr::airlib::Pose::nanPose();
+}
+std::unordered_map<std::string, msr::airlib::Pose> AAirSimCharacter::getBonePoses(const std::vector<std::string>& bone_names) const
+{
+    unused(bone_names);
+
+    //derived class should override this
+    return std::unordered_map<std::string, msr::airlib::Pose>();
 }
 void AAirSimCharacter::resetBonePose(const std::string& bone_name)
 {
@@ -70,6 +81,11 @@ void AAirSimCharacter::setFacePreset(const std::string& preset_name, float value
 {
     unused(preset_name);
     unused(value);
+    //derived class should override this
+}
+void AAirSimCharacter::setFacePresets(const std::unordered_map<std::string, float>& presets)
+{
+    unused(presets);
     //derived class should override this
 }
 void AAirSimCharacter::reset()
