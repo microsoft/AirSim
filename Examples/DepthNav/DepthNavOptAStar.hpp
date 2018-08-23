@@ -187,8 +187,7 @@ protected:
             float depth = depth_image.at(i);
             float inv_depth = Utils::clip(1 / (depth + 1), 0.0f, 1.0f) / 1.0f;
 
-            //if (i >= 66)
-            //    Utils::DebugBreak();
+            //r[i] = common_utils::bmp::convert_wave_length_nm_to_rgb(inv_depth * (725 - 400) + 400);
             common_utils::ColorUtils::valToRGB(inv_depth, r[i].red, r[i].green, r[i].blue);
         }
 
