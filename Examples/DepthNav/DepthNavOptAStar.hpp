@@ -1,6 +1,9 @@
 #pragma once
 
 #include "common/Common.hpp"
+#include "common/common_utils/FileSystem.hpp"
+#include "common/common_utils/bitmap_image.hpp"
+#include "common/common_utils/ColorUtils.hpp"
 
 namespace msr {
 namespace airlib {
@@ -86,6 +89,8 @@ public:
         typedef ImageCaptureBase::ImageResponse ImageResponse;
         typedef ImageCaptureBase::ImageType ImageType;
 
+        iteration_index_ = 0;
+
         do {
             std::vector<ImageRequest> request = {
                 ImageRequest("1", ImageType::DepthPlanner, true) /*,
@@ -134,6 +139,7 @@ public:
                 return;
             Utils::log(Utils::stringf("Distance to target: %f", dist2goal));
 
+            ++iteration_index_;
         } while (true);
     }
 
@@ -145,6 +151,12 @@ protected:
 
         SampleRay* min_cost_ray = &sample_rays.at(0);
         setupRay(*min_cost_ray, depth_image, goal_body, goal_dist);
+
+        if (generate_debug_info_) {
+            const auto& bmp = depth2bmp(depth_image);
+            writeToBmpFile(bmp, params_.depth_width, params_.depth_height,
+                common_utils::FileSystem::combine(std::string("d:\\temp\\111\\"), Utils::stringf("disparity_ % 06d.bmp", iteration_index_)));
+        }
 
         //sample rays
         for (unsigned int ray_index = 0; ray_index < params_.ray_samples_count; ++ray_index) {
@@ -165,6 +177,35 @@ protected:
         Pose local_pose(next_pos, next_q);
         Pose global_pose = VectorMath::transformToWorldFrame(local_pose, current_pose, true);
         return global_pose;
+    }
+
+    static std::vector<common_utils::bmp::rgb_t> depth2bmp(const std::vector<float>& depth_image)
+    {
+        std::vector<common_utils::bmp::rgb_t> r(depth_image.size());
+
+        for (unsigned int i = 0; i < depth_image.size(); ++i) {
+            float depth = depth_image.at(i);
+            float inv_depth = Utils::clip(1 / (depth + 1), 0.0f, 1.0f) / 1.0f;
+
+            //if (i >= 66)
+            //    Utils::DebugBreak();
+            common_utils::ColorUtils::valToRGB(inv_depth, r[i].red, r[i].green, r[i].blue);
+        }
+
+        return r;
+    }
+
+    static void writeToBmpFile(const std::vector<common_utils::bmp::rgb_t>& image, unsigned int width, unsigned int height, const std::string& filepath)
+    {
+        unsigned int idx = 0;
+        common_utils::bmp::bitmap_image img(width, height);
+        for (unsigned int j = 0; j < height; ++j) {
+            for (unsigned int i = 0; i < width; ++i) {
+                img.set_pixel(i, j, image.at(idx));
+                ++idx;
+            }
+        }
+        img.save_image(filepath);
     }
 
     void setupRay(SampleRay& sample_ray, const std::vector<float>& depth_image, const Vector3r& goal_body, real_T goal_dist)
@@ -217,6 +258,8 @@ private:
     Params params_;
     std::vector<SampleRay> sample_rays;
     common_utils::RandomGeneratorUI rnd_width_, rnd_height_;
+    bool generate_debug_info_ = true;
+    unsigned int iteration_index_;
 };
 
 }
