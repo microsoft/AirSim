@@ -81,6 +81,9 @@ public:
     msr::airlib::Pose simCharGetBonePose(const std::string& bone_name, const std::string& character_name = "") const;
     void simCharResetBonePose(const std::string& bone_name, const std::string& character_name = "");
     void simCharSetFacePreset(const std::string& preset_name, float value, const std::string& character_name = "");
+    void simSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name = "");
+    void simSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name = "");
+    std::unordered_map<std::string, msr::airlib::Pose> simGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name = "") const;
 
 protected:
     void* getClient();

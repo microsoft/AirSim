@@ -342,6 +342,30 @@ void RpcLibClientBase::simCharSetFacePreset(const std::string& preset_name, floa
 {
     pimpl_->client.call("simCharSetFacePreset", preset_name, value, character_name);
 }
+void RpcLibClientBase::simSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name)
+{
+    pimpl_->client.call("simSetFacePresets", presets, character_name);
+}
+void RpcLibClientBase::simSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name)
+{
+    std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> r;
+    for (const auto& p : poses)
+        r[p.first] = RpcLibAdapatorsBase::Pose(p.second);
+
+    pimpl_->client.call("simSetBonePoses", r, character_name);
+}
+std::unordered_map<std::string, msr::airlib::Pose> RpcLibClientBase::simGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const
+{
+    std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> t =
+        pimpl_->client.call("simGetBonePoses", bone_names, character_name)
+            .as<std::unordered_map<std::string, RpcLibAdapatorsBase::Pose>>();
+
+    std::unordered_map<std::string, msr::airlib::Pose> r;
+    for (const auto& p : t)
+        r[p.first] = p.second.to();
+
+    return r;
+}
 
 
 }} //namespace

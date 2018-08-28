@@ -80,15 +80,10 @@ void runGaussianMarkovTest()
 
 void runDepthNavTest()
 {
-    Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
-    //Pose goalPose = Pose(Vector3r(50, 20, -1), Quaternionr(1, 0, 0, 0)); //final pose
-    Pose goalPose = Pose(Vector3r(50, 105, -1), Quaternionr(1, 0, 0, 0)); //final pose
-
     RpcLibClientBase client;
     client.confirmConnection();
 
-    client.simSetVehiclePose(startPose, true);
-    std::cout << "Press Enter to start" << std::endl; std::cin.get(); //Allow some time to reach startPose
+    Pose goalPose = client.simGetObjectPose("OrangeBall");
 
     //DepthNavThreshold depthNav;
     //DepthNavCost depthNav;

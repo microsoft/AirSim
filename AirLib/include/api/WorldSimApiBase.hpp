@@ -6,7 +6,6 @@
 
 #include "common/CommonStructs.hpp"
 
-
 namespace msr { namespace airlib {
 
 
@@ -42,6 +41,9 @@ public:
     virtual msr::airlib::Pose charGetBonePose(const std::string& bone_name, const std::string& character_name) const = 0;
     virtual void charResetBonePose(const std::string& bone_name, const std::string& character_name) = 0;
     virtual void charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name) = 0;
+    virtual void charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name) = 0;
+    virtual void charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name) = 0;
+    virtual std::unordered_map<std::string, msr::airlib::Pose> charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const = 0;
 
 };
 
