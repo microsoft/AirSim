@@ -115,8 +115,8 @@ void runDepthNavGT()
     std::cout << "Press Enter to start" << std::endl; std::cin.get(); //Allow some time to reach startPose
 
     //DepthNavThreshold depthNav;
-    //DepthNavCost depthNav;
-    DepthNavOptAStar depthNav;
+    DepthNavCost depthNav;
+    //DepthNavOptAStar depthNav;
     depthNav.gotoGoal(goalPose, client);
 }
 
@@ -154,8 +154,8 @@ void runDepthNavSGM()
 
 int main(int argc, const char *argv[])
 {
-    //runDepthNavGT();
-    runDepthNavSGM();
+    runDepthNavGT();
+    //runDepthNavSGM();
     //runDataCollectorSGM(argc, argv);
 
     return 0;
