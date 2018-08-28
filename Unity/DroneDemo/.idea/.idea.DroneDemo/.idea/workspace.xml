@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="cb5329f7-28c6-40f0-bf66-24201b394db3" name="Default" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="Drone.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/Multirotor/Drone.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="32" column="41" lean-forward="false" selection-start-line="32" selection-start-column="41" selection-end-line="32" selection-end-column="41" />
+              <folding>
+                <marker date="1538692872758" expanded="true" signature="6:98" ph="..." />
+                <marker date="1538692872758" expanded="true" signature="122:3821" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="128:634" ph="/* Drone component that is used to control the drone object in the scene. This is based on Vehicle class that is  ... */" />
+                <marker date="1538692872758" expanded="true" signature="668:3819" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="860:1016" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="942:1006" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="1057:1634" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="1388:1624" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="1674:2936" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="1707:2800" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="1991:2081" ph="/* rcData.left_z = Input.GetAxis(&quot;&quot;); ... */" />
+                <marker date="1538692872758" expanded="true" signature="2987:3054" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="3064:3813" ph="IVehicleInterface implementation" />
+                <marker date="1538692872758" expanded="true" signature="3292:3376" ph="{...}" />
+                <marker date="1538692872758" expanded="true" signature="3562:3760" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VehicleCompanion.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/VehicleCompanion.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="961">
+              <caret line="96" column="72" lean-forward="false" selection-start-line="96" selection-start-column="72" selection-end-line="96" selection-end-column="72" />
+              <folding>
+                <marker date="1538686717314" expanded="false" signature="6:166" ph="..." />
+                <marker date="1538686717314" expanded="true" signature="190:9600" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="196:468" ph="/* An implementation of IAirSimInterface, facilitating calls from Unity to AirLib. ... */" />
+                <marker date="1538686717314" expanded="true" signature="525:9598" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="975:1016" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="1087:1295" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="1392:1854" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="1910:2291" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="2034:2281" ph="/* if (isDrone) { ... */" />
+                <marker date="1538686717314" expanded="true" signature="2333:2585" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="2399:2575" ph="/* if (isDrone) { ... */" />
+                <marker date="1538686717314" expanded="true" signature="2644:2714" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="2797:2885" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="2936:3013" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="3079:3158" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="3231:3505" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="3632:5439" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="5649:5842" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="5906:6060" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="6136:6299" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="6367:6523" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="6617:6790" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="6871:7039" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="7140:7321" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="7400:7568" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="7658:7827" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="7893:8051" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="8140:8310" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="8430:8620" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="8738:8932" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="9040:9242" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="9347:9445" ph="{...}" />
+                <marker date="1538686717314" expanded="true" signature="9517:9592" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PInvokeWrapper.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Utilities/PInvokeWrapper.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="9" column="41" lean-forward="false" selection-start-line="9" selection-start-column="41" selection-end-line="9" selection-end-column="41" />
+              <folding>
+                <marker date="1538686717310" expanded="false" signature="6:51" ph="..." />
+                <marker date="1538686717310" expanded="true" signature="75:1615" ph="{...}" />
+                <marker date="1538686717310" expanded="true" signature="81:133" ph="/* class for all the PInvoke methods. ... */" />
+                <marker date="1538686717310" expanded="true" signature="174:1613" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>Ve</find>
+      <find>VehicleCompanion</find>
+      <find>AirsimWrapper</find>
+    </findStrings>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/AirSimAssets/Shaders/CameraEffects.shader" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/HUD/AirSimHUDScript.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/Multirotor/Drone.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/VehicleCompanion.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Utilities/DataCaptureScript.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/SmoothFollow.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Utilities/PInvokeWrapper.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/VehicleCompanion.cs" />
+        <option value="$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/Multirotor/Drone.cs" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="y" value="23" />
+    <option name="width" value="2560" />
+    <option name="height" value="1417" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="SolutionExplorer" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="SolutionExplorer">
+        <subPane>
+          <expand>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="DroneDemo (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+        <option name="show-file-system" value="false" />
+        <option name="show-all-items" value="false" />
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" />
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cb5329f7-28c6-40f0-bf66-24201b394db3" name="Default" comment="" />
+      <created>1538685762327</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1538685762327</updated>
+      <workItem from="1538685765653" duration="2790000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="2790000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="23" width="2560" height="1417" extended-state="6" />
+    <layout>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/VehicleCompanion.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="961">
+          <caret line="96" column="72" lean-forward="false" selection-start-line="96" selection-start-column="72" selection-end-line="96" selection-end-column="72" />
+          <folding>
+            <marker date="1538686717314" expanded="false" signature="6:166" ph="..." />
+            <marker date="1538686717314" expanded="true" signature="190:9600" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="196:468" ph="/* An implementation of IAirSimInterface, facilitating calls from Unity to AirLib. ... */" />
+            <marker date="1538686717314" expanded="true" signature="525:9598" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="975:1016" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="1087:1295" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="1392:1854" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="1910:2291" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="2034:2281" ph="/* if (isDrone) { ... */" />
+            <marker date="1538686717314" expanded="true" signature="2333:2585" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="2399:2575" ph="/* if (isDrone) { ... */" />
+            <marker date="1538686717314" expanded="true" signature="2644:2714" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="2797:2885" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="2936:3013" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="3079:3158" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="3231:3505" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="3632:5439" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="5649:5842" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="5906:6060" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="6136:6299" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="6367:6523" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="6617:6790" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="6871:7039" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="7140:7321" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="7400:7568" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="7658:7827" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="7893:8051" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="8140:8310" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="8430:8620" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="8738:8932" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="9040:9242" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="9347:9445" ph="{...}" />
+            <marker date="1538686717314" expanded="true" signature="9517:9592" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Utilities/PInvokeWrapper.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="9" column="41" lean-forward="false" selection-start-line="9" selection-start-column="41" selection-end-line="9" selection-end-column="41" />
+          <folding>
+            <marker date="1538686717310" expanded="false" signature="6:51" ph="..." />
+            <marker date="1538686717310" expanded="true" signature="75:1615" ph="{...}" />
+            <marker date="1538686717310" expanded="true" signature="81:133" ph="/* class for all the PInvoke methods. ... */" />
+            <marker date="1538686717310" expanded="true" signature="174:1613" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/AirSimAssets/Scripts/Vehicles/Multirotor/Drone.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="41" lean-forward="false" selection-start-line="32" selection-start-column="41" selection-end-line="32" selection-end-column="41" />
+          <folding>
+            <marker date="1538692872758" expanded="true" signature="6:98" ph="..." />
+            <marker date="1538692872758" expanded="true" signature="122:3821" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="128:634" ph="/* Drone component that is used to control the drone object in the scene. This is based on Vehicle class that is  ... */" />
+            <marker date="1538692872758" expanded="true" signature="668:3819" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="860:1016" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="942:1006" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="1057:1634" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="1388:1624" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="1674:2936" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="1707:2800" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="1991:2081" ph="/* rcData.left_z = Input.GetAxis(&quot;&quot;); ... */" />
+            <marker date="1538692872758" expanded="true" signature="2987:3054" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="3064:3813" ph="IVehicleInterface implementation" />
+            <marker date="1538692872758" expanded="true" signature="3292:3376" ph="{...}" />
+            <marker date="1538692872758" expanded="true" signature="3562:3760" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

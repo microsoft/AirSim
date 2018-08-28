@@ -1,0 +1,73 @@
+#include "CarPawnApi.h"
+#include "../../PInvokeWrapper.h"
+
+CarPawnApi::CarPawnApi(CarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint, std::string car_name)
+	: pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint), car_name_(car_name)
+{
+}
+
+bool CarPawnApi::armDisarm(bool arm)
+{
+	//TODO: implement arming for car
+	unused(arm);
+	return true;
+}
+
+void CarPawnApi::setCarControls(const CarApiBase::CarControls& controls)
+{
+	SetCarApiControls(controls, car_name_.c_str());
+}
+
+const msr::airlib::CarApiBase::CarControls& CarPawnApi::getCarControls() const
+{
+	return last_controls_;
+}
+
+msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
+{
+	AirSimCarState carState = GetCarState(car_name_.c_str());
+
+	CarApiBase::CarState state(
+		carState.speed / 100,
+		carState.gear,
+		0.0f, //GetEngineRotationSpeed(),
+		0.0f, //GetEngineMaxRotationSpeed(),
+		last_controls_.handbrake,
+		*pawn_kinematics_,
+		msr::airlib::ClockFactory::get()->nowNanos()
+	);
+
+	return state;
+}
+
+void CarPawnApi::reset()
+{
+	last_controls_ = CarControls();
+	setCarControls(CarControls());
+}
+
+void CarPawnApi::update()
+{
+	msr::airlib::CarApiBase::update();
+}
+
+msr::airlib::GeoPoint CarPawnApi::getHomeGeoPoint() const
+{
+	return home_geopoint_;
+}
+
+void CarPawnApi::enableApiControl(bool is_enabled)
+{
+	if (api_control_enabled_ != is_enabled) {
+		last_controls_ = CarControls();
+		api_control_enabled_ = is_enabled;
+		SetEnableApi(is_enabled, car_name_.c_str());
+	}
+}
+
+bool CarPawnApi::isApiControlEnabled() const
+{
+	return api_control_enabled_;
+}
+
+CarPawnApi::~CarPawnApi() = default;
