@@ -6,23 +6,27 @@
    "CaptureSettings": [
     {
       "ImageType": 0,
-      "Width": 256,
-      "Height": 144,
+      "Width": 960,
+      "Height": 540,
       "FOV_Degrees": 90
     },
     {
       "ImageType": 1,
-      "Width": 256,
-      "Height": 144,
+      "Width": 960,
+      "Height": 540,
       "FOV_Degrees": 90
     },
     {
       "ImageType": 4,
-      "Width": 256,
-      "Height": 144,
+      "Width": 960,
+      "Height": 540,
       "FOV_Degrees": 90
     }
-  ]
+  ],
+  "Gimbal": {
+    "Stabilization": 1,
+    "Pitch": 0, "Roll": 1, "Yaw": 0
+  } 
   },
    "SubWindows": [
     {"WindowID": 0, "CameraID": 1, "ImageType": 0, "Visible": true},
@@ -30,12 +34,12 @@
     {"WindowID": 2, "CameraID": 2, "ImageType": 3, "Visible": true}	
   ], 
   "Recording": {
-    "RecordOnMove": true,
-    "RecordInterval": 1,
+    "RecordOnMove": false,
+    "RecordInterval": 0.05,
     "Cameras": [
-	    { "CameraID": 1, "ImageType": 0, "PixelsAsFloat": false, "Compress": true },
-        { "CameraID": 2, "ImageType": 0, "PixelsAsFloat": false, "Compress": true },
-		{ "CameraID": 2, "ImageType": 3, "PixelsAsFloat": false, "Compress": false }
+	    { "CameraID": 0, "ImageType": 0, "PixelsAsFloat": false, "Compress": true },
+        { "CameraID": 1, "ImageType": 0, "PixelsAsFloat": false, "Compress": true },
+		{ "CameraID": 2, "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
     ]
   } 
 }

@@ -47,5 +47,14 @@
     <ClInclude Include="DepthNav\DepthNavOptAStar.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="writePNG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomPointPoseGeneratorNoRoll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataCollectorSGM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
