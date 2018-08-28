@@ -52,9 +52,9 @@ public:
             ImageRequest("front_left", ImageType::DepthPlanner, true),
             ImageRequest("front_left", ImageType::DisparityNormalized, true)
         };
-        const std::vector<ImageResponse>& response = client.simGetImages(request);
-        w = response.at(0).width;
-        h = response.at(0).height;
+        const std::vector<ImageResponse>& response_init = client.simGetImages(request);
+        w = response_init.at(0).width;
+        h = response_init.at(0).height;
 
         msr::airlib::ClockBase* clock = msr::airlib::ClockFactory::get();
         RandomPointPoseGeneratorNoRoll pose_generator(static_cast<int>(clock->nowNanos()));
