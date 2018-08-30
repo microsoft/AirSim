@@ -30,6 +30,15 @@ It's super simple: 1-2-3!
 
 Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see [setting up Unreal Environment](unreal_proj.md).
 
+Note that by default the AirSim build scripts will make copies of the AirLib and AirSim source directories in Unreal/Plugins/AirSim/Source/ and Unreal/Environments/Blocks/Plugins/, respectively. (Note that the copy of AirSim contains a second copy of the copied AirLib.) If you would prefer to maintain only one copy of the source files and use symlinks to link the Blocks project to the source, simply:
+
+1. Ensure that you haven't made any changes in the originally copied Unreal/Plugins/AirSim/Source/AirLib or Unreal/Environments/Blocks/Plugins/AirSim that you want to keep.
+2. cd AirSim
+3. rm -r Unreal/Plugins/AirSim/Source/AirLib
+4. rm -r Unreal/Environments/Blocks/Plugins/AirSim
+5. cd Unreal/Environments/Blocks
+6. ./setUpLinks.sh
+
 ## Setup Remote Control (Multirotor Only)
 
 A remote control is required if you want to fly manually. See the [remote control setup](remote_control.md) for more details.

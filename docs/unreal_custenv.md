@@ -19,7 +19,7 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
 
 4. From the `File menu` select `New C++ class`, leave default `None` on the type of class, click `Next`, leave default name `MyClass`, and click `Create Class`. We need to do this because Unreal requires at least one source file in project. It should trigger compile and open up Visual Studio solution `LandscapeMountains.sln`.
 
-5. Go to your folder for AirSim repo and copy `Unreal\Plugins` folder in to your `LandscapeMountains` folder. This way now your own Unreal project has AirSim plugin.
+5. Go to your folder for AirSim repo and copy `Unreal\Plugins` folder in to your `LandscapeMountains` folder. This way now your own Unreal project has AirSim plugin. (Alternatively, you may wish to create custom versions of the setUpLinks.[sh, bat] scripts in AirSim/Unreal/Environments/Blocks/, if you wish to use symlinks as opposed to copies of the source.)
 
 6. Edit the `LandscapeMountains.uproject` so that it looks like this
 
@@ -84,7 +84,7 @@ Once you have your environment using above instructions, you should frequently u
 
 1. First put [clean.bat](https://github.com/Microsoft/AirSim/blob/master/Unreal/Environments/Blocks/clean.bat) (or [clean.sh](https://github.com/Microsoft/AirSim/blob/master/Unreal/Environments/Blocks/clean.sh) for Linux users) in the root folder of your environment. Run this file to clean up all intermediate files in your Unreal project.
 2. Do `git pull` in your AirSim repo followed by `build.cmd` (or `./build.sh` for Linux users).
-3. Replace [your project]/Plugins folder with AirSim/Unreal/Plugins folder.
+3. If you are not using symlinks to link from your Unreal project to the AirSim source, replace [your project]/Plugins folder with AirSim/Unreal/Plugins folder.
 4. Right click on your .uproject file and chose "Generate Visual Studio project files" option. This is not required for Linux.
 
 ## FAQ

@@ -147,7 +147,8 @@ if NOT exist %MAVLINK_TARGET_INCLUDE% mkdir %MAVLINK_TARGET_INCLUDE%
 robocopy /MIR MavLinkCom\include %MAVLINK_TARGET_INCLUDE%
 robocopy /MIR MavLinkCom\lib %MAVLINK_TARGET_LIB%
 
-REM //---------- all our output goes to Unreal/Plugin folder ----------
+REM //---------- all our output goes to Unreal/Plugin folder ------------------------------------------
+REM //---------- (if the user has established a symlink, this is smart enough to do nothing) ----------
 if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Source\AirLib
 robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp *. /njh /njs /ndl /np
 

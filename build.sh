@@ -102,16 +102,27 @@ cp $build_dir/output/lib/libAirLib.a AirLib/lib
 cp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
 cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
 
-# Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
+# Update AirLib/lib, AirLib/deps folders with new binaries
 rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug
 rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
-rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 
-# Update Blocks project
-Unreal/Environments/Blocks/clean.sh
-mkdir -p Unreal/Environments/Blocks/Plugins
-rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
+
+# Test for existence of symlink to AirSim.  Make copies of source directories only if symlink does not exist.
+# (The directories in this section contain source that gets built from the Unreal side. Some developers prefer to maintain only one copy.)
+if [ -L "Unreal/Environments/Blocks/Plugins/AirSim" ]; then
+    echo ""
+    echo "Symlink from Unreal/Environments/Blocks/Plugins/ to AirSim/ exists."
+    echo "    Therefore, we are skipping the AirSim and AirLib rsync calls."
+else
+    # Update AirLib
+    rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
+
+    # Update Blocks project
+    Unreal/Environments/Blocks/clean.sh
+    mkdir -p Unreal/Environments/Blocks/Plugins
+    rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
+fi
 
 set +x
 

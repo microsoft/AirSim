@@ -26,7 +26,7 @@ REM //Navigate to AirSim repo folder
 git pull                          
 build.cmd                        
 cd Unreal\Environments\Blocks         
-update_from_git.bat
+update_from_git.bat (Skip this step if using symlinks as described in the [Windows](build_windows.md) and [Linux](build_linux.md) build instructions.)
 start Blocks.sln
 ```
 
@@ -39,7 +39,7 @@ After you are done with you code changes, you might want to push your changes ba
 REM //Use x64 Native Tools Command Prompt for VS 2017
 REM //run this from Unreal\Environments\Blocks 
 
-update_to_git.bat
+update_to_git.bat (Skip this step if using symlinks as described in the [Windows](build_windows.md) and [Linux](build_linux.md) build instructions.)
 build.cmd
 ```
 
