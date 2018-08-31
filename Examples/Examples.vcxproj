@@ -28,6 +28,12 @@
     <ProjectReference Include="..\MavLinkCom\MavLinkCom.vcxproj">
       <Project>{8510c7a4-bf63-41d2-94f6-d8731d137a5a}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\SGM\src\sgmstereo\sgmstereo_vc15.vcxproj">
+      <Project>{a01e543f-ef34-46bb-8f3f-29ab84e7a5d4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SGM\src\stereoPipeline\stereoPipeline_vc15.vcxproj">
+      <Project>{e512eb59-4eab-49d1-9174-0caf1b40ced0}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C679466F-9D35-4AFC-B9AE-F9FB5448FB99}</ProjectGuid>
@@ -185,15 +191,18 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataCollectorSGM.h" />
     <ClInclude Include="DepthNav\DepthNav.hpp" />
     <ClInclude Include="DepthNav\DepthNavCost.hpp" />
     <ClInclude Include="DepthNav\DepthNavOptAStar.hpp" />
     <ClInclude Include="DepthNav\DepthNavThreshold.hpp" />
     <ClInclude Include="GaussianMarkovTest.hpp" />
     <ClInclude Include="RandomPointPoseGenerator.hpp" />
+    <ClInclude Include="RandomPointPoseGeneratorNoRoll.h" />
     <ClInclude Include="StandAlonePhysics.hpp" />
     <ClInclude Include="StandAloneSensors.hpp" />
     <ClInclude Include="StereoImageGenerator.hpp" />
+    <ClInclude Include="writePNG.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
