@@ -43,9 +43,16 @@ fi
 
 # set up paths of cc and cxx compiler
 if [ "$1" == "gcc" ]; then
+    # variable for build output
+    build_dir=build_gcc_debug
+
+    CMAKE="$(readlink -f cmake_build/bin/cmake)"
     export CC="gcc"
     export CXX="g++"
 else
+    # variable for build output
+    build_dir=build_debug
+
     if [ "$(uname)" == "Darwin" ]; then
         CMAKE="$(greadlink -f cmake_build/bin/cmake)"
 
@@ -66,9 +73,7 @@ if [[ !(-d "./AirLib/deps/eigen3/Eigen") ]]; then
 fi
 
 
-# variable for build output
-build_dir=build_debug
-echo "putting build in build_debug folder, to clean, just delete the directory..."
+echo "putting build in $build_dir folder, to clean, just delete the directory..."
 
 # this ensures the cmake files will be built in our $build_dir instead.
 if [[ -f "./cmake/CMakeCache.txt" ]]; then
