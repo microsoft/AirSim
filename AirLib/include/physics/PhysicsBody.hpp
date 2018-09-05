@@ -97,6 +97,7 @@ public: //methods
         wrench_ = Wrench::zero();
         collision_info_ = CollisionInfo();
         collision_response_ = CollisionResponse();
+		grounded_ = false;
 
         //update individual vertices
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
@@ -225,6 +226,15 @@ public: //methods
         return collision_response_;
     }
 
+	bool isGrounded() const
+	{
+		return grounded_;
+	}
+	void setGrounded(bool grounded)
+	{
+		grounded_ = grounded;
+	}
+
 
 public:
     //for use in physics engine: //TODO: use getter/setter or friend method?
@@ -241,6 +251,8 @@ private:
 
     CollisionInfo collision_info_;
     CollisionResponse collision_response_;
+
+	bool grounded_ = false;
 
     Environment* environment_ = nullptr;
 };
