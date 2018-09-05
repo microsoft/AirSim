@@ -448,28 +448,50 @@ void ASimModeBase::setupVehiclesAndCamera()
             if (vehicle_setting.auto_create &&
                 isVehicleTypeSupported(vehicle_setting.vehicle_type)) {
 
-                //compute initial pose
-                FVector spawn_position = uu_origin.GetLocation();
-                msr::airlib::Vector3r settings_position = vehicle_setting.position;
-                if (!msr::airlib::VectorMath::hasNan(settings_position))
-                    spawn_position = getGlobalNedTransform().fromGlobalNed(settings_position);
-                FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
+				int count = vehicle_setting.count;
+				int sideCount = std::ceil(std::sqrt(count));
+				float spacing_offset_cm = vehicle_setting.spacing_offset_cm;
+				
+				for (int i = 0; i < count; i++)
+				{
+					// For the case in which count is > 1, space them on a regular grid
+					int y = i / sideCount;
+					int x = i - y * sideCount;
 
-                //spawn vehicle pawn
-                FActorSpawnParameters pawn_spawn_params;
-                pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
-                pawn_spawn_params.SpawnCollisionHandlingOverride =
-                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
-                    getSettings().pawn_paths.at(getVehiclePawnPathName(vehicle_setting)).pawn_bp);
-                APawn* spawned_pawn = static_cast<APawn*>( this->GetWorld()->SpawnActor(
-                    vehicle_bp_class, &spawn_position, &spawn_rotation, pawn_spawn_params));
+					//compute initial pose
+					FVector spawn_position = uu_origin.GetLocation();
+					msr::airlib::Vector3r settings_position = vehicle_setting.position;
+					if (!msr::airlib::VectorMath::hasNan(settings_position))
+						spawn_position = getGlobalNedTransform().fromGlobalNed(settings_position);
 
-                spawned_actors_.Add(spawned_pawn);
-                pawns.Add(spawned_pawn);
+					spawn_position.X += x * spacing_offset_cm;
+					spawn_position.Y += y * spacing_offset_cm;
 
-                if (vehicle_setting.is_fpv_vehicle)
-                    fpv_pawn = spawned_pawn;
+					FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
+
+					//spawn vehicle pawn
+					FActorSpawnParameters pawn_spawn_params;
+
+					std::string vehicle_name = vehicle_setting.vehicle_name;
+					if (count > 1) {
+						// For the case in which count is > 1, tack ordinal onto the vehicle name
+						vehicle_name.append(AirSimSettings::kGeneratedVehicleIdSeperator + std::to_string(i));
+					}
+
+					pawn_spawn_params.Name = FName(vehicle_name.c_str());
+					pawn_spawn_params.SpawnCollisionHandlingOverride =
+						ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+					auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+						getSettings().pawn_paths.at(getVehiclePawnPathName(vehicle_setting)).pawn_bp);
+					APawn* spawned_pawn = static_cast<APawn*>(this->GetWorld()->SpawnActor(
+						vehicle_bp_class, &spawn_position, &spawn_rotation, pawn_spawn_params));
+
+					spawned_actors_.Add(spawned_pawn);
+					pawns.Add(spawned_pawn);
+
+					if (vehicle_setting.is_fpv_vehicle)
+						fpv_pawn = spawned_pawn;
+				}
             }
         }
 
