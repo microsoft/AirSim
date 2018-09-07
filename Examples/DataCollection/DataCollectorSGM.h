@@ -12,8 +12,8 @@
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "RandomPointPoseGeneratorNoRoll.h"
-#include "../SGM/src/sgmstereo/sgmstereo.h"
-#include "../SGM/src/stereoPipeline/StateStereo.h"
+#include "../../SGM/src/sgmstereo/sgmstereo.h"
+#include "../../SGM/src/stereoPipeline/StateStereo.h"
 #include "writePNG.h"
 STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
@@ -22,8 +22,15 @@ STRICT_MODE_OFF
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
-
+//NOTE: baseline (float B) and FOV (float fov) need to be set correctly!
 class DataCollectorSGM {
+
+private:
+    //baseline * focal_length = depth * disparity
+    float fov = Utils::degreesToRadians(90.0f);
+    float B = 0.25; 
+    float f = w / (2 * tan(fov/2));
+
 public:
     DataCollectorSGM(std::string storage_dir)
         : storage_dir_(storage_dir)
@@ -136,11 +143,6 @@ private:
     int h;
     float dtime = 0;
 
-    //baseline * focal_length = depth * disparity
-    float fov = Utils::degreesToRadians(90.0f);
-    float f = w / (2 * tan(fov/2));
-    float B = 0.25; 
-
 private:
     struct ImagesResult {
         std::vector<ImageResponse> response;
@@ -175,6 +177,7 @@ private:
 
             auto process_time = clock->nowNanos();
 
+            //Initialze file names
             std::string left_file_name = Utils::stringf("left/%06d.png", result->sample);
             std::string right_file_name = Utils::stringf("right/%06d.png", result->sample);
             std::string depth_gt_file_name  = Utils::stringf("depth_gt/%06d.pfm", result->sample);
@@ -185,9 +188,16 @@ private:
             std::string disparity_sgm_viz_file_name  = Utils::stringf("disparity_sgm_viz/%06d.png", result->sample);
             std::string confidence_sgm_file_name  = Utils::stringf("confidence_sgm/%06d.png", result->sample);
 
-            //Remove alpha
+            //Initialize data containers
             std::vector<uint8_t> left_img(h*w*3);
             std::vector<uint8_t> right_img(h*w*3);
+            std::vector<float> gt_depth_data = result->response.at(2).image_data_float;
+            std::vector<float> gt_disparity_data = result->response.at(3).image_data_float;
+            std::vector<float> sgm_depth_data(h*w);
+            std::vector<float> sgm_disparity_data(h*w);
+            std::vector<uint8_t> sgm_confidence_data(h*w);
+
+            //Remove alpha from RGB images
             int counter = 0;
             for (int idx = 0; idx < (h*w*4); idx++) {
                 if ((idx+1) % 4 == 0) {
@@ -198,15 +208,10 @@ private:
                 right_img[idx-counter] = result->response.at(1).image_data_uint8 [idx];
             }
 
-            std::vector<float> gt_depth_data = result->response.at(2).image_data_float;
-            std::vector<float> gt_disparity_data = result->response.at(3).image_data_float;
-
-            std::vector<float> sgm_depth_data(h*w);
-            std::vector<float> sgm_disparity_data(h*w);
-            std::vector<uint8_t> sgm_confidence_data(h*w);
-
+            //Get SGM disparity and confidence
             p_state->ProcessFrameAirSim(result->sample,dtime,left_img, right_img);
 
+            //Get adjust SGM disparity and compute depth
 	        for (int idx = 0; idx < (h*w); idx++)
 	        {
 		        float d = p_state->dispMap[idx];
@@ -219,43 +224,40 @@ private:
                 
 	        }
 
+            //Write files to disk
+            //Left and right RGB image
             FILE *img_l = fopen(FileSystem::combine(result->storage_dir_, left_file_name).c_str(), "wb");
             svpng(img_l,w,h,reinterpret_cast<const unsigned char*>(left_img.data()),0);
             fclose(img_l);
-
             FILE *img_r = fopen(FileSystem::combine(result->storage_dir_, right_file_name).c_str(), "wb");
             svpng(img_r,w,h,reinterpret_cast<const unsigned char*>(right_img.data()),0);
             fclose(img_r);
-            
-            //below is not needed because we get disparity directly
-            //convertToPlanDepth(depth_data, w, h);
-            //float f = result.response.at(2).width / 2.0f - 1;
-            //convertToDisparity(depth_data, f, 25 / 100.0f);
 
+            //GT disparity and depth
             Utils::writePfmFile(gt_depth_data.data(), w, h, FileSystem::combine(result->storage_dir_, depth_gt_file_name));
             denormalizeDisparity(gt_disparity_data, w);
             Utils::writePfmFile(gt_disparity_data.data(), w, h, FileSystem::combine(result->storage_dir_, disparity_gt_file_name));
             
+            //SGM depth disparity and confidence
             Utils::writePfmFile(sgm_depth_data.data(), w, h, FileSystem::combine(result->storage_dir_, depth_sgm_file_name));
             Utils::writePfmFile(sgm_disparity_data.data(), w, h, FileSystem::combine(result->storage_dir_, disparity_sgm_file_name));
-            
             FILE *sgm_c = fopen(FileSystem::combine(result->storage_dir_, confidence_sgm_file_name).c_str(), "wb");
             svpng(sgm_c,w,h,reinterpret_cast<const unsigned char*>(sgm_confidence_data.data()),0,1);
             fclose(sgm_c);
 
-            //Disparity for visulatization
+            //GT and SGM disparity for visulatization
             std::vector<uint8_t> sgm_disparity_viz(h*w*3);
             getColorVisualization(sgm_disparity_data, sgm_disparity_viz, h, w, 0.05f*w);
             FILE *disparity_sgm = fopen(FileSystem::combine(result->storage_dir_, disparity_sgm_viz_file_name).c_str(), "wb");
             svpng(disparity_sgm,w,h,reinterpret_cast<const unsigned char*>(sgm_disparity_viz.data()), 0);
             fclose(disparity_sgm);
-
             std::vector<uint8_t> gt_disparity_viz(h*w*3);
             getColorVisualization(gt_disparity_data, gt_disparity_viz, h, w, 0.05f*w);
             FILE *disparity_gt = fopen(FileSystem::combine(result->storage_dir_, disparity_gt_viz_file_name).c_str(), "wb");
             svpng(disparity_gt,w,h,reinterpret_cast<const unsigned char*>(gt_disparity_viz.data()), 0);
             fclose(disparity_gt);
 
+            //Add all to file record
             (* result->file_list) << left_file_name << "," << right_file_name << "," << depth_gt_file_name << "," << disparity_gt_file_name << "," << depth_sgm_file_name << "," << disparity_sgm_file_name << "," << confidence_sgm_file_name << std::endl;
 
             std::cout << "Image #" << result->sample 

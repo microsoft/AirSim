@@ -1,21 +1,18 @@
 #include "StandAloneSensors.hpp"
 #include "StandAlonePhysics.hpp"
-#include "StereoImageGenerator.hpp"
-#include "DataCollectorSGM.h"                          
+#include "DataCollection/StereoImageGenerator.hpp"
+#include "DataCollection/DataCollectorSGM.h"                          
 #include "GaussianMarkovTest.hpp"
 #include "DepthNav/DepthNavCost.hpp"
 #include "DepthNav/DepthNavThreshold.hpp"
 #include "DepthNav/DepthNavOptAStar.hpp"
 #include <iostream>
 #include <string>
-#include "../SGM/src/sgmstereo/sgmstereo.h"
-#include "../SGM/src/stereoPipeline/StateStereo.h"
 #include <sys/stat.h>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
-#include "writePNG.h"                                                
+#include <math.h>                                             
 
 int runStandAloneSensors(int argc, const char *argv[])
 {
@@ -103,6 +100,15 @@ void runGaussianMarkovTest()
 
 void runDepthNavGT()
 {
+    typedef ImageCaptureBase::ImageRequest ImageRequest;
+    typedef ImageCaptureBase::ImageType ImageType;
+                                                    
+    std::vector<ImageRequest> request = {
+        ImageRequest("front_left", ImageType::DepthPlanner, true) /*,
+        ImageRequest("front_left", ImageType::Scene),
+        ImageRequest("front_left", ImageType::DisparityNormalized, true) */
+    };
+
     Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
     Pose goalPose = Pose(Vector3r(50, 105, -1), Quaternionr(1, 0, 0, 0)); //final pose
     //Pose goalPose = client.simGetObjectPose("OrangeBall");
@@ -117,11 +123,22 @@ void runDepthNavGT()
     //DepthNavThreshold depthNav;
     DepthNavCost depthNav;
     //DepthNavOptAStar depthNav;
-    depthNav.gotoGoal(goalPose, client);
+    depthNav.initialize(client, request);
+    depthNav.gotoGoal(goalPose, client, request);
 }
 
 void runDepthNavSGM()
 {
+    typedef ImageCaptureBase::ImageRequest ImageRequest;
+    typedef ImageCaptureBase::ImageType ImageType;
+
+    std::vector<ImageRequest> request = {
+        ImageRequest("front_left", ImageType::Scene, false, false), 
+        ImageRequest("front_right", ImageType::Scene, false, false), /*
+        ImageRequest("front_left", ImageType::DepthPlanner, true), 
+        ImageRequest("front_left", ImageType::DisparityNormalized, true) */
+    };
+
     Pose startPose = Pose(Vector3r(0, 0, -1), Quaternionr(1, 0, 0, 0)); //start pose
     Pose goalPose = Pose(Vector3r(50, 105, -1), Quaternionr(1, 0, 0, 0)); //final pose
 
@@ -134,7 +151,9 @@ void runDepthNavSGM()
 
     //DepthNavThreshold depthNav;
     DepthNavCost depthNav;
-   //DepthNavOptAStar depthNav;
+    //DepthNavOptAStar depthNav;
+    depthNav.initialize(client, request);
+    
     SGMOptions params;
     CStateStereo * p_state;
 
@@ -146,7 +165,7 @@ void runDepthNavSGM()
 	p_state = new CStateStereo();
 	p_state->Initialize(params, depthNav.params_.depth_height, depthNav.params_.depth_width);
 
-    depthNav.gotoGoalSGM(goalPose, client, p_state);
+    depthNav.gotoGoalSGM(goalPose, client, request, p_state);
 
     //Cleanup
     delete p_state;
@@ -154,9 +173,9 @@ void runDepthNavSGM()
 
 int main(int argc, const char *argv[])
 {
-    runDepthNavGT();
+    //runDepthNavGT();
     //runDepthNavSGM();
-    //runDataCollectorSGM(argc, argv);
+    runDataCollectorSGM(argc, argv);
 
     return 0;
 }
