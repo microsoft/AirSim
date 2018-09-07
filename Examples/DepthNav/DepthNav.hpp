@@ -16,8 +16,8 @@ STRICT_MODE_ON
 #include "common/Common.hpp"
 #include <exception>
 
-#include "../SGM/src/sgmstereo/sgmstereo.h"
-#include "../SGM/src/stereoPipeline/StateStereo.h"                                                                                        
+#include "../../SGM/src/sgmstereo/sgmstereo.h"
+#include "../../SGM/src/stereoPipeline/StateStereo.h"                                                                                        
 namespace msr { namespace airlib {
 
 class DepthNav {
@@ -31,7 +31,7 @@ public: //types
 		real_T rotation_step_limit = Utils::degreesToRadians(5.0f);
 
         //depth image dimension, index of pixel x,y = x*width + y 
-		unsigned int depth_width = 256, depth_height = 144;
+		unsigned int depth_width, depth_height;
 
 		//Number of cells the depth image gets divided in to. Each cell is square.
 		unsigned int M, N;
@@ -65,22 +65,20 @@ public:
 
 	DepthNav(const Params& params = Params())
 		: params_(params)
-	{
-		params_.vehicle_height_px = int(ceil(params_.depth_height * params_.vehicle_height / (tan(params_.fov / 2) * params_.max_allowed_obs_dist * 2))); //height
-		params_.vehicle_width_px = int(ceil(params_.depth_width * params_.vehicle_width / (tan(hfov2vfov(params_.fov, params_.depth_height, params_.depth_width) / 2) * params_.max_allowed_obs_dist * 2))); //width
-	}
+	{}
 
-    virtual void gotoGoal(const Pose& goal_pose, RpcLibClientBase& client)
+    void initialize(RpcLibClientBase& client, const std::vector<ImageCaptureBase::ImageRequest>& request){
+        const std::vector<ImageCaptureBase::ImageResponse>& response_init = client.simGetImages(request);
+        params_.depth_width = response_init.at(0).width;
+        params_.depth_height = response_init.at(0).height;
+		params_.vehicle_height_px = int(ceil(params_.depth_height * params_.vehicle_height / (tan(params_.fov / 2) * params_.max_allowed_obs_dist * 2))); //height
+		params_.vehicle_width_px = int(ceil(params_.depth_width * params_.vehicle_width / (tan(hfov2vfov(params_.fov, params_.depth_height, params_.depth_width) / 2) * params_.max_allowed_obs_dist * 2))); //width    
+    }
+
+    virtual void gotoGoal(const Pose& goal_pose, RpcLibClientBase& client, const std::vector<ImageCaptureBase::ImageRequest>& request)
     {
-        typedef ImageCaptureBase::ImageRequest ImageRequest;
+
         typedef ImageCaptureBase::ImageResponse ImageResponse;
-        typedef ImageCaptureBase::ImageType ImageType;
-                                                    
-        std::vector<ImageRequest> request = {
-            ImageRequest("1", ImageType::DepthPlanner, true) /*,
-            ImageRequest("1", ImageType::Scene),
-            ImageRequest("1", ImageType::DisparityNormalized, true) */
-        };
 
         do {
             const Pose current_pose = client.simGetVehiclePose();
@@ -134,23 +132,16 @@ public:
 
 
 
-    virtual void gotoGoalSGM(const Pose& goal_pose, RpcLibClientBase& client, CStateStereo * p_state)
+    virtual void gotoGoalSGM(const Pose& goal_pose, RpcLibClientBase& client, const std::vector<ImageCaptureBase::ImageRequest>& request, CStateStereo * p_state)
     {
-        typedef ImageCaptureBase::ImageRequest ImageRequest;
+
         typedef ImageCaptureBase::ImageResponse ImageResponse;
-        typedef ImageCaptureBase::ImageType ImageType;
         typedef common_utils::FileSystem FileSystem;
 
         float dtime = 0;
         int counter = 0;
-        std::vector<float> sgm_depth_image(params_.depth_height*params_.depth_width);
 
-        std::vector<ImageRequest> request = {
-            ImageRequest("front_left", ImageType::Scene, false, false), 
-            ImageRequest("front_right", ImageType::Scene, false, false), /*
-            ImageRequest("front_left", ImageType::DepthPlanner, true), 
-            ImageRequest("front_left", ImageType::DisparityNormalized, true) */
-        };
+        std::vector<float> sgm_depth_image(params_.depth_height*params_.depth_width);
 
         do {
             const Pose current_pose = client.simGetVehiclePose();

@@ -191,18 +191,18 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DataCollectorSGM.h" />
+    <ClInclude Include="DataCollection\DataCollectorSGM.h" />
+    <ClInclude Include="DataCollection\RandomPointPoseGenerator.hpp" />
+    <ClInclude Include="DataCollection\RandomPointPoseGeneratorNoRoll.h" />
+    <ClInclude Include="DataCollection\StereoImageGenerator.hpp" />
+    <ClInclude Include="DataCollection\writePNG.h" />
     <ClInclude Include="DepthNav\DepthNav.hpp" />
     <ClInclude Include="DepthNav\DepthNavCost.hpp" />
     <ClInclude Include="DepthNav\DepthNavOptAStar.hpp" />
     <ClInclude Include="DepthNav\DepthNavThreshold.hpp" />
     <ClInclude Include="GaussianMarkovTest.hpp" />
-    <ClInclude Include="RandomPointPoseGenerator.hpp" />
-    <ClInclude Include="RandomPointPoseGeneratorNoRoll.h" />
     <ClInclude Include="StandAlonePhysics.hpp" />
     <ClInclude Include="StandAloneSensors.hpp" />
-    <ClInclude Include="StereoImageGenerator.hpp" />
-    <ClInclude Include="writePNG.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

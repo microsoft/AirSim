@@ -6,6 +6,7 @@
    "CaptureSettings": [
     {
       "ImageType": 0,
+      "TargetGamma": 1.5,
       "Width": 256,
       "Height": 144,
       "FOV_Degrees": 90
