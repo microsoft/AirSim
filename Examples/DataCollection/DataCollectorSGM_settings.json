@@ -6,6 +6,7 @@
    "CaptureSettings": [
     {
       "ImageType": 0,
+      "TargetGamma": 1.5,
       "Width": 960,
       "Height": 540,
       "FOV_Degrees": 90
@@ -34,8 +35,8 @@
     {"WindowID": 2, "CameraID": 2, "ImageType": 3, "Visible": true}	
   ], 
   "Recording": {
-    "RecordOnMove": false,
-    "RecordInterval": 0.05,
+    "RecordOnMove": true,
+    "RecordInterval": 1,
     "Cameras": [
 	    { "CameraID": 0, "ImageType": 0, "PixelsAsFloat": false, "Compress": true },
         { "CameraID": 1, "ImageType": 0, "PixelsAsFloat": false, "Compress": true },
