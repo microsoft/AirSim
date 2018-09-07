@@ -28,8 +28,11 @@
 #include <limits.h> // needed for CHAR_BIT used below
 #endif
 
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
-#include <cmath>
+#endif
+#include <math.h>
+//#include <cmath>
 
 #ifndef M_PIf
 #define M_PIf static_cast<float>(3.1415926535897932384626433832795028841972)

@@ -216,6 +216,26 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("simCharSetFacePreset", [&](const std::string& preset_name, float value, const std::string& character_name) -> void {
         getWorldSimApi()->charSetFacePreset(preset_name, value, character_name);
     });
+    pimpl_->server.bind("simSetFacePresets", [&](const std::unordered_map<std::string, float>& presets, const std::string& character_name) -> void {
+        getWorldSimApi()->charSetFacePresets(presets, character_name);
+    });
+    pimpl_->server.bind("simSetBonePoses", [&](const std::unordered_map<std::string, RpcLibAdapatorsBase::Pose>& poses, const std::string& character_name) -> void {
+        std::unordered_map<std::string, msr::airlib::Pose> r;
+        for (const auto& p : poses)
+            r[p.first] = p.second.to();
+
+        getWorldSimApi()->charSetBonePoses(r, character_name);
+    });
+    pimpl_->server.bind("simGetBonePoses", [&](const std::vector<std::string>& bone_names, const std::string& character_name) 
+        -> std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> {
+
+        std::unordered_map<std::string, msr::airlib::Pose> poses = getWorldSimApi()->charGetBonePoses(bone_names, character_name);
+        std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> r;
+        for (const auto& p : poses)
+            r[p.first] = RpcLibAdapatorsBase::Pose(p.second);
+
+        return r;
+    });
 
     //if we don't suppress then server will bomb out for exceptions raised by any method
     pimpl_->server.suppress_exceptions(true);

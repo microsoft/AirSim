@@ -183,31 +183,68 @@ public:
 			return q.conjugate()._transformVector(v);
 	}
 
-	static Vector3T transformToBodyFrame(const Vector3T& v_world, const QuaternionT& q, bool assume_unit_quat = true)
+    static QuaternionT rotateQuaternion(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
+    {
+        QuaternionT ref_n = assume_unit_quat ? ref : ref.normalized();
+        QuaternionT ref_n_i = assume_unit_quat ? ref.conjugate() : ref.inverse();
+        return ref_n * q * ref_n_i;
+    }
+
+    static QuaternionT rotateQuaternionReverse(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
+    {
+        QuaternionT ref_n = assume_unit_quat ? ref : ref.normalized();
+        QuaternionT ref_n_i = assume_unit_quat ? ref.conjugate() : ref.inverse();
+        return ref_n_i * q * ref_n;
+    }
+
+	static Vector3T transformToBodyFrame(const Vector3T& v_world, const QuaternionT& q_world, bool assume_unit_quat = true)
 	{
-		return rotateVectorReverse(v_world, q, assume_unit_quat);
+		return rotateVectorReverse(v_world, q_world, assume_unit_quat);
 	}
 
-	static Vector3T transformToBodyFrame(const Vector3T& v_world, const Pose& body_pose, bool assume_unit_quat = true)
+	static Vector3T transformToBodyFrame(const Vector3T& v_world, const Pose& body_world, bool assume_unit_quat = true)
 	{
 		//translate
-		Vector3T translated = v_world - body_pose.position;
+		Vector3T translated = v_world - body_world.position;
 		//rotate
-		return transformToBodyFrame(translated, body_pose.orientation, assume_unit_quat);
+		return transformToBodyFrame(translated, body_world.orientation, assume_unit_quat);
 	}
 
-	static Vector3T transformToWorldFrame(const Vector3T& v_body, const QuaternionT& q, bool assume_unit_quat = true)
+    static Pose transformToBodyFrame(const Pose& pose_world, const Pose& body_world, bool assume_unit_quat = true)
+    {
+        //translate
+        Vector3T translated = pose_world.position - body_world.position;
+        //rotate vector
+        Vector3T v_body = transformToBodyFrame(translated, body_world.orientation, assume_unit_quat);
+        //rotate orientation
+        QuaternionT q_body = rotateQuaternionReverse(pose_world.orientation, body_world.orientation, assume_unit_quat);
+
+        return Pose(v_body, q_body);
+    }
+
+	static Vector3T transformToWorldFrame(const Vector3T& v_body, const QuaternionT& q_world, bool assume_unit_quat = true)
 	{
-		return rotateVector(v_body, q, assume_unit_quat);
+		return rotateVector(v_body, q_world, assume_unit_quat);
 	}
 
-	static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& body_pose, bool assume_unit_quat = true)
+	static Vector3T transformToWorldFrame(const Vector3T& v_body, const Pose& body_world, bool assume_unit_quat = true)
 	{
 		//rotate
-		Vector3T v_world = transformToWorldFrame(v_body, body_pose.orientation, assume_unit_quat);
+		Vector3T v_world = transformToWorldFrame(v_body, body_world.orientation, assume_unit_quat);
 		//translate
-		return v_world + body_pose.position;
+		return v_world + body_world.position;
 	}
+
+    //transform pose specified in body frame to world frame. The body frame in world coordinate is at body_world
+    static Pose transformToWorldFrame(const Pose& pose_body, const Pose& body_world, bool assume_unit_quat = true)
+    {
+        //rotate position
+        Vector3T v_world = transformToWorldFrame(pose_body.position, body_world.orientation, assume_unit_quat);
+        //rotate orientation
+        QuaternionT q_world = rotateQuaternion(pose_body.orientation, body_world.orientation, assume_unit_quat);
+        //translate
+        return Pose(v_world + body_world.position, q_world);
+    }
 
 	static QuaternionT negate(const QuaternionT& q)
 	{
@@ -453,9 +490,9 @@ public:
 	static QuaternionT toQuaternion(const Vector3T& axis, RealT angle)
 	{
 		//Alternative:
-		//auto s = std::sinf(angle / 2);
+		//auto s = std::sin(angle / 2);
 		//auto u = axis.normalized();
-		//return Quaternionr(std::cosf(angle / 2), u.x() * s, u.y() * s, u.z() * s);
+		//return Quaternionr(std::cos(angle / 2), u.x() * s, u.y() * s, u.z() * s);
 
 		return QuaternionT(Eigen::AngleAxis<RealT>(angle, axis));
 	}
@@ -475,6 +512,8 @@ public:
 	//spherical lerp
 	static QuaternionT slerp(const QuaternionT& from, const QuaternionT& to, RealT alpha)
 	{
+        /*
+        //below is manual way to do this
 		RealT n_alpha = 1 - alpha;
 		RealT theta = acos(from.x()*to.x() + from.y()*to.y() + from.z()*to.z() + from.w()*to.w());
 		//Check for theta > 0 to avoid division by 0.
@@ -495,7 +534,9 @@ public:
 		else {
 			return to.normalized();
 		}
+        */
 
+        return from.slerp(alpha, to);
 	}
 
     static Vector3T lerp(const Vector3T& from, const Vector3T& to, RealT alpha)
@@ -543,8 +584,11 @@ public:
 		return lerp(from, to, alpha).normalized();
 	}
 
-	static QuaternionT lookAt(Vector3T sourcePoint, Vector3T destPoint)
+    //assuming you are looking at front() vector, what rotation you need to look at destPoint?
+	static QuaternionT lookAt(const Vector3T& sourcePoint, const Vector3T& destPoint)
 	{
+        /*
+        //below is manual way to do this without Eigen
 		Vector3T toVector = (destPoint - sourcePoint);
 		toVector.normalize(); //this is important!
 
@@ -558,7 +602,16 @@ public:
 			axis = axis.normalized();
 
 		return VectorMathT::toQuaternion(axis, ang);
+        */
+
+        return QuaternionT::FromTwoVectors(VectorMathT::front(), destPoint - sourcePoint);
 	}
+
+    //what rotation we need to rotate "" vector to "to" vector (rotation is around intersection of two vectors)
+    static QuaternionT toQuaternion(const Vector3T& from, const Vector3T& to)
+    {
+        return QuaternionT::FromTwoVectors(from, to);
+    }
 
 	static const Vector3T front()
 	{
