@@ -166,7 +166,7 @@ struct GeoPoint {
         return os << "[" << g.latitude << ", " << g.longitude << ", " << g.altitude << "]";
     }
 
-    std::string to_string()
+    std::string to_string() const
     {
         return std::to_string(latitude) + string(", ") + std::to_string(longitude) + string(", ") + std::to_string(altitude);
     }
