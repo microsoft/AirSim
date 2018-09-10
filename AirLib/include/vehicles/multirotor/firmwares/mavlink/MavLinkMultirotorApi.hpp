@@ -485,7 +485,54 @@ public: //types
         std::shared_ptr<mavlinkcom::MavLinkNode> proxy_;
     };
 
-private: //methods
+	
+protected: //methods
+	
+	virtual void connect()
+	{
+		createMavConnection(connection_info_);
+		initializeMavSubscriptions();
+	}
+
+	virtual void close()
+	{
+		if (connection_ != nullptr) {
+			if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
+				setNormalMode();
+			}
+
+			connection_->close();
+		}
+
+		if (hil_node_ != nullptr)
+			hil_node_->close();
+
+		if (video_server_ != nullptr)
+			video_server_->close();
+
+		if (logviewer_proxy_ != nullptr) {
+			logviewer_proxy_->close();
+			logviewer_proxy_ = nullptr;
+		}
+
+		if (logviewer_out_proxy_ != nullptr) {
+			if (mav_vehicle_ != nullptr) {
+				mav_vehicle_->getConnection()->stopLoggingSendMessage();
+			}
+			logviewer_out_proxy_->close();
+			logviewer_out_proxy_ = nullptr;
+		}
+
+		if (qgc_proxy_ != nullptr) {
+			qgc_proxy_->close();
+			qgc_proxy_ = nullptr;
+		}
+		if (mav_vehicle_ != nullptr) {
+			mav_vehicle_->close();
+			mav_vehicle_ = nullptr;
+		}
+	}
+
     const ImuBase* getImu() const
     {
         return static_cast<const ImuBase*>(sensors_->getByType(SensorBase::SensorType::Imu));
@@ -507,7 +554,15 @@ private: //methods
         return static_cast<const GpsBase*>(sensors_->getByType(SensorBase::SensorType::Gps));
     }
 
-    void openAllConnections()
+	void closeAllConnection()
+	{
+		close();
+	}
+
+
+private: //methods
+
+	void openAllConnections()
     {
         close(); //just in case if connections were open
         resetState(); //reset all variables we might have changed during last session
@@ -516,10 +571,6 @@ private: //methods
         connectToLogViewer();
         connectToQGC();
 
-    }
-    void closeAllConnection()
-    {
-        close();
     }
 
     void getMocapPose(Vector3r& position, Quaternionr& orientation) const
@@ -639,45 +690,6 @@ private: //methods
             throw std::logic_error("Cannot perform operation when no vehicle is connected");
         }
     }
-    
-    void close()
-    {
-        if (connection_ != nullptr) {
-            if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
-                setNormalMode();
-            }
-
-            connection_->close();
-        }
-
-        if (hil_node_ != nullptr)
-            hil_node_->close();
-
-        if (video_server_ != nullptr)
-            video_server_->close();
-
-        if (logviewer_proxy_ != nullptr) {
-            logviewer_proxy_->close();
-            logviewer_proxy_ = nullptr;
-        }
-
-        if (logviewer_out_proxy_ != nullptr) {
-            if (mav_vehicle_ != nullptr) {
-                mav_vehicle_->getConnection()->stopLoggingSendMessage();
-            }
-            logviewer_out_proxy_->close();
-            logviewer_out_proxy_ = nullptr;
-        }
-
-        if (qgc_proxy_ != nullptr) {
-            qgc_proxy_->close();
-            qgc_proxy_ = nullptr;
-        }
-        if (mav_vehicle_ != nullptr) {
-            mav_vehicle_->close();
-            mav_vehicle_ = nullptr;
-        }
-    }
 
     //status update methods should call this first!
     void updateState() const
@@ -693,7 +705,7 @@ private: //methods
         }
     }
 
-    void normalizeRotorControls()
+    virtual void normalizeRotorControls()
     {
         //if rotor controls are in not in 0-1 range then they are in -1 to 1 range in which case
         //we normalize them to 0 to 1 for PX4
@@ -848,12 +860,6 @@ private: //methods
             }
         }
         return "";
-    }
-
-    void connect()
-    {
-        createMavConnection(connection_info_);
-        initializeMavSubscriptions();
     }
 
     void createMavConnection(const AirSimSettings::MavLinkConnectionInfo& connection_info)
@@ -1165,13 +1171,23 @@ private: //methods
     }
 
 
+protected: //variables
+
+	static const int RotorControlsCount = 8;
+
+	const SensorCollection* sensors_;
+	mutable std::mutex hil_controls_mutex_;
+	AirSimSettings::MavLinkConnectionInfo connection_info_;
+	float rotor_controls_[RotorControlsCount];
+	bool is_simulation_mode_;
+
+
 private: //variables
     static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
     static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
     static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
     static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
     static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
-    static const int RotorControlsCount = 8;
     static const int messageReceivedTimeout = 10; ///< Seconds 
 
     std::shared_ptr<mavlinkcom::MavLinkNode> logviewer_proxy_, logviewer_out_proxy_, qgc_proxy_;
@@ -1196,17 +1212,13 @@ private: //variables
     mavlinkcom::MavLinkHilGps last_gps_message_;
 
     std::mutex mocap_pose_mutex_, heartbeat_mutex_, set_mode_mutex_, status_text_mutex_, last_message_mutex_;
-    mutable std::mutex hil_controls_mutex_;
 
     //variables required for VehicleApiBase implementation
-    AirSimSettings::MavLinkConnectionInfo connection_info_;
     bool is_any_heartbeat_, is_hil_mode_set_, is_armed_;
     bool is_controls_0_1_; //Are motor controls specified in 0..1 or -1..1?
-    float rotor_controls_[RotorControlsCount];
     std::queue<std::string> status_messages_;
     int hil_state_freq_;
     bool actuators_message_supported_;
-    const SensorCollection* sensors_;
     uint64_t last_gps_time_;
     bool was_reset_;
     bool is_ready_;
@@ -1218,7 +1230,6 @@ private: //variables
     std::shared_ptr<mavlinkcom::MavLinkVehicle> mav_vehicle_;
     float target_height_;
     bool is_api_control_enabled_;
-    bool is_simulation_mode_;
     PidController thrust_controller_;
     common_utils::Timer hil_message_timer_;
     common_utils::Timer sitl_message_timer_;
