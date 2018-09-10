@@ -100,7 +100,15 @@ private:
         body.setKinematics(next);
         body.setWrench(next_wrench);
         body.kinematicsUpdated();
-    }
+
+
+		////// (FIXME this is from PhysicsBody, where it's commented out - it appears that we need it here to ensure that GPS sensing functions properly)
+		//TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
+		body.getEnvironment().setPosition(next.pose.position);
+		body.getEnvironment().update();
+		////// (End FIXME)
+		
+	}
 
     static void updateCollisionResponseInfo(const CollisionInfo& collision_info, const Kinematics::State& next, 
         bool is_collision_response, CollisionResponse& collision_response)
