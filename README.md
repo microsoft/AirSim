@@ -59,6 +59,9 @@ There are two ways you can generate training data from AirSim for deep learning.
 
 A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data. 
 
+### Implementation on the Real Car 
+
+Our implementation of the algorithm on Nvidia Jetson TX2 can be found in this [repository](https://github.com/FSTDriverless/FSTImplementation).  
 
 ### Formula Student Technion algorithm team
 
