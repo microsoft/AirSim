@@ -48,14 +48,17 @@ If you have a steering wheel (Logitech G920) as shown below, you can manually co
 
 Using imitation learning, we trained a deep learning model to steer a Formula Student car with an input of only one camera. Our code files for the training procedure are available [here](https://github.com/FSTDriverless/AirSim/tree/master/PythonClient/imitation_learning) and are based on [AirSim cookbook](https://github.com/Microsoft/AutonomousDrivingCookbook).
 
-
 ### Gathering training data
+
+We added a few [graphic features](docs/graphic_features.md) to ease the procedure of recording data.  
+You can change the positions of the cameras using [this](docs/cameras_positioning.md) tutorial.  
 
 There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's desire.
 
-![record screenshot](docs/images/record_data.png)
+![record screenshot](docs/images/recording_button.PNG)
 
 A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data. 
+
 
 ### Formula Student Technion algorithm team
 
