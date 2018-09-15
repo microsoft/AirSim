@@ -14,20 +14,20 @@ More information on splines can be found in [UE documentation](https://docs.unre
 
 You can find the spline under Content\RaceCourse\Model\Splines. Also in this folder, there is a tire spline which creates one row of tires.  
 
-![spline_cones](docs/images/spline_cones.png)  
+![spline_cones](images/spline_cones.png)  
 *spacing determine the distance between cones with the same color, Dist yellow to blue determine the width of the track*
 
 ## CycleLight  
 
 Animation of a day light cycle in a changeable, potentially very short period of time.  
 
-![cycleLight](docs/images/cycleLight.gif)  
+![cycleLight](images/cycleLight.gif)  
 
 This feature is built using a blueprint. in order to use it in your environment, you need to attach the CycleLight to your light source and sky sphere.  
 To do so, select your light source and sky in the right place in the details section, as shown in the image below.  
 This method can help in recording the training data for imitation learning.  
 
-![cycleLight](docs/images/cycleLight_details.PNG)  
+![cycleLight](images/cycleLight_details.PNG)  
 *sun- choose you light source. skydome- choose your sky sphere. day length in minutes- decide how long one cycle of the sun will take.* 
 
 The CycleLight is built according to this [tutorial](https://www.youtube.com/watch?v=r94AEtPc9zQ).  
