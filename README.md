@@ -55,7 +55,7 @@ You can change the positions of the cameras using [this](docs/cameras_positionin
 
 There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's desire.
 
-![record screenshot](docs/images/recording_button.PNG)
+![record screenshot](docs/images/recording_button_small.PNG)
 
 A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data. 
 
