@@ -58,7 +58,8 @@ for idx in range(3):
 
     for response in responses:
         filename = 'c:/temp/py' + str(idx)
-
+        if not os.path.exists('c:/temp/'):
+            os.makedirs('c:/temp/')
         if response.pixels_as_float:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
             airsim.write_pfm(os.path.normpath(filename + '.pfm'), airsim.get_pfm_array(response))
