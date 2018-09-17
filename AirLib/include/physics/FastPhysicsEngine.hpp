@@ -225,7 +225,7 @@ private:
 
             // but we do want to "feel" the ground when we hit it (we should see a small z-acc bump)
             // equal and opposite our downward velocity.
-            next.accelerations.linear = -0.5 * body.getMass() * vcur_avg;
+            next.accelerations.linear = -0.5f * body.getMass() * vcur_avg;
 
             //throttledLogOutput("*** Triggering ground lock", 0.1);
         }
