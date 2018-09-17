@@ -6,6 +6,8 @@ namespace msr { namespace airlib {
 
 class DepthNavThreshold : public DepthNav
 {
+private:
+    unsigned int max_allowed_obs_per_block = 1;
 protected:
     virtual Pose getNextPose(const std::vector<float>& depth_image, const Vector3r& goal, const Pose& current_pose, real_T dt) override
     {
@@ -101,7 +103,7 @@ protected:
             }
         }
 
-        if (counter > params_.max_allowed_obs_per_block)
+        if (counter > max_allowed_obs_per_block)
         {
             return false;
         }

@@ -16,6 +16,8 @@ STRICT_MODE_ON
 #include "common/Common.hpp"
 #include <exception>
 
+#include "../../SGM/src/sgmstereo/sgmstereo.h"
+#include "../../SGM/src/stereoPipeline/StateStereo.h"                                                                                        
 namespace msr { namespace airlib {
 
 class DepthNav {
@@ -26,10 +28,10 @@ public: //types
 
 		//When goal is outside of frustum, we need to rotate
 		//below specifies max angle per step
-		real_T rotation_step_limit = Utils::degreesToRadians(5.0f);;
+		real_T rotation_step_limit = Utils::degreesToRadians(5.0f);
 
         //depth image dimension, index of pixel x,y = x*width + y 
-		unsigned int depth_width = 256, depth_height = 144;
+		unsigned int depth_width, depth_height;
 
 		//Number of cells the depth image gets divided in to. Each cell is square.
 		unsigned int M, N;
@@ -46,7 +48,7 @@ public: //types
 
         real_T min_exit_dist_from_goal = 1.0f;
 
-        real_T control_loop_period = 30.0f / 1000; //sec
+        real_T control_loop_period = 0.25f*max_allowed_obs_dist; //30.0f / 1000; //sec
         real_T max_linear_speed = 10; // m/s
         real_T max_angular_speed = 6; // rad/s
 	};
@@ -59,27 +61,27 @@ public: //types
     };
 
 public:
+	Params params_;
+
 	DepthNav(const Params& params = Params())
 		: params_(params)
-	{
+	{}
+
+    void initialize(RpcLibClientBase& client, const std::vector<ImageCaptureBase::ImageRequest>& request){
+        const std::vector<ImageCaptureBase::ImageResponse>& response_init = client.simGetImages(request);
+        params_.depth_width = response_init.at(0).width;
+        params_.depth_height = response_init.at(0).height;
 		params_.vehicle_height_px = int(ceil(params_.depth_height * params_.vehicle_height / (tan(params_.fov / 2) * params_.max_allowed_obs_dist * 2))); //height
-		params_.vehicle_width_px = int(ceil(params_.depth_width * params_.vehicle_width / (tan(hfov2vfov(params_.fov, params_.depth_height, params_.depth_width) / 2) * params_.max_allowed_obs_dist * 2))); //width
-	}
+		params_.vehicle_width_px = int(ceil(params_.depth_width * params_.vehicle_width / (tan(hfov2vfov(params_.fov, params_.depth_height, params_.depth_width) / 2) * params_.max_allowed_obs_dist * 2))); //width    
+    }
 
-    virtual void gotoGoal(const Pose& goal_pose, RpcLibClientBase& client)
+    virtual void gotoGoal(const Pose& goal_pose, RpcLibClientBase& client, const std::vector<ImageCaptureBase::ImageRequest>& request)
     {
-        typedef ImageCaptureBase::ImageRequest ImageRequest;
-        typedef ImageCaptureBase::ImageResponse ImageResponse;
-        typedef ImageCaptureBase::ImageType ImageType;
 
-        const Pose current_pose = client.simGetVehiclePose();
+        typedef ImageCaptureBase::ImageResponse ImageResponse;
 
         do {
-            std::vector<ImageRequest> request = {
-                ImageRequest("1", ImageType::DepthPlanner, true) /*,
-                ImageRequest("1", ImageType::Scene),
-                ImageRequest("1", ImageType::DisparityNormalized, true) */
-            };
+            const Pose current_pose = client.simGetVehiclePose();
 
             const std::vector<ImageResponse>& response = client.simGetImages(request);
 
@@ -91,7 +93,10 @@ public:
 
             if (VectorMath::hasNan(next_pose))
                 throw DepthNavException("No further path can be found.");
-            else { //convert pose to velocity commands
+            else { 
+                client.simSetVehiclePose(next_pose, true);
+            /*
+                //convert pose to velocity commands
                 //obey max linear speed constraint
                 Vector3r linear_vel = (next_pose.position - current_pose.position) / params_.control_loop_period;
                 if (linear_vel.norm() > params_.max_linear_speed) {
@@ -114,6 +119,98 @@ public:
                 Pose contrained_next_pose(current_pose.position + linear_vel * params_.control_loop_period,
                     to_orientation);
                 client.simSetVehiclePose(contrained_next_pose, true);
+            */  
+            }
+
+            real_T dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
+            if (dist2goal <= params_.min_exit_dist_from_goal)
+                return;
+            Utils::log(Utils::stringf("Distance to target: %f", dist2goal));
+
+        } while (true);
+    }
+
+
+
+    virtual void gotoGoalSGM(const Pose& goal_pose, RpcLibClientBase& client, const std::vector<ImageCaptureBase::ImageRequest>& request, CStateStereo * p_state)
+    {
+
+        typedef ImageCaptureBase::ImageResponse ImageResponse;
+        typedef common_utils::FileSystem FileSystem;
+
+        float dtime = 0;
+        int counter = 0;
+
+        std::vector<float> sgm_depth_image(params_.depth_height*params_.depth_width);
+
+        do {
+            const Pose current_pose = client.simGetVehiclePose();
+
+            const std::vector<ImageResponse>& response = client.simGetImages(request);
+
+            if (response.size() == 0)
+                throw std::length_error("No images received!");
+            /*
+            if (response.at(0).height != params_.depth_height || response.at(0).width != params_.depth_height)
+                throw DepthNavException("Image Dimension mismatch. Please check left camera in the AirSim config file.");
+
+            if (response.at(1).height != params_.depth_height || response.at(1).width != params_.depth_height)
+                throw DepthNavException("Image Dimension mismatch. Please check right camera in the AirSim config file.");
+            */
+            const std::vector<uint8_t>& left_image = response.at(0).image_data_uint8;
+            const std::vector<uint8_t>& right_image = response.at(1).image_data_uint8;
+
+            //baseline * focal_length = depth * disparity
+            float f = params_.depth_width / (2 * tan(params_.fov/2));
+            float B = 0.25; 
+   
+            p_state->ProcessFrameAirSim(counter, dtime, left_image, right_image);
+                                                                     
+	        for (unsigned int idx = 0; idx < (params_.depth_height*params_.depth_width); idx++)
+	        {
+		        float d = p_state->dispMap[idx];
+		        if (d < FLT_MAX)
+		        {
+                    //float dn = (d - dmin)/drange;
+                    sgm_depth_image[idx] = -(B*f/d);
+
+		        }
+	        }
+
+            counter++;
+
+            const Pose next_pose = getNextPose(sgm_depth_image, goal_pose.position, 
+                current_pose, params_.control_loop_period);
+
+            if (VectorMath::hasNan(next_pose))
+                throw DepthNavException("No further path can be found.");
+            else { 
+                client.simSetVehiclePose(next_pose, true);
+            /*
+                //convert pose to velocity commands
+                //obey max linear speed constraint
+                Vector3r linear_vel = (next_pose.position - current_pose.position) / params_.control_loop_period;
+                if (linear_vel.norm() > params_.max_linear_speed) {
+                    linear_vel = linear_vel.normalized() * params_.max_linear_speed;
+                }
+
+                //obey max angular speed constraint
+                Quaternionr to_orientation = next_pose.orientation;
+                Vector3r angular_vel = VectorMath::toAngularVelocity(current_pose.orientation,
+                    next_pose.orientation, params_.control_loop_period);
+                real_T angular_vel_norm = angular_vel.norm();
+                if (angular_vel_norm > params_.max_angular_speed) {
+                    real_T slerp_alpha = params_.max_angular_speed / angular_vel_norm;
+                    to_orientation = VectorMath::slerp(current_pose.orientation, to_orientation, slerp_alpha);
+                }
+
+                //Now we can use (linear_vel, to_orientation) for vehicle commands
+                
+                //For ComputerVision mode, we will just create new pose
+                Pose contrained_next_pose(current_pose.position + linear_vel * params_.control_loop_period,
+                    to_orientation);
+                client.simSetVehiclePose(contrained_next_pose, true);
+            */  
             }
 
             real_T dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
@@ -275,9 +372,6 @@ protected:
         real_T angle = VectorMath::angleBetween(VectorMath::front(), goal_body.normalized(), true);
         return std::abs(angle) <= params_.fov;
 	}
-
-//private:
-	Params params_;
 };
 
 }}
