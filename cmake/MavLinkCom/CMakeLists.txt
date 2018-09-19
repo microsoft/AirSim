@@ -41,7 +41,7 @@ LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/serial_com/wifi.cpp")
 IF(UNIX)
     LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/linux/MavLinkFindSerialPorts.cpp")
 ELSE()
-    LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/windows/MavLinkFindSerialPorts.cpp")
+    LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/windows/WindowsFindSerialPorts.cpp")
 ENDIF()
 
 add_library(MavLinkCom STATIC ${MAVLINK_SOURCES})
