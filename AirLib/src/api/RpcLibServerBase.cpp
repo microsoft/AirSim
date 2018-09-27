@@ -137,6 +137,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::GeoPoint(geo_point);
     });
 
+    pimpl_->server.bind("getLidarData", [&](const std::string& lidar_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::LidarData {
+        const auto& lidar_data = getVehicleApi(vehicle_name)->getLidarData(lidar_name);
+        return RpcLibAdapatorsBase::LidarData(lidar_data);
+    });
+
     pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::CameraInfo {
         const auto& camera_info = getVehicleSimApi(vehicle_name)->getCameraInfo(camera_name);
         return RpcLibAdapatorsBase::CameraInfo(camera_info);

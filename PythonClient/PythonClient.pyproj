@@ -66,6 +66,7 @@
     <Compile Include="multirotor\clock_speed.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="multirotor\lidar.py" />
     <Compile Include="multirotor\manual_mode_demo.py">
       <SubType>Code</SubType>
     </Compile>

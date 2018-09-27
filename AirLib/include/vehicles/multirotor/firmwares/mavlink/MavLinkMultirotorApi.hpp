@@ -67,6 +67,11 @@ public: //methods
         return mocap_pose_;
     }
 
+    virtual const SensorCollection& getSensors() const override
+    {
+        return *sensors_;
+    }
+
     //reset PX4 stack
     virtual void reset() override
     {

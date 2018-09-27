@@ -461,6 +461,40 @@ public:
             return response_adapter;
         }
     };
+
+    struct LidarData {
+
+        // header
+        msr::airlib::TTimePoint time_stamp;
+
+        // data
+        std::vector<float> point_cloud;
+
+        MSGPACK_DEFINE_MAP(time_stamp, point_cloud);
+
+        LidarData()
+        {}
+
+        LidarData(const msr::airlib::LidarData& s)
+        {
+            time_stamp = s.time_stamp;
+            point_cloud = s.point_cloud;
+
+            //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
+            if (point_cloud.size() == 0)
+                point_cloud.push_back(0);
+        }
+
+        msr::airlib::LidarData to() const
+        {
+            msr::airlib::LidarData d;
+
+            d.time_stamp = time_stamp;
+            d.point_cloud = point_cloud;
+
+            return d;
+        }
+    };
 };
 
 }} //namespace
