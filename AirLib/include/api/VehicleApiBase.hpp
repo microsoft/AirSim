@@ -11,6 +11,8 @@
 #include "safety/SafetyEval.hpp"
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
+#include "sensors/SensorCollection.hpp"
+#include "sensors/Lidar/LidarBase.hpp"
 #include <exception>
 #include <string>
 
@@ -92,6 +94,30 @@ public:
     {
         unused(rc_data);
         return false;
+    }
+
+    // Sensors APIs
+    virtual const SensorCollection& getSensors() const
+    {
+        throw VehicleCommandNotImplementedException("getSensors API is not supported for this vehicle");
+    }
+
+    // Lidar APIs
+    virtual LidarData getLidarData(const std::string& lidar_name) const
+    {
+        // TODO: find the appropriate Lidar based on the name
+        const LidarBase* lidar = static_cast<const LidarBase*>(getSensors().getByType(SensorBase::SensorType::Lidar));
+        if (lidar == nullptr)
+        {
+            throw VehicleControllerException("No matching lidar found on the vehicle");
+        }
+
+        LidarData lidarData;
+        LidarBase::Output output = lidar->getOutput();
+        
+        lidarData.time_stamp = output.time_stamp;
+        lidarData.point_cloud = std::vector<float>(output.point_cloud);
+        return lidarData;
     }
 
     virtual ~VehicleApiBase() = default;

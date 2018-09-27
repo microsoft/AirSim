@@ -42,6 +42,11 @@ public:
         return vehicle_api_.get();
     }
 
+    virtual msr::airlib::VehicleApiBase* getVehicleApiBase() const override
+    {
+        return vehicle_api_.get();
+    }
+
 private:
     void createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint);
     void updateCarControls();

@@ -340,3 +340,7 @@ class CameraInfo(MsgpackMixin):
     pose = Pose()
     fov = -1
     proj_mat = ProjectionMatrix()
+
+class LidarData(MsgpackMixin):
+    point_cloud = 0.0
+    time_stamp = np.uint64(0)

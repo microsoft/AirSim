@@ -130,6 +130,10 @@ class VehicleClient:
         return EnvironmentState.from_msgpack(env_state)
     simGetGroundTruthEnvironment.__annotations__ = {'return': EnvironmentState}
 
+    # lidar APIs
+    def getLidarData(self, lidar_name = '', vehicle_name = ''):
+        return LidarData.from_msgpack(self.client.call('getLidarData', lidar_name, vehicle_name))
+
     #----------- APIs to control ACharacter in scene ----------/
     def simCharSetFaceExpression(self, expression_name, value, character_name = ""):
         self.client.call('simCharSetFaceExpression', expression_name, value, character_name)
