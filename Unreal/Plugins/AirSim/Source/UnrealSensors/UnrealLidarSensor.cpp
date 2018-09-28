@@ -45,9 +45,18 @@ msr::airlib::vector<msr::airlib::real_T> UnrealLidarSensor::getPointCloud(const 
 
     const auto numberOfLasers = params.number_of_channels;
 
+    // cap the points to scan via ray-tracing; this is currently needed for car/Unreal tick scenarios
+    // since SensorBase mechanism uses the elapsed clock time instead of the tick delta-time.
+    constexpr float MAX_POINTS_IN_SCAN = 5e+4f;
+    uint32 totalPointsToScan = FMath::RoundHalfFromZero(params.points_per_second * deltaTime);
+    if (totalPointsToScan > MAX_POINTS_IN_SCAN)
+    {
+        totalPointsToScan = MAX_POINTS_IN_SCAN;
+        UAirBlueprintLib::LogMessageString("Lidar: ", "Capping number of points to scan", LogDebugLevel::Informational);
+    }
+
     // calculate number of points needed for each laser/channel
-    const uint32 pointsToScanWithOneLaser =
-        FMath::RoundHalfFromZero(params.points_per_second * deltaTime / float(numberOfLasers));
+    const uint32 pointsToScanWithOneLaser = FMath::RoundHalfFromZero(totalPointsToScan / float(numberOfLasers));
     if (pointsToScanWithOneLaser <= 0)
     {
         //UAirBlueprintLib::LogMessageString("Lidar: ", "No points requested this frame", LogDebugLevel::Failure);

@@ -24,7 +24,10 @@ namespace msr {
             int vertical_FOV_Upper = 15;
             int vertical_FOV_Lower = -15;
 
-            Pose relative_pose;                       // position and orientation
+            Pose relative_pose {
+                Vector3r(0,0,-1),        // position - a little above vehicle (especially for cars)
+                Quaternionr()            // orientation
+                };                       
 
             real_T update_frequency = 10;             // Hz
             real_T startup_delay = 0;                 // sec
