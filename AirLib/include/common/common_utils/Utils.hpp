@@ -127,7 +127,7 @@ public:
     }
 
     static bool startsWith(const string& s, const string& prefix) {
-        return s.size() <= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
+        return s.size() >= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
     }
 
     template <template<class, class, class...> class TContainer, typename TKey, typename TVal, typename... Args>
