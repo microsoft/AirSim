@@ -1,6 +1,6 @@
 # Welcome to AirSim
 
-AirSim is a simulator for drones, cars and more built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
+AirSim is a simulator for drones, cars and much more, built on the Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
 
 Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
@@ -17,8 +17,8 @@ Cars in AirSim
 
 ## What's New
 
-* AirSim is now full featured for [multiple vehicles](docs/multi_vehicle.md)!
-* AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
+* AirSim is now fully-featured for [multiple vehicles](docs/multi_vehicle.md)!
+* AirSim 1.2 is now available! **This version has breaking changes in APIs and settings.json.** Please see [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
 * We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
 
 [List of newly added features](docs/whats_new.md)
