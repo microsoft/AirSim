@@ -5,6 +5,7 @@ set ROOT_DIR=%~dp0
 
 REM // Check command line arguments
 set "noFullPolyCar="
+set "buildMode=--Debug"
 
 REM //check VS version
 if "%VisualStudioVersion%"=="" (
@@ -22,6 +23,10 @@ if "%VisualStudioVersion%"=="14.0" (
 
 if "%1"=="" goto noargs
 if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
+if "%1"=="--Release" set "buildMode=--Release"
+
+if "%2"=="" goto noargs
+if "%2"=="--Release" set "buildMode=--Release"
 
 :noargs
 
@@ -72,8 +77,10 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2
 cd external\rpclib\rpclib-2.2.1\build
 REM cmake -G"Visual Studio 14 2015 Win64" ..
 cmake -G"Visual Studio 15 2017 Win64" ..
-cmake --build .
-cmake --build . --config Release
+
+if "%buildMode%" == "--Debug" (cmake --build . --config Debug)
+if "%buildMode%" == "--Release" (cmake --build . --config Release)
+
 if ERRORLEVEL 1 goto :buildfailed
 chdir /d %ROOT_DIR% 
 
@@ -84,8 +91,9 @@ if NOT exist %RPCLIB_TARGET_LIB% mkdir %RPCLIB_TARGET_LIB%
 set RPCLIB_TARGET_INCLUDE=AirLib\deps\rpclib\include
 if NOT exist %RPCLIB_TARGET_INCLUDE% mkdir %RPCLIB_TARGET_INCLUDE%
 robocopy /MIR external\rpclib\rpclib-2.2.1\include %RPCLIB_TARGET_INCLUDE%
-robocopy /MIR external\rpclib\rpclib-2.2.1\build\Debug %RPCLIB_TARGET_LIB%\Debug
-robocopy /MIR external\rpclib\rpclib-2.2.1\build\Release %RPCLIB_TARGET_LIB%\Release
+
+if "%buildMode%" == "--Debug" (robocopy /MIR external\rpclib\rpclib-2.2.1\build\Debug %RPCLIB_TARGET_LIB%\Debug)
+if "%buildMode%" == "--Release" (robocopy /MIR external\rpclib\rpclib-2.2.1\build\Release %RPCLIB_TARGET_LIB%\Release)
 
 REM //---------- get High PolyCount SUV Car Model ------------
 IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
@@ -134,9 +142,9 @@ IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
-if ERRORLEVEL 1 goto :buildfailed
-msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln 
+if "%buildMode%" == "--Debug" (msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln)
+if "%buildMode%" == "--Release" (msbuild /p:Platform=x64 /p:Configuration=Release AirSim.sln)
+
 if ERRORLEVEL 1 goto :buildfailed
 
 REM //---------- copy binaries and include for MavLinkCom in deps ----------
