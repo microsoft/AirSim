@@ -215,7 +215,7 @@ The APIs use [msgpack-rpc protocol](https://github.com/msgpack-rpc/msgpack-rpc) 
 #### Unreal is slowed down dramatically when I run API
 If you see Unreal getting slowed down dramatically when Unreal Engine window loses focus then go to 'Edit->Editor Preferences' in Unreal Editor, in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
 
-#### Do I need any thing else on Windows?
+#### Do I need anything else on Windows?
 You should install VS2017 with VC++, Windows SDK 8.1 and Python. To use Python APIs you will need Python 3.5 or later (install it using Anaconda).
 
 #### Which version of Python should I use?
