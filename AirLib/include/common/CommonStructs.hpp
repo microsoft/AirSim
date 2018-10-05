@@ -298,7 +298,7 @@ struct RCData {
 struct LidarData {
 
     TTimePoint time_stamp = 0;
-    vector<float> point_cloud;
+    vector<real_T> point_cloud;
 
     LidarData()
     {}

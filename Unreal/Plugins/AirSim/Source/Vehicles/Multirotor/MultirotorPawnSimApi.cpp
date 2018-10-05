@@ -49,8 +49,6 @@ void MultirotorPawnSimApi::pawnTick(float dt)
 {
     unused(dt);
     //calls to update* are handled by physics engine and in SimModeWorldBase
-
-    drawLidarDebugPoints();
 }
 
 void MultirotorPawnSimApi::updateRenderedState(float dt)

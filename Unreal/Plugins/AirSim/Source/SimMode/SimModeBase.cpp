@@ -16,6 +16,8 @@
 #include "SimJoyStick/SimJoyStick.h"
 #include "common/EarthCelestial.hpp"
 
+#include "DrawDebugHelpers.h"
+
 //TODO: this is going to cause circular references which is fine here but
 //in future we should consider moving SimMode not derived from AActor and move
 //it to AirLib and directly implement WorldSimApiBase interface
@@ -222,6 +224,8 @@ void ASimModeBase::Tick(float DeltaSeconds)
     showClockStats();
 
     updateDebugReport(debug_reporter_);
+
+    drawLidarDebugPoints();
 
     Super::Tick(DeltaSeconds);
 }
@@ -559,4 +563,56 @@ msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi(const PawnSimApi::Param
 {
     //derived class should override this method to retrieve types of pawns they support
     return nullptr;
+}
+
+// Draws debug-points on main viewport for Lidar laser hits.
+// Used for debugging only.
+void ASimModeBase::drawLidarDebugPoints()
+{
+    if (!draw_lidar_debug_points_) // TODO: check airsim settings
+        return;
+
+    if (api_provider_ == nullptr)
+        return;
+
+    std::string vehicle_name = "";
+    std::string lidar_name = "";
+
+    // TODO: check the airsim settings for vehicle and lidar to
+    // determine if debug points need to drawn.
+    // For now, show it on the first non-default vehicle-name.
+    PawnSimApi* vehicle_sim_api = nullptr;
+    for (auto& api : getApiProvider()->getVehicleSimApis()) {
+        vehicle_sim_api = static_cast<PawnSimApi*>(api);
+        vehicle_name = vehicle_sim_api->getVehicleName();
+
+        if (vehicle_name != "")
+            break;
+    }
+
+    msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
+
+    if (api != nullptr)
+    {
+        msr::airlib::LidarData lidar_data = api->getLidarData(lidar_name);
+
+        if (lidar_data.point_cloud.size() < 3)
+            return;
+
+        for (int i = 0; i < lidar_data.point_cloud.size(); i = i + 3)
+        {
+            msr::airlib::Vector3r point(lidar_data.point_cloud[i], lidar_data.point_cloud[i + 1], lidar_data.point_cloud[i + 2]);
+
+            FVector uu_point = vehicle_sim_api->getNedTransform().fromLocalNed(point);
+
+            DrawDebugPoint(
+                this->GetWorld(),
+                uu_point,
+                5,              //size
+                FColor::Green,
+                true,           //persistent (never goes away)
+                0.1             //point leaves a trail on moving object
+            );
+        }
+    }
 }

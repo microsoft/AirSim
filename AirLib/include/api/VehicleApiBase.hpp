@@ -105,19 +105,24 @@ public:
     // Lidar APIs
     virtual LidarData getLidarData(const std::string& lidar_name) const
     {
-        // TODO: find the appropriate Lidar based on the name
-        const LidarBase* lidar = static_cast<const LidarBase*>(getSensors().getByType(SensorBase::SensorType::Lidar));
-        if (lidar == nullptr)
-        {
-            throw VehicleControllerException("No matching lidar found on the vehicle");
-        }
+        const LidarBase* lidar = nullptr;
 
-        LidarData lidarData;
-        LidarBase::Output output = lidar->getOutput();
-        
-        lidarData.time_stamp = output.time_stamp;
-        lidarData.point_cloud = std::vector<float>(output.point_cloud);
-        return lidarData;
+        // Find lidar with the given name
+        // Not efficient but should suffice given small number of lidars
+        uint count_lidars = getSensors().size(SensorBase::SensorType::Lidar);
+        for (uint i = 0; i < count_lidars; i++)
+        {
+            const LidarBase* current_lidar = static_cast<const LidarBase*>(getSensors().getByType(SensorBase::SensorType::Lidar, i));
+            if (current_lidar != nullptr && current_lidar->getName() == lidar_name)
+            {
+                lidar = current_lidar;
+                break;
+            }
+        }
+        if (lidar == nullptr)
+            throw VehicleControllerException(Utils::stringf("No lidar with name %s exist on vehicle", lidar_name.c_str()));
+
+        return lidar->getOutput();
     }
 
     virtual ~VehicleApiBase() = default;

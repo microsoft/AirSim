@@ -464,11 +464,8 @@ public:
 
     struct LidarData {
 
-        // header
-        msr::airlib::TTimePoint time_stamp;
-
-        // data
-        std::vector<float> point_cloud;
+        msr::airlib::TTimePoint time_stamp;    // timestamp
+        std::vector<float> point_cloud;        // data
 
         MSGPACK_DEFINE_MAP(time_stamp, point_cloud);
 

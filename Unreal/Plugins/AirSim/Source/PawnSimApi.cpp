@@ -66,8 +66,6 @@ void PawnSimApi::pawnTick(float dt)
     update();
     updateRenderedState(dt);
     updateRendering(dt);
-
-    drawLidarDebugPoints();
 }
 
 void PawnSimApi::detectUsbRc()
@@ -550,40 +548,4 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
 msr::airlib::VehicleApiBase* PawnSimApi::getVehicleApiBase() const
 {
     return nullptr;
-}
-
-// Draws debug-points on main viewport for Lidar laser hits.
-// Used for debugging only.
-void PawnSimApi::drawLidarDebugPoints()
-{
-    if (false) // TODO: check lidar settings for debug support
-    {
-        return;
-    }
-
-    msr::airlib::VehicleApiBase* api = getVehicleApiBase();
-
-    if (api != nullptr)
-    {
-        msr::airlib::LidarData lidarData = api->getLidarData("" /*for default Lidar*/);
-
-        if (lidarData.point_cloud.size() < 3)
-            return;
-
-        for (int i = 0; i < lidarData.point_cloud.size(); i = i + 3)
-        {
-            Vector3r point(lidarData.point_cloud[i], lidarData.point_cloud[i + 1], lidarData.point_cloud[i + 2]);
-
-            FVector uuPoint = ned_transform_.fromLocalNed(point);
-
-            DrawDebugPoint(
-                getPawn()->GetWorld(),
-                uuPoint,
-                5,             //size
-                FColor::Green,
-                true,          //persistent (never goes away)
-                0.1            //point leaves a trail on moving object
-            );
-        }
-    }
 }

@@ -123,8 +123,6 @@ public: //Unreal specific methods
     void possess();
     void setRCForceFeedback(float rumble_strength, float auto_center);
 
-    void drawLidarDebugPoints();
-
 private: //methods
     bool canTeleportWhileMove()  const;
     void allowPassthroughToggleInput();

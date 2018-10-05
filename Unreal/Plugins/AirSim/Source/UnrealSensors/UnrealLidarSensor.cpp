@@ -11,123 +11,124 @@
 UnrealLidarSensor::UnrealLidarSensor(AActor* actor, const NedTransform* ned_transform)
     : actor_(actor), ned_transform_(ned_transform)
 {
-    CreateLasers();
+    createLasers();
 }
 
 // initializes information based on lidar configuration
-void UnrealLidarSensor::CreateLasers()
+void UnrealLidarSensor::createLasers()
 {
     msr::airlib::LidarSimpleParams params = getParams();
 
-    const auto numberOfLasers = params.number_of_channels;
-    check(numberOfLasers > 0u);
+    const auto number_of_lasers = params.number_of_channels;
+
+    if (number_of_lasers <= 0)
+        return;
 
     // calculate verticle angle distance between each laser
-    const float dtAngle =
+    const float delta_angle =
         (params.vertical_FOV_Upper - (params.vertical_FOV_Lower)) /
-        static_cast<float>(numberOfLasers - 1);
+        static_cast<float>(number_of_lasers - 1);
 
     // store vertical angles for each laser
-    laser_angles_.Empty(numberOfLasers);
-    for (auto i = 0u; i < numberOfLasers; ++i)
+    laser_angles_.clear();
+    for (auto i = 0u; i < number_of_lasers; ++i)
     {
-        const float verticalAngle = 15 - static_cast<float>(i) * dtAngle;
-        laser_angles_.Emplace(verticalAngle);
+        const float vertical_angle = params.vertical_FOV_Upper - static_cast<float>(i) * delta_angle;
+        laser_angles_.emplace_back(vertical_angle);
     }
 }
 
 // returns a point-cloud for the tick
-msr::airlib::vector<msr::airlib::real_T> UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& pose, const float deltaTime)
+void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
+    const msr::airlib::TTimeDelta delta_time, msr::airlib::vector<msr::airlib::real_T>& point_cloud)
 {
-    points_.clear();
+    point_cloud.clear();
 
     msr::airlib::LidarSimpleParams params = getParams();
-
-    const auto numberOfLasers = params.number_of_channels;
+    const auto number_of_lasers = params.number_of_channels;
 
     // cap the points to scan via ray-tracing; this is currently needed for car/Unreal tick scenarios
     // since SensorBase mechanism uses the elapsed clock time instead of the tick delta-time.
-    constexpr float MAX_POINTS_IN_SCAN = 5e+4f;
-    uint32 totalPointsToScan = FMath::RoundHalfFromZero(params.points_per_second * deltaTime);
-    if (totalPointsToScan > MAX_POINTS_IN_SCAN)
+    constexpr float MAX_POINTS_IN_SCAN = 1e+5f;
+    uint32 total_points_to_scan = FMath::RoundHalfFromZero(params.points_per_second * delta_time);
+    if (total_points_to_scan > MAX_POINTS_IN_SCAN)
     {
-        totalPointsToScan = MAX_POINTS_IN_SCAN;
-        UAirBlueprintLib::LogMessageString("Lidar: ", "Capping number of points to scan", LogDebugLevel::Informational);
+        total_points_to_scan = MAX_POINTS_IN_SCAN;
+        UAirBlueprintLib::LogMessageString("Lidar: ", "Capping number of points to scan", LogDebugLevel::Failure);
     }
 
     // calculate number of points needed for each laser/channel
-    const uint32 pointsToScanWithOneLaser = FMath::RoundHalfFromZero(totalPointsToScan / float(numberOfLasers));
-    if (pointsToScanWithOneLaser <= 0)
+    const uint32 points_to_scan_with_one_laser = FMath::RoundHalfFromZero(total_points_to_scan / float(number_of_lasers));
+    if (points_to_scan_with_one_laser <= 0)
     {
         //UAirBlueprintLib::LogMessageString("Lidar: ", "No points requested this frame", LogDebugLevel::Failure);
-        return points_;
+        return;
     }
 
     // calculate needed angle/distance between each point
-    const float angleDistanceOfTick = params.horizontal_rotation_frequency * 360.0f * deltaTime;
-    const float angleDistanceOfLaserMeasure = angleDistanceOfTick / pointsToScanWithOneLaser;
+    const float angle_distance_of_tick = params.horizontal_rotation_frequency * 360.0f * delta_time;
+    const float angle_distance_of_laser_measure = angle_distance_of_tick / points_to_scan_with_one_laser;
 
     // shoot lasers
-    for (auto laser = 0u; laser < numberOfLasers; ++laser)
+    for (auto laser = 0u; laser < number_of_lasers; ++laser)
     {
-        for (auto i = 0u; i < pointsToScanWithOneLaser; ++i)
+        for (auto i = 0u; i < points_to_scan_with_one_laser; ++i)
         {
             Vector3r point;
-            const float angle = currentHorizontalAngle_ + angleDistanceOfLaserMeasure * i;
+            const float angle = current_horizontal_angle_ + angle_distance_of_laser_measure * i;
             // shoot laser and get the impact point, if any
-            if (ShootLaser(pose, laser, angle, params, point))
+            if (shootLaser(lidar_pose, vehicle_pose, laser, angle, params, point))
             {
-                points_.emplace_back(point.x());
-                points_.emplace_back(point.y());
-                points_.emplace_back(point.z());
+                point_cloud.emplace_back(point.x());
+                point_cloud.emplace_back(point.y());
+                point_cloud.emplace_back(point.z());
             }
         }
     }
 
-    currentHorizontalAngle_ = std::fmod(currentHorizontalAngle_ + angleDistanceOfTick, 360.0f);
+    current_horizontal_angle_ = std::fmod(current_horizontal_angle_ + angle_distance_of_tick, 360.0f);
 
-    return points_;
+    return;
 }
 
 // simulate shooting a laser via Unreal ray-tracing.
-bool UnrealLidarSensor::ShootLaser(const msr::airlib::Pose& pose, const uint32 laser, const float horizontalAngle, 
-    msr::airlib::LidarSimpleParams params, Vector3r &point)
+bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
+    const uint32 laser, const float horizontalAngle, msr::airlib::LidarSimpleParams params, Vector3r &point)
 {
-    const float verticalAngle = laser_angles_[laser];
+    const float vertical_angle = laser_angles_[laser];
 
     // start position
-    FVector start = ned_transform_->fromLocalNed(pose.position);
+    Vector3r start = lidar_pose.position + vehicle_pose.position;
 
-    // calculate rotation needed for this laser point
-    FRotator laserRot(verticalAngle /*pitch - rotation around Y axis*/,
-        horizontalAngle             /*yaw   - rotation around Z axis*/, 
-        0                           /*roll  - rotation around X axis*/);  
+    // get ray quaternion in lidar frame (angles must be in radians)
+    msr::airlib::Quaternionr ray_q_l = msr::airlib::VectorMath::toQuaternion(
+        msr::airlib::Utils::degreesToRadians(vertical_angle),   //pitch - rotation around Y axis
+        0,                                                      //roll  - rotation around X axis
+        msr::airlib::Utils::degreesToRadians(horizontalAngle)); //yaw   - rotation around Z axis
 
-    // calculate final rotation for this laser point w.r.t. lidar pose
-    // there might be a better way of achieving this via AirSim VectorMath but this implementation should work as well
-    FQuat lidarOrientation(pose.orientation.x(), pose.orientation.y(), pose.orientation.z(), pose.orientation.w());
-    FRotator lidarRot = lidarOrientation.Rotator();
-    FRotator resultRot = UKismetMathLibrary::ComposeRotators(laserRot, lidarRot);
+    // get ray quaternion in body frame
+    msr::airlib::Quaternionr ray_q_b = VectorMath::rotateQuaternion(ray_q_l, lidar_pose.orientation, true);
 
-    // calculate end position (params.range is expected to be in meters)
-    constexpr float TO_CENTIMETERS = 1e+2f;
-    FVector end = (params.range * TO_CENTIMETERS) * UKismetMathLibrary::GetForwardVector(resultRot) + start;
-
+    // get ray quaternion in world frame
+    msr::airlib::Quaternionr ray_q_w = VectorMath::rotateQuaternion(ray_q_b, vehicle_pose.orientation, true);
+    
+    // get ray vector (end position)
+    Vector3r end = VectorMath::rotateVector(VectorMath::front(), ray_q_w, true) * params.range + start ;
+   
     FHitResult hit_result = FHitResult(ForceInit);
-    bool is_hit = UAirBlueprintLib::GetObstacle(actor_, start, end, hit_result);
+    bool is_hit = UAirBlueprintLib::GetObstacle(actor_, ned_transform_->fromLocalNed(start), ned_transform_->fromLocalNed(end), hit_result);
 
     if (is_hit)
     {
-        if (false)
+        if (false && UAirBlueprintLib::IsInGameThread())
         {
-            // Debug code.
-            // don't enable this for multirotors since drawing a debug point
-            // outside of Unreal tick will cause exception
+            // Debug code for very specific cases.
+            // Mostly shouldn't be needed. Use SimModeBase::drawLidarDebugPoints()
             DrawDebugPoint(
                 actor_->GetWorld(),
                 hit_result.ImpactPoint,
                 5,                       //size
-                FColor::Green,
+                FColor::Red,
                 true,                    //persistent (never goes away)
                 0.1                      //point leaves a trail on moving object
             );

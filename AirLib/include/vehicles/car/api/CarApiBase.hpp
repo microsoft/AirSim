@@ -74,11 +74,17 @@ public:
     struct EnabledSensors {
         bool imu = false;
         bool magnetometer = false;
-        bool gps = true;
+        bool gps = false;
         bool barometer = false;
-        bool distance = false; //this causes ray casts so disabled by default
-        bool lidar = true;     //this causes ray casts so disabled by default: TODO
+        bool distance = false;  //this causes ray casts so disabled by default
+        bool lidar = false;     //this causes ray casts so disabled by default; lidar_setting
     };
+
+public:
+    CarApiBase(std::shared_ptr<msr::airlib::SensorFactory> sensor_factory, const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment)
+    {
+        initialize(sensor_factory, state, environment);
+    }
 
     //default implementation so derived class doesn't have to call on VehicleApiBase
     virtual void reset() override

@@ -32,7 +32,7 @@ public: //types
         bool gps = true;
         bool barometer = true;
         bool distance = false; //this causes ray casts so disabled by default
-        bool lidar = true;     //this causes ray casts so disabled by default: TODO
+        bool lidar = false;     //this causes ray casts so disabled by default; // lidar_setting
     };
 
     struct Params {
