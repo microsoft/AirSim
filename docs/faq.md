@@ -15,7 +15,7 @@ Yes, Unreal steals the mouse, and we don't draw one.  So to get your mouse back 
 AirSim will create empty settings file at `~/Documents/AirSim/settings.json`. You can view the available [settings options](settings.md). 
 
 #### How do I arm my drone?
-If your using simple_flight, your vehicle is already armed and ready to fly. For PX4 you can arm by holding both sticks on remote control down and to the center.
+If you're using simple_flight, your vehicle is already armed and ready to fly. For PX4 you can arm by holding both sticks on remote control down and to the center.
 
 #### Something went wrong. How do I debug?
 
@@ -46,13 +46,13 @@ Here is [multi-vehicle setup guide](multi_vehicle.md).
 It depends on how big your Unreal Environment is. The Blocks environment that comes with AirSim is very basic and works on typical laptops. The [Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) that we use ourselves for research requires GPUs with at least 4GB of RAM. The [Open World environment](https://www.unrealengine.com/marketplace/open-world-demo-collection) needs GPU with 8GB RAM. Our typical development machines have 32GB of RAM and NVIDIA TitanX and a [fast hard drive](hard_drive.md).
 
 #### How do I report issues?
-It's good idea to include your configuration like below. If you can also include logs, that could also expedite investigation.
+It's a good idea to include your configuration like below. If you can also include logs, that could also expedite the investigation.
 
 ````
 Operating System: Windows 10 64bit
 CPU: Intel Core i7
 GPU: Nvidia GTX 1080
-RAM: 32 gb
+RAM: 32 GB
 Flight Controller: Pixhawk v2
 Remote Control: Futaba
 ````
