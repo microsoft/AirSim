@@ -106,7 +106,7 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 
 ### Who is Using AirSim?
 
-We are [maintaining list](docs/who_is_using.md) of few projects, people and groups that we are aware of. If you had like to be featured in this list please [add request here](https://github.com/microsoft/airsim/issues).
+We are [maintaining a list](docs/who_is_using.md) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [add a request here](https://github.com/microsoft/airsim/issues).
 
 ## Contact
 
