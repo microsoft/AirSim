@@ -44,8 +44,13 @@ else #linux
 
     #install clang and build tools
     sudo apt-get install -y build-essential
-    wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-    sudo apt-get update
+    VERSION=$(lsb_release -rs | cut -d. -f1)
+    # Since Ubuntu 17 clang-5.0 is part of the core repository
+    # See https://packages.ubuntu.com/search?keywords=clang-5.0
+    if [ "$VERSION" -lt "17" ]; then
+        wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+        sudo apt-get update
+    fi
     sudo apt-get install -y clang-5.0 clang++-5.0
     sudo apt-get install -y unzip
 
@@ -138,11 +143,7 @@ else
 fi
 
 #build libc++
-if [ "$(uname)" == "Darwin" ]; then
-    rm -rf llvm-build
-else
-    sudo rm -rf llvm-build
-fi
+rm -rf llvm-build
 mkdir -p llvm-build
 pushd llvm-build >/dev/null
 
@@ -155,21 +156,13 @@ pushd llvm-build >/dev/null
 make cxx
 
 #install libc++ locally in output folder
-if [ "$(uname)" == "Darwin" ]; then
-    make install-libcxx install-libcxxabi 
-else
-    sudo make install-libcxx install-libcxxabi 
-fi
+make install-libcxx install-libcxxabi
 
 popd >/dev/null
 
 #install EIGEN library
 
-if [ "$(uname)" == "Darwin" ]; then
-    rm -rf ./AirLib/deps/eigen3/Eigen
-else
-    sudo rm -rf ./AirLib/deps/eigen3/Eigen
-fi
+rm -rf ./AirLib/deps/eigen3/Eigen
 echo "downloading eigen..."
 wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
 unzip 3.3.2.zip -d temp_eigen
