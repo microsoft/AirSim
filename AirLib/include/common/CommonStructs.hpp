@@ -295,5 +295,14 @@ struct RCData {
     }
 };
 
+struct LidarData {
+
+    TTimePoint time_stamp = 0;
+    vector<real_T> point_cloud;
+
+    LidarData()
+    {}
+};
+
 }} //namespace
 #endif

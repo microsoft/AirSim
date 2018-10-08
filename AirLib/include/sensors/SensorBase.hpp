@@ -25,7 +25,8 @@ public:
         Imu = 2,
         Gps = 3,
         Magnetometer = 4,
-        Distance = 5
+        Distance = 5,
+        Lidar = 6
     };
 protected:
     struct GroundTruth {

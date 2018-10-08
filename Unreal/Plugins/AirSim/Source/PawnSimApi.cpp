@@ -10,6 +10,8 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
+#include "DrawDebugHelpers.h"
+
 PawnSimApi::PawnSimApi(const Params& params)
     : params_(params), ned_transform_(params.pawn, *params.global_transform)
 {
@@ -541,4 +543,9 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
     //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
     //ss << "\n";
     //return ss.str();
+}
+
+msr::airlib::VehicleApiBase* PawnSimApi::getVehicleApiBase() const
+{
+    return nullptr;
 }
