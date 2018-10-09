@@ -69,7 +69,13 @@ public:
     //use pointer here because of derived classes for VehicleSetting
     const AirSimSettings::VehicleSetting* getVehicleSetting() const
     {
-        return AirSimSettings::singleton().getVehicleSetting(getVehicleName());
+		std::string baseVehicleName = getVehicleName();
+		size_t escape_string_position = baseVehicleName.find(AirSimSettings::kGeneratedVehicleIdSeperator);
+		if (escape_string_position > 0) {
+			// If vehicle is part of an auto-generated group of > 1, strip its ordinal to get the base name
+			baseVehicleName = baseVehicleName.substr(0, escape_string_position);
+		}
+        return AirSimSettings::singleton().getVehicleSetting(baseVehicleName);
     }
 
 };
