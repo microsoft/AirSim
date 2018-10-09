@@ -23,7 +23,8 @@ private:
 public: //types
     static constexpr int kSubwindowCount = 3; //must be >= 3 for now
     static constexpr char const * kVehicleTypePX4 = "px4multirotor";
-    static constexpr char const * kVehicleTypeSimpleFlight = "simpleflight";
+	static constexpr char const * kVehicleTypeArduCopterSolo = "arducoptersolo";
+	static constexpr char const * kVehicleTypeSimpleFlight = "simpleflight";
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
     static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
@@ -242,13 +243,9 @@ public: //types
         std::string model = "Generic";
     };
 
-    struct PX4VehicleSetting : public VehicleSetting {
-        MavLinkConnectionInfo connection_info;
-    };
-
-    struct SimpleFlightVehicleSetting : public VehicleSetting {
-        MavLinkConnectionInfo connection_info;
-    };
+	struct MavLinkVehicleSetting : public VehicleSetting {
+		MavLinkConnectionInfo connection_info;
+	};
 
     struct SegmentationSetting {
         enum class InitMethodType {
@@ -570,11 +567,11 @@ private:
         }
     }
 
-    static std::unique_ptr<VehicleSetting> createPX4VehicleSetting(const Settings& settings_json) 
+    static std::unique_ptr<VehicleSetting> createMavLinkVehicleSetting(const Settings& settings_json) 
     {
         //these settings_json are expected in same section, not in another child
-        std::unique_ptr<VehicleSetting> vehicle_setting_p = std::unique_ptr<VehicleSetting>(new PX4VehicleSetting());
-        PX4VehicleSetting* vehicle_setting = static_cast<PX4VehicleSetting*>(vehicle_setting_p.get());
+        std::unique_ptr<VehicleSetting> vehicle_setting_p = std::unique_ptr<VehicleSetting>(new MavLinkVehicleSetting());
+		MavLinkVehicleSetting* vehicle_setting = static_cast<MavLinkVehicleSetting*>(vehicle_setting_p.get());
 
         //TODO: we should be selecting remote if available else keyboard
         //currently keyboard is not supported so use rc as default
@@ -632,8 +629,8 @@ private:
         auto vehicle_type = Utils::toLower(settings_json.getString("VehicleType", ""));
 
         std::unique_ptr<VehicleSetting> vehicle_setting;
-        if (vehicle_type == kVehicleTypePX4)
-            vehicle_setting = createPX4VehicleSetting(settings_json);
+        if (vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo)
+            vehicle_setting = createMavLinkVehicleSetting(settings_json);
         //for everything else we don't need derived class yet
         else {
             vehicle_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
