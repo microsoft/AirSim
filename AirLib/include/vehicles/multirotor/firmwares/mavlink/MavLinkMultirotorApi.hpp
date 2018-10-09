@@ -1178,6 +1178,8 @@ private: //methods
 
 protected: //variables
 
+    //TODO: below was made protected from private to support Ardupilot
+    //implementation but we need to review this and avoid having protected variables
 	static const int RotorControlsCount = 8;
 
 	const SensorCollection* sensors_;

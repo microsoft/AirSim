@@ -7,7 +7,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Engine/World.h"
-#include "vehicles/multirotor/MultiRotorParamsFactory.hpp"
 
 #include <memory>
 #include "AirBlueprintLib.h"
@@ -437,8 +436,6 @@ void ASimModeBase::setupVehiclesAndCamera()
     FTransform camera_transform(toFRotator(camera_director_setting.rotation, FRotator::ZeroRotator), 
         camera_director_position_uu);
     initializeCameraDirector(camera_transform, camera_director_setting.follow_distance);
-
-	MultiRotorParamsFactory::reset();
 
     //find all vehicle pawns
     {

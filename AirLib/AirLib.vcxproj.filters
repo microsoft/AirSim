@@ -485,11 +485,5 @@
     <ClCompile Include="src\vehicles\multirotor\api\MultirotorApiBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vehicles\multirotor\MultiRotorParamsFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vehicles\MultiRotorParamsFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

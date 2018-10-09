@@ -172,7 +172,6 @@
   <ItemGroup>
     <ClCompile Include="src\api\RpcLibClientBase.cpp" />
     <ClCompile Include="src\api\RpcLibServerBase.cpp" />
-    <ClCompile Include="src\vehicles\multirotor\MultiRotorParamsFactory.cpp" />
     <ClCompile Include="src\vehicles\multirotor\api\MultirotorApiBase.cpp" />
     <ClCompile Include="src\safety\ObstacleMap.cpp" />
     <ClCompile Include="src\safety\SafetyEval.cpp" />

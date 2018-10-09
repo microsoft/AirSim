@@ -12,10 +12,10 @@ namespace msr { namespace airlib {
 		class ArduCopterSoloParams : public MultiRotorParams {
 
 		public:
-			ArduCopterSoloParams(const AirSimSettings::MavLinkVehicleSetting& vehicle_settings, std::shared_ptr<const SensorFactory> sensor_factory, int instance_id)
+			ArduCopterSoloParams(const AirSimSettings::MavLinkVehicleSetting& vehicle_settings, std::shared_ptr<const SensorFactory> sensor_factory)
 				: sensor_factory_(sensor_factory)
 			{
-				connection_info_ = getConnectionInfo(vehicle_settings, instance_id);
+				connection_info_ = getConnectionInfo(vehicle_settings);
 			}
 
 			virtual ~ArduCopterSoloParams() = default;
@@ -74,13 +74,9 @@ namespace msr { namespace airlib {
 				computeInertiaMatrix(params.inertia, params.body_box, params.rotor_poses, box_mass, motor_assembly_weight);
 			}
 
-			static const AirSimSettings::MavLinkConnectionInfo getConnectionInfo(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting, int instance_id)
+			static const AirSimSettings::MavLinkConnectionInfo getConnectionInfo(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting)
 			{
 				AirSimSettings::MavLinkConnectionInfo result = vehicle_setting.connection_info;
-
-				result.sitl_ip_port += 10 * instance_id;
-				result.ip_port += 10 * instance_id;
-
 				return result;
 			}
 

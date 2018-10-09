@@ -100,11 +100,10 @@ private:
         body.kinematicsUpdated();
 
 
-		////// (FIXME this is from PhysicsBody, where it's commented out - it appears that we need it here to ensure that GPS sensing functions properly)
 		//TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
-		body.getEnvironment().setPosition(next.pose.position);
-		body.getEnvironment().update();
-		////// (End FIXME)
+        //with below commented out - Arducopter GPS may not work.
+		//body.getEnvironment().setPosition(next.pose.position);
+		//body.getEnvironment().update();
 		
 	}
 
