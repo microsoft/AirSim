@@ -76,6 +76,8 @@
     <ClCompile Include="src\impl\windows\WindowsFindSerialPorts.cpp">
       <Filter>src\impl\windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\impl\AdHocConnectionImpl.cpp" />
+    <ClCompile Include="src\AdHocConnection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -213,6 +215,8 @@
     <ClInclude Include="src\impl\MavLinkFtpClientImpl.hpp">
       <Filter>src\impl</Filter>
     </ClInclude>
+    <ClInclude Include="include\AdHocConnection.hpp" />
+    <ClInclude Include="src\impl\AdHocConnectionImpl.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mavlink">

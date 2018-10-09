@@ -4,35 +4,26 @@
 #ifndef msr_airlib_vehicles_MultiRotorParamsFactory_hpp
 #define msr_airlib_vehicles_MultiRotorParamsFactory_hpp
 
-#include "vehicles/multirotor/firmwares/mavlink/MavLinkMultirotorApi.hpp"
-#include "vehicles/multirotor/firmwares/mavlink/Px4MultiRotorParams.hpp"
-#include "vehicles/multirotor/firmwares/simple_flight/SimpleFlightQuadXParams.hpp"
+#include "vehicles/multirotor/MultiRotorParams.hpp"
+#include "common/AirSimSettings.hpp"
+#include "sensors/SensorFactory.hpp"
 
 
 namespace msr { namespace airlib {
 
 class MultiRotorParamsFactory {
 public:
-    static std::unique_ptr<MultiRotorParams> createConfig(const AirSimSettings::VehicleSetting* vehicle_setting, 
-        std::shared_ptr<const SensorFactory> sensor_factory)
-    {
-        std::unique_ptr<MultiRotorParams> config;
 
-        if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypePX4) {
-            config.reset(new Px4MultiRotorParams(* static_cast<const AirSimSettings::PX4VehicleSetting*>(vehicle_setting),
-                sensor_factory));
-        } else if (vehicle_setting->vehicle_type == "" || //default config
-            vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) {
-            config.reset(new SimpleFlightQuadXParams(vehicle_setting, sensor_factory));
-        } else
-            throw std::runtime_error(Utils::stringf(
-                "Cannot create vehicle config because vehicle name '%s' is not recognized", 
-                vehicle_setting->vehicle_name.c_str()));
+	static void reset();
 
-        config->initialize();
+	static std::unique_ptr<MultiRotorParams> createConfig(const AirSimSettings::VehicleSetting* vehicle_setting,
+		std::shared_ptr<const SensorFactory> sensor_factory);
 
-        return config;
-    }
+private:
+
+	// Simple zero-based ID for ArduCopterSolo vehicles
+	static int next_solo_id_;
+
 };
 
 }} //namespace
