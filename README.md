@@ -1,6 +1,6 @@
 # Welcome to AirSim
 
-AirSim is a simulator for drones, cars and more built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped in to any Unreal environment you want.
+AirSim is a simulator for drones, cars and more, built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment you want.
 
 Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
@@ -18,7 +18,7 @@ Cars in AirSim
 ## What's New
 
 * AirSim is now full featured for [multiple vehicles](docs/multi_vehicle.md)!
-* AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
+* AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see the [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
 * We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
 
 [List of newly added features](docs/whats_new.md)
@@ -35,7 +35,7 @@ Cars in AirSim
 ## How to Use It
 
 ### Choosing the Mode: Car, Multirotor or ComputerVision
-By default AirSim will prompt you for choosing Car or Multirotor mode. You can use [SimMode setting](docs/settings.md#simmode) to specify the default vehicle or the new [ComputerVision mode](docs/image_apis.md#computer-vision-mode-1).
+By default AirSim will prompt you to choose Car or Multirotor mode. You can use [SimMode setting](docs/settings.md#simmode) to specify the default vehicle or the new [ComputerVision mode](docs/image_apis.md#computer-vision-mode-1).
 
 ### Manual drive
 
@@ -50,15 +50,15 @@ If you have remote control (RC) as shown below, you can manually control the dro
 
 ### Programmatic control
 
-AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through RPC and accessible via variety of languages including C++, Python, C# and Java.
+AirSim exposes APIs so you can interact with the vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through the RPC, and are accessible via a variety of languages, including C++, Python, C# and Java.
 
-These APIs are also available as a part of a separate independent cross-platform library so you can deploy them on an companion computer on your vehicle. This way you can write and test your code in simulator and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.
+These APIs are also available as part of a separate, independent cross-platform library, so you can deploy them on a companion computer on your vehicle. This way you can write and test your code in the simulator, and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.
 
 [More details](docs/apis.md)
 
 ### Gathering training data
 
-There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button on the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's desire.
+There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button in the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's content.
 
 ![record screenshot](docs/images/record_data.png)
 
@@ -66,7 +66,7 @@ A better way to generate training data exactly the way you want is by accessing 
 
 ### Computer Vision mode
 
-Yet another way to use AirSim is so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use keyboard to move around the scene or use APIs to position available cameras in any arbitrary pose and collect images such as depth, disparity, surface normals or object segmentation. 
+Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation. 
 
 [More details](docs/image_apis.md)
 
@@ -118,4 +118,4 @@ If you run into problems, check the [FAQ](docs/faq.md) and feel free to post iss
 
 ## License
 
-This project is released under MIT License. Please review [License file](LICENSE) for more details.
+This project is released under the MIT License. Please review the [License file](LICENSE) for more details.
