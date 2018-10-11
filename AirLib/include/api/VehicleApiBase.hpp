@@ -12,7 +12,7 @@
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "sensors/SensorCollection.hpp"
-#include "sensors/Lidar/LidarBase.hpp"
+#include "sensors/lidar/LidarBase.hpp"
 #include <exception>
 #include <string>
 
