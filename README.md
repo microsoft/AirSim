@@ -1,30 +1,53 @@
-# Welcome to AirSim
-
-AirSim is a simulator for drones, cars and more, built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment you want.
-
-Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
-
-**Check out the quick 1.5 minute demo**
-
-Drones in AirSim
-
-[![AirSim Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
-
-Cars in AirSim
-
-[![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
 
-## What's New
+# एयरसिम में आपका स्वागत है
 
-* AirSim is now full featured for [multiple vehicles](docs/multi_vehicle.md)!
-* AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see the [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
-* We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
+एयरसिम अवास्तविक इंजन पर बने ड्रोन, कारों और अधिक के लिए एक सिम्युलेटर है। यह ओपन-सोर्स, क्रॉस प्लेटफार्म है और भौतिक रूप से और दृष्टिहीन यथार्थवादी सिमुलेशन के लिए पीएक्स 4 जैसे लोकप्रिय उड़ान नियंत्रकों के साथ हार्डवेयर-इन-लूप का समर्थन करता है। इसे एक अवास्तविक प्लगइन के रूप में विकसित किया गया है जिसे आप चाहते हैं कि किसी भी अवास्तविक वातावरण में गिरा दिया जा सके।
 
-[List of newly added features](docs/whats_new.md)
+हमारा लक्ष्य एआई रिसर्च के लिए गहन शिक्षा, कंप्यूटर दृष्टि और स्वायत्त वाहनों के लिए मजबूती सीखने वाले एल्गोरिदम के साथ प्रयोग करने के लिए एक मंच के रूप में एयरसिम विकसित करना है। इस उद्देश्य के लिए, एयरसिम एक प्लेटफ़ॉर्म स्वतंत्र तरीके से डेटा पुनर्प्राप्त करने और वाहनों को नियंत्रित करने के लिए एपीआई का खुलासा करता है।
 
-## How to Get It
+** त्वरित 1.5 मिनट डेमो देखें **
 
+एयरसिम में ड्रोन
+
+[! [एयरसिम ड्रोन डेमो वीडियो] (दस्तावेज़ / छवियों / demo_video.png)] (https://youtu.be/-WfTr1-OBGQ)
+
+एयरसिम में कारें
+
+[! [एयरसिम कार डेमो वीडियो] (दस्तावेज़ / छवियों / car_demo_video.png)] (https://youtu.be/gnz1X3UNM5Y)
+
+
+## नया क्या है
+
+* एयरसिम अब [एकाधिक वाहन] (दस्तावेज़ / multi_vehicle.md) के लिए पूर्ण रूप से प्रदर्शित किया गया है!
+* एयरसिम 1.2 जारी किया गया है! ** इस संस्करण में एपीआई और सेटिंग्स.जेसन में परिवर्तन तोड़ रहे हैं। ** कृपया [एपीआई अपग्रेड] (दस्तावेज़ / upgrade_apis.md) और [सेटिंग्स अपग्रेड] (दस्तावेज़ / upgrade_settings.md) दस्तावेज़ देखें।
+* हमने अवास्तविक इंजन 4.18 और विजुअल स्टूडियो 2017 में अपग्रेड किया है (देखें [अपग्रेड निर्देश] (दस्तावेज़ / unreal_upgrade.md))
+
+[नई गयी सुविधाओं की सूची] (दस्तावेज़ / whats_new.md)
+
+## इसे कैसे प्राप्त करें
+
+### विंडोज
+* [बाइनरी डाउनलोड करें] (दस्तावेज़ / use_precompiled.md)
+* [इसे बनाएं] (दस्तावेज़ / build_windows.md)
+
+### लिनक्स
+* [इसे बनाएं] (दस्तावेज़ / build_linux.md)
+
+## इसे कैसे उपयोग करे
+
+### मोड का चयन: कार, मल्टीरोटर या कंप्यूटर विजन
+डिफ़ॉल्ट रूप से एयरसिम आपको कार या मल्टीरोटर मोड चुनने के लिए प्रेरित करेगा। डिफ़ॉल्ट वाहन या नया [कंप्यूटरविजन मोड] (दस्तावेज़ / image_apis.md # कंप्यूटर-दृष्टि-मोड -1) निर्दिष्ट करने के लिए आप [सिममोड सेटिंग] (दस्तावेज़ / सेटिंग्स.एमडी # सिमोड) का उपयोग कर सकते हैं।
+
+### मैनुअल ड्राइव
+
+यदि आपके पास नीचे दिखाए गए रिमोट कंट्रोल (आरसी) हैं, तो आप सिम्युलेटर में ड्रोन को मैन्युअल रूप से नियंत्रित कर सकते हैं। कारों के लिए, आप मैन्युअल रूप से ड्राइव करने के लिए तीर कुंजियों का उपयोग कर सकते हैं।
+
+[अधिक जानकारी] (दस्तावेज़ / remote_control.md)
+
+! [रिकॉर्ड स्क्रीनशॉट] (दस्तावेज़ / छवियों / AirSimDroneManual.gif)
+
+! [रिकॉर्ड स्क्रीनशॉट] (दस्तावेज़ / छवियों / AirSimCarManual.gif)
 ### Windows
 * [Download binaries](docs/use_precompiled.md)
 * [Build it](docs/build_windows.md)
@@ -43,79 +66,96 @@ If you have remote control (RC) as shown below, you can manually control the dro
 
 [More details](docs/remote_control.md)
 
-![record screenshot](docs/images/AirSimDroneManual.gif)
+### विंडोज
+* [बाइनरी डाउनलोड करें] (दस्तावेज़ / use_precompiled.md)
+* [इसे बनाएं] (दस्तावेज़ / build_windows.md)
 
-![record screenshot](docs/images/AirSimCarManual.gif)
+### लिनक्स
+* [इसे बनाएं] (दस्तावेज़ / build_linux.md)
+
+## इसे कैसे उपयोग करे
+
+### मोड का चयन: कार, मल्टीरोटर या कंप्यूटर विजन
+डिफ़ॉल्ट रूप से एयरसिम आपको कार या मल्टीरोटर मोड चुनने के लिए प्रेरित करेगा। डिफ़ॉल्ट वाहन या नया [कंप्यूटरविजन मोड] (दस्तावेज़ / image_apis.md # कंप्यूटर-दृष्टि-मोड -1) निर्दिष्ट करने के लिए आप [सिममोड सेटिंग] (दस्तावेज़ / सेटिंग्स.एमडी # सिमोड) का उपयोग कर सकते हैं।
+
+### मैनुअल ड्राइव
+
+यदि आपके पास नीचे दिखाए गए रिमोट कंट्रोल (आरसी) हैं, तो आप सिम्युलेटर में ड्रोन को मैन्युअल रूप से नियंत्रित कर सकते हैं। कारों के लिए, आप मैन्युअल रूप से ड्राइव करने के लिए तीर कुंजियों का उपयोग कर सकते हैं।
+
+[अधिक जानकारी] (दस्तावेज़ / remote_control.md)
+
+! [रिकॉर्ड स्क्रीनशॉट] (दस्तावेज़ / छवियों / AirSimDroneManual.gif)
+
+! [रिकॉर्ड स्क्रीनशॉट] (दस्तावेज़ / छवियों / AirSimCarManual.gif)
 
 
-### Programmatic control
+### प्रोग्रामेटिक नियंत्रण
 
-AirSim exposes APIs so you can interact with the vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through the RPC, and are accessible via a variety of languages, including C++, Python, C# and Java.
+एयरसिम एपीआई का खुलासा करता है ताकि आप सिमुलेशन में प्रोग्राम के साथ वाहन से बातचीत कर सकें। आप इन एपीआई का उपयोग छवियों को पुनर्प्राप्त करने, राज्य प्राप्त करने, वाहन को नियंत्रित करने आदि के लिए कर सकते हैं। एपीआई आरपीसी के माध्यम से उजागर होते हैं, और सी ++, पायथन, सी # और जावा सहित विभिन्न भाषाओं के माध्यम से सुलभ होते हैं।
 
-These APIs are also available as part of a separate, independent cross-platform library, so you can deploy them on a companion computer on your vehicle. This way you can write and test your code in the simulator, and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.
+ये एपीआई एक अलग, स्वतंत्र क्रॉस-प्लेटफार्म लाइब्रेरी के हिस्से के रूप में भी उपलब्ध हैं, ताकि आप उन्हें अपने वाहन पर एक साथी कंप्यूटर पर तैनात कर सकें। इस तरह आप सिम्युलेटर में अपना कोड लिख और परीक्षण कर सकते हैं, और बाद में इसे वास्तविक वाहनों पर निष्पादित कर सकते हैं। स्थानांतरण और संबंधित शोध स्थानांतरण हमारे फोकस क्षेत्रों में से एक है।
 
-[More details](docs/apis.md)
+[अधिक जानकारी] (दस्तावेज़ / apis.md)
 
-### Gathering training data
+### प्रशिक्षण डेटा इकट्ठा करना
 
-There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button in the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's content.
+गहरी शिक्षा के लिए एयरसिम से प्रशिक्षण डेटा उत्पन्न करने के दो तरीके हैं। सबसे आसान तरीका निचले दाएं कोने में रिकॉर्ड बटन दबाएं। यह प्रत्येक फ्रेम के लिए मुद्रा और छवियों को लिखना शुरू कर देगा। डेटा लॉगिंग कोड बहुत आसान है और आप इसे अपने दिल की सामग्री में संशोधित कर सकते हैं।
 
-![record screenshot](docs/images/record_data.png)
+! [रिकॉर्ड स्क्रीनशॉट] (दस्तावेज़ / छवियों / record_data.png)
 
-A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data. 
+एपीआई एक्सेस करके जिस तरह से आप चाहते हैं प्रशिक्षण डेटा उत्पन्न करने का एक बेहतर तरीका है। यह आपको डेटा को लॉग इन करना चाहते हैं, कैसे, कहां, कब और कब पूर्ण नियंत्रण में रहने की अनुमति देता है।
 
-### Computer Vision mode
+### कंप्यूटर विजन मोड
 
-Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation. 
+फिर भी एयरसिम का उपयोग करने का एक और तरीका तथाकथित "कंप्यूटर विजन" मोड है। इस मोड में, आपके पास वाहन या भौतिकी नहीं है। आप दृश्य के चारों ओर जाने के लिए कीबोर्ड का उपयोग कर सकते हैं, या किसी भी मनमानी मुद्रा में उपलब्ध कैमरे को स्थिति देने के लिए एपीआई का उपयोग कर सकते हैं, और गहराई, असमानता, सतह मानदंड या ऑब्जेक्ट सेगमेंटेशन जैसी छवियां एकत्र कर सकते हैं।
 
-[More details](docs/image_apis.md)
+[अधिक जानकारी] (दस्तावेज़ / image_apis.md)
+## ट्यूटोरियल
 
-## Tutorials
+- [वीडियो - पिक्शॉक ट्यूटोरियल के साथ एयरसिम सेट करना] (https://youtu.be/1oY8Qu5maQQ) क्रिस लवेट द्वारा
+- [वीडियो - पिक्शॉक ट्यूटोरियल के साथ एयरसिम का उपयोग] (https://youtu.be/HNWdYrtw3f0) क्रिस लवेट द्वारा
+- [वीडियो - एयर पियाविस द्वारा ऑफ-द-सेल्फ वातावरण का उपयोग करना] (https://www.youtube.com/watch?v=y09VbdQWvQY) जिम पियाविस द्वारा
+- [आशीष कपूर द्वारा एयरसिम के साथ सुदृढ़ीकरण सीखना] (दस्तावेज़ / reinforcement_learning.md)
+- [स्वायत्त ड्राइविंग कुकबुक] (https://aka.ms/AutonomousDrivingCookbook) माइक्रोसॉफ्ट दीप लर्निंग और रोबोटिक्स गैरेज अध्याय द्वारा
+- [सरल टक्कर से बचने के लिए टेंसरफ्लो का उपयोग करना] (साइमन लेवी और डब्लूएलयू टीम द्वारा https://github.com/simondlevy/AirSimTensorFlow)
 
-- [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) by Chris Lovett
-- [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0) by Chris Lovett
-- [Video - Using off-the-self environments with AirSim](https://www.youtube.com/watch?v=y09VbdQWvQY) by Jim Piavis
-- [Reinforcement Learning with AirSim](docs/reinforcement_learning.md) by Ashish Kapoor
-- [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
-- [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
+## भाग लेना
 
-## Participate
+### पेपर
 
-### Paper
-
-More technical details are available in [AirSim paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065). Please cite this as:
-```
-@inproceedings{airsim2017fsr,
-  author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
-  title = {AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles},
-  year = {2017},
-  booktitle = {Field and Service Robotics},
-  eprint = {arXiv:1705.05065},
+[एयरसिम पेपर (एफएसआर 2017 सम्मेलन)] में अधिक तकनीकी विवरण उपलब्ध हैं (https://arxiv.org/abs/1705.05065)। कृपया इसे इस प्रकार उद्धृत करें:
+`` `
+@inproceedings {airsim2017fsr,
+  लेखक = {शीतल शाह और देबदेप्ता डे और क्रिस लवेट और आशीष कपूर},
+  शीर्षक = {एयरसिम: स्वायत्त वाहनों के लिए उच्च-निष्ठा दृश्य और शारीरिक सिमुलेशन},
+  वर्ष = {2017},
+  booktitle = {फील्ड और सेवा रोबोटिक्स},
+  eprint = {arXiv: 1705.05065},
   url = {https://arxiv.org/abs/1705.05065}
 }
-```
+`` `
 
-### Contribute
+### योगदान
 
-Please take a look at [open issues](https://github.com/microsoft/airsim/issues) if you are looking for areas to contribute to.
+यदि आप योगदान करने के लिए क्षेत्रों की तलाश में हैं तो कृपया [खुले मुद्दे] (https://github.com/microsoft/airsim/issues) पर एक नज़र डालें।
 
-* [More on AirSim design](docs/design.md)
-* [More on code structure](docs/code_structure.md)
-* [Contribution Guidelines](docs/contributing.md)
+* [एयरसिम डिजाइन पर अधिक] (दस्तावेज़ / design.md)
+* [कोड संरचना पर अधिक] (दस्तावेज़ / code_structure.md)
+* [योगदान दिशानिर्देश] (दस्तावेज़ / योगदान.एमडी)
 
 
-### Who is Using AirSim?
+### एयरसिम का उपयोग कौन कर रहा है?
 
-We are [maintaining a list](docs/who_is_using.md) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [add a request here](https://github.com/microsoft/airsim/issues).
+हम कुछ परियोजनाओं, लोगों और समूहों के बारे में जानते हैं जिन्हें हम जानते हैं [सूची बना रहे हैं] (दस्तावेज़ / who_is_using.md)। यदि आप इस सूची में शामिल होना चाहते हैं तो कृपया [यहां एक अनुरोध जोड़ें] (https://github.com/microsoft/airsim/issues)।
 
-## Contact
+## संपर्क करें
 
-Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
+अद्यतित रहने या किसी भी प्रश्न पूछने के लिए [फेसबुक पर एयरसिम समूह] में शामिल हों (https://www.facebook.com/groups/1225832467530667/)।
 
-## FAQ
+## सामान्य प्रश्न
 
-If you run into problems, check the [FAQ](docs/faq.md) and feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
+यदि आप समस्याओं में भाग लेते हैं, तो [एफएक्यू] (दस्तावेज़ / faq.md) देखें और [एयरसिम जिथब] (https://github.com/Microsoft/AirSim/issues) पर समस्याएं पोस्ट करने के लिए स्वतंत्र महसूस करें।
 
-## License
+## लाइसेंस
 
-This project is released under the MIT License. Please review the [License file](LICENSE) for more details.
+यह परियोजना एमआईटी लाइसेंस के तहत जारी की गई है। अधिक जानकारी के लिए कृपया [लाइसेंस फ़ाइल] (लाइसेंस) की समीक्षा करें।
