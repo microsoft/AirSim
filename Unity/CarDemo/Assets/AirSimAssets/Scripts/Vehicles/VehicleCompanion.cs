@@ -109,7 +109,8 @@ namespace AirSimUnity {
                 Marshal.GetFunctionPointerForDelegate(new Func<string, int>(GetSegmentationObjectId)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, string, string, int, bool>(PrintLogMessage)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, UnityTransform>(GetTransformFromUnity)),
-                Marshal.GetFunctionPointerForDelegate(new Func<string, bool>(Reset))
+                Marshal.GetFunctionPointerForDelegate(new Func<string, bool>(Reset)),
+                Marshal.GetFunctionPointerForDelegate(new Func<string, AirSimVector>(GetVelocity))
             );
         }
 
@@ -152,6 +153,12 @@ namespace AirSimUnity {
             var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
             vehicle.VehicleInterface.ResetVehicle();
             return true;
+        }
+
+        private static AirSimVector GetVelocity(string vehicleName)
+        {
+            var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
+            return vehicle.VehicleInterface.GetVelocity();
         }
 
         private static bool SetRotorSpeed(int rotorIndex, RotorInfo rotorInfo, string vehicleName) {

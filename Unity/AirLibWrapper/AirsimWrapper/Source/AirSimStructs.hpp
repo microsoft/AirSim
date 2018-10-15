@@ -164,6 +164,8 @@ namespace AirSimUnity
 		int gear = 0;
 		float speed = 0.0f;
 		__int64 time_stamp = 0;
+		float engineMaxRotationSpeed = 0;
+		float engineRotationSpeed = 0;
 		AirSimPose pose;
 	};
 

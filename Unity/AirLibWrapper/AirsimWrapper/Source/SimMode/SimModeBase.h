@@ -23,11 +23,11 @@ protected:
 private:
 	const msr::airlib::Vector3r GetVehiclePosition();
 	UnityTransform GetVehicleStartTransform();
+	void showClockStats();
 
 protected:
 	virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
 	virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const;
-	virtual std::string getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const;
 	virtual std::unique_ptr<PawnSimApi> createVehicleSimApi(const PawnSimApi::Params& pawn_sim_api_params) const;
 	virtual msr::airlib::VehicleApiBase* getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params, const PawnSimApi* sim_api) const;
 	virtual UnityPawn* GetVehiclePawn();

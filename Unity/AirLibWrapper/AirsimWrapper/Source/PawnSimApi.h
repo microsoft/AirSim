@@ -52,9 +52,9 @@ private:
 	bool canTeleportWhileMove() const;
 	void allowPassthroughToggleInput();
 	void setStartPosition(const AirSimVector& position, const AirSimQuaternion& rotator);
+	void updateKinematics(float dt);
 
 protected:
-	virtual void pawnTick(float dt);
 	const msr::airlib::Kinematics::State* getPawnKinematics() const;
 	AirSimPose GetInitialPose();
 
@@ -84,6 +84,7 @@ public:
 	virtual std::string getRecordFileLine(bool is_header_line) const override;
 	void OnCollision(msr::airlib::CollisionInfo collisionInfo);
 	const NedTransform& getNedTransform() const;
+	virtual void pawnTick(float dt);
 
 private:
 	Params params_;

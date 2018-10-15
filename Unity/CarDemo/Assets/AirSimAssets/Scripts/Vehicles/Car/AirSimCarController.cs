@@ -43,6 +43,7 @@ namespace AirSimUnity {
         private Rigidbody m_Rigidbody;
         private const float k_ReversingThreshold = 0.01f;
         private SpeedType m_SpeedType = SpeedType.KPH;
+        public const float m_MaxRevs = 20000f;
 
         public bool Skidding { get; private set; }
         public float BrakeInput { get; private set; }
@@ -109,6 +110,8 @@ namespace AirSimUnity {
         public void UpdateCarData(ref CarStructs.CarData data) {
             data.speed = (int)CurrentSpeed;
             data.gear = m_GearNum;
+            data.engineMaxRotationSpeed = m_MaxRevs;
+            data.engineRotationSpeed = Revs;
         }
 
         private void GearChanging() {

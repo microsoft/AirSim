@@ -22,7 +22,8 @@ void CarPawnSimApi::createVehicleApi(CarPawn* pawn, const msr::airlib::GeoPoint&
 std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
 {
 	std::string common_line = PawnSimApi::getRecordFileLine(is_header_line);
-	if (is_header_line) {
+	if (is_header_line) 
+	{
 		return common_line +
 			"Throttle\tSteering\tBrake\tGear\tHandbrake\tRPM\tSpeed\t";
 	}
@@ -150,6 +151,8 @@ void CarPawnSimApi::reset()
 {
 	setPose(UnityUtilities::Convert_to_Pose(GetInitialPose()), false);
 	Reset(getVehicleName().c_str());
+	
+	PawnSimApi::reset();
 	vehicle_api_->reset();
 }
 

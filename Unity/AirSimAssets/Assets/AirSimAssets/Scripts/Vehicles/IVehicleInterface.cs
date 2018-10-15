@@ -38,5 +38,7 @@ namespace AirSimUnity {
         bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity);
 
         void ResetVehicle();
+
+        AirSimVector GetVelocity();
     }
 }

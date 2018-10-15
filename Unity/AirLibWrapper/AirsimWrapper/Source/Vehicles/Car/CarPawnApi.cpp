@@ -15,6 +15,7 @@ bool CarPawnApi::armDisarm(bool arm)
 
 void CarPawnApi::setCarControls(const CarApiBase::CarControls& controls)
 {
+	last_controls_ = controls;
 	SetCarApiControls(controls, car_name_.c_str());
 }
 
@@ -30,8 +31,8 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 	CarApiBase::CarState state(
 		carState.speed / 100,
 		carState.gear,
-		0.0f, //GetEngineRotationSpeed(),
-		0.0f, //GetEngineMaxRotationSpeed(),
+		carState.engineRotationSpeed,
+		carState.engineMaxRotationSpeed,
 		last_controls_.handbrake,
 		*pawn_kinematics_,
 		msr::airlib::ClockFactory::get()->nowNanos()
@@ -42,6 +43,8 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 
 void CarPawnApi::reset()
 {
+	msr::airlib::CarApiBase::reset();
+
 	last_controls_ = CarControls();
 	setCarControls(CarControls());
 }

@@ -134,6 +134,12 @@ namespace AirSimUnity {
             resetVehicle = true;
         }
 
+        public AirSimVector GetVelocity()
+        {
+            var rigidBody = GetComponent<Rigidbody>();
+            return new AirSimVector(rigidBody.velocity.x, rigidBody.velocity.y, rigidBody.velocity.z);
+        }
+
         public bool SetPose(AirSimPose pose, bool ignore_collision) {
             poseFromAirLib = pose;
             return true;

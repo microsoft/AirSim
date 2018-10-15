@@ -47,6 +47,7 @@ void PawnSimApi::pawnTick(float dt)
 	updateRenderedState(dt);
 	updateRendering(dt);
 }
+
 void PawnSimApi::OnCollision(msr::airlib::CollisionInfo collisionInfo)
 {
 	state_.collision_info.has_collided = collisionInfo.has_collided;
@@ -139,6 +140,7 @@ void PawnSimApi::reset()
 {
 	VehicleSimApiBase::reset();
 	state_ = initial_state_;
+	rc_data_ = msr::airlib::RCData();
 	environment_->reset();
 }
 
@@ -223,7 +225,7 @@ const msr::airlib::Kinematics::State* PawnSimApi::getPawnKinematics() const
 
 void PawnSimApi::updateRenderedState(float dt)
 {
-	unused(dt);
+	updateKinematics(dt);
 }
 
 void PawnSimApi::updateRendering(float dt)
@@ -236,6 +238,7 @@ const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() con
 {
 	return &kinematics_;
 }
+
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
 {
 	return environment_.get();
@@ -243,7 +246,8 @@ const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
 
 std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
 {
-	if (is_header_line) {
+	if (is_header_line) 
+	{
 		return "TimeStamp\tPOS_X\tPOS_Y\tPOS_Z\tQ_W\tQ_X\tQ_Y\tQ_Z\t";
 	}
 
@@ -265,4 +269,18 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
 		;
 
 	return line;
+}
+
+void PawnSimApi::updateKinematics(float dt)
+{
+	const auto last_kinematics = kinematics_;
+
+	kinematics_.pose = getPose();
+
+	kinematics_.twist.linear = UnityUtilities::Convert_to_Vector3r(GetVelocity(getVehicleName().c_str()));
+	kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
+		kinematics_.pose.orientation, last_kinematics.pose.orientation, dt);
+
+	kinematics_.accelerations.linear = (kinematics_.twist.linear - last_kinematics.twist.linear) / dt;
+	kinematics_.accelerations.angular = (kinematics_.twist.angular - last_kinematics.twist.angular) / dt;
 }

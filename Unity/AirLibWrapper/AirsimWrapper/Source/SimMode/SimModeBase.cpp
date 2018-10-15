@@ -24,6 +24,20 @@ void SimModeBase::BeginPlay()
 
 void SimModeBase::Tick(float DeltaSeconds)
 {
+	getVehicleSimApi(vehicle_name_)->pawnTick(DeltaSeconds);
+	showClockStats();
+	updateDebugReport(debug_reporter_);
+}
+
+void SimModeBase::showClockStats()
+{
+	float clock_speed = getSettings().clock_speed;
+	if (clock_speed != 1)
+	{
+		PrintLogMessage("ClockSpeed config, actual: ", 
+			Utils::stringf("%f, %f", clock_speed, ClockFactory::get()->getTrueScaleWrtWallClock()).c_str(),
+			vehicle_name_.c_str(), ErrorLogSeverity::Information);
+	}
 }
 
 const NedTransform& SimModeBase::getGlobalNedTransform()
@@ -202,18 +216,13 @@ bool SimModeBase::isVehicleTypeSupported(const std::string& vehicle_type) const
 	return false;
 }
 
-std::string SimModeBase::getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const
-{
-	//derived class should override this method to retrieve types of pawns they support
-	return "";
-}
-
 std::unique_ptr<PawnSimApi> SimModeBase::createVehicleSimApi(
 	const PawnSimApi::Params& pawn_sim_api_params) const
 {
 	unused(pawn_sim_api_params);
 	return std::unique_ptr<PawnSimApi>();
 }
+
 msr::airlib::VehicleApiBase* SimModeBase::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
 	const PawnSimApi* sim_api) const
 {

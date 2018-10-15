@@ -25,10 +25,6 @@ public:
 public:
 	NedTransform(const AirSimUnity::UnityTransform& global_transform);
 	NedTransform(const NedTransform& global_transform);
-	Quaternionr toNed(const AirSimUnity::AirSimQuaternion& q) const;
-	AirSimUnity::AirSimQuaternion fromNed(const Quaternionr& q) const;
-	AirSimUnity::AirSimVector getLocalOffset() const;
-	AirSimUnity::UnityTransform getGlobalTransform() const;
 
 private:
 	AirSimUnity::UnityTransform global_transform_;

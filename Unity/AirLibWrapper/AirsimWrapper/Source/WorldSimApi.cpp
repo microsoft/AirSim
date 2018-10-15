@@ -57,6 +57,10 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 	return SetPose(airSimPose, false, object_name.c_str());
 }
 
+
+#pragma region Character
+// Not implemented, just added for compilation.
+
 void WorldSimApi::charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name)
 {
 }
@@ -118,10 +122,14 @@ void WorldSimApi::charSetFacePreset(const std::string& preset_name, float value,
 void WorldSimApi::charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name)
 {
 }
+
 void WorldSimApi::charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name)
 {
 }
+
 std::unordered_map<std::string, msr::airlib::Pose> WorldSimApi::charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const
 {
 	return std::unordered_map<std::string, Pose>();
 }
+
+#pragma endregion

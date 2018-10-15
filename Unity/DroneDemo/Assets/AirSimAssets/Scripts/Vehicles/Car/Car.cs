@@ -93,6 +93,8 @@ namespace AirSimUnity
             carState.gear = carData.gear;
             carState.pose = currentPose;
             carState.timeStamp = DataManager.GetCurrentTimeInMilli();
+            carState.engineMaxRotationSpeed = carData.engineMaxRotationSpeed;
+            carState.engineRotationSpeed = carData.engineRotationSpeed;
             return carState;
         }
 

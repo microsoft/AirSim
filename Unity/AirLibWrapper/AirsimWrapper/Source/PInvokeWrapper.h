@@ -25,6 +25,7 @@ extern int(*GetSegmentationObjectId)(const char* meshName);
 extern bool(*PrintLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity);
 extern UnityTransform(*GetTransformFromUnity)(const char* vehicleName);
 extern bool(*Reset)(const char* vehicleName);
+extern AirSimVector(*GetVelocity)(const char* vehicleName);
 
 // PInvoke call to initialize the function pointers. This function is called from Unity.
 extern "C" __declspec(dllexport) void InitVehicleManager(
@@ -43,5 +44,6 @@ extern "C" __declspec(dllexport) void InitVehicleManager(
 	int(*getSegmentationObjectId)(const char* meshName),
 	bool(*printLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity),
 	UnityTransform(*getTransformFromUnity)(const char* vehicleName),
-	bool(*reset)(const char* vehicleName)
+	bool(*reset)(const char* vehicleName),
+	AirSimVector(*getVelocity)(const char* vehicleName)
 );

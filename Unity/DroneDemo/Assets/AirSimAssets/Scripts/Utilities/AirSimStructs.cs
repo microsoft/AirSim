@@ -56,6 +56,8 @@ namespace AirSimUnity {
             public int gear;
             public float speed;
             public long timeStamp;
+            public float engineRotationSpeed;
+            public float engineMaxRotationSpeed;
             public AirSimPose pose;
 
             public void Reset()
@@ -63,6 +65,8 @@ namespace AirSimUnity {
                 gear = 0;
                 speed = 0;
                 timeStamp = 0;
+                engineRotationSpeed = 0;
+                engineMaxRotationSpeed = 0;
                 pose.Reset();
             }
         }
@@ -73,6 +77,8 @@ namespace AirSimUnity {
             public float throttle;
             public float brake;
             public float steering;
+            public float engineRotationSpeed;
+            public float engineMaxRotationSpeed;
 
             public void Reset()
             {
@@ -81,6 +87,8 @@ namespace AirSimUnity {
                 throttle = 0f;
                 brake = 0f;
                 steering = 0f;
+                engineRotationSpeed = 0;
+                engineMaxRotationSpeed = 0;
             }
         }
     }

@@ -77,16 +77,6 @@ bool SimModeCar::isVehicleTypeSupported(const std::string& vehicle_type) const
 	return vehicle_type == AirSimSettings::kVehicleTypePhysXCar;
 }
 
-std::string SimModeCar::getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const
-{
-	//decide which derived BP to use
-	std::string pawn_path = vehicle_setting.pawn_path;
-	if (pawn_path == "")
-		pawn_path = "DefaultCar";
-
-	return pawn_path;
-}
-
 UnityPawn* SimModeCar::GetVehiclePawn()
 {
 	return new CarPawn(vehicle_name_);

@@ -99,16 +99,6 @@ bool SimModeWorldMultiRotor::isVehicleTypeSupported(const std::string& vehicle_t
 		(vehicle_type == AirSimSettings::kVehicleTypePX4));
 }
 
-std::string SimModeWorldMultiRotor::getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const
-{
-	//decide which derived BP to use
-	std::string pawn_path = vehicle_setting.pawn_path;
-	if (pawn_path == "")
-		pawn_path = "DefaultQuadrotor";
-
-	return pawn_path;
-}
-
 std::unique_ptr<PawnSimApi> SimModeWorldMultiRotor::createVehicleSimApi(
 	const PawnSimApi::Params& pawn_sim_api_params) const
 {
