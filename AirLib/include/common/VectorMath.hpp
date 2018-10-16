@@ -185,9 +185,15 @@ public:
 
     static QuaternionT rotateQuaternion(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
     {
-        QuaternionT ref_n = assume_unit_quat ? ref : ref.normalized();
-        QuaternionT ref_n_i = assume_unit_quat ? ref.conjugate() : ref.inverse();
-        return ref_n * q * ref_n_i;
+        if (assume_unit_quat) {
+            QuaternionT ref_n = ref;
+            QuaternionT ref_n_i = ref.conjugate();
+            return ref_n * q * ref_n_i;
+        } else {
+            QuaternionT ref_n = ref.normalized();
+            QuaternionT ref_n_i = ref.inverse();
+            return ref_n * q * ref_n_i;
+        }
     }
 
     static QuaternionT rotateQuaternionReverse(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)

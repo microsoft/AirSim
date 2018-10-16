@@ -86,7 +86,7 @@ public:
     //get reading from RC bound to vehicle (if unsupported then RCData::is_valid = false)
     virtual RCData getRCData() const
     {
-        static const RCData invalid_rc_data;
+        static const RCData invalid_rc_data {};
         return invalid_rc_data;
     }
     //set external RC data to vehicle (if unsupported then returns false)
