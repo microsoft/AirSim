@@ -145,7 +145,8 @@ IF NOT EXIST AirLib\deps mkdir AirLib\deps
 IF NOT EXIST AirLib\deps\eigen3 (
     powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr http://bitbucket.org/eigen/eigen/get/3.3.2.zip -OutFile eigen3.zip }"
     powershell -command "& { Expand-Archive -Path eigen3.zip -DestinationPath AirLib\deps }"
-    move AirLib\deps\eigen* AirLib\deps\del_eigen
+    powershell -command "& { Move-Item -Path AirLib\deps\eigen* -Destination AirLib\deps\del_eigen }"
+    REM move AirLib\deps\eigen* AirLib\deps\del_eigen
     mkdir AirLib\deps\eigen3
     move AirLib\deps\del_eigen\Eigen AirLib\deps\eigen3\Eigen
     rmdir /S /Q AirLib\deps\del_eigen
