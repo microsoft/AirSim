@@ -3,6 +3,7 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace AirSimUnity {
     /*
@@ -124,7 +125,7 @@ namespace AirSimUnity {
 
         public float SettingsVersion = 1.0f;
         public string DefaultVehicleConfig = "SimpleFlight";
-        public string SimMode = "";//"Multirotor";
+        public string SimMode = "";
         public int ClockSpeed = 1;
         public string LocalHostIP = "127.0.0.1";
         public bool RecordUIVisible = true;
@@ -150,7 +151,7 @@ namespace AirSimUnity {
             return settings;
         }
 
-        public static void Initialize() {
+        public static bool Initialize() {
             settings = new AirSimSettings();
             settings.SetDefaults();
 
@@ -159,7 +160,13 @@ namespace AirSimUnity {
             }
 
             string jsonString = GetSettingsContent();
+            if (jsonString == String.Empty) {
+                EditorUtility.DisplayDialog("Missing 'Settings.json' file!!!", "'Settings.json' file either not present or not configured properly.", "Exit");
+                return false;
+            }
+
             JsonUtility.FromJsonOverwrite(jsonString, settings);
+            return true;
         }
 
         public CameraCaptureSettings GetCaptureSettingsBasedOnImageType(ImageType type) {
@@ -189,16 +196,21 @@ namespace AirSimUnity {
 
         /********** Methods internal to AirSimSettngs ********/
 
-        //Get the settings from the "setting.json" file if already exists, else create one with version info.
+        //Get the settings from the "setting.json" file.
         private static string GetSettingsContent() {
-            string content = "{ \n \"SettingsVersion\" : 1.0, \n \"SimMode\" : \"\" \n}";
+            var fileName = GetFileName();
+            if (fileName == String.Empty)
+            {
+                return String.Empty;
+            }
+
+            string content = "";
             try {
                 string line = "";
-
-                StreamReader reader = new StreamReader(GetFileName(), Encoding.Default);
-                using (reader) {
-                    content = "";
-                    do {
+                using (var reader = new StreamReader(fileName, Encoding.Default))
+                {
+                    do
+                    {
                         content += " " + line;
                         line = reader.ReadLine();
                     } while (line != null);
@@ -208,7 +220,6 @@ namespace AirSimUnity {
                 Debug.LogError("Unable to read the settings file : " + e.Message);
                 throw e;
             }
-
             return content;
         }
 
@@ -219,19 +230,12 @@ namespace AirSimUnity {
             }
 
             fileName = AIRSIM_DATA_FOLDER + "\\settings.json";
-
             if (File.Exists(fileName)) {
                 return fileName;
             }
 
-            string content = "{ \n \"SettingsVersion\" : 1.0, \n \"SimMode\" : \"\" \n}";
-            //settings file created at Documents\AirSim with name "setting.json".
-            StreamWriter writer = new StreamWriter(File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Write));
-            writer.WriteLine(content);
-            writer.Close();
-
-            return fileName;
-        }
+            return String.Empty;
+          }
 
         private void SetDefaults() {
             Recording.RecordInterval = 0.05f;

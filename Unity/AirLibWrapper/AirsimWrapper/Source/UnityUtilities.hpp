@@ -17,9 +17,16 @@ namespace UnityUtilities
 
 	static msr::airlib::Vector3r Convert_to_Vector3r(const AirSimUnity::AirSimVector& airSimVector)
 	{
-		msr::airlib::Vector3r vec3r(airSimVector.x, airSimVector.y, airSimVector.z);
-		return vec3r;
+		msr::airlib::Vector3r result(airSimVector.x, airSimVector.y, airSimVector.z);
+		return result;
 	}
+
+	static AirSimUnity::AirSimVector Convert_to_AirSimVector(const msr::airlib::Vector3r vec)
+	{
+		AirSimUnity::AirSimVector result(vec.x(), vec.y(), vec.z());
+		return result;
+	}
+
 
 	static msr::airlib::CollisionInfo Convert_to_AirSimCollisioinInfo(const AirSimUnity::AirSimCollisionInfo& collision_info)
 	{

@@ -37,6 +37,12 @@ namespace AirSimUnity {
         private bool isDrone;
         private static bool isSegmentationUpdated;
 
+        private bool calculateRayCast = false;
+        Vector3 startVec;
+        Vector3 endVec;
+        RaycastHit hitInfo;
+        bool hitResult;
+
         //Ensure to call this method as the first statement, from derived class `Start()` method.
         protected void Start() {
             isDrone = this is Drone ? true : false;
@@ -68,13 +74,19 @@ namespace AirSimUnity {
                     UpdateSegmentationView();
                     isSegmentationUpdated = false;
                 }
+
                 if (isCapturingImages)
                 {
-                    var captureCamera =
-                        captureCameras.Find(element => element.GetCameraName() == imageRequest.camera_name);
+                    var captureCamera = captureCameras.Find(element => element.GetCameraName() == imageRequest.camera_name);
                     imageResponse = captureCamera.GetImageBasedOnRequest(imageRequest);
                     captureResetEvent.Set(); //Release the GetSimulationImages thread with the image response.
                     isCapturingImages = false;
+                }
+
+                if (calculateRayCast)
+                {
+                    hitResult = Physics.Linecast(startVec, endVec, out hitInfo);
+                    calculateRayCast = false;
                 }
 
                 airsimInterface.InvokeTickInAirSim(Time.deltaTime);
@@ -154,6 +166,21 @@ namespace AirSimUnity {
             return new UnityTransform(new AirSimQuaternion(currentPose.orientation.x, currentPose.orientation.y, currentPose.orientation.z, currentPose.orientation.w), 
                 new AirSimVector(currentPose.position.x, currentPose.position.y, currentPose.position.z),
                 new AirSimVector(scale3D.x, scale3D.y, scale3D.z));
+        }
+
+        public RayCastHitResult GetRayCastHit(AirSimVector start, AirSimVector end)
+        {
+            DataManager.SetToUnity(start, ref startVec);
+            DataManager.SetToUnity(end, ref endVec);
+
+            calculateRayCast = true;
+            int count = 500; // wait for max 0.5 second
+            while(calculateRayCast && count > 0)
+            {
+                count--;
+            }
+
+            return new RayCastHitResult(hitResult, hitInfo.distance);
         }
 
         public CollisionInfo GetCollisionInfo() {
@@ -256,13 +283,7 @@ namespace AirSimUnity {
             //Setting the initial get pose(HomePoint in AirLib) values to that of vehicle's location in the scene for initial setup in AirLib
             DataManager.SetToAirSim(transform.position, ref currentPose.position);
             DataManager.SetToAirSim(transform.rotation, ref currentPose.orientation);
-
-
-
-            //position.Set(0, 0, 0);
-            //rotation.Set(0, 0, 0, 0);
-            //scale3D.Set(1, 1, 1);
-
+            
             collisionInfo.SetDefaultValues();
             SetUpCameras();
             captureResetEvent = new AutoResetEvent(false);

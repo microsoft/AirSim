@@ -445,7 +445,6 @@ namespace AirSimUnity {
             image_float_len = 0;
             image_data_uint = new byte[] { };
             image_data_float = new float[] { };
-            //this.camera_name = "";
             this.camera_position = new AirSimVector();
             this.camera_orientation = new AirSimQuaternion();
             this.pixels_as_float = false;
@@ -468,6 +467,7 @@ namespace AirSimUnity {
         Count
     };
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct UnityTransform
     {
         /** Rotation of this transformation, as a quaternion */
@@ -491,5 +491,18 @@ namespace AirSimUnity {
             Scale3D = new AirSimVector(1, 1, 1);
         }
 
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RayCastHitResult
+    {
+        public bool isHit;
+        public float distance;
+
+        public RayCastHitResult(bool isHit, float distance)
+        {
+            this.isHit = isHit;
+            this.distance = distance;
+        }
     };
 }

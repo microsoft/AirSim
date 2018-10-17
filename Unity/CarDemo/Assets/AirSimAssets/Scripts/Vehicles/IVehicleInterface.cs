@@ -40,5 +40,7 @@ namespace AirSimUnity {
         void ResetVehicle();
 
         AirSimVector GetVelocity();
+
+        RayCastHitResult GetRayCastHit(AirSimVector start, AirSimVector end);
     }
 }

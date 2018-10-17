@@ -23,7 +23,6 @@ namespace AirSimUnity {
         //An interface to interact with Unity vehicle component.
         private IVehicleInterface VehicleInterface;
 
-        //private int vehicleId;
         private string vehicleName;
         private readonly bool isDrone;
 
@@ -41,9 +40,9 @@ namespace AirSimUnity {
             var companion = new VehicleCompanion(vehicleInterface);
 
             if (AirSimSettings.GetSettings().SimMode == "Car")
-                companion.vehicleName = "PhysXCar";//(Vehicles.Count - 1).ToString();
+                companion.vehicleName = "PhysXCar";
             else if (AirSimSettings.GetSettings().SimMode == "Multirotor")
-                companion.vehicleName = "SimpleFlight";//(Vehicles.Count - 1).ToString();
+                companion.vehicleName = "SimpleFlight";
 
             Vehicles.Add(companion);
             return companion;
@@ -51,20 +50,10 @@ namespace AirSimUnity {
 
         public bool StartVehicleServer(string hostIP) {
             return PInvokeWrapper.StartServer(vehicleName, AirSimSettings.GetSettings().SimMode, basePortId);
-            //if (isDrone) {
-            //    PInvokeWrapper.StartDroneServer(hostIP, basePortId /*+ vehicleId*/, vehicleName);
-            //} else {
-            //    PInvokeWrapper.StartCarServer(hostIP, basePortId + vehicleId, vehicleId);
-            //}
         }
 
         public void StopVehicleServer() {
             PInvokeWrapper.StopServer(vehicleName);
-            //if (isDrone) {
-            //    PInvokeWrapper.StopDroneServer(vehicleName);
-            //} else {
-            //    PInvokeWrapper.StopServer(vehicleName);
-            //}
         }
 
         public void InvokeTickInAirSim(float deltaSecond)
@@ -110,7 +99,8 @@ namespace AirSimUnity {
                 Marshal.GetFunctionPointerForDelegate(new Func<string, string, string, int, bool>(PrintLogMessage)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, UnityTransform>(GetTransformFromUnity)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, bool>(Reset)),
-                Marshal.GetFunctionPointerForDelegate(new Func<string, AirSimVector>(GetVelocity))
+                Marshal.GetFunctionPointerForDelegate(new Func<string, AirSimVector>(GetVelocity)),
+                Marshal.GetFunctionPointerForDelegate(new Func<AirSimVector, AirSimVector, string, RayCastHitResult>(GetRayCastHit))
             );
         }
 
@@ -159,6 +149,12 @@ namespace AirSimUnity {
         {
             var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
             return vehicle.VehicleInterface.GetVelocity();
+        }
+
+        private static RayCastHitResult GetRayCastHit(AirSimVector start, AirSimVector end, string vehicleName)
+        {
+            var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
+            return vehicle.VehicleInterface.GetRayCastHit(start, end);
         }
 
         private static bool SetRotorSpeed(int rotorIndex, RotorInfo rotorInfo, string vehicleName) {

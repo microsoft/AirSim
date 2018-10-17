@@ -35,7 +35,6 @@ public class SmoothFollow : MonoBehaviour {
         // Set the position of the camera on the x-z plane to:
         // distance meters behind the target
         transform.position = target.position + (currentRotation * offsetPostion);
-        //transform.position = Vector3.Lerp(transform.position, finalPosition, 0.9f);
 
         // Always look at the target
         transform.LookAt(target);

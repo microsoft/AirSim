@@ -200,4 +200,10 @@ namespace AirSimUnity
 			Scale3D(obj.Scale3D)
 		{}
 	};
+
+	struct RayCastHitResult
+	{
+		bool isHit = false;
+		float distance = 0.0f;
+	};
 }

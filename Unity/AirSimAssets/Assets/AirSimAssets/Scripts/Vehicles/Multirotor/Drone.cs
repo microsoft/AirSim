@@ -60,8 +60,8 @@ namespace AirSimUnity {
                     rcData.pitch = Input.GetAxis("Vertical");
                     rcData.throttle = Input.GetAxis("Depth");
                     rcData.yaw = Input.GetAxis("Yaw");
-                    //rcData.left_z = Input.GetAxis("");
-                    //rcData.right_z = Input.GetAxis("");
+                    rcData.left_z = 0;
+                    rcData.right_z = 0;
 
                     rcData.switch1 = (uint) (Input.GetKeyDown("joystick button 0") ? 1 : 0);
                     rcData.switch2 = (uint) (Input.GetKeyDown("joystick button 1") ? 1 : 0);

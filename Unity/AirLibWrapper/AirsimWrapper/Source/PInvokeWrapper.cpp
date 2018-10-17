@@ -18,6 +18,7 @@ bool(*PrintLogMessage) (const char* message, const char* messageParam, const cha
 UnityTransform(*GetTransformFromUnity)(const char* vehicleName);
 bool(*Reset)(const char* vehicleName);
 AirSimVector(*GetVelocity)(const char* vehicleName);
+RayCastHitResult(*GetRayCastHit)(AirSimVector startVec, AirSimVector endVec, const char* vehicleName);
 
 void InitVehicleManager(
 	bool(*setPose)(AirSimPose pose, bool ignoreCollision, const char* vehicleName),
@@ -36,7 +37,8 @@ void InitVehicleManager(
 	bool(*printLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity),
 	UnityTransform(*getTransformFromUnity)(const char* vehicleName),
 	bool(*reset)(const char* vehicleName),
-	AirSimVector(*getVelocity)(const char* vehicleName)
+	AirSimVector(*getVelocity)(const char* vehicleName),
+	RayCastHitResult(*getRayCastHit)(AirSimVector startVec, AirSimVector endVec, const char* vehicleName)
 )
 {
 	SetPose = setPose;
@@ -56,4 +58,5 @@ void InitVehicleManager(
 	GetTransformFromUnity = getTransformFromUnity;
 	Reset = reset;
 	GetVelocity = getVelocity;
+	GetRayCastHit = getRayCastHit;
 }

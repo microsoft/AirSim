@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace AirSimUnity {
     /*
@@ -13,7 +14,10 @@ namespace AirSimUnity {
 
         private void Awake() {
             //Needs to be the first initialization in the Simulation.
-            AirSimSettings.Initialize();
+            if (!AirSimSettings.Initialize())
+            {
+                EditorApplication.Exit(1);
+            }
         }
 
         private void Start() {
@@ -39,7 +43,7 @@ namespace AirSimUnity {
         }
 
         //Sets up the cameras based on the settings.json file to render on the sub windows.
-        //Make sure the cameras are child of object with tag "ViewCametas"
+        //Make sure the cameras are child of object with tag "ViewCameras"
         public void SetUpViewCameras() {
             GameObject viewCameras = GameObject.FindGameObjectWithTag("ViewCameras");
 
