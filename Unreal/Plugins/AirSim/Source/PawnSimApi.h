@@ -15,6 +15,7 @@
 #include "NedTransform.h"
 #include "common/AirSimSettings.hpp"
 #include "SimJoyStick/SimJoyStick.h"
+#include "api/VehicleApiBase.hpp"
 #include "api/VehicleSimApiBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
 
@@ -92,6 +93,7 @@ protected: //additional interface for derived class
     virtual void pawnTick(float dt);
     const msr::airlib::Kinematics::State* getPawnKinematics() const;
     void setPoseInternal(const Pose& pose, bool ignore_collision);
+    virtual msr::airlib::VehicleApiBase* getVehicleApiBase() const;
 
 public: //Unreal specific methods
     PawnSimApi(const Params& params);

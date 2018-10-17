@@ -86,6 +86,8 @@
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdapators.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibClient.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibServer.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\ArduCopterSoloApi.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\ArduCopterSoloParams.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightBoard.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightCommLink.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightEstimator.hpp" />

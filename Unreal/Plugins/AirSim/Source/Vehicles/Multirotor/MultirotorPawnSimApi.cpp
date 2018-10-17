@@ -66,8 +66,10 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
     const CollisionInfo& collision_info = getCollisionInfo();
     phys_vehicle_->setCollisionInfo(collision_info);
 
-    if (pending_pose_status_ == PendingPoseStatus::RenderStatePending)
+    if (pending_pose_status_ == PendingPoseStatus::RenderStatePending) {
         phys_vehicle_->setPose(pending_phys_pose_);
+        pending_pose_status_ = PendingPoseStatus::RenderPending;
+    }
         
     last_phys_pose_ = phys_vehicle_->getPose();
     

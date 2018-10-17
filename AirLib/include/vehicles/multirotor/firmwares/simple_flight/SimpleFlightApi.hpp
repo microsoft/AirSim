@@ -88,6 +88,11 @@ public: //VehicleApiBase implementation
         comm_link_->getStatusMessages(messages);
     }
 
+    virtual const SensorCollection& getSensors() const override
+    {
+        return vehicle_params_->getSensors();
+    }
+
 public: //MultirotorApiBase implementation
     virtual real_T getActuation(unsigned int rotor_index) const override
     {

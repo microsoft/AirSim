@@ -127,10 +127,11 @@ public:
     }
 
     static bool startsWith(const string& s, const string& prefix) {
-        return s.size() <= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
+        return s.size() >= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
     }
+
     template <template<class, class, class...> class TContainer, typename TKey, typename TVal, typename... Args>
-    static const TVal& findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal& default_val) 
+    static const TVal& findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key, const TVal& default_val)
     {
         typename TContainer<TKey, TVal, Args...>::const_iterator it = m.find(key);
         if (it == m.end())
@@ -141,8 +142,8 @@ public:
     template <template<class, class, class...> class TContainer, typename TKey, typename TVal, typename... Args>
     static const TVal& findOrDefault(const TContainer<TKey, TVal, Args...>& m, TKey const& key)
     {
-	static TVal default_val;
-	return findOrDefault(m, key, default_val);
+        static TVal default_val;
+        return findOrDefault(m, key, default_val);
     }
 
     static Logger* getSetLogger(Logger* logger = nullptr)

@@ -447,6 +447,12 @@
     <ClInclude Include="include\common\common_utils\ColorUtils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\ArduCopterSoloApi.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\ArduCopterSoloParams.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\safety\ObstacleMap.cpp">

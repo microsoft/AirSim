@@ -10,11 +10,11 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
+#include "DrawDebugHelpers.h"
+
 PawnSimApi::PawnSimApi(const Params& params)
     : params_(params), ned_transform_(params.pawn, *params.global_transform)
 {
-    image_capture_.reset(new UnrealImageCapture(params.camera_director, &params_.cameras));
-
     msr::airlib::Environment::State initial_environment;
     initial_environment.position = getPose().position;
     initial_environment.geo_point = params_.home_geopoint;
@@ -39,6 +39,8 @@ PawnSimApi::PawnSimApi(const Params& params)
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
 
     setupCamerasFromSettings(params_.cameras);
+	image_capture_.reset(new UnrealImageCapture(params.camera_director, &cameras_));
+	
     //add listener for pawn's collision event
     params_.pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
     params_.pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
@@ -541,4 +543,9 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
     //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
     //ss << "\n";
     //return ss.str();
+}
+
+msr::airlib::VehicleApiBase* PawnSimApi::getVehicleApiBase() const
+{
+    return nullptr;
 }

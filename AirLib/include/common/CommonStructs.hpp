@@ -166,7 +166,7 @@ struct GeoPoint {
         return os << "[" << g.latitude << ", " << g.longitude << ", " << g.altitude << "]";
     }
 
-    std::string to_string()
+    std::string to_string() const
     {
         return std::to_string(latitude) + string(", ") + std::to_string(longitude) + string(", ") + std::to_string(altitude);
     }
@@ -308,6 +308,15 @@ struct RCData {
     {
         return Utils::stringf("RCData[pitch=%f, roll=%f, throttle=%f, yaw=%f]", pitch, roll, throttle, yaw);
     }
+};
+
+struct LidarData {
+
+    TTimePoint time_stamp = 0;
+    vector<real_T> point_cloud;
+
+    LidarData()
+    {}
 };
 
 }} //namespace

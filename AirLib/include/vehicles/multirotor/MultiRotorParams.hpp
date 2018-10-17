@@ -32,6 +32,7 @@ public: //types
         bool gps = true;
         bool barometer = true;
         bool distance = false; //this causes ray casts so disabled by default
+        bool lidar = false;     //this causes ray casts so disabled by default; // lidar_setting
     };
 
     struct Params {
@@ -103,6 +104,8 @@ public: //interface
             addSensor(SensorBase::SensorType::Barometer);
         if (enabled_sensors.distance)
             addSensor(SensorBase::SensorType::Distance);
+        if (enabled_sensors.lidar)
+            addSensor(SensorBase::SensorType::Lidar);
     }
 
     SensorBase* addSensor(SensorBase::SensorType sensor_type)

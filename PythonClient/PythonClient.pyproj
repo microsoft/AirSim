@@ -12,7 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>PythonClient</Name>
     <RootNamespace>PythonClient</RootNamespace>
-    <InterpreterId>Global|ContinuumAnalytics|Anaconda35-64</InterpreterId>
+    <InterpreterId>Global|ContinuumAnalytics|Anaconda36-64</InterpreterId>
     <InterpreterVersion>
     </InterpreterVersion>
   </PropertyGroup>
@@ -66,6 +66,7 @@
     <Compile Include="multirotor\clock_speed.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="multirotor\lidar.py" />
     <Compile Include="multirotor\manual_mode_demo.py">
       <SubType>Code</SubType>
     </Compile>
@@ -112,9 +113,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda35-64" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="airsim\" />
     <Folder Include="car\" />
     <Folder Include="computer_vision\" />
@@ -129,6 +127,9 @@
     <Content Include="README.md">
       <SubType>Code</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda36-64" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
