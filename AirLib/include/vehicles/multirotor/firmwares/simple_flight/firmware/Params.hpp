@@ -78,7 +78,7 @@ public:
 
     struct VelocityPid {
         const float kMinThrottle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);
-	const float kMaxLimit = 6.0f; // m/s
+        const float kMaxLimit = 6.0f; // m/s
         Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, 0, kMaxLimit); //x, y, yaw, z in meters
 
         Axis4r p = Axis4r(0.2f, 0.2f, 0, 2.0f);
