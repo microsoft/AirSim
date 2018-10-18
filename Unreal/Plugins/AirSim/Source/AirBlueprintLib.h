@@ -183,6 +183,8 @@ public:
     static IImageWrapperModule* getImageWrapperModule();
     static void CompressImageArray(int32 width, int32 height, const TArray<FColor> &src, TArray<uint8> &dest);
 
+	static std::vector<msr::airlib::MeshResponse> GetStaticMeshComponents();
+
 private:
     template<typename T>
     static void InitializeObjectStencilID(T* mesh, bool ignore_existing = true)

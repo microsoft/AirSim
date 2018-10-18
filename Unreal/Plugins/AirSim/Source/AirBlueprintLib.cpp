@@ -352,6 +352,125 @@ std::vector<std::string> UAirBlueprintLib::ListMatchingActors(const UObject *con
     return results;
 }
 
+std::vector<msr::airlib::MeshResponse> UAirBlueprintLib::GetStaticMeshComponents() {
+	std::vector<msr::airlib::MeshResponse> meshes;
+	int num_meshes = 0;
+	for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
+	{
+		*comp;
+
+		std::string name = common_utils::Utils::toLower(GetMeshName(*comp));
+		//The skybox is ignored here as it is huge, and really is of no use to the end user typically. Also the associated meshes with the cameras
+		if (name == "" || common_utils::Utils::startsWith(name, "default_") || common_utils::Utils::startsWith(name, "sky") || common_utils::Utils::startsWith(name, "camera")) {
+			continue;
+		}
+
+		//Various checks if there is even a valid mesh
+		if (!comp->GetStaticMesh()) continue;
+		if (!comp->GetStaticMesh()->RenderData) continue;
+		if (comp->GetStaticMesh()->RenderData->LODResources.Num() == 0) continue;
+
+		msr::airlib::MeshResponse mesh;
+		mesh.name = name;
+
+		FVector pos = comp->GetComponentLocation();
+		FQuat att = comp->GetComponentQuat();
+		mesh.position[0] = pos.X;
+		mesh.position[1] = pos.Y;
+		mesh.position[2] = pos.Z;
+		mesh.orientation.w() = att.W;
+		mesh.orientation.x() = att.X;
+		mesh.orientation.y() = att.Y;
+		mesh.orientation.z() = att.Z;
+
+		FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].PositionVertexBuffer;
+		if (vertex_buffer)
+		{
+			const int32 vertex_count = vertex_buffer->VertexBufferRHI->GetSize();
+			TArray<FVector> vertices;
+			vertices.SetNum(vertex_count);
+			FVector* data = vertices.GetData();
+			ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
+				GetVertexBuffer,
+				FPositionVertexBuffer*, vertex_buffer, vertex_buffer,
+				FVector*, data, data,
+				{
+					FVector* indices = (FVector*)RHILockVertexBuffer(vertex_buffer->VertexBufferRHI, 0, vertex_buffer->VertexBufferRHI->GetSize(), RLM_ReadOnly);
+					memcpy(data, indices, vertex_buffer->VertexBufferRHI->GetSize());
+					RHIUnlockVertexBuffer(vertex_buffer->VertexBufferRHI);
+				});
+
+
+			const FRawStaticIndexBuffer& IndexBuffer = comp->GetStaticMesh()->RenderData->LODResources[0].IndexBuffer;
+
+			FStaticMeshLODResources& lod = comp->GetStaticMesh()->RenderData->LODResources[0];
+			int num_indices = lod.IndexBuffer.IndexBufferRHI->GetSize() / lod.IndexBuffer.IndexBufferRHI->GetStride();
+			if (lod.IndexBuffer.IndexBufferRHI->GetStride() == 2) {
+				TArray<uint16_t> indices_vec;
+				indices_vec.SetNum(num_indices);
+				uint16_t* data_ptr = indices_vec.GetData();
+				ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
+					GetIndexBuffer,
+					FRawStaticIndexBuffer*, IndexBuffer, &lod.IndexBuffer,
+					uint16_t*, data, data_ptr,
+					{
+						uint16_t* indices = (uint16_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
+						memcpy(data, indices, IndexBuffer->IndexBufferRHI->GetSize());
+						RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
+					});
+
+				//Need to force the render command to go through cause on the next iteration the buffer no longer exists
+				FlushRenderingCommands();
+
+				mesh.indices.resize(num_indices);
+				for (int idx = 0; idx < num_indices; ++idx) {
+					mesh.indices[idx] = indices_vec[idx];
+				}
+
+
+			}
+			else { //stride ==4
+				TArray<uint32_t> indices_vec;
+				indices_vec.SetNum(num_indices);
+				uint32_t* data_ptr = indices_vec.GetData();
+				ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
+					GetIndexBuffer,
+					FRawStaticIndexBuffer*, IndexBuffer, &lod.IndexBuffer,
+					uint32_t*, data, data_ptr,
+					{
+						uint32_t* indices = (uint32_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
+						memcpy(data, indices, IndexBuffer->IndexBufferRHI->GetSize());
+						RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
+					});
+
+				FlushRenderingCommands();
+
+				mesh.indices.resize(num_indices);
+				for (int idx = 0; idx < num_indices; ++idx) {
+					mesh.indices[idx] = indices_vec[idx];
+				}
+			}
+
+			//Unreal stores more vertices than triangles. So here we find the highest referenced vertex and ignore any after that
+			auto result_iter = std::max_element(mesh.indices.begin(), mesh.indices.end());
+			auto max_triangle_index = std::distance(mesh.indices.begin(), result_iter);
+
+			mesh.vertices.resize(max_triangle_index * 3);
+			int aligned_index = 0;
+			FTransform transform = comp->GetComponentTransform();
+			for(int vertex_idx=0;vertex_idx<max_triangle_index;++vertex_idx){
+				FVector transformed_vec = pos + transform.TransformVector(vertices[vertex_idx]);
+				mesh.vertices[aligned_index++] = transformed_vec.X;
+				mesh.vertices[aligned_index++] = transformed_vec.Y;
+				mesh.vertices[aligned_index++] = transformed_vec.Z;
+			}
+		}
+
+		meshes.push_back(mesh);
+	}
+
+	return meshes;
+}
 
 bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collision_channel)
 {

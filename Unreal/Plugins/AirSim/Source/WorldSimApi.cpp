@@ -230,3 +230,12 @@ void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, con
         DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(), FString(names[idx].c_str()), NULL, color.ToFColor(true), duration, false, text_scale);
     }
 }
+
+std::vector<WorldSimApi::MeshResponse> WorldSimApi::getMeshes() const
+{
+	std::vector<WorldSimApi::MeshResponse> responses;
+	UAirBlueprintLib::RunCommandOnGameThread([&responses]() {
+		responses = UAirBlueprintLib::GetStaticMeshComponents();
+	}, true);
+	return responses;
+}

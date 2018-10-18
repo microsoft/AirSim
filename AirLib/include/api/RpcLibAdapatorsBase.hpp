@@ -694,6 +694,70 @@ public:
             return d;
         }
     };
+
+	struct MeshResponse {
+		Vector3r position;
+		Quaternionr orientation;
+
+		std::vector<float> vertices;
+		std::vector<uint32_t> indices;
+		std::string name;
+
+		MSGPACK_DEFINE_MAP(position, orientation, vertices, indices, name);
+
+		MeshResponse()
+		{}
+
+		MeshResponse(const msr::airlib::MeshResponse& s)
+		{
+			position = Vector3r(s.position);
+			orientation = Quaternionr(s.orientation);
+
+			vertices = s.vertices;
+			indices = s.indices;
+
+			if (vertices.size() == 0)
+				vertices.push_back(0);
+			if (indices.size() == 0)
+				indices.push_back(0);
+
+			name = s.name;
+		}
+
+		msr::airlib::MeshResponse to() const
+		{
+			msr::airlib::MeshResponse d;
+			d.position = position.to();
+			d.orientation = orientation.to();
+			d.vertices = vertices;
+			d.indices = indices;
+			d.name = name;
+
+			return d;
+		}
+
+		static std::vector<msr::airlib::MeshResponse> to(
+			const std::vector<MeshResponse>& response_adapter
+		) {
+			std::vector<msr::airlib::MeshResponse> response;
+			for (const auto& item : response_adapter)
+				response.push_back(item.to());
+
+			return response;
+		}
+		static std::vector<MeshResponse> from(
+			const std::vector<msr::airlib::MeshResponse>& response
+		) {
+			std::vector<MeshResponse> response_adapter;
+			for (const auto& item : response)
+				response_adapter.push_back(MeshResponse(item));
+
+			return response_adapter;
+		}
+
+	};
+
+
 };
 
 }} //namespace

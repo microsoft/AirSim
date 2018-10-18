@@ -305,5 +305,15 @@ struct LidarData {
     {}
 };
 
+struct MeshResponse {
+
+	Vector3r position;
+	Quaternionr orientation;
+
+	std::vector<float> vertices;
+	std::vector<uint32_t> indices;
+	std::string name;
+};
+
 }} //namespace
 #endif

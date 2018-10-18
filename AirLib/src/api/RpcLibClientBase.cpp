@@ -237,6 +237,11 @@ vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, Im
     return result;
 }
 
+vector<MeshResponse> RpcLibClientBase::simGetMeshes() {
+	const auto& response_adaptor = pimpl_->client.call("simGetMeshes").as<vector<RpcLibAdapatorsBase::MeshResponse>>();
+	return RpcLibAdapatorsBase::MeshResponse::to(response_adaptor);
+}
+
 void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
 {
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);

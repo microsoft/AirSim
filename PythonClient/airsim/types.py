@@ -498,3 +498,10 @@ class PositionControllerGains():
     
     def to_lists(self):
         return [self.x_gains.kp, self.y_gains.kp, self.z_gains.kp], [self.x_gains.ki, self.y_gains.ki, self.z_gains.ki], [self.x_gains.kd, self.y_gains.kd, self.z_gains.kd]
+
+class MeshResponse(MsgpackMixin):
+    position = Vector3r()
+    orientation = Quaternionr()
+    vertices = 0.0
+    indices = 0.0
+    name = ''
