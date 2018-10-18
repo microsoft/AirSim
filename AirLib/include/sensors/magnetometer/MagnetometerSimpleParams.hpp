@@ -31,6 +31,11 @@ struct MagnetometerSimpleParams {
     real_T update_latency = 0.0f;    //sec: from PX4 doc
     real_T update_frequency = 50;    //Hz
     real_T startup_delay = 0;        //sec
+
+    void initializeFromSettings(const AirSimSettings::MagnetometerSetting& settings)
+    {
+        unused(settings);
+    }
 };
 
 

@@ -3,6 +3,7 @@
 
 
 #include "SensorBase.hpp"
+#include "SensorCollection.hpp"
 #include <memory>
 
 //sensors
@@ -16,6 +17,8 @@ namespace msr { namespace airlib {
 
 class SensorFactory {
 public:
+    // creates one sensor
+    // TODO: Can we remove this function alltogether and require the one that accepts settings only?
     virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) const
     {
         switch (sensor_type) {
@@ -29,6 +32,46 @@ public:
             return std::unique_ptr<BarometerSimple>(new BarometerSimple());
         default:
             return std::unique_ptr<SensorBase>();
+        }
+    }
+
+    // creates one sensor from settings
+    virtual std::unique_ptr<SensorBase> createSensorFromSettings(
+        AirSimSettings::SensorSetting* sensor_setting) const
+    {
+        switch (sensor_setting->sensor_type) {
+        case SensorBase::SensorType::Imu:
+            return std::unique_ptr<ImuSimple>(new ImuSimple(sensor_setting));
+        case SensorBase::SensorType::Magnetometer:
+            return std::unique_ptr<MagnetometerSimple>(new MagnetometerSimple(sensor_setting));
+        case SensorBase::SensorType::Gps:
+            return std::unique_ptr<GpsSimple>(new GpsSimple(sensor_setting));
+        case SensorBase::SensorType::Barometer:
+            return std::unique_ptr<BarometerSimple>(new BarometerSimple(sensor_setting));
+        default:
+            return std::unique_ptr<SensorBase>();
+        }
+    }
+
+    // creates sensor-collection
+    virtual void createSensorsFromSettings(
+        const std::map<std::string, std::unique_ptr<AirSimSettings::SensorSetting>>& sensors_settings,
+        SensorCollection& sensors,
+        vector<unique_ptr<SensorBase>>& sensor_storage) const
+    {
+        for (auto& sensor_setting_pair : sensors_settings) {
+            AirSimSettings::SensorSetting* sensor_setting = sensor_setting_pair.second.get();
+
+            // ignore sensors that are marked "disabled" in settings
+            if (sensor_setting == nullptr || !sensor_setting->enabled)
+                continue;
+
+            std::unique_ptr<SensorBase> sensor = createSensorFromSettings(sensor_setting);
+            if (sensor) {
+                    SensorBase* sensor_temp = sensor.get();
+                    sensor_storage.push_back(std::move(sensor));
+                    sensors.insert(sensor_temp, sensor_setting->sensor_type);
+            }
         }
     }
 };

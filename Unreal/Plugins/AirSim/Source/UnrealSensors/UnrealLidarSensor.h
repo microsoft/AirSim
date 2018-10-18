@@ -13,7 +13,11 @@
 // Thanks to CARLA folks for this.
 class UnrealLidarSensor : public msr::airlib::LidarSimple {
 public:
-    UnrealLidarSensor(AActor* actor, const NedTransform* ned_transform);
+    typedef msr::airlib::AirSimSettings AirSimSettings;
+
+public:
+    UnrealLidarSensor(AirSimSettings::SensorSetting* sensor_setting,
+        AActor* actor, const NedTransform* ned_transform);
 
 protected:
     virtual void getPointCloud(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,

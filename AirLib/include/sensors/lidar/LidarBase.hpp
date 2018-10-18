@@ -9,6 +9,11 @@
 namespace msr { namespace airlib {
 
 class LidarBase : public SensorBase {
+public:
+    LidarBase(const std::string& sensor_name = "")
+        : SensorBase(sensor_name)
+    {}
+
 public: //types
     struct Output { //fields to enable creation of ROS message PointCloud2 and LaserScan
 
@@ -40,11 +45,6 @@ public:
         return output_;
     }
 
-    const std::string& getName() const
-    {
-        return name_;
-    }
-
 protected:
     void setOutput(const LidarData& output)
     {
@@ -53,7 +53,6 @@ protected:
 
 private:
     LidarData output_;
-    std::string name_ = "";
 };
 
 }} //namespace

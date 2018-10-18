@@ -51,9 +51,9 @@ public:
     }
 
 protected:
-    virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) override
+    virtual const SensorFactory* getSensorFactory() override
     {
-        return sensor_factory_->createSensor(sensor_type);
+        return sensor_factory_.get();
     }
 
 private:

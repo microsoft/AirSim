@@ -35,7 +35,7 @@ public:
                 "Cannot create vehicle config because vehicle name '%s' is not recognized",
                 vehicle_setting->vehicle_name.c_str()));
 
-        config->initialize();
+        config->initialize(vehicle_setting);
 
         return config;
     }

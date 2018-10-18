@@ -12,6 +12,11 @@
 namespace msr { namespace airlib {
 
 class GpsBase  : public SensorBase {
+public:
+    GpsBase(const std::string& sensor_name = "")
+        : SensorBase(sensor_name)
+    {}
+
 public: //types
     //TODO: cleanup GPS structures that are not needed
     struct GpsPoint {

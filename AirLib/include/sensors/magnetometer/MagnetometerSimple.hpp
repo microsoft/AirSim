@@ -17,9 +17,13 @@ namespace msr { namespace airlib {
 
 class MagnetometerSimple : public MagnetometerBase {
 public: 
-    MagnetometerSimple(const MagnetometerSimpleParams& params = MagnetometerSimpleParams())
-        : params_(params)
+    MagnetometerSimple(AirSimSettings::SensorSetting* sensor_setting = nullptr)
+        : MagnetometerBase(sensor_setting != nullptr ? sensor_setting->sensor_name : "")
     {
+        // initialize params
+        if (sensor_setting != nullptr)
+            params_.initializeFromSettings(*static_cast<const AirSimSettings::MagnetometerSetting*>(sensor_setting));
+
         noise_vec_ = RandomVectorGaussianR(Vector3r::Zero(), params_.noise_sigma);
         bias_vec_ = RandomVectorR(-params_.noise_bias, params_.noise_bias).next();
 

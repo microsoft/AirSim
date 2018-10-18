@@ -11,6 +11,11 @@
 namespace msr { namespace airlib {
 
 class MagnetometerBase  : public SensorBase {
+public:
+    MagnetometerBase(const std::string& sensor_name = "")
+        : SensorBase(sensor_name)
+    {}
+
 public: //types
     struct Output { //same fields as ROS message
         Vector3r magnetic_field_body; //in Gauss

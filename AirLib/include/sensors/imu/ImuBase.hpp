@@ -11,6 +11,11 @@
 namespace msr { namespace airlib {
 
 class ImuBase  : public SensorBase {
+public:
+    ImuBase(const std::string& sensor_name = "")
+        : SensorBase(sensor_name)
+    {}
+
 public: //types
     struct Output {	//structure is same as ROS IMU message
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
