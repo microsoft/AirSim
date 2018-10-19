@@ -107,14 +107,14 @@ msr::airlib::RCData PawnSimApi::getRCData() const
 		rc_data_.right_z = rcDataFromUnity.right_z;
 
 		rc_data_.switches = 0;
-		rc_data_.switches |= rcDataFromUnity.switch1 << 0;
-		rc_data_.switches |= rcDataFromUnity.switch2 << 1;
-		rc_data_.switches |= rcDataFromUnity.switch3 << 2;
-		rc_data_.switches |= rcDataFromUnity.switch4 << 3;
-		rc_data_.switches |= rcDataFromUnity.switch5 << 4;
-		rc_data_.switches |= rcDataFromUnity.switch6 << 5;
-		rc_data_.switches |= rcDataFromUnity.switch7 << 6;
-		rc_data_.switches |= rcDataFromUnity.switch8 << 7;
+		rc_data_.switches |= ((rcDataFromUnity.switch1 & 0x80) == 0 ? 0 : 1) << 0;
+		rc_data_.switches |= ((rcDataFromUnity.switch2 & 0x80) == 0 ? 0 : 1) << 1;
+		rc_data_.switches |= ((rcDataFromUnity.switch3 & 0x80) == 0 ? 0 : 1) << 2;
+		rc_data_.switches |= ((rcDataFromUnity.switch4 & 0x80) == 0 ? 0 : 1) << 3;
+		rc_data_.switches |= ((rcDataFromUnity.switch5 & 0x80) == 0 ? 0 : 1) << 4;
+		rc_data_.switches |= ((rcDataFromUnity.switch6 & 0x80) == 0 ? 0 : 1) << 5;
+		rc_data_.switches |= ((rcDataFromUnity.switch7 & 0x80) == 0 ? 0 : 1) << 6;
+		rc_data_.switches |= ((rcDataFromUnity.switch8 & 0x80) == 0 ? 0 : 1) << 7;
 		PrintLogMessage("RC Mode: ", rc_data_.getSwitch(0) == 0 ? "Angle" : "Rate", getVehicleName().c_str(), ErrorLogSeverity::Information);
 	}
 
