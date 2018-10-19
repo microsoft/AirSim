@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="model" default="$(find airsim_ros_client)/urdf/robot/dji_m100_airsim.urdf.xacro"/>
+  <arg name="urdf_model" default="$(find airsim_ros_client)/urdf/robot/dji_m100_airsim.urdf"/>
+
+  <!-- Parsing xacro and saving it into urdf -->
+  <node name="xacro" pkg="xacro" type="xacro" args="--inorder $(arg model) -o $(arg urdf_model)" />
+
+</launch>

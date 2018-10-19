@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(find airsim_ros_client)/urdf/robot/dji_m100_airsim.urdf.xacro" />
+  <arg name="rvizconfig" default="$(find airsim_ros_client)/rviz/urdf.rviz" />
+
+  <!-- Parsing xacro and loading robot_description parameter -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
+
+  <!-- Publish current robot joint states using tf -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+  <!-- Launch visualization in rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true"/>
+
+</launch>

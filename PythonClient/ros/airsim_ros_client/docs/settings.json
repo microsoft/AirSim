@@ -1,0 +1,90 @@
+{
+  "SettingsVersion": 1.2,
+  "DefaultVehicleConfig": "",
+  "SimMode": "Multirotor",
+  "RecordUIVisible": true,
+  "LogMessagesVisible": true,
+  "ViewMode": "",
+  "RpcEnabled": true,
+  "PhysicsEngineName": "",
+  "EnableCollisionPassthrogh": true,
+  "CameraDefaults": {
+    "CaptureSettings": [
+        {
+        "ImageType": 0,
+        "Width": 640,
+        "Height": 360,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.03,
+        "AutoExposureMinBrightness": 0.03
+      },
+      {
+        "ImageType": 1,
+        "Width": 640,
+        "Height": 360,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.03,
+        "AutoExposureMinBrightness": 0.03
+      },
+      {
+        "ImageType": 2,
+        "Width": 640,
+        "Height": 360,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.03,
+        "AutoExposureMinBrightness": 0.03
+      },
+      {
+        "ImageType": 3,
+        "Width": 640,
+        "Height": 360,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.03,
+        "AutoExposureMinBrightness": 0.03
+      },
+      {
+        "ImageType": 4,
+        "Width": 640,
+        "Height": 360,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.03,
+        "AutoExposureMinBrightness": 0.03
+      },
+      {
+        "ImageType": 5,
+        "Width": 640,
+        "Height": 360,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.03,
+        "AutoExposureMinBrightness": 0.03
+      },
+      {
+        "ImageType": 6,
+        "Width": 640,
+        "Height": 360,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.03,
+        "AutoExposureMinBrightness": 0.03
+      }
+    ]
+  },
+  "SubWindows": [
+    {"WindowID": 0, "CameraID": 0, "ImageType": 3, "Visible": true},
+    {"WindowID": 1, "CameraID": 0, "ImageType": 5, "Visible": true},
+    {"WindowID": 2, "CameraID": 0, "ImageType": 0, "Visible": true}
+  ]
+}

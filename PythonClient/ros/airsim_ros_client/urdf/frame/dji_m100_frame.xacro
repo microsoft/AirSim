@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro"
+       name="dji_m100_frame" >
+
+  <xacro:include filename="$(find airsim_ros_client)/urdf/materials.urdf.xacro" />
+
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+
+  <xacro:property name="base_mass" value="2.432" />
+  <xacro:property name="base_collision_length" value="0.218" />
+  <xacro:property name="base_collision_radius" value="0.498" />
+
+  <!-- The xacro macro xacro:drone_base contains: frame -->
+  <xacro:macro name="dji_m100_frame" params="name">
+    <link name="${name}_link">
+      <inertial>
+        <mass value="${base_mass}" />
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.016994"
+                 ixy="1.2142E-05"
+                 ixz="-1.5304E-05"
+                 iyy="0.015814"
+                 iyz="0.00078225"
+                 izz="0.022766" />
+      </inertial>
+      <visual>
+        <origin xyz="-0.35 -0.25 -0.14" rpy="${M_PI/2} 0 ${M_PI/2}" />
+        <geometry>
+          <mesh filename="package://airsim_ros_client/meshes/DJI_M100_CAD.STL" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="Black" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="${base_collision_radius}" length="${base_collision_length}" />
+        </geometry>
+      </collision>
+    </link>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro"
+       name="airsim_cam" >
+
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+
+  <xacro:macro name="airsim_cam" params="name">
+    <!-- front center camera (cameraID = 0) -->
+    <link name="front_center_optical" />
+    <joint name="front_center_cam" type="fixed">
+      <parent link="${name}_link" />
+      <child link="front_center_optical" />
+      <origin xyz="0.046 0 0" rpy="${M_PI} 0 -${M_PI/2}" />
+    </joint>
+
+    <!-- front left camera (cameraID = 1) -->
+    <link name="front_left_optical" />
+    <joint name="front_left_cam" type="fixed">
+      <parent link="${name}_link" />
+      <child link="front_left_optical" />
+      <origin xyz="0.046 -0.0125 0" rpy="${M_PI} 0 -${M_PI/2}" />
+    </joint>
+
+    <!-- front right camera (cameraID = 2) -->
+    <link name="front_right_optical" />
+    <joint name="front_right_cam" type="fixed">
+      <parent link="${name}_link" />
+      <child link="front_right_optical" />
+      <origin xyz="0.046 0.0125 0" rpy="${M_PI} 0 -${M_PI/2}" />
+    </joint>
+
+    <!-- bottom center camera (cameraID = 3) -->
+    <link name="bottom_center_optical" />
+    <joint name="bottom_center_cam" type="fixed">
+      <parent link="${name}_link" />
+      <child link="bottom_center_optical" />
+      <origin xyz="0 0 -0.012" rpy="${M_PI} 0 -${M_PI/2}" />
+    </joint>
+
+    <!-- bottom back camera (cameraID = 4) -->
+    <link name="bottom_back_optical" />
+    <joint name="bottom_back_cam" type="fixed">
+      <parent link="${name}_link" />
+      <child link="bottom_back_optical" />
+      <origin xyz="-0.046 0 0" rpy="${M_PI} 0 -${M_PI/2}" />
+    </joint>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,22 @@
+<launch>
+
+  <!-- publish tf using urdf  -->
+  <include file="$(find airsim_ros_client)/launch/utils/publish_tf.launch"/>
+
+  <node pkg="airsim_ros_client" type="img_publisher.py" name="airsim_img_publisher"
+    output="screen" >
+
+    <!-- RGB camera parameters (parameters when calibrated) -->
+    <param name="Fx" value="320"/>
+    <param name="Fy" value="320"/>
+    <param name="cx" value="320"/>
+    <param name="cy" value="180"/>
+    <param name="width" value="640"/>  <!-- Width when calibrated!-->
+    <param name="height" value="360"/> <!-- Height when calibrated!-->
+    
+    <!-- Frequency of publishing messages -->
+    <param name="loop_rate" value="10"/>
+
+  </node>
+
+</launch>

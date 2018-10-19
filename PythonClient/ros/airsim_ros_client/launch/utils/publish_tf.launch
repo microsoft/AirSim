@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(find airsim_ros_client)/urdf/robot/dji_m100_airsim.urdf.xacro" />
+  <arg name="gui" default="false" />
+
+  <!-- Parsing xacro and loading robot_description parameter -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
+    <!-- Setting gui parameter to true for display joint slider, for getting joint control -->
+  <param name="use_gui" value="$(arg gui)"/>
+
+  <!-- Publish current robot joint states using tf -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+</launch>

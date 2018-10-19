@@ -1,0 +1,21 @@
+<launch>
+
+    <!-- Nodelet manager for this pipeline -->
+    <node pkg="nodelet" type="nodelet" args="manager" name="airsim_depth_transforms_manager" output="screen"/>
+
+     <!-- Convert to point cloud -->
+    <node pkg="nodelet" type="nodelet" name="airsim_colored_cloudify"
+    args="load depth_image_proc/point_cloud_xyzrgb airsim_depth_transforms_manager --no-bond">
+
+        <!-- Input: Camera calibration and metadata.  (sensor_msgs/CameraInfo) -->
+        <remap from="rgb/camera_info" to="/airsim/camera_info"/>
+        <!-- Input: Rectified rgb image -->
+        <remap from="rgb/image_rect_color" to="/airsim/rgb/image_raw"/>
+        <!-- Input: Rectified depth image -->
+        <remap from="depth_registered/image_rect" to="/airsim/depth"/>
+        <!-- Output: Point Cloud -->
+        <remap from="depth_registered/points" to="/airsim/points/colored"/>
+
+    </node>
+
+</launch>

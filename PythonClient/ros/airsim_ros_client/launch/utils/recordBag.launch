@@ -1,0 +1,13 @@
+<launch>
+  <arg name="record_camera" default="true" />
+  <arg name="record_pointcloud" default="false" />
+
+ <node pkg="rosbag" type="record" name="rosbag_record_cam"
+       args="record -o ~/airsim_bag/airsim-cam /airsim/rgb/image_raw /airsim/normals/image_raw /airsim/segmentation/image_raw /airsim/depth /airsim/depth/camera_info /clock /tf /odom"
+       if="$(arg record_cameras)" />
+
+ <node pkg="rosbag" type="record" name="rosbag_record_pointcloud"
+       args="record -o /airsim_bag/airsim-pcl /airsim/points /airsim/rgb/image_raw /airsim/normals/image_raw /airsim/segmentation/image_raw /airsim/depth /airsim/depth/camera_info /clock /tf /odom"
+       if="$(arg record_pointcloud)" />
+
+</launch>

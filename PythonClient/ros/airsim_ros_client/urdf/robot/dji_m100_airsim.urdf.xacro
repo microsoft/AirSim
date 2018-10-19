@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro"
+       name="dji_m100_airsim">
+
+   <xacro:include filename="$(find airsim_ros_client)/urdf/frame/dji_m100_frame.xacro"/>
+   <xacro:include filename="$(find airsim_ros_client)/urdf/sensors/airsim_cam.xacro"/>
+
+  <xacro:dji_m100_frame name="base"/>
+  <xacro:airsim_cam name="base"/>
+
+</robot>
