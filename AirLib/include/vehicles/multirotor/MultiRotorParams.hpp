@@ -49,7 +49,7 @@ public: //types
 
 protected: //must override by derived class
     virtual void setupParams() = 0;
-    virtual const SensorFactory* getSensorFactory() = 0;
+    virtual const SensorFactory* getSensorFactory() const = 0;
 
 public: //interface
     virtual std::unique_ptr<MultirotorApiBase> createMultirotorApi() = 0;

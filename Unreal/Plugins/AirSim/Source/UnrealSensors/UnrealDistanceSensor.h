@@ -13,7 +13,7 @@ public:
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
 public:
-    UnrealDistanceSensor(AirSimSettings::SensorSetting* sensor_setting,
+    UnrealDistanceSensor(const AirSimSettings::DistanceSetting& setting,
         AActor* actor, const NedTransform* ned_transform);
 
 protected:

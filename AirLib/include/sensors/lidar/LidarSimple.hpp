@@ -15,12 +15,11 @@ namespace msr { namespace airlib {
 
 class LidarSimple : public LidarBase {
 public:
-    LidarSimple(AirSimSettings::SensorSetting* sensor_setting = nullptr)
-        : LidarBase(sensor_setting != nullptr ? sensor_setting->sensor_name : "")
+    LidarSimple(const AirSimSettings::LidarSetting& setting = AirSimSettings::LidarSetting())
+        : LidarBase(setting.sensor_name)
     {
         // initialize params
-        if (sensor_setting != nullptr)
-            params_.initializeFromSettings(*static_cast<const AirSimSettings::LidarSetting*>(sensor_setting));
+        params_.initializeFromSettings(setting);
 
         //initialize frequency limiter
         freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);

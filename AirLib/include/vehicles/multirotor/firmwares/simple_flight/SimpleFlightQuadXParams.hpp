@@ -60,7 +60,7 @@ protected:
         //leave everything else to defaults
     }
 
-    virtual const SensorFactory* getSensorFactory() override
+    virtual const SensorFactory* getSensorFactory() const override
     {
         return sensor_factory_.get();
     }

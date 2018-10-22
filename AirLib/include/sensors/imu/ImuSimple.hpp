@@ -14,12 +14,11 @@ namespace msr { namespace airlib {
 class ImuSimple : public ImuBase {
 public:
     //constructors
-    ImuSimple(AirSimSettings::SensorSetting* sensor_setting = nullptr)
-        : ImuBase(sensor_setting != nullptr ? sensor_setting->sensor_name : "")
+    ImuSimple(const AirSimSettings::ImuSetting& setting = AirSimSettings::ImuSetting())
+        : ImuBase(setting.sensor_name)
     {
         // initialize params
-        if (sensor_setting != nullptr)
-            params_.initializeFromSettings(*static_cast<const AirSimSettings::ImuSetting*>(sensor_setting));
+        params_.initializeFromSettings(setting);
 
         gyro_bias_stability_norm = params_.gyro.bias_stability / sqrt(params_.gyro.tau);
         accel_bias_stability_norm = params_.accel.bias_stability / sqrt(params_.accel.tau);

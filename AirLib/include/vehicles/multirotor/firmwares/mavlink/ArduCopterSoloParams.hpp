@@ -81,7 +81,7 @@ namespace msr { namespace airlib {
 			}
 
 		protected:
-            virtual const SensorFactory* getSensorFactory() override
+            virtual const SensorFactory* getSensorFactory() const override
             {
                 return sensor_factory_.get();
             }

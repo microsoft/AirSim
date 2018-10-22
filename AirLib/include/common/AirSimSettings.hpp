@@ -1084,23 +1084,63 @@ private:
         clock_speed = settings_json.getFloat("ClockSpeed", 1.0f);
     }
 
-    static void initializeLidarSetting(LidarSetting* lidar_setting, const Settings& settings_json)
+    static void initializeBarometerSetting(BarometerSetting& barometer_setting, const Settings& settings_json)
     {
-        lidar_setting->number_of_channels = settings_json.getInt("NumberOfChannels", lidar_setting->number_of_channels);
-        lidar_setting->range = settings_json.getFloat("Range", lidar_setting->range);
-        lidar_setting->points_per_second = settings_json.getInt("PointsPerSecond", lidar_setting->points_per_second);
-        lidar_setting->horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", lidar_setting->horizontal_rotation_frequency);
-        lidar_setting->draw_debug_points = settings_json.getBool("DrawDebugPoints", lidar_setting->draw_debug_points);
+        unused(barometer_setting);
+        unused(settings_json);
 
-        lidar_setting->vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", lidar_setting->vertical_FOV_upper);
-        lidar_setting->vertical_FOV_lower = settings_json.getFloat("VerticalFOVLower", lidar_setting->vertical_FOV_lower);
+        //TODO: set from json as needed
+    }
 
-        lidar_setting->position = createVectorSetting(settings_json, lidar_setting->position);
-        lidar_setting->rotation = createRotationSetting(settings_json, lidar_setting->rotation);
+    static void initializeImuSetting(ImuSetting& imu_setting, const Settings& settings_json)
+    {
+        unused(imu_setting);
+        unused(settings_json);
+
+        //TODO: set from json as needed
+    }
+
+    static void initializeGpsSetting(GpsSetting& gps_setting, const Settings& settings_json)
+    {
+        unused(gps_setting);
+        unused(settings_json);
+
+        //TODO: set from json as needed
+    }
+
+    static void initializeMagnetometerSetting(MagnetometerSetting& magnetometer_setting, const Settings& settings_json)
+    {
+        unused(magnetometer_setting);
+        unused(settings_json);
+
+        //TODO: set from json as needed
+    }
+
+    static void initializeDistanceSetting(DistanceSetting& distance_setting, const Settings& settings_json)
+    {
+        unused(distance_setting);
+        unused(settings_json);
+
+        //TODO: set from json as needed
+    }
+
+    static void initializeLidarSetting(LidarSetting& lidar_setting, const Settings& settings_json)
+    {
+        lidar_setting.number_of_channels = settings_json.getInt("NumberOfChannels", lidar_setting.number_of_channels);
+        lidar_setting.range = settings_json.getFloat("Range", lidar_setting.range);
+        lidar_setting.points_per_second = settings_json.getInt("PointsPerSecond", lidar_setting.points_per_second);
+        lidar_setting.horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", lidar_setting.horizontal_rotation_frequency);
+        lidar_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", lidar_setting.draw_debug_points);
+
+        lidar_setting.vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", lidar_setting.vertical_FOV_upper);
+        lidar_setting.vertical_FOV_lower = settings_json.getFloat("VerticalFOVLower", lidar_setting.vertical_FOV_lower);
+
+        lidar_setting.position = createVectorSetting(settings_json, lidar_setting.position);
+        lidar_setting.rotation = createRotationSetting(settings_json, lidar_setting.rotation);
     }
 
     static std::unique_ptr<SensorSetting> createSensorSetting(
-        SensorBase::SensorType sensor_type, const std::string sensor_name,
+        SensorBase::SensorType sensor_type, const std::string& sensor_name,
         bool enabled)
     {
         std::unique_ptr<SensorSetting> sensor_setting;
@@ -1125,7 +1165,7 @@ private:
             sensor_setting = std::unique_ptr<SensorSetting>(new LidarSetting());
             break;
         default:
-            break;
+            throw std::invalid_argument("Unexpected sensor type");
         }
 
         sensor_setting->sensor_type = sensor_type;
@@ -1141,25 +1181,30 @@ private:
 
         switch (sensor_setting->sensor_type) {
         case SensorBase::SensorType::Barometer:
+            initializeBarometerSetting(*static_cast<BarometerSetting*>(sensor_setting), settings_json);
             break;
         case SensorBase::SensorType::Imu:
+            initializeImuSetting(*static_cast<ImuSetting*>(sensor_setting), settings_json);
             break;
         case SensorBase::SensorType::Gps:
+            initializeGpsSetting(*static_cast<GpsSetting*>(sensor_setting), settings_json);
             break;
         case SensorBase::SensorType::Magnetometer:
+            initializeMagnetometerSetting(*static_cast<MagnetometerSetting*>(sensor_setting), settings_json);
             break;
         case SensorBase::SensorType::Distance:
+            initializeDistanceSetting(*static_cast<DistanceSetting*>(sensor_setting), settings_json);
             break;
         case SensorBase::SensorType::Lidar:
-            initializeLidarSetting(static_cast<LidarSetting*>(sensor_setting), settings_json);
+            initializeLidarSetting(*static_cast<LidarSetting*>(sensor_setting), settings_json);
             break;
         default:
-            break;
+            throw std::invalid_argument("Unexpected sensor type");
         }
     }
 
     // creates and intializes sensor settings from json
-    static void loadSensorSettings( const Settings& settings_json, const std::string collectionName,
+    static void loadSensorSettings( const Settings& settings_json, const std::string& collectionName,
         std::map<std::string, std::unique_ptr<SensorSetting>>& sensors)
     {
         msr::airlib::Settings sensors_child;
@@ -1192,6 +1237,9 @@ private:
         }
         else if (simmode_name == "Car") {
             sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
+        }
+        else {
+            // no sensors added for other modes
         }
     }
 

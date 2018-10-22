@@ -9,31 +9,18 @@ UnrealSensorFactory::UnrealSensorFactory(AActor* actor, const NedTransform* ned_
     setActor(actor, ned_transform);
 }
 
-
-std::unique_ptr<msr::airlib::SensorBase> UnrealSensorFactory::createSensor(msr::airlib::SensorBase::SensorType sensor_type) const
-{
-    using SensorBase = msr::airlib::SensorBase;
-
-    switch (sensor_type) {
-    case SensorBase::SensorType::Distance:
-        return std::unique_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(NULL /*settings*/, actor_, ned_transform_));
-    case SensorBase::SensorType::Lidar:
-        return std::unique_ptr<UnrealLidarSensor>(new UnrealLidarSensor(NULL /*settings*/, actor_, ned_transform_));
-    default:
-        return msr::airlib::SensorFactory::createSensor(sensor_type);
-    }
-}
-
 std::unique_ptr<msr::airlib::SensorBase> UnrealSensorFactory::createSensorFromSettings(
-    AirSimSettings::SensorSetting* sensor_setting) const
+    const AirSimSettings::SensorSetting* sensor_setting) const
 {
     using SensorBase = msr::airlib::SensorBase;
 
     switch (sensor_setting->sensor_type) {
     case SensorBase::SensorType::Distance:
-        return std::unique_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(sensor_setting, actor_, ned_transform_));
+        return std::unique_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(
+            *static_cast<const AirSimSettings::DistanceSetting*>(sensor_setting), actor_, ned_transform_));
     case SensorBase::SensorType::Lidar:
-        return std::unique_ptr<UnrealLidarSensor>(new UnrealLidarSensor(sensor_setting, actor_, ned_transform_));
+        return std::unique_ptr<UnrealLidarSensor>(new UnrealLidarSensor(
+            *static_cast<const AirSimSettings::LidarSetting*>(sensor_setting), actor_, ned_transform_));
     default:
         return msr::airlib::SensorFactory::createSensorFromSettings(sensor_setting);
     }

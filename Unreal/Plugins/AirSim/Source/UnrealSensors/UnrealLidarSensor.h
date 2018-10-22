@@ -16,7 +16,7 @@ public:
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
 public:
-    UnrealLidarSensor(AirSimSettings::SensorSetting* sensor_setting,
+    UnrealLidarSensor(const AirSimSettings::LidarSetting& setting,
         AActor* actor, const NedTransform* ned_transform);
 
 protected:

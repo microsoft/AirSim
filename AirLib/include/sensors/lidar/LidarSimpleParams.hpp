@@ -42,6 +42,8 @@ struct LidarSimpleParams {
         points_per_second = settings.points_per_second;
         horizontal_rotation_frequency = settings.horizontal_rotation_frequency;
 
+        // By default, for multirotors the lidars FOV point downwards;
+        // for cars, the lidars FOV is more forward facing.
         vertical_FOV_upper = settings.vertical_FOV_upper;
         if (std::isnan(vertical_FOV_upper)) {
             if (simmode_name == "Multirotor")

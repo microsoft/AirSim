@@ -8,9 +8,9 @@
 #include "DrawDebugHelpers.h"
 
 // ctor
-UnrealLidarSensor::UnrealLidarSensor(AirSimSettings::SensorSetting* sensor_setting,
+UnrealLidarSensor::UnrealLidarSensor(const AirSimSettings::LidarSetting& setting,
     AActor* actor, const NedTransform* ned_transform)
-    : LidarSimple(sensor_setting), actor_(actor), ned_transform_(ned_transform)
+    : LidarSimple(setting), actor_(actor), ned_transform_(ned_transform)
 {
     createLasers();
 }

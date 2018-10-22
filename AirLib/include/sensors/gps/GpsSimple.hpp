@@ -17,12 +17,11 @@ namespace msr { namespace airlib {
 
 class GpsSimple : public GpsBase {
 public: //methods
-    GpsSimple(AirSimSettings::SensorSetting* sensor_setting = nullptr)
-        : GpsBase(sensor_setting != nullptr ? sensor_setting->sensor_name : "")
+    GpsSimple(const AirSimSettings::GpsSetting& setting = AirSimSettings::GpsSetting())
+        : GpsBase(setting.sensor_name)
     {
         // initialize params
-        if (sensor_setting != nullptr)
-            params_.initializeFromSettings(*static_cast<const AirSimSettings::GpsSetting*>(sensor_setting));
+        params_.initializeFromSettings(setting);
 
         //initialize frequency limiter
         freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);

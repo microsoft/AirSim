@@ -18,12 +18,11 @@ namespace msr { namespace airlib {
 
 class BarometerSimple  : public BarometerBase {
 public:
-    BarometerSimple(AirSimSettings::SensorSetting* sensor_setting = nullptr)
-        : BarometerBase(sensor_setting != nullptr ? sensor_setting->sensor_name: "")
+    BarometerSimple(const AirSimSettings::BarometerSetting& setting = AirSimSettings::BarometerSetting())
+        : BarometerBase(setting.sensor_name)
     {
         // initialize params
-        if (sensor_setting != nullptr)
-            params_.initializeFromSettings(*static_cast<const AirSimSettings::BarometerSetting*>(sensor_setting));
+        params_.initializeFromSettings(setting);
 
         //GM process that would do random walk for pressure factor
         pressure_factor_.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, 0);
