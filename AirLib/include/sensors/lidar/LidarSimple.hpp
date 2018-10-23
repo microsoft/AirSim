@@ -15,9 +15,12 @@ namespace msr { namespace airlib {
 
 class LidarSimple : public LidarBase {
 public:
-    LidarSimple(const LidarSimpleParams& params = LidarSimpleParams())
-        : params_(params)
+    LidarSimple(const AirSimSettings::LidarSetting& setting = AirSimSettings::LidarSetting())
+        : LidarBase(setting.sensor_name)
     {
+        // initialize params
+        params_.initializeFromSettings(setting);
+
         //initialize frequency limiter
         freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
     }
@@ -51,22 +54,23 @@ public:
 
         reporter.writeValue("Lidar-NumChannels", params_.number_of_channels);
         reporter.writeValue("Lidar-Range", params_.range);
-        reporter.writeValue("Lidar-FOV-Upper", params_.vertical_FOV_Upper);
-        reporter.writeValue("Lidar-FOV-Lower", params_.vertical_FOV_Lower);
+        reporter.writeValue("Lidar-FOV-Upper", params_.vertical_FOV_upper);
+        reporter.writeValue("Lidar-FOV-Lower", params_.vertical_FOV_lower);
     }
     //*** End: UpdatableState implementation ***//
 
     virtual ~LidarSimple() = default;
 
-protected:
-    virtual void getPointCloud(const Pose& lidar_pose, const Pose& vehicle_pose, 
-        TTimeDelta delta_time, vector<real_T>& point_cloud) = 0;
-
-    const LidarSimpleParams& getParams()
+    const LidarSimpleParams& getParams() const
     {
         return params_;
     }
 
+protected:
+    virtual void getPointCloud(const Pose& lidar_pose, const Pose& vehicle_pose, 
+        TTimeDelta delta_time, vector<real_T>& point_cloud) = 0;
+
+    
 private: //methods
     void updateOutput()
     {

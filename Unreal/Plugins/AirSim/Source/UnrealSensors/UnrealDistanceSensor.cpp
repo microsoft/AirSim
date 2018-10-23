@@ -6,8 +6,9 @@
 #include "common/Common.hpp"
 #include "NedTransform.h"
 
-UnrealDistanceSensor::UnrealDistanceSensor(AActor* actor, const NedTransform* ned_transform)
-    : actor_(actor), ned_transform_(ned_transform)
+UnrealDistanceSensor::UnrealDistanceSensor(const AirSimSettings::DistanceSetting& setting,
+    AActor* actor, const NedTransform* ned_transform)
+    : DistanceSimple(setting), actor_(actor), ned_transform_(ned_transform)
 {
 }
 

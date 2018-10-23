@@ -136,7 +136,8 @@ private:
     UPROPERTY()
         TArray<AActor*> spawned_actors_; //keep refs alive from Unreal GC
 
-    bool draw_lidar_debug_points_ = false; // lidar_setting
+    bool lidar_checks_done_ = false; 
+    bool lidar_draw_debug_points_ = false;
 
 private:
     void setStencilIDs();

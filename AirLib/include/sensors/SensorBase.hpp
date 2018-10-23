@@ -28,6 +28,11 @@ public:
         Distance = 5,
         Lidar = 6
     };
+
+    SensorBase(const std::string& sensor_name = "")
+        : name_(sensor_name)
+    {}
+
 protected:
     struct GroundTruth {
         const Kinematics::State* kinematics;
@@ -44,12 +49,18 @@ public:
     {
         return ground_truth_;
     }
-    
+   
+    const std::string& getName() const
+    {
+        return name_;
+    }
+
     virtual ~SensorBase() = default;
 
 private:
     //ground truth can be shared between many sensors
     GroundTruth ground_truth_;
+    std::string name_ = "";
 };
 
 

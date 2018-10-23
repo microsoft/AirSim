@@ -15,6 +15,7 @@
 #include "common/SteppableClock.hpp"
 #include "SimJoyStick/SimJoyStick.h"
 #include "common/EarthCelestial.hpp"
+#include "sensors/lidar/LidarSimple.hpp"
 
 #include "DrawDebugHelpers.h"
 
@@ -569,50 +570,53 @@ msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi(const PawnSimApi::Param
 // Used for debugging only.
 void ASimModeBase::drawLidarDebugPoints()
 {
-    if (!draw_lidar_debug_points_) // TODO: check airsim settings
+    // Currently we are checking the sensor-collection instead of sensor-settings.
+    // Also using variables to optimize not checking the collection if not needed.
+    if (lidar_checks_done_ && !lidar_draw_debug_points_)
         return;
 
-    if (api_provider_ == nullptr)
+    if (getApiProvider() == nullptr)
         return;
 
-    std::string vehicle_name = "";
-    std::string lidar_name = "";
+    for (auto& sim_api : getApiProvider()->getVehicleSimApis()) {
+        PawnSimApi* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
+        std::string vehicle_name = pawn_sim_api->getVehicleName();
 
-    // TODO: check the airsim settings for vehicle and lidar to
-    // determine if debug points need to drawn.
-    // For now, show it on the first non-default vehicle-name.
-    PawnSimApi* vehicle_sim_api = nullptr;
-    for (auto& api : getApiProvider()->getVehicleSimApis()) {
-        vehicle_sim_api = static_cast<PawnSimApi*>(api);
-        vehicle_name = vehicle_sim_api->getVehicleName();
+        msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
+        if (api != nullptr) {
+            
+            msr::airlib::uint count_lidars = api->getSensors().size(msr::airlib::SensorBase::SensorType::Lidar);
 
-        if (vehicle_name != "")
-            break;
-    }
+            for (msr::airlib::uint i = 0; i < count_lidars; i++) {
+                // TODO: Is it incorrect to assume LidarSimple here?
+                const msr::airlib::LidarSimple* lidar =
+                    static_cast<const msr::airlib::LidarSimple*>(api->getSensors().getByType(msr::airlib::SensorBase::SensorType::Lidar, i));
+                if (lidar != nullptr && lidar->getParams().draw_debug_points) {
+                    lidar_draw_debug_points_ = true;
 
-    msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
+                    msr::airlib::LidarData lidar_data = lidar->getOutput();
 
-    if (api != nullptr)
-    {
-        msr::airlib::LidarData lidar_data = api->getLidarData(lidar_name);
+                    if (lidar_data.point_cloud.size() < 3)
+                        return;
 
-        if (lidar_data.point_cloud.size() < 3)
-            return;
+                    for (int i = 0; i < lidar_data.point_cloud.size(); i = i + 3) {
+                        msr::airlib::Vector3r point(lidar_data.point_cloud[i], lidar_data.point_cloud[i + 1], lidar_data.point_cloud[i + 2]);
 
-        for (int i = 0; i < lidar_data.point_cloud.size(); i = i + 3)
-        {
-            msr::airlib::Vector3r point(lidar_data.point_cloud[i], lidar_data.point_cloud[i + 1], lidar_data.point_cloud[i + 2]);
+                        FVector uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point);
 
-            FVector uu_point = vehicle_sim_api->getNedTransform().fromLocalNed(point);
-
-            DrawDebugPoint(
-                this->GetWorld(),
-                uu_point,
-                5,              //size
-                FColor::Green,
-                true,           //persistent (never goes away)
-                0.1             //point leaves a trail on moving object
-            );
+                        DrawDebugPoint(
+                            this->GetWorld(),
+                            uu_point,
+                            5,              //size
+                            FColor::Green,
+                            true,           //persistent (never goes away)
+                            0.1             //point leaves a trail on moving object
+                        );
+                    }
+                }
+            }
         }
     }
+
+    lidar_checks_done_ = true;
 }
