@@ -8,8 +8,9 @@
 #include "DrawDebugHelpers.h"
 
 // ctor
-UnrealLidarSensor::UnrealLidarSensor(AActor* actor, const NedTransform* ned_transform)
-    : actor_(actor), ned_transform_(ned_transform)
+UnrealLidarSensor::UnrealLidarSensor(const AirSimSettings::LidarSetting& setting,
+    AActor* actor, const NedTransform* ned_transform)
+    : LidarSimple(setting), actor_(actor), ned_transform_(ned_transform)
 {
     createLasers();
 }
@@ -26,14 +27,14 @@ void UnrealLidarSensor::createLasers()
 
     // calculate verticle angle distance between each laser
     const float delta_angle =
-        (params.vertical_FOV_Upper - (params.vertical_FOV_Lower)) /
+        (params.vertical_FOV_upper - (params.vertical_FOV_lower)) /
         static_cast<float>(number_of_lasers - 1);
 
     // store vertical angles for each laser
     laser_angles_.clear();
     for (auto i = 0u; i < number_of_lasers; ++i)
     {
-        const float vertical_angle = params.vertical_FOV_Upper - static_cast<float>(i) * delta_angle;
+        const float vertical_angle = params.vertical_FOV_upper - static_cast<float>(i) * delta_angle;
         laser_angles_.emplace_back(vertical_angle);
     }
 }

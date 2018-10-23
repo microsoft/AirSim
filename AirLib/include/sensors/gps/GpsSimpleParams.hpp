@@ -18,6 +18,11 @@ struct GpsSimpleParams {
     real_T update_latency = 0.2f;    //sec
     real_T update_frequency = 50;    //Hz
     real_T startup_delay = 1;        //sec
+
+    void initializeFromSettings(const AirSimSettings::GpsSetting& settings)
+    {
+        unused(settings);
+    }
 };
 
 }} //namespace

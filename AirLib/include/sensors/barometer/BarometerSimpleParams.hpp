@@ -47,6 +47,10 @@ struct BarometerSimpleParams {
     real_T update_frequency = 50;    //Hz
     real_T startup_delay = 0;        //sec
 
+    void initializeFromSettings(const AirSimSettings::BarometerSetting& settings)
+    {
+        unused(settings);
+    }
 };
 
 
