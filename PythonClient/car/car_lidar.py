@@ -11,7 +11,7 @@ import argparse
 import pprint
 import numpy
 
-# Makes the drone fly and get Lidar data
+# Makes the car drive and get Lidar data
 class LidarTest:
 
     def __init__(self):
