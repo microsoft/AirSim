@@ -4,8 +4,9 @@
 #include "PhysXVehicleManager.h"
 
 CarPawnApi::CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint,
-    std::shared_ptr<msr::airlib::SensorFactory> sensor_factory, const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment)
-    : msr::airlib::CarApiBase(sensor_factory, state, environment),
+    const msr::airlib::AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<msr::airlib::SensorFactory> sensor_factory, 
+    const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment)
+    : msr::airlib::CarApiBase(vehicle_setting, sensor_factory, state, environment),
     pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint)
 {
     movement_ = pawn->GetVehicleMovement();

@@ -11,6 +11,11 @@
 namespace msr { namespace airlib {
 
 class DistanceBase  : public SensorBase {
+public:
+    DistanceBase(const std::string& sensor_name = "")
+        : SensorBase(sensor_name)
+    {}
+
 public: //types
     struct Output { //same fields as ROS message
         real_T distance;    //meters

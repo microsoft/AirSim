@@ -81,10 +81,10 @@ namespace msr { namespace airlib {
 			}
 
 		protected:
-			virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) override
-			{
-				return sensor_factory_->createSensor(sensor_type);
-			}
+            virtual const SensorFactory* getSensorFactory() const override
+            {
+                return sensor_factory_.get();
+            }
 
 		private:
 			AirSimSettings::MavLinkConnectionInfo connection_info_;
