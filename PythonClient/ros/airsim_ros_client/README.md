@@ -21,7 +21,7 @@ pip install airsim
 ```bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
-git clone https://github.com/Mayankm96/airsim_ros_wrapper.git
+git clone https://github.com/Mayankm96/airsim_ros_client.git
 ```
 * To compile the package:
 ```bash
@@ -42,7 +42,7 @@ A sample `settings.json` file used to run the simulator with the ROS package is 
 
 To use the [`urdf`](urdf) model of the drone used in AirSim simulator, then run:
 ```
-roslaunch airsim_ros_wrapper publish_tf.launch
+roslaunch airsim_ros_client publish_tf.launch
 ```
 
 __NOTE:__ In the modified blueprint of the drone for UE4, all cameras are downward-facing.
@@ -51,7 +51,7 @@ __NOTE:__ In the modified blueprint of the drone for UE4, all cameras are downwa
 
 Change the IP and Port configurations in [`pubImages.launch`](launch/pubImages.launch)  to match the settings in which Airsim is running. Then:
 ```
-roslaunch airsim_ros_wrapper pubImages.launch
+roslaunch airsim_ros_client pubImages.launch
 ```
 
 ## Nodes
