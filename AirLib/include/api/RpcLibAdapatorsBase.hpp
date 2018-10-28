@@ -381,6 +381,7 @@ public:
         std::vector<uint8_t> image_data_uint8;
         std::vector<float> image_data_float;
 
+		std::string camera_name;
         Vector3r camera_position;
         Quaternionr camera_orientation;
         msr::airlib::TTimePoint time_stamp;
@@ -390,7 +391,7 @@ public:
         int width, height;
         msr::airlib::ImageCaptureBase::ImageType image_type;
 
-        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, 
+        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, camera_name,
             camera_orientation, time_stamp, message, pixels_as_float, compress, width, height, image_type);
 
         ImageResponse()
@@ -409,6 +410,7 @@ public:
             if (image_data_float.size() == 0)
                 image_data_float.push_back(0);
 
+			camera_name = s.camera_name;
             camera_position = Vector3r(s.camera_position);
             camera_orientation = Quaternionr(s.camera_orientation);
             time_stamp = s.time_stamp;
@@ -430,6 +432,7 @@ public:
             else
                 d.image_data_float = image_data_float;
 
+			d.camera_name = camera_name;
             d.camera_position = camera_position.to();
             d.camera_orientation = camera_orientation.to();
             d.time_stamp = time_stamp;
