@@ -32,11 +32,11 @@ public:
         int height;
 
         msr::airlib::TTimePoint time_stamp;
+        msr::airlib::Pose camera_pose;
     };
 
 private:
     static FReadSurfaceDataFlags setupRenderResource(const FTextureRenderTargetResource* rt_resource, const RenderParams* params, RenderResult* result, FIntPoint& size);
-    bool use_safe_method_;
 
     std::shared_ptr<RenderParams>* params_;
     std::shared_ptr<RenderResult>* results_;
@@ -46,7 +46,7 @@ private:
 
 
 public:
-    RenderRequest(bool use_safe_method = false);
+    RenderRequest();
     ~RenderRequest();
 
     void DoTask(ENamedThreads::Type CurrentThread, const FGraphEventRef& MyCompletionGraphEvent)
@@ -63,7 +63,8 @@ public:
     // argument on the thread that calls this method.
     void getScreenshot(
         std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size,
-        class ACameraDirector * camera_director = NULL);
+        class ACameraDirector * camera_director,
+        std::function<msr::airlib::Pose(unsigned request_index)> get_camera_pose_cb);
 
     void ExecuteTask();
 };
