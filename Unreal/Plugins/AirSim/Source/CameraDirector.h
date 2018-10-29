@@ -95,6 +95,5 @@ private:
     bool ext_obs_fixed_z_;
     int follow_distance_;
     bool camera_rotation_lag_enabled_;
-    bool offscreen_mode_;
     std::vector<capture_completion_callback_t> capture_callbacks_;
 };

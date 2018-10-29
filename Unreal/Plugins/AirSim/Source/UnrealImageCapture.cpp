@@ -12,7 +12,7 @@ UnrealImageCapture::UnrealImageCapture(ACameraDirector * camera_director, const 
 {
     //TODO: explore screenshot option
     //addScreenCaptureHandler(camera->GetWorld());
-    offscreen_mode_ = ::msr::airlib::AirSimSettings::singleton().offscreen_mode;
+    nodisplay_ =  ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == Utils::toEnum<ECameraDirectorMode>(::msr::airlib::AirSimSettings::singleton().initial_view_mode);
 }
 
 UnrealImageCapture::~UnrealImageCapture()
@@ -45,7 +45,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
         visibilityChanged = const_cast<UnrealImageCapture*>(this)->
             updateCameraVisibility(camera, requests[i]) || visibilityChanged;
     }
-    if (!offscreen_mode_ && visibilityChanged) {
+    if (!nodisplay_ && visibilityChanged) {
         // Wait for render so that view is ready for capture
         std::this_thread::sleep_for(std::chrono::duration<double>(0.2));
     }
@@ -70,7 +70,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     }
 
     RenderRequest render_request(use_safe_method);
-    render_request.getScreenshot(render_params.data(), render_results, render_params.size(), offscreen_mode_? camera_director_: NULL);
+    render_request.getScreenshot(render_params.data(), render_results, render_params.size(), nodisplay_? camera_director_: NULL);
 
     for (unsigned int i = 0; i < requests.size(); ++i) {
         const ImageRequest& request = requests.at(i);

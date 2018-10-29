@@ -22,14 +22,6 @@ ACameraDirector::ACameraDirector()
 void ACameraDirector::BeginPlay()
 {
     Super::BeginPlay();
-    offscreen_mode_ = ::msr::airlib::AirSimSettings::singleton().offscreen_mode;
-
-    if (offscreen_mode_) {
-        UWorld * world = GetWorld();
-        UGameViewportClient * gameViewport = world->GetGameViewport();
-        gameViewport->bDisableWorldRendering = 1;
-        gameViewport->OnEndDraw().AddUObject(this, &ACameraDirector::OnEndDraw);
-    }
 }
 
 void ACameraDirector::Tick(float DeltaTime)
@@ -87,6 +79,10 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
     default:
         throw std::out_of_range("Unsupported view mode specified in CameraDirector::initializeForBeginPlay");
     }
+
+    UWorld * world = GetWorld();
+    UGameViewportClient * gameViewport = world->GetGameViewport();
+    gameViewport->OnEndDraw().AddUObject(this, &ACameraDirector::OnEndDraw);
 }
 
 void ACameraDirector::attachSpringArm(bool attach)
@@ -254,6 +250,10 @@ void ACameraDirector::inputEventNoDisplayView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
+
+    UWorld * world = GetWorld();
+    UGameViewportClient * gameViewport = world->GetGameViewport();
+    gameViewport->bDisableWorldRendering = 1;
 }
 
 void ACameraDirector::inputEventBackupView()
@@ -334,11 +334,11 @@ void ACameraDirector::OnEndDraw()
 
     UWorld * world = GetWorld();
     UGameViewportClient * gameViewport = world->GetGameViewport();
-
-    // disable rendering for the next frame
-    // this is done before making the callback since the callback
-    // may choose to capture the next frame
-    gameViewport->bDisableWorldRendering = 1;
+    if (ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == mode_) {
+        gameViewport->bDisableWorldRendering = 1;
+    } else {
+        gameViewport->bDisableWorldRendering = 0;
+    }
 
     // make the callback
     std::vector<capture_completion_callback_t> callbacks = std::move(capture_callbacks_);

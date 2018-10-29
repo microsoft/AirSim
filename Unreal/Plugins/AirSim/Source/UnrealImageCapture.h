@@ -28,6 +28,6 @@ private:
 private:
     const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras_;
     std::vector<uint8_t> last_compressed_png_;
-    bool offscreen_mode_;
+    bool nodisplay_;
     class ACameraDirector * const camera_director_;
 };

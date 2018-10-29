@@ -11,7 +11,6 @@
 #include <exception>
 #include "AirBlueprintLib.h"
 
-
 APIPCamera::APIPCamera()
 {
     static ConstructorHelpers::FObjectFinder<UMaterial> mat_finder(TEXT("Material'/AirSim/HUDAssets/CameraSensorNoise.CameraSensorNoise'"));
@@ -61,13 +60,13 @@ void APIPCamera::BeginPlay()
     //by default all image types are disabled
     camera_type_enabled_.assign(imageTypeCount(), false);
 
-    bool offscreen_mode = ::msr::airlib::AirSimSettings::singleton().offscreen_mode;
+    bool nodisplay = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == Utils::toEnum<ECameraDirectorMode>(::msr::airlib::AirSimSettings::singleton().initial_view_mode);
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         //use final color for all calculations
         captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
 
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
-        if (offscreen_mode) {
+        if (nodisplay) {
             USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
             if (capture != NULL) {
                 capture->bCaptureEveryFrame = false;
