@@ -5,9 +5,11 @@
 #include "ImageUtils.h"
 
 #include "AirBlueprintLib.h"
+#include "Async/Async.h"
+#include "CameraDirector.h"
 
-RenderRequest::RenderRequest(bool use_safe_method)
-    : use_safe_method_(use_safe_method), params_(nullptr), results_(nullptr), req_size_(0),
+RenderRequest::RenderRequest()
+    : params_(nullptr), results_(nullptr), req_size_(0),
     wait_signal_(new msr::airlib::WorkerThreadSignal)
 {
 }
@@ -18,7 +20,10 @@ RenderRequest::~RenderRequest()
 
 // read pixels from render target using render thread, then compress the result into PNG
 // argument on the thread that calls this method.
-void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size)
+void RenderRequest::getScreenshot(
+    std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size,
+    ACameraDirector * camera_director,
+    std::function<msr::airlib::Pose(unsigned request_index)> get_camera_pose_cb)
 {
     //TODO: is below really needed?
     for (unsigned int i = 0; i < req_size; ++i) {
@@ -34,37 +39,40 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
     //make sure we are not on the rendering thread
     CheckNotBlockedOnRenderThread();
 
-    if (use_safe_method_) {
-        for (unsigned int i = 0; i < req_size; ++i) {
-            //TODO: below doesn't work right now because it must be running in game thread
-            FIntPoint img_size;
-            if (!params[i]->pixels_as_float) {
-                //below is documented method but more expensive because it forces flush
-                FTextureRenderTargetResource* rt_resource = params[i]->render_target->GameThread_GetRenderTargetResource();
-                auto flags = setupRenderResource(rt_resource, params[i].get(), results[i].get(), img_size);
-                rt_resource->ReadPixels(results[i]->bmp, flags);
+    params_ = params;
+    results_ = results.data();
+    req_size_ = req_size;
+
+    AsyncTask(ENamedThreads::GameThread, [camera_director, this, &get_camera_pose_cb]() {
+        camera_director->CaptureOneshot([this, get_camera_pose_cb]() {
+            for (unsigned int i = 0; i < req_size_; ++i) {
+                results_[i]->camera_pose = get_camera_pose_cb(i);
             }
-            else {
-                FTextureRenderTargetResource* rt_resource = params[i]->render_target->GetRenderTargetResource();
-                setupRenderResource(rt_resource, params[i].get(), results[i].get(), img_size);
-                rt_resource->ReadFloat16Pixels(results[i]->bmp_float);
-            }
+
+            // The completion is called immeidately after GameThread sends the
+            // rendering commands to RenderThread. Hence, our ExecuteTask will
+            // execute *immediately* after RenderThread renders the scene!
+            ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
+                SceneDrawCompletion,
+                RenderRequest *, This, this,
+                {
+                    This->ExecuteTask();
+                }
+            );
+        });
+
+        // while we're still on GameThread, enqueue request for capture the scene!
+        for (unsigned int i = 0; i < req_size_; ++i) {
+            params_[i]->render_component->CaptureSceneDeferred();
         }
-    }
-    else {
-        //wait for render thread to pick up our task
-        params_ = params;
-        results_ = results.data();
-        req_size_ = req_size;
+    });
 
-
-        // Queue up the task of rendering the scene in the render thread
-        TGraphTask<RenderRequest>::CreateTask().ConstructAndDispatchWhenReady(*this);
-
-        // wait for this task to complete
-        if (!wait_signal_->waitFor(5)) {
-            throw std::runtime_error("timeout waiting for screenshot");
-        }
+    // wait for this task to complete
+    while (!wait_signal_->waitFor(5)) {
+        // log a message and continue wait
+        // lamda function still references a few objects for which there is no refcount.
+        // Walking away will cause memory corruption, which is much more difficult to debug.
+        UE_LOG(LogTemp, Warning, TEXT("Failed: timeout waiting for screenshot"));
     }
 
     for (unsigned int i = 0; i < req_size; ++i) {

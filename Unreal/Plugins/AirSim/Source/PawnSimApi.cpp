@@ -39,7 +39,7 @@ PawnSimApi::PawnSimApi(const Params& params)
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
 
     setupCamerasFromSettings(params_.cameras);
-	image_capture_.reset(new UnrealImageCapture(&cameras_));
+	image_capture_.reset(new UnrealImageCapture(params.camera_director, &cameras_));
 	
     //add listener for pawn's collision event
     params_.pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);

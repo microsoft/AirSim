@@ -11,12 +11,13 @@ class RenderRequest : public FRenderCommand
 {
 public:
     struct RenderParams {
+        USceneCaptureComponent2D * const render_component;
         UTextureRenderTarget2D* render_target;
         bool pixels_as_float;
         bool compress;
 
-        RenderParams(UTextureRenderTarget2D* render_target_val, bool pixels_as_float_val, bool compress_val)
-            : render_target(render_target_val), pixels_as_float(pixels_as_float_val), compress(compress_val)
+        RenderParams(USceneCaptureComponent2D * render_component_val, UTextureRenderTarget2D* render_target_val, bool pixels_as_float_val, bool compress_val)
+            : render_component(render_component_val), render_target(render_target_val), pixels_as_float(pixels_as_float_val), compress(compress_val)
         {
         }
     };
@@ -31,11 +32,11 @@ public:
         int height;
 
         msr::airlib::TTimePoint time_stamp;
+        msr::airlib::Pose camera_pose;
     };
 
 private:
     static FReadSurfaceDataFlags setupRenderResource(const FTextureRenderTargetResource* rt_resource, const RenderParams* params, RenderResult* result, FIntPoint& size);
-    bool use_safe_method_;
 
     std::shared_ptr<RenderParams>* params_;
     std::shared_ptr<RenderResult>* results_;
@@ -45,7 +46,7 @@ private:
 
 
 public:
-    RenderRequest(bool use_safe_method = false);
+    RenderRequest();
     ~RenderRequest();
 
     void DoTask(ENamedThreads::Type CurrentThread, const FGraphEventRef& MyCompletionGraphEvent)
@@ -60,7 +61,10 @@ public:
 
     // read pixels from render target using render thread, then compress the result into PNG
     // argument on the thread that calls this method.
-    void getScreenshot(std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size);
+    void getScreenshot(
+        std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size,
+        class ACameraDirector * camera_director,
+        std::function<msr::airlib::Pose(unsigned request_index)> get_camera_pose_cb);
 
     void ExecuteTask();
 };
