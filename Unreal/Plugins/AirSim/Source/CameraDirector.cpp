@@ -217,6 +217,8 @@ void ACameraDirector::inputEventSpringArmChaseView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::inputEventGroundView()
@@ -229,6 +231,8 @@ void ACameraDirector::inputEventGroundView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::inputEventManualView()
@@ -240,6 +244,8 @@ void ACameraDirector::inputEventManualView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::inputEventNoDisplayView()
@@ -254,6 +260,8 @@ void ACameraDirector::inputEventNoDisplayView()
     UWorld * world = GetWorld();
     UGameViewportClient * gameViewport = world->GetGameViewport();
     gameViewport->bDisableWorldRendering = 1;
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::inputEventBackupView()
@@ -265,6 +273,8 @@ void ACameraDirector::inputEventBackupView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "backup_camera", LogDebugLevel::Failure);
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::inputEventFrontView()
@@ -276,6 +286,8 @@ void ACameraDirector::inputEventFrontView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "backup_camera", LogDebugLevel::Failure);
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::inputEventFlyWithView()
@@ -292,6 +304,8 @@ void ACameraDirector::inputEventFlyWithView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::inputEventFpvView()
@@ -303,6 +317,8 @@ void ACameraDirector::inputEventFpvView()
     }
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "fpv_camera", LogDebugLevel::Failure);
+
+    notifyViewModeChanged();
 }
 
 void ACameraDirector::disableCameras(bool fpv, bool backup, bool external, bool front)
@@ -315,6 +331,18 @@ void ACameraDirector::disableCameras(bool fpv, bool backup, bool external, bool 
         ExternalCamera->disableMain();
     if (front && front_camera_)
         front_camera_->disableMain();
+}
+
+void ACameraDirector::notifyViewModeChanged()
+{
+    if (fpv_camera_)
+        fpv_camera_->onViewModeChanged(static_cast<int>(mode_));
+    if (backup_camera_)
+        backup_camera_->onViewModeChanged(static_cast<int>(mode_));
+    if (ExternalCamera)
+        ExternalCamera->onViewModeChanged(static_cast<int>(mode_));
+    if (front_camera_)
+        front_camera_->onViewModeChanged(static_cast<int>(mode_));
 }
 
 void ACameraDirector::CaptureOneshot(capture_completion_callback_t&& completion_callback)

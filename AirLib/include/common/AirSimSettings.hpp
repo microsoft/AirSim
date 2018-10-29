@@ -29,6 +29,8 @@ public: //types
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
     static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
+
+
     struct SubwindowSetting {
         int window_index;
         ImageType image_type;

@@ -11,6 +11,7 @@
 #include <exception>
 #include "AirBlueprintLib.h"
 
+
 APIPCamera::APIPCamera()
 {
     static ConstructorHelpers::FObjectFinder<UMaterial> mat_finder(TEXT("Material'/AirSim/HUDAssets/CameraSensorNoise.CameraSensorNoise'"));
@@ -60,20 +61,14 @@ void APIPCamera::BeginPlay()
     //by default all image types are disabled
     camera_type_enabled_.assign(imageTypeCount(), false);
 
-    bool nodisplay = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == Utils::toEnum<ECameraDirectorMode>(::msr::airlib::AirSimSettings::singleton().initial_view_mode);
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         //use final color for all calculations
         captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
 
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
-        if (nodisplay) {
-            USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
-            if (capture != NULL) {
-                capture->bCaptureEveryFrame = false;
-                capture->bCaptureOnMovement = false;
-            }
-        }
     }
+
+    onViewModeChanged(::msr::airlib::AirSimSettings::singleton().initial_view_mode);
 
     gimbal_stabilization_ = 0;
     gimbald_rotator_ = this->GetActorRotation();
@@ -422,6 +417,21 @@ void APIPCamera::disableMain()
     //    controller->SetViewTarget(nullptr);
 }
 
+void APIPCamera::onViewModeChanged(int newMode)
+{
+    bool nodisplay = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == Utils::toEnum<ECameraDirectorMode>(newMode);
 
-
+    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+        USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
+        if (capture) {
+            if (nodisplay) {
+                capture->bCaptureEveryFrame = false;
+                capture->bCaptureOnMovement = false;
+            } else {
+                capture->bCaptureEveryFrame = true;
+                capture->bCaptureOnMovement = true;
+            }
+        }
+    }
+}
 
