@@ -29,15 +29,17 @@ if "%RebuildAirSim%"=="true" (
 
 IF NOT EXIST "%OutputPath%" mkdir "%OutputPath%"
 
-call:doOneProject "CityEnviron"
+REM call:doOneProject "Warehouse"
+call:doOneProject "TalkingHeads"
 call:doOneProject "ZhangJiaJie"
 call:doOneProject "AirSimEnvNH"
+call:doOneProject "SimpleMaze"
 call:doOneProject "LandscapeMountains"
 call:doOneProject "Africa_001" "Africa"
-call:doOneProject "SimpleMaze"
-call:doOneProject "Coastline"
-call:doOneProject "Warehouse"
 call:doOneProject "Forest"
+call:doOneProject "Coastline"
+call:doOneProject "TrapCamera"
+call:doOneProject "CityEnviron"
 
 goto :done
 
@@ -49,7 +51,7 @@ if "%~2"=="" (
 )
 if ERRORLEVEL 1 goto :failed
 
-robocopy "%AirSimPath%\Unreal\Environments\Blocks" . update_from_git.bat  /njh /njs /ndl /np
+robocopy "%AirSimPath%\Unreal\Environments\Blocks" . *.bat  /njh /njs /ndl /np
 
 CALL update_from_git.bat "%AirSimPath%"
 if ERRORLEVEL 1 goto :failed
