@@ -12,7 +12,7 @@ UnrealImageCapture::UnrealImageCapture(ACameraDirector * camera_director, const 
 {
     //TODO: explore screenshot option
     //addScreenCaptureHandler(camera->GetWorld());
-    nodisplay_ =  ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == Utils::toEnum<ECameraDirectorMode>(::msr::airlib::AirSimSettings::singleton().initial_view_mode);
+    nodisplay_ =  ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == static_cast<ECameraDirectorMode>(::msr::airlib::AirSimSettings::singleton().initial_view_mode);
 }
 
 UnrealImageCapture::~UnrealImageCapture()
