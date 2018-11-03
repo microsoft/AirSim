@@ -491,7 +491,7 @@ void ASimModeBase::setupVehiclesAndCamera()
             const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
             const std::string vehicle_name = std::string(TCHAR_TO_UTF8(*(vehicle_pawn->GetName())));
 
-            PawnSimApi::Params pawn_sim_api_params(vehicle_pawn, CameraDirector, &getGlobalNedTransform(),
+            PawnSimApi::Params pawn_sim_api_params(vehicle_pawn, &getGlobalNedTransform(),
                 getVehiclePawnEvents(vehicle_pawn), getVehiclePawnCameras(vehicle_pawn), pip_camera_class, 
                 collision_display_template, home_geopoint, vehicle_name);
 

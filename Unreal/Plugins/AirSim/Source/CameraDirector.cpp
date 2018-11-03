@@ -79,10 +79,6 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
     default:
         throw std::out_of_range("Unsupported view mode specified in CameraDirector::initializeForBeginPlay");
     }
-
-    UWorld * world = GetWorld();
-    UGameViewportClient * gameViewport = world->GetGameViewport();
-    gameViewport->OnEndDraw().AddUObject(this, &ACameraDirector::OnEndDraw);
 }
 
 void ACameraDirector::attachSpringArm(bool attach)
@@ -257,10 +253,6 @@ void ACameraDirector::inputEventNoDisplayView()
     else
         UAirBlueprintLib::LogMessageString("Camera is not available: ", "ExternalCamera", LogDebugLevel::Failure);
 
-    UWorld * world = GetWorld();
-    UGameViewportClient * gameViewport = world->GetGameViewport();
-    gameViewport->bDisableWorldRendering = 1;
-
     notifyViewModeChanged();
 }
 
@@ -343,34 +335,12 @@ void ACameraDirector::notifyViewModeChanged()
         ExternalCamera->onViewModeChanged(static_cast<int>(mode_));
     if (front_camera_)
         front_camera_->onViewModeChanged(static_cast<int>(mode_));
-}
-
-void ACameraDirector::CaptureOneshot(capture_completion_callback_t&& completion_callback)
-{
-    check(IsInGameThread());
-    UWorld * world = GetWorld();
-    UGameViewportClient * gameViewport = world->GetGameViewport();
-
-    // enable rendering for current frame
-    gameViewport->bDisableWorldRendering = 0;
-    capture_callbacks_.push_back(std::move(completion_callback));
-}
-
-void ACameraDirector::OnEndDraw()
-{
-    check(IsInGameThread());
 
     UWorld * world = GetWorld();
     UGameViewportClient * gameViewport = world->GetGameViewport();
-    if (ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == mode_) {
+    if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY) {
         gameViewport->bDisableWorldRendering = 1;
     } else {
         gameViewport->bDisableWorldRendering = 0;
-    }
-
-    // make the callback
-    std::vector<capture_completion_callback_t> callbacks = std::move(capture_callbacks_);
-    for(auto cb: callbacks) {
-        cb();
     }
 }

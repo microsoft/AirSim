@@ -36,8 +36,7 @@ public: //types
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
     struct Params {
-        APawn* pawn;
-        ACameraDirector * const camera_director;
+        APawn* pawn; 
         const NedTransform* global_transform;
         PawnEvents* pawn_events;
         common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
@@ -46,11 +45,14 @@ public: //types
         msr::airlib::GeoPoint home_geopoint;
         std::string vehicle_name;
 
-        Params(APawn* pawn_val, ACameraDirector * camera_director_val, const NedTransform* global_transform_val, PawnEvents* pawn_events_val,
+        Params()
+        {
+        }
+
+        Params(APawn* pawn_val, const NedTransform* global_transform_val, PawnEvents* pawn_events_val,
             const common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_val, UClass* pip_camera_class_val,
             UParticleSystem* collision_display_template_val, const msr::airlib::GeoPoint home_geopoint_val,
             std::string vehicle_name_val)
-            : camera_director(camera_director_val)
         {
             pawn = pawn_val; 
             global_transform = global_transform_val;

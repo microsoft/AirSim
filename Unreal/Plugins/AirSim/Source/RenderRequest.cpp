@@ -6,10 +6,11 @@
 
 #include "AirBlueprintLib.h"
 #include "Async/Async.h"
-#include "CameraDirector.h"
+#include "Engine.h"
 
-RenderRequest::RenderRequest()
+RenderRequest::RenderRequest(UGameViewportClient * game_viewport, std::function<void()>&& query_camera_pose_cb)
     : params_(nullptr), results_(nullptr), req_size_(0),
+    game_viewport_(game_viewport), query_camera_pose_cb_(std::move(query_camera_pose_cb)),
     wait_signal_(new msr::airlib::WorkerThreadSignal)
 {
 }
@@ -20,10 +21,7 @@ RenderRequest::~RenderRequest()
 
 // read pixels from render target using render thread, then compress the result into PNG
 // argument on the thread that calls this method.
-void RenderRequest::getScreenshot(
-    std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size,
-    ACameraDirector * camera_director,
-    std::function<msr::airlib::Pose(unsigned request_index)> get_camera_pose_cb)
+void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size)
 {
     //TODO: is below really needed?
     for (unsigned int i = 0; i < req_size; ++i) {
@@ -43,11 +41,16 @@ void RenderRequest::getScreenshot(
     results_ = results.data();
     req_size_ = req_size;
 
-    AsyncTask(ENamedThreads::GameThread, [camera_director, this, &get_camera_pose_cb]() {
-        camera_director->CaptureOneshot([this, get_camera_pose_cb]() {
-            for (unsigned int i = 0; i < req_size_; ++i) {
-                results_[i]->camera_pose = get_camera_pose_cb(i);
-            }
+    AsyncTask(ENamedThreads::GameThread, [this]() {
+        check(IsInGameThread());
+
+        saved_DisableWorldRendering_ = game_viewport_->bDisableWorldRendering;
+        game_viewport_->bDisableWorldRendering = 0;
+        end_draw_handle_ = game_viewport_->OnEndDraw().AddLambda([this] {
+            check(IsInGameThread());
+
+            // capture CameraPose for this frame
+            query_camera_pose_cb_();
 
             // The completion is called immeidately after GameThread sends the
             // rendering commands to RenderThread. Hence, our ExecuteTask will
@@ -59,6 +62,11 @@ void RenderRequest::getScreenshot(
                     This->ExecuteTask();
                 }
             );
+
+            game_viewport_->bDisableWorldRendering = saved_DisableWorldRendering_;
+
+            assert(end_draw_handle_.IsValid());
+            game_viewport_->OnEndDraw().Remove(end_draw_handle_);
         });
 
         // while we're still on GameThread, enqueue request for capture the scene!

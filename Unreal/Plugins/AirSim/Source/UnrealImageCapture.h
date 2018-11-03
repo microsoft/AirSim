@@ -11,7 +11,7 @@ class UnrealImageCapture : public msr::airlib::ImageCaptureBase
 public:
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 
-    UnrealImageCapture(class ACameraDirector * camera_director, const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras);
+    UnrealImageCapture(const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras);
     virtual ~UnrealImageCapture();
 
     virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const override;
@@ -28,6 +28,4 @@ private:
 private:
     const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras_;
     std::vector<uint8_t> last_compressed_png_;
-    bool nodisplay_;
-    class ACameraDirector * const camera_director_;
 };

@@ -32,7 +32,6 @@ public:
         int height;
 
         msr::airlib::TTimePoint time_stamp;
-        msr::airlib::Pose camera_pose;
     };
 
 private:
@@ -44,9 +43,13 @@ private:
 
     std::shared_ptr<msr::airlib::WorkerThreadSignal> wait_signal_;
 
+    bool saved_DisableWorldRendering_ = false;
+    UGameViewportClient * const game_viewport_;
+    FDelegateHandle end_draw_handle_;
+    std::function<void()> query_camera_pose_cb_;
 
 public:
-    RenderRequest();
+    RenderRequest(UGameViewportClient * game_viewport, std::function<void()>&& query_camera_pose_cb);
     ~RenderRequest();
 
     void DoTask(ENamedThreads::Type CurrentThread, const FGraphEventRef& MyCompletionGraphEvent)
@@ -62,9 +65,7 @@ public:
     // read pixels from render target using render thread, then compress the result into PNG
     // argument on the thread that calls this method.
     void getScreenshot(
-        std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size,
-        class ACameraDirector * camera_director,
-        std::function<msr::airlib::Pose(unsigned request_index)> get_camera_pose_cb);
+        std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size);
 
     void ExecuteTask();
 };

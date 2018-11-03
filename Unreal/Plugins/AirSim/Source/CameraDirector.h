@@ -36,9 +36,6 @@ public:
     UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     APIPCamera* ExternalCamera;
 
-    using capture_completion_callback_t = std::function<void()>;
-    void CaptureOneshot(capture_completion_callback_t&& completion_callback);
-
 public:
     void inputEventFpvView();
     void inputEventGroundView();
@@ -74,7 +71,6 @@ private:
     void attachSpringArm(bool attach);
     void disableCameras(bool fpv, bool backup, bool external, bool front);
     void notifyViewModeChanged();
-    void OnEndDraw();
 
 private:
     typedef common_utils::Utils Utils;
@@ -96,5 +92,4 @@ private:
     bool ext_obs_fixed_z_;
     int follow_distance_;
     bool camera_rotation_lag_enabled_;
-    std::vector<capture_completion_callback_t> capture_callbacks_;
 };
