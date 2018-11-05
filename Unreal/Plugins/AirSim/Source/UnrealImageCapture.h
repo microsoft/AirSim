@@ -18,7 +18,7 @@ public:
 
 private:
     void getSceneCaptureImage(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
-        std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const;
+        std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method) const;
 
     void addScreenCaptureHandler(UWorld *world);
     bool getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng);

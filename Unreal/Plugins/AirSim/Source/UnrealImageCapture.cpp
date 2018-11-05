@@ -25,20 +25,27 @@ void UnrealImageCapture::getImages(const std::vector<msr::airlib::ImageCaptureBa
         }
     }
     else
-        getSceneCaptureImage(requests, responses);
+        getSceneCaptureImage(requests, responses, false);
 }
 
 
 void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
-    std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const
+    std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method) const
 {
     std::vector<std::shared_ptr<RenderRequest::RenderParams>> render_params;
     std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
 
+    bool visibilityChanged = false;
     for (unsigned int i = 0; i < requests.size(); ++i) {
         APIPCamera* camera = cameras_->at(requests.at(i).camera_name);
         //TODO: may be we should have these methods non-const?
-        const_cast<UnrealImageCapture*>(this)->updateCameraVisibility(camera, requests[i]);
+        visibilityChanged = const_cast<UnrealImageCapture*>(this)->updateCameraVisibility(camera, requests[i]) || visibilityChanged;
+    }
+
+    if (use_safe_method && visibilityChanged) {
+        // We don't do game/render thread synchronization for safe method.
+        // We just blindly sleep for 200ms (the old way)
+        std::this_thread::sleep_for(std::chrono::duration<double>(0.2));
     }
 
     UGameViewportClient * gameViewport = nullptr;
@@ -82,7 +89,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     };
     RenderRequest render_request { gameViewport, std::move(query_camera_pose_cb) };
 
-    render_request.getScreenshot(render_params.data(), render_results, render_params.size());
+    render_request.getScreenshot(render_params.data(), render_results, render_params.size(), use_safe_method);
 
     for (unsigned int i = 0; i < requests.size(); ++i) {
         const ImageRequest& request = requests.at(i);
@@ -93,6 +100,13 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
         response.image_data_uint8 = std::vector<uint8_t>(render_results[i]->image_data_uint8.GetData(), render_results[i]->image_data_uint8.GetData() + render_results[i]->image_data_uint8.Num());
         response.image_data_float = std::vector<float>(render_results[i]->image_data_float.GetData(), render_results[i]->image_data_float.GetData() + render_results[i]->image_data_float.Num());
 
+        if (use_safe_method) {
+            // Currently, we don't have a way to synthronize image capturing and camera pose when safe method is used, 
+            APIPCamera* camera = cameras_->at(request.camera_name);
+            msr::airlib::Pose pose = camera->getPose();
+            response.camera_position = pose.position;
+            response.camera_orientation = pose.orientation;
+        }
         response.pixels_as_float = request.pixels_as_float;
         response.compress = request.compress;
         response.width = render_results[i]->width;
