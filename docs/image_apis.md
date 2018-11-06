@@ -50,11 +50,11 @@ client = airsim.MultirotorClient()
 
 responses = client.simGetImages([
     # png format
-    airsim.ImageRequest(0, airsim.AirSimImageType.Scene), 
+    airsim.ImageRequest(0, airsim.ImageType.Scene), 
     # uncompressed RGBA array bytes
-    airsim.ImageRequest(1, airsim.AirSimImageType.Scene, False, False),
+    airsim.ImageRequest(1, airsim.ImageType.Scene, False, False),
     # floating point uncompressed image
-    airsim.ImageRequest(1, airsim.AirSimImageType.DepthPlanner, True)])
+    airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
  
  # do something with response which contains image data, pose, timestamp etc
 ```
