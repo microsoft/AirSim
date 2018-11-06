@@ -5,9 +5,11 @@
 #include "ImageUtils.h"
 
 #include "AirBlueprintLib.h"
+#include "Async/Async.h"
 
-RenderRequest::RenderRequest(bool use_safe_method)
-    : use_safe_method_(use_safe_method), params_(nullptr), results_(nullptr), req_size_(0),
+RenderRequest::RenderRequest(UGameViewportClient * game_viewport, std::function<void()>&& query_camera_pose_cb)
+    : params_(nullptr), results_(nullptr), req_size_(0),
+    game_viewport_(game_viewport), query_camera_pose_cb_(std::move(query_camera_pose_cb)),
     wait_signal_(new msr::airlib::WorkerThreadSignal)
 {
 }
@@ -18,7 +20,7 @@ RenderRequest::~RenderRequest()
 
 // read pixels from render target using render thread, then compress the result into PNG
 // argument on the thread that calls this method.
-void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size)
+void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size, bool use_safe_method)
 {
     //TODO: is below really needed?
     for (unsigned int i = 0; i < req_size; ++i) {
@@ -34,7 +36,7 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
     //make sure we are not on the rendering thread
     CheckNotBlockedOnRenderThread();
 
-    if (use_safe_method_) {
+    if (use_safe_method) {
         for (unsigned int i = 0; i < req_size; ++i) {
             //TODO: below doesn't work right now because it must be running in game thread
             FIntPoint img_size;
@@ -57,13 +59,47 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
         results_ = results.data();
         req_size_ = req_size;
 
+        // Queue up the task of querying camera pose in the game thread and synchronizing render thread with camera pose
+        AsyncTask(ENamedThreads::GameThread, [this]() {
+            check(IsInGameThread());
 
-        // Queue up the task of rendering the scene in the render thread
-        TGraphTask<RenderRequest>::CreateTask().ConstructAndDispatchWhenReady(*this);
+            saved_DisableWorldRendering_ = game_viewport_->bDisableWorldRendering;
+            game_viewport_->bDisableWorldRendering = 0;
+            end_draw_handle_ = game_viewport_->OnEndDraw().AddLambda([this] {
+                check(IsInGameThread());
+
+                // capture CameraPose for this frame
+                query_camera_pose_cb_();
+
+                // The completion is called immeidately after GameThread sends the
+                // rendering commands to RenderThread. Hence, our ExecuteTask will
+                // execute *immediately* after RenderThread renders the scene!
+                ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
+                    SceneDrawCompletion,
+                    RenderRequest *, This, this,
+                    {
+                        This->ExecuteTask();
+                    }
+                );
+
+                game_viewport_->bDisableWorldRendering = saved_DisableWorldRendering_;
+
+                assert(end_draw_handle_.IsValid());
+                game_viewport_->OnEndDraw().Remove(end_draw_handle_);
+            });
+
+            // while we're still on GameThread, enqueue request for capture the scene!
+            for (unsigned int i = 0; i < req_size_; ++i) {
+                params_[i]->render_component->CaptureSceneDeferred();
+            }
+        });
 
         // wait for this task to complete
-        if (!wait_signal_->waitFor(5)) {
-            throw std::runtime_error("timeout waiting for screenshot");
+        while (!wait_signal_->waitFor(5)) {
+            // log a message and continue wait
+            // lamda function still references a few objects for which there is no refcount.
+            // Walking away will cause memory corruption, which is much more difficult to debug.
+            UE_LOG(LogTemp, Warning, TEXT("Failed: timeout waiting for screenshot"));
         }
     }
 

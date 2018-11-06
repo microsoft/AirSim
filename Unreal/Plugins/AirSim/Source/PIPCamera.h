@@ -36,6 +36,7 @@ public:
     void disableAll();
     void disableAllPIP();
     void disableMain();
+    void onViewModeChanged(int newMode);
 
     void setCameraTypeEnabled(ImageType type, bool enabled);
     bool getCameraTypeEnabled(ImageType type) const;

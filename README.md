@@ -1,6 +1,6 @@
 # Welcome to AirSim
 
-AirSim is a simulator for drones, cars and more, built on Unreal Engine. It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment you want.
+AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/). It is open-source, cross platform and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment you want.
 
 Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
@@ -21,7 +21,7 @@ Cars in AirSim
 * AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see the [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
 * We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
 
-[List of newly added features](docs/whats_new.md)
+For complete list of changes, view our [Changelog](docs/whats_new.md)
 
 ## How to Get It
 
@@ -106,15 +106,15 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 
 ### Who is Using AirSim?
 
-We are [maintaining a list](docs/who_is_using.md) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [add a request here](https://github.com/microsoft/airsim/issues).
+We are maintaining a [list](docs/who_is_using.md) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [make a request here](https://github.com/microsoft/airsim/issues).
 
 ## Contact
 
-Join the [AirSim group at Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
+Join the AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
 
 ## FAQ
 
-If you run into problems, check the [FAQ](docs/faq.md) and feel free to post issues on the [AirSim github](https://github.com/Microsoft/AirSim/issues).
+If you run into problems, check the [FAQ](docs/faq.md) and feel free to post issues in the  [AirSim](https://github.com/Microsoft/AirSim/issues) repository.
 
 ## License
 

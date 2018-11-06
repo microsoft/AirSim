@@ -68,6 +68,8 @@ void APIPCamera::BeginPlay()
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 
+    onViewModeChanged(::msr::airlib::AirSimSettings::singleton().initial_view_mode);
+
     gimbal_stabilization_ = 0;
     gimbald_rotator_ = this->GetActorRotation();
     this->SetActorTickEnabled(false);
@@ -415,6 +417,21 @@ void APIPCamera::disableMain()
     //    controller->SetViewTarget(nullptr);
 }
 
+void APIPCamera::onViewModeChanged(int newMode)
+{
+    bool nodisplay = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == Utils::toEnum<ECameraDirectorMode>(newMode);
 
-
+    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+        USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
+        if (capture) {
+            if (nodisplay) {
+                capture->bCaptureEveryFrame = false;
+                capture->bCaptureOnMovement = false;
+            } else {
+                capture->bCaptureEveryFrame = true;
+                capture->bCaptureOnMovement = true;
+            }
+        }
+    }
+}
 
