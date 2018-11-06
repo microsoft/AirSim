@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "common/WorkerThread.hpp"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/GameViewportClient.h"
 #include <memory>
 #include "common/Common.hpp"
 

@@ -5,6 +5,7 @@
 #define msr_airlib_LidarSimpleParams_hpp
 
 #include "common/Common.hpp"
+#include "common/AirSimSettings.hpp"
 
 namespace msr { namespace airlib {
 
