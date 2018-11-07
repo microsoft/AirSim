@@ -14,7 +14,7 @@ import airsim #pip install airsim
 # for car use CarClient() 
 client = airsim.MultirotorClient()
 
-png_image = client.simGetImage("0", airsim.AirSimImageType.Scene)
+png_image = client.simGetImage("0", airsim.ImageType.Scene)
 # do something with image
 ```
 
@@ -50,11 +50,11 @@ client = airsim.MultirotorClient()
 
 responses = client.simGetImages([
     # png format
-    airsim.ImageRequest(0, airsim.AirSimImageType.Scene), 
+    airsim.ImageRequest(0, airsim.ImageType.Scene), 
     # uncompressed RGBA array bytes
-    airsim.ImageRequest(1, airsim.AirSimImageType.Scene, False, False),
+    airsim.ImageRequest(1, airsim.ImageType.Scene, False, False),
     # floating point uncompressed image
-    airsim.ImageRequest(1, airsim.AirSimImageType.DepthPlanner, True)])
+    airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
  
  # do something with response which contains image data, pose, timestamp etc
 ```
@@ -64,7 +64,7 @@ responses = client.simGetImages([
 If you plan to use numpy for image manipulation, you should get uncompressed RGBA image and then convert to numpy like this:
 
 ```python
-responses = client.simGetImages([ImageRequest("0", AirSimImageType.Scene, False, False)])
+responses = client.simGetImages([ImageRequest("0", airsim.ImageType.Scene, False, False)])
 response = responses[0]
 
 # get numpy array
