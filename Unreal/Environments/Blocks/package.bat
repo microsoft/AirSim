@@ -5,8 +5,14 @@ set ROOT_DIR=%~dp0
 
 set OutPath=%1
 set ToolPath=%2
+set UEVer=%3
 
-if "%ToolPath%"=="" set "ToolPath=%PROGRAMFILES%\Epic Games\UE_4.18\Engine\Build\BatchFiles"
+if "%UEVer%"=="" set "UEVer=4.18"
+
+set "_ToolPath=%PROGRAMFILES%\Epic Games\UE_%UEVer%\Engine\Build\BatchFiles"
+if "%ToolPath%"=="" set ToolPath=%_ToolPath%
+if "%ToolPath%"=="""" set ToolPath=%_ToolPath%
+
 IF NOT EXIST "%ToolPath%" (
 	echo "Unreal Engine build path %ToolPath% was not found"
 	goto :failed
@@ -48,7 +54,7 @@ goto :done
 
 :failed
 echo "Error occured while packaging"
-echo "Usage: package.bat <path\to\output> <path to Engine\Build\BatchFiles>"
+echo "Usage: package.bat <path\to\output> <path to Engine\Build\BatchFiles> <UE Version>"
 exit /b 1
 
 :done

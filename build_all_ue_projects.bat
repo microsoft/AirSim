@@ -11,6 +11,8 @@ REM Output folder where the builds would be stored
 set OutputPath=%3
 REM folder containing AirSim repo
 set AirSimPath=%4
+REM path for UE toolset
+set ToolPath=%5
 
 REM set defaults if ars are not supplied
 if "%UnrealProjsPath%"=="" set "UnrealProjsPath=D:\vso\msresearch\Theseus"
@@ -29,7 +31,6 @@ if "%RebuildAirSim%"=="true" (
 
 IF NOT EXIST "%OutputPath%" mkdir "%OutputPath%"
 
-REM call:doOneProject "Warehouse"
 call:doOneProject "TalkingHeads"
 call:doOneProject "ZhangJiaJie"
 call:doOneProject "AirSimEnvNH"
@@ -40,10 +41,13 @@ call:doOneProject "Forest"
 call:doOneProject "Coastline"
 call:doOneProject "TrapCamera"
 call:doOneProject "CityEnviron"
+call:doOneProject "Warehouse"
+call:doOneProject "Plains" "" 4.19
 
 goto :done
 
 :doOneProject
+REM args: OutputPath ToolPath UEVer
 if "%~2"=="" (
  cd /D "%UnrealProjsPath%\%~1"
 ) else (
@@ -56,7 +60,7 @@ robocopy "%AirSimPath%\Unreal\Environments\Blocks" . *.bat  /njh /njs /ndl /np
 CALL update_from_git.bat "%AirSimPath%"
 if ERRORLEVEL 1 goto :failed
 
-CALL package.bat "%OutputPath%"
+CALL package.bat "%OutputPath%" "%ToolPath%" %~3
 if ERRORLEVEL 1 goto :failed
 
 goto :done
