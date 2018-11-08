@@ -1,13 +1,19 @@
-REM @echo off
+@echo off
 REM //---------- set up variable ----------
 setlocal
 set ROOT_DIR=%~dp0
 
 REM root folder for repos
 set RepoRoot=%1
+set CommitMessage=%2
+
+IF "%CommitMessage%"=="" (
+	echo "CommitMessage needs to be provided"
+	goto :failed
+)
 
 IF NOT EXIST %RepoRoot% (
-	echo "Specify root directory for repo as argument!"
+	echo "RepoRoot needs to be provided"
 	goto :failed
 )
 
@@ -33,12 +39,11 @@ TrapCamera
 Warehouse
 ZhangJiaJie
        ) do (
-echo Now doing "%%x"
-cd %RepoRoot%
-cd
+@echo Now doing "%%x"
+cd /d %RepoRoot%
 cd "%%x"
 git add -A
-git commit -m "By gitcomitall.bat"
+git commit -m %CommitMessage%
 git push
 cd ..
        )
@@ -47,8 +52,8 @@ cd ..
 goto :done
 
 :failed
-echo "Error occured while packaging"
-echo "Usage: package.bat <path\to\output> <path to Engine\Build\BatchFiles> <UE Version>"
+@echo "Error occured"
+@echo Usage: gitcommitall <repo root> <commit message>
 cd "%ROOT_DIR%"
 exit /b 1
 
