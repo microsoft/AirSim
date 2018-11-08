@@ -33,8 +33,8 @@ TrapCamera
 Warehouse
 ZhangJiaJie
        ) do (
-cd %RepoRoot%
 echo Now doing "%%x"
+cd %RepoRoot%
 cd "%%x"
 git add -A
 git commit -m "By gitcomitall.bat"
