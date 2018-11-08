@@ -3,6 +3,7 @@
 #include "common/AirSimSettings.hpp"
 #include "CarPawnSimApi.h"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
+#include "../../PInvokeWrapper.h"
 
 SimModeCar::SimModeCar(std::string car_name, int port_number) : SimModeBase(car_name, port_number)
 {
@@ -32,6 +33,8 @@ void SimModeCar::pause(bool is_paused)
 		current_clockspeed_ = 0;
 	else
 		current_clockspeed_ = getSettings().clock_speed;
+
+	Pause(vehicle_name_.c_str(), current_clockspeed_);
 }
 
 void SimModeCar::continueForTime(double seconds)

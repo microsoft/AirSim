@@ -1,0 +1,263 @@
+fileFormatVersion: 2
+guid: 65423102110e8eb40af557f331c91648
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Camera
+    100002: Camera 1
+    100004: Drone 1
+    100006: //RootNode
+    100008: Kameragestell
+    100010: Linsenglas
+    100012: Rotor1
+    100014: Rotor2
+    100016: Rotor3
+    100018: Rotor4
+    100020: Rotors
+    100022: node_id13
+    100024: node_id13 1
+    100026: node_id13 2
+    100028: node_id17
+    100030: node_id17 1
+    100032: node_id17 2
+    100034: node_id21
+    100036: node_id21 1
+    100038: node_id21 2
+    100040: node_id25
+    100042: node_id25 1
+    100044: node_id28
+    100046: node_id29
+    100048: node_id29 1
+    100050: node_id32
+    100052: node_id34
+    100054: node_id5
+    100056: node_id5 1
+    100058: node_id8
+    100060: node_id9
+    100062: node_id9 1
+    100064: node_id9 2
+    400000: Camera
+    400002: Camera 1
+    400004: Drone 1
+    400006: //RootNode
+    400008: Kameragestell
+    400010: Linsenglas
+    400012: Rotor1
+    400014: Rotor2
+    400016: Rotor3
+    400018: Rotor4
+    400020: Rotors
+    400022: node_id13
+    400024: node_id13 1
+    400026: node_id13 2
+    400028: node_id17
+    400030: node_id17 1
+    400032: node_id17 2
+    400034: node_id21
+    400036: node_id21 1
+    400038: node_id21 2
+    400040: node_id25
+    400042: node_id25 1
+    400044: node_id28
+    400046: node_id29
+    400048: node_id29 1
+    400050: node_id32
+    400052: node_id34
+    400054: node_id5
+    400056: node_id5 1
+    400058: node_id8
+    400060: node_id9
+    400062: node_id9 1
+    400064: node_id9 2
+    2100000: shd_white
+    2100002: shd_red
+    2100004: shd_metal
+    2100006: shd_black
+    2100008: shd_silber
+    2100010: shd_matt_silber
+    2100012: shd_grey
+    2100014: shd_glas
+    2100016: shd_camera_lens
+    2100018: Material_118
+    2100020: Material_120
+    2100022: Material_122
+    2100024: Material_124
+    2100026: Material_126
+    2100028: Material_128
+    2100030: Material_130
+    2100032: Material_59
+    2100034: Material_132
+    2100036: Material_134
+    2100038: Material_136
+    2100040: Material_138
+    2100042: Material_140
+    2100044: Material_142
+    2100046: Material_144
+    2100048: Material_146
+    2100050: Material_68
+    2100052: Material_69
+    2100054: Material_70
+    2300000: Camera 1
+    2300002: Drone 1
+    2300004: Kameragestell
+    2300006: Linsenglas
+    2300008: Rotor1
+    2300010: Rotor2
+    2300012: Rotor3
+    2300014: Rotor4
+    2300016: node_id13
+    2300018: node_id13 1
+    2300020: node_id13 2
+    2300022: node_id17
+    2300024: node_id17 1
+    2300026: node_id17 2
+    2300028: node_id21
+    2300030: node_id21 1
+    2300032: node_id21 2
+    2300034: node_id25
+    2300036: node_id25 1
+    2300038: node_id29
+    2300040: node_id29 1
+    2300042: node_id32
+    2300044: node_id5
+    2300046: node_id5 1
+    2300048: node_id9
+    2300050: node_id9 1
+    2300052: node_id9 2
+    3300000: Camera 1
+    3300002: Drone 1
+    3300004: Kameragestell
+    3300006: Linsenglas
+    3300008: Rotor1
+    3300010: Rotor2
+    3300012: Rotor3
+    3300014: Rotor4
+    3300016: node_id13
+    3300018: node_id13 1
+    3300020: node_id13 2
+    3300022: node_id17
+    3300024: node_id17 1
+    3300026: node_id17 2
+    3300028: node_id21
+    3300030: node_id21 1
+    3300032: node_id21 2
+    3300034: node_id25
+    3300036: node_id25 1
+    3300038: node_id29
+    3300040: node_id29 1
+    3300042: node_id32
+    3300044: node_id5
+    3300046: node_id5 1
+    3300048: node_id9
+    3300050: node_id9 1
+    3300052: node_id9 2
+    4300000: Drone
+    4300002: Rotor4
+    4300004: Rotor3
+    4300006: Rotor2
+    4300008: Rotor1
+    4300010: Kameragestell
+    4300012: Camera
+    4300014: Linsenglas
+    4300016: node_id5
+    4300018: node_id5
+    4300020: node_id9
+    4300022: node_id9
+    4300024: node_id9
+    4300026: node_id13
+    4300028: node_id13
+    4300030: node_id13
+    4300032: node_id17
+    4300034: node_id17
+    4300036: node_id17
+    4300038: node_id21
+    4300040: node_id21
+    4300042: node_id21
+    4300044: node_id25
+    4300046: node_id25
+    4300048: node_id29
+    4300050: node_id29
+    4300052: node_id32
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
