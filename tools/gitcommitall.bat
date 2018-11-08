@@ -11,8 +11,6 @@ IF NOT EXIST %RepoRoot% (
 	goto :failed
 )
 
-cd %RepoRoot%
-
 for %%x in (
 1919Presentation
 Africa
@@ -35,6 +33,7 @@ TrapCamera
 Warehouse
 ZhangJiaJie
        ) do (
+cd %RepoRoot%
 echo Now doing "%%x"
 cd "%%x"
 git add -A
