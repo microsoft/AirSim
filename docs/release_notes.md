@@ -1,6 +1,6 @@
 # Release Notes
 
-**Please see [What's new](whats_new.md). This page is not maintained currently.**
+**Please see [changelog](CHANGELOG.md). This page is not maintained currently.**
 
 
 ## v1.1 - 2017-09-28

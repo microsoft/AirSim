@@ -17,11 +17,17 @@ Cars in AirSim
 
 ## What's New
 
-* AirSim is now full featured for [multiple vehicles](docs/multi_vehicle.md)!
+* [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
+* Highly efficient [NoDisplay view mode](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
+* [Lidar Sensor](docs/lidar.md)
+* Case Study: [Formula Student Technion Driverless](https://github.com/Microsoft/AirSim/wiki/technion)
+* [Multi-Vehicle Capability](docs/multi_vehicle.md)
+* [ROS publisher](https://github.com/Microsoft/AirSim/pull/1135)
+* [Arducopter Solo Support](https://github.com/Microsoft/AirSim/pull/1387)
 * AirSim 1.2 is released! **This version has breaking changes in APIs and settings.json.** Please see the [API Upgrade](docs/upgrade_apis.md) and [Settings Upgrade](docs/upgrade_settings.md) docs.
 * We have upgraded to Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](docs/unreal_upgrade.md))
 
-For complete list of changes, view our [Changelog](docs/whats_new.md)
+For complete list of changes, view our [Changelog](CHANGELOG.md)
 
 ## How to Get It
 
@@ -101,8 +107,8 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 
 * [More on AirSim design](docs/design.md)
 * [More on code structure](docs/code_structure.md)
-* [Contribution Guidelines](docs/contributing.md)
-
+* [Contribution Guidelines](CONTRIBUTING.md)
+* [Trello Board](https://trello.com/b/1t2qCeaA/wishlist-by-community-for-community)
 
 ### Who is Using AirSim?
 

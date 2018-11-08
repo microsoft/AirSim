@@ -1,6 +1,23 @@
 # What's new
 
-Below is highly summerized curated list of important changes. This does not include minor/less important changes or bug fixes or things like documentation update. This list updated every few months. For full list of changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
+Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
+
+### November, 2018
+* [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
+* Highly efficient [NoDisplay view mode](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
+* [Enable/disable sensors](https://github.com/Microsoft/AirSim/pull/1479) via settings
+* [Lidar Sensor](docs/lidar.md)
+* [Support for Flysky FS-SM100 RC](https://github.com/Microsoft/AirSim/commit/474214364676b6631c01b3ed79d00c83ba5bccf5) USB adapter
+* Case Study: [Formula Student Technion Driverless](https://github.com/Microsoft/AirSim/wiki/technion)
+* [Multi-Vehicle Capability](docs/multi_vehicle.md)
+* [Custom speed units](https://github.com/Microsoft/AirSim/pull/1181)
+* [ROS publisher](https://github.com/Microsoft/AirSim/pull/1135)
+* [simSetObjectPose API](https://github.com/Microsoft/AirSim/pull/1161)
+* [Character Control APIs](https://github.com/Microsoft/AirSim/blob/master/PythonClient/airsim/client.py#L137) (works on TalkingHeads binaries in release)
+* [Arducopter Solo Support](https://github.com/Microsoft/AirSim/pull/1387)
+* [Linux install without sudo access](https://github.com/Microsoft/AirSim/pull/1434)
+* [Kinect like ROS publisher](https://github.com/Microsoft/AirSim/pull/1298)
+
 
 ### June, 2018
 * Development workflow doc
