@@ -278,7 +278,9 @@ public:
 		, RealT& pitch, RealT& roll, RealT& yaw)
 	{
 		//z-y-x rotation convention (Tait-Bryan angles) 
+        //Apply yaw, pitch and roll in order to front vector (+X)
 		//http://www.sedris.org/wg8home/Documents/WG80485.pdf
+        //http://www.ctralie.com/Teaching/COMPSCI290/Materials/EulerAnglesViz/
 
 		RealT ysqr = q.y() * q.y();
 
