@@ -35,6 +35,7 @@ ZhangJiaJie
        ) do (
 echo Now doing "%%x"
 cd %RepoRoot%
+pwd
 cd "%%x"
 git add -A
 git commit -m "By gitcomitall.bat"
