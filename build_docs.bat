@@ -27,29 +27,34 @@ cd /d %BUILD_DIR%
 if "%1"=="no_serve" goto PromptYN
 mkdocs serve
 
-:PromptYN
-REM if exist "%SystemRoot%\System32\choice.exe" goto UseChoice
-setlocal EnableExtensions EnableDelayedExpansion
-:UseSetPrompt
-set "PromptMessage=Do you want to commit to GitHub Pages [Y/N]? "
-set "UserChoice=N"
-set /P "UserChoice=%PromptMessage%"
-set "UserChoice=!UserChoice: =!"
-if /I "!UserChoice!" == "N" endlocal & goto :AnswerNo
-if /I not "!UserChoice!" == "Y" goto UseSetPrompt
-endlocal
-goto AnswerYes
-REM :UseChoice
-REM %SystemRoot%\System32\choice.exe /C YN /N /M "%PromptMessage%"
-REM if errorlevel 2 goto :AnswerNo
+REM :PromptYN
+REM REM if exist "%SystemRoot%\System32\choice.exe" goto UseChoice
+REM setlocal EnableExtensions EnableDelayedExpansion
+REM :UseSetPrompt
+REM set "PromptMessage=Do you want to commit to GitHub Pages [Y/N]? "
+REM set "UserChoice=N"
+REM set /P "UserChoice=%PromptMessage%"
+REM set "UserChoice=!UserChoice: =!"
+REM if /I "!UserChoice!" == "N" endlocal & goto :AnswerNo
+REM if /I not "!UserChoice!" == "Y" goto UseSetPrompt
+REM endlocal
 REM goto AnswerYes
+REM REM :UseChoice
+REM REM %SystemRoot%\System32\choice.exe /C YN /N /M "%PromptMessage%"
+REM REM if errorlevel 2 goto :AnswerNo
+REM REM goto AnswerYes
 
-:AnswerYes
-@echo Building and commiting to gh-pages branch...
+REM :AnswerYes
+REM @echo Building and commiting to gh-pages branch...
 mkdocs build
 
+@echo Next Steps:
+@echo git checkout gh-pages
+@echo Copy "%BUILD_DIR%\build" to root
+@echo Push gh-pages
+
 REM batch file will get deleted so must execute commands in one line
-git checkout gh-pages && cd /d %BUILD_DIR% && robocopy "%BUILD_DIR%\build" "%ROOT_DIR%docs" /MIR /njh /njs /ndl /np /nfl /r:0
+REM git checkout gh-pages && cd /d %BUILD_DIR% && robocopy "%BUILD_DIR%\build" "%ROOT_DIR%docs" /MIR /njh /njs /ndl /np /nfl /r:0
 
 
 goto success
