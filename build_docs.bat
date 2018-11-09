@@ -47,9 +47,10 @@ REM goto AnswerYes
 :AnswerYes
 @echo Building and commiting to gh-pages branch...
 mkdocs build
-git checkout gh-pages
-cd /d %BUILD_DIR%
-robocopy "%BUILD_DIR%\build" "%ROOT_DIR%docs" /MIR /njh /njs /ndl /np /nfl /r:0
+
+REM batch file will get deleted so must execute commands in one line
+git checkout gh-pages && cd /d %BUILD_DIR% && robocopy "%BUILD_DIR%\build" "%ROOT_DIR%docs" /MIR /njh /njs /ndl /np /nfl /r:0
+
 
 goto success
 
