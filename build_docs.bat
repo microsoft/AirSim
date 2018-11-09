@@ -49,7 +49,7 @@ REM goto AnswerYes
 mkdocs build
 git checkout gh-pages
 cd /d %BUILD_DIR%
-REM robocopy "docs" "%BUILD_DIR%\build" /MIR /njh /njs /ndl /np /nfl /r:0
+robocopy "%BUILD_DIR%\build" "%ROOT_DIR%docs" /MIR /njh /njs /ndl /np /nfl /r:0
 
 goto success
 
