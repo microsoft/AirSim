@@ -1,48 +1,38 @@
 #ifndef LOGGER_FILE
 #define LOGGER_FILE
 
-#include <iostream>
 #include <fstream>
+
+#define LOGGER Logger::GetLogger()
 
 class Logger
 {
-private:
-	Logger(Logger const&) = delete;
-	void operator=(Logger const&) = delete;
-
 public:
-	enum LogType {
+	enum LogLevel {
 		Information,
-		Warnning,
+		Warning,
 		Error
 	};
-	static bool firstTimeFileAccess;
+
+private:
+	Logger() {}
+	Logger(Logger const&) = delete;
+	void operator=(Logger const&) = delete;
+	std::string GetCurrentDateTime();
+
+	bool logLevel_Information;
+	bool logLevel_Warning;
+	bool logLevel_Error;
+
+	static Logger* logger;
+	static std::ofstream fileStream;
+	std::string logFileName;
 
 public:
-	static void WriteLogLine(std::string logLine, LogType type)
-	{
-		std::ofstream file;
-		if (firstTimeFileAccess)
-		{
-			file.open("WrapperDllLog.txt", std::ios::out);
-			firstTimeFileAccess = false;
-		}
-		else
-		{
-			file.open("WrapperDllLog.txt", std::ios::app);
-		}
-
-		std::string typeString = "Information";
-		if (type == LogType::Error)
-			typeString = "Error";
-		else if (type == LogType::Warnning)
-			typeString = "Warnning";
-
-		file << typeString.c_str() << " -\t";
-		file << logLine.c_str() << "\n";
-		file.flush();
-		file.close();
-	}
+	~Logger();
+	static Logger* GetLogger();
+	void WriteLog(const std::string log, LogLevel type = LogLevel::Information);
+	void SetLogLevel(LogLevel level, bool status);
 };
 
 #endif // !LOGGER_FILE

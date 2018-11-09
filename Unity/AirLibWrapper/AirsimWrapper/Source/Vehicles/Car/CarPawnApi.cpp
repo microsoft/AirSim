@@ -29,7 +29,7 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 	AirSimCarState carState = GetCarState(car_name_.c_str());
 
 	CarApiBase::CarState state(
-		carState.speed / 100,
+		carState.speed,
 		carState.gear,
 		carState.engineRotationSpeed,
 		carState.engineMaxRotationSpeed,
