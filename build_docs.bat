@@ -27,7 +27,7 @@ cd /d %BUILD_DIR%
 if "%1"=="no_serve" goto PromptYN
 mkdocs serve
 
-REM :PromptYN
+:PromptYN
 REM REM if exist "%SystemRoot%\System32\choice.exe" goto UseChoice
 REM setlocal EnableExtensions EnableDelayedExpansion
 REM :UseSetPrompt
@@ -47,6 +47,9 @@ REM REM goto AnswerYes
 REM :AnswerYes
 REM @echo Building and commiting to gh-pages branch...
 mkdocs build
+robocopy "%BUILD_DIR%\doc_root\docs\images" "%BUILD_DIR%\build\images" /MIR /njh /njs /ndl /np /nfl /r:0
+robocopy "%BUILD_DIR%\doc_root\docs\misc" "%BUILD_DIR%\build\misc" /MIR /njh /njs /ndl /np /nfl /r:0
+robocopy "%BUILD_DIR%\doc_root\docs\paper" "%BUILD_DIR%\build\paper" /MIR /njh /njs /ndl /np /nfl /r:0
 
 @echo Next Steps:
 @echo git checkout gh-pages
