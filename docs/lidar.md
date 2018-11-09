@@ -55,8 +55,8 @@ Use `getLidarData()` API to retrieve the Lidar data.
 * The coordinates are in the local vehicle NED like all other AirSim APIs.
 
 ### Python Examples
-[drone_lidar.py](../PythonClient/multirotor)
-[car_lidar.py](../PythonClient/car)
+[drone_lidar.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor)
+[car_lidar.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car)
 
 ## Coming soon
 * Visualization of lidar data on client side.

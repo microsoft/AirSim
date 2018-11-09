@@ -94,4 +94,17 @@ Below is summarized list of important changes. This does not include minor/less 
 * The [reinforcement learning example](docs/reinforcement_learning.md) with AirSim
 * New built-in flight controller called [simple_flight](docs/simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
 * AirSim now also generates [depth as well as disparity images](docs/image_apis.md) that is in camera plan. 
-* We also have official Linux build now! If you have been using AirSim with PX4, you might want to read the [release notes](docs/release_notes.md).
+* We also have official Linux build now!
+
+## Sep 2017
+- We have added [car model](docs/using_car.md)!
+
+## Aug 2017
+- [simple_flight](docs/simple_flight.md) is now default flight controller for drones. If you want to use PX4, you will need to modify settings.json as per [PX4 setup doc](docs/px4_setup.md).
+- Linux build is official and currently uses Unreal 4.17 due to various bug fixes required
+- ImageType enum has breaking changes with several new additions and clarifying existing ones
+- SubWindows are now configurable from settings.json
+- PythonClient is now complete and has parity with C++ APIs. Some of these would have breaking changes.
+
+## Feb 2017
+- First release!

@@ -12,7 +12,7 @@ First install this package:
 pip install msgpack-rpc-python
 ```
 
-You can either get AirSim binaries from [releases](https://github.com/Microsoft/AirSim/releases) or compile from the source ([Windows](https://github.com/Microsoft/AirSim/blob/master/docs/build_windows.md), [Linux](https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md)). Once you can run AirSim, choose Car as vehicle and then navigate to `PythonClient\car\` folder and run:
+You can either get AirSim binaries from [releases](https://github.com/Microsoft/AirSim/releases) or compile from the source ([Windows](build_windows.md), [Linux](build_linux.md)). Once you can run AirSim, choose Car as vehicle and then navigate to `PythonClient\car\` folder and run:
 
 ```
 python hello_car.py
@@ -125,12 +125,12 @@ for response in responses:
 
 
 ### Image / Computer Vision APIs
-AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](../Examples/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
+AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
 
 More on [image APIs and Computer Vision mode](image_apis.md).
 
 ### Pause and Continue APIs
-AirSim allows to pause and continue the simulation through `pause(is_paused)` API. To pause the simulation call `pause(True)` and to continue the simulation call `pause(False)`. You may have scenario, especially while using reinforcement learning, to run the simulation for specified amount of time and then automatically pause. While simulation is paused, you may then do some expensive computation, send a new command and then again run the simulation for specified amount of time. This can be achieved by API `continueForTime(seconds)`. This API runs the simulation for the specified number of seconds and then pauses the simulation. For example usage, please see [pause_continue_car.py](../PythonClient/car/pause_continue_car.py) and [pause_continue_drone.py](../PythonClient/multirotor/pause_continue_drone.py).
+AirSim allows to pause and continue the simulation through `pause(is_paused)` API. To pause the simulation call `pause(True)` and to continue the simulation call `pause(False)`. You may have scenario, especially while using reinforcement learning, to run the simulation for specified amount of time and then automatically pause. While simulation is paused, you may then do some expensive computation, send a new command and then again run the simulation for specified amount of time. This can be achieved by API `continueForTime(seconds)`. This API runs the simulation for the specified number of seconds and then pauses the simulation. For example usage, please see [pause_continue_car.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/pause_continue_car.py) and [pause_continue_drone.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/pause_continue_drone.py).
 
 
 ### Collision API
@@ -140,7 +140,7 @@ The collision information can be obtained using `simGetCollisionInfo` API. This 
 AirSim supports multiple vehicles and control them through APIs. Please [Multiple Vehicles](multi_vehicle.md) doc.
 
 ### Coordinate System
-All AirSim API uses NED coordinate system, i.e., +X is North, +Y is East and +Z is Down. All units are in SI system. Please note that this is different from coordinate system used internally by Unreal Engine. In Unreal Engine, +Z is up instead of down and length unit is in centimeters instead of meters. AirSim APIs takes care of the appropriate conversions. The starting point of the vehicle is always coordinates (0, 0, 0) in NED system. Thus when converting from Unreal coordinates to NED, we first subtract the starting offset and then scale by 100 for cm to m conversion. The vehicle is spawned in Unreal environment where the Player Start component is placed. There is a setting called `OriginGeopoint` in [settings.json](setings.md) which assigns geographic longitude, longitude and altitude to the Player Start component.
+All AirSim API uses NED coordinate system, i.e., +X is North, +Y is East and +Z is Down. All units are in SI system. Please note that this is different from coordinate system used internally by Unreal Engine. In Unreal Engine, +Z is up instead of down and length unit is in centimeters instead of meters. AirSim APIs takes care of the appropriate conversions. The starting point of the vehicle is always coordinates (0, 0, 0) in NED system. Thus when converting from Unreal coordinates to NED, we first subtract the starting offset and then scale by 100 for cm to m conversion. The vehicle is spawned in Unreal environment where the Player Start component is placed. There is a setting called `OriginGeopoint` in [settings.json](settings.md) which assigns geographic longitude, longitude and altitude to the Player Start component.
 
 ## Vehicle Specific APIs
 ### APIs for Car
@@ -202,9 +202,9 @@ The APIs use [msgpack-rpc protocol](https://github.com/msgpack-rpc/msgpack-rpc) 
 ## References and Examples
 
 * [C++ API Examples](apis_cpp.md)
-* [Car Examples](../PythonClient/car)
-* [Multirotor Examples](../PythonClient/multirotor)
-* [Computer Vision Examples](../PythonClient/computer_vision)
+* [Car Examples](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car)
+* [Multirotor Examples](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor)
+* [Computer Vision Examples](https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision)
 * [Move on Path](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo) demo showing video of fast multirotor flight through Modular Neighborhood environment
 * [Building a Hexacopter](https://github.com/Microsoft/AirSim/wiki/hexacopter)
 * [Building Point Clouds](https://github.com/Microsoft/AirSim/wiki/Point-Clouds)

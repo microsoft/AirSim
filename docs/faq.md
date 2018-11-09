@@ -37,7 +37,7 @@ Unreal 4.15 added the ability for Foliage LOD dithering to be disabled on a case
 See [XBox controller](xbox_controller.md) for details.
 
 #### Can I build a hexacopter with AirSim?
-See [how to build a hexacopter](hexacopter.md).
+See [how to build a hexacopter](https://github.com/microsoft/airsim/wiki/hexacopter).
 
 #### How do I use AirSim with multiple vehicles?
 Here is [multi-vehicle setup guide](multi_vehicle.md).

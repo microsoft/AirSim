@@ -27,7 +27,7 @@ If not sensors are specified in the settings json, the the following sensors are
 ### ComputerVision
 * None
 
-Please see 'createDefaultSensorSettings' method in [AirSimSettings.hpp](../AirLib/include/common/) 
+Please see 'createDefaultSensorSettings' method in [AirSimSettings.hpp](https://github.com/Microsoft/AirSim/tree/master/AirLib//include/common/) 
 
 ## Configuration of Default Sensor list
 
@@ -99,7 +99,7 @@ If a vehicle provides its sensor list, it must provide the whole list. Selective
 ### Shared settings
 There are two shared settings:
 * SensorType
-        An integer representing the sensor-type [SensorBase.hpp](../AirLib/include/sensors/)
+        An integer representing the sensor-type [SensorBase.hpp](https://github.com/Microsoft/AirSim/tree/master/AirLib//include/sensors/)
 ```
         enum class SensorType : uint {
             Barometer = 1,
