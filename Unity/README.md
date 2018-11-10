@@ -17,21 +17,26 @@ Download Unity [here](https://unity3d.com/get-unity/download).
 ### Run the AirLib setup
 Follow the instructions found [here](https://github.com/Microsoft/AirSim/blob/master/docs/build_windows.md). You can skip the Unreal steps.
 
-### Windows Steps
+### Steps for Windows and Linux
 
 #### Download it
 You can download a prebuilt version of the Demo project in the releases page. Or you can follow the next section to build it yourself.
 
 #### Build it
-Run the `build.cmd` script to install the neccesary components before you start your Unity project. 
+##### Windows
+Run the `build.cmd` script to install the necessary components before you start your Unity project.
+
+##### Linux
+Run the `build.sh` script inside the Unity folder to install the necessary components before you start your unity project. Be sure to run `setup.sh` and `build.sh` in the main airsim folder before this step. 
 
 ### Start the Unity Project
 Start Unity and click Open project. Select the folder UnityDemo, and then hit the button `SelectFolder`. A Unity project will open up with default scene `SimModeSelector`.
 
 Hit the play button, and the Car demo will start. If you want to load the Drone demo, you can select the scene `DroneDemo`, or you can change the SimMode to be Multirotor in your Settings.json file.
 You can read more about Settings.json [here](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md).
+Note: On Linux OS, Unity's settings folder is located inside the main project directory, titled `unity-settings.json`.
 
-### Linux/Mac Steps
+### Mac Steps
 This is currently unsupported, but we hope to add support for this in the future. This would involved building the AirlibWrapper to a plugin format as described [here](https://docs.unity3d.com/Manual/PluginsForDesktop.html).
 
 In the meantime, you can setup your simulator in the Windows Unity editor, and build for your desired platform.
