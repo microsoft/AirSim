@@ -171,7 +171,7 @@ The `simGetCameraInfo` returns the pose (in world frame, NED coordinates, SI uni
 
 The `simSetCameraOrientation` sets the orientation for the specified camera as quaternion in NED frame. The handy `airsim.to_quaternion()` function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch, you can use:
 ```
-client.simSetCameraOrientation(0, airsim.toQuaternion(0.261799, 0, 0)); #radians
+client.simSetCameraOrientation(0, airsim.to_quaternion(0.261799, 0, 0)); #radians
 ```
 
 ### Gimbal
