@@ -1,8 +1,15 @@
 #include "CarPawnApi.h"
 #include "../../PInvokeWrapper.h"
 
-CarPawnApi::CarPawnApi(CarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint, std::string car_name)
-	: pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint), car_name_(car_name)
+
+CarPawnApi::CarPawnApi(CarPawn* pawn, 
+	const msr::airlib::Kinematics::State* pawn_kinematics, 
+	const msr::airlib::GeoPoint& home_geopoint, 
+	std::string car_name)
+	: pawn_(pawn), 
+	pawn_kinematics_(pawn_kinematics), 
+	home_geopoint_(home_geopoint), 
+	car_name_(car_name)
 {
 }
 
