@@ -16,7 +16,7 @@ matrix:
       sudo: required
       services:
         - docker
-    - os: windows
+    # - os: windows
 
     # OS X CMake
     #- os: osx
