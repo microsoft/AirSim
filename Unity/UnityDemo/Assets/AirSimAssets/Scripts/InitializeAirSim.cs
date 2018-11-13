@@ -11,37 +11,52 @@ public class InitializeAirSim : MonoBehaviour
     {
         if (GetAirSimSettingsFileName() != string.Empty)
         {
-            if (AirSimSettings.Initialize())
-            {
-                if (AirSimSettings.GetSettings().SimMode != "")
+			if(AirSimSettings.Initialize())
+			{
+
+                switch (AirSimSettings.GetSettings().SimMode)
                 {
-                    LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
-                }
+                    case "Car":
+                    {
+                        LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
+                        break;
+                    }
+                    case "Multirotor":
+                    {
+                        LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
+                        break;
+                    }
+				}
             }
         }
         else
         {
 #if UNITY_EDITOR
             EditorUtility.DisplayDialog("Missing 'Settings.json' file!!!", "'Settings.json' file either not present or not configured properly.", "Exit");
-            EditorApplication.Exit(1);
+            // EditorApplication.Exit(1);
 #else
             Application.Quit();
 #endif
         }
-        
     }
-    
-    
+
     public static string GetAirSimSettingsFileName()
     {
-        string fileName = Application.dataPath + "\\..\\settings.json";
 
+        #if _WIN32
+            string fileName = Application.dataPath + "\\..\\settings.json";
+        #else
+            string fileName = "../unity-settings.json";
+        #endif
+        // Debug.Log(fileName);
         if (File.Exists(fileName))
         {
             return fileName;
         }
 
-        fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("AirSim", "settings.json"));
+        #if _WIN32
+            fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("AirSim", "settings.json"));
+        #endif
         if (File.Exists(fileName))
         {
             return fileName;
@@ -75,7 +90,7 @@ public class InitializeAirSim : MonoBehaviour
 
     public void LoadSceneAsPerSimMode(string load_name)
     {
-        Debug.Log(load_name);
+        Debug.Log("loading sim");
         if (load_name == "Car")
             SceneManager.LoadSceneAsync("Scenes/CarDemo", LoadSceneMode.Single);
         else if (load_name == "Multirotor")

@@ -17,7 +17,9 @@ void StartServerThread(std::string vehicle_name, std::string sim_mode_name, int 
 
 extern "C" EXPORT bool StartServer(char* vehicle_name, char* sim_mode_name, int port_number)
 {
-	LOGGER->WriteLog("Starting server for : " + std::string(sim_mode_name));
+	#if _WIN32
+		LOGGER->WriteLog("Starting server for : " + std::string(sim_mode_name));//**
+	#endif
 	std::thread server_thread(StartServerThread, vehicle_name, sim_mode_name, port_number);
 	server_thread.detach();
 	int waitCounter = 25; // waiting for maximum 5 seconds to start a server.
@@ -37,8 +39,9 @@ extern "C" EXPORT void StopServer(char* vehicle_name)
 		delete key;
 		key = nullptr;
 	}
-
-	LOGGER->WriteLog("Server stopped");
+	#if _WIN32
+		LOGGER->WriteLog("Server stopped");
+	#endif
 }
 
 extern "C" EXPORT void CallTick(float deltaSeconds)

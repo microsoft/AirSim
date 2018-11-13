@@ -57,7 +57,7 @@ public: //methods
         }
         catch (std::exception& ex) {
             is_ready_ = false;
-            is_ready_message_ = Utils::stringf("Failed to connect: %s", ex.what());
+            is_ready_message_ = msr::airlib::Utils::stringf("Failed to connect: %s", ex.what());
         }
     }
 
@@ -103,7 +103,7 @@ public: //methods
         if (distance) {
             const auto& distance_output = distance->getOutput();
             float pitch, roll, yaw;
-            VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
+            msr::airlib::VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
 
             sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
                 distance_output.max_distance / 100, //m -> cm
@@ -120,14 +120,14 @@ public: //methods
             //send GPS
             if (gps_output.is_valid && gps_output.gnss.time_utc > last_gps_time_) {
                 last_gps_time_ = gps_output.gnss.time_utc;
-                Vector3r gps_velocity = gps_output.gnss.velocity;
-                Vector3r gps_velocity_xy = gps_velocity;
+                msr::airlib::Vector3r gps_velocity = gps_output.gnss.velocity;
+                msr::airlib::Vector3r gps_velocity_xy = gps_velocity;
                 gps_velocity_xy.z() = 0;
                 float gps_cog;
-                if (Utils::isApproximatelyZero(gps_velocity.y(), 1E-2f) && Utils::isApproximatelyZero(gps_velocity.x(), 1E-2f))
+                if (msr::airlib::Utils::isApproximatelyZero(gps_velocity.y(), 1E-2f) && msr::airlib::Utils::isApproximatelyZero(gps_velocity.x(), 1E-2f))
                     gps_cog = 0;
                 else
-                    gps_cog = Utils::radiansToDegrees(atan2(gps_velocity.y(), gps_velocity.x()));
+                    gps_cog = msr::airlib::Utils::radiansToDegrees(atan2(gps_velocity.y(), gps_velocity.x()));
                 if (gps_cog < 0)
                     gps_cog += 360;
 
@@ -169,11 +169,11 @@ public: //methods
         updateState();
         Kinematics::State state;
         //TODO: reduce code duplication in getPosition() etc methods?
-        state.pose.position = Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
-        state.pose.orientation = VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
-        state.twist.linear = Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
-        state.twist.angular = Vector3r(current_state_.attitude.roll_rate, current_state_.attitude.pitch_rate, current_state_.attitude.yaw_rate);
-        state.pose.position = Vector3r(current_state_.local_est.acc.x, current_state_.local_est.acc.y, current_state_.local_est.acc.z);
+        state.pose.position = msr::airlib::Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
+        state.pose.orientation = msr::airlib::VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
+        state.twist.linear = msr::airlib::Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
+        state.twist.angular = msr::airlib::Vector3r(current_state_.attitude.roll_rate, current_state_.attitude.pitch_rate, current_state_.attitude.yaw_rate);
+        state.pose.position = msr::airlib::Vector3r(current_state_.local_est.acc.x, current_state_.local_est.acc.y, current_state_.local_est.acc.z);
         //TODO: how do we get angular acceleration?
         return state;
     }
@@ -196,21 +196,21 @@ public: //methods
         }
     }
 
-    virtual Vector3r getPosition() const override
+    virtual msr::airlib::Vector3r getPosition() const override
     {
         updateState();
-        return Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
+        return msr::airlib::Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
     } 
-    virtual Vector3r getVelocity() const override
+    virtual msr::airlib::Vector3r getVelocity() const override
     {
         updateState();
-        return Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
+        return msr::airlib::Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
     }
 
-    virtual Quaternionr getOrientation() const override
+    virtual msr::airlib::Quaternionr getOrientation() const override
     {
         updateState();
-        return VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
+        return msr::airlib::VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
     }
 
     virtual LandedState getLandedState() const override
@@ -219,7 +219,7 @@ public: //methods
         return current_state_.controls.landed ? LandedState::Landed : LandedState::Flying;
     }
 
-    virtual real_T getActuation(unsigned int rotor_index) const override
+    virtual msr::airlib::real_T getActuation(unsigned int rotor_index) const override
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to read motor controls while not in simulation mode");
@@ -331,19 +331,19 @@ public: //methods
         return rc;
     }
 
-    virtual GeoPoint getHomeGeoPoint() const override
+    virtual msr::airlib::GeoPoint getHomeGeoPoint() const override
     {
         updateState();
         if (current_state_.home.is_set)
-            return GeoPoint(current_state_.home.global_pos.lat, current_state_.home.global_pos.lon, current_state_.home.global_pos.alt);
+            return msr::airlib::GeoPoint(current_state_.home.global_pos.lat, current_state_.home.global_pos.lon, current_state_.home.global_pos.alt);
         else
-            return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
+            return msr::airlib::GeoPoint(msr::airlib::Utils::nan<double>(), msr::airlib::Utils::nan<double>(), msr::airlib::Utils::nan<float>());
     }
 
-    virtual GeoPoint getGpsLocation() const override
+    virtual msr::airlib::GeoPoint getGpsLocation() const override
     {
         updateState();
-        return GeoPoint(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.global_est.pos.alt);
+        return msr::airlib::GeoPoint(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.global_est.pos.alt);
     }
 
     virtual void sendTelemetry(float last_interval = -1) override
@@ -466,12 +466,12 @@ protected: //methods
     }
 
 public: //types
-    typedef msr::airlib::GeoPoint GeoPoint;
-    typedef msr::airlib::VectorMath VectorMath;
-    typedef msr::airlib::Vector3r Vector3r;
-    typedef msr::airlib::Quaternionr Quaternionr;
-    typedef common_utils::Utils Utils;
-    typedef msr::airlib::real_T real_T;
+    // typedef msr::airlib::msr::airlib::GeoPoint msr::airlib::GeoPoint;
+    // typedef msr::airlib::msr::airlib::VectorMath msr::airlib::VectorMath;
+    // typedef msr::airlib::msr::airlib::Vector3r msr::airlib::Vector3r;
+    // typedef msr::airlib::msr::airlib::Quaternionr msr::airlib::Quaternionr;
+    // typedef common_utils::msr::airlib::Utils msr::airlib::Utils;
+    // typedef msr::airlib::msr::airlib::real_T msr::airlib::real_T;
 
     class MavLinkLogViewerLog : public mavlinkcom::MavLinkLog
     {
@@ -578,7 +578,7 @@ private: //methods
 
     }
 
-    void getMocapPose(Vector3r& position, Quaternionr& orientation) const
+    void getMocapPose(msr::airlib::Vector3r& position, msr::airlib::Quaternionr& orientation) const
     {
         position.x() = MocapPoseMessage.x; position.y() = MocapPoseMessage.y; position.z() = MocapPoseMessage.z;
         orientation.w() = MocapPoseMessage.q[0]; orientation.x() = MocapPoseMessage.q[1];
@@ -723,8 +723,8 @@ private: //methods
         else {
             //this applies to PX4 and may work differently on other firmwares. 
             //We use 0.2 as idle rotors which leaves out range of 0.8
-            for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
-                rotor_controls_[i] = Utils::clip(0.8f * rotor_controls_[i] + 0.20f, 0.0f, 1.0f);
+            for (size_t i = 0; i < msr::airlib::Utils::length(rotor_controls_); ++i) {
+                rotor_controls_[i] = msr::airlib::Utils::clip(0.8f * rotor_controls_[i] + 0.20f, 0.0f, 1.0f);
             }
         }
     }
@@ -736,7 +736,7 @@ private: //methods
             is_hil_mode_set_ = false;
             is_armed_ = false;
             is_controls_0_1_ = true;
-            Utils::setValue(rotor_controls_, 0.0f);
+            msr::airlib::Utils::setValue(rotor_controls_, 0.0f);
             //TODO: main_node_->setMessageInterval(...);
             connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                 unused(connection);
@@ -891,7 +891,7 @@ private: //methods
             throw std::invalid_argument("UdpPort setting has an invalid value.");
         }
 
-        addStatusMessage(Utils::stringf("Connecting to UDP port %d, local IP %s, remote IP...", port, connection_info_.local_host_ip.c_str(), ip.c_str()));
+        addStatusMessage(msr::airlib::Utils::stringf("Connecting to UDP port %d, local IP %s, remote IP...", port, connection_info_.local_host_ip.c_str(), ip.c_str()));
         connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
@@ -902,7 +902,7 @@ private: //methods
         if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0 && connection_info_.sitl_ip_port != port) {
             // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
             // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-            addStatusMessage(Utils::stringf("Connecting to PX4 SITL UDP port %d, local IP %s, remote IP...",
+            addStatusMessage(msr::airlib::Utils::stringf("Connecting to PX4 SITL UDP port %d, local IP %s, remote IP...",
                 connection_info_.sitl_ip_port, connection_info_.local_host_ip.c_str(), connection_info_.sitl_ip_address.c_str()));
 
             auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl",
@@ -973,7 +973,7 @@ private: //methods
         is_armed_ = armed;
         if (!armed) {
             //reset motor controls
-            for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
+            for (size_t i = 0; i < msr::airlib::Utils::length(rotor_controls_); ++i) {
                 rotor_controls_[i] = 0;
             }
         }
@@ -994,7 +994,7 @@ private: //methods
         std::lock_guard<std::mutex> guard_status(status_text_mutex_);
         //if queue became too large, clear it first
         if (status_messages_.size() > status_messages_MaxSize)
-            Utils::clear(status_messages_, status_messages_MaxSize - status_messages_.size());
+            msr::airlib::Utils::clear(status_messages_, status_messages_MaxSize - status_messages_.size());
         status_messages_.push(message);
     }
 
@@ -1067,13 +1067,13 @@ private: //methods
         //else ignore message
     }
 
-    void sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt)
+    void sendHILSensor(const msr::airlib::Vector3r& acceleration, const msr::airlib::Vector3r& gyro, const msr::airlib::Vector3r& mag, float abs_pressure, float pressure_alt)
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
 
         mavlinkcom::MavLinkHilSensor hil_sensor;
-        hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        hil_sensor.time_usec = static_cast<uint64_t>(msr::airlib::Utils::getTimeSinceEpochNanos() / 1000.0);
 
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
@@ -1105,7 +1105,7 @@ private: //methods
             throw std::logic_error("Attempt to send simulated distance sensor messages while not in simulation mode");
 
         mavlinkcom::MavLinkDistanceSensor distance_sensor;
-        distance_sensor.time_boot_ms = static_cast<uint32_t>(Utils::getTimeSinceEpochNanos() / 1000000.0);
+        distance_sensor.time_boot_ms = static_cast<uint32_t>(msr::airlib::Utils::getTimeSinceEpochNanos() / 1000000.0);
 
         distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
         distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
@@ -1123,14 +1123,14 @@ private: //methods
         last_distance_message_ = distance_sensor;
     }
 
-    void sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog,
+    void sendHILGps(const msr::airlib::GeoPoint& geo_point, const msr::airlib::Vector3r& velocity, float velocity_xy, float cog,
         float eph, float epv, int fix_type, unsigned int satellites_visible)
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
 
         mavlinkcom::MavLinkHilGps hil_gps;
-        hil_gps.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        hil_gps.time_usec = static_cast<uint64_t>(msr::airlib::Utils::getTimeSinceEpochNanos() / 1000.0);
         hil_gps.lat = static_cast<int32_t>(geo_point.latitude * 1E7);
         hil_gps.lon = static_cast<int32_t>(geo_point.longitude* 1E7);
         hil_gps.alt = static_cast<int32_t>(geo_point.altitude * 1000);
@@ -1149,8 +1149,8 @@ private: //methods
         }
 
         if (hil_gps.lat < 0.1f && hil_gps.lat > -0.1f) {
-            //Utils::DebugBreak();
-            Utils::log("hil_gps.lat was too close to 0", Utils::kLogLevelError);
+            //msr::airlib::Utils::DebugBreak();
+            msr::airlib::Utils::log("hil_gps.lat was too close to 0", msr::airlib::Utils::kLogLevelError);
         }
 
         std::lock_guard<std::mutex> guard(last_message_mutex_);
@@ -1170,7 +1170,7 @@ private: //methods
         target_height_ = 0;
         is_api_control_enabled_ = false;
         thrust_controller_ = PidController();
-        Utils::setValue(rotor_controls_, 0.0f);
+        msr::airlib::Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
         mocap_pose_ = Pose::nanPose();
     }
