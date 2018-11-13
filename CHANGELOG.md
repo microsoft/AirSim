@@ -3,6 +3,7 @@
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
 ### November, 2018
+* An experimental integration of AirSim with Unity on Windows is now available! Learn more [here](https://github.com/Microsoft/AirSim/tree/master/Unity). 
 * [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
 * Highly efficient [NoDisplay view mode](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
 * [Enable/disable sensors](https://github.com/Microsoft/AirSim/pull/1479) via settings
