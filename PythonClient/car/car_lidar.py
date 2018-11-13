@@ -25,11 +25,11 @@ class LidarTest:
     def execute(self):
 
         for i in range(3):
-
+           
             state = self.client.getCarState()
             s = pprint.pformat(state)
             #print("state: %s" % s)
-
+            
             # go forward
             self.car_controls.throttle = 0.5
             self.car_controls.steering = 0
@@ -43,7 +43,7 @@ class LidarTest:
             self.client.setCarControls(self.car_controls)
             print("Go Forward, steer right")
             time.sleep(3)   # let car drive a bit
-
+            
             airsim.wait_key('Press any key to get Lidar readings')
         
             for i in range(1,3):
@@ -53,6 +53,8 @@ class LidarTest:
                 else:
                     points = self.parse_lidarData(lidarData)
                     print("\tReading %d: time_stamp: %d number_of_points: %d" % (i, lidarData.time_stamp, len(points)))
+                    print("\t\tlidar position: %s" % (pprint.pformat(lidarData.pose.position)))
+                    print("\t\tlidar orientation: %s" % (pprint.pformat(lidarData.pose.orientation)))
                 time.sleep(5)
 
     def parse_lidarData(self, data):
