@@ -24,7 +24,7 @@ You can download a prebuilt version of the Demo project in the releases page. Or
 
 #### Build it
 ##### Windows
-Run the `build.cmd` script to install the neccesary components before you start your Unity project.
+Run the `build.cmd` script to install the necessary components before you start your Unity project.
 
 ##### Linux
 Run the `build.sh` script inside the Unity folder to install the necessary components before you start your unity project. Be sure to run `setup.sh` and `build.sh` in the main airsim folder before this step. 
