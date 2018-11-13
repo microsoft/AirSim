@@ -60,7 +60,8 @@ script:
       docker exec -t xenial /build/setup.sh;
       docker exec -t xenial /build/build.sh;
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-      .\build.cmd   
+      .\build.cmd;
+      .\Unity\build.cmd;
     elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       git submodule update --init --recursive;
       ./setup.sh;
