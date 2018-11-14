@@ -16,26 +16,38 @@ You can download a prebuilt version of the Demo project in the releases page.
 ### Building from source
 
 #### Install Unity
-* [Download Unity](https://unity3d.com/get-unity/download) via the **Unity Hub**. 
-* Install Unity using the Unity Hub by following [the instructions here](https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html). 
+* Download **Unity Hub** from [this page](https://unity3d.com/get-unity/download). 
+* Install **Unity 2018.2.15f1** using the Unity Hub. [Detailed instructions here](https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html). 
 * Note: If you are using Unity for the first time, check out [the Getting started guide](https://docs.unity3d.com/Manual/GettingStarted.html). The [Unity User Manual](https://docs.unity3d.com/Manual/UnityManual.html) has additional tips, resources, and FAQs.
 
+#### Build Airsim
+* Run `x64 Native Tools Command Prompt for VS 2017`. 
+* Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
+* Build AirSim: `build.cmd`
+
 #### Build Unity Project
-* `cd` to the [Unity folder](https://github.com/Microsoft/AirSim/tree/master/Unity) and run `build.cmd` script therein. 
-* Additionally, there is a free environment `Windridge City` which you can download from Unity Asset Store, which is perfect for AirSim experimentation. And, of course, you can always create your own environment.
+* Go inside the Unity directory: `cd Unity`. 
+* Build the unity project: `build.cmd`.   
+* Additionally, there is a free environment `Windridge City` which you can download from [Unity Asset Store](https://www.assetstore.unity3d.com/), which is perfect for AirSim experimentation. And, of course, you can always create your own environment.
 
 #### Usage 
-* Start Unity and click `Open project`. Select the folder `AirSim\Unity\UnityDemo`, and then hit the button `Select Folder`. A Unity project will open up with default scene `SimModeSelector`. (
-Make sure that *SimModeSelector* scene is loaded.)
-* Hit the play button, and the Car demo will start. 
-* If you want to load the Drone demo, you can select the scene `DroneDemo` in `Assets -> Scenes` in the pane at the bottom.  
-Alternatively, you can change the SimMode to be Multirotor in your Settings.json file. (You can read more about Settings.json [here](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md))
-* Use WASD/Arrow keys or AirSim client to control the car and PageUP/PageDown with WASD/Arrow keys to control drone.
-* Keys 0, 1, 2, and 3 are used to toggle windows of different camera views.
-* Press *Record* button(Red button) located at the right bottom corner of the screen, to toggle recording of the simulation data. The recorded data can be found at **Documents\AirSim\(Date of recording)**
+* Start Unity and click `Open project`. 
+* Select the folder `AirSim\Unity\UnityDemo`, and then hit the button `Select Folder`. 
+* In the bottom pane, Click on `Projects`->`Assets`->`Scenes`. Then, **Double-click** on `SimModeSelector`, `DroneDemo`, or `CarDemo`. 
+* Hit the play button to start the simulation (and hit play again to stop the simulation. .  
+* Alternatively, you can change the SimMode in your `Settings.json` file. (You can read more about `Settings.json` [here](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md))
+* Controlling the car:    
+Use `WASD` or the `Arrow keys` or the AirSim client.   
+* Controlling the drone:    
+Use the `PageUP`/`PageDown` with WASD/Arrow keys.
+* Changing camera views:    
+Keys 0, 1, 2, and 3 are used to toggle windows of different camera views.
+* Recording simulation data:    
+Press *Record* button(Red button) located at the right bottom corner of the screen, to toggle recording of the simulation data. The recorded data can be found at `Documents\AirSim\(Date of recording)`
 
 #### Using Airsim API
-See the details [here](https://github.com/Microsoft/AirSim/blob/master/docs/apis.md) on how to interact with your Airsim simulation using the APIs.  
+* For quickstart with the Python APIs for the car or the drone, simply run the [`hello_car.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/hello_car.py) or the [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py) script accordingly. 
+* Details of the AirSim C++ and Python APIs are [here](https://github.com/Microsoft/AirSim/blob/master/docs/apis.md). 
 
 ### Acknowledgements
 * The drone object was provided by user 31415926 on [sketchfab](https://sketchfab.com/models/055841df0fb24cd4abde06a91f7d360a). It is licensed under the [CC License](https://creativecommons.org/licenses/by/4.0/).
