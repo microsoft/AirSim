@@ -10,9 +10,10 @@ public:
 	typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
 public:
-    CarPawnApi(CarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint,
-        const msr::airlib::AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<msr::airlib::SensorFactory> sensor_factory,
-        const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment);
+	CarPawnApi(CarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint,
+		const msr::airlib::AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<msr::airlib::SensorFactory> sensor_factory,
+		const std::string car_name,
+		const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment);
 	virtual void setCarControls(const CarApiBase::CarControls& controls) override;
 	virtual CarApiBase::CarState getCarState() const override;
 	virtual void reset() override;

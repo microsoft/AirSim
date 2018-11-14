@@ -33,7 +33,10 @@ Once AirSim is set up by following above steps, you can,
 
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available.
 
-## FAQ
+# AirSim on Unity (Experimental)
+[Unity](https://unity3d.com/) is another great game engine platform and we have an [experimental release](https://github.com/Microsoft/AirSim/tree/master/Unity) of AirSim on Unity. Please note that this is work in progress and all features may not work yet. 
+
+# FAQ
 
 #### I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"
 Very likely you don't have [Windows SDK](https://developercommunity.visualstudio.com/content/problem/3754/cant-compile-c-program-because-of-sdk-81cant-add-a.html) installed with Visual Studio. 

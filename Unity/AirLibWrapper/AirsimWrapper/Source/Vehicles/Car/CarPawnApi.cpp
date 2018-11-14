@@ -3,10 +3,11 @@
 
 
 CarPawnApi::CarPawnApi(CarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint,
-    const msr::airlib::AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<msr::airlib::SensorFactory> sensor_factory,
-    const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment)
-    : msr::airlib::CarApiBase(vehicle_setting, sensor_factory, state, environment),
-    pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint)
+	const msr::airlib::AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<msr::airlib::SensorFactory> sensor_factory,
+	const std::string car_name,
+	const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment)
+	: msr::airlib::CarApiBase(vehicle_setting, sensor_factory, state, environment),
+	pawn_(pawn), pawn_kinematics_(pawn_kinematics), home_geopoint_(home_geopoint), car_name_(car_name)
 {
 }
 
