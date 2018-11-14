@@ -18,17 +18,17 @@ CarPawnSimApi::CarPawnSimApi(const Params& params,
 
 void CarPawnSimApi::createVehicleApi(CarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
 {
-    std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
+	std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
 
 	vehicle_api_ = std::unique_ptr<msr::airlib::CarApiBase>(new CarPawnApi(pawn, getPawnKinematics(), home_geopoint,
-        getVehicleSetting(), sensor_factory,
-        (*getGroundTruthKinematics()), (*getGroundTruthEnvironment())));
+		getVehicleSetting(), sensor_factory, car_name_,
+		(*getGroundTruthKinematics()), (*getGroundTruthEnvironment())));
 }
 
 std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
 {
 	std::string common_line = PawnSimApi::getRecordFileLine(is_header_line);
-	if (is_header_line) 
+	if (is_header_line)
 	{
 		return common_line +
 			"Throttle\tSteering\tBrake\tGear\tHandbrake\tRPM\tSpeed\t";
@@ -157,7 +157,7 @@ void CarPawnSimApi::reset()
 {
 	setPose(UnityUtilities::Convert_to_Pose(GetInitialPose()), false);
 	Reset(getVehicleName().c_str());
-	
+
 	PawnSimApi::reset();
 	vehicle_api_->reset();
 }
@@ -176,4 +176,3 @@ void CarPawnSimApi::reportState(StateReporter& reporter)
 	reporter.writeValue("unreal pos", Vector3r(pose.position.x, pose.position.y, pose.position.z));
 }
 //*** End: UpdatableState implementation ***//
-
