@@ -67,15 +67,8 @@ public:
     };
 
 public:
-<<<<<<< HEAD
-
-    // TODO: Temporary constructor for the Unity implementation which does not use the new Sensor Configuration Settings implementation.
-	//CarApiBase() {}
-
-=======
     // TODO: Temporary constructor for the Unity implementation which does not use the new Sensor Configuration Settings implementation.
 	CarApiBase() {}
->>>>>>> 11f30fd... working build for unity on linux
     CarApiBase(const AirSimSettings::VehicleSetting* vehicle_setting, 
         std::shared_ptr<SensorFactory> sensor_factory, 
         const Kinematics::State& state, const Environment& environment)
