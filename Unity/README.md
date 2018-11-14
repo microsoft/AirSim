@@ -1,10 +1,10 @@
-# Airsim Unity
+# Airsim on Unity
 
 * Airsim Unity allows you to run your simulators in the [Unity Engine](https://unity3d.com/). This project comes with some sample Unity projects and a wrapper around the AirLib library to run as a [native plugin](https://docs.unity3d.com/Manual/NativePlugins.html) in Unity. 
 * Included are two basic Unity Projects, one for a Car simulator and another for a Drone simulator. They are meant to be lightweight, and can be used to verify your setup is correct. 
 * Check out the [Unity blogpost](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation/) for overview on the release.  
 
-### Warning: Beta Sofware
+### Warning: Experimental Release
 This project is still in early development, expect some rough edges. We are working to fully support the full AirLib API and feature set, but some things may be missing. 
 
 ## Windows
