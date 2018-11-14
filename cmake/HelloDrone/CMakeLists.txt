@@ -19,7 +19,10 @@ include_directories(
 )
 
 AddExecutableSource()
-			
 CommonTargetLink()
 target_link_libraries(${PROJECT_NAME} AirLib)
 target_link_libraries(${PROJECT_NAME} ${RPC_LIB})
+
+add_custom_command(TARGET ${PROJECT_NAME} 
+                   POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ~/Desktop)
