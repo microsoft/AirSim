@@ -488,6 +488,16 @@ public:
 			return angle;
 	}
 
+    // assumes that angles are in 0-360 range
+    static bool isAngleBetweenAngles(RealT angle, RealT start_angle, RealT end_angle)
+    {
+        if (start_angle < end_angle) {
+            return (start_angle <= angle && angle <= end_angle);
+        }
+        else
+            return (start_angle <= angle || angle <= end_angle);
+    }
+
 	/**
 	* \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.
 	* RPY rotates about the fixed axes in the order x-y-z,

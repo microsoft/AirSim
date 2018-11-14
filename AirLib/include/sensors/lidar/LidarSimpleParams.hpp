@@ -32,7 +32,7 @@ struct LidarSimpleParams {
         };                       
 
     bool draw_debug_points = false;
-    std::string data_frame = "";              
+    std::string data_frame = AirSimSettings::kVehicleInertialFrame;
 
     real_T update_frequency = 10;             // Hz
     real_T startup_delay = 0;                 // sec

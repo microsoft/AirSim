@@ -604,10 +604,10 @@ void ASimModeBase::drawLidarDebugPoints()
 
                         FVector uu_point;
 
-                        if (lidar->getParams().data_frame == "" || lidar->getParams().data_frame == "VehicleInertialFrame") {
+                        if (lidar->getParams().data_frame == AirSimSettings::kVehicleInertialFrame) {
                             uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point);
                         }
-                        else if (lidar->getParams().data_frame == "SensorLocalFrame") {
+                        else if (lidar->getParams().data_frame == AirSimSettings::kSensorLocalFrame) {
 
                             msr::airlib::Vector3r point_w = msr::airlib::VectorMath::transformToWorldFrame(point, lidar_data.pose, true);
                             uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point_w);

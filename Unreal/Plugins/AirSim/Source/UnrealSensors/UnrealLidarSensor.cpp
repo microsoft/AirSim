@@ -70,8 +70,9 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
     const float angle_distance_of_tick = params.horizontal_rotation_frequency * 360.0f * delta_time;
     const float angle_distance_of_laser_measure = angle_distance_of_tick / points_to_scan_with_one_laser;
 
-    const float laser_start = std::fmod(360.0 + params.horizontal_FOV_start, 360.0f);
-    const float laser_end = std::fmod(360.0 + params.horizontal_FOV_end, 360.0f);
+    // normalize FOV start/end
+    const float laser_start = std::fmod(360.0f + params.horizontal_FOV_start, 360.0f);
+    const float laser_end = std::fmod(360.0f + params.horizontal_FOV_end, 360.0f);
 
     // shoot lasers
     for (auto laser = 0u; laser < number_of_lasers; ++laser)
@@ -80,11 +81,12 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
 
         for (auto i = 0u; i < points_to_scan_with_one_laser; ++i)
         {
-            // check if the laser is outside the requested horizontal FOV
             const float horizontal_angle = std::fmod(current_horizontal_angle_ + angle_distance_of_laser_measure * i, 360.0f);
-            if (horizontal_angle < laser_start && horizontal_angle > laser_end)
-                continue;
 
+            // check if the laser is outside the requested horizontal FOV
+            if (!VectorMath::isAngleBetweenAngles(horizontal_angle, laser_start, laser_end))
+                continue;
+       
             Vector3r point;
             // shoot laser and get the impact point, if any
             if (shootLaser(lidar_pose, vehicle_pose, laser, horizontal_angle, vertical_angle, params, point))
@@ -147,12 +149,12 @@ bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const ms
         }
 
         // decide the frame for the point-cloud
-        if (params.data_frame == "" || params.data_frame == "VehicleInertialFrame") {
+        if (params.data_frame == AirSimSettings::kVehicleInertialFrame) {
             // current detault behavior; though it is probably not very useful.
             // not changing the default for now to maintain backwards-compat.
             point = ned_transform_->toLocalNed(hit_result.ImpactPoint);
         }
-        else if (params.data_frame == "SensorLocalFrame") {
+        else if (params.data_frame == AirSimSettings::kSensorLocalFrame) {
             // point in vehicle intertial frame
             Vector3r point_v_i = ned_transform_->toLocalNed(hit_result.ImpactPoint);
 

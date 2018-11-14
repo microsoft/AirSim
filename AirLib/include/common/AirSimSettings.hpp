@@ -29,7 +29,8 @@ public: //types
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
     static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
-
+    static constexpr char const * kVehicleInertialFrame = "VehicleInertialFrame";
+    static constexpr char const * kSensorLocalFrame = "SensorLocalFrame";
 
     struct SubwindowSetting {
         int window_index;
@@ -216,7 +217,7 @@ public: //types
         Rotation rotation = Rotation::nanRotation();
 
         bool draw_debug_points = false;
-        std::string data_frame = "VehicleInertialFrame";
+        std::string data_frame = AirSimSettings::kVehicleInertialFrame;
     };
 
     struct VehicleSetting {
