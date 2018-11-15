@@ -21,6 +21,8 @@ struct LidarSimpleParams {
     real_T range = 10000.0f / 100;            // meters
     uint points_per_second = 100000;  
     uint horizontal_rotation_frequency = 10;  // rotations/sec
+    real_T horizontal_FOV_start = 0;
+    real_T horizontal_FOV_end = 359;
     real_T vertical_FOV_upper = -15;             // drones -15, car +10
     real_T vertical_FOV_lower = -45;             // drones -45, car -10
 
@@ -30,6 +32,7 @@ struct LidarSimpleParams {
         };                       
 
     bool draw_debug_points = false;
+    std::string data_frame = AirSimSettings::kVehicleInertialFrame;
 
     real_T update_frequency = 10;             // Hz
     real_T startup_delay = 0;                 // sec
@@ -42,6 +45,9 @@ struct LidarSimpleParams {
         range = settings.range;
         points_per_second = settings.points_per_second;
         horizontal_rotation_frequency = settings.horizontal_rotation_frequency;
+
+        horizontal_FOV_start = settings.horizontal_FOV_start;
+        horizontal_FOV_end = settings.horizontal_FOV_end;
 
         // By default, for multirotors the lidars FOV point downwards;
         // for cars, the lidars FOV is more forward facing.
@@ -83,6 +89,7 @@ struct LidarSimpleParams {
             Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
            
         draw_debug_points = settings.draw_debug_points;
+        data_frame = settings.data_frame;
     }
 };
 
