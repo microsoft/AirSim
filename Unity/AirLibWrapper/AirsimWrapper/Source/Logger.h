@@ -2,8 +2,11 @@
 #define LOGGER_FILE
 
 #include <fstream>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
+#ifdef __linux__
+	#include <boost/filesystem.hpp>
+	#include <boost/filesystem/fstream.hpp>
+	namespace bfs = boost::filesystem;
+#endif
 
 #define LOGGER Logger::GetLogger()
 
@@ -31,8 +34,8 @@ private:
 		static std::ofstream fileStream;
 		std::string logFileName;
 	#else
-		static 	boost::filesystem::ofstream fileStream;
-				boost::filesystem::path 	logFileName;
+		static 	bfs::ofstream fileStream;
+				bfs::path 	logFileName;
 	#endif
 	
 
