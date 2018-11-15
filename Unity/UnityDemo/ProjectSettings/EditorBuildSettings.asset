@@ -14,4 +14,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DroneDemo.unity
     guid: 012f6bdfaada17042bf7917f7d4fcbd8
-  m_configObjects: {}
+  - enabled: 1
+    path: Assets/Scenes/DroneDemoLinux.unity
+    guid: 9fa013905bef54424b220810f856d0b1

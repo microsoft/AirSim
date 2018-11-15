@@ -37,7 +37,7 @@ int main()
         vector<ImageRequest> request = { ImageRequest("0", ImageType::Scene), ImageRequest("1", ImageType::DepthPlanner, true) };
         const vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images received: " << response.size() << std::endl;
-
+        
         if (response.size() > 0) {
             std::cout << "Enter path with ending separator to save images (leave empty for no save)" << std::endl; 
             std::string path;

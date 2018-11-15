@@ -2,6 +2,8 @@
 #define LOGGER_FILE
 
 #include <fstream>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 
 #define LOGGER Logger::GetLogger()
 
@@ -25,8 +27,14 @@ private:
 	bool logLevel_Error;
 
 	static Logger* logger;
-	static std::ofstream fileStream;
-	std::string logFileName;
+	#ifdef _WIN32
+		static std::ofstream fileStream;
+		std::string logFileName;
+	#else
+		static 	boost::filesystem::ofstream fileStream;
+				boost::filesystem::path 	logFileName;
+	#endif
+	
 
 public:
 	~Logger();
