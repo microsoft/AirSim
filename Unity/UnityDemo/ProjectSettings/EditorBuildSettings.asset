@@ -17,3 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DroneDemoLinux.unity
     guid: 9fa013905bef54424b220810f856d0b1
+  - enabled: 1
+    path: Assets/Scenes/CarDemoLinux.unity
+    guid: 6dbe6a7fac33b46889eade3b1eb3440c
