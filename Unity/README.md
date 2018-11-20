@@ -15,7 +15,7 @@ This project is still in early development, expect some rough edges. We are work
 * Note: If you are using Unity for the first time, check out [the Getting started guide](https://docs.unity3d.com/Manual/GettingStarted.html). The [Unity User Manual](https://docs.unity3d.com/Manual/UnityManual.html) has additional tips, resources, and FAQs.
 
 #### Build Airsim
-* Install [Visual Studio 2017, ver <= 15.8.9](https://docs.microsoft.com/en-us/visualstudio/productinfo/installing-an-earlier-release-of-vs2017).    
+* Install Visual Studio 2017. 
 **Make sure** to select **VC++** and **Windows SDK 8.1** while installing VS 2017.   
 
 * Start `x64 Native Tools Command Prompt for VS 2017`. 
