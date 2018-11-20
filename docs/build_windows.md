@@ -9,7 +9,7 @@ Click on the `Add Versions` which should show the option to download **Unreal 4.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ## Build AirSim
-* Install [Visual Studio 2017, ver <= 15.8.9](https://docs.microsoft.com/en-us/visualstudio/productinfo/installing-an-earlier-release-of-vs2017).    
+* Install Visual Studio 2017.    
 **Make sure** to select **VC++** and **Windows SDK 8.1** while installing VS 2017.   
 * Start `x64 Native Tools Command Prompt for VS 2017`. 
 * Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
@@ -40,8 +40,7 @@ See [Using APIs](apis.md) and [settings.json](settings.md) for various options a
 
 # FAQ
 #### I get `error C100 : An internal error has occurred in the compiler` when running build.cmd
-We have noticed this happening with VS version `15.9.0`. If you have this version, please downgrade to <= `15.8.9` as explained [here
-](https://docs.microsoft.com/en-us/visualstudio/productinfo/installing-an-earlier-release-of-vs2017).   
+We have noticed this happening with VS version `15.9.0` and have checked-in a workaround in AirSim code. If you have this VS version, please make sure to pull the latest AirSim code.
 
 #### I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"
 Very likely you don't have [Windows SDK](https://developercommunity.visualstudio.com/content/problem/3754/cant-compile-c-program-because-of-sdk-81cant-add-a.html) installed with Visual Studio. 
