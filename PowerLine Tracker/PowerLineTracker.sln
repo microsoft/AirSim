@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerLineTracker", "HelloDrone.vcxproj", "{98BB426F-6FB5-4754-81BC-BB481900E135}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Debug|x64.ActiveCfg = Debug|x64
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Debug|x64.Build.0 = Debug|x64
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Debug|x86.ActiveCfg = Debug|Win32
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Debug|x86.Build.0 = Debug|Win32
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Release|x64.ActiveCfg = Release|x64
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Release|x64.Build.0 = Release|x64
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Release|x86.ActiveCfg = Release|Win32
+		{98BB426F-6FB5-4754-81BC-BB481900E135}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A41B4D4-09C2-4327-82AB-17C3B391932C}
+	EndGlobalSection
+EndGlobal
