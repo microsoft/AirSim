@@ -143,19 +143,19 @@ class Quaternionr(MsgpackMixin):
             raise TypeError('unsupported operand type(s) for \'dot\': %s and %s' % ( str(type(self)), str(type(other))) )
 
     def cross(self, other):
-        if type(self) == typer(other):
+        if type(self) == type(other):
             return (self * other - other * self) / 2
         else:
             raise TypeError('unsupported operand type(s) for \'cross\': %s and %s' % ( str(type(self)), str(type(other))) )
 
     def outer_product(self, other):
-        if type(self) == typer(other):
+        if type(self) == type(other):
             return ( self.inverse()*other - other.inverse()*self ) / 2
         else:
             raise TypeError('unsupported operand type(s) for \'outer_product\': %s and %s' % ( str(type(self)), str(type(other))) )
 
     def rotate(self, other):
-        if type(self) == typer(other):
+        if type(self) == type(other):
             if other.get_length() == 1:
                 return other * self * other.inverse()
             else:
