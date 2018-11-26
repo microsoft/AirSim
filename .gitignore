@@ -6,11 +6,14 @@
 *.user
 *.userosscache
 *.sln.docstates
-
+linux-build/
+Packages/
+Temp/
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-
-# Build results
+*.json
+Plugins/
+ Build results
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

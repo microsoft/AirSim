@@ -17,7 +17,7 @@ namespace AirSimUnity {
         
         private new void Start() {
             base.Start(); 
-
+            Debug.Log("Starting Drone");
             for (int i = 0; i < rotors.Length; i++) {
                 rotorInfos.Add(new RotorInfo());
             }

@@ -186,6 +186,8 @@ public:
     static QuaternionT rotateQuaternion(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
     {
         if (assume_unit_quat) {
+            // conjugate and inverse are equivalent for unit-length quaternions, 
+            // but the conjugate is less expensive to compute
             QuaternionT ref_n = ref;
             QuaternionT ref_n_i = ref.conjugate();
             return ref_n * q * ref_n_i;
@@ -198,9 +200,16 @@ public:
 
     static QuaternionT rotateQuaternionReverse(const QuaternionT& q, const QuaternionT& ref, bool assume_unit_quat)
     {
-        QuaternionT ref_n = assume_unit_quat ? ref : ref.normalized();
-        QuaternionT ref_n_i = assume_unit_quat ? ref.conjugate() : ref.inverse();
-        return ref_n_i * q * ref_n;
+        if (assume_unit_quat) {
+            QuaternionT ref_n = ref;
+            QuaternionT ref_n_i = ref.conjugate();
+            return ref_n_i * q * ref_n;
+        }
+        else {
+            QuaternionT ref_n = ref.normalized();
+            QuaternionT ref_n_i = ref.inverse();
+            return ref_n_i * q * ref_n;
+        }
     }
 
 	static Vector3T transformToBodyFrame(const Vector3T& v_world, const QuaternionT& q_world, bool assume_unit_quat = true)
@@ -479,6 +488,16 @@ public:
 			return angle;
 	}
 
+    // assumes that angles are in 0-360 range
+    static bool isAngleBetweenAngles(RealT angle, RealT start_angle, RealT end_angle)
+    {
+        if (start_angle < end_angle) {
+            return (start_angle <= angle && angle <= end_angle);
+        }
+        else
+            return (start_angle <= angle || angle <= end_angle);
+    }
+
 	/**
 	* \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.
 	* RPY rotates about the fixed axes in the order x-y-z,
@@ -566,6 +585,8 @@ public:
     static void getPlaneOrthoVectors(const Vector3T& from, const Vector3T& to, bool assume_normalized,
         Vector3T& from_ortho, Vector3T& to_ortho, RealT& dot)
     {
+        unused(from);
+
         Vector3T to_n = to;
 
         if (!assume_normalized) {
