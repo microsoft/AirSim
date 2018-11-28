@@ -227,6 +227,13 @@ void RpcLibClientBase::simContinueForTime(double seconds)
     pimpl_->client.call("simContinueForTime", seconds);
 }
 
+void RpcLibClientBase::simSetTimeOfDay(bool is_enabled, const string& start_datetime, bool is_start_datetime_dst,
+    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+{
+    pimpl_->client.call("simSetTimeOfDay", is_enabled, start_datetime, is_start_datetime_dst,
+        celestial_clock_speed, update_interval_secs, move_sun);
+}
+
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name) const
 {
     return pimpl_->client.call("simGetObjectPose", object_name).as<RpcLibAdapatorsBase::Pose>().to();

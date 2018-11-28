@@ -72,7 +72,10 @@ void ASimModeBase::BeginPlay()
     record_tick_count = 0;
     setupInputBindings();
 
-    setupTimeOfDay();
+    initializeTimeOfDay();
+    AirSimSettings::TimeOfDaySetting tod_setting = getSettings().tod_setting;
+    setTimeOfDay(tod_setting.enabled, tod_setting.start_datetime, tod_setting.is_start_datetime_dst,
+        tod_setting.celestial_clock_speed, tod_setting.update_interval_secs, tod_setting.move_sun);
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
@@ -129,42 +132,68 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-void ASimModeBase::setupTimeOfDay()
+void ASimModeBase::initializeTimeOfDay()
 {
     sky_sphere_ = nullptr;
+    sun_ = nullptr;
 
-    const auto& tod_setting = getSettings().tod_setting;
+    TArray<AActor*> sky_spheres;
+    UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), sky_sphere_class_, sky_spheres);
 
-    if (tod_setting.enabled) {
-        TArray<AActor*> sky_spheres;
-        UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), sky_sphere_class_, sky_spheres);
-        if (sky_spheres.Num() == 0)
-            UAirBlueprintLib::LogMessage(TEXT("BP_Sky_Sphere was not found. "), 
+    if (sky_spheres.Num() > 1)
+        UAirBlueprintLib::LogMessage(TEXT("More than BP_Sky_Sphere were found. "),
+            TEXT("TimeOfDay settings would be applied to first one."), LogDebugLevel::Failure);
+
+    if (sky_spheres.Num() >= 1) {
+        sky_sphere_ = sky_spheres[0];
+        static const FName sun_prop_name(TEXT("Directional light actor"));
+        auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
+        UObjectProperty* sun_prop = Cast<UObjectProperty>(p);
+        UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
+        sun_ = Cast<ADirectionalLight>(sun_obj);
+        default_sun_rotation_ = sun_->GetActorRotation();
+    }
+}
+
+void ASimModeBase::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+{
+    bool enabled_currently = tod_enabled_;
+    
+    if (is_enabled) {
+
+        if (!sun_) {
+            UAirBlueprintLib::LogMessage(TEXT("BP_Sky_Sphere was not found. "),
                 TEXT("TimeOfDay settings would be ignored."), LogDebugLevel::Failure);
-        else if (sky_spheres.Num() > 1)
-            UAirBlueprintLib::LogMessage(TEXT("More than BP_Sky_Sphere were found. "), 
-                TEXT("TimeOfDay settings would be applied to first one."), LogDebugLevel::Failure);
+        }
+        else {
+            sun_->GetRootComponent()->Mobility = EComponentMobility::Movable;
 
-        if (sky_spheres.Num() >= 1) {
-            sky_sphere_ = sky_spheres[0];
-            static const FName sun_prop_name(TEXT("Directional light actor"));
-            auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
-            UObjectProperty* sun_prop = Cast<UObjectProperty>( p);
-            UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
-            sun_ = Cast<ADirectionalLight>(sun_obj);
-            if (sun_) {
-                sun_->GetRootComponent()->Mobility = EComponentMobility::Movable;
-            }
-
+            // this is a bit odd but given how advanceTimeOfDay() works currently, 
+            // tod_sim_clock_start_ needs to be reset here.
             tod_sim_clock_start_ = ClockFactory::get()->nowNanos();
+
             tod_last_update_ = 0;
-            if (tod_setting.start_datetime != "")
-                tod_start_time_ = Utils::to_time_t(tod_setting.start_datetime, tod_setting.is_start_datetime_dst);
+            if (start_datetime != "")
+                tod_start_time_ = Utils::to_time_t(start_datetime, is_start_datetime_dst) * 1E9;
             else
-                tod_start_time_ = std::time(nullptr);
+                tod_start_time_ = std::time(nullptr) * 1E9;
         }
     }
-    //else ignore
+    else if (enabled_currently) {
+        // Going from enabled to disabled
+        if (sun_) {
+            setSunRotation(default_sun_rotation_);
+            UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(ClockFactory::get()->nowNanos() / 1E9), LogDebugLevel::Informational);
+        }
+    }
+
+    // do these in the end to ensure that advanceTimeOfDay() doesn't see
+    // any inconsistent state.
+    tod_enabled_ = is_enabled;
+    tod_celestial_clock_speed_ = celestial_clock_speed;
+    tod_update_interval_secs_ = update_interval_secs;
+    tod_move_sun_ = move_sun;
 }
 
 bool ASimModeBase::isPaused() const
@@ -245,26 +274,33 @@ void ASimModeBase::advanceTimeOfDay()
 {
     const auto& settings = getSettings();
 
-    if (settings.tod_setting.enabled && sky_sphere_ && sun_) {
+    if (tod_enabled_ && sky_sphere_ && sun_ && tod_move_sun_) {
         auto secs = ClockFactory::get()->elapsedSince(tod_last_update_);
-        if (secs > settings.tod_setting.update_interval_secs) {
+        if (secs > tod_update_interval_secs_) {
             tod_last_update_ = ClockFactory::get()->nowNanos();
 
-            auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * settings.tod_setting.celestial_clock_speed;
-            uint64_t cur_time = ClockFactory::get()->addTo(tod_sim_clock_start_, interval)  / 1E9;
+            auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * tod_celestial_clock_speed_;
+            uint64_t cur_time = ClockFactory::get()->addTo(tod_start_time_, interval)  / 1E9;
 
             UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(cur_time), LogDebugLevel::Informational);
 
             auto coord = msr::airlib::EarthCelestial::getSunCoordinates(cur_time, settings.origin_geopoint.home_geo_point.latitude,
                 settings.origin_geopoint.home_geo_point.longitude);
 
-            auto rot = FRotator(-coord.altitude, coord.azimuth, 0);
-            sun_->SetActorRotation(rot);
+            setSunRotation(FRotator(-coord.altitude, coord.azimuth, 0));
+        }
+    }
+}
+
+void ASimModeBase::setSunRotation(FRotator rotation)
+{
+    if (sun_ && sky_sphere_) {
+        UAirBlueprintLib::RunCommandOnGameThread([this, rotation]() {
+            sun_->SetActorRotation(rotation);
 
             FOutputDeviceNull ar;
             sky_sphere_->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), ar, NULL, true);
-        }
-         
+        }, true /*wait*/);
     }
 }
 
