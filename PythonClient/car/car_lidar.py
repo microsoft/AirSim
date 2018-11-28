@@ -14,32 +14,18 @@ import numpy
 # Makes the drone fly and get Lidar data
 class LidarTest:
 
-    def __init__(self, save_to_disk, change_time_of_day):
-
-        self.save_to_disk = save_to_disk
-        self.change_time_of_day = change_time_of_day
+    def __init__(self):
 
         # connect to the AirSim simulator
         self.client = airsim.CarClient()
         self.client.confirmConnection()
         self.client.enableApiControl(True)
         self.car_controls = airsim.CarControls()
-        
-        if (self.change_time_of_day):
-            time_of_day = "2018-11-27 8:00:00"
-            airsim.wait_key('Press any key to change time of day to [{}]'.format(time_of_day))
-            self.client.simSetTimeOfDay(True, time_of_day)
-            time.sleep(3)
 
     def execute(self):
 
         for i in range(3):
-
-            if (self.change_time_of_day):
-                time_of_day = "2018-11-27 {}:00:00".format(12+ (i * 3))
-                airsim.wait_key('Press any key to change time of day to [{}]'.format(time_of_day))
-                self.client.simSetTimeOfDay(True, time_of_day)
-
+           
             state = self.client.getCarState()
             s = pprint.pformat(state)
             #print("state: %s" % s)
@@ -83,13 +69,10 @@ class LidarTest:
         # TODO
         print("not yet implemented")
 
-    def stop(self):       
-        
-        if (self.change_time_of_day):
-            airsim.wait_key('Press any key to reset time of day')
-            self.client.simSetTimeOfDay(False)
+    def stop(self):
 
         airsim.wait_key('Press any key to reset to original state')
+
         self.client.reset()
 
         self.client.enableApiControl(False)
@@ -103,10 +86,9 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser("Lidar.py makes car move and gets Lidar data")
 
     arg_parser.add_argument('-save-to-disk', type=bool, help="save Lidar data to disk", default=False)
-    arg_parser.add_argument('-change-time-of-day', type=bool, help="change time of day", default=False)
-
+  
     args = arg_parser.parse_args(args)    
-    lidarTest = LidarTest(args.save_to_disk, args.change_time_of_day)
+    lidarTest = LidarTest()
     try:
         lidarTest.execute()
     finally:

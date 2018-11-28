@@ -183,8 +183,6 @@ void ASimModeBase::setTimeOfDay(bool is_enabled, const std::string& start_dateti
     else if (enabled_currently) {
         // Going from enabled to disabled
         if (sun_) {
-            // TODO: Is changing Mobility necessary here?
-            sun_->GetRootComponent()->Mobility = EComponentMobility::Static;
             setSunRotation(default_sun_rotation_);
             UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(ClockFactory::get()->nowNanos() / 1E9), LogDebugLevel::Informational);
         }
