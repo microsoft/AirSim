@@ -33,6 +33,13 @@ void WorldSimApi::continueForTime(double seconds)
     simmode_->continueForTime(seconds);
 }
 
+void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+{
+    simmode_->setTimeOfDay(is_enabled, start_datetime, is_start_datetime_dst,
+        celestial_clock_speed, update_interval_secs, move_sun);
+}
+
 bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
     bool success;

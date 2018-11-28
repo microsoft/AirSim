@@ -73,6 +73,19 @@ void SimModeBase::continueForTime(double seconds)
 	throw std::domain_error("continueForTime is not implemented by SimMode");
 }
 
+void SimModeBase::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+{
+        unused(is_enabled);
+        unused(start_datetime);
+        unused(is_start_datetime_dst);
+        unused(celestial_clock_speed);
+        unused(update_interval_secs);
+        unused(move_sun);
+        //commenting this out for now to avoid unintentional Unity startup failure
+        //throw std::domain_error("setTimeOfDay is not implemented by SimMode");
+}
+
 std::unique_ptr<msr::airlib::ApiServerBase> SimModeBase::createApiServer() const
 {
 	//this will be the case when compilation with RPCLIB is disabled or simmode doesn't support APIs
