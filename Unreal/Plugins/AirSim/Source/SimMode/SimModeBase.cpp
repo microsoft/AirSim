@@ -17,6 +17,8 @@
 #include "common/EarthCelestial.hpp"
 #include "sensors/lidar/LidarSimple.hpp"
 
+#include "Weather/WeatherLib.h"
+
 #include "DrawDebugHelpers.h"
 
 //TODO: this is going to cause circular references which is fine here but
@@ -77,6 +79,13 @@ void ASimModeBase::BeginPlay()
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
     setupVehiclesAndCamera();
+
+    UWorld* World = GetWorld();
+    if (World)
+    {
+        UWeatherLib::initWeather(World, spawned_actors_);
+        //UWeatherLib::showWeatherMenu(World);
+    }
 }
 
 const NedTransform& ASimModeBase::getGlobalNedTransform()
