@@ -8,7 +8,8 @@ if [ ! -d "linux-build" ]; then
 fi
 
 cd linux-build;
-
+export CC=/usr/bin/clang-5.0;
+export CXX=/usr/bin/clang++-5.0;
 cmake ../AirLibWrapper/AirsimWrapper;
 make;
 
