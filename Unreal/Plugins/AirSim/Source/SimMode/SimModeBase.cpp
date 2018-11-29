@@ -407,7 +407,7 @@ void ASimModeBase::startApiServer()
 #endif
 
         try {
-            api_server_->start();
+            api_server_->start(false, spawned_actors_.Num() + 4);
         }
         catch (std::exception& ex) {
             UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);

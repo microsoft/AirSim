@@ -17,6 +17,20 @@ AirSim will create empty settings file at `~/Documents/AirSim/settings.json`. Yo
 #### How do I arm my drone?
 If you're using simple_flight, your vehicle is already armed and ready to fly. For PX4 you can arm by holding both sticks on remote control down and to the center.
 
+#### When making API call I get error
+If you are getting this error,
+```
+TypeError: unsupported operand type(s) for *: 'AsyncIOLoop' and 'float'
+```
+its probably due to upgraded version of tornado package with version > 5.0 in Python that conflicts with `msgpack-rpc-python` which requires tornado package < 5.0. To fix this you can update the package like this:
+```
+pip install --upgrade msgpack-rpc-python
+```
+But this might break something (for example, PyTorch 0.4+) because it will uninstall newer tornado and re-install older one. To avoid this you should create new [conda environment](https://conda.io/docs/user-guide/tasks/manage-environments.html).
+
+#### I'm getting Eigen not found error when compiling Unreal project.
+This is most likely because AirSim wasn't built and Plugin folder was copied in Unreal project folder. To fix this make sure you [build AirSim](build_windows.md) first (run `build.cmd` in Windows).
+
 #### Something went wrong. How do I debug?
 
 First turn on C++ exceptions from the Exceptions window:

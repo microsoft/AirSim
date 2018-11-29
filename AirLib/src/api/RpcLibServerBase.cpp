@@ -265,12 +265,12 @@ RpcLibServerBase::~RpcLibServerBase()
     stop();
 }
 
-void RpcLibServerBase::start(bool block)
+void RpcLibServerBase::start(bool block, std::size_t thread_count)
 {
     if (block)
         pimpl_->server.run();
     else
-        pimpl_->server.async_run(4);   //4 threads
+        pimpl_->server.async_run(thread_count);   //4 threads
 }
 
 void RpcLibServerBase::stop()
