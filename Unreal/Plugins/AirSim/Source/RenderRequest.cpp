@@ -9,8 +9,8 @@
 
 RenderRequest::RenderRequest(UGameViewportClient * game_viewport, std::function<void()>&& query_camera_pose_cb)
     : params_(nullptr), results_(nullptr), req_size_(0),
-    game_viewport_(game_viewport), query_camera_pose_cb_(std::move(query_camera_pose_cb)),
-    wait_signal_(new msr::airlib::WorkerThreadSignal)
+    wait_signal_(new msr::airlib::WorkerThreadSignal),
+    game_viewport_(game_viewport), query_camera_pose_cb_(std::move(query_camera_pose_cb))
 {
 }
 

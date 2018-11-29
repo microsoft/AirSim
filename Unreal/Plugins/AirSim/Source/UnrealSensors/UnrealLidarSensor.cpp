@@ -26,9 +26,10 @@ void UnrealLidarSensor::createLasers()
         return;
 
     // calculate verticle angle distance between each laser
-    const float delta_angle =
-        (params.vertical_FOV_upper - (params.vertical_FOV_lower)) /
-        static_cast<float>(number_of_lasers - 1);
+    float delta_angle = 0;
+    if (number_of_lasers > 1)
+        delta_angle = (params.vertical_FOV_upper - (params.vertical_FOV_lower)) /
+            static_cast<float>(number_of_lasers - 1);
 
     // store vertical angles for each laser
     laser_angles_.clear();
