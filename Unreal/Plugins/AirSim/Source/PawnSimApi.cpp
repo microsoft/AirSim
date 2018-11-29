@@ -295,12 +295,6 @@ void PawnSimApi::update()
     environment_->update();
     //kinematics_->update();
 
-    // and in the case of subclasses that are overriding getGroundTruthEnvironment, make sure those 
-    // are also updated.
-    msr::airlib::Environment* vehicleEnvironment = const_cast<msr::airlib::Environment*>(getGroundTruthEnvironment());
-    vehicleEnvironment->setPosition(kinematics_.pose.position);
-    vehicleEnvironment->update();
-
     VehicleSimApiBase::update();
 }
 
@@ -515,6 +509,11 @@ const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() con
     return &kinematics_;
 }
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
+{
+    return environment_.get();
+}
+
+msr::airlib::Environment* PawnSimApi::getEnvironment() const
 {
     return environment_.get();
 }
