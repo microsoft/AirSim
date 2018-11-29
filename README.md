@@ -16,8 +16,8 @@ Cars in AirSim
 
 ## What's New
 
-* Added Weather Effects and [APIs](docs/apis.md#weather-apis)
-* Added [Time of Day API](docs/apis.md#time-of-day-api)
+* Added Weather Effects and [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis)
+* Added [Time of Day API](https://microsoft.github.io/AirSim/docs/apis#time-of-day-api)
 * An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation).
 * [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
 * Highly efficient [NoDisplay view mode](https://microsoft.github.io/AirSim/docs/settings#viewmode) to turn off main screen rendering so you can capture images at high rate
@@ -78,11 +78,11 @@ A better way to generate training data exactly the way you want is by accessing 
 
 Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation. 
 
-[More details](docs/image_apis.md)
+[More details](https://microsoft.github.io/AirSim/docs/docs/image_apis/)
 
 ### Weather Effects
 
-Press F10 to see various options available for weather effects. You can also control the weather using [APIs](https://microsoft.github.io/AirSim/docs/apis.md#weather-apis). Press F1 to see other options available.
+Press F10 to see various options available for weather effects. You can also control the weather using [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis). Press F1 to see other options available.
 
 ![record screenshot](docs/images/weather_menu.png)
 
