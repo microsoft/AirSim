@@ -3,15 +3,17 @@
 ## Install Unreal Engine
 
 1. [Download](https://www.unrealengine.com/download) the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.
-2. Run the Epic Games Launcher, open the Library tab from left, click on the "Add Versions" which should show the option to download Unreal 4.18 as shown below. If you have multiple versions of Unreal installed then make sure 4.18 is "Current" by clicking down arrow next to the Launch button for the version.
+2. Run the Epic Games Launcher, open the `Library` tab on the left pane.   
+Click on the `Add Versions` which should show the option to download **Unreal 4.18** as shown below. If you have multiple versions of Unreal installed then **make sure 4.18 is set to `current`** by clicking down arrow next to the Launch button for the version.
 
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ## Build AirSim
-
-  1. You will need Visual Studio 2017 (**make sure** to install VC++ and Windows SDK 8.x).
-  2. Start `x64 Native Tools Command Prompt for VS 2017`. Create a folder for the repo and run `git clone https://github.com/Microsoft/AirSim.git`.
-  3. Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
+* Install Visual Studio 2017.    
+**Make sure** to select **VC++** and **Windows SDK 8.1** while installing VS 2017.   
+* Start `x64 Native Tools Command Prompt for VS 2017`. 
+* Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
+* Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
 
 ## Build Unreal Project
 
@@ -37,6 +39,8 @@ See [Using APIs](apis.md) and [settings.json](settings.md) for various options a
 [Unity](https://unity3d.com/) is another great game engine platform and we have an [experimental release](https://github.com/Microsoft/AirSim/tree/master/Unity) of AirSim on Unity. Please note that this is work in progress and all features may not work yet. 
 
 # FAQ
+#### I get `error C100 : An internal error has occurred in the compiler` when running build.cmd
+We have noticed this happening with VS version `15.9.0` and have checked-in a workaround in AirSim code. If you have this VS version, please make sure to pull the latest AirSim code.
 
 #### I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"
 Very likely you don't have [Windows SDK](https://developercommunity.visualstudio.com/content/problem/3754/cant-compile-c-program-because-of-sdk-81cant-add-a.html) installed with Visual Studio. 

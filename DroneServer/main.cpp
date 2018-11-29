@@ -85,7 +85,7 @@ int main(int argc, const char* argv[])
     msr::airlib::MultirotorRpcLibServer server(&api_provider, connection_info.local_host_ip);
     
     //start server in async mode
-    server.start(false);
+    server.start(false, 4);
 
     std::cout << "Server connected to MavLink endpoint at " << connection_info.local_host_ip << ":" << connection_info.ip_port << std::endl;
     std::cout << "Hit Ctrl+C to terminate." << std::endl;

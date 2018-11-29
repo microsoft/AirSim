@@ -11,12 +11,30 @@ namespace msr { namespace airlib {
 
 class WorldSimApiBase {
 public:
+    enum class WeatherParameter {
+        Rain = 0,
+        Roadwetness = 1,
+        Snow = 2,
+        RoadSnow = 3,
+        MapleLeaf = 4,
+        RoadLeaf = 5,
+        Dust = 6,
+        Fog = 7,
+        Enabled = 8
+    };
+
     virtual ~WorldSimApiBase() = default;
 
     virtual bool isPaused() const = 0;
     virtual void reset() = 0;
     virtual void pause(bool is_paused) = 0;
     virtual void continueForTime(double seconds) = 0;
+
+    virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+        float celestial_clock_speed, float update_interval_secs, bool move_sun) = 0;
+
+    virtual void enableWeather(bool enable) = 0;
+    virtual void setWeatherParameter(WeatherParameter param, float val) = 0;
 
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int getSegmentationObjectID(const std::string& mesh_name) const = 0;

@@ -1,6 +1,7 @@
 #include "WorldSimApi.h"
 #include "AirBlueprintLib.h"
 #include "common/common_utils/Utils.hpp"
+#include "Weather/WeatherLib.h"
 
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode)
@@ -31,6 +32,13 @@ void WorldSimApi::pause(bool is_paused)
 void WorldSimApi::continueForTime(double seconds)
 {
     simmode_->continueForTime(seconds);
+}
+
+void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+{
+    simmode_->setTimeOfDay(is_enabled, start_datetime, is_start_datetime_dst,
+        celestial_clock_speed, update_interval_secs, move_sun);
 }
 
 bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
@@ -85,6 +93,21 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
     }, true);
     return result;
 }
+
+void WorldSimApi::enableWeather(bool enable)
+{
+    UWeatherLib::setWeatherEnabled(simmode_->GetWorld(), enable);
+}
+void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
+{
+    unsigned char param_n = static_cast<unsigned char>(msr::airlib::Utils::toNumeric<WeatherParameter>(param));
+    EWeatherParamScalar param_e = msr::airlib::Utils::toEnum<EWeatherParamScalar>(param_n);
+
+    UWeatherLib::setWeatherParamScalar(simmode_->GetWorld(), param_e, val);
+}
+
+
+//------------------------------------------------- Char APIs -----------------------------------------------------------/
 
 void WorldSimApi::charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name)
 {
@@ -216,4 +239,5 @@ const AAirSimCharacter* WorldSimApi::getAirSimCharacter(const std::string& chara
 {
     return const_cast<WorldSimApi*>(this)->getAirSimCharacter(character_name);
 }
+//------------------------------------------------- Char APIs -----------------------------------------------------------/
 

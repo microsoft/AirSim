@@ -311,6 +311,7 @@ public: //types
         bool is_start_datetime_dst = false;
         float celestial_clock_speed = 1;
         float update_interval_secs = 60;
+        bool move_sun = true;
     };
 
 private: //fields
@@ -1017,6 +1018,7 @@ private:
                 tod_setting.celestial_clock_speed = tod_settings_json.getFloat("CelestialClockSpeed", tod_setting.celestial_clock_speed);
                 tod_setting.is_start_datetime_dst = tod_settings_json.getBool("StartDateTimeDst", tod_setting.is_start_datetime_dst);
                 tod_setting.update_interval_secs = tod_settings_json.getFloat("UpdateIntervalSecs", tod_setting.update_interval_secs);
+                tod_setting.move_sun = tod_settings_json.getBool("MoveSun", tod_setting.move_sun);
             }
         }
     }

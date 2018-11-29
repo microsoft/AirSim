@@ -78,6 +78,19 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         getWorldSimApi()->continueForTime(seconds); 
     });
 
+    pimpl_->server.bind("simSetTimeOfDay", [&](bool is_enabled, const string& start_datetime, bool is_start_datetime_dst, 
+        float celestial_clock_speed, float update_interval_secs, bool move_sun) -> void {
+        getWorldSimApi()->setTimeOfDay(is_enabled, start_datetime, is_start_datetime_dst, 
+            celestial_clock_speed, update_interval_secs, move_sun);
+    });
+
+    pimpl_->server.bind("simEnableWeather", [&](bool enable) -> void {
+        getWorldSimApi()->enableWeather(enable);
+    });
+    pimpl_->server.bind("simSetWeatherParameter", [&](WorldSimApiBase::WeatherParameter param, float val) -> void {
+        getWorldSimApi()->setWeatherParameter(param, val);
+    });
+
     pimpl_->server.bind("enableApiControl", [&](bool is_enabled, const std::string& vehicle_name) -> void { 
         getVehicleApi(vehicle_name)->enableApiControl(is_enabled);
     });
@@ -252,12 +265,12 @@ RpcLibServerBase::~RpcLibServerBase()
     stop();
 }
 
-void RpcLibServerBase::start(bool block)
+void RpcLibServerBase::start(bool block, std::size_t thread_count)
 {
     if (block)
         pimpl_->server.run();
     else
-        pimpl_->server.async_run(4);   //4 threads
+        pimpl_->server.async_run(thread_count);   //4 threads
 }
 
 void RpcLibServerBase::stop()

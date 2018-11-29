@@ -73,6 +73,16 @@ class VehicleClient:
             print(ver_info)
         print('')
 
+    # time-of-day control
+    def simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True):
+        return self.client.call('simSetTimeOfDay', is_enabled, start_datetime, is_start_datetime_dst, celestial_clock_speed, update_interval_secs, move_sun)
+
+    # weather
+    def simEnableWeather(self, enable):
+        return self.client.call('simEnableWeather', enable)
+    def simSetWeatherParameter(self, param, val):
+        return self.client.call('simSetWeatherParameter', param, val)
+
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the ImageType members
