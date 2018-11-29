@@ -17,6 +17,7 @@ matrix:
       services:
         - docker
     - os: windows
+      dotnet: 2.1.5
       services:
         - docker
         
