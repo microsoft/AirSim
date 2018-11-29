@@ -295,6 +295,12 @@ void PawnSimApi::update()
     environment_->update();
     //kinematics_->update();
 
+    // and in the case of subclasses that are overriding getGroundTruthEnvironment, make sure those 
+    // are also updated.
+    msr::airlib::Environment* vehicleEnvironment = const_cast<msr::airlib::Environment*>(getGroundTruthEnvironment());
+    vehicleEnvironment->setPosition(kinematics_.pose.position);
+    vehicleEnvironment->update();
+
     VehicleSimApiBase::update();
 }
 
@@ -418,6 +424,7 @@ void PawnSimApi::setPoseInternal(const Pose& pose, bool ignore_collision)
     //translate to new PawnSimApi position & orientation from NED to NEU
     FVector position = ned_transform_.fromLocalNed(pose.position);
     state_.current_position = position;
+    kinematics_.pose = pose;
 
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
     FQuat orientation = ned_transform_.fromNed(pose.orientation);
