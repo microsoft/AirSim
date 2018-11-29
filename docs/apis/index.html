@@ -538,6 +538,40 @@ for response in responses:
 <p>AirSim allows to pause and continue the simulation through <code>pause(is_paused)</code> API. To pause the simulation call <code>pause(True)</code> and to continue the simulation call <code>pause(False)</code>. You may have scenario, especially while using reinforcement learning, to run the simulation for specified amount of time and then automatically pause. While simulation is paused, you may then do some expensive computation, send a new command and then again run the simulation for specified amount of time. This can be achieved by API <code>continueForTime(seconds)</code>. This API runs the simulation for the specified number of seconds and then pauses the simulation. For example usage, please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/pause_continue_car.py">pause_continue_car.py</a> and <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/pause_continue_drone.py">pause_continue_drone.py</a>.</p>
 <h3 id="collision-api">Collision API</h3>
 <p>The collision information can be obtained using <code>simGetCollisionInfo</code> API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.</p>
+<h3 id="time-of-day-api">Time of Day API</h3>
+<p>AirSim assumes there exist sky sphere of class <code>EngineSky/BP_Sky_Sphere</code> in your environment with <a href="https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L156">ADirectionalLight actor</a>. By default, the position of the sun in the scene doesn't move with time. You can use <a href="../settings/#timeofday">settings</a> to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene. </p>
+<p>You can also use following API call to set the sun position according to given date time:</p>
+<pre><code>simSetTimeOfDay(self, is_enabled, start_datetime = &quot;&quot;, is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True)
+</code></pre>
+
+<p>The <code>is_enabled</code> parameter must be <code>True</code> to enable time of day effect. If it is <code>False</code> then sun position is reset to its original in the environment.</p>
+<p>Other parameters are same as in <a href="../settings/#timeofday">settings</a>.</p>
+<h3 id="weather-apis">Weather APIs</h3>
+<p>By default all weather effects are disabled. To enable weather effect, first call:</p>
+<pre><code>simEnableWeather(True)
+</code></pre>
+
+<p>Various weather effects can be enabled by using <code>simSetWeatherParameter</code> method which takes <code>WeatherParameter</code>, for example,</p>
+<pre><code>client.simSetWeatherParameter(airsim.WeatherParameter.Rain, 0.25);
+</code></pre>
+
+<p>The second parameter value is from 0 to 1. The first parameter provides following options:</p>
+<pre><code>class WeatherParameter:
+    Rain = 0
+    Roadwetness = 1
+    Snow = 2
+    RoadSnow = 3
+    MapleLeaf = 4
+    RoadLeaf = 5
+    Dust = 6
+    Fog = 7
+</code></pre>
+
+<p>Please note that <code>Roadwetness</code>, <code>RoadSnow</code> and <code>RoadLeaf</code> effects requires adding <a href="https://github.com/Microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Content/Weather/WeatherFX">materials</a> to your scene.</p>
+<p>Please see <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/weather.py">example code</a> for more details.</p>
+<h3 id="lidar-apis">Lidar APIs</h3>
+<p>AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in <a href="../settings/">settings.json</a>. </p>
+<p>More on <a href="../lidar/">lidar APIs and settings</a> and <a href="../sensors/">sensor settings</a></p>
 <h3 id="multiple-vehicles">Multiple Vehicles</h3>
 <p>AirSim supports multiple vehicles and control them through APIs. Please <a href="../multi_vehicle/">Multiple Vehicles</a> doc.</p>
 <h3 id="coordinate-system">Coordinate System</h3>
@@ -581,7 +615,7 @@ client.takeoffAsync().join()
 <h2 id="adding-new-apis-to-airsim">Adding New APIs to AirSim</h2>
 <p>Adding new APIs requires modifying the source code. Much of the changes are mechanical and required for various levels of abstractions that AirSim supports. <a href="https://github.com/Microsoft/AirSim/commit/f0e83c29e7685e1021185e3c95bfdaffb6cb85dc">This commit</a> demonstrates how to add a simple API <code>simPrintLogMessage</code> that prints message in simulator window.</p>
 <h2 id="some-internals">Some Internals</h2>
-<p>The APIs use <a href="https://github.com/msgpack-rpc/msgpack-rpc">msgpack-rpc protocol</a> over TCP/IP through <a href="http://rpclib.net/">rpclib</a> developed by <a href="https://github.com/sztomi">Tamás Szelei</a> which allows you to use variety of programming languages including C++, C#, Python, Java etc. When AirSim starts, it opens port 41451 (this can be changed via <a href="../settings/">settings</a>) and listens for incoming request. The Python or C++ client code connects to this port and sends RPC calls using <a href="https://msgpack.org">msgpack serialization format</a>.</p>
+<p>The APIs use <a href="https://github.com/msgpack-rpc/msgpack-rpc">msgpack-rpc protocol</a> over TCP/IP through <a href="http://rpclib.net/">rpclib</a> developed by <a href="https://github.com/sztomi">TamÃ¡s Szelei</a> which allows you to use variety of programming languages including C++, C#, Python, Java etc. When AirSim starts, it opens port 41451 (this can be changed via <a href="../settings/">settings</a>) and listens for incoming request. The Python or C++ client code connects to this port and sends RPC calls using <a href="https://msgpack.org">msgpack serialization format</a>.</p>
 <h2 id="references-and-examples">References and Examples</h2>
 <ul>
 <li><a href="../apis_cpp/">C++ API Examples</a></li>

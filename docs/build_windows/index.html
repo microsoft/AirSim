@@ -95,6 +95,8 @@
     
         <ul>
         
+            <li><a class="toctree-l4" href="#i-get-error-c100-an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd">I get error C100 : An internal error has occurred in the compiler when running build.cmd</a></li>
+        
             <li><a class="toctree-l4" href="#i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found">I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"</a></li>
         
             <li><a class="toctree-l4" href="#how-do-i-use-px4-firmware-with-airsim">How do I use PX4 firmware with AirSim?</a></li>
@@ -431,15 +433,18 @@
 <h2 id="install-unreal-engine">Install Unreal Engine</h2>
 <ol>
 <li><a href="https://www.unrealengine.com/download">Download</a> the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.</li>
-<li>Run the Epic Games Launcher, open the Library tab from left, click on the "Add Versions" which should show the option to download Unreal 4.18 as shown below. If you have multiple versions of Unreal installed then make sure 4.18 is "Current" by clicking down arrow next to the Launch button for the version.</li>
+<li>Run the Epic Games Launcher, open the <code>Library</code> tab on the left pane. <br />
+Click on the <code>Add Versions</code> which should show the option to download <strong>Unreal 4.18</strong> as shown below. If you have multiple versions of Unreal installed then <strong>make sure 4.18 is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
 </ol>
 <p><strong>Note</strong>: If you have UE 4.16 or older projects, please see the <a href="../unreal_upgrade/">upgrade guide</a> to upgrade your projects.</p>
 <h2 id="build-airsim">Build AirSim</h2>
-<ol>
-<li>You will need Visual Studio 2017 (<strong>make sure</strong> to install VC++ and Windows SDK 8.x).</li>
-<li>Start <code>x64 Native Tools Command Prompt for VS 2017</code>. Create a folder for the repo and run <code>git clone https://github.com/Microsoft/AirSim.git</code>.</li>
+<ul>
+<li>Install Visual Studio 2017.  <br />
+<strong>Make sure</strong> to select <strong>VC++</strong> and <strong>Windows SDK 8.1</strong> while installing VS 2017.   </li>
+<li>Start <code>x64 Native Tools Command Prompt for VS 2017</code>. </li>
+<li>Clone the repo: <code>git clone https://github.com/Microsoft/AirSim.git</code>, and go the AirSim directory by <code>cd AirSim</code>. </li>
 <li>Run <code>build.cmd</code> from the command line. This will create ready to use plugin bits in the <code>Unreal\Plugins</code> folder that can be dropped into any Unreal project.</li>
-</ol>
+</ul>
 <h2 id="build-unreal-project">Build Unreal Project</h2>
 <p>Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see <a href="../unreal_proj/">setting up Unreal Environment</a>.</p>
 <h2 id="setup-remote-control-multirotor-only">Setup Remote Control (Multirotor only)</h2>
@@ -456,6 +461,8 @@
 <h1 id="airsim-on-unity-experimental">AirSim on Unity (Experimental)</h1>
 <p><a href="https://unity3d.com/">Unity</a> is another great game engine platform and we have an <a href="https://github.com/Microsoft/AirSim/tree/master/Unity">experimental release</a> of AirSim on Unity. Please note that this is work in progress and all features may not work yet. </p>
 <h1 id="faq">FAQ</h1>
+<h4 id="i-get-error-c100-an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd">I get <code>error C100 : An internal error has occurred in the compiler</code> when running build.cmd</h4>
+<p>We have noticed this happening with VS version <code>15.9.0</code> and have checked-in a workaround in AirSim code. If you have this VS version, please make sure to pull the latest AirSim code.</p>
 <h4 id="i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found">I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"</h4>
 <p>Very likely you don't have <a href="https://developercommunity.visualstudio.com/content/problem/3754/cant-compile-c-program-because-of-sdk-81cant-add-a.html">Windows SDK</a> installed with Visual Studio. </p>
 <h4 id="how-do-i-use-px4-firmware-with-airsim">How do I use PX4 firmware with AirSim?</h4>

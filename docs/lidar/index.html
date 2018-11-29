@@ -452,6 +452,14 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
 <td>Rotations per second</td>
 </tr>
 <tr>
+<td>HorizontalFOVStart</td>
+<td>Horizontal FOV start for the lidar, in degrees</td>
+</tr>
+<tr>
+<td>HorizontalFOVEnd</td>
+<td>Horizontal FOV end for the lidar, in degrees</td>
+</tr>
+<tr>
 <td>VerticalFOVUpper</td>
 <td>Vertical FOV upper limit for the lidar, in degrees</td>
 </tr>
@@ -465,17 +473,58 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
 </tr>
 <tr>
 <td>Roll Pitch Yaw</td>
-<td>Roation of the lidar relative to the vehicle  (in degrees)</td>
+<td>Orientation of the lidar relative to the vehicle  (in degrees, yaw-pitch-roll order to front vector +X)</td>
+</tr>
+<tr>
+<td>DataFrame</td>
+<td>Frame for the points in output ("VehicleInertialFrame" or "SensorLocalFrame")</td>
 </tr>
 </tbody>
 </table>
 <p>e.g.,</p>
-<pre><code>        &quot;Lidar1&quot;: { 
-             &quot;SensorType&quot;: 6,
-             &quot;Enabled&quot; : true,
-             &quot;NumberOfChannels&quot;: 16,
-             &quot;PointsPerSecond&quot;: 10000,
-             &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
+<pre><code>{
+    &quot;SeeDocsAt&quot;: &quot;https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md&quot;,
+    &quot;SettingsVersion&quot;: 1.2,
+
+    &quot;SimMode&quot;: &quot;Multirotor&quot;,
+
+     &quot;Vehicles&quot;: {
+        &quot;Drone1&quot;: {
+            &quot;VehicleType&quot;: &quot;simpleflight&quot;,
+            &quot;AutoCreate&quot;: true,
+            &quot;Sensors&quot;: {
+                &quot;LidarSensor1&quot;: { 
+                    &quot;SensorType&quot;: 6,
+                    &quot;Enabled&quot; : true,
+                    &quot;NumberOfChannels&quot;: 16,
+                    &quot;RotationsPerSecond&quot;: 10,
+                    &quot;PointsPerSecond&quot;: 100000,
+                    &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
+                    &quot;Roll&quot;: 0, &quot;Pitch&quot;: 0, &quot;Yaw&quot; : 0,
+                    &quot;VerticalFOVUpper&quot;: -15,
+                    &quot;VerticalFOVLower&quot;: -25,
+                    &quot;HorizontalFOVStart&quot;: -20,
+                    &quot;HorizontalFOVEnd&quot;: 20,
+                    &quot;DrawDebugPoints&quot;: true,
+                    &quot;DataFrame&quot;: &quot;SensorLocalFrame&quot;
+                },
+                &quot;LidarSensor2&quot;: { 
+                   &quot;SensorType&quot;: 6,
+                    &quot;Enabled&quot; : true,
+                    &quot;NumberOfChannels&quot;: 4,
+                    &quot;RotationsPerSecond&quot;: 10,
+                    &quot;PointsPerSecond&quot;: 10000,
+                    &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
+                    &quot;Roll&quot;: 0, &quot;Pitch&quot;: 0, &quot;Yaw&quot; : 0,
+                    &quot;VerticalFOVUpper&quot;: -15,
+                    &quot;VerticalFOVLower&quot;: -25,
+                    &quot;DrawDebugPoints&quot;: true,
+                    &quot;DataFrame&quot;: &quot;SensorLocalFrame&quot;
+                }
+            }
+        }
+    }
+}
 </code></pre>
 
 <h2 id="server-side-visualization-for-debugging">Server side visualization for debugging</h2>
@@ -489,9 +538,15 @@ e.g.,</p>
 
 <h2 id="client-api">Client API</h2>
 <p>Use <code>getLidarData()</code> API to retrieve the Lidar data. 
-<em> The API returns a Point-Cloud as a flat array of floats along with a timestamp of the capture.
-</em> The floats represent [x,y,z] coordinate for each point hit within the range in the last scan.
-* The coordinates are in the local vehicle NED like all other AirSim APIs.</p>
+<em> The API returns a Point-Cloud as a flat array of floats along with the timestamp of the capture and lidar pose.
+</em> Point-Cloud: 
+  * The floats represent [x,y,z] coordinate for each point hit within the range in the last scan.
+  * The frame for the points in the output is configurable using "DataFrame" attribute
+  "" or "VehicleInertialFrame" -- default; returned points are in vehicle inertial frame (in NED, in meters)
+  "SensorLocalFrame" -- returned points are in lidar local frame (in NED, in meters)
+* Lidar Pose:
+    * Lidar pose in the vehicle inertial frame (in NED, in meters)
+    * Can be used to transform points to other frames.</p>
 <h3 id="python-examples">Python Examples</h3>
 <p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor">drone_lidar.py</a>
 <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//car">car_lidar.py</a></p>
