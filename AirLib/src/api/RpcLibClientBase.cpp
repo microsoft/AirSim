@@ -227,6 +227,15 @@ void RpcLibClientBase::simContinueForTime(double seconds)
     pimpl_->client.call("simContinueForTime", seconds);
 }
 
+void RpcLibClientBase::simEnableWeather(bool enable)
+{
+    pimpl_->client.call("simEnableWeather", enable);
+}
+void RpcLibClientBase::simSetWeatherParameter(WorldSimApiBase::WeatherParameter param, float val)
+{
+    pimpl_->client.call("simSetWeatherParameter", param, val);
+}
+
 void RpcLibClientBase::simSetTimeOfDay(bool is_enabled, const string& start_datetime, bool is_start_datetime_dst,
     float celestial_clock_speed, float update_interval_secs, bool move_sun)
 {

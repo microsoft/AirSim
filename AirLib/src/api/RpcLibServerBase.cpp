@@ -84,6 +84,13 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
             celestial_clock_speed, update_interval_secs, move_sun);
     });
 
+    pimpl_->server.bind("simEnableWeather", [&](bool enable) -> void {
+        getWorldSimApi()->enableWeather(enable);
+    });
+    pimpl_->server.bind("simSetWeatherParameter", [&](WorldSimApiBase::WeatherParameter param, float val) -> void {
+        getWorldSimApi()->setWeatherParameter(param, val);
+    });
+
     pimpl_->server.bind("enableApiControl", [&](bool is_enabled, const std::string& vehicle_name) -> void { 
         getVehicleApi(vehicle_name)->enableApiControl(is_enabled);
     });

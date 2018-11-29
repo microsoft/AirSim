@@ -1,6 +1,7 @@
 #include "WorldSimApi.h"
 #include "AirBlueprintLib.h"
 #include "common/common_utils/Utils.hpp"
+#include "Weather/WeatherLib.h"
 
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode)
@@ -92,6 +93,21 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
     }, true);
     return result;
 }
+
+void WorldSimApi::enableWeather(bool enable)
+{
+    UWeatherLib::setWeatherEnabled(simmode_->GetWorld(), enable);
+}
+void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
+{
+    unsigned char param_n = static_cast<unsigned char>(msr::airlib::Utils::toNumeric<WeatherParameter>(param));
+    EWeatherParamScalar param_e = msr::airlib::Utils::toEnum<EWeatherParamScalar>(param_n);
+
+    UWeatherLib::setWeatherParamScalar(simmode_->GetWorld(), param_e, val);
+}
+
+
+//------------------------------------------------- Char APIs -----------------------------------------------------------/
 
 void WorldSimApi::charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name)
 {
@@ -223,4 +239,5 @@ const AAirSimCharacter* WorldSimApi::getAirSimCharacter(const std::string& chara
 {
     return const_cast<WorldSimApi*>(this)->getAirSimCharacter(character_name);
 }
+//------------------------------------------------- Char APIs -----------------------------------------------------------/
 
