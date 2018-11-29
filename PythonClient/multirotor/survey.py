@@ -15,19 +15,6 @@ class SurveyNavigator:
         self.client.confirmConnection()
         self.client.enableApiControl(True)
 
-    def move_to_position(self, x, y, z, threshold=2):
-        self.client.moveToPositionAsync(0, 0, z, self.velocity).join()
-        # bufbuf: seems moveToPositionAsync isn't working right...
-        while True:
-            k = self.client.simGetGroundTruthKinematics()
-            pos = self.client.getPosition()
-            dx = abs(pos.x_val - x)
-            dy = abs(pos.y_val - y)
-            dz = abs(pos.z_val - z)
-            if dx+dy+dz < threshold:
-                return
-            time.sleep(0.1)  # 100ms should be fine        
-
     def start(self):
         print("arming the drone...")
         self.client.armDisarm(True)
@@ -42,10 +29,10 @@ class SurveyNavigator:
         z = -self.altitude
 
         print("climbing to altitude: " + str(self.altitude))
-        self.move_to_position(0, 0, z)
+        self.client.moveToPositionAsync(0, 0, z, self.velocity).join()
 
         print("flying to first corner of survey box")
-        self.move_to_position(x, -self.boxsize, z)
+        self.client.moveToPositionAsync(x, -self.boxsize, z, self.velocity).join()
         
         # let it settle there a bit.
         self.client.hoverAsync().join()
@@ -79,12 +66,11 @@ class SurveyNavigator:
             pass
 
         print("flying back home")
-        self.move_to_position(0, 0, z)
+        self.client.moveToPositionAsync(0, 0, z, self.velocity).join()
         
         if z < -5:
             print("descending")
-            self.velocity = 2
-            self.move_to_position(0, 0, -5)
+            self.client.moveToPositionAsync(0, 0, -5, 2).join()
 
         print("landing...")
         self.client.landAsync().join()
