@@ -98,6 +98,7 @@
     <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealSensorFactory.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\VehicleCameraConnector.cpp" />
     <ClCompile Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\Weather\WeatherLib.cpp" />
     <ClCompile Include="Unreal\Plugins\AirSim\Source\WorldSimApi.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +132,7 @@
     <ClInclude Include="unreal\plugins\airsim\source\VehicleCameraConnector.h" />
     <ClInclude Include="unreal\plugins\airsim\source\VehiclePawnWrapper.h" />
     <ClInclude Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\Weather\WeatherLib.h" />
     <ClInclude Include="Unreal\Plugins\AirSim\Source\WorldSimApi.h" />
   </ItemGroup>
   <ItemGroup>

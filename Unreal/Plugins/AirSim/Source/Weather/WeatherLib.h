@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
+
 #include "WeatherLib.generated.h"
 
 // NOTE: when adding new enums, you must add it to GetWeatherParamScalarName()'s switch statement
