@@ -102,6 +102,9 @@
     <ClCompile Include="Unreal\Plugins\AirSim\Source\Multirotor\SimModeWorldMultirotor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\Weather\WeatherLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="unreal\plugins\airsim\source\AirBlueprintLib.h">
@@ -195,6 +198,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Unreal\Plugins\AirSim\Source\Multirotor\MultirotorSimApi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\Weather\WeatherLib.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

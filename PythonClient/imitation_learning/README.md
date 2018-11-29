@@ -13,12 +13,12 @@ The code in this section is based on the [Autonomous Driving Cookbook](https://g
   
 ## What's inside  
   
-![imitation learning](../../docs/images/imitation_learning_example.gif)  
+![imitation learning](https://github.com/microsoft/airsim/wiki/images/technion/imitation_learning_example.gif)  
 *Driving in simulation using trained imitation learning model, based on recorded data*  
 
 Imitation learning includes the usage of labeled data as input to a training algorithm with the purpose of having the algorithm imitate the actions of people who recorded the data.  
 
-![diagram](../../docs/images/imitation_diagram.PNG)
+![diagram](https://github.com/microsoft/airsim/wiki/images/technion/imitation_diagram.PNG)
 
 This diagram is represented by these files:  
 
@@ -45,5 +45,5 @@ By using the predicted steering value, the code calculates related control param
 ## Training Tips  
 We recommend on using augmentation and recording techniques.  
 We give here an example for two methods:  
-- [CycleLight](../../docs/graphic_features.md) - Animation of a day light cycle in a changeable, potentially very short period of time.  
+- [CycleLight](https://github.com/Microsoft/AirSim/wiki/graphic_features) - Animation of a day light cycle in a changeable, potentially very short period of time.  
 - Shifted images - Altering the camera’s position to the right or the left of the car, so that it can record images in extreme conditions. To simulate driving back to the center from those extreme situations, post-process the recorded angle of the steering accordingly (manually).  

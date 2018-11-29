@@ -9,6 +9,7 @@
 #include "common/ImageCaptureBase.hpp"
 #include "physics/Kinematics.hpp"
 #include "physics/Environment.hpp"
+#include "api/WorldSimApiBase.hpp"
 
 namespace msr { namespace airlib {
 
@@ -35,6 +36,12 @@ public:
     bool simIsPaused() const;
     void simPause(bool is_paused);
     void simContinueForTime(double seconds);
+
+    void simSetTimeOfDay(bool is_enabled, const string& start_datetime = "", bool is_start_datetime_dst = false,
+        float celestial_clock_speed = 1, float update_interval_secs = 60, bool move_sun = true);
+
+    void simEnableWeather(bool enable);
+    void simSetWeatherParameter(WorldSimApiBase::WeatherParameter param, float val);
 
     Pose simGetObjectPose(const std::string& object_name) const;
     bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);

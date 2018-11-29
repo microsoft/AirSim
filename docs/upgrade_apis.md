@@ -2,7 +2,7 @@
 There have been several API changes in AirSim v1.2 that we hope removes inconsistency, adds future extensibility and presents cleaner interface. Many of these changes are however *breaking changes* which means you will need to modify your client code that talks to AirSim.
 
 ## Quicker Way
-While most changes you need to do in your client code are fairly easy, a quicker way is simply to take a look at the example code such as [Hello Drone](../PythonClient/multirotor/hello_drone.py)or [Hello Car](../PythonClient/car/hello_car.py) to get gist of changes.
+While most changes you need to do in your client code are fairly easy, a quicker way is simply to take a look at the example code such as [Hello Drone](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/hello_drone.py)or [Hello Car](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/hello_car.py) to get gist of changes.
 
 ## Importing AirSim
 Instead of,

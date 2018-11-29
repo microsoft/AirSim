@@ -1,6 +1,6 @@
 import setup_path 
 import airsim
-
+import os
 import sys
 import math
 import time
@@ -97,7 +97,9 @@ class OrbitNavigator:
         ramptime = self.radius / 10
         self.start_time = time.time()        
 
-        while count < self.iterations and self.snapshot_index < self.snapshots:
+        while count < self.iterations:
+            if self.snapshots > 0 and not (self.snapshot_index < self.snapshots):
+                break
             # ramp up to full speed in smooth increments so we don't start too aggressively.
             now = time.time()
             speed = self.speed

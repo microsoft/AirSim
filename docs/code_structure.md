@@ -18,7 +18,7 @@ This is the only portion of project which is dependent on Unreal engine. We have
 ## MavLinkCom
 
 This is the library developed by our own team member [Chris Lovett](https://github.com/lovettchris) that provides C++ classes to talk to the MavLink devices. This library is stand alone and can be used in any project.
-See [MavLinkCom](../MavLinkCom/README.md) for more info.
+See [MavLinkCom](https://github.com/Microsoft/AirSim/tree/master/MavLinkCom//README.md) for more info.
 
 ## Sample Programs
 We have created a few sample programs to demonstrate how to use the API. See HelloDrone and DroneShell. 
@@ -26,7 +26,7 @@ DroneShell demonstrates how to connect to the simulator using UDP.  The simulato
 
 ## Contributing
 
-See [Contribution Guidelines](docs/contributing.md)
+See [Contribution Guidelines](../CONTRIBUTING.md)
 
 ## Unreal Framework
 

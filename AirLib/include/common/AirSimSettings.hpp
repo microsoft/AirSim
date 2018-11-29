@@ -29,7 +29,8 @@ public: //types
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
     static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
-
+    static constexpr char const * kVehicleInertialFrame = "VehicleInertialFrame";
+    static constexpr char const * kSensorLocalFrame = "SensorLocalFrame";
 
     struct SubwindowSetting {
         int window_index;
@@ -206,6 +207,8 @@ public: //types
         real_T range = 10000.0f / 100;                    // meters
         uint points_per_second = 100000;
         uint horizontal_rotation_frequency = 10;          // rotations/sec
+        float horizontal_FOV_start = 0;                   // degrees
+        float horizontal_FOV_end = 359;                   // degrees
 
         // defaults specific to a mode
         float vertical_FOV_upper = Utils::nan<float>();   // drones -15, car +10
@@ -214,6 +217,7 @@ public: //types
         Rotation rotation = Rotation::nanRotation();
 
         bool draw_debug_points = false;
+        std::string data_frame = AirSimSettings::kVehicleInertialFrame;
     };
 
     struct VehicleSetting {
@@ -307,6 +311,7 @@ public: //types
         bool is_start_datetime_dst = false;
         float celestial_clock_speed = 1;
         float update_interval_secs = 60;
+        bool move_sun = true;
     };
 
 private: //fields
@@ -1013,6 +1018,7 @@ private:
                 tod_setting.celestial_clock_speed = tod_settings_json.getFloat("CelestialClockSpeed", tod_setting.celestial_clock_speed);
                 tod_setting.is_start_datetime_dst = tod_settings_json.getBool("StartDateTimeDst", tod_setting.is_start_datetime_dst);
                 tod_setting.update_interval_secs = tod_settings_json.getFloat("UpdateIntervalSecs", tod_setting.update_interval_secs);
+                tod_setting.move_sun = tod_settings_json.getBool("MoveSun", tod_setting.move_sun);
             }
         }
     }
@@ -1131,9 +1137,12 @@ private:
         lidar_setting.points_per_second = settings_json.getInt("PointsPerSecond", lidar_setting.points_per_second);
         lidar_setting.horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", lidar_setting.horizontal_rotation_frequency);
         lidar_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", lidar_setting.draw_debug_points);
+        lidar_setting.data_frame = settings_json.getString("DataFrame", lidar_setting.data_frame);
 
         lidar_setting.vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", lidar_setting.vertical_FOV_upper);
         lidar_setting.vertical_FOV_lower = settings_json.getFloat("VerticalFOVLower", lidar_setting.vertical_FOV_lower);
+        lidar_setting.horizontal_FOV_start = settings_json.getFloat("HorizontalFOVStart", lidar_setting.horizontal_FOV_start);
+        lidar_setting.horizontal_FOV_end = settings_json.getFloat("HorizontalFOVEnd", lidar_setting.horizontal_FOV_end);
 
         lidar_setting.position = createVectorSetting(settings_json, lidar_setting.position);
         lidar_setting.rotation = createRotationSetting(settings_json, lidar_setting.rotation);

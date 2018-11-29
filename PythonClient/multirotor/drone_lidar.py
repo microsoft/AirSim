@@ -50,6 +50,8 @@ class LidarTest:
             else:
                 points = self.parse_lidarData(lidarData)
                 print("\tReading %d: time_stamp: %d number_of_points: %d" % (i, lidarData.time_stamp, len(points)))
+                print("\t\tlidar position: %s" % (pprint.pformat(lidarData.pose.position)))
+                print("\t\tlidar orientation: %s" % (pprint.pformat(lidarData.pose.orientation)))
             time.sleep(5)
 
     def parse_lidarData(self, data):

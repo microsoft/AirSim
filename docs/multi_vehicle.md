@@ -49,9 +49,9 @@ It's as easy as specifying them in [settings.json](settings.md). The `Vehicles` 
 ## Using APIs for Multiple Vehicles
 The new APIs since AirSim 1.2 allows you to specify `vehicle_name`. This name corresponds to keys in json settings (for example, Car1 or Drone2 above). 
 
-[Example code for cars](../PythonClient/car/multi_agent_car.py)
+[Example code for cars](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/multi_agent_car.py)
 
-[Example code for multirotors](../PythonClient/multirotor/multi_agent_drone.py)
+[Example code for multirotors](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/multi_agent_drone.py)
 
 ### Demo
 [![AirSimMultiple Vehicles Demo Video](images/demo_multi_vehicles.png)](https://youtu.be/35dgcuLuF5M)

@@ -1,4 +1,4 @@
-#Flight Controller
+# Flight Controller
 
 ## What is Flight Controller?
 "Wait!" you ask, "Why do you need flight controller for a simulator?". The primary job of flight controller is to take in *desired state* as input, estimate *actual state* using sensors data and then drive the actuators in such a way so that actual state comes as close to the desired state. For quadrotors, desired state can be specified as roll, pitch and yaw, for example. It then estimates actual roll, pitch and yaw using gyroscope and accelerometer. Then it generates appropriate motor signals so actual state becomes desired state. You can find more in-depth in [our paper](paper/main.pdf).

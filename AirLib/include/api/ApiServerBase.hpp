@@ -11,7 +11,7 @@ namespace msr { namespace airlib {
 
 class ApiServerBase {
 public:
-    virtual void start(bool block = false) = 0;
+    virtual void start(bool block, std::size_t thread_count) = 0;
     virtual void stop() = 0;
 
     virtual ~ApiServerBase() = default;
