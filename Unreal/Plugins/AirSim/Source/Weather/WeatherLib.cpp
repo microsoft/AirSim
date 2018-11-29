@@ -146,7 +146,7 @@ FVector UWeatherLib::getWeatherWindDirection(UWorld* World)
 		FLinearColor Direction;
 		WeatherMaterialCollectionInstance->GetVectorParameterValue(ParamName, Direction);//SetScalarParameterValue(ParamName, Amount);
 
-		return Direction;
+		return FVector(Direction);
 	}
 	else
 	{
