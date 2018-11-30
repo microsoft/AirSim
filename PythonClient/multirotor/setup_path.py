@@ -4,7 +4,7 @@
 # Else we look up grand-parent folder to see if it has airsim folder
 #    and if it does then we add that in sys.path
 
-import os,sys,inspect,logging
+import os,sys,logging
 
 #this class simply tries to see if airsim 
 class SetupPath:
@@ -15,7 +15,7 @@ class SetupPath:
 
     @staticmethod
     def getCurrentPath():
-        cur_filepath = os.path.abspath(inspect.getfile(inspect.currentframe()))
+        cur_filepath = __file__
         return os.path.dirname(cur_filepath)
 
     @staticmethod

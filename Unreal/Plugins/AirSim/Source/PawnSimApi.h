@@ -96,6 +96,7 @@ protected: //additional interface for derived class
     const msr::airlib::Kinematics::State* getPawnKinematics() const;
     void setPoseInternal(const Pose& pose, bool ignore_collision);
     virtual msr::airlib::VehicleApiBase* getVehicleApiBase() const;
+    virtual msr::airlib::Environment* getEnvironment() const;
 
 public: //Unreal specific methods
     PawnSimApi(const Params& params);

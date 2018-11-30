@@ -291,7 +291,7 @@ void PawnSimApi::reset()
 void PawnSimApi::update()
 {
     //update position from kinematics so we have latest position after physics update
-    environment_->setPosition(kinematics_.pose.position);
+    environment_->setPosition(getGroundTruthKinematics()->pose.position);
     environment_->update();
     //kinematics_->update();
 
@@ -472,7 +472,7 @@ bool PawnSimApi::canTeleportWhileMove()  const
 
 const msr::airlib::Kinematics::State* PawnSimApi::getPawnKinematics() const
 {
-    return &kinematics_;
+    return getGroundTruthKinematics();
 }
 
 void PawnSimApi::updateKinematics(float dt)
@@ -508,6 +508,11 @@ const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() con
     return &kinematics_;
 }
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
+{
+    return environment_.get();
+}
+
+msr::airlib::Environment* PawnSimApi::getEnvironment() const
 {
     return environment_.get();
 }
