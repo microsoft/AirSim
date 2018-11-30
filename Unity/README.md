@@ -26,9 +26,23 @@ This project is still in early development, expect some rough edges. We are work
 * Go inside the AirSim\Unity directory: `cd Unity`. 
 * Build the unity project: `build.cmd`.   
 * Additionally, there is a free environment `Windridge City` which you can download from [Unity Asset Store](https://assetstore.unity.com/packages/3d/environments/roadways/windridge-city-132222). And, of course, you can always create your own environment.
-### Linux
-* Go inside the AirSim/Unity directory: `cd Unity`.
-* Build the unity project `build.sh`.
+### Cross-Compiling to Linux
+While Airsim Projects cannot be built natively on Linux using the Unity engine, Unity does support compiling projects to Linux systems.
+* In Windows, build the Unity Demo by navigating to the build settings option in the toolbar ```File -> Build Settings```
+* Make sure the following scenes are set to be built:
+	1. SimModeSelector
+	2. CarDemo
+	3. DroneDemo
+* Set the target operating system to linux, and choose the version appropriate for your system (x86 vs x86_64)
+* Click Build
+* Transport the built project as well as the generated folder ''' "{project_name}_Data"``` to your linux machine
+* On your linux machine, navigate to your AirSim repository, and run the following commands in a terminal window:
+	```
+	cd Unity
+	./build.sh
+	cp linux-build/libAirsimWrapper.so path/to/your/project/{project_name}_Data/Plugins/{os_version}
+	```
+This will generate the necessary shared library to allow Airsim to communicate with Unity and copy it to the plugins folder of your project binary.
 
 #### Usage 
 * Start Unity and click `Open project`. 
