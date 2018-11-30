@@ -1,5 +1,3 @@
-#pragma once
-
 #include <future>
 #include "vehicles/multirotor/MultiRotor.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"

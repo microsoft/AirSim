@@ -12,5 +12,7 @@ export CC=/usr/bin/clang-5.0;
 export CXX=/usr/bin/clang++-5.0;
 cmake ../AirLibWrapper/AirsimWrapper;
 make;
-
-rm AirLibWrapper/AirsimWrapper/rpclib.pc.in
+cd ..;
+if [ -f AirLibWrapper/AirsimWrapper/rpclib.pc.in ]; then
+	rm AirLibWrapper/AirsimWrapper/rpclib.pc.in
+fi

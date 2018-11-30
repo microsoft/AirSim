@@ -18,6 +18,10 @@ if [ "$(uname)" == "Darwin" ]; then
     pushd "$UnrealDir/Engine/Build/BatchFiles/Mac/" >/dev/null
     ./GenerateProjectFiles.sh "$SCRIPT_DIR/Blocks.uproject"
     popd >/dev/null
+elif [ "$(uname)" == "Linux" ]; then
+    pushd "$UnrealDir/Engine/Build/BatchFiles/Linux/" >/dev/null
+    ./GenerateProjectFiles.sh "$SCRIPT_DIR/Blocks.uproject"
+    popd >/dev/null
 else
     echo "Not implemented"
     exit 1
