@@ -37,6 +37,7 @@ add_library(
     ${AIRLIB_LIBRARY_SOURCE_FILES}
     ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES}
     )
+
 target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}  -lstdc++ -lpthread -lboost_filesystem)
 
 

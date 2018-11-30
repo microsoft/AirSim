@@ -85,17 +85,10 @@ public class InitializeAirSim : MonoBehaviour
 
     public void LoadSceneAsPerSimMode(string load_name)
     {
+
         if (load_name == "Car")
-            #if _WIN32
-                SceneManager.LoadSceneAsync("Scenes/CarDemo", LoadSceneMode.Single);
-            #else
-                SceneManager.LoadSceneAsync("Scenes/CarDemoLinux", LoadSceneMode.Single);
-            #endif
+            SceneManager.LoadSceneAsync("Scenes/CarDemo", LoadSceneMode.Single);
         else if (load_name == "Multirotor")
-            #if _WIN32
-                SceneManager.LoadSceneAsync("Scenes/DroneDemo", LoadSceneMode.Single);
-            #else
-                SceneManager.LoadSceneAsync("Scenes/DroneDemoLinux", LoadSceneMode.Single);
-            #endif
+            SceneManager.LoadSceneAsync("Scenes/DroneDemo", LoadSceneMode.Single);
     }
 }
