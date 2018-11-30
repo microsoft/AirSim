@@ -9,3 +9,4 @@ exit /b 0
 :buildfailed
 echo(
 echo #### Build failed - see messages above. 1>&2
+exit /b 1
