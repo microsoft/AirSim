@@ -291,7 +291,7 @@ void PawnSimApi::reset()
 void PawnSimApi::update()
 {
     //update position from kinematics so we have latest position after physics update
-    environment_->setPosition(kinematics_.pose.position);
+    environment_->setPosition(getGroundTruthKinematics()->pose.position);
     environment_->update();
     //kinematics_->update();
 
@@ -418,7 +418,6 @@ void PawnSimApi::setPoseInternal(const Pose& pose, bool ignore_collision)
     //translate to new PawnSimApi position & orientation from NED to NEU
     FVector position = ned_transform_.fromLocalNed(pose.position);
     state_.current_position = position;
-    kinematics_.pose = pose;
 
     //quaternion formula comes from http://stackoverflow.com/a/40334755/207661
     FQuat orientation = ned_transform_.fromNed(pose.orientation);
@@ -473,7 +472,7 @@ bool PawnSimApi::canTeleportWhileMove()  const
 
 const msr::airlib::Kinematics::State* PawnSimApi::getPawnKinematics() const
 {
-    return &kinematics_;
+    return getGroundTruthKinematics();
 }
 
 void PawnSimApi::updateKinematics(float dt)
