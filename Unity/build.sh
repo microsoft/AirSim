@@ -12,10 +12,4 @@ cd linux-build;
 cmake ../AirLibWrapper/AirsimWrapper;
 make;
 
-if [ ! -d "../UnityDemo/Assets/Plugins" ]; then
-	mkdir ../ UnityDemo/Assets/Plugins;
-fi
-cp libAirsimWrapper.so ../UnityDemo/Assets/Plugins;
-cd ..;
-#rm -r linux-build;
 rm AirLibWrapper/AirsimWrapper/rpclib.pc.in
