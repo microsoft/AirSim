@@ -644,8 +644,8 @@ void ASimModeBase::drawLidarDebugPoints()
                     if (lidar_data.point_cloud.size() < 3)
                         return;
 
-                    for (int i = 0; i < lidar_data.point_cloud.size(); i = i + 3) {
-                        msr::airlib::Vector3r point(lidar_data.point_cloud[i], lidar_data.point_cloud[i + 1], lidar_data.point_cloud[i + 2]);
+                    for (int j = 0; j < lidar_data.point_cloud.size(); j = j + 3) {
+                        msr::airlib::Vector3r point(lidar_data.point_cloud[j], lidar_data.point_cloud[j + 1], lidar_data.point_cloud[j + 2]);
 
                         FVector uu_point;
 

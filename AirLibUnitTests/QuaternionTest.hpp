@@ -12,10 +12,38 @@ public:
     virtual void run() override
     {
         //eulerAngleTest();
-        lookAtTest();
+        //lookAtTest();
+        rotationOrderTest();
     }
 
 private:
+    void rotationOrderTest()
+    {
+        Quaternionr q1 = VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(90.0f));
+        Quaternionr q2 = VectorMath::toQuaternion(Utils::degreesToRadians(90.0f), 0, 0);
+        Quaternionr q12 = q1 * q2;
+        Quaternionr q21 = q2 * q1;
+
+        float pitch, roll, yaw;
+        VectorMath::toEulerianAngle(q12, pitch, roll, yaw);
+        VectorMath::toEulerianAngle(q21, pitch, roll, yaw);
+
+    }
+    void worldBodyTransformTest()
+    {
+        //vehicle wrt to world
+        Quaternionr vehicle_world_q = VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(45.0f));
+        //lidar wrt to vehicle
+        Quaternionr lidar_vehicle_q = VectorMath::toQuaternion(0, 0, Utils::degreesToRadians(10.0f));
+        //lidar wrt to world
+        Quaternionr lidar_world_q = VectorMath::rotateQuaternion(lidar_vehicle_q, vehicle_world_q, false);
+        float pitch, roll, yaw;
+        VectorMath::toEulerianAngle(vehicle_world_q, pitch, roll, yaw);
+        VectorMath::toEulerianAngle(lidar_world_q, pitch, roll, yaw);
+        Utils::log(Utils::stringf("%f", Utils::radiansToDegrees(yaw)));
+
+    }
+
     Quaternionr lookAt(Vector3r sourcePoint, Vector3r destPoint)
     {
         Vector3r toVector = (destPoint - sourcePoint).normalized();
