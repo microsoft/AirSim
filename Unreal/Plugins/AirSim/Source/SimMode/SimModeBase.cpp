@@ -602,7 +602,18 @@ void ASimModeBase::drawLidarDebugPoints()
                     for (int i = 0; i < lidar_data.point_cloud.size(); i = i + 3) {
                         msr::airlib::Vector3r point(lidar_data.point_cloud[i], lidar_data.point_cloud[i + 1], lidar_data.point_cloud[i + 2]);
 
-                        FVector uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point);
+                        FVector uu_point;
+
+                        if (lidar->getParams().data_frame == AirSimSettings::kVehicleInertialFrame) {
+                            uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point);
+                        }
+                        else if (lidar->getParams().data_frame == AirSimSettings::kSensorLocalFrame) {
+
+                            msr::airlib::Vector3r point_w = msr::airlib::VectorMath::transformToWorldFrame(point, lidar_data.pose, true);
+                            uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point_w);
+                        }
+                        else
+                            throw std::runtime_error("Unknown requested data frame");
 
                         DrawDebugPoint(
                             this->GetWorld(),

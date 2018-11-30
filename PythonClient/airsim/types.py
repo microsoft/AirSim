@@ -344,3 +344,4 @@ class CameraInfo(MsgpackMixin):
 class LidarData(MsgpackMixin):
     point_cloud = 0.0
     time_stamp = np.uint64(0)
+    pose = Pose()

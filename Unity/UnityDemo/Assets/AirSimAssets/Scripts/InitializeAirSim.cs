@@ -43,22 +43,17 @@ public class InitializeAirSim : MonoBehaviour
     public static string GetAirSimSettingsFileName()
     {
 
-        #if _WIN32
-            string fileName = Application.dataPath + "\\..\\settings.json";
-        #else
-            string fileName = "../unity-settings.json";
-        #endif
-        // Debug.Log(fileName);
+        string fileName = Application.dataPath + "\\..\\settings.json";
         if (File.Exists(fileName))
         {
             return fileName;
         }
 
-        #if _WIN32
-            fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("AirSim", "settings.json"));
-        #endif
+        fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("AirSim", "settings.json"));
+        Debug.Log(fileName);
         if (File.Exists(fileName))
         {
+            
             return fileName;
         }
 
@@ -90,10 +85,18 @@ public class InitializeAirSim : MonoBehaviour
 
     public void LoadSceneAsPerSimMode(string load_name)
     {
-        Debug.Log("loading sim");
+
         if (load_name == "Car")
-            SceneManager.LoadSceneAsync("Scenes/CarDemo", LoadSceneMode.Single);
+            #if _WIN32
+                SceneManager.LoadSceneAsync("Scenes/CarDemo", LoadSceneMode.Single);
+            #else
+                SceneManager.LoadSceneAsync("Scenes/CarDemoLinux", LoadSceneMode.Single);
+            #endif
         else if (load_name == "Multirotor")
-            SceneManager.LoadSceneAsync("Scenes/DroneDemo", LoadSceneMode.Single);
+            #if _WIN32
+                SceneManager.LoadSceneAsync("Scenes/DroneDemo", LoadSceneMode.Single);
+            #else
+                SceneManager.LoadSceneAsync("Scenes/DroneDemoLinux", LoadSceneMode.Single);
+            #endif
     }
 }

@@ -29,7 +29,8 @@ private:
 
     void createLasers();
     bool shootLaser(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
-        uint32 channel, float horizontalAngle, msr::airlib::LidarSimpleParams params, Vector3r &point);
+        const uint32 channel, const float horizontal_angle, const float vertical_angle, 
+        const msr::airlib::LidarSimpleParams params, Vector3r &point);
 
 private:
     AActor* actor_;

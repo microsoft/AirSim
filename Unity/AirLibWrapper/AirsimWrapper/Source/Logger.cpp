@@ -1,16 +1,18 @@
 #include <time.h>
 #include <string>
 
-#ifdef  _WIN32
-	#include <Windows.h>
-#elif __linux__
-	#include <sys/stat.h>
-#endif
-
 #include "Logger.h"
 
-std::ofstream Logger::fileStream;
-Logger* Logger::logger = nullptr;
+#ifdef  _WIN32
+	#include <Windows.h>
+	std::ofstream Logger::fileStream;
+#elif __linux__
+	bfs::ofstream Logger::fileStream;
+#endif
+
+
+Logger* Logger::logger = nullptr; //** This is set to be a nullptr, so are we actually setting it somewhere?
+
 
 Logger* Logger::GetLogger()
 {
@@ -38,24 +40,28 @@ Logger* Logger::GetLogger()
 					fileStream.open(logger->logFileName, std::ios::out);
 				}
 			#elif __linux__
-				struct stat sb;
-				if (stat("Logs", &sb) == 0 && S_ISDIR(sb.st_mode))  // *td* Need to add GetLasError equivalent 
+
+				if (bfs::create_directory("Logs") || bfs::exists("Logs")) 
 				{ 
-					logger = new Logger();
+					logger = new Logger(); //** pointer to logger set here
+
 
 					// Enabling all LogLevels,
 					logger->logLevel_Information = true;
 					logger->logLevel_Warning = true;
 					logger->logLevel_Error = true;
-
 					time_t now = time(0);
 					tm* ltm = localtime(&now);
 					auto err = asctime(ltm);
 					char buff[20];
-					snprintf(buff, 20, "%d%d%d_%d%d", ltm->tm_mday, ltm->tm_mon + 1, ltm->tm_year + 1900, ltm->tm_hour, ltm->tm_min);
-					logger->logFileName = "Logs/WrapperDllLog_" + std::string(buff) + ".txt";
-					fileStream.open(logger->logFileName, std::ios::out);
-					delete ltm;
+
+					snprintf(buff, 20, "%d%d%d_%d%d", ltm->tm_mday, ltm->tm_mon + 1, ltm->tm_year + 1900, ltm->tm_hour, ltm->tm_min); //** Tested, results are identical to windows
+					logger->logFileName = bfs::path{"Logs/WrapperDllLog_" + std::string(buff) + ".txt"};
+					fileStream.open(logger->logFileName);
+					fileStream << "initial opening";
+					
+					// delete ltm;
+
 				}
 			#endif
 		}
@@ -109,6 +115,7 @@ void Logger::WriteLog(const std::string log, LogLevel level)
 	else if (logLevel_Warning && level == LogLevel::Warning)
 	{
 		fileStream << "\n[Warnning] \t\t<" << GetCurrentDateTime() << ">" << " \t" << log;
+
 	}
 	else if (logLevel_Error && level == LogLevel::Error)
 	{
