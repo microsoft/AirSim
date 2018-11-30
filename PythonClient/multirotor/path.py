@@ -8,6 +8,14 @@ client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 
+client.armDisarm(True)
+
+landed = client.getMultirotorState().landed_state
+if landed == airsim.LandedState.Landed:
+    print("taking off...")
+    client.takeoffAsync().join()
+else:
+    client.hoverAsync().join()
 
 # AirSim uses NED coordinates so negative axis is up.
 # z of -7 is 7 meters above the original launch point.
