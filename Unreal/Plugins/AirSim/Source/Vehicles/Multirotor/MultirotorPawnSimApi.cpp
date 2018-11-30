@@ -23,7 +23,7 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(const Params& params)
     vehicle_api_ = vehicle_params_->createMultirotorApi();
     //setup physics vehicle
     phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(),
-        getPose(), params.home_geopoint));
+        getPose(), getEnvironment()));
     rotor_count_ = phys_vehicle_->wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
 

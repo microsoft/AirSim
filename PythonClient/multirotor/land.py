@@ -11,7 +11,7 @@ if landed == airsim.LandedState.Landed:
     print("already landed...")
 else:
     print("landing...")
-    client.land()
+    client.landAsync().join()
 
 client.armDisarm(False)
 client.enableApiControl(False)
