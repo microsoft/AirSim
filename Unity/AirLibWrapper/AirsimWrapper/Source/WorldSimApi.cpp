@@ -64,6 +64,17 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 	return SetPose(airSimPose, false, object_name.c_str());
 }
 
+void WorldSimApi::enableWeather(bool enable)
+{
+    unused(enable);
+    //TODO: implement weather for Unity
+}
+void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
+{
+    unused(param);
+    unused(val);
+    //TODO: implement weather for Unity
+}
 
 #pragma region Character
 // Not implemented, just added for compilation.

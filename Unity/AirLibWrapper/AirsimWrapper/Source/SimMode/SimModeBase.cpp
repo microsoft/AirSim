@@ -139,7 +139,7 @@ void SimModeBase::startApiServer()
 		api_server_ = createApiServer();
 #endif
 		try {
-			api_server_->start();
+			api_server_->start(false, 4); //TODO: set thread for vehicle count
 		}
 		catch (std::exception& ex) {
 			PrintLogMessage("Cannot start RpcLib Server", ex.what(), vehicle_name_.c_str(), ErrorLogSeverity::Error);
