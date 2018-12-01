@@ -95,9 +95,8 @@ private:
         //Utils::log(Utils::stringf("T-VEL %s %" PRIu64 ": ", 
         //    VectorMath::toString(next.twist.linear).c_str(), clock()->getStepCount()));
 
-        body.setKinematics(next);
         body.setWrench(next_wrench);
-        body.kinematicsUpdated();
+        body.updateKinematics(next);
 
 
 		//TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence

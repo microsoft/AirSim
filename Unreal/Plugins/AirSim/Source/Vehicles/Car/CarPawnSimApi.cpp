@@ -8,10 +8,16 @@ using namespace msr::airlib;
 
 CarPawnSimApi::CarPawnSimApi(const Params& params,
     const CarPawnApi::CarControls&  keyboard_controls, UWheeledVehicleMovementComponent* movement)
-    : PawnSimApi(params),
+    : PawnSimApi(params), params_(params),
       keyboard_controls_(keyboard_controls)
 {
-    createVehicleApi(static_cast<ACarPawn*>(params.pawn), params.home_geopoint);
+}
+
+void CarPawnSimApi::initialize()
+{
+    PawnSimApi::initialize();
+
+    createVehicleApi(static_cast<ACarPawn*>(params_.pawn), params_.home_geopoint);
 
     //TODO: should do reset() here?
     joystick_controls_ = CarPawnApi::CarControls();
@@ -21,7 +27,7 @@ void CarPawnSimApi::createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint
 {
     //create vehicle params
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
-    vehicle_api_ = std::unique_ptr<CarApiBase>(new CarPawnApi(pawn, getPawnKinematics(), home_geopoint,
+    vehicle_api_ = std::unique_ptr<CarApiBase>(new CarPawnApi(pawn, getGroundTruthKinematics(), home_geopoint,
         getVehicleSetting(), sensor_factory, 
         (*getGroundTruthKinematics()), (*getGroundTruthEnvironment())));
 }
@@ -168,11 +174,5 @@ void CarPawnSimApi::update()
     PawnSimApi::update();
 }
 
-void CarPawnSimApi::reportState(StateReporter& reporter)
-{
-    // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
-    FVector unrealPosition = getUUPosition();
-    reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
-}
 //*** End: UpdatableState implementation ***//
 

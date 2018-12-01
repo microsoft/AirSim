@@ -10,6 +10,21 @@
 
 namespace msr { namespace airlib {
 
+/*
+UpdatableObject provides generalized framework for things that needs to be "ticked". For example,
+physics objects that needs to update its position every 10ms.
+Typically this objects will take their current state, do some processing and produce new state
+on every tick.
+The reset() provides important ability to rollback all changes to the state back to original
+since when it was first initialized. This allows to reset simulation and put all updatable objects
+back to their original state.
+
+After object is created and initialized, reset() must be called first before calling update().
+Do not call reset() from constructor or initialization because that will produce sequence of
+init->reset calls for base-derived class that would be incorrect.
+*/
+
+
 class UpdatableObject {
 public:
     virtual void reset()

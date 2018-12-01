@@ -29,17 +29,19 @@ private:
     };
 
 public: 
-    void initialize(const Kinematics::State& initial_kinematic_state, Environment* environment)
+    void initialize(Kinematics* kinematics, Environment* environment)
     {
         computeInertiaMatrix(inertia_, mass_, body_box_);
         createWrenchVertices(wrench_vertices_, body_box_.x(), body_box_.y(), body_box_.z(), mass_);
         createDragVertices(drag_vertices_, 1.3f, body_box_.x(), body_box_.y(), body_box_.z());
 
-        PhysicsBody::initialize(mass_, inertia_, initial_kinematic_state, environment);
+        PhysicsBody::initialize(mass_, inertia_, kinematics, environment);
     }
 
-    virtual void kinematicsUpdated() override 
+    virtual void updateKinematics(const Kinematics::State& kinematics) override
     {
+        PhysicsBody::updateKinematics(kinematics);
+
         const auto& kinematics = this->getKinematics();
         std::cout << " Pos: " << VectorMath::toString(kinematics.pose.position);
         std::cout << " Ori: " << VectorMath::toString(kinematics.pose.orientation) << std::endl;

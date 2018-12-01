@@ -19,25 +19,10 @@ namespace msr { namespace airlib {
 class MultiRotor : public PhysicsBody {
 public:
     MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
-        const Kinematics::State& initial_kinematic_state, const Environment::State& initial_environment)
+        Kinematics* kinematics, Environment* environment)
         : params_(params), vehicle_api_(vehicle_api)
     {
-        environment_.reset(new Environment(initial_environment));
-        initialize(initial_kinematic_state, environment_.get());
-    }
-
-    MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
-        const Pose& initial_pose, const GeoPoint& home_geopoint)
-        : params_(params), vehicle_api_(vehicle_api)
-    {
-        auto initial_kinematics = Kinematics::State::zero();
-        initial_kinematics.pose = initial_pose;
-        Environment::State initial_environment;
-        initial_environment.position = initial_kinematics.pose.position;
-        initial_environment.geo_point = home_geopoint;
-        environment_.reset(new Environment(initial_environment));
-
-        initialize(initial_kinematics, environment_.get());
+        initialize(kinematics, environment);
     }
 
     //*** Start: UpdatableState implementation ***//
@@ -55,7 +40,7 @@ public:
         //update forces on vertices that we will use next
         PhysicsBody::update();
 
-        //Note that controller gets updated after kinematics gets updated in kinematicsUpdated
+        //Note that controller gets updated after kinematics gets updated in updateKinematics
         //otherwise sensors will have values from previous cycle causing lags which will appear
         //as crazy jerks whenever commands like velocity is issued
     }
@@ -77,9 +62,11 @@ public:
     //*** End: UpdatableState implementation ***//
 
 
-    //After physics engine updates kinematics, this method gets called
-    virtual void kinematicsUpdated() override
+    //Physics engine calls this method to set next kinematics
+    virtual void updateKinematics(const Kinematics::State& kinematics) override
     {
+        PhysicsBody::updateKinematics(kinematics);
+
         updateSensors(*params_, getKinematics(), getEnvironment());
 
         //update controller which will update actuator control signal
@@ -142,9 +129,9 @@ public:
     virtual ~MultiRotor() = default;
 
 private: //methods
-    void initialize(const Kinematics::State& initial_kinematic_state, Environment* environment)
+    void initialize(Kinematics* kinematics, Environment* environment)
     {
-        PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, initial_kinematic_state, environment);
+        PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, kinematics, environment);
 
         createRotors(*params_, rotors_, environment);
         createDragVertices();
