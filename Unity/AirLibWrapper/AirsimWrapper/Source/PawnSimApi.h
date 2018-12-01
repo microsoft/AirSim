@@ -15,6 +15,8 @@ class PawnSimApi : public msr::airlib::VehicleSimApiBase
 {
 private:
 	typedef msr::airlib::AirSimSettings AirSimSettings;
+    typedef msr::airlib::Kinematics Kinematics;
+    typedef msr::airlib::Environment Environment;
 
 public:
 	typedef msr::airlib::GeoPoint GeoPoint;
@@ -55,10 +57,12 @@ private:
 	void updateKinematics(float dt);
 
 protected:
-	const msr::airlib::Kinematics::State* getPawnKinematics() const;
 	AirSimPose GetInitialPose();
+    msr::airlib::Kinematics* getKinematics();
+    msr::airlib::Environment* getEnvironment();
 
 public:
+    virtual void initialize() override;
 	PawnSimApi(const Params& params);
 	virtual void reset() override;
 	virtual void update() override;
@@ -82,6 +86,7 @@ public:
 	virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
 	virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
 	virtual std::string getRecordFileLine(bool is_header_line) const override;
+    virtual void reportState(msr::airlib::StateReporter& reporter) override;
 	void OnCollision(msr::airlib::CollisionInfo collisionInfo);
 	const NedTransform& getNedTransform() const;
 	virtual void pawnTick(float dt);
@@ -107,6 +112,6 @@ private:
 	};
 	State state_, initial_state_;
 
-	msr::airlib::Kinematics::State kinematics_;
-	std::unique_ptr<msr::airlib::Environment> environment_;
+    std::unique_ptr<msr::airlib::Kinematics> kinematics_;
+    std::unique_ptr<msr::airlib::Environment> environment_;
 };

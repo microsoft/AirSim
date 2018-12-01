@@ -14,34 +14,29 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(const Params& params) : PawnSimApi(pa
 	VectorMath::toEulerianAngle(pose.orientation, pitch, roll, yaw);
 	pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
 	setPose(pose, false);
-
-	//create vehicle API
-	auto sensor_factory = std::make_shared<UnitySensorFactory>(getVehicleName(), &getNedTransform());
-	vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
-	vehicle_api_ = vehicle_params_->createMultirotorApi();
-	//setup physics vehicle
-	phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(),
-		getPose(), params.home_geopoint));
-	rotor_count_ = phys_vehicle_->wrenchVertexCount();
-	rotor_info_.assign(rotor_count_, RotorInfo());
-
-	vehicle_api_->setSimulatedGroundTruth(getGroundTruthKinematics(), getGroundTruthEnvironment());
-
-	//initialize private vars
-	last_phys_pose_ = pending_phys_pose_ = Pose::nanPose();
-	pending_pose_status_ = PendingPoseStatus::NonePending;
-	reset_pending_ = false;
-	did_reset_ = false;
 }
 
-const msr::airlib::Kinematics::State* MultirotorPawnSimApi::getGroundTruthKinematics() const
+void MultirotorPawnSimApi::initialize()
 {
-	return &phys_vehicle_->getKinematics();
-}
+    PawnSimApi::initialize();
 
-const msr::airlib::Environment* MultirotorPawnSimApi::getGroundTruthEnvironment() const
-{
-	return &phys_vehicle_->getEnvironment();
+    //create vehicle API
+    std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(getVehicleName(), &getNedTransform());
+    vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
+    vehicle_api_ = vehicle_params_->createMultirotorApi();
+    //setup physics vehicle
+    phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(),
+        getKinematics(), getEnvironment()));
+    rotor_count_ = phys_vehicle_->wrenchVertexCount();
+    rotor_info_.assign(rotor_count_, RotorInfo());
+
+    vehicle_api_->setSimulatedGroundTruth(getGroundTruthKinematics(), getGroundTruthEnvironment());
+
+    //initialize private vars
+    last_phys_pose_ = pending_phys_pose_ = Pose::nanPose();
+    pending_pose_status_ = PendingPoseStatus::NonePending;
+    reset_pending_ = false;
+    did_reset_ = false;
 }
 
 void MultirotorPawnSimApi::updateRenderedState(float dt)
@@ -166,9 +161,9 @@ void MultirotorPawnSimApi::update()
 
 void MultirotorPawnSimApi::reportState(StateReporter& reporter)
 {
-	// report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
-	AirSimPose pose = GetPose(getVehicleName().c_str());
-	reporter.writeValue("unreal pos", Vector3r(pose.position.x, pose.position.y, pose.position.z));
+	//// report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
+	//AirSimPose pose = GetPose(getVehicleName().c_str());
+	//reporter.writeValue("unreal pos", Vector3r(pose.position.x, pose.position.y, pose.position.z));
 	phys_vehicle_->reportState(reporter);
 }
 

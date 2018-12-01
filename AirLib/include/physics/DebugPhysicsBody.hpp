@@ -42,7 +42,6 @@ public:
     {
         PhysicsBody::updateKinematics(kinematics);
 
-        const auto& kinematics = this->getKinematics();
         std::cout << " Pos: " << VectorMath::toString(kinematics.pose.position);
         std::cout << " Ori: " << VectorMath::toString(kinematics.pose.orientation) << std::endl;
         std::cout << " Lin Vel: " << VectorMath::toString(kinematics.twist.linear);

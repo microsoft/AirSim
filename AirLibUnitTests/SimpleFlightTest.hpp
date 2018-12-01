@@ -28,7 +28,18 @@ public:
             std::make_shared<SensorFactory>());
         auto api = params->createMultirotorApi();
 
-        MultiRotor vehicle(params.get(), api.get(), Pose(), GeoPoint());
+        std::unique_ptr<msr::airlib::Kinematics> kinematics;
+        std::unique_ptr<msr::airlib::Environment> environment;
+        Kinematics::State initial_kinematic_state = Kinematics::State::zero();;
+        initial_kinematic_state.pose = Pose();
+        kinematics.reset(new Kinematics(initial_kinematic_state));
+
+        Environment::State initial_environment;
+        initial_environment.position = initial_kinematic_state.pose.position;
+        initial_environment.geo_point = GeoPoint();
+        environment.reset(new Environment(initial_environment));
+
+        MultiRotor vehicle(params.get(), api.get(), kinematics.get(), environment.get());
 
         std::vector<UpdatableObject*> vehicles = { &vehicle };
         std::unique_ptr<PhysicsEngineBase> physics_engine(new FastPhysicsEngine());
