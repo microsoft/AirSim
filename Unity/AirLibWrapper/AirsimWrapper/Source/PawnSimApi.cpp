@@ -8,15 +8,22 @@
 PawnSimApi::PawnSimApi(const Params& params)
 	: params_(params), ned_transform_(*params.global_transform)
 {
-	image_capture_.reset(new UnityImageCapture(params.vehicle_name));
+}
 
-	msr::airlib::Environment::State initial_environment;
-	initial_environment.position = getPose().position;
+void PawnSimApi::initialize()
+{
+	image_capture_.reset(new UnityImageCapture(params_.vehicle_name));
+
+    Kinematics::State initial_kinematic_state = Kinematics::State::zero();;
+    initial_kinematic_state.pose = getPose();
+    kinematics_.reset(new Kinematics(initial_kinematic_state));
+    Environment::State initial_environment;
+    initial_environment.position = initial_kinematic_state.pose.position;
 	initial_environment.geo_point = params_.home_geopoint;
-	environment_.reset(new msr::airlib::Environment(initial_environment));
+	environment_.reset(new Environment(initial_environment));
 
 	//initialize state
-	UnityTransform initialTransform = GetTransformFromUnity(params.vehicle_name.c_str());
+	UnityTransform initialTransform = GetTransformFromUnity(params_.vehicle_name.c_str());
 	initial_state_.mesh_origin = initialTransform.Position;
 	setStartPosition(initialTransform.Position, initialTransform.Rotation);
 
@@ -43,6 +50,9 @@ void PawnSimApi::setStartPosition(const AirSimVector& position, const AirSimQuat
 
 void PawnSimApi::pawnTick(float dt)
 {
+    //default behavior is to call update every tick
+    //for custom physics engine, this method should be overridden and update should be
+    //called from every physics tick
 	update();
 	updateRenderedState(dt);
 	updateRendering(dt);
@@ -141,17 +151,27 @@ void PawnSimApi::reset()
 	VehicleSimApiBase::reset();
 	state_ = initial_state_;
 	rc_data_ = msr::airlib::RCData();
+    kinematics_->reset();
 	environment_->reset();
 }
 
 void PawnSimApi::update()
 {
-	//update position from kinematics so we have latest position after physics update
-	environment_->setPosition(kinematics_.pose.position);
+    //sync environment from kinematics
+	environment_->setPosition(kinematics_->getPose().position);
 	environment_->update();
-	//kinematics_->update();
 
 	VehicleSimApiBase::update();
+}
+
+void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
+{
+    msr::airlib::VehicleSimApiBase::reportState(reporter);
+    kinematics_->reportState(reporter);
+    environment_->reportState(reporter);
+    // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
+    //FVector unrealPosition = getUUPosition();
+    //reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
 }
 
 PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfo() const
@@ -218,13 +238,10 @@ bool PawnSimApi::canTeleportWhileMove()  const
 	return !state_.collisions_enabled || (state_.collision_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
-const msr::airlib::Kinematics::State* PawnSimApi::getPawnKinematics() const
-{
-	return &kinematics_;
-}
-
 void PawnSimApi::updateRenderedState(float dt)
 {
+    //by default we update kinematics from UE pawn
+    //if SimMod uses its own physics engine then this should be overriden
 	updateKinematics(dt);
 }
 
@@ -236,12 +253,21 @@ void PawnSimApi::updateRendering(float dt)
 
 const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() const
 {
-	return &kinematics_;
+	return &kinematics_->getState();
 }
 
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
 {
 	return environment_.get();
+}
+
+msr::airlib::Kinematics* PawnSimApi::getKinematics()
+{
+    return kinematics_.get();
+}
+msr::airlib::Environment* PawnSimApi::getEnvironment()
+{
+    return environment_.get();
 }
 
 std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
@@ -273,14 +299,15 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
 
 void PawnSimApi::updateKinematics(float dt)
 {
-	const auto last_kinematics = kinematics_;
-
-	kinematics_.pose = getPose();
-
-	kinematics_.twist.linear = UnityUtilities::Convert_to_Vector3r(GetVelocity(getVehicleName().c_str()));
-	kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
-		kinematics_.pose.orientation, last_kinematics.pose.orientation, dt);
-
-	kinematics_.accelerations.linear = (kinematics_.twist.linear - last_kinematics.twist.linear) / dt;
-	kinematics_.accelerations.angular = (kinematics_.twist.angular - last_kinematics.twist.angular) / dt;
+    //update kinematics from pawn's movement instead of physics engine
+    auto next_kinematics = kinematics_->getState();
+    next_kinematics.pose = getPose();
+    next_kinematics.twist.linear = UnityUtilities::Convert_to_Vector3r(GetVelocity(getVehicleName().c_str()));
+    next_kinematics.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
+        kinematics_->getPose().orientation, next_kinematics.pose.orientation, dt);
+    //TODO: update other fields?
+    next_kinematics.accelerations.linear = (next_kinematics.twist.linear - kinematics_->getTwist().linear) / dt;
+    next_kinematics.accelerations.angular = (next_kinematics.twist.angular - kinematics_->getTwist().angular) / dt;
+    kinematics_->setState(next_kinematics);
+    kinematics_->update();
 }

@@ -18,11 +18,12 @@ private:
 	void updateCarControls();
 
 public:
+    virtual void initialize() override;
 	CarPawnSimApi(const Params& params, const CarPawnApi::CarControls&  keyboard_controls, std::string car_name);
 	virtual ~CarPawnSimApi() = default;
 	virtual void reset() override;
 	virtual void update() override;
-	virtual void reportState(StateReporter& reporter) override;
+	//virtual void reportState(StateReporter& reporter) override;
 	virtual std::string getRecordFileLine(bool is_header_line) const override;
 	virtual void updateRenderedState(float dt) override;
 	virtual void updateRendering(float dt) override;
@@ -33,6 +34,8 @@ public:
 	}
 
 private:
+    Params params_;
+
 	std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;
 	std::vector<std::string> vehicle_api_messages_;
 	CarPawnApi::CarControls joystick_controls_;

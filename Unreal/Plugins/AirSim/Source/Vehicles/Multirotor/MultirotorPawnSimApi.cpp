@@ -16,6 +16,11 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(const Params& params)
     VectorMath::toEulerianAngle(pose.orientation, pitch, roll, yaw);
     pose.orientation = VectorMath::toQuaternion(0, 0, yaw);
     setPose(pose, false);
+}
+
+void MultirotorPawnSimApi::initialize()
+{
+    PawnSimApi::initialize();
 
     //create vehicle API
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
@@ -23,7 +28,7 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(const Params& params)
     vehicle_api_ = vehicle_params_->createMultirotorApi();
     //setup physics vehicle
     phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(),
-        getPose(), params.home_geopoint));
+        getKinematics(), getEnvironment()));
     rotor_count_ = phys_vehicle_->wrenchVertexCount();
     rotor_info_.assign(rotor_count_, RotorInfo());
 
@@ -34,15 +39,6 @@ MultirotorPawnSimApi::MultirotorPawnSimApi(const Params& params)
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
     did_reset_ = false;
-}
-
-const msr::airlib::Kinematics::State* MultirotorPawnSimApi::getGroundTruthKinematics() const
-{
-    return & phys_vehicle_->getKinematics();
-}
-const msr::airlib::Environment* MultirotorPawnSimApi::getGroundTruthEnvironment() const
-{
-    return & phys_vehicle_->getEnvironment();
 }
 
 void MultirotorPawnSimApi::pawnTick(float dt)
@@ -164,9 +160,8 @@ void MultirotorPawnSimApi::update()
 
 void MultirotorPawnSimApi::reportState(StateReporter& reporter)
 {
-    // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
-    FVector unrealPosition = getUUPosition();
-    reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
+    PawnSimApi::reportState(reporter);
+
     phys_vehicle_->reportState(reporter);
 }
 

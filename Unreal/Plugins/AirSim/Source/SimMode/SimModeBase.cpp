@@ -602,7 +602,10 @@ std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleSimApi(
     const PawnSimApi::Params& pawn_sim_api_params) const
 {
     unused(pawn_sim_api_params);
-    return std::unique_ptr<PawnSimApi>();
+    auto sim_api = std::unique_ptr<PawnSimApi>();
+    sim_api->initialize();
+
+    return sim_api;
 }
 msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
     const PawnSimApi* sim_api) const
@@ -644,8 +647,8 @@ void ASimModeBase::drawLidarDebugPoints()
                     if (lidar_data.point_cloud.size() < 3)
                         return;
 
-                    for (int i = 0; i < lidar_data.point_cloud.size(); i = i + 3) {
-                        msr::airlib::Vector3r point(lidar_data.point_cloud[i], lidar_data.point_cloud[i + 1], lidar_data.point_cloud[i + 2]);
+                    for (int j = 0; j < lidar_data.point_cloud.size(); j = j + 3) {
+                        msr::airlib::Vector3r point(lidar_data.point_cloud[j], lidar_data.point_cloud[j + 1], lidar_data.point_cloud[j + 2]);
 
                         FVector uu_point;
 

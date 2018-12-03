@@ -17,7 +17,6 @@ namespace msr { namespace airlib {
 
 class PhysicsBody : public UpdatableObject {
 public: //interface
-    virtual void kinematicsUpdated() = 0;
     virtual real_T getRestitution() const = 0;
     virtual real_T getFriction() const = 0;
 
@@ -56,6 +55,17 @@ public: //interface
         collision_info_ = collision_info;
     }
 
+    virtual void updateKinematics(const Kinematics::State& state)
+    {
+        if (VectorMath::hasNan(state.twist.linear)) {
+            //Utils::DebugBreak();
+            Utils::log("Linear velocity had NaN!", Utils::kLogLevelError);
+        }
+
+        kinematics_->setState(state);
+        kinematics_->update();
+    }
+
 
 public: //methods
     //constructors
@@ -63,19 +73,18 @@ public: //methods
     {
         //allow default constructor with later call for initialize
     }
-    PhysicsBody(real_T mass, const Matrix3x3r& inertia, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    PhysicsBody(real_T mass, const Matrix3x3r& inertia, Kinematics* kinematics, Environment* environment)
     {
-        initialize(mass, inertia, initial_kinematic_state, environment);
+        initialize(mass, inertia, kinematics, environment);
     }
-    void initialize(real_T mass, const Matrix3x3r& inertia, const Kinematics::State& initial_kinematic_state, Environment* environment)
+    void initialize(real_T mass, const Matrix3x3r& inertia, Kinematics* kinematics, Environment* environment)
     {
-        kinematics_.initialize(initial_kinematic_state);
-
         mass_ = mass;
         mass_inv_ = 1.0f / mass;
         inertia_ = inertia;
         inertia_inv_ = inertia_.inverse();
         environment_ = environment;
+        kinematics_ = kinematics;
     }
 
     //enable physics body detection
@@ -89,8 +98,6 @@ public: //methods
     virtual void reset() override
     {
         UpdatableObject::reset();
-
-        kinematics_.reset();
 
         if (environment_)
             environment_->reset();
@@ -112,12 +119,6 @@ public: //methods
     {
         UpdatableObject::update();
 
-        //TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
-        //environment_->setPosition(getKinematics().pose.position);
-        //environment_->update();
-
-        kinematics_.update();
-
         //update individual vertices - each vertex takes control signal as input and
         //produces force and thrust as output
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
@@ -134,7 +135,6 @@ public: //methods
         UpdatableObject::reportState(reporter);
 
         reporter.writeHeading("Kinematics");
-        kinematics_.reportState(reporter);
     }
     //*** End: UpdatableState implementation ***//
 
@@ -159,38 +159,30 @@ public: //methods
 
     const Pose& getPose() const
     {
-        return kinematics_.getPose();
+        return kinematics_->getPose();
     }
     void setPose(const Pose& pose)
     {
-        return kinematics_.setPose(pose);
+        return kinematics_->setPose(pose);
     }
     const Twist& getTwist() const
     {
-        return kinematics_.getTwist();
+        return kinematics_->getTwist();
     }
     void setTwist(const Twist& twist)
     {
-        return kinematics_.setTwist(twist);
+        return kinematics_->setTwist(twist);
     }
 
 
     const Kinematics::State& getKinematics() const
     {
-        return kinematics_.getState();
+        return kinematics_->getState();
     }
-    void setKinematics(const Kinematics::State& state)
-    {
-        if (VectorMath::hasNan(state.twist.linear)) {
-            //Utils::DebugBreak();
-            Utils::log("Linear velocity had NaN!", Utils::kLogLevelError);
-        }
 
-        kinematics_.setState(state);
-    }
     const Kinematics::State& getInitialKinematics() const
     {
-        return kinematics_.getInitialState();
+        return kinematics_->getInitialState();
     }
     const Environment& getEnvironment() const
     {
@@ -235,7 +227,6 @@ public: //methods
 		grounded_ = grounded;
 	}
 
-
 public:
     //for use in physics engine: //TODO: use getter/setter or friend method?
     TTimePoint last_kinematics_time;
@@ -244,7 +235,8 @@ private:
     real_T mass_, mass_inv_;
     Matrix3x3r inertia_, inertia_inv_;
 
-    Kinematics kinematics_;
+    Kinematics* kinematics_ = nullptr;
+    Environment* environment_ = nullptr;
 
     //force is in world frame but torque is not
     Wrench wrench_;
@@ -253,8 +245,6 @@ private:
     CollisionResponse collision_response_;
 
 	bool grounded_ = false;
-
-    Environment* environment_ = nullptr;
 };
 
 }} //namespace

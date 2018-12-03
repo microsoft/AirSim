@@ -91,7 +91,7 @@ std::unique_ptr<PawnSimApi> SimModeCar::createVehicleSimApi(const PawnSimApi::Pa
 
 	auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new CarPawnSimApi(pawn_sim_api_params,
 		vehicle_pawn->getKeyBoardControls(), vehicle_name_));
-
+    vehicle_sim_api->initialize();
 	vehicle_sim_api->reset();
 	return vehicle_sim_api;
 }
