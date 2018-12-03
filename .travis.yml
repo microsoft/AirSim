@@ -16,10 +16,10 @@ matrix:
       sudo: required
       services:
         - docker
-    - os: windows
-      dotnet: 2.1.5
-      services:
-        - docker
+    #- os: windows
+    # dotnet: 2.1.5
+    # services:
+    #   - docker
         
 
     # OS X CMake

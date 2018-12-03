@@ -28,6 +28,6 @@ result = client.moveOnPathAsync([airsim.Vector3r(0,-253,z),airsim.Vector3r(125,-
                         12, 120, 
                         airsim.DrivetrainType.ForwardOnly, airsim.YawMode(False,0), 20, 1).join()
 client.moveToPositionAsync(0,0,z,1).join()
-client.land()
+client.landAsync().join()
 client.armDisarm(False)
 client.enableApiControl(False)

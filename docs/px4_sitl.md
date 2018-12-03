@@ -15,7 +15,9 @@ you can build and run it there.
     ```
 3. Use following command to start PX4 firmware in SITL mode:
     ```
-    ./build/posix_sitl_default/px4 ./posix-configs/SITL/init/ekf2/iris
+    export PX4_SIM_MODEL="iris"
+    export PX4_ESTIMATOR="ekf2"
+    ./build/px4_sitl_default/bin/px4 ./ROMFS/px4fmu_common -s etc/init.d-posix/rcS -t ./test_data
     ```
 4. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is waiting for someone to connect.
 5. Now edit [AirSim settings](settings.md) file to make sure you have followings:
@@ -49,7 +51,7 @@ You might also want to set this one so that the drone automatically hovers after
 param set COM_OBL_ACT 1
 ````
 
-Now close Unreal app, restart `./build_posix_sitl_default/src/firmware/posix/px4` and re-start the unreal app.  
+Now close Unreal app, restart the `px4` app and re-start the unreal app.  In fact, every time you stop the unreal app you have top restart the `px4` app.
 
 ## Check the Home Position
 
