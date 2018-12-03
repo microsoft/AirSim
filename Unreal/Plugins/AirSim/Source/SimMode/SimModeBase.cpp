@@ -602,7 +602,10 @@ std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleSimApi(
     const PawnSimApi::Params& pawn_sim_api_params) const
 {
     unused(pawn_sim_api_params);
-    return std::unique_ptr<PawnSimApi>();
+    auto sim_api = std::unique_ptr<PawnSimApi>();
+    sim_api->initialize();
+
+    return sim_api;
 }
 msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
     const PawnSimApi* sim_api) const

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <future>
 #include "vehicles/multirotor/MultiRotor.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
@@ -17,6 +19,8 @@ public:
 	typedef MultirotorPawnEvents::RotorInfo RotorInfo;
 
 public:
+    virtual void initialize() override;
+
 	MultirotorPawnSimApi(const Params& params);
 	virtual ~MultirotorPawnSimApi() = default;
 	virtual void updateRenderedState(float dt) override;
@@ -26,8 +30,6 @@ public:
 	virtual void reportState(StateReporter& reporter) override;
 	virtual UpdatableObject* getPhysicsBody() override;
 	virtual void setPose(const Pose& pose, bool ignore_collision) override;
-	virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
-	virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
 
 	msr::airlib::MultirotorApiBase* getVehicleApi() const
 	{

@@ -65,4 +65,3 @@ Press *Record* button(Red button) located at the right bottom corner of the scre
 
 ### Acknowledgements
 * The drone object was provided by user 31415926 on [sketchfab](https://sketchfab.com/models/055841df0fb24cd4abde06a91f7d360a). It is licensed under the [CC License](https://creativecommons.org/licenses/by/4.0/).
-* The rest of this project follows the same License as the Airsim project.

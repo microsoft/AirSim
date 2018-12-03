@@ -6,8 +6,6 @@
 void ASimModeWorldBase::BeginPlay()
 {
     Super::BeginPlay();
-
-    setupInputBindings();
 }
 
 void ASimModeWorldBase::initializeForPlay()
