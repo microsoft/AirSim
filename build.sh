@@ -26,12 +26,12 @@ if [[ !(-d "./llvm-build/output/lib") ]]; then
     exit 1
 fi
 
-# # check for rpclib
-# if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
-#     echo "ERROR: new version of AirSim requires newer rpclib."
-#     echo "please run setup.sh first and then run build.sh again."
-#     exit 1
-# fi
+# check for rpclib
+if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
+    echo "ERROR: new version of AirSim requires newer rpclib."
+    echo "please run setup.sh first and then run build.sh again."
+    exit 1
+fi
 
 # check for cmake build
 if [ ! -d "./cmake_build" ]; then
@@ -96,15 +96,15 @@ popd >/dev/null
 
 
 mkdir -p AirLib/lib/x64/Debug
-# mkdir -p AirLib/deps/rpclib/lib
+mkdir -p AirLib/deps/rpclib/lib
 mkdir -p AirLib/deps/MavLinkCom/lib
 cp $build_dir/output/lib/libAirLib.a AirLib/lib
 cp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
-# cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
+cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
 
 # Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
 rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug
-# rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
+rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 
