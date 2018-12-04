@@ -135,6 +135,9 @@ AirSim allows to pause and continue the simulation through `pause(is_paused)` AP
 ### Collision API
 The collision information can be obtained using `simGetCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.
 
+### Debug Marker API
+You can add spherical markers in the sim using simAddMarker(lat, lon, alt, radius, lifetime).
+
 ### Time of Day API
 AirSim assumes there exist sky sphere of class `EngineSky/BP_Sky_Sphere` in your environment with [ADirectionalLight actor](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L156). By default, the position of the sun in the scene doesn't move with time. You can use [settings](settings.md#timeofday) to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene. 
 

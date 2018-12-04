@@ -232,6 +232,12 @@ vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, Im
     return result;
 }
 
+void RpcLibClientBase::simAddMarker(double lat, double lon, float alt, float radius, float lifetime)
+{
+	float radiusCentimeters = radius * 100.0f;
+	pimpl_->client.call("simAddMarker", lat, lon, alt, radiusCentimeters, lifetime);
+}
+
 void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
 {
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);

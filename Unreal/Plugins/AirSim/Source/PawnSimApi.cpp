@@ -1,4 +1,5 @@
 #include "PawnSimApi.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -285,6 +286,28 @@ const UnrealImageCapture* PawnSimApi::getImageCapture() const
 int PawnSimApi::getCameraCount()
 {
     return cameras_.valsSize();
+}
+
+void PawnSimApi::simAddMarker(msr::airlib::GeoPoint lla, float radius, float lifetime)
+{
+	NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(getPawn()));
+	msr::airlib::Vector3r calculatedNed = msr::airlib::EarthUtils::GeodeticToNedFast(lla, AirSimSettings::singleton().origin_geopoint.home_geo_point);
+	FVector targetLocation = zero_based_ned_transform.fromGlobalNed(calculatedNed);
+
+	DrawDebugSphere
+	(
+		getPawn()->GetWorld(),
+		targetLocation,
+		radius,
+		32,
+		FColor(255, 255, 255),
+		false,
+		lifetime
+		/*,
+		uint8 DepthPriority,
+		float Thickness
+		*/
+	);
 }
 
 void PawnSimApi::reset()

@@ -109,7 +109,10 @@ public: //Unreal specific methods
     APIPCamera* getCamera(const std::string& camera_name);
     int getCameraCount();
 
-    //if enabled, this would show some flares
+    // Add a basic spherical marker to the scene
+    void simAddMarker(msr::airlib::GeoPoint lla, float radius, float lifetime);
+
+	//if enabled, this would show some flares
     void displayCollisionEffect(FVector hit_location, const FHitResult& hit);
 
     //return the attached pawn
