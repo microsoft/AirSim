@@ -88,7 +88,7 @@ class Vector3r(MsgpackMixin):
 
     def cross(self, other):
         if type(self) == type(other):
-            cross_product = np.cross(self.to_numpy_array(), other.to_numpy_array)
+            cross_product = np.cross(self.to_numpy_array(), other.to_numpy_array())
             return Vector3r(cross_product[0], cross_product[1], cross_product[2])
         else:
             raise TypeError('unsupported operand type(s) for \'cross\': %s and %s' % ( str(type(self)), str(type(other))) )
