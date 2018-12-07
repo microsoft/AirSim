@@ -47,17 +47,17 @@ class AIRSIM_API UWeatherLib : public UBlueprintFunctionLibrary
 	}
 	static const FSoftClassPath getWeatherMenuObjectPath()
 	{
-		return TEXT("AActor'/AirSim/Weather/UI/MenuActor.MenuActor_C'");
+		return FSoftClassPath(TEXT("AActor'/AirSim/Weather/UI/MenuActor.MenuActor_C'"));
 	}
 
 	static const FSoftClassPath getWeatherActorPath()
 	{
-		return TEXT("AActor'/AirSim/Weather/WeatherFX/WeatherActor.WeatherActor_C'");
+		return FSoftClassPath(TEXT("AActor'/AirSim/Weather/WeatherFX/WeatherActor.WeatherActor_C'"));
 	}
 
 	static const FSoftClassPath getWeatherMenuWidgetClass()
 	{
-		return TEXT("UUserWidget'/AirSim/Weather/UI/OptionsMenu.OptionsMenu_C'");
+		return FSoftClassPath(TEXT("UUserWidget'/AirSim/Weather/UI/OptionsMenu.OptionsMenu_C'"));
 	}
 	/*static const FSoftClassPath getMenuClass()
 	{
