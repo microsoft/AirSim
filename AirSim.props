@@ -1,0 +1,6 @@
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AirSimTargetPlatformVersion>$([System.String]::Copy('$(WindowsSDKVersion)').Replace('\',''))</AirSimTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>$(AirSimTargetPlatformVersion)</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+</Project>
