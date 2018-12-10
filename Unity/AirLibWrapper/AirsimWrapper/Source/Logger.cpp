@@ -1,8 +1,8 @@
 #include <time.h>
 #include <string>
+#define WIN32_LEAN_AND_MEAN // combaseapi.h build break fix
 #include <Windows.h>
 #include "Logger.h"
-
 std::ofstream Logger::fileStream;
 Logger* Logger::logger = nullptr;
 
