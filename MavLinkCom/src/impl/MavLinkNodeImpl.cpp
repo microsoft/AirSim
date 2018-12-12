@@ -52,7 +52,7 @@ void MavLinkNodeImpl::sendHeartbeat()
         MavLinkHeartbeat heartbeat;
         // send a heart beat so that the remote node knows we are still alive
         // (otherwise drone will trigger a failsafe operation).	
-        heartbeat.autopilot = static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_INVALID);
+        heartbeat.autopilot = static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_GENERIC);
         heartbeat.type = static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_GCS);
         heartbeat.mavlink_version = 3;
         heartbeat.base_mode = 0; // ignored by PX4
