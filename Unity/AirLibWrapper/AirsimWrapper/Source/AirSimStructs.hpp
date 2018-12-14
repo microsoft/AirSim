@@ -101,7 +101,11 @@ namespace AirSimUnity
 
 	struct AirSimRCData
 	{
-		_int64 timestamp = 0;
+		#ifdef _WIN32
+			_int64 timestamp = 0;
+		#elif __linux__
+			int64_t timestamp = 0;
+		#endif
 		float pitch = 0, roll = 0, throttle = 0, yaw = 0;
 		float left_z = 0, right_z = 0;
 		unsigned int  switch1 = 0, switch2 = 0, switch3 = 0, switch4 = 0,
@@ -117,7 +121,11 @@ namespace AirSimUnity
 		AirSimVector impact_point;
 		AirSimVector position;
 		float penetration_depth = 0.0f;
-		_int64 time_stamp = 0;
+		#ifdef _WIN32
+			_int64 time_stamp = 0;
+		#elif __linux__
+			int64_t time_stamp = 0;
+		#endif
 		int collision_count = 0;
 		char* object_name;
 		int object_id = -1;
@@ -163,7 +171,12 @@ namespace AirSimUnity
 	{
 		int gear = 0;
 		float speed = 0.0f;
-		__int64 time_stamp = 0;
+		#ifdef _WIN32
+			__int64 time_stamp = 0;
+		#elif __linux__
+			int64_t timestamp = 0;
+		#endif
+		
 		float engineMaxRotationSpeed = 0;
 		float engineRotationSpeed = 0;
 		AirSimPose pose;

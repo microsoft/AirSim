@@ -2,6 +2,11 @@
 #define LOGGER_FILE
 
 #include <fstream>
+#ifdef __linux__
+	#include <boost/filesystem.hpp>
+	#include <boost/filesystem/fstream.hpp>
+	namespace bfs = boost::filesystem;
+#endif
 
 #define LOGGER Logger::GetLogger()
 
@@ -25,8 +30,14 @@ private:
 	bool logLevel_Error;
 
 	static Logger* logger;
-	static std::ofstream fileStream;
-	std::string logFileName;
+	#ifdef _WIN32
+		static std::ofstream fileStream;
+		std::string logFileName;
+	#else
+		static 	bfs::ofstream fileStream;
+				bfs::path 	logFileName;
+	#endif
+	
 
 public:
 	~Logger();
