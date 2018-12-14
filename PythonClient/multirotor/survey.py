@@ -23,6 +23,11 @@ class SurveyNavigator:
         if landed == airsim.LandedState.Landed:
             print("taking off...")
             self.client.takeoffAsync().join()
+
+        landed = self.client.getMultirotorState().landed_state
+        if landed == airsim.LandedState.Landed:
+            print("takeoff failed - check Unreal message log for details")
+            return
         
         # AirSim uses NED coordinates so negative axis is up.
         x = -self.boxsize
@@ -37,6 +42,9 @@ class SurveyNavigator:
         # let it settle there a bit.
         self.client.hoverAsync().join()
         time.sleep(2)
+
+        # after hovering we need to re-enabled api control for next leg of the trip
+        self.client.enableApiControl(True)
 
         # now compute the survey path required to fill the box 
         path = []
@@ -59,7 +67,7 @@ class SurveyNavigator:
         print("estimated survey time is " + str(trip_time))
         try:
             result = self.client.moveOnPathAsync(path, self.velocity, trip_time, airsim.DrivetrainType.ForwardOnly, 
-                airsim.YawMode(True,0), self.velocity + (self.velocity/2), 1).join()
+                airsim.YawMode(False,0), self.velocity + (self.velocity/2), 1).join()
         except:
             errorType, value, traceback = sys.exc_info()
             print("moveOnPath threw exception: " + str(value))
