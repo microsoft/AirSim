@@ -37,8 +37,7 @@ extern "C" EXPORT void StopServer(char* vehicle_name)
 		delete key;
 		key = nullptr;
 	}
-
-	LOGGER->WriteLog("Server stopped");
+		LOGGER->WriteLog("Server stopped");
 }
 
 extern "C" EXPORT void CallTick(float deltaSeconds)
