@@ -3,12 +3,12 @@
 #include "Logger.h"
 
 #ifdef  _WIN32
+  #define WIN32_LEAN_AND_MEAN // combaseapi.h build break fix  
 	#include <Windows.h>
 	std::ofstream Logger::fileStream;
 #elif __linux__
 	bfs::ofstream Logger::fileStream;
 #endif
-
 
 Logger* Logger::logger = nullptr; //** This is set to be a nullptr, so are we actually setting it somewhere?
 
