@@ -33,7 +33,12 @@ you can build and run it there.
 }
 
     ```
-6. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from things like `[mavlink]` and `[commander]` and so on.
+6. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from things like `[mavlink]` and `[commander]` and so on.  The drone is ready to fly when you see these messages:
+```
+INFO  [ecl/EKF] EKF GPS checks passed (WGS-84 origin set)
+INFO  [ecl/EKF] EKF commencing GPS fusion
+```
+
 7. You should also be able to use QGroundControl just like with flight controller hardware. Note that as we don't have physical board, RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to PC. This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.
 
 ## Setting GPS origin

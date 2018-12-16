@@ -8,7 +8,16 @@ client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
-client.takeoffAsync().join()
+
+landed = client.getMultirotorState().landed_state
+if landed == airsim.LandedState.Landed:
+    print("taking off...")
+    client.takeoffAsync().join()
+
+landed = client.getMultirotorState().landed_state
+if landed == airsim.LandedState.Landed:
+    print("takeoff failed - check Unreal message log for details")
+    sys.exit(1)
 
 print("Flying a small square box using moveByVelocityZ")
 print("Try pressing 't' in the AirSim view to see a pink trace of the flight")
@@ -46,3 +55,12 @@ print("moving by velocity vx=" + str(vx) + ", vy=" + str(vy) + ", yaw=0")
 client.moveByVelocityZAsync(vx, vy,z,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, 0)).join()
 time.sleep(delay)
 client.hoverAsync().join()
+
+print("ensure we are back home")
+client.moveToPositionAsync(0, 0, z, 1).join()
+
+print("landing...")
+client.landAsync().join()
+
+print("disarming.")
+client.armDisarm(False)

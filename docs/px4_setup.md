@@ -91,6 +91,11 @@ position once it is happy with the GPS signal, and you will see these messages:
 INFO  [commander] home: 47.6414680, -122.1401672, 119.99
 INFO  [tone_alarm] home_set
 ```
+and these :
+```
+INFO  [ecl/EKF] EKF GPS checks passed (WGS-84 origin set)
+INFO  [ecl/EKF] EKF commencing GPS fusion
+```
 
 Up until this point in time, however, the PX4 will reject takeoff commands.
 
