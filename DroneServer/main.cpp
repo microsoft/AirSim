@@ -36,9 +36,12 @@ int main(int argc, const char* argv[])
     // read settings and override defaults
     auto settings_full_filepath = Settings::getUserDirectoryFullPath("settings.json");
     Settings& settings = Settings::singleton().loadJSonFile(settings_full_filepath);
-    Settings child;
     if (settings.isLoadSuccess()) {
-        settings.getChild("PX4", child);
+
+        Settings child;
+        Settings vehicles;
+        settings.getChild("Vehicles", vehicles);
+        vehicles.getChild("PX4", child);
 
         // allow json overrides on a per-vehicle basis.
         connection_info.sim_sysid = static_cast<uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));

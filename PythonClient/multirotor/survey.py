@@ -39,14 +39,14 @@ class SurveyNavigator:
         print("flying to first corner of survey box")
         self.client.moveToPositionAsync(x, -self.boxsize, z, self.velocity).join()
         
-        # let it settle there a bit.
+        print("let it settle there a bit by hovering at this corner")
         self.client.hoverAsync().join()
         time.sleep(2)
 
         # after hovering we need to re-enabled api control for next leg of the trip
         self.client.enableApiControl(True)
 
-        # now compute the survey path required to fill the box 
+        print("now compute the survey path required to fill the box...")
         path = []
         distance = 0
         while x < self.boxsize:
@@ -62,9 +62,9 @@ class SurveyNavigator:
             path.append(airsim.Vector3r(x, -self.boxsize, z))
             distance += self.boxsize 
         
-        print("starting survey, estimated distance is " + str(distance))
+        print("starting survey, estimated distance is " + str(distance) + " meters")
         trip_time = distance / self.velocity
-        print("estimated survey time is " + str(trip_time))
+        print("estimated survey time is " + str(trip_time) + " seconds")
         try:
             result = self.client.moveOnPathAsync(path, self.velocity, trip_time, airsim.DrivetrainType.ForwardOnly, 
                 airsim.YawMode(False,0), self.velocity + (self.velocity/2), 1).join()
