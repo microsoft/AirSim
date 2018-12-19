@@ -7,7 +7,11 @@
 #include "PIPCamera.h"
 #include "api/ApiServerBase.hpp"
 #include <memory>
+#include "SettingsWidget.h"
+
 #include "SimHUD.generated.h"
+
+
 
 
 UENUM(BlueprintType)
@@ -48,6 +52,15 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaSeconds) override;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings Widget")
+        TSubclassOf<USettingsWidget> settings_widget_loader_;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings Widget")
+		USettingsWidget* settings_widget_;
+
+    UFUNCTION(BlueprintCallable, Category = "C++ Interface")
+	void buildScene();
+
 protected:
     virtual void setupInputBindings();
     void toggleRecordHandler();
@@ -57,14 +70,16 @@ protected:
 private:
     void initializeSubWindows();
     void createSimMode();
-    void initializeSettings();
+    void initializeSettings(FString);
     void setUnrealEngineSettings();
     void createMainWidget();
+	void createSettingsWidget();
+
     const std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings() const;
     std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings();
     
 
-    bool getSettingsText(std::string& settingsText);
+    bool getSettingsText(std::string& settingsText, std::string& settingsFile);
     bool getSettingsTextFromCommandLine(std::string& settingsText);
     bool readSettingsTextFromFile(FString fileName, std::string& settingsText);
     std::string getSimModeFromUser();
@@ -75,6 +90,9 @@ private:
 
     UPROPERTY() USimHUDWidget* widget_;
     UPROPERTY() ASimModeBase* simmode_;
+
+    bool not_built_ = true;
+   
 
     APIPCamera* subwindow_cameras_[AirSimSettings::kSubwindowCount];
 };

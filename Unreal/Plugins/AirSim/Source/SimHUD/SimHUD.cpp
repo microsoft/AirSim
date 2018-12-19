@@ -10,11 +10,13 @@
 #include "common/AirSimSettings.hpp"
 #include <stdexcept>
 
-
 ASimHUD::ASimHUD()
 {
     static ConstructorHelpers::FClassFinder<UUserWidget> hud_widget_class(TEXT("WidgetBlueprint'/AirSim/Blueprints/BP_SimHUDWidget'"));
     widget_class_ = hud_widget_class.Succeeded() ? hud_widget_class.Class : nullptr;
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> settings_widget_class(TEXT("WidgetBlueprint'/AirSim/Blueprints/LoadSettingsWidget'"));
+	settings_widget_loader_ = settings_widget_class.Succeeded() ? settings_widget_class.Class : nullptr;
 }
 
 void ASimHUD::BeginPlay()
@@ -23,13 +25,26 @@ void ASimHUD::BeginPlay()
 
     try {
         UAirBlueprintLib::OnBeginPlay();
-        initializeSettings();
+        createSettingsWidget();
+    }
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
+        //FGenericPlatformMisc::PlatformInit();
+        //FGenericPlatformMisc::MessageBoxExt(EAppMsgType::Ok, TEXT("Error at Startup"), ANSI_TO_TCHAR(ex.what()));
+        UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("Error at startup: ") + ex.what(), "Error");
+    }
+}
+void ASimHUD::buildScene()
+{
+     try {
+        initializeSettings(settings_widget_->title_text_.ToString());
         setUnrealEngineSettings();
         createSimMode();
         createMainWidget();
         setupInputBindings();
-        if (simmode_)
+        if (simmode_) {
             simmode_->startApiServer();
+        }
     }
     catch (std::exception& ex) {
         UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
@@ -43,6 +58,11 @@ void ASimHUD::Tick(float DeltaSeconds)
 {
     if (simmode_ && simmode_->EnableReport)
         widget_->updateDebugReport(simmode_->getDebugReport());
+    if ( settings_widget_->checkForInput() && not_built_ ) {
+        UE_LOG(LogTemp, Warning, TEXT("There was an input!"));
+        buildScene();
+        not_built_ = false;
+    }
 }
 
 void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -172,6 +192,21 @@ void ASimHUD::inputEventToggleAll()
     updateWidgetSubwindowVisibility();
 }
 
+void ASimHUD::createSettingsWidget()
+{
+	if (settings_widget_loader_){
+		settings_widget_ = CreateWidget<USettingsWidget>(this->GetWorld()->GetFirstPlayerController(), settings_widget_loader_);
+		UE_LOG(LogTemp, Warning, TEXT("Successfully built settings widget"));
+		if (!settings_widget_)
+			return;
+		settings_widget_->AddToViewport();
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Settings widget was not built!"));
+	}
+    settings_widget_->populateDropdown();
+}
+
 void ASimHUD::createMainWidget()
 {
     //create main widget
@@ -243,10 +278,12 @@ void ASimHUD::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventToggleAll", EKeys::Zero, this, &ASimHUD::inputEventToggleAll);
 }
 
-void ASimHUD::initializeSettings()
-{
+void ASimHUD::initializeSettings(FString ue4_settings_string)
+{   
+    std::string settingsFile = std::string(TCHAR_TO_UTF8(*ue4_settings_string));
     std::string settingsText;
-    if (getSettingsText(settingsText))
+    
+    if (getSettingsText(settingsText, settingsFile))
         AirSimSettings::initializeSettings(settingsText);
     else
         AirSimSettings::createDefaultSettingsFile();
@@ -348,13 +385,13 @@ void ASimHUD::initializeSubWindows()
 // Finally, check the user's documents folder. 
 // If the settings file cannot be read, throw an exception
 
-bool ASimHUD::getSettingsText(std::string& settingsText) 
+bool ASimHUD::getSettingsText(std::string& settingsText, std::string& settingsFile) 
 {
     return (getSettingsTextFromCommandLine(settingsText)
         ||
-        readSettingsTextFromFile(FString(msr::airlib::Settings::getExecutableFullPath("settings.json").c_str()), settingsText)
+        readSettingsTextFromFile(FString(msr::airlib::Settings::getExecutableFullPath(settingsFile).c_str()), settingsText)
         ||
-        readSettingsTextFromFile(FString(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
+        readSettingsTextFromFile(FString(msr::airlib::Settings::Settings::getUserDirectoryFullPath(settingsFile).c_str()), settingsText));
 }
 
 // Attempts to parse the settings text from the command line
