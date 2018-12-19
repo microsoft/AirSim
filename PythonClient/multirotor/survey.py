@@ -73,7 +73,12 @@ class SurveyNavigator:
             print("moveOnPath threw exception: " + str(value))
             pass
 
-        print("flying back home")
+        print("let it settle there a bit by hovering at this end point")
+        self.client.hoverAsync().join()
+        time.sleep(1)
+
+        print("now flying back to 0,0 since there is probably some overshoot on the above")
+        self.client.enableApiControl(True)
         self.client.moveToPositionAsync(0, 0, z, self.velocity).join()
         
         if z < -5:
