@@ -5101,6 +5101,36 @@ std::string MavLinkDebug::toJSon() {
  return ss.str();
 }
 
+int MavLinkProtocolVersion::pack(char* buffer) const {
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->version), 0);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->min_version), 2);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->max_version), 4);
+    pack_uint8_t_array(8, buffer, reinterpret_cast<const uint8_t*>(&this->spec_version_hash[0]), 6);
+    pack_uint8_t_array(8, buffer, reinterpret_cast<const uint8_t*>(&this->library_version_hash[0]), 14);
+    return 22;
+}
+int MavLinkProtocolVersion::unpack(const char* buffer) {
+
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->version), 0);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->min_version), 2);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->max_version), 4);
+    unpack_uint8_t_array(8, buffer, reinterpret_cast<uint8_t*>(&this->spec_version_hash[0]), 6);
+    unpack_uint8_t_array(8, buffer, reinterpret_cast<uint8_t*>(&this->library_version_hash[0]), 14);
+    return 22;
+}
+
+std::string MavLinkProtocolVersion::toJSon() {
+    std::ostringstream ss;
+    ss << "{ \"name\": \"DEBUG\", \"id\": 300, \"timestamp\":" << timestamp << ", \"msg\": {";
+    ss << "\"version\":" << this->version;
+    ss << ", \"min_version\":" << this->min_version;
+    ss << ", \"max_version\":" << this->max_version;
+    ss << ", \"spec_version_hash\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->spec_version_hash[0])) << "]";
+    ss << ", \"library_version_hash\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->library_version_hash[0])) << "]";
+    ss << "} },";
+    return ss.str();
+}
+
 void MavCmdNavWaypoint::pack() {
     param1 = HoldTimeDecimal;
     param2 = AcceptanceRadiusMeters;
@@ -6781,6 +6811,9 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_DEBUG:
         result = new MavLinkDebug();
+        break;
+    case MavLinkMessageIds::MAVLINK_MSG_ID_PROTOCOL_VERSION:
+        result = new MavLinkProtocolVersion();
         break;
     default:
         break;

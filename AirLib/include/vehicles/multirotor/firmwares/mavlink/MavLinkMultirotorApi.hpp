@@ -769,7 +769,7 @@ private: //methods
             test.system_status = 0;
             return true;
         }
-        catch (std::exception) {
+        catch (std::exception&) {
             return false;
         }
     }

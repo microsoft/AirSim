@@ -1323,7 +1323,7 @@ int console(std::stringstream& script) {
             }
             break;
         }
-        catch (std::exception e) {
+        catch (std::exception& e) {
             printf("isLocalControlSupported failed: %s\n", e.what());
         }
     }
@@ -1349,7 +1349,7 @@ int console(std::stringstream& script) {
             try {
                 mavLinkVehicle->getParamList();
             }
-            catch (std::exception e) {
+            catch (std::exception& e) {
                 printf("%s\n", e.what());
             }
         }

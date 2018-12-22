@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#include "MavLinkMessages.hpp"
 #include "MavLinkConnectionImpl.hpp"
 #include "Utils.hpp"
 #include "ThreadUtils.hpp"
@@ -483,6 +484,16 @@ void MavLinkConnectionImpl::drainQueue()
             snapshot_stale = false;
         }
         auto end = snapshot.end();
+
+        if (message.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION))
+        {
+            MavLinkAutopilotVersion cap;
+            cap.decode(message);
+            if ((cap.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2) != 0)
+            {
+                this->supports_mavlink2_ = true;
+            }
+        }
 
         auto startTime = std::chrono::system_clock::now();
         std::shared_ptr<MavLinkConnection> sharedPtr = std::shared_ptr<MavLinkConnection>(this->con_);

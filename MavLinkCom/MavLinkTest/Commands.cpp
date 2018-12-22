@@ -578,7 +578,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         try {
             params = com->getParamList();
         }
-        catch (std::exception e) {
+        catch (std::exception& e) {
             printf("%s\n", e.what());
         }
     }

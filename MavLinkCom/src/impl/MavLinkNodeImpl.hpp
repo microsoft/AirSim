@@ -95,6 +95,7 @@ namespace mavlinkcom_impl {
         std::vector<MavLinkParameter> parameters_; //cached snapshot.
         MavLinkAutopilotVersion cap_;
         bool has_cap_ = false;
+        bool req_cap_ = false;
         bool heartbeat_running_ = false;
         std::thread heartbeat_thread_;
     };
