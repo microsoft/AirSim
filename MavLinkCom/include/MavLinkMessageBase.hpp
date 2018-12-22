@@ -40,6 +40,7 @@ namespace mavlinkcom
         uint64_t payload64[PayloadSize];
         uint8_t ck[2];          ///< incoming checksum bytes
         uint8_t signature[13];
+        uint8_t protocol_version;
     };
 
     // This is the base class for all the strongly typed messages define in MavLinkMessages.hpp
@@ -50,6 +51,7 @@ namespace mavlinkcom
         uint8_t sysid = 0;   ///< ID of message sender system/aircraft
         uint8_t compid = 0;  ///< ID of the message sender component
         uint64_t timestamp = 0;
+        uint8_t protocol_version = 0;
 
         // unpack the given message
         void decode(const MavLinkMessage& msg);
