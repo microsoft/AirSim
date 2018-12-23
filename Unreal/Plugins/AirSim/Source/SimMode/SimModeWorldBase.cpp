@@ -119,7 +119,7 @@ void ASimModeWorldBase::reset()
         physics_world_->reset();
     }, true);
     
-    //no need to call base reset because of our custom implementation
+    Super::reset();
 }
 
 std::string ASimModeWorldBase::getDebugReport()

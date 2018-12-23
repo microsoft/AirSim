@@ -47,8 +47,10 @@ void ASimHUD::Tick(float DeltaSeconds)
 
 void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    if (simmode_)
+    if (simmode_) {
+        simmode_->reset();
         simmode_->stopApiServer();
+    }
 
     if (widget_) {
         widget_->Destruct();

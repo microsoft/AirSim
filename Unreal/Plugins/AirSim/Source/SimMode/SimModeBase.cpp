@@ -321,6 +321,11 @@ void ASimModeBase::reset()
             api->reset();
         }
     }, true);
+
+    // stop any pending RPC actions  (which avoids deadlocks on rpc thread)
+    for (msr::airlib::VehicleApiBase* api : getApiProvider()->getVehicleApis()) {
+        api->reset();
+    }
 }
 
 std::string ASimModeBase::getDebugReport()

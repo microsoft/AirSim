@@ -275,9 +275,6 @@ void RpcLibServerBase::start(bool block, std::size_t thread_count)
 
 void RpcLibServerBase::stop()
 {
-    for (VehicleApiBase* api : api_provider_->getVehicleApis()) {
-        api->reset(); // terminate any pending actions
-    }
     pimpl_->server.close_sessions();
     pimpl_->server.stop();
 }
