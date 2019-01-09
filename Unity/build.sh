@@ -7,11 +7,13 @@ if [ ! -d "linux-build" ]; then
     mkdir linux-build;
 fi
 
+
 cd linux-build;
 export CC="clang-5.0"
 export CXX="clang++-5.0"
+CMAKE="$(readlink -f ../../cmake_build/bin/cmake)"
 
-cmake ../AirLibWrapper/AirsimWrapper;
+"$CMAKE" ../../cmake ../AirLibWrapper/AirsimWrapper;
 make -j`nproc`;
 if [ ! -d "../UnityDemo/Assets/Plugins" ]; then
 	mkdir ../ UnityDemo/Assets/Plugins;
