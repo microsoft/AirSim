@@ -460,26 +460,26 @@ int main()
 #include &lt;iostream&gt;
 #include &quot;vehicles/multirotor/api/MultirotorRpcLibClient.hpp&quot;
 
-int main()
+int main() 
 {
     using namespace std;
     msr::airlib::MultirotorRpcLibClient client;
 
-    cout << "Press Enter to enable API control" << endl; cin.get();
+    cout &lt;&lt; &quot;Press Enter to enable API control&quot; &lt;&lt; endl; cin.get();
     client.enableApiControl(true);
 
-    cout << "Press Enter to arm the drone" << endl; cin.get();
+    cout &lt;&lt; &quot;Press Enter to arm the drone&quot; &lt;&lt; endl; cin.get();
     client.armDisarm(true);
 
-    cout << "Press Enter to takeoff" << endl; cin.get();
-    client.takeoffAsync(5)->waitOnLastTask();
+    cout &lt;&lt; &quot;Press Enter to takeoff&quot; &lt;&lt; endl; cin.get();
+    client.takeoffAsync(5)-&gt;waitOnLastTask();
 
-    cout << "Press Enter to move 5 meters in x direction with 1 m/s velocity" << endl; cin.get();
+    cout &lt;&lt; &quot;Press Enter to move 5 meters in x direction with 1 m/s velocity&quot; &lt;&lt; endl; cin.get();  
     auto position = client.getMultirotorState().getPosition(); // from current location
-    client.moveToPositionAsync(position.x() + 5, position.y(), position.z(), 1)->waitOnLastTask();
+    client.moveToPositionAsync(position.x() + 5, position.y(), position.z(), 1)-&gt;waitOnLastTask();
 
-    cout << "Press Enter to land" << endl; cin.get();
-    client.landAsync()->waitOnLastTask();
+    cout &lt;&lt; &quot;Press Enter to land&quot; &lt;&lt; endl; cin.get();
+    client.landAsync()-&gt;waitOnLastTask();
 
     return 0;
 }
