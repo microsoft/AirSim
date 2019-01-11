@@ -78,7 +78,7 @@ int main()
     client.moveToPositionAsync(position.x() + 5, position.y(), position.z(), 1)->waitOnLastTask();
 
     cout << "Press Enter to land" << endl; cin.get();
-    client.landAync()->waitOnLastTask();
+    client.landAsync()->waitOnLastTask();
 
     return 0;
 }
