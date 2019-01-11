@@ -589,27 +589,26 @@ public:
         return celcius + 273.15f;
     }
 
-
-    //implements relative method - do not use for comparing with zero
-    //use this most of the time, tolerance needs to be meaningful in your context
-    template<typename TReal>
-    static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = epsilon<TReal>())
-    {
-        TReal diff = std::fabs(a - b);
-        if (diff <= tolerance)
-            return true;
-
-        if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
-            return true;
-
-        return false;
-    }
-
     template<typename TReal>
     static constexpr TReal epsilon()
     {
         return std::numeric_limits<TReal>::epsilon();
     }
+
+	//implements relative method - do not use for comparing with zero
+	//use this most of the time, tolerance needs to be meaningful in your context
+	template<typename TReal>
+	static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = epsilon<TReal>())
+	{
+		TReal diff = std::fabs(a - b);
+		if (diff <= tolerance)
+			return true;
+
+		if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
+			return true;
+
+		return false;
+	}
 
     //supply tolerance that is meaningful in your context
     //for example, default tolerance may not work if you are comparing double with float
