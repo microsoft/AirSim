@@ -72,6 +72,8 @@ void FRecordingThread::stopRecording()
 
 void FRecordingThread::killRecording()
 {
+    if (first_) return;
+
     stopRecording();
     bool finished = finishing_signal_.waitForRetry(1, 5);
     if (!finished) {
