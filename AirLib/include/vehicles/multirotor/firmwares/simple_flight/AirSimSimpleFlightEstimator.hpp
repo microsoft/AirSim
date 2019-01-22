@@ -15,6 +15,9 @@ namespace msr { namespace airlib {
 
 class AirSimSimpleFlightEstimator : public simple_flight::IStateEstimator {
 public:
+
+    virtual ~AirSimSimpleFlightEstimator() {}
+    
     //for now we don't do any state estimation and use ground truth (i.e. assume perfect sensors)
     void setGroundTruthKinematics(const Kinematics::State* kinematics, const Environment* environment)
     {

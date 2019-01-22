@@ -12,6 +12,8 @@ public:
     {
     }
 
+    virtual ~StdPidIntegrator() {}
+
     virtual void reset() override
     {
         iterm_int_ = T();

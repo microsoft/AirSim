@@ -15,6 +15,7 @@ public:
 
 public:
     UnrealSensorFactory(AActor* actor, const NedTransform* ned_transform);
+    virtual ~UnrealSensorFactory() {}
     void setActor(AActor* actor, const NedTransform* ned_transform);
     virtual std::unique_ptr<msr::airlib::SensorBase> createSensorFromSettings(
         const AirSimSettings::SensorSetting* sensor_setting) const override;
