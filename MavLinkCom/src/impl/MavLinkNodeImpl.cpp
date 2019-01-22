@@ -58,7 +58,15 @@ void MavLinkNodeImpl::sendHeartbeat()
         heartbeat.base_mode = 0; // ignored by PX4
         heartbeat.custom_mode = 0; // ignored by PX4
         heartbeat.system_status = 0; // ignored by PX4
-        sendMessage(heartbeat);
+        try 
+        {
+            sendMessage(heartbeat);
+        }
+        catch (std::exception& e)
+        {
+            // ignore any failures here because we are running in our own thread here.
+            Utils::log(Utils::stringf("Caught and ignoring exception sending heartbeat: %s", e.what()));
+        }
         
         std::this_thread::sleep_for(std::chrono::milliseconds(heartbeatMilliseconds));
     }
@@ -68,7 +76,25 @@ void MavLinkNodeImpl::sendHeartbeat()
 void MavLinkNodeImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg)
 {
     unused(connection);
-    unused(msg);
+
+    switch (msg.msgid)
+    {
+    case static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HEARTBEAT):
+        // we received a heartbeat, so let's get the capabilities.
+        if (!req_cap_)
+        {
+            req_cap_ = true;
+            MavCmdRequestAutopilotCapabilities cmd{};
+            cmd.p1 = 1;
+            sendCommand(cmd);
+        }
+        break;
+    case static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION):
+        cap_.decode(msg);
+        has_cap_ = true;
+        break;
+    }
+
     // this is for the subclasses to play with.  We put nothing here so we are not dependent on the 
     // subclasses remembering to call this base implementation.
 }
@@ -110,12 +136,7 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
 
     int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
         unused(connection);
-        if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION))
-        {
-            cap_.decode(m);
-            has_cap_ = true;
-            result.setResult(cap_);
-        }
+        result.setResult(cap_);
     });
 
     result.setState(subscription);

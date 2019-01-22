@@ -24,6 +24,7 @@ void MavLinkMessageBase::decode(const MavLinkMessage& msg)
 {
     // unpack the message...
     this->msgid = msg.msgid;
+    this->protocol_version = msg.protocol_version;
     unpack(reinterpret_cast<const char*>(msg.payload64));
 }
 
@@ -32,6 +33,7 @@ void MavLinkMessageBase::encode(MavLinkMessage& msg) const {
     msg.msgid = this->msgid;
     msg.sysid = this->sysid;
     msg.compid = this->compid;
+    msg.protocol_version = this->protocol_version;
     // pack the payload buffer.
     int len = this->pack(reinterpret_cast<char*>(msg.payload64));
     msg.len = len;

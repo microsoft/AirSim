@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#include "MavLinkMessages.hpp"
 #include "MavLinkConnectionImpl.hpp"
 #include "Utils.hpp"
 #include "ThreadUtils.hpp"
@@ -222,7 +223,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     // as per  https://github.com/mavlink/mavlink/blob/master/doc/MAVLink2.md
     int seqno = getNextSequence();
 
-    bool mavlink1 = !supports_mavlink2_;
+    bool mavlink1 = !supports_mavlink2_ && msg.protocol_version != 2;
     bool signing = !mavlink1 && mavlink_status_.signing && (mavlink_status_.signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
     uint8_t signature_len = signing ? MAVLINK_SIGNATURE_BLOCK_LEN : 0;
 
@@ -258,10 +259,8 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     if (msg.msgid == MavLinkTelemetry::kMessageId) {
         msglen = 28; // mavlink doesn't know about our custom telemetry message.
     }
-    if (len != msglen) {
-        throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
-    }
-    msg.len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
+    len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
+    msg.len = len;
 
     // form the header as a byte array for the crc
     buf[0] = msg.magic;
@@ -431,6 +430,7 @@ void MavLinkConnectionImpl::readPackets()
                         message.compat_flags = msg.compat_flags;
                         message.seq = msg.seq;
                         message.msgid = msg.msgid;
+                        message.protocol_version = supports_mavlink2_ ? 2 : 1;
                         ::memcpy(message.signature, msg.signature, 13);
                         ::memcpy(message.payload64, msg.payload64, PayloadSize * sizeof(uint64_t));
                         msg_queue_.push(message);
@@ -483,6 +483,16 @@ void MavLinkConnectionImpl::drainQueue()
             snapshot_stale = false;
         }
         auto end = snapshot.end();
+
+        if (message.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION))
+        {
+            MavLinkAutopilotVersion cap;
+            cap.decode(message);
+            if ((cap.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2) != 0)
+            {
+                this->supports_mavlink2_ = true;
+            }
+        }
 
         auto startTime = std::chrono::system_clock::now();
         std::shared_ptr<MavLinkConnection> sharedPtr = std::shared_ptr<MavLinkConnection>(this->con_);

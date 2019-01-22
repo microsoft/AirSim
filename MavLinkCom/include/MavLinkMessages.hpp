@@ -146,7 +146,8 @@ enum class MavLinkMessageIds {
     MAVLINK_MSG_ID_NAMED_VALUE_FLOAT = 251,
     MAVLINK_MSG_ID_NAMED_VALUE_INT = 252,
     MAVLINK_MSG_ID_STATUSTEXT = 253,
-    MAVLINK_MSG_ID_DEBUG = 254
+    MAVLINK_MSG_ID_DEBUG = 254,
+    MAVLINK_MSG_ID_PROTOCOL_VERSION = 300
 };
 // Micro air vehicle / autopilot classes. This identifies the individual model.
 enum class MAV_AUTOPILOT {
@@ -747,6 +748,8 @@ enum class MAV_CMD {
     // Request the interval between messages for a particular MAVLink message ID.
     // This interface replaces REQUEST_DATA_STREAM
     MAV_CMD_SET_MESSAGE_INTERVAL = 511,
+    // Request MAVLink protocol version compatibility
+    MAV_CMD_REQUEST_PROTOCOL_VERSION = 519,
     // Request autopilot capabilities
     MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES = 520,
     // WIP: Request camera information (CAMERA_INFORMATION)
@@ -5378,6 +5381,26 @@ public:
     float value = 0;
     // index of debug variable
     uint8_t ind = 0;
+    virtual std::string toJSon();
+protected:
+    virtual int pack(char* buffer) const;
+    virtual int unpack(const char* buffer);
+};
+
+// Version and capability of protocol version. This message is the response to REQUEST_PROTOCOL_VERSION 
+// and is used as part of the handshaking to establish which MAVLink version should be used on the network. 
+// Every node should respond to REQUEST_PROTOCOL_VERSION to enable the handshaking. Library implementers 
+// should consider adding this into the default decoding state machine to allow the protocol core to respond directly.
+class MavLinkProtocolVersion : public MavLinkMessageBase {
+public:
+    const static uint32_t kMessageId = 300;
+    MavLinkProtocolVersion() { msgid = kMessageId; }
+    // Currently active MAVLink version number * 100: v1.0 is 100, v2.0 is 200, etc.
+    uint16_t version = 0;
+    uint16_t min_version = 0;
+    uint16_t max_version = 0;
+    uint8_t spec_version_hash[8] = { 0 };
+    uint8_t library_version_hash[8] = { 0 };
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
