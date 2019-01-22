@@ -22,6 +22,8 @@ public:
         unused(latency_);
     }
 
+    virtual ~ScalableClock() {}
+
     virtual TTimePoint nowNanos() const override
     {
         if (offset_ == 0 && scale_ == 1) //optimized normal route
