@@ -48,8 +48,10 @@ else #linux
     # Since Ubuntu 17 clang-5.0 is part of the core repository
     # See https://packages.ubuntu.com/search?keywords=clang-5.0
     if [ "$VERSION" -lt "17" ]; then
+        set +e
         wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
         sudo apt-get update
+        set -e
     fi
     sudo apt-get install -y clang-5.0 clang++-5.0
     sudo apt-get install -y unzip
