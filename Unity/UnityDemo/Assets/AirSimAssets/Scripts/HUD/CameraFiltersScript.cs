@@ -59,9 +59,10 @@ namespace AirSimUnity {
         }
 
         public static bool SetSegmentationId(string objectName, int segmentationId, bool isNameRegex) {
-            if (isNameRegex) {
+            List<string> keyList = new List<string>(segmentationIds.Keys); 
+            if (isNameRegex) {isNameRegex
                 bool isValueSet = false;
-                foreach (string s in segmentationIds.Keys) {
+                foreach (string s in keylist) {
                     if (!s.Contains(objectName)) {
                         continue;
                     }
