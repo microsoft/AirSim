@@ -183,11 +183,7 @@ public:
 		while (!closed_)
 		{
 			socklen_t addrlen = sizeof(sockaddr_in);
-			#if defined (__APPLE__)
-			int rc = ::read(sock, reinterpret_cast<char*>(result), bytesToRead);
-			#else
 			int rc = recvfrom(sock, reinterpret_cast<char*>(result), bytesToRead, 0, reinterpret_cast<sockaddr*>(&other), &addrlen);
-			#endif
 			if (rc < 0)
 			{
 				int hr = WSAGetLastError();
