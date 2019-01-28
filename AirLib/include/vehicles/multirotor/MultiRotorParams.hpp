@@ -160,19 +160,20 @@ protected: //static utility functions for derived classes to use
             */
 
             // vectors below are rotated according to NED left hand rule (so the vectors are rotated counter clockwise).
-            Quaternionr quadx_rot(AngleAxisr(M_PIf / 6, unit_z));
+            Quaternionr hexa_rot30(AngleAxisr(M_PIf / 6, unit_z)); // 30 degrees
+            Quaternionr hexa_rot60(AngleAxisr(M_PIf / 3, unit_z)); // 60 degrees
             Quaternionr no_rot(AngleAxisr(0, unit_z));
             rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[0], rotor_z), no_rot, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCW);
             rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[1], rotor_z), no_rot, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(arm_lengths[2], 0, rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(arm_lengths[2], 0, rotor_z), hexa_rot30, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(-arm_lengths[3], 0, rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(-arm_lengths[3], 0, rotor_z), hexa_rot30, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[4], rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[4], rotor_z), hexa_rot60, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[5], rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[5], rotor_z), hexa_rot60, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCW);
         }
         else
