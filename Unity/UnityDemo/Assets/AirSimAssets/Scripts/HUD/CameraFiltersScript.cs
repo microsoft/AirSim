@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
-using System.IO;
 
 namespace AirSimUnity {
-
     /*
      * MonoBehaviour class that is attached to cameras in the scene.
      * Used for applying image filters based on settings.json or Image request by the client to record the data.
@@ -22,8 +20,6 @@ namespace AirSimUnity {
         private static Dictionary<string, int> segmentationIds = new Dictionary<string, int>();
 
         private void Start() {
-
-
             myCamera = GetComponent<Camera>();
             var renderers = FindObjectsOfType<Renderer>();
             var mpb = new MaterialPropertyBlock();
@@ -63,18 +59,16 @@ namespace AirSimUnity {
         }
 
         public static bool SetSegmentationId(string objectName, int segmentationId, bool isNameRegex) {
-            List<string> keyList = new List<string>(segmentationIds.Keys);
-
-            if (isNameRegex) {
+            List<string> keyList = new List<string>(segmentationIds.Keys); 
+            if (isNameRegex) {isNameRegex
                 bool isValueSet = false;
-                foreach (string s in keyList) {
+                foreach (string s in keylist) {
                     if (!s.Contains(objectName)) {
                         continue;
                     }
                     segmentationIds[s] = segmentationId;
                     isValueSet = true;
                 }
-
                 return isValueSet;
             }
 
