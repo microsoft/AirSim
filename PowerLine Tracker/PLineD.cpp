@@ -1,4 +1,5 @@
 #include "PLineD.hpp"
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 cv::RNG rng(cv::getTickCount());
@@ -17,7 +18,7 @@ namespace {
       return A;
   }
   cv::Mat calcVecCovar(const std::vector<cv::Point> &inRow){
-      double varXY, varXX, varYY =0;
+      double varXY=0, varXX =0, varYY =0;
       cv::Mat coVarMatx = cv::Mat(2,2,CV_64F);
       for (size_t i = 0; i < inRow.size(); i++) {
           varXX += (inRow[i].x * inRow[i].x);

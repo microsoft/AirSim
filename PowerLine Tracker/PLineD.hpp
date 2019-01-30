@@ -2,6 +2,7 @@
 #define P_LINE_D_H_
 
 #include <opencv2/opencv.hpp>
+#include <math.h>
 #include <vector>
 #include <iostream>
 
