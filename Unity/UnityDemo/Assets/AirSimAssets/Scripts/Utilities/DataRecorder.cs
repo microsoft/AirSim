@@ -37,11 +37,19 @@ namespace AirSimUnity {
         public DataRecorder() {
             isDrone = true;
             count = 0;
-            docsLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/AirSim/";
+            docsLocation = IsLinux ? "/Documents/AirSim/" : "/AirSim/";
+            docsLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + docsLocation;
         }
 
         public void IsDrone(bool isDrone) {
             this.isDrone = isDrone;
+        }
+
+        public static bool IsLinux {
+            get {
+                int p = (int)Environment.OSVersion.Platform;
+                return (p == 4) || (p == 6) || (p == 128);
+            }
         }
 
         //Start the thread to dequeue the capture data and save them in a folder.
@@ -57,12 +65,14 @@ namespace AirSimUnity {
                 Directory.CreateDirectory(folderLocation);
             }
 
-            imagesLocation = folderLocation + "\\images";
+            imagesLocation = IsLinux ? "/images" : "\\images";
+            imagesLocation = folderLocation + imagesLocation;
             if (!Directory.Exists(imagesLocation)) {
                 Directory.CreateDirectory(imagesLocation);
             }
 
-            fileName = folderLocation + "\\airsim_rec.txt";
+            fileName = IsLinux ? "/airsim_rec.txt" : "\\airsim_rec.txt";
+            fileName = folderLocation + fileName;
             dataWriter = new StreamWriter(File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Write));
             string heading;
             if (isDrone) {
@@ -115,7 +125,11 @@ namespace AirSimUnity {
                         data.carData.gear, imageName));
                 }
 
-                imageName = string.Format("{0}\\{1}", imagesLocation, imageName);
+                if (IsLinux) {
+                    imageName = string.Format("{0}/{1}", imagesLocation, imageName);
+                } else {
+                    imageName = string.Format("{0}\\{1}", imagesLocation, imageName);
+                }
 
                 File.WriteAllBytes(imageName, data.image);
             }
