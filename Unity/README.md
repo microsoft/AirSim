@@ -75,7 +75,7 @@ Keyboard control is not currently available for drone flight.
 * Changing camera views:    
 Keys `0`, `1`, `2`, `3` are used to toggle windows of different camera views.
 * Recording simulation data:    
-Press *Record* button(Red button) located at the right bottom corner of the screen, to toggle recording of the simulation data. The recorded data can be found at `Documents\AirSim\(Date of recording)`
+Press *Record* button(Red button) located at the right bottom corner of the screen, to toggle recording of the simulation data. The recorded data can be found at `Documents\AirSim\(Date of recording)` on Windows and `~/Documents/AirSim/(Date of recording)` on Linux.
 ## Building Custom Environments For AirSim
 To use environments other than `UnityDemo`, follow the instructions written [here](../docs/custom_unity_environments.md)
 ## Cross-Compiling to Linux
