@@ -50,4 +50,9 @@ can be viewed in another terminal by running ```rostopic echo /example_name```  
 topics currently published via tab completion after typing ```rostopic echo``` in the terminal.
 Rviz is a useful visualization tool that can display the published data. 
 
+### Troubleshooting
+
+In the case of ```rosrun airsim example_name.py``` returning ```Couldn't find executable named...``` you may ```chmod +x example_name.py``` to tell the system that this is executable.
+
+
 # C++ (coming soon)
