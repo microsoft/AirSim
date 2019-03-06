@@ -3742,6 +3742,17 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114549485821928442, guid: e40b37a58e90168489aecb17d1395cbb,
+        type: 2}
+      propertyPath: VehiclePrefab
+      value: 
+      objectReference: {fileID: 1697916290324548, guid: 20a8ea8f047df2a47baacf48fc9d6598,
+        type: 2}
+    - target: {fileID: 114549485821928442, guid: e40b37a58e90168489aecb17d1395cbb,
+        type: 2}
+      propertyPath: simModeSelected
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e40b37a58e90168489aecb17d1395cbb, type: 2}
   m_IsPrefabAsset: 0
@@ -8563,7 +8574,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1472270035
 MonoBehaviour:
   m_ObjectHideFlags: 0

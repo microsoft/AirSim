@@ -13,6 +13,8 @@ namespace AirSimUnity {
 
     [RequireComponent(typeof(Rigidbody))]
     public abstract class Vehicle : MonoBehaviour, IVehicleInterface {
+        protected string vehicleName;
+        //protected int mainCameraFocusID;
         protected Vector3 position;
         protected Quaternion rotation;
         protected Vector3 scale3D = Vector3.one;
@@ -48,6 +50,11 @@ namespace AirSimUnity {
 
         //Ensure to call this method as the first statement, from derived class `Start()` method.
         protected void Start() {
+            // TEMP: A way to set main camera look at target since vehicle is now one of possibly many instantiated prefabs
+            // So for now if there are multiple vehicles, only the last instantiated will be the focus of the main camera.
+            Camera.main.transform.GetComponent<SmoothFollow>().target = this.transform;
+            // TODO: Implement toggle for rotate between multiple vehicles or god view of all vehicles, etc.
+
             isDrone = this is Drone ? true : false;
             if (isDrone) {
                 GetComponent<Rigidbody>().useGravity = false;
@@ -56,13 +63,13 @@ namespace AirSimUnity {
             InitializeVehicle();
 
             airsimInterface = VehicleCompanion.GetVehicleCompanion(this);
-            isServerStarted = airsimInterface.StartVehicleServer(AirSimSettings.GetSettings().LocalHostIP);
+            isServerStarted = airsimInterface.StartVehicleServer(AirSimSettings.GetSettings().LocalHostIp);
 
             if (isServerStarted == false)
             {
 #if UNITY_EDITOR
                 EditorUtility.DisplayDialog("Problem in starting AirSim server!!!", "Please check logs for more information.", "Exit");
-                EditorApplication.Exit(1);
+                //EditorApplication.Exit(1);
 #else
                 Application.Quit();
 #endif
@@ -164,6 +171,17 @@ namespace AirSimUnity {
 
         //Define the recording data that needs to be saved in the airsim_rec file for Toggle Recording button
         public abstract DataRecorder.ImageData GetRecordingData();
+
+        public string GetVehicleName()
+        {
+            return vehicleName;
+        }
+
+        public bool SetVehicleName(string name)
+        {
+            vehicleName = name;
+            return true;
+        }
 
         public void ResetVehicle()
         {
@@ -316,11 +334,15 @@ namespace AirSimUnity {
 
         private void InitializeVehicle() {
             //Setting the initial get pose(HomePoint in AirLib) values to that of vehicle's location in the scene for initial setup in AirLib
+            Debug.Log("Setting initial get pose (HomePoint) values.");
             DataManager.SetToAirSim(transform.position, ref currentPose.position);
             DataManager.SetToAirSim(transform.rotation, ref currentPose.orientation);
-            
+
+            Debug.Log("Setting collisionInfo.SetDefaultValues.");
             collisionInfo.SetDefaultValues();
+
             SetUpCameras();
+
             captureResetEvent = new AutoResetEvent(false);
         }
 

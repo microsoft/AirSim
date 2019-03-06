@@ -16,8 +16,9 @@ namespace AirSimUnity {
         private float rotationFactor = 0.1f;
         
         private new void Start() {
-            base.Start(); 
+            base.Start();
 
+            Debug.Log("Drone adding rotors.");
             for (int i = 0; i < rotors.Length; i++) {
                 rotorInfos.Add(new RotorInfo());
             }

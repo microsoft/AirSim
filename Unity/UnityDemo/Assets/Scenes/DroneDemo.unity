@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18029505, g: 0.22572652, b: 0.30692935, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1144,6 +1144,10 @@ Prefab:
     - target: {fileID: 4094397369091838, guid: f63bf11bc2a9a7146a4375d511e1425c, type: 2}
       propertyPath: m_LocalPosition.z
       value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875394544442156, guid: f63bf11bc2a9a7146a4375d511e1425c, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f63bf11bc2a9a7146a4375d511e1425c, type: 2}
@@ -2932,6 +2936,22 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114549485821928442, guid: e40b37a58e90168489aecb17d1395cbb,
+        type: 2}
+      propertyPath: VehiclePrefab
+      value: 
+      objectReference: {fileID: 1875394544442156, guid: f63bf11bc2a9a7146a4375d511e1425c,
+        type: 2}
+    - target: {fileID: 114549485821928442, guid: e40b37a58e90168489aecb17d1395cbb,
+        type: 2}
+      propertyPath: SimMode
+      value: Multirotor
+      objectReference: {fileID: 0}
+    - target: {fileID: 114549485821928442, guid: e40b37a58e90168489aecb17d1395cbb,
+        type: 2}
+      propertyPath: simModeSelected
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e40b37a58e90168489aecb17d1395cbb, type: 2}

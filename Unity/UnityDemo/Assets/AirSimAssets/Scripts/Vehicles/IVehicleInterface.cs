@@ -7,6 +7,10 @@ namespace AirSimUnity {
 
     public interface IVehicleInterface {
 
+        string GetVehicleName();
+
+        bool SetVehicleName(string name);
+
         bool SetPose(AirSimPose pose, bool ignoreCollision);
 
         AirSimPose GetPose();

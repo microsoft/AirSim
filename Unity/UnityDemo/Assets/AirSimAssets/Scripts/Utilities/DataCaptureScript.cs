@@ -57,7 +57,7 @@ namespace AirSimUnity {
             renderCam = GetComponent<Camera>();
             fov = renderCam.fieldOfView;
             recorder = new DataRecorder();
-            waitUntilNext = new WaitForSeconds(AirSimSettings.GetSettings().Recording.RecordInterval);
+            waitUntilNext = new WaitForSeconds((float)AirSimSettings.GetSettings().Recording.RecordInterval);
             waitForEndOfFrame = new WaitForEndOfFrame();
             shaderScript = GetComponent<CameraFiltersScript>();
 
@@ -199,8 +199,7 @@ namespace AirSimUnity {
             if (shaderScript.effect == type) {
                 return;
             }
-
-            AirSimSettings.CameraCaptureSettings captureSettings = AirSimSettings.GetSettings().GetCaptureSettingsBasedOnImageType(type);
+            AirSimSettings.CaptureSettingsSettings captureSettings = AirSimSettings.GetSettings().GetCaptureSettingsBasedOnImageType(type);
 
             renderTexture = RenderTexture.GetTemporary(captureSettings.Width, captureSettings.Height, 24, RenderTextureFormat.ARGB32);
 

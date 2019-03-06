@@ -467,6 +467,20 @@ namespace AirSimUnity {
         Count
     };
 
+    public enum SensorType {
+        Barometer = 1,
+        Imu,
+        Gps,
+        Magnetometer,
+        Distance,
+        Lidar
+    }
+
+    public enum SimMode {
+        Car = 1,
+        Multirotor
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct UnityTransform
     {

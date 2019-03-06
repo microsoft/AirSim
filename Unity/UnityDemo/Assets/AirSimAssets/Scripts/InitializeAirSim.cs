@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using AirSimUnity;
 using UnityEditor;
@@ -7,101 +9,66 @@ using UnityEngine.SceneManagement;
 
 public class InitializeAirSim : MonoBehaviour
 {
+    private static string AIRSIM_DATA_FOLDER = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/AirSim/";
+
     void Awake()
     {
-        if (GetAirSimSettingsFileName() != string.Empty)
+        if (!Directory.Exists(AIRSIM_DATA_FOLDER))
         {
-			if(AirSimSettings.Initialize())
-			{
+            Directory.CreateDirectory(AIRSIM_DATA_FOLDER);
+        }
 
-                switch (AirSimSettings.GetSettings().SimMode)
-                {
-                    case "Car":
-                    {
-                        LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
-                        break;
-                    }
-                    case "Multirotor":
-                    {
-                        LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
-                        break;
-                    }
-				}
+        AirSimSettings.Initialize();
+
+        var simMode = AirSimSettings.GetSettings().SimMode;
+        if (simMode != "")
+        {
+            switch (simMode)
+            {
+                case "Car":
+                case "Multirotor":
+                case "ComputerVision":
+                    LoadSceneAsPerSimMode(simMode);
+                    break;
+                default:
+                    Debug.Log("Notice: Unknown SimMode specified in 'settings.json' file.");
+                    break;
             }
         }
-        else
-        {
-            Debug.LogError("'Settings.json' file either not present or not configured properly.");
-#if UNITY_EDITOR
-                EditorUtility.DisplayDialog("Missing 'Settings.json' file!!!", "'Settings.json' file either not present or not configured properly.", "Exit");
-#endif
-            Application.Quit();
-        }
-    }
-
-    public static string GetAirSimSettingsFileName()
-    {
-
-        string fileName = Application.dataPath + "\\..\\settings.json";
-        if (File.Exists(fileName))
-        {
-            return fileName;
-        }
-
-        fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("AirSim", "settings.json"));
-        string linuxFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("Documents/AirSim", "settings.json"));
-        if (File.Exists(fileName))
-        {
-            return fileName;
-        }
-        else if (File.Exists(linuxFileName))
-        {
-            return linuxFileName;
-        }
-        if (CreateSettingsFileWithDefaultValues(fileName))
-            return fileName;
-        else if (CreateSettingsFileWithDefaultValues(linuxFileName))
-            return linuxFileName;
-        else
-            return string.Empty;
-    }
-
-    public static bool CreateSettingsFileWithDefaultValues(string fileName)
-    {
-        var result = false;
-        try
-        {
-            if (fileName.Substring(0, 5) == "/home")
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Documents/AirSim"));
-            else
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "AirSim"));
-
-            string content = "{\n \"SimMode\" : \"\", \n \"SettingsVersion\" : 1.2, \n \"SeeDocsAt\" : \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"\n}";
-            //settings file created at Documents\AirSim with name "setting.json".
-            StreamWriter writer = new StreamWriter(File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Write));
-            writer.WriteLine(content);
-            writer.Close();
-            result = true;
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("Unable to create settings.json file @ " + fileName + " Error :- " + ex.Message);
-            result = false;
-        }
-        return result;
     }
 
     public void LoadSceneAsPerSimMode(string load_name)
     {
         if (load_name == "Car")
-        {
             AirSimSettings.GetSettings().SimMode = "Car";
-            SceneManager.LoadSceneAsync("Scenes/CarDemo", LoadSceneMode.Single);
-        }
         else if (load_name == "Multirotor")
-        {
             AirSimSettings.GetSettings().SimMode = "Multirotor";
-            SceneManager.LoadSceneAsync("Scenes/DroneDemo", LoadSceneMode.Single);
+
+            
+
+        // Once SimMode is known we make final adjustments and check of settings based on the mode selected.
+        if (AirSimSettings.GetSettings().ValidateSettingsForSimMode())
+        {
+            if (load_name == "Car")
+            {
+                SceneManager.LoadSceneAsync("Scenes/CarDemo", LoadSceneMode.Single);
+            }
+            else if (load_name == "Multirotor")
+            {
+                SceneManager.LoadSceneAsync("Scenes/DroneDemo", LoadSceneMode.Single);
+            }
+        }
+        else
+        {
+            Debug.LogError("Error: Had a problem with the 'settings.json' file for SimMode selected '" + load_name + "'.");
+#if UNITY_EDITOR
+            EditorUtility.DisplayDialog("Had a problem with the 'settings.json' file for SimMode selected: '" + load_name + "'.",
+                "Had a problem with the 'settings.json' file for SimMode selected: '" + load_name + "'.",
+                "Exit");
+#endif
+            Application.Quit();
         }
     }
+
 }
+
