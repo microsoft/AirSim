@@ -313,25 +313,55 @@ msr::airlib::Pose APIPCamera::getPose() const
 void APIPCamera::updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting)
 {
     if (!std::isnan(setting.motion_blur_amount))
+    {
+        obj.bOverride_MotionBlurAmount = 1;
         obj.MotionBlurAmount = setting.motion_blur_amount;
+    }
     if (setting.auto_exposure_method >= 0)
-        obj.AutoExposureMethod = Utils::toEnum<EAutoExposureMethod>(setting.auto_exposure_method);       
+    {
+        obj.bOverride_AutoExposureMethod = 1;
+        obj.AutoExposureMethod = Utils::toEnum<EAutoExposureMethod>(setting.auto_exposure_method);
+    }
     if (!std::isnan(setting.auto_exposure_speed))
+    {
+        obj.bOverride_AutoExposureSpeedDown = 1;
         obj.AutoExposureSpeedDown = obj.AutoExposureSpeedUp = setting.auto_exposure_speed;
+    }
     if (!std::isnan(setting.auto_exposure_max_brightness))
+    {
+        obj.bOverride_AutoExposureMaxBrightness = 1;
         obj.AutoExposureMaxBrightness = setting.auto_exposure_max_brightness;
+    }
     if (!std::isnan(setting.auto_exposure_min_brightness))
+    {
+        obj.bOverride_AutoExposureMinBrightness = 1;
         obj.AutoExposureMinBrightness = setting.auto_exposure_min_brightness;
+    }
     if (!std::isnan(setting.auto_exposure_bias))
+    {
+        obj.bOverride_AutoExposureBias = 1;
         obj.AutoExposureBias = setting.auto_exposure_bias;
+    }
     if (!std::isnan(setting.auto_exposure_low_percent))
-        obj.AutoExposureLowPercent = setting.auto_exposure_low_percent;        
+    {
+        obj.bOverride_AutoExposureLowPercent = 1;
+        obj.AutoExposureLowPercent = setting.auto_exposure_low_percent;
+    }
     if (!std::isnan(setting.auto_exposure_high_percent))
-        obj.AutoExposureHighPercent = setting.auto_exposure_high_percent;    
+    {
+        obj.bOverride_AutoExposureHighPercent = 1;
+        obj.AutoExposureHighPercent = setting.auto_exposure_high_percent;
+    }
     if (!std::isnan(setting.auto_exposure_histogram_log_min))
-        obj.HistogramLogMin = setting.auto_exposure_histogram_log_min;    
+    {
+        obj.bOverride_HistogramLogMin = 1;
+        obj.HistogramLogMin = setting.auto_exposure_histogram_log_min;
+    }
     if (!std::isnan(setting.auto_exposure_histogram_log_max))
-        obj.HistogramLogMax = setting.auto_exposure_histogram_log_max;  
+    {
+        obj.bOverride_HistogramLogMax = 1;
+        obj.HistogramLogMax = setting.auto_exposure_histogram_log_max;
+    }
 }
 
 void APIPCamera::setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings)
