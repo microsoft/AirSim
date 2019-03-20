@@ -76,7 +76,7 @@ class Vector3r(MsgpackMixin):
 
     def __mul__(self, other):
         if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
-            return Vector3r(self.x_val*other, self.y_val*other, self.z_val)
+            return Vector3r(self.x_val*other, self.y_val*other, self.z_val*other)
         else: 
             raise TypeError('unsupported operand type(s) for *: %s and %s' % ( str(type(self)), str(type(other))) )
 
