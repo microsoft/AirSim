@@ -10,15 +10,22 @@ namespace Microsoft.Networking.Mavlink
 {
     public class MavLinkMessage
     {
+        public const byte Mavlink1Stx = 254;
+        public const byte Mavlink2Stx = 253;
+
         public byte Magic { get; set; }
-        public MAVLink.MAVLINK_MSG_ID MsgId { get; set; }
         public byte Length { get; set; }
-        public byte ComponentId { get; set; }
-        public byte SystemId { get; set; }
+        public byte IncompatFlags { get; set; } // flags that must be understood
+        public byte CompatFlags { get; set; }   // flags that can be ignored if not understood
         public byte SequenceNumber { get; set; }
+        public byte SystemId { get; set; }
+        public byte ComponentId { get; set; }
+        public MAVLink.MAVLINK_MSG_ID MsgId { get; set; }
         public ushort Crc { get; set; }
         public UInt64 Time { get; set; }
         public byte[] Payload { get; set; }
+        public byte[] Signature { get; set; }
+        public byte ProtocolVersion { get; set; }
         public object TypedPayload { get; set; }
 
         public override string ToString()
@@ -111,10 +118,23 @@ namespace Microsoft.Networking.Mavlink
             ushort crcTmp = 0xffff; // X25_INIT_CRC;
             // Start with the MAVLINK_CORE_HEADER_LEN bytes.
             crcTmp = crc_accumulate((byte)this.Length, crcTmp);
+            if (this.Magic == MavLinkMessage.Mavlink2Stx)
+            {
+                crcTmp = crc_accumulate((byte)this.IncompatFlags, crcTmp);
+                crcTmp = crc_accumulate((byte)this.CompatFlags, crcTmp);
+            }
             crcTmp = crc_accumulate((byte)this.SequenceNumber, crcTmp);
             crcTmp = crc_accumulate((byte)this.SystemId, crcTmp);
             crcTmp = crc_accumulate((byte)this.ComponentId, crcTmp);
+
             crcTmp = crc_accumulate((byte)this.MsgId, crcTmp);
+            if (this.Magic == MavLinkMessage.Mavlink2Stx)
+            {
+                byte b = (byte)((uint)this.MsgId >> 8);
+                crcTmp = crc_accumulate(b, crcTmp);
+                b = (byte)((uint)this.MsgId >> 16);
+                crcTmp = crc_accumulate(b, crcTmp);
+            }
             crcTmp = crc_accumulate(buffer, len, crcTmp);
             return crc_accumulate(crc_extra, crcTmp);
         }
@@ -172,6 +192,8 @@ namespace Microsoft.Networking.Mavlink
                 this.Length = (byte)block.Length;
             }
         }
+
+
     }
 
     public class MavlinkChannel
@@ -228,11 +250,17 @@ namespace Microsoft.Networking.Mavlink
         {
             byte[] buffer = new byte[1];
 
+            const byte MAVLINK_IFLAG_SIGNED = 0x01;
+            const int MAVLINK_SIGNATURE_BLOCK_LEN = 13;
             MavLinkMessage msg = null;
             ReadState state = ReadState.Init;
             int payloadPos = 0;
             ushort crc = 0;
-
+            int signaturePos = 0;
+            uint msgid = 0;
+            int msgIdPos = 0;
+            int MaxPayloadLength = 255;
+            bool messageComplete = false;
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             watch.Start();
 
@@ -248,22 +276,61 @@ namespace Microsoft.Networking.Mavlink
                         switch (state)
                         {
                             case ReadState.Init:
-                                if (b == MagicMarker)
+                                if (b == MavLinkMessage.Mavlink1Stx)
                                 {
                                     state = ReadState.GotMagic;
                                     msg = new MavLinkMessage();
                                     msg.Time = (ulong)watch.ElapsedMilliseconds * 1000; // must be in microseconds
-                                    msg.Magic = MagicMarker;
+                                    msg.Magic = MavLinkMessage.Mavlink1Stx;
                                     payloadPos = 0;
+                                    msgIdPos = 0;
+                                    msgid = 0;
                                     crc = 0;
+                                    messageComplete = false;
+                                }
+                                else if (b == MavLinkMessage.Mavlink2Stx)
+                                {
+                                    state = ReadState.GotMagic;
+                                    msg = new MavLinkMessage();
+                                    msg.Time = (ulong)watch.ElapsedMilliseconds * 1000; // must be in microseconds
+                                    msg.Magic = MavLinkMessage.Mavlink2Stx;
+                                    payloadPos = 0;
+                                    msgIdPos = 0;
+                                    msgid = 0;
+                                    crc = 0;
+                                    messageComplete = false;
                                 }
                                 break;
                             case ReadState.GotMagic:
-                                msg.Length = b;
-                                msg.Payload = new byte[msg.Length];
-                                state = ReadState.GotLength;
+                                if (b > MaxPayloadLength)
+                                {
+                                    state = ReadState.Init;
+                                }
+                                else
+                                {
+                                    if (msg.Magic == MavLinkMessage.Mavlink1Stx)
+                                    {
+                                        msg.IncompatFlags = 0;
+                                        msg.CompatFlags = 0;
+                                        state = ReadState.GotCompatFlags;
+                                    }
+                                    else
+                                    {
+                                        msg.Length = b;
+                                        msg.Payload = new byte[msg.Length];
+                                        state = ReadState.GotLength;
+                                    }
+                                }
                                 break;
                             case ReadState.GotLength:
+                                msg.IncompatFlags = b;
+                                state = ReadState.GotIncompatFlags;
+                                break;
+                            case ReadState.GotIncompatFlags:
+                                msg.CompatFlags = b;
+                                state = ReadState.GotCompatFlags;
+                                break;
+                            case ReadState.GotCompatFlags:
                                 msg.SequenceNumber = b;
                                 state = ReadState.GotSequenceNumber;
                                 break;
@@ -276,15 +343,37 @@ namespace Microsoft.Networking.Mavlink
                                 state = ReadState.GotComponentId;
                                 break;
                             case ReadState.GotComponentId:
-                                msg.MsgId = (MAVLink.MAVLINK_MSG_ID)b;
-                                if (msg.Length == 0)
+                                if (msg.Magic == MavLinkMessage.Mavlink1Stx)
                                 {
-                                    // done!
-                                    state = ReadState.GotPayload;
+                                    msg.MsgId = (MAVLink.MAVLINK_MSG_ID)b;
+                                    if (msg.Length == 0)
+                                    {
+                                        // done!
+                                        state = ReadState.GotPayload;
+                                    }
+                                    else
+                                    {
+                                        state = ReadState.GotMessageId;
+                                    }
                                 }
                                 else
                                 {
-                                    state = ReadState.GotMessageId;
+                                    // msgid is 24 bits
+                                    switch(msgIdPos)
+                                    {
+                                        case 0:
+                                            msgid = b;
+                                            break;
+                                        case 1:
+                                            msgid |= ((uint)b << 8);
+                                            break;
+                                        case 2:
+                                            msgid |= ((uint)b << 16);
+                                            msg.MsgId = (MAVLink.MAVLINK_MSG_ID)msgid;
+                                            state = ReadState.GotMessageId;
+                                            break;
+                                    }
+                                    msgIdPos++;
                                 }
                                 break;
 
@@ -311,15 +400,38 @@ namespace Microsoft.Networking.Mavlink
                                 }
                                 else
                                 {
-                                    // try and deserialize the payload.
-                                    msg.Deserialize();
-                                    if (MessageReceived != null)
+                                    if ((msg.IncompatFlags & MAVLINK_IFLAG_SIGNED) == MAVLINK_IFLAG_SIGNED)
                                     {
-                                        MessageReceived(this, msg);
+                                        signaturePos = 0;
+                                        msg.Signature = new byte[MAVLINK_SIGNATURE_BLOCK_LEN];
+                                        state = ReadState.GetSignature;
+                                    }
+                                    else
+                                    {
+                                        messageComplete = true;
                                     }
                                 }
-                                state = ReadState.Init;
                                 break;
+                            case ReadState.GetSignature:
+                                msg.Signature[signaturePos++] = b;
+                                if (signaturePos == MAVLINK_SIGNATURE_BLOCK_LEN)
+                                {
+                                    // todo: check the signature.
+                                    messageComplete = true;
+                                }
+                                break;
+                        }
+
+                        if (messageComplete)
+                        {
+                            // try and deserialize the payload.
+                            msg.Deserialize();
+                            if (MessageReceived != null)
+                            {
+                                MessageReceived(this, msg);
+                            }
+                            // reset for next message.
+                            state = ReadState.Init;
                         }
                     }
 
@@ -336,16 +448,17 @@ namespace Microsoft.Networking.Mavlink
         {
             Init,
             GotMagic,
+            GotIncompatFlags,
+            GotCompatFlags,
             GotLength,
             GotSequenceNumber,
             GotSystemId,
             GotComponentId,
             GotMessageId,
             GotPayload,
-            GotCrc1
+            GotCrc1,
+            GetSignature
         }
-
-        const int MagicMarker = 254;
 
     }
 
