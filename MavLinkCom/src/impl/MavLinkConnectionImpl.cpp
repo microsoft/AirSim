@@ -259,6 +259,16 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     if (msg.msgid == MavLinkTelemetry::kMessageId) {
         msglen = 28; // mavlink doesn't know about our custom telemetry message.
     }
+
+    if (len != msglen) {
+        if (mavlink1) {
+            throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
+        }
+        else {
+            // mavlink2 supports trimming the payload of trailing zeros so the messages
+            // are variable length as a result.
+        }
+    }    
     len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
     msg.len = len;
 
@@ -336,6 +346,11 @@ void MavLinkConnectionImpl::joinLeftSubscriber(std::shared_ptr<MavLinkConnection
 {
     unused(connection);
     // forward messages from our connected node to the remote proxy.
+    if (supports_mavlink2_)
+    {
+        // tell the remote connection to expect mavlink2 messages.
+        remote->pImpl->supports_mavlink2_ = true;
+    }
     remote->sendMessage(msg);
 }
 
@@ -406,7 +421,7 @@ void MavLinkConnectionImpl::readPackets()
                 if (mavlink_intermediate_status_.flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
                 {
                     // then this is a mavlink 1 message
-                } else {
+                } else if (!supports_mavlink2_) {
                     // then this mavlink sender supports mavlink 2
                     supports_mavlink2_ = true;
                 }
