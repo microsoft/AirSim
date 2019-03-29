@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace AirSimUnity {
     /*
@@ -63,7 +64,7 @@ namespace AirSimUnity {
             if (isNameRegex) {
                 bool isValueSet = false;
                 foreach (string s in keyList) {
-                    if (!s.Contains(objectName)) {
+                    if (!Regex.IsMatch(s, objectName)) {
                         continue;
                     }
                     segmentationIds[s] = segmentationId;
