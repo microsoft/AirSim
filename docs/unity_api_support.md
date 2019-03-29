@@ -6,8 +6,8 @@
 | confirmConnection | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
 | isApiControlEnabled | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
 | ping | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
-| simGetObjectPose | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
-| simSetObjectPose | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
+| simGetObjectPose | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
+| simSetObjectPose | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
 | pause | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
 | continueForTime | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
 | simGetCollisionInfo | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
