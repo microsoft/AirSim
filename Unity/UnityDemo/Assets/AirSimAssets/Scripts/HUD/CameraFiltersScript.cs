@@ -66,7 +66,7 @@ namespace AirSimUnity {
                     if (!s.Contains(objectName)) {
                         continue;
                     }
-                    segmentationIds[objectName] = segmentationId;
+                    segmentationIds[s] = segmentationId;
                     isValueSet = true;
                 }
                 return isValueSet;
