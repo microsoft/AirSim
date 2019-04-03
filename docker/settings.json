@@ -1,4 +1,4 @@
- {
+{
   "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
   "SettingsVersion": 1.2,
   "SimMode": "Multirotor",
@@ -14,5 +14,6 @@
         "RemoteControlID": 0,
         "AllowAPIWhenDisconnected": false
       }
+    }
   }
 }
