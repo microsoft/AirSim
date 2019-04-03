@@ -1,0 +1,1 @@
+docker build --network=host -t airsim:cudagl-10.0-devel-ubuntu16.04 -f Dockerfile .
