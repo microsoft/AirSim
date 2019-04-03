@@ -27,12 +27,4 @@ RUN mkdir -p /home/airsim_user/Documents/AirSim
 COPY settings.json /home/airsim_user/Documents/AirSim
 #ADD Documents /home/airsim_user/Documents
 
-# add path to directory of your airsim linux binary below! default is the blocks binary
-ADD Blocks /home/airsim_user/Blocks
 RUN sudo chown -R airsim_user /home/airsim_user
-
-# if this is set to "offscreen", unreal would run headless 
-#ENV SDL_VIDEODRIVER=offscreen
-
-# put the ID of the GPU you want unreal engine to use
-#ENV SDL_HINT_CUDA_DEVICE=0

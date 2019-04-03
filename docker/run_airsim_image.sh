@@ -1,3 +1,4 @@
+UNREAL_BINARY_PATH=$(dirname $1)
 XAUTH=/tmp/.docker.xauth
 if [ ! -f $XAUTH ]
 then
@@ -11,9 +12,10 @@ then
     chmod a+r $XAUTH
 fi
 
-nvidia-docker run \
+nvidia-docker run -it \
     -v $(pwd)/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
-    -e SDL_VIDEODRIVER='offscreen' \
+    -v $UNREAL_BINARY_PATH:$UNREAL_BINARY_PATH \
+    -e SDL_VIDEODRIVER='' \
     -e SDL_HINT_CUDA_DEVICE='0' \
     --net=host \
     --env="DISPLAY=$DISPLAY" \
@@ -24,4 +26,4 @@ nvidia-docker run \
     --runtime=nvidia \
     --rm \
     airsim:cudagl-10.0-devel-ubuntu16.04 \
-    /bin/bash -c "/home/airsim_user/Blocks/Blocks.sh"	
+    /bin/bash -c "$1 $2 $3 $4"

@@ -11,9 +11,10 @@ then
     chmod a+r $XAUTH
 fi
 
-nvidia-docker run \
+nvidia-docker run -it \
     -v $(pwd)/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
-    -e SDL_VIDEODRIVER='' \
+    -v /home/$USER:/home/$USER \
+    -e SDL_VIDEODRIVER='offscreen' \
     -e SDL_HINT_CUDA_DEVICE='0' \
     --net=host \
     --env="DISPLAY=$DISPLAY" \
@@ -24,4 +25,4 @@ nvidia-docker run \
     --runtime=nvidia \
     --rm \
     airsim:cudagl-10.0-devel-ubuntu16.04 \
-    /bin/bash -c "/home/airsim_user/Blocks/Blocks.sh -windowed"
+    /bin/bash -c "$1 $2 $3 $4"
