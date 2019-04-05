@@ -1,4 +1,5 @@
-FROM adamrehn/ue4-engine:4.19.2-cudagl10.0
+ARG BASE_IMAGE=adamrehn/ue4-engine:4.19.2-cudagl10.0
+FROM $BASE_IMAGE
 
 USER root
 RUN apt-get update
