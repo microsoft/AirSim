@@ -12,6 +12,8 @@ then
     chmod a+r $XAUTH
 fi
 
+DOCKER_IMAGE_NAME=$1
+
 # now let's check if user specified  an "-- headless" parameter in the end
 # we'll set SDL_VIDEODRIVER_VALUE to '' if it wasn't specified, 'offscreen' if it was
 SDL_VIDEODRIVER_VALUE='';
@@ -46,4 +48,4 @@ nvidia-docker run -it \
     --volume="$XAUTH:$XAUTH" \
     --runtime=nvidia \
     --rm \
-    airsim_source:4.19.2-cudagl-10.0-devel-ubuntu16.04
+    $DOCKER_IMAGE_NAME

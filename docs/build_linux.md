@@ -5,7 +5,7 @@ The current recommended and tested environment is **Ubuntu 16.04 LTS**. Theoreti
 We've two options - you can either build inside docker containers or your host machine. 
 
 ## Docker 
-Please see instructions [here](https://github.com/madratman/AirSim/blob/PR/docker_ubuntu/docs/docker_ubuntu.md)
+Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md)
 
 ## Host machine
 

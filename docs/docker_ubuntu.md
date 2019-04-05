@@ -5,13 +5,20 @@
 - Install [nvidia-docker2](https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-2.0))
 
 #### Build the docker image
-```
-$ cd Airsim/docker;
-$ ./build_airsim_image.sh
-```
+- Below are the default arguments.   
+  `--base_image`: This is image over which we'll install airsim. We've tested on Ubuntu 16.04 + CUDA 10.0.  
+   You can specify any [NVIDIA cudagl](https://hub.docker.com/r/nvidia/cudagl/) at your own risk.    
+   `--target_image` is the desired name of your docker image.    
+   Defaults to `airsim_binary` with same tag as the base image
+   ```
+   $ cd Airsim/docker;
+   $ python build_airsim_image.py \
+      --base_image=nvidia/cudagl:10.0-devel-ubuntu16.04 \
+      --target_image=airsim_binary:10.0-devel-ubuntu16.04
+   ```
 
-   - Verify you have an image by:
-    `$ docker images | grep airsim`   
+- Verify you have an image by:
+ `$ docker images | grep airsim`   
 
 #### Running an unreal binary inside a docker container 
 - Get [an unreal binary](https://github.com/Microsoft/AirSim/releases/tag/v1.2.0Linux) or package your own project in Ubuntu.   
@@ -22,46 +29,25 @@ You can download it by running
     $ ./download_blocks_env_binary.sh
     ```
 
-- Run the Blocks binary inside a docker container 
-    ```
-    $ cd Airsim/docker;
-    $ ./run_airsim_image.sh Blocks/Blocks.sh -windowed
-    ```
-    * Specifying Resolution   :
-        ```
-        $ ./run_airsim_image.sh Blocks/Blocks.sh -windowed -ResX=1080
-        ## OR:
-        $ ./run_airsim_image.sh Blocks/Blocks.sh -windowed -ResX=1080 -ResY=720
-        ```
+- Running an unreal binary inside a docker container 
+   The syntax is:
+   ```
+    $ ./run_airsim_image_binary.sh DOCKER_IMAGE_NAME UNREAL_BINARY_SHELL_SCRIPT UNREAL_BINARY_ARGUMENTS -- headless     
+   ```
+   For blocks, you can do a `$ ./run_airsim_image_binary.sh airsim_binary:10.0-devel-ubuntu16.04 Blocks/Blocks.sh -windowed -ResX=1080 -ResY=720`
 
+   * `DOCKER_IMAGE_NAME`: Same as `target_image` parameter in previous step. By default, enter `airsim_binary:10.0-devel-ubuntu16.04`   
+   * `UNREAL_BINARY_SHELL_SCRIPT`: for Blocks enviroment, it will be `Blocks/Blocks.sh`
+   * [`UNREAL_BINARY_ARGUMENTS`](https://docs.unrealengine.com/en-us/Programming/Basics/CommandLineArguments):
+      For airsim, most relevant would be `-windowed`, `-ResX`, `-ResY`. Click on link to see all options. 
+         
     * Running in Headless mode:    
         Suffix `-- headless` at the end:
         ```
-        $ ./run_airsim_image.sh Blocks/Blocks.sh -- headless
+        $ ./run_airsim_image_binary.sh Blocks/Blocks.sh -- headless
         ```
-- Specifying a `settings.json`:   
-    Look inside [`run_airsim_image.sh`](https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image.sh).    
-    We're mapping the host machine's `PATH/TO/Airsim/docker/settings.json` to the docker containers `/home/airsim_user/Documents/AirSim/settings.json`.    
-    Hence, we can load any settings file by simply modifying `PATH_TO_YOUR/settings.json` by modifying the following snippet in the end of [`run_airsim_image.sh`](https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image.sh):
+- [Specifying a `settings.json`](https://github.com/madratman/AirSim/blob/PR/docker_ubuntu/docs/docker_ubuntu.md#airsim_binary-docker-image)
 
-    ```
-    nvidia-docker run -it \
-        -v $PATH_TO_YOUR/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
-        -v $UNREAL_BINARY_PATH:$UNREAL_BINARY_PATH \
-        -e SDL_VIDEODRIVER=$SDL_VIDEODRIVER_VALUE \
-        -e SDL_HINT_CUDA_DEVICE='0' \
-        --net=host \
-        --env="DISPLAY=$DISPLAY" \
-        --env="QT_X11_NO_MITSHM=1" \
-        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        -env="XAUTHORITY=$XAUTH" \
-        --volume="$XAUTH:$XAUTH" \
-        --runtime=nvidia \
-        --rm \
-        airsim:cudagl-10.0-devel-ubuntu16.04 \
-        /bin/bash -c "$UNREAL_BINARY_COMMAND"
-    ```
- 
 ## Source
 #### Requirements:
 - Install [nvidia-docker2](https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-2.0))
@@ -86,18 +72,34 @@ You can download it by running
        [$ `docker image prune`](https://docs.docker.com/engine/reference/commandline/image_prune/)   
        [$ `docker system prune`](https://docs.docker.com/engine/reference/commandline/system_df/)   
 
-      
-
 #### Building AirSim inside UE4 docker container:
 * Build AirSim docker image (which lays over the unreal image we just built)   
-   `./build_airsim_image_source.sh`
-
+  Below are the default arguments.   
+  `--base_image`: This is image over which we'll install airsim. We've tested on `adamrehn/ue4-engine:4.19.2-cudagl10.0`. See [ue4-docker](https://adamrehn.com/docs/ue4-docker/building-images/available-container-images) for other versions.     
+   `--target_image` is the desired name of your docker image.    
+   Defaults to `airsim_source` with same tag as the base image
+   ```
+   $ cd Airsim/docker;
+   $ python build_airsim_image.py \
+      --source \
+      ----base_image adamrehn/ue4-engine:4.19.2-cudagl10.0 \
+      --target_image=airsim_source:4.19.2-cudagl10.0
+   ```
 #### Running AirSim container
-* `./run_airsim_image_source.sh`
-* Start unreal engine:   
-   `/home/ue4/UnrealEngine/Engine/Binaries/Linux/UE4Editor`
+* Run the airsim source image we built by:
+   ```
+      ./run_airsim_image_source.sh airsim_source:4.19.2-cudagl10.0
+   ```
+   Syntax is `./run_airsim_image_source.sh DOCKER_IMAGE_NAME -- headless`
+   `-- headless`: suffix this to run in optional headless mode. 
 
-#### Packaging Unreal Environments
+* Inside the container, you can see `UnrealEngine` and `AirSim` under `/home/ue4`. 
+* Start unreal engine inside the container:   
+   `ue4@HOSTMACHINE:~$ /home/ue4/UnrealEngine/Engine/Binaries/Linux/UE4Editor`
+* [Specifying an airsim settings.json](https://github.com/madratman/AirSim/blob/PR/docker_ubuntu/docs/docker_ubuntu.md#airsim_source-docker-image)
+* Continue with [AirSim's Linux docs](https://microsoft.github.io/AirSim/docs/build_linux/#build-unreal-environment). 
+
+#### [Misc] Packaging Unreal Environments in `airsim_source` containers
 * Let's take the Blocks environment as an example.    
     In the following script, specify the full path to your unreal uproject file by `project` and the directory where you want the binaries to be placed by `archivedirectory` 
     ```
@@ -108,4 +110,44 @@ You can download it by running
 
     This would create a Blocks binary in `/home/ue4/Binaries/Blocks/`.   
     You can test it by running `/home/ue4/Binaries/Blocks/LinuxNoEditor/Blocks.sh -windowed`   
-TODO : add changes in build.cs and target.cs
+
+### Specifying an airsim settings.json
+  #### `airsim_binary` docker image:
+  - We're mapping the host machine's `PATH/TO/Airsim/docker/settings.json` to the docker container's `/home/airsim_user/Documents/AirSim/settings.json`.    
+  - Hence, we can load any settings file by simply modifying `PATH_TO_YOUR/settings.json` by modifying the following snippets in * [`run_airsim_image_binary.sh`](https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image_binary.sh)
+      ```
+      nvidia-docker run -it \
+          -v $PATH_TO_YOUR/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
+          -v $UNREAL_BINARY_PATH:$UNREAL_BINARY_PATH \
+          -e SDL_VIDEODRIVER=$SDL_VIDEODRIVER_VALUE \
+          -e SDL_HINT_CUDA_DEVICE='0' \
+          --net=host \
+          --env="DISPLAY=$DISPLAY" \
+          --env="QT_X11_NO_MITSHM=1" \
+          --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+          -env="XAUTHORITY=$XAUTH" \
+          --volume="$XAUTH:$XAUTH" \
+          --runtime=nvidia \
+          --rm \
+          $DOCKER_IMAGE_NAME \
+          /bin/bash -c "$UNREAL_BINARY_COMMAND"
+      ```
+  ####  `airsim_source` docker image:
+
+  * We're mapping the host machine's `PATH/TO/Airsim/docker/settings.json` to the docker container's `/home/airsim_user/Documents/AirSim/settings.json`.    
+  * Hence, we can load any settings file by simply modifying `PATH_TO_YOUR/settings.json` by modifying the following snippets in [`run_airsim_image_source.sh`](https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image_source.sh):
+    ```
+    nvidia-docker run -it \
+        -v $(pwd)/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
+        -e SDL_VIDEODRIVER=$SDL_VIDEODRIVER_VALUE \
+        -e SDL_HINT_CUDA_DEVICE='0' \
+        --net=host \
+        --env="DISPLAY=$DISPLAY" \
+        --env="QT_X11_NO_MITSHM=1" \
+        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+        -env="XAUTHORITY=$XAUTH" \
+        --volume="$XAUTH:$XAUTH" \
+        --runtime=nvidia \
+        --rm \
+    $DOCKER_IMAGE_NAME
+    ```

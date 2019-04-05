@@ -1,7 +1,10 @@
+DOCKER_IMAGE_NAME=$1
+
 # get the base directory name of the unreal binary's shell script
 # we'll mount this volume while running docker container
-UNREAL_BINARY_PATH=$(dirname $(readlink -f $1))
-UNREAL_BINARY_SHELL_ABSPATH=$(readlink -f $1)
+UNREAL_BINARY_PATH=$(dirname $(readlink -f $2))
+UNREAL_BINARY_SHELL_ABSPATH=$(readlink -f $2)
+
 # this block is for running X apps in docker
 XAUTH=/tmp/.docker.xauth
 if [ ! -f $XAUTH ]
@@ -19,7 +22,7 @@ fi
 # this are the first (maximum) four arguments which the user specifies:
 # ex: ./run_airsim_image.sh /PATH/TO/UnrealBinary/UnrealBinary.sh -windowed -ResX=1080 -ResY=720
 # we save them in a variable right now:  
-UNREAL_BINARY_COMMAND="$UNREAL_BINARY_SHELL_ABSPATH $2 $3 $4"
+UNREAL_BINARY_COMMAND="$UNREAL_BINARY_SHELL_ABSPATH $3 $4 $5"
 
 # now let's check if user specified  an "-- headless" parameter in the end
 # we'll set SDL_VIDEODRIVER_VALUE to '' if it wasn't specified, 'offscreen' if it was
@@ -56,5 +59,5 @@ nvidia-docker run -it \
     --volume="$XAUTH:$XAUTH" \
     --runtime=nvidia \
     --rm \
-    airsim:4.19.2-cudagl-10.0-devel-ubuntu16.04 \
+    $DOCKER_IMAGE_NAME \
     /bin/bash -c "$UNREAL_BINARY_COMMAND"
