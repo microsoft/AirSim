@@ -56,5 +56,5 @@ nvidia-docker run -it \
     --volume="$XAUTH:$XAUTH" \
     --runtime=nvidia \
     --rm \
-    airsim:cudagl-10.0-devel-ubuntu16.04 \
+    airsim:4.19.2-cudagl-10.0-devel-ubuntu16.04 \
     /bin/bash -c "$UNREAL_BINARY_COMMAND"
