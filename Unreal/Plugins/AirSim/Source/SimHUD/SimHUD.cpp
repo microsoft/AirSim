@@ -16,7 +16,7 @@ ASimHUD::ASimHUD()
     widget_class_ = hud_widget_class.Succeeded() ? hud_widget_class.Class : nullptr;
 
     static ConstructorHelpers::FClassFinder<UUserWidget> settings_widget_class(TEXT("WidgetBlueprint'/AirSim/Blueprints/LoadSettingsWidget'"));
-	settings_widget_loader_ = settings_widget_class.Succeeded() ? settings_widget_class.Class : nullptr;
+    settings_widget_loader_ = settings_widget_class.Succeeded() ? settings_widget_class.Class : nullptr;
 }
 
 void ASimHUD::BeginPlay()
@@ -29,11 +29,10 @@ void ASimHUD::BeginPlay()
     }
     catch (std::exception& ex) {
         UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
-        //FGenericPlatformMisc::PlatformInit();
-        //FGenericPlatformMisc::MessageBoxExt(EAppMsgType::Ok, TEXT("Error at Startup"), ANSI_TO_TCHAR(ex.what()));
         UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("Error at startup: ") + ex.what(), "Error");
     }
 }
+
 void ASimHUD::buildScene()
 {
      try {
@@ -48,8 +47,6 @@ void ASimHUD::buildScene()
     }
     catch (std::exception& ex) {
         UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
-        //FGenericPlatformMisc::PlatformInit();
-        //FGenericPlatformMisc::MessageBoxExt(EAppMsgType::Ok, TEXT("Error at Startup"), ANSI_TO_TCHAR(ex.what()));
         UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("Error at startup: ") + ex.what(), "Error");
     }
 }
@@ -194,16 +191,20 @@ void ASimHUD::inputEventToggleAll()
 
 void ASimHUD::createSettingsWidget()
 {
-	if (settings_widget_loader_){
-		settings_widget_ = CreateWidget<USettingsWidget>(this->GetWorld()->GetFirstPlayerController(), settings_widget_loader_);
-		UE_LOG(LogTemp, Warning, TEXT("Successfully built settings widget"));
-		if (!settings_widget_)
-			return;
-		settings_widget_->AddToViewport();
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("Settings widget was not built!"));
-	}
+    if (settings_widget_loader_){
+       try {
+            settings_widget_ = CreateWidget<USettingsWidget>(this->GetWorld()->GetFirstPlayerController(), settings_widget_loader_);
+            UE_LOG(LogTemp, Warning, TEXT("Successfully built settings widget"));
+            settings_widget_->AddToViewport();
+        }
+        catch (std::exception& ex) {
+            UAirBlueprintLib::LogMessageString("Error at startup: ", ex.what(), LogDebugLevel::Failure);
+            UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("Error at startup: ") + ex.what(), "Error");
+        }
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Settings widget was not built!"));
+    }
     settings_widget_->populateDropdown();
 }
 
@@ -286,7 +287,7 @@ void ASimHUD::initializeSettings(FString ue4_settings_string)
     if (getSettingsText(settingsText, settingsFile))
         AirSimSettings::initializeSettings(settingsText);
     else
-        AirSimSettings::createDefaultSettingsFile();
+        AirSimSettings::createDefaultSettingsFile("settings_default.json"); // do not overwrite user's settings.json!
 
     AirSimSettings::singleton().load(std::bind(&ASimHUD::getSimModeFromUser, this));
     for (const auto& warning : AirSimSettings::singleton().warning_messages) {

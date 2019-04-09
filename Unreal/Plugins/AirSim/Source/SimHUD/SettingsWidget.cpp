@@ -1,10 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SettingsWidget.h"
-
-
-// UE_LOG(YourLog,Warning,TEXT("MyCharacter's Name is %s"), *MyCharacter->GetName() );
 
 bool USettingsWidget::changedText()
 {
@@ -13,7 +7,6 @@ bool USettingsWidget::changedText()
 	user_input_ = true;
     return true;
 }
-
 
 bool USettingsWidget::checkForInput()
 {
@@ -41,8 +34,3 @@ void USettingsWidget::populateDropdown()
         } 
     }
 }
-
-// void USettingsWidget::updateMenu()
-// {
-//     std::cout << "updating menu" << std::endl;
-// }

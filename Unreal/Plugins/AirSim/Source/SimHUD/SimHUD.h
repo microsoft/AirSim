@@ -8,16 +8,12 @@
 #include "api/ApiServerBase.hpp"
 #include <memory>
 #include "SettingsWidget.h"
-
 #include "SimHUD.generated.h"
-
-
-
 
 UENUM(BlueprintType)
 enum class ESimulatorMode : uint8
 {
-    SIM_MODE_HIL 	UMETA(DisplayName = "Hardware-in-loop")
+    SIM_MODE_HIL    UMETA(DisplayName = "Hardware-in-loop")
 };
 
 UCLASS()
@@ -52,14 +48,14 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaSeconds) override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings Widget")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings Widget Loader")
         TSubclassOf<USettingsWidget> settings_widget_loader_;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings Widget")
-		USettingsWidget* settings_widget_;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings Widget")
+        USettingsWidget* settings_widget_;
 
     UFUNCTION(BlueprintCallable, Category = "C++ Interface")
-	void buildScene();
+    void buildScene();
 
 protected:
     virtual void setupInputBindings();
@@ -73,26 +69,23 @@ private:
     void initializeSettings(FString);
     void setUnrealEngineSettings();
     void createMainWidget();
-	void createSettingsWidget();
+    void createSettingsWidget();
 
     const std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings() const;
     std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings();
     
-
     bool getSettingsText(std::string& settingsText, std::string& settingsFile);
     bool getSettingsTextFromCommandLine(std::string& settingsText);
     bool readSettingsTextFromFile(FString fileName, std::string& settingsText);
     std::string getSimModeFromUser();
 
 private:
+    bool not_built_ = true;
     typedef common_utils::Utils Utils;
     UClass* widget_class_;
 
     UPROPERTY() USimHUDWidget* widget_;
     UPROPERTY() ASimModeBase* simmode_;
-
-    bool not_built_ = true;
-   
 
     APIPCamera* subwindow_cameras_[AirSimSettings::kSubwindowCount];
 };

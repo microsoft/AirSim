@@ -1,19 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 #ifdef _WIN32
 	#include "dirent.h"
 #else
 	#include <dirent.h>
 #endif
-
 #include "common/Settings.hpp"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Runtime/UMG/Public/Components/ComboBoxString.h"
-
 #include "SettingsWidget.generated.h"
-
 
 UCLASS()
 class AIRSIM_API USettingsWidget : public UUserWidget
@@ -23,13 +18,8 @@ class AIRSIM_API USettingsWidget : public UUserWidget
 public:
 	bool user_input_ = false;
 
-	// void waitForInput();
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dropdown Menu")
-	// UComboBoxString* dropdown_;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dropdown item")
 	FString menu_string_;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test text")
 	FText title_text_ = FText::FromString("");

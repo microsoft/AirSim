@@ -393,9 +393,9 @@ public: //methods
             throw std::invalid_argument("Cannot parse JSON settings_json string.");
     }
 
-    static void createDefaultSettingsFile()
+    static void createDefaultSettingsFile(std::string local_filename = "settings.json")
     {
-        std::string settings_filename = Settings::getUserDirectoryFullPath("settings.json");
+        std::string settings_filename = Settings::getUserDirectoryFullPath(local_filename);
         Settings& settings_json = Settings::loadJSonString("{}");
         //write some settings_json in new file otherwise the string "null" is written if all settings_json are empty
         settings_json.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
