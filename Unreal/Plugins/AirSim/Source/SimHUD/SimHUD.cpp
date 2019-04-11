@@ -33,7 +33,7 @@ void ASimHUD::BeginPlay()
     }
 }
 
-void ASimHUD::buildScene()
+void ASimHUD::buildWidgets()
 {
      try {
         initializeSettings(settings_widget_->title_text_.ToString());
@@ -55,9 +55,12 @@ void ASimHUD::Tick(float DeltaSeconds)
 {
     if (simmode_ && simmode_->EnableReport)
         widget_->updateDebugReport(simmode_->getDebugReport());
+
     if ( settings_widget_->checkForInput() && not_built_ ) {
-        UE_LOG(LogTemp, Warning, TEXT("There was an input!"));
-        buildScene();
+		// This checker must be included inside of tick, 
+		// or the GUI does not actively check for user input
+        UE_LOG(LogTemp, Warning, TEXT("settings file chosen"));
+        buildWidgets();
         not_built_ = false;
     }
 }

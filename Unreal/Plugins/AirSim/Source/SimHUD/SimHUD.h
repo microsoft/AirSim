@@ -55,7 +55,7 @@ public:
         USettingsWidget* settings_widget_;
 
     UFUNCTION(BlueprintCallable, Category = "C++ Interface")
-    void buildScene();
+    void buildWidgets();
 
 protected:
     virtual void setupInputBindings();

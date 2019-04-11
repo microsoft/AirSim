@@ -1,9 +1,16 @@
 #pragma once
+
+// dirent.h is a directory parsing header file. 
+// The Unix version is natively included in linux,
+// Windows compatible version must be downloaded
 #ifdef _WIN32
+	// Use local dirent.h header file
 	#include "dirent.h"
 #else
+	// Use global header file
 	#include <dirent.h>
 #endif
+
 #include "common/Settings.hpp"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
