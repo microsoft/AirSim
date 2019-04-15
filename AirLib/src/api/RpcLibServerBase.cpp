@@ -30,7 +30,7 @@ STRICT_MODE_OFF
 #include "common/common_utils/WindowsApisCommonPost.hpp"
 
 #include "api/RpcLibAdapatorsBase.hpp"
-#include <functional>
+
 STRICT_MODE_ON
 
 
@@ -132,20 +132,13 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         bind("simGetSegmentationObjectID", [&](const std::string& mesh_name) -> int {
         return getWorldSimApi()->getSegmentationObjectID(mesh_name);
     });    
-    pimpl_->server.bind("reset", [&]() -> void {
-		//Exit if already resetting.
-		static bool resetInProgress;
-		if (resetInProgress)
-			return;
 
-		//Reset
-		resetInProgress = true;
+    pimpl_->server.bind("reset", [&]() -> void {
         auto* sim_world_api = getWorldSimApi();
         if (sim_world_api)
             sim_world_api->reset();
         else
             getVehicleApi("")->reset();
-		resetInProgress = false;
     });
 
     pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, const std::string& message_param, unsigned char severity) -> void {
