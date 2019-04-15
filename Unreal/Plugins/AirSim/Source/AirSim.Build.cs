@@ -47,18 +47,18 @@ public class AirSim : ModuleRules
         switch (mode)
         {
             case CompileMode.HeaderOnlyNoRpc:
-                Definitions.Add("AIRLIB_HEADER_ONLY=1");
-                Definitions.Add("AIRLIB_NO_RPC=1");
+                PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
+                PublicDefinitions.Add("AIRLIB_NO_RPC=1");
                 AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 break;
             case CompileMode.HeaderOnlyWithRpc:
-                Definitions.Add("AIRLIB_HEADER_ONLY=1");
+                PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
                 AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
             case CompileMode.CppCompileNoRpc:
                 LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
-                Definitions.Add("AIRLIB_NO_RPC=1");
+                PublicDefinitions.Add("AIRLIB_NO_RPC=1");
                 break;
             case CompileMode.CppCompileWithRpc:
                 LoadAirSimDependency(Target, "rpclib", "rpc");
@@ -80,9 +80,9 @@ public class AirSim : ModuleRules
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
-        Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
-        Definitions.Add("_CRT_SECURE_NO_WARNINGS=1");
-        Definitions.Add("HMD_MODULE_INCLUDED=0");
+        PublicDefinitions.Add("_SCL_SECURE_NO_WARNINGS=1");
+        PublicDefinitions.Add("_CRT_SECURE_NO_WARNINGS=1");
+        PublicDefinitions.Add("HMD_MODULE_INCLUDED=0");
 
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "include"));
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
@@ -151,7 +151,7 @@ public class AirSim : ModuleRules
             PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
         }
 
-        Definitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
+        PublicDefinitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
 
         return isLibrarySupported;
     }
