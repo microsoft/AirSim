@@ -124,5 +124,21 @@ void ASimModeWorldBase::reset()
 
 std::string ASimModeWorldBase::getDebugReport()
 {
-    return physics_world_->getDebugReport();
+	// Most of the report comes from AirLib, but this one bit, the main camera's LLA, comes from Unreal.  That's why it's prepended here.
+	// Used to show current LLA - base it on the origin
+	NedTransform ned_transform_(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(this));
+
+	// Get main camera position
+	FTransform main_camera_transform = GetWorld()->GetFirstPlayerController()->GetViewTarget()->GetActorTransform();
+	FVector cameraLocation = main_camera_transform.GetLocation();
+
+	// Transform to LLA and log
+	const auto& settings = AirSimSettings::singleton();
+	msr::airlib::Vector3r ned = ned_transform_.toGlobalNed(cameraLocation);
+	msr::airlib::GeoPoint lla = msr::airlib::EarthUtils::nedToGeodetic(ned, settings.origin_geopoint.home_geo_point);
+
+	std::string prefix = "Main camera LLA: ";
+	prefix.append(lla.to_string()).append("\n");
+	
+	return prefix + physics_world_->getDebugReport();
 }
