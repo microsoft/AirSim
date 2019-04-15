@@ -117,6 +117,9 @@ class VehicleClient:
     def simSetObjectPose(self, object_name, pose, teleport = True):
         return self.client.call('simSetObjectPose', object_name, pose, teleport)
 
+    def simListSceneObjects(self, name_regex):
+        return self.client.call('simListSceneObjects', name_regex)
+
     def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
         return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
     def simGetSegmentationObjectID(self, mesh_name):
