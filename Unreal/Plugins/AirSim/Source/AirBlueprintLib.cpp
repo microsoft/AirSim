@@ -30,7 +30,6 @@ parameters -> camel_case
 */
 
 bool UAirBlueprintLib::log_messages_hidden_ = false;
-uint32_t UAirBlueprintLib::flush_on_draw_count_ = 0;
 msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method_ =
     msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName;
 IImageWrapperModule* UAirBlueprintLib::image_wrapper_module_ = nullptr;
@@ -122,22 +121,17 @@ void UAirBlueprintLib::enableViewportRendering(AActor* context, bool enable)
         // drawn frame so that it executes our render request at that point already.
         // Do this only if the main viewport is not being rendered anyway in case there are
         // any adverse performance effects during main rendering.
-        //HACK: FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
-        if (flush_on_draw_count_ == 0)
-            viewport->GetGameViewport()->IncrementFlushOnDraw();
+
+        // TODO: Validate framerate of sensor data when the NoDisplay setting is turned on.
     }
     else {
         viewport->EngineShowFlags.SetRendering(true);
 
-        //HACK: FViewPort doesn't expose this field so we are doing dirty work around by maintaining count by ourselves
-        if (flush_on_draw_count_ > 0)
-            viewport->GetGameViewport()->DecrementFlushOnDraw();
     }
 }
 
 void UAirBlueprintLib::OnBeginPlay()
 {
-    flush_on_draw_count_ = 0;
     image_wrapper_module_ = &FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 }
 
@@ -179,11 +173,11 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
         break;
     case LogDebugLevel::Failure:
         color = FColor(237, 147, 168);
-        //UE_LOG(LogAirSim, Error, TEXT("%s%s"), *prefix, *suffix); 
+        //UE_LOG(LogAirSim, Error, TEXT("%s%s"), *prefix, *suffix);
         break;
     case LogDebugLevel::Unimportant:
         color = FColor(237, 228, 147);
-        //UE_LOG(LogTemp, Verbose, TEXT("%s%s"), *prefix, *suffix); 
+        //UE_LOG(LogTemp, Verbose, TEXT("%s%s"), *prefix, *suffix);
         break;
     default: color = FColor::Black; break;
     }
@@ -492,8 +486,8 @@ void UAirBlueprintLib::CompressImageArray(int32 width, int32 height, const TArra
 {
     TArray<FColor> MutableSrcData = src;
 
-    // PNGs are saved as RGBA but FColors are stored as BGRA. An option to swap the order upon compression may be added at 
-    // some point. At the moment, manually swapping Red and Blue 
+    // PNGs are saved as RGBA but FColors are stored as BGRA. An option to swap the order upon compression may be added at
+    // some point. At the moment, manually swapping Red and Blue
     for (int32 Index = 0; Index < width*height; Index++)
     {
         uint8 TempRed = MutableSrcData[Index].R;
