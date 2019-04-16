@@ -104,8 +104,13 @@ std::string ASimModeWorldMultiRotor::getVehiclePawnPathName(const AirSimSettings
     //decide which derived BP to use
     std::string pawn_path = vehicle_setting.pawn_path;
     if (pawn_path == "")
-        pawn_path = "DefaultQuadrotor";
-
+    {
+        auto settings = AirSimSettings::singleton().getVehicleSetting(vehicle_setting.vehicle_name);
+        if (settings->vehicle_model == "Hexacopter")
+            pawn_path = "DefaultHexrotor";
+        else
+            pawn_path = "DefaultQuadrotor";
+    }
     return pawn_path;
 }
 

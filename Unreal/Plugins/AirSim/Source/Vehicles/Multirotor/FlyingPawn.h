@@ -19,6 +19,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
     float RotatorFactor = 1.0f;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debugging")
+    int rotor_count = 4;
+
     AFlyingPawn();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
@@ -39,14 +42,14 @@ public:
 
 private: //variables
     //Unreal components
-    static constexpr size_t rotor_count = 4;
     UPROPERTY() APIPCamera* camera_front_left_;
     UPROPERTY() APIPCamera* camera_front_right_;
     UPROPERTY() APIPCamera* camera_front_center_;
     UPROPERTY() APIPCamera* camera_back_center_;
     UPROPERTY() APIPCamera* camera_bottom_center_;
 
-    UPROPERTY() URotatingMovementComponent* rotating_movements_[rotor_count];
+    typedef URotatingMovementComponent* URotatingMovementComponentPtr;
+    URotatingMovementComponentPtr* rotating_movements_;
 
     MultirotorPawnEvents pawn_events_;
 };

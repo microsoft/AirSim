@@ -3,8 +3,11 @@
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
 #include "common/Common.hpp"
+#include "common/common_utils/Utils.hpp"
 
-AFlyingPawn::AFlyingPawn()
+using namespace common_utils;
+
+AFlyingPawn::AFlyingPawn() : rotating_movements_(nullptr)
 {
     pawn_events_.getActuatorSignal().connect_member(this, &AFlyingPawn::setRotorSpeed);
 }
@@ -12,6 +15,10 @@ AFlyingPawn::AFlyingPawn()
 void AFlyingPawn::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (rotating_movements_ == nullptr) {
+        rotating_movements_ = new URotatingMovementComponentPtr[rotor_count];
+    }
 
     for (auto i = 0; i < rotor_count; ++i) {
         rotating_movements_[i] = UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i));
@@ -47,6 +54,11 @@ void AFlyingPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
     camera_front_center_ = nullptr;
     camera_back_center_ = nullptr;
     camera_bottom_center_ = nullptr;
+
+    if (rotating_movements_ != nullptr) {
+        delete[] rotating_movements_;
+        rotating_movements_ = nullptr;
+    }
 
     Super::EndPlay(EndPlayReason);
 }
@@ -85,8 +97,7 @@ void AFlyingPawn::setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorInf
         auto comp = rotating_movements_[rotor_index];
         if (comp != nullptr) {
             comp->RotationRate.Yaw = 
-                rotor_infos.at(rotor_index).rotor_speed * rotor_infos.at(rotor_index).rotor_direction *
-                180.0f / M_PIf * RotatorFactor;
+                rotor_infos.at(rotor_index).rotor_speed * rotor_infos.at(rotor_index).rotor_direction * 180.0f / M_PIf * RotatorFactor;
         }
     }
 }
