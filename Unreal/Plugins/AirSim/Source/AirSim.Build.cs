@@ -47,18 +47,31 @@ public class AirSim : ModuleRules
         switch (mode)
         {
             case CompileMode.HeaderOnlyNoRpc:
+#if UE_4_19_OR_LATER
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
                 PublicDefinitions.Add("AIRLIB_NO_RPC=1");
+#else
+                Definitions.Add("AIRLIB_HEADER_ONLY=1");
+                Definitions.Add("AIRLIB_NO_RPC=1");
+#endif
                 AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 break;
             case CompileMode.HeaderOnlyWithRpc:
+#if UE_4_19_OR_LATER
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
+#else
+                Definitions.Add("AIRLIB_HEADER_ONLY=1");
+#endif
                 AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
             case CompileMode.CppCompileNoRpc:
                 LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
+#if UE_4_19_OR_LATER
                 PublicDefinitions.Add("AIRLIB_NO_RPC=1");
+#else
+                Definitions.Add("AIRLIB_NO_RPC=1");
+#endif
                 break;
             case CompileMode.CppCompileWithRpc:
                 LoadAirSimDependency(Target, "rpclib", "rpc");
@@ -80,9 +93,15 @@ public class AirSim : ModuleRules
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
+#if UE_4_19_OR_LATER
         PublicDefinitions.Add("_SCL_SECURE_NO_WARNINGS=1");
         PublicDefinitions.Add("_CRT_SECURE_NO_WARNINGS=1");
         PublicDefinitions.Add("HMD_MODULE_INCLUDED=0");
+#else
+        Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
+        Definitions.Add("_CRT_SECURE_NO_WARNINGS=1");
+        Definitions.Add("HMD_MODULE_INCLUDED=0");
+#endif
 
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "include"));
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
@@ -150,8 +169,11 @@ public class AirSim : ModuleRules
             // Include path
             PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
         }
-
+#if UE_4_19_OR_LATER
         PublicDefinitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
+#else
+        Definitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
+#endif
 
         return isLibrarySupported;
     }
