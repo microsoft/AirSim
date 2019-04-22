@@ -28,9 +28,9 @@ state_buf = np.zeros((1,4))
 def get_image():
     image = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])[0]
     image1d = np.fromstring(image.image_data_uint8, dtype=np.uint8)
-    image_rgba = image1d.reshape(image.height, image.width, 4)
-    image_rgba = np.flipud(image_rgba)
-    return image_rgba[:, :, 0:3]
+    image_rgb = image1d.reshape(image.height, image.width, 3)
+    image_rgb = np.flipud(image_rgb)
+    return image_rgb
 
 while (True):
     car_state = client.getCarState()

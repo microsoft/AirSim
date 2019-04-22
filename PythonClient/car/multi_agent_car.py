@@ -91,11 +91,11 @@ for idx in range(3):
     # get camera images from the car
     responses1 = client.simGetImages([
         airsim.ImageRequest("0", airsim.ImageType.DepthVis),  #depth visualization image
-        airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)], "Car1")  #scene vision image in uncompressed RGBA array
+        airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)], "Car1")  #scene vision image in uncompressed RGB array
     print('Car1: Retrieved images: %d' % (len(responses1)))
     responses2 = client.simGetImages([
         airsim.ImageRequest("0", airsim.ImageType.Segmentation),  #depth visualization image
-        airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)], "Car2")  #scene vision image in uncompressed RGBA array
+        airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)], "Car2")  #scene vision image in uncompressed RGB array
     print('Car2: Retrieved images: %d' % (len(responses2)))
 
     for response in responses1 + responses2:
@@ -110,10 +110,9 @@ for idx in range(3):
         else: #uncompressed array
             print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
             img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
-            img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
-            img_rgba = np.flipud(img_rgba) #original image is flipped vertically
-            img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
-            airsim.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
+            img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
+            img_rgb = np.flipud(img_rgb) #original image is flipped vertically
+            airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) #write to png 
 
 
 #restore to original state

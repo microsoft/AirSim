@@ -51,7 +51,7 @@ client = airsim.MultirotorClient()
 responses = client.simGetImages([
     # png format
     airsim.ImageRequest(0, airsim.ImageType.Scene), 
-    # uncompressed RGBA array bytes
+    # uncompressed RGB array bytes
     airsim.ImageRequest(1, airsim.ImageType.Scene, False, False),
     # floating point uncompressed image
     airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
@@ -61,7 +61,7 @@ responses = client.simGetImages([
 
 #### Using AirSim Images with NumPy
 
-If you plan to use numpy for image manipulation, you should get uncompressed RGBA image and then convert to numpy like this:
+If you plan to use numpy for image manipulation, you should get uncompressed RGB image and then convert to numpy like this:
 
 ```python
 responses = client.simGetImages([ImageRequest("0", airsim.ImageType.Scene, False, False)])
@@ -71,16 +71,13 @@ response = responses[0]
 img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
 
 # reshape array to 4 channel image array H X W X 4
-img_rgba = img1d.reshape(response.height, response.width, 4)  
+img_rgb = img1d.reshape(response.height, response.width, 3)
 
 # original image is fliped vertically
-img_rgba = np.flipud(img_rgba)
-
-# just for fun add little bit of green in all pixels
-img_rgba[:,:,1:2] = 100
+img_rgb = np.flipud(img_rgb)
 
 # write to png 
-airsim.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) 
+airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) 
 ```
 
 #### Quick Tips
@@ -112,7 +109,7 @@ int getStereoAndDepthImages()
     vector<ImageRequest> request = { 
         //png format
         ImageRequest("0", ImageType::Scene),
-        //uncompressed RGBA array bytes
+        //uncompressed RGB array bytes
         ImageRequest("1", ImageType::Scene, false, false),       
         //floating point uncompressed image  
         ImageRequest("1", ImageType::DepthPlanner, true) 
@@ -246,13 +243,13 @@ It is recommended that you request uncompressed image using this API to ensure y
 ```python
 responses = client.simGetImages([ImageRequest(0, AirSimImageType.Segmentation, False, False)])
 img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
-img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
-img_rgba = np.flipud(img_rgba) #original image is fliped vertically
+img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
+img_rgb = np.flipud(img_rgb) #original image is fliped vertically
 
 #find unique colors
-print(np.unique(img_rgba[:,:,0], return_counts=True)) #red
-print(np.unique(img_rgba[:,:,1], return_counts=True)) #green
-print(np.unique(img_rgba[:,:,2], return_counts=True)) #blue  
+print(np.unique(img_rgb[:,:,0], return_counts=True)) #red
+print(np.unique(img_rgb[:,:,1], return_counts=True)) #green
+print(np.unique(img_rgb[:,:,2], return_counts=True)) #blue  
 ```
 
 A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/segmentation.py).
