@@ -45,7 +45,6 @@ public class InitializeAirSim : MonoBehaviour
             AirSimSettings.GetSettings().SimMode = "Multirotor";
 
             
-
         // Once SimMode is known we make final adjustments and check of settings based on the mode selected.
         if (AirSimSettings.GetSettings().ValidateSettingsForSimMode())
         {

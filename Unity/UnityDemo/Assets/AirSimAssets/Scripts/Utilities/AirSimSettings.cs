@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using UnityEditor;
 using SimpleJSON;
+using System.Runtime.InteropServices;
 
 namespace AirSimUnity {
     /*
@@ -84,6 +85,7 @@ namespace AirSimUnity {
 
         [Serializable]
         public struct CameraDefaultsSettings {
+            public string Name;
             public List<CaptureSettingsSettings> CaptureSettings;
             public List<NoiseSettingsSettings> NoiseSettings;
             public GimbalSettings Gimbal;
@@ -151,7 +153,7 @@ namespace AirSimUnity {
             public bool IsFpvVehicle; // Missing from Settings.doc
             public bool AllowAPIAlways;
             public RCSettings RC;
-            public CamerasSettings Cameras;
+            public List<CameraDefaultsSettings> Cameras;
             public Position Position;
             public Rotation Rotation;
             public DefaultSensorsSettings Sensors;
@@ -168,7 +170,7 @@ namespace AirSimUnity {
             public bool EnableCollisionPassthrogh;  // Is there a typo in Settings.doc ?
             public bool EnableCollisions;
             public RCSettings RC;
-            public CamerasSettings Cameras;
+            public List<CameraDefaultsSettings> Cameras;
             public Position Position;
             public Rotation Rotation;
             public DefaultSensorsSettings Sensors;
@@ -188,7 +190,7 @@ namespace AirSimUnity {
             public bool IsFpvVehicle; // Missing from Settings.doc
             public bool AllowAPIAlways;
             public RCSettings RC;
-            public CamerasSettings Cameras;
+            public List<CameraDefaultsSettings> Cameras;
             public Position Position;
             public Rotation Rotation;
         }
@@ -228,7 +230,7 @@ namespace AirSimUnity {
             public bool IsFpvVehicle;
             public bool AllowAPIAlways;
             public RCSettings RC;
-            public CamerasSettings Cameras;
+            public List<CameraDefaultsSettings> Cameras;
             public Position Position;
             public Rotation Rotation;
             public DefaultSensorsSettings Sensors;
@@ -348,8 +350,9 @@ namespace AirSimUnity {
         public VehiclesSettings Vehicles;
         public DefaultSensorsSettings DefaultSensors; // Default sensors
         public CameraDirectorSettings CameraDirector; // New settings?
-        #endregion
         public int InitialViewMode;
+        #endregion
+
 
         /// <summary>
         /// Private Static Field
@@ -485,9 +488,7 @@ namespace AirSimUnity {
 
             if (TimeOfDay.StartDateTime == "")
             {
-                var localDate = DateTime.Now;
-                string formattedDate = localDate.ToString("u", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
-                TimeOfDay.StartDateTime = formattedDate.TrimEnd('Z');
+                TimeOfDay.StartDateTime = GetFormattedDateTime();
             }
 
             if (ClockType == "")
@@ -559,7 +560,8 @@ namespace AirSimUnity {
             // What else should we check?
             // Do we want to check for NaN Rotations or Positions?
 
-            CreateSettingsFileWithAllMergedSettings("OKAY_AGAIN.json");
+            var filename = GetAirSimSettingsLogFileName();
+            NoError = CreateSettingsFileWithAllMergedSettings(filename);
 
             return NoError;
         }
@@ -613,7 +615,7 @@ namespace AirSimUnity {
             EngineSound = true;
             PhysicsEngineName = ""; // No longer used?
             SpeedUnitFactor = 1.0;
-            SpeedUnitLabel = "m//s";
+            SpeedUnitLabel = "m/s";
             Recording = GetDefaultRecordingSettings();
             CameraDefaults = GetDefaultCameraDefaultSettings();
             OriginGeopoint = GetDefaultOriginGeopointSettings();
@@ -676,6 +678,7 @@ namespace AirSimUnity {
         {
             var cameradefaults = new CameraDefaultsSettings
             {
+                Name = "Default",
                 CaptureSettings = new List<CaptureSettingsSettings>
                 {
                     GetDefaultCaptureSettingsSettings()
@@ -863,7 +866,10 @@ namespace AirSimUnity {
                 IsFpvVehicle = false,
                 AllowAPIAlways = true,
                 RC = GetDefaultRCSettings(),
-                Cameras = GetDefaultCamerasSettings(),
+                Cameras = new List<CameraDefaultsSettings>
+                {
+                    GetDefaultCameraDefaultSettings()
+                },
                 Position = Position.NanPosition(),
                 Rotation = Rotation.NanRotation(),
                 Sensors = GetDefaultDefaultSensorsSettingsDrone()
@@ -884,7 +890,10 @@ namespace AirSimUnity {
                 EnableCollisionPassthrogh = false, // We can correct the spelling of the var
                 EnableCollisions = true,
                 RC = GetDefaultRCSettings(),
-                Cameras = GetDefaultCamerasSettings(),
+                Cameras = new List<CameraDefaultsSettings>
+                {
+                    GetDefaultCameraDefaultSettings()
+                },
                 Position = Position.NanPosition(),
                 Rotation = Rotation.NanRotation(),
                 Sensors = GetDefaultDefaultSensorsSettingsCar()
@@ -908,7 +917,10 @@ namespace AirSimUnity {
                 IsFpvVehicle = false,
                 AllowAPIAlways = true,
                 RC = GetDefaultRCSettings(),
-                Cameras = GetDefaultCamerasSettings(),
+                Cameras = new List<CameraDefaultsSettings>
+                {
+                    GetDefaultCameraDefaultSettings()
+                },
                 Position = Position.NanPosition(),
                 Rotation = Rotation.NanRotation(),
             };
@@ -952,7 +964,10 @@ namespace AirSimUnity {
                 IsFpvVehicle = false,
                 AllowAPIAlways = true,
                 RC = GetDefaultRCSettings(),
-                Cameras = GetDefaultCamerasSettings(),
+                Cameras = new List<CameraDefaultsSettings>
+                {
+                    GetDefaultCameraDefaultSettings()
+                },
                 Position = Position.NanPosition(),
                 Rotation = Rotation.NanRotation(),
                 Sensors = GetDefaultDefaultSensorsSettingsDrone()
@@ -1113,6 +1128,13 @@ namespace AirSimUnity {
             return director;
         }
 
+        private static string GetFormattedDateTime()
+        {
+            var localDate = DateTime.Now;
+            string formattedDate = localDate.ToString("u", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
+            return formattedDate.TrimEnd('Z');
+        }
+        
         /// <summary>
         /// Merges any attributes specified by the user in the settings.json file with the pre-initialized default values.
         /// Utilizes the very handy SimpleJSON script by Markus Göbel (Bunny83) which provides ability to parse the json tree
@@ -1197,7 +1219,7 @@ namespace AirSimUnity {
                     Recording.Cameras.Clear();
                     foreach (JSONNode camNode in recordingNode["Cameras"])
                     {
-                        var camerasSettings = AirSimSettings.GetDefaultCamerasSettings();
+                        var camerasSettings = GetDefaultCamerasSettings();
                         camerasSettings.CameraName = camNode.GetValueOrDefault("CameraName", camerasSettings.CameraName);
                         camerasSettings.ImageType = camNode.GetValueOrDefault("ImageType", camerasSettings.ImageType);
                         camerasSettings.PixelAsFloat = camNode.GetValueOrDefault("PixelAsFloat", camerasSettings.PixelAsFloat);
@@ -1212,21 +1234,21 @@ namespace AirSimUnity {
                 if (camDefaultsNode.HasKey("CaptureSettings"))
                 {
                     CameraDefaults.CaptureSettings.Clear();
-                    foreach (JSONNode captureNode in camDefaultsNode["CaptureSettings"])
+                    foreach (JSONNode node in camDefaultsNode["CaptureSettings"])
                     {
-                        var captureSettings = AirSimSettings.GetDefaultCaptureSettingsSettings();
-                        captureSettings.ImageType = captureNode.GetValueOrDefault("ImageType", captureSettings.ImageType);
-                        captureSettings.Width = captureNode.GetValueOrDefault("Width", captureSettings.Width);
-                        captureSettings.Height = captureNode.GetValueOrDefault("Height", captureSettings.Height);
-                        captureSettings.FOV_Degrees = captureNode.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
-                        captureSettings.AutoExposureSpeed = captureNode.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
-                        captureSettings.AutoExposureBias = captureNode.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
-                        captureSettings.AutoExposureMaxBrightness = captureNode.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
-                        captureSettings.AutoExposureMinBrightness = captureNode.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
-                        captureSettings.MotionBlurAmount = captureNode.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
-                        captureSettings.TargetGamma = captureNode.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
-                        captureSettings.ProjectionMode = captureNode.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
-                        captureSettings.OrthoWidth = captureNode.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
+                        var captureSettings = GetDefaultCaptureSettingsSettings();
+                        captureSettings.ImageType = node.GetValueOrDefault("ImageType", captureSettings.ImageType);
+                        captureSettings.Width = node.GetValueOrDefault("Width", captureSettings.Width);
+                        captureSettings.Height = node.GetValueOrDefault("Height", captureSettings.Height);
+                        captureSettings.FOV_Degrees = node.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
+                        captureSettings.AutoExposureSpeed = node.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
+                        captureSettings.AutoExposureBias = node.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
+                        captureSettings.AutoExposureMaxBrightness = node.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
+                        captureSettings.AutoExposureMinBrightness = node.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
+                        captureSettings.MotionBlurAmount = node.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
+                        captureSettings.TargetGamma = node.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
+                        captureSettings.ProjectionMode = node.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
+                        captureSettings.OrthoWidth = node.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
                         CameraDefaults.CaptureSettings.Add(captureSettings);
                     }
                 }
@@ -1235,7 +1257,7 @@ namespace AirSimUnity {
                     CameraDefaults.NoiseSettings.Clear();
                     foreach (JSONNode node in camDefaultsNode["NoiseSettings"])
                     {
-                        var noiseSettings = AirSimSettings.GetDefaultNoiseSettingsSettings();
+                        var noiseSettings = GetDefaultNoiseSettingsSettings();
                         noiseSettings.Enabled = node.GetValueOrDefault("Enabled", noiseSettings.Enabled);
                         noiseSettings.ImageType = node.GetValueOrDefault("ImageType", noiseSettings.ImageType);
                         noiseSettings.RandContrib = node.GetValueOrDefault("RandContrib", noiseSettings.RandContrib);
@@ -1302,7 +1324,7 @@ namespace AirSimUnity {
                 {
                     if (subWindowNode.HasKey("WindowID"))
                     {
-                        var UserSubWindow = new AirSimSettings.SubWindowsSettings()
+                        var UserSubWindow = new SubWindowsSettings()
                         {
                             WindowID = subWindowNode["WindowID"],
                             CameraName = subWindowNode.GetValueOrDefault("CameraName", "Not Specified"),
@@ -1405,16 +1427,12 @@ namespace AirSimUnity {
                                     Vehicles.Vehicles_SimpleFlight.Clear();
                                     isSimpleFlightDefaultCleared = true;
                                 }
-                                var simpleFlightSetting = AirSimSettings.GetDefaultSimpleFlightSettings();                           
-                                if (!Vehicles.Vehicles_SimpleFlight.Any(x => x.VehicleName == vehicleName))
+                                var simpleFlightSetting = GetDefaultSimpleFlightSettings();                           
+                                if (Vehicles.Vehicles_SimpleFlight.Any(x => x.VehicleName == vehicleName)) // If we already have this vehicleName, remove it - no dups
                                 {
-                                    simpleFlightSetting.VehicleName = vehicleName;
-                                }
-                                else // Remove duplicates - this vehicle replaces the previous one if it didn't have a unique name
-                                {   // Note: This shouldn't really happen as json editors will identify duplicate attributes.
                                     Vehicles.Vehicles_SimpleFlight.Remove(Vehicles.Vehicles_SimpleFlight.Find(x => x.VehicleName == vehicleName));
-                                    simpleFlightSetting.VehicleName = vehicleName; // Must be unique
                                 }
+                                simpleFlightSetting.VehicleName = vehicleName; // Must be unique
                                 simpleFlightSetting.DefaultVehicleState = vNode.GetValueOrDefault("DefaultVehicleState", simpleFlightSetting.DefaultVehicleState);
                                 simpleFlightSetting.AutoCreate = vNode.GetValueOrDefault("AutoCreate", simpleFlightSetting.AutoCreate);
                                 simpleFlightSetting.EnableTrace = vNode.GetValueOrDefault("EnableTrace", simpleFlightSetting.EnableTrace);
@@ -1441,33 +1459,82 @@ namespace AirSimUnity {
                                 }
                                 if (vNode.HasKey("Cameras"))
                                 {
+                                    simpleFlightSetting.Cameras.Clear();
                                     var camerasNode = vNode["Cameras"];
-                                    simpleFlightSetting.Cameras.CameraName = camerasNode.GetValueOrDefault("CameraName", simpleFlightSetting.Cameras.CameraName);
-                                    simpleFlightSetting.Cameras.ImageType = camerasNode.GetValueOrDefault("ImageType", simpleFlightSetting.Cameras.ImageType);
-                                    simpleFlightSetting.Cameras.PixelAsFloat = camerasNode.GetValueOrDefault("PixelAsFloat", simpleFlightSetting.Cameras.PixelAsFloat);
-                                    simpleFlightSetting.Cameras.Compress = camerasNode.GetValueOrDefault("Compress", simpleFlightSetting.Cameras.Compress);
-
-                                    if (camerasNode.HasKey("CaputureSettings"))
+                                    foreach (string cameraName in camerasNode.Keys)  // such as Camera1, Camera2
                                     {
-                                        var capSettingsNode = camerasNode["CaputureSettings"];
-                                        simpleFlightSetting.Cameras.CaptureSettings.Clear();
-                                        foreach (JSONNode capNode in capSettingsNode)
+                                        var cNode = camerasNode[cameraName];
+                                        var newCamera = GetDefaultCameraDefaultSettings();
+                                        if (simpleFlightSetting.Cameras.Any(x => x.Name == cameraName)) // If we already have a camera with this name, remove it - no dups
                                         {
-                                            var captureSettings = AirSimSettings.GetDefaultCaptureSettingsSettings();
-                                            captureSettings.ImageType = capNode.GetValueOrDefault("ImageType", captureSettings.ImageType);
-                                            captureSettings.Width = capNode.GetValueOrDefault("Width", captureSettings.Width);
-                                            captureSettings.Height = capNode.GetValueOrDefault("Height", captureSettings.Height);
-                                            captureSettings.FOV_Degrees = capNode.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
-                                            captureSettings.AutoExposureSpeed = capNode.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
-                                            captureSettings.AutoExposureBias = capNode.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
-                                            captureSettings.AutoExposureMaxBrightness = capNode.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
-                                            captureSettings.AutoExposureMinBrightness = capNode.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
-                                            captureSettings.MotionBlurAmount = capNode.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
-                                            captureSettings.TargetGamma = capNode.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
-                                            captureSettings.ProjectionMode = capNode.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
-                                            captureSettings.OrthoWidth = capNode.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
-                                            simpleFlightSetting.Cameras.CaptureSettings.Add(captureSettings);
+                                            simpleFlightSetting.Cameras.Remove(simpleFlightSetting.Cameras.Find(x => x.Name == cameraName));
                                         }
+                                        newCamera.Name = cameraName;
+                                        if (cNode.HasKey("CaptureSettings"))
+                                        {
+                                            newCamera.CaptureSettings.Clear();
+                                            foreach (JSONNode node in cNode["CaptureSettings"])
+                                            {
+                                                var captureSettings = GetDefaultCaptureSettingsSettings();
+                                                captureSettings.ImageType = node.GetValueOrDefault("ImageType", captureSettings.ImageType);
+                                                captureSettings.Width = node.GetValueOrDefault("Width", captureSettings.Width);
+                                                captureSettings.Height = node.GetValueOrDefault("Height", captureSettings.Height);
+                                                captureSettings.FOV_Degrees = node.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
+                                                captureSettings.AutoExposureSpeed = node.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
+                                                captureSettings.AutoExposureBias = node.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
+                                                captureSettings.AutoExposureMaxBrightness = node.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
+                                                captureSettings.AutoExposureMinBrightness = node.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
+                                                captureSettings.MotionBlurAmount = node.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
+                                                captureSettings.TargetGamma = node.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
+                                                captureSettings.ProjectionMode = node.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
+                                                captureSettings.OrthoWidth = node.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
+                                                newCamera.CaptureSettings.Add(captureSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("NoiseSettings"))
+                                        {
+                                            newCamera.NoiseSettings.Clear();
+                                            foreach (JSONNode node in cNode["NoiseSettings"])
+                                            {
+                                                var noiseSettings = GetDefaultNoiseSettingsSettings();
+                                                noiseSettings.Enabled = node.GetValueOrDefault("Enabled", noiseSettings.Enabled);
+                                                noiseSettings.ImageType = node.GetValueOrDefault("ImageType", noiseSettings.ImageType);
+                                                noiseSettings.RandContrib = node.GetValueOrDefault("RandContrib", noiseSettings.RandContrib);
+                                                noiseSettings.RandSize = node.GetValueOrDefault("RandSize", noiseSettings.RandSize);
+                                                noiseSettings.RandDensity = node.GetValueOrDefault("RandDensity", noiseSettings.RandDensity);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzWaveStrength = node.GetValueOrDefault("HorzWaveStrength", noiseSettings.HorzWaveStrength);
+                                                noiseSettings.HorzWaveVertSize = node.GetValueOrDefault("HorzWaveVertSize", noiseSettings.HorzWaveVertSize);
+                                                noiseSettings.HorzWaveScreenSize = node.GetValueOrDefault("HorzWaveScreenSize", noiseSettings.HorzWaveScreenSize);
+                                                noiseSettings.HorzNoiseLinesContrib = node.GetValueOrDefault("HorzNoiseLinesContrib", noiseSettings.HorzNoiseLinesContrib);
+                                                noiseSettings.HorzNoiseLinesDensityY = node.GetValueOrDefault("HorzNoiseLinesDensityY", noiseSettings.HorzNoiseLinesDensityY);
+                                                noiseSettings.HorzNoiseLinesDensityXY = node.GetValueOrDefault("HorzNoiseLinesDensityXY", noiseSettings.HorzNoiseLinesDensityXY);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzDistortionStrength = node.GetValueOrDefault("HorzDistortionStrength", noiseSettings.HorzDistortionStrength);
+                                                newCamera.NoiseSettings.Add(noiseSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("Gimbal"))
+                                        {
+                                            var gimbalNode = cNode["Gimbal"];
+                                            newCamera.Gimbal.Stabilization = gimbalNode.GetValueOrDefault("Stabilization", newCamera.Gimbal.Stabilization);
+                                            var gimbalRotation = Rotation.NanRotation();
+                                            gimbalRotation.Pitch = gimbalNode.GetValueOrDefault("Pitch", gimbalRotation.Pitch);
+                                            gimbalRotation.Roll = gimbalNode.GetValueOrDefault("Roll", gimbalRotation.Roll);
+                                            gimbalRotation.Yaw = gimbalNode.GetValueOrDefault("Yaw", gimbalRotation.Yaw);
+                                            newCamera.Gimbal.Rotation = gimbalRotation;
+                                        }
+                                        var camPosition = Position.NanPosition();
+                                        camPosition.X = cNode.GetValueOrDefault("X", camPosition.X);
+                                        camPosition.Y = cNode.GetValueOrDefault("Y", camPosition.Y);
+                                        camPosition.Z = cNode.GetValueOrDefault("Z", camPosition.Z);
+                                        newCamera.Position = camPosition;
+                                        var camRotation = Rotation.NanRotation();
+                                        camRotation.Pitch = cNode.GetValueOrDefault("Pitch", camRotation.Pitch);
+                                        camRotation.Roll = cNode.GetValueOrDefault("Roll", camRotation.Roll);
+                                        camRotation.Yaw = cNode.GetValueOrDefault("Yaw", camRotation.Yaw);
+                                        newCamera.Rotation = camRotation;
+                                        simpleFlightSetting.Cameras.Add(newCamera);
                                     }
                                 }
                                 if (vNode.HasKey("Sensors"))
@@ -1586,15 +1653,11 @@ namespace AirSimUnity {
                                     isPhysXCarDefaultCleared = true;
                                 }
                                 var physXCarSetting = AirSimSettings.GetDefaultPhysXCarSettings();
-                                if (!Vehicles.Vehicles_PhysXCar.Any(x => x.VehicleName == vehicleName))
+                                if (Vehicles.Vehicles_PhysXCar.Any(x => x.VehicleName == vehicleName)) // If we already have this vehicleName, remove it - no dups
                                 {
-                                    physXCarSetting.VehicleName = vehicleName;
-                                }
-                                else // Remove duplicates - this vehicle replaces the previous one if it didn't have a unique name
-                                {   // Note: This shouldn't really happen as json editors will identify duplicate attributes.
                                     Vehicles.Vehicles_PhysXCar.Remove(Vehicles.Vehicles_PhysXCar.Find(x => x.VehicleName == vehicleName));
-                                    physXCarSetting.VehicleName = vehicleName; // Must be unique
                                 }
+                                physXCarSetting.VehicleName = vehicleName; // Must be unique
                                 physXCarSetting.DefaultVehicleState = vNode.GetValueOrDefault("DefaultVehicleState", physXCarSetting.DefaultVehicleState);
                                 physXCarSetting.AutoCreate = vNode.GetValueOrDefault("AutoCreate", physXCarSetting.AutoCreate);
                                 physXCarSetting.EnableTrace = vNode.GetValueOrDefault("EnableTrace", physXCarSetting.EnableTrace);
@@ -1619,32 +1682,82 @@ namespace AirSimUnity {
                                 }
                                 if (vNode.HasKey("Cameras"))
                                 {
+                                    physXCarSetting.Cameras.Clear();
                                     var camerasNode = vNode["Cameras"];
-                                    physXCarSetting.Cameras.CameraName = camerasNode.GetValueOrDefault("CameraName", physXCarSetting.Cameras.CameraName);
-                                    physXCarSetting.Cameras.ImageType = camerasNode.GetValueOrDefault("ImageType", physXCarSetting.Cameras.ImageType);
-                                    physXCarSetting.Cameras.PixelAsFloat = camerasNode.GetValueOrDefault("PixelAsFloat", physXCarSetting.Cameras.PixelAsFloat);
-                                    physXCarSetting.Cameras.Compress = camerasNode.GetValueOrDefault("Compress", physXCarSetting.Cameras.Compress);
-                                    if (camerasNode.HasKey("CaputureSettings"))
+                                    foreach (string cameraName in camerasNode.Keys)  // such as Camera1, Camera2
                                     {
-                                        var capSettingsNode = camerasNode["CaputureSettings"];
-                                        physXCarSetting.Cameras.CaptureSettings.Clear();
-                                        foreach (JSONNode capNode in capSettingsNode)
+                                        var cNode = camerasNode[cameraName];
+                                        var newCamera = GetDefaultCameraDefaultSettings();
+                                        if (physXCarSetting.Cameras.Any(x => x.Name == cameraName)) // If we already have a camera with this name, remove it - no dups
                                         {
-                                            var captureSettings = AirSimSettings.GetDefaultCaptureSettingsSettings();
-                                            captureSettings.ImageType = capNode.GetValueOrDefault("ImageType", captureSettings.ImageType);
-                                            captureSettings.Width = capNode.GetValueOrDefault("Width", captureSettings.Width);
-                                            captureSettings.Height = capNode.GetValueOrDefault("Height", captureSettings.Height);
-                                            captureSettings.FOV_Degrees = capNode.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
-                                            captureSettings.AutoExposureSpeed = capNode.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
-                                            captureSettings.AutoExposureBias = capNode.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
-                                            captureSettings.AutoExposureMaxBrightness = capNode.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
-                                            captureSettings.AutoExposureMinBrightness = capNode.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
-                                            captureSettings.MotionBlurAmount = capNode.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
-                                            captureSettings.TargetGamma = capNode.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
-                                            captureSettings.ProjectionMode = capNode.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
-                                            captureSettings.OrthoWidth = capNode.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
-                                            physXCarSetting.Cameras.CaptureSettings.Add(captureSettings);
+                                            physXCarSetting.Cameras.Remove(physXCarSetting.Cameras.Find(x => x.Name == cameraName));
                                         }
+                                        newCamera.Name = cameraName;
+                                        if (cNode.HasKey("CaptureSettings"))
+                                        {
+                                            newCamera.CaptureSettings.Clear();
+                                            foreach (JSONNode node in cNode["CaptureSettings"])
+                                            {
+                                                var captureSettings = GetDefaultCaptureSettingsSettings();
+                                                captureSettings.ImageType = node.GetValueOrDefault("ImageType", captureSettings.ImageType);
+                                                captureSettings.Width = node.GetValueOrDefault("Width", captureSettings.Width);
+                                                captureSettings.Height = node.GetValueOrDefault("Height", captureSettings.Height);
+                                                captureSettings.FOV_Degrees = node.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
+                                                captureSettings.AutoExposureSpeed = node.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
+                                                captureSettings.AutoExposureBias = node.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
+                                                captureSettings.AutoExposureMaxBrightness = node.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
+                                                captureSettings.AutoExposureMinBrightness = node.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
+                                                captureSettings.MotionBlurAmount = node.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
+                                                captureSettings.TargetGamma = node.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
+                                                captureSettings.ProjectionMode = node.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
+                                                captureSettings.OrthoWidth = node.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
+                                                newCamera.CaptureSettings.Add(captureSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("NoiseSettings"))
+                                        {
+                                            newCamera.NoiseSettings.Clear();
+                                            foreach (JSONNode node in cNode["NoiseSettings"])
+                                            {
+                                                var noiseSettings = GetDefaultNoiseSettingsSettings();
+                                                noiseSettings.Enabled = node.GetValueOrDefault("Enabled", noiseSettings.Enabled);
+                                                noiseSettings.ImageType = node.GetValueOrDefault("ImageType", noiseSettings.ImageType);
+                                                noiseSettings.RandContrib = node.GetValueOrDefault("RandContrib", noiseSettings.RandContrib);
+                                                noiseSettings.RandSize = node.GetValueOrDefault("RandSize", noiseSettings.RandSize);
+                                                noiseSettings.RandDensity = node.GetValueOrDefault("RandDensity", noiseSettings.RandDensity);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzWaveStrength = node.GetValueOrDefault("HorzWaveStrength", noiseSettings.HorzWaveStrength);
+                                                noiseSettings.HorzWaveVertSize = node.GetValueOrDefault("HorzWaveVertSize", noiseSettings.HorzWaveVertSize);
+                                                noiseSettings.HorzWaveScreenSize = node.GetValueOrDefault("HorzWaveScreenSize", noiseSettings.HorzWaveScreenSize);
+                                                noiseSettings.HorzNoiseLinesContrib = node.GetValueOrDefault("HorzNoiseLinesContrib", noiseSettings.HorzNoiseLinesContrib);
+                                                noiseSettings.HorzNoiseLinesDensityY = node.GetValueOrDefault("HorzNoiseLinesDensityY", noiseSettings.HorzNoiseLinesDensityY);
+                                                noiseSettings.HorzNoiseLinesDensityXY = node.GetValueOrDefault("HorzNoiseLinesDensityXY", noiseSettings.HorzNoiseLinesDensityXY);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzDistortionStrength = node.GetValueOrDefault("HorzDistortionStrength", noiseSettings.HorzDistortionStrength);
+                                                newCamera.NoiseSettings.Add(noiseSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("Gimbal"))
+                                        {
+                                            var gimbalNode = cNode["Gimbal"];
+                                            newCamera.Gimbal.Stabilization = gimbalNode.GetValueOrDefault("Stabilization", newCamera.Gimbal.Stabilization);
+                                            var gimbalRotation = Rotation.NanRotation();
+                                            gimbalRotation.Pitch = gimbalNode.GetValueOrDefault("Pitch", gimbalRotation.Pitch);
+                                            gimbalRotation.Roll = gimbalNode.GetValueOrDefault("Roll", gimbalRotation.Roll);
+                                            gimbalRotation.Yaw = gimbalNode.GetValueOrDefault("Yaw", gimbalRotation.Yaw);
+                                            newCamera.Gimbal.Rotation = gimbalRotation;
+                                        }
+                                        var camPosition = Position.NanPosition();
+                                        camPosition.X = cNode.GetValueOrDefault("X", camPosition.X);
+                                        camPosition.Y = cNode.GetValueOrDefault("Y", camPosition.Y);
+                                        camPosition.Z = cNode.GetValueOrDefault("Z", camPosition.Z);
+                                        newCamera.Position = camPosition;
+                                        var camRotation = Rotation.NanRotation();
+                                        camRotation.Pitch = cNode.GetValueOrDefault("Pitch", camRotation.Pitch);
+                                        camRotation.Roll = cNode.GetValueOrDefault("Roll", camRotation.Roll);
+                                        camRotation.Yaw = cNode.GetValueOrDefault("Yaw", camRotation.Yaw);
+                                        newCamera.Rotation = camRotation;
+                                        physXCarSetting.Cameras.Add(newCamera);
                                     }
                                 }
                                 if (vNode.HasKey("Sensors"))
@@ -1726,15 +1839,11 @@ namespace AirSimUnity {
                                 break;
                             case "PX4Multirotor":
                                 var pX4Setting = AirSimSettings.GetDefaultPX4MultirotorSettings();
-                                if (!Vehicles.Vehicles_PX4Multirotor.Any(x => x.VehicleName == vehicleName))
+                                if (Vehicles.Vehicles_PX4Multirotor.Any(x => x.VehicleName == vehicleName)) // If we already have this vehicleName, remove it - no dups
                                 {
-                                    pX4Setting.VehicleName = vehicleName;
-                                }
-                                else // Remove duplicates - this vehicle replaces the previous one if it didn't have a unique name
-                                {   // Note: This shouldn't really happen as json editors will identify duplicate attributes.
                                     Vehicles.Vehicles_PX4Multirotor.Remove(Vehicles.Vehicles_PX4Multirotor.Find(x => x.VehicleName == vehicleName));
-                                    pX4Setting.VehicleName = vehicleName; // Must be unique
                                 }
+                                pX4Setting.VehicleName = vehicleName; // Must be unique
                                 pX4Setting.LogViewerHostIp = vNode.GetValueOrDefault("LogViewerHostIp", pX4Setting.LogViewerHostIp);
                                 pX4Setting.LogViewerPort = vNode.GetValueOrDefault("LogViewerPort", pX4Setting.LogViewerPort);
                                 // PX4.LogViewerSendPort = vNode.GetValueOrDefault("LogViewerSendPort", PX4.LogViewerSendPort);
@@ -1775,32 +1884,82 @@ namespace AirSimUnity {
                                 }
                                 if (vNode.HasKey("Cameras"))
                                 {
+                                    pX4Setting.Cameras.Clear();
                                     var camerasNode = vNode["Cameras"];
-                                    pX4Setting.Cameras.CameraName = camerasNode.GetValueOrDefault("CameraName", pX4Setting.Cameras.CameraName);
-                                    pX4Setting.Cameras.ImageType = camerasNode.GetValueOrDefault("ImageType", pX4Setting.Cameras.ImageType);
-                                    pX4Setting.Cameras.PixelAsFloat = camerasNode.GetValueOrDefault("PixelAsFloat", pX4Setting.Cameras.PixelAsFloat);
-                                    pX4Setting.Cameras.Compress = camerasNode.GetValueOrDefault("Compress", pX4Setting.Cameras.Compress);
-                                    if (camerasNode.HasKey("CaputureSettings"))
+                                    foreach (string cameraName in camerasNode.Keys)  // such as Camera1, Camera2
                                     {
-                                        var capSettingsNode = camerasNode["CaputureSettings"];
-                                        pX4Setting.Cameras.CaptureSettings.Clear();
-                                        foreach (JSONNode capNode in capSettingsNode)
+                                        var cNode = camerasNode[cameraName];
+                                        var newCamera = GetDefaultCameraDefaultSettings();
+                                        if (pX4Setting.Cameras.Any(x => x.Name == cameraName)) // If we already have a camera with this name, remove it - no dups
                                         {
-                                            var captureSettings = AirSimSettings.GetDefaultCaptureSettingsSettings();
-                                            captureSettings.ImageType = capNode.GetValueOrDefault("ImageType", captureSettings.ImageType);
-                                            captureSettings.Width = capNode.GetValueOrDefault("Width", captureSettings.Width);
-                                            captureSettings.Height = capNode.GetValueOrDefault("Height", captureSettings.Height);
-                                            captureSettings.FOV_Degrees = capNode.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
-                                            captureSettings.AutoExposureSpeed = capNode.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
-                                            captureSettings.AutoExposureBias = capNode.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
-                                            captureSettings.AutoExposureMaxBrightness = capNode.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
-                                            captureSettings.AutoExposureMinBrightness = capNode.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
-                                            captureSettings.MotionBlurAmount = capNode.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
-                                            captureSettings.TargetGamma = capNode.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
-                                            captureSettings.ProjectionMode = capNode.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
-                                            captureSettings.OrthoWidth = capNode.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
-                                            pX4Setting.Cameras.CaptureSettings.Add(captureSettings);
+                                            pX4Setting.Cameras.Remove(pX4Setting.Cameras.Find(x => x.Name == cameraName));
                                         }
+                                        newCamera.Name = cameraName;
+                                        if (cNode.HasKey("CaptureSettings"))
+                                        {
+                                            newCamera.CaptureSettings.Clear();
+                                            foreach (JSONNode node in cNode["CaptureSettings"])
+                                            {
+                                                var captureSettings = GetDefaultCaptureSettingsSettings();
+                                                captureSettings.ImageType = node.GetValueOrDefault("ImageType", captureSettings.ImageType);
+                                                captureSettings.Width = node.GetValueOrDefault("Width", captureSettings.Width);
+                                                captureSettings.Height = node.GetValueOrDefault("Height", captureSettings.Height);
+                                                captureSettings.FOV_Degrees = node.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
+                                                captureSettings.AutoExposureSpeed = node.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
+                                                captureSettings.AutoExposureBias = node.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
+                                                captureSettings.AutoExposureMaxBrightness = node.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
+                                                captureSettings.AutoExposureMinBrightness = node.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
+                                                captureSettings.MotionBlurAmount = node.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
+                                                captureSettings.TargetGamma = node.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
+                                                captureSettings.ProjectionMode = node.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
+                                                captureSettings.OrthoWidth = node.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
+                                                newCamera.CaptureSettings.Add(captureSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("NoiseSettings"))
+                                        {
+                                            newCamera.NoiseSettings.Clear();
+                                            foreach (JSONNode node in cNode["NoiseSettings"])
+                                            {
+                                                var noiseSettings = GetDefaultNoiseSettingsSettings();
+                                                noiseSettings.Enabled = node.GetValueOrDefault("Enabled", noiseSettings.Enabled);
+                                                noiseSettings.ImageType = node.GetValueOrDefault("ImageType", noiseSettings.ImageType);
+                                                noiseSettings.RandContrib = node.GetValueOrDefault("RandContrib", noiseSettings.RandContrib);
+                                                noiseSettings.RandSize = node.GetValueOrDefault("RandSize", noiseSettings.RandSize);
+                                                noiseSettings.RandDensity = node.GetValueOrDefault("RandDensity", noiseSettings.RandDensity);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzWaveStrength = node.GetValueOrDefault("HorzWaveStrength", noiseSettings.HorzWaveStrength);
+                                                noiseSettings.HorzWaveVertSize = node.GetValueOrDefault("HorzWaveVertSize", noiseSettings.HorzWaveVertSize);
+                                                noiseSettings.HorzWaveScreenSize = node.GetValueOrDefault("HorzWaveScreenSize", noiseSettings.HorzWaveScreenSize);
+                                                noiseSettings.HorzNoiseLinesContrib = node.GetValueOrDefault("HorzNoiseLinesContrib", noiseSettings.HorzNoiseLinesContrib);
+                                                noiseSettings.HorzNoiseLinesDensityY = node.GetValueOrDefault("HorzNoiseLinesDensityY", noiseSettings.HorzNoiseLinesDensityY);
+                                                noiseSettings.HorzNoiseLinesDensityXY = node.GetValueOrDefault("HorzNoiseLinesDensityXY", noiseSettings.HorzNoiseLinesDensityXY);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzDistortionStrength = node.GetValueOrDefault("HorzDistortionStrength", noiseSettings.HorzDistortionStrength);
+                                                newCamera.NoiseSettings.Add(noiseSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("Gimbal"))
+                                        {
+                                            var gimbalNode = cNode["Gimbal"];
+                                            newCamera.Gimbal.Stabilization = gimbalNode.GetValueOrDefault("Stabilization", newCamera.Gimbal.Stabilization);
+                                            var gimbalRotation = Rotation.NanRotation();
+                                            gimbalRotation.Pitch = gimbalNode.GetValueOrDefault("Pitch", gimbalRotation.Pitch);
+                                            gimbalRotation.Roll = gimbalNode.GetValueOrDefault("Roll", gimbalRotation.Roll);
+                                            gimbalRotation.Yaw = gimbalNode.GetValueOrDefault("Yaw", gimbalRotation.Yaw);
+                                            newCamera.Gimbal.Rotation = gimbalRotation;
+                                        }
+                                        var camPosition = Position.NanPosition();
+                                        camPosition.X = cNode.GetValueOrDefault("X", camPosition.X);
+                                        camPosition.Y = cNode.GetValueOrDefault("Y", camPosition.Y);
+                                        camPosition.Z = cNode.GetValueOrDefault("Z", camPosition.Z);
+                                        newCamera.Position = camPosition;
+                                        var camRotation = Rotation.NanRotation();
+                                        camRotation.Pitch = cNode.GetValueOrDefault("Pitch", camRotation.Pitch);
+                                        camRotation.Roll = cNode.GetValueOrDefault("Roll", camRotation.Roll);
+                                        camRotation.Yaw = cNode.GetValueOrDefault("Yaw", camRotation.Yaw);
+                                        newCamera.Rotation = camRotation;
+                                        pX4Setting.Cameras.Add(newCamera);
                                     }
                                 }
                                 if (vNode.HasKey("Sensors"))
@@ -1914,15 +2073,11 @@ namespace AirSimUnity {
                                 break;
                             case "ComputerVision":
                                 var computerVisionSetting = AirSimSettings.GetDefaultComputerVisionSettings();
-                                if (!Vehicles.Vehicles_ComputerVision.Any(x => x.VehicleName == vehicleName))
+                                if (Vehicles.Vehicles_ComputerVision.Any(x => x.VehicleName == vehicleName))
                                 {
-                                    computerVisionSetting.VehicleName = vehicleName;
-                                }
-                                else // Remove duplicates - this vehicle replaces the previous one if it didn't have a unique name
-                                {   // Note: This shouldn't really happen as json editors will identify duplicate attributes.
                                     Vehicles.Vehicles_ComputerVision.Remove(Vehicles.Vehicles_ComputerVision.Find(x => x.VehicleName == vehicleName));
-                                    computerVisionSetting.VehicleName = vehicleName; // Must be unique
                                 }
+                                computerVisionSetting.VehicleName = vehicleName; // Must be unique
                                 computerVisionSetting.DefaultVehicleState = vNode.GetValueOrDefault("DefaultVehicleState", computerVisionSetting.DefaultVehicleState);
                                 computerVisionSetting.AutoCreate = vNode.GetValueOrDefault("AutoCreate", computerVisionSetting.AutoCreate);
                                 computerVisionSetting.EnableTrace = vNode.GetValueOrDefault("EnableTrace", computerVisionSetting.EnableTrace);
@@ -1949,32 +2104,82 @@ namespace AirSimUnity {
                                 }
                                 if (vNode.HasKey("Cameras"))
                                 {
+                                    computerVisionSetting.Cameras.Clear();
                                     var camerasNode = vNode["Cameras"];
-                                    computerVisionSetting.Cameras.CameraName = camerasNode.GetValueOrDefault("CameraName", computerVisionSetting.Cameras.CameraName);
-                                    computerVisionSetting.Cameras.ImageType = camerasNode.GetValueOrDefault("ImageType", computerVisionSetting.Cameras.ImageType);
-                                    computerVisionSetting.Cameras.PixelAsFloat = camerasNode.GetValueOrDefault("PixelAsFloat", computerVisionSetting.Cameras.PixelAsFloat);
-                                    computerVisionSetting.Cameras.Compress = camerasNode.GetValueOrDefault("Compress", computerVisionSetting.Cameras.Compress);
-                                    if (camerasNode.HasKey("CaputureSettings"))
+                                    foreach (string cameraName in camerasNode.Keys)  // such as Camera1, Camera2
                                     {
-                                        var capSettingsNode = camerasNode["CaputureSettings"];
-                                        computerVisionSetting.Cameras.CaptureSettings.Clear();
-                                        foreach (JSONNode capNode in capSettingsNode)
+                                        var cNode = camerasNode[cameraName];
+                                        var newCamera = GetDefaultCameraDefaultSettings();
+                                        if (computerVisionSetting.Cameras.Any(x => x.Name == cameraName)) // If we already have a camera with this name, remove it - no dups
                                         {
-                                            var captureSettings = AirSimSettings.GetDefaultCaptureSettingsSettings();
-                                            captureSettings.ImageType = capNode.GetValueOrDefault("ImageType", captureSettings.ImageType);
-                                            captureSettings.Width = capNode.GetValueOrDefault("Width", captureSettings.Width);
-                                            captureSettings.Height = capNode.GetValueOrDefault("Height", captureSettings.Height);
-                                            captureSettings.FOV_Degrees = capNode.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
-                                            captureSettings.AutoExposureSpeed = capNode.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
-                                            captureSettings.AutoExposureBias = capNode.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
-                                            captureSettings.AutoExposureMaxBrightness = capNode.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
-                                            captureSettings.AutoExposureMinBrightness = capNode.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
-                                            captureSettings.MotionBlurAmount = capNode.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
-                                            captureSettings.TargetGamma = capNode.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
-                                            captureSettings.ProjectionMode = capNode.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
-                                            captureSettings.OrthoWidth = capNode.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
-                                            computerVisionSetting.Cameras.CaptureSettings.Add(captureSettings);
+                                            computerVisionSetting.Cameras.Remove(computerVisionSetting.Cameras.Find(x => x.Name == cameraName));
                                         }
+                                        newCamera.Name = cameraName;
+                                        if (cNode.HasKey("CaptureSettings"))
+                                        {
+                                            newCamera.CaptureSettings.Clear();
+                                            foreach (JSONNode node in cNode["CaptureSettings"])
+                                            {
+                                                var captureSettings = GetDefaultCaptureSettingsSettings();
+                                                captureSettings.ImageType = node.GetValueOrDefault("ImageType", captureSettings.ImageType);
+                                                captureSettings.Width = node.GetValueOrDefault("Width", captureSettings.Width);
+                                                captureSettings.Height = node.GetValueOrDefault("Height", captureSettings.Height);
+                                                captureSettings.FOV_Degrees = node.GetValueOrDefault("FOV_Degrees", captureSettings.FOV_Degrees);
+                                                captureSettings.AutoExposureSpeed = node.GetValueOrDefault("AutoExposureSpeed", captureSettings.AutoExposureSpeed);
+                                                captureSettings.AutoExposureBias = node.GetValueOrDefault("AutoExposureBias", captureSettings.AutoExposureBias);
+                                                captureSettings.AutoExposureMaxBrightness = node.GetValueOrDefault("AutoExposureMaxBrightness", captureSettings.AutoExposureMaxBrightness);
+                                                captureSettings.AutoExposureMinBrightness = node.GetValueOrDefault("AutoExposureMinBrightness", captureSettings.AutoExposureMinBrightness);
+                                                captureSettings.MotionBlurAmount = node.GetValueOrDefault("MotionBlurAmount", captureSettings.MotionBlurAmount);
+                                                captureSettings.TargetGamma = node.GetValueOrDefault("TargetGamma", captureSettings.TargetGamma);
+                                                captureSettings.ProjectionMode = node.GetValueOrDefault("ProjectionMode", captureSettings.ProjectionMode);
+                                                captureSettings.OrthoWidth = node.GetValueOrDefault("OrthoWidth", captureSettings.OrthoWidth);
+                                                newCamera.CaptureSettings.Add(captureSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("NoiseSettings"))
+                                        {
+                                            newCamera.NoiseSettings.Clear();
+                                            foreach (JSONNode node in cNode["NoiseSettings"])
+                                            {
+                                                var noiseSettings = GetDefaultNoiseSettingsSettings();
+                                                noiseSettings.Enabled = node.GetValueOrDefault("Enabled", noiseSettings.Enabled);
+                                                noiseSettings.ImageType = node.GetValueOrDefault("ImageType", noiseSettings.ImageType);
+                                                noiseSettings.RandContrib = node.GetValueOrDefault("RandContrib", noiseSettings.RandContrib);
+                                                noiseSettings.RandSize = node.GetValueOrDefault("RandSize", noiseSettings.RandSize);
+                                                noiseSettings.RandDensity = node.GetValueOrDefault("RandDensity", noiseSettings.RandDensity);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzWaveStrength = node.GetValueOrDefault("HorzWaveStrength", noiseSettings.HorzWaveStrength);
+                                                noiseSettings.HorzWaveVertSize = node.GetValueOrDefault("HorzWaveVertSize", noiseSettings.HorzWaveVertSize);
+                                                noiseSettings.HorzWaveScreenSize = node.GetValueOrDefault("HorzWaveScreenSize", noiseSettings.HorzWaveScreenSize);
+                                                noiseSettings.HorzNoiseLinesContrib = node.GetValueOrDefault("HorzNoiseLinesContrib", noiseSettings.HorzNoiseLinesContrib);
+                                                noiseSettings.HorzNoiseLinesDensityY = node.GetValueOrDefault("HorzNoiseLinesDensityY", noiseSettings.HorzNoiseLinesDensityY);
+                                                noiseSettings.HorzNoiseLinesDensityXY = node.GetValueOrDefault("HorzNoiseLinesDensityXY", noiseSettings.HorzNoiseLinesDensityXY);
+                                                noiseSettings.HorzDistortionContrib = node.GetValueOrDefault("HorzDistortionContrib", noiseSettings.HorzDistortionContrib);
+                                                noiseSettings.HorzDistortionStrength = node.GetValueOrDefault("HorzDistortionStrength", noiseSettings.HorzDistortionStrength);
+                                                newCamera.NoiseSettings.Add(noiseSettings);
+                                            }
+                                        }
+                                        if (cNode.HasKey("Gimbal"))
+                                        {
+                                            var gimbalNode = cNode["Gimbal"];
+                                            newCamera.Gimbal.Stabilization = gimbalNode.GetValueOrDefault("Stabilization", newCamera.Gimbal.Stabilization);
+                                            var gimbalRotation = Rotation.NanRotation();
+                                            gimbalRotation.Pitch = gimbalNode.GetValueOrDefault("Pitch", gimbalRotation.Pitch);
+                                            gimbalRotation.Roll = gimbalNode.GetValueOrDefault("Roll", gimbalRotation.Roll);
+                                            gimbalRotation.Yaw = gimbalNode.GetValueOrDefault("Yaw", gimbalRotation.Yaw);
+                                            newCamera.Gimbal.Rotation = gimbalRotation;
+                                        }
+                                        var camPosition = Position.NanPosition();
+                                        camPosition.X = cNode.GetValueOrDefault("X", camPosition.X);
+                                        camPosition.Y = cNode.GetValueOrDefault("Y", camPosition.Y);
+                                        camPosition.Z = cNode.GetValueOrDefault("Z", camPosition.Z);
+                                        newCamera.Position = camPosition;
+                                        var camRotation = Rotation.NanRotation();
+                                        camRotation.Pitch = cNode.GetValueOrDefault("Pitch", camRotation.Pitch);
+                                        camRotation.Roll = cNode.GetValueOrDefault("Roll", camRotation.Roll);
+                                        camRotation.Yaw = cNode.GetValueOrDefault("Yaw", camRotation.Yaw);
+                                        newCamera.Rotation = camRotation;
+                                        computerVisionSetting.Cameras.Add(newCamera);
                                     }
                                 }
                                 if (vNode.HasKey("Sensors"))
@@ -2151,8 +2356,30 @@ namespace AirSimUnity {
                 return string.Empty;
         }
 
+        private string GetAirSimSettingsLogFileName()
+        {
+            string settingsName = "settings_log_" + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".json";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                string linuxFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("Documents/AirSim", settingsName));
+                return linuxFileName;
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Path.Combine("AirSim", settingsName));
+                return fileName;
+            }
+            else
+            {
+                Debug.Log("Notice: Could not determing OSPlatform.");
+                return "";
+            }
+        }
+
         private bool CreateSettingsFileWithMinRequiredValues(string fileName)
         {
+            Debug.Log("Create filename: " + fileName);
             var result = false;
             try
             {
@@ -2179,6 +2406,7 @@ namespace AirSimUnity {
 
         private bool CreateSettingsFileWithAllMergedSettings(string fileName)
         {
+            Debug.Log("Merge filename: " + fileName);
             var result = false;
             try
             {
@@ -2192,266 +2420,361 @@ namespace AirSimUnity {
                 }
 
                 int i;
+                string lf = Environment.NewLine;
+                string t1 = lf + "\t";
+                string t2 = t1 + "\t";
+                string t3 = t2 + "\t";
+                string t4 = t3 + "\t";
+                string t5 = t4 + "\t";
+                string t6 = t5 + "\t";
 
                 StringBuilder sb = new StringBuilder(10000);
                 sb.Append("{");
                 var airSimUri = new Uri("https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
-                sb.Append($"\n\t\"SeeDocsAt\" : \"{airSimUri.ToString()}\",");
-                sb.Append($"\n\t\"SettingsVersion\" : {SettingsVersion.ToString()},");
-                sb.Append($"\n\t\"SimMode\" : \"{SimMode}\",");
-                sb.Append($"\n\t\"ClockType\" : \"{ClockType}\",");
-                sb.Append($"\n\t\"ClockSpeed\" : {ClockSpeed.ToString()},");
-                sb.Append($"\n\t\"LocalHostIp\" : \"{LocalHostIp}\",");
-                sb.Append($"\n\t\"ApiServerAddress\" : \"{ApiServerAddress}\",");
-                sb.Append($"\n\t\"RecordUIVisible\" : {RecordUIVisible.ToString().ToLower()},");
-                sb.Append($"\n\t\"LogMessagesVisible\" : {LogMessagesVisible.ToString().ToLower()},");
-                sb.Append($"\n\t\"ViewMode\" : \"{ViewMode}\",");
-                sb.Append($"\n\t\"RpcEnabled\" : {RpcEnabled.ToString().ToLower()},");
-                sb.Append($"\n\t\"EngineSound\" : {EngineSound.ToString().ToLower()},");
-                sb.Append($"\n\t\"PhysicsEngineName\" : \"{PhysicsEngineName}\",");
-                sb.Append($"\n\t\"SpeedUnitFactor\" : {SpeedUnitFactor.ToString()},");
-                sb.Append($"\n\t\"SpeedUnitLabel\" : \"{SpeedUnitLabel}\",");
+                sb.Append($"{t1}\"SeeDocsAt\" : \"{airSimUri.ToString()}\",");
+                sb.Append($"{t1}\"SettingsVersion\" : {SettingsVersion.ToString()},");
+                sb.Append($"{t1}\"SimMode\" : \"{SimMode}\",");
+                sb.Append($"{t1}\"ClockType\" : \"{ClockType}\",");
+                sb.Append($"{t1}\"ClockSpeed\" : {ClockSpeed.ToString()},");
+                sb.Append($"{t1}\"LocalHostIp\" : \"{LocalHostIp}\",");
+                sb.Append($"{t1}\"ApiServerAddress\" : \"{ApiServerAddress}\",");
+                sb.Append($"{t1}\"RecordUIVisible\" : {RecordUIVisible.ToString().ToLower()},");
+                sb.Append($"{t1}\"LogMessagesVisible\" : {LogMessagesVisible.ToString().ToLower()},");
+                sb.Append($"{t1}\"ViewMode\" : \"{ViewMode}\",");
+                sb.Append($"{t1}\"RpcEnabled\" : {RpcEnabled.ToString().ToLower()},");
+                sb.Append($"{t1}\"EngineSound\" : {EngineSound.ToString().ToLower()},");
+                sb.Append($"{t1}\"PhysicsEngineName\" : \"{PhysicsEngineName}\",");
+                sb.Append($"{t1}\"SpeedUnitFactor\" : {SpeedUnitFactor.ToString()},");
+                sb.Append($"{t1}\"SpeedUnitLabel\" : \"{SpeedUnitLabel}\",");
 
-                sb.Append("\n\t\"Recording\" : {");
-                sb.Append($"\n\t\t\"RecordOnMove\" : {Recording.RecordOnMove.ToString().ToLower()},");
-                sb.Append($"\n\t\t\"RecordInterval\" : {Recording.RecordInterval.ToString()},");
-                sb.Append("\n\t\t\"Cameras\" : [");
+                sb.Append($"{t1}\"Recording\" : {{");
+                sb.Append($"{t2}\"RecordOnMove\" : {Recording.RecordOnMove.ToString().ToLower()},");
+                sb.Append($"{t2}\"RecordInterval\" : {Recording.RecordInterval.ToString()},");
+                sb.Append($"{t2}\"Cameras\" : [");
                 foreach (var cam in Recording.Cameras)
                 {
-                    sb.Append("\n\t\t\t{");
-                    sb.Append($"\n\t\t\t\"CameraName\" : \"{cam.CameraName}\",");
-                    sb.Append($"\n\t\t\t\"ImageType\" : {cam.ImageType.ToString()},");
-                    sb.Append($"\n\t\t\t\"PixelAsFloat\" : {cam.PixelAsFloat.ToString().ToLower()},");
-                    sb.Append($"\n\t\t\t\"Compress\" : {cam.Compress.ToString().ToLower()}");
-                    sb.Append("\n\t\t\t},");
+                    sb.Append($"{t3}{{");
+                    sb.Append($"{t3}\"CameraName\" : \"{cam.CameraName}\",");
+                    sb.Append($"{t3}\"ImageType\" : {cam.ImageType.ToString()},");
+                    sb.Append($"{t3}\"PixelAsFloat\" : {cam.PixelAsFloat.ToString().ToLower()},");
+                    sb.Append($"{t3}\"Compress\" : {cam.Compress.ToString().ToLower()}");
+                    sb.Append($"{t3}}},");
                 }
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append("\n\t\t]");
-                sb.Append("\n\t},");
+                sb.Append($"{t2}]");
+                sb.Append($"{t1}}},");
 
-                sb.Append("\n\t\"CameraDefaults\" : {");
-                sb.Append("\n\t\t\"CaptureSettings\" : [");
+                sb.Append($"{t1}\"CameraDefaults\" : {{");
+                sb.Append($"{t2}\"CaptureSettings\" : [");
                 foreach (var capSet in CameraDefaults.CaptureSettings)
                 {
-                    sb.Append("\n\t\t\t{");
-                    sb.Append($"\n\t\t\t\"ImageType\" : {capSet.ImageType.ToString()},");
-                    sb.Append($"\n\t\t\t\"Width\" : {capSet.Width.ToString()},");
-                    sb.Append($"\n\t\t\t\"Height\" : {capSet.Height.ToString()},");
-                    sb.Append($"\n\t\t\t\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
-                    sb.Append($"\n\t\t\t\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
-                    sb.Append($"\n\t\t\t\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
-                    sb.Append($"\n\t\t\t\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
-                    sb.Append($"\n\t\t\t\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
-                    sb.Append($"\n\t\t\t\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
-                    sb.Append($"\n\t\t\t\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
-                    sb.Append($"\n\t\t\t\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
-                    sb.Append($"\n\t\t\t\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
-                    sb.Append("\n\t\t\t},");
+                    sb.Append($"{t3}{{");
+                    sb.Append($"{t3}\"ImageType\" : {capSet.ImageType.ToString()},");
+                    sb.Append($"{t3}\"Width\" : {capSet.Width.ToString()},");
+                    sb.Append($"{t3}\"Height\" : {capSet.Height.ToString()},");
+                    sb.Append($"{t3}\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
+                    sb.Append($"{t3}\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
+                    sb.Append($"{t3}\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
+                    sb.Append($"{t3}\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
+                    sb.Append($"{t3}\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
+                    sb.Append($"{t3}\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
+                    sb.Append($"{t3}\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
+                    sb.Append($"{t3}\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
+                    sb.Append($"{t3}\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
+                    sb.Append($"{t3}}},");
                 }
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append("\n\t\t],");
+                sb.Append($"{t2}],");
 
-                sb.Append("\n\t\t\"NoiseSettings\" : [");
+                sb.Append($"{t2}\"NoiseSettings\" : [");
                 foreach (var noiseSet in CameraDefaults.NoiseSettings)
                 {
-                    sb.Append("\n\t\t\t{");
-                    sb.Append($"\n\t\t\t\"Enabled\" : {noiseSet.Enabled.ToString().ToLower()},");
-                    sb.Append($"\n\t\t\t\"ImageType\" : {noiseSet.ImageType.ToString()},");
-                    sb.Append($"\n\t\t\t\"RandContrib\" : {noiseSet.RandContrib.ToString()},");
-                    sb.Append($"\n\t\t\t\"RandSpeed\" : {noiseSet.RandSpeed.ToString()},");
-                    sb.Append($"\n\t\t\t\"RandSize\" : {noiseSet.RandSize.ToString()},");
-                    sb.Append($"\n\t\t\t\"RandDensity\" : {noiseSet.RandDensity.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzWaveContrib\" : {noiseSet.HorzWaveContrib.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzWaveStrength\" : {noiseSet.HorzWaveStrength.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzWaveVertSize\" : {noiseSet.HorzWaveVertSize.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzWaveScreenSize\" : {noiseSet.HorzWaveScreenSize.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzNoiseLinesContrib\" : {noiseSet.HorzNoiseLinesContrib.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzNoiseLinesDensityY\" : {noiseSet.HorzNoiseLinesDensityY.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzNoiseLinesDensityXY\" : {noiseSet.HorzNoiseLinesDensityXY.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzDistortionContrib\" : {noiseSet.HorzDistortionContrib.ToString()},");
-                    sb.Append($"\n\t\t\t\"HorzDistortionStrength\" : {noiseSet.HorzDistortionStrength.ToString()}");
-                    sb.Append("\n\t\t\t},");
+                    sb.Append($"{t3}{{");
+                    sb.Append($"{t3}\"Enabled\" : {noiseSet.Enabled.ToString().ToLower()},");
+                    sb.Append($"{t3}\"ImageType\" : {noiseSet.ImageType.ToString()},");
+                    sb.Append($"{t3}\"RandContrib\" : {noiseSet.RandContrib.ToString()},");
+                    sb.Append($"{t3}\"RandSpeed\" : {noiseSet.RandSpeed.ToString()},");
+                    sb.Append($"{t3}\"RandSize\" : {noiseSet.RandSize.ToString()},");
+                    sb.Append($"{t3}\"RandDensity\" : {noiseSet.RandDensity.ToString()},");
+                    sb.Append($"{t3}\"HorzWaveContrib\" : {noiseSet.HorzWaveContrib.ToString()},");
+                    sb.Append($"{t3}\"HorzWaveStrength\" : {noiseSet.HorzWaveStrength.ToString()},");
+                    sb.Append($"{t3}\"HorzWaveVertSize\" : {noiseSet.HorzWaveVertSize.ToString()},");
+                    sb.Append($"{t3}\"HorzWaveScreenSize\" : {noiseSet.HorzWaveScreenSize.ToString()},");
+                    sb.Append($"{t3}\"HorzNoiseLinesContrib\" : {noiseSet.HorzNoiseLinesContrib.ToString()},");
+                    sb.Append($"{t3}\"HorzNoiseLinesDensityY\" : {noiseSet.HorzNoiseLinesDensityY.ToString()},");
+                    sb.Append($"{t3}\"HorzNoiseLinesDensityXY\" : {noiseSet.HorzNoiseLinesDensityXY.ToString()},");
+                    sb.Append($"{t3}\"HorzDistortionContrib\" : {noiseSet.HorzDistortionContrib.ToString()},");
+                    sb.Append($"{t3}\"HorzDistortionStrength\" : {noiseSet.HorzDistortionStrength.ToString()}");
+                    sb.Append($"{t3}}},");
                 }
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append("\n\t\t],");
+                sb.Append($"{t2}],");
 
-                sb.Append("\n\t\t\"Gimbal\" : {");
-                sb.Append($"\n\t\t\t\"Stabilization\" : {CameraDefaults.Gimbal.Stabilization.ToString()},");
+                sb.Append($"{t2}\"Gimbal\" : {{");
+                sb.Append($"{t3}\"Stabilization\" : {CameraDefaults.Gimbal.Stabilization.ToString()},");
                 if (!float.IsNaN(CameraDefaults.Gimbal.Rotation.Pitch))
                 {
-                    Debug.Log("Pitch is " + CameraDefaults.Gimbal.Rotation.Pitch);
-                    sb.Append($"\n\t\t\t\"Pitch\" : {CameraDefaults.Gimbal.Rotation.Pitch.ToString()},");
+                    sb.Append($"{t3}\"Pitch\" : {CameraDefaults.Gimbal.Rotation.Pitch.ToString()},");
                 }
                 if (!float.IsNaN(CameraDefaults.Gimbal.Rotation.Roll))
                 {
-                    sb.Append($"\n\t\t\t\"Roll\" : {CameraDefaults.Gimbal.Rotation.Roll.ToString()},");
+                    sb.Append($"{t3}\"Roll\" : {CameraDefaults.Gimbal.Rotation.Roll.ToString()},");
                 }
                 if (!float.IsNaN(CameraDefaults.Gimbal.Rotation.Yaw))
                 {
-                    sb.Append($"\n\t\t\t\"Yaw\" : {CameraDefaults.Gimbal.Rotation.Yaw.ToString()},");
+                    sb.Append($"{t3}\"Yaw\" : {CameraDefaults.Gimbal.Rotation.Yaw.ToString()},");
                 }
                 sb.Remove(sb.Length - 1, 1);
-                
-                sb.Append("\n\t\t},");  // End Gimabl
+                sb.Append($"{t2}}},");  // End Gimabl
                 if (!float.IsNaN(CameraDefaults.Position.X))
                 {
-                    sb.Append($"\n\t\t\"X\" : {CameraDefaults.Position.X.ToString()},");
+                    sb.Append($"{t2}\"X\" : {CameraDefaults.Position.X.ToString()},");
                 }
                 if (!float.IsNaN(CameraDefaults.Position.Y))
                 {
-                    sb.Append($"\n\t\t\"Y\" : {CameraDefaults.Position.Y.ToString()},");
+                    sb.Append($"{t2}\"Y\" : {CameraDefaults.Position.Y.ToString()},");
                 }
                 if (!float.IsNaN(CameraDefaults.Position.Z))
                 {
-                    sb.Append($"\n\t\t\"Z\" : {CameraDefaults.Position.Z.ToString()},");
+                    sb.Append($"{t2}\"Z\" : {CameraDefaults.Position.Z.ToString()},");
                 }
                 if (!float.IsNaN(CameraDefaults.Rotation.Pitch))
                 {
-                    sb.Append($"\n\t\t\"Pitch\" : {CameraDefaults.Rotation.Pitch.ToString()},");
+                    sb.Append($"{t2}\"Pitch\" : {CameraDefaults.Rotation.Pitch.ToString()},");
                 }
                 if (!float.IsNaN(CameraDefaults.Rotation.Roll))
                 {
-                    sb.Append($"\n\t\t\"Roll\" : {CameraDefaults.Rotation.Roll.ToString()},");
+                    sb.Append($"{t2}\"Roll\" : {CameraDefaults.Rotation.Roll.ToString()},");
                 }
                 if (!float.IsNaN(CameraDefaults.Rotation.Yaw))
                 {
-                    sb.Append($"\n\t\t\"Yaw\" : {CameraDefaults.Rotation.Yaw.ToString()},");
+                    sb.Append($"{t2}\"Yaw\" : {CameraDefaults.Rotation.Yaw.ToString()},");
                 }
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append("\n\t},"); // End CameraDefaults
+                sb.Append($"{t1}}},"); // End CameraDefaults
 
-                sb.Append("\n\t\"OriginGeopoint\" : {");
-                sb.Append($"\n\t\t\"Latitude\" : {OriginGeopoint.Latitude.ToString()},");
-                sb.Append($"\n\t\t\"Longitude\" : {OriginGeopoint.Longitude.ToString()},");
-                sb.Append($"\n\t\t\"Altitude\" : {OriginGeopoint.Altitude.ToString()}");
-                sb.Append("\n\t},"); // End OriginGeopoint
+                sb.Append($"{t1}\"OriginGeopoint\" : {{");
+                sb.Append($"{t2}\"Latitude\" : {OriginGeopoint.Latitude.ToString()},");
+                sb.Append($"{t2}\"Longitude\" : {OriginGeopoint.Longitude.ToString()},");
+                sb.Append($"{t2}\"Altitude\" : {OriginGeopoint.Altitude.ToString()}");
+                sb.Append($"{t1}}},"); // End OriginGeopoint
 
-                sb.Append("\n\t\"TimeOfDay\" : {");
-                sb.Append($"\n\t\t\"Enabled\" : {TimeOfDay.Enabled.ToString().ToLower()},");
-                sb.Append($"\n\t\t\"StartDateTime\" : \"{TimeOfDay.StartDateTime}\",");
-                sb.Append($"\n\t\t\"CelestialClockSpeed\" : {TimeOfDay.CelestialClockSpeed.ToString()},");
-                sb.Append($"\n\t\t\"StartDateTimeDst\" : {TimeOfDay.StartDateTimeDst.ToString().ToLower()},");
-                sb.Append($"\n\t\t\"UpdateIntervalSecs\" : {TimeOfDay.UpdateIntervalSecs.ToString()},");
-                sb.Append($"\n\t\t\"MoveSun\" : {TimeOfDay.MoveSun.ToString().ToLower()}");
-                sb.Append("\n\t},"); // End TimeOfDay
+                sb.Append($"{t1}\"TimeOfDay\" : {{");
+                sb.Append($"{t2}\"Enabled\" : {TimeOfDay.Enabled.ToString().ToLower()},");
+                sb.Append($"{t2}\"StartDateTime\" : \"{TimeOfDay.StartDateTime}\",");
+                sb.Append($"{t2}\"CelestialClockSpeed\" : {TimeOfDay.CelestialClockSpeed.ToString()},");
+                sb.Append($"{t2}\"StartDateTimeDst\" : {TimeOfDay.StartDateTimeDst.ToString().ToLower()},");
+                sb.Append($"{t2}\"UpdateIntervalSecs\" : {TimeOfDay.UpdateIntervalSecs.ToString()},");
+                sb.Append($"{t2}\"MoveSun\" : {TimeOfDay.MoveSun.ToString().ToLower()}");
+                sb.Append($"{t1}}},"); // End TimeOfDay
 
-                sb.Append("\n\t\"SubWindows\" : [");
+                sb.Append($"{t1}\"SubWindows\" : [");
                 foreach (var subWindow in SubWindows)
                 {
-                    sb.Append("\n\t\t\t{");
-                    sb.Append($"\n\t\t\t\"WindowID\" : {subWindow.WindowID.ToString()},");
-                    sb.Append($"\n\t\t\t\"CameraName\" : \"{subWindow.CameraName}\",");
-                    sb.Append($"\n\t\t\t\"ImageType\" : {subWindow.ImageType.ToString()},");
-                    sb.Append($"\n\t\t\t\"Visible\" : {subWindow.Visible.ToString().ToLower()}");
-                    sb.Append("\n\t\t\t},");
+                    sb.Append($"{t3}{{");
+                    sb.Append($"{t3}\"WindowID\" : {subWindow.WindowID.ToString()},");
+                    sb.Append($"{t3}\"CameraName\" : \"{subWindow.CameraName}\",");
+                    sb.Append($"{t3}\"ImageType\" : {subWindow.ImageType.ToString()},");
+                    sb.Append($"{t3}\"Visible\" : {subWindow.Visible.ToString().ToLower()}");
+                    sb.Append($"{t3}}},");
                 }
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append("\n\t],"); // End SubWindows
+                sb.Append($"{t1}],"); // End SubWindows
 
-                sb.Append("\n\t\"SegmentationSettings\" : {");
-                sb.Append($"\n\t\t\"InitMethod\" : \"{SegmentationSettings.InitMethod}\",");
-                sb.Append($"\n\t\t\"MeshNamingMethod\" : \"{SegmentationSettings.MeshNamingMethod}\",");
-                sb.Append($"\n\t\t\"OverrideExisting\" : {SegmentationSettings.OverrideExisting.ToString().ToLower()}");
-                sb.Append("\n\t},");
+                sb.Append($"{t1}\"SegmentationSettings\" : {{");
+                sb.Append($"{t2}\"InitMethod\" : \"{SegmentationSettings.InitMethod}\",");
+                sb.Append($"{t2}\"MeshNamingMethod\" : \"{SegmentationSettings.MeshNamingMethod}\",");
+                sb.Append($"{t2}\"OverrideExisting\" : {SegmentationSettings.OverrideExisting.ToString().ToLower()}");
+                sb.Append($"{t1}}},");
 
-                sb.Append("\n\t\"PawnPaths\" : {");
-                sb.Append("\n\t\t\"BareboneCar\" : {");
-                sb.Append($"\n\t\t\t\"PawnBP\" : \"{PawnPaths.BareboneCar.PawnBP}\"");
-                sb.Append("\n\t\t},");
-                sb.Append("\n\t\t\"DefaultCar\" : {");
-                sb.Append($"\n\t\t\t\"PawnBP\" : \"{PawnPaths.DefaultCar.PawnBP}\"");
-                sb.Append("\n\t\t},");
-                sb.Append("\n\t\t\"DefaultQuadrotor\" : {");
-                sb.Append($"\n\t\t\t\"PawnBP\" : \"{PawnPaths.DefaultQuadrotor.PawnBP}\"");
-                sb.Append("\n\t\t},");
-                sb.Append("\n\t\t\"DefaultComputerVision\" : {");
-                sb.Append($"\n\t\t\t\"PawnBP\" : \"{PawnPaths.DefaultComputerVision.PawnBP}\"");
-                sb.Append("\n\t\t}");
-                sb.Append("\n\t},"); // End PawnPaths
+                sb.Append($"{t1}\"PawnPaths\" : {{");
+                sb.Append($"{t2}\"BareboneCar\" : {{");
+                sb.Append($"{t3}\"PawnBP\" : \"{PawnPaths.BareboneCar.PawnBP}\"");
+                sb.Append($"{t2}}},");
+                sb.Append($"{t2}\"DefaultCar\" : {{");
+                sb.Append($"{t3}\"PawnBP\" : \"{PawnPaths.DefaultCar.PawnBP}\"");
+                sb.Append($"{t2}}},");
+                sb.Append($"{t2}\"DefaultQuadrotor\" : {{");
+                sb.Append($"{t3}\"PawnBP\" : \"{PawnPaths.DefaultQuadrotor.PawnBP}\"");
+                sb.Append($"{t2}}},");
+                sb.Append($"{t2}\"DefaultComputerVision\" : {{");
+                sb.Append($"{t3}\"PawnBP\" : \"{PawnPaths.DefaultComputerVision.PawnBP}\"");
+                sb.Append($"{t2}}}");
+                sb.Append($"{t1}}},"); // End PawnPaths
 
-                /// VEHICLES - Maybe need to add name
-                sb.Append("\n\t\"Vehicles\" : {");
+                sb.Append($"{t1}\"Vehicles\" : {{");
                 foreach (var vehicle in Vehicles.Vehicles_SimpleFlight)
                 {
                     if (vehicle.VehicleType == "SimpleFlight")
                     {
-                        sb.Append($"\n\t\t\"{vehicle.VehicleName}\" : {{");
-                        sb.Append($"\n\t\t\t\"VehicleType\" : \"{vehicle.VehicleType}\",");
-                        sb.Append($"\n\t\t\t\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
-                        sb.Append($"\n\t\t\t\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"PawnPath\" : \"{vehicle.PawnPath}\",");
-                        sb.Append($"\n\t\t\t\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrough.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"IsFpvVehicle\" : {vehicle.IsFpvVehicle.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"AllowAPIAlways\" : {vehicle.AllowAPIAlways.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\"RC\" : {");
-                        sb.Append($"\n\t\t\t\t\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()},");
-                        sb.Append($"\n\t\t\t\t\"AllowAPIWhenDisconnected\" : {vehicle.RC.AllowAPIWhenDisconnected.ToString().ToLower()}");
-                        sb.Append("\n\t\t\t},"); // End RC
-                        sb.Append("\n\t\t\t\"Cameras\" : {");
-                        sb.Append($"\n\t\t\t\t\"CameraName\" : \"{vehicle.Cameras.CameraName}\",");
-                        sb.Append($"\n\t\t\t\t\"ImageType\" : {vehicle.Cameras.ImageType.ToString()},");
-                        sb.Append($"\n\t\t\t\t\"PixelAsFloat\" : {vehicle.Cameras.PixelAsFloat.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\t\"Compress\" : {vehicle.Cameras.Compress.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\t\"CaptureSettings\" : [");
-
-                        foreach (var capSet in vehicle.Cameras.CaptureSettings)
+                        sb.Append($"{t2}\"{vehicle.VehicleName}\" : {{");
+                        sb.Append($"{t3}\"VehicleType\" : \"{vehicle.VehicleType}\",");
+                        sb.Append($"{t3}\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
+                        sb.Append($"{t3}\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
+                        sb.Append($"{t3}\"PawnPath\" : \"{vehicle.PawnPath}\",");
+                        sb.Append($"{t3}\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrough.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
+                        sb.Append($"{t3}\"IsFpvVehicle\" : {vehicle.IsFpvVehicle.ToString().ToLower()},");
+                        sb.Append($"{t3}\"AllowAPIAlways\" : {vehicle.AllowAPIAlways.ToString().ToLower()},");
+                        sb.Append($"{t3}\"RC\" : {{");
+                        sb.Append($"{t4}\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()},");
+                        sb.Append($"{t4}\"AllowAPIWhenDisconnected\" : {vehicle.RC.AllowAPIWhenDisconnected.ToString().ToLower()}");
+                        sb.Append($"{t3}}},"); // End RC
+                        sb.Append($"{t3}\"Cameras\" : {{");
+                        
+                        foreach (var cam in vehicle.Cameras)
                         {
-                            sb.Append("\n\t\t\t\t\t{");
-                            sb.Append($"\n\t\t\t\t\t\"ImageType\" : {capSet.ImageType.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Width\" : {capSet.Width.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Height\" : {capSet.Height.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
-                            sb.Append($"\n\t\t\t\t\t\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
-                            sb.Append("\n\t\t\t\t\t},");
+                            sb.Append($"{t4}\"{cam.Name}\" : {{");
+                            sb.Append($"{t5}\"CaptureSettings\" : [");
+                            foreach (var capSet in cam.CaptureSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"ImageType\" : {capSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"Width\" : {capSet.Width.ToString()},");
+                                sb.Append($"{t6}\"Height\" : {capSet.Height.ToString()},");
+                                sb.Append($"{t6}\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
+                                sb.Append($"{t6}\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
+                                sb.Append($"{t6}\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
+                                sb.Append($"{t6}\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
+                                sb.Append($"{t6}\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"NoiseSettings\" : [");
+                            foreach (var noiseSet in cam.NoiseSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"Enabled\" : {noiseSet.Enabled.ToString().ToLower()},");
+                                sb.Append($"{t6}\"ImageType\" : {noiseSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"RandContrib\" : {noiseSet.RandContrib.ToString()},");
+                                sb.Append($"{t6}\"RandSpeed\" : {noiseSet.RandSpeed.ToString()},");
+                                sb.Append($"{t6}\"RandSize\" : {noiseSet.RandSize.ToString()},");
+                                sb.Append($"{t6}\"RandDensity\" : {noiseSet.RandDensity.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveContrib\" : {noiseSet.HorzWaveContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveStrength\" : {noiseSet.HorzWaveStrength.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveVertSize\" : {noiseSet.HorzWaveVertSize.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveScreenSize\" : {noiseSet.HorzWaveScreenSize.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesContrib\" : {noiseSet.HorzNoiseLinesContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityY\" : {noiseSet.HorzNoiseLinesDensityY.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityXY\" : {noiseSet.HorzNoiseLinesDensityXY.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionContrib\" : {noiseSet.HorzDistortionContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionStrength\" : {noiseSet.HorzDistortionStrength.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"Gimbal\" : {{");
+                            sb.Append($"{t6}\"Stabilization\" : {cam.Gimbal.Stabilization.ToString()},");
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Pitch))
+                            {
+                                sb.Append($"{t6}\"Pitch\" : {cam.Gimbal.Rotation.Pitch.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Roll))
+                            {
+                                sb.Append($"{t6}\"Roll\" : {cam.Gimbal.Rotation.Roll.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Yaw))
+                            {
+                                sb.Append($"{t6}\"Yaw\" : {cam.Gimbal.Rotation.Yaw.ToString()},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}}},");  // End Gimabl
+                            // Note: Camera position and rotation settings currently if omitted will cause Unreal to crash: Issue #1836
+                            // Therefore we will at least write 0.0 for any unspecified (NaN) values
+                            if (!float.IsNaN(cam.Position.X))
+                            {
+                                sb.Append($"{t5}\"X\" : {cam.Position.X.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"X\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Y))
+                            {
+                                sb.Append($"{t5}\"Y\" : {cam.Position.Y.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Y\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Z))
+                            {
+                                sb.Append($"{t5}\"Z\" : {cam.Position.Z.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Z\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Pitch))
+                            {
+                                sb.Append($"{t5}\"Pitch\" : {cam.Rotation.Pitch.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Pitch\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Roll))
+                            {
+                                sb.Append($"{t5}\"Roll\" : {cam.Rotation.Roll.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Roll\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Yaw))
+                            {
+                                sb.Append($"{t5}\"Yaw\" : {cam.Rotation.Yaw.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Yaw\" : 0.0,");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t4}}},"); // End this cam
                         }
                         sb.Remove(sb.Length - 1, 1);
-
-                        sb.Append("\n\t\t\t\t]");
-                        sb.Append("\n\t\t\t},"); // End Cameras
+                        sb.Append($"{t3}}},"); // End Cameras
                         if (!float.IsNaN(vehicle.Position.X))
                         {
-                            sb.Append($"\n\t\t\t\"X\" : {vehicle.Position.X.ToString()},");
+                            sb.Append($"{t3}\"X\" : {vehicle.Position.X.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Y))
                         {
-                            sb.Append($"\n\t\t\t\"Y\" : {vehicle.Position.Y.ToString()},");
+                            sb.Append($"{t3}\"Y\" : {vehicle.Position.Y.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Z))
                         {
-                            sb.Append($"\n\t\t\t\"Z\" : {vehicle.Position.Z.ToString()},");
+                            sb.Append($"{t3}\"Z\" : {vehicle.Position.Z.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Pitch))
                         {
-                            sb.Append($"\n\t\t\t\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
+                            sb.Append($"{t3}\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Roll))
                         {
-                            sb.Append($"\n\t\t\t\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
+                            sb.Append($"{t3}\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Yaw))
                         {
-                            sb.Append($"\n\t\t\t\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
+                            sb.Append($"{t3}\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
                         }
-                        sb.Append("\n\t\t\t\"Sensors\" : {");
+                        sb.Append($"{t3}\"Sensors\" : {{");
                         i = 0;
                         foreach (var sensor in vehicle.Sensors.BarometerList)
                         {
                             i++;
                             if (sensor.SensorType == SensorType.Barometer)
                             {
-                                sb.Append($"\n\t\t\t\t\"Barometer{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 1,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Barometer{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 1,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2460,10 +2783,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Imu)
                             {
-                                sb.Append($"\n\t\t\t\t\"Imu{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 2,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Imu{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 2,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2472,10 +2795,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Gps)
                             {
-                                sb.Append($"\n\t\t\t\t\"Gps{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 3,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Gps{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 3,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2484,10 +2807,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Magnetometer)
                             {
-                                sb.Append($"\n\t\t\t\t\"Magnetometer{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 4,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Magnetometer{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 4,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2496,10 +2819,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Distance)
                             {
-                                sb.Append($"\n\t\t\t\t\"Distance{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 5,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Distance{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 5,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2508,49 +2831,49 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Lidar)
                             {
-                                sb.Append($"\n\t\t\t\t\"Lidar{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 6,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
-                                sb.Append($"\n\t\t\t\t\t\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"Range\" : {sensor.Range.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
+                                sb.Append($"{t4}\"Lidar{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 6,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
+                                sb.Append($"{t5}\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
+                                sb.Append($"{t5}\"Range\" : {sensor.Range.ToString()},");
+                                sb.Append($"{t5}\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
+                                sb.Append($"{t5}\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
                                 if (!float.IsNaN(sensor.Position.X))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"X\" : {sensor.Position.X.ToString()},");
+                                    sb.Append($"{t5}\"X\" : {sensor.Position.X.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Position.Y))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Y\" : {sensor.Position.Y.ToString()},");
+                                    sb.Append($"{t5}\"Y\" : {sensor.Position.Y.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Position.Z))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Z\" : {sensor.Position.Z.ToString()},");
+                                    sb.Append($"{t5}\"Z\" : {sensor.Position.Z.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Pitch))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
+                                    sb.Append($"{t5}\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Roll))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Roll\" : {sensor.Rotation.Roll.ToString()},");
+                                    sb.Append($"{t5}\"Roll\" : {sensor.Rotation.Roll.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Yaw))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
+                                    sb.Append($"{t5}\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
                                 }
-                                sb.Append($"\n\t\t\t\t\t\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
-                                sb.Append($"\n\t\t\t\t\t\"DataFrame\" : \"{sensor.DataFrame}\"");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t5}\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
+                                sb.Append($"{t5}\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
+                                sb.Append($"{t5}\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
+                                sb.Append($"{t5}\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
+                                sb.Append($"{t5}\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
+                                sb.Append($"{t5}\"DataFrame\" : \"{sensor.DataFrame}\"");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         sb.Remove(sb.Length - 1, 1);
-                        sb.Append("\n\t\t\t}"); // End This SimpleFlight Sensor
-                        sb.Append("\n\t\t},"); // End This SimpleFlight
+                        sb.Append($"{t3}}}"); // End This SimpleFlight Sensor
+                        sb.Append($"{t2}}},"); // End This SimpleFlight
                     } // End if
                 } // End foreach
 
@@ -2558,78 +2881,170 @@ namespace AirSimUnity {
                 {
                     if (vehicle.VehicleType == "PhysXCar")
                     {
-                        sb.Append($"\n\t\t\"{vehicle.VehicleName}\" : {{");
-                        sb.Append($"\n\t\t\t\"VehicleType\" : \"{vehicle.VehicleType}\",");
-                        sb.Append($"\n\t\t\t\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
-                        sb.Append($"\n\t\t\t\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"PawnPath\" : \"{vehicle.PawnPath}\",");
-                        sb.Append($"\n\t\t\t\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrogh.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\"RC\" : {");
-                        sb.Append($"\n\t\t\t\t\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()}");
-                        sb.Append("\n\t\t\t},"); // End RC
-                        sb.Append("\n\t\t\t\"Cameras\" : {");
-                        sb.Append($"\n\t\t\t\t\"CameraName\" : \"{vehicle.Cameras.CameraName}\",");
-                        sb.Append($"\n\t\t\t\t\"ImageType\" : {vehicle.Cameras.ImageType.ToString()},");
-                        sb.Append($"\n\t\t\t\t\"PixelAsFloat\" : {vehicle.Cameras.PixelAsFloat.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\t\"Compress\" : {vehicle.Cameras.Compress.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\t\"CaptureSettings\" : [");
-                        foreach (var capSet in vehicle.Cameras.CaptureSettings)
+                        sb.Append($"{t2}\"{vehicle.VehicleName}\" : {{");
+                        sb.Append($"{t3}\"VehicleType\" : \"{vehicle.VehicleType}\",");
+                        sb.Append($"{t3}\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
+                        sb.Append($"{t3}\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
+                        sb.Append($"{t3}\"PawnPath\" : \"{vehicle.PawnPath}\",");
+                        sb.Append($"{t3}\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrogh.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
+                        sb.Append($"{t3}\"RC\" : {{");
+                        sb.Append($"{t4}\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()}");
+                        sb.Append($"{t3}}},"); // End RC
+                        sb.Append($"{t3}\"Cameras\" : {{");
+                        foreach (var cam in vehicle.Cameras)
                         {
-                            sb.Append("\n\t\t\t\t\t{");
-                            sb.Append($"\n\t\t\t\t\t\"ImageType\" : {capSet.ImageType.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Width\" : {capSet.Width.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Height\" : {capSet.Height.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
-                            sb.Append($"\n\t\t\t\t\t\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
-                            sb.Append("\n\t\t\t\t\t},");
+                            sb.Append($"{t4}\"{cam.Name}\" : {{");
+                            sb.Append($"{t5}\"CaptureSettings\" : [");
+                            foreach (var capSet in cam.CaptureSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"ImageType\" : {capSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"Width\" : {capSet.Width.ToString()},");
+                                sb.Append($"{t6}\"Height\" : {capSet.Height.ToString()},");
+                                sb.Append($"{t6}\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
+                                sb.Append($"{t6}\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
+                                sb.Append($"{t6}\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
+                                sb.Append($"{t6}\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
+                                sb.Append($"{t6}\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"NoiseSettings\" : [");
+                            foreach (var noiseSet in cam.NoiseSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"Enabled\" : {noiseSet.Enabled.ToString().ToLower()},");
+                                sb.Append($"{t6}\"ImageType\" : {noiseSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"RandContrib\" : {noiseSet.RandContrib.ToString()},");
+                                sb.Append($"{t6}\"RandSpeed\" : {noiseSet.RandSpeed.ToString()},");
+                                sb.Append($"{t6}\"RandSize\" : {noiseSet.RandSize.ToString()},");
+                                sb.Append($"{t6}\"RandDensity\" : {noiseSet.RandDensity.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveContrib\" : {noiseSet.HorzWaveContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveStrength\" : {noiseSet.HorzWaveStrength.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveVertSize\" : {noiseSet.HorzWaveVertSize.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveScreenSize\" : {noiseSet.HorzWaveScreenSize.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesContrib\" : {noiseSet.HorzNoiseLinesContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityY\" : {noiseSet.HorzNoiseLinesDensityY.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityXY\" : {noiseSet.HorzNoiseLinesDensityXY.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionContrib\" : {noiseSet.HorzDistortionContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionStrength\" : {noiseSet.HorzDistortionStrength.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"Gimbal\" : {{");
+                            sb.Append($"{t6}\"Stabilization\" : {cam.Gimbal.Stabilization.ToString()},");
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Pitch))
+                            {
+                                sb.Append($"{t6}\"Pitch\" : {cam.Gimbal.Rotation.Pitch.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Roll))
+                            {
+                                sb.Append($"{t6}\"Roll\" : {cam.Gimbal.Rotation.Roll.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Yaw))
+                            {
+                                sb.Append($"{t6}\"Yaw\" : {cam.Gimbal.Rotation.Yaw.ToString()},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}}},");  // End Gimabl
+                            // Note: Camera position and rotation settings currently if omitted will cause Unreal to crash: Issue #1836
+                            // Therefore we will at least write 0.0 for any unspecified (NaN) values
+                            if (!float.IsNaN(cam.Position.X))
+                            {
+                                sb.Append($"{t5}\"X\" : {cam.Position.X.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"X\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Y))
+                            {
+                                sb.Append($"{t5}\"Y\" : {cam.Position.Y.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Y\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Z))
+                            {
+                                sb.Append($"{t5}\"Z\" : {cam.Position.Z.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Z\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Pitch))
+                            {
+                                sb.Append($"{t5}\"Pitch\" : {cam.Rotation.Pitch.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Pitch\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Roll))
+                            {
+                                sb.Append($"{t5}\"Roll\" : {cam.Rotation.Roll.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Roll\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Yaw))
+                            {
+                                sb.Append($"{t5}\"Yaw\" : {cam.Rotation.Yaw.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Yaw\" : 0.0,");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t4}}},"); // End this cam
                         }
                         sb.Remove(sb.Length - 1, 1);
-                        sb.Append("\n\t\t\t\t]");
-                        sb.Append("\n\t\t\t},"); // End Cameras
+                        sb.Append($"{t3}}},"); // End Cameras
                         if (!float.IsNaN(vehicle.Position.X))
                         {
-                            sb.Append($"\n\t\t\t\"X\" : {vehicle.Position.X.ToString()},");
+                            sb.Append($"{t3}\"X\" : {vehicle.Position.X.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Y))
                         {
-                            sb.Append($"\n\t\t\t\"Y\" : {vehicle.Position.Y.ToString()},");
+                            sb.Append($"{t3}\"Y\" : {vehicle.Position.Y.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Z))
                         {
-                            sb.Append($"\n\t\t\t\"Z\" : {vehicle.Position.Z.ToString()},");
+                            sb.Append($"{t3}\"Z\" : {vehicle.Position.Z.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Pitch))
                         {
-                            sb.Append($"\n\t\t\t\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
+                            sb.Append($"{t3}\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Roll))
                         {
-                            sb.Append($"\n\t\t\t\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
+                            sb.Append($"{t3}\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Yaw))
                         {
-                            sb.Append($"\n\t\t\t\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
+                            sb.Append($"{t3}\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
                         }
-                        sb.Append("\n\t\t\t\"Sensors\" : {");
+                        sb.Append($"{t3}\"Sensors\" : {{");
                         i = 0;
                         foreach (var sensor in vehicle.Sensors.GpsList)
                         {
                             i++;
                             if (sensor.SensorType == SensorType.Gps)
                             {
-                                sb.Append($"\n\t\t\t\t\"Gps{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 3,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Gps{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 3,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2638,49 +3053,49 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Lidar)
                             {
-                                sb.Append($"\n\t\t\t\t\"Lidar{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 6,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
-                                sb.Append($"\n\t\t\t\t\t\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"Range\" : {sensor.Range.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
+                                sb.Append($"{t4}\"Lidar{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 6,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
+                                sb.Append($"{t5}\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
+                                sb.Append($"{t5}\"Range\" : {sensor.Range.ToString()},");
+                                sb.Append($"{t5}\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
+                                sb.Append($"{t5}\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
                                 if (!float.IsNaN(sensor.Position.X))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"X\" : {sensor.Position.X.ToString()},");
+                                    sb.Append($"{t5}\"X\" : {sensor.Position.X.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Position.Y))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Y\" : {sensor.Position.Y.ToString()},");
+                                    sb.Append($"{t5}\"Y\" : {sensor.Position.Y.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Position.Z))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Z\" : {sensor.Position.Z.ToString()},");
+                                    sb.Append($"{t5}\"Z\" : {sensor.Position.Z.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Pitch))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
+                                    sb.Append($"{t5}\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Roll))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Roll\" : {sensor.Rotation.Roll.ToString()},");
+                                    sb.Append($"{t5}\"Roll\" : {sensor.Rotation.Roll.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Yaw))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
+                                    sb.Append($"{t5}\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
                                 }
-                                sb.Append($"\n\t\t\t\t\t\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
-                                sb.Append($"\n\t\t\t\t\t\"DataFrame\" : \"{sensor.DataFrame}\"");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t5}\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
+                                sb.Append($"{t5}\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
+                                sb.Append($"{t5}\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
+                                sb.Append($"{t5}\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
+                                sb.Append($"{t5}\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
+                                sb.Append($"{t5}\"DataFrame\" : \"{sensor.DataFrame}\"");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         sb.Remove(sb.Length - 1, 1);
-                        sb.Append("\n\t\t\t}"); // End This PhysXCar Sensors
-                        sb.Append("\n\t\t},"); // End This PhysXCar
+                        sb.Append($"{t3}}}"); // End This PhysXCar Sensors
+                        sb.Append($"{t2}}},"); // End This PhysXCar
                     } // End if
                 }
 
@@ -2688,100 +3103,192 @@ namespace AirSimUnity {
                 {
                     if (vehicle.VehicleType == "PX4Multirotor")
                     {
-                        sb.Append($"\n\t\t\"{vehicle.VehicleName}\" : {{");
-                        sb.Append($"\n\t\t\t\"VehicleType\" : \"{vehicle.VehicleType}\",");
-                        sb.Append($"\n\t\t\t\"LogViewerPort\" : {vehicle.LogViewerPort.ToString()},");
-                        //sb.Append($"\n\t\t\t\"LogViewerSendPort\" : {vehicle.LogViewerSendPort.ToString()},");
-                        sb.Append($"\n\t\t\t\"OffboardCompID\" : {vehicle.OffboardCompID.ToString()},");
-                        sb.Append($"\n\t\t\t\"OffboardSysID\" : {vehicle.OffboardSysID.ToString()},");
-                        sb.Append($"\n\t\t\t\"QgcHostIp\" : \"{vehicle.QgcHostIp}\",");
-                        sb.Append($"\n\t\t\t\"QgcPort\" : {vehicle.QgcPort.ToString()},");
-                        sb.Append($"\n\t\t\t\"SerialBaudRate\" : {vehicle.SerialBaudRate.ToString()},");
-                        sb.Append($"\n\t\t\t\"SerialPort\" : \"{vehicle.SerialPort}\",");
-                        sb.Append($"\n\t\t\t\"SimCompID\" : {vehicle.SimCompID.ToString()},");
-                        sb.Append($"\n\t\t\t\"SimSysID\" : {vehicle.SimSysID.ToString()},");
-                        sb.Append($"\n\t\t\t\"SitlIp\" : \"{vehicle.SitlIp}\",");
-                        sb.Append($"\n\t\t\t\"SitlPort\" : {vehicle.SitlPort.ToString()},");
-                        sb.Append($"\n\t\t\t\"UdpIp\" : \"{vehicle.UdpIp}\",");
-                        sb.Append($"\n\t\t\t\"UdpPort\" : {vehicle.UdpPort.ToString()},");
-                        sb.Append($"\n\t\t\t\"UseSerial\" : {vehicle.UseSerial.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"VehicleCompID\" : {vehicle.VehicleCompID.ToString()},");
-                        sb.Append($"\n\t\t\t\"VehicleSysID\" : {vehicle.VehicleSysID.ToString()},");
-                        sb.Append($"\n\t\t\t\"Model\" : \"{vehicle.Model}\",");
-                        sb.Append($"\n\t\t\t\"LocalHostIp\" : \"{vehicle.LocalHostIp}\",");
-                        sb.Append($"\n\t\t\t\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
-                        sb.Append($"\n\t\t\t\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"PawnPath\" : \"{vehicle.PawnPath}\",");
-                        sb.Append($"\n\t\t\t\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrogh.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"IsFpvVehicle\" : {vehicle.IsFpvVehicle.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"AllowAPIAlways\" : {vehicle.AllowAPIAlways.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\"RC\" : {");
-                        sb.Append($"\n\t\t\t\t\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()},");
-                        sb.Append($"\n\t\t\t\t\"AllowAPIWhenDisconnected\" : {vehicle.RC.AllowAPIWhenDisconnected.ToString().ToLower()}");
-                        sb.Append("\n\t\t\t},"); // End RC
-                        sb.Append("\n\t\t\t\"Cameras\" : {");
-                        sb.Append($"\n\t\t\t\t\"CameraName\" : \"{vehicle.Cameras.CameraName}\",");
-                        sb.Append($"\n\t\t\t\t\"ImageType\" : {vehicle.Cameras.ImageType.ToString()},");
-                        sb.Append($"\n\t\t\t\t\"PixelAsFloat\" : {vehicle.Cameras.PixelAsFloat.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\t\"Compress\" : {vehicle.Cameras.Compress.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\t\"CaptureSettings\" : [");
-                        foreach (var capSet in vehicle.Cameras.CaptureSettings)
+                        sb.Append($"{t2}\"{vehicle.VehicleName}\" : {{");
+                        sb.Append($"{t3}\"VehicleType\" : \"{vehicle.VehicleType}\",");
+                        sb.Append($"{t3}\"LogViewerPort\" : {vehicle.LogViewerPort.ToString()},");
+                        //sb.Append($"{t3}\"LogViewerSendPort\" : {vehicle.LogViewerSendPort.ToString()},");
+                        sb.Append($"{t3}\"OffboardCompID\" : {vehicle.OffboardCompID.ToString()},");
+                        sb.Append($"{t3}\"OffboardSysID\" : {vehicle.OffboardSysID.ToString()},");
+                        sb.Append($"{t3}\"QgcHostIp\" : \"{vehicle.QgcHostIp}\",");
+                        sb.Append($"{t3}\"QgcPort\" : {vehicle.QgcPort.ToString()},");
+                        sb.Append($"{t3}\"SerialBaudRate\" : {vehicle.SerialBaudRate.ToString()},");
+                        sb.Append($"{t3}\"SerialPort\" : \"{vehicle.SerialPort}\",");
+                        sb.Append($"{t3}\"SimCompID\" : {vehicle.SimCompID.ToString()},");
+                        sb.Append($"{t3}\"SimSysID\" : {vehicle.SimSysID.ToString()},");
+                        sb.Append($"{t3}\"SitlIp\" : \"{vehicle.SitlIp}\",");
+                        sb.Append($"{t3}\"SitlPort\" : {vehicle.SitlPort.ToString()},");
+                        sb.Append($"{t3}\"UdpIp\" : \"{vehicle.UdpIp}\",");
+                        sb.Append($"{t3}\"UdpPort\" : {vehicle.UdpPort.ToString()},");
+                        sb.Append($"{t3}\"UseSerial\" : {vehicle.UseSerial.ToString().ToLower()},");
+                        sb.Append($"{t3}\"VehicleCompID\" : {vehicle.VehicleCompID.ToString()},");
+                        sb.Append($"{t3}\"VehicleSysID\" : {vehicle.VehicleSysID.ToString()},");
+                        sb.Append($"{t3}\"Model\" : \"{vehicle.Model}\",");
+                        sb.Append($"{t3}\"LocalHostIp\" : \"{vehicle.LocalHostIp}\",");
+                        sb.Append($"{t3}\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
+                        sb.Append($"{t3}\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
+                        sb.Append($"{t3}\"PawnPath\" : \"{vehicle.PawnPath}\",");
+                        sb.Append($"{t3}\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrogh.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
+                        sb.Append($"{t3}\"IsFpvVehicle\" : {vehicle.IsFpvVehicle.ToString().ToLower()},");
+                        sb.Append($"{t3}\"AllowAPIAlways\" : {vehicle.AllowAPIAlways.ToString().ToLower()},");
+                        sb.Append($"{t3}\"RC\" : {{");
+                        sb.Append($"{t4}\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()},");
+                        sb.Append($"{t4}\"AllowAPIWhenDisconnected\" : {vehicle.RC.AllowAPIWhenDisconnected.ToString().ToLower()}");
+                        sb.Append($"{t3}}},"); // End RC
+                        sb.Append($"{t3}\"Cameras\" : {{");
+                        foreach (var cam in vehicle.Cameras)
                         {
-                            sb.Append("\n\t\t\t\t\t{");
-                            sb.Append($"\n\t\t\t\t\t\"ImageType\" : {capSet.ImageType.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Width\" : {capSet.Width.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Height\" : {capSet.Height.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
-                            sb.Append($"\n\t\t\t\t\t\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
-                            sb.Append("\n\t\t\t\t\t},");
+                            sb.Append($"{t4}\"{cam.Name}\" : {{");
+                            sb.Append($"{t5}\"CaptureSettings\" : [");
+                            foreach (var capSet in cam.CaptureSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"ImageType\" : {capSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"Width\" : {capSet.Width.ToString()},");
+                                sb.Append($"{t6}\"Height\" : {capSet.Height.ToString()},");
+                                sb.Append($"{t6}\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
+                                sb.Append($"{t6}\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
+                                sb.Append($"{t6}\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
+                                sb.Append($"{t6}\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
+                                sb.Append($"{t6}\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"NoiseSettings\" : [");
+                            foreach (var noiseSet in cam.NoiseSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"Enabled\" : {noiseSet.Enabled.ToString().ToLower()},");
+                                sb.Append($"{t6}\"ImageType\" : {noiseSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"RandContrib\" : {noiseSet.RandContrib.ToString()},");
+                                sb.Append($"{t6}\"RandSpeed\" : {noiseSet.RandSpeed.ToString()},");
+                                sb.Append($"{t6}\"RandSize\" : {noiseSet.RandSize.ToString()},");
+                                sb.Append($"{t6}\"RandDensity\" : {noiseSet.RandDensity.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveContrib\" : {noiseSet.HorzWaveContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveStrength\" : {noiseSet.HorzWaveStrength.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveVertSize\" : {noiseSet.HorzWaveVertSize.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveScreenSize\" : {noiseSet.HorzWaveScreenSize.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesContrib\" : {noiseSet.HorzNoiseLinesContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityY\" : {noiseSet.HorzNoiseLinesDensityY.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityXY\" : {noiseSet.HorzNoiseLinesDensityXY.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionContrib\" : {noiseSet.HorzDistortionContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionStrength\" : {noiseSet.HorzDistortionStrength.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"Gimbal\" : {{");
+                            sb.Append($"{t6}\"Stabilization\" : {cam.Gimbal.Stabilization.ToString()},");
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Pitch))
+                            {
+                                sb.Append($"{t6}\"Pitch\" : {cam.Gimbal.Rotation.Pitch.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Roll))
+                            {
+                                sb.Append($"{t6}\"Roll\" : {cam.Gimbal.Rotation.Roll.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Yaw))
+                            {
+                                sb.Append($"{t6}\"Yaw\" : {cam.Gimbal.Rotation.Yaw.ToString()},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}}},");  // End Gimabl
+                            // Note: Camera position and rotation settings currently if omitted will cause Unreal to crash: Issue #1836
+                            // Therefore we will at least write 0.0 for any unspecified (NaN) values
+                            if (!float.IsNaN(cam.Position.X))
+                            {
+                                sb.Append($"{t5}\"X\" : {cam.Position.X.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"X\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Y))
+                            {
+                                sb.Append($"{t5}\"Y\" : {cam.Position.Y.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Y\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Z))
+                            {
+                                sb.Append($"{t5}\"Z\" : {cam.Position.Z.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Z\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Pitch))
+                            {
+                                sb.Append($"{t5}\"Pitch\" : {cam.Rotation.Pitch.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Pitch\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Roll))
+                            {
+                                sb.Append($"{t5}\"Roll\" : {cam.Rotation.Roll.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Roll\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Yaw))
+                            {
+                                sb.Append($"{t5}\"Yaw\" : {cam.Rotation.Yaw.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Yaw\" : 0.0,");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t4}}},"); // End this cam
                         }
                         sb.Remove(sb.Length - 1, 1);
-                        sb.Append("\n\t\t\t\t]");
-                        sb.Append("\n\t\t\t},"); // End Cameras
+                        sb.Append($"{t3}}},"); // End Cameras
                         if (!float.IsNaN(vehicle.Position.X))
                         {
-                            sb.Append($"\n\t\t\t\"X\" : {vehicle.Position.X.ToString()},");
+                            sb.Append($"{t3}\"X\" : {vehicle.Position.X.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Y))
                         {
-                            sb.Append($"\n\t\t\t\"Y\" : {vehicle.Position.Y.ToString()},");
+                            sb.Append($"{t3}\"Y\" : {vehicle.Position.Y.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Z))
                         {
-                            sb.Append($"\n\t\t\t\"Z\" : {vehicle.Position.Z.ToString()},");
+                            sb.Append($"{t3}\"Z\" : {vehicle.Position.Z.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Pitch))
                         {
-                            sb.Append($"\n\t\t\t\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
+                            sb.Append($"{t3}\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Roll))
                         {
-                            sb.Append($"\n\t\t\t\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
+                            sb.Append($"{t3}\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Yaw))
                         {
-                            sb.Append($"\n\t\t\t\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
+                            sb.Append($"{t3}\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
                         }
-                        sb.Append("\n\t\t\t\"Sensors\" : {");
+                        sb.Append($"{t3}\"Sensors\" : {{");
                         i = 0;
                         foreach (var sensor in vehicle.Sensors.BarometerList)
                         {
                             i++;
                             if (sensor.SensorType == SensorType.Barometer)
                             {
-                                sb.Append($"\n\t\t\t\t\"Barometer{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 1,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Barometer{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 1,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2790,10 +3297,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Imu)
                             {
-                                sb.Append($"\n\t\t\t\t\"Imu{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 2,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Imu{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 2,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2802,10 +3309,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Gps)
                             {
-                                sb.Append($"\n\t\t\t\t\"Gps{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 3,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Gps{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 3,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2814,10 +3321,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Magnetometer)
                             {
-                                sb.Append($"\n\t\t\t\t\"Magnetometer{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 4,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Magnetometer{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 4,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2826,10 +3333,10 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Distance)
                             {
-                                sb.Append($"\n\t\t\t\t\"Distance{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 5,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t4}\"Distance{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 5,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         i = 0;
@@ -2838,49 +3345,49 @@ namespace AirSimUnity {
                             i++;
                             if (sensor.SensorType == SensorType.Lidar)
                             {
-                                sb.Append($"\n\t\t\t\t\"Lidar{i}\" : {{");
-                                sb.Append($"\n\t\t\t\t\t\"SensorType\" : 6,");
-                                sb.Append($"\n\t\t\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
-                                sb.Append($"\n\t\t\t\t\t\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"Range\" : {sensor.Range.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
+                                sb.Append($"{t4}\"Lidar{i}\" : {{");
+                                sb.Append($"{t5}\"SensorType\" : 6,");
+                                sb.Append($"{t5}\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
+                                sb.Append($"{t5}\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
+                                sb.Append($"{t5}\"Range\" : {sensor.Range.ToString()},");
+                                sb.Append($"{t5}\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
+                                sb.Append($"{t5}\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
                                 if (!float.IsNaN(sensor.Position.X))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"X\" : {sensor.Position.X.ToString()},");
+                                    sb.Append($"{t5}\"X\" : {sensor.Position.X.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Position.Y))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Y\" : {sensor.Position.Y.ToString()},");
+                                    sb.Append($"{t5}\"Y\" : {sensor.Position.Y.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Position.Z))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Z\" : {sensor.Position.Z.ToString()},");
+                                    sb.Append($"{t5}\"Z\" : {sensor.Position.Z.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Pitch))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
+                                    sb.Append($"{t5}\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Roll))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Roll\" : {sensor.Rotation.Roll.ToString()},");
+                                    sb.Append($"{t5}\"Roll\" : {sensor.Rotation.Roll.ToString()},");
                                 }
                                 if (!float.IsNaN(sensor.Rotation.Yaw))
                                 {
-                                    sb.Append($"\n\t\t\t\t\t\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
+                                    sb.Append($"{t5}\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
                                 }
-                                sb.Append($"\n\t\t\t\t\t\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
-                                sb.Append($"\n\t\t\t\t\t\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
-                                sb.Append($"\n\t\t\t\t\t\"DataFrame\" : \"{sensor.DataFrame}\"");
-                                sb.Append("\n\t\t\t\t},");
+                                sb.Append($"{t5}\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
+                                sb.Append($"{t5}\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
+                                sb.Append($"{t5}\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
+                                sb.Append($"{t5}\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
+                                sb.Append($"{t5}\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
+                                sb.Append($"{t5}\"DataFrame\" : \"{sensor.DataFrame}\"");
+                                sb.Append($"{t4}}},");
                             }
                         }
                         sb.Remove(sb.Length - 1, 1);
-                        sb.Append("\n\t\t\t}"); // End This PX4 Sensor
-                        sb.Append("\n\t\t},"); // End This PX4
+                        sb.Append($"{t3}}}"); // End This PX4 Sensor
+                        sb.Append($"{t2}}},"); // End This PX4
                     } // End if
                 } // End foreach
 
@@ -2888,115 +3395,207 @@ namespace AirSimUnity {
                 {
                     if (vehicle.VehicleType == "ComputerVision")
                     {
-                        sb.Append($"\n\t\t\"{vehicle.VehicleName}\" : {{");
-                        sb.Append($"\n\t\t\t\"VehicleType\" : \"{vehicle.VehicleType}\",");
-                        sb.Append($"\n\t\t\t\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
-                        sb.Append($"\n\t\t\t\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"PawnPath\" : \"{vehicle.PawnPath}\",");
-                        sb.Append($"\n\t\t\t\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrogh.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"IsFpvVehicle\" : {vehicle.IsFpvVehicle.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"AllowAPIAlways\" : {vehicle.AllowAPIAlways.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\"RC\" : {");
-                        sb.Append($"\n\t\t\t\t\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()},");
-                        sb.Append($"\n\t\t\t\t\"AllowAPIWhenDisconnected\" : {vehicle.RC.AllowAPIWhenDisconnected.ToString().ToLower()}");
-                        sb.Append("\n\t\t\t},"); // End RC
-                        sb.Append("\n\t\t\t\"Cameras\" : {");
-                        sb.Append($"\n\t\t\t\t\"CameraName\" : \"{vehicle.Cameras.CameraName}\",");
-                        sb.Append($"\n\t\t\t\t\"ImageType\" : {vehicle.Cameras.ImageType.ToString()},");
-                        sb.Append($"\n\t\t\t\t\"PixelAsFloat\" : {vehicle.Cameras.PixelAsFloat.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\t\"Compress\" : {vehicle.Cameras.Compress.ToString().ToLower()},");
-                        sb.Append("\n\t\t\t\t\"CaptureSettings\" : [");
-                        foreach (var capSet in vehicle.Cameras.CaptureSettings)
+                        sb.Append($"{t2}\"{vehicle.VehicleName}\" : {{");
+                        sb.Append($"{t3}\"VehicleType\" : \"{vehicle.VehicleType}\",");
+                        sb.Append($"{t3}\"DefaultVehicleState\" : \"{vehicle.DefaultVehicleState}\",");
+                        sb.Append($"{t3}\"AutoCreate\" : {vehicle.AutoCreate.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableTrace\" : {vehicle.EnableTrace.ToString().ToLower()},");
+                        sb.Append($"{t3}\"PawnPath\" : \"{vehicle.PawnPath}\",");
+                        sb.Append($"{t3}\"EnableCollisionPassthrogh\" : {vehicle.EnableCollisionPassthrogh.ToString().ToLower()},");
+                        sb.Append($"{t3}\"EnableCollisions\" : {vehicle.EnableCollisions.ToString().ToLower()},");
+                        sb.Append($"{t3}\"IsFpvVehicle\" : {vehicle.IsFpvVehicle.ToString().ToLower()},");
+                        sb.Append($"{t3}\"AllowAPIAlways\" : {vehicle.AllowAPIAlways.ToString().ToLower()},");
+                        sb.Append($"{t3}\"RC\" : {{");
+                        sb.Append($"{t4}\"RemoteControlID\" : {vehicle.RC.RemoteControlID.ToString()},");
+                        sb.Append($"{t4}\"AllowAPIWhenDisconnected\" : {vehicle.RC.AllowAPIWhenDisconnected.ToString().ToLower()}");
+                        sb.Append($"{t3}}},"); // End RC
+                        sb.Append($"{t3}\"Cameras\" : {{");
+                        foreach (var cam in vehicle.Cameras)
                         {
-                            sb.Append("\n\t\t\t\t\t{");
-                            sb.Append($"\n\t\t\t\t\t\"ImageType\" : {capSet.ImageType.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Width\" : {capSet.Width.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"Height\" : {capSet.Height.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
-                            sb.Append($"\n\t\t\t\t\t\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
-                            sb.Append($"\n\t\t\t\t\t\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
-                            sb.Append("\n\t\t\t\t\t},");
+                            sb.Append($"{t4}\"{cam.Name}\" : {{");
+                            sb.Append($"{t5}\"CaptureSettings\" : [");
+                            foreach (var capSet in cam.CaptureSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"ImageType\" : {capSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"Width\" : {capSet.Width.ToString()},");
+                                sb.Append($"{t6}\"Height\" : {capSet.Height.ToString()},");
+                                sb.Append($"{t6}\"FOV_Degrees\" : {capSet.FOV_Degrees.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureSpeed\" : {capSet.AutoExposureSpeed.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureBias\" : {capSet.AutoExposureBias.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMaxBrightness\" : {capSet.AutoExposureMaxBrightness.ToString()},");
+                                sb.Append($"{t6}\"AutoExposureMinBrightness\" : {capSet.AutoExposureMinBrightness.ToString()},");
+                                sb.Append($"{t6}\"MotionBlurAmount\" : {capSet.MotionBlurAmount.ToString()},");
+                                sb.Append($"{t6}\"TargetGamma\" : {capSet.TargetGamma.ToString()},");
+                                sb.Append($"{t6}\"ProjectionMode\" : \"{capSet.ProjectionMode}\",");
+                                sb.Append($"{t6}\"OrthoWidth\" : {capSet.OrthoWidth.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"NoiseSettings\" : [");
+                            foreach (var noiseSet in cam.NoiseSettings)
+                            {
+                                sb.Append($"{t6}{{");
+                                sb.Append($"{t6}\"Enabled\" : {noiseSet.Enabled.ToString().ToLower()},");
+                                sb.Append($"{t6}\"ImageType\" : {noiseSet.ImageType.ToString()},");
+                                sb.Append($"{t6}\"RandContrib\" : {noiseSet.RandContrib.ToString()},");
+                                sb.Append($"{t6}\"RandSpeed\" : {noiseSet.RandSpeed.ToString()},");
+                                sb.Append($"{t6}\"RandSize\" : {noiseSet.RandSize.ToString()},");
+                                sb.Append($"{t6}\"RandDensity\" : {noiseSet.RandDensity.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveContrib\" : {noiseSet.HorzWaveContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveStrength\" : {noiseSet.HorzWaveStrength.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveVertSize\" : {noiseSet.HorzWaveVertSize.ToString()},");
+                                sb.Append($"{t6}\"HorzWaveScreenSize\" : {noiseSet.HorzWaveScreenSize.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesContrib\" : {noiseSet.HorzNoiseLinesContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityY\" : {noiseSet.HorzNoiseLinesDensityY.ToString()},");
+                                sb.Append($"{t6}\"HorzNoiseLinesDensityXY\" : {noiseSet.HorzNoiseLinesDensityXY.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionContrib\" : {noiseSet.HorzDistortionContrib.ToString()},");
+                                sb.Append($"{t6}\"HorzDistortionStrength\" : {noiseSet.HorzDistortionStrength.ToString()}");
+                                sb.Append($"{t6}}},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}],");
+                            sb.Append($"{t5}\"Gimbal\" : {{");
+                            sb.Append($"{t6}\"Stabilization\" : {cam.Gimbal.Stabilization.ToString()},");
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Pitch))
+                            {
+                                sb.Append($"{t6}\"Pitch\" : {cam.Gimbal.Rotation.Pitch.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Roll))
+                            {
+                                sb.Append($"{t6}\"Roll\" : {cam.Gimbal.Rotation.Roll.ToString()},");
+                            }
+                            if (!float.IsNaN(cam.Gimbal.Rotation.Yaw))
+                            {
+                                sb.Append($"{t6}\"Yaw\" : {cam.Gimbal.Rotation.Yaw.ToString()},");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t5}}},");  // End Gimabl
+                            // Note: Camera position and rotation settings currently if omitted will cause Unreal to crash: Issue #1836
+                            // Therefore we will at least write 0.0 for any unspecified (NaN) values
+                            if (!float.IsNaN(cam.Position.X))
+                            {
+                                sb.Append($"{t5}\"X\" : {cam.Position.X.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"X\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Y))
+                            {
+                                sb.Append($"{t5}\"Y\" : {cam.Position.Y.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Y\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Position.Z))
+                            {
+                                sb.Append($"{t5}\"Z\" : {cam.Position.Z.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Z\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Pitch))
+                            {
+                                sb.Append($"{t5}\"Pitch\" : {cam.Rotation.Pitch.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Pitch\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Roll))
+                            {
+                                sb.Append($"{t5}\"Roll\" : {cam.Rotation.Roll.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Roll\" : 0.0,");
+                            }
+                            if (!float.IsNaN(cam.Rotation.Yaw))
+                            {
+                                sb.Append($"{t5}\"Yaw\" : {cam.Rotation.Yaw.ToString()},");
+                            }
+                            else
+                            {
+                                sb.Append($"{t5}\"Yaw\" : 0.0,");
+                            }
+                            sb.Remove(sb.Length - 1, 1);
+                            sb.Append($"{t4}}},"); // End this cam
                         }
                         sb.Remove(sb.Length - 1, 1);
-                        sb.Append("\n\t\t\t\t]");
-                        sb.Append("\n\t\t\t},"); // End Cameras
+                        sb.Append($"{t3}}},"); // End Cameras
                         if (!float.IsNaN(vehicle.Position.X))
                         {
-                            sb.Append($"\n\t\t\t\"X\" : {vehicle.Position.X.ToString()},");
+                            sb.Append($"{t3}\"X\" : {vehicle.Position.X.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Y))
                         {
-                            sb.Append($"\n\t\t\t\"Y\" : {vehicle.Position.Y.ToString()},");
+                            sb.Append($"{t3}\"Y\" : {vehicle.Position.Y.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Position.Z))
                         {
-                            sb.Append($"\n\t\t\t\"Z\" : {vehicle.Position.Z.ToString()},");
+                            sb.Append($"{t3}\"Z\" : {vehicle.Position.Z.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Pitch))
                         {
-                            sb.Append($"\n\t\t\t\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
+                            sb.Append($"{t3}\"Pitch\" : {vehicle.Rotation.Pitch.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Roll))
                         {
-                            sb.Append($"\n\t\t\t\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
+                            sb.Append($"{t3}\"Roll\" : {vehicle.Rotation.Roll.ToString()},");
                         }
                         if (!float.IsNaN(vehicle.Rotation.Yaw))
                         {
-                            sb.Append($"\n\t\t\t\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
+                            sb.Append($"{t3}\"Yaw\" : {vehicle.Rotation.Yaw.ToString()},");
                         }
-                        sb.Append("\n\t\t},"); // End This ComputerVision
+                        sb.Append($"{t2}}},"); // End This ComputerVision
                     } // End if
                 } // End foreach
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append("\n\t},"); // End Vehicles
+                sb.Append($"{t1}}},"); // End Vehicles
 
-                sb.Append("\n\t\"CameraDirector\" : {");
+                sb.Append($"{t1}\"CameraDirector\" : {{");
                 if (!float.IsNaN(CameraDirector.Position.X))
                 {
-                    sb.Append($"\n\t\t\"X\" : {CameraDirector.Position.X.ToString()},");
+                    sb.Append($"{t2}\"X\" : {CameraDirector.Position.X.ToString()},");
                 }
                 if (!float.IsNaN(CameraDirector.Position.Y))
                 {
-                    sb.Append($"\n\t\t\"Y\" : {CameraDirector.Position.Y.ToString()},");
+                    sb.Append($"{t2}\"Y\" : {CameraDirector.Position.Y.ToString()},");
                 }
                 if (!float.IsNaN(CameraDirector.Position.Z))
                 {
-                    sb.Append($"\n\t\t\"Z\" : {CameraDirector.Position.Z.ToString()},");
+                    sb.Append($"{t2}\"Z\" : {CameraDirector.Position.Z.ToString()},");
                 }
                 if (!float.IsNaN(CameraDirector.Rotation.Pitch))
                 {
-                    sb.Append($"\n\t\t\"Pitch\" : {CameraDirector.Rotation.Pitch.ToString()},");
+                    sb.Append($"{t2}\"Pitch\" : {CameraDirector.Rotation.Pitch.ToString()},");
                 }
                 if (!float.IsNaN(CameraDirector.Rotation.Roll))
                 {
-                    sb.Append($"\n\t\t\"Roll\" : {CameraDirector.Rotation.Roll.ToString()},");
+                    sb.Append($"{t2}\"Roll\" : {CameraDirector.Rotation.Roll.ToString()},");
                 }
                 if (!float.IsNaN(CameraDirector.Rotation.Yaw))
                 {
-                    sb.Append($"\n\t\t\"Yaw\" : {CameraDirector.Rotation.Yaw.ToString()},");
+                    sb.Append($"{t2}\"Yaw\" : {CameraDirector.Rotation.Yaw.ToString()},");
                 }
-                sb.Append($"\n\t\t\"FollowDistance\" : {CameraDirector.FollowDistance}");
-                sb.Append("\n\t},"); // End CameraDirector
+                sb.Append($"{t2}\"FollowDistance\" : {CameraDirector.FollowDistance}");
+                sb.Append($"{t1}}},"); // End CameraDirector
 
-                sb.Append("\n\t\"DefaultSensors\" : {");
+                sb.Append($"{t1}\"DefaultSensors\" : {{");
                 i = 0;
                 foreach ( var sensor in DefaultSensors.BarometerList)
                 {
                     i++;
                     if ( sensor.SensorType == SensorType.Barometer)
                     {
-                        sb.Append($"\n\t\t\"Barometer{i}\" : {{");
-                        sb.Append($"\n\t\t\t\"SensorType\" : 1,");
-                        sb.Append($"\n\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                        sb.Append("\n\t\t},");
+                        sb.Append($"{t2}\"Barometer{i}\" : {{");
+                        sb.Append($"{t3}\"SensorType\" : 1,");
+                        sb.Append($"{t3}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                        sb.Append($"{t2}}},");
                     }
                 }
                 i = 0;
@@ -3005,10 +3604,10 @@ namespace AirSimUnity {
                     i++;
                     if (sensor.SensorType == SensorType.Imu)
                     {
-                        sb.Append($"\n\t\t\"Imu{i}\" : {{");
-                        sb.Append($"\n\t\t\t\"SensorType\" : 2,");
-                        sb.Append($"\n\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                        sb.Append("\n\t\t},");
+                        sb.Append($"{t2}\"Imu{i}\" : {{");
+                        sb.Append($"{t3}\"SensorType\" : 2,");
+                        sb.Append($"{t3}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                        sb.Append($"{t2}}},");
                     }
                 }
                 i = 0;
@@ -3017,10 +3616,10 @@ namespace AirSimUnity {
                     i++;
                     if (sensor.SensorType == SensorType.Gps)
                     {
-                        sb.Append($"\n\t\t\"Gps{i}\" : {{");
-                        sb.Append($"\n\t\t\t\"SensorType\" : 3,");
-                        sb.Append($"\n\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                        sb.Append("\n\t\t},");
+                        sb.Append($"{t2}\"Gps{i}\" : {{");
+                        sb.Append($"{t3}\"SensorType\" : 3,");
+                        sb.Append($"{t3}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                        sb.Append($"{t2}}},");
                     }
                 }
                 i = 0;
@@ -3029,10 +3628,10 @@ namespace AirSimUnity {
                     i++;
                     if (sensor.SensorType == SensorType.Magnetometer)
                     {
-                        sb.Append($"\n\t\t\"Magnetometer{i}\" : {{");
-                        sb.Append($"\n\t\t\t\"SensorType\" : 4,");
-                        sb.Append($"\n\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                        sb.Append("\n\t\t},");
+                        sb.Append($"{t2}\"Magnetometer{i}\" : {{");
+                        sb.Append($"{t3}\"SensorType\" : 4,");
+                        sb.Append($"{t3}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                        sb.Append($"{t2}}},");
                     }
                 }
                 i = 0;
@@ -3041,10 +3640,10 @@ namespace AirSimUnity {
                     i++;
                     if (sensor.SensorType == SensorType.Distance)
                     {
-                        sb.Append($"\n\t\t\"Distance{i}\" : {{");
-                        sb.Append($"\n\t\t\t\"SensorType\" : 5,");
-                        sb.Append($"\n\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
-                        sb.Append("\n\t\t},");
+                        sb.Append($"{t2}\"Distance{i}\" : {{");
+                        sb.Append($"{t3}\"SensorType\" : 5,");
+                        sb.Append($"{t3}\"Enabled\" : {sensor.Enabled.ToString().ToLower()}");
+                        sb.Append($"{t2}}},");
                     }
                 }
                 i = 0;
@@ -3053,50 +3652,50 @@ namespace AirSimUnity {
                     i++;
                     if (sensor.SensorType == SensorType.Lidar)
                     {
-                        sb.Append($"\n\t\t\"Lidar{i}\" : {{");
-                        sb.Append($"\n\t\t\t\"SensorType\" : 6,");
-                        sb.Append($"\n\t\t\t\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
-                        sb.Append($"\n\t\t\t\"Range\" : {sensor.Range.ToString()},");
-                        sb.Append($"\n\t\t\t\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
-                        sb.Append($"\n\t\t\t\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
+                        sb.Append($"{t2}\"Lidar{i}\" : {{");
+                        sb.Append($"{t3}\"SensorType\" : 6,");
+                        sb.Append($"{t3}\"Enabled\" : {sensor.Enabled.ToString().ToLower()},");
+                        sb.Append($"{t3}\"NumberOfChannels\" : {sensor.NumberOfChannels.ToString()},");
+                        sb.Append($"{t3}\"Range\" : {sensor.Range.ToString()},");
+                        sb.Append($"{t3}\"RotationsPerSecond\" : {sensor.RotationsPerSecond.ToString()},");
+                        sb.Append($"{t3}\"PointsPerSecond\" : {sensor.PointsPerSecond.ToString()},");
 
                         if (!float.IsNaN(sensor.Position.X))
                         {
-                            sb.Append($"\n\t\t\t\"X\" : {sensor.Position.X.ToString()},");
+                            sb.Append($"{t3}\"X\" : {sensor.Position.X.ToString()},");
                         }
                         if (!float.IsNaN(sensor.Position.Y))
                         {
-                            sb.Append($"\n\t\t\t\"Y\" : {sensor.Position.Y.ToString()},");
+                            sb.Append($"{t3}\"Y\" : {sensor.Position.Y.ToString()},");
                         }
                         if (!float.IsNaN(sensor.Position.Z))
                         {
-                            sb.Append($"\n\t\t\t\"Z\" : {sensor.Position.Z.ToString()},");
+                            sb.Append($"{t3}\"Z\" : {sensor.Position.Z.ToString()},");
                         }
                         if (!float.IsNaN(sensor.Rotation.Pitch))
                         {
-                            sb.Append($"\n\t\t\t\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
+                            sb.Append($"{t3}\"Pitch\" : {sensor.Rotation.Pitch.ToString()},");
                         }
                         if (!float.IsNaN(sensor.Rotation.Roll))
                         {
-                            sb.Append($"\n\t\t\t\"Roll\" : {sensor.Rotation.Roll.ToString()},");
+                            sb.Append($"{t3}\"Roll\" : {sensor.Rotation.Roll.ToString()},");
                         }
                         if (!float.IsNaN(sensor.Rotation.Yaw))
                         {
-                            sb.Append($"\n\t\t\t\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
+                            sb.Append($"{t3}\"Yaw\" : {sensor.Rotation.Yaw.ToString()},");
                         }
-                        sb.Append($"\n\t\t\t\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
-                        sb.Append($"\n\t\t\t\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
-                        sb.Append($"\n\t\t\t\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
-                        sb.Append($"\n\t\t\t\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
-                        sb.Append($"\n\t\t\t\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
-                        sb.Append($"\n\t\t\t\"DataFrame\" : \"{sensor.DataFrame}\"");
-                        sb.Append("\n\t\t},");
+                        sb.Append($"{t3}\"VerticalFOVUpper\" : {sensor.VerticalFOVUpper.ToString()},");
+                        sb.Append($"{t3}\"VerticalFOVLower\" : {sensor.VerticalFOVLower.ToString()},");
+                        sb.Append($"{t3}\"HorizontalFOVStart\" : {sensor.HorizontalFOVStart.ToString()},");
+                        sb.Append($"{t3}\"HorizontalFOVEnd\" : {sensor.HorizontalFOVEnd.ToString()},");
+                        sb.Append($"{t3}\"DrawDebugPoints\" : {sensor.DrawDebugPoints.ToString().ToLower()},");
+                        sb.Append($"{t3}\"DataFrame\" : \"{sensor.DataFrame}\"");
+                        sb.Append($"{t2}}},");
                     }
                 }
                 sb.Remove(sb.Length -1, 1);
 
-                sb.Append("\n\t}");
+                sb.Append($"{t1}}}");
                 sb.Append("\n}");
 
                 //Debug.Log("Writing to: " + fileName);
@@ -3108,7 +3707,7 @@ namespace AirSimUnity {
                 writer.WriteLine(sb);
                 writer.Close();
                 result = true;
-                AirSimSettings.GetSettings().SettingsVersion = 1.2;
+                GetSettings().SettingsVersion = 1.2;
             }
             catch (Exception ex)
             {
@@ -3116,6 +3715,11 @@ namespace AirSimUnity {
                 result = false;
             }
             return result;
+
+
+
+
+
         }
     }
 
