@@ -2,7 +2,7 @@
 #define LOGGER_FILE
 
 #include <fstream>
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 	#include <boost/filesystem.hpp>
 	#include <boost/filesystem/fstream.hpp>
 	namespace bfs = boost::filesystem;
