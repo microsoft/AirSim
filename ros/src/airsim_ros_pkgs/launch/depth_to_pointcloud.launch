@@ -5,7 +5,7 @@
 	<!-- docs: https://gist.github.com/bhaskara/2400165 -->
 	
 	<!-- Nodelet manager -->
-	<node pkg="nodelet" type="nodelet" args="manager" name="airsim_nodelet_manager" output="screen"/>
+	<!-- <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen"/> -->
 
 	<!-- Nodelets! -->
 	<!-- Convert it into a point cloud -->

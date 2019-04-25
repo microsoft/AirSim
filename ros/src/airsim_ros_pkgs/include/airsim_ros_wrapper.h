@@ -24,6 +24,7 @@ STRICT_MODE_ON
 #include <math.h>
 #include <mavros_msgs/State.h>
 #include <nav_msgs/Odometry.h>
+#include "nodelet/nodelet.h"
 #include <opencv2/opencv.hpp>
 #include <ros/console.h>
 #include <sensor_msgs/CameraInfo.h>
@@ -95,12 +96,13 @@ struct GimbalCmd
     //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
 };
 
-class AirsimROSWrapper
+class AirsimROSWrapper : public nodelet::Nodelet
 {
 public:
-    AirsimROSWrapper(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private);
-    ~AirsimROSWrapper() {}; // who will really derive this tho
+    AirsimROSWrapper() {}; 
+    ~AirsimROSWrapper() {}; 
 
+    virtual void onInit();
     void initialize_airsim();
     void initialize_ros();
     void setup_vehicle_constraints(); // todo make ros params
@@ -130,7 +132,6 @@ public:
     // TODO migrate to image_tranport camera publisher https://answers.ros.org/question/278602/how-to-use-camera_info_manager-to-publish-camera_info/
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response);
     sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response);
-    cv::Mat manual_decode_rgb(const ImageResponse &img_response);
     cv::Mat manual_decode_depth(const ImageResponse &img_response);
     void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info);
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m); // todo ugly
@@ -147,7 +148,6 @@ public:
 
 private:
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we need to decode the image 
-    // tf2::Quaternion quat_world_ned_to_world_enu; // for gimbal commands. todo deprecated
 
     msr::airlib::MultirotorRpcLibClient airsim_client_;
     msr::airlib::MultirotorState curr_drone_state_;
@@ -172,11 +172,8 @@ private:
     GimbalCmd gimbal_cmd_; 
 
     /// ROS tf
-    /// todo is having listener and broadcaster together a bad idea? 
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::Buffer tf_buffer_;
-    tf2_ros::TransformListener tf_listener_;
-    std::unordered_map<std::string, std::string> cam_name_to_gimbal_tf_name_map_;
     std::unordered_map<std::string, std::string> cam_name_to_cam_tf_name_map_;
 
     /// ROS params
@@ -192,7 +189,7 @@ private:
     // sensor_msgs::CameraInfo front_center_mono_cam_info_msg_;
 
     /// ROS camera publishers
-    image_transport::ImageTransport it_;
+    // image_transport::ImageTransport it_;
     image_transport::Publisher front_left_img_raw_pub_;
     image_transport::Publisher front_right_img_raw_pub_;
     image_transport::Publisher front_left_depth_planar_pub_;

@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
   mavros_msgs
   message_generation
   nav_msgs
+  nodelet
   roscpp
   rospy
   sensor_msgs
@@ -55,10 +56,8 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS 
-  message_runtime 
-  roscpp 
-  std_msgs
+  LIBRARIES airsim_ros_nodelet
+  CATKIN_DEPENDS message_runtime nodelet roscpp std_msgs
 )
 
 include_directories(
@@ -73,30 +72,27 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-add_library(lib_pd_position_controller_simple src/pd_position_controller_simple.cpp)
-add_dependencies(lib_pd_position_controller_simple ${catkin_EXPORTED_TARGETS})
+add_library(pd_position_controller_simple src/pd_position_controller_simple.cpp)
+add_dependencies(pd_position_controller_simple ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(pd_position_controller_simple ${catkin_EXPORTED_TARGETS})
 
-add_library(lib_airsim_ros_wrapper src/airsim_ros_wrapper.cpp)
-add_dependencies(lib_airsim_ros_wrapper ${catkin_EXPORTED_TARGETS})
-target_link_libraries(lib_airsim_ros_wrapper ${catkin_LIBRARIES} ${OpenCV_LIBS} yaml-cpp AirLib)
-
-add_executable(airsim_node src/airsim_node.cpp)
-target_link_libraries(airsim_node lib_airsim_ros_wrapper ${catkin_LIBRARIES} AirLib)
+add_library(airsim_ros_nodelet src/airsim_ros_wrapper.cpp)
+add_dependencies(airsim_ros_nodelet ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(airsim_ros_nodelet ${catkin_LIBRARIES} ${OpenCV_LIBS} yaml-cpp AirLib)
 
 add_executable(pd_position_controller_simple_node src/pd_position_controller_simple_node.cpp)
-target_link_libraries(pd_position_controller_simple_node lib_pd_position_controller_simple lib_airsim_ros_wrapper ${catkin_LIBRARIES} AirLib)
+target_link_libraries(pd_position_controller_simple_node pd_position_controller_simple airsim_ros_nodelet ${catkin_LIBRARIES} AirLib)
 
 install(TARGETS
     #list of nodes
-    airsim_node
     pd_position_controller_simple_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 install(TARGETS 
     #list of shared libraries
-    lib_airsim_ros_wrapper
-    lib_pd_position_controller_simple
+    airsim_ros_nodelet
+    pd_position_controller_simple
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
@@ -105,6 +101,7 @@ install(FILES
   #list of necessary files (xml...)
   README.md
   # settings.json
+  nodelet_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 

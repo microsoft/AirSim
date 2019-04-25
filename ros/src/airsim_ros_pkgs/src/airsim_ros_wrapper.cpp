@@ -1,5 +1,7 @@
 #include <airsim_ros_wrapper.h>
 #include <boost/make_shared.hpp>
+#include <pluginlib/class_list_macros.h>
+PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
 
 constexpr char AirsimROSWrapper::CAM_YML_NAME[];
 constexpr char AirsimROSWrapper::WIDTH_YML_NAME[];
@@ -10,16 +12,11 @@ constexpr char AirsimROSWrapper::R_YML_NAME[];
 constexpr char AirsimROSWrapper::P_YML_NAME[];
 constexpr char AirsimROSWrapper::DMODEL_YML_NAME[];
 
-AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle &nh,const ros::NodeHandle &nh_private)
-    : nh_(nh), nh_private_(nh_private), it_(nh_), tf_listener_(tf_buffer_)
+void AirsimROSWrapper::onInit()
 {
     initialize_airsim();
     initialize_ros();
     in_air_ = false;
-    // todo following is ugly and hardcoded
-    cam_name_to_gimbal_tf_name_map_["front_right_custom"] = "front/right/static/gimbal";
-    cam_name_to_gimbal_tf_name_map_["front_left_custom"] = "front/left/static/gimbal";
-    cam_name_to_gimbal_tf_name_map_["front_center_custom"] = "front_center/static/gimbal";
 
     cam_name_to_cam_tf_name_map_["front_right_custom"] = "front/right";
     cam_name_to_cam_tf_name_map_["front_left_custom"] = "front/left";
@@ -54,15 +51,19 @@ void AirsimROSWrapper::initialize_airsim()
 
 void AirsimROSWrapper::initialize_ros()
 {
+    nh_ = getNodeHandle();
+    nh_private_ = getPrivateNodeHandle();
+    image_transport::ImageTransport it(nh_);
+
     // ros params
     vel_cmd_duration_ = 0.05; // todo
     double update_airsim_img_response_every_n_sec;// = 0.0001;
     double update_airsim_control_every_n_sec;// = 0.01;
 
-    front_center_img_raw_pub_ = it_.advertise("front_center/image_raw", 1);
-    front_left_img_raw_pub_ = it_.advertise("front/left/image_raw", 1);
-    front_right_img_raw_pub_ = it_.advertise("front/right/image_raw", 1);
-    front_left_depth_planar_pub_ = it_.advertise("front/left/depth_planar", 1);
+    front_center_img_raw_pub_ = it.advertise("front_center/image_raw", 1);
+    front_left_img_raw_pub_ = it.advertise("front/left/image_raw", 1);
+    front_right_img_raw_pub_ = it.advertise("front/right/image_raw", 1);
+    front_left_depth_planar_pub_ = it.advertise("front/left/depth_planar", 1);
 
     // todo enforce dynamics constraints in this node as well?
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
@@ -153,7 +154,6 @@ void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd &msg)
     vel_cmd_.y = (msg.twist.linear.x * sin(yaw)) + (msg.twist.linear.y * cos(yaw)); //body frame
     vel_cmd_.z = msg.twist.linear.z;
     vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-    // vel_cmd_.yaw_mode = msr::airlib::YawMode(true, msg.twist.angular.z);
     vel_cmd_.yaw_mode.is_rate = true;
     // airsim uses degrees
     vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg.twist.angular.z);
@@ -167,7 +167,6 @@ void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd &msg
     vel_cmd_.y = msg.twist.linear.y;
     vel_cmd_.z = msg.twist.linear.z;
     vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-    // vel_cmd_.yaw_mode = msr::airlib::YawMode(true, msg.twist.angular.z);
     vel_cmd_.yaw_mode.is_rate = true;
     vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg.twist.angular.z);
     vel_cmd_.vehicle_name = msg.vehicle_name;
@@ -178,13 +177,11 @@ void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd &msg
 void AirsimROSWrapper::gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd &gimbal_angle_quat_cmd_msg)
 {
     tf2::Quaternion quat_control_cmd;
-    geometry_msgs::TransformStamped gimbal_orig_tf;
     try
     {
         tf2::convert(gimbal_angle_quat_cmd_msg.orientation, quat_control_cmd);
         quat_control_cmd.normalize();
-        // airsim uses wxyz
-        gimbal_cmd_.target_quat = get_airlib_quat(quat_control_cmd);
+        gimbal_cmd_.target_quat = get_airlib_quat(quat_control_cmd); // airsim uses wxyz
         gimbal_cmd_.camera_name = gimbal_angle_quat_cmd_msg.camera_name;
         gimbal_cmd_.vehicle_name = gimbal_angle_quat_cmd_msg.vehicle_name;
         has_gimbal_cmd_ = true; 
@@ -192,7 +189,6 @@ void AirsimROSWrapper::gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAng
     catch (tf2::TransformException &ex)
     {
         ROS_WARN("%s",ex.what());
-        // ros::Duration(0.001).sleep();
     }
 }
 
@@ -203,8 +199,6 @@ void AirsimROSWrapper::gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAng
 // 3. call airsim client's setcameraorientation which sets camera orientation wrt world (or takeoff?) ned frame. todo 
 void AirsimROSWrapper::gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd &gimbal_angle_euler_cmd_msg)
 {
-    tf2::Quaternion quat_world_enu_to_gimbal;
-    geometry_msgs::TransformStamped gimbal_tf_world_enu;
     try
     {
         tf2::Quaternion quat_control_cmd;
@@ -218,7 +212,6 @@ void AirsimROSWrapper::gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAn
     catch (tf2::TransformException &ex)
     {
         ROS_WARN("%s",ex.what());
-        // ros::Duration(0.001).sleep();
     }
 }
 
@@ -330,7 +323,6 @@ void AirsimROSWrapper::set_zero_vel_cmd()
     vel_cmd_.z = 0.0;
 
     vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-    // vel_cmd_.yaw_mode = msr::airlib::YawMode(true, msg.twist.angular.z);
     vel_cmd_.yaw_mode.is_rate = false;
 
     // todo make class member or a fucntion 
@@ -410,42 +402,6 @@ void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
 
 }
 
-cv::Mat AirsimROSWrapper::manual_decode_rgb(const ImageResponse &img_response)
-{
-    cv::Mat mat(img_response.height, img_response.width, CV_8UC3, cv::Scalar(0, 0, 0));
-    int img_width = img_response.width;
-
-    // the encoding in vulkan and opengl is opposite. not sure why, but this gets around it. 
-    if(is_vulkan_)
-    {
-        for (int row = 0; row < img_response.height; row++)
-        {
-            for (int col = 0; col < img_width; col++)
-            {
-                mat.at<cv::Vec3b>(row, col) = cv::Vec3b(
-                    img_response.image_data_uint8[row*img_width*4 + 4*col + 2],
-                    img_response.image_data_uint8[row*img_width*4 + 4*col + 1],
-                    img_response.image_data_uint8[row*img_width*4 + 4*col + 0]);
-            }
-        }
-    }
-    else
-    {
-        for (int row = 0; row < img_response.height; row++)
-        {
-            for (int col = 0; col < img_width; col++)
-            {
-                mat.at<cv::Vec3b>(row, col) = cv::Vec3b(
-                    img_response.image_data_uint8[row*img_width*4 + 4*col + 0],
-                    img_response.image_data_uint8[row*img_width*4 + 4*col + 1],
-                    img_response.image_data_uint8[row*img_width*4 + 4*col + 2]);
-            }
-        }
-
-    }
-    return mat;
-}
-
 cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse &img_response)
 {
     cv::Mat mat(img_response.height, img_response.width, CV_32FC1, cv::Scalar(0));
@@ -484,24 +440,13 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
     // #endif
 
     // decode images and convert to ROS image msgs
-    // cv::Mat bgr_front_left = manual_decode_rgb(img_response.at(0));
-    // sensor_msgs::ImagePtr bgr_front_left_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_front_left).toImageMsg();
-    // sensor_msgs::ImagePtr bgr_front_left_msg = cv_bridge::CvImage(std_msgs::Header(), "rgb8", bgr_front_left).toImageMsg();
     sensor_msgs::ImagePtr bgr_front_left_msg = get_img_msg_from_response(img_response.at(0));
 
-    // cv::Mat bgr_front_right = manual_decode_rgb(img_response.at(1));
-    // sensor_msgs::ImagePtr bgr_front_right_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_front_right).toImageMsg();
-    // sensor_msgs::ImagePtr bgr_front_right_msg = cv_bridge::CvImage(std_msgs::Header(), "rgb8", bgr_front_right).toImageMsg();
     sensor_msgs::ImagePtr bgr_front_right_msg = get_img_msg_from_response(img_response.at(1));
 
-    // cv::Mat front_left_depth_planar = cv::imdecode(img_response.at(2).image_data_float, cv::IMREAD_GRAYSCALE);
-    // front_left_depth_planar.convertTo(front_left_depth_planar, CV_32FC1);
     cv::Mat front_left_depth_planar = manual_decode_depth(img_response.at(2));
     sensor_msgs::ImagePtr front_left_depth_planar_msg = cv_bridge::CvImage(std_msgs::Header(), "32FC1", front_left_depth_planar).toImageMsg();
 
-    // cv::Mat bgr_front_center = manual_decode_rgb(img_response.at(3));
-    // sensor_msgs::ImagePtr bgr_front_center_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", bgr_front_center).toImageMsg();
-    // sensor_msgs::ImagePtr bgr_front_center_msg = cv_bridge::CvImage(std_msgs::Header(), "rgb8", bgr_front_center).toImageMsg();
     sensor_msgs::ImagePtr bgr_front_center_msg = get_img_msg_from_response(img_response.at(3));
 
     // put ros time now in headers. 
