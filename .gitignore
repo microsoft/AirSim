@@ -362,3 +362,10 @@ xcuserdata/
 /Unity/UnityDemo/UnityDemo.sln
 /Unity/UnityDemo/Logs/
 /Unity/UnityDemo/Assets/Plugins/AirsimWrapper.dll
+
+# ROS
+ros/.catkin_tools/
+ros/devel/
+ros/logs/
+ros/.catkin_workspace
+ros/src/CMakeLists.txt

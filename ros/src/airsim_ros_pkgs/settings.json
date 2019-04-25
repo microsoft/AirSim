@@ -1,0 +1,77 @@
+{
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "ClockSpeed": 1.0,
+  "Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Armed",
+      "EnableCollisionPassthrogh": false,
+      "EnableCollisions": true,
+      "AllowAPIAlways": true,
+      "RC": {
+        "RemoteControlID": 0,
+        "AllowAPIWhenDisconnected": false
+      },
+      "Cameras": {
+        "front_center_custom": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 640,
+              "Height": 480,
+              "FOV_Degrees": 27,
+              "DepthOfFieldFstop": 2.8,
+              "DepthOfFieldFocalDistance": 200.0, 
+              "DepthOfFieldFocalRegion": 200.0,
+              "TargetGamma": 2.4
+            }
+          ],
+          "X": 0.50, "Y": 0, "Z": 0.10,
+          "Pitch": 0, "Roll": 0, "Yaw": 0
+        },
+        "front_left_custom": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 2.4
+            }, 
+            {
+              "ImageType": 1,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 2.4
+            }
+          ],
+          "X": 0.50, "Y": -0.06, "Z": 0.10,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
+        },
+        "front_right_custom": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 2.4
+            }
+          ],
+          "X": 0.50, "Y": 0.06, "Z": 0.10,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
+        }
+      },
+      "X": 0, "Y": 0, "Z": 0,
+      "Pitch": 0, "Roll": 0, "Yaw": 0
+    }
+  },
+  "SubWindows": [
+    {"WindowID": 0, "ImageType": 0, "CameraName": "front_left_custom", "Visible": true},
+    {"WindowID": 1, "ImageType": 0, "CameraName": "front_center_custom", "Visible": true},
+    {"WindowID": 2, "ImageType": 0, "CameraName": "front_right_custom", "Visible": true}
+  ]
+}

@@ -1,0 +1,13 @@
+<launch>
+	<node pkg="tf" type="static_transform_publisher" name="ned_to_enu_pub" args="0 0 0 1.57 0 3.14 world_ned world_enu 100"/>
+	<!-- odom_local_ned is just ground truth -->
+	<!-- the camera frames are coincident with the gimbal frames as of now  -->
+	<node pkg="tf" type="static_transform_publisher" name="static_tf_base_to_front_left" args="0.500 -0.060 0.100 0 0 0 /airsim/odom_local_ned /front/left/static/gimbal 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="static_tf_base_to_front_right" args="0.500 0.060 0.100 0 0 0 /airsim/odom_local_ned /front/right/static/gimbal 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="static_tf_base_to_front_center" args="0.500 0.000 0.100 0 0 0 /airsim/odom_local_ned /front_center/static/gimbal 100"/>
+
+<!-- 	<node pkg="tf" type="static_transform_publisher" name="static_tf_cam_ned_to_cam_optical" args="0.500 -0.060 0.100 0 0 0 /airsim/odom_local_ned /front/left/static/gimbal 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="static_dji_to_front_right_pub" args="0.500 0.060 0.100 0 0 0 /airsim/odom_local_ned /front/right/static/gimbal 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="static_dji_to_front_center_pub" args="0.500 0.000 0.100 0 0 0 /airsim/odom_local_ned /front_center/static/gimbal 100"/>
+ -->
+</launch>

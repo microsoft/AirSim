@@ -1,0 +1,3 @@
+<launch>
+	<node type="rviz" name="rviz" pkg="rviz" args="-d $(find airsim_ros_pkgs)/rviz/default.rviz" />
+</launch>

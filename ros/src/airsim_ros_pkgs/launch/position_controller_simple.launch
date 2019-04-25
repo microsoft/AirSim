@@ -1,0 +1,20 @@
+<launch>
+<!-- global params -->
+<!-- PID position controller node -->
+    <node name="pid_position_node" pkg="airsim_ros_pkgs" type="pid_position_controller_simple_node" output="screen">
+        <param name="update_control_every_n_sec" type="double" value="0.01" /> <!-- this needs to be in sync with airsim_ros_wrapper? -->
+        <param name="kp_x" type="double" value="0.30" />
+        <param name="kp_y" type="double" value="0.30" />
+        <param name="kp_z" type="double" value="0.30" />
+        <param name="kp_yaw" type="double" value="0.30" />
+
+        <param name="kd_x" type="double" value="0.05" />
+        <param name="kd_y" type="double" value="0.05" />
+        <param name="kd_z" type="double" value="0.05" />
+        <param name="kd_yaw" type="double" value="0.05" />
+
+        <param name="reached_thresh_xyz" type="double" value="0.1" />
+        <param name="reached_yaw_degrees" type="double" value="5.0" />
+    </node>
+
+</launch>
