@@ -92,18 +92,12 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
     if (capture) {
         FMatrix proj_mat;
 
-	    float x_axis_multiplier;
-	    float y_axis_multiplier;
 		FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
+		float x_axis_multiplier = 1.0f;
+		float y_axis_multiplier = render_target_size.X / (float)render_target_size.Y;
 
-	    if (render_target_size.X > render_target_size.Y)
-	    {
-		    // if the viewport is wider than it is tall
-		    x_axis_multiplier = 1.0f;
-		    y_axis_multiplier = render_target_size.X / static_cast<float>(render_target_size.Y);
-	    }
-	    else
-	    {
+	    if (render_target_size.X < render_target_size.Y)
+		{
 		    // if the viewport is taller than it is wide
 		    x_axis_multiplier = render_target_size.Y / static_cast<float>(render_target_size.X);
 		    y_axis_multiplier = 1.0f;
@@ -130,12 +124,12 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
 	    }
 	    else
 	    {
-            float fov = Utils::degreesToRadians(capture->FOVAngle);
+            float halfFov = Utils::degreesToRadians(capture->FOVAngle) / 2;
 		    if ((int32)ERHIZBuffer::IsInverted)
 		    {
 			    proj_mat = FReversedZPerspectiveMatrix(
-				    fov,
-				    fov,
+				    halfFov,
+				    halfFov,
 				    x_axis_multiplier,
 				    y_axis_multiplier,
 				    GNearClippingPlane,
@@ -145,8 +139,8 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
 		    else
 		    {
 			    proj_mat = FPerspectiveMatrix(
-				    fov,
-				    fov,
+				    halfFov,
+				    halfFov,
 				    x_axis_multiplier,
 				    y_axis_multiplier,
 				    GNearClippingPlane,
