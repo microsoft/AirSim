@@ -7,6 +7,74 @@ import random
 import glob
 from airsim import *
 
+def rotation_matrix_from_angles(pry):
+    pitch = pry[0]
+    roll = pry[1]
+    yaw = pry[2]
+    sy = numpy.sin(yaw)
+    cy = numpy.cos(yaw)
+    sp = numpy.sin(pitch)
+    cp = numpy.cos(pitch)
+    sr = numpy.sin(roll)
+    cr = numpy.cos(roll)
+    
+    #The rotation matrices in x-y-z = North-East-Down coordinates
+    Rx = numpy.array([
+        [1, 0, 0],
+        [0, cr, -sr],
+        [0, sr, cr]
+    ])
+    
+    Ry = numpy.array([
+        [cp, 0, -sp],
+        [0, 1, 0],
+        [sp, 0, cp]
+    ])
+    
+    Rz = numpy.array([
+        [cy, sy, 0],
+        [-sy, cy, 0],
+        [0, 0, 1]
+    ])
+    
+    #Roll is applied first, then pitch, then yaw.
+    return numpy.matmul(Rz, Ry, Rx)
+
+def project_3d_point_to_screen(subjectXYZ, camXYZ, camQuaternion, camProjMatrix4x4, imageWidthHeight):
+    subjectXYZ.append(1)
+    #Turn the position into a column vector.
+    camPosition = numpy.transpose([camXYZ])
+
+    #Convert the quaternion rotation to yaw, pitch, roll angles.
+    pitchRollYaw = utils.to_eularian_angles(camQuaternion)
+    
+    #Create a rotation matrix from camera pitch, roll, and yaw angles.
+    camRotation = rotation_matrix_from_angles(pitchRollYaw)
+    
+    #Create the view matrix. (Tthe matrix that transforms points from world space to the camera's coordinate frame.)
+    inverseViewMatrix = numpy.concatenate([camRotation, camPosition], axis = 1)
+    inverseViewMatrix = numpy.concatenate([inverseViewMatrix, [[0, 0, 0, 1]]], axis = 0)
+    
+    print("Before viewMatrix: " + str(subjectXYZ))
+    camViewMatrix4x4 = numpy.linalg.inv(inverseViewMatrix)
+    print("After viewMatrix: " + str(numpy.matmul(camViewMatrix4x4, subjectXYZ)))
+
+    #Transform the 3D point by the view matrix and the projection matrix to get its screen space coordinates.
+    viewProj4x4 = numpy.matmul(camProjMatrix4x4, camViewMatrix4x4)
+    
+    #The result is normalized screen coordinates in the (-1, 1) x (-1, 1) rectangle with a normalization factor W.
+    XYZW = numpy.matmul(viewProj4x4, numpy.transpose([subjectXYZ]))
+    print("XYZW: " + str(XYZW))
+    XYZW = XYZW / XYZW[3]
+    
+    #Move origin to the upper-left corner of the screen and multiply by size to get pixel values.
+    normX = (1 + XYZW[0]) / 2
+    normY = (1 - XYZW[1]) / 2
+    return [
+        imageWidthHeight[0] * normX,
+        imageWidthHeight[1] * normY
+    ]
+   
 def get_image(x, y, z, pitch, roll, yaw, client):
     """
     title::
@@ -77,7 +145,7 @@ def main(client,
          roll=0,
          yaw=0,
          z=-122,
-         writeIR=False,
+         writeIR=True,
          writeScene=False,
          irFolder='',
          sceneFolder=''):
@@ -116,15 +184,17 @@ def main(client,
     i = 0
     for o in objectList:
         startTime = time.time()
-        currentTime = time.time() - startTime
+        elapsedTime = 0
         pose = client.simGetObjectPose(o);
+        o1 = objectList[1]
+        secondObjectPose = client.simGetObjectPose(o1)
 
         #Capture images for a certain amount of time in seconds (half hour now)
-        while currentTime < 1800:
+        while elapsedTime < 1800:
             #Capture image - pose.position x_val access may change w/ AirSim
             #version (pose.position.x_val new, pose.position[b'x_val'] old)
             vector, angle, ir, scene = get_image(pose.position.x_val, 
-                                                 pose.position.y_val, 
+                                                 pose.position.y_val - 20, 
                                                  z, 
                                                  pitch, 
                                                  roll, 
@@ -142,10 +212,17 @@ def main(client,
                             scene)
 
             i += 1
-            currentTime = time.time() - startTime
+            elapsedTime = time.time() - startTime
             pose = client.simGetObjectPose(o);
-
-
+            camInfo = client.simGetCameraInfo("0")
+            object_xy_in_pic = project_3d_point_to_screen(
+                [secondObjectPose.position.x_val, secondObjectPose.position.y_val, secondObjectPose.position.z_val],
+                [camInfo.pose.position.x_val, camInfo.pose.position.y_val, camInfo.pose.position.z_val],
+                camInfo.pose.orientation,
+                camInfo.proj_mat.matrix,
+                ir.shape[:2][::-1]
+            )
+            print("Object projected to pixel\n{!s}.".format(object_xy_in_pic))
 
 if __name__ == '__main__':
     
@@ -153,29 +230,34 @@ if __name__ == '__main__':
     client = MultirotorClient()
     client.confirmConnection()
 
-    #Tags for poachers in each of the three groups in Africa enviornment.
-    objectList = ['Poacher1A', 'Poacher1B', 'Poacher1C']
-
+    #Look for objects with names that match a regular expression.
+    poacherList = client.simListSceneObjects('.*?Poacher.*?')
+    elephantList = client.simListSceneObjects('.*?Elephant.*?')
+    crocList = client.simListSceneObjects('.*?Croc.*?')
+    hippoList = client.simListSceneObjects('.*?Hippo.*?')
+    
+    objectList = hippoList
+    
     #Sample calls to main, varying camera angle and altitude.
     #straight down, 400ft
     main(client, 
          objectList, 
-         folder=r'auto\winter\400ft\down') 
+         irFolder=r'C:\\Users\\v-nigyde\\Documents\\SCREENSHOTS\\')#auto\winter\400ft\down') 
     #straight down, 200ft
     main(client, 
          objectList, 
          z=-61, 
-         folder=r'auto\winter\200ft\down') 
+         irFolder=r'auto\winter\200ft\down') 
     #45 degrees, 200ft -- note that often object won't be scene since position
     #is set exactly to object's
     main(client, 
          objectList, 
          z=-61, 
          pitch=numpy.radians(315), 
-         folder=r'auto\winter\200ft\45') 
+         irFolder=r'auto\winter\200ft\45') 
     #45 degrees, 400ft -- note that often object won't be scene since position
     #is set exactly to object's
     main(client, 
          objectList, 
          pitch=numpy.radians(315), 
-         folder=r'auto\winter\400ft\45') 
+         irFolder=r'auto\winter\400ft\45') 

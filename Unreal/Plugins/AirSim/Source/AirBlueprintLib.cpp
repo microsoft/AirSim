@@ -336,6 +336,23 @@ int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
     return -1;
 }
 
+std::vector<std::string> UAirBlueprintLib::ListMatchingActors(const UObject *context, const std::string& name_regex)
+{
+	std::vector<std::string> results;
+	auto world = context->GetWorld();
+	std::regex compiledRegex(name_regex, std::regex::optimize);
+	for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator)
+	{
+		AActor *actor = *actorIterator;
+		auto name = std::string(TCHAR_TO_UTF8(*actor->GetName()));
+		bool match = std::regex_match(name, compiledRegex);
+		if (match)
+			results.push_back(name);
+	}
+	return results;
+}
+
+
 bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collision_channel)
 {
     FCollisionQueryParams trace_params;
