@@ -23,7 +23,12 @@ make -j`nproc`;
 if [ ! -d "../UnityDemo/Assets/Plugins" ]; then
 	mkdir ../ UnityDemo/Assets/Plugins;
 fi
-cp libAirsimWrapper.so ../UnityDemo/Assets/Plugins;
+
+if [ "$(uname)" == "Darwin" ]; then
+	cp AirsimWrapper.bundle ../UnityDemo/Assets/Plugins;
+else
+	cp libAirsimWrapper.so ../UnityDemo/Assets/Plugins;
+fi
 
 cd ..
 if [ -f AirLibWrapper/AirsimWrapper/rpclib.pc.in ]; then
