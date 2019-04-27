@@ -6,14 +6,16 @@ STRICT_MODE_OFF //todo what does this do?
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
+#include "common/AirSimSettings.hpp"
 #include "common/common_utils/FileSystem.hpp"
+#include "nodelet/nodelet.h"
 #include "ros/ros.h"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "yaml-cpp/yaml.h"
 #include <airsim_ros_pkgs/GimbalAngleEulerCmd.h>
 #include <airsim_ros_pkgs/GimbalAngleQuatCmd.h>
-#include <airsim_ros_pkgs/VelCmd.h>
 #include <airsim_ros_pkgs/GPSYaw.h>
+#include <airsim_ros_pkgs/VelCmd.h>
 #include <chrono>
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -22,24 +24,23 @@ STRICT_MODE_ON
 #include <image_transport/image_transport.h>
 #include <iostream>
 #include <math.h>
+#include <math_common.h>
 #include <mavros_msgs/State.h>
 #include <nav_msgs/Odometry.h>
-#include "nodelet/nodelet.h"
 #include <opencv2/opencv.hpp>
 #include <ros/console.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/distortion_models.h>
 #include <sensor_msgs/Image.h>
-#include <sensor_msgs/Imu.h>
 #include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/Imu.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <std_srvs/Empty.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <math_common.h>
 #include <unordered_map>
 
 // todo move airlib typedefs to separate header file?
@@ -131,10 +132,14 @@ public:
     /// camera helper methods
     // TODO migrate to image_tranport camera publisher https://answers.ros.org/question/278602/how-to-use-camera_info_manager-to-publish-camera_info/
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response);
-    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response);
+    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
+    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
+    sensor_msgs::CameraInfo get_cam_info_msg(const ImageResponse& img_response, float fov_degrees, const ros::Time curr_ros_time, const std::string frame_id);
+
     cv::Mat manual_decode_depth(const ImageResponse &img_response);
     void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info);
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m); // todo ugly
+    void generate_img_request_vec_and_ros_pubs_from_sensors_yml();
 
     /// utils. parse into an Airlib<->ROS conversion class
     tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat);
@@ -147,7 +152,7 @@ public:
     sensor_msgs::Imu get_ground_truth_imu_msg_from_airsim_state(const msr::airlib::MultirotorState &drone_state);
 
 private:
-    bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we need to decode the image 
+    bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
     msr::airlib::MultirotorRpcLibClient airsim_client_;
     msr::airlib::MultirotorState curr_drone_state_;
@@ -175,6 +180,8 @@ private:
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::Buffer tf_buffer_;
     std::unordered_map<std::string, std::string> cam_name_to_cam_tf_name_map_;
+    // look up vector of all capture type in "camera major" format. used to give camera tf's their names
+    std::vector<std::string> image_types_names_vec_; 
 
     /// ROS params
     double vel_cmd_duration_;
@@ -189,13 +196,18 @@ private:
     // sensor_msgs::CameraInfo front_center_mono_cam_info_msg_;
 
     /// ROS camera publishers
-    // image_transport::ImageTransport it_;
-    image_transport::Publisher front_left_img_raw_pub_;
-    image_transport::Publisher front_right_img_raw_pub_;
-    image_transport::Publisher front_left_depth_planar_pub_;
-    image_transport::Publisher front_center_img_raw_pub_;
-    ros::Publisher front_left_cam_info_pub_;
-    ros::Publisher front_right_cam_info_pub_;
+
+    // map of camera names and image types to publish to ROS. 
+    // We obtain this from the camera subfield in sensors.yml, which is supplied by the end user. 
+    // the camera names and image types must be a subset or equal to what is declared in settings.json 
+    XmlRpc::XmlRpcValue camera_name_image_type_list_;
+
+    // generated from camera_name_image_type_list_
+    std::vector<ImageRequest> airsim_img_request_;
+
+    // auto generated from camera_name_image_type_list_, which is generated from sensors.yamls
+    std::vector<image_transport::Publisher> image_pub_vec_; 
+    std::vector<ros::Publisher> cam_info_pub_vec_; 
 
     /// ROS other publishers
     ros::Publisher clock_pub_;

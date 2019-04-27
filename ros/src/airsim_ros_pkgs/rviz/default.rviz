@@ -4,10 +4,16 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /TF1
         - /front_left_depth_planar_registered_point_cloud1
+        - /cam_front_left_depth_planar1
+        - /cam_front_left1
+        - /cam_front_right1
+        - /cam_front_center1
         - /Odometry1/Shape1
+        - /DepthCloud1
         - /DepthCloud1/Auto Size1
-      Splitter Ratio: 0.535620034
+      Splitter Ratio: 0.535626531
     Tree Height: 775
   - Class: rviz/Selection
     Name: Selection
@@ -56,23 +62,23 @@ Visualization Manager:
         All Enabled: false
         airsim/odom_local_ned:
           Value: true
-        front/left:
-          Value: false
         front/left/static/gimbal:
-          Value: false
-        front/left_optical:
-          Value: true
-        front/right:
           Value: false
         front/right/static/gimbal:
           Value: false
-        front/right_optical:
-          Value: true
-        front_center:
-          Value: false
         front_center/static/gimbal:
           Value: false
-        front_center_optical:
+        front_center_custom:
+          Value: true
+        front_center_custom_optical:
+          Value: true
+        front_left_custom:
+          Value: true
+        front_left_custom_optical:
+          Value: true
+        front_right_custom:
+          Value: true
+        front_right_custom_optical:
           Value: true
         world_enu:
           Value: false
@@ -92,17 +98,17 @@ Visualization Manager:
               {}
             front_center/static/gimbal:
               {}
-          front/left:
+          front_center_custom:
             {}
-          front/left_optical:
+          front_center_custom_optical:
             {}
-          front/right:
+          front_left_custom:
             {}
-          front/right_optical:
+          front_left_custom_optical:
             {}
-          front_center:
+          front_right_custom:
             {}
-          front_center_optical:
+          front_right_custom_optical:
             {}
           world_enu:
             {}
@@ -133,7 +139,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.100000001
       Style: Flat Squares
-      Topic: /front/left/depth_planar_registered/points
+      Topic: /front_left_custom/DepthPlanner/registered/points
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -141,7 +147,7 @@ Visualization Manager:
     - Class: rviz/Camera
       Enabled: false
       Image Rendering: background and overlay
-      Image Topic: /front/left/depth_planar
+      Image Topic: /front_left_custom/DepthPlanner
       Name: cam_front_left_depth_planar
       Overlay Alpha: 0.5
       Queue Size: 2
@@ -160,15 +166,15 @@ Visualization Manager:
         front_left_depth_planar_registered_point_cloud: true
       Zoom Factor: 1
     - Class: rviz/Camera
-      Enabled: true
+      Enabled: false
       Image Rendering: background and overlay
-      Image Topic: /front/left/image_raw
+      Image Topic: /front_left_custom/Scene
       Name: cam_front_left
       Overlay Alpha: 0.5
       Queue Size: 2
       Transport Hint: raw
       Unreliable: false
-      Value: true
+      Value: false
       Visibility:
         DepthCloud: true
         Grid: true
@@ -183,7 +189,7 @@ Visualization Manager:
     - Class: rviz/Camera
       Enabled: false
       Image Rendering: background and overlay
-      Image Topic: /front/right/image_raw
+      Image Topic: /front_right_custom/Scene
       Name: cam_front_right
       Overlay Alpha: 0.5
       Queue Size: 2
@@ -204,7 +210,7 @@ Visualization Manager:
     - Class: rviz/Camera
       Enabled: false
       Image Rendering: background and overlay
-      Image Topic: /front_center/image_raw
+      Image Topic: /front_center_custom/Scene
       Name: cam_front_center
       Overlay Alpha: 0.5
       Queue Size: 2
@@ -273,9 +279,9 @@ Visualization Manager:
       Color Transformer: RGB8
       Color Transport Hint: raw
       Decay Time: 0
-      Depth Map Topic: /front/left/depth_planar
+      Depth Map Topic: /front_left_custom/DepthPlanner
       Depth Map Transport Hint: raw
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -293,7 +299,7 @@ Visualization Manager:
       Topic Filter: true
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -319,25 +325,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 46.3500214
+      Distance: 26.1581497
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.767795563
-        Y: 16.5442429
-        Z: -1.54536867
+        X: -3.03797746
+        Y: 13.1939058
+        Z: -3.61843824
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.154797614
+      Pitch: 0.299797505
       Target Frame: world_view
       Value: Orbit (rviz)
-      Yaw: 4.6317215
+      Yaw: 4.79671383
     Saved: ~
 Window Geometry:
   Displays:
@@ -345,7 +351,7 @@ Window Geometry:
   Height: 1056
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000017d00000396fc020000000dfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000002800000396000000d700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061010000038f000000160000000000000000fb0000003600630061006d005f00660072006f006e0074005f006c006500660074005f00640065007000740068005f0070006c0061006e006100720200000af40000014e0000031c00000231fb0000001c00630061006d005f00660072006f006e0074005f006c006500660074030000086400000170000002d700000196fb0000001e00630061006d005f00660072006f006e0074005f007200690067006800740200000b400000017000000286000001a7fb0000002000630061006d005f00660072006f006e0074005f00630065006e0074006500720200000a58000000f50000023f0000023c000000010000010f00000396fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000002800000396000000ad00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007530000003efc0100000002fb0000000800540069006d00650100000000000007530000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000004bb0000039600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001a600000396fc020000000dfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000002800000396000000d700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061010000038f000000160000000000000000fb0000003600630061006d005f00660072006f006e0074005f006c006500660074005f00640065007000740068005f0070006c0061006e006100720200000af40000014e0000031c00000231fb0000001c00630061006d005f00660072006f006e0074005f006c0065006600740200000ac00000010f000002d700000196fb0000001e00630061006d005f00660072006f006e0074005f007200690067006800740200000b400000017000000286000001a7fb0000002000630061006d005f00660072006f006e0074005f00630065006e0074006500720200000a58000000f50000023f0000023c000000010000010f00000396fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000002800000396000000ad00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007530000003efc0100000002fb0000000800540069006d00650100000000000007530000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000004920000039600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -355,7 +361,7 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1875
-  X: 45
+  X: 1965
   Y: 24
   cam_front_center:
     collapsed: false

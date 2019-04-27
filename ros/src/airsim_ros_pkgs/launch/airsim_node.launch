@@ -1,6 +1,12 @@
 <launch>
-	<node pkg="nodelet" type="nodelet" name="airsim_nodelet_manager" args="manager"/>
-	<node pkg="nodelet" type="nodelet" name="airsim_nodelet" args="load airsim_ros_pkgs/airsim_ros_nodelet airsim_nodelet_manager">
+
+	<!-- A map of cameras and image types you want to publish to ROS -->
+	<!-- This MUST be a subset of cameras and image types in your settings.json! -->
+    <rosparam command="load" file="$(find airsim_ros_pkgs)/params/sensors.yaml" />  
+	
+	<node pkg="nodelet" type="nodelet" name="airsim_nodelet_manager" args="manager" output="screen" />
+	<node pkg="nodelet" type="nodelet" name="airsim_nodelet" args="load airsim_ros_pkgs/airsim_ros_nodelet airsim_nodelet_manager" output="screen">
+
 		<!-- ROS timer rates. Note that timer callback will be processed at maximum possible rate, upperbounded by the following ROS params -->
 		<param name="is_vulkan" type="bool" value="false" /> 
 		<param name="update_airsim_img_response_every_n_sec" type="double" value="0.01" /> 

@@ -6,8 +6,4 @@
 	<node pkg="tf" type="static_transform_publisher" name="static_tf_base_to_front_right" args="0.500 0.060 0.100 0 0 0 /airsim/odom_local_ned /front/right/static/gimbal 100"/>
 	<node pkg="tf" type="static_transform_publisher" name="static_tf_base_to_front_center" args="0.500 0.000 0.100 0 0 0 /airsim/odom_local_ned /front_center/static/gimbal 100"/>
 
-<!-- 	<node pkg="tf" type="static_transform_publisher" name="static_tf_cam_ned_to_cam_optical" args="0.500 -0.060 0.100 0 0 0 /airsim/odom_local_ned /front/left/static/gimbal 100"/>
-	<node pkg="tf" type="static_transform_publisher" name="static_dji_to_front_right_pub" args="0.500 0.060 0.100 0 0 0 /airsim/odom_local_ned /front/right/static/gimbal 100"/>
-	<node pkg="tf" type="static_transform_publisher" name="static_dji_to_front_center_pub" args="0.500 0.000 0.100 0 0 0 /airsim/odom_local_ned /front_center/static/gimbal 100"/>
- -->
 </launch>

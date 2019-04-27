@@ -10,10 +10,11 @@
 	<!-- Nodelets! -->
 	<!-- Convert it into a point cloud -->
 	<!-- <node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" args="load depth_image_proc/point_cloud_xyzrgb"> -->
-	<node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" args="load depth_image_proc/point_cloud_xyzrgb airsim_nodelet_manager --no-bond">
-		<remap from="depth_registered/image_rect" to="/front/left/depth_planar"/>
-		<remap from="depth_registered/points" to="/front/left/depth_planar_registered/points"/>
-		<remap from="rgb/image_rect_color" to="/front/left/image_raw"/>
-		<remap from="rgb/camera_info" to="/front/left/camera_info"/>
+	<node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" output="screen" 
+			args="load depth_image_proc/point_cloud_xyzrgb airsim_nodelet_manager --no-bond">
+		<remap from="depth_registered/image_rect" to="/front_left_custom/DepthPlanner"/>
+		<remap from="depth_registered/points" to="/front_left_custom/DepthPlanner/registered/points"/>
+		<remap from="rgb/image_rect_color" to="/front_left_custom/Scene"/>
+		<remap from="rgb/camera_info" to="/front_left_custom/Scene/camera_info"/>
 	</node>
 </launch>
