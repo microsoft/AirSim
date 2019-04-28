@@ -43,6 +43,13 @@ public:
         unlock();
     }
 
+    void addBody(UpdatableObject* body)
+    {
+        lock();
+        world_.insert(body);
+        unlock();
+    }
+
     uint64_t getUpdatePeriodNanos() const
     {
         return update_period_nanos_;

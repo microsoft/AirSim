@@ -268,6 +268,22 @@ void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetim
         celestial_clock_speed, update_interval_secs, move_sun);
 }
 
+bool WorldSimApi::createVehicleAtRuntime(AirSimSettings::VehicleSetting& vehicle_setting)
+{
+    bool result;
+	
+    // We need to run this code on the main game thread, since it iterates over actors
+    FGraphEventRef task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
+    {
+        result = simmode_->createVehicleAtRuntime(vehicle_setting);
+    }, TStatId(), NULL, ENamedThreads::GameThread);
+
+    // Wait for the result
+    FTaskGraphInterface::Get().WaitUntilTaskCompletes(task); 
+		
+    return result;
+}
+
 bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
     bool success;

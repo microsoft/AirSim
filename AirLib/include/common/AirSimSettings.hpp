@@ -435,6 +435,15 @@ public: //methods
         settings_json.saveJSonFile(settings_filename);
     }
 
+    // This is for the case when a new vehicle is made on the fly, at runtime
+    void addVehicleSetting(const VehicleSetting &vehicle_setting)
+    {
+        std::unique_ptr<VehicleSetting> vehicle_setting_p = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+
+        // Usually we have a pointer to an entry from the json, but here we have to make a new one
+        vehicles[vehicle_setting.vehicle_name] = std::move(vehicle_setting_p);
+    }
+
     const VehicleSetting* getVehicleSetting(const std::string& vehicle_name) const
     {
         auto it = vehicles.find(vehicle_name);

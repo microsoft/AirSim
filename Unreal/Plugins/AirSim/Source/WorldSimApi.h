@@ -38,6 +38,8 @@ public:
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) override;
     virtual int getSegmentationObjectID(const std::string& mesh_name) const override;
 
+    virtual bool createVehicleAtRuntime(msr::airlib::AirSimSettings::VehicleSetting& vehicle_setting);
+
     virtual void printLogMessage(const std::string& message,
         const std::string& message_param = "", unsigned char severity = 0) override;
 
