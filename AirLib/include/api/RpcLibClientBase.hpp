@@ -80,6 +80,8 @@ public:
     vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name = "");
     vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "");
 
+	bool simAddVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const std::string& pawn_path, float north, float east, float down);
+
     CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
 
     CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;

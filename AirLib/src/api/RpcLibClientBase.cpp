@@ -232,6 +232,11 @@ vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, Im
     return result;
 }
 
+bool RpcLibClientBase::simAddVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const std::string& pawn_path, float north, float east, float down)
+{
+	return pimpl_->client.call("simAddVehicle", vehicle_name, vehicle_type, pawn_path, north, east, down).as<bool>();
+}
+
 void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
 {
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);

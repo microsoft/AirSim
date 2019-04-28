@@ -61,6 +61,8 @@ public:
     void stopApiServer();
     bool isApiServerStarted();
 
+	bool createVehicleAtRuntime(const msr::airlib::AirSimSettings::VehicleSetting &vehicle_setting);
+
     const NedTransform& getGlobalNedTransform();
 
     msr::airlib::ApiProvider* getApiProvider() const
@@ -99,6 +101,7 @@ protected: //optional overrides
     void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
     void checkVehicleReady(); //checks if vehicle is available to use
     virtual void updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter);
+	virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody) {}
 
 protected: //Utility methods for derived classes
     virtual const msr::airlib::AirSimSettings& getSettings() const;

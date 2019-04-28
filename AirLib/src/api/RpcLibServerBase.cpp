@@ -115,8 +115,27 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return result;
     });
 
-    pimpl_->server.
-        bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision, const std::string& vehicle_name) -> void {
+	pimpl_->server.bind("simAddVehicle", [&](const std::string& vehicle_name, const std::string& vehicle_type, const std::string& pawn_path, float north, float east, float down) -> bool {
+
+		AirSimSettings::VehicleSetting vehicle_setting;
+
+		// TODO expose other VehicleSettings fields
+		vehicle_setting.vehicle_name = vehicle_name;
+		vehicle_setting.vehicle_type = vehicle_type;
+		vehicle_setting.pawn_path = pawn_path;
+
+		vehicle_setting.position[0] = north;
+		vehicle_setting.position[1] = east;
+		vehicle_setting.position[2] = down;
+
+		vehicle_setting.rotation.yaw = 0;
+		vehicle_setting.rotation.pitch = 0;
+		vehicle_setting.rotation.roll = 0;
+
+		return getWorldSimApi()->createVehicleAtRuntime(vehicle_setting);
+	});
+	
+	pimpl_->server.bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision, const std::string& vehicle_name) -> void {
         getVehicleSimApi(vehicle_name)->setPose(pose.to(), ignore_collision);
     });
     pimpl_->server.bind("simGetVehiclePose", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::Pose {
