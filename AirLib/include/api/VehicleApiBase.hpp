@@ -13,6 +13,7 @@
 #include "common/ImageCaptureBase.hpp"
 #include "sensors/SensorCollection.hpp"
 #include "sensors/lidar/LidarBase.hpp"
+#include "sensors/imu/ImuBase.hpp"
 #include <exception>
 #include <string>
 
@@ -123,6 +124,29 @@ public:
             throw VehicleControllerException(Utils::stringf("No lidar with name %s exist on vehicle", lidar_name.c_str()));
 
         return lidar->getOutput();
+    }
+
+    // IMU API
+    virtual ImuBase::Output getImuData(const std::string& imu_name) const
+    {
+        const ImuBase* imu = nullptr;
+
+        // Find imu with the given name (for empty input name, return the first one found)
+        // Not efficient but should suffice given small number of imus
+        uint count_imus = getSensors().size(SensorBase::SensorType::Imu);
+        for (uint i = 0; i < count_imus; i++)
+        {
+            const ImuBase* current_imu = static_cast<const ImuBase*>(getSensors().getByType(SensorBase::SensorType::Imu, i));
+            if (current_imu != nullptr && (current_imu->getName() == imu_name || imu_name == ""))
+            {
+                imu = current_imu;
+                break;
+            }
+        }
+        if (imu == nullptr)
+            throw VehicleControllerException(Utils::stringf("No IMU with name %s exist on vehicle", imu_name.c_str()));
+
+        return imu->getOutput();
     }
 
     virtual ~VehicleApiBase() = default;

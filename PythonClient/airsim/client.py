@@ -140,6 +140,9 @@ class VehicleClient:
         return EnvironmentState.from_msgpack(env_state)
     simGetGroundTruthEnvironment.__annotations__ = {'return': EnvironmentState}
 
+    def getImuData(self, imu_name = '', vehicle_name = ''):
+        return ImuData.from_msgpack(self.client.call('getImuData', imu_name, vehicle_name))
+
     # lidar APIs
     def getLidarData(self, lidar_name = '', vehicle_name = ''):
         return LidarData.from_msgpack(self.client.call('getLidarData', lidar_name, vehicle_name))

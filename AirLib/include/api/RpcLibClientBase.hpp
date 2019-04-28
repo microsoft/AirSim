@@ -7,6 +7,7 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
+#include "sensors/imu/ImuBase.hpp"
 #include "physics/Kinematics.hpp"
 #include "physics/Environment.hpp"
 #include "api/WorldSimApiBase.hpp"
@@ -62,6 +63,8 @@ public:
     msr::airlib::GeoPoint getHomeGeoPoint(const std::string& vehicle_name = "") const;
 
     msr::airlib::LidarData getLidarData(const std::string& lidar_name = "", const std::string& vehicle_name = "") const;
+
+    msr::airlib::ImuBase::Output getImuData(const std::string& imu_name = "", const std::string& vehicle_name = "") const;
 
     Pose simGetVehiclePose(const std::string& vehicle_name = "") const;
     void simSetVehiclePose(const Pose& pose, bool ignore_collision, const std::string& vehicle_name = "");

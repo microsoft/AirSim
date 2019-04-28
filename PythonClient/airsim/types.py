@@ -356,3 +356,9 @@ class LidarData(MsgpackMixin):
     point_cloud = 0.0
     time_stamp = np.uint64(0)
     pose = Pose()
+
+class ImuData(MsgpackMixin):
+    time_stamp = np.uint64(0)
+    orientation = Quaternionr()
+    angular_velocity = Vector3r()
+    linear_acceleration = Vector3r()
