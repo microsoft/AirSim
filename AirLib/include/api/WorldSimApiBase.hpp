@@ -5,6 +5,8 @@
 #define air_WorldSimApiBase_hpp
 
 #include "common/CommonStructs.hpp"
+#include "common/AirSimSettings.hpp"
+
 
 namespace msr { namespace airlib {
 
@@ -44,6 +46,8 @@ public:
 
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int getSegmentationObjectID(const std::string& mesh_name) const = 0;
+
+    virtual bool createVehicleAtRuntime(AirSimSettings::VehicleSetting& vehicle_setting) = 0;
 
     virtual void printLogMessage(const std::string& message,
         const std::string& message_param = "", unsigned char severity = 0) = 0;
