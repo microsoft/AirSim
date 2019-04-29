@@ -18,6 +18,7 @@ public:
 
 public: //types
     struct Output { //same fields as ROS message
+        TTimePoint time_stamp;
         real_T altitude;    //meters
         real_T pressure;    //Pascal
         real_T qnh;

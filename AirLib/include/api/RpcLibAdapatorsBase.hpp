@@ -532,6 +532,38 @@ public:
             return d;
         }
     };
+
+    struct BarometerData {
+        msr::airlib::TTimePoint time_stamp;
+        float altitude;
+        float pressure;
+        float qnh;
+
+        MSGPACK_DEFINE_MAP(time_stamp, altitude, pressure, qnh);
+
+        BarometerData()
+        {}
+
+        BarometerData(const msr::airlib::BarometerBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            altitude = s.altitude;
+            pressure = s.pressure;
+            qnh = s.qnh;
+        }
+
+        msr::airlib::BarometerBase::Output to() const
+        {
+            msr::airlib::BarometerBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.altitude = altitude;
+            d.pressure = pressure;
+            d.qnh = qnh;
+
+            return d;
+        }
+    };
 };
 
 }} //namespace

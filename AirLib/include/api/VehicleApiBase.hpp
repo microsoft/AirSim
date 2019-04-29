@@ -14,6 +14,7 @@
 #include "sensors/SensorCollection.hpp"
 #include "sensors/lidar/LidarBase.hpp"
 #include "sensors/imu/ImuBase.hpp"
+#include "sensors/barometer/BarometerBase.hpp"
 #include <exception>
 #include <string>
 
@@ -147,6 +148,27 @@ public:
             throw VehicleControllerException(Utils::stringf("No IMU with name %s exist on vehicle", imu_name.c_str()));
 
         return imu->getOutput();
+    }
+
+    // Barometer API
+    virtual BarometerBase::Output getBarometerData(const std::string& barometer_name) const
+    {
+        const BarometerBase* barometer = nullptr;
+
+        uint count_imus = getSensors().size(SensorBase::SensorType::Barometer);
+        for (uint i = 0; i < count_imus; i++)
+        {
+            const BarometerBase* current_barometer = static_cast<const BarometerBase*>(getSensors().getByType(SensorBase::SensorType::Barometer, i));
+            if (current_barometer != nullptr && (current_barometer->getName() == barometer_name || barometer_name == ""))
+            {
+                barometer = current_barometer;
+                break;
+            }
+        }
+        if (barometer == nullptr)
+            throw VehicleControllerException(Utils::stringf("No barometer with name %s exist on vehicle", barometer_name.c_str()));
+
+        return barometer->getOutput();
     }
 
     virtual ~VehicleApiBase() = default;

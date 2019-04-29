@@ -362,3 +362,9 @@ class ImuData(MsgpackMixin):
     orientation = Quaternionr()
     angular_velocity = Vector3r()
     linear_acceleration = Vector3r()
+
+class BarometerData(MsgpackMixin):
+    time_stamp = np.uint64(0)
+    altitude = Quaternionr()
+    pressure = Vector3r()
+    qnh = Vector3r()

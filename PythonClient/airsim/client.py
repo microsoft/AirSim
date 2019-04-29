@@ -143,6 +143,9 @@ class VehicleClient:
     def getImuData(self, imu_name = '', vehicle_name = ''):
         return ImuData.from_msgpack(self.client.call('getImuData', imu_name, vehicle_name))
 
+    def getBarometerData(self, barometer_name = '', vehicle_name = ''):
+        return ImuData.from_msgpack(self.client.call('getBarometerData', barometer_name, vehicle_name))
+
     # lidar APIs
     def getLidarData(self, lidar_name = '', vehicle_name = ''):
         return LidarData.from_msgpack(self.client.call('getLidarData', lidar_name, vehicle_name))
