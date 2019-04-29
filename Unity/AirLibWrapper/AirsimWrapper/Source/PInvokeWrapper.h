@@ -7,7 +7,7 @@
 
 #ifdef _WIN32
 	#define EXPORT __declspec(dllexport)
-#elif __linux__
+#elif defined(__linux__) || defined(__APPLE__)
 	#define EXPORT __attribute__((visibility("default")))
 #endif
 /*
