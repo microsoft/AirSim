@@ -18,6 +18,7 @@ public:
 
 public: //types
     struct Output { //same fields as ROS message
+        TTimePoint time_stamp;
         Vector3r magnetic_field_body; //in Gauss
         vector<real_T> magnetic_field_covariance; //9 elements 3x3 matrix    
     };

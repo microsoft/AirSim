@@ -564,6 +564,35 @@ public:
             return d;
         }
     };
+
+    struct MagnetometerData {
+        msr::airlib::TTimePoint time_stamp;
+        Vector3r magnetic_field_body;
+        std::vector<float> magnetic_field_covariance; // not implemented in MagnetometerBase.hpp
+
+        MSGPACK_DEFINE_MAP(time_stamp, magnetic_field_body, magnetic_field_covariance);
+
+        MagnetometerData()
+        {}
+
+        MagnetometerData(const msr::airlib::MagnetometerBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            magnetic_field_body = s.magnetic_field_body;
+            magnetic_field_covariance = s.magnetic_field_covariance;
+        }
+
+        msr::airlib::MagnetometerBase::Output to() const
+        {
+            msr::airlib::MagnetometerBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.magnetic_field_body = magnetic_field_body.to();
+            d.magnetic_field_covariance = magnetic_field_covariance;
+
+            return d;
+        }
+    };
 };
 
 }} //namespace

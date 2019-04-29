@@ -15,6 +15,7 @@
 #include "sensors/lidar/LidarBase.hpp"
 #include "sensors/imu/ImuBase.hpp"
 #include "sensors/barometer/BarometerBase.hpp"
+#include "sensors/magnetometer/MagnetometerBase.hpp"
 #include <exception>
 #include <string>
 
@@ -169,6 +170,27 @@ public:
             throw VehicleControllerException(Utils::stringf("No barometer with name %s exist on vehicle", barometer_name.c_str()));
 
         return barometer->getOutput();
+    }
+
+    // Magnetometer API
+    virtual MagnetometerBase::Output getMagnetometerData(const std::string& magnetometer_name) const
+    {
+        const MagnetometerBase* magnetometer = nullptr;
+
+        uint count_imus = getSensors().size(SensorBase::SensorType::Magnetometer);
+        for (uint i = 0; i < count_imus; i++)
+        {
+            const MagnetometerBase* current_magnetometer = static_cast<const MagnetometerBase*>(getSensors().getByType(SensorBase::SensorType::Magnetometer, i));
+            if (current_magnetometer != nullptr && (current_magnetometer->getName() == magnetometer_name || magnetometer_name == ""))
+            {
+                magnetometer = current_magnetometer;
+                break;
+            }
+        }
+        if (magnetometer == nullptr)
+            throw VehicleControllerException(Utils::stringf("No magnetometer with name %s exist on vehicle", magnetometer_name.c_str()));
+
+        return magnetometer->getOutput();
     }
 
     virtual ~VehicleApiBase() = default;

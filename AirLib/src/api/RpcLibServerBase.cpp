@@ -160,6 +160,16 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::ImuData(imu_data);
     });
 
+    pimpl_->server.bind("getBarometerData", [&](const std::string& barometer_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::BarometerData {
+        const auto& barometer_data = getVehicleApi(vehicle_name)->getBarometerData(barometer_name);
+        return RpcLibAdapatorsBase::BarometerData(barometer_data);
+    });
+
+    pimpl_->server.bind("getMagnetometerData", [&](const std::string& magnetometer_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::MagnetometerData {
+        const auto& magnetometer_data = getVehicleApi(vehicle_name)->getMagnetometerData(magnetometer_name);
+        return RpcLibAdapatorsBase::MagnetometerData(magnetometer_data);
+    });
+
     pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::CameraInfo {
         const auto& camera_info = getVehicleSimApi(vehicle_name)->getCameraInfo(camera_name);
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
