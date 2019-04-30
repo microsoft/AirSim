@@ -236,7 +236,7 @@ if __name__ == '__main__':
     #straight down, 400ft
     main(client, 
          objectList, 
-         irFolder=r'C:\\Users\\v-nigyde\\Documents\\SCREENSHOTS\\')#auto\winter\400ft\down') 
+         irFolder=r'auto\winter\400ft\down') 
     #straight down, 200ft
     main(client, 
          objectList, 
