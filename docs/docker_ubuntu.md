@@ -1,4 +1,5 @@
 # AirSim on Docker in Linux
+We've two options for docker. You can either build an image for running [airsim linux binaries](#binaries), or for compiling Unreal Engine + AirSim [from source](#source)
 
 ## Binaries
 #### Requirements:
@@ -46,7 +47,7 @@ You can download it by running
         ```
         $ ./run_airsim_image_binary.sh Blocks/Blocks.sh -- headless
         ```
-- [Specifying a `settings.json`](https://github.com/madratman/AirSim/blob/PR/docker_ubuntu/docs/docker_ubuntu.md#airsim_binary-docker-image)
+- [Specifying a `settings.json`](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md#airsim_binary-docker-image)
 
 ## Source
 #### Requirements:
@@ -96,7 +97,7 @@ You can download it by running
 * Inside the container, you can see `UnrealEngine` and `AirSim` under `/home/ue4`. 
 * Start unreal engine inside the container:   
    `ue4@HOSTMACHINE:~$ /home/ue4/UnrealEngine/Engine/Binaries/Linux/UE4Editor`
-* [Specifying an airsim settings.json](https://github.com/madratman/AirSim/blob/PR/docker_ubuntu/docs/docker_ubuntu.md#airsim_source-docker-image)
+* [Specifying an airsim settings.json](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md#airsim_source-docker-image)
 * Continue with [AirSim's Linux docs](https://microsoft.github.io/AirSim/docs/build_linux/#build-unreal-environment). 
 
 #### [Misc] Packaging Unreal Environments in `airsim_source` containers
