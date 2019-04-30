@@ -10,7 +10,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>nodelet</build_depend>
+  <!-- <build_depend>nodelet</build_depend> -->
   <build_depend>geometry_msgs</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>message_generation</build_depend>
@@ -21,7 +21,7 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
 
-  <exec_depend>nodelet</exec_depend>
+  <!-- <exec_depend>nodelet</exec_depend> -->
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>image_transport</exec_depend>
   <exec_depend>message_generation</exec_depend>
@@ -32,7 +32,8 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
 
-  <export>
+<!--   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />
   </export>
+ -->
 </package>

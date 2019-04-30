@@ -5,13 +5,13 @@
 	<!-- docs: https://gist.github.com/bhaskara/2400165 -->
 	
 	<!-- Nodelet manager -->
-	<!-- <node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen"/> -->
+	<node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen"/>
 
 	<!-- Nodelets! -->
 	<!-- Convert it into a point cloud -->
-	<!-- <node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" args="load depth_image_proc/point_cloud_xyzrgb"> -->
-	<node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" output="screen" 
-			args="load depth_image_proc/point_cloud_xyzrgb airsim_nodelet_manager --no-bond">
+	<node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" args="load depth_image_proc/point_cloud_xyzrgb" output="screen">
+	<!-- <node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" output="screen"  -->
+			<!-- args="load depth_image_proc/point_cloud_xyzrgb airsim_nodelet_manager -\-no-bond"> -->
 		<remap from="depth_registered/image_rect" to="/front_left_custom/DepthPlanner"/>
 		<remap from="depth_registered/points" to="/front_left_custom/DepthPlanner/registered/points"/>
 		<remap from="rgb/image_rect_color" to="/front_left_custom/Scene"/>

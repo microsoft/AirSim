@@ -1,7 +1,7 @@
 #include <airsim_ros_wrapper.h>
 #include <boost/make_shared.hpp>
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
+// #include <pluginlib/class_list_macros.h>
+// PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
 
 constexpr char AirsimROSWrapper::CAM_YML_NAME[];
 constexpr char AirsimROSWrapper::WIDTH_YML_NAME[];
@@ -12,7 +12,7 @@ constexpr char AirsimROSWrapper::R_YML_NAME[];
 constexpr char AirsimROSWrapper::P_YML_NAME[];
 constexpr char AirsimROSWrapper::DMODEL_YML_NAME[];
 
-void AirsimROSWrapper::onInit()
+AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private) : nh_(nh), nh_private_(nh_private)
 {
     initialize_airsim();
     initialize_ros();
@@ -42,18 +42,19 @@ void AirsimROSWrapper::initialize_airsim()
 
 void AirsimROSWrapper::initialize_ros()
 {
-    nh_ = getNodeHandle();
-    nh_private_ = getPrivateNodeHandle();
+//     nh_ = getNodeHandle();
+//     nh_private_ = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh_);
 
     // ros params
     vel_cmd_duration_ = 0.05; // todo
-    double update_airsim_img_response_every_n_sec;// = 0.0001;
-    double update_airsim_control_every_n_sec;// = 0.01;
+    double update_airsim_img_response_every_n_sec;
+    double update_airsim_control_every_n_sec;
+    double update_airsim_imu_every_n_sec;
 
     // todo enforce dynamics constraints in this node as well?
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
-    // nh_.getParam("max_horz_vel", max_horz_vel_);
+    // nh_.getParam("max_horz_vel", max_horz_vel_)
 
     nh_private_.getParam("/cameras", camera_name_image_type_list_);
     generate_img_request_vec_and_ros_pubs_from_sensors_yml();
@@ -64,13 +65,14 @@ void AirsimROSWrapper::initialize_ros()
 
     nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
+    nh_private_.getParam("update_airsim_imu_every_n_sec", update_airsim_imu_every_n_sec);
 
     // fill camera info msg from YAML calib file. todo error check path
-    read_params_from_yaml_and_fill_cam_info_msg(front_left_calib_file_, front_left_cam_info_msg_);
-    front_left_cam_info_msg_.header.frame_id = "airsim/front/left";
+    // read_params_from_yaml_and_fill_cam_info_msg(front_left_calib_file_, front_left_cam_info_msg_);
+    // front_left_cam_info_msg_.header.frame_id = "airsim/front/left";
 
-    read_params_from_yaml_and_fill_cam_info_msg(front_right_calib_file_, front_right_cam_info_msg_);
-    front_right_cam_info_msg_.header.frame_id = "airsim/front/right";
+    // read_params_from_yaml_and_fill_cam_info_msg(front_right_calib_file_, front_right_cam_info_msg_);
+    // front_right_cam_info_msg_.header.frame_id = "airsim/front/right";
 
     takeoff_srvr_ = nh_private_.advertiseService("takeoff", &AirsimROSWrapper::takeoff_srv_cb, this);
     land_srvr_ = nh_private_.advertiseService("land", &AirsimROSWrapper::land_srv_cb, this);
@@ -81,7 +83,7 @@ void AirsimROSWrapper::initialize_ros()
     odom_local_ned_pub_ = nh_private_.advertise<nav_msgs::Odometry>("odom_local_ned", 10);
     global_gps_pub_ = nh_private_.advertise<sensor_msgs::NavSatFix>("global_gps", 10);
     home_geo_point_pub_ = nh_private_.advertise<airsim_ros_pkgs::GPSYaw>("home_geo_point", 10);
-    imu_ground_truth_pub_ = nh_private_.advertise<sensor_msgs::Imu>("imu_ground_truth", 10);
+    imu_pub_ = nh_private_.advertise<sensor_msgs::Imu>("imu", 10);
 
     // subscribe to control commands on global nodehandle
     vel_cmd_body_frame_sub_ = nh_.subscribe("vel_cmd_body_frame", 50, &AirsimROSWrapper::vel_cmd_body_frame_cb, this); // todo ros::TransportHints().tcpNoDelay();
@@ -91,6 +93,7 @@ void AirsimROSWrapper::initialize_ros()
 
     airsim_img_response_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_img_response_every_n_sec), &AirsimROSWrapper::img_response_timer_cb, this);
     airsim_control_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_control_every_n_sec), &AirsimROSWrapper::drone_state_timer_cb, this);
+    airsim_imu_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_imu_every_n_sec), &AirsimROSWrapper::imu_timer_cb, this);
 }
 
 // todo minor: error check. if state is not landed, return error. 
@@ -227,29 +230,29 @@ nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_airsim_state(const msr::a
 }
 
 // todo covariances
-sensor_msgs::Imu AirsimROSWrapper::get_ground_truth_imu_msg_from_airsim_state(const msr::airlib::MultirotorState &drone_state)
+sensor_msgs::Imu AirsimROSWrapper::get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output &imu_data)
 {
     sensor_msgs::Imu imu_msg;
     // imu_msg.header.frame = ;
-    imu_msg.orientation.x = drone_state.getOrientation().x();
-    imu_msg.orientation.y = drone_state.getOrientation().y();
-    imu_msg.orientation.z = drone_state.getOrientation().z();
-    imu_msg.orientation.w = drone_state.getOrientation().w();
+    imu_msg.orientation.x = imu_data.orientation.x();
+    imu_msg.orientation.y = imu_data.orientation.y();
+    imu_msg.orientation.z = imu_data.orientation.z();
+    imu_msg.orientation.w = imu_data.orientation.w();
 
     // imu_msg.orientation_covariance = ;
 
     // todo radians per second
-    imu_msg.angular_velocity.x = math_common::deg2rad(drone_state.kinematics_estimated.twist.angular.x());
-    imu_msg.angular_velocity.y = math_common::deg2rad(drone_state.kinematics_estimated.twist.angular.y());
-    imu_msg.angular_velocity.z = math_common::deg2rad(drone_state.kinematics_estimated.twist.angular.z());
+    imu_msg.angular_velocity.x = math_common::deg2rad(imu_data.angular_velocity.x());
+    imu_msg.angular_velocity.y = math_common::deg2rad(imu_data.angular_velocity.y());
+    imu_msg.angular_velocity.z = math_common::deg2rad(imu_data.angular_velocity.z());
 
     // imu_msg.angular_velocity_covariance = ;
 
     // meters/s2^m 
     // todo const struct msr::airlib::Kinematics::State’ has no member named ‘linear_acceleration
-    // imu_msg.linear_acceleration.x = drone_state.kinematics_estimated.linear_acceleration.x();
-    // imu_msg.linear_acceleration.y = drone_state.kinematics_estimated.linear_acceleration.y();
-    // imu_msg.linear_acceleration.z = drone_state.kinematics_estimated.linear_acceleration.z();
+    imu_msg.linear_acceleration.x = imu_data.linear_acceleration.x();
+    imu_msg.linear_acceleration.y = imu_data.linear_acceleration.y();
+    imu_msg.linear_acceleration.z = imu_data.linear_acceleration.z();
 
     // imu_msg.linear_acceleration_covariance = ;
 
@@ -317,6 +320,23 @@ void AirsimROSWrapper::set_zero_vel_cmd()
     vel_cmd_.yaw_mode.yaw_or_rate = yaw;
 }
 
+// keep IMU in a separate timer callback with the hope of getting high speed polling
+void AirsimROSWrapper::imu_timer_cb(const ros::TimerEvent& event)
+{
+    try
+    {
+        auto imu_data = airsim_client_.getImuData();
+        sensor_msgs::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
+        imu_pub_.publish(imu_msg);
+    }
+
+    catch (rpc::rpc_error& e)
+    {
+        std::string msg = e.get_error().as<std::string>();
+        std::cout << "Exception raised by the API, didn't get IMU response." << std::endl << msg << std::endl;
+    }
+}
+
 void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 {
     // get drone state from airsim
@@ -333,15 +353,12 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 
     mavros_msgs::State vehicle_state_msg = get_vehicle_state_msg(curr_drone_state_);
 
-    // sensor_msgs::Imu imu_ground_truth_msg = get_ground_truth_imu_msg_from_airsim_state(curr_drone_state_);
-
     // publish to ROS!  
     odom_local_ned_pub_.publish(curr_odom_ned_);
     publish_odom_tf(curr_odom_ned_);
     global_gps_pub_.publish(gps_sensor_msg);
     home_geo_point_pub_.publish(home_geo_point_msg_);
     vehicle_state_pub_.publish(vehicle_state_msg);
-    // imu_ground_truth_pub_.publish(imu_ground_truth_msg);//todo. IMU is pretty fast. should be in its own timer callback 
 
     // send control commands from the last callback to airsim
     if (has_vel_cmd_)

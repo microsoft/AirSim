@@ -8,7 +8,8 @@ STRICT_MODE_ON
 
 #include "common/AirSimSettings.hpp"
 #include "common/common_utils/FileSystem.hpp"
-#include "nodelet/nodelet.h"
+#include "sensors/imu/ImuBase.hpp"
+// #include "nodelet/nodelet.h"
 #include "ros/ros.h"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "yaml-cpp/yaml.h"
@@ -97,13 +98,12 @@ struct GimbalCmd
     //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
 };
 
-class AirsimROSWrapper : public nodelet::Nodelet
+class AirsimROSWrapper
 {
 public:
-    AirsimROSWrapper() {}; 
+    AirsimROSWrapper(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private);
     ~AirsimROSWrapper() {}; 
 
-    virtual void onInit();
     void initialize_airsim();
     void initialize_ros();
     void setup_vehicle_constraints(); // todo make ros params
@@ -111,6 +111,7 @@ public:
     /// ROS timer callbacks
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec
+    void imu_timer_cb(const ros::TimerEvent& event); // update imu msg from airsim_client_ every nth sec
 
     /// ROS subscriber callbacks
     void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd &msg);
@@ -149,7 +150,7 @@ public:
     airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point);
     sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point);
     mavros_msgs::State get_vehicle_state_msg(msr::airlib::MultirotorState &drone_state);
-    sensor_msgs::Imu get_ground_truth_imu_msg_from_airsim_state(const msr::airlib::MultirotorState &drone_state);
+    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output &imu_data);
 
 private:
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
@@ -189,6 +190,7 @@ private:
     /// ROS Timers.
     ros::Timer airsim_img_response_timer_;
     ros::Timer airsim_control_update_timer_;
+    ros::Timer airsim_imu_update_timer_;
 
     /// ROS camera messages
     sensor_msgs::CameraInfo front_left_cam_info_msg_;
@@ -216,7 +218,7 @@ private:
     ros::Publisher attitude_euler_pub_;
     ros::Publisher attitude_quat_pub_;
     ros::Publisher vehicle_state_pub_;
-    ros::Publisher imu_ground_truth_pub_;
+    ros::Publisher imu_pub_;
     ros::Publisher origin_geo_point_pub_; // geo coord of unreal origin
     ros::Publisher home_geo_point_pub_; // home geo coord of drones
 
