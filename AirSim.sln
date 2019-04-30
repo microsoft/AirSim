@@ -43,6 +43,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sgmstereo", "SGM\src\sgmste
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stereoPipeline", "SGM\src\stereoPipeline\stereoPipeline_vc15.vcxproj", "{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloSpawnedDrones", "HelloSpawnedDrones\HelloSpawnedDrones.vcxproj", "{99CBF376-5EBA-4164-A657-E7D708C9D685}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4BFB7231-077A-4671-BD21-D3ADE3EA36E7} = {4BFB7231-077A-4671-BD21-D3ADE3EA36E7}
+		{8510C7A4-BF63-41D2-94F6-D8731D137A5A} = {8510C7A4-BF63-41D2-94F6-D8731D137A5A}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +213,18 @@ Global
 		{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}.Release|x64.Build.0 = Release|x64
 		{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}.Release|x86.ActiveCfg = Release|Win32
 		{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}.Release|x86.Build.0 = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|ARM.ActiveCfg = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x64.ActiveCfg = Debug|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x64.Build.0 = Debug|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x86.ActiveCfg = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x86.Build.0 = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|Any CPU.ActiveCfg = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|ARM.ActiveCfg = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x64.ActiveCfg = Release|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x64.Build.0 = Release|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x86.ActiveCfg = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
