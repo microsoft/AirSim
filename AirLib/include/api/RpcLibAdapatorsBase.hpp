@@ -636,7 +636,6 @@ public:
         GnssReport gnss;
         bool is_valid = false;
 
-
         MSGPACK_DEFINE_MAP(time_stamp, gnss, is_valid);
 
         GpsData()

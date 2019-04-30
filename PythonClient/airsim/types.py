@@ -369,7 +369,7 @@ class BarometerData(MsgpackMixin):
     pressure = Vector3r()
     qnh = Vector3r()
 
-class Magnetometer(MsgpackMixin):
+class MagnetometerData(MsgpackMixin):
     time_stamp = np.uint64(0)
     magnetic_field_body = Vector3r()
     magnetic_field_covariance = 0.0
