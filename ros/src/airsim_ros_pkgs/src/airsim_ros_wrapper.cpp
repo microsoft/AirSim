@@ -17,6 +17,7 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle &nh, const ros::NodeHan
     initialize_airsim();
     initialize_ros();
     in_air_ = false;
+    world_frame_id_ = "world_ned"; // todo rosparam?
     // intitialize placeholder control commands
     // vel_cmd_ = VelCmd();
     // gimbal_cmd_ = GimbalCmd();
@@ -42,8 +43,6 @@ void AirsimROSWrapper::initialize_airsim()
 
 void AirsimROSWrapper::initialize_ros()
 {
-//     nh_ = getNodeHandle();
-//     nh_private_ = getPrivateNodeHandle();
     image_transport::ImageTransport it(nh_);
 
     // ros params
@@ -56,21 +55,37 @@ void AirsimROSWrapper::initialize_ros()
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
     // nh_.getParam("max_horz_vel", max_horz_vel_)
 
-    nh_private_.getParam("/cameras", camera_name_image_type_list_);
-    generate_img_request_vec_and_ros_pubs_from_sensors_yml();
+    if(nh_private_.getParam("/cameras", camera_name_image_type_list_))
+    {
+        generate_img_request_vec_and_ros_pubs_from_sensors_yml();
+        airsim_img_response_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_img_response_every_n_sec), &AirsimROSWrapper::img_response_timer_cb, this);
+        nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
+    }
+
+    if(nh_private_.getParam("/lidar", lidar_names_))
+    {
+        generate_lidar_pubs();
+        airsim_lidar_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_lidar_every_n_sec), &AirsimROSWrapper::lidar_timer_cb, this);
+        nh_private_.getParam("update_airsim_lidar_every_n_sec", update_airsim_lidar_every_n_sec);
+    }
+
+    if(nh_private_.getParam("/imu", imu_names_))
+    {
+        // generat_imu_pubs();
+        imu_pub_ = nh_private_.advertise<sensor_msgs::Imu>("imu", 10);
+        airsim_imu_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_imu_every_n_sec), &AirsimROSWrapper::imu_timer_cb, this);
+        nh_private_.getParam("update_airsim_imu_every_n_sec", update_airsim_imu_every_n_sec);
+    }
 
     nh_private_.getParam("is_vulkan", is_vulkan_);
     nh_private_.getParam("front_left_calib_file", front_left_calib_file_);
     nh_private_.getParam("front_right_calib_file", front_right_calib_file_);
 
-    nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
-    nh_private_.getParam("update_airsim_imu_every_n_sec", update_airsim_imu_every_n_sec);
 
-    // fill camera info msg from YAML calib file. todo error check path
+    // fill camera info msg from YAML calib file. todo error checks on path. add rosparam / option to load camera info from a yaml 
     // read_params_from_yaml_and_fill_cam_info_msg(front_left_calib_file_, front_left_cam_info_msg_);
     // front_left_cam_info_msg_.header.frame_id = "airsim/front/left";
-
     // read_params_from_yaml_and_fill_cam_info_msg(front_right_calib_file_, front_right_cam_info_msg_);
     // front_right_cam_info_msg_.header.frame_id = "airsim/front/right";
 
@@ -83,7 +98,6 @@ void AirsimROSWrapper::initialize_ros()
     odom_local_ned_pub_ = nh_private_.advertise<nav_msgs::Odometry>("odom_local_ned", 10);
     global_gps_pub_ = nh_private_.advertise<sensor_msgs::NavSatFix>("global_gps", 10);
     home_geo_point_pub_ = nh_private_.advertise<airsim_ros_pkgs::GPSYaw>("home_geo_point", 10);
-    imu_pub_ = nh_private_.advertise<sensor_msgs::Imu>("imu", 10);
 
     // subscribe to control commands on global nodehandle
     vel_cmd_body_frame_sub_ = nh_.subscribe("vel_cmd_body_frame", 50, &AirsimROSWrapper::vel_cmd_body_frame_cb, this); // todo ros::TransportHints().tcpNoDelay();
@@ -91,9 +105,7 @@ void AirsimROSWrapper::initialize_ros()
     gimbal_angle_quat_cmd_sub_ = nh_.subscribe("gimbal_angle_quat_cmd", 50, &AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this);
     gimbal_angle_euler_cmd_sub_ = nh_.subscribe("gimbal_angle_euler_cmd", 50, &AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this);
 
-    airsim_img_response_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_img_response_every_n_sec), &AirsimROSWrapper::img_response_timer_cb, this);
     airsim_control_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_control_every_n_sec), &AirsimROSWrapper::drone_state_timer_cb, this);
-    airsim_imu_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_imu_every_n_sec), &AirsimROSWrapper::imu_timer_cb, this);
 }
 
 // todo minor: error check. if state is not landed, return error. 
@@ -239,21 +251,18 @@ sensor_msgs::Imu AirsimROSWrapper::get_imu_msg_from_airsim(const msr::airlib::Im
     imu_msg.orientation.z = imu_data.orientation.z();
     imu_msg.orientation.w = imu_data.orientation.w();
 
-    // imu_msg.orientation_covariance = ;
-
     // todo radians per second
     imu_msg.angular_velocity.x = math_common::deg2rad(imu_data.angular_velocity.x());
     imu_msg.angular_velocity.y = math_common::deg2rad(imu_data.angular_velocity.y());
     imu_msg.angular_velocity.z = math_common::deg2rad(imu_data.angular_velocity.z());
 
-    // imu_msg.angular_velocity_covariance = ;
-
     // meters/s2^m 
-    // todo const struct msr::airlib::Kinematics::State’ has no member named ‘linear_acceleration
     imu_msg.linear_acceleration.x = imu_data.linear_acceleration.x();
     imu_msg.linear_acceleration.y = imu_data.linear_acceleration.y();
     imu_msg.linear_acceleration.z = imu_data.linear_acceleration.z();
 
+    // imu_msg.orientation_covariance = ;
+    // imu_msg.angular_velocity_covariance = ;
     // imu_msg.linear_acceleration_covariance = ;
 
     return imu_msg;
@@ -345,7 +354,7 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 
     // convert airsim drone state to ROS msgs
     curr_odom_ned_ = get_odom_msg_from_airsim_state(curr_drone_state_);
-    curr_odom_ned_.header.frame_id = "world_ned";
+    curr_odom_ned_.header.frame_id = world_frame_id_;
     curr_odom_ned_.header.stamp = curr_ros_time;
 
     sensor_msgs::NavSatFix gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(curr_drone_state_.gps_location);
@@ -415,6 +424,34 @@ void AirsimROSWrapper::generate_img_request_vec_and_ros_pubs_from_sensors_yml()
             image_types_names_vec_.push_back(std::string(it.second[image_type_idx]));
         }
     }
+}
+
+void AirsimROSWrapper::generate_lidar_pubs()
+{
+    // iterate over requested lidars
+    for (auto& curr_lidar_name : lidar_names_)
+    {
+        std::cout << "Initializing ROS publisher for lidar name \"" << curr_lidar_name << "\""<< std::endl; 
+        lidar_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::PointCloud2>(curr_lidar_name, 1));
+    }
+}
+
+void AirsimROSWrapper::lidar_timer_cb()
+{
+    auto lidar_data = airsim_client_.getLidarData();
+    sensor_msgs::PointCloud2 lidar_msg;
+    lidar_msg.header.frame_id = world_frame_id_;
+    if (lidar_msg.point_cloud.size() > 3)
+    {
+
+        lidar_msg.is_bigendian = false;
+        lidar_msg.point_ste = false;
+    }
+    else
+    {
+
+    }
+    lidar_pub_vec_.publish(lidar_msg);
 }
 
 // the image request names should match the json custom camera names!
@@ -513,8 +550,8 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
     {
         // todo publishing a tf for each capture type seems stupid. but it foolproofs us against render thread's async stuff, I hope. 
         // Ideally, we should loop over cameras and then captures, and publish only one tf.  
-        // publish_camera_tf(curr_img_response, curr_ros_time, "world_ned", curr_img_response.camera_name + "/" + image_types_names_vec_[img_response_idx]);
-        publish_camera_tf(curr_img_response, curr_ros_time, "world_ned", curr_img_response.camera_name);
+        // publish_camera_tf(curr_img_response, curr_ros_time, world_frame_id_, curr_img_response.camera_name + "/" + image_types_names_vec_[img_response_idx]);
+        publish_camera_tf(curr_img_response, curr_ros_time, world_frame_id_, curr_img_response.camera_name);
 
         // todoo calling airsim_client_ in this funciton isn'it the cleanest thing to do. should be in img_response_timer_cb for readability  
         msr::airlib::CameraInfo camera_info = airsim_client_.simGetCameraInfo(curr_img_response.camera_name);

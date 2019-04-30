@@ -2,3 +2,4 @@ cameras:
   front_left_custom: [Scene, DepthPlanner]
   front_right_custom: [Scene]
   front_center_custom: [Scene]
+lidar: [LidarCustom]

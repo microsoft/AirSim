@@ -9,7 +9,7 @@ int main(int argc, char ** argv)
 
     AirsimROSWrapper airsim_ros_wrapper(nh, nh_private);
 
-	int num_threads = 4;
+	int num_threads = 2;
 	ros::MultiThreadedSpinner multi_thread(num_threads);
 	multi_thread.spin(); 
 

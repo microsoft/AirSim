@@ -35,6 +35,7 @@ STRICT_MODE_ON
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Imu.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <std_srvs/Empty.h>
 #include <tf2/LinearMath/Matrix3x3.h>
@@ -141,6 +142,7 @@ public:
     void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info);
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m); // todo ugly
     void generate_img_request_vec_and_ros_pubs_from_sensors_yml();
+    void generate_lidar_pubs();
 
     /// utils. parse into an Airlib<->ROS conversion class
     tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat);
@@ -178,11 +180,12 @@ private:
     GimbalCmd gimbal_cmd_; 
 
     /// ROS tf
+    std::string world_frame_id_;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::Buffer tf_buffer_;
     std::unordered_map<std::string, std::string> cam_name_to_cam_tf_name_map_;
     // look up vector of all capture type in "camera major" format. used to give camera tf's their names
-    std::vector<std::string> image_types_names_vec_; 
+    std::vector<std::string> image_types_names_vec_;
 
     /// ROS params
     double vel_cmd_duration_;
@@ -203,6 +206,8 @@ private:
     // We obtain this from the camera subfield in sensors.yml, which is supplied by the end user. 
     // the camera names and image types must be a subset or equal to what is declared in settings.json 
     XmlRpc::XmlRpcValue camera_name_image_type_list_;
+    std::vector<std::string> lidar_names_;
+    std::vector<std::string> imu_names_;
 
     // generated from camera_name_image_type_list_
     std::vector<ImageRequest> airsim_img_request_;
@@ -210,6 +215,7 @@ private:
     // auto generated from camera_name_image_type_list_, which is generated from sensors.yamls
     std::vector<image_transport::Publisher> image_pub_vec_; 
     std::vector<ros::Publisher> cam_info_pub_vec_; 
+    std::vector<ros::Publisher> lidar_pub_vec_; 
 
     /// ROS other publishers
     ros::Publisher clock_pub_;
