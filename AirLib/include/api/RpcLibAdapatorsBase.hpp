@@ -535,9 +535,9 @@ public:
 
     struct BarometerData {
         msr::airlib::TTimePoint time_stamp;
-        float altitude;
-        float pressure;
-        float qnh;
+        msr::airlib::real_T altitude;
+        msr::airlib::real_T pressure;
+        msr::airlib::real_T qnh;
 
         MSGPACK_DEFINE_MAP(time_stamp, altitude, pressure, qnh);
 
@@ -656,6 +656,41 @@ public:
             d.time_stamp = time_stamp;
             d.gnss = gnss.to();
             d.is_valid = is_valid;
+
+            return d;
+        }
+    };
+
+    struct DistanceSensorData {
+        msr::airlib::TTimePoint time_stamp;
+        msr::airlib::real_T distance;    //meters
+        msr::airlib::real_T min_distance;//m
+        msr::airlib::real_T max_distance;//m
+        Pose relative_pose;
+
+        MSGPACK_DEFINE_MAP(time_stamp, distance, min_distance, max_distance, relative_pose);
+
+        DistanceSensorData()
+        {}
+
+        DistanceSensorData(const msr::airlib::DistanceBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            distance = s.distance;
+            min_distance = s.min_distance;
+            max_distance = s.max_distance;
+            relative_pose = s.relative_pose;
+        }
+
+        msr::airlib::DistanceBase::Output to() const
+        {
+            msr::airlib::DistanceBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.distance = distance;
+            d.min_distance = min_distance;
+            d.max_distance = max_distance;
+            d.relative_pose = relative_pose.to();
 
             return d;
         }
