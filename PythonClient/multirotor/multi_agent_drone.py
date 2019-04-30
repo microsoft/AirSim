@@ -1,10 +1,10 @@
-import setup_path 
 import airsim
-
+import cv2
 import numpy as np
 import os
-import tempfile
 import pprint
+import setup_path 
+import tempfile
 
 # Use below in settings.json with Blocks environment
 """
@@ -88,8 +88,7 @@ for idx, response in enumerate(responses1 + responses2):
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
         img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
-        img_rgb = np.flipud(img_rgb) #original image is flipped vertically
-        airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) #write to png
+        cv2.imwrite(os.path.normpath(filename + '.png'), img_rgb) # write to png
 
 airsim.wait_key('Press any key to reset to original state')
 

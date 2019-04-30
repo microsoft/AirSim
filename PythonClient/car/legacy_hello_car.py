@@ -65,7 +65,6 @@ for idx, response in enumerate(responses):
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
         img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
-        img_rgb = np.flipud(img_rgb) #original image is fliped vertically
         AirSimClientBase.write_png(os.path.normpath(filename + '.png'), img_rgb) #write to png
 
 AirSimClientBase.wait_key('Press any key to reset to original state')

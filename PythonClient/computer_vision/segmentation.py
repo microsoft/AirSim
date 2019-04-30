@@ -1,10 +1,10 @@
 # In settings.json first activate computer vision mode: 
 # https://github.com/Microsoft/AirSim/blob/master/docs/image_apis.md#computer-vision-mode
 
-import setup_path 
 import airsim
-
+import cv2
 import numpy as np
+import setup_path 
 
 client = airsim.VehicleClient()
 client.confirmConnection()
@@ -55,8 +55,7 @@ for idx, response in enumerate(responses):
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
         img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
-        img_rgb = np.flipud(img_rgb) #original image is flipped vertically
-        #airsim.write_png(os.path.normpath(filename + '.numpy.png'), img_rgb) #write to png 
+        # cv2.imwrite(os.path.normpath(filename + '.png'), img_rgb) # write to png
 
         #find unique colors
         print(np.unique(img_rgb[:,:,0], return_counts=True)) #red

@@ -112,9 +112,9 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
                 else {
                     uint8* ptr = results[i]->image_data_uint8.GetData();
                     for (const auto& item : results[i]->bmp) {
-                        *ptr++ = item.R;
-                        *ptr++ = item.G;
                         *ptr++ = item.B;
+                        *ptr++ = item.G;
+                        *ptr++ = item.R;
                     }
                 }
             }
