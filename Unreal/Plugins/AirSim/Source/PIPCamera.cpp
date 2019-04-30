@@ -90,7 +90,7 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
     const_cast<APIPCamera*>(this)->setCameraTypeEnabled(image_type, true);
     const USceneCaptureComponent2D* capture = const_cast<APIPCamera*>(this)->getCaptureComponent(image_type, false);
     if (capture) {
-        FMatrix proj_mat;
+        FMatrix proj_mat_transpose;
 
 		FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
 		float x_axis_multiplier = 1.0f;
@@ -115,7 +115,7 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
 		    const float ZScale = 1.0f / (FarPlane - NearPlane);
 		    const float ZOffset = -NearPlane;
 
-		    proj_mat = FReversedZOrthoMatrix(
+		    proj_mat_transpose = FReversedZOrthoMatrix(
 			    OrthoWidth,
 			    OrthoHeight,
 			    ZScale,
@@ -127,7 +127,7 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
             float halfFov = Utils::degreesToRadians(capture->FOVAngle) / 2;
 		    if ((int32)ERHIZBuffer::IsInverted)
 		    {
-			    proj_mat = FReversedZPerspectiveMatrix(
+			    proj_mat_transpose = FReversedZPerspectiveMatrix(
 				    halfFov,
 				    halfFov,
 				    x_axis_multiplier,
@@ -138,7 +138,8 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
 		    }
 		    else
 		    {
-			    proj_mat = FPerspectiveMatrix(
+				//The FPerspectiveMatrix() constructor actually returns the transpose of the perspective matrix.
+			    proj_mat_transpose = FPerspectiveMatrix(
 				    halfFov,
 				    halfFov,
 				    x_axis_multiplier,
@@ -148,17 +149,30 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
 				    );
 		    }
 	    }
-        msr::airlib::ProjectionMatrix mat;
-        for (auto i = 0; i < 4; ++i)
-            for (auto j = 0; j < 4; ++j)
-                mat.matrix[i][j] = proj_mat.M[i][j];
-        return mat;
-    }
-    else {
-        msr::airlib::ProjectionMatrix mat;
-        mat.setTo(Utils::nan<float>());
-        return mat;
-    }
+		
+		//Takes a vector from NORTH-EAST-DOWN coordinates (AirSim) to EAST-UP-SOUTH coordinates (Unreal). Leaves W coordinate unchanged.
+		FMatrix coordinateChangeTranspose = FMatrix(
+			FPlane(0, 0, -1, 0),
+			FPlane(1, 0, 0, 0),
+			FPlane(0, -1, 0, 0),
+			FPlane(0, 0, 0, 1)
+		);
+
+		FMatrix projMatTransposeInAirSim = coordinateChangeTranspose * proj_mat_transpose;
+
+		//Copy the result to an airlib::ProjectionMatrix while taking transpose.
+		msr::airlib::ProjectionMatrix mat;
+		for (auto row = 0; row < 4; ++row)
+			for (auto col = 0; col < 4; ++col)
+				mat.matrix[col][row] = projMatTransposeInAirSim.M[row][col];
+
+		return mat;
+	}
+	else {
+		msr::airlib::ProjectionMatrix mat;
+		mat.setTo(Utils::nan<float>());
+		return mat;
+	}
 }
 
 void APIPCamera::Tick(float DeltaTime)

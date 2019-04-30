@@ -18,7 +18,6 @@ def rotation_matrix_from_angles(pry):
     sr = numpy.sin(roll)
     cr = numpy.cos(roll)
     
-    #The rotation matrices in x-y-z = North-East-Down coordinates
     Rx = numpy.array([
         [1, 0, 0],
         [0, cr, -sr],
@@ -26,54 +25,51 @@ def rotation_matrix_from_angles(pry):
     ])
     
     Ry = numpy.array([
-        [cp, 0, -sp],
+        [cp, 0, sp],
         [0, 1, 0],
-        [sp, 0, cp]
+        [-sp, 0, cp]
     ])
     
     Rz = numpy.array([
-        [cy, sy, 0],
-        [-sy, cy, 0],
+        [cy, -sy, 0],
+        [sy, cy, 0],
         [0, 0, 1]
     ])
     
     #Roll is applied first, then pitch, then yaw.
-    return numpy.matmul(Rz, Ry, Rx)
+    RyRx = numpy.matmul(Ry, Rx)
+    return numpy.matmul(Rz, RyRx)
 
 def project_3d_point_to_screen(subjectXYZ, camXYZ, camQuaternion, camProjMatrix4x4, imageWidthHeight):
-    subjectXYZ.append(1)
-    #Turn the position into a column vector.
+    #Turn the camera position into a column vector.
     camPosition = numpy.transpose([camXYZ])
 
-    #Convert the quaternion rotation to yaw, pitch, roll angles.
+    #Convert the camera's quaternion rotation to yaw, pitch, roll angles.
     pitchRollYaw = utils.to_eularian_angles(camQuaternion)
     
     #Create a rotation matrix from camera pitch, roll, and yaw angles.
     camRotation = rotation_matrix_from_angles(pitchRollYaw)
     
-    #Create the view matrix. (Tthe matrix that transforms points from world space to the camera's coordinate frame.)
-    inverseViewMatrix = numpy.concatenate([camRotation, camPosition], axis = 1)
-    inverseViewMatrix = numpy.concatenate([inverseViewMatrix, [[0, 0, 0, 1]]], axis = 0)
-    
-    print("Before viewMatrix: " + str(subjectXYZ))
-    camViewMatrix4x4 = numpy.linalg.inv(inverseViewMatrix)
-    print("After viewMatrix: " + str(numpy.matmul(camViewMatrix4x4, subjectXYZ)))
-
-    #Transform the 3D point by the view matrix and the projection matrix to get its screen space coordinates.
-    viewProj4x4 = numpy.matmul(camProjMatrix4x4, camViewMatrix4x4)
-    
-    #The result is normalized screen coordinates in the (-1, 1) x (-1, 1) rectangle with a normalization factor W.
-    XYZW = numpy.matmul(viewProj4x4, numpy.transpose([subjectXYZ]))
+    #Change coordinates to get subjectXYZ in the camera's local coordinate system.
+    XYZW = numpy.transpose([subjectXYZ])
+    XYZW = numpy.add(XYZW, -camPosition)
     print("XYZW: " + str(XYZW))
+    XYZW = numpy.matmul(numpy.transpose(camRotation), XYZW)
+    print("XYZW derot: " + str(XYZW))
+    
+    #Recreate the perspective projection of the camera.
+    XYZW = numpy.concatenate([XYZW, [[1]]])    
+    XYZW = numpy.matmul(camProjMatrix4x4, XYZW)
     XYZW = XYZW / XYZW[3]
     
-    #Move origin to the upper-left corner of the screen and multiply by size to get pixel values.
-    normX = (1 + XYZW[0]) / 2
-    normY = (1 - XYZW[1]) / 2
-    return [
+    #Move origin to the upper-left corner of the screen and multiply by size to get pixel values. Note that screen is in y,-z plane.
+    normX = (1 - XYZW[0]) / 2
+    normY = (1 + XYZW[1]) / 2
+    
+    return numpy.array([
         imageWidthHeight[0] * normX,
         imageWidthHeight[1] * normY
-    ]
+    ]).reshape(2,)
    
 def get_image(x, y, z, pitch, roll, yaw, client):
     """
@@ -186,15 +182,13 @@ def main(client,
         startTime = time.time()
         elapsedTime = 0
         pose = client.simGetObjectPose(o);
-        o1 = objectList[1]
-        secondObjectPose = client.simGetObjectPose(o1)
 
         #Capture images for a certain amount of time in seconds (half hour now)
         while elapsedTime < 1800:
             #Capture image - pose.position x_val access may change w/ AirSim
             #version (pose.position.x_val new, pose.position[b'x_val'] old)
             vector, angle, ir, scene = get_image(pose.position.x_val, 
-                                                 pose.position.y_val - 20, 
+                                                 pose.position.y_val, 
                                                  z, 
                                                  pitch, 
                                                  roll, 
@@ -216,7 +210,7 @@ def main(client,
             pose = client.simGetObjectPose(o);
             camInfo = client.simGetCameraInfo("0")
             object_xy_in_pic = project_3d_point_to_screen(
-                [secondObjectPose.position.x_val, secondObjectPose.position.y_val, secondObjectPose.position.z_val],
+                [pose.position.x_val, pose.position.y_val, pose.position.z_val],
                 [camInfo.pose.position.x_val, camInfo.pose.position.y_val, camInfo.pose.position.z_val],
                 camInfo.pose.orientation,
                 camInfo.proj_mat.matrix,
@@ -236,13 +230,13 @@ if __name__ == '__main__':
     crocList = client.simListSceneObjects('.*?Croc.*?')
     hippoList = client.simListSceneObjects('.*?Hippo.*?')
     
-    objectList = hippoList
+    objectList = elephantList
     
     #Sample calls to main, varying camera angle and altitude.
     #straight down, 400ft
     main(client, 
          objectList, 
-         irFolder=r'C:\\Users\\v-nigyde\\Documents\\SCREENSHOTS\\')#auto\winter\400ft\down') 
+         irFolder=r'auto\winter\400ft\down') 
     #straight down, 200ft
     main(client, 
          objectList, 
