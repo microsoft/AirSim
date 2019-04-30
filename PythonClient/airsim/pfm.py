@@ -49,7 +49,6 @@ def read_pfm(file):
 
     data = np.reshape(data, shape)
     # DEY: I don't know why this was there.
-    #data = np.flipud(data)
     file.close()
     
     return data, scale
@@ -63,8 +62,6 @@ def write_pfm(file, image, scale=1):
 
     if image.dtype.name != 'float32':
         raise Exception('Image dtype must be float32.')
-
-    image = np.flipud(image)
 
     if len(image.shape) == 3 and image.shape[2] == 3: # color image
         color = True
