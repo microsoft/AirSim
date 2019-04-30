@@ -593,6 +593,73 @@ public:
             return d;
         }
     };
+
+    struct GnssReport {
+        GeoPoint geo_point;
+        msr::airlib::real_T eph = 0.0, epv = 0.0; 
+        Vector3r velocity;
+        msr::airlib::GpsBase::GnssFixType fix_type;
+        uint64_t time_utc = 0;
+
+        MSGPACK_DEFINE_MAP(geo_point, eph, epv, velocity, fix_type, time_utc);
+
+        GnssReport()
+        {}
+
+        GnssReport(const msr::airlib::GpsBase::GnssReport& s)
+        {
+            geo_point = s.geo_point;
+            eph = s.eph;
+            epv = s.epv;
+            velocity = s.velocity;
+            fix_type = s.fix_type;
+            time_utc = s.time_utc;
+        }
+
+        msr::airlib::GpsBase::GnssReport to() const
+        {
+            msr::airlib::GpsBase::GnssReport d;
+
+            d.geo_point = geo_point.to();
+            d.eph = eph;
+            d.epv = epv;
+            d.velocity = velocity.to();
+            d.fix_type = fix_type;
+            d.time_utc = time_utc;
+
+            return d;
+        }
+    };
+
+    struct GpsData {
+        msr::airlib::TTimePoint time_stamp;
+        GnssReport gnss;
+        bool is_valid = false;
+
+
+        MSGPACK_DEFINE_MAP(time_stamp, gnss, is_valid);
+
+        GpsData()
+        {}
+
+        GpsData(const msr::airlib::GpsBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            gnss = s.gnss;
+            is_valid = s.is_valid;
+        }
+
+        msr::airlib::GpsBase::Output to() const
+        {
+            msr::airlib::GpsBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.gnss = gnss.to();
+            d.is_valid = is_valid;
+
+            return d;
+        }
+    };
 };
 
 }} //namespace
@@ -601,5 +668,6 @@ MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::SafetyViolationType_);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::ObsAvoidanceStrategy);
 MSGPACK_ADD_ENUM(msr::airlib::ImageCaptureBase::ImageType);
 MSGPACK_ADD_ENUM(msr::airlib::WorldSimApiBase::WeatherParameter);
+MSGPACK_ADD_ENUM(msr::airlib::GpsBase::GnssFixType);
 
 #endif

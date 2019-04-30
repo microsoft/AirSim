@@ -16,6 +16,7 @@
 #include "sensors/imu/ImuBase.hpp"
 #include "sensors/barometer/BarometerBase.hpp"
 #include "sensors/magnetometer/MagnetometerBase.hpp"
+#include "sensors/gps/GpsBase.hpp"
 #include <exception>
 #include <string>
 
@@ -191,6 +192,27 @@ public:
             throw VehicleControllerException(Utils::stringf("No magnetometer with name %s exist on vehicle", magnetometer_name.c_str()));
 
         return magnetometer->getOutput();
+    }
+
+    // Magnetometer API
+    virtual GpsBase::Output getGpsData(const std::string& gps_name) const
+    {
+        const GpsBase* gps = nullptr;
+
+        uint count_imus = getSensors().size(SensorBase::SensorType::Gps);
+        for (uint i = 0; i < count_imus; i++)
+        {
+            const GpsBase* current_gps = static_cast<const GpsBase*>(getSensors().getByType(SensorBase::SensorType::Gps, i));
+            if (current_gps != nullptr && (current_gps->getName() == gps_name || gps_name == ""))
+            {
+                gps = current_gps;
+                break;
+            }
+        }
+        if (gps == nullptr)
+            throw VehicleControllerException(Utils::stringf("No gps with name %s exist on vehicle", gps_name.c_str()));
+
+        return gps->getOutput();
     }
 
     virtual ~VehicleApiBase() = default;

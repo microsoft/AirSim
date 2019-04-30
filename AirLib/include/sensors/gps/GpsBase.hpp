@@ -74,6 +74,7 @@ public: //types
         GNSS_FIX_2D_FIX = 2,
         GNSS_FIX_3D_FIX = 3
     };
+
     struct GnssReport {
         GeoPoint geo_point;
         real_T eph, epv;    //GPS HDOP/VDOP horizontal/vertical dilution of position (unitless), 0-100%
@@ -90,6 +91,7 @@ public: //types
     };
 
     struct Output {	//same as ROS message
+        TTimePoint time_stamp;
         GnssReport gnss;
         bool is_valid = false;
     };
