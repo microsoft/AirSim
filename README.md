@@ -16,6 +16,7 @@ Cars in AirSim
 
 ## What's New
 
+* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](https://microsoft.github.io/AirSim/docs/sensors.md) 
 * Added support for [docker in ubuntu](https://microsoft.github.io/AirSim/docs/docker_ubuntu) 
 * Added Weather Effects and [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis)
 * Added [Time of Day API](https://microsoft.github.io/AirSim/docs/apis#time-of-day-api)

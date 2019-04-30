@@ -65,6 +65,8 @@ private: //methods
         addNoise(output.linear_acceleration, output.angular_velocity);
         // TODO: Add noise in orientation?
 
+        output.time_stamp = clock()->nowNanos();
+
         setOutput(output);
     }
 

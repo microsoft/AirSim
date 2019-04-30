@@ -164,6 +164,31 @@ msr::airlib::LidarData RpcLibClientBase::getLidarData(const std::string& lidar_n
     return pimpl_->client.call("getLidarData", lidar_name, vehicle_name).as<RpcLibAdapatorsBase::LidarData>().to();
 }
 
+msr::airlib::ImuBase::Output RpcLibClientBase::getImuData(const std::string& imu_name, const std::string& vehicle_name) const
+{
+    return pimpl_->client.call("getImuData", imu_name, vehicle_name).as<RpcLibAdapatorsBase::ImuData>().to();
+}
+
+msr::airlib::BarometerBase::Output RpcLibClientBase::getBarometerData(const std::string& barometer_name, const std::string& vehicle_name) const
+{
+    return pimpl_->client.call("getBarometerData", barometer_name, vehicle_name).as<RpcLibAdapatorsBase::BarometerData>().to();
+}
+
+msr::airlib::MagnetometerBase::Output RpcLibClientBase::getMagnetometerData(const std::string& magnetometer_name, const std::string& vehicle_name) const
+{
+    return pimpl_->client.call("getMagnetometerData", magnetometer_name, vehicle_name).as<RpcLibAdapatorsBase::MagnetometerData>().to();
+}
+
+msr::airlib::GpsBase::Output RpcLibClientBase::getGpsData(const std::string& gps_name, const std::string& vehicle_name) const
+{
+    return pimpl_->client.call("getGpsData", gps_name, vehicle_name).as<RpcLibAdapatorsBase::GpsData>().to();
+}
+
+msr::airlib::DistanceBase::Output RpcLibClientBase::getDistanceSensorData(const std::string& distance_sensor_name, const std::string& vehicle_name) const
+{
+    return pimpl_->client.call("getDistanceSensorData", distance_sensor_name, vehicle_name).as<RpcLibAdapatorsBase::DistanceSensorData>().to();
+}
+
 bool RpcLibClientBase::simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
     return pimpl_->client.call("simSetSegmentationObjectID", mesh_name, object_id, is_name_regex).as<bool>();

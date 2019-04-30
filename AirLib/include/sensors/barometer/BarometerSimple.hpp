@@ -93,6 +93,8 @@ private: //methods
         output.altitude = (1 - pow(pressure / EarthUtils::SeaLevelPressure, 0.190284f)) * 145366.45f * 0.3048f;
         output.qnh = params_.qnh;
 
+        output.time_stamp = clock()->nowNanos();
+
         return output;
     }
     

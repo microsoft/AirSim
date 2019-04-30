@@ -18,6 +18,7 @@ public:
 
 public: //types
     struct Output { //same fields as ROS message
+        TTimePoint time_stamp;
         real_T distance;    //meters
         real_T min_distance;//m
         real_T max_distance;//m

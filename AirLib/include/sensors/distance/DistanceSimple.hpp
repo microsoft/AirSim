@@ -88,6 +88,7 @@ private: //methods
         output.min_distance = params_.min_distance;
         output.max_distance = params_.max_distance;
         output.relative_pose = params_.relative_pose;
+        output.time_stamp = clock()->nowNanos();
 
         return output;
     }

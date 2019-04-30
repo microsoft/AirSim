@@ -19,6 +19,7 @@ public:
 public: //types
     struct Output {	//structure is same as ROS IMU message
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        TTimePoint time_stamp; 
         Quaternionr orientation;
         Vector3r angular_velocity;
         Vector3r linear_acceleration;

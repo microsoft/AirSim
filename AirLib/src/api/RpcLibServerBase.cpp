@@ -155,6 +155,31 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::LidarData(lidar_data);
     });
 
+    pimpl_->server.bind("getImuData", [&](const std::string& imu_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::ImuData {
+        const auto& imu_data = getVehicleApi(vehicle_name)->getImuData(imu_name);
+        return RpcLibAdapatorsBase::ImuData(imu_data);
+    });
+
+    pimpl_->server.bind("getBarometerData", [&](const std::string& barometer_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::BarometerData {
+        const auto& barometer_data = getVehicleApi(vehicle_name)->getBarometerData(barometer_name);
+        return RpcLibAdapatorsBase::BarometerData(barometer_data);
+    });
+
+    pimpl_->server.bind("getMagnetometerData", [&](const std::string& magnetometer_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::MagnetometerData {
+        const auto& magnetometer_data = getVehicleApi(vehicle_name)->getMagnetometerData(magnetometer_name);
+        return RpcLibAdapatorsBase::MagnetometerData(magnetometer_data);
+    });
+
+    pimpl_->server.bind("getGpsData", [&](const std::string& gps_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::GpsData {
+        const auto& gps_data = getVehicleApi(vehicle_name)->getGpsData(gps_name);
+        return RpcLibAdapatorsBase::GpsData(gps_data);
+    });
+
+    pimpl_->server.bind("getDistanceSensorData", [&](const std::string& distance_sensor_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::DistanceSensorData {
+        const auto& distance_sensor_data = getVehicleApi(vehicle_name)->getDistanceSensorData(distance_sensor_name);
+        return RpcLibAdapatorsBase::DistanceSensorData(distance_sensor_data);
+    });
+
     pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::CameraInfo {
         const auto& camera_info = getVehicleSimApi(vehicle_name)->getCameraInfo(camera_name);
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
