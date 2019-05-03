@@ -6,6 +6,7 @@ STRICT_MODE_OFF //todo what does this do?
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
+#include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include "sensors/imu/ImuBase.hpp"
@@ -49,6 +50,8 @@ STRICT_MODE_ON
 typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
 typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
 typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
+typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
+typedef msr::airlib::AirSimSettings::CameraSetting CameraSetting;
 
 struct SimpleMatrix
 {
@@ -133,6 +136,7 @@ public:
 
     /// camera helper methods
     // TODO migrate to image_tranport camera publisher https://answers.ros.org/question/278602/how-to-use-camera_info_manager-to-publish-camera_info/
+    sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting);
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response);
     sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
     sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
@@ -141,7 +145,7 @@ public:
     cv::Mat manual_decode_depth(const ImageResponse &img_response);
     void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info);
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m); // todo ugly
-    void generate_img_request_vec_and_ros_pubs_from_sensors_yml();
+    void generate_img_request_vec_and_ros_pubs_from_settings_json();
     void generate_lidar_pubs();
 
     /// utils. parse into an Airlib<->ROS conversion class
@@ -155,6 +159,8 @@ public:
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output &imu_data);
 
 private:
+    AirSimSettingsParser airsim_settings_parser_;
+    std::map<int, std::string> image_type_int_to_string_map_;
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
     msr::airlib::MultirotorRpcLibClient airsim_client_;
@@ -196,8 +202,6 @@ private:
     ros::Timer airsim_imu_update_timer_;
 
     /// ROS camera messages
-    sensor_msgs::CameraInfo front_left_cam_info_msg_;
-    sensor_msgs::CameraInfo front_right_cam_info_msg_;
     // sensor_msgs::CameraInfo front_center_mono_cam_info_msg_;
 
     /// ROS camera publishers
@@ -214,8 +218,9 @@ private:
 
     // auto generated from camera_name_image_type_list_, which is generated from sensors.yamls
     std::vector<image_transport::Publisher> image_pub_vec_; 
-    std::vector<ros::Publisher> cam_info_pub_vec_; 
+    std::vector<ros::Publisher> cam_info_pub_vec_;
     std::vector<ros::Publisher> lidar_pub_vec_; 
+    std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
 
     /// ROS other publishers
     ros::Publisher clock_pub_;

@@ -2,6 +2,7 @@
 #include <boost/make_shared.hpp>
 // #include <pluginlib/class_list_macros.h>
 // PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
+#include "common/AirSimSettings.hpp"
 
 constexpr char AirsimROSWrapper::CAM_YML_NAME[];
 constexpr char AirsimROSWrapper::WIDTH_YML_NAME[];
@@ -14,6 +15,15 @@ constexpr char AirsimROSWrapper::DMODEL_YML_NAME[];
 
 AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private) : nh_(nh), nh_private_(nh_private)
 {
+    image_type_int_to_string_map_[0] = "Scene"; 
+    image_type_int_to_string_map_[1] = "DepthPlanner"; 
+    image_type_int_to_string_map_[2] = "DepthPerspective";
+    image_type_int_to_string_map_[3] = "DepthVis"; 
+    image_type_int_to_string_map_[4] = "DisparityNormalized";
+    image_type_int_to_string_map_[5] = "Segmentation";
+    image_type_int_to_string_map_[6] = "SurfaceNormals";
+    image_type_int_to_string_map_[7] = "Infrared";
+
     initialize_airsim();
     initialize_ros();
     in_air_ = false;
@@ -57,17 +67,17 @@ void AirsimROSWrapper::initialize_ros()
 
     if(nh_private_.getParam("/cameras", camera_name_image_type_list_))
     {
-        generate_img_request_vec_and_ros_pubs_from_sensors_yml();
+        generate_img_request_vec_and_ros_pubs_from_settings_json();
         airsim_img_response_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_img_response_every_n_sec), &AirsimROSWrapper::img_response_timer_cb, this);
         nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
     }
 
-    if(nh_private_.getParam("/lidar", lidar_names_))
-    {
-        generate_lidar_pubs();
-        airsim_lidar_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_lidar_every_n_sec), &AirsimROSWrapper::lidar_timer_cb, this);
-        nh_private_.getParam("update_airsim_lidar_every_n_sec", update_airsim_lidar_every_n_sec);
-    }
+    // if(nh_private_.getParam("/lidar", lidar_names_))
+    // {
+    //     generate_lidar_pubs();
+    //     airsim_lidar_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_lidar_every_n_sec), &AirsimROSWrapper::lidar_timer_cb, this);
+    //     nh_private_.getParam("update_airsim_lidar_every_n_sec", update_airsim_lidar_every_n_sec);
+    // }
 
     if(nh_private_.getParam("/imu", imu_names_))
     {
@@ -384,45 +394,73 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 }
 
 // XmlRpc::XmlRpcValue can't be const in this case
-void AirsimROSWrapper::generate_img_request_vec_and_ros_pubs_from_sensors_yml()
+void AirsimROSWrapper::generate_img_request_vec_and_ros_pubs_from_settings_json()
 {
     airsim_img_request_.clear();
     image_pub_vec_.clear();
     image_types_names_vec_.clear();
     cam_info_pub_vec_.clear();
+    camera_info_msg_vec_.clear();
 
     image_transport::ImageTransport image_transporter(nh_);
 
-    // iterate over request cameras
-    for (auto& it : camera_name_image_type_list_)
+    // iterate over std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
+    for (const auto &curr_vehicle_elem : AirSimSettings::singleton().vehicles)
     {
-        std::string curr_camera_name = std::string(it.first);
-        cam_name_to_cam_tf_name_map_[curr_camera_name] = curr_camera_name + "_optical"; // tf name
+        auto& vehicle_setting = curr_vehicle_elem.second;
+        auto curr_vehicle_name = curr_vehicle_elem.first;
+        std::cout << "vehicle_name:" << curr_vehicle_elem.first << '\t' << std::endl;
+        // std::cout << vehicle_setting->position << '\t' << std::endl;
+        // std::cout << vehicle_setting->rotation << '\t' << std::endl;
 
-        // iterate over request capture types
-        for (int image_type_idx = 0; image_type_idx < it.second.size(); image_type_idx++)
+        // iterate over camera map std::map<std::string, CameraSetting> cameras;
+        for (const auto &curr_camera_elem : vehicle_setting->cameras)
         {
-            std::cout << "Initializing ROS publisher for camera name \"" << it.first << 
-                "\" with image type \"" << it.second[image_type_idx] << "\" " << std::endl;
+            auto& camera_setting = curr_camera_elem.second;
+            auto& curr_camera_name = curr_camera_elem.first;
+            std::cout << "camera_name:" << curr_camera_elem.first << std::endl;
+            std::cout << camera_setting.position << '\t' << std::endl;
+            // camera_setting.gimbal
+            // std::cout << camera_setting->rotation << '\t' << std::endl;
 
-            // int image types 
-            if (it.second[image_type_idx] == "Scene" || 
-                it.second[image_type_idx] == "Segmentation" || 
-                it.second[image_type_idx] == "SurfaceNormals" || 
-                it.second[image_type_idx] == "Infrared")
+            cam_name_to_cam_tf_name_map_[curr_camera_name] = curr_camera_name + "_optical"; // tf name
+            
+            // iterate over capture_setting std::map<int, CaptureSetting> capture_settings
+            for (const auto &curr_capture_elem : camera_setting.capture_settings)
             {
-                // append to ImageRequest to be sent to image
-                airsim_img_request_.push_back(ImageRequest(curr_camera_name, ImageType::Scene, false, false));
+                auto& capture_setting = curr_capture_elem.second;
+
+                // todo why does AirSimSettings::loadCaptureSettings calls AirSimSettings::initializeCaptureSettings()
+                // which initializes default capture settings for _all_ NINE msr::airlib::ImageCaptureBase::ImageType
+                if ( !(std::isnan(capture_setting.fov_degrees)) 
+                    && capture_setting.publish_to_ros)
+                {
+                    ImageType curr_image_type = msr::airlib::Utils::toEnum<ImageType>(capture_setting.image_type);
+                    // if scene / segmentation / surface normals / infrared, get uncompressed image with pixels_as_floats = false
+                    if (capture_setting.image_type == 0 || capture_setting.image_type == 5 || capture_setting.image_type == 6 || capture_setting.image_type == 7)
+                    {
+                        airsim_img_request_.push_back(ImageRequest(curr_camera_name, curr_image_type, false, false));
+                    }
+                    // if {DepthPlanner, DepthPerspective,DepthVis, DisparityNormalized}, get float image
+                    else
+                    {
+                        airsim_img_request_.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
+                    }
+
+                    std::cout << "image_type_int_to_string_map_[capture_setting.image_type]" << image_type_int_to_string_map_[capture_setting.image_type] << std::endl;
+                    image_pub_vec_.push_back(image_transporter.advertise(curr_camera_name + "/" + image_type_int_to_string_map_[capture_setting.image_type], 1));
+                    image_types_names_vec_.push_back(image_type_int_to_string_map_[capture_setting.image_type]);
+                    cam_info_pub_vec_.push_back(nh_.advertise<sensor_msgs::CameraInfo> (curr_camera_name + "/" + image_type_int_to_string_map_[capture_setting.image_type] + "/camera_info", 10));
+                    camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
+
+                    std::cout << "image_type:" << capture_setting.image_type << std::endl;
+                    std::cout << "fov_degrees:" << capture_setting.fov_degrees << std::endl;
+                    std::cout << "publish_to_ros:" << capture_setting.publish_to_ros << std::endl;
+                }
+
             }
-            else // float image types DepthPlanner || DepthPerspective || DepthVis || DisparityNormalized
-            {
-                airsim_img_request_.push_back(ImageRequest(curr_camera_name, ImageType::DepthPlanner, true));
-            }
-            // append a corresponding ROS publisher
-            image_pub_vec_.push_back(image_transporter.advertise(curr_camera_name + "/" + std::string(it.second[image_type_idx]), 1));
-            cam_info_pub_vec_.push_back(nh_.advertise<sensor_msgs::CameraInfo> (curr_camera_name + "/" + std::string(it.second[image_type_idx]) + "/camera_info", 10));
-            image_types_names_vec_.push_back(std::string(it.second[image_type_idx]));
         }
+        // iterate over sensors std::map<std::string, std::unique_ptr<SensorSetting>> sensors;
     }
 }
 
@@ -436,23 +474,23 @@ void AirsimROSWrapper::generate_lidar_pubs()
     }
 }
 
-void AirsimROSWrapper::lidar_timer_cb()
-{
-    auto lidar_data = airsim_client_.getLidarData();
-    sensor_msgs::PointCloud2 lidar_msg;
-    lidar_msg.header.frame_id = world_frame_id_;
-    if (lidar_msg.point_cloud.size() > 3)
-    {
+// void AirsimROSWrapper::lidar_timer_cb()
+// {
+//     auto lidar_data = airsim_client_.getLidarData();
+//     sensor_msgs::PointCloud2 lidar_msg;
+//     lidar_msg.header.frame_id = world_frame_id_;
+//     if (lidar_msg.point_cloud.size() > 3)
+//     {
 
-        lidar_msg.is_bigendian = false;
-        lidar_msg.point_ste = false;
-    }
-    else
-    {
+//         lidar_msg.is_bigendian = false;
+//         lidar_msg.point_ste = false;
+//     }
+//     else
+//     {
 
-    }
-    lidar_pub_vec_.publish(lidar_msg);
-}
+//     }
+//     lidar_pub_vec_.publish(lidar_msg);
+// }
 
 // the image request names should match the json custom camera names!
 void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
@@ -497,9 +535,9 @@ sensor_msgs::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageRes
     img_msg_ptr->header.frame_id = frame_id;
     img_msg_ptr->height = img_response.height;
     img_msg_ptr->width = img_response.width;
-    img_msg_ptr->encoding = "rgb8";
+    img_msg_ptr->encoding = "bgr8";
     if (is_vulkan_)
-        img_msg_ptr->encoding = "bgr8";
+        img_msg_ptr->encoding = "rgb8";
     img_msg_ptr->is_bigendian = 0;
     return img_msg_ptr;
 }
@@ -517,33 +555,32 @@ sensor_msgs::ImagePtr AirsimROSWrapper::get_depth_img_msg_from_response(const Im
     return depth_img_msg;
 }
 
-
-
-sensor_msgs::CameraInfo AirsimROSWrapper::get_cam_info_msg(const ImageResponse& img_response,
-                                                            float fov_degrees,
-                                                            const ros::Time curr_ros_time,
-                                                            const std::string frame_id)
+// todo have a special stereo pair mode and get projection matrix by calculating offset wrt drone body frame?
+sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& camera_name,
+                                                            const CameraSetting& camera_setting,
+                                                            const CaptureSetting& capture_setting)
 {
     sensor_msgs::CameraInfo cam_info_msg;
-    cam_info_msg.header.stamp = curr_ros_time;
-    cam_info_msg.header.frame_id = frame_id;
-    cam_info_msg.height = img_response.height;
-    cam_info_msg.width = img_response.width;
-    float f_x = (img_response.width / 2.0) / tan(math_common::deg2rad(fov_degrees / 2.0));
-    // focal length in Y direction should be same as X it seems. 
-    // float f_y = (img_response.height / 2.0) / tan(math_common::deg2rad(fov_degrees / 2.0));
-    cam_info_msg.K = {f_x, 0.0, img_response.width / 2.0, 
-                        0.0, f_x, img_response.height / 2.0, 
+    // cam_info_msg.header.stamp = curr_ros_time;
+    cam_info_msg.header.frame_id = camera_name + "/" + image_type_int_to_string_map_[capture_setting.image_type] + "_optical";
+    cam_info_msg.height = capture_setting.height;
+    cam_info_msg.width = capture_setting.width;
+    float f_x = (capture_setting.width / 2.0) / tan(math_common::deg2rad(capture_setting.fov_degrees / 2.0));
+    // todo focal length in Y direction should be same as X it seems. this can change in future a scene capture component which exactly correponds to a cine camera
+    // float f_y = (capture_setting.height / 2.0) / tan(math_common::deg2rad(fov_degrees / 2.0));
+    cam_info_msg.K = {f_x, 0.0, capture_setting.width / 2.0, 
+                        0.0, f_x, capture_setting.height / 2.0, 
                         0.0, 0.0, 1.0};
-    cam_info_msg.P = {f_x, 0.0, img_response.width / 2.0, 0.0,
-                        0.0, f_x, img_response.height / 2.0, 0.0, 
+    cam_info_msg.P = {f_x, 0.0, capture_setting.width / 2.0, 0.0,
+                        0.0, f_x, capture_setting.height / 2.0, 0.0, 
                         0.0, 0.0, 1.0, 0.0};
     return cam_info_msg;
 }
 
 void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec)
 {    
-    ros::Time curr_ros_time = ros::Time::now(); // todo add option to use airsim time (image_response.TTimePoint) like Gazebo /use_sim_time param
+    // todo add option to use airsim time (image_response.TTimePoint) like Gazebo /use_sim_time param
+    ros::Time curr_ros_time = ros::Time::now(); 
     int img_response_idx = 0;
 
     for (const auto& curr_img_response : img_response_vec)
@@ -553,12 +590,14 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         // publish_camera_tf(curr_img_response, curr_ros_time, world_frame_id_, curr_img_response.camera_name + "/" + image_types_names_vec_[img_response_idx]);
         publish_camera_tf(curr_img_response, curr_ros_time, world_frame_id_, curr_img_response.camera_name);
 
-        // todoo calling airsim_client_ in this funciton isn'it the cleanest thing to do. should be in img_response_timer_cb for readability  
-        msr::airlib::CameraInfo camera_info = airsim_client_.simGetCameraInfo(curr_img_response.camera_name);
+        // todo simGetCameraInfo is wrong + also it's only for image type -1.  
+        // msr::airlib::CameraInfo camera_info = airsim_client_.simGetCameraInfo(curr_img_response.camera_name);
         // std::cout << curr_img_response.camera_name << ", " << camera_info.fov << std::endl;
 
-        cam_info_pub_vec_[img_response_idx].publish(get_cam_info_msg(curr_img_response, camera_info.fov, curr_ros_time, 
-            curr_img_response.camera_name + "/" + image_types_names_vec_[img_response_idx] + "_optical"));
+        // update timestamp of saved cam info msgs
+        camera_info_msg_vec_[img_response_idx].header.stamp = curr_ros_time;
+        cam_info_pub_vec_[img_response_idx].publish(camera_info_msg_vec_[img_response_idx]);
+
         if (curr_img_response.pixels_as_float) // DepthPlanner / DepthPerspective / DepthVis / DisparityNormalized
         {
             image_pub_vec_[img_response_idx].publish(get_depth_img_msg_from_response(curr_img_response, 
@@ -576,7 +615,6 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         img_response_idx++;
     }
 
-    // update timestamp of saved cam info msgs
 }
 
 // publish camera transforms

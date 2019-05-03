@@ -112,6 +112,7 @@ public: //types
         // ShowFlag.VisualizeHDR 1.
         //to replicate camera settings_json to SceneCapture2D
         //TODO: should we use UAirBlueprintLib::GetDisplayGamma()?
+        bool publish_to_ros;
         typedef msr::airlib::Utils Utils;
         static constexpr float kSceneTargetGamma = 1.4f;
 
@@ -183,6 +184,7 @@ public: //types
         SensorBase::SensorType sensor_type;
         std::string sensor_name;
         bool enabled;
+        bool publish_to_ros;
     };
 
     struct BarometerSetting : SensorSetting {
@@ -945,6 +947,7 @@ private:
         capture_setting.target_gamma = settings_json.getFloat("TargetGamma", 
             capture_setting.image_type == 0 ? CaptureSetting::kSceneTargetGamma : Utils::nan<float>());
 
+        capture_setting.publish_to_ros = settings_json.getInt("PublishToRos", capture_setting.publish_to_ros);
         std::string projection_mode = Utils::toLower(settings_json.getString("ProjectionMode", ""));
         if (projection_mode == "" || projection_mode == "perspective")
             capture_setting.projection_mode = 0; // Perspective
