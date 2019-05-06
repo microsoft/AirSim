@@ -232,6 +232,29 @@ vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, Im
     return result;
 }
 
+// Minor TODO: consider msgpack magic for GeoPoint, so we can have one arg instead of three
+bool RpcLibClientBase::simTestLineOfSightToPoint(double lat, double lon, float alt, const std::string& vehicle_name)
+{
+    return pimpl_->client.call("simTestLineOfSightToPoint", lat, lon, alt, vehicle_name).as<bool>();
+}
+
+bool RpcLibClientBase::simTestLineOfSightBetweenPoints(double lat1, double lon1, float alt1, double lat2, double lon2, float alt2)
+{
+    return pimpl_->client.call("simTestLineOfSightBetweenPoints", lat1, lon1, alt1, lat2, lon2, alt2).as<bool>();
+}
+
+vector<msr::airlib::GeoPoint> RpcLibClientBase::getWorldExtents()
+{
+    vector<RpcLibAdapatorsBase::GeoPoint> rawResult = pimpl_->client.call("getWorldExtents").as<vector<RpcLibAdapatorsBase::GeoPoint>>();
+    vector<msr::airlib::GeoPoint> finalResult;
+
+    // Convert
+    finalResult.push_back(rawResult[0].to());
+    finalResult.push_back(rawResult[1].to());
+
+    return finalResult;
+}
+
 void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
 {
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);

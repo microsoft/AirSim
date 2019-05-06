@@ -339,6 +339,7 @@ public: //fields
     float clock_speed = 1.0f;
     bool engine_sound = false;
     bool log_messages_visible = true;
+    bool show_los_debug_lines_ = false;
     HomeGeoPoint origin_geopoint{ GeoPoint(47.641468, -122.140165, 122) }; //The geo-coordinate assigned to Unreal coordinate 0,0,0
     std::map<std::string, PawnPath> pawn_paths; //path for pawn blueprint
     std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
@@ -998,6 +999,7 @@ private:
         speed_unit_factor = settings_json.getFloat("SpeedUnitFactor", 1.0f);
         speed_unit_label = settings_json.getString("SpeedUnitLabel", "m\\s");
         log_messages_visible = settings_json.getBool("LogMessagesVisible", true);
+        show_los_debug_lines_ = settings_json.getBool("ShowLosDebugLines", false);
 
         {   //load origin geopoint
             Settings origin_geopoint_json;

@@ -115,7 +115,33 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return result;
     });
 
-    pimpl_->server.
+    pimpl_->server.bind("simTestLineOfSightToPoint", [&](double lat, double lon, float alt, const std::string& vehicle_name) -> bool {
+
+        GeoPoint point(lat, lon, alt);
+
+        return getVehicleSimApi(vehicle_name)->testLineOfSightToPoint(point);
+    });
+
+    pimpl_->server.bind("simTestLineOfSightBetweenPoints", [&](double lat1, double lon1, float alt1, double lat2, double lon2, float alt2) -> bool {
+
+        GeoPoint point1(lat1, lon1, alt1);
+        GeoPoint point2(lat2, lon2, alt2);
+
+        return getVehicleSimApi("")->testLineOfSightBetweenPoints(point1, point2);
+    });
+
+    pimpl_->server.bind("getWorldExtents", [&]() -> vector<RpcLibAdapatorsBase::GeoPoint> {
+        msr::airlib::GeoPoint min;
+        msr::airlib::GeoPoint max;
+        getVehicleSimApi("")->getWorldExtents(min, max);
+        vector<RpcLibAdapatorsBase::GeoPoint> result;
+        result.push_back(RpcLibAdapatorsBase::GeoPoint(min));
+        result.push_back(RpcLibAdapatorsBase::GeoPoint(max));
+
+        return result;
+    });
+
+	pimpl_->server.
         bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision, const std::string& vehicle_name) -> void {
         getVehicleSimApi(vehicle_name)->setPose(pose.to(), ignore_collision);
     });
