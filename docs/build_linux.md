@@ -31,6 +31,10 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
    ./build.sh
    ```
 
+- Note that if you wish to build using GCC (to play nice with ROS, for example) you can simply add gcc to the build invocation, like this:
+   ./build.sh gcc
+
+
 ### Build Unreal Environment
 
 Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see [setting up Unreal Environment](unreal_proj.md).
