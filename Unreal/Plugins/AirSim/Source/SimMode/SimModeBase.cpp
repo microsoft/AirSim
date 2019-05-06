@@ -293,8 +293,8 @@ void ASimModeBase::advanceTimeOfDay()
 
             UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(cur_time), LogDebugLevel::Informational);
 
-            auto coord = msr::airlib::EarthCelestial::getSunCoordinates(cur_time, settings.origin_geopoint.home_geo_point.latitude,
-                settings.origin_geopoint.home_geo_point.longitude);
+            auto coord = msr::airlib::EarthCelestial::getSunCoordinates(cur_time, ASimModeBase::getOriginGeopoint().home_geo_point.latitude,
+                ASimModeBase::getOriginGeopoint().home_geo_point.longitude);
 
             setSunRotation(FRotator(-coord.altitude, coord.azimuth, 0));
         }
@@ -533,7 +533,7 @@ void ASimModeBase::setupVehiclesAndCamera()
             //create vehicle sim api
             const auto& ned_transform = getGlobalNedTransform();
             const auto& pawn_ned_pos = ned_transform.toLocalNed(vehicle_pawn->GetActorLocation());
-            const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
+            const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, ASimModeBase::getOriginGeopoint());
             const std::string vehicle_name = std::string(TCHAR_TO_UTF8(*(vehicle_pawn->GetName())));
 
             PawnSimApi::Params pawn_sim_api_params(vehicle_pawn, &getGlobalNedTransform(),
@@ -678,4 +678,33 @@ void ASimModeBase::drawLidarDebugPoints()
     }
 
     lidar_checks_done_ = true;
+}
+
+HomeGeoPoint ASimModeBase::getOriginGeopoint()
+{
+    // Check for origin command-line args
+    FString latString;
+    FString lonString;
+    FString altString;
+
+    bool gotLatCla = FParse::Value(FCommandLine::Get(), TEXT("originLatitude"), latString);
+    bool gotLonCla = FParse::Value(FCommandLine::Get(), TEXT("originLongitude"), lonString);
+    bool gotAltCla = FParse::Value(FCommandLine::Get(), TEXT("originAltitude"), altString);
+
+    if (gotLatCla && gotLonCla && gotAltCla)
+    {
+        GeoPoint origin;
+        latString = latString.Replace(TEXT("="), TEXT(""));
+        origin.latitude = FCString::Atod(*latString);
+        lonString = lonString.Replace(TEXT("="), TEXT(""));
+        origin.longitude = FCString::Atod(*lonString);
+        altString = altString.Replace(TEXT("="), TEXT(""));
+        origin.altitude = FCString::Atod(*altString);
+
+        common_utils::Utils::log("Using origin geopoint command-line args instead of JSON", common_utils::Utils::kLogLevelInfo);
+
+        return HomeGeoPoint(origin);
+    }
+
+    return msr::airlib::AirSimSettings::singleton().origin_geopoint;
 }

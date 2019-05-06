@@ -21,6 +21,8 @@ To choose multirotor, set `"SimMode": "Multirotor"`. If you want to prompt user 
 ## Available Settings and Their Defaults
 Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then default value is used. Some default values are simply specified as `""` which means actual value may be chosen based on the vehicle you are using. For example, `ViewMode` setting has default value `""` which translates to `"FlyWithMe"` for drones and `"SpringArmChase"` for cars.
 
+You can override OriginGeopoint with the originLatitude=<latitude>, originLongitude=<longitude>, and originAltitude=<altitude> command-line arguments, if you would like to launch different levels with different geo-anchors without changing your settings.json every time.
+
 **WARNING:** Do not copy paste all of below in your settings.json. We strongly recommend adding only those settings that you don't want default values. Only required element is `"SettingsVersion"`.
 
 ```

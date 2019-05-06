@@ -76,6 +76,9 @@ public:
         return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
     }
 
+    static msr::airlib::HomeGeoPoint getOriginGeopoint();
+
+
 protected: //must overrides
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
