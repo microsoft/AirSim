@@ -1,10 +1,6 @@
 <launch>
-
-	<!-- A map of cameras and image types you want to publish to ROS -->
-	<!-- This MUST be a subset of cameras and image types in your settings.json! -->
-    <rosparam command="load" file="$(find airsim_ros_pkgs)/params/sensors.yaml" />  
 	
-		<node name="airsim_node" pkg="airsim_ros_pkgs" type="airsim_node" output="screen">
+	<node name="airsim_node" pkg="airsim_ros_pkgs" type="airsim_node" output="screen">
 	<!-- <node pkg="nodelet" type="nodelet" name="airsim_nodelet_manager" args="manager" output="screen" /> -->
 	<!-- <node pkg="nodelet" type="nodelet" name="airsim_nodelet" args="standalone airsim_ros_pkgs/airsim_ros_nodelet airsim_nodelet_manager" output="screen"> -->
 
@@ -16,8 +12,8 @@
 
 		<!-- Camera calibration -->
 		<!-- Note: don't forget to make corresponding changes in Documents/AirSim/settings.json  -->
-		<param name="front_left_calib_file" type="string" value="$(find airsim_ros_pkgs)/calib/front_left_376x672.yaml" />
-		<param name="front_right_calib_file" type="string" value="$(find airsim_ros_pkgs)/calib/front_right_376x672.yaml" />
+		<!-- <param name="front_left_calib_file" type="string" value="$(find airsim_ros_pkgs)/calib/front_left_376x672.yaml" /> -->
+		<!-- <param name="front_right_calib_file" type="string" value="$(find airsim_ros_pkgs)/calib/front_right_376x672.yaml" /> -->
 
 	</node>
 

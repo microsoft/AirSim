@@ -56,7 +56,7 @@ void AirsimROSWrapper::initialize_ros()
     image_transport::ImageTransport it(nh_);
 
     // ros params
-    vel_cmd_duration_ = 0.05; // todo
+    vel_cmd_duration_ = 0.05; // todo rosparam
     double update_airsim_img_response_every_n_sec;
     double update_airsim_control_every_n_sec;
     double update_airsim_imu_every_n_sec;
@@ -65,35 +65,17 @@ void AirsimROSWrapper::initialize_ros()
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
     // nh_.getParam("max_horz_vel", max_horz_vel_)
 
-    if(nh_private_.getParam("/cameras", camera_name_image_type_list_))
-    {
-        generate_img_request_vec_and_ros_pubs_from_settings_json();
-        airsim_img_response_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_img_response_every_n_sec), &AirsimROSWrapper::img_response_timer_cb, this);
-        nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
-    }
-
-    // if(nh_private_.getParam("/lidar", lidar_names_))
-    // {
-    //     generate_lidar_pubs();
-    //     airsim_lidar_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_lidar_every_n_sec), &AirsimROSWrapper::lidar_timer_cb, this);
-    //     nh_private_.getParam("update_airsim_lidar_every_n_sec", update_airsim_lidar_every_n_sec);
-    // }
-
-    if(nh_private_.getParam("/imu", imu_names_))
-    {
-        // generat_imu_pubs();
-        imu_pub_ = nh_private_.advertise<sensor_msgs::Imu>("imu", 10);
-        airsim_imu_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_imu_every_n_sec), &AirsimROSWrapper::imu_timer_cb, this);
-        nh_private_.getParam("update_airsim_imu_every_n_sec", update_airsim_imu_every_n_sec);
-    }
+    generate_img_request_vec_and_ros_pubs_from_settings_json();
+    airsim_img_response_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_img_response_every_n_sec), &AirsimROSWrapper::img_response_timer_cb, this);
+    nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
     nh_private_.getParam("is_vulkan", is_vulkan_);
-    nh_private_.getParam("front_left_calib_file", front_left_calib_file_);
-    nh_private_.getParam("front_right_calib_file", front_right_calib_file_);
 
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
 
     // fill camera info msg from YAML calib file. todo error checks on path. add rosparam / option to load camera info from a yaml 
+    // nh_private_.getParam("front_left_calib_file", front_left_calib_file_);
+    // nh_private_.getParam("front_right_calib_file", front_right_calib_file_);
     // read_params_from_yaml_and_fill_cam_info_msg(front_left_calib_file_, front_left_cam_info_msg_);
     // front_left_cam_info_msg_.header.frame_id = "airsim/front/left";
     // read_params_from_yaml_and_fill_cam_info_msg(front_right_calib_file_, front_right_cam_info_msg_);
@@ -104,7 +86,6 @@ void AirsimROSWrapper::initialize_ros()
     reset_srvr_ = nh_private_.advertiseService("reset",&AirsimROSWrapper::reset_srv_cb, this);
 
     // clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 10); // mimic gazebo's /use_sim_time feature
-    vehicle_state_pub_ = nh_private_.advertise<mavros_msgs::State>("vehicle_state", 10);
     odom_local_ned_pub_ = nh_private_.advertise<nav_msgs::Odometry>("odom_local_ned", 10);
     global_gps_pub_ = nh_private_.advertise<sensor_msgs::NavSatFix>("global_gps", 10);
     home_geo_point_pub_ = nh_private_.advertise<airsim_ros_pkgs::GPSYaw>("home_geo_point", 10);
@@ -230,7 +211,7 @@ void AirsimROSWrapper::gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAn
 nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_airsim_state(const msr::airlib::MultirotorState &drone_state)
 {
     nav_msgs::Odometry odom_ned_msg;
-    // odom_ned_msg.header.frame = ;
+    odom_ned_msg.header.frame_id = world_frame_id_;
     odom_ned_msg.child_frame_id = "/airsim/odom_local_ned"; // todo make param
 
     odom_ned_msg.pose.pose.position.x = drone_state.getPosition().x();
@@ -312,17 +293,6 @@ sensor_msgs::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo_poin
     return gps_msg;
 }
 
-mavros_msgs::State AirsimROSWrapper::get_vehicle_state_msg(msr::airlib::MultirotorState &drone_state)
-{
-    mavros_msgs::State vehicle_state_msg;
-    // vehicle_state_msg.connected = true; // not reqd
-    vehicle_state_msg.armed = true; // todo is_armed_
-    // vehicle_state_msg.guided; // not reqd 
-    // vehicle_state_msg.mode; // todo
-    // vehicle_state_msg.system_status; // not reqd
-    return vehicle_state_msg;
-}
-
 // todo unused
 void AirsimROSWrapper::set_zero_vel_cmd()
 {
@@ -364,21 +334,25 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 
     // convert airsim drone state to ROS msgs
     curr_odom_ned_ = get_odom_msg_from_airsim_state(curr_drone_state_);
-    curr_odom_ned_.header.frame_id = world_frame_id_;
     curr_odom_ned_.header.stamp = curr_ros_time;
 
     sensor_msgs::NavSatFix gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(curr_drone_state_.gps_location);
     gps_sensor_msg.header.stamp = curr_ros_time;
-
-    mavros_msgs::State vehicle_state_msg = get_vehicle_state_msg(curr_drone_state_);
 
     // publish to ROS!  
     odom_local_ned_pub_.publish(curr_odom_ned_);
     publish_odom_tf(curr_odom_ned_);
     global_gps_pub_.publish(gps_sensor_msg);
     home_geo_point_pub_.publish(home_geo_point_msg_);
-    vehicle_state_pub_.publish(vehicle_state_msg);
 
+    if (static_tf_msg_vec_.size() > 0)
+    {
+        for (auto& static_tf_msg : static_tf_msg_vec_)
+        {
+            static_tf_msg.header.stamp = curr_ros_time;
+            static_tf_pub_.sendTransform(static_tf_msg);
+        }
+    }
     // send control commands from the last callback to airsim
     if (has_vel_cmd_)
         airsim_client_.moveByVelocityAsync(vel_cmd_.x, vel_cmd_.y, vel_cmd_.z, vel_cmd_duration_, 
@@ -401,6 +375,7 @@ void AirsimROSWrapper::generate_img_request_vec_and_ros_pubs_from_settings_json(
     image_types_names_vec_.clear();
     cam_info_pub_vec_.clear();
     camera_info_msg_vec_.clear();
+    static_tf_msg_vec_.clear();
 
     image_transport::ImageTransport image_transporter(nh_);
 
@@ -409,21 +384,14 @@ void AirsimROSWrapper::generate_img_request_vec_and_ros_pubs_from_settings_json(
     {
         auto& vehicle_setting = curr_vehicle_elem.second;
         auto curr_vehicle_name = curr_vehicle_elem.first;
-        std::cout << "vehicle_name:" << curr_vehicle_elem.first << '\t' << std::endl;
-        // std::cout << vehicle_setting->position << '\t' << std::endl;
-        // std::cout << vehicle_setting->rotation << '\t' << std::endl;
 
         // iterate over camera map std::map<std::string, CameraSetting> cameras;
         for (const auto &curr_camera_elem : vehicle_setting->cameras)
         {
             auto& camera_setting = curr_camera_elem.second;
             auto& curr_camera_name = curr_camera_elem.first;
-            std::cout << "camera_name:" << curr_camera_elem.first << std::endl;
-            std::cout << camera_setting.position << '\t' << std::endl;
+            append_static_camera_tf(curr_camera_elem.first, camera_setting);
             // camera_setting.gimbal
-            // std::cout << camera_setting->rotation << '\t' << std::endl;
-
-            cam_name_to_cam_tf_name_map_[curr_camera_name] = curr_camera_name + "_optical"; // tf name
             
             // iterate over capture_setting std::map<int, CaptureSetting> capture_settings
             for (const auto &curr_capture_elem : camera_setting.capture_settings)
@@ -447,15 +415,10 @@ void AirsimROSWrapper::generate_img_request_vec_and_ros_pubs_from_settings_json(
                         airsim_img_request_.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                     }
 
-                    std::cout << "image_type_int_to_string_map_[capture_setting.image_type]" << image_type_int_to_string_map_[capture_setting.image_type] << std::endl;
                     image_pub_vec_.push_back(image_transporter.advertise(curr_camera_name + "/" + image_type_int_to_string_map_[capture_setting.image_type], 1));
                     image_types_names_vec_.push_back(image_type_int_to_string_map_[capture_setting.image_type]);
                     cam_info_pub_vec_.push_back(nh_.advertise<sensor_msgs::CameraInfo> (curr_camera_name + "/" + image_type_int_to_string_map_[capture_setting.image_type] + "/camera_info", 10));
                     camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
-
-                    std::cout << "image_type:" << capture_setting.image_type << std::endl;
-                    std::cout << "fov_degrees:" << capture_setting.fov_degrees << std::endl;
-                    std::cout << "publish_to_ros:" << capture_setting.publish_to_ros << std::endl;
                 }
 
             }
@@ -464,33 +427,40 @@ void AirsimROSWrapper::generate_img_request_vec_and_ros_pubs_from_settings_json(
     }
 }
 
-void AirsimROSWrapper::generate_lidar_pubs()
+void AirsimROSWrapper::append_static_camera_tf(const std::string& camera_name, const CameraSetting& camera_setting)
 {
-    // iterate over requested lidars
-    for (auto& curr_lidar_name : lidar_names_)
-    {
-        std::cout << "Initializing ROS publisher for lidar name \"" << curr_lidar_name << "\""<< std::endl; 
-        lidar_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::PointCloud2>(curr_lidar_name, 1));
-    }
+
+    geometry_msgs::TransformStamped static_cam_tf_body_msg;
+    static_cam_tf_body_msg.header.frame_id = "/airsim/odom_local_ned";
+    static_cam_tf_body_msg.child_frame_id = camera_name + "_body/static";
+    static_cam_tf_body_msg.transform.translation.x = camera_setting.position.x();
+    static_cam_tf_body_msg.transform.translation.y = camera_setting.position.y();
+    static_cam_tf_body_msg.transform.translation.z = camera_setting.position.z();
+    tf2::Quaternion quat;
+    quat.setRPY(camera_setting.rotation.roll, camera_setting.rotation.pitch, camera_setting.rotation.yaw);
+    static_cam_tf_body_msg.transform.rotation.x = quat.x();
+    static_cam_tf_body_msg.transform.rotation.y = quat.y();
+    static_cam_tf_body_msg.transform.rotation.z = quat.z();
+    static_cam_tf_body_msg.transform.rotation.w = quat.w();
+
+    geometry_msgs::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
+    static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
+
+    tf2::Quaternion quat_cam_body;
+    tf2::Quaternion quat_cam_optical;
+    tf2::convert(static_cam_tf_body_msg.transform.rotation, quat_cam_body);
+    tf2::Matrix3x3 mat_cam_body(quat_cam_body); 
+    tf2::Matrix3x3 mat_cam_optical;
+    mat_cam_optical.setValue(mat_cam_body.getColumn(1).getX(), mat_cam_body.getColumn(2).getX(), mat_cam_body.getColumn(0).getX(), 
+                             mat_cam_body.getColumn(1).getY(), mat_cam_body.getColumn(2).getY(), mat_cam_body.getColumn(0).getY(),
+                             mat_cam_body.getColumn(1).getZ(), mat_cam_body.getColumn(2).getZ(), mat_cam_body.getColumn(0).getZ()); 
+    mat_cam_optical.getRotation(quat_cam_optical);
+    quat_cam_optical.normalize();
+    tf2::convert(quat_cam_optical, static_cam_tf_optical_msg.transform.rotation);
+
+    static_tf_msg_vec_.push_back(static_cam_tf_body_msg);
+    static_tf_msg_vec_.push_back(static_cam_tf_optical_msg);
 }
-
-// void AirsimROSWrapper::lidar_timer_cb()
-// {
-//     auto lidar_data = airsim_client_.getLidarData();
-//     sensor_msgs::PointCloud2 lidar_msg;
-//     lidar_msg.header.frame_id = world_frame_id_;
-//     if (lidar_msg.point_cloud.size() > 3)
-//     {
-
-//         lidar_msg.is_bigendian = false;
-//         lidar_msg.point_ste = false;
-//     }
-//     else
-//     {
-
-//     }
-//     lidar_pub_vec_.publish(lidar_msg);
-// }
 
 // the image request names should match the json custom camera names!
 void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
@@ -561,7 +531,6 @@ sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& c
                                                             const CaptureSetting& capture_setting)
 {
     sensor_msgs::CameraInfo cam_info_msg;
-    // cam_info_msg.header.stamp = curr_ros_time;
     cam_info_msg.header.frame_id = camera_name + "/" + image_type_int_to_string_map_[capture_setting.image_type] + "_optical";
     cam_info_msg.height = capture_setting.height;
     cam_info_msg.width = capture_setting.width;
@@ -603,14 +572,12 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
             image_pub_vec_[img_response_idx].publish(get_depth_img_msg_from_response(curr_img_response, 
                                                     curr_ros_time, 
                                                     curr_img_response.camera_name + "_optical"));
-                                                    // curr_img_response.camera_name + "/" + image_types_names_vec_[img_response_idx] + "_optical"));
         }
         else // Scene / Segmentation / SurfaceNormals / Infrared
         {
             image_pub_vec_[img_response_idx].publish(get_img_msg_from_response(curr_img_response, 
                                                     curr_ros_time, 
                                                     curr_img_response.camera_name + "_optical"));
-                                                    // curr_img_response.camera_name + "/" + image_types_names_vec_[img_response_idx] + "_optical"));
         }
         img_response_idx++;
     }
@@ -625,7 +592,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse &img_response, cons
     geometry_msgs::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = ros_time;
     cam_tf_body_msg.header.frame_id = frame_id;
-    cam_tf_body_msg.child_frame_id = child_frame_id;
+    cam_tf_body_msg.child_frame_id = child_frame_id + "_body";
     cam_tf_body_msg.transform.translation.x = img_response.camera_position.x();
     cam_tf_body_msg.transform.translation.y = img_response.camera_position.y();
     cam_tf_body_msg.transform.translation.z = img_response.camera_position.z();

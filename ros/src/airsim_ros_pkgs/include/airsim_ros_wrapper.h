@@ -43,6 +43,7 @@ STRICT_MODE_ON
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/static_transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <unordered_map>
 
@@ -133,6 +134,7 @@ public:
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse &img_response, const ros::Time &ros_time, const std::string &frame_id, const std::string &child_frame_id);
     void publish_odom_tf(const nav_msgs::Odometry &odom_ned_msg);
+    void append_static_camera_tf(const std::string& camera_name, const CameraSetting& camera_setting);
 
     /// camera helper methods
     // TODO migrate to image_tranport camera publisher https://answers.ros.org/question/278602/how-to-use-camera_info_manager-to-publish-camera_info/
@@ -155,12 +157,12 @@ public:
     nav_msgs::Odometry get_odom_msg_from_airsim_state(const msr::airlib::MultirotorState &drone_state);
     airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point);
     sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point);
-    mavros_msgs::State get_vehicle_state_msg(msr::airlib::MultirotorState &drone_state);
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output &imu_data);
 
 private:
     AirSimSettingsParser airsim_settings_parser_;
     std::map<int, std::string> image_type_int_to_string_map_;
+    std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec_;
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
     msr::airlib::MultirotorRpcLibClient airsim_client_;
@@ -189,7 +191,6 @@ private:
     std::string world_frame_id_;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::Buffer tf_buffer_;
-    std::unordered_map<std::string, std::string> cam_name_to_cam_tf_name_map_;
     // look up vector of all capture type in "camera major" format. used to give camera tf's their names
     std::vector<std::string> image_types_names_vec_;
 
@@ -223,12 +224,12 @@ private:
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
 
     /// ROS other publishers
+    tf2_ros::StaticTransformBroadcaster static_tf_pub_;
     ros::Publisher clock_pub_;
     ros::Publisher odom_local_ned_pub_;
     ros::Publisher global_gps_pub_;
     ros::Publisher attitude_euler_pub_;
     ros::Publisher attitude_quat_pub_;
-    ros::Publisher vehicle_state_pub_;
     ros::Publisher imu_pub_;
     ros::Publisher origin_geo_point_pub_; // geo coord of unreal origin
     ros::Publisher home_geo_point_pub_; // home geo coord of drones

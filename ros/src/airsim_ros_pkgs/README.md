@@ -3,36 +3,16 @@
 A ROS wrapper over the AirSim C++ client library. 
 
 ##  Setup 
-### Ubuntu 16.04
-- Install ROS kinetic
-- Deps:
-  - `$ sudo apt-get install ros-kinetic-mavros-msgs`
+- Ubuntu 16.04
+  * Install [ROS kinetic](https://wiki.ros.org/kinetic/Installation/Ubuntu)
 
-### Ubuntu 18.04
-- Install ROS melodic
-- Deps:
-  - `$ sudo apt-get install ros-melodic-mavros-msgs`
-
-### Windows Subsytem for Linux on Windows 10
-- WSL setup:
-  * Get [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-  * Get [Ubuntu 16.04](https://www.microsoft.com/en-us/p/ubuntu-1604-lts/9pjn388hp8c9?activetab=pivot:overviewtab) or [Ubuntu 18.04](https://www.microsoft.com/en-us/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot%3Aoverviewtab)  
-  * Go to Ubuntu 16 / 18 instructions!
-
-
-- Setup for X apps (like RViz, rqt_image_view, terminator) in Windows + WSL
-  * Install [Xming X Server](https://sourceforge.net/projects/xming/). 
-  * Find and run `XLaunch` from the Windows start menu.   
-  Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl`.  
-  * Open Ubuntu 16.04 / 18.04 session by typing `Ubuntu 16.04`  / `Ubuntu 18.04` in Windows start menu.  
-  * Recommended: Install [terminator](http://www.ubuntugeek.com/terminator-multiple-gnome-terminals-in-one-window.html) : `$ sudo apt-get install terminator.` 
-    - You can open terminator in a new window by entering `$ DISPLAY=:0 terminator -u`. 
+- Ubuntu 18.04
+  * Install [ROS melodic](https://wiki.ros.org/melodic/Installation/Ubuntu)
 
 ##  Build
 - Build AirSim 
 ```
 git clone https://github.com/Microsoft/AirSim.git;
-export AIRSIM_ROOT=$(pwd)/AirSim; # this environment variable is used by ROS' CMakeLists
 cd AirSim;
 ./setup.sh;
 ./build.sh;
@@ -40,15 +20,15 @@ cd AirSim;
 - Build ROS package
 
 ```
-cd $(AIRSIM_ROOT)/ros;
-catkin build
+cd ros;
+catkin_make; # or catkin build
 ```
 
 ## Running
 ```
-source devel/setup.bash
-roslaunch airsim_ros_pkgs airsim_node.launch
-roslaunch airsim_ros_pkgs airsim_rviz.launch
+source devel/setup.bash;
+roslaunch airsim_ros_pkgs airsim_node.launch;
+roslaunch airsim_ros_pkgs rviz.launch;
 ```
 
 # Using AirSim ROS wrapper
@@ -58,41 +38,22 @@ Let's look at the ROS API for both nodes:
 ### AirSim ROS Wrapper Node
 #### Publishers:
 - `/airsim_node/home_geo_point` [airsim_ros_pkgs/GPSYaw](msg/GPSYaw.msg)   
-GPS coordinates corresponding to home/spawn point of the drone. These are set in the airsim's settings.json file. Please see here for `settings.json`'s [documentation](https://microsoft.github.io/AirSim/docs/settings/). 
+GPS coordinates corresponding to home/spawn point of the drone. These are set in the airsim's settings.json file under the `OriginGeopoint` key. Please see `settings.json`'s [documentation](https://microsoft.github.io/AirSim/docs/settings/). 
 
-The defaults are:
-```
- "OriginGeopoint": {
-    "Latitude": 47.641468,
-    "Longitude": -122.140165,
-    "Altitude": 122
-  }
-```
   
 - `/airsim_node/global_gps` [sensor_msgs/NavSatFix](https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html)   
 This the current GPS coordinates of the drone in airsim. 
 
 - `/airsim_node/odom_local_ned` [nav_msgs/Odometry](https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html)   
-Odometry in NED frame wrt take-off point 
+Odometry in NED frame wrt take-off point.  
 
 - `/airsim_node/vehicle_state` [mavros_msgs/State](https://docs.ros.org/api/mavros_msgs/html/msg/State.html)   
   Currently, the drone is always `armed`. Hence, there is only one state. 
-
-- `/airsim_node/imu_ground_truth` [sensor_msgs/Imu](https://docs.ros.org/api/sensor_msgs/html/msg/Imu.html)   
-  Not published yet
  
-- `/front/left/camera_info` [sensor_msgs/CameraInfo](https://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)
+- `/CAMERA_NAME/IMAGE_TYPE/camera_info` [sensor_msgs/CameraInfo](https://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)
 
-- `/front/left/image_raw` [sensor_msgs/Image](https://docs.ros.org/api/sensor_msgs/html/msg/Image.html)   
-  RGB image corresponding to front stereo pair's left camera.
-
-- `/front/right/camera_info` [sensor_msgs/CameraInfo](https://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)
-
-- `/front/right/image_raw` [sensor_msgs/Image](https://docs.ros.org/api/sensor_msgs/html/msg/Image.html)   
-  RGB image corresponding to front stereo pair's left camera.
-
-- `/front/left/depth_planar` [sensor_msgs/Image](https://docs.ros.org/api/sensor_msgs/html/msg/Image.html)   
-  Ground truth depth from left camera's focal plane from AirSim. 
+- `/CAMERA_NAME/IMAGE_TYPE` [sensor_msgs/Image](https://docs.ros.org/api/sensor_msgs/html/msg/Image.html)   
+  RGB or float image depending on image type requested in settings.json.
 
 - `/tf` [tf2_msgs/TFMessage](https://docs.ros.org/api/tf2_msgs/html/msg/TFMessage.html)
 
@@ -122,14 +83,6 @@ Odometry in NED frame wrt take-off point
 - `/airsim_node/takeoff` [std_srvs/Empty](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
 
 #### Parameters:
-- `/airsim_node/front_left_calib_file` [string]   
-  Set in: `$(airsim_ros_pkgs)/launch/airsim_node.launch`   
-  Default: `$(airsim_ros_pkgs)/calib/front_left_376x672.yaml`. 
-
-- `/airsim_node/front_right_calib_file` [string]    
-  Set in: `$(airsim_ros_pkgs)/launch/airsim_node.launch`   
-  Default: `airsim_ros_pkgs/calib/front_right_376x672.yaml`
-
 - `/airsim_node/update_airsim_control_every_n_sec` [double]   
   Set in: `$(airsim_ros_pkgs)/launch/airsim_node.launch`   
   Default: 0.01 seconds.    
@@ -148,25 +101,25 @@ Odometry in NED frame wrt take-off point
 
 #### Parameters:
 - PD controller parameters:
-  * `/pid_position_node/kd_x` [double],   
-    `/pid_position_node/kp_y` [double],   
-    `/pid_position_node/kp_z` [double],   
-    `/pid_position_node/kp_yaw` [double]   
+  * `/pd_position_node/kd_x` [double],   
+    `/pd_position_node/kp_y` [double],   
+    `/pd_position_node/kp_z` [double],   
+    `/pd_position_node/kp_yaw` [double]   
     Proportional gains
 
-  * `/pid_position_node/kd_x` [double],   
-    `/pid_position_node/kd_y` [double],   
-    `/pid_position_node/kd_z` [double],   
-    `/pid_position_node/kd_yaw` [double]   
+  * `/pd_position_node/kd_x` [double],   
+    `/pd_position_node/kd_y` [double],   
+    `/pd_position_node/kd_z` [double],   
+    `/pd_position_node/kd_yaw` [double]   
     Derivative gains
 
-  * `/pid_position_node/reached_thresh_xyz` [double]   
+  * `/pd_position_node/reached_thresh_xyz` [double]   
     Threshold euler distance (meters) from current position to setpoint position 
 
-  * `/pid_position_node/reached_yaw_degrees` [double]   
+  * `/pd_position_node/reached_yaw_degrees` [double]   
     Threshold yaw distance (degrees) from current position to setpoint position 
 
-- `/pid_position_node/update_control_every_n_sec` [double]   
+- `/pd_position_node/update_control_every_n_sec` [double]   
   Default: 0.01 seconds
 
 #### Services:
@@ -199,55 +152,17 @@ Odometry in NED frame wrt take-off point
     * `/max_yaw_rate_degree` [double]   
   Maximum yaw rate (degrees/second)
 
-## AirSim camera settings 
-### Changing camera parameters 
-- Frame of reference
-The camera positions are defined in a **left-handed coordinate frame** as shown in the image below. +X-axis is along "body front", +Y-axis is along "body right", +Z axis is along "body up" direction.  
-![](docs/images/unreal_m210_origin.PNG)
+#### Windows Subsytem for Linux on Windows 10
+- WSL setup:
+  * Get [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+  * Get [Ubuntu 16.04](https://www.microsoft.com/en-us/p/ubuntu-1604-lts/9pjn388hp8c9?activetab=pivot:overviewtab) or [Ubuntu 18.04](https://www.microsoft.com/en-us/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot%3Aoverviewtab)  
+  * Go to Ubuntu 16 / 18 instructions!
 
-- Stereo   
-[This page](https://support.stereolabs.com/hc/en-us/articles/360007395634-What-is-the-camera-focal-length-and-field-of-view-) enlists the possible resolutions, and corresponding focal lengths and field of views.   
-You can change the default stereo pair pose, image resolution, and _horizontal_ FoV under the "front-left" and "front-right" fields in `Documents\AirSim\Settings.json`. The default parameters are according the `WVGA` settings as [detailed here](https://support.stereolabs.com/hc/en-us/articles/360007395634-What-is-the-camera-focal-length-and-field-of-view-).   
-More details on AirSim's settings is [available here](https://microsoft.github.io/AirSim/docs/settings/).   
-Defaults are (X,Y,Z are in **meters**. ZED's baseline is 12 centimeters, hence we have `-0.06` and `0.06` in Y axis of front_left and front_right):
-  * for front-left:
-  	```
-      "front-left": {
-        "CaptureSettings": [
-          {
-            "ImageType": 0,
-            "Width": 672,
-            "Height": 376,
-            "FOV_Degrees": 87
-          }
-        ],
-        "X": 0.25, "Y": -0.06, "Z": 0.10,
-        "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
-      },
-	```
 
-  * for front-right:
-  	```
-      "front-right": {
-        "CaptureSettings": [
-          {
-            "ImageType": 0,
-            "Width": 672,
-            "Height": 376,
-            "FOV_Degrees": 87
-          }
-        ],
-        "X": 0.25, "Y": 0.06, "Z": 0.10,
-        "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
-      }
-	```
-
-## Integrating with popular ROS nodes and/or utilities 
-
-### Computing disparity using stereo_image_proc
-- `ROS_NAMESPACE=front rosrun stereo_image_proc stereo_image_proc`
-- View disparity `rosrun image_view stereo_view stereo:=/front image:=image_rect_color`
-- Read stereo_image_proc's [documentation](https://wiki.ros.org/stereo_image_proc)
-- Improve disparity/depth: [Choose good stereo params](https://wiki.ros.org/stereo_image_proc/Tutorials/ChoosingGoodStereoParameters)
-
-### Registering RGB images with ground truth depth from AirSim
+- Setup for X apps (like RViz, rqt_image_view, terminator) in Windows + WSL
+  * Install [Xming X Server](https://sourceforge.net/projects/xming/). 
+  * Find and run `XLaunch` from the Windows start menu.   
+  Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl`.  
+  * Open Ubuntu 16.04 / 18.04 session by typing `Ubuntu 16.04`  / `Ubuntu 18.04` in Windows start menu.  
+  * Recommended: Install [terminator](http://www.ubuntugeek.com/terminator-multiple-gnome-terminals-in-one-window.html) : `$ sudo apt-get install terminator.` 
+    - You can open terminator in a new window by entering `$ DISPLAY=:0 terminator -u`. 
