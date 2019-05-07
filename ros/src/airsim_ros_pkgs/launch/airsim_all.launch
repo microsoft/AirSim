@@ -8,6 +8,4 @@
 	<include file="$(find airsim_ros_pkgs)/launch/position_controller_simple.launch"/>
 <!-- Static transforms -->
 	<include file="$(find airsim_ros_pkgs)/launch/static_transforms.launch"/>
-<!-- Depth to point cloud -->
-	<include file="$(find airsim_ros_pkgs)/launch/depth_to_pointcloud.launch"/>
 </launch>

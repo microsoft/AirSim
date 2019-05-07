@@ -8,14 +8,6 @@
 		<param name="is_vulkan" type="bool" value="false" /> 
 		<param name="update_airsim_img_response_every_n_sec" type="double" value="0.01" /> 
 		<param name="update_airsim_control_every_n_sec" type="double" value="0.01" />
-		<param name="update_airsim_imu_every_n_sec" type="double" value="0.01" />
-
-		<!-- Camera calibration -->
-		<!-- Note: don't forget to make corresponding changes in Documents/AirSim/settings.json  -->
-		<!-- <param name="front_left_calib_file" type="string" value="$(find airsim_ros_pkgs)/calib/front_left_376x672.yaml" /> -->
-		<!-- <param name="front_right_calib_file" type="string" value="$(find airsim_ros_pkgs)/calib/front_right_376x672.yaml" /> -->
 
 	</node>
-
 </launch>
-

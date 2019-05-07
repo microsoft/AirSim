@@ -114,7 +114,6 @@ install(FILES
 # for shipping binaries. run `$ catin_make install`
 install(DIRECTORY
   launch
-  calib
   rviz
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   # PATTERN ".git" EXCLUDE
