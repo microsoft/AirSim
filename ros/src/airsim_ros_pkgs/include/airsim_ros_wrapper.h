@@ -52,7 +52,9 @@ typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
 typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
 typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
+typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
 typedef msr::airlib::AirSimSettings::CameraSetting CameraSetting;
+typedef msr::airlib::AirSimSettings::LidarSetting LidarSetting;
 
 struct SimpleMatrix
 {
@@ -79,10 +81,10 @@ struct VelCmd
     //     vehicle_name("") {drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
     //             yaw_mode = msr::airlib::YawMode();};
 
-    // VelCmd(const double &x, const double &y, const double &z, 
+    // VelCmd(const double& x, const double& y, const double& z, 
     //         msr::airlib::DrivetrainType drivetrain, 
-    //         const msr::airlib::YawMode &yaw_mode,
-    //         const std::string &vehicle_name) : 
+    //         const msr::airlib::YawMode& yaw_mode,
+    //         const std::string& vehicle_name) : 
     //     x(x), y(y), z(z), 
     //     drivetrain(drivetrain), 
     //     yaw_mode(yaw_mode), 
@@ -97,16 +99,16 @@ struct GimbalCmd
 
     // GimbalCmd() : vehicle_name(vehicle_name), camera_name(camera_name), target_quat(msr::airlib::Quaternionr(1,0,0,0)) {}
 
-    // GimbalCmd(const std::string &vehicle_name, 
-    //         const std::string &camera_name, 
-    //         const msr::airlib::Quaternionr &target_quat) : 
+    // GimbalCmd(const std::string& vehicle_name, 
+    //         const std::string& camera_name, 
+    //         const msr::airlib::Quaternionr& target_quat) : 
     //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
 };
 
 class AirsimROSWrapper
 {
 public:
-    AirsimROSWrapper(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private);
+    AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
     ~AirsimROSWrapper() {}; 
 
     void initialize_airsim();
@@ -116,13 +118,13 @@ public:
     /// ROS timer callbacks
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec
-    void imu_timer_cb(const ros::TimerEvent& event); // update imu msg from airsim_client_ every nth sec
+    void lidar_timer_cb(const ros::TimerEvent& event);
 
     /// ROS subscriber callbacks
-    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd &msg);
-    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd &msg);
-    void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd &gimbal_angle_quat_cmd_msg);
-    void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd &gimbal_angle_euler_cmd_msg);
+    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
+    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
+    void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
+    void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
 
     void set_zero_vel_cmd();
 
@@ -132,9 +134,14 @@ public:
     bool reset_srv_cb(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
 
     /// ROS tf broadcasters
-    void publish_camera_tf(const ImageResponse &img_response, const ros::Time &ros_time, const std::string &frame_id, const std::string &child_frame_id);
-    void publish_odom_tf(const nav_msgs::Odometry &odom_ned_msg);
+    void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
+    void publish_odom_tf(const nav_msgs::Odometry& odom_ned_msg);
     void append_static_camera_tf(const std::string& camera_name, const CameraSetting& camera_setting);
+    void append_static_lidar_tf(const std::string& lidar_name, const LidarSetting& lidar_setting);
+
+    void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting);
+    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, CameraSetting& camera_setting);
+    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, LidarSetting& lidar_setting);
 
     /// camera helper methods
     // TODO migrate to image_tranport camera publisher https://answers.ros.org/question/278602/how-to-use-camera_info_manager-to-publish-camera_info/
@@ -144,24 +151,27 @@ public:
     sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
     sensor_msgs::CameraInfo get_cam_info_msg(const ImageResponse& img_response, float fov_degrees, const ros::Time curr_ros_time, const std::string frame_id);
 
-    cv::Mat manual_decode_depth(const ImageResponse &img_response);
+    cv::Mat manual_decode_depth(const ImageResponse& img_response);
     void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info);
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m); // todo ugly
-    void generate_img_request_vec_and_ros_pubs_from_settings_json();
+    void create_ros_pubs_from_settings_json();
     void generate_lidar_pubs();
 
     /// utils. parse into an Airlib<->ROS conversion class
     tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat);
     msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion& geometry_msgs_quat);
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat);
-    nav_msgs::Odometry get_odom_msg_from_airsim_state(const msr::airlib::MultirotorState &drone_state);
-    airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point);
-    sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point);
-    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output &imu_data);
+    nav_msgs::Odometry get_odom_msg_from_airsim_state(const msr::airlib::MultirotorState& drone_state);
+    airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point);
+    sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point);
+    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data);
+    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data);
 
 private:
     AirSimSettingsParser airsim_settings_parser_;
     std::map<int, std::string> image_type_int_to_string_map_;
+    std::map<std::string, std::string> vehicle_imu_map_;
+    std::map<std::string, std::string> vehicle_lidar_map_;
     std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec_;
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
@@ -200,7 +210,7 @@ private:
     /// ROS Timers.
     ros::Timer airsim_img_response_timer_;
     ros::Timer airsim_control_update_timer_;
-    ros::Timer airsim_imu_update_timer_;
+    ros::Timer airsim_lidar_update_timer_;
 
     /// ROS camera messages
     // sensor_msgs::CameraInfo front_center_mono_cam_info_msg_;
@@ -220,7 +230,9 @@ private:
     // auto generated from camera_name_image_type_list_, which is generated from sensors.yamls
     std::vector<image_transport::Publisher> image_pub_vec_; 
     std::vector<ros::Publisher> cam_info_pub_vec_;
-    std::vector<ros::Publisher> lidar_pub_vec_; 
+    std::vector<ros::Publisher> lidar_pub_vec_;
+    std::vector<ros::Publisher> imu_pub_vec_;
+
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
 
     /// ROS other publishers
@@ -228,9 +240,6 @@ private:
     ros::Publisher clock_pub_;
     ros::Publisher odom_local_ned_pub_;
     ros::Publisher global_gps_pub_;
-    ros::Publisher attitude_euler_pub_;
-    ros::Publisher attitude_quat_pub_;
-    ros::Publisher imu_pub_;
     ros::Publisher origin_geo_point_pub_; // geo coord of unreal origin
     ros::Publisher home_geo_point_pub_; // home geo coord of drones
 
