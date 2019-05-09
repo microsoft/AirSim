@@ -9,8 +9,8 @@ int main(int argc, char ** argv)
 
     AirsimROSWrapper airsim_ros_wrapper(nh, nh_private);
 
-	int num_threads = 2;
-	ros::MultiThreadedSpinner multi_thread(num_threads);
+    std::cout << "airsim_ros_wrapper.num_threads_: " << airsim_ros_wrapper.num_threads_ << std::endl;
+	ros::MultiThreadedSpinner multi_thread(airsim_ros_wrapper.num_threads_);
 	multi_thread.spin(); 
 
 	// ros::AsyncSpinner async_spinner(num_threads);

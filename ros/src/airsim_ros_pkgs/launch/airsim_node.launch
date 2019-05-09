@@ -7,7 +7,10 @@
 		<!-- ROS timer rates. Note that timer callback will be processed at maximum possible rate, upperbounded by the following ROS params -->
 		<param name="is_vulkan" type="bool" value="false" /> 
 		<param name="update_airsim_img_response_every_n_sec" type="double" value="0.01" /> 
-		<param name="update_airsim_control_every_n_sec" type="double" value="0.01" />
-
+		<param name="update_airsim_control_every_n_sec" type="double" value="0.005" />
+		<param name="update_lidar_every_n_sec" type="double" value="0.01" />
 	</node>
+
+	<!-- Static transforms -->
+	<include file="$(find airsim_ros_pkgs)/launch/static_transforms.launch"/>
 </launch>

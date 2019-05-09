@@ -6,6 +6,9 @@ STRICT_MODE_OFF //todo what does this do?
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
+#include <airsim_ros_pkgs/Takeoff.h>
+#include <airsim_ros_pkgs/Land.h>
+#include <airsim_ros_pkgs/Reset.h>
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
 #include "common/common_utils/FileSystem.hpp"
@@ -121,23 +124,26 @@ public:
     void lidar_timer_cb(const ros::TimerEvent& event);
 
     /// ROS subscriber callbacks
-    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
-    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
+    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
+    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
+
+    // void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg, const std::string& vehicle_name);
     void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
     void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
 
-    void set_zero_vel_cmd();
+    // void set_zero_vel_cmd();
 
     /// ROS service callbacks
-    bool takeoff_srv_cb(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
-    bool land_srv_cb(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
-    bool reset_srv_cb(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
+    bool takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response, const std::string& vehicle_name);
+    bool land_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response, const std::string& vehicle_name);
+    bool reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, airsim_ros_pkgs::Reset::Response& response);
 
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
     void publish_odom_tf(const nav_msgs::Odometry& odom_ned_msg);
     void append_static_camera_tf(const std::string& camera_name, const CameraSetting& camera_setting);
     void append_static_lidar_tf(const std::string& lidar_name, const LidarSetting& lidar_setting);
+    void append_static_vehicle_tf(const std::string& vehicle_name, const VehicleSetting& vehicle_setting);
 
     void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting);
     void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, CameraSetting& camera_setting);
@@ -167,31 +173,64 @@ public:
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data);
     sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data);
 
+    int num_threads_; // num threads to be used by ROS' multi-threaded spinner. todo, refactor to callback queues to have more and explicit contol.
+
 private:
+    ros::Subscriber vel_cmd_body_frame_sub_;
+
+    struct MultiRotorROS
+    {
+        std::string vehicle_name;
+
+        /// All things ROS
+        ros::Publisher odom_local_ned_pub;
+        ros::Publisher global_gps_pub;
+        // ros::Publisher home_geo_point_pub_; // geo coord of unreal origin
+
+        ros::Subscriber vel_cmd_body_frame_sub;
+        ros::Subscriber vel_cmd_world_frame_sub;
+
+        ros::ServiceServer takeoff_srvr;
+        ros::ServiceServer land_srvr;
+
+        /// State
+        msr::airlib::MultirotorState curr_drone_state;
+        // bool in_air_; // todo change to "status" and keep track of this
+        nav_msgs::Odometry curr_odom_ned;
+        sensor_msgs::NavSatFix gps_sensor_msg;
+        bool has_vel_cmd;
+        VelCmd vel_cmd;
+
+        std::string odom_frame_id;
+        /// Status
+        // bool in_air_; // todo change to "status" and keep track of this
+        // bool is_armed_;
+        // std::string mode_;
+    };
+
+    ros::ServiceServer reset_srvr_;
+    ros::Publisher origin_geo_point_pub_; // home geo coord of drones
+    msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin 
+    airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
+
+    std::vector<MultiRotorROS> multirotor_ros_vec_;
+
+    std::vector<string> vehicle_names_;
+    std::vector<VehicleSetting> vehicle_setting_vec_;
     AirSimSettingsParser airsim_settings_parser_;
-    std::map<int, std::string> image_type_int_to_string_map_;
+    std::unordered_map<std::string, int> vehicle_name_idx_map_;
+    std::unordered_map<int, std::string> image_type_int_to_string_map_;
     std::map<std::string, std::string> vehicle_imu_map_;
     std::map<std::string, std::string> vehicle_lidar_map_;
     std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec_;
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
     msr::airlib::MultirotorRpcLibClient airsim_client_;
-    msr::airlib::MultirotorState curr_drone_state_;
 
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
-
-    msr::airlib::GeoPoint home_geo_point_;// gps coord of unreal origin 
-    airsim_ros_pkgs::GPSYaw home_geo_point_msg_; // todo duplicate
-
-    bool in_air_; // todo not really used 
-
     /// vehiclecontrol commands (received from last callback)
     // todo make a struct for control cmd, perhaps line with airlib's API 
-    bool has_vel_cmd_;
-    VelCmd vel_cmd_;
-
-    nav_msgs::Odometry curr_odom_ned_;
 
     // gimbal control
     bool has_gimbal_cmd_;
@@ -238,23 +277,12 @@ private:
     /// ROS other publishers
     tf2_ros::StaticTransformBroadcaster static_tf_pub_;
     ros::Publisher clock_pub_;
-    ros::Publisher odom_local_ned_pub_;
-    ros::Publisher global_gps_pub_;
-    ros::Publisher origin_geo_point_pub_; // geo coord of unreal origin
-    ros::Publisher home_geo_point_pub_; // home geo coord of drones
 
     /// ROS Subscribers
     // ros::CallbackQueue img_callback_queue_
     // ros::SubscribeOptions sub_ops_;
-    ros::Subscriber vel_cmd_body_frame_sub_;
-    ros::Subscriber vel_cmd_world_frame_sub_;
     ros::Subscriber gimbal_angle_quat_cmd_sub_;
     ros::Subscriber gimbal_angle_euler_cmd_sub_;
-
-    /// ROS Services
-    ros::ServiceServer takeoff_srvr_;
-    ros::ServiceServer land_srvr_;
-    ros::ServiceServer reset_srvr_;
 
     static constexpr char CAM_YML_NAME[]    = "camera_name";
     static constexpr char WIDTH_YML_NAME[]  = "image_width";
@@ -268,6 +296,4 @@ private:
     std::string front_left_calib_file_;
     std::string front_right_calib_file_;
 
-    bool is_armed_;
-    std::string mode_;
 };

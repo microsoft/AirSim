@@ -45,6 +45,9 @@ add_message_files(
 add_service_files(
   FILES
   SetGPSPosition.srv
+  Takeoff.srv
+  Land.srv
+  Reset.srv
   SetLocalPosition.srv
 )
 

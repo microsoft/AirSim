@@ -1,2 +1,2 @@
 geometry_msgs/Twist twist
-string vehicle_name
+# string vehicle_name
