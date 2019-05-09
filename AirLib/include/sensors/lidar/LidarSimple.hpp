@@ -68,15 +68,16 @@ public:
 
 protected:
     virtual void getPointCloud(const Pose& lidar_pose, const Pose& vehicle_pose, 
-        TTimeDelta delta_time, vector<real_T>& point_cloud) = 0;
+        TTimeDelta delta_time, vector<real_T>& point_cloud, std::vector<std::string>& label) = 0;
 
     
 private: //methods
     void updateOutput()
     {
-        TTimeDelta delta_time = clock()->updateSince(last_time_);
+		TTimeDelta delta_time = clock()->updateSince(last_time_);
 
         point_cloud_.clear();
+		label_.clear();
 
         const GroundTruth& ground_truth = getGroundTruth();
 
@@ -92,24 +93,25 @@ private: //methods
         getPointCloud(params_.relative_pose, // relative lidar pose
             ground_truth.kinematics->pose,   // relative vehicle pose
             delta_time, 
-            point_cloud_);
+            point_cloud_,label_);
 
         LidarData output;
         output.point_cloud = point_cloud_;
         output.time_stamp = clock()->nowNanos();
         output.pose = lidar_pose;            
-
-        last_time_ = output.time_stamp;
+		output.labels = label_;
+		last_time_ = output.time_stamp;
 
         setOutput(output);
+
     }
 
 private:
     LidarSimpleParams params_;
     vector<real_T> point_cloud_;
-
     FrequencyLimiter freq_limiter_;
     TTimePoint last_time_;
+	std::vector<std::string> label_; //the labels of the pointcloud
 };
 
 }} //namespace

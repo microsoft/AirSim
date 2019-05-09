@@ -28,6 +28,7 @@ public: //types
         // - in lidar local NED coordinates
         // - in meters
         vector<real_T> point_cloud;
+		std::vector<std::string> labels;
     };
 
 public:
@@ -38,7 +39,9 @@ public:
 
         reporter.writeValue("Lidar-Timestamp", output_.time_stamp);
         reporter.writeValue("Lidar-NumPoints", static_cast<int>(output_.point_cloud.size() / 3));
-    }
+		reporter.writeValue("Labels-Num", static_cast<int>(output_.labels.size()));
+
+	}
 
     const LidarData& getOutput() const
     {

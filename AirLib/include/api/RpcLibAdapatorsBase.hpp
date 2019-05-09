@@ -471,8 +471,9 @@ public:
         msr::airlib::TTimePoint time_stamp;    // timestamp
         std::vector<float> point_cloud;        // data
         Pose pose;
+		std::vector<std::string> labels;
 
-        MSGPACK_DEFINE_MAP(time_stamp, point_cloud, pose);
+        MSGPACK_DEFINE_MAP(time_stamp, point_cloud, pose, labels);
 
         LidarData()
         {}
@@ -487,6 +488,7 @@ public:
                 point_cloud.push_back(0);
 
             pose = s.pose;
+			labels = s.labels;
         }
 
         msr::airlib::LidarData to() const
@@ -496,6 +498,7 @@ public:
             d.time_stamp = time_stamp;
             d.point_cloud = point_cloud;
             d.pose = pose.to();
+			d.labels = labels;
 
             return d;
         }
