@@ -40,13 +40,16 @@ add_message_files(
   GimbalAngleQuatCmd.msg
   GPSYaw.msg
   VelCmd.msg
+  VelCmdGroup.msg
 )
 
 add_service_files(
   FILES
   SetGPSPosition.srv
   Takeoff.srv
+  TakeoffGroup.srv
   Land.srv
+  LandGroup.srv
   Reset.srv
   SetLocalPosition.srv
 )

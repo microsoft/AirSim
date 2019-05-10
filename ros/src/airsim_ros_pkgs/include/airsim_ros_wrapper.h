@@ -7,7 +7,9 @@ STRICT_MODE_OFF //todo what does this do?
 STRICT_MODE_ON
 
 #include <airsim_ros_pkgs/Takeoff.h>
+#include <airsim_ros_pkgs/TakeoffGroup.h>
 #include <airsim_ros_pkgs/Land.h>
+#include <airsim_ros_pkgs/LandGroup.h>
 #include <airsim_ros_pkgs/Reset.h>
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
@@ -21,6 +23,7 @@ STRICT_MODE_ON
 #include <airsim_ros_pkgs/GimbalAngleQuatCmd.h>
 #include <airsim_ros_pkgs/GPSYaw.h>
 #include <airsim_ros_pkgs/VelCmd.h>
+#include <airsim_ros_pkgs/VelCmdGroup.h>
 #include <chrono>
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -127,6 +130,12 @@ public:
     void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
     void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
 
+    void vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
+    void vel_cmd_group_world_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
+
+    void vel_cmd_all_world_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
+    void vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
+
     // void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg, const std::string& vehicle_name);
     void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
     void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
@@ -135,14 +144,18 @@ public:
 
     /// ROS service callbacks
     bool takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response, const std::string& vehicle_name);
+    bool takeoff_group_srv_cb(airsim_ros_pkgs::TakeoffGroup::Request& request, airsim_ros_pkgs::TakeoffGroup::Response& response);
+    bool takeoff_all_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response);
     bool land_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response, const std::string& vehicle_name);
+    bool land_group_srv_cb(airsim_ros_pkgs::LandGroup::Request& request, airsim_ros_pkgs::LandGroup::Response& response);
+    bool land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response);
     bool reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, airsim_ros_pkgs::Reset::Response& response);
 
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
     void publish_odom_tf(const nav_msgs::Odometry& odom_ned_msg);
-    void append_static_camera_tf(const std::string& camera_name, const CameraSetting& camera_setting);
-    void append_static_lidar_tf(const std::string& lidar_name, const LidarSetting& lidar_setting);
+    void append_static_camera_tf(const std::string& vehicle_name, const std::string& camera_name, const CameraSetting& camera_setting);
+    void append_static_lidar_tf(const std::string& vehicle_name, const std::string& lidar_name, const LidarSetting& lidar_setting);
     void append_static_vehicle_tf(const std::string& vehicle_name, const VehicleSetting& vehicle_setting);
 
     void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting);
@@ -176,8 +189,19 @@ public:
     int num_threads_; // num threads to be used by ROS' multi-threaded spinner. todo, refactor to callback queues to have more and explicit contol.
 
 private:
-    ros::Subscriber vel_cmd_body_frame_sub_;
+    // subscriber / services for ALL robots
+    ros::Subscriber vel_cmd_all_body_frame_sub_;
+    ros::Subscriber vel_cmd_all_world_frame_sub_;
+    ros::ServiceServer takeoff_all_srvr_;
+    ros::ServiceServer land_all_srvr_;
 
+    // todo - subscriber / services for a GROUP of robots, which is defined by a list of `vehicle_name`s passed in the ros msg / srv request
+    ros::Subscriber vel_cmd_group_body_frame_sub_;
+    ros::Subscriber vel_cmd_group_world_frame_sub_;
+    ros::ServiceServer takeoff_group_srvr_;
+    ros::ServiceServer land_group_srvr_;
+
+    // utility struct for a SINGLE robot
     struct MultiRotorROS
     {
         std::string vehicle_name;
