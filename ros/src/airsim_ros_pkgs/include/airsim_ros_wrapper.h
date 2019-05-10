@@ -6,22 +6,21 @@ STRICT_MODE_OFF //todo what does this do?
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
-#include <airsim_ros_pkgs/Takeoff.h>
-#include <airsim_ros_pkgs/TakeoffGroup.h>
-#include <airsim_ros_pkgs/Land.h>
-#include <airsim_ros_pkgs/LandGroup.h>
-#include <airsim_ros_pkgs/Reset.h>
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
 #include "common/common_utils/FileSystem.hpp"
-#include "sensors/imu/ImuBase.hpp"
-// #include "nodelet/nodelet.h"
 #include "ros/ros.h"
+#include "sensors/imu/ImuBase.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "yaml-cpp/yaml.h"
 #include <airsim_ros_pkgs/GimbalAngleEulerCmd.h>
 #include <airsim_ros_pkgs/GimbalAngleQuatCmd.h>
 #include <airsim_ros_pkgs/GPSYaw.h>
+#include <airsim_ros_pkgs/Land.h>
+#include <airsim_ros_pkgs/LandGroup.h>
+#include <airsim_ros_pkgs/Reset.h>
+#include <airsim_ros_pkgs/Takeoff.h>
+#include <airsim_ros_pkgs/TakeoffGroup.h>
 #include <airsim_ros_pkgs/VelCmd.h>
 #include <airsim_ros_pkgs/VelCmdGroup.h>
 #include <chrono>
@@ -36,22 +35,24 @@ STRICT_MODE_ON
 #include <mavros_msgs/State.h>
 #include <nav_msgs/Odometry.h>
 #include <opencv2/opencv.hpp>
+#include <ros/callback_queue.h>
 #include <ros/console.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/distortion_models.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Imu.h>
-#include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <std_srvs/Empty.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <unordered_map>
+// #include "nodelet/nodelet.h"
 
 // todo move airlib typedefs to separate header file?
 typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
@@ -186,9 +187,14 @@ public:
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data);
     sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data);
 
-    int num_threads_; // num threads to be used by ROS' multi-threaded spinner. todo, refactor to callback queues to have more and explicit contol.
+    // std::vector<ros::CallbackQueue> callback_queues_;
+    ros::AsyncSpinner img_async_spinner_;
+    ros::AsyncSpinner lidar_async_spinner_;
+    bool is_used_lidar_timer_cb_queue_;
+    bool is_used_img_timer_cb_queue_;
 
 private:
+
     // subscriber / services for ALL robots
     ros::Subscriber vel_cmd_all_body_frame_sub_;
     ros::Subscriber vel_cmd_all_world_frame_sub_;
@@ -253,6 +259,17 @@ private:
 
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
+
+    // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
+    // todo for multiple drones with multiple sensors, this won't scale. make it a part of MultiRotorROS?
+    ros::CallbackQueue img_timer_cb_queue_;
+    ros::CallbackQueue lidar_timer_cb_queue_;
+
+    // todo race condition
+    std::recursive_mutex drone_control_mutex_;
+    // std::recursive_mutex img_mutex_;
+    // std::recursive_mutex lidar_mutex_;
+
     /// vehiclecontrol commands (received from last callback)
     // todo make a struct for control cmd, perhaps line with airlib's API 
 
@@ -263,6 +280,8 @@ private:
     /// ROS tf
     std::string world_frame_id_;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
+    tf2_ros::TransformBroadcaster tf_broadcaster_image_;
+    tf2_ros::TransformBroadcaster tf_broadcaster_lidar_;
     tf2_ros::Buffer tf_buffer_;
     // look up vector of all capture type in "camera major" format. used to give camera tf's their names
     std::vector<std::string> image_types_names_vec_;

@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "airsim_ros_wrapper.h"
+#include <ros/spinner.h>
 
 int main(int argc, char ** argv)
 {
@@ -9,14 +10,17 @@ int main(int argc, char ** argv)
 
     AirsimROSWrapper airsim_ros_wrapper(nh, nh_private);
 
-    std::cout << "airsim_ros_wrapper.num_threads_: " << airsim_ros_wrapper.num_threads_ << std::endl;
-	ros::MultiThreadedSpinner multi_thread(airsim_ros_wrapper.num_threads_);
-	multi_thread.spin(); 
+    if (airsim_ros_wrapper.is_used_img_timer_cb_queue_)
+    {
+        airsim_ros_wrapper.img_async_spinner_.start();
+    }
 
-	// ros::AsyncSpinner async_spinner(num_threads);
-	// async_spinner.start();
+    if (airsim_ros_wrapper.is_used_lidar_timer_cb_queue_)
+    {
+        airsim_ros_wrapper.lidar_async_spinner_.start();
+    }
 
-	// single threaded spinner
-    // ros::spin();
+    ros::spin();
+
     return 0;
 } 

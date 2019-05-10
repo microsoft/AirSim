@@ -28,4 +28,3 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${airsim_ros_pkgs_INCLUDE_DIRS}
 )
-
