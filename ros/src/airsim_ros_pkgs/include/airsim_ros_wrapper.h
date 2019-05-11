@@ -120,8 +120,14 @@ public:
 
     void initialize_airsim();
     void initialize_ros();
-    void setup_vehicle_constraints(); // todo make ros params
 
+    // std::vector<ros::CallbackQueue> callback_queues_;
+    ros::AsyncSpinner img_async_spinner_;
+    ros::AsyncSpinner lidar_async_spinner_;
+    bool is_used_lidar_timer_cb_queue_;
+    bool is_used_img_timer_cb_queue_;
+
+private:
     /// ROS timer callbacks
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec
@@ -155,46 +161,38 @@ public:
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
     void publish_odom_tf(const nav_msgs::Odometry& odom_ned_msg);
+
+    /// camera helper methods
+    sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
+    cv::Mat manual_decode_depth(const ImageResponse& img_response) const;
+    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id) const;
+    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id) const;
+    void process_and_publish_img_response(const std::vector<ImageResponse>& img_response);
+
+    // methods which parse setting json ang generate ros pubsubsrv
+    void create_ros_pubs_from_settings_json();
     void append_static_camera_tf(const std::string& vehicle_name, const std::string& camera_name, const CameraSetting& camera_setting);
     void append_static_lidar_tf(const std::string& vehicle_name, const std::string& lidar_name, const LidarSetting& lidar_setting);
     void append_static_vehicle_tf(const std::string& vehicle_name, const VehicleSetting& vehicle_setting);
+    void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting) const;
+    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, CameraSetting& camera_setting) const;
+    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, LidarSetting& lidar_setting) const;
 
-    void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting);
-    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, CameraSetting& camera_setting);
-    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, LidarSetting& lidar_setting);
+    /// utils. todo parse into an Airlib<->ROS conversion class
+    tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat) const;
+    msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion& geometry_msgs_quat) const;
+    msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
+    nav_msgs::Odometry get_odom_msg_from_airsim_state(const msr::airlib::MultirotorState& drone_state) const;
+    airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
+    sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
+    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
+    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data) const;
 
-    /// camera helper methods
-    // TODO migrate to image_tranport camera publisher https://answers.ros.org/question/278602/how-to-use-camera_info_manager-to-publish-camera_info/
-    sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting);
-    void process_and_publish_img_response(const std::vector<ImageResponse>& img_response);
-    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
-    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
-    sensor_msgs::CameraInfo get_cam_info_msg(const ImageResponse& img_response, float fov_degrees, const ros::Time curr_ros_time, const std::string frame_id);
-
-    cv::Mat manual_decode_depth(const ImageResponse& img_response);
-    void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info);
-    void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m); // todo ugly
-    void create_ros_pubs_from_settings_json();
-    void generate_lidar_pubs();
-
-    /// utils. parse into an Airlib<->ROS conversion class
-    tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat);
-    msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion& geometry_msgs_quat);
-    msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat);
-    nav_msgs::Odometry get_odom_msg_from_airsim_state(const msr::airlib::MultirotorState& drone_state);
-    airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point);
-    sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point);
-    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data);
-    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data);
-
-    // std::vector<ros::CallbackQueue> callback_queues_;
-    ros::AsyncSpinner img_async_spinner_;
-    ros::AsyncSpinner lidar_async_spinner_;
-    bool is_used_lidar_timer_cb_queue_;
-    bool is_used_img_timer_cb_queue_;
+    // not used anymore, but can be useful in future with an unreal camera calibration environment
+    void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info) const;
+    void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m) const; // todo ugly
 
 private:
-
     // subscriber / services for ALL robots
     ros::Subscriber vel_cmd_all_body_frame_sub_;
     ros::Subscriber vel_cmd_all_world_frame_sub_;
@@ -249,7 +247,7 @@ private:
     std::vector<VehicleSetting> vehicle_setting_vec_;
     AirSimSettingsParser airsim_settings_parser_;
     std::unordered_map<std::string, int> vehicle_name_idx_map_;
-    std::unordered_map<int, std::string> image_type_int_to_string_map_;
+    static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
     std::map<std::string, std::string> vehicle_imu_map_;
     std::map<std::string, std::string> vehicle_lidar_map_;
     std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec_;
@@ -270,9 +268,6 @@ private:
     // std::recursive_mutex img_mutex_;
     // std::recursive_mutex lidar_mutex_;
 
-    /// vehiclecontrol commands (received from last callback)
-    // todo make a struct for control cmd, perhaps line with airlib's API 
-
     // gimbal control
     bool has_gimbal_cmd_;
     GimbalCmd gimbal_cmd_; 
@@ -280,11 +275,8 @@ private:
     /// ROS tf
     std::string world_frame_id_;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
-    tf2_ros::TransformBroadcaster tf_broadcaster_image_;
-    tf2_ros::TransformBroadcaster tf_broadcaster_lidar_;
+    tf2_ros::StaticTransformBroadcaster static_tf_pub_;
     tf2_ros::Buffer tf_buffer_;
-    // look up vector of all capture type in "camera major" format. used to give camera tf's their names
-    std::vector<std::string> image_types_names_vec_;
 
     /// ROS params
     double vel_cmd_duration_;
@@ -294,22 +286,7 @@ private:
     ros::Timer airsim_control_update_timer_;
     ros::Timer airsim_lidar_update_timer_;
 
-    /// ROS camera messages
-    // sensor_msgs::CameraInfo front_center_mono_cam_info_msg_;
-
-    /// ROS camera publishers
-
-    // map of camera names and image types to publish to ROS. 
-    // We obtain this from the camera subfield in sensors.yml, which is supplied by the end user. 
-    // the camera names and image types must be a subset or equal to what is declared in settings.json 
-    XmlRpc::XmlRpcValue camera_name_image_type_list_;
-    std::vector<std::string> lidar_names_;
-    std::vector<std::string> imu_names_;
-
-    // generated from camera_name_image_type_list_
     std::vector<ImageRequest> airsim_img_request_;
-
-    // auto generated from camera_name_image_type_list_, which is generated from sensors.yamls
     std::vector<image_transport::Publisher> image_pub_vec_; 
     std::vector<ros::Publisher> cam_info_pub_vec_;
     std::vector<ros::Publisher> lidar_pub_vec_;
@@ -318,12 +295,8 @@ private:
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
 
     /// ROS other publishers
-    tf2_ros::StaticTransformBroadcaster static_tf_pub_;
     ros::Publisher clock_pub_;
 
-    /// ROS Subscribers
-    // ros::CallbackQueue img_callback_queue_
-    // ros::SubscribeOptions sub_ops_;
     ros::Subscriber gimbal_angle_quat_cmd_sub_;
     ros::Subscriber gimbal_angle_euler_cmd_sub_;
 
@@ -335,8 +308,5 @@ private:
     static constexpr char R_YML_NAME[]      = "rectification_matrix";
     static constexpr char P_YML_NAME[]      = "projection_matrix";
     static constexpr char DMODEL_YML_NAME[] = "distortion_model";
-
-    std::string front_left_calib_file_;
-    std::string front_right_calib_file_;
 
 };

@@ -56,8 +56,8 @@ def main():
 
     # arrange drones in a rectangle. todo make classes for different swarm spawn shapes? 
     dist_between_drones = 2.0 
-    num_drones_x = 1
-    num_drones_y = 2
+    num_drones_x = 5
+    num_drones_y = 5
     grid_width = (num_drones_x-1) * dist_between_drones
     grid_length = (num_drones_y-1) * dist_between_drones
 
