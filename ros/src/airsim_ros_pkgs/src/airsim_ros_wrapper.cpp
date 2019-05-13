@@ -88,7 +88,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     // subscribe to control commands on global nodehandle
     gimbal_angle_quat_cmd_sub_ = nh_private_.subscribe("gimbal_angle_quat_cmd", 50, &AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this);
     gimbal_angle_euler_cmd_sub_ = nh_private_.subscribe("gimbal_angle_euler_cmd", 50, &AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this);
-    origin_geo_point_pub_ = nh_private_.advertise<airsim_ros_pkgs::GPSYaw>("/origin_geo_point", 10);       
+    origin_geo_point_pub_ = nh_private_.advertise<airsim_ros_pkgs::GPSYaw>("origin_geo_point", 10);       
 
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
@@ -980,6 +980,7 @@ void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)
                 auto lidar_data = airsim_client_.getLidarData(vehicle_lidar_pair.second, vehicle_lidar_pair.first); // airsim api is imu_name, vehicle_name
                 lck.unlock();
                 sensor_msgs::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data); // todo make const ptr msg to avoid copy
+                lidar_msg.header.frame_id = vehicle_lidar_pair.second; // sensor frame name. todo add to doc
                 lidar_msg.header.stamp = ros::Time::now();
                 lidar_pub_vec_[ctr].publish(lidar_msg);
                 ctr++;

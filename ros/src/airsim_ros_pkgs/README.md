@@ -37,50 +37,43 @@ Let's look at the ROS API for both nodes:
 
 ### AirSim ROS Wrapper Node
 #### Publishers:
-- `/airsim_node/home_geo_point` [airsim_ros_pkgs/GPSYaw](msg/GPSYaw.msg)   
-GPS coordinates corresponding to home/spawn point of the drone. These are set in the airsim's settings.json file under the `OriginGeopoint` key. Please see `settings.json`'s [documentation](https://microsoft.github.io/AirSim/docs/settings/). 
-
+- `/airsim_node/origin_geo_point` [airsim_ros_pkgs/GPSYaw](msg/GPSYaw.msg)   
+GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/docs/settings/) file under the `OriginGeopoint` key. 
   
-- `/airsim_node/global_gps` [sensor_msgs/NavSatFix](https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html)   
+- `/airsim_node/VEHICLE_NAME/global_gps` [sensor_msgs/NavSatFix](https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html)   
 This the current GPS coordinates of the drone in airsim. 
 
-- `/airsim_node/odom_local_ned` [nav_msgs/Odometry](https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html)   
+- `/airsim_node/VEHICLE_NAME/odom_local_ned` [nav_msgs/Odometry](https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html)   
 Odometry in NED frame wrt take-off point.  
-
-- `/airsim_node/vehicle_state` [mavros_msgs/State](https://docs.ros.org/api/mavros_msgs/html/msg/State.html)   
-  Currently, the drone is always `armed`. Hence, there is only one state. 
  
-- `/CAMERA_NAME/IMAGE_TYPE/camera_info` [sensor_msgs/CameraInfo](https://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)
+- `/airsim_node/VEHICLE_NAME/CAMERA_NAME/IMAGE_TYPE/camera_info` [sensor_msgs/CameraInfo](https://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html)
 
-- `/CAMERA_NAME/IMAGE_TYPE` [sensor_msgs/Image](https://docs.ros.org/api/sensor_msgs/html/msg/Image.html)   
+- `/airsim_node/VEHICLE_NAME/CAMERA_NAME/IMAGE_TYPE` [sensor_msgs/Image](https://docs.ros.org/api/sensor_msgs/html/msg/Image.html)   
   RGB or float image depending on image type requested in settings.json.
 
 - `/tf` [tf2_msgs/TFMessage](https://docs.ros.org/api/tf2_msgs/html/msg/TFMessage.html)
 
 
 #### Subscribers: 
-- `/vel_cmd_body_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
+- `/airsim_node/vel_cmd_body_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
   Ignore `vehicle_name` field, leave it to blank. We will use `vehicle_name` in future for multiple drones.
 
-- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
+- `/airsim_node/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
   Ignore `vehicle_name` field, leave it to blank. We will use `vehicle_name` in future for multiple drones.
 
 - `/gimbal_angle_euler_cmd` [airsim_ros_pkgs/GimbalAngleEulerCmd](msg/GimbalAngleEulerCmd.msg)   
   Gimbal set point in euler angles.    
-  Use `front_center`, `front_right`, or `front_left` as `camera_name` parameter in the message field.    
-  Ignore `vehicle_name`.
 
 - `/gimbal_angle_quat_cmd` [airsim_ros_pkgs/GimbalAngleQuatCmd](msg/GimbalAngleQuatCmd.msg)   
   Gimbal set point in quaternion.    
-  Use `front_center`, `front_right`, or `front_left` as `camera_name` parameter in the message field.    
-  Ignore `vehicle_name`.
 
 #### Services:
-- `/airsim_node/land` [std_srvs/Empty](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
+- `/airsim_node/VEHICLE_NAME/land` [airsim_ros_pkgs/Takeoff](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
 
-- `/airsim_node/reset` [std_srvs/Empty](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
+- `/airsim_node/takeoff` [airsim_ros_pkgs/Takeoff](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
 
-- `/airsim_node/takeoff` [std_srvs/Empty](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
+- `/airsim_node/reset` [airsim_ros_pkgs/Reset](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
+ Resets *all* drones
 
 #### Parameters:
 - `/airsim_node/update_airsim_control_every_n_sec` [double]   
@@ -123,18 +116,18 @@ Odometry in NED frame wrt take-off point.
   Default: 0.01 seconds
 
 #### Services:
-- `/airsim_node/gps_goal` [Request: [msgs/airsim_ros_pkgs/GPSYaw](msgs/airsim_ros_pkgs/GPSYaw)]   
+- `/airsim_node/VEHICLE_NAME/gps_goal` [Request: [msgs/airsim_ros_pkgs/GPSYaw](msgs/airsim_ros_pkgs/GPSYaw)]   
   Target gps position + yaw.   
   In **absolute** altitude. 
 
-- `/airsim_node/local_position_goal` [Request: [msgs/airsim_ros_pkgs/XYZYaw](msgs/airsim_ros_pkgs/XYZYaw)   
-  Target local position + yaw in NED frame.   
+- `/airsim_node/VEHICLE_NAME/local_position_goal` [Request: [msgs/airsim_ros_pkgs/XYZYaw](msgs/airsim_ros_pkgs/XYZYaw)   
+  Target local position + yaw in global NED frame.   
 
 #### Subscribers:
-- `/airsim_node/home_geo_point` [airsim_ros_pkgs/GPSYaw](msg/GPSYaw.msg)   
+- `/airsim_node/origin_geo_point` [airsim_ros_pkgs/GPSYaw](msg/GPSYaw.msg)   
   Listens to home geo coordinates published by `airsim_node`.  
 
-- `/airsim_node/odom_local_ned` [nav_msgs/Odometry](https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html)   
+- `/airsim_node/VEHICLE_NAME/odom_local_ned` [nav_msgs/Odometry](https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html)   
   Listens to odometry published by `airsim_node`
 
 #### Publishers:
@@ -152,6 +145,7 @@ Odometry in NED frame wrt take-off point.
     * `/max_yaw_rate_degree` [double]   
   Maximum yaw rate (degrees/second)
 
+### Misc
 #### Windows Subsytem for Linux on Windows 10
 - WSL setup:
   * Get [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
