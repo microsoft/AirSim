@@ -1,0 +1,233 @@
+{
+  "ClockSpeed": 1, 
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md", 
+  "SettingsVersion": 1.2, 
+  "SimMode": "Multirotor", 
+  "Vehicles": {
+    "Drone0": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 0.0, 
+      "Y": 0.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone1": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 0.0, 
+      "Y": 2.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone10": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 4.0, 
+      "Y": 0.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone11": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 4.0, 
+      "Y": 2.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone12": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 4.0, 
+      "Y": 4.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone13": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 4.0, 
+      "Y": 6.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone14": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 4.0, 
+      "Y": 8.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone15": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 6.0, 
+      "Y": 0.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone16": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 6.0, 
+      "Y": 2.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone17": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 6.0, 
+      "Y": 4.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone18": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 6.0, 
+      "Y": 6.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone19": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 6.0, 
+      "Y": 8.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone2": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 0.0, 
+      "Y": 4.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone20": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 8.0, 
+      "Y": 0.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone21": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 8.0, 
+      "Y": 2.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone22": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 8.0, 
+      "Y": 4.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone23": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 8.0, 
+      "Y": 6.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone24": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 8.0, 
+      "Y": 8.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone3": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 0.0, 
+      "Y": 6.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone4": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 0.0, 
+      "Y": 8.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone5": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 2.0, 
+      "Y": 0.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone6": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 2.0, 
+      "Y": 2.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone7": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 2.0, 
+      "Y": 4.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone8": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 2.0, 
+      "Y": 6.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }, 
+    "Drone9": {
+      "Pitch": 0, 
+      "Roll": 0, 
+      "VehicleType": "SimpleFlight", 
+      "X": 2.0, 
+      "Y": 8.0, 
+      "Yaw": 0, 
+      "Z": 0
+    }
+  }
+}
