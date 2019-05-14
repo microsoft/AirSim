@@ -90,74 +90,82 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
     const_cast<APIPCamera*>(this)->setCameraTypeEnabled(image_type, true);
     const USceneCaptureComponent2D* capture = const_cast<APIPCamera*>(this)->getCaptureComponent(image_type, false);
     if (capture) {
-        FMatrix proj_mat;
+        FMatrix proj_mat_transpose;
 
-	    float x_axis_multiplier;
-	    float y_axis_multiplier;
-		FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
+        FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
+        float x_axis_multiplier = 1.0f;
+        float y_axis_multiplier = render_target_size.X / (float)render_target_size.Y;
 
-	    if (render_target_size.X > render_target_size.Y)
-	    {
-		    // if the viewport is wider than it is tall
-		    x_axis_multiplier = 1.0f;
-		    y_axis_multiplier = render_target_size.X / static_cast<float>(render_target_size.Y);
-	    }
-	    else
-	    {
-		    // if the viewport is taller than it is wide
-		    x_axis_multiplier = render_target_size.Y / static_cast<float>(render_target_size.X);
-		    y_axis_multiplier = 1.0f;
-	    }
+        if (render_target_size.X < render_target_size.Y)
+        {
+            // if the viewport is taller than it is wide
+            x_axis_multiplier = render_target_size.Y / static_cast<float>(render_target_size.X);
+            y_axis_multiplier = 1.0f;
+        }
 
-	    if (capture->ProjectionType == ECameraProjectionMode::Orthographic)
-	    {
-		    check((int32)ERHIZBuffer::IsInverted);
-		    const float OrthoWidth = capture->OrthoWidth / 2.0f;
-		    const float OrthoHeight = capture->OrthoWidth / 2.0f * x_axis_multiplier / y_axis_multiplier;
+        if (capture->ProjectionType == ECameraProjectionMode::Orthographic)
+        {
+            check((int32)ERHIZBuffer::IsInverted);
+            const float OrthoWidth = capture->OrthoWidth / 2.0f;
+            const float OrthoHeight = capture->OrthoWidth / 2.0f * x_axis_multiplier / y_axis_multiplier;
 
-		    const float NearPlane = 0;
-		    const float FarPlane = WORLD_MAX / 8.0f;
+            const float NearPlane = 0;
+            const float FarPlane = WORLD_MAX / 8.0f;
 
-		    const float ZScale = 1.0f / (FarPlane - NearPlane);
-		    const float ZOffset = -NearPlane;
+            const float ZScale = 1.0f / (FarPlane - NearPlane);
+            const float ZOffset = -NearPlane;
 
-		    proj_mat = FReversedZOrthoMatrix(
-			    OrthoWidth,
-			    OrthoHeight,
-			    ZScale,
-			    ZOffset
-			    );
-	    }
-	    else
-	    {
-            float fov = Utils::degreesToRadians(capture->FOVAngle);
-		    if ((int32)ERHIZBuffer::IsInverted)
-		    {
-			    proj_mat = FReversedZPerspectiveMatrix(
-				    fov,
-				    fov,
-				    x_axis_multiplier,
-				    y_axis_multiplier,
-				    GNearClippingPlane,
-				    GNearClippingPlane
-				    );
-		    }
-		    else
-		    {
-			    proj_mat = FPerspectiveMatrix(
-				    fov,
-				    fov,
-				    x_axis_multiplier,
-				    y_axis_multiplier,
-				    GNearClippingPlane,
-				    GNearClippingPlane
-				    );
-		    }
-	    }
+            proj_mat_transpose = FReversedZOrthoMatrix(
+                OrthoWidth,
+                OrthoHeight,
+                ZScale,
+                ZOffset
+                );
+        }
+        else
+        {
+            float halfFov = Utils::degreesToRadians(capture->FOVAngle) / 2;
+            if ((int32)ERHIZBuffer::IsInverted)
+            {
+                proj_mat_transpose = FReversedZPerspectiveMatrix(
+                    halfFov,
+                    halfFov,
+                    x_axis_multiplier,
+                    y_axis_multiplier,
+                    GNearClippingPlane,
+                    GNearClippingPlane
+                    );
+            }
+            else
+            {
+                //The FPerspectiveMatrix() constructor actually returns the transpose of the perspective matrix.
+                proj_mat_transpose = FPerspectiveMatrix(
+                    halfFov,
+                    halfFov,
+                    x_axis_multiplier,
+                    y_axis_multiplier,
+                    GNearClippingPlane,
+                    GNearClippingPlane
+                    );
+            }
+        }
+        
+        //Takes a vector from NORTH-EAST-DOWN coordinates (AirSim) to EAST-UP-SOUTH coordinates (Unreal). Leaves W coordinate unchanged.
+        FMatrix coordinateChangeTranspose = FMatrix(
+            FPlane(0, 0, -1, 0),
+            FPlane(1, 0, 0, 0),
+            FPlane(0, -1, 0, 0),
+            FPlane(0, 0, 0, 1)
+        );
+
+        FMatrix projMatTransposeInAirSim = coordinateChangeTranspose * proj_mat_transpose;
+
+        //Copy the result to an airlib::ProjectionMatrix while taking transpose.
         msr::airlib::ProjectionMatrix mat;
-        for (auto i = 0; i < 4; ++i)
-            for (auto j = 0; j < 4; ++j)
-                mat.matrix[i][j] = proj_mat.M[i][j];
+        for (auto row = 0; row < 4; ++row)
+            for (auto col = 0; col < 4; ++col)
+                mat.matrix[col][row] = projMatTransposeInAirSim.M[row][col];
+
         return mat;
     }
     else {

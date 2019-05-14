@@ -42,6 +42,7 @@ public:
     virtual void printLogMessage(const std::string& message,
         const std::string& message_param = "", unsigned char severity = 0) = 0;
 
+    virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const = 0;
     virtual Pose getObjectPose(const std::string& object_name) const = 0;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
 

@@ -65,6 +65,16 @@ void WorldSimApi::printLogMessage(const std::string& message,
     UAirBlueprintLib::LogMessageString(message, message_param, static_cast<LogDebugLevel>(severity));
 }
 
+std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_regex) const
+{
+    std::vector<std::string> result;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &name_regex, &result]() {
+        result = UAirBlueprintLib::ListMatchingActors(simmode_, name_regex);
+    }, true);
+    return result;
+}
+
+
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
     Pose result;
