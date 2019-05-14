@@ -300,6 +300,8 @@ struct LidarData {
     TTimePoint time_stamp = 0;
     vector<real_T> point_cloud;
     Pose pose;
+    std::vector<std::string> labels;
+
 
     LidarData()
     {}
