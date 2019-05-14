@@ -80,7 +80,7 @@ A better way to generate training data exactly the way you want is by accessing 
 
 Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation. 
 
-[More details](https://microsoft.github.io/AirSim/docs/docs/image_apis/)
+[More details](https://microsoft.github.io/AirSim/docs/image_apis/)
 
 ### Weather Effects
 
