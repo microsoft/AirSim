@@ -190,10 +190,8 @@ std::vector<PawnSimApi::ImageCaptureBase::ImageResponse> PawnSimApi::getImages(
     const std::vector<ImageCaptureBase::ImageRequest>& requests) const
 {
     std::vector<ImageCaptureBase::ImageResponse> responses;
-
     const ImageCaptureBase* camera = getImageCapture();
     camera->getImages(requests, responses);
-
     return responses;
 }
 
@@ -495,14 +493,12 @@ void PawnSimApi::updateKinematics(float dt)
     //update kinematics from pawn's movement instead of physics engine
 
     auto next_kinematics = kinematics_->getState();
-
     next_kinematics.pose = getPose();
-    next_kinematics.twist.linear = getNedTransform().toLocalNed(getPawn()->GetVelocity());
+	next_kinematics.twist.linear = getNedTransform().toLocalNed(getPawn()->GetVelocity(), false);
     next_kinematics.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
         kinematics_->getPose().orientation, next_kinematics.pose.orientation, dt);
-
-    next_kinematics.accelerations.linear = (next_kinematics.twist.linear - kinematics_->getTwist().linear) / dt;
-    next_kinematics.accelerations.angular = (next_kinematics.twist.angular - kinematics_->getTwist().angular) / dt;
+	next_kinematics.accelerations.linear = (next_kinematics.twist.linear - kinematics_->getTwist().linear) / dt;
+	next_kinematics.accelerations.angular = (next_kinematics.twist.angular - kinematics_->getTwist().angular) / dt;
 
     kinematics_->setState(next_kinematics);
     kinematics_->update();
