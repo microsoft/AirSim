@@ -270,7 +270,7 @@ void RpcLibClientBase::simSetTimeOfDay(bool is_enabled, const string& start_date
 
 vector<string> RpcLibClientBase::simListSceneObjects(const string& name_regex) const
 {
-	return pimpl_->client.call("simListSceneObjects", name_regex).as<vector<string>>();
+    return pimpl_->client.call("simListSceneObjects", name_regex).as<vector<string>>();
 }
 
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name) const
