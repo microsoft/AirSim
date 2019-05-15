@@ -63,6 +63,7 @@ typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
 typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
 typedef msr::airlib::AirSimSettings::CameraSetting CameraSetting;
 typedef msr::airlib::AirSimSettings::LidarSetting LidarSetting;
+typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
 
 struct SimpleMatrix
 {
@@ -108,28 +109,25 @@ public:
     AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
     ~AirsimROSWrapper() {}; 
 
-    void initialize_airsim();
-    void initialize_ros();
-
-    // std::vector<ros::CallbackQueue> callback_queues_;
     ros::AsyncSpinner img_async_spinner_;
     ros::AsyncSpinner lidar_async_spinner_;
     bool is_used_lidar_timer_cb_queue_;
     bool is_used_img_timer_cb_queue_;
 
 private:
+    void initialize_airsim();
+    void initialize_ros();
+
     /// ROS timer callbacks
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec
     void lidar_timer_cb(const ros::TimerEvent& event);
 
     /// ROS subscriber callbacks
-    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
-    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
-
+    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const int vehicle_idx);
+    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const int vehicle_idx);
     void vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
     void vel_cmd_group_world_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
-
     void vel_cmd_all_world_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
     void vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
 
@@ -140,6 +138,8 @@ private:
     void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
 
     // void set_zero_vel_cmd();
+    void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd::ConstPtr& gimbal_angle_quat_cmd_msg, const int vehicle_idx, const int camera_idx);
+    void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd::ConstPtr& gimbal_angle_euler_cmd_msg, const int vehicle_idx, const int camera_idx);
 
     /// ROS service callbacks
     bool takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response, const std::string& vehicle_name);
@@ -185,18 +185,6 @@ private:
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m) const; // todo ugly
 
 private:
-    // subscriber / services for ALL robots
-    ros::Subscriber vel_cmd_all_body_frame_sub_;
-    ros::Subscriber vel_cmd_all_world_frame_sub_;
-    ros::ServiceServer takeoff_all_srvr_;
-    ros::ServiceServer land_all_srvr_;
-
-    // todo - subscriber / services for a GROUP of robots, which is defined by a list of `vehicle_name`s passed in the ros msg / srv request
-    ros::Subscriber vel_cmd_group_body_frame_sub_;
-    ros::Subscriber vel_cmd_group_world_frame_sub_;
-    ros::ServiceServer takeoff_group_srvr_;
-    ros::ServiceServer land_group_srvr_;
-
     // utility struct for a SINGLE robot
     struct MultiRotorROS
     {
@@ -210,6 +198,11 @@ private:
         ros::Subscriber vel_cmd_body_frame_sub;
         ros::Subscriber vel_cmd_world_frame_sub;
         ros::Subscriber rollpitchyawratethrust_sub;
+        // gimbal topics per camera, per vehicle
+        std::vector<ros::Subscriber> gimbal_angle_quat_cmd_sub_vec;
+        std::vector<ros::Subscriber> gimbal_angle_euler_cmd_sub_vec;
+        std::vector<bool> has_gimbal_cmd_vec;
+        std::vector<GimbalCmd> gimbal_cmd_vec; 
 
         ros::ServiceServer takeoff_srvr;
         ros::ServiceServer land_srvr;
@@ -227,11 +220,24 @@ private:
         bool has_rollpitchyawratethrust_cmd;
 
         std::string odom_frame_id;
+        std::vector<std::string> camera_names;
         /// Status
         // bool in_air_; // todo change to "status" and keep track of this
         // bool is_armed_;
         // std::string mode_;
     };
+
+    // subscriber / services for ALL robots
+    ros::Subscriber vel_cmd_all_body_frame_sub_;
+    ros::Subscriber vel_cmd_all_world_frame_sub_;
+    ros::ServiceServer takeoff_all_srvr_;
+    ros::ServiceServer land_all_srvr_;
+
+    // todo - subscriber / services for a GROUP of robots, which is defined by a list of `vehicle_name`s passed in the ros msg / srv request
+    ros::Subscriber vel_cmd_group_body_frame_sub_;
+    ros::Subscriber vel_cmd_group_world_frame_sub_;
+    ros::ServiceServer takeoff_group_srvr_;
+    ros::ServiceServer land_group_srvr_;
 
     ros::ServiceServer reset_srvr_;
     ros::Publisher origin_geo_point_pub_; // home geo coord of drones
@@ -265,10 +271,6 @@ private:
     // std::recursive_mutex img_mutex_;
     // std::recursive_mutex lidar_mutex_;
 
-    // gimbal control
-    bool has_gimbal_cmd_;
-    GimbalCmd gimbal_cmd_; 
-
     /// ROS tf
     std::string world_frame_id_;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
@@ -284,7 +286,6 @@ private:
     ros::Timer airsim_control_update_timer_;
     ros::Timer airsim_lidar_update_timer_;
 
-    typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
     std::vector<image_transport::Publisher> image_pub_vec_; 
     std::vector<ros::Publisher> cam_info_pub_vec_;
@@ -295,9 +296,6 @@ private:
 
     /// ROS other publishers
     ros::Publisher clock_pub_;
-
-    ros::Subscriber gimbal_angle_quat_cmd_sub_;
-    ros::Subscriber gimbal_angle_euler_cmd_sub_;
 
     static constexpr char CAM_YML_NAME[]    = "camera_name";
     static constexpr char WIDTH_YML_NAME[]  = "image_width";
