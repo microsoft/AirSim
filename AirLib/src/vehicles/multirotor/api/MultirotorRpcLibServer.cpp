@@ -62,6 +62,11 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(ApiProvider* api_provider, string
             const std::string& vehicle_name) -> bool { 
                 return getVehicleApi(vehicle_name)->moveByAngleThrottle(pitch, roll, throttle, yaw_rate, duration); 
     });
+	(static_cast<rpc::server*>(getServer()))->
+		bind("moveByRateThrottle", [&](float pitch_rate, float roll_rate, float yaw_rate, float throttle, float duration,
+			const std::string& vehicle_name) -> bool {
+		return getVehicleApi(vehicle_name)->moveByRateThrottle(pitch_rate, roll_rate, yaw_rate, throttle, duration);
+	});
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByVelocity", [&](float vx, float vy, float vz, float duration, DrivetrainType drivetrain, 
             const MultirotorRpcLibAdapators::YawMode& yaw_mode, const std::string& vehicle_name) -> bool { 

@@ -431,6 +431,10 @@ protected: //methods
         checkValidVehicle();
         mav_vehicle_->moveByAttitude(roll, pitch, yaw_rate, 0, 0, 0, throttle);
     }
+	virtual void commandRateThrottle(float pitch_rate, float roll_rate, float yaw_rate, float throttle)
+	{
+		// TODO: implement
+	}
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
         checkValidVehicle();

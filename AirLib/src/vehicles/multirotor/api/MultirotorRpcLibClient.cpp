@@ -86,6 +86,11 @@ MultirotorRpcLibClient* MultirotorRpcLibClient::moveByAngleThrottleAsync(float p
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByAngleThrottle", pitch, roll, throttle, yaw_rate, duration, vehicle_name);
     return this;
 }
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByRateThrottleAsync(float pitch_rate, float roll_rate, float yaw_rate, float throttle, float duration, const std::string& vehicle_name)
+{
+	pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByRateThrottle", pitch_rate, roll_rate, yaw_rate, throttle, duration, vehicle_name);
+	return this;
+}
 
 MultirotorRpcLibClient* MultirotorRpcLibClient::moveByVelocityAsync(float vx, float vy, float vz, float duration, 
     DrivetrainType drivetrain, const YawMode& yaw_mode, const std::string& vehicle_name)
