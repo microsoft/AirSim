@@ -896,7 +896,7 @@ void MavLinkVehicleImpl::moveByRate(float rollRate, float pitchRate, float yawRa
     msg.target_system = getTargetSystemId();
     msg.target_component = getTargetComponentId();
 
-    // altitude is not set, because all fields in msg are 0-initialized
+    // attitude is not set, because all fields in msg are 0-initialized
     //mavlink_euler_to_quaternion(0.0f, 0.0f, 0.0f, msg.q);
 
     // thrust must be between -1 and 1.
