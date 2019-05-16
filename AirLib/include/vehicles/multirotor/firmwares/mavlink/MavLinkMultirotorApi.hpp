@@ -434,6 +434,10 @@ protected: //methods
 	virtual void commandRateThrottle(float pitch_rate, float roll_rate, float yaw_rate, float throttle)
 	{
 		checkValidVehicle();
+        // convert to deg/s
+        roll_rate = roll_rate * 180.0f / M_PIf;
+        pitch_rate = pitch_rate * 180.0f / M_PIf;
+        yaw_rate = yaw_rate * 180.0f / M_PIf;
 		mav_vehicle_->moveByRate(roll_rate, pitch_rate, yaw_rate, throttle);
 	}
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
