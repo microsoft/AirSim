@@ -865,14 +865,14 @@ void MavLinkVehicleImpl::moveByAttitude(float roll, float pitch, float yaw, floa
     msg.body_pitch_rate = pitchRate * M_PIf / 180.0f;
     msg.body_yaw_rate = yawRate * M_PIf / 180.0f;
 
-    const uint8_t kIgnoreBodyRollRateBit = 1; //  mask bit 1: body roll rate,
-    const uint8_t kIgnoreBodyPitchRateBit = 2; // bit 2: body pitch rate, 
-    const uint8_t kIgnoreBodyYawRateBit = 4; // bit 3: body yaw rate. 
-    const uint8_t kIgnoreBit4Reserved = 8; //  bit 4-bit 6: reserved
-    const uint8_t kIgnoreBit5Reserved = 0x10;
-    const uint8_t kIgnoreBit6Reserved = 0x20;
-    const uint8_t kIgnoreThrottleBit = 0x40; // bit 7: throttle, 
-    const uint8_t kIgnoreAttitudeBit = 0x80; // bit 8: attitude
+    const uint8_t kIgnoreBodyRollRateBit = (1 << 0); //  mask bit 1: body roll rate,
+    const uint8_t kIgnoreBodyPitchRateBit = (1 << 1); // bit 2: body pitch rate, 
+    const uint8_t kIgnoreBodyYawRateBit = (1 << 2); // bit 3: body yaw rate. 
+    const uint8_t kIgnoreBit4Reserved = (1 << 3); //  bit 4-bit 6: reserved
+    const uint8_t kIgnoreBit5Reserved = (1 << 4);
+    const uint8_t kIgnoreBit6Reserved = (1 << 5);
+    const uint8_t kIgnoreThrottleBit = (1 << 6); // bit 7: throttle, 
+    const uint8_t kIgnoreAttitudeBit = (1 << 7); // bit 8: attitude
 
     msg.type_mask = 0;
     if (rollRate == 0) {
@@ -884,6 +884,33 @@ void MavLinkVehicleImpl::moveByAttitude(float roll, float pitch, float yaw, floa
     if (yawRate == 0) {
         msg.type_mask |= kIgnoreBodyYawRateBit;
     }
+    writeMessage(msg);
+}
+
+void MavLinkVehicleImpl::moveByRate(float rollRate, float pitchRate, float yawRate, float thrust)
+{
+    checkOffboard();
+
+    MavLinkSetAttitudeTarget msg;
+    msg.time_boot_ms = getTimeStamp();
+    msg.target_system = getTargetSystemId();
+    msg.target_component = getTargetComponentId();
+
+    // altitude is not set, because all fields in msg are 0-initialized
+    //mavlink_euler_to_quaternion(0.0f, 0.0f, 0.0f, msg.q);
+
+    // thrust must be between -1 and 1.
+    thrust = static_cast<float>(fmax(-1.0f, fmin(1.0f, thrust)));
+    msg.thrust = thrust;
+    msg.body_roll_rate = rollRate * M_PIf / 180.0f;
+    msg.body_pitch_rate = pitchRate * M_PIf / 180.0f;
+    msg.body_yaw_rate = yawRate * M_PIf / 180.0f;
+
+    const uint8_t kIgnoreAttitudeBit = (1 << 7); // bit 8: attitude
+
+    msg.type_mask = 0;
+    msg.type_mask |= kIgnoreAttitudeBit;
+
     writeMessage(msg);
 }
 

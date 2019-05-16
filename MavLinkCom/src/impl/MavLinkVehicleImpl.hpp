@@ -61,9 +61,11 @@ namespace mavlinkcom_impl {
 		// low level control, only use this one if you really know what you are doing!!
 		bool isAttitudeControlSupported();
 
-		// Move drone by directly controlling the attitude of the drone (units are degrees).
-		// If the rollRate, pitchRate and yawRate are all zero then you will get the default rates provided by the drone.
-		void moveByAttitude(float roll, float pitch, float yaw, float rollRate, float pitchRate, float yawRate, float thrust);
+        // Move drone by directly controlling the attitude of the drone (units are degrees).
+        // If the rollRate, pitchRate and yawRate are all zero then you will get the default rates provided by the drone.
+        void moveByAttitude(float roll, float pitch, float yaw, float rollRate, float pitchRate, float yawRate, float thrust);
+        // Move drone by controlling the rotational rates (units are deg/s)
+        void moveByRate(float rollRate, float pitchRate, float yawRate, float thrust);
         void writeMessage(MavLinkMessageBase& message, bool update_stats = true);
 
 		int getVehicleStateVersion();
