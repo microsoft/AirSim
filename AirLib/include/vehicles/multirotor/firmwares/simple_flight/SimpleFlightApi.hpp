@@ -202,7 +202,7 @@ protected:
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleRate, GoalModeType::Passthrough);
 
-        simple_flight::Axis4r goal(roll, pitch, yaw_rate, throttle);
+        simple_flight::Axis4r goal(Utils::degreesToRadians(roll), Utils::degreesToRadians(pitch), Utils::degreesToRadians(yaw_rate), throttle);
 
         std::string message;
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
@@ -216,7 +216,7 @@ protected:
 		simple_flight::GoalMode mode(GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::Passthrough);
 		// alternative: simple_flight::GoalMode mode = simple_flight::GoalMode::getAllRateMode();
 
-		simple_flight::Axis4r goal(roll_rate, pitch_rate, yaw_rate, throttle);
+		simple_flight::Axis4r goal(Utils::degreesToRadians(roll_rate), Utils::degreesToRadians(pitch_rate), Utils::degreesToRadians(yaw_rate), throttle);
 
 		std::string message;
 		firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
@@ -229,7 +229,7 @@ protected:
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
 
-        simple_flight::Axis4r goal(roll, pitch, yaw, z);
+        simple_flight::Axis4r goal(Utils::degreesToRadians(roll), Utils::degreesToRadians(pitch), Utils::degreesToRadians(yaw), z);
 
         std::string message;
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
