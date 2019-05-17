@@ -44,9 +44,9 @@ public:
 
 
 public: //VehicleApiBase implementation
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        MultirotorApiBase::reset();
+        MultirotorApiBase::resetImplementation();
 
         firmware_->reset();
     }

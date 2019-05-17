@@ -16,7 +16,7 @@ public:
 		const msr::airlib::Kinematics::State& state, const msr::airlib::Environment& environment);
 	virtual void setCarControls(const CarApiBase::CarControls& controls) override;
 	virtual CarApiBase::CarState getCarState() const override;
-	virtual void reset() override;
+	virtual void resetImplementation() override;
 	virtual void update() override;
 	virtual msr::airlib::GeoPoint getHomeGeoPoint() const override;
 	virtual void enableApiControl(bool is_enabled) override;

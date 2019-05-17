@@ -31,10 +31,8 @@ public: //limited container interface
 
 public:
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableObject::reset();
-
         for (TUpdatableObjectPtr& member : members_)
             member->reset();
     }

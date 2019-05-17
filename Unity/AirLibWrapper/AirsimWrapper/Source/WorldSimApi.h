@@ -13,7 +13,7 @@ public:
 	WorldSimApi(SimModeBase* simmode, std::string vehicle_name);
 	virtual ~WorldSimApi();
 	virtual bool isPaused() const override;
-	virtual void reset() override;
+	virtual void resetImplementation() override;
 	virtual void pause(bool is_paused) override;
 	virtual void continueForTime(double seconds) override;
         virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,

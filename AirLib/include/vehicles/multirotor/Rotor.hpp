@@ -66,9 +66,9 @@ public: //methods
 
        
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        PhysicsBodyVertex::reset();
+        PhysicsBodyVertex::resetImplementation();
 
         //update environmental factors before we call base
         updateEnvironmentalFactors();
