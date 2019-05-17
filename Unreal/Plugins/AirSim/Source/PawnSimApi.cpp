@@ -287,10 +287,8 @@ int PawnSimApi::getCameraCount()
     return cameras_.valsSize();
 }
 
-void PawnSimApi::reset()
+void PawnSimApi::resetImplementation()
 {
-    VehicleSimApiBase::reset();
-
     state_ = initial_state_;
     rc_data_ = msr::airlib::RCData();
     params_.pawn->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);

@@ -25,7 +25,7 @@ public:
 	virtual ~MultirotorPawnSimApi() = default;
 	virtual void updateRenderedState(float dt) override;
 	virtual void updateRendering(float dt) override;
-	virtual void reset() override;
+	virtual void resetImplementation() override;
 	virtual void update() override;
 	virtual void reportState(StateReporter& reporter) override;
 	virtual UpdatableObject* getPhysicsBody() override;

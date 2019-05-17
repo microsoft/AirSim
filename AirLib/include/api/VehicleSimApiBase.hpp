@@ -17,11 +17,6 @@ class VehicleSimApiBase : public msr::airlib::UpdatableObject {
 public:
     virtual ~VehicleSimApiBase() = default;
 
-    //default implementation so derived class doesn't have to call on UpdatableObject
-    virtual void reset() override
-    {
-        UpdatableObject::reset();
-    }
     virtual void update() override
     {
         UpdatableObject::update();

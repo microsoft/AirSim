@@ -68,7 +68,7 @@ public: //types
 public: //implementation of VehicleSimApiBase
     virtual void initialize() override;
 
-    virtual void reset() override;
+    virtual void resetImplementation() override;
     virtual void update() override;
 
     virtual const UnrealImageCapture* getImageCapture() const override;
