@@ -54,9 +54,9 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
     return state;
 }
 
-void CarPawnApi::reset()
+void CarPawnApi::resetImplementation()
 {
-    msr::airlib::CarApiBase::reset();
+    msr::airlib::CarApiBase::resetImplementation();
 
     last_controls_ = CarControls();
     auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_);

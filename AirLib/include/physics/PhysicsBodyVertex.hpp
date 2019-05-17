@@ -45,10 +45,8 @@ public:
 
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableObject::reset();
-
         position_ = initial_position_;
         normal_ = initial_normal_;
 

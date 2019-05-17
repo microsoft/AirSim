@@ -25,10 +25,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        ImuBase::reset();
-
         last_time_ = clock()->nowNanos();
 
         state_.gyroscope_bias = params_.gyro.turn_on_bias;

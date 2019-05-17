@@ -36,10 +36,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        BarometerBase::reset();
-
         pressure_factor_.reset();
         //correlated_noise_.reset();
         uncorrelated_noise_.reset();

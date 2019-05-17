@@ -73,9 +73,9 @@ public: //methods
     }
 
     //reset PX4 stack
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        MultirotorApiBase::reset();
+        MultirotorApiBase::resetImplementation();
 
         resetState();
         was_reset_ = true;
