@@ -103,7 +103,7 @@ namespace AirSimUnity
 	{
 		#ifdef _WIN32
 			_int64 timestamp = 0;
-		#elif __linux__
+		#elif defined(__linux__) || defined(__APPLE__)
 			int64_t timestamp = 0;
 		#endif
 		float pitch = 0, roll = 0, throttle = 0, yaw = 0;
@@ -123,7 +123,7 @@ namespace AirSimUnity
 		float penetration_depth = 0.0f;
 		#ifdef _WIN32
 			_int64 time_stamp = 0;
-		#elif __linux__
+		#elif defined(__linux__) || defined(__APPLE__)
 			int64_t time_stamp = 0;
 		#endif
 		int collision_count = 0;
@@ -173,7 +173,7 @@ namespace AirSimUnity
 		float speed = 0.0f;
 		#ifdef _WIN32
 			__int64 time_stamp = 0;
-		#elif __linux__
+		#elif defined(__linux__) || defined(__APPLE__)
 			int64_t timestamp = 0;
 		#endif
 		

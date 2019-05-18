@@ -7,6 +7,11 @@
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
 #include "common/ImageCaptureBase.hpp"
+#include "sensors/imu/ImuBase.hpp"
+#include "sensors/barometer/BarometerBase.hpp"
+#include "sensors/magnetometer/MagnetometerBase.hpp"
+#include "sensors/gps/GpsBase.hpp"
+#include "sensors/distance/DistanceBase.hpp"
 #include "physics/Kinematics.hpp"
 #include "physics/Environment.hpp"
 #include "api/WorldSimApiBase.hpp"
@@ -43,7 +48,8 @@ public:
     void simEnableWeather(bool enable);
     void simSetWeatherParameter(WorldSimApiBase::WeatherParameter param, float val);
 
-	vector<string> simListSceneObjects(const string& name_regex = string(".*")) const;
+
+    vector<string> simListSceneObjects(const string& name_regex = string(".*")) const;
     Pose simGetObjectPose(const std::string& object_name) const;
     bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
     
@@ -62,7 +68,13 @@ public:
 
     msr::airlib::GeoPoint getHomeGeoPoint(const std::string& vehicle_name = "") const;
 
+    // sensor APIs
     msr::airlib::LidarData getLidarData(const std::string& lidar_name = "", const std::string& vehicle_name = "") const;
+    msr::airlib::ImuBase::Output getImuData(const std::string& imu_name = "", const std::string& vehicle_name = "") const;
+    msr::airlib::BarometerBase::Output getBarometerData(const std::string& barometer_name = "", const std::string& vehicle_name = "") const;
+    msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string& magnetometer_name = "", const std::string& vehicle_name = "") const;
+    msr::airlib::GpsBase::Output getGpsData(const std::string& gps_name = "", const std::string& vehicle_name = "") const;
+    msr::airlib::DistanceBase::Output getDistanceSensorData(const std::string& distance_sensor_name = "", const std::string& vehicle_name = "") const;
 
     Pose simGetVehiclePose(const std::string& vehicle_name = "") const;
     void simSetVehiclePose(const Pose& pose, bool ignore_collision, const std::string& vehicle_name = "");

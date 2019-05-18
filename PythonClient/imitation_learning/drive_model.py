@@ -39,8 +39,8 @@ def get_image():
     """
     image_response = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])[0]
     image1d = np.fromstring(image_response.image_data_uint8, dtype=np.uint8)
-    image_rgba = image1d.reshape(image_response.height, image_response.width, 4)
-    return image_rgba[78:144,27:227,0:3].astype(float)
+    image_rgb = image1d.reshape(image_response.height, image_response.width, 3)
+    return image_rgb[78:144,27:227,0:2].astype(float)
 
 while True:    
     # Update throttle value according to steering angle

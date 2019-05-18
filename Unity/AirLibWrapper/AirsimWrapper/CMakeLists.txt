@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.5.0)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
 
 find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
 message(AirSim Root directory: ${AIRSIM_ROOT})
@@ -29,14 +32,27 @@ BuildAirlib()
 BuildAirsimWrapper()
 
 
-###################### Link source files to library ######################################33
-add_library(
-    ${PROJECT_NAME} SHARED
-    ${RPC_LIBRARY_SOURCE_FILES}
-    ${MAVLINK_LIBRARY_SOURCE_FILES}
-    ${AIRLIB_LIBRARY_SOURCE_FILES}
-    ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES}
+###################### Link source files to library ######################################
+if (${MACOSX})
+	add_library(
+	    ${PROJECT_NAME} MODULE
+	    ${RPC_LIBRARY_SOURCE_FILES}
+	    ${MAVLINK_LIBRARY_SOURCE_FILES}
+	    ${AIRLIB_LIBRARY_SOURCE_FILES}
+	    ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES}
+	)
+
+	set_target_properties(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
+else ()
+	add_library(
+	    ${PROJECT_NAME} SHARED
+	    ${RPC_LIBRARY_SOURCE_FILES}
+	    ${MAVLINK_LIBRARY_SOURCE_FILES}
+	    ${AIRLIB_LIBRARY_SOURCE_FILES}
+	    ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES}
     )
+endif ()
+
 target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}  -lstdc++ -lpthread -lboost_filesystem)
 
 

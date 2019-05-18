@@ -1,0 +1,286 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /TF1
+        - /TF1/Frames1
+        - /Odometry1/Shape1
+      Splitter Ratio: 0.50515461
+    Tree Height: 775
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.588679016
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: front_left_depth_planar_registered_point_cloud
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.0299999993
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        LidarCustom:
+          Value: true
+        MyQuad:
+          Value: true
+        MyQuad/odom_local_ned:
+          Value: true
+        front_center_custom_body:
+          Value: false
+        front_center_custom_body/static:
+          Value: false
+        front_center_custom_optical:
+          Value: true
+        front_center_custom_optical/static:
+          Value: true
+        front_left_custom_body:
+          Value: false
+        front_left_custom_body/static:
+          Value: false
+        front_left_custom_optical:
+          Value: true
+        front_left_custom_optical/static:
+          Value: true
+        front_right_custom_body:
+          Value: false
+        front_right_custom_body/static:
+          Value: false
+        front_right_custom_optical:
+          Value: true
+        front_right_custom_optical/static:
+          Value: true
+        world_enu:
+          Value: false
+        world_ned:
+          Value: true
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        world_ned:
+          MyQuad:
+            MyQuad/odom_local_ned:
+              LidarCustom:
+                {}
+              front_center_custom_body/static:
+                {}
+              front_center_custom_optical/static:
+                {}
+              front_left_custom_body/static:
+                {}
+              front_left_custom_optical/static:
+                {}
+              front_right_custom_body/static:
+                {}
+              front_right_custom_optical/static:
+                {}
+          front_center_custom_body:
+            {}
+          front_center_custom_optical:
+            {}
+          front_left_custom_body:
+            {}
+          front_left_custom_optical:
+            {}
+          front_right_custom_body:
+            {}
+          front_right_custom_optical:
+            {}
+          world_enu:
+            {}
+      Update Interval: 0
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: front_left_depth_planar_registered_point_cloud
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.100000001
+      Style: Flat Squares
+      Topic: /airsim_node/front_left_custom/DepthPlanner/registered/points
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Angle Tolerance: 0.100000001
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.300000012
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 25
+      Name: Odometry
+      Position Tolerance: 0.100000001
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.100000001
+        Color: 255; 25; 0
+        Head Length: 0.200000003
+        Head Radius: 0.0500000007
+        Shaft Length: 0.200000003
+        Shaft Radius: 0.0199999996
+        Value: Arrow
+      Topic: /airsim_node/MyQuad/odom_local_ned
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.00999999978
+      Style: Flat Squares
+      Topic: /airsim_node/MyQuad/lidar/LidarCustom
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: world_enu
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Topic: /initialpose
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 98.1204224
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.0599999987
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0.0908625796
+        Y: -0.00513405167
+        Z: -0.783257008
+      Focal Shape Fixed Size: false
+      Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.00999999978
+      Pitch: 0.63979739
+      Target Frame: world_view
+      Value: Orbit (rviz)
+      Yaw: 3.76538205
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1056
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd00000004000000000000025500000396fc020000000cfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afc0000002800000396000000d700fffffffa000000010100000002fb0000002000630061006d005f00660072006f006e0074005f00630065006e0074006500720000000000ffffffff0000000000000000fb000000100044006900730070006c0061007900730100000000000001a60000016a00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061010000038f000000160000000000000000fb0000003600630061006d005f00660072006f006e0074005f006c006500660074005f00640065007000740068005f0070006c0061006e006100720200000af40000014e0000031c00000231fb0000001c00630061006d005f00660072006f006e0074005f006c0065006600740200000ac00000010f000002d700000196fb0000001e00630061006d005f00660072006f006e0074005f007200690067006800740200000b400000017000000286000001a7000000010000010f00000396fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000002800000396000000ad00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007530000003efc0100000002fb0000000800540069006d00650100000000000007530000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000003e30000039600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1875
+  X: 1965
+  Y: 24

@@ -24,6 +24,15 @@ APIPCamera::APIPCamera()
             "", LogDebugLevel::Failure);
 
     PrimaryActorTick.bCanEverTick = true;
+
+    image_type_to_pixel_format_map_.Add(0, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(1, EPixelFormat::PF_DepthStencil); // not used. init_auto_format is called in setupCameraFromSettings() 
+    image_type_to_pixel_format_map_.Add(2, EPixelFormat::PF_DepthStencil); // not used for same reason as above
+    image_type_to_pixel_format_map_.Add(3, EPixelFormat::PF_DepthStencil); // not used for same reason as above 
+    image_type_to_pixel_format_map_.Add(4, EPixelFormat::PF_DepthStencil); // not used for same reason as above 
+    image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -82,88 +91,87 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
     const USceneCaptureComponent2D* capture = const_cast<APIPCamera*>(this)->getCaptureComponent(image_type, false);
     if (capture) {
         FMatrix proj_mat_transpose;
+        FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
+        float x_axis_multiplier = 1.0f;
+        float y_axis_multiplier = render_target_size.X / (float)render_target_size.Y;
 
-		FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
-		float x_axis_multiplier = 1.0f;
-		float y_axis_multiplier = render_target_size.X / (float)render_target_size.Y;
+        if (render_target_size.X < render_target_size.Y)
+        {
+            // if the viewport is taller than it is wide
+            x_axis_multiplier = render_target_size.Y / static_cast<float>(render_target_size.X);
+            y_axis_multiplier = 1.0f;
+        }
 
-	    if (render_target_size.X < render_target_size.Y)
-		{
-		    // if the viewport is taller than it is wide
-		    x_axis_multiplier = render_target_size.Y / static_cast<float>(render_target_size.X);
-		    y_axis_multiplier = 1.0f;
-	    }
+        if (capture->ProjectionType == ECameraProjectionMode::Orthographic)
+        {
+            check((int32)ERHIZBuffer::IsInverted);
+            const float OrthoWidth = capture->OrthoWidth / 2.0f;
+            const float OrthoHeight = capture->OrthoWidth / 2.0f * x_axis_multiplier / y_axis_multiplier;
 
-	    if (capture->ProjectionType == ECameraProjectionMode::Orthographic)
-	    {
-		    check((int32)ERHIZBuffer::IsInverted);
-		    const float OrthoWidth = capture->OrthoWidth / 2.0f;
-		    const float OrthoHeight = capture->OrthoWidth / 2.0f * x_axis_multiplier / y_axis_multiplier;
+            const float NearPlane = 0;
+            const float FarPlane = WORLD_MAX / 8.0f;
 
-		    const float NearPlane = 0;
-		    const float FarPlane = WORLD_MAX / 8.0f;
+            const float ZScale = 1.0f / (FarPlane - NearPlane);
+            const float ZOffset = -NearPlane;
 
-		    const float ZScale = 1.0f / (FarPlane - NearPlane);
-		    const float ZOffset = -NearPlane;
-
-		    proj_mat_transpose = FReversedZOrthoMatrix(
-			    OrthoWidth,
-			    OrthoHeight,
-			    ZScale,
-			    ZOffset
-			    );
-	    }
-	    else
-	    {
+            proj_mat_transpose = FReversedZOrthoMatrix(
+                OrthoWidth,
+                OrthoHeight,
+                ZScale,
+                ZOffset
+                );
+        }
+        else
+        {
             float halfFov = Utils::degreesToRadians(capture->FOVAngle) / 2;
-		    if ((int32)ERHIZBuffer::IsInverted)
-		    {
-			    proj_mat_transpose = FReversedZPerspectiveMatrix(
-				    halfFov,
-				    halfFov,
-				    x_axis_multiplier,
-				    y_axis_multiplier,
-				    GNearClippingPlane,
-				    GNearClippingPlane
-				    );
-		    }
-		    else
-		    {
-				//The FPerspectiveMatrix() constructor actually returns the transpose of the perspective matrix.
-			    proj_mat_transpose = FPerspectiveMatrix(
-				    halfFov,
-				    halfFov,
-				    x_axis_multiplier,
-				    y_axis_multiplier,
-				    GNearClippingPlane,
-				    GNearClippingPlane
-				    );
-		    }
-	    }
-		
-		//Takes a vector from NORTH-EAST-DOWN coordinates (AirSim) to EAST-UP-SOUTH coordinates (Unreal). Leaves W coordinate unchanged.
-		FMatrix coordinateChangeTranspose = FMatrix(
-			FPlane(0, 0, -1, 0),
-			FPlane(1, 0, 0, 0),
-			FPlane(0, -1, 0, 0),
-			FPlane(0, 0, 0, 1)
-		);
+            if ((int32)ERHIZBuffer::IsInverted)
+            {
+                proj_mat_transpose = FReversedZPerspectiveMatrix(
+                    halfFov,
+                    halfFov,
+                    x_axis_multiplier,
+                    y_axis_multiplier,
+                    GNearClippingPlane,
+                    GNearClippingPlane
+                    );
+            }
+            else
+            {
+                //The FPerspectiveMatrix() constructor actually returns the transpose of the perspective matrix.
+                proj_mat_transpose = FPerspectiveMatrix(
+                    halfFov,
+                    halfFov,
+                    x_axis_multiplier,
+                    y_axis_multiplier,
+                    GNearClippingPlane,
+                    GNearClippingPlane
+                    );
+            }
+        }
+        
+        //Takes a vector from NORTH-EAST-DOWN coordinates (AirSim) to EAST-UP-SOUTH coordinates (Unreal). Leaves W coordinate unchanged.
+        FMatrix coordinateChangeTranspose = FMatrix(
+            FPlane(0, 0, -1, 0),
+            FPlane(1, 0, 0, 0),
+            FPlane(0, -1, 0, 0),
+            FPlane(0, 0, 0, 1)
+        );
 
-		FMatrix projMatTransposeInAirSim = coordinateChangeTranspose * proj_mat_transpose;
+        FMatrix projMatTransposeInAirSim = coordinateChangeTranspose * proj_mat_transpose;
 
-		//Copy the result to an airlib::ProjectionMatrix while taking transpose.
-		msr::airlib::ProjectionMatrix mat;
-		for (auto row = 0; row < 4; ++row)
-			for (auto col = 0; col < 4; ++col)
-				mat.matrix[col][row] = projMatTransposeInAirSim.M[row][col];
+        //Copy the result to an airlib::ProjectionMatrix while taking transpose.
+        msr::airlib::ProjectionMatrix mat;
+        for (auto row = 0; row < 4; ++row)
+            for (auto col = 0; col < 4; ++col)
+                mat.matrix[col][row] = projMatTransposeInAirSim.M[row][col];
 
-		return mat;
-	}
-	else {
-		msr::airlib::ProjectionMatrix mat;
-		mat.setTo(Utils::nan<float>());
-		return mat;
-	}
+        return mat;
+    }
+    else {
+        msr::airlib::ProjectionMatrix mat;
+        mat.setTo(Utils::nan<float>());
+        return mat;
+    }
 }
 
 void APIPCamera::Tick(float DeltaTime)
@@ -268,8 +276,12 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
         const auto& noise_setting = camera_setting.noise_settings.at(image_type);
 
         if (image_type >= 0) { //scene capture components
-            updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type],
-                capture_setting, ned_transform);
+            if (image_type==0 || image_type==5 || image_type==6 || image_type==7)
+                updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], false, 
+                    image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform);
+            else
+                updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, 
+                    image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform); 
 
             setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
         }
@@ -282,9 +294,17 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
 }
 
 void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, 
-    const CaptureSetting& setting, const NedTransform& ned_transform)
+    bool auto_format, const EPixelFormat& pixel_format, const CaptureSetting& setting, const NedTransform& ned_transform)
 {
-    render_target->InitAutoFormat(setting.width, setting.height); //256 X 144, X 480
+    if (auto_format)
+    {
+        render_target->InitAutoFormat(setting.width, setting.height); //256 X 144, X 480
+    }
+    else
+    {
+        render_target->InitCustomFormat(setting.width, setting.height, pixel_format, false);
+    } 
+
     if (!std::isnan(setting.target_gamma))
         render_target->TargetGamma = setting.target_gamma;
 

@@ -1,0 +1,4 @@
+<launch> 
+	<include file="$(find airsim_tutorial_pkgs)/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch"/>
+	<include file="$(find airsim_tutorial_pkgs)/launch/front_stereo_and_center_mono/rviz.launch"/>
+</launch>

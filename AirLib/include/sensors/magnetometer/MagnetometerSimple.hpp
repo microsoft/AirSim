@@ -93,6 +93,9 @@ private: //methods
             + noise_vec_.next()
             + bias_vec_;
 
+        // todo output.magnetic_field_covariance ? 
+        output.time_stamp = clock()->nowNanos();
+
         return output;
     }
 

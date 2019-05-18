@@ -52,6 +52,14 @@ void WorldSimApi::printLogMessage(const std::string& message, const std::string&
 	PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
 }
 
+std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_regex) const
+{
+	std::vector<std::string> result;
+	throw std::invalid_argument(common_utils::Utils::stringf(
+		"simListSceneObject is not supported on unity").c_str());
+	return result;
+}
+
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
 	AirSimUnity::AirSimPose airSimPose = GetPose(object_name.c_str());

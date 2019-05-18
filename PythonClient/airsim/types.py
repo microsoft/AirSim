@@ -356,3 +356,39 @@ class LidarData(MsgpackMixin):
     point_cloud = 0.0
     time_stamp = np.uint64(0)
     pose = Pose()
+
+class ImuData(MsgpackMixin):
+    time_stamp = np.uint64(0)
+    orientation = Quaternionr()
+    angular_velocity = Vector3r()
+    linear_acceleration = Vector3r()
+
+class BarometerData(MsgpackMixin):
+    time_stamp = np.uint64(0)
+    altitude = Quaternionr()
+    pressure = Vector3r()
+    qnh = Vector3r()
+
+class MagnetometerData(MsgpackMixin):
+    time_stamp = np.uint64(0)
+    magnetic_field_body = Vector3r()
+    magnetic_field_covariance = 0.0
+
+class GnssFixType(MsgpackMixin):
+    GNSS_FIX_NO_FIX = 0
+    GNSS_FIX_TIME_ONLY = 1
+    GNSS_FIX_2D_FIX = 2
+    GNSS_FIX_3D_FIX = 3
+
+class GnssReport(MsgpackMixin): 
+    geo_point = GeoPoint();
+    eph = 0.0
+    epv = 0.0;
+    velocity = Vector3r();
+    fix_type = GnssFixType();
+    time_utc = np.uint64(0);
+
+class GpsData(MsgpackMixin):
+    time_stamp = np.uint64(0)
+    gnss = GnssReport()
+    is_valid = False

@@ -6,7 +6,7 @@
   #define WIN32_LEAN_AND_MEAN // combaseapi.h build break fix  
 	#include <Windows.h>
 	std::ofstream Logger::fileStream;
-#elif __linux__
+#elif defined(__linux__) || defined(__APPLE__)
 	bfs::ofstream Logger::fileStream;
 #endif
 
@@ -38,8 +38,8 @@ Logger* Logger::GetLogger()
 					logger->logFileName = "Logs/WrapperDllLog_" + std::string(buff) + ".txt";
 					fileStream.open(logger->logFileName, std::ios::out);
 				}
-			#elif __linux__
-				if (bfs::create_directory("Logs") || bfs::exists("Logs")) 
+            #elif defined(__linux__) || defined(__APPLE__)
+				if (bfs::create_directory("Logs") || bfs::exists("Logs"))
 				{ 
 					logger = new Logger(); //** pointer to logger set here
 
@@ -66,7 +66,7 @@ Logger* Logger::GetLogger()
 		{
 			#ifdef _WIN32
 				throw std::exception(e.what());
-			#elif __linux__
+			#elif defined(__linux__) || defined(__APPLE__)
 				throw std::exception(e);
 			#endif
 		}
@@ -86,7 +86,7 @@ std::string Logger::GetCurrentDateTime()
 	#ifdef _WIN32
 		char buff[50];
 		ctime_s(buff, 50, &now);
-	#elif __linux__
+	#elif defined(__linux__) || defined(__APPLE__)
 		auto buff = asctime(localtime(&now));
 	#endif
 	
