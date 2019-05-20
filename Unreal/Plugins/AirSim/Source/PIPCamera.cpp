@@ -91,7 +91,6 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
     const USceneCaptureComponent2D* capture = const_cast<APIPCamera*>(this)->getCaptureComponent(image_type, false);
     if (capture) {
         FMatrix proj_mat_transpose;
-
         FIntPoint render_target_size(capture->TextureTarget->GetSurfaceWidth(), capture->TextureTarget->GetSurfaceHeight());
         float x_axis_multiplier = 1.0f;
         float y_axis_multiplier = render_target_size.X / (float)render_target_size.Y;
