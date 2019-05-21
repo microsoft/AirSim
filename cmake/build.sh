@@ -48,7 +48,7 @@ mkdir -p AirLib/lib/x64/Debug
 mkdir -p AirLib/deps/rpclib
 mkdir -p AirLib/deps/MavLinkCom
 rsync -a --delete cmake/output/lib/ AirLib/lib/x64/Debug
-rsync -a --delete external/rpclib/include AirLib/deps/rpclib
+rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 popd
