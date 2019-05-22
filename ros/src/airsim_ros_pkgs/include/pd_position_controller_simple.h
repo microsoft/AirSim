@@ -25,6 +25,7 @@ STRICT_MODE_ON
 #include <geodetic_conv.hpp>
 #include <math_common.h>
 #include <utils.h>
+#include "common.h"
 
 // todo nicer api
 class PIDParams
@@ -53,32 +54,6 @@ public:
         kd_yaw(0.1),
         reached_thresh_xyz(0.5),
         reached_yaw_degrees(5.0)
-        {}
-
-    bool load_from_rosparams(const ros::NodeHandle& nh);
-};
-
-// todo should be a common representation
-struct XYZYaw
-{
-    double x;
-    double y;
-    double z;
-    double yaw;
-};
-
-// todo should be a common representation
-class DynamicConstraints
-{
-public:
-    double max_vel_horz_abs; // meters/sec
-    double max_vel_vert_abs;
-    double max_yaw_rate_degree;
-
-    DynamicConstraints():
-        max_vel_horz_abs(1.0),
-        max_vel_vert_abs(0.5),
-        max_yaw_rate_degree(10.0)
         {}
 
     bool load_from_rosparams(const ros::NodeHandle& nh);
@@ -116,12 +91,12 @@ private:
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
 
-    DynamicConstraints constraints_;
+    airsim_ros::DynamicConstraints constraints_;
     PIDParams params_;
-    XYZYaw target_position_;
-    XYZYaw curr_position_;
-    XYZYaw prev_error_;
-    XYZYaw curr_error_;
+    airsim_ros::XYZYaw target_position_;
+    airsim_ros::XYZYaw curr_position_;
+    airsim_ros::XYZYaw prev_error_;
+    airsim_ros::XYZYaw curr_error_;
 
     bool has_home_geo_;
     airsim_ros_pkgs::GPSYaw gps_home_msg_;

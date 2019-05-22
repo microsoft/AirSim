@@ -42,6 +42,7 @@ add_message_files(
   RollPitchYawrateThrust.msg
   VelCmd.msg
   VelCmdGroup.msg
+  PointArray.msg
 )
 
 add_service_files(

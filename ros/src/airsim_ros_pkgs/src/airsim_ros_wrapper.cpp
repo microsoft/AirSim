@@ -701,22 +701,6 @@ sensor_msgs::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo_poin
     return gps_msg;
 }
 
-// todo unused
-// void AirsimROSWrapper::set_zero_vel_cmd()
-// {
-//     vel_cmd_.x = 0.0;
-//     vel_cmd_.y = 0.0;
-//     vel_cmd_.z = 0.0;
-
-//     vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-//     vel_cmd_.yaw_mode.is_rate = false;
-
-//     // todo make class member or a fucntion 
-//     double roll, pitch, yaw;
-//     tf2::Matrix3x3(get_tf2_quat(curr_drone_state_.kinematics_estimated.pose.orientation)).getRPY(roll, pitch, yaw); // ros uses xyzw
-//     vel_cmd_.yaw_mode.yaw_or_rate = yaw;
-// }
-
 void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 {
     try

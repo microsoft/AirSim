@@ -20,18 +20,6 @@ bool PIDParams::load_from_rosparams(const ros::NodeHandle &nh)
     return found;
 }
 
-bool DynamicConstraints::load_from_rosparams(const ros::NodeHandle &nh)
-{
-    bool found = true;
-
-    found = found && nh.getParam("max_vel_horz_abs", max_vel_horz_abs);
-    found = found && nh.getParam("max_vel_vert_abs", max_vel_vert_abs);
-    found = found && nh.getParam("max_yaw_rate_degree", max_yaw_rate_degree);
-
-    return found;
-}
-
-
 PIDPositionController::PIDPositionController(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private)
     : nh_(nh), nh_private_(nh_private), 
     has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
@@ -331,11 +319,11 @@ void PIDPositionController::enforce_dynamic_constraints()
         vel_cmd_.twist.linear.z = (vel_cmd_.twist.linear.z / std::fabs(vel_cmd_.twist.linear.z)) * constraints_.max_vel_vert_abs; 
     }
     // todo yaw limits
-    if (std::fabs(vel_cmd_.twist.linear.z) > constraints_.max_yaw_rate_degree)
+    if (std::fabs(vel_cmd_.twist.linear.z) > constraints_.max_yaw_rate_degrees)
     {
         // todo just add a sgn funciton in common utils? return double to be safe. 
         // template <typename T> double sgn(T val) { return (T(0) < val) - (val < T(0)); }
-        vel_cmd_.twist.linear.z = (vel_cmd_.twist.linear.z / std::fabs(vel_cmd_.twist.linear.z)) * constraints_.max_yaw_rate_degree;
+        vel_cmd_.twist.linear.z = (vel_cmd_.twist.linear.z / std::fabs(vel_cmd_.twist.linear.z)) * constraints_.max_yaw_rate_degrees;
     }
 
 }
