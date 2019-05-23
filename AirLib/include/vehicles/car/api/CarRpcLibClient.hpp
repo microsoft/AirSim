@@ -11,12 +11,16 @@
 #include "api/RpcLibClientBase.hpp"
 #include "common/ImageCaptureBase.hpp"
 
+#include "api/RpcLibPort.hpp"
+
+const extern uint16_t RpcLibPort;
+
 
 namespace msr { namespace airlib {
 
 class CarRpcLibClient : public RpcLibClientBase {
 public:
-    CarRpcLibClient(const string& ip_address = "localhost", uint16_t port = 41451, float timeout_sec = 60);
+    CarRpcLibClient(const string& ip_address = "localhost", uint16_t port = RpcLibPort, float timeout_sec = 60);
 
     void setCarControls(const CarApiBase::CarControls& controls, const std::string& vehicle_name = "");
     CarApiBase::CarState getCarState(const std::string& vehicle_name = "");

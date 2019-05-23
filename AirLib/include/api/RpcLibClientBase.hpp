@@ -16,6 +16,11 @@
 #include "physics/Environment.hpp"
 #include "api/WorldSimApiBase.hpp"
 
+#include "api/RpcLibPort.hpp"
+
+const extern uint16_t RpcLibPort;
+
+
 namespace msr { namespace airlib {
 
 //common methods for RCP clients of different vehicles
@@ -25,7 +30,7 @@ public:
         Initial = 0, Connected, Disconnected, Reset, Unknown
     };
 public:
-    RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = 41451, float timeout_sec = 60);
+    RpcLibClientBase(const string& ip_address = "localhost", uint16_t port = RpcLibPort, float timeout_sec = 60);
     virtual ~RpcLibClientBase();    //required for pimpl
 
     void confirmConnection();
