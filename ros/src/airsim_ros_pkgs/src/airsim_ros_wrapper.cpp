@@ -74,6 +74,7 @@ void AirsimROSWrapper::initialize_ros()
     nh_private_.getParam("is_vulkan", is_vulkan_);
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
     vel_cmd_duration_ = 0.05; // todo rosparam
+    rollpitchyawratethrust_cmd_duration_ = 0.05;
     // todo enforce dynamics constraints in this node as well?
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
     // nh_.getParam("max_horz_vel", max_horz_vel_)
@@ -126,10 +127,13 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         // bind to a single callback. todo optimal subs queue length
         // bind multiple topics to a single callback, but keep track of which vehicle name it was by passing curr_vehicle_name as the 2nd argument 
-        multirotor_ros.vel_cmd_body_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/vel_cmd_body_frame", 1, 
+        multirotor_ros.vel_cmd_body_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/cmd/vel/body_frame", 1, 
             boost::bind(&AirsimROSWrapper::vel_cmd_body_frame_cb, this, _1, multirotor_ros.vehicle_name)); // todo ros::TransportHints().tcpNoDelay();
-        multirotor_ros.vel_cmd_world_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/vel_cmd_world_frame", 1, 
+        multirotor_ros.vel_cmd_world_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/cmd/vel/world_frame", 1, 
             boost::bind(&AirsimROSWrapper::vel_cmd_world_frame_cb, this, _1, multirotor_ros.vehicle_name));
+
+        multirotor_ros.rollpitchyawratethrust_sub = nh_private_.subscribe<airsim_ros_pkgs::RollPitchYawrateThrust>(curr_vehicle_name + "/cmd/roll_pitch_yawrate_thrust", 1, 
+            boost::bind(&AirsimROSWrapper::cmd_roll_pitch_yawrate_thrust_cb, this, _1, multirotor_ros.vehicle_name));
 
         multirotor_ros.takeoff_srvr = nh_private_.advertiseService<airsim_ros_pkgs::Takeoff::Request, airsim_ros_pkgs::Takeoff::Response>(curr_vehicle_name + "/takeoff", 
             boost::bind(&AirsimROSWrapper::takeoff_srv_cb, this, _1, _2, multirotor_ros.vehicle_name) );
@@ -245,11 +249,11 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         // gimbal_angle_quat_cmd_sub_ = nh_.subscribe("gimbal_angle_quat_cmd", 50, &AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this);
 
-        vel_cmd_all_body_frame_sub_ = nh_private_.subscribe("all_robots/vel_cmd_body_frame", 1, &AirsimROSWrapper::vel_cmd_all_body_frame_cb, this);
-        vel_cmd_all_world_frame_sub_ = nh_private_.subscribe("all_robots/vel_cmd_world_frame", 1, &AirsimROSWrapper::vel_cmd_all_world_frame_cb, this);
+        vel_cmd_all_body_frame_sub_ = nh_private_.subscribe("all_robots/cmd/vel/body_frame", 1, &AirsimROSWrapper::vel_cmd_all_body_frame_cb, this);
+        vel_cmd_all_world_frame_sub_ = nh_private_.subscribe("all_robots/cmd/vel/world_frame", 1, &AirsimROSWrapper::vel_cmd_all_world_frame_cb, this);
 
-        vel_cmd_group_body_frame_sub_ = nh_private_.subscribe("group_of_robots/vel_cmd_body_frame", 1, &AirsimROSWrapper::vel_cmd_group_body_frame_cb, this);
-        vel_cmd_group_world_frame_sub_ = nh_private_.subscribe("group_of_obots/vel_cmd_world_frame", 1, &AirsimROSWrapper::vel_cmd_group_world_frame_cb, this);
+        vel_cmd_group_body_frame_sub_ = nh_private_.subscribe("group_of_robots/cmd/vel/body_frame", 1, &AirsimROSWrapper::vel_cmd_group_body_frame_cb, this);
+        vel_cmd_group_world_frame_sub_ = nh_private_.subscribe("group_of_robots/cmd/vel/world_frame", 1, &AirsimROSWrapper::vel_cmd_group_world_frame_cb, this);
 
         takeoff_group_srvr_ = nh_private_.advertiseService("group_of_robots/takeoff", &AirsimROSWrapper::takeoff_group_srv_cb, this);
         land_group_srvr_ = nh_private_.advertiseService("group_of_robots/land", &AirsimROSWrapper::land_group_srv_cb, this);
@@ -526,6 +530,18 @@ void AirsimROSWrapper::vel_cmd_all_world_frame_cb(const airsim_ros_pkgs::VelCmd&
     }
 }
 
+void AirsimROSWrapper::cmd_roll_pitch_yawrate_thrust_cb(const airsim_ros_pkgs::RollPitchYawrateThrust::ConstPtr& msg, const std::string& vehicle_name)
+{
+    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    int vehicle_idx = vehicle_name_idx_map_[vehicle_name];
+
+    multirotor_ros_vec_[vehicle_idx].rollpitchyawratethrust_cmd.roll = math_common::rad2deg(msg->roll);
+    multirotor_ros_vec_[vehicle_idx].rollpitchyawratethrust_cmd.pitch = math_common::rad2deg(msg->pitch);
+    multirotor_ros_vec_[vehicle_idx].rollpitchyawratethrust_cmd.yaw_rate = math_common::rad2deg(msg->yaw_rate);
+    multirotor_ros_vec_[vehicle_idx].rollpitchyawratethrust_cmd.thrust = msg->thrust.z;
+    multirotor_ros_vec_[vehicle_idx].has_rollpitchyawratethrust_cmd = true;
+}
+
 // todo support multiple gimbal commands
 void AirsimROSWrapper::gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg)
 {
@@ -749,10 +765,22 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
                 airsim_client_.moveByVelocityAsync(multirotor_ros.vel_cmd.x, multirotor_ros.vel_cmd.y, multirotor_ros.vel_cmd.z, vel_cmd_duration_, 
                     msr::airlib::DrivetrainType::MaxDegreeOfFreedom, multirotor_ros.vel_cmd.yaw_mode, multirotor_ros.vehicle_name);
                 lck.unlock();
+                // "clear" control cmd
+                multirotor_ros.has_vel_cmd = false;
             }
 
-            // "clear" control cmds
-            multirotor_ros.has_vel_cmd = false;
+            // todo make vel and rpythrust mode exclusive, or allow both APIs simultaneously?
+            if (multirotor_ros.has_rollpitchyawratethrust_cmd)
+            {
+                std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
+                // todo change unintuitive param order in airsim APIs
+                airsim_client_.moveByAngleThrottleAsync(multirotor_ros.rollpitchyawratethrust_cmd.pitch, multirotor_ros.rollpitchyawratethrust_cmd.roll, 
+                    multirotor_ros.rollpitchyawratethrust_cmd.thrust, multirotor_ros.rollpitchyawratethrust_cmd.yaw_rate, 
+                    rollpitchyawratethrust_cmd_duration_, multirotor_ros.vehicle_name);
+                lck.unlock();
+                // "clear" control cmd
+                multirotor_ros.has_rollpitchyawratethrust_cmd = false;
+            }
         }
 
         // IMUS

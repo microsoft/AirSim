@@ -19,6 +19,7 @@ STRICT_MODE_ON
 #include <airsim_ros_pkgs/Land.h>
 #include <airsim_ros_pkgs/LandGroup.h>
 #include <airsim_ros_pkgs/Reset.h>
+#include <airsim_ros_pkgs/RollPitchYawrateThrust.h>
 #include <airsim_ros_pkgs/Takeoff.h>
 #include <airsim_ros_pkgs/TakeoffGroup.h>
 #include <airsim_ros_pkgs/VelCmd.h>
@@ -82,20 +83,6 @@ struct VelCmd
     msr::airlib::DrivetrainType drivetrain;
     msr::airlib::YawMode yaw_mode;
     std::string vehicle_name;
-
-    // VelCmd() : 
-    //     x(0), y(0), z(0), 
-    //     vehicle_name("") {drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-    //             yaw_mode = msr::airlib::YawMode();};
-
-    // VelCmd(const double& x, const double& y, const double& z, 
-    //         msr::airlib::DrivetrainType drivetrain, 
-    //         const msr::airlib::YawMode& yaw_mode,
-    //         const std::string& vehicle_name) : 
-    //     x(x), y(y), z(z), 
-    //     drivetrain(drivetrain), 
-    //     yaw_mode(yaw_mode), 
-    //     vehicle_name(vehicle_name) {};
 };
 
 struct GimbalCmd
@@ -103,13 +90,16 @@ struct GimbalCmd
     std::string vehicle_name;
     std::string camera_name;
     msr::airlib::Quaternionr target_quat;
+};
 
-    // GimbalCmd() : vehicle_name(vehicle_name), camera_name(camera_name), target_quat(msr::airlib::Quaternionr(1,0,0,0)) {}
-
-    // GimbalCmd(const std::string& vehicle_name, 
-    //         const std::string& camera_name, 
-    //         const msr::airlib::Quaternionr& target_quat) : 
-    //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
+// placeholder cmd struct for calling MultirotorRpcLibClient::moveByAngleThrottleAsync()
+// has to be in **degrees**!
+struct RollPitchYawrateThrust
+{
+    double roll;
+    double pitch;
+    double yaw_rate;
+    double thrust;
 };
 
 class AirsimROSWrapper
@@ -142,6 +132,8 @@ private:
 
     void vel_cmd_all_world_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
     void vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
+
+    void cmd_roll_pitch_yawrate_thrust_cb(const airsim_ros_pkgs::RollPitchYawrateThrust::ConstPtr& msg, const std::string& vehicle_name);
 
     // void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg, const std::string& vehicle_name);
     void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
@@ -217,6 +209,7 @@ private:
 
         ros::Subscriber vel_cmd_body_frame_sub;
         ros::Subscriber vel_cmd_world_frame_sub;
+        ros::Subscriber rollpitchyawratethrust_sub;
 
         ros::ServiceServer takeoff_srvr;
         ros::ServiceServer land_srvr;
@@ -226,8 +219,12 @@ private:
         // bool in_air_; // todo change to "status" and keep track of this
         nav_msgs::Odometry curr_odom_ned;
         sensor_msgs::NavSatFix gps_sensor_msg;
-        bool has_vel_cmd;
+
         VelCmd vel_cmd;
+        bool has_vel_cmd;
+
+        RollPitchYawrateThrust rollpitchyawratethrust_cmd;
+        bool has_rollpitchyawratethrust_cmd;
 
         std::string odom_frame_id;
         /// Status
@@ -280,6 +277,7 @@ private:
 
     /// ROS params
     double vel_cmd_duration_;
+    double rollpitchyawratethrust_cmd_duration_;
 
     /// ROS Timers.
     ros::Timer airsim_img_response_timer_;

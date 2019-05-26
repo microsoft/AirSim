@@ -39,6 +39,7 @@ add_message_files(
   GimbalAngleEulerCmd.msg
   GimbalAngleQuatCmd.msg
   GPSYaw.msg
+  RollPitchYawrateThrust.msg
   VelCmd.msg
   VelCmdGroup.msg
 )
