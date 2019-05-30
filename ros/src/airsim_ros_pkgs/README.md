@@ -55,24 +55,32 @@ Odometry in NED frame wrt take-off point.
 
 
 #### Subscribers: 
-- `/airsim_node/vel_cmd_body_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
-  Ignore `vehicle_name` field, leave it to blank. We will use `vehicle_name` in future for multiple drones.
+- `/airsim_node/VEHICLE_NAME/cmd/vel/body_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
 
-- `/airsim_node/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
-  Ignore `vehicle_name` field, leave it to blank. We will use `vehicle_name` in future for multiple drones.
+- `/airsim_node/VEHICLE_NAME/cmd/vel/world_frame` [airsim_ros_pkgs/VelCmd](msg/VelCmd.msg)    
 
-- `/gimbal_angle_euler_cmd` [airsim_ros_pkgs/GimbalAngleEulerCmd](msg/GimbalAngleEulerCmd.msg)   
+- `/airsim_node/VEHICLE_NAME/CAMERA_NAME/gimbal_angle_euler_cmd` [airsim_ros_pkgs/GimbalAngleEulerCmd](msg/GimbalAngleEulerCmd.msg)   
   Gimbal set point in euler angles.    
 
-- `/gimbal_angle_quat_cmd` [airsim_ros_pkgs/GimbalAngleQuatCmd](msg/GimbalAngleQuatCmd.msg)   
+- `/airsim_node/VEHICLE_NAME/CAMERA_NAME/gimbal_angle_quat_cmd` [airsim_ros_pkgs/GimbalAngleQuatCmd](msg/GimbalAngleQuatCmd.msg)   
   Gimbal set point in quaternion.    
 
 #### Services:
-- `/airsim_node/VEHICLE_NAME/land` [airsim_ros_pkgs/Takeoff](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
+- `/airsim_node/VEHICLE_NAME/takeoff` [airsim_ros_pkgs/Takeoff](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/Takeoff.srv)
 
-- `/airsim_node/takeoff` [airsim_ros_pkgs/Takeoff](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
+- `/airsim_node/group_of_robots/takeoff` [airsim_ros_pkgs/TakeoffGroup](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/TakeoffGroup.srv)   
+Service request takes vector of string of robot names as a parameter
 
-- `/airsim_node/reset` [airsim_ros_pkgs/Reset](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
+- `/airsim_node/all_robots/takeoff`  [airsim_ros_pkgs/Takeoff](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/Takeoff.srv)
+
+- `/airsim_node/VEHICLE_NAME/land` [airsim_ros_pkgs/Land](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/Land.srv)
+
+- `/airsim_node/group_of_robots/land` [airsim_ros_pkgs/LandGroup](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/LandGroup.srv)
+Service request takes vector of string of robot names as a parameter 
+
+- `/airsim_node/all_robots/land`  [airsim_ros_pkgs/Land](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/Takeoff.srv)
+
+- `/airsim_node/reset` [airsim_ros_pkgs/Reset](https://github.com/madratman/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/Reset.srv)
  Resets *all* drones
 
 #### Parameters:
