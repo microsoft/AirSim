@@ -75,7 +75,7 @@ Service request takes vector of string of robot names as a parameter
 
 - `/airsim_node/VEHICLE_NAME/land` [airsim_ros_pkgs/Land](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/Land.srv)
 
-- `/airsim_node/group_of_robots/land` [airsim_ros_pkgs/LandGroup](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/LandGroup.srv)
+- `/airsim_node/group_of_robots/land` [airsim_ros_pkgs/LandGroup](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/LandGroup.srv)   
 Service request takes vector of string of robot names as a parameter 
 
 - `/airsim_node/all_robots/land`  [airsim_ros_pkgs/Land](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/Takeoff.srv)
