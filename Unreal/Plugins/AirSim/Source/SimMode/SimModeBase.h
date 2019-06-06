@@ -75,6 +75,9 @@ public:
     {
         return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
     }
+	// gets current time in a blueprint friendly format, for unreal API
+	UFUNCTION(BlueprintCallable, Category=Time)
+	FString getCurrentTime();
 
 protected: //must overrides
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -129,6 +132,9 @@ private:
     TTimePoint tod_sim_clock_start_;             // sim start in local time
     TTimePoint tod_last_update_;
     TTimePoint tod_start_time_;                  // tod, configurable
+
+	time_t/*uint64_t*/ cur_time_;							// Update for Neighborhood environment: getting current time 
+
     bool tod_enabled_;
     float tod_celestial_clock_speed_;
     float tod_update_interval_secs_;

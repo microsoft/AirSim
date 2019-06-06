@@ -41,7 +41,7 @@ class AIRSIM_API UWeatherLib : public UBlueprintFunctionLibrary
 
 	// not sure why, but content folder should be omitted in the path
 	// location of the weather UMaterialParameterCollection, params for rain snow wind etc
-		static const TCHAR* getWeatherParamsObjectPath()
+	static const TCHAR* getWeatherParamsObjectPath()
 	{
 		return TEXT("/AirSim/Weather/WeatherFX/WeatherGlobalParams");
 	}

@@ -18,6 +18,8 @@
 #include "sensors/lidar/LidarSimple.hpp"
 
 #include "Weather/WeatherLib.h"
+#include "Traffic/TrafficLib.h"
+#include "Traffic/SplinePathInfoLib.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -88,6 +90,9 @@ void ASimModeBase::BeginPlay()
     {
         UWeatherLib::initWeather(World, spawned_actors_);
         //UWeatherLib::showWeatherMenu(World);
+		UTrafficLib::setLocalPawns(World, spawned_actors_);
+
+		USplinePathInfoLib::initActorsCheckViolation(World, spawned_actors_);
     }
 }
 
@@ -95,7 +100,20 @@ const NedTransform& ASimModeBase::getGlobalNedTransform()
 {
     return *global_ned_transform_;
 }
+FString ASimModeBase::getCurrentTime()
+{
+	const char* format = "%Y-%m-%d-%H-%M-%S";
+	char str[1024];
 
+	time_t current_time_ = cur_time_;
+	// copied from to_string in utils.hpp
+	std::strftime(str, sizeof(str), format, std::localtime(&current_time_));
+
+	std::string time_in_string(str);
+	FString time_in_FString(time_in_string.c_str());
+
+	return time_in_FString;
+}
 void ASimModeBase::checkVehicleReady()
 {
     for (auto& api : api_provider_->getVehicleApis()) {
@@ -200,8 +218,8 @@ void ASimModeBase::setTimeOfDay(bool is_enabled, const std::string& start_dateti
     // do these in the end to ensure that advanceTimeOfDay() doesn't see
     // any inconsistent state.
     tod_enabled_ = is_enabled;
-    tod_celestial_clock_speed_ = celestial_clock_speed;
-    tod_update_interval_secs_ = update_interval_secs;
+	/*tod_celestial_clock_speed_ = 1000.0f;*/ tod_celestial_clock_speed_ = celestial_clock_speed;
+	/*tod_update_interval_secs_ = 0.0333f;*/  tod_update_interval_secs_ = update_interval_secs;
     tod_move_sun_ = move_sun;
 }
 
@@ -289,11 +307,11 @@ void ASimModeBase::advanceTimeOfDay()
             tod_last_update_ = ClockFactory::get()->nowNanos();
 
             auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * tod_celestial_clock_speed_;
-            uint64_t cur_time = ClockFactory::get()->addTo(tod_start_time_, interval)  / 1E9;
+            /*uint64_t cur_time*/ cur_time_ = ClockFactory::get()->addTo(tod_start_time_, interval)  / 1E9;
 
-            UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(cur_time), LogDebugLevel::Informational);
+            UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(/*cur_time*/ cur_time_), LogDebugLevel::Informational);
 
-            auto coord = msr::airlib::EarthCelestial::getSunCoordinates(cur_time, settings.origin_geopoint.home_geo_point.latitude,
+            auto coord = msr::airlib::EarthCelestial::getSunCoordinates(/*cur_time*/ cur_time_, settings.origin_geopoint.home_geo_point.latitude,
                 settings.origin_geopoint.home_geo_point.longitude);
 
             setSunRotation(FRotator(-coord.altitude, coord.azimuth, 0));
