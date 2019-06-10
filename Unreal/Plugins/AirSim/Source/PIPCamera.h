@@ -4,7 +4,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Camera/CameraActor.h"
 #include "Materials/Material.h"
-
+#include "Runtime/Core/Public/PixelFormat.h"
 #include "common/ImageCaptureBase.hpp"
 #include "common/common_utils/Utils.hpp"
 #include "common/AirSimSettings.hpp"
@@ -65,6 +65,7 @@ private: //members
     FRotator gimbald_rotator_;
     float gimbal_stabilization_;
     const NedTransform* ned_transform_;
+    TMap<int, EPixelFormat> image_type_to_pixel_format_map_;
 
 private: //methods
     typedef common_utils::Utils Utils;
@@ -73,8 +74,8 @@ private: //methods
 
     static unsigned int imageTypeCount();
     void enableCaptureComponent(const ImageType type, bool is_enabled);
-    static void updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, const CaptureSetting& setting, 
-        const NedTransform& ned_transform);
+    static void updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, 
+        bool auto_format, const EPixelFormat& pixel_format, const CaptureSetting& setting, const NedTransform& ned_transform);
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
     static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
