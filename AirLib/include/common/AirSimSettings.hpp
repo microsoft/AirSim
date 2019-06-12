@@ -90,7 +90,7 @@ public: //types
 
         bool hasNan()
         {
-            std::isnan(yaw) || std::isnan(pitch) || std::isnan(roll);
+            return std::isnan(yaw) || std::isnan(pitch) || std::isnan(roll);
         }
 
         static Rotation nanRotation()
