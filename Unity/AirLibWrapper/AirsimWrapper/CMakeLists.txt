@@ -33,7 +33,7 @@ BuildAirsimWrapper()
 
 
 ###################### Link source files to library ######################################
-if (${MACOSX})
+if (${APPLE})
 	add_library(
 	    ${PROJECT_NAME} MODULE
 	    ${RPC_LIBRARY_SOURCE_FILES}
