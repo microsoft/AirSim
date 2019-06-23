@@ -71,10 +71,13 @@ response = responses[0]
 img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
 
 # reshape array to 4 channel image array H X W X 4
-img_rgb = img1d.reshape(response.height, response.width, 3)
+img_rgb = img1d.reshape(response.height, response.width, 4)
 
 # original image is fliped vertically
 img_rgb = np.flipud(img_rgb)
+
+# convert color pattern from BGRA to RGBA
+img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_BGRA2RGBA)
 
 # write to png 
 airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) 
