@@ -467,13 +467,7 @@ protected: //methods
         endOffboardMode();
     }
 
-public: //types
-    typedef msr::airlib::GeoPoint GeoPoint;
-    typedef msr::airlib::VectorMath VectorMath;
-    typedef msr::airlib::Vector3r Vector3r;
-    typedef msr::airlib::Quaternionr Quaternionr;
-    typedef common_utils::Utils Utils;
-    typedef msr::airlib::real_T real_T;
+public: 
 
     class MavLinkLogViewerLog : public mavlinkcom::MavLinkLog
     {

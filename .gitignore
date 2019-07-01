@@ -307,6 +307,7 @@ cmake_build/
 /boost
 /[Ee]igen
 /build_debug
+/build_gcc_debug
 /cmake/CPackSourceConfig.cmake
 /cmake/CPackConfig.cmake
 /cmake/arch.c
