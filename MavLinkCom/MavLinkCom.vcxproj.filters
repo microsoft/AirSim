@@ -78,6 +78,8 @@
     </ClCompile>
     <ClCompile Include="src\impl\AdHocConnectionImpl.cpp" />
     <ClCompile Include="src\AdHocConnection.cpp" />
+    <ClCompile Include="src\impl\UdpSocketImpl.cpp" />
+    <ClCompile Include="src\UdpSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -217,6 +219,8 @@
     </ClInclude>
     <ClInclude Include="include\AdHocConnection.hpp" />
     <ClInclude Include="src\impl\AdHocConnectionImpl.hpp" />
+    <ClInclude Include="include\UdpSocket.hpp" />
+    <ClInclude Include="src\impl\UdpSocketImpl.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mavlink">

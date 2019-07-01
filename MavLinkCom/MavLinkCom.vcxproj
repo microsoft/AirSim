@@ -343,6 +343,8 @@
   <ItemGroup>
     <ClCompile Include="common_utils\FileSystem.cpp" />
     <ClCompile Include="common_utils\ThreadUtils.cpp" />
+    <ClCompile Include="src\UdpSocket.cpp" />
+    <ClCompile Include="src\impl\UdpSocketImpl.cpp" />
     <ClCompile Include="src\AdHocConnection.cpp" />
     <ClCompile Include="src\impl\AdHocConnectionImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkFtpClientImpl.cpp" />
@@ -374,6 +376,7 @@
     <ClInclude Include="common_utils\json.hpp" />
     <ClInclude Include="common_utils\StrictMode.hpp" />
     <ClInclude Include="common_utils\ThreadUtils.hpp" />
+    <ClInclude Include="include\UdpSocket.hpp" />
     <ClInclude Include="include\AdHocConnection.hpp" />
     <ClInclude Include="include\AsyncResult.hpp" />
     <ClInclude Include="common_utils\EnumFlags.hpp" />
@@ -385,6 +388,7 @@
     <ClInclude Include="common_utils\type_utils.hpp" />
     <ClInclude Include="common_utils\Utils.hpp" />
     <ClInclude Include="include\Semaphore.hpp" />
+    <ClInclude Include="src\impl\UdpSocketImpl.hpp" />
     <ClInclude Include="src\impl\AdHocConnectionImpl.hpp" />
     <ClInclude Include="src\impl\MavLinkFtpClientImpl.hpp" />
     <ClInclude Include="src\impl\MavLinkNodeImpl.hpp" />
