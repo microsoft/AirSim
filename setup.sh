@@ -65,8 +65,13 @@ else #linux
         sudo apt-get -y update
         sudo apt-get install -y gcc-8 g++-8
     else
-        wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-        sudo apt-get update
+        VERSION=$(lsb_release -rs | cut -d. -f1)
+        # Since Ubuntu 17 clang-5.0 is part of the core repository
+        # See https://packages.ubuntu.com/search?keywords=clang-5.0
+        if [ "$VERSION" -lt "17" ]; then
+            wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+            sudo apt-get update
+        fi
         sudo apt-get install -y clang-5.0 clang++-5.0
         export C_COMPILER=clang-5.0
         export COMPILER=clang++-5.0
@@ -170,7 +175,7 @@ if ! $gccBuild; then
         echo "folder llvm-source-50 already exists, skipping git clone..."
     fi
     #build libc++
-    if [ "$(uname)" == "Darwin" ]; then 
+    if [ "$(uname)" == "Darwin" ]; then
         rm -rf llvm-build
     else
         sudo rm -rf llvm-build
@@ -179,11 +184,11 @@ if ! $gccBuild; then
     pushd llvm-build >/dev/null
 
     "$CMAKE" -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
-          -LIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=ON -DLIBCXX_INSTALL_EXPERIMENTAL_LIBRARY=ON \
+          -LIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF -DLIBCXX_INSTALL_EXPERIMENTAL_LIBRARY=OFF \
           -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=./output \
                 ../llvm-source-50
 
-    make cxx
+    make cxx -j`nproc`
 
     #install libc++ locally in output folder
     if [ "$(uname)" == "Darwin" ]; then
