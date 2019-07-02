@@ -5,8 +5,9 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"  >/dev/null
 
 set -e
-# set -x
+set -x
 
+MIN_GCC_VERSION=6.0.0
 gccBuild=false
 # Parse command line arguments
 while [[ $# -gt 0 ]]
@@ -42,9 +43,21 @@ fi
 # set up paths of cc and cxx compiler
 if $gccBuild; then
     # variable for build output
-    build_dir=build_gcc_debug    
-    export CC="gcc-8"
-    export CXX="g++-8"
+    build_dir=build_gcc_debug
+    # gcc tools
+    gcc_ver=$(gcc --version 2>&1 | head -n1 | cut -d ' ' -f4 | awk '{print $NF}')
+    gcc_path=$(which cmake)
+    if [[ "$gcc_path" == "" ]] ; then
+        echo "ERROR: run setup.sh to install a good version of gcc."
+        exit 1
+    fi
+    if [[ $(python $SCRIPT_DIR/tools/version.py $gcc_ver $MIN_GCC_VERSION) ]]; then
+        export CC="gcc-6"
+        export CXX="g++-6"
+    else
+        export CC="gcc"
+        export CXX="g++"
+    fi
 else
     #check for correct verion of llvm
     if [[ ! -d "llvm-source-50" ]]; then
@@ -67,10 +80,10 @@ else
 
     # variable for build output
     build_dir=build_debug
-    if [ "$(uname)" == "Darwin" ]; then        
+    if [ "$(uname)" == "Darwin" ]; then
         export CC=/usr/local/opt/llvm-5.0/bin/clang-5.0
         export CXX=/usr/local/opt/llvm-5.0/bin/clang++-5.0
-    else        
+    else
         export CC="clang-5.0"
         export CXX="clang++-5.0"
     fi
@@ -78,7 +91,7 @@ fi
 
 #install EIGEN library
 if [[ !(-d "./AirLib/deps/eigen3/Eigen") ]]; then
-    echo "eigen is not installed. Please run setup.sh first."
+    echo "### Eigen is not installed. Please run setup.sh first."
     exit 1
 fi
 
