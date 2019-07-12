@@ -335,3 +335,6 @@ class CarClient(VehicleClient, object):
     def getCarState(self, vehicle_name = ''):
         state_raw = self.client.call('getCarState', vehicle_name)
         return CarState.from_msgpack(state_raw)
+    def getCarControls(self, vehicle_name=''):
+        controls_raw = self.client.call('getCarControls', vehicle_name)
+        return CarControls.from_msgpack(controls_raw)
