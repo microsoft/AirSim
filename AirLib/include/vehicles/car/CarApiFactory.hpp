@@ -5,6 +5,7 @@
 #define msr_airlib_vehicles_CarApiFactory_hpp
 
 #include "vehicles/car/firmwares/physxcar/PhysXCarApi.hpp"
+#include "vehicles/car/firmwares/ardurover/ArduRoverApi.hpp"
 
 namespace msr { namespace airlib {
 
@@ -15,7 +16,11 @@ public:
                                                  const Kinematics::State& state, const Environment& environment, 
                                                  const msr::airlib::GeoPoint& home_geopoint)
     {
-        if (vehicle_setting->vehicle_type == "" || //default config
+        if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeArduRover) {
+            return std::unique_ptr<CarApiBase>(new ArduRoverApi(vehicle_setting, sensor_factory, 
+                                                                state, environment, home_geopoint));
+        }
+        else if (vehicle_setting->vehicle_type == "" || //default config
             vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypePhysXCar) {
             return std::unique_ptr<CarApiBase>(new PhysXCarApi(vehicle_setting, sensor_factory, 
                                                                state, environment, home_geopoint));
