@@ -160,7 +160,8 @@ void ASimModeBase::initializeTimeOfDay()
         UObjectProperty* sun_prop = Cast<UObjectProperty>(p);
         UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
         sun_ = Cast<ADirectionalLight>(sun_obj);
-        default_sun_rotation_ = sun_->GetActorRotation();
+        if (sun_)
+            default_sun_rotation_ = sun_->GetActorRotation(); 
     }
 }
 
