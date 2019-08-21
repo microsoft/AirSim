@@ -26,10 +26,10 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
         //reset rotors, kinematics and environment
-        PhysicsBody::reset();
+        PhysicsBody::resetImplementation();
 
         //reset sensors last after their ground truth has been reset
         resetSensors();

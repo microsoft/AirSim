@@ -163,12 +163,12 @@ void CarPawnSimApi::updateCarControls()
 }
 
 //*** Start: UpdatableState implementation ***//
-void CarPawnSimApi::reset()
+void CarPawnSimApi::resetImplementation()
 {
 	setPose(UnityUtilities::Convert_to_Pose(GetInitialPose()), false);
 	Reset(getVehicleName().c_str());
 
-	PawnSimApi::reset();
+	PawnSimApi::resetImplementation();
 	vehicle_api_->reset();
 }
 

@@ -15,7 +15,7 @@ bool WorldSimApi::isPaused() const
 	return simmode_->isPaused();
 }
 
-void WorldSimApi::reset()
+void WorldSimApi::resetImplementation()
 {
 	simmode_->reset();
 }

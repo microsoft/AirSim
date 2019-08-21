@@ -12,11 +12,6 @@ namespace msr { namespace airlib {
 
 class PhysicsEngineBase : public UpdatableObject {
 public:
-    virtual void reset() override
-    {
-        UpdatableObject::reset();
-    }
-
     virtual void update() override
     {
         UpdatableObject::update();

@@ -78,20 +78,13 @@ public:
         initialize(vehicle_setting, sensor_factory, state, environment);
     }
 
-    //default implementation so derived class doesn't have to call on VehicleApiBase
-    virtual void reset() override
-    {
-        VehicleApiBase::reset();
-
-        //reset sensors last after their ground truth has been reset
-        getSensors().reset();
-    }
     virtual void update() override
     {
         VehicleApiBase::update();
 
         getSensors().update();
     }
+
     void reportState(StateReporter& reporter) override
     {
         getSensors().reportState(reporter);
@@ -142,6 +135,13 @@ public:
     std::shared_ptr<const SensorFactory> sensor_factory_;
     SensorCollection sensors_; //maintains sensor type indexed collection of sensors
     vector<unique_ptr<SensorBase>> sensor_storage_; //RAII for created sensors
+
+protected:
+    virtual void resetImplementation() override
+    {
+        //reset sensors last after their ground truth has been reset
+        getSensors().reset();
+    }
 };
 
 

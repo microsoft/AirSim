@@ -27,17 +27,27 @@ init->reset calls for base-derived class that would be incorrect.
 
 class UpdatableObject {
 public:
-    virtual void reset()
-    {
+    void reset()
+    { 
+        if (reset_in_progress)
+            return;
+
+        reset_in_progress = true;
+        //TODO: Do we need this check anymore? Maybe reset() should be idempotent. 
+
         if (reset_called && !update_called)
-            throw std::runtime_error("Multiple reset() calls detected without call to update()");
+            failResetUpdateOrdering("Multiple reset() calls detected without call to update()");
 
         reset_called = true;
+
+        resetImplementation();
+        reset_in_progress = false;
     }
+
     virtual void update()
     {
         if (!reset_called)
-            throw std::runtime_error("reset() must be called first before update()");
+            failResetUpdateOrdering("reset() must be called first before update()");
         update_called = true;
     }
 
@@ -64,15 +74,16 @@ public:
     }
 
 protected:
-    void clearResetUpdateAsserts()
+    virtual void resetImplementation() = 0;
+    virtual void failResetUpdateOrdering(std::string err)
     {
-        reset_called = false;
-        update_called = false;
+        throw std::runtime_error(err);
     }
 
 private:
     bool reset_called = false;
     bool update_called = false;
+    bool reset_in_progress = false;
 };
 
 }} //namespace

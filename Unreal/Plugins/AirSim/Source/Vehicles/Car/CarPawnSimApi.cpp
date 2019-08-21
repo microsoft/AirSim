@@ -159,9 +159,9 @@ void CarPawnSimApi::updateCarControls()
 }
 
 //*** Start: UpdatableState implementation ***//
-void CarPawnSimApi::reset()
+void CarPawnSimApi::resetImplementation()
 {
-    PawnSimApi::reset();
+    PawnSimApi::resetImplementation();
 
     vehicle_api_->reset();
 }

@@ -27,9 +27,9 @@ public:
 
     //override updatable interface so we can synchronize physics engine
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableContainer::reset();
+        UpdatableContainer::resetImplementation();
         
         if (physics_engine_)
             physics_engine_->reset();

@@ -138,9 +138,9 @@ void MultirotorPawnSimApi::setPose(const Pose& pose, bool ignore_collision)
 }
 
 //*** Start: UpdatableState implementation ***//
-void MultirotorPawnSimApi::reset()
+void MultirotorPawnSimApi::resetImplementation()
 {
-	PawnSimApi::reset();
+	PawnSimApi::resetImplementation();
 
 	vehicle_api_->reset();
 	phys_vehicle_->reset();
