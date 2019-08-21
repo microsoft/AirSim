@@ -17,6 +17,7 @@ downloadHighPolySuv=true
 gccBuild=false
 MIN_CMAKE_VERSION=3.10.0
 MIN_GCC_VERSION=6.0.0
+function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]
@@ -37,12 +38,12 @@ done
 
 if $gccBuild; then
     # gcc tools
-    gcc_ver=$(gcc --version 2>&1 | head -n1 | cut -d ' ' -f4 | awk '{print $NF}')
+    gcc_ver=$(gcc -dumpfullversion)
     gcc_path=$(which cmake)
     if [[ "$gcc_path" == "" ]] ; then
         gcc_ver=0
     fi
-    if [[ $(python $SCRIPT_DIR/tools/version.py $gcc_ver $MIN_GCC_VERSION) ]]; then
+    if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
         if [ "$(uname)" == "Darwin" ]; then # osx
             brew update
             brew install gcc-6 g++-6
@@ -109,7 +110,7 @@ else #linux
     fi
 
     #download cmake - v3.10.2 is not out of box in Ubuntu 16.04
-    if [[ $(python $SCRIPT_DIR/tools/version.py $cmake_ver $MIN_CMAKE_VERSION) ]]; then
+    if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
         if [[ ! -d "cmake_build/bin" ]]; then
             echo "Downloading cmake..."
             wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \

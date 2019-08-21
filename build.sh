@@ -9,6 +9,8 @@ set -x
 
 MIN_GCC_VERSION=6.0.0
 gccBuild=false
+function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]
 do
@@ -45,13 +47,13 @@ if $gccBuild; then
     # variable for build output
     build_dir=build_gcc_debug
     # gcc tools
-    gcc_ver=$(gcc --version 2>&1 | head -n1 | cut -d ' ' -f4 | awk '{print $NF}')
+    gcc_ver=$(gcc -dumpfullversion)
     gcc_path=$(which cmake)
     if [[ "$gcc_path" == "" ]] ; then
         echo "ERROR: run setup.sh to install a good version of gcc."
         exit 1
     fi
-    if [[ $(python $SCRIPT_DIR/tools/version.py $gcc_ver $MIN_GCC_VERSION) ]]; then
+    if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
         export CC="gcc-6"
         export CXX="g++-6"
     else
