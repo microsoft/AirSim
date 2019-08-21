@@ -89,11 +89,6 @@ public: //types
         {
         }
 
-        bool hasNan()
-        {
-            return std::isnan(yaw) || std::isnan(pitch) || std::isnan(roll);
-        }
-
         static Rotation nanRotation()
         {
             static const Rotation val(Utils::nan<float>(), Utils::nan<float>(), Utils::nan<float>());
