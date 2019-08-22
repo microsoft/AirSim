@@ -183,26 +183,46 @@ protected:
 
     virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
     {
+        unused(pitch);
+        unused(roll);
+        unused(throttle);
+        unused(yaw_rate);
         Utils::log("Not Implemented", Utils::kLogLevelInfo);
     }
 
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
     {
+        unused(pitch);
+        unused(roll);
+        unused(z);
+        unused(yaw);
         Utils::log("Not Implemented", Utils::kLogLevelInfo);
     }
 
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
+        unused(vx);
+        unused(vy);
+        unused(vz);
+        unused(yaw_mode);
         Utils::log("Not Implemented", Utils::kLogLevelInfo);
     }
 
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
+        unused(vx);
+        unused(vy);
+        unused(z);
+        unused(yaw_mode);
         Utils::log("Not Implemented", Utils::kLogLevelInfo);
     }
 
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
+        unused(x);
+        unused(y);
+        unused(z);
+        unused(yaw_mode);
         Utils::log("Not Implemented", Utils::kLogLevelInfo);
     }
 
