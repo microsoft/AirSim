@@ -82,6 +82,7 @@ void ASimModeBase::BeginPlay()
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
     setupVehiclesAndCamera();
+    FRecordingThread::init();
 
     UWorld* World = GetWorld();
     if (World)
@@ -126,6 +127,7 @@ void ASimModeBase::setStencilIDs()
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
+    FRecordingThread::killRecording();
     world_sim_api_.reset();
     api_provider_.reset();
     api_server_.reset();
