@@ -2,6 +2,7 @@
 #define MavLinkCom_UdpSocket_hpp
 
 #include <string>
+#include <memory>
 
 namespace mavlinkcom_impl {
     class UdpSocketImpl;
