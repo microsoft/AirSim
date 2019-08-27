@@ -36,7 +36,7 @@ Below are complete list of settings available along with their default values. I
   "EngineSound": true,
   "PhysicsEngineName": "",
   "SpeedUnitFactor": 1.0,
-	"SpeedUnitLabel": "m/s",
+  "SpeedUnitLabel": "m/s",
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
