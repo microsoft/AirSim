@@ -16,11 +16,6 @@
 #include "physics/Environment.hpp"
 #include "api/WorldSimApiBase.hpp"
 
-#include "api/RpcLibPort.hpp"
-
-const extern uint16_t RpcLibPort;
-
-
 namespace msr { namespace airlib {
 
 //common methods for RCP clients of different vehicles

@@ -19,6 +19,8 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
+#define RpcLibPort 41451
+
 namespace msr { namespace airlib {
 
 //numericals
