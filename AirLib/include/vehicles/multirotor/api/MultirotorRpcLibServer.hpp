@@ -9,10 +9,6 @@
 #include "api/RpcLibServerBase.hpp"
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 
-#include "api/RpcLibPort.hpp"
-
-const extern uint16_t RpcLibPort;
-
 
 namespace msr { namespace airlib {
 

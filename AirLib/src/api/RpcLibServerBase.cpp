@@ -56,10 +56,12 @@ typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
 RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port)
     : api_provider_(api_provider)
 {
+
     if (server_address == "")
         pimpl_.reset(new impl(port));
     else
         pimpl_.reset(new impl(server_address, port));
+
     pimpl_->server.bind("ping", [&]() -> bool { return true; });
     pimpl_->server.bind("getServerVersion", []() -> int {
         return 1;

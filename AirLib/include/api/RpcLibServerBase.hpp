@@ -8,10 +8,6 @@
 #include "api/ApiServerBase.hpp"
 #include "api/ApiProvider.hpp"
 
-#include "api/RpcLibPort.hpp"
-
-const extern uint16_t RpcLibPort;
-
 
 namespace msr { namespace airlib {
 

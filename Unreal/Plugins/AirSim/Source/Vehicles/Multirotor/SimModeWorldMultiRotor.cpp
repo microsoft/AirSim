@@ -83,7 +83,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiSe
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
-        getApiProvider(), getSettings().api_server_address));
+        getApiProvider(), getSettings().api_server_address, getSettings().api_port));
 #endif
 }
 

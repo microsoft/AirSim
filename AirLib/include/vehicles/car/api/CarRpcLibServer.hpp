@@ -11,10 +11,6 @@
 #include "api/RpcLibServerBase.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
 
-#include "api/RpcLibPort.hpp"
-
-const extern uint16_t RpcLibPort;
-
 
 namespace msr { namespace airlib {
 
