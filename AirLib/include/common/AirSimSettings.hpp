@@ -329,6 +329,7 @@ public: //fields
     int initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
     bool enable_rpc = true;
     std::string api_server_address = "";
+	uint16_t api_port = RpcLibPort;
     std::string physics_engine_name = "";
 
     std::string clock_type = "";
@@ -988,6 +989,7 @@ private:
         //because for docker container default is 0.0.0.0 and people get really confused why things
         //don't work
         api_server_address = settings_json.getString("LocalHostIp", "");
+		api_port = settings_json.getInt("ApiServerPort", RpcLibPort);
         is_record_ui_visible = settings_json.getBool("RecordUIVisible", true);
         engine_sound = settings_json.getBool("EngineSound", false);
         enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);
