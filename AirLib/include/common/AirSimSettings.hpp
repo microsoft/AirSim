@@ -329,7 +329,7 @@ public: //fields
     int initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
     bool enable_rpc = true;
     std::string api_server_address = "";
-	uint16_t api_port = RpcLibPort;
+	int api_port = RpcLibPort;
     std::string physics_engine_name = "";
 
     std::string clock_type = "";
