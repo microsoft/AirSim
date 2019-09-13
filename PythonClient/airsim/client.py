@@ -196,9 +196,9 @@ class VehicleClient:
     def simCharGetBonePoses(self, bone_names, character_name = ""):
         return self.client.call('simGetBonePoses', bone_names, character_name)
 
-    def cancelLastTask():
-        self.client.call('cancelLastTask')
-    def waitOnLastTask(timeout_sec = float('nan')):
+    def cancelLastTask(self, vehicle_name = ''):
+        self.client.call('cancelLastTask', vehicle_name)
+    def waitOnLastTask(self, timeout_sec = float('nan')):
         return self.client.call('waitOnLastTask', timeout_sec)
 
     # legacy handling
