@@ -68,7 +68,7 @@ public:
 
 protected:
     virtual void getPointCloud(const Pose& lidar_pose, const Pose& vehicle_pose, 
-        TTimeDelta delta_time, vector<real_T>& point_cloud) = 0;
+        TTimeDelta delta_time, vector<real_T>& point_cloud, vector<int>& segmentation_cloud) = 0;
 
     
 private: //methods
@@ -91,8 +91,10 @@ private: //methods
         Pose lidar_pose = params_.relative_pose + ground_truth.kinematics->pose;
         getPointCloud(params_.relative_pose, // relative lidar pose
             ground_truth.kinematics->pose,   // relative vehicle pose
-            delta_time, 
-            point_cloud_);
+            delta_time,
+            point_cloud_,
+            segmentation_cloud_
+        );
 
         LidarData output;
         output.point_cloud = point_cloud_;
@@ -102,11 +104,13 @@ private: //methods
         last_time_ = output.time_stamp;
 
         setOutput(output);
+        setSegmentationOutput(segmentation_cloud_);
     }
 
 private:
     LidarSimpleParams params_;
     vector<real_T> point_cloud_;
+    vector<int> segmentation_cloud_;
 
     FrequencyLimiter freq_limiter_;
     TTimePoint last_time_;

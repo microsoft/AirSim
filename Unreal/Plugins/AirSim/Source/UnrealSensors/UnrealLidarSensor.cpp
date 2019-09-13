@@ -42,9 +42,10 @@ void UnrealLidarSensor::createLasers()
 
 // returns a point-cloud for the tick
 void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
-    const msr::airlib::TTimeDelta delta_time, msr::airlib::vector<msr::airlib::real_T>& point_cloud)
+    const msr::airlib::TTimeDelta delta_time, msr::airlib::vector<msr::airlib::real_T>& point_cloud, vector<int>& segmentation_cloud)
 {
     point_cloud.clear();
+    segmentation_cloud.clear();
 
     msr::airlib::LidarSimpleParams params = getParams();
     const auto number_of_lasers = params.number_of_channels;
@@ -89,12 +90,14 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
                 continue;
        
             Vector3r point;
+            int segmentationID = -1;
             // shoot laser and get the impact point, if any
-            if (shootLaser(lidar_pose, vehicle_pose, laser, horizontal_angle, vertical_angle, params, point))
+            if (shootLaser(lidar_pose, vehicle_pose, laser, horizontal_angle, vertical_angle, params, point, segmentationID))
             {
                 point_cloud.emplace_back(point.x());
                 point_cloud.emplace_back(point.y());
                 point_cloud.emplace_back(point.z());
+                segmentation_cloud.emplace_back(segmentationID);
             }
         }
     }
@@ -107,7 +110,7 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
 // simulate shooting a laser via Unreal ray-tracing.
 bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
     const uint32 laser, const float horizontal_angle, const float vertical_angle, 
-    const msr::airlib::LidarSimpleParams params, Vector3r &point)
+    const msr::airlib::LidarSimpleParams params, Vector3r &point, int &segmentationID)
 {
     // start position
     Vector3r start = lidar_pose.position + vehicle_pose.position;
@@ -135,6 +138,18 @@ bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const ms
 
     if (is_hit)
     {
+        //Store the segmentation id of the hit object.
+        auto hitActor = hit_result.GetActor();
+        if (hitActor != nullptr)
+        {
+            TArray<UMeshComponent*> meshComponents;
+            hitActor->GetComponents<UMeshComponent>(meshComponents);
+            for (int i = 0; i < meshComponents.Num(); i++)
+            {
+                segmentationID = segmentationID == -1 ? meshComponents[i]->CustomDepthStencilValue : segmentationID;
+            }
+        }
+
         if (false && UAirBlueprintLib::IsInGameThread())
         {
             // Debug code for very specific cases.

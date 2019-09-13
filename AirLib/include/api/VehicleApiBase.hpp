@@ -110,24 +110,20 @@ public:
     // Lidar APIs
     virtual LidarData getLidarData(const std::string& lidar_name) const
     {
-        const LidarBase* lidar = nullptr;
-
-        // Find lidar with the given name (for empty input name, return the first one found)
-        // Not efficient but should suffice given small number of lidars
-        uint count_lidars = getSensors().size(SensorBase::SensorType::Lidar);
-        for (uint i = 0; i < count_lidars; i++)
-        {
-            const LidarBase* current_lidar = static_cast<const LidarBase*>(getSensors().getByType(SensorBase::SensorType::Lidar, i));
-            if (current_lidar != nullptr && (current_lidar->getName() == lidar_name || lidar_name == ""))
-            {
-                lidar = current_lidar;
-                break;
-            }
-        }
+        auto *lidar = findLidarByName(lidar_name);
         if (lidar == nullptr)
             throw VehicleControllerException(Utils::stringf("No lidar with name %s exist on vehicle", lidar_name.c_str()));
 
         return lidar->getOutput();
+    }
+
+    virtual vector<int> getLidarSegmentation(const std::string& lidar_name) const
+    {
+        auto *lidar = findLidarByName(lidar_name);
+        if (lidar == nullptr)
+            throw VehicleControllerException(Utils::stringf("No lidar with name %s exist on vehicle", lidar_name.c_str()));
+
+        return lidar->getSegmentationOutput();
     }
 
     // IMU API
@@ -260,6 +256,27 @@ public:
             : VehicleControllerException(message) {
         }
     };
+
+    private:
+    const LidarBase* findLidarByName(const std::string& lidar_name) const
+    {
+        const LidarBase* lidar = nullptr;
+
+        // Find lidar with the given name (for empty input name, return the first one found)
+        // Not efficient but should suffice given small number of lidars
+        uint count_lidars = getSensors().size(SensorBase::SensorType::Lidar);
+        for (uint i = 0; i < count_lidars; i++)
+        {
+            const LidarBase* current_lidar = static_cast<const LidarBase*>(getSensors().getByType(SensorBase::SensorType::Lidar, i));
+            if (current_lidar != nullptr && (current_lidar->getName() == lidar_name || lidar_name == ""))
+            {
+                lidar = current_lidar;
+                break;
+            }
+        }
+
+        return lidar;
+    }
 };
 
 
