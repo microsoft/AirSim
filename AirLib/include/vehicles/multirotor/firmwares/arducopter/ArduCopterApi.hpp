@@ -49,9 +49,9 @@ public:
 
 
 public: 
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        MultirotorApiBase::reset();
+        MultirotorApiBase::resetImplementation();
 
         // Reset state
     }

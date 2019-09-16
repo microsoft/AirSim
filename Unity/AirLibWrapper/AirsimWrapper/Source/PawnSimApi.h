@@ -64,7 +64,7 @@ protected:
 public:
     virtual void initialize() override;
 	PawnSimApi(const Params& params);
-	virtual void reset() override;
+	virtual void resetImplementation() override;
 	virtual void update() override;
 	virtual const UnityImageCapture* getImageCapture() const override;
 	virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const override;

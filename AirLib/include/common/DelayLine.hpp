@@ -11,7 +11,7 @@
 namespace msr { namespace airlib {
 
 template<typename T>
-class DelayLine : UpdatableObject {
+class DelayLine : public UpdatableObject {
 public:
     DelayLine()
     {}
@@ -33,10 +33,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
-    {
-        UpdatableObject::reset();
-
+     virtual void resetImplementation() override
+     {
         values_.clear();
         times_.clear();
         last_time_ = 0;

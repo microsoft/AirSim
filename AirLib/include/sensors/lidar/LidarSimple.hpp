@@ -26,10 +26,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        LidarBase::reset();
-
         freq_limiter_.reset();
         last_time_ = clock()->nowNanos();
 

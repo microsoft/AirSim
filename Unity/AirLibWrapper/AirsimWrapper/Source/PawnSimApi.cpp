@@ -146,9 +146,8 @@ AirSimPose PawnSimApi::GetInitialPose()
 	return AirSimPose(state_.start_location, state_.start_rotation);
 }
 
-void PawnSimApi::reset()
+void PawnSimApi::resetImplementation()
 {
-	VehicleSimApiBase::reset();
 	state_ = initial_state_;
 	rc_data_ = msr::airlib::RCData();
     kinematics_->reset();
