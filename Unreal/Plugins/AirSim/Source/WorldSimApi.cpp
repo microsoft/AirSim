@@ -1,5 +1,6 @@
 #include "WorldSimApi.h"
 #include "AirBlueprintLib.h"
+#include "TextureShuffleActor.h"
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 
@@ -116,6 +117,16 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     UWeatherLib::setWeatherParamScalar(simmode_->GetWorld(), param_e, val);
 }
 
+void WorldSimApi::swapTextures(const std::string& tag, int tex_id)
+{
+	UAirBlueprintLib::RunCommandOnGameThread([this, &tag, tex_id]() {
+		TArray<AActor*> shuffleables;
+		UAirBlueprintLib::FindAllActor<ATextureShuffleActor>(simmode_, shuffleables);
+		for (auto *shuffler : shuffleables) {
+			dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(FString(tag.c_str()), tex_id);
+		}
+	}, true);
+}
 
 //------------------------------------------------- Char APIs -----------------------------------------------------------/
 
