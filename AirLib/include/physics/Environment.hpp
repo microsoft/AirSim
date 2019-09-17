@@ -78,7 +78,7 @@ public:
         return current_;
     }
 
-    virtual void update()
+    virtual void update() override
     {
         updateState(current_, home_geo_point_);
     }
@@ -91,6 +91,7 @@ protected:
 
     virtual void failResetUpdateOrdering(std::string err) override
     {
+        unused(err);
         //Do nothing.
         //The environment gets reset() twice without an update() inbetween,
         //via MultirotorPawnSimApi::reset() and CarSimApi::reset(), because
