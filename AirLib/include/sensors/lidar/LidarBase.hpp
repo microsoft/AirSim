@@ -45,14 +45,25 @@ public:
         return output_;
     }
 
+    const vector<int>& getSegmentationOutput() const
+    {
+        return segmentation_output_;
+    }
+
 protected:
     void setOutput(const LidarData& output)
     {
         output_ = output;
     }
 
+    void setSegmentationOutput(vector<int>& segmentation_output)
+    {
+        segmentation_output_ = segmentation_output;
+    }
+
 private:
     LidarData output_;
+    vector<int> segmentation_output_;
 };
 
 }} //namespace

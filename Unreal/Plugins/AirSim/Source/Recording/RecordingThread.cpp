@@ -8,7 +8,10 @@
 #include "PIPCamera.h"
 
 
-std::unique_ptr<FRecordingThread> FRecordingThread::instance_;
+std::unique_ptr<FRecordingThread> FRecordingThread::running_instance_;
+std::unique_ptr<FRecordingThread> FRecordingThread::finishing_instance_;
+msr::airlib::WorkerThreadSignal FRecordingThread::finishing_signal_;
+bool FRecordingThread::first_ = true;
 
 
 FRecordingThread::FRecordingThread()
@@ -18,44 +21,64 @@ FRecordingThread::FRecordingThread()
 }
 
 
-void FRecordingThread::startRecording(const msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics, 
+void FRecordingThread::startRecording(const msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics,
     const RecordingSetting& settings, msr::airlib::VehicleSimApiBase* vehicle_sim_api)
 {
     stopRecording();
 
     //TODO: check FPlatformProcess::SupportsMultithreading()?
+    assert(!isRecording());
 
-    instance_.reset(new FRecordingThread());
-    instance_->image_capture_ = image_capture;
-    instance_->kinematics_ = kinematics;
-    instance_->settings_ = settings;
-    instance_->vehicle_sim_api_ = vehicle_sim_api;
+    running_instance_.reset(new FRecordingThread());
+    running_instance_->image_capture_ = image_capture;
+    running_instance_->kinematics_ = kinematics;
+    running_instance_->settings_ = settings;
+    running_instance_->vehicle_sim_api_ = vehicle_sim_api;
 
-    instance_->last_screenshot_on_ = 0;
-    instance_->last_pose_ = msr::airlib::Pose();
+    running_instance_->last_screenshot_on_ = 0;
+    running_instance_->last_pose_ = msr::airlib::Pose();
 
-    instance_->is_ready_ = true;
+    running_instance_->is_ready_ = true;
 
-    instance_->recording_file_.reset(new RecordingFile());
-    instance_->recording_file_->startRecording(vehicle_sim_api);
+    running_instance_->recording_file_.reset(new RecordingFile());
+    running_instance_->recording_file_->startRecording(vehicle_sim_api);
 }
 
 FRecordingThread::~FRecordingThread()
 {
-    stopRecording();
+    if (this == running_instance_.get()) stopRecording();
+}
+
+void FRecordingThread::init()
+{
+    first_ = true;
 }
 
 bool FRecordingThread::isRecording()
 {
-    return instance_ != nullptr;
+    return running_instance_ != nullptr;
 }
 
 void FRecordingThread::stopRecording()
 {
-    if (instance_)
+    if (running_instance_)
     {
-        instance_->EnsureCompletion();
-        instance_.reset();
+        assert(finishing_instance_ == nullptr);
+        finishing_instance_ = std::move(running_instance_);
+        assert(!isRecording());
+        finishing_instance_->Stop();
+    }
+}
+
+void FRecordingThread::killRecording()
+{
+    if (first_) return;
+
+    stopRecording();
+    bool finished = finishing_signal_.waitForRetry(1, 5);
+    if (!finished) {
+        UE_LOG(LogTemp, Log, TEXT("killing thread"));
+        finishing_instance_->thread_->Kill(false);
     }
 }
 
@@ -63,6 +86,12 @@ void FRecordingThread::stopRecording()
 
 bool FRecordingThread::Init()
 {
+    if (first_) {
+        first_ = false;
+    }
+    else {
+        finishing_signal_.wait();
+    }
     if (image_capture_ && recording_file_)
     {
         UAirBlueprintLib::LogMessage(TEXT("Initiated recording thread"), TEXT(""), LogDebugLevel::Success);
@@ -85,8 +114,12 @@ uint32 FRecordingThread::Run()
 
                 //TODO: should we go as fast as possible, or should we limit this to a particular number of
                 // frames per second?
-                
+
+                //BG: Workaround to get sync ground truth. See https://github.com/Microsoft/AirSim/issues/1494 for details
+                uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
+                std::string gt = vehicle_sim_api_->getRecordFileLine(false);
                 std::vector<msr::airlib::ImageCaptureBase::ImageResponse> responses;
+
                 image_capture_->getImages(settings_.requests, responses);
                 recording_file_->appendRecord(responses, vehicle_sim_api_);
             }
@@ -107,13 +140,8 @@ void FRecordingThread::Stop()
 
 void FRecordingThread::Exit()
 {
+    assert(this == finishing_instance_.get());
     if (recording_file_)
         recording_file_.reset();
-}
-
-void FRecordingThread::EnsureCompletion()
-{
-    Stop();
-    thread_->WaitForCompletion();
-    //UAirBlueprintLib::LogMessage(TEXT("Stopped recording thread"), TEXT(""), LogDebugLevel::Success);
+    finishing_signal_.signal();
 }

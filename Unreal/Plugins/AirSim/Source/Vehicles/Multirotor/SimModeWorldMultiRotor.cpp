@@ -83,7 +83,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiSe
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
-        getApiProvider(), getSettings().api_server_address));
+        getApiProvider(), getSettings().api_server_address, getSettings().api_port));
 #endif
 }
 
@@ -95,8 +95,9 @@ void ASimModeWorldMultiRotor::getExistingVehiclePawns(TArray<AActor*>& pawns) co
 bool ASimModeWorldMultiRotor::isVehicleTypeSupported(const std::string& vehicle_type) const
 {
     return ((vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) ||
-        (vehicle_type == AirSimSettings::kVehicleTypePX4) ||
-		(vehicle_type == AirSimSettings::kVehicleTypeArduCopterSolo));
+            (vehicle_type == AirSimSettings::kVehicleTypePX4) ||
+            (vehicle_type == AirSimSettings::kVehicleTypeArduCopterSolo) ||
+            (vehicle_type == AirSimSettings::kVehicleTypeArduCopter));
 }
 
 std::string ASimModeWorldMultiRotor::getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const

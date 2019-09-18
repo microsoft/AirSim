@@ -9,7 +9,6 @@
 
 #include "api/RpcLibServerBase.hpp"
 
-
 #include "common/Common.hpp"
 STRICT_MODE_OFF
 
@@ -30,6 +29,7 @@ STRICT_MODE_OFF
 #include "common/common_utils/WindowsApisCommonPost.hpp"
 
 #include "api/RpcLibAdapatorsBase.hpp"
+#include <functional>
 
 STRICT_MODE_ON
 
@@ -56,10 +56,12 @@ typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
 RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port)
     : api_provider_(api_provider)
 {
+
     if (server_address == "")
         pimpl_.reset(new impl(port));
     else
         pimpl_.reset(new impl(server_address, port));
+
     pimpl_->server.bind("ping", [&]() -> bool { return true; });
     pimpl_->server.bind("getServerVersion", []() -> int {
         return 1;
@@ -125,6 +127,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     });
 
     pimpl_->server.
+        bind("simGetLidarSegmentation", [&](const std::string& lidar_name, const std::string& vehicle_name) -> std::vector<int> {
+        return getVehicleApi(vehicle_name)->getLidarSegmentation(lidar_name);
+    });
+
+    pimpl_->server.
         bind("simSetSegmentationObjectID", [&](const std::string& mesh_name, int object_id, bool is_name_regex) -> bool {
         return getWorldSimApi()->setSegmentationObjectID(mesh_name, object_id, is_name_regex);
     });
@@ -134,11 +141,19 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     });    
 
     pimpl_->server.bind("reset", [&]() -> void {
+        //Exit if already resetting.
+        static bool resetInProgress;
+        if (resetInProgress)
+            return;
+
+        //Reset
+        resetInProgress = true;
         auto* sim_world_api = getWorldSimApi();
         if (sim_world_api)
             sim_world_api->reset();
         else
             getVehicleApi("")->reset();
+            resetInProgress = false;
     });
 
     pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, const std::string& message_param, unsigned char severity) -> void {

@@ -21,7 +21,7 @@ public:
     virtual void initialize() override;
 	CarPawnSimApi(const Params& params, const CarPawnApi::CarControls&  keyboard_controls, std::string car_name);
 	virtual ~CarPawnSimApi() = default;
-	virtual void reset() override;
+	virtual void resetImplementation() override;
 	virtual void update() override;
 	//virtual void reportState(StateReporter& reporter) override;
 	virtual std::string getRecordFileLine(bool is_header_line) const override;

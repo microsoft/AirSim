@@ -78,17 +78,25 @@ public:
         return current_;
     }
 
-    //*** Start: UpdatableState implementation ***//
-    virtual void reset()
+    virtual void update() override
+    {
+        updateState(current_, home_geo_point_);
+    }
+
+protected:
+    virtual void resetImplementation() override
     {
         current_ = initial_;
     }
 
-    virtual void update()
+    virtual void failResetUpdateOrdering(std::string err) override
     {
-        updateState(current_, home_geo_point_);
+        unused(err);
+        //Do nothing.
+        //The environment gets reset() twice without an update() inbetween,
+        //via MultirotorPawnSimApi::reset() and CarSimApi::reset(), because
+        //those functions directly reset an environment, and also call other reset()s that reset the same environment.
     }
-    //*** End: UpdatableState implementation ***//
 
 private:
     static void updateState(State& state, const HomeGeoPoint& home_geo_point)

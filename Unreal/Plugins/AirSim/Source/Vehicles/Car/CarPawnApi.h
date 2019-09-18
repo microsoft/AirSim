@@ -18,7 +18,6 @@ public:
 
     virtual CarApiBase::CarState getCarState() const override;
 
-    virtual void reset() override;
     virtual void update() override;
 
     virtual msr::airlib::GeoPoint getHomeGeoPoint() const override;
@@ -30,6 +29,9 @@ public:
     virtual const CarApiBase::CarControls& getCarControls() const override;
 
     virtual ~CarPawnApi();
+
+protected:
+    virtual void resetImplementation() override;
 
 private:
     UWheeledVehicleMovementComponent* movement_;

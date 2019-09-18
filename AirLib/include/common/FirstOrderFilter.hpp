@@ -12,7 +12,7 @@
 namespace msr { namespace airlib {
 
 template <typename T>
-class FirstOrderFilter : UpdatableObject {
+class FirstOrderFilter : public UpdatableObject {
     /*
     This class can be used to apply a first order filter on a signal.
     It allows different acceleration and deceleration time constants.
@@ -42,10 +42,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableObject::reset();
-
         last_time_ = clock()->nowNanos();
         input_ = initial_input_;
         output_ = initial_output_;
