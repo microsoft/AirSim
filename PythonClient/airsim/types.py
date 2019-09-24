@@ -197,9 +197,15 @@ class Pose(MsgpackMixin):
     position = Vector3r()
     orientation = Quaternionr()
 
-    def __init__(self, position_val = Vector3r(), orientation_val = Quaternionr()):
-        self.position = position_val
-        self.orientation = orientation_val
+    def __init__(self, position_val = None, orientation_val = None):
+        if position_val:
+            self.position = position_val
+        else:
+            self.position = Vector3r()
+        if orientation_val:
+            self.orientation = orientation_val
+        else:
+            self.orientation = Quaternionr()
 
     @staticmethod
     def nanPose():
