@@ -197,7 +197,9 @@ class Pose(MsgpackMixin):
     position = Vector3r()
     orientation = Quaternionr()
 
-    def __init__(self, position_val = Vector3r(), orientation_val = Quaternionr()):
+    def __init__(self, position_val = None, orientation_val = None):
+        position_val = position_val if position_val != None else Vector3r()
+        orientation_val = orientation_val if orientation_val != None else Quaternionr()
         self.position = position_val
         self.orientation = orientation_val
 
