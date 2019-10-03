@@ -192,7 +192,7 @@ class Quaternionr(MsgpackMixin):
     def to_numpy_array(self):
         return np.array([self.x_val, self.y_val, self.z_val, self.w_val], dtype=np.float32)
 		
-    def from_numpy_array(self, array):
+	def from_numpy_array(self, array):
         return Quaternionr( array[0], array[1], array[2], array[3] )
 
 
