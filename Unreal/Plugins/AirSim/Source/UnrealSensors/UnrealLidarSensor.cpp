@@ -113,7 +113,7 @@ bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const ms
     const msr::airlib::LidarSimpleParams params, Vector3r &point, int &segmentationID)
 {
     // start position
-    Vector3r start = lidar_pose.position + vehicle_pose.position;
+    Vector3r start = VectorMath::add(lidar_pose, vehicle_pose).position;
 
     // We need to compose rotations here rather than rotate a vector by a quaternion
     // Hence using coordOrientationAdd(..) rather than rotateQuaternion(..)
