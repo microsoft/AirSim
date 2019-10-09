@@ -27,6 +27,8 @@ void WorldSimApi::reset()
 void WorldSimApi::pause(bool is_paused)
 {
     simmode_->pause(is_paused);
+	auto time_dilation = is_paused ? 0.0 : 1.0 ;
+	simmode_->GetWorld()->SetGlobalTimeDilation(time_dilation);
 }
 
 void WorldSimApi::continueForTime(double seconds)
