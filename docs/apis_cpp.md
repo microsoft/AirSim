@@ -50,7 +50,7 @@ int main()
 
 ## Hello Drone
 
-Here's how to use AirSim APIs using C++ to control simulated car (see also [Python example](apis.md#hello_drone)):
+Here's how to use AirSim APIs using C++ to control simulated quadrotor (see also [Python example](apis.md#hello_drone)):
 
 ```cpp
 
