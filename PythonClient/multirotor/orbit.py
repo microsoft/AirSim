@@ -53,10 +53,10 @@ class OrbitNavigator:
         start = time.time()
         count = 0
         while count < 100:
-            pos = self.home
+            pos = self.client.getMultirotorState().kinematics_estimated.position
             if abs(pos.z_val - self.home.z_val) > 1:                                
                 count = 0
-                self.home = pos
+                self.home = self.client.getMultirotorState().kinematics_estimated.position
                 if time.time() - start > 10:
                     print("Drone position is drifting, we are waiting for it to settle down...")
                     start = time
