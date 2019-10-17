@@ -650,6 +650,9 @@ private: //methods
         cmd.Mode = static_cast<float>(mode);
         mav_vehicle_->sendCommand(cmd);
 
+        // todo: how to determine if lockstep is required? (PX4: ENABLE_LOCKSTEP_SCHEDULER)
+        lock_step_enabled_ = true;
+
         is_hil_mode_set_ = true;
     }
 
@@ -1059,6 +1062,7 @@ private: //methods
                 rotor_controls_[i] = HilActuatorControlsMessage.controls[i];
             }
             normalizeRotorControls();
+            received_actuator_controls_ = true;
         }
         //else ignore message
     }
@@ -1067,6 +1071,12 @@ private: //methods
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
+
+        if (lock_step_enabled_ && !received_actuator_controls_)
+        {
+            // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
+            return; 
+        }
 
         mavlinkcom::MavLinkHilSensor hil_sensor;
         hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
@@ -1089,6 +1099,7 @@ private: //methods
 
         if (hil_node_ != nullptr) {
             hil_node_->sendMessage(hil_sensor);
+            received_actuator_controls_ = false;
         }
 
         std::lock_guard<std::mutex> guard(last_message_mutex_);
@@ -1168,6 +1179,8 @@ private: //methods
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
         was_reset_ = false;
+        received_actuator_controls_ = false;
+        lock_step_enabled_ = false;
         mocap_pose_ = Pose::nanPose();
     }
 
@@ -1225,6 +1238,8 @@ private: //variables
     uint64_t last_gps_time_;
     bool was_reset_;
     bool is_ready_;
+    bool lock_step_enabled_;
+    bool received_actuator_controls_;
     std::string is_ready_message_;
     Pose mocap_pose_;
 
