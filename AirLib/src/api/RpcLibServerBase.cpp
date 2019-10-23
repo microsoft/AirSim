@@ -117,6 +117,26 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return result;
     });
 
+    pimpl_->server.bind("simGetMultipleImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter, const std::vector<std::string>& vehicle_names) -> 
+        std::vector<vector<RpcLibAdapatorsBase::ImageResponse>> {
+        std::vector<vector<RpcLibAdapatorsBase::ImageResponse>> results;
+        std::vector<msr::airlib::VehicleSimApiBase*> vehiclesApis;
+        for (size_t i = 0; i < vehicle_names.size();i++)
+            vehiclesApis.push_back(getVehicleSimApi(vehicle_names[i]));
+        std::vector<vector<ImageCaptureBase::ImageResponse>> imgResults = getWorldSimApi()->getMultipleImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter), vehiclesApis);
+        if (imgResults.size()==0)
+            return std::vector<vector<RpcLibAdapatorsBase::ImageResponse>>();
+        for(size_t i=0;i<imgResults.size();++i){
+            results.push_back(RpcLibAdapatorsBase::ImageResponse::from(imgResults[i]));
+        }
+        return results;
+    });
+
+    pimpl_->server.
+        bind("simResetIDFromView", [&]() -> int {
+        return getWorldSimApi()->resetIDFromView();
+    });
+
     pimpl_->server.
         bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision, const std::string& vehicle_name) -> void {
         getVehicleSimApi(vehicle_name)->setPose(pose.to(), ignore_collision);

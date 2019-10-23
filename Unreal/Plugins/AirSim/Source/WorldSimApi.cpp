@@ -3,6 +3,8 @@
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 
+#include "Async.h"
+
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode)
 {
@@ -33,6 +35,107 @@ void WorldSimApi::continueForTime(double seconds)
 {
     simmode_->continueForTime(seconds);
 }
+
+class PrimeCalculationAsyncTask : public FNonAbandonableTask
+{
+    friend class FAsyncTask<PrimeCalculationAsyncTask>;
+    int idx;
+    std::vector<std::vector<ImageCaptureBase::ImageResponse>>* mResults;
+    std::vector<ImageCaptureBase::ImageRequest> mR;
+    msr::airlib::VehicleSimApiBase* mApi;
+
+public:
+    /*Default constructor*/
+    PrimeCalculationAsyncTask(int idx
+        ,std::vector<std::vector<ImageCaptureBase::ImageResponse>>* vResults
+        ,std::vector<ImageCaptureBase::ImageRequest> vR
+        ,msr::airlib::VehicleSimApiBase* vApi)
+    {
+        this->idx = idx;
+        this->mResults = vResults;
+        this->mR = vR;
+        this->mApi = vApi;
+    }
+
+    /*This function is needed from the API of the engine. 
+    My guess is that it provides necessary information
+    about the thread that we occupy and the progress of our task*/
+    FORCEINLINE TStatId GetStatId() const
+    {
+        RETURN_QUICK_DECLARE_CYCLE_STAT(PrimeCalculationAsyncTask, STATGROUP_ThreadPoolAsyncTasks);
+    }
+
+    /*This function is executed when we tell our task to execute*/
+    void DoWork()
+    {
+        const auto& response = mApi->getImages(mR);
+        mResults->at(idx) = response;
+    }
+};
+
+std::vector<std::vector<ImageCaptureBase::ImageResponse>> getMultipleImages(const std::vector<ImageCaptureBase::ImageRequest>& request_adapter
+    , const std::vector<msr::airlib::VehicleSimApiBase*>& vehiclesApis){
+        try {
+            std::vector<FAsyncTask<PrimeCalculationAsyncTask>*> workers;
+            std::vector<std::vector<ImageCaptureBase::ImageResponse>> results;
+            workers.resize(vehiclesApis.size());
+            for (size_t i = 0; i < vehiclesApis.size(); ++i) {
+                results.push_back(std::vector<ImageCaptureBase::ImageResponse>());
+            }
+            for (size_t i = 0; i < workers.size(); i++) {
+                workers[i] = new FAsyncTask<PrimeCalculationAsyncTask>(i
+                    ,&results,request_adapter,vehiclesApis[i]);
+                if (workers[i])
+                    workers[i]->StartBackgroundTask();
+            }
+            for (size_t i = 0; i < workers.size(); i++) {
+                workers.at(i)->EnsureCompletion();
+                //workers.at(i)->~FAsyncTask();
+            }
+            workers.clear();
+            return results;
+        }
+        catch (const std::exception&){
+            return std::vector<std::vector<ImageCaptureBase::ImageResponse>>();
+        }
+}
+
+
+int WorldSimApi::resetIDFromView()
+{
+    int result;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &result]() {
+        TArray<AActor*> foundActors;
+        UAirBlueprintLib::FindAllActor<AActor>(simmode_, foundActors);
+
+        int object_id = 2;
+        std::regex regex;
+        for (AActor* actor : foundActors) {
+            std::string name(TCHAR_TO_UTF8(*(actor->GetName())));
+            float deltaTime = actor->GetWorld()->GetTimeSeconds() - actor->GetLastRenderTime();
+            bool visible=(deltaTime <= 0.04f) && (deltaTime > 0);
+            //visible = visible && actor->GetComponents();
+            //deltaTime = deltaTime > 0 ? deltaTime : 0;
+            if (std::regex_match(name, std::regex("(sndd)(.*)")) ) {
+                UAirBlueprintLib::SetMeshStencilID(name, object_id, false);
+                object_id += 1;
+                UE_LOG(LogTemp, Warning, TEXT("%s, %f"),*(actor->GetName()),deltaTime);
+            }
+            else if (std::regex_match(name, std::regex("(BP_Sky_Sphere)(.*)")) ) {
+                UAirBlueprintLib::SetMeshStencilID(name, 1, false);
+            }
+            else
+                UAirBlueprintLib::SetMeshStencilID(name, 0, false);
+
+        }
+        if (object_id > 255) {
+            UE_LOG(LogTemp, Warning, TEXT("More than 255 objects: %i"),object_id);
+        }
+
+    }, true);
+    return result;
+}
+
 
 void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
     float celestial_clock_speed, float update_interval_secs, bool move_sun)

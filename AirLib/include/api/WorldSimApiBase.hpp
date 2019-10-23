@@ -5,7 +5,7 @@
 #define air_WorldSimApiBase_hpp
 
 #include "common/CommonStructs.hpp"
-
+#include "VehicleSimApiBase.hpp"
 namespace msr { namespace airlib {
 
 
@@ -64,6 +64,9 @@ public:
     virtual void charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name) = 0;
     virtual std::unordered_map<std::string, msr::airlib::Pose> charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const = 0;
 
+    virtual int resetIDFromView() = 0;
+    virtual std::vector<std::vector<ImageCaptureBase::ImageResponse>> getMultipleImages(const std::vector<ImageCaptureBase::ImageRequest>& request_adapter
+        , const std::vector<msr::airlib::VehicleSimApiBase*>& vehiclesApis) = 0;
 };
 
 
