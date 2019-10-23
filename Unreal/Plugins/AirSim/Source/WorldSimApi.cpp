@@ -73,7 +73,7 @@ public:
     }
 };
 
-std::vector<std::vector<ImageCaptureBase::ImageResponse>> getMultipleImages(const std::vector<ImageCaptureBase::ImageRequest>& request_adapter
+std::vector<std::vector<ImageCaptureBase::ImageResponse>> WorldSimApi::getMultipleImages(const std::vector<ImageCaptureBase::ImageRequest>& request_adapter
     , const std::vector<msr::airlib::VehicleSimApiBase*>& vehiclesApis){
         try {
             std::vector<FAsyncTask<PrimeCalculationAsyncTask>*> workers;
