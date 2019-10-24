@@ -30,6 +30,8 @@ if "%2"=="" goto noargs
 if "%2"=="--Debug" set "buildMode=--Debug"
 if "%2"=="--Release" set "buildMode=--Release"
 
+set "noFullPolyCar=y"
+
 :noargs
 
 chdir /d %ROOT_DIR% 
@@ -55,9 +57,9 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1 (
 	ECHO *****************************************************************************************
 	ECHO Downloading rpclib
 	ECHO *****************************************************************************************
-	@echo on
-	powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/rpclib/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip }"
-	@echo off
+	//@echo on
+	//powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr //https://github.com/rpclib/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip }"
+	//@echo off
 	
 	REM //remove any previous versions
 	rmdir external\rpclib /q /s
