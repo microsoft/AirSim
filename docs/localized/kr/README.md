@@ -1,36 +1,36 @@
-# Welcome to AirSim
+# AirSim에 온 것을 환영합니다
 
-AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin. 
+AirSim은 [Unreal Engine](https://www.unrealengine.com/)으로 빌드 된 드론, 차량 등을 위한 시뮬레이터 입니다 (이제 실험적인 [Unity](https://unity3d.com/) 릴리즈 또한 포함합니다). AirSim은 오픈소스이고, 크로스 플랫폼입니다. 그리고 물리적, 시각적으로 현실같은 시뮬레이션을 위한 PX4와 같은 인기있는 비행 컨트롤러들에 대해서 hardware-in-loop을 지원합니다. AirSim은 간단하게 Unreal 환경에 빠질 수 있는 Unreal 플러그인으로 개발되었습니다. 유사하게, 우리는 Unity 플러그인에 대한 실험적 릴리즈가 있습니다.
 
-Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
+우리의 목표는 AirSim을 딥 러닝, 컴퓨터 비전과 자율 주행 차량의 학습 알고리즘 강화를 포함한 AI 연구를 위한 플랫폼으로써 개발하는 것입니다. 이를 위해서 AirSim은 또한 데이터를 검색하고 플랫폼 독립적인 방법으로 차량을 제어하기 위해서 API들을 제공합니다.
 
-**Check out the quick 1.5 minute demo**
+**빠른 1.5분 데모 확인**
 
-Drones in AirSim
+AirSim에서의 드론
 
 [![AirSim Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
-Cars in AirSim
+AirSim에서의 차량
 
 [![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
-## What's New
-* A ROS wrapper for multirotors is available. See [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs) for the ROS API, and [airsim_tutorial_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs) for tutorials. 
-* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](https://microsoft.github.io/AirSim/docs/sensors.md) 
-* Added support for [docker in ubuntu](https://microsoft.github.io/AirSim/docs/docker_ubuntu) 
-* Added Weather Effects and [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis)
-* Added [Time of Day API](https://microsoft.github.io/AirSim/docs/apis#time-of-day-api)
-* An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation).
-* [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
-* Highly efficient [NoDisplay view mode](https://microsoft.github.io/AirSim/docs/settings#viewmode) to turn off main screen rendering so you can capture images at high rate
+## 새로운 소식
+* 멀티로터용 ROS 래퍼를 사용할 수 있습니다. ROS API에 대해서는 [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs)을 보십시오, 그리고 튜토리얼에 대해서는 [airsim_tutorial_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs)을 보십시오. 
+* [기압계, IMU, GPS, 자력계, 거리 센서에 대한 센서 API 추가](https://microsoft.github.io/AirSim/docs/sensors.md) 
+* [docker in ubuntu](https://microsoft.github.io/AirSim/docs/docker_ubuntu)에 대한 지원 추가
+* 기상 효과와 [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis) 추가
+* [Time of Day API](https://microsoft.github.io/AirSim/docs/apis#time-of-day-api) 추가
+* [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity)의 실험적 통합이 이제 사용할 수 있습니다. 자세한 것은 [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation).
+* [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): 숲, 평원 (풍차 농장), TalkingHeads (사람 머리 시뮬레이션), TrapCam (카메라를 통한 동물 탐지)
+* 메인 스크린 렌더링을 껐을 때에 대한 [NoDisplay view mode](https://microsoft.github.io/AirSim/docs/settings#viewmode)의 높은 효율로 인해 이미지를 빠른 속도로 캡쳐 할 수 있습니다.
 * [Lidar Sensor](https://microsoft.github.io/AirSim/docs/lidar)
-* Case Study: [Formula Student Technion Driverless](https://github.com/Microsoft/AirSim/wiki/technion)
+* 케이스 연구: [Formula Student Technion Driverless](https://github.com/Microsoft/AirSim/wiki/technion)
 * [Multi-Vehicle Capability](https://microsoft.github.io/AirSim/docs/multi_vehicle)
 * [ROS publisher](https://github.com/Microsoft/AirSim/pull/1135)
 
-For complete list of changes, view our [Changelog](CHANGELOG.md)
+변경 사항 전체 목록에 대해서는, [Changelog](CHANGELOG.md)를 보십시오
 
-## How to Get It
+## 얻는 방법
 
 ### Windows
 * [Download binaries](https://microsoft.github.io/AirSim/docs/use_precompiled)
@@ -41,15 +41,15 @@ For complete list of changes, view our [Changelog](CHANGELOG.md)
 
 [![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
 
-## How to Use It
+## 사용 방법
 
-### Documentation
+### 문서
 
-View our [detailed documentation](https://microsoft.github.io/AirSim/) on all aspects of AirSim.
+AirSim에 대한 모든 방면에 대해서 [detailed documentation](https://microsoft.github.io/AirSim/)을 보십시오.
 
-### Manual drive
+### 수동 운전
 
-If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.
+만약 아래 그림과 같이 원격 컨트롤러 (RC)를 갖고 있다면, 시뮬레이터에서 수동으로 드론을 조종할 수 있습니다. 차에 대해서는, 방향키를 사용해서 수동으로 조종할 수 있습니다.
 
 [More details](https://microsoft.github.io/AirSim/docs/remote_control/)
 
@@ -58,50 +58,50 @@ If you have remote control (RC) as shown below, you can manually control the dro
 ![record screenshot](docs/images/AirSimCarManual.gif)
 
 
-### Programmatic control
+### 프로그래밍 제어
 
-AirSim exposes APIs so you can interact with the vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through the RPC, and are accessible via a variety of languages, including C++, Python, C# and Java.
+AirSim은 API들을 제공하므로 차량들과 시뮬레이션에서 프로그래밍 방식으로 상호작용할 수 있습니다. 당신은 이 API를 이미지를 검색하고, 상태를 얻고, 차량을 조종하는 등을 하는데 쓸 수 있습니다. API는 RPC를 통해서 제공됩니다. 그리고 C++, Python, C#, Java를 포함한 다양한 언어를 통해서 접근 가능합니다.
 
-These APIs are also available as part of a separate, independent cross-platform library, so you can deploy them on a companion computer on your vehicle. This way you can write and test your code in the simulator, and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.
+이 API는 또한 분리, 독립적인 크로스 플랫폼 라이브러리의 일부분으로써 이용가능합니다. 그래서 당신은 차량의 컴패니언 컴퓨터에 배포할 수 있습니다. 이 방법으로 시뮬레이터에서 코드를 작성하고 테스트 한 후 나중에 실제 차량에서 실행할 수 있습니다. 전이 학습 및 관련 연구는 우리의 중점 분야 중 하나입니다.
 
-Note that you can use [SimMode setting](https://microsoft.github.io/AirSim/docs/settings#simmode) to specify the default vehicle or the new [ComputerVision mode](https://microsoft.github.io/AirSim/docs/image_apis#computer-vision-mode-1) so you don't get prompted each time you start AirSim.
+AirSim을 시작할 때마다 메시지가 표시되지 않도록 기본 차량이나 새 [ComputerVision mode](https://microsoft.github.io/AirSim/docs/image_apis#computer-vision-mode-1)을 지정하기 위해서 [SimMode setting](https://microsoft.github.io/AirSim/docs/settings#simmode)을 쓸 수 있습니다.
 
 [More details](https://microsoft.github.io/AirSim/docs/apis/)
 
-### Gathering training data
+### 학습 데이터 수집
 
-There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button in the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's content.
+딥 러닝을 위해 AirSim에서 교육 데이터를 생성 할 수있는 두 가지 방법이 있습니다. 가장 쉬운 방법은 우측 하단에 있는 기록 버튼을 누르는 것입니다. 각 프레임마다 포즈와 이미지 기록이 시작됩니다. 데이터 로깅 코드는 매우 간단하며 당신의 생각에 맞게 수정할 수 있습니다.
 
 ![record screenshot](docs/images/record_data.png)
 
-A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data. 
+원하는 방식으로 교육 데이터를 생성하는 더 좋은 방법은 API에 액세스하는 것입니다. 이것은 당신이 기록하려는 데이터를 어떻게, 무엇을, 어디서, 언제 완전히 통제 할 수 있도록 합니다.
 
-### Computer Vision mode
+### 컴퓨터 비전 모드
 
-Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation. 
+AirSim을 사용하는 또 다른 방법은 "컴퓨터 비전" 모드라고 부르는 것입니다. 이 모드에서는, 차량이나 물리가 없습니다. 키보드를 사용하여 씬 주위를 이동하거나, API를 사용하여 임의의 포즈로 사용 가능한 카메라를 배치하고, 깊이, 시차, 표면 법선 또는 객체 분할과 같은 이미지를 수집 할 수 있습니다.
 
 [More details](https://microsoft.github.io/AirSim/docs/image_apis/)
 
-### Weather Effects
+### 날씨 효과
 
-Press F10 to see various options available for weather effects. You can also control the weather using [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis). Press F1 to see other options available.
+날씨 효과에 사용할 수 있는 다양한 옵션을 보려면 F10을 누르십시오. [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis)를 사용하여 날씨를 제어 할 수도 있습니다. 사용 가능한 다른 옵션을 보려면 F1을 누르십시오.
 
 ![record screenshot](docs/images/weather_menu.png)
 
-## Tutorials
+## 튜토리얼
 
-- [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) by Chris Lovett
-- [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0) by Chris Lovett
-- [Video - Using off-the-self environments with AirSim](https://www.youtube.com/watch?v=y09VbdQWvQY) by Jim Piavis
-- [Reinforcement Learning with AirSim](https://microsoft.github.io/AirSim/docs/reinforcement_learning) by Ashish Kapoor
-- [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
-- [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
+- [Video - AirSim과 Pixhawk 설정 튜토리얼](https://youtu.be/1oY8Qu5maQQ) by Chris Lovett
+- [Video - AirSim과 Pixhawk 사용 튜토리얼](https://youtu.be/HNWdYrtw3f0) by Chris Lovett
+- [Video - AirSim에서 자체 환경 사용](https://www.youtube.com/watch?v=y09VbdQWvQY) by Jim Piavis
+- [AirSim에서 강화 학습](https://microsoft.github.io/AirSim/docs/reinforcement_learning) by Ashish Kapoor
+- [자율 주행 설명서](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
+- [간단한 충돌 방지를 위한 TensorFlow 사용](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
 
-## Participate
+## 참여
 
-### Paper
+### 논문
 
-More technical details are available in [AirSim paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065). Please cite this as:
+자세한 기술 정보는 [AirSim paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065)에 있습니다. 이것을 인용하십시오:
 ```
 @inproceedings{airsim2017fsr,
   author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
@@ -113,27 +113,27 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 }
 ```
 
-### Contribute
+### 기여
 
-Please take a look at [open issues](https://github.com/microsoft/airsim/issues) if you are looking for areas to contribute to.
+기여할 분야를 찾고 있다면 [open issues](https://github.com/microsoft/airsim/issues)를 살펴보십시오.
 
-* [More on AirSim design](https://microsoft.github.io/AirSim/docs/design)
-* [More on code structure](https://microsoft.github.io/AirSim/docs/code_structure)
-* [Contribution Guidelines](CONTRIBUTING.md)
+* [AirSim 디자인에 대한 자세한 사항](https://microsoft.github.io/AirSim/docs/design)
+* [코드 구조에 대한 자세한 사항](https://microsoft.github.io/AirSim/docs/code_structure)
+* [기여 가이드라인](CONTRIBUTING.md)
 * [Trello Board](https://trello.com/b/1t2qCeaA/wishlist-by-community-for-community)
 
-### Who is Using AirSim?
+### AirSim을 사용하는 사람은 누구입니까?
 
-We are maintaining a [list](https://microsoft.github.io/AirSim/docs/who_is_using) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [make a request here](https://github.com/microsoft/airsim/issues).
+우리는 우리가 알고있는 몇 가지 프로젝트, 사람 및 그룹의 [목록](https://microsoft.github.io/AirSim/docs/who_is_using)을 유지하고 있습니다. 이 목록에 포함 되길 원하시면 [여기서 요청하세요](https://github.com/microsoft/airsim/issues).
 
-## Contact
+## 연락
 
-Join the AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
+[Facebook](https://www.facebook.com/groups/1225832467530667/)에서 AirSim 그룹에 가입하여 최신 정보를 받거나 질문을 하십시오.
 
 ## FAQ
 
-If you run into problems, check the [FAQ](https://microsoft.github.io/AirSim/docs/faq) and feel free to post issues in the  [AirSim](https://github.com/Microsoft/AirSim/issues) repository.
+문제가 발생하면 [FAQ](https://microsoft.github.io/AirSim/docs/faq)를 확인하고 [AirSim](https://github.com/Microsoft/AirSim/issues) 리포지토리에 자유롭게 문제를 게시하십시오.
 
-## License
+## 라이선스
 
-This project is released under the MIT License. Please review the [License file](LICENSE) for more details.
+이 프로젝트는 MIT 라이센스에 따라 배포됩니다. 자세한 내용은 [라이센스 파일](LICENSE)을 확인하십시오.
