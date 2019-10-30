@@ -1,6 +1,6 @@
-# Support
+# 지원
 
-We highly recommend to take a look at source code and contribute to the project. Due to large number of incoming feature request we may not be able to get to your request in your desired timeframe. So please [contribute](CONTRIBUTING.md) :).
+소스 코드를 살펴보고 프로젝트에 기여하는 것을 환영합니다. 들어오는 요청이 많기 때문에 원하는 시간 내에 당신의 요청을 받지 못할 수 있습니다. [기여](CONTRIBUTING.md)를 부탁합니다 :).
 
-* [Join AirSim Facebook Group](https://www.facebook.com/groups/1225832467530667/) 
-* [File GitHub Issue](https://github.com/Microsoft/AirSim/issues)
+* [AirSim Facebook 그룹에 참여](https://www.facebook.com/groups/1225832467530667/) 
+* [GitHub Issue 제기](https://github.com/Microsoft/AirSim/issues)
