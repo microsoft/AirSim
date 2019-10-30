@@ -76,3 +76,13 @@ msr::airlib::VehicleApiBase* ASimModeComputerVision::getVehicleApi(const PawnSim
     //we don't have real vehicle so no vehicle API
     return nullptr;
 }
+
+bool ASimModeComputerVision::isPaused() const
+{
+    return  UGameplayStatics::GetGlobalTimeDilation(this->GetWorld()) < 1e-3;
+}
+
+void ASimModeComputerVision::pause(bool is_paused)
+{
+    UGameplayStatics::SetGlobalTimeDilation(this->GetWorld(), is_paused ? 0.0 : 1.0);
+}

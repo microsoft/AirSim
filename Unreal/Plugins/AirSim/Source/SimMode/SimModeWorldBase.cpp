@@ -78,6 +78,7 @@ bool ASimModeWorldBase::isPaused() const
 void ASimModeWorldBase::pause(bool is_paused)
 {
     physics_world_->pause(is_paused);
+    UGameplayStatics::SetGlobalTimeDilation(this->GetWorld(), is_paused ? 0.0 : 1.0);
 }
 
 void ASimModeWorldBase::continueForTime(double seconds)
