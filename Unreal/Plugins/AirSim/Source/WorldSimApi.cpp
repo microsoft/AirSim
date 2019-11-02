@@ -120,10 +120,30 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
 void WorldSimApi::swapTextures(const std::string& tag, int tex_id)
 {
 	UAirBlueprintLib::RunCommandOnGameThread([this, &tag, tex_id]() {
+		//Split the tag string into individual tags.
+		TArray<FString> splitTags;
+		FString notSplit = FString(tag.c_str());
+		FString next = "";
+		while (notSplit.Split(",", &next, &notSplit))
+			splitTags.Add(next);
+		splitTags.Add(notSplit);
+
+		//Texture swap on actors that have all of those tags.
 		TArray<AActor*> shuffleables;
 		UAirBlueprintLib::FindAllActor<ATextureShuffleActor>(simmode_, shuffleables);
-		for (auto *shuffler : shuffleables) {
-			dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(FString(tag.c_str()), tex_id);
+		for (auto *shuffler : shuffleables)
+		{
+			bool invalidChoice = false;
+			for (auto required_tag : splitTags)
+			{
+				invalidChoice |= !shuffler->ActorHasTag(FName(*required_tag));
+				if (invalidChoice)
+					break;
+			}
+			
+			if (invalidChoice)
+				break;
+			dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(tex_id);
 		}
 	}, true);
 }

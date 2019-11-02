@@ -13,14 +13,21 @@ class AIRSIM_API ATextureShuffleActor : public AStaticMeshActor
 {
 	GENERATED_BODY()
 protected:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureShuffle)
-	UTexture2D* DefaultTexture;
+	UMaterialInterface *DynamicMaterial = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureShuffle)
 	TArray<UTexture2D*> SwappableTextures;
 
+	UPROPERTY(BlueprintReadOnly, Category = TextureShuffle)
+	int Current_Id = -1;
+
 public:
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void SwapTexture(FString tag, int tex_id = 0);
+	UFUNCTION(BlueprintNativeEvent)
+	void SwapTexture(int tex_id = 0);
+
+private:
+	UMaterialInstanceDynamic *DynamicMaterialInstance = nullptr;
 };
