@@ -148,6 +148,11 @@ public:
         return allow_api_control_;
     }
 
+    float getMotorOutput()
+    {
+	return board_inputs_->getAvgMotorOutput();
+    }
+
 private:
     enum class RcRequestType {
         None, ArmRequest, DisarmRequest, NeutralRequest
