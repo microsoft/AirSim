@@ -8,12 +8,10 @@ The parent class can be set via the settings tab in the actor's blueprint.
 ![Parent Class](images/tex_shuffle_actor.png)
 
 After setting the parent class to TextureShuffActor, the object gains the member DynamicMaterial.
-DynamicMaterial is ediable under the Class Defaults tab, and needs to be set to the TextureSwappableMaterial.
-TextureSwappableMaterial can be found in AirSim Content/Starter Content/Materials.
+DynamicMaterial needs to be set--on all actor instances in the scene--to TextureSwappableMaterial.
+Warning: Statically setting the Dynamic Material in the blueprint class may cause rendering errors. It seems to work better to set it on all the actor instances in the scene, using the details panel.
 
 ![TextureSwappableMaterial](images/tex_swap_material.png)
-
-The set of swappable textures can also be set here if it's going to be the same for each instance of the actor.
 
 ## How to Define the Set(s) of Textures to Choose From
 
@@ -22,8 +20,6 @@ Typically, certain subsets of actors will share a set of texture options with ea
 It's easy to set up these groupings by using Unreal Engine's group editing functionality.
 Select all the instances that should have the same texture selection, and add the textures to all of them simultaneously via the Details panel.
 Use the same technique to add descriptive tags to groups of actors, which will be used to address them in the API.
-
-Warning: Statically setting the textures in the blueprint class may cause rendering errors. It seems better to set the textures on actor instances in the scene, using the details panel.
 
 ![Group Editing](images/tex_swap_group_editing.png)
 
