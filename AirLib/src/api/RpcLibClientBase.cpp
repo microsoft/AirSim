@@ -278,9 +278,9 @@ vector<string> RpcLibClientBase::simListSceneObjects(const string& name_regex) c
     return pimpl_->client.call("simListSceneObjects", name_regex).as<vector<string>>();
 }
 
-bool RpcLibClientBase::simSwapTextures(const std::string& tags, int tex_id)
+std::vector<std::string> RpcLibClientBase::simSwapTextures(const std::string& tags, int tex_id)
 {
-	return pimpl_->client.call("simSwapTextures", tags, tex_id).as<bool>();
+	return pimpl_->client.call("simSwapTextures", tags, tex_id).as<vector<string>>();
 }
 
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name) const

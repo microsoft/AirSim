@@ -299,8 +299,8 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return r;
     });
 
-	pimpl_->server.bind("simSwapTextures", [&](const std::string tag, int tex_id) {
-		getWorldSimApi()->swapTextures(tag, tex_id);
+	pimpl_->server.bind("simSwapTextures", [&](const std::string tag, int tex_id) -> std::vector<string> {
+		return *getWorldSimApi()->swapTextures(tag, tex_id);
 	});
 
     //if we don't suppress then server will bomb out for exceptions raised by any method
