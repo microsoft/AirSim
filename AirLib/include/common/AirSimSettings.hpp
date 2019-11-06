@@ -705,10 +705,7 @@ private:
         vehicle_setting->is_fpv_vehicle = settings_json.getBool("IsFpvVehicle",
             vehicle_setting->is_fpv_vehicle);
 
-        Settings rc_json;
-        if (settings_json.getChild("RC", rc_json)) {
-            loadRCSetting(simmode_name, rc_json, vehicle_setting->rc);
-        }
+        loadRCSetting(simmode_name, settings_json, vehicle_setting->rc);
 
         vehicle_setting->position = createVectorSetting(settings_json, vehicle_setting->position);
         vehicle_setting->rotation = createRotationSetting(settings_json, vehicle_setting->rotation);
