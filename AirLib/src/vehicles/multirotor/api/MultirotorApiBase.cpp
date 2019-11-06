@@ -72,7 +72,7 @@ bool MultirotorApiBase::goHome(float timeout_sec)
     return moveToPosition(0, 0, 0, 0.5f, timeout_sec, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
 }
 
-bool MultirotorApiBase::moveByAngleZ(float pitch, float roll, float z, float yaw, float duration)
+bool MultirotorApiBase::moveByRollPitchYawZ(float roll, float pitch, float yaw, float z, float duration)
 {
     SingleTaskCall lock(this);
 
@@ -80,12 +80,12 @@ bool MultirotorApiBase::moveByAngleZ(float pitch, float roll, float z, float yaw
         return true;
 
     return waitForFunction([&]() {
-        moveByRollPitchZInternal(pitch, roll, z, yaw);
+        moveByRollPitchYawZInternal(roll, pitch, yaw, z);
         return false; //keep moving until timeout
     }, duration).isTimeout();
 }
 
-bool MultirotorApiBase::moveByAngleThrottle(float pitch, float roll, float throttle, float yaw_rate, float duration)
+bool MultirotorApiBase::moveByRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle, float duration)
 {
     SingleTaskCall lock(this);
 
@@ -93,7 +93,59 @@ bool MultirotorApiBase::moveByAngleThrottle(float pitch, float roll, float throt
         return true;
 
     return waitForFunction([&]() {
-        moveByRollPitchThrottleInternal(pitch, roll, throttle, yaw_rate);
+        moveByRollPitchYawThrottleInternal(roll, pitch, yaw, throttle);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
+}
+
+bool MultirotorApiBase::moveByRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle, float duration)
+{
+    SingleTaskCall lock(this);
+
+    if (duration <= 0)
+        return true;
+
+    return waitForFunction([&]() {
+        moveByRollPitchYawrateThrottleInternal(roll, pitch, yaw_rate, throttle);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
+}
+
+bool MultirotorApiBase::moveByRollPitchYawrateZ(float roll, float pitch, float yaw_rate, float z, float duration)
+{
+    SingleTaskCall lock(this);
+
+    if (duration <= 0)
+        return true;
+
+    return waitForFunction([&]() {
+        moveByRollPitchYawrateZInternal(roll, pitch, yaw_rate, z);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
+}
+
+bool MultirotorApiBase::moveByAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z, float duration)
+{
+    SingleTaskCall lock(this);
+
+    if (duration <= 0)
+        return true;
+
+    return waitForFunction([&]() {
+        moveByAngleRatesZInternal(roll_rate, pitch_rate, yaw_rate, z);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
+}
+
+bool MultirotorApiBase::moveByAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle, float duration)
+{
+    SingleTaskCall lock(this);
+
+    if (duration <= 0)
+        return true;
+
+    return waitForFunction([&]() {
+        moveByAngleRatesThrottleInternal(roll_rate, pitch_rate, yaw_rate, throttle);
         return false; //keep moving until timeout
     }, duration).isTimeout();
 }
@@ -451,16 +503,40 @@ void MultirotorApiBase::moveToPositionInternal(const Vector3r& dest, const YawMo
         commandPosition(dest.x(), dest.y(), dest.z(), yaw_mode);
 }
 
-void MultirotorApiBase::moveByRollPitchThrottleInternal(float pitch, float roll, float throttle, float yaw_rate)
+void MultirotorApiBase::moveByRollPitchYawZInternal(float roll, float pitch, float yaw, float z)
 {
     if (safetyCheckVelocity(getVelocity()))
-        commandRollPitchThrottle(pitch, roll, throttle, yaw_rate);
+        commandRollPitchYawZ(roll, pitch, yaw, z);
 }
 
-void MultirotorApiBase::moveByRollPitchZInternal(float pitch, float roll, float z, float yaw)
+void MultirotorApiBase::moveByRollPitchYawThrottleInternal(float roll, float pitch, float yaw, float throttle)
 {
     if (safetyCheckVelocity(getVelocity()))
-        commandRollPitchZ(pitch, roll, z, yaw);
+        commandRollPitchYawThrottle(roll, pitch, yaw, throttle);
+}
+
+void MultirotorApiBase::moveByRollPitchYawrateThrottleInternal(float roll, float pitch, float yaw_rate, float throttle)
+{
+    if (safetyCheckVelocity(getVelocity()))
+        commandRollPitchYawrateThrottle(roll, pitch, yaw_rate, throttle);
+}
+
+void MultirotorApiBase::moveByRollPitchYawrateZInternal(float roll, float pitch, float yaw_rate, float z)
+{
+    if (safetyCheckVelocity(getVelocity()))
+        commandRollPitchYawrateZ(roll, pitch, yaw_rate, z);
+}
+
+void MultirotorApiBase::moveByAngleRatesZInternal(float roll_rate, float pitch_rate, float yaw_rate, float z)
+{
+    if (safetyCheckVelocity(getVelocity()))
+        commandAngleRatesZ(roll_rate, pitch_rate, yaw_rate, z);
+}
+
+void MultirotorApiBase::moveByAngleRatesThrottleInternal(float roll_rate, float pitch_rate, float yaw_rate, float throttle)
+{
+    if (safetyCheckVelocity(getVelocity()))
+        commandAngleRatesThrottle(roll_rate, pitch_rate, yaw_rate, throttle);
 }
 
 //executes a given function until it returns true. Each execution is spaced apart at command period.

@@ -247,10 +247,200 @@ class VehicleClient:
         raise Exception("goHome API is deprecated. Please use goHomeAsync() API." + self.upgrade_api_help)
     def hover(self):
         raise Exception("hover API is deprecated. Please use hoverAsync() API." + self.upgrade_api_help)
-    def moveByAngleZ(self, pitch, roll, z, yaw, duration):
-        raise Exception("moveByAngleZ API is deprecated. Please use moveByAngleZAsync() API." + self.upgrade_api_help)
-    def moveByAngleThrottle(self, pitch, roll, throttle, yaw_rate, duration):
-        raise Exception("moveByAngleThrottle API is deprecated. Please use moveByAngleThrottleAsync() API." + self.upgrade_api_help)
+
+    # low-level control API
+    def moveByRollPitchYawZAsync(self, roll, pitch, yaw, z, duration, vehicle_name = ''):
+        """
+        - z is given in local NED frame of the vehicle.  
+        - Roll angle, pitch angle, and yaw angle set points are given in **radians**, in the body frame. 
+        - The body frame follows the Front Left Up (FLU) convention, and right-handedness. 
+
+        - Frame Convention:
+            - X axis is along the **Front** direction of the quadrotor. 
+            | Clockwise rotation about this axis defines a positive **roll** angle.    
+            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame. 
+
+            - Y axis is along the **Left** direction of the quadrotor.  
+            | Clockwise rotation about this axis defines a positive **pitch** angle.    
+            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame. 
+
+            - Z axis is along the **Up** direction. 
+            | Clockwise rotation about this axis defines a positive **yaw** angle. 
+            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane. 
+        
+        Args:
+            roll (float): Desired roll angle, in radians.
+            pitch (float): Desired pitch angle, in radians.
+            yaw (float): Desired yaw angle, in radians.
+            z (float): Desired Z value (in local NED frame of the vehicle)
+            duration (float): Desired amount of time (seconds), to send this command for
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+        return self.client.call_async('moveByRollPitchYawZ', roll, -pitch, -yaw, z, duration, vehicle_name)
+
+    def moveByRollPitchYawThrottleAsync(self, roll, pitch, yaw, throttle, duration, vehicle_name = ''):
+        """
+        - Desired throttle is between 0.0 to 1.0
+        - Roll angle, pitch angle, and yaw angle are given in **radians**, in the body frame. 
+        - The body frame follows the Front Left Up (FLU) convention, and right-handedness. 
+
+        - Frame Convention:
+            - X axis is along the **Front** direction of the quadrotor. 
+            | Clockwise rotation about this axis defines a positive **roll** angle.    
+            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame. 
+
+            - Y axis is along the **Left** direction of the quadrotor.  
+            | Clockwise rotation about this axis defines a positive **pitch** angle.    
+            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame. 
+
+            - Z axis is along the **Up** direction. 
+            | Clockwise rotation about this axis defines a positive **yaw** angle. 
+            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane. 
+                
+        Args:
+            roll (float): Desired roll angle, in radians.
+            pitch (float): Desired pitch angle, in radians.
+            yaw (float): Desired yaw angle, in radians.
+            throttle (float): Desired throttle (between 0.0 to 1.0)
+            duration (float): Desired amount of time (seconds), to send this command for
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+        return self.client.call_async('moveByRollPitchYawThrottle', roll, -pitch, -yaw, throttle, duration, vehicle_name)
+
+    def moveByRollPitchYawrateThrottleAsync(self, roll, pitch, yaw_rate, throttle, duration, vehicle_name = ''):
+        """
+        - Desired throttle is between 0.0 to 1.0
+        - Roll angle, pitch angle, and yaw rate set points are given in **radians**, in the body frame. 
+        - The body frame follows the Front Left Up (FLU) convention, and right-handedness. 
+
+        - Frame Convention:
+            - X axis is along the **Front** direction of the quadrotor. 
+            | Clockwise rotation about this axis defines a positive **roll** angle.    
+            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame. 
+
+            - Y axis is along the **Left** direction of the quadrotor.  
+            | Clockwise rotation about this axis defines a positive **pitch** angle.    
+            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame. 
+
+            - Z axis is along the **Up** direction. 
+            | Clockwise rotation about this axis defines a positive **yaw** angle. 
+            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane. 
+                
+        Args:
+            roll (float): Desired roll angle, in radians.
+            pitch (float): Desired pitch angle, in radians.
+            yaw_rate (float): Desired yaw rate, in radian per second.
+            throttle (float): Desired throttle (between 0.0 to 1.0)
+            duration (float): Desired amount of time (seconds), to send this command for
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+        return self.client.call_async('moveByRollPitchYawrateThrottle', roll, -pitch, -yaw_rate, throttle, duration, vehicle_name)
+
+    def moveByRollPitchYawrateZAsync(self, roll, pitch, yaw_rate, z, duration, vehicle_name = ''):
+        """
+        - z is given in local NED frame of the vehicle.  
+        - Roll angle, pitch angle, and yaw rate set points are given in **radians**, in the body frame. 
+        - The body frame follows the Front Left Up (FLU) convention, and right-handedness. 
+
+        - Frame Convention:
+            - X axis is along the **Front** direction of the quadrotor. 
+            | Clockwise rotation about this axis defines a positive **roll** angle.    
+            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame. 
+
+            - Y axis is along the **Left** direction of the quadrotor.  
+            | Clockwise rotation about this axis defines a positive **pitch** angle.    
+            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame. 
+
+            - Z axis is along the **Up** direction. 
+            | Clockwise rotation about this axis defines a positive **yaw** angle. 
+            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane. 
+                
+        Args:
+            roll (float): Desired roll angle, in radians.
+            pitch (float): Desired pitch angle, in radians.
+            yaw_rate (float): Desired yaw rate, in radian per second.
+            z (float): Desired Z value (in local NED frame of the vehicle)
+            duration (float): Desired amount of time (seconds), to send this command for
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+       
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+        return self.client.call_async('moveByRollPitchYawrateZ', roll, -pitch, -yaw_rate, z, duration, vehicle_name)
+
+    def moveByAngleRatesZAsync(self, roll_rate, pitch_rate, yaw_rate, z, duration, vehicle_name = ''):
+        """
+        - z is given in local NED frame of the vehicle.  
+        - Roll rate, pitch rate, and yaw rate set points are given in **radians**, in the body frame. 
+        - The body frame follows the Front Left Up (FLU) convention, and right-handedness. 
+
+        - Frame Convention:
+            - X axis is along the **Front** direction of the quadrotor. 
+            | Clockwise rotation about this axis defines a positive **roll** angle.    
+            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame. 
+
+            - Y axis is along the **Left** direction of the quadrotor.  
+            | Clockwise rotation about this axis defines a positive **pitch** angle.    
+            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame. 
+
+            - Z axis is along the **Up** direction. 
+            | Clockwise rotation about this axis defines a positive **yaw** angle. 
+            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane. 
+        
+        Args:
+            roll_rate (float): Desired roll rate, in radians / second
+            pitch_rate (float): Desired pitch rate, in radians / second
+            yaw_rate (float): Desired yaw rate, in radians / second
+            z (float): Desired Z value (in local NED frame of the vehicle)
+            duration (float): Desired amount of time (seconds), to send this command for
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+        return self.client.call_async('moveByAngleRatesZ', roll_rate, -pitch_rate, -yaw_rate, z, duration, vehicle_name)
+
+    def moveByAngleRatesThrottleAsync(self, roll_rate, pitch_rate, yaw_rate, throttle, duration, vehicle_name = ''):
+        """
+        - Desired throttle is between 0.0 to 1.0
+        - Roll rate, pitch rate, and yaw rate set points are given in **radians**, in the body frame. 
+        - The body frame follows the Front Left Up (FLU) convention, and right-handedness. 
+
+        - Frame Convention:
+            - X axis is along the **Front** direction of the quadrotor. 
+            | Clockwise rotation about this axis defines a positive **roll** angle.    
+            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame. 
+
+            - Y axis is along the **Left** direction of the quadrotor.  
+            | Clockwise rotation about this axis defines a positive **pitch** angle.    
+            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame. 
+
+            - Z axis is along the **Up** direction. 
+            | Clockwise rotation about this axis defines a positive **yaw** angle. 
+            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane. 
+
+        Args:
+            roll_rate (float): Desired roll rate, in radians / second
+            pitch_rate (float): Desired pitch rate, in radians / second
+            yaw_rate (float): Desired yaw rate, in radians / second
+            throttle (float): Desired throttle (between 0.0 to 1.0)
+            duration (float): Desired amount of time (seconds), to send this command for
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+        return self.client.call_async('moveByAngleRatesThrottle', roll_rate, -pitch_rate, -yaw_rate, throttle, duration, vehicle_name)
+
     def moveByVelocity(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
         raise Exception("moveByVelocity API is deprecated. Please use moveByVelocityAsync() API." + self.upgrade_api_help)
     def moveByVelocityZ(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
