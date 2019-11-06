@@ -79,23 +79,11 @@ bool ASimModeWorldBase::isPaused() const
 void ASimModeWorldBase::pause(bool is_paused)
 {
     physics_world_->pause(is_paused);
-    UGameplayStatics::SetGamePaused(this->GetWorld(), is_paused);
 }
 
 void ASimModeWorldBase::continueForTime(double seconds)
 {
-    if(physics_world_->isPaused())
-    {
-        physics_world_->pause(false);
-        UGameplayStatics::SetGamePaused(this->GetWorld(), false);        
-    }
-
     physics_world_->continueForTime(seconds);
-    while(!physics_world_->isPaused())
-    {
-        continue; 
-    }
-    UGameplayStatics::SetGamePaused(this->GetWorld(), true);
 }
 
 void ASimModeWorldBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter)
@@ -121,6 +109,8 @@ void ASimModeWorldBase::Tick(float DeltaSeconds)
     //perform any expensive rendering update outside of lock region
     for (auto& api : getApiProvider()->getVehicleSimApis())
         api->updateRendering(DeltaSeconds);
+
+    UGameplayStatics::SetGamePaused(this->GetWorld(), physics_world_->isPaused());
 
     Super::Tick(DeltaSeconds);
 }
