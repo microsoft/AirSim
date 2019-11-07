@@ -254,6 +254,8 @@ private:
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
     msr::airlib::MultirotorRpcLibClient airsim_client_;
+    msr::airlib::MultirotorRpcLibClient airsim_client_images_;
+    msr::airlib::MultirotorRpcLibClient airsim_client_lidar_;
 
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
