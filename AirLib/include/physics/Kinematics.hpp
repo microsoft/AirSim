@@ -38,11 +38,8 @@ public:
         initial_ = initial;
     }
 
-    //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableObject::reset();
-
         current_ = initial_;
     }
 

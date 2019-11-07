@@ -33,10 +33,8 @@ public: //methods
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        GpsBase::reset();
-
         freq_limiter_.reset();
         delay_line_.reset();
 

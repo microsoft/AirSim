@@ -32,10 +32,8 @@ public:
     }
 
     //*** Start: UpdatableObject implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        MagnetometerBase::reset();
-
         //Ground truth is reset before sensors are reset
         updateReference(getGroundTruth());
         noise_vec_.reset();

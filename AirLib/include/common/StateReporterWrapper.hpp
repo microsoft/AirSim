@@ -37,17 +37,19 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        //disable checks for reset/update sequence because
-        //this object may get created but not used
-        clearResetUpdateAsserts();  
-        UpdatableObject::reset();
-
         last_time_ = clock()->nowNanos();
         clearReport();
         dt_stats_.clear();
         report_freq_.reset();
+    }
+
+    virtual void failResetUpdateOrdering(std::string err) override
+    {
+        // Do nothing.
+        // Disable checks for reset/update sequence because
+        // this object may get created but not used.
     }
 
     virtual void update() override

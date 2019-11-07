@@ -10,7 +10,7 @@
 
 namespace msr { namespace airlib {
 
-class FrequencyLimiter : UpdatableObject {
+class FrequencyLimiter : public UpdatableObject {
 public:
     FrequencyLimiter(real_T frequency = Utils::max<float>(), real_T startup_delay = 0)
     {
@@ -24,13 +24,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        //disable checks for reset/update sequence because
-        //this object may get created but not used
-        clearResetUpdateAsserts();  
-        UpdatableObject::reset();
-
         last_time_ = clock()->nowNanos();
         first_time_ = last_time_;
 
@@ -45,6 +40,13 @@ public:
         update_count_ = 0;
         interval_complete_ = false;
         startup_complete_ = false;
+    }
+
+    virtual void failResetUpdateOrdering(std::string err) override
+    {
+        // Do nothing.
+        // Disable checks for reset/update sequence because
+        // this object may get created but not used.
     }
 
     virtual void update() override

@@ -103,7 +103,7 @@ int RpcLibClientBase::getMinRequiredClientVersion() const
 }
 int RpcLibClientBase::getServerVersion() const
 {
-	return pimpl_->client.call("getServerVersion").as<int>();
+    return pimpl_->client.call("getServerVersion").as<int>();
 }
 
 void RpcLibClientBase::reset()
@@ -187,6 +187,11 @@ msr::airlib::GpsBase::Output RpcLibClientBase::getGpsData(const std::string& gps
 msr::airlib::DistanceBase::Output RpcLibClientBase::getDistanceSensorData(const std::string& distance_sensor_name, const std::string& vehicle_name) const
 {
     return pimpl_->client.call("getDistanceSensorData", distance_sensor_name, vehicle_name).as<RpcLibAdapatorsBase::DistanceSensorData>().to();
+}
+
+vector<int> RpcLibClientBase::simGetLidarSegmentation(const std::string& lidar_name, const std::string& vehicle_name) const
+{
+    return pimpl_->client.call("simGetLidarSegmentation", lidar_name, vehicle_name).as<vector<int>>();
 }
 
 bool RpcLibClientBase::simSetSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)

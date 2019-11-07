@@ -38,7 +38,7 @@ public:
 
     //PhysicsBody interface
     //this just wrapped around MultiRotor physics body
-    virtual void reset() override;
+    virtual void resetImplementation() override;
     virtual void update() override;
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;

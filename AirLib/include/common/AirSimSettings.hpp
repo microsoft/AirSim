@@ -26,6 +26,7 @@ public: //types
     static constexpr char const * kVehicleTypePX4 = "px4multirotor";
 	static constexpr char const * kVehicleTypeArduCopterSolo = "arducoptersolo";
 	static constexpr char const * kVehicleTypeSimpleFlight = "simpleflight";
+    static constexpr char const * kVehicleTypeArduCopter = "arducopter";
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
     static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
@@ -86,11 +87,6 @@ public: //types
         Rotation(float yaw_val, float pitch_val, float roll_val)
             : yaw(yaw_val), pitch(pitch_val), roll(roll_val)
         {
-        }
-
-        bool hasNan()
-        {
-            return std::isnan(yaw) || std::isnan(pitch) || std::isnan(roll);
         }
 
         static Rotation nanRotation()
@@ -333,6 +329,7 @@ public: //fields
     int initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
     bool enable_rpc = true;
     std::string api_server_address = "";
+	int api_port = RpcLibPort;
     std::string physics_engine_name = "";
 
     std::string clock_type = "";
@@ -676,7 +673,7 @@ private:
         auto vehicle_type = Utils::toLower(settings_json.getString("VehicleType", ""));
 
         std::unique_ptr<VehicleSetting> vehicle_setting;
-        if (vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo)
+        if (vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo || vehicle_type == kVehicleTypeArduCopter)
             vehicle_setting = createMavLinkVehicleSetting(settings_json);
         //for everything else we don't need derived class yet
         else {
@@ -708,10 +705,7 @@ private:
         vehicle_setting->is_fpv_vehicle = settings_json.getBool("IsFpvVehicle",
             vehicle_setting->is_fpv_vehicle);
 
-        Settings rc_json;
-        if (settings_json.getChild("RC", rc_json)) {
-            loadRCSetting(simmode_name, rc_json, vehicle_setting->rc);
-        }
+        loadRCSetting(simmode_name, settings_json, vehicle_setting->rc);
 
         vehicle_setting->position = createVectorSetting(settings_json, vehicle_setting->position);
         vehicle_setting->rotation = createRotationSetting(settings_json, vehicle_setting->rotation);
@@ -992,6 +986,7 @@ private:
         //because for docker container default is 0.0.0.0 and people get really confused why things
         //don't work
         api_server_address = settings_json.getString("LocalHostIp", "");
+		api_port = settings_json.getInt("ApiServerPort", RpcLibPort);
         is_record_ui_visible = settings_json.getBool("RecordUIVisible", true);
         engine_sound = settings_json.getBool("EngineSound", false);
         enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);

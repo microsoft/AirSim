@@ -64,7 +64,7 @@ responses = client.simGetImages([
 If you plan to use numpy for image manipulation, you should get uncompressed RGB image and then convert to numpy like this:
 
 ```python
-responses = client.simGetImages([ImageRequest("0", airsim.ImageType.Scene, False, False)])
+responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
 response = responses[0]
 
 # get numpy array

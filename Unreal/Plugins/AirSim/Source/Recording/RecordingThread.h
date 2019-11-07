@@ -10,6 +10,7 @@
 #include <memory>
 #include "common/ClockFactory.hpp"
 #include "common/AirSimSettings.hpp"
+#include "common/WorkerThread.hpp"
 
 class FRecordingThread : public FRunnable
 {
@@ -19,9 +20,12 @@ public:
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
+
+    static void init();
     static void startRecording(const msr::airlib::ImageCaptureBase* camera, const msr::airlib::Kinematics::State* kinematics, 
         const RecordingSetting& settings, msr::airlib::VehicleSimApiBase* vehicle_sim_api);
-    static void stopRecording(); 
+    static void stopRecording();
+    static void killRecording();
     static bool isRecording();
 
 protected:
@@ -31,11 +35,13 @@ protected:
     virtual void Exit() override;
 
 private:
-    void EnsureCompletion();
-
-private:
     FThreadSafeCounter stop_task_counter_;
     FRenderCommandFence read_pixel_fence_;
+
+    static std::unique_ptr<FRecordingThread> running_instance_;
+    static std::unique_ptr<FRecordingThread> finishing_instance_;
+    static msr::airlib::WorkerThreadSignal finishing_signal_;
+    static bool first_;
     
     static std::unique_ptr<FRecordingThread> instance_;
 

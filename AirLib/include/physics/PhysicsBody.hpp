@@ -95,10 +95,8 @@ public: //methods
 
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableObject::reset();
-
         if (environment_)
             environment_->reset();
         wrench_ = Wrench::zero();

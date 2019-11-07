@@ -69,7 +69,7 @@ public: //optional overrides
         unused(environment);
     }
 
-    virtual void reset() override;
+    virtual void resetImplementation() override;
 
 
 public: //these APIs uses above low level APIs

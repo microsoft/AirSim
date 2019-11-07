@@ -318,14 +318,14 @@ private:
 	{
 		double Fz, xddot, yddot;
 		int i;
-		Fz = (zddot + 9.81)*0.9116;
+		Fz = (zddot + 9.81)*m;
 		xddot = -2.0 * xdot - 2.0 * (x_current - x_desired); 
 		yddot = -2.0 * ydot - 3.0 * (y_current - y_desired); 
 		if (Fz == 0) {
-			Fz = 9.81*0.9116;
+			Fz = 9.81*m;
 		}
-		result[0][0] = (xddot*sin(yaw_current) - yddot*cos(yaw_current))*0.9116 / Fz;
-		result[1][0] = (xddot*cos(yaw_current) + yddot*sin(yaw_current))*0.9116 / Fz;
+		result[0][0] = (xddot*sin(yaw_current) - yddot*cos(yaw_current))*m / Fz;
+		result[1][0] = (xddot*cos(yaw_current) + yddot*sin(yaw_current))*m / Fz;
 		// Limit the angle reference values
 		for (i = 0; i < 2; i++) { 
 			if (result[i][0] > 0.3) {

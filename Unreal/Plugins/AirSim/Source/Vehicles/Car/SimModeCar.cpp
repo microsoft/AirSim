@@ -77,7 +77,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::CarRpcLibServer(
-        getApiProvider(), getSettings().api_server_address));
+        getApiProvider(), getSettings().api_server_address, getSettings().api_port));
 #endif
 }
 

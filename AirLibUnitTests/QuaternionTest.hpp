@@ -52,15 +52,15 @@ private:
         if (rotAxis.squaredNorm() == 0)
             rotAxis = VectorMath::up();
         float dot = VectorMath::front().dot(toVector);
-        float ang = std::acosf(dot);
+        float ang = std::acos(dot);
 
         return VectorMath::toQuaternion(rotAxis, ang);
     }
 
     Quaternionr toQuaternion(const Vector3r& axis, float angle) {
-        auto s = std::sinf(angle / 2);
+        auto s = std::sin(angle / 2.0f);
         auto u = axis.normalized();
-        return Quaternionr(std::cosf(angle / 2), u.x() * s, u.y() * s, u.z() * s);
+        return Quaternionr(std::cos(angle / 2.0f), u.x() * s, u.y() * s, u.z() * s);
     }
 
     void lookAtTest()

@@ -219,7 +219,9 @@ private:
         // if we are not trying to move by setting motor outputs
         if (takenoff_)
         {
-            if (!isGreaterThanArmedThrottle(goal_.throttle())) {
+            //if (!isGreaterThanArmedThrottle(goal_.throttle())) {
+            float checkThrottle = rc_.getMotorOutput();
+            if (!isGreaterThanArmedThrottle(checkThrottle)) {
                 // and we are not currently moving (based on current velocities)
                 auto angular = state_estimator_->getAngularVelocity();
                 auto velocity = state_estimator_->getLinearVelocity();
@@ -238,9 +240,10 @@ private:
         // if we are not trying to move by setting motor outputs
         if (!takenoff_)
         {
+            float checkThrottle = rc_.getMotorOutput();
             //TODO: better handling of landed & takenoff states 
-            if (isGreaterThanArmedThrottle(goal_.throttle()) &&
-                std::abs(state_estimator_->getLinearVelocity().z()) > 0.01f) {
+            if (isGreaterThanArmedThrottle(checkThrottle) &&
+              std::abs(state_estimator_->getLinearVelocity().z()) > 0.01f) {
                 takenoff_ = true;
                 landed_ = false;
             }

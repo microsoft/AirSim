@@ -450,7 +450,7 @@ public:
     static std::size_t length(const T(&)[N])
     {
         return N;
-    };
+    }
 
     static void saveToFile(string file_name, const char* data, uint size)
     {

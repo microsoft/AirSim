@@ -65,6 +65,11 @@ CarApiBase::CarState CarRpcLibClient::getCarState(const std::string& vehicle_nam
     return static_cast<rpc::client*>(getClient())->
         call("getCarState", vehicle_name).as<CarRpcLibAdapators::CarState>().to();
 }
+CarApiBase::CarControls CarRpcLibClient::getCarControls(const std::string& vehicle_name)
+{
+	return static_cast<rpc::client*>(getClient())->
+		call("getCarControls", vehicle_name).as<CarRpcLibAdapators::CarControls>().to();
+}
 
 
 }} //namespace

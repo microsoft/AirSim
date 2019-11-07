@@ -161,6 +161,9 @@ class VehicleClient:
 
     def getLidarData(self, lidar_name = '', vehicle_name = ''):
         return LidarData.from_msgpack(self.client.call('getLidarData', lidar_name, vehicle_name))
+        
+    def simGetLidarSegmentation(self, lidar_name = '', vehicle_name = ''):
+        return self.client.call('simGetLidarSegmentation', lidar_name, vehicle_name)
 
     #----------- APIs to control ACharacter in scene ----------/
     def simCharSetFaceExpression(self, expression_name, value, character_name = ""):
@@ -196,9 +199,9 @@ class VehicleClient:
     def simCharGetBonePoses(self, bone_names, character_name = ""):
         return self.client.call('simGetBonePoses', bone_names, character_name)
 
-    def cancelLastTask():
-        self.client.call('cancelLastTask')
-    def waitOnLastTask(timeout_sec = float('nan')):
+    def cancelLastTask(self, vehicle_name = ''):
+        self.client.call('cancelLastTask', vehicle_name)
+    def waitOnLastTask(self, timeout_sec = float('nan')):
         return self.client.call('waitOnLastTask', timeout_sec)
 
     # legacy handling
@@ -335,3 +338,6 @@ class CarClient(VehicleClient, object):
     def getCarState(self, vehicle_name = ''):
         state_raw = self.client.call('getCarState', vehicle_name)
         return CarState.from_msgpack(state_raw)
+    def getCarControls(self, vehicle_name=''):
+        controls_raw = self.client.call('getCarControls', vehicle_name)
+        return CarControls.from_msgpack(controls_raw)

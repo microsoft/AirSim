@@ -24,10 +24,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        PhysicsEngineBase::reset();
-
         for (PhysicsBody* body_ptr : *this) {
             initPhysicsBody(body_ptr);
         }
