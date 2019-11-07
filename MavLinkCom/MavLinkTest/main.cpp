@@ -1122,13 +1122,6 @@ bool connect()
         usedPorts.push_back(offboardEndPoint);
     }
 
-    if (verbose) {
-        droneConnection->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
-            printf("Received msg %d from drone\n", static_cast<int>(msg.msgid));
-        });
-    }
-
-
     if (server)
     {
         if (serverEndPoint.addr == "") {
@@ -1152,6 +1145,12 @@ bool connect()
     {
         // failed to connect
         return false;
+    }
+
+    if (verbose) {
+        droneConnection->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
+            printf("Received msg %d from drone\n", static_cast<int>(msg.msgid));
+            });
     }
 
     if (outLogFile != nullptr) {

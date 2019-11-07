@@ -1,10 +1,12 @@
 #include "ThreadUtils.hpp"
 
+#include <codecvt>
 
 #ifdef _WIN32
 #include <windows.h> // SetThreadPriority and GetCurrentThread
 #else
 #include <pthread.h>
+#include <sys/prctl.h>
 #endif
 
 using namespace mavlink_utils;
@@ -33,4 +35,18 @@ bool CurrentThread::setMaximumPriority()
 	err = pthread_setschedprio(pthread_self(), maxPriority);
 	return err == 0;
 #endif
+}
+
+bool CurrentThread::setThreadName(const std::string& name)
+{
+#ifdef _WIN32
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::wstring wide_path = converter.from_bytes(name.c_str());
+    return S_OK == SetThreadDescription(GetCurrentThread(), wide_path.c_str());
+#else
+    
+    return 0 == prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);
+
+#endif
+
 }

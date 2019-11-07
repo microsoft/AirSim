@@ -254,7 +254,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     int msglen = 0;
     if (entry != nullptr) {
         crc_extra = entry->crc_extra;
-        msglen = entry->msg_len;
+        msglen = entry->min_msg_len;
     }
     if (msg.msgid == MavLinkTelemetry::kMessageId) {
         msglen = 28; // mavlink doesn't know about our custom telemetry message.
@@ -373,6 +373,7 @@ void MavLinkConnectionImpl::join(std::shared_ptr<MavLinkConnection> remote, bool
 void MavLinkConnectionImpl::readPackets()
 {
     //CurrentThread::setMaximumPriority();
+    CurrentThread::setThreadName("MavLinkThread");
     std::shared_ptr<Port> safePort = this->port;
     mavlink_message_t msg;
     mavlink_message_t msgBuffer; // intermediate state.
@@ -536,6 +537,7 @@ void MavLinkConnectionImpl::drainQueue()
 void MavLinkConnectionImpl::publishPackets()
 {
     //CurrentThread::setMaximumPriority();
+    CurrentThread::setThreadName("MavLinkThread");
     while (!closed) {
 
         drainQueue();

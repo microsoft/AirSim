@@ -46,6 +46,10 @@ namespace MavLinkComGenerator
 
         [XmlText]
         public string description { get; set; }
+
+        [XmlAttribute]
+        public string label { get; set; }
+
     }
 
     public class MavEnumEntry

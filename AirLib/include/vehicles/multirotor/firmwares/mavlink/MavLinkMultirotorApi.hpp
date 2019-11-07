@@ -202,7 +202,7 @@ public: //methods
     {
         updateState();
         return Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
-    } 
+    }
     virtual Vector3r getVelocity() const override
     {
         updateState();
@@ -292,7 +292,7 @@ public: //methods
         const auto& waiter = waitForFunction([&]() {
             updateState();
             return current_state_.controls.landed;
-        }, timeout_sec);
+            }, timeout_sec);
 
         // Wait for landed state (or user cancellation)
         if (!waiter.isComplete())
@@ -323,7 +323,7 @@ public: //methods
         checkValidVehicle();
         mavlinkcom::AsyncResult<bool> result = mav_vehicle_->loiter();
         //auto start_time = std::chrono::system_clock::now();
-        while (! getCancelToken().isCancelled())
+        while (!getCancelToken().isCancelled())
         {
             if (result.wait(100, &rc))
             {
@@ -467,7 +467,7 @@ protected: //methods
         endOffboardMode();
     }
 
-public: 
+public:
 
     class MavLinkLogViewerLog : public mavlinkcom::MavLinkLog
     {
@@ -486,53 +486,53 @@ public:
         std::shared_ptr<mavlinkcom::MavLinkNode> proxy_;
     };
 
-	
+
 protected: //methods
-	
-	virtual void connect()
-	{
-		createMavConnection(connection_info_);
-		initializeMavSubscriptions();
-	}
 
-	virtual void close()
-	{
-		if (connection_ != nullptr) {
-			if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
-				setNormalMode();
-			}
+    virtual void connect()
+    {
+        createMavConnection(connection_info_);
+        initializeMavSubscriptions();
+    }
 
-			connection_->close();
-		}
+    virtual void close()
+    {
+        if (connection_ != nullptr) {
+            if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
+                setNormalMode();
+            }
 
-		if (hil_node_ != nullptr)
-			hil_node_->close();
+            connection_->close();
+        }
 
-		if (video_server_ != nullptr)
-			video_server_->close();
+        if (hil_node_ != nullptr)
+            hil_node_->close();
 
-		if (logviewer_proxy_ != nullptr) {
-			logviewer_proxy_->close();
-			logviewer_proxy_ = nullptr;
-		}
+        if (video_server_ != nullptr)
+            video_server_->close();
 
-		if (logviewer_out_proxy_ != nullptr) {
-			if (mav_vehicle_ != nullptr) {
-				mav_vehicle_->getConnection()->stopLoggingSendMessage();
-			}
-			logviewer_out_proxy_->close();
-			logviewer_out_proxy_ = nullptr;
-		}
+        if (logviewer_proxy_ != nullptr) {
+            logviewer_proxy_->close();
+            logviewer_proxy_ = nullptr;
+        }
 
-		if (qgc_proxy_ != nullptr) {
-			qgc_proxy_->close();
-			qgc_proxy_ = nullptr;
-		}
-		if (mav_vehicle_ != nullptr) {
-			mav_vehicle_->close();
-			mav_vehicle_ = nullptr;
-		}
-	}
+        if (logviewer_out_proxy_ != nullptr) {
+            if (mav_vehicle_ != nullptr) {
+                mav_vehicle_->getConnection()->stopLoggingSendMessage();
+            }
+            logviewer_out_proxy_->close();
+            logviewer_out_proxy_ = nullptr;
+        }
+
+        if (qgc_proxy_ != nullptr) {
+            qgc_proxy_->close();
+            qgc_proxy_ = nullptr;
+        }
+        if (mav_vehicle_ != nullptr) {
+            mav_vehicle_->close();
+            mav_vehicle_ = nullptr;
+        }
+    }
 
     const ImuBase* getImu() const
     {
@@ -555,15 +555,15 @@ protected: //methods
         return static_cast<const GpsBase*>(sensors_->getByType(SensorBase::SensorType::Gps));
     }
 
-	void closeAllConnection()
-	{
-		close();
-	}
+    void closeAllConnection()
+    {
+        close();
+    }
 
 
 private: //methods
 
-	void openAllConnections()
+    void openAllConnections()
     {
         close(); //just in case if connections were open
         resetState(); //reset all variables we might have changed during last session
@@ -649,9 +649,6 @@ private: //methods
         cmd.command = static_cast<uint16_t>(mavlinkcom::MAV_CMD::MAV_CMD_DO_SET_MODE);
         cmd.Mode = static_cast<float>(mode);
         mav_vehicle_->sendCommand(cmd);
-
-        // todo: how to determine if lockstep is required? (PX4: ENABLE_LOCKSTEP_SCHEDULER)
-        lock_step_enabled_ = true;
 
         is_hil_mode_set_ = true;
     }
@@ -740,7 +737,7 @@ private: //methods
             connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                 unused(connection);
                 processMavMessages(msg);
-            });
+                });
 
             // listen to the other mavlink connection also
             auto mavcon = mav_vehicle_->getConnection();
@@ -748,7 +745,7 @@ private: //methods
                 mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                     unused(connection);
                     processMavMessages(msg);
-                });
+                    });
             }
         }
     }
@@ -813,7 +810,7 @@ private: //methods
                 connection->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection_val, const mavlinkcom::MavLinkMessage& msg) {
                     unused(connection_val);
                     processQgcMessages(msg);
-                });
+                    });
             }
         }
         return qgc_proxy_ != nullptr;
@@ -1063,6 +1060,11 @@ private: //methods
             }
             normalizeRotorControls();
             received_actuator_controls_ = true;
+            if (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec)
+            {
+                // if the timestamps match then it means we are in lockstep mode.
+                lock_step_enabled_ = true;
+            }
         }
         //else ignore message
     }
@@ -1075,11 +1077,12 @@ private: //methods
         if (lock_step_enabled_ && !received_actuator_controls_)
         {
             // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
-            return; 
+            return;
         }
 
         mavlinkcom::MavLinkHilSensor hil_sensor;
-        hil_sensor.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        last_hil_sensor_time_ = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        hil_sensor.time_usec = last_hil_sensor_time_;
 
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
@@ -1189,13 +1192,13 @@ protected: //variables
 
     //TODO: below was made protected from private to support Ardupilot
     //implementation but we need to review this and avoid having protected variables
-	static const int RotorControlsCount = 8;
+    static const int RotorControlsCount = 8;
 
-	const SensorCollection* sensors_;
-	mutable std::mutex hil_controls_mutex_;
-	AirSimSettings::MavLinkConnectionInfo connection_info_;
-	float rotor_controls_[RotorControlsCount];
-	bool is_simulation_mode_;
+    const SensorCollection* sensors_;
+    mutable std::mutex hil_controls_mutex_;
+    AirSimSettings::MavLinkConnectionInfo connection_info_;
+    float rotor_controls_[RotorControlsCount];
+    bool is_simulation_mode_;
 
 
 private: //variables
@@ -1236,6 +1239,7 @@ private: //variables
     int hil_state_freq_;
     bool actuators_message_supported_;
     uint64_t last_gps_time_;
+    uint64_t last_hil_sensor_time_;
     bool was_reset_;
     bool is_ready_;
     bool lock_step_enabled_;

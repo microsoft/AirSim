@@ -5,6 +5,7 @@
 #include "Utils.hpp"
 #include "MavLinkMessages.hpp"
 #include "Semaphore.hpp"
+#include "ThreadUtils.hpp"
 
 using namespace mavlink_utils;
 
@@ -48,6 +49,7 @@ void MavLinkNodeImpl::startHeartbeat()
 
 void MavLinkNodeImpl::sendHeartbeat()
 {
+    CurrentThread::setThreadName("MavLinkThread");
     while (heartbeat_running_) {
         MavLinkHeartbeat heartbeat;
         // send a heart beat so that the remote node knows we are still alive
@@ -85,7 +87,7 @@ void MavLinkNodeImpl::handleMessage(std::shared_ptr<MavLinkConnection> connectio
         {
             req_cap_ = true;
             MavCmdRequestAutopilotCapabilities cmd{};
-            cmd.p1 = 1;
+            cmd.param1 = 1;
             sendCommand(cmd);
         }
         break;
@@ -143,7 +145,7 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
 
     // request capabilities, it will respond with AUTOPILOT_VERSION.
     MavCmdRequestAutopilotCapabilities cmd{};
-    cmd.p1 = 1;
+    cmd.param1 = 1;
     sendCommand(cmd);
 
     return result;
@@ -179,8 +181,8 @@ void MavLinkNodeImpl::setMessageInterval(int msgId, int frequency)
 {
     float intervalMicroseconds = 1000000.0f / frequency;
     MavCmdSetMessageInterval cmd{};
-    cmd.TheMavlinkMessage = static_cast<float>(msgId);
-    cmd.TheIntervalBetween = intervalMicroseconds;
+    cmd.MessageId = static_cast<float>(msgId);
+    cmd.Interval = intervalMicroseconds;
     sendCommand(cmd);
 }
 

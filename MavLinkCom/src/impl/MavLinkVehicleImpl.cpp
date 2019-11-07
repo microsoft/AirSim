@@ -486,7 +486,7 @@ void MavLinkVehicleImpl::writeMessage(MavLinkMessageBase& msg, bool update_stats
 AsyncResult<bool> MavLinkVehicleImpl::armDisarm(bool arm)
 {
     MavCmdComponentArmDisarm cmd{};
-    cmd.p1ToArm = arm ? 1.0f : 0.0f;
+    cmd.Arm = arm ? 1.0f : 0.0f;
     return sendCommandAndWaitForAck(cmd);
 }
 
@@ -497,8 +497,8 @@ AsyncResult<bool> MavLinkVehicleImpl::takeoff(float z, float pitch, float yaw)
     float targetAlt = vehicle_state_.home.global_pos.alt - deltaZ;
     Utils::log(Utils::stringf("Take off to %f", targetAlt));
     MavCmdNavTakeoff cmd{};
-    cmd.MinimumPitch = pitch;
-    cmd.YawAngle = yaw;
+    cmd.Pitch = pitch;
+    cmd.Yaw = yaw;
     cmd.Latitude = INFINITY;
     cmd.Longitude = INFINITY;
     cmd.Altitude = targetAlt;
@@ -531,10 +531,10 @@ AsyncResult<bool> MavLinkVehicleImpl::land(float yaw, float lat, float lon, floa
 {
     MavCmdNavLand cmd{};
     cmd.AbortAlt = 1;
-    cmd.DesiredYawAngle = yaw;
+    cmd.YawAngle = yaw;
     cmd.Latitude = lat;
     cmd.Longitude = lon;
-    cmd.Altitude = altitude;
+    cmd.LandingAltitude = altitude;
     return sendCommandAndWaitForAck(cmd);
 }
 
@@ -585,7 +585,7 @@ void MavLinkVehicleImpl::releaseControl()
     control_request_sent_ = false;
     vehicle_state_.controls.offboard = false;
     MavCmdNavGuidedEnable cmd{};
-    cmd.OnOff = 0;
+    cmd.Enable = 0;
     sendCommand(cmd);
 }
 
@@ -612,7 +612,7 @@ void MavLinkVehicleImpl::checkOffboard()
         // now the command should succeed.
         bool r = false;
         MavCmdNavGuidedEnable cmd{};
-        cmd.OnOff = 1;
+        cmd.Enable = 1;
         // Note: we can't wait for ACK here, I've tried it.  The ACK takes too long to get back to
         // us by which time the PX4 times out offboard mode!!
         sendCommand(cmd);
@@ -694,7 +694,7 @@ AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int cust
     MavCmdDoSetMode cmd{};
     cmd.Mode = static_cast<float>(mode);
     cmd.CustomMode = static_cast<float>(customMode);
-    cmd.CustomSubMode = static_cast<float>(customSubMode);
+    cmd.CustomSubmode = static_cast<float>(customSubMode);
     return sendCommandAndWaitForAck(cmd);
 }
 
