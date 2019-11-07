@@ -460,6 +460,66 @@ class VehicleClient:
     def setRCData(self, rcdata = RCData()):
         raise Exception("setRCData API is deprecated. Please use moveByRC() API." + self.upgrade_api_help)
 
+    def setAngleRateControllerGains(self, angle_rate_gains=AngleRateControllerGains(), vehicle_name = ''):
+        """
+        - Modifying these gains will have an affect on *ALL* move*() APIs. 
+            This is because any velocity setpoint is converted to an angle level setpoint which is tracked with an angle level controllers. 
+            That angle level setpoint is itself tracked with and angle rate controller.  
+        - This function should only be called if the default angle rate control PID gains need to be modified.
+
+        Args:
+            angle_rate_gains (AngleRateControllerGains): 
+                - Correspond to the roll, pitch, yaw axes, defined in the body frame. 
+                - Pass AngleRateControllerGains() to reset gains to default recommended values.
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        """
+        self.client.call('setAngleRateControllerGains', *(angle_rate_gains.to_lists()+(vehicle_name,)))
+
+    def setAngleLevelControllerGains(self, angle_level_gains=AngleLevelControllerGains(), vehicle_name = ''):
+        """
+        - Sets angle level controller gains (used by any API setting angle references - for ex: moveByRollPitchYawZAsync(), moveByRollPitchYawThrottleAsync(), etc)
+        - Modifying these gains will also affect the behaviour of moveByVelocityAsync() API. 
+            This is because the AirSim flight controller will track velocity setpoints by converting them to angle set points.  
+        - This function should only be called if the default angle level control PID gains need to be modified.
+        - Passing AngleLevelControllerGains() sets gains to default airsim values. 
+
+        Args:
+            angle_level_gains (AngleLevelControllerGains): 
+                - Correspond to the roll, pitch, yaw axes, defined in the body frame. 
+                - Pass AngleLevelControllerGains() to reset gains to default recommended values.
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        """
+        self.client.call('setAngleLevelControllerGains', *(angle_level_gains.to_lists()+(vehicle_name,)))
+
+    def setVelocityControllerGains(self, velocity_gains=VelocityControllerGains(), vehicle_name = ''):
+        """
+        - Sets velocity controller gains for moveByVelocityAsync().
+        - This function should only be called if the default velocity control PID gains need to be modified.
+        - Passing VelocityControllerGains() sets gains to default airsim values. 
+
+        Args:
+            velocity_gains (VelocityControllerGains): 
+                - Correspond to the world X, Y, Z axes. 
+                - Pass VelocityControllerGains() to reset gains to default recommended values.
+                - Modifying velocity controller gains will have an affect on the behaviour of moveOnSplineAsync() and moveOnSplineVelConstraintsAsync(), as they both use velocity control to track the trajectory. 
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        """
+        self.client.call('setVelocityControllerGains', *(velocity_gains.to_lists()+(vehicle_name,)))
+
+
+    def setPositionControllerGains(self, position_gains=PositionControllerGains(), vehicle_name = ''):
+        """
+        Sets position controller gains for moveByPositionAsync.
+        This function should only be called if the default position control PID gains need to be modified.
+
+        Args:
+            position_gains (PositionControllerGains): 
+                - Correspond to the X, Y, Z axes. 
+                - Pass PositionControllerGains() to reset gains to default recommended values.
+            vehicle_name (str, optional): Name of the multirotor to send this command to 
+        """
+        self.client.call('setPositionControllerGains', *(position_gains.to_lists()+(vehicle_name,)))
+
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
