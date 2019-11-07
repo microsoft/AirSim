@@ -117,10 +117,10 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     UWeatherLib::setWeatherParamScalar(simmode_->GetWorld(), param_e, val);
 }
 
-std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id)
+std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
 {
 	auto swappedObjectNames = std::make_unique<std::vector<std::string>>();
-	UAirBlueprintLib::RunCommandOnGameThread([this, &tag, tex_id, &swappedObjectNames]() {
+	UAirBlueprintLib::RunCommandOnGameThread([this, &tag, tex_id, component_id, material_id, &swappedObjectNames]() {
 		//Split the tag string into individual tags.
 		TArray<FString> splitTags;
 		FString notSplit = FString(tag.c_str());
@@ -148,7 +148,7 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 			
 			if (invalidChoice)
 				continue;
-			dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(tex_id);
+			dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(tex_id, component_id, material_id);
 			swappedObjectNames->push_back(TCHAR_TO_UTF8(*shuffler->GetName()));
 		}
 	}, true);

@@ -1,21 +1,33 @@
 #include "TextureShuffleActor.h"
 
-void ATextureShuffleActor::SwapTexture_Implementation(int tex_id)
+void ATextureShuffleActor::SwapTexture_Implementation(int tex_id, int component_id, int material_id)
 {
 	if (SwappableTextures.Num() < 1)
 		return;
-	tex_id %= SwappableTextures.Num();
 
-	if (DynamicMaterialInstance == nullptr)
+	if (!MaterialCacheInitialized)
 	{
-		DynamicMaterialInstance = UMaterialInstanceDynamic::Create(DynamicMaterial, this);
 		TArray<UStaticMeshComponent*> components;
 		GetComponents<UStaticMeshComponent>(components);
-		if (components.Num() < 1)
-			return;
-		components[0]->SetMaterial(0, DynamicMaterialInstance);
+		NumComponents = components.Num();
+		DynamicMaterialInstances.Init(nullptr, NumComponents);
+		MaterialCacheInitialized = true;
 	}
 
-	DynamicMaterialInstance->SetTextureParameterValue("TextureParameter", SwappableTextures[tex_id]);
-	Current_Id = tex_id;
+	if (NumComponents == 0 || DynamicMaterialInstances.Num() == 0)
+		return;
+
+	tex_id %= SwappableTextures.Num();
+	component_id %= NumComponents;
+	material_id %= DynamicMaterialInstances.Num();
+
+	if (DynamicMaterialInstances[material_id] == nullptr)
+	{
+		DynamicMaterialInstances[material_id] = UMaterialInstanceDynamic::Create(DynamicMaterial, this);
+		TArray<UStaticMeshComponent*> components;
+		GetComponents<UStaticMeshComponent>(components);
+		components[component_id]->SetMaterial(material_id, DynamicMaterialInstances[material_id]);
+	}
+
+	DynamicMaterialInstances[material_id]->SetTextureParameterValue("TextureParameter", SwappableTextures[tex_id]);
 }
