@@ -152,7 +152,7 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 			swappedObjectNames->push_back(TCHAR_TO_UTF8(*shuffler->GetName()));
 		}
 	}, true);
-	return std::move(swappedObjectNames);
+	return swappedObjectNames;
 }
 
 //------------------------------------------------- Char APIs -----------------------------------------------------------/
