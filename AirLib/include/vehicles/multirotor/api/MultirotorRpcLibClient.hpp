@@ -47,8 +47,11 @@ public:
     MultirotorRpcLibClient* rotateByYawRateAsync(float yaw_rate, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* hoverAsync(const std::string& vehicle_name = "");
 
+    void setAngleLevelControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name="");
+    void setAngleRateControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name="");
+    void setVelocityControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name="");
+    void setPositionControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name="");
     void moveByRC(const RCData& rc_data, const std::string& vehicle_name = "");
-
 
     MultirotorState getMultirotorState(const std::string& vehicle_name = "");
 

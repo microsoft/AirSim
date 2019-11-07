@@ -303,6 +303,55 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
+    virtual void setControllerGains(uint8_t controller_type, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) override
+    {
+        simple_flight::GoalModeType controller_type_enum = static_cast<simple_flight::GoalModeType>(controller_type);
+
+        vector<float> kp_axis4(4);
+        vector<float> ki_axis4(4);
+        vector<float> kd_axis4(4);
+
+        switch(controller_type_enum) {
+            // roll gain, pitch gain, yaw gain, and no gains in throttle / z axis
+            case simple_flight::GoalModeType::AngleRate:
+                kp_axis4 = {kp[0], kp[1], kp[2], 1.0};
+                ki_axis4  ={ki[0], ki[1], ki[2], 0.0};
+                kd_axis4 = {kd[0], kd[1], kd[2], 0.0};
+                params_.angle_rate_pid.p.setValues(kp_axis4);
+                params_.angle_rate_pid.i.setValues(ki_axis4);
+                params_.angle_rate_pid.d.setValues(kd_axis4);
+                params_.gains_changed = true;
+                break;
+            case simple_flight::GoalModeType::AngleLevel:
+                kp_axis4 = {kp[0], kp[1], kp[2], 1.0};
+                ki_axis4 = {ki[0], ki[1], ki[2], 0.0};
+                kd_axis4 = {kd[0], kd[1], kd[2], 0.0};
+                params_.angle_level_pid.p.setValues(kp_axis4);
+                params_.angle_level_pid.i.setValues(ki_axis4);
+                params_.angle_level_pid.d.setValues(kd_axis4);
+                params_.gains_changed = true;
+                break;
+            case simple_flight::GoalModeType::VelocityWorld:
+                kp_axis4 = {kp[1], kp[0], 0.0, kp[2]};
+                ki_axis4 = {ki[1], ki[0], 0.0, ki[2]};
+                kd_axis4 = {kd[1], kd[0], 0.0, kd[2]};
+                params_.velocity_pid.p.setValues(kp_axis4);
+                params_.velocity_pid.i.setValues(ki_axis4);
+                params_.velocity_pid.d.setValues(kd_axis4);
+                params_.gains_changedgains_changed = true;
+                break;
+            case simple_flight::GoalModeType::PositionWorld:
+                kp_axis4 = {kp[1], kp[0], 0.0, kp[2]};
+                ki_axis4 = {ki[1], ki[0], 0.0, ki[2]};
+                kd_axis4 = {kd[1], kd[0], 0.0, kd[2]};
+                params_.position_pid.p.setValues(kp_axis4);
+                params_.position_pid.i.setValues(ki_axis4);
+                params_.position_pid.d.setValues(kd_axis4);
+                params_.gains_changed = true;
+                break;
+        }
+    }
+
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
         //Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));

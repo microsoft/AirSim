@@ -18,7 +18,7 @@ namespace simple_flight {
 
 class Firmware : public IFirmware {
 public:
-    Firmware(const Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator)
+    Firmware(Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator)
         : params_(params), board_(board), comm_link_(comm_link), state_estimator_(state_estimator),
         offboard_api_(params, board, board, state_estimator, comm_link), mixer_(params)
     {
@@ -77,7 +77,7 @@ public:
 
 private:
     //objects we use
-    const Params* params_;
+    Params* params_;
     IBoard* board_;
     ICommLink* comm_link_;
     IStateEstimator* state_estimator_;

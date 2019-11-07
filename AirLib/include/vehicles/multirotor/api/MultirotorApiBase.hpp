@@ -34,6 +34,9 @@ protected: //must be implemented
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) = 0;
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) = 0;
 
+    /************************* set Controller Gains APIs *********************************/
+    virtual void setControllerGains(uint8_t controllerType, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) { }
+
     /************************* State APIs *********************************/
     virtual Kinematics::State getKinematicsEstimated() const = 0;
     virtual LandedState getLandedState() const = 0;
@@ -105,6 +108,12 @@ public: //these APIs uses above low level APIs
     virtual bool hover();
     virtual RCData estimateRCTrims(float trimduration = 1, float minCountForTrim = 10, float maxTrim = 100);
     
+    /************************* set angle gain APIs *********************************/
+    virtual void setAngleLevelControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd); 
+    virtual void setAngleRateControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd); 
+    virtual void setVelocityControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd); 
+    virtual void setPositionControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd); 
+
     /************************* Safety APIs *********************************/
     virtual void setSafetyEval(const shared_ptr<SafetyEval> safety_eval_ptr);
     virtual bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,

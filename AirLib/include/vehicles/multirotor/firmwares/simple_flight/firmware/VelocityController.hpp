@@ -18,7 +18,7 @@ class VelocityController :
     public IGoal  //for internal child controller
 {
 public:
-    VelocityController(const Params* params, const IBoardClock* clock = nullptr)
+    VelocityController(Params* params, const IBoardClock* clock = nullptr)
         : params_(params), clock_(clock)
     {
     }
@@ -30,7 +30,7 @@ public:
         state_estimator_ = state_estimator;
 
         PidConfig<float> pid_config(params_->velocity_pid.p[axis],
-            params_->velocity_pid.i[axis], 0);
+            params_->velocity_pid.i[axis], params_->velocity_pid.d[axis]);
         pid_config.iterm_discount = params_->velocity_pid.iterm_discount[axis];
         pid_config.output_bias = params_->velocity_pid.output_bias[axis];
 
@@ -146,7 +146,7 @@ private:
 
     TReal output_;
 
-    const Params* params_;
+    Params* params_;
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
     std::unique_ptr<IAxisController> child_controller_;

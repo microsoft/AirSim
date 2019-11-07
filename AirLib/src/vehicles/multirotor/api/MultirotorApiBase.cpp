@@ -471,6 +471,30 @@ bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
     return waiter.isTimeout();
 }
 
+void MultirotorApiBase::setAngleLevelControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) 
+{
+    uint8_t controller_type = 2;
+    setControllerGains(controller_type, kp, ki, kd);
+}
+
+void MultirotorApiBase::setAngleRateControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) 
+{
+    uint8_t controller_type = 3;
+    setControllerGains(controller_type, kp, ki, kd);
+}
+
+void MultirotorApiBase::setVelocityControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) 
+{
+    uint8_t controller_type = 4;
+    setControllerGains(controller_type, kp, ki, kd);
+}
+
+void MultirotorApiBase::setPositionControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) 
+{
+    uint8_t controller_type = 5;
+    setControllerGains(controller_type, kp, ki, kd);
+}
+
 bool MultirotorApiBase::hover()
 {
     SingleTaskCall lock(this);
