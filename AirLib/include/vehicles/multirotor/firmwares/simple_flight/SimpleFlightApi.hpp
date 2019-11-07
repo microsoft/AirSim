@@ -338,7 +338,7 @@ protected:
                 params_.velocity_pid.p.setValues(kp_axis4);
                 params_.velocity_pid.i.setValues(ki_axis4);
                 params_.velocity_pid.d.setValues(kd_axis4);
-                params_.gains_changedgains_changed = true;
+                params_.gains_changed = true;
                 break;
             case simple_flight::GoalModeType::PositionWorld:
                 kp_axis4 = {kp[1], kp[0], 0.0, kp[2]};

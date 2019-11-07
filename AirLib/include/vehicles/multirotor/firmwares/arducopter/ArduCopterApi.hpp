@@ -180,20 +180,27 @@ protected:
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
     }
 
-    virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
+    virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) override
     {
-        unused(pitch);
         unused(roll);
-        unused(throttle);
+        unused(pitch);
         unused(yaw_rate);
         Utils::log("Not Implemented: commandRollPitchThrottle", Utils::kLogLevelInfo);
     }
 
-    virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
+    virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
     {
-        unused(pitch);
         unused(roll);
+        unused(pitch);
+        unused(yaw);
         unused(z);
+        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) override
+    {
+        unused(roll);
+        unused(pitch);
         unused(yaw);
         Utils::log("Not Implemented: commandRollPitchZ", Utils::kLogLevelInfo);
     }
