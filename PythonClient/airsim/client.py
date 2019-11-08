@@ -168,6 +168,31 @@ class VehicleClient:
     def simGetLidarSegmentation(self, lidar_name = '', vehicle_name = ''):
         return self.client.call('simGetLidarSegmentation', lidar_name, vehicle_name)
 
+    #  Plotting APIs
+    def simPlotPoints(self, points, color_rgba=[1.0, 0.0, 0.0, 0.4], size = 10, duration = -1.0, is_persistent = False):
+        return self.client.call('simPlotPoints', points, color_rgba, size, duration, is_persistent)
+
+    def simPlotLineStrip(self, points, color_rgba=[1.0, 0.0, 0.0, 0.4], thickness = 5, duration = -1.0, is_persistent = False):
+        return self.client.call('simPlotLineStrip', points, color_rgba, thickness, duration, is_persistent)
+
+    def simPlotLineList(self, points, color_rgba=[1.0, 0.0, 0.0, 0.4], thickness = 5, duration = -1.0, is_persistent = False):
+        return self.client.call('simPlotLineList', points, color_rgba, thickness, duration, is_persistent)
+
+    def simPlotArrowList(self, points_start, points_end, color_rgba=[1.0, 0.0, 0.0, 0.4], thickness = 5, arrow_size = 2, duration = -1.0, is_persistent = False):
+        return self.client.call('simPlotArrowList', points_start, points_end, color_rgba, thickness, arrow_size, duration, is_persistent)
+
+    def simPlotTransform(self, poses, scale = 5, thickness = 5, duration = -1.0, is_persistent = False):
+        return self.client.call('simPlotTransform', poses, scale, thickness, duration, is_persistent)
+
+    # def simPlotTransformAndNames(self, poses, names, tf_scale = 5, text_scale = 10, text_color = [1.0, 0.0, 0.0, 0.4], thickness = 5, duration = -1.0, is_persistent = False):
+    #     return self.client.call('simPlotTransformAndNames', poses, names, tf_scale, text_scale, duration, is_persistent)
+
+    def simPlotStrings(self, positions, strings = ["Microsoft", "AirSim"], scale = 5, color_rgba=[1.0, 0.0, 0.0, 0.4], duration = -1.0, is_persistent = False):
+        return self.client.call('simPlotStrings', positions, strings, scale, color_rgba, duration, is_persistent)
+
+    # def simPlotStringOnActor(self, positions, strings = ["Microsoft", "AirSim"], actor_name = "", scale = 5, color_rgba=[1.0, 0.0, 0.0, 0.4], duration = -1.0, is_persistent = False):
+    #     return self.client.call('simPlotStringOnActor', positions, strings, scale, actor_name, color_rgba, duration, is_persistent)
+
     #----------- APIs to control ACharacter in scene ----------/
     def simCharSetFaceExpression(self, expression_name, value, character_name = ""):
         self.client.call('simCharSetFaceExpression', expression_name, value, character_name)

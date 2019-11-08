@@ -60,6 +60,14 @@ public:
     int simGetSegmentationObjectID(const std::string& mesh_name) const;
     void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
+    void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent);
+    void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent);
+    void simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent);
+    void simPlotArrowList(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent);
+    void simPlotTransform(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent);
+    // void simPlotTransformAndName(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float text_scale, const vector<float>& text_color, float duration, bool is_persistent); 
+    void simPlotStrings(const vector<Vector3r>& positions, const vector<std::string>& strings, float scale, const vector<float>& color_rgba, float duration, bool is_persistent); 
+    // void simPlotStringOnActor(const vector<Pose>& pose, const std::string<std::string>& strings, const std::string actor_name, float scale, const vector<float>& color_rgba, float duration, bool is_persistent); 
 
     bool armDisarm(bool arm, const std::string& vehicle_name = "");
     bool isApiControlEnabled(const std::string& vehicle_name = "") const;

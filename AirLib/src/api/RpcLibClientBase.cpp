@@ -242,6 +242,61 @@ void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::strin
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);
 }
 
+void RpcLibClientBase::simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points;
+    RpcLibAdapatorsBase::from(points, conv_points);
+    pimpl_->client.call("simPlotPoints", conv_points, color_rgba, size, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points;
+    RpcLibAdapatorsBase::from(points, conv_points);
+    pimpl_->client.call("simPlotLineStrip", conv_points, color_rgba, thickness, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points;
+    RpcLibAdapatorsBase::from(points, conv_points);
+    pimpl_->client.call("simPlotLineList", conv_points, color_rgba, thickness, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotArrowList(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points_start;
+    RpcLibAdapatorsBase::from(points_start, conv_points_start);
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points_end;
+    RpcLibAdapatorsBase::from(points_end, conv_points_end);
+    pimpl_->client.call("simPlotArrowList", conv_points_start, conv_points_end, color_rgba, thickness, arrow_size, duration, is_persistent);
+   
+}
+
+void RpcLibClientBase::simPlotTransform(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Pose> conv_poses;
+    RpcLibAdapatorsBase::from(poses, conv_poses);
+    pimpl_->client.call("simPlotTransform", conv_poses, scale, thickness, duration, is_persistent);
+}
+
+// void RpcLibClientBase::simPlotTransformAndNames(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float text_scale, const vector<float>& text_color, float duration, bool is_persistent)
+// {
+    
+// } 
+
+void RpcLibClientBase::simPlotStrings(const vector<Vector3r>& positions, const vector<std::string>& strings, float scale, const vector<float>& color_rgba, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_positions;
+    RpcLibAdapatorsBase::from(positions, conv_positions);
+    pimpl_->client.call("simPlotStrings", conv_positions, strings, scale, color_rgba, duration, is_persistent);
+}
+
+// void RpcLibClientBase::simPlotStringOnActor(const vector<Pose>& pose, const std::string<std::string>& strings, const std::string actor_name, float scale, const vector<float>& color_rgba, float duration, bool is_persistent)
+// {
+    
+// }
+
 bool RpcLibClientBase::simIsPaused() const
 {
     return pimpl_->client.call("simIsPaused").as<bool>();

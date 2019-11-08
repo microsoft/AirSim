@@ -242,6 +242,48 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->setObjectPose(object_name, pose.to(), teleport);
     });
 
+    pimpl_->server.bind("simPlotPoints", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotPoints(conv_points, color_rgba, size, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotLineStrip", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotLineStrip(conv_points, color_rgba, thickness, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotLineList", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotLineList(conv_points, color_rgba, thickness, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotArrowList", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points_start, const std::vector<RpcLibAdapatorsBase::Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points_start;
+        RpcLibAdapatorsBase::to(points_start, conv_points_start);
+        vector<Vector3r> conv_points_end;
+        RpcLibAdapatorsBase::to(points_end, conv_points_end);
+        getWorldSimApi()->simPlotArrowList(conv_points_start, conv_points_end, color_rgba, thickness, arrow_size, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotTransform", [&](const std::vector<RpcLibAdapatorsBase::Pose>& poses, float scale, float thickness, float duration, bool is_persistent) -> void {
+        vector<Pose> conv_poses;
+        RpcLibAdapatorsBase::to(poses, conv_poses);
+        getWorldSimApi()->simPlotTransform(conv_poses, scale, thickness, duration, is_persistent);
+    });
+    // pimpl_->server.bind("simPlotTransformAndNames", [&](const std::vector<RpcLibAdapatorsBase::Pose>& poses, const std::vector<std::string> names, float tf_scale, float text_scale, const vector<float>& text_color, float duration, bool is_persistent) -> void {
+    //     vector<Pose> conv_poses;
+    //     RpcLibAdapatorsBase::to(poses, conv_poses);
+    //     getWorldSimApi()->simPlotTransformAndNames(conv_poses, names, tf_scale, text_scale, text_color, duration, is_persistent);
+    // });
+    pimpl_->server.bind("simPlotStrings", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& positions, const std::vector<std::string> strings, float scale, const vector<float>& color_rgba, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_positions;
+        RpcLibAdapatorsBase::to(positions, conv_positions);
+        getWorldSimApi()->simPlotStrings(conv_positions, strings, scale, color_rgba, duration, is_persistent);
+    });
+    // pimpl_->server.bind("simPlotStringOnActor", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& positions, const std::vector<std::string> strings, const std::string actor_name, float scale, const vector<float>& color_rgba, float duration, bool is_persistent) -> void {
+    //     vector<Vector3r> conv_positions;
+    //     RpcLibAdapatorsBase::to(positions, conv_positions);
+    //     getWorldSimApi()->simPlotStringOnActor(conv_positions, strings, scale, color_rgba, duration, is_persistent);
+    // });
     pimpl_->server.bind("simGetGroundTruthKinematics", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::KinematicsState {
         const Kinematics::State& result = *getVehicleSimApi(vehicle_name)->getGroundTruthKinematics();
         return RpcLibAdapatorsBase::KinematicsState(result);
