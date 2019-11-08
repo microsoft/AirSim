@@ -19,15 +19,19 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
     ```
    If you are using older version v1.8.* use this command instead: `make posix_sitl_ekf2  none_iris`.
 
-4. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is waiting for someone to connect.
-You will also see information about which ports are configured in your SITL app.
-The default ports have changed recently.  You should see something like this:
+4. You should see a message saying the SITL PX4 app is waiting for the simulator (AirSim) to connect.
+You will also see information about which ports are configured for mavlink connection to the PX4 app.
+The default ports have changed recently, so check them closely to make sure AirSim settings are correct.
     ```
     INFO  [simulator] Waiting for simulator to connect on UDP port 14560
     INFO  [init] Mixer: etc/mixers/quad_w.main.mix on /dev/pwm_output0
     INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 14570 remote port 14550
     INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540
     ```
+
+    Note: this is also an interactive PX4 console, type `help` to see the
+    list of commands you can enter here.  They are mostly low level PX4
+    commands.
 
 5. Now edit [AirSim settings](settings.md) file to make sure you have matching UDP port settings:
     ```json
@@ -49,8 +53,9 @@ The default ports have changed recently.  You should see something like this:
     to be disabled using: `"TcpIp": ""`.  Note also that on older versions of
     PX4 the ground control port is not printed, in that case set it to 14556.
 
-6. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from things like `[mavlink]` and `[commander]` and so on.  The following messages tell you that AirSim is connected
-properly:
+6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via UDP.
+You should see a bunch of messages from the SITL PX4 window from things like `[mavlink]` and `[commander]` and so on.
+Specifically, the following messages tell you that AirSim is connected properly:
     ```
     INFO  [simulator] Simulator connected on UDP port 14560
     INFO  [mavlink] partner IP: 127.0.0.1
@@ -60,18 +65,21 @@ properly:
 
     If you do not see these messages then check your UDP port settings.
 
-7. You should also be able to use QGroundControl just like with flight controller hardware. Note that as we don't have physical board, RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to PC. This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.
+7. You should also be able to use QGroundControl with SITL mode.  Make sure
+there is now Pixhawk hardware plugged in, otherwise QGroundControl will choose
+to use that instead.  Note that as we don't have physical board, RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to PC. This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You do not need to do this unless you plan to
+fly a drone manually in AirSim.
 
 ## Setting GPS origin
 
-PX4 SITL mode needs to be configured to get the home location correct.  Run the following in the PX4 console window so that the origin matches that which is setup in AirSim AVehiclePawnBase::HomeLatitude and HomeLongitude.
+PX4 SITL mode needs to be configured to get the home location correct.  Run the following in the SITL PX4 console window so that the origin matches that which is setup in AirSim AVehiclePawnBase::HomeLatitude and HomeLongitude.
 
 ````
 param set LPE_LAT 47.641468
 param set LPE_LON -122.140165
 ````
 
-You might also want to set this one so that the drone automatically hovers after each offboard control command (the default setting is to land):
+You might also want to set this one so that the drone automatically hovers after each offboard control command finishes (the default setting is to land):
 
 ````
 param set COM_OBL_ACT 1
@@ -121,4 +129,3 @@ set the  LocalIpAddress to the address of your host machine running the Unreal e
 ## Remote Controller
 
 There are several options for flying the simulated drone using a remote control or joystick like xbox gamepad. See [remote controllers](remote_control.md#RC_Setup_for_PX4)
-
