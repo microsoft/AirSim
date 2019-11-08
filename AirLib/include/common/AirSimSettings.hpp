@@ -249,23 +249,29 @@ public: //types
         std::string serial_port = "*";
         int baud_rate = 115200;
 
-        //Used to connect to drone over UDP: needed only if use_serial = false
-        std::string ip_address = "127.0.0.1";
-        int ip_port = 14560;
+        // Used to connect to drone over UDP: needed only if use_serial = false and tcp_address = ""
+        std::string udp_address = "127.0.0.1";
+        int udp_port = 14560;
 
-        // The PX4 SITL app requires receiving drone commands over a different mavlink channel.
+        // Used to connect to drone over TCP: needed only if use_serial = false and udp_address = ""
+        std::string tcp_address = "127.0.0.1";
+        int tcp_port = 4560;
+
+        // The PX4 SITL app requires receiving drone commands over a different mavlink channel called
+        // the "ground control station" channel.  
         // So set this to empty string to disable this separate command channel.
-        std::string sitl_ip_address = "127.0.0.1";
-        int sitl_ip_port = 14556;
+        std::string gcs_address = "127.0.0.1";
+        int gcs_port = 14540;
 
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
         int logviewer_ip_port = 14388;
         int logviewer_ip_sport = 14389; // for logging all messages we send to the vehicle.
         std::string logviewer_ip_address = "127.0.0.1";
 
-        // The QGroundControl app can be on a different machine, so you can configure it's ip address and port here.
-        int qgc_ip_port = 14550;
-        std::string qgc_ip_address = "127.0.0.1";
+        // The QGroundControl app can be on a different machine, and AirSim can act as a proxy to forward 
+        // the mavlink stream over to that machine if you configure it's ip address and port here.
+        int qgc_ip_port = 0;
+        std::string qgc_ip_address = "";
 
         // mavlink vehicle identifiers
         uint8_t sim_sysid = 142;
@@ -638,15 +644,16 @@ private:
         connection_info.qgc_ip_address = settings_json.getString("QgcHostIp", connection_info.qgc_ip_address);
         connection_info.qgc_ip_port = settings_json.getInt("QgcPort", connection_info.qgc_ip_port);
 
-        connection_info.sitl_ip_address = settings_json.getString("SitlIp", connection_info.sitl_ip_address);
-        connection_info.sitl_ip_port = settings_json.getInt("SitlPort", connection_info.sitl_ip_port);
+        connection_info.gcs_address = settings_json.getString("GroundControlIp", connection_info.gcs_address);
+        connection_info.gcs_port = settings_json.getInt("GroundControlPort", connection_info.gcs_port);
 
         connection_info.local_host_ip = settings_json.getString("LocalHostIp", connection_info.local_host_ip);
 
-
         connection_info.use_serial = settings_json.getBool("UseSerial", connection_info.use_serial);
-        connection_info.ip_address = settings_json.getString("UdpIp", connection_info.ip_address);
-        connection_info.ip_port = settings_json.getInt("UdpPort", connection_info.ip_port);
+        connection_info.udp_address = settings_json.getString("UdpIp", connection_info.udp_address);
+        connection_info.udp_port = settings_json.getInt("UdpPort", connection_info.udp_port);
+        connection_info.tcp_address = settings_json.getString("TcpIp", connection_info.tcp_address);
+        connection_info.tcp_port = settings_json.getInt("TcpPort", connection_info.tcp_port);
         connection_info.serial_port = settings_json.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = settings_json.getInt("SerialBaudRate", connection_info.baud_rate);
         connection_info.model = settings_json.getString("Model", connection_info.model);

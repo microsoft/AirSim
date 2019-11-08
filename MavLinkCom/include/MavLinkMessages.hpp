@@ -2591,8 +2591,6 @@ class MavLinkHeartbeat : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 0;
     MavLinkHeartbeat() { msgid = kMessageId; }
-    // A bitfield for use for autopilot-specific flags
-    uint32_t custom_mode = 0;
     // Vehicle or component type. For a flight controller component the vehicle type
     // (quadrotor, helicopter, etc.). For other components the component type (e.g.
     // camera, gimbal, etc.). This should be used in preference to component id for
@@ -2603,6 +2601,8 @@ public:
     uint8_t autopilot = 0;
     // System mode bitmap.
     uint8_t base_mode = 0;
+    // A bitfield for use for autopilot-specific flags
+    uint32_t custom_mode = 0;
     // System status flag.
     uint8_t system_status = 0;
     // MAVLink version, not writable by user, gets added by protocol because of magic
@@ -2646,6 +2646,8 @@ public:
     uint16_t voltage_battery = 0;
     // Battery current, -1: Current not sent by autopilot
     int16_t current_battery = 0;
+    // Battery energy remaining, -1: Battery remaining energy not sent by autopilot
+    int8_t battery_remaining = 0;
     // Communication drop rate, (UART, I2C, SPI, CAN), dropped packets on all links
     // (packets that were corrupted on reception on the MAV)
     uint16_t drop_rate_comm = 0;
@@ -2660,8 +2662,6 @@ public:
     uint16_t errors_count3 = 0;
     // Autopilot-specific errors
     uint16_t errors_count4 = 0;
-    // Battery energy remaining, -1: Battery remaining energy not sent by autopilot
-    int8_t battery_remaining = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -2773,26 +2773,26 @@ public:
     MavLinkLinkNodeStatus() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint64_t timestamp = 0;
+    // Remaining free transmit buffer space
+    uint8_t tx_buf = 0;
+    // Remaining free receive buffer space
+    uint8_t rx_buf = 0;
     // Transmit rate
     uint32_t tx_rate = 0;
     // Receive rate
     uint32_t rx_rate = 0;
-    // Messages sent
-    uint32_t messages_sent = 0;
-    // Messages received (estimated from counting seq)
-    uint32_t messages_received = 0;
-    // Messages lost (estimated from counting seq)
-    uint32_t messages_lost = 0;
     // Number of bytes that could not be parsed correctly.
     uint16_t rx_parse_err = 0;
     // Transmit buffer overflows. This number wraps around as it reaches UINT16_MAX
     uint16_t tx_overflows = 0;
     // Receive buffer overflows. This number wraps around as it reaches UINT16_MAX
     uint16_t rx_overflows = 0;
-    // Remaining free transmit buffer space
-    uint8_t tx_buf = 0;
-    // Remaining free receive buffer space
-    uint8_t rx_buf = 0;
+    // Messages sent
+    uint32_t messages_sent = 0;
+    // Messages received (estimated from counting seq)
+    uint32_t messages_received = 0;
+    // Messages lost (estimated from counting seq)
+    uint32_t messages_lost = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -2805,12 +2805,12 @@ class MavLinkSetMode : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 11;
     MavLinkSetMode() { msgid = kMessageId; }
-    // The new autopilot-specific mode. This field can be ignored by an autopilot.
-    uint32_t custom_mode = 0;
     // The system setting the mode
     uint8_t target_system = 0;
     // The new base mode.
     uint8_t base_mode = 0;
+    // The new autopilot-specific mode. This field can be ignored by an autopilot.
+    uint32_t custom_mode = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -2827,9 +2827,6 @@ class MavLinkParamRequestRead : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 20;
     MavLinkParamRequestRead() { msgid = kMessageId; }
-    // Parameter index. Send -1 to use the param ID field as identifier (else the
-    // param id will be ignored)
-    int16_t param_index = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
@@ -2839,6 +2836,9 @@ public:
     // chars - applications have to provide 16+1 bytes storage if the ID is stored
     // as string
     char param_id[16] = { 0 };
+    // Parameter index. Send -1 to use the param ID field as identifier (else the
+    // param id will be ignored)
+    int16_t param_index = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -2869,19 +2869,19 @@ class MavLinkParamValue : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 22;
     MavLinkParamValue() { msgid = kMessageId; }
-    // Onboard parameter value
-    float param_value = 0;
-    // Total number of onboard parameters
-    uint16_t param_count = 0;
-    // Index of this onboard parameter
-    uint16_t param_index = 0;
     // Onboard parameter id, terminated by NULL if the length is less than 16 human-readable
     // chars and WITHOUT null termination (NULL) byte if the length is exactly 16
     // chars - applications have to provide 16+1 bytes storage if the ID is stored
     // as string
     char param_id[16] = { 0 };
+    // Onboard parameter value
+    float param_value = 0;
     // Onboard parameter type.
     uint8_t param_type = 0;
+    // Total number of onboard parameters
+    uint16_t param_count = 0;
+    // Index of this onboard parameter
+    uint16_t param_index = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -2898,8 +2898,6 @@ class MavLinkParamSet : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 23;
     MavLinkParamSet() { msgid = kMessageId; }
-    // Onboard parameter value
-    float param_value = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
@@ -2909,6 +2907,8 @@ public:
     // chars - applications have to provide 16+1 bytes storage if the ID is stored
     // as string
     char param_id[16] = { 0 };
+    // Onboard parameter value
+    float param_value = 0;
     // Onboard parameter type.
     uint8_t param_type = 0;
     virtual std::string toJSon();
@@ -2928,6 +2928,8 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // GPS fix type.
+    uint8_t fix_type = 0;
     // Latitude (WGS84, EGM96 ellipsoid)
     int32_t lat = 0;
     // Longitude (WGS84, EGM96 ellipsoid)
@@ -2935,6 +2937,17 @@ public:
     // Altitude (MSL). Positive for up. Note that virtually all GPS modules provide
     // the MSL altitude in addition to the WGS84 altitude.
     int32_t alt = 0;
+    // GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX
+    uint16_t eph = 0;
+    // GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX
+    uint16_t epv = 0;
+    // GPS ground speed. If unknown, set to: UINT16_MAX
+    uint16_t vel = 0;
+    // Course over ground (NOT heading, but direction of movement) in degrees * 100,
+    // 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
+    uint16_t cog = 0;
+    // Number of satellites visible. If unknown, set to 255
+    uint8_t satellites_visible = 0;
     // Altitude (above WGS84, EGM96 ellipsoid). Positive for up.
     int32_t alt_ellipsoid = 0;
     // Position uncertainty. Positive for up.
@@ -2945,19 +2958,6 @@ public:
     uint32_t vel_acc = 0;
     // Heading / track uncertainty
     uint32_t hdg_acc = 0;
-    // GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX
-    uint16_t eph = 0;
-    // GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX
-    uint16_t epv = 0;
-    // GPS ground speed. If unknown, set to: UINT16_MAX
-    uint16_t vel = 0;
-    // Course over ground (NOT heading, but direction of movement) in degrees * 100,
-    // 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
-    uint16_t cog = 0;
-    // GPS fix type.
-    uint8_t fix_type = 0;
-    // Number of satellites visible. If unknown, set to 255
-    uint8_t satellites_visible = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3054,12 +3054,12 @@ public:
     int16_t ymag = 0;
     // Z Magnetic field (raw)
     int16_t zmag = 0;
-    // Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C
-    // it must send 1 (0.01C).
-    int16_t temperature = 0;
     // Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will
     // have a message with id=0)
     uint8_t id = 0;
+    // Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C
+    // it must send 1 (0.01C).
+    int16_t temperature = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3239,6 +3239,9 @@ public:
     MavLinkRcChannelsScaled() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
+    // Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk
+    // should use: 0 = MAIN, 1 = AUX.
+    uint8_t port = 0;
     // RC channel 1 value scaled.
     int16_t chan1_scaled = 0;
     // RC channel 2 value scaled.
@@ -3255,9 +3258,6 @@ public:
     int16_t chan7_scaled = 0;
     // RC channel 8 value scaled.
     int16_t chan8_scaled = 0;
-    // Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk
-    // should use: 0 = MAIN, 1 = AUX.
-    uint8_t port = 0;
     // Receive signal strength indicator in device-dependent units/scale. Values:
     // [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
@@ -3276,6 +3276,9 @@ public:
     MavLinkRcChannelsRaw() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
+    // Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk
+    // should use: 0 = MAIN, 1 = AUX.
+    uint8_t port = 0;
     // RC channel 1 value.
     uint16_t chan1_raw = 0;
     // RC channel 2 value.
@@ -3292,9 +3295,6 @@ public:
     uint16_t chan7_raw = 0;
     // RC channel 8 value.
     uint16_t chan8_raw = 0;
-    // Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk
-    // should use: 0 = MAIN, 1 = AUX.
-    uint8_t port = 0;
     // Receive signal strength indicator in device-dependent units/scale. Values:
     // [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
@@ -3315,6 +3315,9 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint32_t time_usec = 0;
+    // Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk
+    // should use: 0 = MAIN, 1 = AUX.
+    uint8_t port = 0;
     // Servo output 1 value
     uint16_t servo1_raw = 0;
     // Servo output 2 value
@@ -3347,9 +3350,6 @@ public:
     uint16_t servo15_raw = 0;
     // Servo output 16 value
     uint16_t servo16_raw = 0;
-    // Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk
-    // should use: 0 = MAIN, 1 = AUX.
-    uint8_t port = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3362,15 +3362,15 @@ class MavLinkMissionRequestPartialList : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 37;
     MavLinkMissionRequestPartialList() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
     // Start index
     int16_t start_index = 0;
     // End index, -1 by default (-1: send list to end). Else a valid index of the
     // list
     int16_t end_index = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
@@ -3386,15 +3386,15 @@ class MavLinkMissionWritePartialList : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 38;
     MavLinkMissionWritePartialList() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
     // Start index. Must be smaller / equal to the largest index of the current onboard
     // list.
     int16_t start_index = 0;
     // End index, equal or greater than start index.
     int16_t end_index = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
@@ -3412,6 +3412,20 @@ class MavLinkMissionItem : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 39;
     MavLinkMissionItem() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // Sequence
+    uint16_t seq = 0;
+    // The coordinate system of the waypoint.
+    uint8_t frame = 0;
+    // The scheduled action for the waypoint.
+    uint16_t command = 0;
+    // false:0, true:1
+    uint8_t current = 0;
+    // Autocontinue to next waypoint
+    uint8_t autocontinue = 0;
     // PARAM1, see MAV_CMD enum
     float param1 = 0;
     // PARAM2, see MAV_CMD enum
@@ -3427,20 +3441,6 @@ public:
     // PARAM7 / local: Z coordinate, global: altitude (relative or absolute, depending
     // on frame).
     float z = 0;
-    // Sequence
-    uint16_t seq = 0;
-    // The scheduled action for the waypoint.
-    uint16_t command = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // The coordinate system of the waypoint.
-    uint8_t frame = 0;
-    // false:0, true:1
-    uint8_t current = 0;
-    // Autocontinue to next waypoint
-    uint8_t autocontinue = 0;
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
@@ -3455,12 +3455,12 @@ class MavLinkMissionRequest : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 40;
     MavLinkMissionRequest() { msgid = kMessageId; }
-    // Sequence
-    uint16_t seq = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
     uint8_t target_component = 0;
+    // Sequence
+    uint16_t seq = 0;
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
@@ -3476,12 +3476,12 @@ class MavLinkMissionSetCurrent : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 41;
     MavLinkMissionSetCurrent() { msgid = kMessageId; }
-    // Sequence
-    uint16_t seq = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
     uint8_t target_component = 0;
+    // Sequence
+    uint16_t seq = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3526,12 +3526,12 @@ class MavLinkMissionCount : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 44;
     MavLinkMissionCount() { msgid = kMessageId; }
-    // Number of mission items in the sequence
-    uint16_t count = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
     uint8_t target_component = 0;
+    // Number of mission items in the sequence
+    uint16_t count = 0;
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
@@ -3601,18 +3601,18 @@ class MavLinkSetGpsGlobalOrigin : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 48;
     MavLinkSetGpsGlobalOrigin() { msgid = kMessageId; }
-    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
-    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
-    uint64_t time_usec = 0;
+    // System ID
+    uint8_t target_system = 0;
     // Latitude (WGS84)
     int32_t latitude = 0;
     // Longitude (WGS84)
     int32_t longitude = 0;
     // Altitude (MSL). Positive for up.
     int32_t altitude = 0;
-    // System ID
-    uint8_t target_system = 0;
+    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
+    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
+    // the magnitude the number.
+    uint64_t time_usec = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3626,16 +3626,16 @@ class MavLinkGpsGlobalOrigin : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 49;
     MavLinkGpsGlobalOrigin() { msgid = kMessageId; }
-    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
-    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
-    uint64_t time_usec = 0;
     // Latitude (WGS84)
     int32_t latitude = 0;
     // Longitude (WGS84)
     int32_t longitude = 0;
     // Altitude (MSL). Positive for up.
     int32_t altitude = 0;
+    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
+    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
+    // the magnitude the number.
+    uint64_t time_usec = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3648,6 +3648,21 @@ class MavLinkParamMapRc : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 50;
     MavLinkParamMapRc() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // Onboard parameter id, terminated by NULL if the length is less than 16 human-readable
+    // chars and WITHOUT null termination (NULL) byte if the length is exactly 16
+    // chars - applications have to provide 16+1 bytes storage if the ID is stored
+    // as string
+    char param_id[16] = { 0 };
+    // Parameter index. Send -1 to use the param ID field as identifier (else the
+    // param id will be ignored), send -2 to disable any existing map for this rc_channel_index.
+    int16_t param_index = 0;
+    // Index of parameter RC channel. Not equal to the RC channel id. Typically corresponds
+    // to a potentiometer-knob on the RC.
+    uint8_t parameter_rc_channel_index = 0;
     // Initial parameter value
     float param_value0 = 0;
     // Scale, maps the RC range [-1, 1] to a parameter value
@@ -3658,21 +3673,6 @@ public:
     // Maximum param value. The protocol does not define if this overwrites an onboard
     // maximum value. (Depends on implementation)
     float param_value_max = 0;
-    // Parameter index. Send -1 to use the param ID field as identifier (else the
-    // param id will be ignored), send -2 to disable any existing map for this rc_channel_index.
-    int16_t param_index = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // Onboard parameter id, terminated by NULL if the length is less than 16 human-readable
-    // chars and WITHOUT null termination (NULL) byte if the length is exactly 16
-    // chars - applications have to provide 16+1 bytes storage if the ID is stored
-    // as string
-    char param_id[16] = { 0 };
-    // Index of parameter RC channel. Not equal to the RC channel id. Typically corresponds
-    // to a potentiometer-knob on the RC.
-    uint8_t parameter_rc_channel_index = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3685,12 +3685,12 @@ class MavLinkMissionRequestInt : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 51;
     MavLinkMissionRequestInt() { msgid = kMessageId; }
-    // Sequence
-    uint16_t seq = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
     uint8_t target_component = 0;
+    // Sequence
+    uint16_t seq = 0;
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
@@ -3729,6 +3729,13 @@ class MavLinkSafetySetAllowedArea : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 54;
     MavLinkSafetySetAllowedArea() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // Coordinate frame. Can be either global, GPS, right-handed with Z axis up or
+    // local, right handed, Z axis down.
+    uint8_t frame = 0;
     // x position 1 / Latitude 1
     float p1x = 0;
     // y position 1 / Longitude 1
@@ -3741,13 +3748,6 @@ public:
     float p2y = 0;
     // z position 2 / Altitude 2
     float p2z = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // Coordinate frame. Can be either global, GPS, right-handed with Z axis up or
-    // local, right handed, Z axis down.
-    uint8_t frame = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3759,6 +3759,9 @@ class MavLinkSafetyAllowedArea : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 55;
     MavLinkSafetyAllowedArea() { msgid = kMessageId; }
+    // Coordinate frame. Can be either global, GPS, right-handed with Z axis up or
+    // local, right handed, Z axis down.
+    uint8_t frame = 0;
     // x position 1 / Latitude 1
     float p1x = 0;
     // y position 1 / Longitude 1
@@ -3771,9 +3774,6 @@ public:
     float p2y = 0;
     // z position 2 / Altitude 2
     float p2z = 0;
-    // Coordinate frame. Can be either global, GPS, right-handed with Z axis up or
-    // local, right handed, Z axis down.
-    uint8_t frame = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3818,18 +3818,18 @@ public:
     float nav_roll = 0;
     // Current desired pitch
     float nav_pitch = 0;
-    // Current altitude error
-    float alt_error = 0;
-    // Current airspeed error
-    float aspd_error = 0;
-    // Current crosstrack error on x-y plane
-    float xtrack_error = 0;
     // Current desired heading
     int16_t nav_bearing = 0;
     // Bearing to current waypoint/target
     int16_t target_bearing = 0;
     // Distance to active waypoint
     uint16_t wp_dist = 0;
+    // Current altitude error
+    float alt_error = 0;
+    // Current airspeed error
+    float aspd_error = 0;
+    // Current crosstrack error on x-y plane
+    float xtrack_error = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3850,6 +3850,8 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // Class id of the estimator this estimate originated from.
+    uint8_t estimator_type = 0;
     // Latitude
     int32_t lat = 0;
     // Longitude
@@ -3869,8 +3871,6 @@ public:
     // ROW, next six entries are the second row, etc.). If unknown, assign NaN value
     // to first element in the array.
     float covariance[36] = { 0 };
-    // Class id of the estimator this estimate originated from.
-    uint8_t estimator_type = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3887,6 +3887,8 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // Class id of the estimator this estimate originated from.
+    uint8_t estimator_type = 0;
     // X Position
     float x = 0;
     // Y Position
@@ -3910,8 +3912,6 @@ public:
     // nine entries are the first ROW, next eight entries are the second row, etc.).
     // If unknown, assign NaN value to first element in the array.
     float covariance[45] = { 0 };
-    // Class id of the estimator this estimate originated from.
-    uint8_t estimator_type = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -3927,6 +3927,10 @@ public:
     MavLinkRcChannels() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
+    // Total number of RC channels being received. This can be larger than 18, indicating
+    // that more channels are available but not given in this message. This value
+    // should be 0 when no RC channels are available.
+    uint8_t chancount = 0;
     // RC channel 1 value.
     uint16_t chan1_raw = 0;
     // RC channel 2 value.
@@ -3963,10 +3967,6 @@ public:
     uint16_t chan17_raw = 0;
     // RC channel 18 value.
     uint16_t chan18_raw = 0;
-    // Total number of RC channels being received. This can be larger than 18, indicating
-    // that more channels are available but not given in this message. This value
-    // should be 0 when no RC channels are available.
-    uint8_t chancount = 0;
     // Receive signal strength indicator in device-dependent units/scale. Values:
     // [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
@@ -3981,14 +3981,14 @@ class MavLinkRequestDataStream : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 66;
     MavLinkRequestDataStream() { msgid = kMessageId; }
-    // The requested message rate
-    uint16_t req_message_rate = 0;
     // The target requested to send the message stream.
     uint8_t target_system = 0;
     // The target requested to send the message stream.
     uint8_t target_component = 0;
     // The ID of the requested data stream
     uint8_t req_stream_id = 0;
+    // The requested message rate
+    uint16_t req_message_rate = 0;
     // 1 to start sending, 0 to stop sending.
     uint8_t start_stop = 0;
     virtual std::string toJSon();
@@ -4002,10 +4002,10 @@ class MavLinkDataStream : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 67;
     MavLinkDataStream() { msgid = kMessageId; }
-    // The message rate
-    uint16_t message_rate = 0;
     // The ID of the requested data stream
     uint8_t stream_id = 0;
+    // The message rate
+    uint16_t message_rate = 0;
     // 1 stream is enabled, 0 stream is stopped.
     uint8_t on_off = 0;
     virtual std::string toJSon();
@@ -4021,6 +4021,8 @@ class MavLinkManualControl : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 69;
     MavLinkManualControl() { msgid = kMessageId; }
+    // The system to be controlled.
+    uint8_t target = 0;
     // X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates
     // that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000)
     // movement on a joystick and the pitch of a vehicle.
@@ -4043,8 +4045,6 @@ public:
     // A bitfield corresponding to the joystick buttons' current state, 1 for pressed,
     // 0 for released. The lowest bit corresponds to Button 1.
     uint16_t buttons = 0;
-    // The system to be controlled.
-    uint8_t target = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4060,6 +4060,10 @@ class MavLinkRcChannelsOverride : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 70;
     MavLinkRcChannelsOverride() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
     // RC channel 1 value. A value of UINT16_MAX means to ignore this field.
     uint16_t chan1_raw = 0;
     // RC channel 2 value. A value of UINT16_MAX means to ignore this field.
@@ -4096,10 +4100,6 @@ public:
     uint16_t chan17_raw = 0;
     // RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.
     uint16_t chan18_raw = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4115,6 +4115,21 @@ class MavLinkMissionItemInt : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 73;
     MavLinkMissionItemInt() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // Waypoint ID (sequence number). Starts at zero. Increases monotonically for
+    // each waypoint, no gaps in the sequence (0,1,2,3,4).
+    uint16_t seq = 0;
+    // The coordinate system of the waypoint.
+    uint8_t frame = 0;
+    // The scheduled action for the waypoint.
+    uint16_t command = 0;
+    // false:0, true:1
+    uint8_t current = 0;
+    // Autocontinue to next waypoint
+    uint8_t autocontinue = 0;
     // PARAM1, see MAV_CMD enum
     float param1 = 0;
     // PARAM2, see MAV_CMD enum
@@ -4131,21 +4146,6 @@ public:
     // PARAM7 / z position: global: altitude in meters (relative or absolute, depending
     // on frame.
     float z = 0;
-    // Waypoint ID (sequence number). Starts at zero. Increases monotonically for
-    // each waypoint, no gaps in the sequence (0,1,2,3,4).
-    uint16_t seq = 0;
-    // The scheduled action for the waypoint.
-    uint16_t command = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // The coordinate system of the waypoint.
-    uint8_t frame = 0;
-    // false:0, true:1
-    uint8_t current = 0;
-    // Autocontinue to next waypoint
-    uint8_t autocontinue = 0;
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
@@ -4163,14 +4163,14 @@ public:
     float airspeed = 0;
     // Current ground speed.
     float groundspeed = 0;
-    // Current altitude (MSL).
-    float alt = 0;
-    // Current climb rate.
-    float climb = 0;
     // Current heading in compass units (0-360, 0=north).
     int16_t heading = 0;
     // Current throttle setting (0 to 100).
     uint16_t throttle = 0;
+    // Current altitude (MSL).
+    float alt = 0;
+    // Current climb rate.
+    float climb = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4183,6 +4183,18 @@ class MavLinkCommandInt : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 75;
     MavLinkCommandInt() { msgid = kMessageId; }
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // The coordinate system of the COMMAND.
+    uint8_t frame = 0;
+    // The scheduled action for the mission item.
+    uint16_t command = 0;
+    // false:0, true:1
+    uint8_t current = 0;
+    // autocontinue to next wp
+    uint8_t autocontinue = 0;
     // PARAM1, see MAV_CMD enum
     float param1 = 0;
     // PARAM2, see MAV_CMD enum
@@ -4199,18 +4211,6 @@ public:
     // PARAM7 / z position: global: altitude in meters (relative or absolute, depending
     // on frame).
     float z = 0;
-    // The scheduled action for the mission item.
-    uint16_t command = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // The coordinate system of the COMMAND.
-    uint8_t frame = 0;
-    // false:0, true:1
-    uint8_t current = 0;
-    // autocontinue to next wp
-    uint8_t autocontinue = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4223,6 +4223,15 @@ class MavLinkCommandLong : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 76;
     MavLinkCommandLong() { msgid = kMessageId; }
+    // System which should execute the command
+    uint8_t target_system = 0;
+    // Component which should execute the command, 0 for all components
+    uint8_t target_component = 0;
+    // Command ID (of command to send).
+    uint16_t command = 0;
+    // 0: First transmission of this command. 1-255: Confirmation transmissions (e.g.
+    // for kill command)
+    uint8_t confirmation = 0;
     // Parameter 1 (for the specific command).
     float param1 = 0;
     // Parameter 2 (for the specific command).
@@ -4237,15 +4246,6 @@ public:
     float param6 = 0;
     // Parameter 7 (for the specific command).
     float param7 = 0;
-    // Command ID (of command to send).
-    uint16_t command = 0;
-    // System which should execute the command
-    uint8_t target_system = 0;
-    // Component which should execute the command, 0 for all components
-    uint8_t target_component = 0;
-    // 0: First transmission of this command. 1-255: Confirmation transmissions (e.g.
-    // for kill command)
-    uint8_t confirmation = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4258,9 +4258,6 @@ class MavLinkCommandAck : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 77;
     MavLinkCommandAck() { msgid = kMessageId; }
-    // WIP: Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT
-    // caused it to be denied.
-    int32_t result_param2 = 0;
     // Command ID (of acknowledged command).
     uint16_t command = 0;
     // Result of command.
@@ -4269,6 +4266,9 @@ public:
     // reasons of why the command was denied or the progress percentage or 255 if
     // unknown the progress when result is MAV_RESULT_IN_PROGRESS.
     uint8_t progress = 0;
+    // WIP: Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT
+    // caused it to be denied.
+    int32_t result_param2 = 0;
     // WIP: System which requested the command to be executed
     uint8_t target_system = 0;
     // WIP: Component which requested the command to be executed
@@ -4312,6 +4312,14 @@ public:
     MavLinkSetAttitudeTarget() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // Mappings: If any of these bits are set, the corresponding input should be ignored:
+    // bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit
+    // 6: reserved, bit 7: throttle, bit 8: attitude
+    uint8_t type_mask = 0;
     // Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
     float q[4] = { 0 };
     // Body roll rate
@@ -4323,14 +4331,6 @@ public:
     // Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse
     // trust)
     float thrust = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // Mappings: If any of these bits are set, the corresponding input should be ignored:
-    // bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit
-    // 6: reserved, bit 7: throttle, bit 8: attitude
-    uint8_t type_mask = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4346,6 +4346,10 @@ public:
     MavLinkAttitudeTarget() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
+    // Mappings: If any of these bits are set, the corresponding input should be ignored:
+    // bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit
+    // 7: reserved, bit 8: attitude
+    uint8_t type_mask = 0;
     // Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
     float q[4] = { 0 };
     // Body roll rate
@@ -4357,10 +4361,6 @@ public:
     // Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse
     // trust)
     float thrust = 0;
-    // Mappings: If any of these bits are set, the corresponding input should be ignored:
-    // bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit
-    // 7: reserved, bit 8: attitude
-    uint8_t type_mask = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4375,6 +4375,15 @@ public:
     MavLinkSetPositionTargetLocalNed() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7,
+    // MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9
+    uint8_t coordinate_frame = 0;
+    // Bitmap to indicate which dimensions should be ignored by the vehicle.
+    uint16_t type_mask = 0;
     // X Position in NED frame
     float x = 0;
     // Y Position in NED frame
@@ -4400,15 +4409,6 @@ public:
     float yaw = 0;
     // yaw rate setpoint
     float yaw_rate = 0;
-    // Bitmap to indicate which dimensions should be ignored by the vehicle.
-    uint16_t type_mask = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7,
-    // MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9
-    uint8_t coordinate_frame = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4424,6 +4424,11 @@ public:
     MavLinkPositionTargetLocalNed() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
+    // Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7,
+    // MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9
+    uint8_t coordinate_frame = 0;
+    // Bitmap to indicate which dimensions should be ignored by the vehicle.
+    uint16_t type_mask = 0;
     // X Position in NED frame
     float x = 0;
     // Y Position in NED frame
@@ -4449,11 +4454,6 @@ public:
     float yaw = 0;
     // yaw rate setpoint
     float yaw_rate = 0;
-    // Bitmap to indicate which dimensions should be ignored by the vehicle.
-    uint16_t type_mask = 0;
-    // Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7,
-    // MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9
-    uint8_t coordinate_frame = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4471,6 +4471,15 @@ public:
     // setpoint is to allow the system to compensate for the transport delay of the
     // setpoint. This allows the system to compensate processing latency.
     uint32_t time_boot_ms = 0;
+    // System ID
+    uint8_t target_system = 0;
+    // Component ID
+    uint8_t target_component = 0;
+    // Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT
+    // = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11
+    uint8_t coordinate_frame = 0;
+    // Bitmap to indicate which dimensions should be ignored by the vehicle.
+    uint16_t type_mask = 0;
     // X Position in WGS84 frame
     int32_t lat_int = 0;
     // Y Position in WGS84 frame
@@ -4496,15 +4505,6 @@ public:
     float yaw = 0;
     // yaw rate setpoint
     float yaw_rate = 0;
-    // Bitmap to indicate which dimensions should be ignored by the vehicle.
-    uint16_t type_mask = 0;
-    // System ID
-    uint8_t target_system = 0;
-    // Component ID
-    uint8_t target_component = 0;
-    // Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT
-    // = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11
-    uint8_t coordinate_frame = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4522,6 +4522,11 @@ public:
     // setpoint is to allow the system to compensate for the transport delay of the
     // setpoint. This allows the system to compensate processing latency.
     uint32_t time_boot_ms = 0;
+    // Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT
+    // = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11
+    uint8_t coordinate_frame = 0;
+    // Bitmap to indicate which dimensions should be ignored by the vehicle.
+    uint16_t type_mask = 0;
     // X Position in WGS84 frame
     int32_t lat_int = 0;
     // Y Position in WGS84 frame
@@ -4547,11 +4552,6 @@ public:
     float yaw = 0;
     // yaw rate setpoint
     float yaw_rate = 0;
-    // Bitmap to indicate which dimensions should be ignored by the vehicle.
-    uint16_t type_mask = 0;
-    // Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT
-    // = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11
-    uint8_t coordinate_frame = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4720,12 +4720,12 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
-    // Flags as bitfield, reserved for future use.
-    uint64_t flags = 0;
     // Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.
     float controls[16] = { 0 };
     // System mode. Includes arming state.
     uint8_t mode = 0;
+    // Flags as bitfield, reserved for future use.
+    uint64_t flags = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4741,24 +4741,24 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // Sensor ID
+    uint8_t sensor_id = 0;
+    // Flow in x-sensor direction
+    int16_t flow_x = 0;
+    // Flow in y-sensor direction
+    int16_t flow_y = 0;
     // Flow in x-sensor direction, angular-speed compensated
     float flow_comp_m_x = 0;
     // Flow in y-sensor direction, angular-speed compensated
     float flow_comp_m_y = 0;
+    // Optical flow quality / confidence. 0: bad, 255: maximum quality
+    uint8_t quality = 0;
     // Ground distance. Positive value: distance known. Negative value: Unknown distance
     float ground_distance = 0;
     // Flow rate about X axis
     float flow_rate_x = 0;
     // Flow rate about Y axis
     float flow_rate_y = 0;
-    // Flow in x-sensor direction
-    int16_t flow_x = 0;
-    // Flow in y-sensor direction
-    int16_t flow_y = 0;
-    // Sensor ID
-    uint8_t sensor_id = 0;
-    // Optical flow quality / confidence. 0: bad, 255: maximum quality
-    uint8_t quality = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -4949,6 +4949,8 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // Sensor ID
+    uint8_t sensor_id = 0;
     // Integration time. Divide integrated_x and integrated_y by the integration time
     // to obtain average flow. The integration time also indicates the.
     uint32_t integration_time_us = 0;
@@ -4964,17 +4966,15 @@ public:
     float integrated_ygyro = 0;
     // RH rotation around Z axis
     float integrated_zgyro = 0;
+    // Temperature
+    int16_t temperature = 0;
+    // Optical flow quality / confidence. 0: no valid flow, 255: maximum quality
+    uint8_t quality = 0;
     // Time since the distance was sampled.
     uint32_t time_delta_distance_us = 0;
     // Distance to the center of the flow field. Positive value (including zero):
     // distance known. Negative value: Unknown distance.
     float distance = 0;
-    // Temperature
-    int16_t temperature = 0;
-    // Sensor ID
-    uint8_t sensor_id = 0;
-    // Optical flow quality / confidence. 0: no valid flow, 255: maximum quality
-    uint8_t quality = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5087,10 +5087,6 @@ class MavLinkRadioStatus : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 109;
     MavLinkRadioStatus() { msgid = kMessageId; }
-    // Count of radio packet receive errors (since boot).
-    uint16_t rxerrors = 0;
-    // Count of error corrected radio packets (since boot).
-    uint16_t fixed = 0;
     // Local (message sender) recieved signal strength indication in device-dependent
     // units/scale. Values: [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
@@ -5105,6 +5101,10 @@ public:
     // Remote background noise level. These are device dependent RSSI values (scale
     // as approx 2x dB on SiK radios). Values: [0-254], 255: invalid/unknown.
     uint8_t remnoise = 0;
+    // Count of radio packet receive errors (since boot).
+    uint16_t rxerrors = 0;
+    // Count of error corrected radio packets (since boot).
+    uint16_t fixed = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5177,6 +5177,9 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // 0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value
+    // of this field unless it is at least two, so always correctly fill in the fix.
+    uint8_t fix_type = 0;
     // Latitude (WGS84)
     int32_t lat = 0;
     // Longitude (WGS84)
@@ -5198,9 +5201,6 @@ public:
     // Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees.
     // If unknown, set to: 65535
     uint16_t cog = 0;
-    // 0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value
-    // of this field unless it is at least two, so always correctly fill in the fix.
-    uint8_t fix_type = 0;
     // Number of satellites visible. If unknown, set to 255
     uint8_t satellites_visible = 0;
     virtual std::string toJSon();
@@ -5218,6 +5218,8 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // Sensor ID
+    uint8_t sensor_id = 0;
     // Integration time. Divide integrated_x and integrated_y by the integration time
     // to obtain average flow. The integration time also indicates the.
     uint32_t integration_time_us = 0;
@@ -5235,17 +5237,15 @@ public:
     float integrated_ygyro = 0;
     // RH rotation around Z axis
     float integrated_zgyro = 0;
+    // Temperature
+    int16_t temperature = 0;
+    // Optical flow quality / confidence. 0: no valid flow, 255: maximum quality
+    uint8_t quality = 0;
     // Time since the distance was sampled.
     uint32_t time_delta_distance_us = 0;
     // Distance to the center of the flow field. Positive value (including zero):
     // distance known. Negative value: Unknown distance.
     float distance = 0;
-    // Temperature
-    int16_t temperature = 0;
-    // Sensor ID
-    uint8_t sensor_id = 0;
-    // Optical flow quality / confidence. 0: no valid flow, 255: maximum quality
-    uint8_t quality = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5341,14 +5341,14 @@ class MavLinkLogRequestList : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 117;
     MavLinkLogRequestList() { msgid = kMessageId; }
-    // First log id (0 for first available)
-    uint16_t start = 0;
-    // Last log id (0xffff for last available)
-    uint16_t end = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
     uint8_t target_component = 0;
+    // First log id (0 for first available)
+    uint16_t start = 0;
+    // Last log id (0xffff for last available)
+    uint16_t end = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5360,16 +5360,16 @@ class MavLinkLogEntry : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 118;
     MavLinkLogEntry() { msgid = kMessageId; }
-    // UTC timestamp of log since 1970, or 0 if not available
-    uint32_t time_utc = 0;
-    // Size of the log (may be approximate)
-    uint32_t size = 0;
     // Log id
     uint16_t id = 0;
     // Total number of logs
     uint16_t num_logs = 0;
     // High log number
     uint16_t last_log_num = 0;
+    // UTC timestamp of log since 1970, or 0 if not available
+    uint32_t time_utc = 0;
+    // Size of the log (may be approximate)
+    uint32_t size = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5381,16 +5381,16 @@ class MavLinkLogRequestData : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 119;
     MavLinkLogRequestData() { msgid = kMessageId; }
-    // Offset into the log
-    uint32_t ofs = 0;
-    // Number of bytes
-    uint32_t count = 0;
-    // Log id (from LOG_ENTRY reply)
-    uint16_t id = 0;
     // System ID
     uint8_t target_system = 0;
     // Component ID
     uint8_t target_component = 0;
+    // Log id (from LOG_ENTRY reply)
+    uint16_t id = 0;
+    // Offset into the log
+    uint32_t ofs = 0;
+    // Number of bytes
+    uint32_t count = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5402,10 +5402,10 @@ class MavLinkLogData : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 120;
     MavLinkLogData() { msgid = kMessageId; }
-    // Offset into the log
-    uint32_t ofs = 0;
     // Log id (from LOG_ENTRY reply)
     uint16_t id = 0;
+    // Offset into the log
+    uint32_t ofs = 0;
     // Number of bytes (zero for end of log)
     uint8_t count = 0;
     // log data
@@ -5474,14 +5474,14 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // GPS fix type.
+    uint8_t fix_type = 0;
     // Latitude (WGS84)
     int32_t lat = 0;
     // Longitude (WGS84)
     int32_t lon = 0;
     // Altitude (MSL). Positive for up.
     int32_t alt = 0;
-    // Age of DGPS info
-    uint32_t dgps_age = 0;
     // GPS HDOP horizontal dilution of position. If unknown, set to: UINT16_MAX
     uint16_t eph = 0;
     // GPS VDOP vertical dilution of position. If unknown, set to: UINT16_MAX
@@ -5491,12 +5491,12 @@ public:
     // Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees.
     // If unknown, set to: UINT16_MAX
     uint16_t cog = 0;
-    // GPS fix type.
-    uint8_t fix_type = 0;
     // Number of satellites visible. If unknown, set to 255
     uint8_t satellites_visible = 0;
     // Number of DGPS satellites
     uint8_t dgps_numch = 0;
+    // Age of DGPS info
+    uint32_t dgps_age = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5528,14 +5528,14 @@ class MavLinkSerialControl : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 126;
     MavLinkSerialControl() { msgid = kMessageId; }
-    // Baudrate of transfer. Zero means no change.
-    uint32_t baudrate = 0;
-    // Timeout for reply data
-    uint16_t timeout = 0;
     // Serial control device type.
     uint8_t device = 0;
     // Bitmap of serial control flags.
     uint8_t flags = 0;
+    // Timeout for reply data
+    uint16_t timeout = 0;
+    // Baudrate of transfer. Zero means no change.
+    uint32_t baudrate = 0;
     // how many bytes in this transfer
     uint8_t count = 0;
     // serial data
@@ -5554,8 +5554,20 @@ public:
     MavLinkGpsRtk() { msgid = kMessageId; }
     // Time since boot of last baseline message received.
     uint32_t time_last_baseline_ms = 0;
+    // Identification of connected RTK receiver.
+    uint8_t rtk_receiver_id = 0;
+    // GPS Week Number of last baseline
+    uint16_t wn = 0;
     // GPS Time of Week of last baseline
     uint32_t tow = 0;
+    // GPS-specific health report for RTK data.
+    uint8_t rtk_health = 0;
+    // Rate of baseline messages being received by GPS
+    uint8_t rtk_rate = 0;
+    // Current number of sats used for RTK calculation.
+    uint8_t nsats = 0;
+    // Coordinate system of baseline
+    uint8_t baseline_coords_type = 0;
     // Current baseline in ECEF x or NED north component.
     int32_t baseline_a_mm = 0;
     // Current baseline in ECEF y or NED east component.
@@ -5566,18 +5578,6 @@ public:
     uint32_t accuracy = 0;
     // Current number of integer ambiguity hypotheses.
     int32_t iar_num_hypotheses = 0;
-    // GPS Week Number of last baseline
-    uint16_t wn = 0;
-    // Identification of connected RTK receiver.
-    uint8_t rtk_receiver_id = 0;
-    // GPS-specific health report for RTK data.
-    uint8_t rtk_health = 0;
-    // Rate of baseline messages being received by GPS
-    uint8_t rtk_rate = 0;
-    // Current number of sats used for RTK calculation.
-    uint8_t nsats = 0;
-    // Coordinate system of baseline
-    uint8_t baseline_coords_type = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5592,8 +5592,20 @@ public:
     MavLinkGps2Rtk() { msgid = kMessageId; }
     // Time since boot of last baseline message received.
     uint32_t time_last_baseline_ms = 0;
+    // Identification of connected RTK receiver.
+    uint8_t rtk_receiver_id = 0;
+    // GPS Week Number of last baseline
+    uint16_t wn = 0;
     // GPS Time of Week of last baseline
     uint32_t tow = 0;
+    // GPS-specific health report for RTK data.
+    uint8_t rtk_health = 0;
+    // Rate of baseline messages being received by GPS
+    uint8_t rtk_rate = 0;
+    // Current number of sats used for RTK calculation.
+    uint8_t nsats = 0;
+    // Coordinate system of baseline
+    uint8_t baseline_coords_type = 0;
     // Current baseline in ECEF x or NED north component.
     int32_t baseline_a_mm = 0;
     // Current baseline in ECEF y or NED east component.
@@ -5604,18 +5616,6 @@ public:
     uint32_t accuracy = 0;
     // Current number of integer ambiguity hypotheses.
     int32_t iar_num_hypotheses = 0;
-    // GPS Week Number of last baseline
-    uint16_t wn = 0;
-    // Identification of connected RTK receiver.
-    uint8_t rtk_receiver_id = 0;
-    // GPS-specific health report for RTK data.
-    uint8_t rtk_health = 0;
-    // Rate of baseline messages being received by GPS
-    uint8_t rtk_rate = 0;
-    // Current number of sats used for RTK calculation.
-    uint8_t nsats = 0;
-    // Coordinate system of baseline
-    uint8_t baseline_coords_type = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5663,6 +5663,8 @@ class MavLinkDataTransmissionHandshake : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 130;
     MavLinkDataTransmissionHandshake() { msgid = kMessageId; }
+    // Type of requested/acknowledged data.
+    uint8_t type = 0;
     // total data size (set on ACK only).
     uint32_t size = 0;
     // Width of a matrix or image.
@@ -5671,8 +5673,6 @@ public:
     uint16_t height = 0;
     // Number of packets being sent (set on ACK only).
     uint16_t packets = 0;
-    // Type of requested/acknowledged data.
-    uint8_t type = 0;
     // Payload size per packet (normally 253 byte, see DATA field size in message
     // ENCAPSULATED_DATA) (set on ACK only).
     uint8_t payload = 0;
@@ -5706,17 +5706,6 @@ public:
     MavLinkDistanceSensor() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
-    // Horizontal Field of View (angle) where the distance measurement is valid and
-    // the field of view is known. Otherwise this is set to 0.
-    float horizontal_fov = 0;
-    // Vertical Field of View (angle) where the distance measurement is valid and
-    // the field of view is known. Otherwise this is set to 0.
-    float vertical_fov = 0;
-    // Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order,
-    // zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis.
-    // This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM.
-    // Set it to 0 if invalid."
-    float quaternion[4] = { 0 };
     // Minimum distance the sensor can measure
     uint16_t min_distance = 0;
     // Maximum distance the sensor can measure
@@ -5733,6 +5722,17 @@ public:
     uint8_t orientation = 0;
     // Measurement variance. Max standard deviation is 6cm. 255 if unknown.
     uint8_t covariance = 0;
+    // Horizontal Field of View (angle) where the distance measurement is valid and
+    // the field of view is known. Otherwise this is set to 0.
+    float horizontal_fov = 0;
+    // Vertical Field of View (angle) where the distance measurement is valid and
+    // the field of view is known. Otherwise this is set to 0.
+    float vertical_fov = 0;
+    // Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order,
+    // zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis.
+    // This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM.
+    // Set it to 0 if invalid."
+    float quaternion[4] = { 0 };
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5744,14 +5744,14 @@ class MavLinkTerrainRequest : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 133;
     MavLinkTerrainRequest() { msgid = kMessageId; }
-    // Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)
-    uint64_t mask = 0;
     // Latitude of SW corner of first grid
     int32_t lat = 0;
     // Longitude of SW corner of first grid
     int32_t lon = 0;
     // Grid spacing
     uint16_t grid_spacing = 0;
+    // Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)
+    uint64_t mask = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5770,10 +5770,10 @@ public:
     int32_t lon = 0;
     // Grid spacing
     uint16_t grid_spacing = 0;
-    // Terrain data MSL
-    int16_t data[16] = { 0 };
     // bit within the terrain request mask
     uint8_t gridbit = 0;
+    // Terrain data MSL
+    int16_t data[16] = { 0 };
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5805,12 +5805,12 @@ public:
     int32_t lat = 0;
     // Longitude
     int32_t lon = 0;
+    // grid spacing (zero if terrain at this location unavailable)
+    uint16_t spacing = 0;
     // Terrain height MSL
     float terrain_height = 0;
     // Current vehicle height above lat/lon terrain height
     float current_height = 0;
-    // grid spacing (zero if terrain at this location unavailable)
-    uint16_t spacing = 0;
     // Number of 4x4 terrain blocks waiting to be received or read from disk
     uint16_t pending = 0;
     // Number of 4x4 terrain blocks in memory
@@ -5877,12 +5877,6 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
-    // Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for
-    // single rotation direction motors is 0..1, negative range for reverse direction.
-    // Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch,
-    // yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through
-    // mixer to repurpose them as generic outputs.
-    float controls[8] = { 0 };
     // Actuator group. The "_mlx" indicates this is a multi-instance message and a
     // MAVLink parser should use this field to difference between instances.
     uint8_t group_mlx = 0;
@@ -5890,6 +5884,12 @@ public:
     uint8_t target_system = 0;
     // Component ID
     uint8_t target_component = 0;
+    // Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for
+    // single rotation direction motors is 0..1, negative range for reverse direction.
+    // Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch,
+    // yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through
+    // mixer to repurpose them as generic outputs.
+    float controls[8] = { 0 };
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -5905,15 +5905,15 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // Actuator group. The "_mlx" indicates this is a multi-instance message and a
+    // MAVLink parser should use this field to difference between instances.
+    uint8_t group_mlx = 0;
     // Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for
     // single rotation direction motors is 0..1, negative range for reverse direction.
     // Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch,
     // yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through
     // mixer to repurpose them as generic outputs.
     float controls[8] = { 0 };
-    // Actuator group. The "_mlx" indicates this is a multi-instance message and a
-    // MAVLink parser should use this field to difference between instances.
-    uint8_t group_mlx = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6011,8 +6011,9 @@ public:
     MavLinkFollowTarget() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint64_t timestamp = 0;
-    // button states or switches of a tracker device
-    uint64_t custom_state = 0;
+    // bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL =
+    // 2, ATT + RATES = 3)
+    uint8_t est_capabilities = 0;
     // Latitude (WGS84)
     int32_t lat = 0;
     // Longitude (WGS84)
@@ -6029,9 +6030,8 @@ public:
     float rates[3] = { 0 };
     // eph epv
     float position_cov[3] = { 0 };
-    // bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL =
-    // 2, ATT + RATES = 3)
-    uint8_t est_capabilities = 0;
+    // button states or switches of a tracker device
+    uint64_t custom_state = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6091,13 +6091,12 @@ class MavLinkBatteryStatus : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 147;
     MavLinkBatteryStatus() { msgid = kMessageId; }
-    // Consumed charge, -1: autopilot does not provide consumption estimate
-    int32_t current_consumed = 0;
-    // Consumed energy, -1: autopilot does not provide energy consumption estimate
-    int32_t energy_consumed = 0;
-    // Remaining battery time, 0: autopilot does not provide remaining battery time
-    // estimate
-    int32_t time_remaining = 0;
+    // Battery ID
+    uint8_t id = 0;
+    // Function of the battery
+    uint8_t battery_function = 0;
+    // Type (chemistry) of the battery
+    uint8_t type = 0;
     // Temperature of the battery. INT16_MAX for unknown temperature.
     int16_t temperature = 0;
     // Battery voltage of cells. Cells above the valid cell count for this battery
@@ -6105,15 +6104,16 @@ public:
     uint16_t voltages[10] = { 0 };
     // Battery current, -1: autopilot does not measure the current
     int16_t current_battery = 0;
-    // Battery ID
-    uint8_t id = 0;
-    // Function of the battery
-    uint8_t battery_function = 0;
-    // Type (chemistry) of the battery
-    uint8_t type = 0;
+    // Consumed charge, -1: autopilot does not provide consumption estimate
+    int32_t current_consumed = 0;
+    // Consumed energy, -1: autopilot does not provide energy consumption estimate
+    int32_t energy_consumed = 0;
     // Remaining battery energy. Values: [0-100], -1: autopilot does not estimate
     // the remaining battery.
     int8_t battery_remaining = 0;
+    // Remaining battery time, 0: autopilot does not provide remaining battery time
+    // estimate
+    int32_t time_remaining = 0;
     // State for extent of discharge, provided by autopilot for warning or external
     // reactions
     uint8_t charge_state = 0;
@@ -6131,8 +6131,6 @@ public:
     MavLinkAutopilotVersion() { msgid = kMessageId; }
     // Bitmap of capabilities
     uint64_t capabilities = 0;
-    // UID if provided by hardware (see uid2)
-    uint64_t uid = 0;
     // Firmware version number
     uint32_t flight_sw_version = 0;
     // Middleware version number
@@ -6141,10 +6139,6 @@ public:
     uint32_t os_sw_version = 0;
     // HW / board version (last 8 bytes should be silicon ID, if any)
     uint32_t board_version = 0;
-    // ID of the board vendor
-    uint16_t vendor_id = 0;
-    // ID of the product
-    uint16_t product_id = 0;
     // Custom version field, commonly the first 8 bytes of the git hash. This is not
     // an unique identifier, but should allow to identify the commit using the main
     // version number even for very large code bases.
@@ -6157,6 +6151,12 @@ public:
     // an unique identifier, but should allow to identify the commit using the main
     // version number even for very large code bases.
     uint8_t os_custom_version[8] = { 0 };
+    // ID of the board vendor
+    uint16_t vendor_id = 0;
+    // ID of the product
+    uint16_t product_id = 0;
+    // UID if provided by hardware (see uid2)
+    uint64_t uid = 0;
     // UID if provided by hardware (supersedes the uid field. If this is non-zero,
     // use this field, otherwise use uid)
     uint8_t uid2[18] = { 0 };
@@ -6175,6 +6175,10 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // The ID of the target if multiple targets are present
+    uint8_t target_num = 0;
+    // Coordinate frame used for following fields.
+    uint8_t frame = 0;
     // X-axis angular offset of the target from the center of the image
     float angle_x = 0;
     // Y-axis angular offset of the target from the center of the image
@@ -6194,10 +6198,6 @@ public:
     // Quaternion of landing target orientation (w, x, y, z order, zero-rotation is
     // 1, 0, 0, 0)
     float q[4] = { 0 };
-    // The ID of the target if multiple targets are present
-    uint8_t target_num = 0;
-    // Coordinate frame used for following fields.
-    uint8_t frame = 0;
     // Type of landing target
     uint8_t type = 0;
     // Boolean indicating whether the position fields (x, y, z, q, type) contain valid
@@ -6214,14 +6214,14 @@ class MavLinkFenceStatus : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 162;
     MavLinkFenceStatus() { msgid = kMessageId; }
-    // Time (since boot) of last breach.
-    uint32_t breach_time = 0;
-    // Number of fence breaches.
-    uint16_t breach_count = 0;
     // Breach status (0 if currently inside fence, 1 if outside).
     uint8_t breach_status = 0;
+    // Number of fence breaches.
+    uint16_t breach_count = 0;
     // Last breach type.
     uint8_t breach_type = 0;
+    // Time (since boot) of last breach.
+    uint32_t breach_time = 0;
     // Active action to prevent fence breach
     uint8_t breach_mitigation = 0;
     virtual std::string toJSon();
@@ -6248,6 +6248,8 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // Bitmap indicating which EKF outputs are valid.
+    uint16_t flags = 0;
     // Velocity innovation test ratio
     float vel_ratio = 0;
     // Horizontal position innovation test ratio
@@ -6264,8 +6266,6 @@ public:
     float pos_horiz_accuracy = 0;
     // Vertical position 1-STD accuracy relative to the EKF local origin
     float pos_vert_accuracy = 0;
-    // Bitmap indicating which EKF outputs are valid.
-    uint16_t flags = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6313,8 +6313,17 @@ public:
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
     uint64_t time_usec = 0;
+    // ID of the GPS for multiple GPS inputs
+    uint8_t gps_id = 0;
+    // Bitmap indicating which GPS input flags fields to ignore. All other fields
+    // must be provided.
+    uint16_t ignore_flags = 0;
     // GPS time (from start of GPS week)
     uint32_t time_week_ms = 0;
+    // GPS week number
+    uint16_t time_week = 0;
+    // 0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK
+    uint8_t fix_type = 0;
     // Latitude (WGS84)
     int32_t lat = 0;
     // Longitude (WGS84)
@@ -6337,15 +6346,6 @@ public:
     float horiz_accuracy = 0;
     // GPS vertical accuracy
     float vert_accuracy = 0;
-    // Bitmap indicating which GPS input flags fields to ignore. All other fields
-    // must be provided.
-    uint16_t ignore_flags = 0;
-    // GPS week number
-    uint16_t time_week = 0;
-    // ID of the GPS for multiple GPS inputs
-    uint8_t gps_id = 0;
-    // 0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK
-    uint8_t fix_type = 0;
     // Number of satellites visible.
     uint8_t satellites_visible = 0;
     virtual std::string toJSon();
@@ -6384,32 +6384,30 @@ class MavLinkHighLatency : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 234;
     MavLinkHighLatency() { msgid = kMessageId; }
+    // Bitmap of enabled system modes.
+    uint8_t base_mode = 0;
     // A bitfield for use for autopilot-specific flags.
     uint32_t custom_mode = 0;
-    // Latitude
-    int32_t latitude = 0;
-    // Longitude
-    int32_t longitude = 0;
+    // The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.
+    uint8_t landed_state = 0;
     // roll
     int16_t roll = 0;
     // pitch
     int16_t pitch = 0;
     // heading
     uint16_t heading = 0;
+    // throttle (percentage)
+    int8_t throttle = 0;
     // heading setpoint
     int16_t heading_sp = 0;
+    // Latitude
+    int32_t latitude = 0;
+    // Longitude
+    int32_t longitude = 0;
     // Altitude above mean sea level
     int16_t altitude_amsl = 0;
     // Altitude setpoint relative to the home position
     int16_t altitude_sp = 0;
-    // distance to target
-    uint16_t wp_distance = 0;
-    // Bitmap of enabled system modes.
-    uint8_t base_mode = 0;
-    // The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.
-    uint8_t landed_state = 0;
-    // throttle (percentage)
-    int8_t throttle = 0;
     // airspeed
     uint8_t airspeed = 0;
     // airspeed setpoint
@@ -6433,6 +6431,8 @@ public:
     uint8_t failsafe = 0;
     // current waypoint number
     uint8_t wp_num = 0;
+    // distance to target
+    uint16_t wp_distance = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6446,31 +6446,27 @@ public:
     MavLinkHighLatency2() { msgid = kMessageId; }
     // Timestamp (milliseconds since boot or Unix epoch)
     uint32_t timestamp = 0;
-    // Latitude
-    int32_t latitude = 0;
-    // Longitude
-    int32_t longitude = 0;
-    // A bitfield for use for autopilot-specific flags (2 byte version).
-    uint16_t custom_mode = 0;
-    // Altitude above mean sea level
-    int16_t altitude = 0;
-    // Altitude setpoint
-    int16_t target_altitude = 0;
-    // Distance to target waypoint or position
-    uint16_t target_distance = 0;
-    // Current waypoint number
-    uint16_t wp_num = 0;
-    // Bitmap of failure flags.
-    uint16_t failure_flags = 0;
     // Type of the MAV (quadrotor, helicopter, etc.)
     uint8_t type = 0;
     // Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not
     // flight controllers.
     uint8_t autopilot = 0;
+    // A bitfield for use for autopilot-specific flags (2 byte version).
+    uint16_t custom_mode = 0;
+    // Latitude
+    int32_t latitude = 0;
+    // Longitude
+    int32_t longitude = 0;
+    // Altitude above mean sea level
+    int16_t altitude = 0;
+    // Altitude setpoint
+    int16_t target_altitude = 0;
     // Heading
     uint8_t heading = 0;
     // Heading setpoint
     uint8_t target_heading = 0;
+    // Distance to target waypoint or position
+    uint16_t target_distance = 0;
     // Throttle
     uint8_t throttle = 0;
     // Airspeed
@@ -6493,6 +6489,10 @@ public:
     int8_t climb_rate = 0;
     // Battery level (-1 if field not provided).
     int8_t battery = 0;
+    // Current waypoint number
+    uint16_t wp_num = 0;
+    // Bitmap of failure flags.
+    uint16_t failure_flags = 0;
     // Field for custom payload.
     int8_t custom0 = 0;
     // Field for custom payload.
@@ -6546,10 +6546,6 @@ class MavLinkHomePosition : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 242;
     MavLinkHomePosition() { msgid = kMessageId; }
-    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
-    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
-    uint64_t time_usec = 0;
     // Latitude (WGS84)
     int32_t latitude = 0;
     // Longitude (WGS84)
@@ -6583,6 +6579,10 @@ public:
     // should set it to the opposite direction of the takeoff, assuming the takeoff
     // happened from the threshold / touchdown zone.
     float approach_z = 0;
+    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
+    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
+    // the magnitude the number.
+    uint64_t time_usec = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6601,10 +6601,8 @@ class MavLinkSetHomePosition : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 243;
     MavLinkSetHomePosition() { msgid = kMessageId; }
-    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
-    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
-    uint64_t time_usec = 0;
+    // System ID.
+    uint8_t target_system = 0;
     // Latitude (WGS84)
     int32_t latitude = 0;
     // Longitude (WGS84)
@@ -6638,8 +6636,10 @@ public:
     // should set it to the opposite direction of the takeoff, assuming the takeoff
     // happened from the threshold / touchdown zone.
     float approach_z = 0;
-    // System ID.
-    uint8_t target_system = 0;
+    // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
+    // infer timestamp format (since 1.1.1970 or since system boot) by checking for
+    // the magnitude the number.
+    uint64_t time_usec = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6653,12 +6653,12 @@ class MavLinkMessageInterval : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 244;
     MavLinkMessageInterval() { msgid = kMessageId; }
+    // The ID of the requested MAVLink message. v1.0 is limited to 254 messages.
+    uint16_t message_id = 0;
     // The interval between two messages. A value of -1 indicates this stream is disabled,
     // 0 indicates it is not available, > 0 indicates the interval at which it is
     // sent.
     int32_t interval_us = 0;
-    // The ID of the requested MAVLink message. v1.0 is limited to 254 messages.
-    uint16_t message_id = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6692,6 +6692,8 @@ public:
     int32_t lat = 0;
     // Longitude
     int32_t lon = 0;
+    // ADSB altitude type.
+    uint8_t altitude_type = 0;
     // Altitude(ASL)
     int32_t altitude = 0;
     // Course over ground
@@ -6700,18 +6702,16 @@ public:
     uint16_t hor_velocity = 0;
     // The vertical velocity. Positive is up
     int16_t ver_velocity = 0;
-    // Bitmap to indicate various statuses including valid data fields
-    uint16_t flags = 0;
-    // Squawk code
-    uint16_t squawk = 0;
-    // ADSB altitude type.
-    uint8_t altitude_type = 0;
     // The callsign, 8+null
     char callsign[9] = { 0 };
     // ADSB emitter type.
     uint8_t emitter_type = 0;
     // Time since last communication in seconds
     uint8_t tslc = 0;
+    // Bitmap to indicate various statuses including valid data fields
+    uint16_t flags = 0;
+    // Squawk code
+    uint16_t squawk = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6723,20 +6723,20 @@ class MavLinkCollision : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 247;
     MavLinkCollision() { msgid = kMessageId; }
+    // Collision data source
+    uint8_t src = 0;
     // Unique identifier, domain based on src field
     uint32_t id = 0;
+    // Action that is being taken to avoid this collision
+    uint8_t action = 0;
+    // How concerned the aircraft is about this collision
+    uint8_t threat_level = 0;
     // Estimated time until collision occurs
     float time_to_minimum_delta = 0;
     // Closest vertical distance between vehicle and object
     float altitude_minimum_delta = 0;
     // Closest horizontal distance between vehicle and object
     float horizontal_minimum_delta = 0;
-    // Collision data source
-    uint8_t src = 0;
-    // Action that is being taken to avoid this collision
-    uint8_t action = 0;
-    // How concerned the aircraft is about this collision
-    uint8_t threat_level = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6749,6 +6749,12 @@ class MavLinkV2Extension : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 248;
     MavLinkV2Extension() { msgid = kMessageId; }
+    // Network ID (0 for broadcast)
+    uint8_t target_network = 0;
+    // System ID (0 for broadcast)
+    uint8_t target_system = 0;
+    // Component ID (0 for broadcast)
+    uint8_t target_component = 0;
     // A code that identifies the software component that understands this message
     // (analogous to USB device classes or mime type strings). If this code is less
     // than 32768, it is considered a 'registered' protocol extension and the corresponding
@@ -6757,12 +6763,6 @@ public:
     // GCS specific metadata, etc...). Message_types greater than 32767 are considered
     // local experiments and should not be checked in to any widely distributed codebase.
     uint16_t message_type = 0;
-    // Network ID (0 for broadcast)
-    uint8_t target_network = 0;
-    // System ID (0 for broadcast)
-    uint8_t target_system = 0;
-    // Component ID (0 for broadcast)
-    uint8_t target_component = 0;
     // Variable length payload. The length must be encoded in the payload as part
     // of the message_type protocol, e.g. by including the length as payload data,
     // or by terminating the payload data with a non-zero marker. This is required
@@ -6806,6 +6806,8 @@ class MavLinkDebugVect : public MavLinkMessageBase {
 public:
     const static uint8_t kMessageId = 250;
     MavLinkDebugVect() { msgid = kMessageId; }
+    // Name
+    char name[10] = { 0 };
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
     // the magnitude the number.
@@ -6816,8 +6818,6 @@ public:
     float y = 0;
     // z
     float z = 0;
-    // Name
-    char name[10] = { 0 };
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6833,10 +6833,10 @@ public:
     MavLinkNamedValueFloat() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
-    // Floating point value
-    float value = 0;
     // Name of the debug variable
     char name[10] = { 0 };
+    // Floating point value
+    float value = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6852,10 +6852,10 @@ public:
     MavLinkNamedValueInt() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
-    // Signed integer value
-    int32_t value = 0;
     // Name of the debug variable
     char name[10] = { 0 };
+    // Signed integer value
+    int32_t value = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -6888,10 +6888,10 @@ public:
     MavLinkDebug() { msgid = kMessageId; }
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
-    // DEBUG value
-    float value = 0;
     // index of debug variable
     uint8_t ind = 0;
+    // DEBUG value
+    float value = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;

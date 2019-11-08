@@ -393,17 +393,17 @@ int MavLinkGpsRawInt::pack(char* buffer) const {
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->lat), 8);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->lon), 12);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->alt), 16);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->alt_ellipsoid), 20);
-    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->h_acc), 24);
-    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->v_acc), 28);
-    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->vel_acc), 32);
-    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->hdg_acc), 36);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->eph), 40);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->epv), 42);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->vel), 44);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->cog), 46);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->fix_type), 48);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->satellites_visible), 49);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->eph), 20);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->epv), 22);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->vel), 24);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->cog), 26);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->fix_type), 28);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->satellites_visible), 29);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->alt_ellipsoid), 30);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->h_acc), 34);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->v_acc), 38);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->vel_acc), 42);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->hdg_acc), 46);
     return 50;
 }
 
@@ -412,17 +412,17 @@ int MavLinkGpsRawInt::unpack(const char* buffer) {
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->lat), 8);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->lon), 12);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->alt), 16);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->alt_ellipsoid), 20);
-    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->h_acc), 24);
-    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->v_acc), 28);
-    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->vel_acc), 32);
-    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->hdg_acc), 36);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->eph), 40);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->epv), 42);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->vel), 44);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->cog), 46);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->fix_type), 48);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->satellites_visible), 49);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->eph), 20);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->epv), 22);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->vel), 24);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->cog), 26);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->fix_type), 28);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->satellites_visible), 29);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->alt_ellipsoid), 30);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->h_acc), 34);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->v_acc), 38);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->vel_acc), 42);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->hdg_acc), 46);
  return 50;
 }
 
@@ -433,17 +433,17 @@ std::string MavLinkGpsRawInt::toJSon() {
     ss << ", \"lat\":"  << this->lat;
     ss << ", \"lon\":"  << this->lon;
     ss << ", \"alt\":"  << this->alt;
-    ss << ", \"alt_ellipsoid\":"  << this->alt_ellipsoid;
-    ss << ", \"h_acc\":"  << this->h_acc;
-    ss << ", \"v_acc\":"  << this->v_acc;
-    ss << ", \"vel_acc\":"  << this->vel_acc;
-    ss << ", \"hdg_acc\":"  << this->hdg_acc;
     ss << ", \"eph\":"  << this->eph;
     ss << ", \"epv\":"  << this->epv;
     ss << ", \"vel\":"  << this->vel;
     ss << ", \"cog\":"  << this->cog;
     ss << ", \"fix_type\":"  << static_cast<unsigned int>(this->fix_type);
     ss << ", \"satellites_visible\":"  << static_cast<unsigned int>(this->satellites_visible);
+    ss << ", \"alt_ellipsoid\":"  << this->alt_ellipsoid;
+    ss << ", \"h_acc\":"  << this->h_acc;
+    ss << ", \"v_acc\":"  << this->v_acc;
+    ss << ", \"vel_acc\":"  << this->vel_acc;
+    ss << ", \"hdg_acc\":"  << this->hdg_acc;
     ss << "} },";
  return ss.str();
 }
@@ -540,8 +540,8 @@ int MavLinkRawImu::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->xmag), 20);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->ymag), 22);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->zmag), 24);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 26);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 28);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 26);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 27);
     return 29;
 }
 
@@ -556,8 +556,8 @@ int MavLinkRawImu::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->xmag), 20);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->ymag), 22);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->zmag), 24);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 26);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 28);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 26);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 27);
  return 29;
 }
 
@@ -574,8 +574,8 @@ std::string MavLinkRawImu::toJSon() {
     ss << ", \"xmag\":"  << this->xmag;
     ss << ", \"ymag\":"  << this->ymag;
     ss << ", \"zmag\":"  << this->zmag;
-    ss << ", \"temperature\":"  << this->temperature;
     ss << ", \"id\":"  << static_cast<unsigned int>(this->id);
+    ss << ", \"temperature\":"  << this->temperature;
     ss << "} },";
  return ss.str();
 }
@@ -899,15 +899,15 @@ int MavLinkServoOutputRaw::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo6_raw), 14);
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo7_raw), 16);
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo8_raw), 18);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo9_raw), 20);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo10_raw), 22);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo11_raw), 24);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo12_raw), 26);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo13_raw), 28);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo14_raw), 30);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo15_raw), 32);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo16_raw), 34);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->port), 36);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->port), 20);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo9_raw), 21);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo10_raw), 23);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo11_raw), 25);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo12_raw), 27);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo13_raw), 29);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo14_raw), 31);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo15_raw), 33);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo16_raw), 35);
     return 37;
 }
 
@@ -921,15 +921,15 @@ int MavLinkServoOutputRaw::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo6_raw), 14);
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo7_raw), 16);
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo8_raw), 18);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo9_raw), 20);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo10_raw), 22);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo11_raw), 24);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo12_raw), 26);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo13_raw), 28);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo14_raw), 30);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo15_raw), 32);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo16_raw), 34);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->port), 36);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->port), 20);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo9_raw), 21);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo10_raw), 23);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo11_raw), 25);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo12_raw), 27);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo13_raw), 29);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo14_raw), 31);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo15_raw), 33);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo16_raw), 35);
  return 37;
 }
 
@@ -945,6 +945,7 @@ std::string MavLinkServoOutputRaw::toJSon() {
     ss << ", \"servo6_raw\":"  << this->servo6_raw;
     ss << ", \"servo7_raw\":"  << this->servo7_raw;
     ss << ", \"servo8_raw\":"  << this->servo8_raw;
+    ss << ", \"port\":"  << static_cast<unsigned int>(this->port);
     ss << ", \"servo9_raw\":"  << this->servo9_raw;
     ss << ", \"servo10_raw\":"  << this->servo10_raw;
     ss << ", \"servo11_raw\":"  << this->servo11_raw;
@@ -953,7 +954,6 @@ std::string MavLinkServoOutputRaw::toJSon() {
     ss << ", \"servo14_raw\":"  << this->servo14_raw;
     ss << ", \"servo15_raw\":"  << this->servo15_raw;
     ss << ", \"servo16_raw\":"  << this->servo16_raw;
-    ss << ", \"port\":"  << static_cast<unsigned int>(this->port);
     ss << "} },";
  return ss.str();
 }
@@ -1268,58 +1268,58 @@ std::string MavLinkMissionAck::toJSon() {
 }
 
 int MavLinkSetGpsGlobalOrigin::pack(char* buffer) const {
-    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 0);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 8);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 12);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 16);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 20);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 0);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 4);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 8);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 12);
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 13);
     return 21;
 }
 
 int MavLinkSetGpsGlobalOrigin::unpack(const char* buffer) {
-    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 0);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 8);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 12);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 16);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 20);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 0);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 4);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 8);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 12);
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 13);
  return 21;
 }
 
 std::string MavLinkSetGpsGlobalOrigin::toJSon() {
     std::ostringstream ss;
     ss << "{ \"name\": \"SET_GPS_GLOBAL_ORIGIN\", \"id\": 48, \"timestamp\":" << timestamp << ", \"msg\": {";
-    ss << "\"time_usec\":"  << this->time_usec;
-    ss << ", \"latitude\":"  << this->latitude;
+    ss << "\"latitude\":"  << this->latitude;
     ss << ", \"longitude\":"  << this->longitude;
     ss << ", \"altitude\":"  << this->altitude;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }
 
 int MavLinkGpsGlobalOrigin::pack(char* buffer) const {
-    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 0);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 8);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 12);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 16);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 0);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 4);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 8);
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 12);
     return 20;
 }
 
 int MavLinkGpsGlobalOrigin::unpack(const char* buffer) {
-    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 0);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 8);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 12);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 16);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 0);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 4);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 8);
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 12);
  return 20;
 }
 
 std::string MavLinkGpsGlobalOrigin::toJSon() {
     std::ostringstream ss;
     ss << "{ \"name\": \"GPS_GLOBAL_ORIGIN\", \"id\": 49, \"timestamp\":" << timestamp << ", \"msg\": {";
-    ss << "\"time_usec\":"  << this->time_usec;
-    ss << ", \"latitude\":"  << this->latitude;
+    ss << "\"latitude\":"  << this->latitude;
     ss << ", \"longitude\":"  << this->longitude;
     ss << ", \"altitude\":"  << this->altitude;
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }
@@ -1843,18 +1843,18 @@ int MavLinkRcChannelsOverride::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan6_raw), 10);
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan7_raw), 12);
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan8_raw), 14);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan9_raw), 16);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan10_raw), 18);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan11_raw), 20);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan12_raw), 22);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan13_raw), 24);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan14_raw), 26);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan15_raw), 28);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan16_raw), 30);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan17_raw), 32);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan18_raw), 34);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 36);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 37);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 16);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 17);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan9_raw), 18);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan10_raw), 20);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan11_raw), 22);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan12_raw), 24);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan13_raw), 26);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan14_raw), 28);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan15_raw), 30);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan16_raw), 32);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan17_raw), 34);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan18_raw), 36);
     return 38;
 }
 
@@ -1867,18 +1867,18 @@ int MavLinkRcChannelsOverride::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan6_raw), 10);
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan7_raw), 12);
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan8_raw), 14);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan9_raw), 16);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan10_raw), 18);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan11_raw), 20);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan12_raw), 22);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan13_raw), 24);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan14_raw), 26);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan15_raw), 28);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan16_raw), 30);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan17_raw), 32);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan18_raw), 34);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 36);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 37);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 16);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 17);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan9_raw), 18);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan10_raw), 20);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan11_raw), 22);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan12_raw), 24);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan13_raw), 26);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan14_raw), 28);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan15_raw), 30);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan16_raw), 32);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan17_raw), 34);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan18_raw), 36);
  return 38;
 }
 
@@ -1893,6 +1893,8 @@ std::string MavLinkRcChannelsOverride::toJSon() {
     ss << ", \"chan6_raw\":"  << this->chan6_raw;
     ss << ", \"chan7_raw\":"  << this->chan7_raw;
     ss << ", \"chan8_raw\":"  << this->chan8_raw;
+    ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
     ss << ", \"chan9_raw\":"  << this->chan9_raw;
     ss << ", \"chan10_raw\":"  << this->chan10_raw;
     ss << ", \"chan11_raw\":"  << this->chan11_raw;
@@ -1903,8 +1905,6 @@ std::string MavLinkRcChannelsOverride::toJSon() {
     ss << ", \"chan16_raw\":"  << this->chan16_raw;
     ss << ", \"chan17_raw\":"  << this->chan17_raw;
     ss << ", \"chan18_raw\":"  << this->chan18_raw;
-    ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
-    ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
     ss << "} },";
  return ss.str();
 }
@@ -2105,20 +2105,20 @@ std::string MavLinkCommandLong::toJSon() {
 }
 
 int MavLinkCommandAck::pack(char* buffer) const {
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->result_param2), 0);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->command), 4);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->result), 6);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->progress), 7);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->command), 0);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->result), 2);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->progress), 3);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->result_param2), 4);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 8);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 9);
     return 10;
 }
 
 int MavLinkCommandAck::unpack(const char* buffer) {
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->result_param2), 0);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->command), 4);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->result), 6);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->progress), 7);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->command), 0);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->result), 2);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->progress), 3);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->result_param2), 4);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 8);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 9);
  return 10;
@@ -2127,10 +2127,10 @@ int MavLinkCommandAck::unpack(const char* buffer) {
 std::string MavLinkCommandAck::toJSon() {
     std::ostringstream ss;
     ss << "{ \"name\": \"COMMAND_ACK\", \"id\": 77, \"timestamp\":" << timestamp << ", \"msg\": {";
-    ss << "\"result_param2\":"  << this->result_param2;
-    ss << ", \"command\":"  << this->command;
+    ss << "\"command\":"  << this->command;
     ss << ", \"result\":"  << static_cast<unsigned int>(this->result);
     ss << ", \"progress\":"  << static_cast<unsigned int>(this->progress);
+    ss << ", \"result_param2\":"  << this->result_param2;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
     ss << "} },";
@@ -2727,12 +2727,12 @@ int MavLinkOpticalFlow::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->flow_comp_m_x), 8);
     pack_float(buffer, reinterpret_cast<const float*>(&this->flow_comp_m_y), 12);
     pack_float(buffer, reinterpret_cast<const float*>(&this->ground_distance), 16);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->flow_rate_x), 20);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->flow_rate_y), 24);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->flow_x), 28);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->flow_y), 30);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->sensor_id), 32);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->quality), 33);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->flow_x), 20);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->flow_y), 22);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->sensor_id), 24);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->quality), 25);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->flow_rate_x), 26);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->flow_rate_y), 30);
     return 34;
 }
 
@@ -2741,12 +2741,12 @@ int MavLinkOpticalFlow::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->flow_comp_m_x), 8);
     unpack_float(buffer, reinterpret_cast<float*>(&this->flow_comp_m_y), 12);
     unpack_float(buffer, reinterpret_cast<float*>(&this->ground_distance), 16);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->flow_rate_x), 20);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->flow_rate_y), 24);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->flow_x), 28);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->flow_y), 30);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->sensor_id), 32);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->quality), 33);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->flow_x), 20);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->flow_y), 22);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->sensor_id), 24);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->quality), 25);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->flow_rate_x), 26);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->flow_rate_y), 30);
  return 34;
 }
 
@@ -2757,12 +2757,12 @@ std::string MavLinkOpticalFlow::toJSon() {
     ss << ", \"flow_comp_m_x\":"  << float_tostring(this->flow_comp_m_x);
     ss << ", \"flow_comp_m_y\":"  << float_tostring(this->flow_comp_m_y);
     ss << ", \"ground_distance\":"  << float_tostring(this->ground_distance);
-    ss << ", \"flow_rate_x\":"  << float_tostring(this->flow_rate_x);
-    ss << ", \"flow_rate_y\":"  << float_tostring(this->flow_rate_y);
     ss << ", \"flow_x\":"  << this->flow_x;
     ss << ", \"flow_y\":"  << this->flow_y;
     ss << ", \"sensor_id\":"  << static_cast<unsigned int>(this->sensor_id);
     ss << ", \"quality\":"  << static_cast<unsigned int>(this->quality);
+    ss << ", \"flow_rate_x\":"  << float_tostring(this->flow_rate_x);
+    ss << ", \"flow_rate_y\":"  << float_tostring(this->flow_rate_y);
     ss << "} },";
  return ss.str();
 }
@@ -4002,31 +4002,31 @@ std::string MavLinkEncapsulatedData::toJSon() {
 
 int MavLinkDistanceSensor::pack(char* buffer) const {
     pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->time_boot_ms), 0);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->horizontal_fov), 4);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->vertical_fov), 8);
-    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->quaternion[0]), 12);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->min_distance), 28);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->max_distance), 30);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->current_distance), 32);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 34);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 35);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->orientation), 36);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->covariance), 37);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->min_distance), 4);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->max_distance), 6);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->current_distance), 8);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 10);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 11);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->orientation), 12);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->covariance), 13);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->horizontal_fov), 14);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->vertical_fov), 18);
+    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->quaternion[0]), 22);
     return 38;
 }
 
 int MavLinkDistanceSensor::unpack(const char* buffer) {
     unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->time_boot_ms), 0);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->horizontal_fov), 4);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->vertical_fov), 8);
-    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->quaternion[0]), 12);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->min_distance), 28);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->max_distance), 30);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->current_distance), 32);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 34);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 35);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->orientation), 36);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->covariance), 37);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->min_distance), 4);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->max_distance), 6);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->current_distance), 8);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 10);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 11);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->orientation), 12);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->covariance), 13);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->horizontal_fov), 14);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->vertical_fov), 18);
+    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->quaternion[0]), 22);
  return 38;
 }
 
@@ -4034,9 +4034,6 @@ std::string MavLinkDistanceSensor::toJSon() {
     std::ostringstream ss;
     ss << "{ \"name\": \"DISTANCE_SENSOR\", \"id\": 132, \"timestamp\":" << timestamp << ", \"msg\": {";
     ss << "\"time_boot_ms\":"  << this->time_boot_ms;
-    ss << ", \"horizontal_fov\":"  << float_tostring(this->horizontal_fov);
-    ss << ", \"vertical_fov\":"  << float_tostring(this->vertical_fov);
-    ss << ", \"quaternion\":"  << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->quaternion[0])) << "]";
     ss << ", \"min_distance\":"  << this->min_distance;
     ss << ", \"max_distance\":"  << this->max_distance;
     ss << ", \"current_distance\":"  << this->current_distance;
@@ -4044,6 +4041,9 @@ std::string MavLinkDistanceSensor::toJSon() {
     ss << ", \"id\":"  << static_cast<unsigned int>(this->id);
     ss << ", \"orientation\":"  << static_cast<unsigned int>(this->orientation);
     ss << ", \"covariance\":"  << static_cast<unsigned int>(this->covariance);
+    ss << ", \"horizontal_fov\":"  << float_tostring(this->horizontal_fov);
+    ss << ", \"vertical_fov\":"  << float_tostring(this->vertical_fov);
+    ss << ", \"quaternion\":"  << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->quaternion[0])) << "]";
     ss << "} },";
  return ss.str();
 }
@@ -4486,14 +4486,14 @@ std::string MavLinkControlSystemState::toJSon() {
 int MavLinkBatteryStatus::pack(char* buffer) const {
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->current_consumed), 0);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->energy_consumed), 4);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->time_remaining), 8);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 12);
-    pack_uint16_t_array(10, buffer, reinterpret_cast<const uint16_t*>(&this->voltages[0]), 14);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->current_battery), 34);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 36);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->battery_function), 37);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 38);
-    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->battery_remaining), 39);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 8);
+    pack_uint16_t_array(10, buffer, reinterpret_cast<const uint16_t*>(&this->voltages[0]), 10);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->current_battery), 30);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 32);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->battery_function), 33);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 34);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->battery_remaining), 35);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->time_remaining), 36);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->charge_state), 40);
     return 41;
 }
@@ -4501,14 +4501,14 @@ int MavLinkBatteryStatus::pack(char* buffer) const {
 int MavLinkBatteryStatus::unpack(const char* buffer) {
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->current_consumed), 0);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->energy_consumed), 4);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->time_remaining), 8);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 12);
-    unpack_uint16_t_array(10, buffer, reinterpret_cast<uint16_t*>(&this->voltages[0]), 14);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->current_battery), 34);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 36);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->battery_function), 37);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 38);
-    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->battery_remaining), 39);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 8);
+    unpack_uint16_t_array(10, buffer, reinterpret_cast<uint16_t*>(&this->voltages[0]), 10);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->current_battery), 30);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 32);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->battery_function), 33);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 34);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->battery_remaining), 35);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->time_remaining), 36);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->charge_state), 40);
  return 41;
 }
@@ -4518,7 +4518,6 @@ std::string MavLinkBatteryStatus::toJSon() {
     ss << "{ \"name\": \"BATTERY_STATUS\", \"id\": 147, \"timestamp\":" << timestamp << ", \"msg\": {";
     ss << "\"current_consumed\":"  << this->current_consumed;
     ss << ", \"energy_consumed\":"  << this->energy_consumed;
-    ss << ", \"time_remaining\":"  << this->time_remaining;
     ss << ", \"temperature\":"  << this->temperature;
     ss << ", \"voltages\":"  << "[" << uint16_t_array_tostring(10, reinterpret_cast<uint16_t*>(&this->voltages[0])) << "]";
     ss << ", \"current_battery\":"  << this->current_battery;
@@ -4526,6 +4525,7 @@ std::string MavLinkBatteryStatus::toJSon() {
     ss << ", \"battery_function\":"  << static_cast<unsigned int>(this->battery_function);
     ss << ", \"type\":"  << static_cast<unsigned int>(this->type);
     ss << ", \"battery_remaining\":"  << static_cast<int>(this->battery_remaining);
+    ss << ", \"time_remaining\":"  << this->time_remaining;
     ss << ", \"charge_state\":"  << static_cast<unsigned int>(this->charge_state);
     ss << "} },";
  return ss.str();
@@ -4589,12 +4589,12 @@ int MavLinkLandingTarget::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->distance), 16);
     pack_float(buffer, reinterpret_cast<const float*>(&this->size_x), 20);
     pack_float(buffer, reinterpret_cast<const float*>(&this->size_y), 24);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->x), 28);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->y), 32);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->z), 36);
-    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->q[0]), 40);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_num), 56);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->frame), 57);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_num), 28);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->frame), 29);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->x), 30);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->y), 34);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->z), 38);
+    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->q[0]), 42);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 58);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->position_valid), 59);
     return 60;
@@ -4607,12 +4607,12 @@ int MavLinkLandingTarget::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->distance), 16);
     unpack_float(buffer, reinterpret_cast<float*>(&this->size_x), 20);
     unpack_float(buffer, reinterpret_cast<float*>(&this->size_y), 24);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->x), 28);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->y), 32);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->z), 36);
-    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->q[0]), 40);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_num), 56);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->frame), 57);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_num), 28);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->frame), 29);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->x), 30);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->y), 34);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->z), 38);
+    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->q[0]), 42);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 58);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->position_valid), 59);
  return 60;
@@ -4627,12 +4627,12 @@ std::string MavLinkLandingTarget::toJSon() {
     ss << ", \"distance\":"  << float_tostring(this->distance);
     ss << ", \"size_x\":"  << float_tostring(this->size_x);
     ss << ", \"size_y\":"  << float_tostring(this->size_y);
+    ss << ", \"target_num\":"  << static_cast<unsigned int>(this->target_num);
+    ss << ", \"frame\":"  << static_cast<unsigned int>(this->frame);
     ss << ", \"x\":"  << float_tostring(this->x);
     ss << ", \"y\":"  << float_tostring(this->y);
     ss << ", \"z\":"  << float_tostring(this->z);
     ss << ", \"q\":"  << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
-    ss << ", \"target_num\":"  << static_cast<unsigned int>(this->target_num);
-    ss << ", \"frame\":"  << static_cast<unsigned int>(this->frame);
     ss << ", \"type\":"  << static_cast<unsigned int>(this->type);
     ss << ", \"position_valid\":"  << static_cast<unsigned int>(this->position_valid);
     ss << "} },";
@@ -5069,40 +5069,39 @@ std::string MavLinkVibration::toJSon() {
 }
 
 int MavLinkHomePosition::pack(char* buffer) const {
-    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 0);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 8);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 12);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 16);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->x), 20);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->y), 24);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->z), 28);
-    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->q[0]), 32);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_x), 48);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_y), 52);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_z), 56);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 0);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 4);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 8);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->x), 12);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->y), 16);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->z), 20);
+    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->q[0]), 24);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_x), 40);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_y), 44);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_z), 48);
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 52);
     return 60;
 }
 
 int MavLinkHomePosition::unpack(const char* buffer) {
-    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 0);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 8);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 12);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 16);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->x), 20);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->y), 24);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->z), 28);
-    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->q[0]), 32);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_x), 48);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_y), 52);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_z), 56);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 0);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 4);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 8);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->x), 12);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->y), 16);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->z), 20);
+    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->q[0]), 24);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_x), 40);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_y), 44);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_z), 48);
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 52);
  return 60;
 }
 
 std::string MavLinkHomePosition::toJSon() {
     std::ostringstream ss;
     ss << "{ \"name\": \"HOME_POSITION\", \"id\": 242, \"timestamp\":" << timestamp << ", \"msg\": {";
-    ss << "\"time_usec\":"  << this->time_usec;
-    ss << ", \"latitude\":"  << this->latitude;
+    ss << "\"latitude\":"  << this->latitude;
     ss << ", \"longitude\":"  << this->longitude;
     ss << ", \"altitude\":"  << this->altitude;
     ss << ", \"x\":"  << float_tostring(this->x);
@@ -5112,47 +5111,47 @@ std::string MavLinkHomePosition::toJSon() {
     ss << ", \"approach_x\":"  << float_tostring(this->approach_x);
     ss << ", \"approach_y\":"  << float_tostring(this->approach_y);
     ss << ", \"approach_z\":"  << float_tostring(this->approach_z);
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }
 
 int MavLinkSetHomePosition::pack(char* buffer) const {
-    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 0);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 8);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 12);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 16);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->x), 20);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->y), 24);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->z), 28);
-    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->q[0]), 32);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_x), 48);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_y), 52);
-    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_z), 56);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 60);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 0);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 4);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 8);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->x), 12);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->y), 16);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->z), 20);
+    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->q[0]), 24);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_x), 40);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_y), 44);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->approach_z), 48);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 52);
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 53);
     return 61;
 }
 
 int MavLinkSetHomePosition::unpack(const char* buffer) {
-    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 0);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 8);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 12);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 16);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->x), 20);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->y), 24);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->z), 28);
-    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->q[0]), 32);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_x), 48);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_y), 52);
-    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_z), 56);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 60);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 0);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 4);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 8);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->x), 12);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->y), 16);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->z), 20);
+    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->q[0]), 24);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_x), 40);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_y), 44);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->approach_z), 48);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 52);
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 53);
  return 61;
 }
 
 std::string MavLinkSetHomePosition::toJSon() {
     std::ostringstream ss;
     ss << "{ \"name\": \"SET_HOME_POSITION\", \"id\": 243, \"timestamp\":" << timestamp << ", \"msg\": {";
-    ss << "\"time_usec\":"  << this->time_usec;
-    ss << ", \"latitude\":"  << this->latitude;
+    ss << "\"latitude\":"  << this->latitude;
     ss << ", \"longitude\":"  << this->longitude;
     ss << ", \"altitude\":"  << this->altitude;
     ss << ", \"x\":"  << float_tostring(this->x);
@@ -5163,6 +5162,7 @@ std::string MavLinkSetHomePosition::toJSon() {
     ss << ", \"approach_y\":"  << float_tostring(this->approach_y);
     ss << ", \"approach_z\":"  << float_tostring(this->approach_z);
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }

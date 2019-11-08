@@ -37,12 +37,27 @@ bool CurrentThread::setMaximumPriority()
 #endif
 }
 
+typedef HRESULT (WINAPI *SetThreadDescriptionFunction)( _In_ HANDLE hThread, _In_ PCWSTR lpThreadDescription);
+static SetThreadDescriptionFunction setThreadDescriptionFunction = nullptr;
+
 bool CurrentThread::setThreadName(const std::string& name)
 {
 #ifdef _WIN32
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-    std::wstring wide_path = converter.from_bytes(name.c_str());
-    return S_OK == SetThreadDescription(GetCurrentThread(), wide_path.c_str());
+    // unfortunately this is only available on Windows 10, and AirSim is not limited to that.
+    if (setThreadDescriptionFunction == nullptr) {
+        HINSTANCE hGetProcIDDLL = LoadLibrary(L"Kernel32");
+        FARPROC func = GetProcAddress(hGetProcIDDLL, "SetThreadDescription");
+        if (func != nullptr)
+        {
+            setThreadDescriptionFunction = (SetThreadDescriptionFunction)func;
+        }
+    }
+    if (setThreadDescriptionFunction != nullptr) {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+        std::wstring wide_path = converter.from_bytes(name.c_str());
+        return S_OK == (*setThreadDescriptionFunction)(GetCurrentThread(), wide_path.c_str());
+    }
+    return false;
 #else
     
     return 0 == prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);

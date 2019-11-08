@@ -101,6 +101,8 @@ namespace MavLinkComGenerator
         [XmlElement(ElementName ="field")]
         public List<MavField> fields { get; set; }
 
+        public int ExtensionPos { get; set; }
+
         public MavMessage() { }
     }
 }

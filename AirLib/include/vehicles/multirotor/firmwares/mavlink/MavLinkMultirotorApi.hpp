@@ -869,41 +869,60 @@ private: //methods
             createMavSerialConnection(connection_info.serial_port, connection_info.baud_rate);
         }
         else {
-            createMavUdpConnection(connection_info.ip_address, connection_info.ip_port);
+            createMavEthernetConnection(connection_info);
         }
+
         //Uncomment below for sending images over MavLink
         //connectToVideoServer();
     }
 
-    void createMavUdpConnection(const std::string& ip, int port)
+    void createMavEthernetConnection(const AirSimSettings::MavLinkConnectionInfo& connection_info)
     {
         close();
 
-        if (ip == "") {
-            throw std::invalid_argument("UdpIp setting is invalid.");
+        if (connection_info.tcp_address.size() > 0)
+        {
+            if (connection_info.tcp_port == 0) {
+                throw std::invalid_argument("TcpPort setting has an invalid value.");
+            }
+
+            addStatusMessage(Utils::stringf("Connecting to TCP port %d, local IP %s, remote IP...", connection_info.tcp_port, connection_info_.local_host_ip.c_str(), connection_info.tcp_address.c_str()));
+
+            connection_ = mavlinkcom::MavLinkConnection::connectTcp("hil", connection_info_.local_host_ip, connection_info.tcp_address, connection_info.tcp_port);
+        }
+        else if (connection_info.udp_address.size() > 0)
+        {
+            if (connection_info.udp_port == 0) {
+                throw std::invalid_argument("UdpPort setting has an invalid value.");
+            }
+
+            connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, connection_info.udp_address, connection_info.udp_port);
+        }
+        else 
+        {
+            throw std::invalid_argument("Must provide either TcpIp or UdpIp setting for ethernet connections.");
         }
 
-        if (port == 0) {
-            throw std::invalid_argument("UdpPort setting has an invalid value.");
-        }
-
-        addStatusMessage(Utils::stringf("Connecting to UDP port %d, local IP %s, remote IP...", port, connection_info_.local_host_ip.c_str(), ip.c_str()));
-        connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, ip, port);
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
         addStatusMessage(std::string("Connected over UDP."));
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
 
-        if (connection_info_.sitl_ip_address != "" && connection_info_.sitl_ip_port != 0 && connection_info_.sitl_ip_port != port) {
-            // bugbug: the PX4 SITL mode app cannot receive commands to control the drone over the same mavlink connection
-            // as the HIL_SENSOR messages, we must establish a separate mavlink channel for that so that DroneShell works.
-            addStatusMessage(Utils::stringf("Connecting to PX4 SITL UDP port %d, local IP %s, remote IP...",
-                connection_info_.sitl_ip_port, connection_info_.local_host_ip.c_str(), connection_info_.sitl_ip_address.c_str()));
+        if (connection_info_.gcs_address != "") {
+            if (connection_info_.gcs_port == 0) {
+                throw std::invalid_argument("GroundControlPort setting has an invalid value.");
+            }
 
-            auto sitlconnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl",
-                connection_info_.local_host_ip, connection_info_.sitl_ip_address, connection_info_.sitl_ip_port);
-            mav_vehicle_->connect(sitlconnection);
+            // The PX4 SITL mode app cannot receive commands to control the drone over the same HIL mavlink connection.
+            // The HIL mavlink connection can only handle HIL_SENSOR messages.  This separate channel is needed for
+            // everything else.
+            addStatusMessage(Utils::stringf("Connecting to PX4 Ground Control UDP port %d, local IP %s, remote IP...",
+                connection_info_.gcs_port, connection_info_.local_host_ip.c_str(), connection_info_.gcs_address.c_str()));
+
+            auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl",
+                connection_info_.local_host_ip, connection_info_.gcs_address, connection_info_.gcs_port);
+            mav_vehicle_->connect(gcsConnection);
 
             addStatusMessage(std::string("Connected to SITL over UDP."));
         }
@@ -1054,9 +1073,14 @@ private: //methods
             std::lock_guard<std::mutex> guard_actuator(hil_controls_mutex_);    //use same mutex as HIL_CONTROl
 
             HilActuatorControlsMessage.decode(msg);
-            //is_arned_ = (HilControlsMessage.mode & 128) > 0; //TODO: is this needed?
+            bool isarmed = (HilActuatorControlsMessage.mode & 128) != 0;
             for (auto i = 0; i < 8; ++i) {
-                rotor_controls_[i] = HilActuatorControlsMessage.controls[i];
+                if (isarmed) {
+                    rotor_controls_[i] = HilActuatorControlsMessage.controls[i];
+                }
+                else {
+                    rotor_controls_[i] = 0;
+                }
             }
             normalizeRotorControls();
             received_actuator_controls_ = true;

@@ -277,9 +277,6 @@ namespace MavLinkComGenerator
                     }
                 }
 
-                // mavlink packs the fields by descending size for some odd reason.
-                m.fields = m.fields.OrderByDescending(x => typeSize[x.type]).ToList();
-
                 int length = m.fields.Count;
                 for (int i = 0; i < length; i++)
                 {
@@ -302,6 +299,19 @@ namespace MavLinkComGenerator
                         header.WriteLine("    {0} {1} = 0;", type, field.name);
                     }
                 }
+
+                // mavlink packs the fields in order of descending size (but not including the extension fields.
+                var sortedFields = m.fields;
+                int extensionPos = m.ExtensionPos;
+                if (extensionPos == 0)
+                {
+                    extensionPos = m.fields.Count;
+                }
+                sortedFields = new List<MavField>(m.fields.Take(extensionPos));
+                sortedFields = sortedFields.OrderByDescending(x => typeSize[x.type]).ToList();
+                sortedFields.AddRange(m.fields.Skip(extensionPos));
+
+                m.fields = sortedFields;
 
                 header.WriteLine("    virtual std::string toJSon();");
                 header.WriteLine("protected:");

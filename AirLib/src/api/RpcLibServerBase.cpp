@@ -319,6 +319,11 @@ void RpcLibServerBase::start(bool block, std::size_t thread_count)
 
 void RpcLibServerBase::stop()
 {
+    try {
+        pimpl_->server.close_sessions();
+    }
+    catch (...) {
+    }
     pimpl_->server.stop();
 }
 

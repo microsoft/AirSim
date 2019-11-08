@@ -1,9 +1,9 @@
 # Setting up PX4 Software-in-Loop
 
-The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. Sorry it doesn't run in Windows, but if you install [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)
-you can build and run it there.
+The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. If you are on Windows then you must
+use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) as the [Bash On Windows](https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html) toolchain no longer works for SITL.
 
-1. From your Linux bash terminal follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included out own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
+1. From your bash terminal follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included out own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
 
 2. Get the PX4 source code and build the posix SITL version of PX4:
     ```
@@ -11,14 +11,25 @@ you can build and run it there.
     cd PX4
     git clone https://github.com/PX4/Firmware.git
     cd Firmware
-    git checkout v1.8.2  # Pick a well known "good" release tag.
+    git checkout v1.9.2  # Pick a well known "good" release tag.
     ```
 3. Use following command to build and start PX4 firmware in SITL mode:
     ```
-    make posix_sitl_ekf2  none_iris
+    make px4_sitl_default none_iris
     ```
+   If you are using older version v1.8.* use this command instead: `make posix_sitl_ekf2  none_iris`.
+
 4. You should see a message like this you `INFO  [simulator] Waiting for initial data on UDP port 14560` which means the SITL PX4 app is waiting for someone to connect.
-5. Now edit [AirSim settings](settings.md) file to make sure you have followings:
+You will also see information about which ports are configured in your SITL app.
+The default ports have changed recently.  You should see something like this:
+    ```
+    INFO  [simulator] Waiting for simulator to connect on UDP port 14560
+    INFO  [init] Mixer: etc/mixers/quad_w.main.mix on /dev/pwm_output0
+    INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 14570 remote port 14550
+    INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540
+    ```
+
+5. Now edit [AirSim settings](settings.md) file to make sure you have matching UDP port settings:
     ```json
     {
         "SettingsVersion": 1.2,
@@ -26,14 +37,29 @@ you can build and run it there.
         "Vehicles": {
             "PX4": {
                 "VehicleType": "PX4Multirotor",
-                "UseSerial": false
+                "UseSerial": false,
+                "TcpIp": "",
+                "UdpPort": 14560,
+                "GroundControlPort": 14570
             }
         }
     }
-}
-
     ```
-6. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from things like `[mavlink]` and `[commander]` and so on.
+    Notice the `[simulator]` is using UDP, which is why the TCP address needs
+    to be disabled using: `"TcpIp": ""`.  Note also that on older versions of
+    PX4 the ground control port is not printed, in that case set it to 14556.
+
+6. Run Unreal environment and it should connect to SITL via UDP.  You should see a bunch of messages from the SITL PX4 window from things like `[mavlink]` and `[commander]` and so on.  The following messages tell you that AirSim is connected
+properly:
+    ```
+    INFO  [simulator] Simulator connected on UDP port 14560
+    INFO  [mavlink] partner IP: 127.0.0.1
+    INFO  [ecl/EKF] EKF GPS checks passed (WGS-84 origin set)
+    INFO  [ecl/EKF] EKF commencing GPS fusion
+    ```
+
+    If you do not see these messages then check your UDP port settings.
+
 7. You should also be able to use QGroundControl just like with flight controller hardware. Note that as we don't have physical board, RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to PC. This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.
 
 ## Setting GPS origin
@@ -90,7 +116,7 @@ NOTE: Do `NOT` do this on a real drone as it is too dangerous to fly without the
 ## Using VirtualBox Ubuntu
 
 If you want to run the above posix_sitl in a `VirtualBox Ubuntu` machine then it will have a different ip address from localhost. So in this case you need to edit the [settings file](settings.md) and change the UdpIp and SitlIp to the ip address of your virtual machine
-set the  LocalIpAddress to the address of your host machine running the Unreal engine. 
+set the  LocalIpAddress to the address of your host machine running the Unreal engine.
 
 ## Remote Controller
 
