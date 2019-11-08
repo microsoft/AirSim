@@ -10,7 +10,7 @@ void ATextureShuffleActor::SwapTexture_Implementation(int tex_id, int component_
 		TArray<UStaticMeshComponent*> components;
 		GetComponents<UStaticMeshComponent>(components);
 		NumComponents = components.Num();
-		DynamicMaterialInstances.Init(nullptr, NumComponents);
+		DynamicMaterialInstances.Init(nullptr, components[component_id]->GetNumMaterials());
 		MaterialCacheInitialized = true;
 	}
 
