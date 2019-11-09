@@ -85,6 +85,12 @@ namespace mavlinkcom {
         // NIC to use, for example, wifi versus hard wired ethernet adapter.  For localhost pass 127.0.0.1.
         static std::shared_ptr<MavLinkConnection>  connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort);
 
+        // This method accepts one tcp connection from a remote host on a given port.
+        // You may need to open this port in your firewall.
+        // The  localAddr can also a specific local ip address if you need to specify which
+        // NIC to use, for example, wifi versus hard wired ethernet adapter.  For localhost pass 127.0.0.1.
+        static std::shared_ptr<MavLinkConnection>  acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort);
+
         // instance methods
         std::string getName();
         int getTargetComponentId();

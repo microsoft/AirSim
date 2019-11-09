@@ -85,6 +85,20 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std:
     return createConnection(nodeName, socket);
 }
 
+std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort)
+{
+    std::string local = localAddr;
+
+    std::shared_ptr<TcpClientPort> socket = std::make_shared<TcpClientPort>();
+
+    socket->accept(localAddr, listeningPort);
+
+    socket->setNonBlocking();
+    socket->setNoDelay();
+
+    return createConnection(nodeName, socket);
+}
+
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, const std::string& portName, int baudRate, const std::string& initString)
 {
     std::shared_ptr<SerialPort> serial = std::make_shared<SerialPort>();

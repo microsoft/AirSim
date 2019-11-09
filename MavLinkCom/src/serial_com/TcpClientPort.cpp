@@ -158,8 +158,50 @@ public:
 			throw std::runtime_error(Utils::stringf("TcpClientPort accept failed with error: %d\n", hr));
 		}
 
+        // don't need to accept any more, so we can close this one.
+        ::closesocket(local);
+
 		closed_ = false;
 	}
+
+    void setNonBlocking()
+    {
+#ifdef _WIN32
+        unsigned long mode = 1;
+        int rc = ioctlsocket(sock, FIONBIO, &mode);
+#else
+        int fd = static_cast<int>(sock);
+        int flags = fcntl(fd, F_GETFL, 0);
+        if (flags == -1) return false;
+        flags |= O_NONBLOCK;
+        int rc = fcntl(fd, F_SETFL, flags);
+#endif
+        if (rc != 0) {
+#ifdef _WIN32
+            rc = WSAGetLastError();
+#endif
+            throw std::runtime_error(Utils::stringf("TcpClientPort setNonBlocking failed with error: %d\n", rc));
+        }
+    }
+
+    void setNoDelay()
+    {
+        int flags = 1;
+#ifdef _WIN32
+        int rc = ::setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&flags, sizeof(flags));
+#else
+        int fd = static_cast<int>(sock);
+        int rc = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char*)&flags, sizeof(flags));
+#endif
+
+        if (rc != 0)
+        {
+#ifdef _WIN32
+            rc = WSAGetLastError();
+#endif
+            throw std::runtime_error(Utils::stringf("TcpClientPort set TCP_NODELAY failed: %d\n", rc));
+        }
+    }
 
 	// write to the serial port
 	int write(const uint8_t* ptr, int count)
@@ -305,4 +347,14 @@ int TcpClientPort::remotePort()
 int TcpClientPort::getRssi(const char* ifaceName)
 {
     return impl_->getRssi(ifaceName);
+}
+
+void TcpClientPort::setNoDelay()
+{
+    impl_->setNoDelay();
+}
+
+void TcpClientPort::setNonBlocking()
+{
+    impl_->setNonBlocking();
 }

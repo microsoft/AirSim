@@ -32,6 +32,11 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnection::connectTcp(const std::str
     return MavLinkConnectionImpl::connectTcp(nodeName, localAddr, remoteIpAddr, remotePort);
 }
 
+std::shared_ptr<MavLinkConnection>  MavLinkConnection::acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort)
+{
+    return MavLinkConnectionImpl::acceptTcp(nodeName, localAddr, listeningPort);
+}
+
 void MavLinkConnection::startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort)
 {
     pImpl->startListening(shared_from_this(), nodeName, connectedPort);

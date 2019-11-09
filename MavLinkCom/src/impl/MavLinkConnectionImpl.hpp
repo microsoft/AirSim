@@ -36,6 +36,7 @@ namespace mavlinkcom_impl {
         static std::shared_ptr<MavLinkConnection>  connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort);
         static std::shared_ptr<MavLinkConnection>  connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort);
         static std::shared_ptr<MavLinkConnection>  connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort);
+        static std::shared_ptr<MavLinkConnection>  acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort);
 
         std::string getName();
         int getTargetComponentId();

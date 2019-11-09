@@ -244,17 +244,18 @@ public: //types
     struct MavLinkConnectionInfo {
         /* Default values are requires so uninitialized instance doesn't have random values */
 
-        bool use_serial = true; // false means use UDP instead
-                                //Used to connect via HITL: needed only if use_serial = true
+        bool use_serial = true; // false means use UDP or TCP instead
+                                
+        //Used to connect via HITL: needed only if use_serial = true
         std::string serial_port = "*";
         int baud_rate = 115200;
 
-        // Used to connect to drone over UDP: needed only if use_serial = false and tcp_address = ""
+        // Used to connect to drone over UDP: needed only if use_serial = false and use_tcp == false
         std::string udp_address = "127.0.0.1";
         int udp_port = 14560;
 
-        // Used to connect to drone over TCP: needed only if use_serial = false and udp_address = ""
-        std::string tcp_address = "127.0.0.1";
+        // Used to accept connections from drone over TCP: needed only if use_tcp = true
+        bool use_tcp = false;
         int tcp_port = 4560;
 
         // The PX4 SITL app requires receiving drone commands over a different mavlink channel called
@@ -652,7 +653,7 @@ private:
         connection_info.use_serial = settings_json.getBool("UseSerial", connection_info.use_serial);
         connection_info.udp_address = settings_json.getString("UdpIp", connection_info.udp_address);
         connection_info.udp_port = settings_json.getInt("UdpPort", connection_info.udp_port);
-        connection_info.tcp_address = settings_json.getString("TcpIp", connection_info.tcp_address);
+        connection_info.use_tcp = settings_json.getBool("UseTcp", connection_info.use_tcp);
         connection_info.tcp_port = settings_json.getInt("TcpPort", connection_info.tcp_port);
         connection_info.serial_port = settings_json.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = settings_json.getInt("SerialBaudRate", connection_info.baud_rate);

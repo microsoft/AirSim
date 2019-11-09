@@ -880,15 +880,15 @@ private: //methods
     {
         close();
 
-        if (connection_info.tcp_address.size() > 0)
+        if (connection_info.use_tcp)
         {
             if (connection_info.tcp_port == 0) {
                 throw std::invalid_argument("TcpPort setting has an invalid value.");
             }
 
-            addStatusMessage(Utils::stringf("Connecting to TCP port %d, local IP %s, remote IP...", connection_info.tcp_port, connection_info_.local_host_ip.c_str(), connection_info.tcp_address.c_str()));
+            addStatusMessage(Utils::stringf("Accepting TCP connection on port %d, local IP %s", connection_info.tcp_port, connection_info_.local_host_ip.c_str()));
 
-            connection_ = mavlinkcom::MavLinkConnection::connectTcp("hil", connection_info_.local_host_ip, connection_info.tcp_address, connection_info.tcp_port);
+            connection_ = mavlinkcom::MavLinkConnection::acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
         }
         else if (connection_info.udp_address.size() > 0)
         {
@@ -1065,6 +1065,7 @@ private: //methods
                 rotor_controls_[7] = HilControlsMessage.aux4;
 
                 normalizeRotorControls();
+                received_actuator_controls_ = true;
             }
         }
         else if (msg.msgid == HilActuatorControlsMessage.msgid) {
@@ -1084,11 +1085,8 @@ private: //methods
             }
             normalizeRotorControls();
             received_actuator_controls_ = true;
-            if (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec)
-            {
-                // if the timestamps match then it means we are in lockstep mode.
-                lock_step_enabled_ = true;
-            }
+            // if the timestamps match then it means we are in lockstep mode.
+            lock_step_enabled_ = (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec);
         }
         //else ignore message
     }

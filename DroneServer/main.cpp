@@ -65,7 +65,7 @@ int main(int argc, const char* argv[])
         connection_info.use_serial = child.getBool("UseSerial", connection_info.use_serial);
         connection_info.udp_address = child.getString("UdpIp", connection_info.udp_address);
         connection_info.udp_port = child.getInt("UdpPort", connection_info.udp_port);
-        connection_info.tcp_address = child.getString("TcpIp", connection_info.tcp_address);
+        connection_info.use_tcp = child.getBool("UseTcp", connection_info.use_tcp);
         connection_info.tcp_port = child.getInt("TcpPort", connection_info.tcp_port);
         connection_info.serial_port = child.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = child.getInt("SerialBaudRate", connection_info.baud_rate);
@@ -89,7 +89,7 @@ int main(int argc, const char* argv[])
     //start server in async mode
     server.start(false, 4);
 
-    if (connection_info.tcp_address.size() > 0) {
+    if (connection_info.use_tcp) {
         std::cout << "Server connected to MavLink TCP endpoint at " << connection_info.local_host_ip << ":" << connection_info.tcp_port << std::endl;
     } 
     else {
