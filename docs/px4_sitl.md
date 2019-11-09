@@ -23,7 +23,7 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
 You will also see information about which ports are configured for mavlink connection to the PX4 app.
 The default ports have changed recently, so check them closely to make sure AirSim settings are correct.
     ```
-    INFO  [simulator] Waiting for simulator to connect on UDP port 14560
+    INFO  [simulator] Waiting for simulator to connect on TCP port 4560
     INFO  [init] Mixer: etc/mixers/quad_w.main.mix on /dev/pwm_output0
     INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 14570 remote port 14550
     INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540
@@ -42,20 +42,18 @@ The default ports have changed recently, so check them closely to make sure AirS
             "PX4": {
                 "VehicleType": "PX4Multirotor",
                 "UseSerial": false,
-                "TcpIp": "",
-                "UdpPort": 14560,
+                "UseTcp": true,
+                "TcpPort": 4560,
                 "GroundControlPort": 14570
             }
         }
     }
     ```
-    Notice the `[simulator]` is using UDP, which is why the TCP address needs
-    to be disabled using: `"TcpIp": ""`.  Note also that on older versions of
-    PX4 the ground control port is not printed, in that case set it to 14556.
+    Notice the `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
 
-6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via UDP.
-You should see a bunch of messages from the SITL PX4 window from things like `[mavlink]` and `[commander]` and so on.
-Specifically, the following messages tell you that AirSim is connected properly:
+6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP.
+You should see a bunch of messages from the SITL PX4 window.
+Specifically, the following messages tell you that AirSim is connected properly and GPS fusion is stable:
     ```
     INFO  [simulator] Simulator connected on UDP port 14560
     INFO  [mavlink] partner IP: 127.0.0.1
@@ -63,12 +61,12 @@ Specifically, the following messages tell you that AirSim is connected properly:
     INFO  [ecl/EKF] EKF commencing GPS fusion
     ```
 
-    If you do not see these messages then check your UDP port settings.
+    If you do not see these messages then check your port settings.
 
 7. You should also be able to use QGroundControl with SITL mode.  Make sure
-there is now Pixhawk hardware plugged in, otherwise QGroundControl will choose
-to use that instead.  Note that as we don't have physical board, RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to PC. This makes your RC look like joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You do not need to do this unless you plan to
-fly a drone manually in AirSim.
+there is no Pixhawk hardware plugged in, otherwise QGroundControl will choose
+to use that instead.  Note that as we don't have a physical board, an RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to your PC. This makes your RC look like a joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You do not need to do this unless you plan to fly a drone manually in AirSim.  Autonomous flight using the Python
+API does not require RC, see `No Remote Control` below.
 
 ## Setting GPS origin
 
