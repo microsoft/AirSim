@@ -185,7 +185,8 @@ protected:
         unused(roll);
         unused(pitch);
         unused(yaw_rate);
-        Utils::log("Not Implemented: commandRollPitchThrottle", Utils::kLogLevelInfo);
+        unused(throttle);
+        Utils::log("Not Implemented: commandRollPitchYawrateThrottle", Utils::kLogLevelInfo);
     }
 
     virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
@@ -194,7 +195,7 @@ protected:
         unused(pitch);
         unused(yaw);
         unused(z);
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: commandRollPitchYawZ", Utils::kLogLevelInfo);
     }
 
     virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) override
@@ -202,7 +203,35 @@ protected:
         unused(roll);
         unused(pitch);
         unused(yaw);
-        Utils::log("Not Implemented: commandRollPitchZ", Utils::kLogLevelInfo);
+        unused(throttle);
+        Utils::log("Not Implemented: commandRollPitchYawThrottle", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandRollPitchYawrateZ(float roll, float pitch, float yaw_rate, float z) override
+    {
+        unused(roll);
+        unused(pitch);
+        unused(yaw_rate);
+        unused(z);
+        Utils::log("Not Implemented: commandRollPitchYawrateZ", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
+    {
+        unused(roll_rate);
+        unused(pitch_rate);
+        unused(yaw_rate);
+        unused(z);
+        Utils::log("Not Implemented: commandAngleRatesZ", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle) override
+    {
+        unused(roll_rate);
+        unused(pitch_rate);
+        unused(yaw_rate);
+        unused(throttle);
+        Utils::log("Not Implemented: commandAngleRatesZ", Utils::kLogLevelInfo);
     }
 
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override

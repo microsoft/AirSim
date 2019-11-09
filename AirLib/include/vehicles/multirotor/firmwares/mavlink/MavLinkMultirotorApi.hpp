@@ -501,13 +501,11 @@ protected: //methods
     virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) override
     {
         checkValidVehicle();
-        // todo  in mavlinkvehicleimpl.cpp, thrush is supposed to be b/w -1 and +1. do we need to scale?
         mav_vehicle_->moveByAttitude(roll, pitch, yaw, 0, 0, 0, throttle);
     }
     virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) override
     {
         checkValidVehicle();
-        // todo  in mavlinkvehicleimpl.cpp, thrush is supposed to be b/w -1 and +1. do we need to scale?
         mav_vehicle_->moveByAttitude(roll, pitch, 0, 0, 0, yaw_rate, throttle);
     }
     virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
@@ -524,7 +522,6 @@ protected: //methods
     virtual void commandAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle) override
     {
         checkValidVehicle();
-        // todo  in mavlinkvehicleimpl.cpp, thrush is supposed to be b/w -1 and +1. do we need to scale?
         mav_vehicle_->moveByAttitude(0, 0, 0, roll_rate, pitch_rate, yaw_rate, throttle);
     }
 

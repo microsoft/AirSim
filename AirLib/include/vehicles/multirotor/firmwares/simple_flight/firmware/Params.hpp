@@ -70,7 +70,7 @@ public:
         const float kI = 0.0f;
         const float kD = 0.0f;
         
-        //max_pitch/roll_angle > 5.5 would produce versicle thrust that is not enough to keep vehicle in air at extremities of controls
+        //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremities of controls
         Axis4r max_limit = Axis4r(pi / 5.5f, pi / 5.5f, pi, 1.0f); //roll, pitch, yaw - in radians/sec
 
         Axis4r p = Axis4r(kP, kP, kP, 1.0f);
@@ -80,7 +80,7 @@ public:
 
     struct PositionPid {
         const float kMaxLimit = 8.8E26f; //some big number like size of known universe
-        const float kP = 2.5f;
+        const float kP = 0.25f;
         const float kI = 0.0f;
         const float kD = 0.0f;
 
