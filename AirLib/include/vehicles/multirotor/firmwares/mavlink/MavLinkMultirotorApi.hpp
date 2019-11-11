@@ -53,7 +53,6 @@ public: //methods
 
         try {
             openAllConnections();
-            is_ready_ = true;
         }
         catch (std::exception& ex) {
             is_ready_ = false;
@@ -175,7 +174,7 @@ public: //methods
         state.pose.orientation = VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
         state.twist.linear = Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
         state.twist.angular = Vector3r(current_state_.attitude.roll_rate, current_state_.attitude.pitch_rate, current_state_.attitude.yaw_rate);
-        state.pose.position = Vector3r(current_state_.local_est.acc.x, current_state_.local_est.acc.y, current_state_.local_est.acc.z);
+        state.accelerations.linear = Vector3r(current_state_.local_est.acc.x, current_state_.local_est.acc.y, current_state_.local_est.acc.z);
         //TODO: how do we get angular acceleration?
         return state;
     }
@@ -370,25 +369,25 @@ public: //methods
         // listen to the other mavlink connection also
         auto mavcon = mav_vehicle_->getConnection();
         if (mavcon != connection_) {
-            mavlinkcom::MavLinkTelemetry sitl;
-            mavcon->getTelemetry(sitl);
+            mavlinkcom::MavLinkTelemetry gcs;
+            mavcon->getTelemetry(gcs);
 
-            data.handlerMicroseconds += sitl.handlerMicroseconds;
-            data.messagesHandled += sitl.messagesHandled;
-            data.messagesReceived += sitl.messagesReceived;
-            data.messagesSent += sitl.messagesSent;
+            data.handlerMicroseconds += gcs.handlerMicroseconds;
+            data.messagesHandled += gcs.messagesHandled;
+            data.messagesReceived += gcs.messagesReceived;
+            data.messagesSent += gcs.messagesSent;
 
-            if (sitl.messagesReceived == 0)
+            if (gcs.messagesReceived == 0)
             {
-                if (!sitl_message_timer_.started()) {
-                    sitl_message_timer_.start();
+                if (!gcs_message_timer_.started()) {
+                    gcs_message_timer_.start();
                 }
-                else if (sitl_message_timer_.seconds() > messageReceivedTimeout) {
-                    addStatusMessage("not receiving any messages from SITL, please restart your SITL node and try again");
+                else if (gcs_message_timer_.seconds() > messageReceivedTimeout) {
+                    addStatusMessage("not receiving any messages from GCS port, please restart your SITL node and try again");
                 }
             }
             else {
-                sitl_message_timer_.stop();
+                gcs_message_timer_.stop();
             }
         }
 
@@ -1018,8 +1017,9 @@ private: //methods
         if (msg.msgid == HeartbeatMessage.msgid) {
             std::lock_guard<std::mutex> guard_heartbeat(heartbeat_mutex_);
 
-            //TODO: have MavLinkNode track armed state so we don't have to re-decode message here again
             HeartbeatMessage.decode(msg);
+            is_ready_ = true;
+
             bool armed = (HeartbeatMessage.base_mode & static_cast<uint8_t>(mavlinkcom::MAV_MODE_FLAG::MAV_MODE_FLAG_SAFETY_ARMED)) > 0;
             setArmed(armed);
             if (!is_any_heartbeat_) {
@@ -1083,10 +1083,20 @@ private: //methods
                     rotor_controls_[i] = 0;
                 }
             }
-            normalizeRotorControls();
+            if (isarmed)
+            {
+                normalizeRotorControls();
+            }
             received_actuator_controls_ = true;
             // if the timestamps match then it means we are in lockstep mode.
-            lock_step_enabled_ = (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec);
+            if (!lock_step_enabled_)
+            {
+                if (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec)
+                {
+                    Utils::log(Utils::stringf("Enabling lockstep mode"));
+                    lock_step_enabled_ = true;
+                }
+            }
         }
         //else ignore message
     }
@@ -1096,14 +1106,30 @@ private: //methods
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
 
-        if (lock_step_enabled_ && !received_actuator_controls_)
+        auto now = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        if (lock_step_enabled_)
         {
-            // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
-            return;
+            if (last_hil_sensor_time_ + 100000 < now)
+            {
+                // if 100 ms passes then something is terribly wrong, reset lock_step_enabled_
+                lock_step_enabled_ = false;
+                Utils::log(Utils::stringf("timeout on HilActuatorControlsMessage, resetting lock_step_enabled_"));
+            }
+            if (last_hil_sensor_time_ + 4000 > now)
+            {
+                // too soon, PX4 SITL cannot handle more than 4ms per message.
+                return;
+            }
+
+            if (!received_actuator_controls_)
+            {
+                // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
+                return;
+            }
         }
 
         mavlinkcom::MavLinkHilSensor hil_sensor;
-        last_hil_sensor_time_ = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        last_hil_sensor_time_ = now;
         hil_sensor.time_usec = last_hil_sensor_time_;
 
         hil_sensor.xacc = acceleration.x();
@@ -1276,7 +1302,7 @@ private: //variables
     bool is_api_control_enabled_;
     PidController thrust_controller_;
     common_utils::Timer hil_message_timer_;
-    common_utils::Timer sitl_message_timer_;
+    common_utils::Timer gcs_message_timer_;
 
     //every time we return status update, we need to check if we have new data
     //this is why below two variables are marked as mutable

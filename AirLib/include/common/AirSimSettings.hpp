@@ -647,6 +647,14 @@ private:
 
         connection_info.gcs_address = settings_json.getString("GroundControlIp", connection_info.gcs_address);
         connection_info.gcs_port = settings_json.getInt("GroundControlPort", connection_info.gcs_port);
+        
+        std::string sitlip = settings_json.getString("SitlIp", connection_info.gcs_address);
+        if (sitlip.size() > 0 && connection_info.gcs_address.size() == 0)
+        {
+            // backwards compat
+            connection_info.gcs_address = sitlip;
+            connection_info.gcs_port = settings_json.getInt("SitlPort", connection_info.gcs_port);
+        }
 
         connection_info.local_host_ip = settings_json.getString("LocalHostIp", connection_info.local_host_ip);
 

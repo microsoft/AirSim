@@ -8,8 +8,6 @@ client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 
-state = client.getMultirotorState()
-
 print("arming the drone...")
 client.armDisarm(True)
 
@@ -37,11 +35,11 @@ client.moveToZAsync(z, 1).join()
 # this method is async and we are not waiting for the result since we are passing timeout_sec=0.
 
 print("flying on path...")
-result = client.moveOnPathAsync([airsim.Vector3r(0,-255,z),airsim.Vector3r(125,-253,z),airsim.Vector3r(125,5,z),airsim.Vector3r(5,0,z)],
+result = client.moveOnPathAsync([airsim.Vector3r(0,-255,z),airsim.Vector3r(125,-253,z),airsim.Vector3r(125,5,z),airsim.Vector3r(0,0,z)],
                         12, 120,
                         airsim.DrivetrainType.ForwardOnly, airsim.YawMode(False,0), 20, 1).join()
 
-client.moveToPositionAsync(0,0,-10,1).join()
+# drone will over-shoot so we bring it back to the start point before landing.
 client.moveToPositionAsync(0,0,z,1).join()
 client.landAsync().join()
 client.armDisarm(False)
