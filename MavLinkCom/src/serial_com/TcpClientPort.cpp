@@ -26,11 +26,13 @@ static bool socket_initialized_ = false;
 #else
 
 // posix
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <cerrno>
+#include <fcntl.h>
 #include <netdb.h>
 #include <errno.h>
 #include <unistd.h>
@@ -158,8 +160,13 @@ public:
 			throw std::runtime_error(Utils::stringf("TcpClientPort accept failed with error: %d\n", hr));
 		}
 
+#ifdef _WIN32
         // don't need to accept any more, so we can close this one.
         ::closesocket(local);
+#else
+		int fd = static_cast<int>(sock);
+		::close(fd);
+#endif
 
 		closed_ = false;
 	}
@@ -172,7 +179,9 @@ public:
 #else
         int fd = static_cast<int>(sock);
         int flags = fcntl(fd, F_GETFL, 0);
-        if (flags == -1) return false;
+        if (flags == -1) {
+			throw std::runtime_error(Utils::stringf("fcntl failed with error: %d\n", errno));
+		}
         flags |= O_NONBLOCK;
         int rc = fcntl(fd, F_SETFL, flags);
 #endif
@@ -188,10 +197,10 @@ public:
     {
         int flags = 1;
 #ifdef _WIN32
-        int rc = ::setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&flags, sizeof(flags));
+        int rc = ::setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&flags), sizeof(flags));
 #else
         int fd = static_cast<int>(sock);
-        int rc = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char*)&flags, sizeof(flags));
+        int rc = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&flags), sizeof(flags));
 #endif
 
         if (rc != 0)
@@ -231,7 +240,7 @@ public:
 				int hr = WSAGetLastError();
 				if (hr == WSAEMSGSIZE)
 				{
-					// message was too large for the buffer, no problem, return what we have.					
+					// message was too large for the buffer, no problem, return what we have.
 				}
 				else if (hr == WSAECONNRESET || hr == ERROR_IO_PENDING)
 				{

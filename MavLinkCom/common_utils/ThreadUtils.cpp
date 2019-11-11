@@ -37,8 +37,10 @@ bool CurrentThread::setMaximumPriority()
 #endif
 }
 
+#ifdef _WIN32
 typedef HRESULT (WINAPI *SetThreadDescriptionFunction)( _In_ HANDLE hThread, _In_ PCWSTR lpThreadDescription);
 static SetThreadDescriptionFunction setThreadDescriptionFunction = nullptr;
+#endif
 
 bool CurrentThread::setThreadName(const std::string& name)
 {
@@ -59,7 +61,7 @@ bool CurrentThread::setThreadName(const std::string& name)
     }
     return false;
 #else
-    
+
     return 0 == prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);
 
 #endif
