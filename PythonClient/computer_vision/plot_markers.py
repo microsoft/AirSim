@@ -1,36 +1,48 @@
 import setup_path 
 import airsim
-from airsim import Vector3r
+from airsim import Vector3r, Quaternionr, Pose
+from airsim.utils import to_quaternion
 import numpy as np
+import time
 
 client = airsim.VehicleClient()
 client.confirmConnection()
 
-# plot 2 red arrows for 3 seconds
-arrow_1_start, arrow_2_start = Vector3r(0,0,-1), Vector3r(0,0,-3)
-arrow_1_end, arrow_2_end = Vector3r(1,1,-1), Vector3r(2,2,-3)
-client.simPlotArrowList(points_start = [arrow_1_start, arrow_2_start], points_end = [arrow_1_end, arrow_2_end], 
-                        color_rgba = [1.0, 0.0, 1.0, 1.0], duration = 3.0, arrow_size = 20, thickness = 4)
+# plot red arrows for 30 seconds
+client.simPlotArrowList(points_start = [Vector3r(x,y,0) for x, y in zip(np.linspace(0,10,20), np.linspace(0,0,20))], 
+                        points_end = [Vector3r(x,y,0) for x, y in zip(np.linspace(0,10,20), np.linspace(10,10,20))], 
+                        color_rgba = [1.0, 0.0, 1.0, 1.0], duration = 30.0, arrow_size = 10, thickness = 1)
 
-# plot 2 yellow arrows for 4 seconds
-arrow_1_start, arrow_2_start = Vector3r(0,1,-1), Vector3r(0,1,-3)
-arrow_1_end, arrow_2_end = Vector3r(4,5,-1), Vector3r(2,3,-3)
-client.simPlotArrowList(points_start = [arrow_1_start, arrow_2_start], points_end = [arrow_1_end, arrow_2_end], 
-                        color_rgba = [1.0, 1.0, 0.0, 1.0], duration = 4.0, arrow_size = 20, thickness = 3)
+# plot magenta arrows for 15 seconds
+client.simPlotArrowList(points_start = [Vector3r(x,y,-3) for x, y in zip(np.linspace(0,10,20), np.linspace(0,0,20))], 
+                        points_end = [Vector3r(x,y,-5) for x, y in zip(np.linspace(0,10,20), np.linspace(10,20,20))], 
+                        color_rgba = [1.0, 1.0, 0.0, 1.0], duration = 15.0, arrow_size = 20, thickness = 3)
 
-# plot 2 red arrows for 5 seconds
-arrow_1_start, arrow_2_start = Vector3r(1,1,-2), Vector3r(1,1,-4)
-arrow_1_end, arrow_2_end = Vector3r(-4,-4,-2), Vector3r(-2,-2,-4)
-client.simPlotArrowList(points_start = [arrow_1_start, arrow_2_start], points_end = [arrow_1_end, arrow_2_end], 
-                        color_rgba = [1.0, 0.0, 0.0, 1.0], duration = 5.0, arrow_size = 20, thickness = 2)
+# plot red arrows for 10 seconds
+client.simPlotArrowList(points_start = [Vector3r(x,y,z) for x, y, z in zip(np.linspace(0,10,20), np.linspace(0,0,20), np.linspace(-3,-10, 20))], 
+                        points_end = [Vector3r(x,y,z) for x, y, z in zip(np.linspace(0,10,20), np.linspace(10,20,20), np.linspace(-5,-8, 20))], 
+                        color_rgba = [1.0, 0.0, 0.0, 1.0], duration = 10.0, arrow_size = 100, thickness = 5)
 
 # plot 2 white arrows which are persistent 
-arrow_1_start, arrow_2_start = Vector3r(2,2,-2), Vector3r(0,1,-4)
-arrow_1_end, arrow_2_end = Vector3r(2,3,-2), Vector3r(2,4,-4)
-client.simPlotArrowList(points_start = [arrow_1_start, arrow_2_start], points_end = [arrow_1_end, arrow_2_end], 
-                        color_rgba = [1.0, 1.0, 1.0, 1.0], duration = 5.0, arrow_size = 20, thickness = 10, is_persistent = True)
+client.simPlotArrowList(points_start = [Vector3r(x,y,-2) for x, y in zip(np.linspace(0,10,20), np.linspace(0,20,20))], 
+                        points_end = [Vector3r(x,y,-5) for x, y in zip(np.linspace(3,17,20), np.linspace(5,28,20))], 
+                        color_rgba = [1.0, 1.0, 1.0, 1.0], duration = 5.0, arrow_size = 100, thickness = 1, is_persistent = True)
 
 # plot points 
-client.simPlotPoints(points = [Vector3r(x,y,-2) for x, y in zip(np.linspace(0,10,20), np.linspace(0,20,20))],  color_rgba=[1.0, 0.0, 0.0, 1.0], size = 20, duration = 20.0, is_persistent = False)
-client.simPlotPoints(points = [Vector3r(x,y,z) for x, y, z in zip(np.linspace(0,-10,20), np.linspace(0,-20,20), np.linspace(0,-5,20))],  color_rgba=[0.0, 0.0, 1.0, 1.0], size = 10, duration = 20.0, is_persistent = False)
-client.simPlotPoints(points = [Vector3r(x,y,z) for x, y, z in zip(np.linspace(0,10,20), np.linspace(0,-20,20), np.linspace(0,-7,20))],  color_rgba=[1.0, 0.0, 1.0, 1.0], size = 15, duration = 20.0, is_persistent = False)
+client.simPlotPoints(points = [Vector3r(x,y,-5) for x, y in zip(np.linspace(0,-10,20), np.linspace(0,-20,20))], color_rgba=[1.0, 0.0, 0.0, 1.0], size = 25, duration = 20.0, is_persistent = False)
+client.simPlotPoints(points = [Vector3r(x,y,z) for x, y, z in zip(np.linspace(0,-10,20), np.linspace(0,-20,20), np.linspace(0,-5,20))], color_rgba=[0.0, 0.0, 1.0, 1.0], size = 10, duration = 20.0, is_persistent = False)
+client.simPlotPoints(points = [Vector3r(x,y,z) for x, y, z in zip(np.linspace(0,10,20), np.linspace(0,-20,20), np.linspace(0,-7,20))], color_rgba=[1.0, 0.0, 1.0, 1.0], size = 15, duration = 20.0, is_persistent = False)
+
+# plot line strip. 0-1, 1-2, 2-3
+client.simPlotLineStrip(points = [Vector3r(x,y,-5) for x, y in zip(np.linspace(0,-10,10), np.linspace(0,-20,10))], color_rgba=[1.0, 0.0, 0.0, 1.0], thickness = 5, duration = 30.0, is_persistent = False)
+
+# plot line list. 0-1, 2-3, 4-5. Must be even. 
+client.simPlotLineList(points = [Vector3r(x,y,-7) for x, y in zip(np.linspace(0,-10,10), np.linspace(0,-20,10))], color_rgba=[1.0, 0.0, 0.0, 1.0], thickness = 5, duration = 30.0, is_persistent = False)
+
+# plot transforms 
+client.simPlotTransform(poses = [Pose(position_val=Vector3r(x,y,-7), orientation_val=to_quaternion(pitch=0.0, roll=0.0, yaw=np.pi/2)) for x, y in zip(np.linspace(0,-10,10), np.linspace(0,-20,10))], 
+                        scale = 35, thickness = 5, duration = 10.0, is_persistent = False)
+
+client.simPlotTransform(poses = [Pose(position_val=Vector3r(x,y,-5), orientation_val=to_quaternion(pitch=0.0, roll=0.0, yaw=0.0)) for x, y in zip(np.linspace(0,-10,10), np.linspace(0,-20,10))], 
+                        scale = 35, thickness = 5, duration = 10.0, is_persistent = False)
+

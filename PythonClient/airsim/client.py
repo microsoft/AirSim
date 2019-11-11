@@ -170,28 +170,80 @@ class VehicleClient:
 
     #  Plotting APIs
     def simPlotPoints(self, points, color_rgba=[1.0, 0.0, 0.0, 0.4], size = 10, duration = -1.0, is_persistent = False):
-        return self.client.call('simPlotPoints', points, color_rgba, size, duration, is_persistent)
+        """
+        Plot a list of 3D points in World NED frame
+        
+        Args:
+            points (list[Vector3r]): List of Vector3r objects 
+            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0
+            size (int, optional): Size of plotted point
+            duration (float, optional): Duration (seconds) to plot for
+            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.
+        """
+        self.client.call('simPlotPoints', points, color_rgba, size, duration, is_persistent)
 
     def simPlotLineStrip(self, points, color_rgba=[1.0, 0.0, 0.0, 0.4], thickness = 5, duration = -1.0, is_persistent = False):
-        return self.client.call('simPlotLineStrip', points, color_rgba, thickness, duration, is_persistent)
+        """
+        Plots a line strip in World NED frame, defined from points[0] to points[1], points[1] to points[2], ... , points[n-2] to points[n-1]
+        
+        Args:
+            points (list[Vector3r]): List of 3D locations of line start and end points, specified as Vector3r objects
+            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0
+            thickness (int, optional): Thickness of line
+            duration (float, optional): Duration (seconds) to plot for
+            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.
+        """
+        self.client.call('simPlotLineStrip', points, color_rgba, thickness, duration, is_persistent)
 
     def simPlotLineList(self, points, color_rgba=[1.0, 0.0, 0.0, 0.4], thickness = 5, duration = -1.0, is_persistent = False):
-        return self.client.call('simPlotLineList', points, color_rgba, thickness, duration, is_persistent)
+        """
+        Plots a line strip in World NED frame, defined from points[0] to points[1], points[2] to points[3], ... , points[n-2] to points[n-1]
+        
+        Args:
+            points (list[Vector3r]): List of 3D locations of line start and end points, specified as Vector3r objects. Must be even
+            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0
+            thickness (int, optional): Thickness of line
+            duration (float, optional): Duration (seconds) to plot for
+            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.
+        """
+        self.client.call('simPlotLineList', points, color_rgba, thickness, duration, is_persistent)
 
     def simPlotArrowList(self, points_start, points_end, color_rgba=[1.0, 0.0, 0.0, 0.4], thickness = 5, arrow_size = 2, duration = -1.0, is_persistent = False):
-        return self.client.call('simPlotArrowList', points_start, points_end, color_rgba, thickness, arrow_size, duration, is_persistent)
+        """
+        Plots a list of arrows in World NED frame, defined from points_start[0] to points_end[0], points_start[1] to points_end[1], ... , points_start[n-1] to points_end[n-1]
+
+        Args:
+            points_start (list[Vector3r]): List of 3D start positions of arrow start positions, specified as Vector3r objects
+            points_end (list[Vector3r]): List of 3D end positions of arrow start positions, specified as Vector3r objects
+            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0
+            thickness (int, optional): Thickness of line
+            arrow_size (int, optional): Size of arrow head
+            duration (float, optional): Duration (seconds) to plot for
+            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.
+        """
+        self.client.call('simPlotArrowList', points_start, points_end, color_rgba, thickness, arrow_size, duration, is_persistent)
 
     def simPlotTransform(self, poses, scale = 5, thickness = 5, duration = -1.0, is_persistent = False):
-        return self.client.call('simPlotTransform', poses, scale, thickness, duration, is_persistent)
+        """
+        Plots a list of transforms in World NED frame. 
+
+        Args:
+            poses (list[Pose]): List of Pose objects representing the transforms to plot
+            scale (int, optional): Length of transform axes
+            thickness (int, optional): Thickness of lines
+            duration (float, optional): Duration (seconds) to plot for
+            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.
+        """
+        self.client.call('simPlotTransform', poses, scale, thickness, duration, is_persistent)
 
     # def simPlotTransformAndNames(self, poses, names, tf_scale = 5, text_scale = 10, text_color = [1.0, 0.0, 0.0, 0.4], thickness = 5, duration = -1.0, is_persistent = False):
-    #     return self.client.call('simPlotTransformAndNames', poses, names, tf_scale, text_scale, duration, is_persistent)
+    #     self.client.call('simPlotTransformAndNames', poses, names, tf_scale, text_scale, duration, is_persistent)
 
     def simPlotStrings(self, positions, strings = ["Microsoft", "AirSim"], scale = 5, color_rgba=[1.0, 0.0, 0.0, 0.4], duration = -1.0, is_persistent = False):
-        return self.client.call('simPlotStrings', positions, strings, scale, color_rgba, duration, is_persistent)
+        self.client.call('simPlotStrings', positions, strings, scale, color_rgba, duration, is_persistent)
 
     # def simPlotStringOnActor(self, positions, strings = ["Microsoft", "AirSim"], actor_name = "", scale = 5, color_rgba=[1.0, 0.0, 0.0, 0.4], duration = -1.0, is_persistent = False):
-    #     return self.client.call('simPlotStringOnActor', positions, strings, scale, actor_name, color_rgba, duration, is_persistent)
+    #     self.client.call('simPlotStringOnActor', positions, strings, scale, actor_name, color_rgba, duration, is_persistent)
 
     #----------- APIs to control ACharacter in scene ----------/
     def simCharSetFaceExpression(self, expression_name, value, character_name = ""):
