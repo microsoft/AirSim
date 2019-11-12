@@ -347,6 +347,7 @@ class MultirotorState(MsgpackMixin):
     rc_data = RCData()
     ready = False
     ready_message = ""
+    can_arm = False
 
 class ProjectionMatrix(MsgpackMixin):
     matrix = []

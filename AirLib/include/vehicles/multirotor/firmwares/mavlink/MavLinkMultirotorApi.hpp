@@ -52,7 +52,8 @@ public: //methods
         is_simulation_mode_ = is_simulation;
 
         try {
-            openAllConnections();
+            openAllConnections(); 
+            is_ready_ = true;
         }
         catch (std::exception& ex) {
             is_ready_ = false;
@@ -88,6 +89,11 @@ public: //methods
 
         if (sensors_ == nullptr || connection_ == nullptr || !connection_->isOpen())
             return;
+
+        if (send_params_) {
+            send_params_ = false;
+            sendParams();
+        }
 
         //send sensor updates
         const auto& imu_output = getImu()->getOutput();
@@ -144,14 +150,14 @@ public: //methods
 
     virtual bool isReady(std::string& message) const override
     {
-        if (!is_ready_) {
-            if (is_ready_message_.size() > 0) {
-                message = is_ready_message_;
-            }
+        if (!is_ready_ && is_ready_message_.size() > 0) {
+            message = is_ready_message_;            
         }
-        else if (!has_gps_lock_) {
-            message = "no gps lock";
-        }
+        return is_ready_;
+    }
+
+    virtual bool canArm() const override
+    {
         return is_ready_ && has_gps_lock_;
     }
 
@@ -1064,7 +1070,7 @@ private: //methods
                     // and it scales multi rotor servo output to 0 to 1.
                     is_controls_0_1_ = false;
                 }
-                sendParams();
+                send_params_ = true;
             }
             else if (is_simulation_mode_ && !is_hil_mode_set_) {
                 setHILMode();
@@ -1327,17 +1333,18 @@ private: //variables
     //variables required for VehicleApiBase implementation
     bool is_any_heartbeat_, is_hil_mode_set_, is_armed_;
     bool is_controls_0_1_; //Are motor controls specified in 0..1 or -1..1?
+    bool send_params_ = false;
     std::queue<std::string> status_messages_;
     int hil_state_freq_;
-    bool actuators_message_supported_;
-    uint64_t last_gps_time_;
-    uint64_t last_hil_sensor_time_;
+    bool actuators_message_supported_ = false;
+    uint64_t last_gps_time_ = 0;
+    uint64_t last_hil_sensor_time_ = 0;
     uint64_t hil_sensor_clock_ = 0;
-    bool was_reset_;
+    bool was_reset_ = false;
     bool is_ready_ = false;
     bool has_gps_lock_ = false;
-    bool lock_step_enabled_;
-    bool received_actuator_controls_;
+    bool lock_step_enabled_ = false;
+    bool received_actuator_controls_ = false;
     std::string is_ready_message_;
     Pose mocap_pose_;
 

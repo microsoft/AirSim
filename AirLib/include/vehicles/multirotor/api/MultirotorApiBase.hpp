@@ -112,7 +112,8 @@ public: //these APIs uses above low level APIs
         state.timestamp = clock()->nowNanos();
         state.landed_state = getLandedState();
         state.rc_data = getRCData();
-        state.ready = this->isReady(state.ready_message);
+        state.ready = isReady(state.ready_message);
+        state.can_arm = canArm();
         return state;
     }
 

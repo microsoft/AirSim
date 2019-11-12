@@ -76,15 +76,16 @@ struct MultirotorState {
     RCData rc_data;
     bool ready;
     std::string ready_message;
+    bool can_arm;
 
     MultirotorState()
     {}
     MultirotorState(const CollisionInfo& collision_val, const Kinematics::State& kinematics_estimated_val, 
         const GeoPoint& gps_location_val, uint64_t timestamp_val,
-        LandedState landed_state_val, const RCData& rc_data_val, bool ready, const std::string& message)
+        LandedState landed_state_val, const RCData& rc_data_val, bool ready_val, const std::string& message, bool can_arm_val)
         : collision(collision_val), kinematics_estimated(kinematics_estimated_val),
         gps_location(gps_location_val), timestamp(timestamp_val),
-        landed_state(landed_state_val), rc_data(rc_data_val), ready(ready), ready_message(message)
+        landed_state(landed_state_val), rc_data(rc_data_val), ready(ready_val), ready_message(message), can_arm(can_arm_val)
     {
     }
 

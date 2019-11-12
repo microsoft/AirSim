@@ -671,7 +671,7 @@ private:
         connection_info.model = settings_json.getString("Model", connection_info.model);
 
         Settings params;
-        if (settings_json.getChild("params", params)) {
+        if (settings_json.getChild("Parameters", params)) {
             std::vector<std::string> keys;
             params.getChildNames(keys);
             for (auto key: keys)
