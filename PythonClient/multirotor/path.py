@@ -41,6 +41,9 @@ result = client.moveOnPathAsync([airsim.Vector3r(0,-255,z),airsim.Vector3r(125,-
 
 # drone will over-shoot so we bring it back to the start point before landing.
 client.moveToPositionAsync(0,0,z,1).join()
+print("landing...")
 client.landAsync().join()
+print("disarming...")
 client.armDisarm(False)
 client.enableApiControl(False)
+print("done.")

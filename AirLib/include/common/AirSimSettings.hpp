@@ -8,6 +8,7 @@
 #include <vector>
 #include <exception>
 #include <functional>
+#include <map>
 #include "Settings.hpp"
 #include "CommonStructs.hpp"
 #include "common_utils/Utils.hpp"
@@ -288,6 +289,8 @@ public: //types
         std::string local_host_ip = "127.0.0.1";
 
         std::string model = "Generic";
+
+        std::map<std::string, float> params;
     };
 
 	struct MavLinkVehicleSetting : public VehicleSetting {
@@ -666,6 +669,16 @@ private:
         connection_info.serial_port = settings_json.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = settings_json.getInt("SerialBaudRate", connection_info.baud_rate);
         connection_info.model = settings_json.getString("Model", connection_info.model);
+
+        Settings params;
+        if (settings_json.getChild("params", params)) {
+            std::vector<std::string> keys;
+            params.getChildNames(keys);
+            for (auto key: keys)
+            {
+                connection_info.params[key] = params.getFloat(key, 0);
+            }
+        }
 
         return vehicle_setting_p;
     }

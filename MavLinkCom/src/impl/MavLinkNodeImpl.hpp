@@ -84,6 +84,7 @@ namespace mavlinkcom_impl {
     protected:
         // this is called for all messages received on the connection.
         virtual void handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message);
+        void assertNotPublishingThread();
     private:
         void sendHeartbeat();
         AsyncResult<MavLinkParameter> getParameterByIndex(int16_t index);

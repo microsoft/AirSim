@@ -3,6 +3,9 @@
 The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. If you are on Windows then you must
 use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) as the [Bash On Windows](https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html) toolchain no longer works for SITL.
 
+**Note** that every time you stop the unreal app you have top restart the `px4` app.
+
+
 1. From your bash terminal follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included out own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
 
 2. Get the PX4 source code and build the posix SITL version of PX4:
@@ -31,7 +34,7 @@ The default ports have changed recently, so check them closely to make sure AirS
 
     Note: this is also an interactive PX4 console, type `help` to see the
     list of commands you can enter here.  They are mostly low level PX4
-    commands.
+    commands, but some of them can be useful for debugging.
 
 5. Now edit [AirSim settings](settings.md) file to make sure you have matching UDP port settings:
     ```json
@@ -44,12 +47,19 @@ The default ports have changed recently, so check them closely to make sure AirS
                 "UseSerial": false,
                 "UseTcp": true,
                 "TcpPort": 4560,
-                "GroundControlPort": 14570
+                "GroundControlPort": 14580,
+                "params": {
+                    "NAV_RCL_ACT": 0,
+                    "NAV_DLL_ACT": 0,
+                    "LPE_LAT": 47.641468,
+                    "LPE_LON": -122.140165,
+                    "COM_OBL_ACT": 1
+                }
             }
         }
     }
     ```
-    Notice the `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
+    Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
 
 6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP.
 You should see a bunch of messages from the SITL PX4 window.
@@ -70,20 +80,37 @@ API does not require RC, see `No Remote Control` below.
 
 ## Setting GPS origin
 
-PX4 SITL mode needs to be configured to get the home location correct.  Run the following in the SITL PX4 console window so that the origin matches that which is setup in AirSim AVehiclePawnBase::HomeLatitude and HomeLongitude.
+Notice the above settings are provided in the `params` section of the `settings.json` file:
+```
+    "LPE_LAT": 47.641468,
+    "LPE_LON": -122.140165,
+```
+
+PX4 SITL mode needs to be configured to get the home location correct.
+There is a bug in AirSim that makes it such that flight does not work
+unless the home location is set to the same coordinates defined in  AVehiclePawnBase::HomeLatitude and HomeLongitude.
+
+You can also run the following in the SITL PX4 console window to check
+that these values are set correctly.
 
 ````
-param set LPE_LAT 47.641468
-param set LPE_LON -122.140165
+param show LPE_LAT
+param show LPE_LON
 ````
 
-You might also want to set this one so that the drone automatically hovers after each offboard control command finishes (the default setting is to land):
+## Smooth Offboard Transitions
+
+Notice the above setting is provided in the `params` section of the `settings.json` file:
+```
+    "COM_OBL_ACT": 1
+```
+
+This tells the drone automatically hover after each offboard control command finishes (the default setting is to land).  Hovering is a smoother transition between multiple offboard commands.  You can check this setting
+by running the following PX4 console command:
 
 ````
-param set COM_OBL_ACT 1
+param show COM_OBL_ACT
 ````
-
-Now close Unreal app, restart the `px4` app and re-start the unreal app.  In fact, every time you stop the unreal app you have top restart the `px4` app.
 
 ## Check the Home Position
 
@@ -110,14 +137,32 @@ If the z coordinate is large like this then takeoff might not work as expected. 
 
 ## No Remote Control
 
-If you plan to fly with no remote control, just using DroneShell commands for example, then you will need to set the following parameters to stop the PX4 from triggering "failsafe mode on" every time a move command is finished.
+Notice the above setting is provided in the `params` section of the `settings.json` file:
+```
+    "NAV_RCL_ACT": 0,
+    "NAV_DLL_ACT": 0,
+```
+
+This is required if you plan to fly the SITL mode PX4 with no remote control, just using python scripts, for example.  These parameters stop the PX4 from triggering "failsafe mode on" every time a move command is finished.  You can use the following PX4 command to check these values are set correctly:
 
 ````
-param set NAV_RCL_ACT 0
-param set NAV_DLL_ACT 0
+param show NAV_RCL_ACT
+param show NAV_DLL_ACT
 ````
 
 NOTE: Do `NOT` do this on a real drone as it is too dangerous to fly without these failsafe measures.
+
+## Manually set parameters
+
+You can also run the following in the PX4 console to set all these parameters:
+
+```
+param set LPE_LAT 47.641468
+param set LPE_LON -122.140165
+param set COM_OBL_ACT 1
+param set NAV_RCL_ACT 0
+param set NAV_DLL_ACT 0
+```
 
 ## Using VirtualBox Ubuntu
 

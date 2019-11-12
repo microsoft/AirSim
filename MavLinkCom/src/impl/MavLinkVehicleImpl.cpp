@@ -738,6 +738,7 @@ AsyncResult<bool> MavLinkVehicleImpl::loiter()
 bool MavLinkVehicleImpl::isLocalControlSupported()
 {
     MavLinkAutopilotVersion cap;
+    assertNotPublishingThread();
     if (!getCapabilities().wait(2000, &cap)) {
         throw std::runtime_error(Utils::stringf("Two second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"));
     }
@@ -838,6 +839,7 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
 bool MavLinkVehicleImpl::isAttitudeControlSupported()
 {
     MavLinkAutopilotVersion cap;
+    assertNotPublishingThread();
     if (!getCapabilities().wait(5000, &cap)) {
         throw std::runtime_error(Utils::stringf("Five second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"));
     }

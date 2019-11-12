@@ -28,6 +28,7 @@ MavLinkConnectionImpl::MavLinkConnectionImpl()
     // todo: if we support signing then initialize
     // mavlink_intermediate_status_.signing callbacks
 }
+
 std::string MavLinkConnectionImpl::getName() {
     return name;
 }
@@ -342,6 +343,7 @@ int MavLinkConnectionImpl::subscribe(MessageHandler handler)
     snapshot_stale = true;
     return entry.id;
 }
+
 void MavLinkConnectionImpl::unsubscribe(int id)
 {
     std::lock_guard<std::mutex> guard(listener_mutex);
@@ -552,6 +554,7 @@ void MavLinkConnectionImpl::publishPackets()
 {
     //CurrentThread::setMaximumPriority();
     CurrentThread::setThreadName("MavLinkThread");
+    publish_thread_id_ = std::this_thread::get_id();
     while (!closed) {
 
         drainQueue();
@@ -560,6 +563,11 @@ void MavLinkConnectionImpl::publishPackets()
         msg_available_.wait();
         waiting_for_msg_ = false;
     }
+}
+
+bool MavLinkConnectionImpl::isPublishThread() const
+{
+    return std::this_thread::get_id() == publish_thread_id_;
 }
 
 void MavLinkConnectionImpl::getTelemetry(MavLinkTelemetry& result)

@@ -109,6 +109,12 @@ void MavLinkConnection::unsubscribe(int id)
     pImpl->unsubscribe(id);
 }
 
+
+bool MavLinkConnection::isPublishThread() const
+{
+    return pImpl->isPublishThread();
+}
+
 MavLinkConnection::~MavLinkConnection() {
     pImpl->close();
     pImpl = nullptr;

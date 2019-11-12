@@ -133,6 +133,10 @@ namespace mavlinkcom {
         // message signing according to the target node we are communicating with, and return the message length.
         int prepareForSending(MavLinkMessage& msg);
 
+        // Returns true if we are on the publishing thread.  Certain blocing operations that wait for messages from mavlin vehicle are not
+        // allowed on this thread.
+        bool isPublishThread() const;
+
     protected:
         void startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort);
 

@@ -291,6 +291,15 @@ float PackParameter(uint8_t type, float param_value)
     return pu.f;
 }
 
+void MavLinkNodeImpl::assertNotPublishingThread()
+{
+    auto con = ensureConnection();
+    if (con->isPublishThread())
+    {
+        throw std::runtime_error("Cannot perform blocking operation on the connection publish thread");
+    }
+}
+
 
 std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 {
@@ -301,6 +310,8 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
     size_t paramCount = 0;
 
     auto con = ensureConnection();
+    assertNotPublishingThread();
+
     int subscription = con->subscribe([&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
         unused(connection);
         if (message.msgid == MavLinkParamValue::kMessageId)
@@ -500,6 +511,7 @@ AsyncResult<bool> MavLinkNodeImpl::setParameter(MavLinkParameter  p)
         size++; // we can include the null terminator.
     }
     auto con = ensureConnection();
+    assertNotPublishingThread();
     AsyncResult<bool> result([=](int state) {
         con->unsubscribe(state);
     });

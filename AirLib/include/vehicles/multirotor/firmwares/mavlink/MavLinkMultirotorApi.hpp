@@ -144,9 +144,15 @@ public: //methods
 
     virtual bool isReady(std::string& message) const override
     {
-        if (!is_ready_)
-            message = is_ready_message_;
-        return is_ready_;
+        if (!is_ready_) {
+            if (is_ready_message_.size() > 0) {
+                message = is_ready_message_;
+            }
+        }
+        else if (!has_gps_lock_) {
+            message = "no gps lock";
+        }
+        return is_ready_ && has_gps_lock_;
     }
 
     //TODO: this method can't be const yet because it clears previous messages
@@ -885,7 +891,8 @@ private: //methods
                 throw std::invalid_argument("TcpPort setting has an invalid value.");
             }
 
-            addStatusMessage(Utils::stringf("Accepting TCP connection on port %d, local IP %s", connection_info.tcp_port, connection_info_.local_host_ip.c_str()));
+            auto msg = Utils::stringf("Waiting for TCP connection on port %d, local IP %s", connection_info.tcp_port, connection_info_.local_host_ip.c_str());
+            addStatusMessage(msg);
 
             connection_ = mavlinkcom::MavLinkConnection::acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
         }
@@ -899,12 +906,17 @@ private: //methods
         }
         else 
         {
-            throw std::invalid_argument("Must provide either TcpIp or UdpIp setting for ethernet connections.");
+            throw std::invalid_argument("Must provide valid connection info for your drone.");
         }
 
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
-        addStatusMessage(std::string("Connected over UDP."));
+        if (connection_info.use_tcp) {
+            addStatusMessage(std::string("Connected over TCP."));
+        }
+        else {
+            addStatusMessage(std::string("Connected over UDP."));
+        }
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
 
@@ -982,6 +994,27 @@ private: //methods
         return last_gps_message_;
     }
 
+    void sendParams()
+    {
+        // send any mavlink parameters from settings.json through to the connected vehicle.
+        if (connection_info_.params.size() > 0)
+        {
+            for (auto iter : connection_info_.params)
+            {
+                auto key = iter.first;
+                auto value = iter.second;
+                mavlinkcom::MavLinkParameter p;
+                p.name = key;
+                p.value = value;
+                bool result = false;
+                mav_vehicle_->setParameter(p).wait(1000, &result);
+                if (!result) {
+                    Utils::log(Utils::stringf("Failed to set mavlink parameter '%s'", key.c_str()));
+                }
+            }
+        }
+    }
+
     void setArmed(bool armed)
     {
         is_armed_ = armed;
@@ -1005,6 +1038,7 @@ private: //methods
 
     void addStatusMessage(const std::string& message)
     {
+        Utils::log(message);
         std::lock_guard<std::mutex> guard_status(status_text_mutex_);
         //if queue became too large, clear it first
         if (status_messages_.size() > status_messages_MaxSize)
@@ -1030,6 +1064,7 @@ private: //methods
                     // and it scales multi rotor servo output to 0 to 1.
                     is_controls_0_1_ = false;
                 }
+                sendParams();
             }
             else if (is_simulation_mode_ && !is_hil_mode_set_) {
                 setHILMode();
@@ -1091,11 +1126,22 @@ private: //methods
             // if the timestamps match then it means we are in lockstep mode.
             if (!lock_step_enabled_)
             {
-                if (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec)
+                if (hil_sensor_clock_ == HilActuatorControlsMessage.time_usec)
                 {
-                    Utils::log(Utils::stringf("Enabling lockstep mode"));
+                    addStatusMessage("Enabling lockstep mode");
                     lock_step_enabled_ = true;
                 }
+            }
+        }
+        else if (msg.msgid == MavLinkGpsRawInt.msgid)
+        {
+            MavLinkGpsRawInt.decode(msg);
+            auto fix_type = static_cast<mavlinkcom::GPS_FIX_TYPE>(MavLinkGpsRawInt.fix_type);
+            auto locked = (fix_type != mavlinkcom::GPS_FIX_TYPE::GPS_FIX_TYPE_NO_GPS &&
+                fix_type != mavlinkcom::GPS_FIX_TYPE::GPS_FIX_TYPE_NO_FIX);
+            if (locked && !has_gps_lock_) {
+                addStatusMessage("Got GPS lock");
+                has_gps_lock_ = true;
             }
         }
         //else ignore message
@@ -1111,14 +1157,9 @@ private: //methods
         {
             if (last_hil_sensor_time_ + 100000 < now)
             {
-                // if 100 ms passes then something is terribly wrong, reset lock_step_enabled_
+                // if 100 ms passes then something is terribly wrong, reset lockstep mode
                 lock_step_enabled_ = false;
-                Utils::log(Utils::stringf("timeout on HilActuatorControlsMessage, resetting lock_step_enabled_"));
-            }
-            if (last_hil_sensor_time_ + 4000 > now)
-            {
-                // too soon, PX4 SITL cannot handle more than 4ms per message.
-                return;
+                addStatusMessage("timeout on HilActuatorControlsMessage, resetting lock step mode");
             }
 
             if (!received_actuator_controls_)
@@ -1128,9 +1169,11 @@ private: //methods
             }
         }
 
+        hil_sensor_clock_ = now;
+
         mavlinkcom::MavLinkHilSensor hil_sensor;
         last_hil_sensor_time_ = now;
-        hil_sensor.time_usec = last_hil_sensor_time_;
+        hil_sensor.time_usec = hil_sensor_clock_;
 
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
@@ -1188,7 +1231,7 @@ private: //methods
             throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
 
         mavlinkcom::MavLinkHilGps hil_gps;
-        hil_gps.time_usec = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        hil_gps.time_usec = hil_sensor_clock_;
         hil_gps.lat = static_cast<int32_t>(geo_point.latitude * 1E7);
         hil_gps.lon = static_cast<int32_t>(geo_point.longitude* 1E7);
         hil_gps.alt = static_cast<int32_t>(geo_point.altitude * 1000);
@@ -1272,6 +1315,7 @@ private: //variables
     mavlinkcom::MavLinkStatustext StatusTextMessage;
     mavlinkcom::MavLinkHilControls HilControlsMessage;
     mavlinkcom::MavLinkHilActuatorControls HilActuatorControlsMessage;
+    mavlinkcom::MavLinkGpsRawInt MavLinkGpsRawInt;
     mavlinkcom::MavLinkCommandLong CommandLongMessage;
 
     mavlinkcom::MavLinkHilSensor last_sensor_message_;
@@ -1288,8 +1332,10 @@ private: //variables
     bool actuators_message_supported_;
     uint64_t last_gps_time_;
     uint64_t last_hil_sensor_time_;
+    uint64_t hil_sensor_clock_ = 0;
     bool was_reset_;
-    bool is_ready_;
+    bool is_ready_ = false;
+    bool has_gps_lock_ = false;
     bool lock_step_enabled_;
     bool received_actuator_controls_;
     std::string is_ready_message_;

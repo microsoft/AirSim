@@ -19,7 +19,7 @@ class MsgpackMixin:
         return obj
 
 
-class ImageType:    
+class ImageType:
     Scene = 0
     DepthPlanner = 1
     DepthPerspective = 2
@@ -32,7 +32,7 @@ class ImageType:
 class DrivetrainType:
     MaxDegreeOfFreedom = 0
     ForwardOnly = 1
-    
+
 class LandedState:
     Landed = 0
     Flying = 1
@@ -71,13 +71,13 @@ class Vector3r(MsgpackMixin):
     def __truediv__(self, other):
         if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
             return Vector3r( self.x_val / other, self.y_val / other, self.z_val / other)
-        else: 
+        else:
             raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
 
     def __mul__(self, other):
         if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
             return Vector3r(self.x_val*other, self.y_val*other, self.z_val*other)
-        else: 
+        else:
             raise TypeError('unsupported operand type(s) for *: %s and %s' % ( str(type(self)), str(type(other))) )
 
     def dot(self, other):
@@ -139,12 +139,12 @@ class Quaternionr(MsgpackMixin):
         else:
             raise TypeError('unsupported operand type(s) for *: %s and %s' % ( str(type(self)), str(type(other))) )
 
-    def __truediv__(self, other): 
-        if type(other) == type(self): 
+    def __truediv__(self, other):
+        if type(other) == type(self):
             return self * other.inverse()
         elif type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
             return Quaternionr( self.x_val / other, self.y_val / other, self.z_val / other, self.w_val / other)
-        else: 
+        else:
             raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
 
     def dot(self, other):
@@ -172,7 +172,7 @@ class Quaternionr(MsgpackMixin):
             else:
                 raise ValueError('length of the other Quaternionr must be 1')
         else:
-            raise TypeError('unsupported operand type(s) for \'rotate\': %s and %s' % ( str(type(self)), str(type(other))) )        
+            raise TypeError('unsupported operand type(s) for \'rotate\': %s and %s' % ( str(type(self)), str(type(other))) )
 
     def conjugate(self):
         return Quaternionr(-self.x_val, -self.y_val, -self.z_val, self.w_val)
@@ -240,18 +240,18 @@ class RCData(MsgpackMixin):
     def __init__(self, timestamp = 0, pitch = 0.0, roll = 0.0, throttle = 0.0, yaw = 0.0, switch1 = 0,
                  switch2 = 0, switch3 = 0, switch4 = 0, switch5 = 0, switch6 = 0, switch7 = 0, switch8 = 0, is_initialized = False, is_valid = False):
         self.timestamp = timestamp
-        self.pitch = pitch 
+        self.pitch = pitch
         self.roll = roll
-        self.throttle = throttle 
-        self.yaw = yaw 
-        self.switch1 = switch1 
-        self.switch2 = switch2 
-        self.switch3 = switch3 
-        self.switch4 = switch4 
+        self.throttle = throttle
+        self.yaw = yaw
+        self.switch1 = switch1
+        self.switch2 = switch2
+        self.switch3 = switch3
+        self.switch4 = switch4
         self.switch5 = switch5
-        self.switch6 = switch6 
-        self.switch7 = switch7 
-        self.switch8 = switch8 
+        self.switch6 = switch6
+        self.switch7 = switch7
+        self.switch8 = switch8
         self.is_initialized = is_initialized
         self.is_valid = is_valid
 
@@ -291,7 +291,7 @@ class CarControls(MsgpackMixin):
     manual_gear = 0
     gear_immediate = True
 
-    def __init__(self, throttle = 0, steering = 0, brake = 0, 
+    def __init__(self, throttle = 0, steering = 0, brake = 0,
         handbrake = False, is_manual_gear = False, manual_gear = 0, gear_immediate = True):
         self.throttle = throttle
         self.steering = steering
@@ -334,17 +334,19 @@ class CarState(MsgpackMixin):
     rpm = 0.0
     maxrpm = 0.0
     handbrake = False
-    collision = CollisionInfo();
+    collision = CollisionInfo()
     kinematics_estimated = KinematicsState()
     timestamp = np.uint64(0)
 
 class MultirotorState(MsgpackMixin):
-    collision = CollisionInfo();
+    collision = CollisionInfo()
     kinematics_estimated = KinematicsState()
     gps_location = GeoPoint()
     timestamp = np.uint64(0)
     landed_state = LandedState.Landed
     rc_data = RCData()
+    ready = False
+    ready_message = ""
 
 class ProjectionMatrix(MsgpackMixin):
     matrix = []
@@ -382,13 +384,13 @@ class GnssFixType(MsgpackMixin):
     GNSS_FIX_2D_FIX = 2
     GNSS_FIX_3D_FIX = 3
 
-class GnssReport(MsgpackMixin): 
-    geo_point = GeoPoint();
+class GnssReport(MsgpackMixin):
+    geo_point = GeoPoint()
     eph = 0.0
-    epv = 0.0;
-    velocity = Vector3r();
-    fix_type = GnssFixType();
-    time_utc = np.uint64(0);
+    epv = 0.0
+    velocity = Vector3r()
+    fix_type = GnssFixType()
+    time_utc = np.uint64(0)
 
 class GpsData(MsgpackMixin):
     time_stamp = np.uint64(0)

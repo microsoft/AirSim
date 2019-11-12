@@ -97,6 +97,7 @@ bool MavLinkFtpClientImpl::isSupported()
 {
     // request capabilities, it will respond with AUTOPILOT_VERSION.
     MavLinkAutopilotVersion ver;
+    assertNotPublishingThread();
     if (!getCapabilities().wait(5000, &ver)) {
         throw std::runtime_error(Utils::stringf("Five second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"));
     }
