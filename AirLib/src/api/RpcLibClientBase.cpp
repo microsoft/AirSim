@@ -242,6 +242,11 @@ void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::strin
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);
 }
 
+void RpcLibClientBase::simFlushPersistentMarkers()
+{
+    pimpl_->client.call("simFlushPersistentMarkers");
+}
+
 void RpcLibClientBase::simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent)
 {
     vector<RpcLibAdapatorsBase::Vector3r> conv_points;

@@ -169,6 +169,12 @@ class VehicleClient:
         return self.client.call('simGetLidarSegmentation', lidar_name, vehicle_name)
 
     #  Plotting APIs
+    def simFlushPersistentMarkers(self):
+        """
+        Clear any persistent markers - those plotted with setting is_persistent=True in the APIs below
+        """
+        self.client.call('simFlushPersistentMarkers')
+
     def simPlotPoints(self, points, color_rgba=[1.0, 0.0, 0.0, 1.0], size = 10.0, duration = -1.0, is_persistent = False):
         """
         Plot a list of 3D points in World NED frame

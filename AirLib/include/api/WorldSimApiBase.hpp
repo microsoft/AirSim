@@ -43,6 +43,7 @@ public:
         const std::string& message_param = "", unsigned char severity = 0) = 0;
 
     //----------- Plotting APIs ----------/
+    virtual void simFlushPersistentMarkers() = 0;
     virtual void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) = 0; 
     virtual void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 
     virtual void simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 

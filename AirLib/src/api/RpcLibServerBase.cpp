@@ -242,6 +242,9 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->setObjectPose(object_name, pose.to(), teleport);
     });
 
+    pimpl_->server.bind("simFlushPersistentMarkers", [&]() -> void {
+        getWorldSimApi()->simFlushPersistentMarkers();
+    });
     pimpl_->server.bind("simPlotPoints", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) -> void {
         vector<Vector3r> conv_points;
         RpcLibAdapatorsBase::to(points, conv_points);

@@ -37,6 +37,7 @@ public:
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
 
     //----------- Plotting APIs ----------/
+    virtual void simFlushPersistentMarkers() override;
     virtual void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) override;
     virtual void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override;
     virtual void simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override;

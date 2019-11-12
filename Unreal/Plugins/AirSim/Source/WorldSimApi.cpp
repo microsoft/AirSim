@@ -157,6 +157,11 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 	return swappedObjectNames;
 }
 //----------- Plotting APIs ----------/
+void WorldSimApi::simFlushPersistentMarkers()
+{
+    FlushPersistentDebugLines(simmode_->GetWorld());
+}
+
 void WorldSimApi::simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent)
 {
     FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
