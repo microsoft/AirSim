@@ -1281,6 +1281,8 @@ private: //methods
         was_reset_ = false;
         received_actuator_controls_ = false;
         lock_step_enabled_ = false;
+        has_gps_lock_ = false;
+        send_params_ = false;
         mocap_pose_ = Pose::nanPose();
     }
 
