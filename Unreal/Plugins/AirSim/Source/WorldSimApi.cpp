@@ -157,7 +157,7 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 	return swappedObjectNames;
 }
 //----------- Plotting APIs ----------/
-void WorldSimApi::simPlotPoints(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent)
+void WorldSimApi::simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent)
 {
     FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
     for (const auto& point : points)
@@ -167,7 +167,7 @@ void WorldSimApi::simPlotPoints(const std::vector<Vector3r>& points, const vecto
 }
 
 // plot line for points 0-1, 1-2, 2-3
-void WorldSimApi::simPlotLineStrip(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+void WorldSimApi::simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
     FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
     for (size_t idx = 0; idx != points.size()-1; idx++)
@@ -177,7 +177,7 @@ void WorldSimApi::simPlotLineStrip(const std::vector<Vector3r>& points, const ve
 }
 
 // plot line for points 0-1, 2-3, 4-5... must be even number of points
-void WorldSimApi::simPlotLineList(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+void WorldSimApi::simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
     if (points.size() % 2)
     {
@@ -191,7 +191,7 @@ void WorldSimApi::simPlotLineList(const std::vector<Vector3r>& points, const vec
     }
 }
 
-void WorldSimApi::simPlotArrowList(const std::vector<Vector3r>& points_start, const std::vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
+void WorldSimApi::simPlotArrows(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
 {
     // assert points_start.size() == poinst_end.size()
     FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
@@ -201,15 +201,7 @@ void WorldSimApi::simPlotArrowList(const std::vector<Vector3r>& points_start, co
     }
 }
 
-void WorldSimApi::simPlotTransform(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
-{
-    for (const auto& pose : poses)
-    {
-        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(pose).GetLocation(), simmode_->getGlobalNedTransform().fromGlobalNed(pose).Rotator(), scale, is_persistent, duration, 0, thickness);
-    }
-}
-// void WorldSimApi::simPlotTransformAndName(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float text_scale, const vector<float>& text_color, float duration, bool is_persistent); 
-void WorldSimApi::simPlotStrings(const std::vector<Vector3r>& positions, const std::vector<std::string>& strings, float scale, const vector<float>& color_rgba, float duration, bool is_persistent)
+void WorldSimApi::simPlotStrings(const vector<std::string>& strings, const vector<Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration)
 {
     // assert positions.size() == strings.size()
     FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
@@ -218,7 +210,25 @@ void WorldSimApi::simPlotStrings(const std::vector<Vector3r>& positions, const s
         DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(positions[idx]), FString(strings[idx].c_str()), NULL, color.ToFColor(true), duration, false, scale);
     }
 }
-// void WorldSimApi::simPlotStringOnActor(const std::vector<Pose>& pose, const std::vector<std::string>& strings, const std::vector<std::string>& actor_name, float scale, const vector<float>& color_rgba, float duration, bool is_persistent); 
+
+void WorldSimApi::simPlotTransforms(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
+{
+    for (const auto& pose : poses)
+    {
+        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(pose).GetLocation(), simmode_->getGlobalNedTransform().fromGlobalNed(pose).Rotator(), scale, is_persistent, duration, 0, thickness);
+    }
+}
+
+void WorldSimApi::simPlotTransformsWithNames(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration)
+{
+    // assert poses.size() == names.size()
+    FLinearColor color {text_color_rgba[0], text_color_rgba[1], text_color_rgba[2], text_color_rgba[3]};
+    for (int idx = 0; idx < poses.size(); idx += 1)
+    {
+        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).Rotator(), tf_scale, false, duration, 0, tf_thickness);
+        DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(), FString(names[idx].c_str()), NULL, color.ToFColor(true), duration, false, text_scale);
+    }
+}
 
 //------------------------------------------------- Char APIs -----------------------------------------------------------/
 

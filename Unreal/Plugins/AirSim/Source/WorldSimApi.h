@@ -37,14 +37,13 @@ public:
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
 
     //----------- Plotting APIs ----------/
-    virtual void simPlotPoints(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) override; 
-    virtual void simPlotLineStrip(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override; 
-    virtual void simPlotLineList(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override; 
-    virtual void simPlotArrowList(const std::vector<Vector3r>& points_start, const std::vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) override; 
-    virtual void simPlotTransform(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent) override; 
-    // virtual void simPlotTransformAndName(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float text_scale, const vector<float>& text_color, float duration, bool is_persistent) override; 
-    virtual void simPlotStrings(const std::vector<Vector3r>& position, const std::vector<std::string>& strings, float scale, const vector<float>& color_rgba, float duration, bool is_persistent) override; 
-    // virtual void simPlotStringOnActor(const std::vector<Pose>& pose, const std::string<std::string>& strings, std::string actor_name, float scale, const vector<float>& color_rgba, float duration, bool is_persistent) override; 
+    virtual void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) override;
+    virtual void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override;
+    virtual void simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override;
+    virtual void simPlotArrows(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) override;
+    virtual void simPlotStrings(const vector<std::string>& strings, const vector<Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration) override;
+    virtual void simPlotTransforms(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent) override;
+    virtual void simPlotTransformsWithNames(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration) override;
 
     //----------- APIs to control ACharacter in scene ----------/
     virtual void charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name) override;

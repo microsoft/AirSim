@@ -43,14 +43,13 @@ public:
         const std::string& message_param = "", unsigned char severity = 0) = 0;
 
     //----------- Plotting APIs ----------/
-    virtual void simPlotPoints(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) = 0; 
-    virtual void simPlotLineStrip(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 
-    virtual void simPlotLineList(const std::vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 
-    virtual void simPlotArrowList(const std::vector<Vector3r>& points_start, const std::vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) = 0; 
-    virtual void simPlotTransform(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent) = 0; 
-    // virtual void simPlotTransformAndName(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float text_scale, const vector<float>& text_color, float duration, bool is_persistent) = 0; 
-    virtual void simPlotStrings(const std::vector<Vector3r>& position, const std::vector<std::string>& strings, float scale, const vector<float>& color_rgba, float duration, bool is_persistent) = 0; 
-    // virtual void simPlotStringOnActor(const std::vector<Pose>& pose, const std::string<std::string>& strings, const std::string actor_name, float scale, const vector<float>& color_rgba, float duration, bool is_persistent) = 0; 
+    virtual void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) = 0; 
+    virtual void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 
+    virtual void simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 
+    virtual void simPlotArrows(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) = 0; 
+    virtual void simPlotStrings(const vector<std::string>& strings, const vector<Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration) = 0;
+    virtual void simPlotTransforms(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent) = 0; 
+    virtual void simPlotTransformsWithNames(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration) = 0;
 
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const = 0;
     virtual Pose getObjectPose(const std::string& object_name) const = 0;
