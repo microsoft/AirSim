@@ -82,6 +82,14 @@ FTransform NedTransform::fromGlobalNed(const Pose& pose) const
 {
     return FTransform(fromNed(pose.orientation), fromGlobalNed(pose.position));
 }
+FQuat NedTransform::fromNedtoEnu(const FQuat& q) const
+{
+    return FQuat(q.W, q.Y, q.X, -q.Z);
+}
+FTransform NedTransform::fromGlobalNedToUUENU(const Pose& pose) const
+{
+    return FTransform(fromNedtoEnu(fromNed(pose.orientation)), fromGlobalNed(pose.position));
+}
 
 FVector NedTransform::getGlobalOffset() const
 {

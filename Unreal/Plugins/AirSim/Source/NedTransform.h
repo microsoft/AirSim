@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Actor.h"
-
 #include "common/Common.hpp"
 
 /*
@@ -38,7 +37,6 @@ public:
     Pose toLocalNed(const FTransform& pose) const;
     Pose toGlobalNed(const FTransform& pose) const;
 
-
     //local NED -> UU
     FVector fromLocalNed(const Vector3r& position) const;
     FVector fromGlobalNed(const Vector3r& position) const;
@@ -46,6 +44,10 @@ public:
     float fromNed(float length) const;
     FTransform fromLocalNed(const Pose& pose) const;
     FTransform fromGlobalNed(const Pose& pose) const;
+
+    // NED -> ENU. We want to visualize in world ENU (right handed)
+    FQuat fromNedtoEnu(const FQuat& q) const;
+    FTransform fromGlobalNedToUUENU(const Pose& pose) const;
 
     FVector getGlobalOffset() const;
     FVector getLocalOffset() const;
