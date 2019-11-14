@@ -25,7 +25,7 @@ public:
 
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
-        if (axis_ == 2)
+        if (axis == 2)
             throw std::invalid_argument("PositionController does not support yaw axis i.e. " + std::to_string(axis));
 
         axis_ = axis;
