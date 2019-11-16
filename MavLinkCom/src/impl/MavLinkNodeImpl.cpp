@@ -51,25 +51,7 @@ void MavLinkNodeImpl::sendHeartbeat()
 {
     CurrentThread::setThreadName("MavLinkThread");
     while (heartbeat_running_) {
-        MavLinkHeartbeat heartbeat;
-        // send a heart beat so that the remote node knows we are still alive
-        // (otherwise drone will trigger a failsafe operation).
-        heartbeat.autopilot = static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_GENERIC);
-        heartbeat.type = static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_GCS);
-        heartbeat.mavlink_version = 3;
-        heartbeat.base_mode = 0; // ignored by PX4
-        heartbeat.custom_mode = 0; // ignored by PX4
-        heartbeat.system_status = 0; // ignored by PX4
-        try
-        {
-            sendMessage(heartbeat);
-        }
-        catch (std::exception& e)
-        {
-            // ignore any failures here because we are running in our own thread here.
-            Utils::log(Utils::stringf("Caught and ignoring exception sending heartbeat: %s", e.what()));
-        }
-
+        sendOneHeartbeat();
         std::this_thread::sleep_for(std::chrono::milliseconds(heartbeatMilliseconds));
     }
 }
@@ -177,6 +159,30 @@ AsyncResult<MavLinkHeartbeat>  MavLinkNodeImpl::waitForHeartbeat()
 
     return result;
 }
+
+void MavLinkNodeImpl::sendOneHeartbeat()
+{
+    MavLinkHeartbeat heartbeat;
+    // send a heart beat so that the remote node knows we are still alive
+    // (otherwise drone will trigger a failsafe operation).
+    heartbeat.autopilot = static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_GENERIC);
+    heartbeat.type = static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_GCS);
+    heartbeat.mavlink_version = 3;
+    heartbeat.base_mode = 0; // ignored by PX4
+    heartbeat.custom_mode = 0; // ignored by PX4
+    heartbeat.system_status = 0; // ignored by PX4
+    try
+    {
+        sendMessage(heartbeat);
+    }
+    catch (std::exception& e)
+    {
+        // ignore any failures here because we are running in our own thread here.
+        Utils::log(Utils::stringf("Caught and ignoring exception sending heartbeat: %s", e.what()));
+    }
+}
+
+
 
 void MavLinkNodeImpl::setMessageInterval(int msgId, int frequency)
 {

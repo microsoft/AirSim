@@ -23,6 +23,9 @@ using namespace mavlink_utils;
 
 typedef int socklen_t;
 static bool socket_initialized_ = false;
+inline int GetSocketError() {
+    return WSAGetLastError();
+}
 #else
 
 // posix
@@ -39,7 +42,7 @@ typedef int SOCKET;
 const int INVALID_SOCKET = -1;
 const int ERROR_ACCESS_DENIED = EACCES;
 
-inline int WSAGetLastError() {
+inline int GetSocketError() {
 	return errno;
 }
 const int SOCKET_ERROR = -1;
@@ -125,7 +128,7 @@ public:
 		int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
+			int hr = GetSocketError();
 			throw std::runtime_error(Utils::stringf("UdpClientPort socket bind failed with error: %d\n", hr));
 			return hr;
 		}
@@ -136,7 +139,7 @@ public:
 			rc = ::connect(sock, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen); 
 			if (rc < 0)
 			{
-				int hr = WSAGetLastError();
+				int hr = GetSocketError();
 				throw std::runtime_error(Utils::stringf("UdpClientPort socket could not connect to remote host at %s:%d, error: %d\n", 
 					remoteHost.c_str(), remotePort, hr));
 				return hr;
@@ -145,6 +148,22 @@ public:
 		closed_ = false;
 		return 0;
 	}
+
+    int checkerror() {
+        int hr = GetSocketError();
+#ifdef _WIN32
+        if (hr == WSAECONNRESET)
+        {
+            close();
+        }
+#else
+        if (hr == ECONNREFUSED || hr == ENOTCONN)
+        {
+            close();
+        }
+#endif
+        return hr;
+    }
 
 	// write to the serial port
 	int write(const uint8_t* ptr, int count)
@@ -164,7 +183,7 @@ public:
 		#endif
 		if (hr == SOCKET_ERROR)
 		{
-			hr = WSAGetLastError();
+			hr = checkerror();
 			// perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
 			remoteaddr.sin_port = 0;
 			throw std::runtime_error(Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr));
@@ -186,13 +205,13 @@ public:
 			int rc = recvfrom(sock, reinterpret_cast<char*>(result), bytesToRead, 0, reinterpret_cast<sockaddr*>(&other), &addrlen);
 			if (rc < 0)
 			{
-				int hr = WSAGetLastError();
+                int hr = checkerror();
 #ifdef _WIN32
 				if (hr == WSAEMSGSIZE)
 				{
 					// message was too large for the buffer, no problem, return what we have.
 				}
-				else if (hr == WSAECONNRESET || hr == ERROR_IO_PENDING)
+				else if (hr == ERROR_IO_PENDING)
 				{
 					// try again - this can happen if server recreates the socket on their side.
 					continue;
@@ -206,10 +225,6 @@ public:
 				if (hr == EINTR)
 				{
 					// skip this, it is was interrupted, and if user is closing the port closed_ will be true.
-					continue;
-				}
-				else if (hr == ECONNRESET) {
-					// try again - this can happen if server recreates the socket on their side.
 					continue;
 				}
 				else
@@ -235,7 +250,6 @@ public:
 
 			if (rc == 0)
 			{
-				//printf("Connection closed\n");
 				return -1;
 			}
 			else

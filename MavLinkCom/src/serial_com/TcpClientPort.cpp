@@ -23,6 +23,10 @@ using namespace mavlink_utils;
 
 typedef int socklen_t;
 static bool socket_initialized_ = false;
+inline int GetSocketError()
+{
+    return WSAGetLastError();
+}
 #else
 
 // posix
@@ -41,7 +45,7 @@ typedef int SOCKET;
 const int INVALID_SOCKET = -1;
 const int ERROR_ACCESS_DENIED = EACCES;
 
-inline int WSAGetLastError() {
+inline int GetSocketError() {
 	return errno;
 }
 const int SOCKET_ERROR = -1;
@@ -116,13 +120,13 @@ public:
 		int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
+            int hr = GetSocketError();
 			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
 		}
 
 		rc = ::connect(sock, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen);
 		if (rc != 0) {
-			int hr = WSAGetLastError();
+            int hr = GetSocketError();
 			throw std::runtime_error(Utils::stringf("TcpClientPort socket connect failed with error: %d\n", hr));
 		}
 
@@ -141,7 +145,7 @@ public:
 		int rc = ::bind(local, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
+            int hr = GetSocketError();
 			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
 		}
 
@@ -149,14 +153,14 @@ public:
 		rc = ::listen(local, 1);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
+            int hr = GetSocketError();
 			throw std::runtime_error(Utils::stringf("TcpClientPort socket listen failed with error: %d\n", hr));
 		}
 
 		// accept 1
 		sock = ::accept(local, reinterpret_cast<sockaddr*>(&remoteaddr), &addrlen);
 		if (sock == INVALID_SOCKET) {
-			int hr = WSAGetLastError();
+            int hr = GetSocketError();
 			throw std::runtime_error(Utils::stringf("TcpClientPort accept failed with error: %d\n", hr));
 		}
 
@@ -164,7 +168,7 @@ public:
         // don't need to accept any more, so we can close this one.
         ::closesocket(local);
 #else
-		int fd = static_cast<int>(sock);
+		int fd = static_cast<int>(local);
 		::close(fd);
 #endif
 
@@ -186,9 +190,7 @@ public:
         int rc = fcntl(fd, F_SETFL, flags);
 #endif
         if (rc != 0) {
-#ifdef _WIN32
-            rc = WSAGetLastError();
-#endif
+            rc = GetSocketError();
             throw std::runtime_error(Utils::stringf("TcpClientPort setNonBlocking failed with error: %d\n", rc));
         }
     }
@@ -205,9 +207,7 @@ public:
 
         if (rc != 0)
         {
-#ifdef _WIN32
-            rc = WSAGetLastError();
-#endif
+            rc = GetSocketError();
             throw std::runtime_error(Utils::stringf("TcpClientPort set TCP_NODELAY failed: %d\n", rc));
         }
     }
@@ -219,11 +219,28 @@ public:
 		int hr = send(sock, reinterpret_cast<const char*>(ptr), count, 0);
 		if (hr == SOCKET_ERROR)
 		{
+            hr = checkerror();
 			throw std::runtime_error(Utils::stringf("TcpClientPort socket send failed with error: %d\n", hr));
 		}
 
 		return hr;
 	}
+
+    int checkerror() {
+        int hr = GetSocketError();
+#ifdef _WIN32
+        if (hr == WSAECONNRESET)
+        {
+            close();
+        }
+#else
+        if (hr == ECONNREFUSED || hr == ENOTCONN)
+        {
+            close();
+        }
+#endif
+        return hr;
+    }
 
 	int read(uint8_t* result, int bytesToRead)
 	{
@@ -236,24 +253,28 @@ public:
 			int rc = recv(sock, reinterpret_cast<char*>(result), bytesToRead, 0);
 			if (rc < 0)
 			{
+                int hr = checkerror();
 #ifdef _WIN32
-				int hr = WSAGetLastError();
 				if (hr == WSAEMSGSIZE)
 				{
 					// message was too large for the buffer, no problem, return what we have.
 				}
-				else if (hr == WSAECONNRESET || hr == ERROR_IO_PENDING)
+                else if (hr == ERROR_IO_PENDING)
 				{
 					// try again - this can happen if server recreates the socket on their side.
 					continue;
 				}
+                else if (hr == WSAEINTR)
+                {
+                    // skip this, it is was interrupted, and if user is closing the port closed_ will be true.
+                    continue;
+                }
 				else
 #else
-				int hr = errno;
 				if (hr == EINTR)
 				{
-					// skip this, it is was interrupted.
-					continue;
+                    // try again - this can happen if server recreates the socket on their side.
+                    continue;
 				}
 				else
 #endif
@@ -264,7 +285,6 @@ public:
 
 			if (rc == 0)
 			{
-				//printf("Connection closed\n");
 				return -1;
 			}
 			else

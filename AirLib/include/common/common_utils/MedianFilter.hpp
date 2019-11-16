@@ -13,7 +13,7 @@ namespace common_utils {
 template <typename T>
 class MedianFilter {
     private:
-        std::vector<T> buffer_, buffer_copy_;
+        std::vector<T> buffer_;
         int window_size_, window_size_2x_, window_size_half_;
         float outlier_factor_;
         int buffer_index_;
@@ -26,8 +26,7 @@ class MedianFilter {
 
 template <typename T>
 void MedianFilter<T>::initialize(int window_size, float outlier_factor) {
-   buffer_.resize(window_size);
-    buffer_copy_.resize(window_size);
+    buffer_.resize(window_size);
     window_size_ = window_size;
     window_size_2x_ = window_size_ * 2;
     window_size_half_ = window_size_ / 2;
@@ -52,28 +51,33 @@ std::tuple<double,double> MedianFilter<T>::filter(T value){
         buffer_index_ = window_size_;    
     
     if (buffer_index_ >= window_size_) {
-        //find median
-        for(auto i = 0; i < window_size_; ++i)
-            buffer_copy_[i] = buffer_[i];
-        std::sort(buffer_copy_.begin(), buffer_copy_.end());
-        double median = buffer_copy_[window_size_half_];
-        
+        // find outliers
+        double min = *std::min_element(buffer_.begin(), buffer_.end());
+        double max = *std::max_element(buffer_.begin(), buffer_.end());
+        auto range = (max - min);
         //average values that fall between upper and lower bound of median
-        auto lower_bound = median - median * outlier_factor_, upper_bound = median + median * outlier_factor_;
+        auto lower_bound = min + (range * outlier_factor_);
+        auto upper_bound = max - (range * outlier_factor_);
+        
         double sum = 0; int count = 0;
         for(auto i = 0; i < window_size_; ++i) {
-            if (buffer_copy_[i] >= lower_bound && buffer_copy_[i] <= upper_bound) {
-                sum += buffer_copy_[i];
+            if (buffer_[i] >= lower_bound && buffer_[i] <= upper_bound) {
+                sum += buffer_[i];
                 ++count;
             }
+        }
+
+        if (count == 0) 
+        {
+            return std::make_tuple(double(min + range / 2), -1);
         }
         double mean = sum / count;
         
         double std_dev_sum = 0;
         for(auto i = 0; i < window_size_; ++i) {
-            if (buffer_copy_[i] >= lower_bound && buffer_copy_[i] <= upper_bound) {
-                double diff = buffer_copy_[i] - mean; 
-                sum += diff*diff;
+            if (buffer_[i] >= lower_bound && buffer_[i] <= upper_bound) {
+                double diff = buffer_[i] - mean;
+                std_dev_sum += diff*diff;
             }
         }
         double variance = std_dev_sum / count; 
@@ -83,7 +87,7 @@ std::tuple<double,double> MedianFilter<T>::filter(T value){
     else {
         //window is not full, return the input as-is
         //TODO: use growing window here
-        return std::make_tuple(double(value), 0);
+        return std::make_tuple(double(value), -1);
     }
 }
 

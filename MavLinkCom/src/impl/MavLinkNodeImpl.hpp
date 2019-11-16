@@ -69,6 +69,8 @@ namespace mavlinkcom_impl {
 
         AsyncResult<MavLinkHeartbeat>  waitForHeartbeat();
 
+        void sendOneHeartbeat();
+
         // Encode and send the given message to the connected node
         void sendMessage(MavLinkMessageBase& msg);
 

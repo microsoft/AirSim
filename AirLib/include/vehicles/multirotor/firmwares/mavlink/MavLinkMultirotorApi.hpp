@@ -16,8 +16,11 @@
 #include <vector>
 #include <memory>
 #include <exception>
+#include <thread>
+#include <tuple>
 
 #include "common/Common.hpp"
+#include "common/common_utils/MedianFilter.hpp"
 #include "common/common_utils/Timer.hpp"
 #include "common/CommonStructs.hpp"
 #include "common/VectorMath.hpp"
@@ -85,62 +88,71 @@ public: //methods
     //update sensors in PX4 stack
     virtual void update() override
     {
-        MultirotorApiBase::update();
+        try
+        {
+            MultirotorApiBase::update();
 
-        if (sensors_ == nullptr || connection_ == nullptr || !connection_->isOpen())
-            return;
+            if (sensors_ == nullptr || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
+                return;
 
-        if (send_params_) {
-            send_params_ = false;
-            sendParams();
-        }
-
-        //send sensor updates
-        const auto& imu_output = getImu()->getOutput();
-        const auto& mag_output = getMagnetometer()->getOutput();
-        const auto& baro_output = getBarometer()->getOutput();
-
-        sendHILSensor(imu_output.linear_acceleration,
-            imu_output.angular_velocity,
-            mag_output.magnetic_field_body,
-            baro_output.pressure * 0.01f /*Pa to Millibar */, baro_output.altitude);
-
-
-        const auto * distance = getDistance();
-        if (distance) {
-            const auto& distance_output = distance->getOutput();
-            float pitch, roll, yaw;
-            VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
-
-            sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
-                distance_output.max_distance / 100, //m -> cm
-                distance_output.distance,
-                0, //sensor type: //TODO: allow changing in settings?
-                77, //sensor id, //TODO: should this be something real?
-                pitch); //TODO: convert from radians to degrees?
-        }
-
-        const auto gps = getGps();
-        if (gps != nullptr) {
-            const auto& gps_output = gps->getOutput();
-
-            //send GPS
-            if (gps_output.is_valid && gps_output.gnss.time_utc > last_gps_time_) {
-                last_gps_time_ = gps_output.gnss.time_utc;
-                Vector3r gps_velocity = gps_output.gnss.velocity;
-                Vector3r gps_velocity_xy = gps_velocity;
-                gps_velocity_xy.z() = 0;
-                float gps_cog;
-                if (Utils::isApproximatelyZero(gps_velocity.y(), 1E-2f) && Utils::isApproximatelyZero(gps_velocity.x(), 1E-2f))
-                    gps_cog = 0;
-                else
-                    gps_cog = Utils::radiansToDegrees(atan2(gps_velocity.y(), gps_velocity.x()));
-                if (gps_cog < 0)
-                    gps_cog += 360;
-
-                sendHILGps(gps_output.gnss.geo_point, gps_velocity, gps_velocity_xy.norm(), gps_cog,
-                    gps_output.gnss.eph, gps_output.gnss.epv, gps_output.gnss.fix_type, 10);
+            if (send_params_) {
+                send_params_ = false;
+                sendParams();
             }
+
+            //send sensor updates
+            const auto& imu_output = getImu()->getOutput();
+            const auto& mag_output = getMagnetometer()->getOutput();
+            const auto& baro_output = getBarometer()->getOutput();
+
+            sendHILSensor(imu_output.linear_acceleration,
+                imu_output.angular_velocity,
+                mag_output.magnetic_field_body,
+                baro_output.pressure * 0.01f /*Pa to Millibar */, baro_output.altitude);
+
+
+            const auto * distance = getDistance();
+            if (distance) {
+                const auto& distance_output = distance->getOutput();
+                float pitch, roll, yaw;
+                VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
+
+                sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
+                    distance_output.max_distance / 100, //m -> cm
+                    distance_output.distance,
+                    0, //sensor type: //TODO: allow changing in settings?
+                    77, //sensor id, //TODO: should this be something real?
+                    pitch); //TODO: convert from radians to degrees?
+            }
+
+            const auto gps = getGps();
+            if (gps != nullptr) {
+                const auto& gps_output = gps->getOutput();
+
+                //send GPS
+                if (gps_output.is_valid && gps_output.gnss.time_utc > last_gps_time_) {
+                    last_gps_time_ = gps_output.gnss.time_utc;
+                    Vector3r gps_velocity = gps_output.gnss.velocity;
+                    Vector3r gps_velocity_xy = gps_velocity;
+                    gps_velocity_xy.z() = 0;
+                    float gps_cog;
+                    if (Utils::isApproximatelyZero(gps_velocity.y(), 1E-2f) && Utils::isApproximatelyZero(gps_velocity.x(), 1E-2f))
+                        gps_cog = 0;
+                    else
+                        gps_cog = Utils::radiansToDegrees(atan2(gps_velocity.y(), gps_velocity.x()));
+                    if (gps_cog < 0)
+                        gps_cog += 360;
+
+                    sendHILGps(gps_output.gnss.geo_point, gps_velocity, gps_velocity_xy.norm(), gps_cog,
+                        gps_output.gnss.eph, gps_output.gnss.epv, gps_output.gnss.fix_type, 10);
+                }
+            }
+        }
+        catch (std::exception&)
+        {
+            addStatusMessage("Exception sending messages to vehicle");
+            disconnect();
+            connect(); // re-start a new connection so PX4 can be restarted and AirSim will happily continue on.
         }
 
         //must be done at the end
@@ -260,6 +272,23 @@ public: //methods
         SingleCall lock(this);
 
         checkValidVehicle();
+
+        if (!current_state_.home.is_set)
+        {
+            throw VehicleMoveException("Cannot takeoff without a valid GPS home location");
+        }
+
+        // wait for ground stabilization
+        if (ground_variance_ > GroundTolerance) {
+            if (!waitForFunction([&]() {
+                return ground_variance_ <= GroundTolerance;
+                }, timeout_sec).isComplete())
+            {
+                auto msg = Utils::stringf("Ground is not stable, variance is %f", ground_variance_);
+                throw VehicleMoveException(msg);
+            }
+        }
+
         bool rc = false;
         auto vec = getPosition();
         float z = vec.z() + getTakeoffZ();
@@ -499,15 +528,20 @@ public:
 
 
 protected: //methods
-
     virtual void connect()
     {
-        createMavConnection(connection_info_);
-        initializeMavSubscriptions();
+        if (!connecting_) {
+            connecting_ = true;
+            if (this->connect_thread_.joinable())
+            {
+                this->connect_thread_.join();
+            }
+            this->connect_thread_ = std::thread(&MavLinkMultirotorApi::connect_thread, this);
+        }
     }
 
-    virtual void close()
-    {
+    virtual void disconnect() {
+        addStatusMessage("Disconnecting mavlink vehicle");
         if (connection_ != nullptr) {
             if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
                 setNormalMode();
@@ -516,8 +550,35 @@ protected: //methods
             connection_->close();
         }
 
-        if (hil_node_ != nullptr)
+        if (hil_node_ != nullptr) {
             hil_node_->close();
+        }
+
+        if (mav_vehicle_ != nullptr) {
+            mav_vehicle_->getConnection()->stopLoggingSendMessage();
+            mav_vehicle_->close();
+            mav_vehicle_ = nullptr;
+        }
+        if (!connecting_)
+        {
+            if (this->connect_thread_.joinable())
+            {
+                this->connect_thread_.join();
+            }
+        }
+    }
+
+    void connect_thread()
+    {
+        addStatusMessage("Waiting for mavlink vehicle...");
+        createMavConnection(connection_info_);
+        initializeMavSubscriptions();
+        connecting_ = false;
+    }
+
+    virtual void close()
+    {
+        disconnect();
 
         if (video_server_ != nullptr)
             video_server_->close();
@@ -528,9 +589,6 @@ protected: //methods
         }
 
         if (logviewer_out_proxy_ != nullptr) {
-            if (mav_vehicle_ != nullptr) {
-                mav_vehicle_->getConnection()->stopLoggingSendMessage();
-            }
             logviewer_out_proxy_->close();
             logviewer_out_proxy_ = nullptr;
         }
@@ -538,10 +596,6 @@ protected: //methods
         if (qgc_proxy_ != nullptr) {
             qgc_proxy_->close();
             qgc_proxy_ = nullptr;
-        }
-        if (mav_vehicle_ != nullptr) {
-            mav_vehicle_->close();
-            mav_vehicle_ = nullptr;
         }
     }
 
@@ -582,7 +636,6 @@ private: //methods
         connect();
         connectToLogViewer();
         connectToQGC();
-
     }
 
     void getMocapPose(Vector3r& position, Quaternionr& orientation) const
@@ -698,8 +751,8 @@ private: //methods
     }
 
     void checkValidVehicle() {
-        if (mav_vehicle_ == nullptr) {
-            throw std::logic_error("Cannot perform operation when no vehicle is connected");
+        if (mav_vehicle_ == nullptr || connection_ == nullptr || !connection_->isOpen()) {
+            throw std::logic_error("Cannot perform operation when no vehicle is connected or vehicle is not responding");
         }
     }
 
@@ -739,7 +792,7 @@ private: //methods
     void initializeMavSubscriptions()
     {
         if (connection_ != nullptr && mav_vehicle_ != nullptr) {
-            is_any_heartbeat_ = false;
+            got_first_heartbeat_ = false;
             is_hil_mode_set_ = false;
             is_armed_ = false;
             is_controls_0_1_ = true;
@@ -917,11 +970,12 @@ private: //methods
 
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
+
         if (connection_info.use_tcp) {
-            addStatusMessage(std::string("Connected over TCP."));
+            addStatusMessage(std::string("Connected to SITL over TCP."));
         }
         else {
-            addStatusMessage(std::string("Connected over UDP."));
+            addStatusMessage(std::string("Connected to SITL over UDP."));
         }
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
@@ -937,11 +991,11 @@ private: //methods
             addStatusMessage(Utils::stringf("Connecting to PX4 Ground Control UDP port %d, local IP %s, remote IP...",
                 connection_info_.gcs_port, connection_info_.local_host_ip.c_str(), connection_info_.gcs_address.c_str()));
 
-            auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("sitl",
+            auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
                 connection_info_.local_host_ip, connection_info_.gcs_address, connection_info_.gcs_port);
             mav_vehicle_->connect(gcsConnection);
 
-            addStatusMessage(std::string("Connected to SITL over UDP."));
+            addStatusMessage(std::string("Ground control connected over UDP."));
         }
         else {
             mav_vehicle_->connect(connection_);
@@ -954,32 +1008,59 @@ private: //methods
     {
         close();
 
+        bool reported = false;
         std::string port_name_auto = port_name;
-        if (port_name_auto == "" || port_name_auto == "*") {
+        while (port_name_auto == "" || port_name_auto == "*") {
             port_name_auto = findPX4();
             if (port_name_auto == "") {
-                throw std::domain_error("Could not detect a connected PX4 flight controller on any USB ports. You can specify USB port in settings.json.");
+                if (!reported) {
+                    reported = true;
+                    addStatusMessage("Could not detect a connected PX4 flight controller on any USB ports.");
+                    addStatusMessage("You can specify USB port in settings.json.");
+                }
+                std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
 
         if (port_name_auto == "") {
-            throw std::invalid_argument("USB port for PX4 flight controller is empty. Please set it in settings.json.");
+            addStatusMessage("USB port for PX4 flight controller is empty. Please set it in settings.json.");
+            return;
         }
 
         if (baud_rate == 0) {
-            throw std::invalid_argument("Baud rate specified in settings.json is 0 which is invalid");
+            addStatusMessage("Baud rate specified in settings.json is 0 which is invalid");
+            return;
         }
 
         addStatusMessage(Utils::stringf("Connecting to PX4 over serial port: %s, baud rate %d ....", port_name_auto.c_str(), baud_rate));
-        connection_ = mavlinkcom::MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
-        connection_->ignoreMessage(mavlinkcom::MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mo-cap messages
-        hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
-        hil_node_->connect(connection_);
-        addStatusMessage("Connected to PX4 over serial port.");
+        reported = false;
 
-        mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
-        mav_vehicle_->connect(connection_); // in this case we can use the same connection.
-        mav_vehicle_->startHeartbeat();
+        while (true) {
+            try {
+                connection_ = mavlinkcom::MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
+                connection_->ignoreMessage(mavlinkcom::MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mo-cap messages
+                hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
+                hil_node_->connect(connection_);
+                addStatusMessage(Utils::stringf("Connected to PX4 over serial port: %s", port_name_auto.c_str()));
+
+                mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
+                mav_vehicle_->connect(connection_); // in this case we can use the same connection.
+                mav_vehicle_->startHeartbeat();
+                return;
+            }
+            catch (std::exception& e)
+            {
+                if (!reported) {
+                    reported = true;
+                    addStatusMessage("Error connecting to mavlink vehicle.");
+                    if (e.what()) {
+                        addStatusMessage(e.what());
+                    }
+                    addStatusMessage("Please check your USB port in settings.json.");
+                }
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        }
     }
 
     mavlinkcom::MavLinkHilSensor getLastSensorMessage()
@@ -1058,12 +1139,13 @@ private: //methods
             std::lock_guard<std::mutex> guard_heartbeat(heartbeat_mutex_);
 
             HeartbeatMessage.decode(msg);
-            is_ready_ = true;
 
             bool armed = (HeartbeatMessage.base_mode & static_cast<uint8_t>(mavlinkcom::MAV_MODE_FLAG::MAV_MODE_FLAG_SAFETY_ARMED)) > 0;
             setArmed(armed);
-            if (!is_any_heartbeat_) {
-                is_any_heartbeat_ = true;
+            if (!got_first_heartbeat_) {
+                Utils::log("received first heartbeat");
+
+                got_first_heartbeat_ = true;
                 if (HeartbeatMessage.autopilot == static_cast<uint8_t>(mavlinkcom::MAV_AUTOPILOT::MAV_AUTOPILOT_PX4) &&
                     HeartbeatMessage.type == static_cast<uint8_t>(mavlinkcom::MAV_TYPE::MAV_TYPE_FIXED_WING)) {
                     // PX4 will scale fixed wing servo outputs to -1 to 1
@@ -1149,6 +1231,19 @@ private: //methods
                 addStatusMessage("Got GPS lock");
                 has_gps_lock_ = true;
             }
+        }
+        else if (msg.msgid == mavlinkcom::MavLinkLocalPositionNed::kMessageId)
+        {
+            // we are getting position information... so we can use this to check the stability of the z coordinate before takeoff.
+            if (current_state_.controls.landed)
+            {
+                monitorGroundAltitude();
+            }
+        }
+        else if (msg.msgid == mavlinkcom::MavLinkExtendedSysState::kMessageId)
+        {
+            // check landed state.
+            getLandedState();
         }
         //else ignore message
     }
@@ -1267,7 +1362,7 @@ private: //methods
     void resetState()
     {
         //reset state
-        is_any_heartbeat_ = is_hil_mode_set_ = is_armed_ = false;
+        is_hil_mode_set_ = false;
         is_controls_0_1_ = true;
         hil_state_freq_ = -1;
         actuators_message_supported_ = false;
@@ -1284,6 +1379,21 @@ private: //methods
         has_gps_lock_ = false;
         send_params_ = false;
         mocap_pose_ = Pose::nanPose();
+        ground_variance_ = 1;
+        ground_filter_.initialize(25, 0.1);
+        cancelLastTask();
+    }
+
+    void monitorGroundAltitude()
+    {
+        // used to ensure stable altitude before takeoff.
+        auto position = getPosition();
+        auto result = ground_filter_.filter(position.z());
+        auto variance = std::get<1>(result);
+        if (variance >= 0) // filter returns -1 if we don't have enough data yet.
+        {            
+            ground_variance_ = variance;
+        }
     }
 
 
@@ -1325,6 +1435,7 @@ private: //variables
     mavlinkcom::MavLinkHilActuatorControls HilActuatorControlsMessage;
     mavlinkcom::MavLinkGpsRawInt MavLinkGpsRawInt;
     mavlinkcom::MavLinkCommandLong CommandLongMessage;
+    mavlinkcom::MavLinkLocalPositionNed MavLinkLocalPositionNed;
 
     mavlinkcom::MavLinkHilSensor last_sensor_message_;
     mavlinkcom::MavLinkDistanceSensor last_distance_message_;
@@ -1333,7 +1444,7 @@ private: //variables
     std::mutex mocap_pose_mutex_, heartbeat_mutex_, set_mode_mutex_, status_text_mutex_, last_message_mutex_;
 
     //variables required for VehicleApiBase implementation
-    bool is_any_heartbeat_, is_hil_mode_set_, is_armed_;
+    bool got_first_heartbeat_, is_hil_mode_set_, is_armed_;
     bool is_controls_0_1_; //Are motor controls specified in 0..1 or -1..1?
     bool send_params_ = false;
     std::queue<std::string> status_messages_;
@@ -1349,6 +1460,11 @@ private: //variables
     bool received_actuator_controls_ = false;
     std::string is_ready_message_;
     Pose mocap_pose_;
+    std::thread connect_thread_;
+    bool connecting_ = false;
+    common_utils::MedianFilter<float> ground_filter_;
+    double ground_variance_ = 1;
+    const double GroundTolerance = 0.1;
 
     //additional variables required for MultirotorApiBase implementation
     //this is optional for methods that might not use vehicle commands
