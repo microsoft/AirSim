@@ -1380,7 +1380,7 @@ private: //methods
         send_params_ = false;
         mocap_pose_ = Pose::nanPose();
         ground_variance_ = 1;
-        ground_filter_.initialize(25, 0.1);
+        ground_filter_.initialize(25, 0.1f);
         cancelLastTask();
     }
 

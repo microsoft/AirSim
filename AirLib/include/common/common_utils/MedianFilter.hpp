@@ -36,7 +36,7 @@ void MedianFilter<T>::initialize(int window_size, float outlier_factor) {
 
 template <typename T>
 MedianFilter<T>::MedianFilter() {
-    initialize(buffer_.capacity(), std::numeric_limits<float>::infinity());
+    initialize(static_cast<int>(buffer_.capacity()), std::numeric_limits<float>::infinity());
 }
 
 template <typename T>
