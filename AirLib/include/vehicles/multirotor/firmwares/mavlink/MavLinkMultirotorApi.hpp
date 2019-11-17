@@ -263,21 +263,32 @@ public: //methods
 
         checkValidVehicle();
         bool rc = false;
+        if (arm) {
+            float timeout_sec = 10;
+            waitForHomeLocation(timeout_sec);
+            waitForStableGroundPosition(timeout_sec);
+        }
+
         mav_vehicle_->armDisarm(arm).wait(10000, &rc);
         return rc;
     }
 
-    virtual bool takeoff(float timeout_sec) override
+    void waitForHomeLocation(float timeout_sec)
     {
-        SingleCall lock(this);
-
-        checkValidVehicle();
-
         if (!current_state_.home.is_set)
         {
-            throw VehicleMoveException("Cannot takeoff without a valid GPS home location");
+            addStatusMessage("Waiting for valid GPS home location...");
+            if (!waitForFunction([&]() {
+                return current_state_.home.is_set;
+                }, timeout_sec).isComplete())
+            {
+                throw VehicleMoveException("Vehicle does not have a valid GPS home location");
+            }
         }
+    }
 
+    void waitForStableGroundPosition(float timeout_sec)
+    {
         // wait for ground stabilization
         if (ground_variance_ > GroundTolerance) {
             addStatusMessage("Waiting for z-position to stabilize...");
@@ -289,6 +300,16 @@ public: //methods
                 throw VehicleMoveException(msg);
             }
         }
+    }
+
+    virtual bool takeoff(float timeout_sec) override
+    {
+        SingleCall lock(this);
+
+        checkValidVehicle();
+
+        waitForHomeLocation(timeout_sec);
+        waitForStableGroundPosition(timeout_sec);
 
         bool rc = false;
         auto vec = getPosition();
