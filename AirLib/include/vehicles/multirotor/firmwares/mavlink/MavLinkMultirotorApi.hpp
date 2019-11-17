@@ -280,6 +280,7 @@ public: //methods
 
         // wait for ground stabilization
         if (ground_variance_ > GroundTolerance) {
+            addStatusMessage("Waiting for z-position to stabilize...");
             if (!waitForFunction([&]() {
                 return ground_variance_ <= GroundTolerance;
                 }, timeout_sec).isComplete())
@@ -291,8 +292,9 @@ public: //methods
 
         bool rc = false;
         auto vec = getPosition();
+        auto yaw = current_state_.attitude.yaw;
         float z = vec.z() + getTakeoffZ();
-        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, 0.0f /* yaw */).wait(static_cast<int>(timeout_sec * 1000), &rc))
+        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, yaw).wait(static_cast<int>(timeout_sec * 1000), &rc))
         {
             throw VehicleMoveException("TakeOff command - timeout waiting for response");
         }
@@ -573,6 +575,8 @@ protected: //methods
         addStatusMessage("Waiting for mavlink vehicle...");
         createMavConnection(connection_info_);
         initializeMavSubscriptions();
+        connectToLogViewer();
+        connectToQGC();
         connecting_ = false;
     }
 
@@ -634,8 +638,6 @@ private: //methods
         resetState(); //reset all variables we might have changed during last session
 
         connect();
-        connectToLogViewer();
-        connectToQGC();
     }
 
     void getMocapPose(Vector3r& position, Quaternionr& orientation) const
