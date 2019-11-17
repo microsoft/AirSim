@@ -44,6 +44,10 @@ class MavLinkMultirotorApi : public MultirotorApiBase
 public: //methods
     virtual ~MavLinkMultirotorApi()
     {
+        if (this->connect_thread_.joinable())
+        {
+            this->connect_thread_.join();
+        }
         closeAllConnection();
     }
 
@@ -88,11 +92,10 @@ public: //methods
     //update sensors in PX4 stack
     virtual void update() override
     {
-        try
-        {
+        try {
             MultirotorApiBase::update();
 
-            if (sensors_ == nullptr || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
+            if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
                 return;
 
             if (send_params_) {
@@ -148,8 +151,7 @@ public: //methods
                 }
             }
         }
-        catch (std::exception&)
-        {
+        catch (std::exception&) {
             addStatusMessage("Exception sending messages to vehicle");
             disconnect();
             connect(); // re-start a new connection so PX4 can be restarted and AirSim will happily continue on.
@@ -275,13 +277,11 @@ public: //methods
 
     void waitForHomeLocation(float timeout_sec)
     {
-        if (!current_state_.home.is_set)
-        {
+        if (!current_state_.home.is_set) {
             addStatusMessage("Waiting for valid GPS home location...");
             if (!waitForFunction([&]() {
                 return current_state_.home.is_set;
-                }, timeout_sec).isComplete())
-            {
+                }, timeout_sec).isComplete()) {
                 throw VehicleMoveException("Vehicle does not have a valid GPS home location");
             }
         }
@@ -315,8 +315,7 @@ public: //methods
         auto vec = getPosition();
         auto yaw = current_state_.attitude.yaw;
         float z = vec.z() + getTakeoffZ();
-        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, yaw).wait(static_cast<int>(timeout_sec * 1000), &rc))
-        {
+        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, yaw).wait(static_cast<int>(timeout_sec * 1000), &rc)) {
             throw VehicleMoveException("TakeOff command - timeout waiting for response");
         }
         if (!rc) {
@@ -336,8 +335,7 @@ public: //methods
         //we assume the ground is relatively flat an we are landing roughly at the home altitude.
         updateState();
         checkValidVehicle();
-        if (current_state_.home.is_set)
-        {
+        if (current_state_.home.is_set) {
             bool rc = false;
             if (!mav_vehicle_->land(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.home.global_pos.alt).wait(10000, &rc))
             {
@@ -347,8 +345,7 @@ public: //methods
                 throw VehicleMoveException("Landing command rejected by drone");
             }
         }
-        else
-        {
+        else {
             throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
         }
 
@@ -565,6 +562,7 @@ protected: //methods
 
     virtual void disconnect() {
         addStatusMessage("Disconnecting mavlink vehicle");
+        connected_ = false;
         if (connection_ != nullptr) {
             if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
                 setNormalMode();
@@ -582,28 +580,6 @@ protected: //methods
             mav_vehicle_->close();
             mav_vehicle_ = nullptr;
         }
-        if (!connecting_)
-        {
-            if (this->connect_thread_.joinable())
-            {
-                this->connect_thread_.join();
-            }
-        }
-    }
-
-    void connect_thread()
-    {
-        addStatusMessage("Waiting for mavlink vehicle...");
-        createMavConnection(connection_info_);
-        initializeMavSubscriptions();
-        connectToLogViewer();
-        connectToQGC();
-        connecting_ = false;
-    }
-
-    virtual void close()
-    {
-        disconnect();
 
         if (video_server_ != nullptr)
             video_server_->close();
@@ -622,6 +598,23 @@ protected: //methods
             qgc_proxy_->close();
             qgc_proxy_ = nullptr;
         }
+    }
+
+    void connect_thread()
+    {
+        addStatusMessage("Waiting for mavlink vehicle...");
+        createMavConnection(connection_info_);
+        if (connection_ != nullptr) {
+            connectToLogViewer();
+            connectToQGC();
+        }
+        connecting_ = false;
+        connected_ = true;
+    }
+
+    virtual void close()
+    {
+        disconnect();
     }
 
     const ImuBase* getImu() const
@@ -774,7 +767,10 @@ private: //methods
     }
 
     void checkValidVehicle() {
-        if (mav_vehicle_ == nullptr || connection_ == nullptr || !connection_->isOpen()) {
+        if (mav_vehicle_ == nullptr || connection_ == nullptr || !connection_->isOpen() || !connected_) {
+            if (!connecting_) {
+                disconnect();
+            }
             throw std::logic_error("Cannot perform operation when no vehicle is connected or vehicle is not responding");
         }
     }
@@ -808,31 +804,6 @@ private: //methods
             //We use 0.2 as idle rotors which leaves out range of 0.8
             for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
                 rotor_controls_[i] = Utils::clip(0.8f * rotor_controls_[i] + 0.20f, 0.0f, 1.0f);
-            }
-        }
-    }
-
-    void initializeMavSubscriptions()
-    {
-        if (connection_ != nullptr && mav_vehicle_ != nullptr) {
-            got_first_heartbeat_ = false;
-            is_hil_mode_set_ = false;
-            is_armed_ = false;
-            is_controls_0_1_ = true;
-            Utils::setValue(rotor_controls_, 0.0f);
-            //TODO: main_node_->setMessageInterval(...);
-            connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
-                unused(connection);
-                processMavMessages(msg);
-                });
-
-            // listen to the other mavlink connection also
-            auto mavcon = mav_vehicle_->getConnection();
-            if (mavcon != connection_) {
-                mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
-                    unused(connection);
-                    processMavMessages(msg);
-                    });
             }
         }
     }
@@ -930,19 +901,15 @@ private: //methods
     static std::string findPX4()
     {
         auto result = mavlinkcom::MavLinkConnection::findSerialPorts(0, 0);
-        for (auto iter = result.begin(); iter != result.end(); iter++)
-        {
+        for (auto iter = result.begin(); iter != result.end(); iter++) {
             mavlinkcom::SerialPortInfo info = *iter;
-            if (
-                (
+            if ((
                 (info.vid == pixhawkVendorId) &&
                     (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
                     ) ||
                     (
                 (info.displayName.find(L"PX4_") != std::string::npos)
-                        )
-                )
-            {
+                )) {
                 // printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
                 return std::string(info.portName.begin(), info.portName.end());
             }
@@ -967,29 +934,44 @@ private: //methods
     {
         close();
 
-        if (connection_info.use_tcp)
-        {
+        got_first_heartbeat_ = false;
+        is_hil_mode_set_ = false;
+        is_armed_ = false;
+        is_controls_0_1_ = true;
+        Utils::setValue(rotor_controls_, 0.0f);
+
+        if (connection_info.use_tcp) {
             if (connection_info.tcp_port == 0) {
                 throw std::invalid_argument("TcpPort setting has an invalid value.");
             }
 
             auto msg = Utils::stringf("Waiting for TCP connection on port %d, local IP %s", connection_info.tcp_port, connection_info_.local_host_ip.c_str());
             addStatusMessage(msg);
-
-            connection_ = mavlinkcom::MavLinkConnection::acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
+            try {
+                connection_ = mavlinkcom::MavLinkConnection::acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
+            }
+            catch (std::exception& e) {
+                addStatusMessage("Accepting TCP socket failed, is another instance running?");
+                addStatusMessage(e.what());
+                return;
+            }
         }
-        else if (connection_info.udp_address.size() > 0)
-        {
+        else if (connection_info.udp_address.size() > 0) {
             if (connection_info.udp_port == 0) {
                 throw std::invalid_argument("UdpPort setting has an invalid value.");
             }
 
             connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, connection_info.udp_address, connection_info.udp_port);
         }
-        else 
-        {
+        else  {
             throw std::invalid_argument("Must provide valid connection info for your drone.");
         }
+
+        // start listening to the SITL connection.
+        connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
+            unused(connection);
+            processMavMessages(msg);
+            });
 
         hil_node_ = std::make_shared<mavlinkcom::MavLinkNode>(connection_info_.sim_sysid, connection_info_.sim_compid);
         hil_node_->connect(connection_);
@@ -1014,17 +996,34 @@ private: //methods
             addStatusMessage(Utils::stringf("Connecting to PX4 Ground Control UDP port %d, local IP %s, remote IP...",
                 connection_info_.gcs_port, connection_info_.local_host_ip.c_str(), connection_info_.gcs_address.c_str()));
 
+            // PX4 has trouble if we do this too quickly, so wait for first heartbeat            
+            int retries = 100;
+            while (!got_first_heartbeat_ && retries-- > 0) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+            // and then it needs even more sleep, bug in PX4 ?
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
             auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
                 connection_info_.local_host_ip, connection_info_.gcs_address, connection_info_.gcs_port);
             mav_vehicle_->connect(gcsConnection);
 
             addStatusMessage(std::string("Ground control connected over UDP."));
-        }
-        else {
-            mav_vehicle_->connect(connection_);
-        }
 
-        mav_vehicle_->startHeartbeat();
+            // listen to this UDP mavlink connection also
+            auto mavcon = mav_vehicle_->getConnection();
+            if (mavcon != connection_) {
+                mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
+                    unused(connection);
+                    processMavMessages(msg);
+                    });
+            }
+            else {
+                mav_vehicle_->connect(connection_);
+            }
+
+            mav_vehicle_->startHeartbeat();
+        }
     }
 
     void createMavSerialConnection(const std::string& port_name, int baud_rate)
@@ -1071,14 +1070,11 @@ private: //methods
                 mav_vehicle_->startHeartbeat();
                 return;
             }
-            catch (std::exception& e)
-            {
+            catch (std::exception& e) {
                 if (!reported) {
                     reported = true;
                     addStatusMessage("Error connecting to mavlink vehicle.");
-                    if (e.what()) {
-                        addStatusMessage(e.what());
-                    }
+                    addStatusMessage(e.what());
                     addStatusMessage("Please check your USB port in settings.json.");
                 }
                 std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -1107,10 +1103,8 @@ private: //methods
     void sendParams()
     {
         // send any mavlink parameters from settings.json through to the connected vehicle.
-        if (connection_info_.params.size() > 0)
-        {
-            for (auto iter : connection_info_.params)
-            {
+        if (connection_info_.params.size() > 0) {
+            for (auto iter : connection_info_.params) {
                 auto key = iter.first;
                 auto value = iter.second;
                 mavlinkcom::MavLinkParameter p;
@@ -1148,12 +1142,14 @@ private: //methods
 
     void addStatusMessage(const std::string& message)
     {
-        Utils::log(message);
-        std::lock_guard<std::mutex> guard_status(status_text_mutex_);
-        //if queue became too large, clear it first
-        if (status_messages_.size() > status_messages_MaxSize)
-            Utils::clear(status_messages_, status_messages_MaxSize - status_messages_.size());
-        status_messages_.push(message);
+        if (message.size() != 0) {
+            Utils::log(message);
+            std::lock_guard<std::mutex> guard_status(status_text_mutex_);
+            //if queue became too large, clear it first
+            if (status_messages_.size() > status_messages_MaxSize)
+                Utils::clear(status_messages_, status_messages_MaxSize - status_messages_.size());
+            status_messages_.push(message);
+        }
     }
 
     void processMavMessages(const mavlinkcom::MavLinkMessage& msg)
@@ -1235,17 +1231,14 @@ private: //methods
             }
             received_actuator_controls_ = true;
             // if the timestamps match then it means we are in lockstep mode.
-            if (!lock_step_enabled_)
-            {
-                if (hil_sensor_clock_ == HilActuatorControlsMessage.time_usec)
-                {
+            if (!lock_step_enabled_) {
+                if (hil_sensor_clock_ == HilActuatorControlsMessage.time_usec) {
                     addStatusMessage("Enabling lockstep mode");
                     lock_step_enabled_ = true;
                 }
             }
         }
-        else if (msg.msgid == MavLinkGpsRawInt.msgid)
-        {
+        else if (msg.msgid == MavLinkGpsRawInt.msgid) {
             MavLinkGpsRawInt.decode(msg);
             auto fix_type = static_cast<mavlinkcom::GPS_FIX_TYPE>(MavLinkGpsRawInt.fix_type);
             auto locked = (fix_type != mavlinkcom::GPS_FIX_TYPE::GPS_FIX_TYPE_NO_GPS &&
@@ -1255,16 +1248,14 @@ private: //methods
                 has_gps_lock_ = true;
             }
         }
-        else if (msg.msgid == mavlinkcom::MavLinkLocalPositionNed::kMessageId)
-        {
+        else if (msg.msgid == mavlinkcom::MavLinkLocalPositionNed::kMessageId) {
             // we are getting position information... so we can use this to check the stability of the z coordinate before takeoff.
             if (current_state_.controls.landed)
             {
                 monitorGroundAltitude();
             }
         }
-        else if (msg.msgid == mavlinkcom::MavLinkExtendedSysState::kMessageId)
-        {
+        else if (msg.msgid == mavlinkcom::MavLinkExtendedSysState::kMessageId) {
             // check landed state.
             getLandedState();
         }
@@ -1277,17 +1268,14 @@ private: //methods
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
 
         auto now = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
-        if (lock_step_enabled_)
-        {
-            if (last_hil_sensor_time_ + 100000 < now)
-            {
+        if (lock_step_enabled_) {
+            if (last_hil_sensor_time_ + 100000 < now) {
                 // if 100 ms passes then something is terribly wrong, reset lockstep mode
                 lock_step_enabled_ = false;
                 addStatusMessage("timeout on HilActuatorControlsMessage, resetting lock step mode");
             }
 
-            if (!received_actuator_controls_)
-            {
+            if (!received_actuator_controls_) {
                 // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
                 return;
             }
@@ -1413,8 +1401,7 @@ private: //methods
         auto position = getPosition();
         auto result = ground_filter_.filter(position.z());
         auto variance = std::get<1>(result);
-        if (variance >= 0) // filter returns -1 if we don't have enough data yet.
-        {            
+        if (variance >= 0) { // filter returns -1 if we don't have enough data yet.
             ground_variance_ = variance;
         }
     }
@@ -1485,6 +1472,7 @@ private: //variables
     Pose mocap_pose_;
     std::thread connect_thread_;
     bool connecting_ = false;
+    bool connected_ = false;
     common_utils::MedianFilter<float> ground_filter_;
     double ground_variance_ = 1;
     const double GroundTolerance = 0.1;
