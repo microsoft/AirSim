@@ -57,6 +57,7 @@ class TcpClientPort::TcpSocketImpl
 {
 	SocketInit init;
 	SOCKET sock = INVALID_SOCKET;
+    SOCKET accept_sock = INVALID_SOCKET;
 	sockaddr_in localaddr;
 	sockaddr_in remoteaddr;
 	bool closed_ = true;
@@ -136,13 +137,13 @@ public:
 
 	void accept(const std::string& localHost, int localPort)
 	{
-		SOCKET local = socket(AF_INET, SOCK_STREAM, 0);
+        accept_sock = socket(AF_INET, SOCK_STREAM, 0);
 
 		resolveAddress(localHost, localPort, localaddr);
 
 		// bind socket to local address.
 		socklen_t addrlen = sizeof(sockaddr_in);
-		int rc = ::bind(local, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
+		int rc = ::bind(accept_sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
 		if (rc < 0)
 		{
             int hr = GetSocketError();
@@ -150,7 +151,7 @@ public:
 		}
 
 		// start listening for incoming connection
-		rc = ::listen(local, 1);
+		rc = ::listen(accept_sock, 1);
 		if (rc < 0)
 		{
             int hr = GetSocketError();
@@ -158,7 +159,7 @@ public:
 		}
 
 		// accept 1
-		sock = ::accept(local, reinterpret_cast<sockaddr*>(&remoteaddr), &addrlen);
+		sock = ::accept(accept_sock, reinterpret_cast<sockaddr*>(&remoteaddr), &addrlen);
 		if (sock == INVALID_SOCKET) {
             int hr = GetSocketError();
 			throw std::runtime_error(Utils::stringf("TcpClientPort accept failed with error: %d\n", hr));
@@ -166,11 +167,12 @@ public:
 
 #ifdef _WIN32
         // don't need to accept any more, so we can close this one.
-        ::closesocket(local);
+        ::closesocket(accept_sock);
 #else
-		int fd = static_cast<int>(local);
+		int fd = static_cast<int>(accept_sock);
 		::close(fd);
 #endif
+        accept_sock = INVALID_SOCKET;
 
 		closed_ = false;
 	}
@@ -298,16 +300,28 @@ public:
 
 	void close()
 	{
-		if (!closed_) {
-			closed_ = true;
-
+         closed_ = true;
+        if (sock != INVALID_SOCKET)
+        {
 #ifdef _WIN32
-			closesocket(sock);
+            closesocket(sock);
 #else
-			int fd = static_cast<int>(sock);
-			::close(fd);
+            int fd = static_cast<int>(sock);
+            ::close(fd);
 #endif
-		}
+            sock = INVALID_SOCKET;
+        }
+
+        if (accept_sock != INVALID_SOCKET)
+        {
+#ifdef _WIN32
+            closesocket(accept_sock);
+#else
+            int fd = static_cast<int>(accept_sock);
+            ::close(fd);
+#endif
+            accept_sock = INVALID_SOCKET;
+        }
 	}
 
 	std::string remoteAddress() {

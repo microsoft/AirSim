@@ -44,11 +44,11 @@ class MavLinkMultirotorApi : public MultirotorApiBase
 public: //methods
     virtual ~MavLinkMultirotorApi()
     {
+        closeAllConnection();
         if (this->connect_thread_.joinable())
         {
             this->connect_thread_.join();
         }
-        closeAllConnection();
     }
 
     //non-base interface specific to MavLinKDroneController
@@ -151,8 +151,9 @@ public: //methods
                 }
             }
         }
-        catch (std::exception&) {
+        catch (std::exception& e) {
             addStatusMessage("Exception sending messages to vehicle");
+            addStatusMessage(e.what());
             disconnect();
             connect(); // re-start a new connection so PX4 can be restarted and AirSim will happily continue on.
         }
@@ -604,7 +605,7 @@ protected: //methods
     {
         addStatusMessage("Waiting for mavlink vehicle...");
         createMavConnection(connection_info_);
-        if (connection_ != nullptr) {
+        if (mav_vehicle_ != nullptr) {
             connectToLogViewer();
             connectToQGC();
         }
@@ -768,9 +769,6 @@ private: //methods
 
     void checkValidVehicle() {
         if (mav_vehicle_ == nullptr || connection_ == nullptr || !connection_->isOpen() || !connected_) {
-            if (!connecting_) {
-                disconnect();
-            }
             throw std::logic_error("Cannot perform operation when no vehicle is connected or vehicle is not responding");
         }
     }
@@ -948,7 +946,8 @@ private: //methods
             auto msg = Utils::stringf("Waiting for TCP connection on port %d, local IP %s", connection_info.tcp_port, connection_info_.local_host_ip.c_str());
             addStatusMessage(msg);
             try {
-                connection_ = mavlinkcom::MavLinkConnection::acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
+                connection_ = std::make_shared<mavlinkcom::MavLinkConnection>();
+                connection_->acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
             }
             catch (std::exception& e) {
                 addStatusMessage("Accepting TCP socket failed, is another instance running?");
@@ -958,13 +957,13 @@ private: //methods
         }
         else if (connection_info.udp_address.size() > 0) {
             if (connection_info.udp_port == 0) {
-                throw std::invalid_argument("UdpPort setting has an invalid value.");
+                throw std::invalid_argument("UdpPort setting has an invalid value."); 
             }
 
             connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, connection_info.udp_address, connection_info.udp_port);
         }
         else  {
-            throw std::invalid_argument("Must provide valid connection info for your drone.");
+            throw std::invalid_argument("Please provide valid connection info for your drone.");
         }
 
         // start listening to the SITL connection.
@@ -996,13 +995,8 @@ private: //methods
             addStatusMessage(Utils::stringf("Connecting to PX4 Ground Control UDP port %d, local IP %s, remote IP...",
                 connection_info_.gcs_port, connection_info_.local_host_ip.c_str(), connection_info_.gcs_address.c_str()));
 
-            // PX4 has trouble if we do this too quickly, so wait for first heartbeat            
-            int retries = 100;
-            while (!got_first_heartbeat_ && retries-- > 0) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-            // and then it needs even more sleep, bug in PX4 ?
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
+            std::this_thread::sleep_for(std::chrono::seconds(2));
 
             auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
                 connection_info_.local_host_ip, connection_info_.gcs_address, connection_info_.gcs_port);
