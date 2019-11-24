@@ -12,7 +12,7 @@ Fastest way to get started is to open AirSim.sln in Visual Studio 2017. You will
 
 ## Hello Car
 
-Here's how to use AirSim APIs using Python to control simulated car (see also [Python example](apis.md#hello_car)):
+Here's how to use AirSim APIs using C++ to control simulated car (see also [Python example](apis.md#hello_car)):
 
 ```cpp
 
@@ -50,7 +50,7 @@ int main()
 
 ## Hello Drone
 
-Here's how to use AirSim APIs using Python to control simulated car (see also [Python example](apis.md#hello_drone)):
+Here's how to use AirSim APIs using C++ to control simulated quadrotor (see also [Python example](apis.md#hello_drone)):
 
 ```cpp
 
