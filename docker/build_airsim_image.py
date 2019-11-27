@@ -1,3 +1,4 @@
+from __future__ import print_function
 import argparse
 import subprocess
 
@@ -32,7 +33,7 @@ def build_docker_image(args):
                         '-f',  dockerfile, \
                         '--build-arg', 'BASE_IMAGE=' + args.base_image, \
                         '.']
-    print " ".join(docker_command)
+    print(" ".join(docker_command))
     subprocess.call(docker_command)
 
 if __name__=="__main__":
