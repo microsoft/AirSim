@@ -20,6 +20,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ),
     install_requires=[
-          'msgpack-rpc-python', 'numpy'
+          'msgpack-rpc-python', 'numpy', 'opencv-contrib-python'
     ]
 )
