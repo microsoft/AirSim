@@ -42,6 +42,9 @@ typedef HRESULT (WINAPI *SetThreadDescriptionFunction)( _In_ HANDLE hThread, _In
 static SetThreadDescriptionFunction setThreadDescriptionFunction = nullptr;
 #endif
 
+// setThreadName is a helper function that is useful when debugging because your threads 
+// show up in the debugger with the name you set which makes it easier to find the threads 
+// that you are interested in.
 bool CurrentThread::setThreadName(const std::string& name)
 {
 #ifdef _WIN32

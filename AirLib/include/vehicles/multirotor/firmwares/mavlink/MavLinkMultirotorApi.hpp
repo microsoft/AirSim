@@ -20,7 +20,7 @@
 #include <tuple>
 
 #include "common/Common.hpp"
-#include "common/common_utils/MedianFilter.hpp"
+#include "common/common_utils/SmoothingFilter.hpp"
 #include "common/common_utils/Timer.hpp"
 #include "common/CommonStructs.hpp"
 #include "common/VectorMath.hpp"
@@ -1467,7 +1467,7 @@ private: //variables
     std::thread connect_thread_;
     bool connecting_ = false;
     bool connected_ = false;
-    common_utils::MedianFilter<float> ground_filter_;
+    common_utils::SmoothingFilter<float> ground_filter_;
     double ground_variance_ = 1;
     const double GroundTolerance = 0.1;
 

@@ -74,9 +74,9 @@ struct MultirotorState {
     uint64_t timestamp;
     LandedState landed_state;
     RCData rc_data;
-    bool ready;
-    std::string ready_message;
-    bool can_arm;
+    bool ready;  // indicates drone is ready for commands
+    std::string ready_message;  // can show error message if drone is not reachable over the network or is not responding
+    bool can_arm;  // indicates drone is ready to be armed
 
     MultirotorState()
     {}

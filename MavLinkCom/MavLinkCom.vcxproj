@@ -381,7 +381,6 @@
     <ClInclude Include="include\AsyncResult.hpp" />
     <ClInclude Include="common_utils\EnumFlags.hpp" />
     <ClInclude Include="common_utils\ExceptionUtils.hpp" />
-    <ClInclude Include="common_utils\MedianFilter.hpp" />
     <ClInclude Include="common_utils\optional.hpp" />
     <ClInclude Include="common_utils\prettyprint.hpp" />
     <ClInclude Include="common_utils\sincos.hpp" />
