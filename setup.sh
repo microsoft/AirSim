@@ -233,12 +233,12 @@ else
     sudo rm -rf ./AirLib/deps/eigen3/Eigen
 fi
 echo "downloading eigen..."
-wget http://bitbucket.org/eigen/eigen/get/3.3.2.zip
-unzip 3.3.2.zip -d temp_eigen
+wget https://gitlab.com/libeigen/eigen/-/archive/3.3.2/eigen-3.3.2.zip
+unzip eigen-3.3.2.zip -d temp_eigen
 mkdir -p AirLib/deps/eigen3
 mv temp_eigen/eigen*/Eigen AirLib/deps/eigen3
 rm -rf temp_eigen
-rm 3.3.2.zip
+rm eigen-3.3.2.zip
 
 popd >/dev/null
 
