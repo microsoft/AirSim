@@ -656,6 +656,10 @@ private:
         {
             // backwards compat
             connection_info.gcs_address = sitlip;
+        }
+        if (settings_json.hasKey("SitlPort"))
+        {
+            // backwards compat
             connection_info.gcs_port = settings_json.getInt("SitlPort", connection_info.gcs_port);
         }
 
