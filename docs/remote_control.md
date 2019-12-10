@@ -9,7 +9,7 @@ By default AirSim uses [simple_flight](simple_flight.md) as its flight controlle
 You can either use XBox controller or [FrSky Taranis X9D Plus](https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html). Note that XBox 360 controller is not precise enough and is not recommended if you wanted more real world experience. See FAQ below if things are not working.
 
  ### Other Devices
- AirSim can detect large variety of devices however devices other than above *might* need extra configuration. In future we will add ability to set this config through settings.json. For now, if things are not working then you might want to try workarounds such as [x360ce](http://www.x360ce.com/) or chnage code in [SimJoystick.cpp file](/Unreal/Plugins/AirSim/Source/SimJoyStick/SimJoyStick.cpp#L50).
+ AirSim can detect large variety of devices however devices other than above *might* need extra configuration. In future we will add ability to set this config through settings.json. For now, if things are not working then you might want to try workarounds such as [x360ce](http://www.x360ce.com/) or change code in [SimJoystick.cpp file](/Unreal/Plugins/AirSim/Source/SimJoyStick/SimJoyStick.cpp#L50).
 
  ### Note on FrSky Taranis X9D Plus
 
