@@ -136,19 +136,20 @@ else #linux
 fi
 
 # Download rpclib
-if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
+RPC_VERSION=c4fb37acbe67ec99e47e5187acd2a7450bde0cec
+if [ ! -d "external/rpclib/rpclib-${RPC_VERSION}" ]; then
     echo "*********************************************************************************************"
     echo "Downloading rpclib..."
     echo "*********************************************************************************************"
 
-    wget  https://github.com/rpclib/rpclib/archive/v2.2.1.zip
+    wget https://github.com/qchateau/rpclib/archive/${RPC_VERSION}.zip -O rpclib.zip
 
     # remove previous versions
     rm -rf "external/rpclib"
 
     mkdir -p "external/rpclib"
-    unzip v2.2.1.zip -d external/rpclib
-    rm v2.2.1.zip
+    unzip rpclib.zip -d external/rpclib
+    rm rpclib.zip
 fi
 
 # Download high-polycount SUV model

@@ -25,7 +25,8 @@ esac
 done
 
 # check for rpclib
-if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
+RPC_VERSION=c4fb37acbe67ec99e47e5187acd2a7450bde0cec
+if [ ! -d "./external/rpclib/rpclib-${RPC_VERSION}" ]; then
     echo "ERROR: new version of AirSim requires newer rpclib."
     echo "please run setup.sh first and then run build.sh again."
     exit 1
@@ -133,7 +134,7 @@ cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
 
 # Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
 rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug
-rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
+rsync -a --delete external/rpclib/rpclib-${RPC_VERSION}/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 
