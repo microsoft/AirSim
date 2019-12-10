@@ -24,7 +24,7 @@ AirSim supports PX4 flight controller however it requires different setup. There
 
 1. If you are going to use Hardware-in-Loop mode, you need transmitter for your specific brand of RC and bind it. You can find this information in RC's user guide. 
 2. For Hardware-in-Loop mode, you connect transmitter to Pixhawk. Usually you can find online doc or YouTube video tutorial on how to do that.
-2. [Calibrate your RC in QGroundControl](https://docs.qgroundcontrol.com/en/SetupView/Radio.html).
+3. [Calibrate your RC in QGroundControl](https://docs.qgroundcontrol.com/en/SetupView/Radio.html).
 
 See [PX4 RC configuration](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) and Please see [this guide](http://ardupilot.org/copter/docs/common-pixhawk-and-px4-compatible-rc-transmitter-and-receiver-systems.html) for more information. 
 
