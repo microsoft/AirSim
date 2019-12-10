@@ -1,7 +1,7 @@
 ﻿# AirSim APIs
 
 ## Introduction
-AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. 
+AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on.
 
 ## Python Quickstart
 If you want to use Python to call AirSim APIs, we recommend using Anaconda with Python 3.5 or later versions however some code may also work with Python 2.7 ([help us](../CONTRIBUTING.md) improve compatibility!).
@@ -27,7 +27,7 @@ You can also install `airsim` package simply by,
 pip install airsim
 ```
 
-You can find source code and samples for this package in `PythonClient` folder in your repo. 
+You can find source code and samples for this package in `PythonClient` folder in your repo.
 
 **Notes**
 1. You may notice a file `setup_path.py` in our example folders. This file has simple code to detect if `airsim` package is available in parent folder and in that case we use that instead of pip installed package so you always use latest code.
@@ -44,7 +44,7 @@ Here's how to use AirSim APIs using Python to control simulated car (see also [C
 import airsim
 import time
 
-# connect to the AirSim simulator 
+# connect to the AirSim simulator
 client = airsim.CarClient()
 client.confirmConnection()
 client.enableApiControl(True)
@@ -66,7 +66,7 @@ while True:
     # get camera images from the car
     responses = client.simGetImages([
         airsim.ImageRequest(0, airsim.ImageType.DepthVis),
-        airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)]) 
+        airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
     print('Retrieved images: %d', len(responses))
 
     # do something with images
@@ -87,7 +87,7 @@ Here's how to use AirSim APIs using Python to control simulated quadrotor (see a
 # ready to run example: PythonClient/multirotor/hello_drone.py
 import airsim
 
-# connect to the AirSim simulator 
+# connect to the AirSim simulator
 client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
@@ -99,7 +99,7 @@ client.moveToPositionAsync(-10, 10, -10, 5).join()
 
 # take images
 responses = client.simGetImages([
-    airsim.ImageRequest("0", airsim.ImageType.DepthVis), 
+    airsim.ImageRequest("0", airsim.ImageType.DepthVis),
     airsim.ImageRequest("1", airsim.ImageType.DepthPlanner, True)])
 print('Retrieved images: %d', len(responses))
 
@@ -136,7 +136,7 @@ AirSim allows to pause and continue the simulation through `pause(is_paused)` AP
 The collision information can be obtained using `simGetCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.
 
 ### Time of Day API
-AirSim assumes there exist sky sphere of class `EngineSky/BP_Sky_Sphere` in your environment with [ADirectionalLight actor](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L156). By default, the position of the sun in the scene doesn't move with time. You can use [settings](settings.md#timeofday) to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene. 
+AirSim assumes there exist sky sphere of class `EngineSky/BP_Sky_Sphere` in your environment with [ADirectionalLight actor](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L156). By default, the position of the sun in the scene doesn't move with time. You can use [settings](settings.md#timeofday) to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene.
 
 You can also use following API call to set the sun position according to given date time:
 
@@ -179,7 +179,7 @@ Please note that `Roadwetness`, `RoadSnow` and `RoadLeaf` effects requires addin
 Please see [example code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/weather.py) for more details.
 
 ### Lidar APIs
-AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md). 
+AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md).
 
 More on [lidar APIs and settings](lidar.md) and [sensor settings](sensors.md)
 
@@ -224,17 +224,17 @@ All *Async* method returns `concurrent.futures.Future` in Python (`std::future` 
 There are two modes you can fly vehicle: `drivetrain` parameter is set to `airsim.DrivetrainType.ForwardOnly` or `airsim.DrivetrainType.MaxDegreeOfFreedom`. When you specify ForwardOnly, you are saying that vehicle's front should always point in the direction of travel. So if you want drone to take left turn then it would first rotate so front points to left. This mode is useful when you have only front camera and you are operating vehicle using FPV view. This is more or less like travelling in car where you always have front view. The MaxDegreeOfFreedom means you don't care where the front points to. So when you take left turn, you just start going left like crab. Quadrotors can go in any direction regardless of where front points to. The MaxDegreeOfFreedom enables this mode.
 
 #### yaw_mode
-`yaw_mode` is a struct `YawMode` with two fields, `yaw_or_rate` and `is_rate`. If `is_rate` field is True then `yaw_or_rate` field is interpreted as angular velocity in degrees/sec which means you want vehicle to rotate continuously around its axis at that angular velocity while moving. If `is_rate` is False then `yaw_or_rate` is interpreted as angle in degrees which means you want vehicle to rotate to specific angle (i.e. yaw) and keep that angle while moving. 
+`yaw_mode` is a struct `YawMode` with two fields, `yaw_or_rate` and `is_rate`. If `is_rate` field is True then `yaw_or_rate` field is interpreted as angular velocity in degrees/sec which means you want vehicle to rotate continuously around its axis at that angular velocity while moving. If `is_rate` is False then `yaw_or_rate` is interpreted as angle in degrees which means you want vehicle to rotate to specific angle (i.e. yaw) and keep that angle while moving.
 
 You can probably see that when `yaw_mode.is_rate == true`, the `drivetrain` parameter shouldn't be set to `ForwardOnly` because you are contradicting by saying that keep front pointing ahead but also rotate continuously. However if you have `yaw_mode.is_rate = false` in `ForwardOnly` mode then you can do some funky stuff. For example, you can have drone do circles and have yaw_or_rate set to 90 so camera is always pointed to center ("super cool selfie mode"). In `MaxDegreeofFreedom` also you can get some funky stuff by setting `yaw_mode.is_rate = true` and say `yaw_mode.yaw_or_rate = 20`. This will cause drone to go in its path while rotating which may allow to do 360 scanning.
 
-In most cases, you just don't want yaw to change which you can do by setting yaw rate of 0. The shorthand for this is `airsim.YawMode.Zero()` (or in C++: `YawMode::Zero()`). 
+In most cases, you just don't want yaw to change which you can do by setting yaw rate of 0. The shorthand for this is `airsim.YawMode.Zero()` (or in C++: `YawMode::Zero()`).
 
 #### lookahead and adaptive_lookahead
 When you ask vehicle to follow a path, AirSim uses "carrot following" algorithm. This algorithm operates by looking ahead on path and adjusting its velocity vector. The parameters for this algorithm is specified by `lookahead` and `adaptive_lookahead`. For most of the time you want algorithm to auto-decide the values by simply setting `lookahead = -1` and `adaptive_lookahead = 0`.
 
 ## Using APIs on Real Vehicles
-We want to be able to run *same code* that runs in simulation as on real vehicle. This allows you to test your code in simulator and deploy to real vehicle. 
+We want to be able to run *same code* that runs in simulation as on real vehicle. This allows you to test your code in simulator and deploy to real vehicle.
 
 Generally speaking, APIs therefore shouldn't allow you to do something that cannot be done on real vehicle (for example, getting the ground truth). But, of course, simulator has much more information and it would be useful in applications that may not care about running things on real vehicle. For this reason, we clearly delineate between sim-only APIs by attaching `sim` prefix, for example, `simGetGroundTruthKinematics`. This way you can avoid using these simulation-only APIs if you care about running your code on real vehicles.
 
@@ -275,3 +275,7 @@ conda install opencv
 pip install opencv-python
 ```
 
+#### TypeError: unsupported operand type(s) for *: 'AsyncIOLoop' and 'float'
+
+This error happens if you install Jupyter, which somehow breaks the msgpackrpc library.  Create a new python environment
+which the minimal required packages.
