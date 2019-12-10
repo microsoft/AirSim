@@ -6,7 +6,7 @@ To use an XBox controller with AirSim follow these steps:
 
 ![Gamecontrollers](images/game_controllers.png)
 
-2. Launch QGroundControl and you should see a new Joystick tab under stettings:
+2. Launch QGroundControl and you should see a new Joystick tab under settings:
 
 ![Gamecontrollers](images/qgc_joystick.png)
 
