@@ -263,7 +263,7 @@ public: //types
         // the "ground control station" channel.
         // So set this to empty string to disable this separate command channel.
         std::string control_ip_address = "127.0.0.1";
-        int control_port = 14540;
+        int control_port = 14580;
 
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
         int logviewer_ip_port = 14388;

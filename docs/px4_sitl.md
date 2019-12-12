@@ -36,7 +36,7 @@ The default ports have changed recently, so check them closely to make sure AirS
     list of commands you can enter here.  They are mostly low level PX4
     commands, but some of them can be useful for debugging.
 
-5. Now edit [AirSim settings](settings.md) file to make sure you have matching UDP port settings:
+5. Now edit [AirSim settings](settings.md) file to make sure you have matching UDP and TCP port settings:
     ```json
     {
         "SettingsVersion": 1.2,
