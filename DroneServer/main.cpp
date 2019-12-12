@@ -11,7 +11,7 @@ using namespace std;
 using namespace msr::airlib;
 
 /*
-    This is a sample code demonstrating how to deploy rpc server on-board 
+    This is a sample code demonstrating how to deploy rpc server on-board
     real drone so we can use same APIs on real vehicle that we used in simulation.
     This demonstration is designed for PX4 powered drone.
 */
@@ -32,7 +32,7 @@ int main(int argc, const char* argv[])
         std::cout << "WARNING: This is not simulation!" << std::endl;
 
     AirSimSettings::MavLinkConnectionInfo connection_info;
-    
+
     // read settings and override defaults
     auto settings_full_filepath = Settings::getUserDirectoryFullPath("settings.json");
     Settings& settings = Settings::singleton().loadJSonFile(settings_full_filepath);
@@ -57,8 +57,8 @@ int main(int argc, const char* argv[])
         connection_info.qgc_ip_address = child.getString("QgcHostIp", connection_info.qgc_ip_address);
         connection_info.qgc_ip_port = child.getInt("QgcPort", connection_info.qgc_ip_port);
 
-        connection_info.gcs_address = child.getString("GroundControlIp", connection_info.gcs_address);
-        connection_info.gcs_port = child.getInt("GroundControlPort", connection_info.gcs_port);
+        connection_info.control_ip_address = child.getString("ControlIp", connection_info.control_ip_address);
+        connection_info.control_port = child.getInt("ControlPort", connection_info.control_port);
 
         connection_info.local_host_ip = child.getString("LocalHostIp", connection_info.local_host_ip);
 
@@ -85,13 +85,13 @@ int main(int argc, const char* argv[])
     ApiProvider api_provider(nullptr);
     api_provider.insert_or_assign("", &api, nullptr);
     msr::airlib::MultirotorRpcLibServer server(&api_provider, connection_info.local_host_ip);
-    
+
     //start server in async mode
     server.start(false, 4);
 
     if (connection_info.use_tcp) {
         std::cout << "Server connected to MavLink TCP endpoint at " << connection_info.local_host_ip << ":" << connection_info.tcp_port << std::endl;
-    } 
+    }
     else {
         std::cout << "Server connected to MavLink UDP endpoint at " << connection_info.local_host_ip << ":" << connection_info.udp_port << std::endl;
     }
@@ -105,7 +105,7 @@ int main(int argc, const char* argv[])
             for (const auto& message : messages) {
                 std::cout << message << std::endl;
             }
-        }        
+        }
 
         constexpr static std::chrono::milliseconds MessageCheckDurationMillis(100);
         std::this_thread::sleep_for(MessageCheckDurationMillis);

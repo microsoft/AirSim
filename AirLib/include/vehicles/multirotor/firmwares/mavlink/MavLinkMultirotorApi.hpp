@@ -59,7 +59,7 @@ public: //methods
         is_simulation_mode_ = is_simulation;
 
         try {
-            openAllConnections(); 
+            openAllConnections();
             is_ready_ = true;
         }
         catch (std::exception& ex) {
@@ -166,7 +166,7 @@ public: //methods
     virtual bool isReady(std::string& message) const override
     {
         if (!is_ready_ && is_ready_message_.size() > 0) {
-            message = is_ready_message_;            
+            message = is_ready_message_;
         }
         return is_ready_;
     }
@@ -463,7 +463,7 @@ public: //methods
     }
     virtual float getTakeoffZ() const override
     {
-        // pick a number, PX4 doesn't have a fixed limit here, but 3 meters is probably safe 
+        // pick a number, PX4 doesn't have a fixed limit here, but 3 meters is probably safe
         // enough to get out of the backwash turbulence.  Negative due to NED coordinate system.
         return -3.0f;
     }
@@ -698,7 +698,7 @@ private: //methods
     {
         if (is_hil_mode_set_ && connection_ != nullptr && mav_vehicle_ != nullptr) {
 
-            // remove MAV_MODE_FLAG_HIL_ENABLED flag from current mode 
+            // remove MAV_MODE_FLAG_HIL_ENABLED flag from current mode
             std::lock_guard<std::mutex> guard(set_mode_mutex_);
             int mode = mav_vehicle_->getVehicleState().mode;
             mode &= ~static_cast<int>(mavlinkcom::MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
@@ -721,7 +721,7 @@ private: //methods
 
         checkValidVehicle();
 
-        // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode 
+        // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode
         std::lock_guard<std::mutex> guard(set_mode_mutex_);
         int mode = mav_vehicle_->getVehicleState().mode;
         mode |= static_cast<int>(mavlinkcom::MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
@@ -798,7 +798,7 @@ private: //methods
             }
         }
         else {
-            //this applies to PX4 and may work differently on other firmwares. 
+            //this applies to PX4 and may work differently on other firmwares.
             //We use 0.2 as idle rotors which leaves out range of 0.8
             for (size_t i = 0; i < Utils::length(rotor_controls_); ++i) {
                 rotor_controls_[i] = Utils::clip(0.8f * rotor_controls_[i] + 0.20f, 0.0f, 1.0f);
@@ -957,7 +957,7 @@ private: //methods
         }
         else if (connection_info.udp_address.size() > 0) {
             if (connection_info.udp_port == 0) {
-                throw std::invalid_argument("UdpPort setting has an invalid value."); 
+                throw std::invalid_argument("UdpPort setting has an invalid value.");
             }
 
             connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, connection_info.udp_address, connection_info.udp_port);
@@ -984,22 +984,22 @@ private: //methods
 
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
 
-        if (connection_info_.gcs_address != "") {
-            if (connection_info_.gcs_port == 0) {
-                throw std::invalid_argument("GroundControlPort setting has an invalid value.");
+        if (connection_info_.control_ip_address != "") {
+            if (connection_info_.control_port == 0) {
+                throw std::invalid_argument("ControlPort setting has an invalid value.");
             }
 
             // The PX4 SITL mode app cannot receive commands to control the drone over the same HIL mavlink connection.
             // The HIL mavlink connection can only handle HIL_SENSOR messages.  This separate channel is needed for
             // everything else.
-            addStatusMessage(Utils::stringf("Connecting to PX4 Ground Control UDP port %d, local IP %s, remote IP...",
-                connection_info_.gcs_port, connection_info_.local_host_ip.c_str(), connection_info_.gcs_address.c_str()));
+            addStatusMessage(Utils::stringf("Connecting to PX4 Control UDP port %d, local IP %s, remote IP...",
+                connection_info_.control_port, connection_info_.local_host_ip.c_str(), connection_info_.control_ip_address.c_str()));
 
             // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
             std::this_thread::sleep_for(std::chrono::seconds(2));
 
             auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
-                connection_info_.local_host_ip, connection_info_.gcs_address, connection_info_.gcs_port);
+                connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
             mav_vehicle_->connect(gcsConnection);
 
             addStatusMessage(std::string("Ground control connected over UDP."));
@@ -1420,7 +1420,7 @@ private: //variables
     static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
     static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
     static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
-    static const int messageReceivedTimeout = 10; ///< Seconds 
+    static const int messageReceivedTimeout = 10; ///< Seconds
 
     std::shared_ptr<mavlinkcom::MavLinkNode> logviewer_proxy_, logviewer_out_proxy_, qgc_proxy_;
 
