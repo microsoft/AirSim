@@ -14,7 +14,7 @@ Now calibrate the radio, and setup some handy button actions.  For example, I se
 the 'A' button arms the drone, 'B' put it in manual flight mode, 'X' puts it in altitude hold mode
 and 'Y' puts it in position hold mode.  I also prefer the feel of the controller when I check the
 box labelled "Use exponential curve on roll,pitch, yaw" because this gives me more sensitivity for
-small movements.]
+small movements.
 
 QGroundControl will find your Pixhawk via the UDP proxy port 14550 setup by MavLinkTest above.
 AirSim will find your Pixhawk via the other UDP server port 14570 also setup by MavLinkTest above.
