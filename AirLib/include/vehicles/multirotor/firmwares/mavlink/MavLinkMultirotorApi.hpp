@@ -1016,6 +1016,7 @@ private: //methods
                 mav_vehicle_->connect(connection_);
             }
 
+            connected_ = true;
             mav_vehicle_->startHeartbeat();
         }
     }
