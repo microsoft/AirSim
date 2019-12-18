@@ -35,20 +35,19 @@ matrix:
 # docker exec xenial apt-get -y install clang libclang-3.8-dev;
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      docker pull ubuntu:xenial;
-      docker run -d --name xenial -dti ubuntu:xenial bash;
+      docker pull ubuntu:bionic;
+      docker run -d --name bionic -dti ubuntu:bionic bash;
       docker ps -a;
-      docker exec xenial mkdir /build;
-      docker cp . xenial:/build;
-      docker exec xenial apt-get update;
-      docker exec xenial apt-get -y upgrade;
-      docker exec xenial apt-get -y install git wget unzip sudo;
-      docker exec xenial apt-get -y install build-essential software-properties-common cmake;
-      docker exec xenial apt-get update;
+      docker exec bionic mkdir /build;
+      docker cp . bionic:/build;
+      docker exec bionic apt-get update;
+      docker exec bionic apt-get -y upgrade;
+      docker exec bionic apt-get -y install git wget unzip sudo;
+      docker exec bionic apt-get -y install build-essential software-properties-common cmake rsync;
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-      echo "No install osx actions--using repo";
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
       echo "No install Windows actions--using repo";
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
+      echo "No install osx actions--using repo";
     fi
 
 before_install:
@@ -61,8 +60,8 @@ before_install:
 #docker exec xenial /bin/sh -c "export EIGEN3_INCLUDE_DIR=/build/eigen/eigen3 && cd /build/cmake && sh ./build.sh && cmake . && make";
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      docker exec -t xenial /build/setup.sh;
-      docker exec -t xenial /build/build.sh;
+      docker exec -t bionic /build/setup.sh;
+      docker exec -t bionic /build/build.sh;
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
       .\\build.cmd;
       .\\Unity\\build.cmd;
