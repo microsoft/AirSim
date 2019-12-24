@@ -324,10 +324,10 @@ private:
         const Wrench body_wrench = getBodyWrench(body, current.pose.orientation);
 
         if (body.isGrounded()) {
-            // make it stick to the ground until we see body wrench force greater than gravity.
+            // make it stick to the ground until we see body wrench specific force greater than gravity.
             float normalizedForce = body_wrench.force.squaredNorm();
             float normalizedGravity = body.getEnvironment().getState().gravity.squaredNorm();
-            if (normalizedForce >= normalizedGravity)
+            if (normalizedForce/body.getMass()/body.getMass() >= normalizedGravity)
             {
                 //throttledLogOutput("*** Losing ground lock due to body_wrench " + VectorMath::toString(body_wrench.force), 0.1);
 				body.setGrounded(false);
