@@ -47,12 +47,13 @@ if $gccBuild; then
     # variable for build output
     build_dir=build_gcc_debug
     # gcc tools
-    gcc_ver=$(gcc -dumpfullversion)
-    gcc_path=$(which cmake)
-    if [[ "$gcc_path" == "" ]] ; then
+    if ! which gcc; then
         echo "ERROR: run setup.sh to install a good version of gcc."
         exit 1
+    else
+        gcc_ver=$(gcc -dumpfullversion)
     fi
+
     if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
         export CC="gcc-6"
         export CXX="g++-6"
