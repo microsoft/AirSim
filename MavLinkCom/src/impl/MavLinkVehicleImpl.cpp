@@ -547,7 +547,8 @@ AsyncResult<bool> MavLinkVehicleImpl::returnToHome()
 bool MavLinkVehicleImpl::getRcSwitch(int channel, float threshold)
 {
     if (threshold < -1 || threshold > 1) {
-        throw std::runtime_error(Utils::stringf("RC channel threshold is out of range, expecting -1 < threshold < 1, but got %f", threshold));
+        auto msg = Utils::stringf("RC channel threshold is out of range, expecting -1 < threshold < 1, but got %f", threshold);
+        throw std::runtime_error(msg);
     }
     // if threshold < 0 then the threshold is inverted.
     if (channel > 0 && channel < 18) {
@@ -740,7 +741,7 @@ bool MavLinkVehicleImpl::isLocalControlSupported()
     MavLinkAutopilotVersion cap;
     assertNotPublishingThread();
     if (!getCapabilities().wait(2000, &cap)) {
-        throw std::runtime_error(Utils::stringf("Two second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"));
+        throw std::runtime_error("Two second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES");
     }
     return (cap.capabilities & static_cast<int>(MAV_PROTOCOL_CAPABILITY::MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED)) != 0;
 }
@@ -841,7 +842,7 @@ bool MavLinkVehicleImpl::isAttitudeControlSupported()
     MavLinkAutopilotVersion cap;
     assertNotPublishingThread();
     if (!getCapabilities().wait(5000, &cap)) {
-        throw std::runtime_error(Utils::stringf("Five second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"));
+        throw std::runtime_error("Five second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES");
     }
     return (cap.capabilities & static_cast<int>(MAV_PROTOCOL_CAPABILITY::MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET)) != 0;
 }

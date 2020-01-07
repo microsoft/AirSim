@@ -87,7 +87,8 @@ public:
 		std::string serviceName = std::to_string(port);
 		int rc = getaddrinfo(ipAddress.c_str(), serviceName.c_str(), &hints, &result);
 		if (rc != 0) {
-			throw std::runtime_error(Utils::stringf("TcpClientPort getaddrinfo failed with error: %d\n", rc));
+            auto msg = Utils::stringf("TcpClientPort getaddrinfo failed with error: %d\n", rc);
+			throw std::runtime_error(msg);
 		}
 		for (struct addrinfo *ptr = result; ptr != NULL; ptr = ptr->ai_next)
 		{
@@ -105,7 +106,8 @@ public:
 
 		freeaddrinfo(result);
 		if (!found) {
-			throw std::runtime_error(Utils::stringf("TcpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port));
+            auto msg = Utils::stringf("TcpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port);
+			throw std::runtime_error(msg);
 		}
 	}
 
@@ -122,13 +124,15 @@ public:
 		if (rc < 0)
 		{
             int hr = GetSocketError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
+            auto msg = Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		rc = ::connect(sock, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen);
 		if (rc != 0) {
             int hr = GetSocketError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket connect failed with error: %d\n", hr));
+            auto msg = Utils::stringf("TcpClientPort socket connect failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		closed_ = false;
@@ -147,7 +151,8 @@ public:
 		if (rc < 0)
 		{
             int hr = GetSocketError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
+            auto msg = Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		// start listening for incoming connection
@@ -155,14 +160,16 @@ public:
 		if (rc < 0)
 		{
             int hr = GetSocketError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket listen failed with error: %d\n", hr));
+            auto msg = Utils::stringf("TcpClientPort socket listen failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		// accept 1
 		sock = ::accept(accept_sock, reinterpret_cast<sockaddr*>(&remoteaddr), &addrlen);
 		if (sock == INVALID_SOCKET) {
             int hr = GetSocketError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort accept failed with error: %d\n", hr));
+            auto msg = Utils::stringf("TcpClientPort accept failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 #ifdef _WIN32
@@ -186,14 +193,16 @@ public:
         int fd = static_cast<int>(sock);
         int flags = fcntl(fd, F_GETFL, 0);
         if (flags == -1) {
-			throw std::runtime_error(Utils::stringf("fcntl failed with error: %d\n", errno));
+            auto msg = Utils::stringf("fcntl failed with error: %d\n", errno);
+			throw std::runtime_error(msg);
 		}
         flags |= O_NONBLOCK;
         int rc = fcntl(fd, F_SETFL, flags);
 #endif
         if (rc != 0) {
             rc = GetSocketError();
-            throw std::runtime_error(Utils::stringf("TcpClientPort setNonBlocking failed with error: %d\n", rc));
+            auto msg = Utils::stringf("TcpClientPort setNonBlocking failed with error: %d\n", rc);
+            throw std::runtime_error(msg);
         }
     }
 
@@ -210,7 +219,8 @@ public:
         if (rc != 0)
         {
             rc = GetSocketError();
-            throw std::runtime_error(Utils::stringf("TcpClientPort set TCP_NODELAY failed: %d\n", rc));
+            auto msg = Utils::stringf("TcpClientPort set TCP_NODELAY failed: %d\n", rc);
+            throw std::runtime_error(msg);
         }
     }
 
@@ -222,7 +232,8 @@ public:
 		if (hr == SOCKET_ERROR)
 		{
             hr = checkerror();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket send failed with error: %d\n", hr));
+            auto msg = Utils::stringf("TcpClientPort socket send failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		return hr;

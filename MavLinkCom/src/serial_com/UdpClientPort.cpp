@@ -85,7 +85,8 @@ public:
 		std::string serviceName = std::to_string(port);
 		int rc = getaddrinfo(ipAddress.c_str(), serviceName.c_str(), &hints, &result);
 		if (rc != 0) {
-			throw std::runtime_error(Utils::stringf("UdpClientPort getaddrinfo failed with error: %d\n", rc));
+            auto msg = Utils::stringf("UdpClientPort getaddrinfo failed with error: %d\n", rc);
+			throw std::runtime_error(msg);
 		}
 		for (struct addrinfo *ptr = result; ptr != NULL; ptr = ptr->ai_next)
 		{
@@ -103,8 +104,8 @@ public:
 
 		freeaddrinfo(result);
 		if (!found) {
-
-			throw std::runtime_error(Utils::stringf("UdpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port));
+            auto msg = Utils::stringf("UdpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port);
+			throw std::runtime_error(msg);
 		}
 	}
 
@@ -129,7 +130,8 @@ public:
 		if (rc < 0)
 		{
 			int hr = GetSocketError();
-			throw std::runtime_error(Utils::stringf("UdpClientPort socket bind failed with error: %d\n", hr));
+            auto msg = Utils::stringf("UdpClientPort socket bind failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 			return hr;
 		}
 
@@ -140,8 +142,9 @@ public:
 			if (rc < 0)
 			{
 				int hr = GetSocketError();
-				throw std::runtime_error(Utils::stringf("UdpClientPort socket could not connect to remote host at %s:%d, error: %d\n", 
-					remoteHost.c_str(), remotePort, hr));
+                auto msg = Utils::stringf("UdpClientPort socket could not connect to remote host at %s:%d, error: %d\n",
+                    remoteHost.c_str(), remotePort, hr);
+				throw std::runtime_error(msg);
 				return hr;
 			}
 		}
@@ -186,7 +189,8 @@ public:
 			hr = checkerror();
 			// perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
 			remoteaddr.sin_port = 0;
-			throw std::runtime_error(Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr));
+            auto msg = Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		return hr;

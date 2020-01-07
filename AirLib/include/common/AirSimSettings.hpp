@@ -268,7 +268,7 @@ public: //types
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
         int logviewer_ip_port = 14388;
         int logviewer_ip_sport = 14389; // for logging all messages we send to the vehicle.
-        std::string logviewer_ip_address = "127.0.0.1";
+        std::string logviewer_ip_address = "";
 
         // The QGroundControl app can be on a different machine, and AirSim can act as a proxy to forward
         // the mavlink stream over to that machine if you configure it's ip address and port here.
