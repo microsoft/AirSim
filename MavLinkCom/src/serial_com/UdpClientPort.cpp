@@ -23,6 +23,9 @@ using namespace mavlink_utils;
 
 typedef int socklen_t;
 static bool socket_initialized_ = false;
+inline int GetSocketError() {
+    return WSAGetLastError();
+}
 #else
 
 // posix
@@ -39,7 +42,7 @@ typedef int SOCKET;
 const int INVALID_SOCKET = -1;
 const int ERROR_ACCESS_DENIED = EACCES;
 
-inline int WSAGetLastError() {
+inline int GetSocketError() {
 	return errno;
 }
 const int SOCKET_ERROR = -1;
@@ -82,7 +85,8 @@ public:
 		std::string serviceName = std::to_string(port);
 		int rc = getaddrinfo(ipAddress.c_str(), serviceName.c_str(), &hints, &result);
 		if (rc != 0) {
-			throw std::runtime_error(Utils::stringf("UdpClientPort getaddrinfo failed with error: %d\n", rc));
+            auto msg = Utils::stringf("UdpClientPort getaddrinfo failed with error: %d\n", rc);
+			throw std::runtime_error(msg);
 		}
 		for (struct addrinfo *ptr = result; ptr != NULL; ptr = ptr->ai_next)
 		{
@@ -100,8 +104,8 @@ public:
 
 		freeaddrinfo(result);
 		if (!found) {
-
-			throw std::runtime_error(Utils::stringf("UdpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port));
+            auto msg = Utils::stringf("UdpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port);
+			throw std::runtime_error(msg);
 		}
 	}
 
@@ -125,8 +129,9 @@ public:
 		int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
-			throw std::runtime_error(Utils::stringf("UdpClientPort socket bind failed with error: %d\n", hr));
+			int hr = GetSocketError();
+            auto msg = Utils::stringf("UdpClientPort socket bind failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 			return hr;
 		}
 
@@ -136,15 +141,32 @@ public:
 			rc = ::connect(sock, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen); 
 			if (rc < 0)
 			{
-				int hr = WSAGetLastError();
-				throw std::runtime_error(Utils::stringf("UdpClientPort socket could not connect to remote host at %s:%d, error: %d\n", 
-					remoteHost.c_str(), remotePort, hr));
+				int hr = GetSocketError();
+                auto msg = Utils::stringf("UdpClientPort socket could not connect to remote host at %s:%d, error: %d\n",
+                    remoteHost.c_str(), remotePort, hr);
+				throw std::runtime_error(msg);
 				return hr;
 			}
 		}
 		closed_ = false;
 		return 0;
 	}
+
+    int checkerror() {
+        int hr = GetSocketError();
+#ifdef _WIN32
+        if (hr == WSAECONNRESET)
+        {
+            close();
+        }
+#else
+        if (hr == ECONNREFUSED || hr == ENOTCONN)
+        {
+            close();
+        }
+#endif
+        return hr;
+    }
 
 	// write to the serial port
 	int write(const uint8_t* ptr, int count)
@@ -164,10 +186,11 @@ public:
 		#endif
 		if (hr == SOCKET_ERROR)
 		{
-			hr = WSAGetLastError();
+			hr = checkerror();
 			// perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
 			remoteaddr.sin_port = 0;
-			throw std::runtime_error(Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr));
+            auto msg = Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		return hr;
@@ -186,13 +209,13 @@ public:
 			int rc = recvfrom(sock, reinterpret_cast<char*>(result), bytesToRead, 0, reinterpret_cast<sockaddr*>(&other), &addrlen);
 			if (rc < 0)
 			{
-				int hr = WSAGetLastError();
+                int hr = checkerror();
 #ifdef _WIN32
 				if (hr == WSAEMSGSIZE)
 				{
 					// message was too large for the buffer, no problem, return what we have.
 				}
-				else if (hr == WSAECONNRESET || hr == ERROR_IO_PENDING)
+				else if (hr == ERROR_IO_PENDING)
 				{
 					// try again - this can happen if server recreates the socket on their side.
 					continue;
@@ -206,10 +229,6 @@ public:
 				if (hr == EINTR)
 				{
 					// skip this, it is was interrupted, and if user is closing the port closed_ will be true.
-					continue;
-				}
-				else if (hr == ECONNRESET) {
-					// try again - this can happen if server recreates the socket on their side.
 					continue;
 				}
 				else
@@ -235,7 +254,6 @@ public:
 
 			if (rc == 0)
 			{
-				//printf("Connection closed\n");
 				return -1;
 			}
 			else

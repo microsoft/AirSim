@@ -103,8 +103,10 @@ void ASimModeBase::checkVehicleReady()
         if (api) { //sim-only vehicles may have api as null
             std::string message;
             if (!api->isReady(message)) {
-                UAirBlueprintLib::LogMessage("Vehicle %s was not initialized: ", 
-                    "", LogDebugLevel::Failure); //TODO: add vehicle name in message
+                UAirBlueprintLib::LogMessage("Vehicle was not initialized", "", LogDebugLevel::Failure);
+                if (message.size() > 0) {
+                    UAirBlueprintLib::LogMessage(message.c_str(), "", LogDebugLevel::Failure);
+                }
                 UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
             }
         }

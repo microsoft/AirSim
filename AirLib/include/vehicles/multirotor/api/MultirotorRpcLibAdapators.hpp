@@ -47,8 +47,10 @@ public:
         uint64_t timestamp;
         LandedState landed_state;
         RCData rc_data;
+        bool ready;
+        std::string ready_message;
         std::vector<std::string> controller_messages;
-
+        bool can_arm;
 
         MSGPACK_DEFINE_MAP(collision, kinematics_estimated, gps_location, timestamp, landed_state, rc_data);
 
@@ -63,12 +65,15 @@ public:
             timestamp = s.timestamp;
             landed_state = s.landed_state;
             rc_data = RCData(s.rc_data);
+            ready = s.ready;
+            ready_message = s.ready_message;
+            can_arm = s.can_arm;
         }
 
         msr::airlib::MultirotorState to() const
         {
             return msr::airlib::MultirotorState(collision.to(), kinematics_estimated.to(), 
-                gps_location.to(), timestamp, landed_state, rc_data.to());
+                gps_location.to(), timestamp, landed_state, rc_data.to(), ready, ready_message, can_arm);
         }
     };
 };

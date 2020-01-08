@@ -1,0 +1,5 @@
+param set LPE_LAT 47.641468
+param set LPE_LON -122.140165
+param set COM_OBL_ACT 1
+param set NAV_RCL_ACT 0
+param set NAV_DLL_ACT 0

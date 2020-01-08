@@ -102,9 +102,9 @@ bool MavLinkVideoClientImpl::readNextFrame(MavLinkVideoClient::MavLinkVideoFrame
 void MavLinkVideoClientImpl::requestVideo(int camera_id, float every_n_sec, bool save_locally)
 {
     MavCmdDoControlVideo cmd{};
-    cmd.CameraId = static_cast<float>(camera_id);
+    cmd.Id = static_cast<float>(camera_id);
     cmd.Transmission = 1.0f;
-    cmd.TransmissionMode = every_n_sec;
+    cmd.Interval = every_n_sec;
     cmd.Recording = save_locally ? 1.0f : 0.0f;
     sendCommand(cmd);
 }

@@ -30,6 +30,7 @@ STRICT_MODE_OFF
 
 #include "api/RpcLibAdapatorsBase.hpp"
 #include <functional>
+#include <thread>
 
 STRICT_MODE_ON
 
@@ -48,7 +49,26 @@ struct RpcLibServerBase::impl {
     ~impl() {
     }
 
+    void stop() {        
+        server.close_sessions();
+        if (!is_async_) {
+            // this deadlocks UI thread if async_run was called while there are pending rpc calls.
+            server.stop();
+        }
+    }
+
+    void run(bool block, std::size_t thread_count)
+    {
+        if (block) {
+            server.run();
+        } else {
+            is_async_ = true;
+            server.async_run(thread_count);   //4 threads
+        }
+    }
+
     rpc::server server;
+    bool is_async_ = false;
 };
 
 typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
@@ -311,15 +331,12 @@ RpcLibServerBase::~RpcLibServerBase()
 
 void RpcLibServerBase::start(bool block, std::size_t thread_count)
 {
-    if (block)
-        pimpl_->server.run();
-    else
-        pimpl_->server.async_run(thread_count);   //4 threads
+    pimpl_->run(block, thread_count);
 }
 
 void RpcLibServerBase::stop()
 {
-    pimpl_->server.stop();
+    pimpl_->stop();
 }
 
 void* RpcLibServerBase::getServer() const
