@@ -6,7 +6,6 @@
 #include <windows.h> // SetThreadPriority and GetCurrentThread
 #else
 #include <pthread.h>
-#include <sys/prctl.h>
 #endif
 
 using namespace mavlink_utils;
