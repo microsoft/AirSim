@@ -60,13 +60,19 @@ if $gccBuild; then
 else
     # llvm tools
     if [ "$(uname)" == "Darwin" ]; then # osx
-        brew update
 
-        # brew install llvm@3.9
-        brew tap llvm-hs/homebrew-llvm
-        brew install llvm-5.0
-        export C_COMPILER=/usr/local/opt/llvm-5.0/bin/clang-5.0
-        export COMPILER=/usr/local/opt/llvm-5.0/bin/clang++-5.0
+        if [[ -n $CIINSTALL ]]; then # use downloaded binaries on Travis
+            export C_COMPILER=${LLVM_DIR}/bin/clang
+            export COMPILER=${LLVM_DIR}/bin/clang++
+        else
+            brew update
+
+            # brew install llvm@3.9
+            brew tap llvm-hs/homebrew-llvm
+            brew install llvm-5.0
+            export C_COMPILER=/usr/local/opt/llvm-5.0/bin/clang-5.0
+            export COMPILER=/usr/local/opt/llvm-5.0/bin/clang++-5.0
+        fi
 
     else #linux
         #install clang and build tools

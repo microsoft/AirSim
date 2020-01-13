@@ -9,8 +9,13 @@ fi
 
 
 cd linux-build;
-export CC="clang-5.0"
-export CXX="clang++-5.0"
+if [[ -n $CIINSTALL ]]; then # use downloaded binaries on Travis
+    export CC=${LLVM_DIR}/bin/clang
+    export CXX=${LLVM_DIR}/bin/clang++
+else
+    export CC="clang-5.0"
+    export CXX="clang++-5.0"
+fi
 
 if [ "$(uname)" == "Darwin" ]; then
     CMAKE="$(greadlink -f ../../cmake_build/bin/cmake)"
@@ -25,7 +30,7 @@ if [ ! -d "../UnityDemo/Assets/Plugins" ]; then
 fi
 
 if [ "$(uname)" == "Darwin" ]; then
-	cp AirsimWrapper.bundle ../UnityDemo/Assets/Plugins;
+	cp -r AirsimWrapper.bundle ../UnityDemo/Assets/Plugins;
 else
 	cp libAirsimWrapper.so ../UnityDemo/Assets/Plugins;
 fi
