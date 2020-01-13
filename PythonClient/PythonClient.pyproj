@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>computer_vision\character_control.py</StartupFile>
+    <StartupFile>multirotor\land.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -58,7 +58,27 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\setup_path.py" />
+    <Compile Include="Flask_Icd\falskICD.py" />
+    <Compile Include="icd_multirotor\gimbal.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="icd_multirotor\land.py" />
+    <Compile Include="icd_multirotor\moveToPosition.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="icd_multirotor\rotateToYaw.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="icd_multirotor\setup_path.py" />
+    <Compile Include="icd_multirotor\takeoff.py" />
+    <Compile Include="imitation_learning\Cooking.py" />
+    <Compile Include="imitation_learning\cook_data.py" />
+    <Compile Include="imitation_learning\drive_model.py" />
+    <Compile Include="imitation_learning\Generator.py" />
+    <Compile Include="imitation_learning\setup_path.py" />
+    <Compile Include="imitation_learning\train_model.py" />
     <Compile Include="multirotor\gimbal.py" />
+    <Compile Include="multirotor\hello_drone.py" />
     <Compile Include="multirotor\land.py" />
     <Compile Include="car\pause_continue_car.py">
       <SubType>Code</SubType>
@@ -96,7 +116,6 @@
     <Compile Include="multirotor\disarm.py" />
     <Compile Include="multirotor\DQNdrone.py" />
     <Compile Include="multirotor\drone_stress_test.py" />
-    <Compile Include="multirotor\hello_drone.py" />
     <Compile Include="multirotor\orbit.py" />
     <Compile Include="multirotor\path.py" />
     <Compile Include="multirotor\pause_continue_drone.py" />
@@ -116,10 +135,52 @@
     <Folder Include="airsim\" />
     <Folder Include="car\" />
     <Folder Include="computer_vision\" />
+    <Folder Include="Flask_Icd\" />
+    <Folder Include="Flask_Icd\static\" />
+    <Folder Include="Flask_Icd\static\content\" />
+    <Folder Include="Flask_Icd\static\fonts\" />
+    <Folder Include="Flask_Icd\static\scripts\" />
+    <Folder Include="Flask_Icd\templates\" />
+    <Folder Include="Flask_Icd\__pycache__\" />
+    <Folder Include="imitation_learning\" />
     <Folder Include="multirotor\" />
+    <Folder Include="icd_multirotor\" />
     <Folder Include="ros\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Flask_Icd\commandline.txt" />
+    <Content Include="Flask_Icd\static\content\bootstrap.css" />
+    <Content Include="Flask_Icd\static\content\bootstrap.min.css" />
+    <Content Include="Flask_Icd\static\content\customStyle.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Flask_Icd\static\content\site.css" />
+    <Content Include="Flask_Icd\static\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Flask_Icd\static\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Flask_Icd\static\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Flask_Icd\static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Flask_Icd\static\scripts\bootstrap.js" />
+    <Content Include="Flask_Icd\static\scripts\bootstrap.min.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery-1.10.2.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery-1.10.2.min.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery-1.10.2.min.map" />
+    <Content Include="Flask_Icd\static\scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery.validate.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery.validate.min.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Flask_Icd\static\scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Flask_Icd\static\scripts\modernizr-2.6.2.js" />
+    <Content Include="Flask_Icd\static\scripts\postRequest.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Flask_Icd\static\scripts\respond.js" />
+    <Content Include="Flask_Icd\static\scripts\respond.min.js" />
+    <Content Include="Flask_Icd\static\scripts\_references.js" />
+    <Content Include="Flask_Icd\templates\index.html" />
+    <Content Include="Flask_Icd\templates\layout.html" />
+    <Content Include="Flask_Icd\__pycache__\falskICD.cpython-38.pyc" />
+    <Content Include="imitation_learning\README.md" />
     <Content Include="install_packages.bat">
       <SubType>Code</SubType>
     </Content>

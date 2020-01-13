@@ -11,24 +11,30 @@ import tempfile
 
 pp = pprint.PrettyPrinter(indent=4)
 
-client = airsim.VehicleClient()
-client.confirmConnection()
 
-airsim.wait_key('Press any key to set camera-0 gimble to 45-degree pitch')
+client = airsim.MultirotorClient()
+client.confirmConnection()
+client.enableApiControl(True)
+client.armDisarm(True)
+
 client.simSetCameraOrientation("0", airsim.to_quaternion(0.261799 *3, 0, 0)); #radians
 
-airsim.wait_key('Press any key to get camera parameters')
-for camera_name in range(5):
-    camera_info = client.simGetCameraInfo(str(camera_name))
-    print("CameraInfo %d: %s" % (camera_name, pp.pprint(camera_info)))
 
-airsim.wait_key('Press any key to get images')
+landed = client.getMultirotorState().landed_state
+if landed == airsim.LandedState.Landed:
+    print("taking off...")
+    client.takeoffAsync().join()
+else:
+    print("already flying...")
+    client.hoverAsync().join()
+
+
 tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_drone")
 print("path: %s" % tmp_dir)
 
 for x in range(3): # do few times
     z = x * -20 - 5 # some random number
-    client.simSetVehiclePose(airsim.Pose(airsim.Vector3r(z, z, z), airsim.to_quaternion(x / 3.0, 0, x / 3.0)), True)
+ #   client.simSetVehiclePose(airsim.Pose(airsim.Vector3r(z, z, z), airsim.to_quaternion(x / 3.0, 0, x / 3.0)), True)
 
     responses = client.simGetImages([
         airsim.ImageRequest("0", airsim.ImageType.DepthVis),
@@ -55,4 +61,3 @@ for x in range(3): # do few times
     time.sleep(3)
 
 # currently reset() doesn't work in CV mode. Below is the workaround
-client.simSetVehiclePose(airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0, 0, 0)), True)

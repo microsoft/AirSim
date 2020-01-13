@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        {% for post in posts %}
+
+        <!--<h1>{{post.title}}</h1>
+    <p>{{post.author}}</p>
+    <p></p>-->
+        <!--<form>
+        <div class="form-group">
+            <label for="exampleFormControlFile1">Takeoff</label>
+            <button type="button" class="btn btn-primary">{{post.content}}</button>
+        </div>
+    </form>-->
+        {% endfor %}
+
+
+
+        <input type="button" id="takeoffbtn" value="Take Off" class="btn btn-primary" />
+        <input type="button" id="landbtn" value="Land" class="btn btn-primary" />
+        <form class="form-inline">
+            <div class="form-group mb-2">
+                <label for="textX">X:</label>
+                <input type="text" class="form-control" id="textX" value="0.0">
+            </div>
+            <div class="form-group mb-2">
+                <label for="textY">Y:</label>
+                <input type="text" class="form-control" id="textY" value="0.0">
+            </div>
+            <div class="form-group mb-2">
+                <label for="textZ">Z:</label>
+                <input type="text" class="form-control" id="textZ" value="1.0">
+            </div>
+            <button type="submit" id="moveToPositionbtn" class="btn btn-primary mb-2 confirm-btn">Move To Position</button>
+        </form>
+
+
+        <form class="form-inline">
+            <div class="form-group mb-2">
+                <label for="textX">Yaw:</label>
+                <input type="text" class="form-control" id="rotateYaw" value="0.0">
+            </div>
+            <button type="submit" id="rotateToYaw" class="btn btn-primary mb-2 confirm-btn">Rotate To Yaw</button>
+        </form>
+
+        <input type="button" id="gimbalbtn" value="Gimbal" class="btn btn-primary" />
+    </div>
+</div>
+
+    {% endblock %}
+
+

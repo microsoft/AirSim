@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SimModeSelector.unity
     guid: 2a2adab4f94d2a8428812b3c4db5f357
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/CarDemo.unity
     guid: 48447221fb4a8864dbedfeed703bf275
   - enabled: 1

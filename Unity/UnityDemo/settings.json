@@ -1,0 +1,12 @@
+{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+	"SubWindows": [
+    {"WindowID": 0, "CameraName": "0", "ImageType": 1, "Visible": true}
+  
+	
+  ]
+}
+
+
+

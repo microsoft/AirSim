@@ -161,6 +161,9 @@ namespace AirSimUnity {
             }
 
             string jsonString = GetSettingsContent();
+
+            var ssss = JsonUtility.FromJson<AirSimSettings>(jsonString);
+
             JsonUtility.FromJsonOverwrite(jsonString, settings);
             return true;
         }
@@ -319,5 +322,31 @@ namespace AirSimUnity {
             capSettings.Gimble.Yaw = 0;
             return capSettings;
         }
+
+
+
+        private CameraCaptureSettings GetDefaultCaptureSettingstemp()
+        {
+            CameraCaptureSettings capSettings;
+            capSettings.ImageType = 0;
+            capSettings.Width = 256;
+            capSettings.Height = 144;
+            capSettings.FOV_Degrees = 90;
+            capSettings.AutoExposureSpeed = 100;
+            capSettings.AutoExposureBias = 0;
+            capSettings.AutoExposureMaxBrightness = 0.64f;
+            capSettings.AutoExposureMinBrightness = 0.03f;
+            capSettings.MotionBlurAmout = 0;
+            capSettings.TargetGamma = 1;
+            capSettings.ProjectionMode = 0;
+            capSettings.OrthoWidth = 5.12f;
+            capSettings.Gimble.Stabilization = 1;
+            capSettings.Gimble.Pitch = 20;
+            capSettings.Gimble.Roll =20;
+            capSettings.Gimble.Yaw = 20;
+            return capSettings;
+        }
+
+
     }
 }

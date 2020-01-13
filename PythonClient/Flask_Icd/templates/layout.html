@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - My Flask Application</title>
+    <link rel="stylesheet" type="text/css" href="/static/content/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/content/site.css" />
+    <link rel="stylesheet" type="text/css" href="/static/content/customStyle.css" />
+    <script src="/static/scripts/modernizr-2.6.2.js"></script>
+</head>
+
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/" class="navbar-brand">Application name</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container body-content">
+        {% block content %}{% endblock %}
+        <hr />
+        <footer>
+            <p>&copy; {{ year }} - My Flask Application</p>
+        </footer>
+    </div>
+
+    <script src="/static/scripts/jquery-1.10.2.js"></script>
+    <script src="/static/scripts/bootstrap.js"></script>
+    <script src="/static/scripts/respond.js"></script>
+    {% block scripts %}
+    <script type=text/javascript>
+
+        var takeoffJson = { "name": "takeoff", "operation": "takeoff" };
+        var armDisarmJson = { "name": "armDisarm", "operation": "armDisarm" };
+        var landJson = { "name": "land", "operation": "land" };
+        var gimbalJson = { "name": "gimbal", "operation": "gimbal" };
+
+        $(function () {
+            $("#takeoffbtn").click(function (event) {
+                 $.ajax({
+                       type : 'POST',
+                       url : "{{url_for('ICD')}}",
+                       contentType: "application/json",
+                       data: JSON.stringify (takeoffJson),
+                       dataType: 'json'
+                       });
+                       });
+        });
+
+         $(function () {
+            $("#gimbalbtn").click(function (event) {
+                 $.ajax({
+                       type : 'POST',
+                       url : "{{url_for('ICD')}}",
+                       contentType: "application/json",
+                       data: JSON.stringify (gimbalJson),
+                       dataType: 'json'
+                       });
+                       });
+        });
+            $(function () {
+            $("#landbtn").click(function (event) {
+                 $.ajax({
+                       type : 'POST',
+                       url : "{{url_for('ICD')}}",
+                       contentType: "application/json",
+                       data: JSON.stringify (landJson),
+                       dataType: 'json'
+                       });
+                       });
+            });
+            $(function () {
+             $("#moveToPositionbtn").click(function (event) {
+                 var variableX = document.getElementById('textX').value;
+                 var variableY = document.getElementById('textY').value;
+                 var variableZ = document.getElementById('textZ').value;
+                 var moveToPositionJson = { "name": "moveToPosition", "operation": "moveToPosition", "coordinates":[variableX,variableY,variableZ] };
+
+
+                 $.ajax({
+                       type : 'POST',
+                       url : "{{url_for('ICD')}}",
+                       contentType: "application/json",
+                       data: JSON.stringify (moveToPositionJson),
+                       dataType: 'json'
+                       });
+                       });
+            });
+        $(function () {
+            $("#rotateToYaw").click(function (event) {
+                 var angle = document.getElementById('rotateYaw').value;
+                 var rotateToYawJson = { "name": "rotateToYaw", "operation": "rotateToYaw", "angle":angle };
+                 $.ajax({
+                       type : 'POST',
+                       url : "{{url_for('ICD')}}",
+                       contentType: "application/json",
+                       data: JSON.stringify (rotateToYawJson),
+                       dataType: 'json'
+                       });
+                       });
+            });
+    </script>
+    {% endblock %}
+
+</body>
+</html>

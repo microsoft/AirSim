@@ -192,6 +192,7 @@
     <ProjectGuid>{4BFB7231-077A-4671-BD21-D3ADE3EA36E7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>AirLib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
