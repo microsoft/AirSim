@@ -63,10 +63,10 @@ bool CurrentThread::setThreadName(const std::string& name)
         return S_OK == (*setThreadDescriptionFunction)(GetCurrentThread(), wide_path.c_str());
     }
     return false;
+#elif defined(__APPLE__)
+    return 0 == pthread_setname_np(name.c_str());
 #else
-
-    return 0 == prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);
-
+    return 0 == pthread_setname_np(pthread_self(), name.c_str());
 #endif
 
 }
