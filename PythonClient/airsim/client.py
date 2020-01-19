@@ -856,6 +856,24 @@ class VehicleClient:
         """
         return self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
 
+    # Add new vehicle via RPC
+    def simAddVehicle(self, vehicle_name, vehicle_type, pawn_path, north, east, down):
+        """
+        Create vehicle at runtime
+
+        Args:
+            vehicle_name (str): Name of the vehicle being created
+            vehicle_type (str): Type of vehicle, e.g. "simpleflight"
+            pawn_path (str): Vehicle blueprint path
+            north (float): Metres in North direction to spawn at vehicle at
+            east (float): Meters in East direction to spawn vehicle at
+            down (float): Metres below to spawn the vehicle at
+
+        Returns:
+            bool: Whether vehicle was created
+        """
+        return self.client.call('simAddVehicle', vehicle_name, vehicle_type, pawn_path, north, east, down)
+
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
