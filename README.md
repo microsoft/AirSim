@@ -16,8 +16,8 @@ Cars in AirSim
 
 ## What's New
 * A ROS wrapper for multirotors is available. See [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs) for the ROS API, and [airsim_tutorial_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs) for tutorials. 
-* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](https://microsoft.github.io/AirSim/docs/sensors.md) 
-* Added support for [docker in ubuntu](https://microsoft.github.io/AirSim/docs/docker_ubuntu) 
+* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](https://microsoft.github.io/AirSim/docs/sensors) 
+* Added support for [docker in ubuntu](https://github.com/microsoft/AirSim/blob/master/docs/docker_ubuntu.md) 
 * Added Weather Effects and [APIs](https://microsoft.github.io/AirSim/docs/apis#weather-apis)
 * Added [Time of Day API](https://microsoft.github.io/AirSim/docs/apis#time-of-day-api)
 * An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation).
