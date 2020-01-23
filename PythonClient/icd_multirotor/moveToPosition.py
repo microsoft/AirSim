@@ -16,4 +16,9 @@ class MoveToPosition:
           client.armDisarm(True) 
           print( -1 * float(self.initZ))
           client.moveToPositionAsync(float(self.initX),float(self.initY), -1 * float(self.initZ), 5).join()
+
+          print("simSetCameraOrientation")
+          position = client.getMultirotorState().kinematics_estimated.position;
+          print(position)  
+
           return "complit"

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>multirotor\land.py</StartupFile>
+    <StartupFile>icd_multirotor\cv_mode.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -59,6 +59,7 @@
     </Compile>
     <Compile Include="computer_vision\setup_path.py" />
     <Compile Include="Flask_Icd\falskICD.py" />
+    <Compile Include="icd_multirotor\cv_mode.py" />
     <Compile Include="icd_multirotor\gimbal.py">
       <SubType>Code</SubType>
     </Compile>

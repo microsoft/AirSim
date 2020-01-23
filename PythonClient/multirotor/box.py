@@ -10,12 +10,15 @@ client.enableApiControl(True)
 client.armDisarm(True)
 client.takeoffAsync().join()
 
-print("Flying a small square box using moveByVelocityZ")
+
 
 # AirSim uses NED coordinates so negative axis is up.
 # z of -7 is 7 meters above the original launch point.
-z = -7
-
+print("Flying to 100,200,330")
+client.moveToPositionAsync(100*0.99,200*0.99, -330*0.99, 5).join() 
+print("Flying to 100,200,330")
+z = -350
+print("Flying a small square box using moveByVelocityZ")
 # Fly given velocity vector for 5 seconds
 duration = 5
 speed = 1

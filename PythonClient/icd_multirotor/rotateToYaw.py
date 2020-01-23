@@ -27,17 +27,28 @@ class RotateToYaw:
           delay = duration * speed
 
 
-          state = client.getMultirotorState()
+        #  state = client.getMultirotorState()
          
          
 
-          s = pprint.pformat(state)
-          print("state: %s" % s)
+        #  s = pprint.pformat(state)
+        #  print("state: %s" % s)
           print("position")
           x = client.getMultirotorState();
      
           print("simSetCameraOrientation")
-          z_val = client.getMultirotorState().kinematics_estimated.position.z_val;
-          print(z_val)  
+          position = client.getMultirotorState().kinematics_estimated.position;
+          print(position)  
+          print(float(position.x_val))  
+          print(float(position.y_val))  
+          print(float(position.z_val))  
+          print(float(self.angle))  
           client.moveByVelocityZAsync(vx, vy, z_val,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, float(self.angle))).join()
-     
+          #client.moveToZAsync(z_val, 1).join()
+          #airsim.DrivetrainType.MaxDegreeOfFreedom,airsim.YawMode(False, float(self.angle))
+          #client.moveToPositionAsync(float(position.x_val),float(self.y_val), 1* float(self.z_val), 5).join() 
+          #client.moveToPositionAsync(100*0.99,200*0.99, -330*0.99, 5,airsim.DrivetrainType.MaxDegreeOfFreedom,airsim.YawMode(False, float(fself.angle))).join() 
+          #client.moveToPositionAsync(100*0.99,200*0.99, -330*0.99, 0.5, 10, airsim.DrivetrainType.MaxDegreeOfFreedom,airsim.YawMode(False, self.angle)).join() 
+            #,airsim.YawMode(False, self.angle)).join()
+          #client.rotateByYawRateAsync(30,2,"SimpleFlight").join()
+          print("dam you")

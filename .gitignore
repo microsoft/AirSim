@@ -391,3 +391,29 @@ ros/src/CMakeLists.txt
 /Unity/UnityDemo/Assets/Scenes/READ ME - About Scene.txt.meta
 /Unity/UnityDemo/Assets/Scenes/Terrain Orginal First Pass.asset
 /Unity/UnityDemo/Assets/Scenes/Terrain Orginal First Pass.asset.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/lens.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/lens.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_black.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_black.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_glas.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_glas.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_grey.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_grey.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_matt_silber.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_matt_silber.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_metal.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_metal.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_red.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_red.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_silber.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_silber.mat.meta
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_white.mat
+Unity/UnityDemo/Assets/AirSimAssets/Models/Materials/shd_white.mat.meta
+Unity/UnityDemo/Assets/Plugins/AirsimWrapper.dll.meta
+Unity/UnityDemo/Assets/Scenes/DroneDemo-old.unity
+Unity/UnityDemo/Assets/Scenes/DroneDemo-old.unity.meta
+Unity/UnityDemo/Assets/Plugins/AirsimWrapper.dll.meta
+Unity/UnityDemo/Assets/Scenes/DroneDemo.unity
+Unity/UnityDemo/Assets/Plugins/AirsimWrapper.dll.meta
+Unity/UnityDemo/Assets/Scenes/DroneDemo.unity
