@@ -1063,6 +1063,13 @@ private: //methods
                 mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
                 mav_vehicle_->connect(connection_); // in this case we can use the same connection.
                 mav_vehicle_->startHeartbeat();
+
+                // start listening to the HITL connection.
+                connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
+                    unused(connection);
+                    processMavMessages(msg);
+                    });
+
                 return;
             }
             catch (std::exception& e) {
