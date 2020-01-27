@@ -18,7 +18,16 @@
 
 
 
-        <input type="button" id="takeoffbtn" value="Take Off" class="btn btn-primary" />
+        <form class="form-inline">
+            <div class="form-group mb-4">
+                <label for="textTakeoffbtn">Altitude:</label>
+                <input type="text" class="form-control" id="textTakeoffbtn" value="1.0">
+            </div>
+            <button type="submit" id="takeoffbtn" class="btn btn-primary mb-2 confirm-btn">Take Off</button>
+        </form>
+
+
+        <!-- <input type="button" id="takeoffbtn" value="Take Off" class="btn btn-primary" /> -->
         <input type="button" id="landbtn" value="Land" class="btn btn-primary" />
         <form class="form-inline">
             <div class="form-group mb-2">

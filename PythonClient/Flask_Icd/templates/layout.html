@@ -45,16 +45,18 @@
     {% block scripts %}
     <script type=text/javascript>
 
-        var takeoffJson = { "name": "takeoff", "operation": "takeoff" };
         var armDisarmJson = { "name": "armDisarm", "operation": "armDisarm" };
         var landJson = { "name": "land", "operation": "land" };
         var gimbalJson = { "name": "gimbal", "operation": "gimbal" };
+      
 
         $(function () {
             $("#takeoffbtn").click(function (event) {
+                var variableAlt = document.getElementById('textTakeoffbtn').value;
+                var takeoffJson =  { "operationalAlt": variableAlt };
                  $.ajax({
                        type : 'POST',
-                       url : "{{url_for('ICD')}}",
+                       url : "takeoff",
                        contentType: "application/json",
                        data: JSON.stringify (takeoffJson),
                        dataType: 'json'

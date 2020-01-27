@@ -9,7 +9,8 @@ client.armDisarm(True)
 
 
 
-
+landed3 = client.getMultirotorState()
+print(landed3)
 
 landed = client.getMultirotorState().landed_state
 if landed == airsim.LandedState.Landed:
