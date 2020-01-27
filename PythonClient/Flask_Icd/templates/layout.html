@@ -79,9 +79,8 @@
             $("#landbtn").click(function (event) {
                  $.ajax({
                        type : 'POST',
-                       url : "{{url_for('ICD')}}",
+                       url : "land",
                        contentType: "application/json",
-                       data: JSON.stringify (landJson),
                        dataType: 'json'
                        });
                        });

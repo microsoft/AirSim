@@ -14,6 +14,8 @@ class Takeoff:
         client.confirmConnection()
         client.enableApiControl(True)
         client.armDisarm(True)
+        currentZ = client.getMultirotorState().kinematics_estimated.position.z_val
+        print(currentZ)
         landed = client.getMultirotorState().landed_state
         if landed == airsim.LandedState.Landed:
             print("taking off...")
@@ -21,5 +23,5 @@ class Takeoff:
         else:
             print("already flying...")
             client.hoverAsync()
-        client.moveToZAsync(-1*alt, 5).join()
+        client.moveToZAsync(-1*alt + currentZ, 5).join()
         return not client.getMultirotorState().collision.has_collided 

@@ -9,15 +9,15 @@ import json
 app = Flask(__name__)
 
 posts = [{
-        'author': "yigal",
-        'title': "1",
-        'content': "First post content",
+    'author': "yigal",
+    'title': "1",
+    'content': "First post content",
 
-        }, {
-        'author': "pigal",
-        'title': "2",
-        'content': "Second post content",
-        }]
+}, {
+    'author': "pigal",
+    'title': "2",
+    'content': "Second post content",
+}]
 
 
 @app.route('/')
@@ -25,10 +25,10 @@ posts = [{
 def home():
     """Renders the home page."""
     return render_template('index.html',
-       posts=posts,
-       title='Contact',
-       year=datetime.now().year,
-       message='Your contact page.')
+                           posts=posts,
+                           title='Contact',
+                           year=datetime.now().year,
+                           message='Your contact page.')
 
 
 @app.route('/SomeFunction')
@@ -78,51 +78,51 @@ Daytype[ICDOperation.Gimbal] = 'gimbal'
 def addRegion():
 
     # return (request.form['projectFilePath'])
-     return "Nothing"
+    return "Nothing"
 
 
 @app.route('/ICD/', methods=['GET', 'POST'])
 def ICD():
-     if request.method == "POST":
-         data = request.get_json()
-         print("request")
-         operation = data['operation']
-         print(operation)
-         import sys
-       #  sys.path.insert(1, 'D:\Git\AirSim\PythonClient\icd_multirotor')
-         sys.path.insert(1, '../icd_multirotor')
-         if operation == Daytype[ICDOperation.TakeOff]:
+    if request.method == "POST":
+        data = request.get_json()
+        print("request")
+        operation = data['operation']
+        print(operation)
+        import sys
+      #  sys.path.insert(1, 'D:\Git\AirSim\PythonClient\icd_multirotor')
+        sys.path.insert(1, '../icd_multirotor')
+        if operation == Daytype[ICDOperation.TakeOff]:
             import takeoff
-         elif operation == Daytype[ICDOperation.Land]:
+        elif operation == Daytype[ICDOperation.Land]:
             print("land action")
             import land
-         elif operation == Daytype[ICDOperation.MoveToPosition]:
-               coordinates = data['coordinates']
-               import moveToPosition
-               from moveToPosition import MoveToPosition
-               r = MoveToPosition(
-                   coordinates[0], coordinates[1], coordinates[2])
-               r.start()
-         elif operation == Daytype[ICDOperation.RotateToYaw]:
-               import rotateToYaw
-               from rotateToYaw import RotateToYaw
-               angle = data['angle']
-               print(angle)
-               r = RotateToYaw(angle)
-               r.start()
-         elif operation == Daytype[ICDOperation.Gimbal]:
-               import gimbal
-         return render_template('index.html')
+        elif operation == Daytype[ICDOperation.MoveToPosition]:
+            coordinates = data['coordinates']
+            import moveToPosition
+            from moveToPosition import MoveToPosition
+            r = MoveToPosition(
+                coordinates[0], coordinates[1], coordinates[2])
+            r.start()
+        elif operation == Daytype[ICDOperation.RotateToYaw]:
+            import rotateToYaw
+            from rotateToYaw import RotateToYaw
+            angle = data['angle']
+            print(angle)
+            r = RotateToYaw(angle)
+            r.start()
+        elif operation == Daytype[ICDOperation.Gimbal]:
+            import gimbal
+        return render_template('index.html')
 
 
 @app.route('/takeoff', methods=['GET', 'POST'])
 def takeoff():
     if request.method == "POST":
-         data = request.get_json()
-         print("request")
-         operation = data['operationalAlt']
-         msg = "missing Alt operand"
-         if operation:
+        data = request.get_json()
+        print("request")
+        operation = data['operationalAlt']
+        msg = "missing Alt operand"
+        if operation:
             import sys
             sys.path.insert(1, '../icd_multirotor')
             import takeoff
@@ -131,19 +131,36 @@ def takeoff():
             r2 = Takeoff(operation)
             result = r2.start()
             if result == True:
-             
-               respons = { "success": True, "message": ""}
-               return jsonify(respons)
+
+                respons = {"success": True, "message": ""}
+                return jsonify(respons)
             else:
-              
-               msg = "got error as collision" 
-               respons = { "success": False, "message": msg}
-               return jsonify(respons)    
-         else:
-             print(msg)
-             respons = { "success": False, "message": msg}
-             return jsonify(respons)
-    
+                msg = "got error as collision"
+                respons = {"success": False, "message": msg}
+                return jsonify(respons)
+        else:
+            print(msg)
+            respons = {"success": False, "message": msg}
+            return jsonify(respons)
+
+
+@app.route('/land', methods=['GET', 'POST'])
+def land():
+    if request.method == "POST":
+        import sys
+        sys.path.insert(1, '../icd_multirotor')
+        import land
+        from land import Land
+        r2 = Land()
+        result = r2.start()
+        if result == True:
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
+        else:
+            msg = "got error as collision"
+            respons = {"success": False, "message": msg}
+            return jsonify(respons)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
