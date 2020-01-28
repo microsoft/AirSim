@@ -1,6 +1,6 @@
 # AirSim ROS Tutorials
 
-This is a set of sample AirSim `settings.json`s, roslaunch and rviz files to give a starting point for using AirSim with ROS.     
+This is a set of sample AirSim `settings.json`, roslaunch and rviz files to give a starting point for using AirSim with ROS.     
 See [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/README.md) for the ROS API.
 
 
