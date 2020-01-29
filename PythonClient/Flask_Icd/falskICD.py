@@ -166,6 +166,12 @@ def land():
 def WebSocketStart():
     if request.method == "GET":
         print("GET /WebSocket/start")
+        import sys
+        sys.path.insert(1, '../webSocket')
+        import wsClient
+        from wsClient import WebSocketClient
+        wbs = WebSocketClient()
+        result = wbs.start()
         respons = {"success": True, "message": "WebSocket start"}
         return jsonify(respons)
 
@@ -174,6 +180,12 @@ def WebSocketStart():
 def WebSocketEnd():
     if request.method == "GET":
         print("GET /WebSocket/end")
+        import sys
+        sys.path.insert(1, '../webSocket')
+        import wsClient
+        from wsClient import WebSocketClient
+        wbs = WebSocketClient()
+        result = wbs.end()
         respons = {"success": True, "message": "WebSocket end"}
         return jsonify(respons)
 
