@@ -10,7 +10,8 @@ client.armDisarm(True)
 
 class Land:
     
-    def start(self):       
+    def start(self):
+        print(client.getMultirotorState())       
         landed = client.getMultirotorState().landed_state
         if landed == airsim.LandedState.Landed:
             print("already landed...")

@@ -420,3 +420,16 @@ Unity/UnityDemo/Assets/Scenes/DroneDemo.unity
 Unity/UnityDemo/Assets/EasyRoads3D Assets.meta
 Unity/UnityDemo/Assets/NatureManufacture Assets - Trials Not Full Resolution.meta
 Unity/UnityDemo/Assets/Windridge City Assets.meta
+Unity/UnityDemo/Assets//\*.meta
+/Unity/UnityDemo/Assets/*.meta
+/Unity/UnityDemo/Assets/*.meta
+/Unity/UnityDemo/Assets/HttpClient/*.meta
+/Unity/UnityDemo/Assets/HttpClient/*.meta
+/Unity/UnityDemo/Assets/HttpClient/*.txt
+/Unity/UnityDemo/Assets/HttpClient/HttpContent/*.meta
+/Unity/UnityDemo/Assets/HttpClient/Messages/*.meta
+/Unity/UnityDemo/Assets/HttpClient/HttpRequest/*.meta
+/Unity/UnityDemo/Assets/HttpClient/Dispatcher/*.meta
+/Unity/UnityDemo/Assets/HttpClient/Enums/*.meta
+/Unity/UnityDemo/Assets/HttpClient/Example/*.meta
+/Unity/UnityDemo/Assets/HttpClient/Helpers/*.meta

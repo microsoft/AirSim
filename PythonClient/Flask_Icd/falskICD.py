@@ -162,5 +162,21 @@ def land():
             return jsonify(respons)
 
 
+@app.route('/api/WebSocket/start', methods=['GET'])
+def WebSocketStart():
+    if request.method == "GET":
+        print("GET /WebSocket/start")
+        respons = {"success": True, "message": "WebSocket start"}
+        return jsonify(respons)
+
+
+@app.route('/api/WebSocket/end', methods=['GET'])
+def WebSocketEnd():
+    if request.method == "GET":
+        print("GET /WebSocket/end")
+        respons = {"success": True, "message": "WebSocket end"}
+        return jsonify(respons)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
