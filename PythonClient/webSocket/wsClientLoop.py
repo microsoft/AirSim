@@ -14,6 +14,9 @@ class WebSocketClient:
         while True:
             if  WebSocketClient.isContinuousLoop:
                 rpcinfo =  self.client.getMultirotorState()
+                gps_location = rpcinfo.gps_location
+                kinematics_estimated = rpcinfo.kinematics_estimated
+                rcdata = rpcinfo.rc_data
                 print(rpcinfo)
                 telemetry = {
                     "battery_state": {
@@ -21,24 +24,24 @@ class WebSocketClient:
                     },
                     "distance_from_home": 1561.4,
                     "gimbal": {
-                        "roll": 2.65,
-                        "pitch": -4.33,
-                        "yaw": -4.33
+                        "roll": rcdata.roll,
+                        "pitch": rcdata.pitch,
+                        "yaw": rcdata.yaw
                     },
                     "height_above_takeoff": 55.77,
                     "gps_health": 5,
                     "heading": 150.00,
                     "velocity": {
-                        "x": 3.3859853744506836,
-                        "y": 4.3859853744506836,
-                        "z": -6.4859853744506836
+                        "x": kinematics_estimated.linear_velocity.x_val,
+                        "y": kinematics_estimated.linear_velocity.y_val,
+                        "z": kinematics_estimated.linear_velocity.z_val
                     },
                     "gps_position": {
-                        "latitude": 32.79549864125392,
-                        "altitude": 120.10076141357422,
-                        "longitude": 35.07356423292824
+                        "latitude": gps_location.latitude,
+                        "altitude": gps_location.altitude,
+                        "longitude": gps_location.longitude
                     },
-                    "last_change_time": 1577692382821,
+                    "last_change_time": rpcinfo.timestamp,
                     "lastHome": {
                         "latitude": 32.79549864125392,
                         "operationalAlt": 50.1007,
@@ -51,7 +54,7 @@ class WebSocketClient:
                     "wayPoints": {
                         "status": 2
                     },
-                    "keepAlive": 1577692382821
+                    "keepAlive": rpcinfo.timestamp
                 }
                 mesage = json.dumps(telemetry)
                 await websocket.send(mesage)
