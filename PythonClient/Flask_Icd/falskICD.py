@@ -168,8 +168,8 @@ def WebSocketStart():
         print("GET /WebSocket/start")
         import sys
         sys.path.insert(1, '../webSocket')
-        import wsClient
-        from wsClient import WebSocketClient
+        import wsClientLoop
+        from wsClientLoop import WebSocketClient
         wbs = WebSocketClient()
         result = wbs.start()
         respons = {"success": True, "message": "WebSocket start"}
@@ -182,8 +182,8 @@ def WebSocketEnd():
         print("GET /WebSocket/end")
         import sys
         sys.path.insert(1, '../webSocket')
-        import wsClient
-        from wsClient import WebSocketClient
+        import wsClientLoop
+        from wsClientLoop import WebSocketClient
         wbs = WebSocketClient()
         result = wbs.end()
         respons = {"success": True, "message": "WebSocket end"}
