@@ -67,6 +67,7 @@ class ICDOperation(enum.Enum):
     Gimbal = 4
     Land = 5
     HotPoint = 6
+    WayPoints = 7
 
 
 Daytype = {}
@@ -76,6 +77,7 @@ Daytype[ICDOperation.Land] = 'land'
 Daytype[ICDOperation.RotateToYaw] = 'rotateToYaw'
 Daytype[ICDOperation.Gimbal] = 'gimbal'
 Daytype[ICDOperation.HotPoint] = 'hotPoint'
+Daytype[ICDOperation.WayPoints] = 'wayPoints'
 
 
 @app.route('/addRegion', methods=['POST'])
@@ -101,8 +103,9 @@ def ICD():
             print("land action") 
             import land
         elif operation == Daytype[ICDOperation.HotPoint]:
-            print("###################### hotPoint ###################")   
             import hotPoint 
+        elif operation == Daytype[icd_multirotor.wayPoints]:
+            import wayPoints   
         elif operation == Daytype[ICDOperation.MoveToPosition]:
             coordinates = data['coordinates']
             import moveToPosition
@@ -214,6 +217,49 @@ def hotPoint():
             return jsonify(respons)
 
 
+
+# WayPoints  
+# WebSocket -> start ! 
+#
+# Body:
+# { "latitude": 20,
+#   "longitude":21,
+#   "altitude":22,
+#   "radius":20,
+#   "is_clockwise":20,
+#   "start_point":20,
+#   "yaw_mode":20
+#  }            
+# ========================================================================== #            
+@app.route('/wayPoints', methods=['GET', 'POST'])
+def wayPoints():
+    if request.method == "POST":
+        data = request.get_json()
+        print("request")
+        msg = "data is missing !"
+        if data:
+            import sys
+            sys.path.insert(1, '../icd_multirotor')
+
+            points = data['points']
+    
+            import wayPoints
+            from wayPoints import WayPoints
+            print(points)
+            task = WayPoints(points,100)
+            result = task.start()
+            if result == True:
+                respons = {"success": True, "message": ""}
+                return jsonify(respons)
+            else:
+                msg = "got error as collision"
+                respons = {"success": False, "message": msg}
+                return jsonify(respons)
+        else:
+            print(msg)
+            respons = {"success": False, "message": msg}
+            return jsonify(respons)
+
 #   WebSocket -> start !     
 # ========================================================================== #          
 @app.route('/api/WebSocket/start', methods=['GET'])
@@ -231,8 +277,10 @@ def WebSocketStart():
         respons = {"success": True, "message": "WebSocket start"}
         return jsonify(respons)
 
+
 #   initialize the client.          
 # ========================================================================== #    
+
 def init_airsim():
     airsim_client = airsim.MultirotorClient()
     airsim_client.confirmConnection()
@@ -309,6 +357,38 @@ def WebSocketEnd():
 # ========================================================================== #   
 # ############################# Socket.io ################################## #         
 # ========================================================================== #   
+@socketio.on('connect')
+def WSocketConnect():
+    print('connect')
+
+
+@socketio.on('disconnect')
+def WSocketDisconnect():
+    print('disconnect')
+
+
+@socketio.on('keepAlive')
+def WSocketHandleKeepAlive(json):
+    # print('received keepAlive: ' + str(json))
+    pass
+
+
+@socketio.on('my')
+def handle_my_custom_event(json):
+    print('received my: ' + str(json))
+
+
+@socketio.on('force_send')
+def handle_force_send(json):
+    print('received force_send: ' + str(json))
+
+
+@socketio.on('force_stop')
+def handle_force_stop(json):
+    print('received force_stop: ' + str(json))
+    
+
+############# Socket.io #############
 @socketio.on('connect')
 def WSocketConnect():
     print('connect')
