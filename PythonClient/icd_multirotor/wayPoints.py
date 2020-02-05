@@ -14,8 +14,12 @@ class WayPoints:
           path = []  
           array_length = len(self.points)
           for i in range(array_length):
-            point = self.points[i]
-            airSimPoint = airsim.Vector3r(point[0], point[1], point[2])
+            point = self.points[i] #{X,Y,Z}
+            x = point['latitude']
+            y = point['longitude']
+            z = point['altitude']
+            airSimPoint = airsim.Vector3r(x,y,z)
+            print(airSimPoint)
             path.append(airSimPoint)
 
 

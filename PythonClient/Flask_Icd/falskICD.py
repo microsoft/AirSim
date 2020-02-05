@@ -6,11 +6,11 @@ from flask_socketio import SocketIO, emit, send
 import airsim
 import math
 import time
+from threading import Thread
 
 import json
 app = Flask(__name__)
 socketio = SocketIO(app, ping_timeout=100, ping_interval=100)
-
 posts = [{
     'author': "yigal",
     'title': "1",
@@ -76,8 +76,8 @@ Daytype[ICDOperation.MoveToPosition] = 'moveToPosition'
 Daytype[ICDOperation.Land] = 'land'
 Daytype[ICDOperation.RotateToYaw] = 'rotateToYaw'
 Daytype[ICDOperation.Gimbal] = 'gimbal'
-Daytype[ICDOperation.HotPoint] = 'hotPoint'
-Daytype[ICDOperation.WayPoints] = 'wayPoints'
+Daytype[ICDOperation.HotPoint] = 'hotpoint/upload'
+Daytype[ICDOperation.WayPoints] = 'waypoint/upload'
 
 
 @app.route('/addRegion', methods=['POST'])
@@ -137,24 +137,24 @@ def takeoff():
         if operation:
             import sys
             sys.path.insert(1, '../icd_multirotor')
-            import takeoff
-            from takeoff import Takeoff
-            print(data)
-            r2 = Takeoff(operation)
-            result = r2.start()
-            if result == True:
 
-                respons = {"success": True, "message": ""}
-                return jsonify(respons)
-            else:
-                msg = "got error as collision"
-                respons = {"success": False, "message": msg}
-                return jsonify(respons)
+            thread = Thread(target=takeoff_operation, kwargs={'value': request.args.get('value', operation)})
+            thread.start()
+
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
         else:
             print(msg)
             respons = {"success": False, "message": msg}
             return jsonify(respons)
 
+
+def takeoff_operation(value):
+     import takeoff
+     from takeoff import Takeoff
+     _task = Takeoff(value)
+     _task.start()
+                
 #   Land            
 # ========================================================================== #            
 @app.route('/land', methods=['GET', 'POST'])
@@ -162,33 +162,35 @@ def land():
     if request.method == "POST":
         import sys
         sys.path.insert(1, '../icd_multirotor')
-        import land
-        from land import Land
-        r2 = Land()
-        result = r2.start()
-        if result == True:
-            respons = {"success": True, "message": ""}
-            return jsonify(respons)
-        else:
-            msg = "got error as collision"
-            respons = {"success": False, "message": msg}
-            return jsonify(respons)
+        thread = Thread(target=land_operation)
+        thread.start()
+        respons = {"success": True, "message": ""}
+        return jsonify(respons)
+        # else:
+        #     msg = "got error as collision"
+        #     respons = {"success": False, "message": msg}
+        #     return jsonify(respons)
 
-
+def land_operation():
+    import land
+    from land import Land
+    _task = Land()
+    _task.start()
+     
 # HotPoint  
-# WebSocket -> start ! 
 #
 # Body:
-# { "latitude": 20,
-#   "longitude":21,
-#   "altitude":22,
-#   "radius":20,
-#   "is_clockwise":20,
-#   "start_point":20,
-#   "yaw_mode":20
-#  }            
+# {	  "latitude": 32.8004,
+#     "longitude": 35.05148,
+#     "altitude":22,
+#     "radius":20,
+#     "angular_speed": 5,
+#     "is_clockwise": 0,
+#     "start_point": 0,
+#     "yaw_mode": 2
+#  }
 # ========================================================================== #            
-@app.route('/hotPoint', methods=['GET', 'POST'])
+@app.route('/hotpoint/upload', methods=['GET', 'POST'])
 def hotPoint():
     if request.method == "POST":
         data = request.get_json()
@@ -200,38 +202,55 @@ def hotPoint():
 
             coordinates = []
             coordinates = [data['latitude'],data['longitude'],data['altitude']]
-            import hotPoint
-            from hotPoint import HotPoint
-            task = HotPoint(coordinates[0], coordinates[1], coordinates[2])
-            result = task.start()
-            if result == True:
-                respons = {"success": True, "message": ""}
-                return jsonify(respons)
-            else:
-                msg = "got error as collision"
-                respons = {"success": False, "message": msg}
-                return jsonify(respons)
+            thread = Thread(target=hotpoint_operation, kwargs={'value': request.args.get('value', coordinates)})
+            thread.start()
+            
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
         else:
             print(msg)
             respons = {"success": False, "message": msg}
             return jsonify(respons)
 
 
+def hotpoint_operation(value):
+    import hotPoint
+    from hotPoint import HotPoint
+    print(value[0], value[1], value[2])
+    _task = HotPoint(value[0], value[1], value[2])
+    _task.start()
+
 
 # WayPoints  
-# WebSocket -> start ! 
-#
-# Body:
-# { "latitude": 20,
-#   "longitude":21,
-#   "altitude":22,
-#   "radius":20,
-#   "is_clockwise":20,
-#   "start_point":20,
-#   "yaw_mode":20
-#  }            
+# 
+# { 
+# 	"action_on_finish": 0,
+# 	"points": [
+#	 	{
+#	 		"latitude": 32.922820,
+#	 		"longitude": 35.28677496,
+#	 		"altitude": 6,
+#	 		"velocity": 10,
+#	 		"yaw": 90
+#	 	},
+#	 	{
+#	 		"latitude": 32.922020,
+#	 		"longitude": 35.28707496,
+#	 		"altitude": 6,
+#	 		"velocity": 10,
+#	 		"yaw": 90
+#	 	},
+#	 		 	{
+#	 		"latitude": 32.921820,
+#	 		"longitude": 35.28777496,
+#	 		"altitude": 6,
+#	 		"velocity": 10,
+#	 		"yaw": 90
+#	 	}
+# 	]
+# }
 # ========================================================================== #            
-@app.route('/wayPoints', methods=['GET', 'POST'])
+@app.route('/waypoint/upload', methods=['GET', 'POST'])
 def wayPoints():
     if request.method == "POST":
         data = request.get_json()
@@ -243,22 +262,23 @@ def wayPoints():
 
             points = data['points']
     
-            import wayPoints
-            from wayPoints import WayPoints
-            print(points)
-            task = WayPoints(points,100)
-            result = task.start()
-            if result == True:
-                respons = {"success": True, "message": ""}
-                return jsonify(respons)
-            else:
-                msg = "got error as collision"
-                respons = {"success": False, "message": msg}
-                return jsonify(respons)
+            thread = Thread(target=waypoint_operation, kwargs={'value': request.args.get('value', points)})
+            thread.start()
+            
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
         else:
             print(msg)
             respons = {"success": False, "message": msg}
             return jsonify(respons)
+
+
+def waypoint_operation(value):
+    import wayPoints
+    from wayPoints import WayPoints
+    _task = WayPoints(value,100)
+    _task.start()
+
 
 #   WebSocket -> start !     
 # ========================================================================== #          
