@@ -2,14 +2,14 @@ import setup_path
 import airsim
 
 
-class MoveToPosition:
+class PositionSet:
       def __init__(self, initX, initY, initZ):
           self.initX = initX
           self.initY = initY
           self.initZ = initZ
 
       def start(self):
-          print("MoveToPositionStart")
+          print("position_set")
           client = airsim.MultirotorClient()
           client.confirmConnection()
           client.enableApiControl(True)

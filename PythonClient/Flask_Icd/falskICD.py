@@ -62,7 +62,7 @@ class ICDOperation(enum.Enum):
     # RotateToYaw = "rotateToYaw",
     # Gimbal = "gimbal"
     TakeOff = 1
-    MoveToPosition = 2
+    position_set = 2
     RotateToYaw = 3
     Gimbal = 4
     Land = 5
@@ -72,7 +72,7 @@ class ICDOperation(enum.Enum):
 
 Daytype = {}
 Daytype[ICDOperation.TakeOff] = 'takeoff'
-Daytype[ICDOperation.MoveToPosition] = 'moveToPosition'
+Daytype[ICDOperation.position_set] = 'position_set'
 Daytype[ICDOperation.Land] = 'land'
 Daytype[ICDOperation.RotateToYaw] = 'rotateToYaw'
 Daytype[ICDOperation.Gimbal] = 'gimbal'
@@ -106,13 +106,8 @@ def ICD():
             import hotPoint 
         elif operation == Daytype[icd_multirotor.wayPoints]:
             import wayPoints   
-        elif operation == Daytype[ICDOperation.MoveToPosition]:
-            coordinates = data['coordinates']
-            import moveToPosition
-            from moveToPosition import MoveToPosition
-            r = MoveToPosition(
-                coordinates[0], coordinates[1], coordinates[2])
-            r.start()
+        elif operation == Daytype[ICDOperation.position_set]:
+            import positionSet
         elif operation == Daytype[ICDOperation.RotateToYaw]:
             import rotateToYaw
             from rotateToYaw import RotateToYaw
@@ -277,6 +272,49 @@ def waypoint_operation(value):
     import wayPoints
     from wayPoints import WayPoints
     _task = WayPoints(value,100)
+    _task.start()
+
+
+
+#   position_set
+#
+#  { 
+#	"x": 20,
+#	"y": 20,
+#	"z": 25,
+#	"tolerance": 2
+#}                        
+# ========================================================================== #  
+@app.route('/position_set', methods=['GET', 'POST'])
+def positionSet():
+    if request.method == "POST":
+        data = request.get_json()
+        print("request")
+        x = data['x']
+        y = data['y']
+        z = data['z']
+        ned_coordinates = [x,y,z]
+
+        msg = "NED is missing"
+        if ned_coordinates:
+            import sys
+            sys.path.insert(1, '../icd_multirotor')
+
+            thread = Thread(target=position_set_operation, kwargs={'value': request.args.get('value', ned_coordinates)})
+            thread.start()
+
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
+        else:
+            print(msg)
+            respons = {"success": False, "message": msg}
+            return jsonify(respons)
+
+
+def position_set_operation(value):
+    import positionSet
+    from positionSet import PositionSet
+    _task = PositionSet(value[0], value[1], value[2])
     _task.start()
 
 
