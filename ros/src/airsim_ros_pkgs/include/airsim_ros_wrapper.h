@@ -206,7 +206,7 @@ private:
     ros::ServiceServer land_group_srvr_;
 
     // utility struct for a SINGLE robot
-    struct MultiRotorROS
+    struct VehicleROS
     {
         std::string vehicle_name;
 
@@ -241,7 +241,7 @@ private:
     msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin 
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
 
-    std::vector<MultiRotorROS> multirotor_ros_vec_;
+    std::vector<VehicleROS> vehicle_ros_vec_;
 
     std::vector<string> vehicle_names_;
     std::vector<VehicleSetting> vehicle_setting_vec_;
@@ -261,7 +261,7 @@ private:
     ros::NodeHandle nh_private_;
 
     // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
-    // todo for multiple drones with multiple sensors, this won't scale. make it a part of MultiRotorROS?
+    // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?
     ros::CallbackQueue img_timer_cb_queue_;
     ros::CallbackQueue lidar_timer_cb_queue_;
 
