@@ -41,7 +41,15 @@ private:
 
     std::shared_ptr<RenderParams>* params_;
     std::shared_ptr<RenderResult>* results_;
-    unsigned int req_size_;
+public:
+	RenderParams *fast_param_;
+	RenderResult *fast_result_;
+	volatile bool fast_cap_done_ = false;
+	FTextureRenderTargetResource* fast_rt_resource_;
+private:
+	FRHITexture2D *fast_cap_texture_;
+	volatile unsigned int fast_cap_tex_size_;
+    volatile unsigned int req_size_;
 
     std::shared_ptr<msr::airlib::WorkerThreadSignal> wait_signal_;
 
@@ -64,10 +72,13 @@ public:
         RETURN_QUICK_DECLARE_CYCLE_STAT(RenderRequest, STATGROUP_RenderThreadCommands);
     }
 
+	void fastScreenshot(std::shared_ptr<RenderParams> param, std::shared_ptr<RenderResult> result);
+
     // read pixels from render target using render thread, then compress the result into PNG
     // argument on the thread that calls this method.
     void getScreenshot(
         std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size, bool use_safe_method);
 
     void ExecuteTask();
+	void FastTask();
 };

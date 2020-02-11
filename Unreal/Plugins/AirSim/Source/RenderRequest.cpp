@@ -3,6 +3,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "TaskGraphInterfaces.h"
 #include "ImageUtils.h"
+#include "UnrealString.h"
 
 #include "AirBlueprintLib.h"
 #include "Async/Async.h"
@@ -16,6 +17,47 @@ RenderRequest::RenderRequest(UGameViewportClient * game_viewport, std::function<
 
 RenderRequest::~RenderRequest()
 {
+}
+
+void RenderRequest::fastScreenshot(std::shared_ptr<RenderParams> param, std::shared_ptr<RenderResult> result)
+{
+	//params_ = &param;
+	//results_ = &result;
+	//fast_param_ = param.get();
+	//fast_result_ = result.get();
+
+	UAirBlueprintLib::RunCommandOnGameThread([this]() {
+		fast_cap_done_ = false;
+		fast_rt_resource_ = fast_param_->render_component->TextureTarget->GameThread_GetRenderTargetResource();
+		fast_param_->render_component->CaptureScene();
+		ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
+			SceneDrawCompletion,
+			RenderRequest *, This, this,
+			{
+				This->FastTask();
+			}
+		);
+	}, true);
+	while (!fast_cap_done_) {} //Spin lock.
+}
+
+void RenderRequest::FastTask()
+{
+	fast_cap_texture_ = fast_rt_resource_->TextureRHI->GetTexture2D();
+	EPixelFormat pixelFormat = fast_cap_texture_->GetFormat();
+	uint32 width = fast_cap_texture_->GetSizeX();
+	uint32 height = fast_cap_texture_->GetSizeY();
+	fast_cap_tex_size_ = width * height;
+	//
+	uint32 stride;
+	auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture_, 0, RLM_ReadOnly, stride, false); // needs to be on render thread?
+	fast_result_->image_data_uint8.Reset(fast_result_->image_data_uint8.Num());
+	fast_result_->image_data_uint8.Append(src, width * height);
+	//void *dest = static_cast<void*>(fast_result_->image_data_uint8.GetData());
+	//if (src && dest)
+//		FMemory::BigBlockMemcpy(dest, src, fast_cap_tex_size_);
+	RHIUnlockTexture2D(fast_cap_texture_, 0, false);
+	fast_cap_done_ = true;
 }
 
 // read pixels from render target using render thread, then compress the result into PNG
