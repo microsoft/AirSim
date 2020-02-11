@@ -12,6 +12,7 @@ STRICT_MODE_ON
 #include "ros/ros.h"
 #include "sensors/imu/ImuBase.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
+#include "vehicles/car/api/CarRpcLibClient.hpp"
 #include "yaml-cpp/yaml.h"
 #include <airsim_ros_pkgs/GimbalAngleEulerCmd.h>
 #include <airsim_ros_pkgs/GimbalAngleQuatCmd.h>
@@ -52,6 +53,7 @@ STRICT_MODE_ON
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <unordered_map>
+#include <memory>
 // #include "nodelet/nodelet.h"
 
 // todo move airlib typedefs to separate header file?
@@ -115,6 +117,12 @@ struct GimbalCmd
 class AirsimROSWrapper
 {
 public:
+    enum class AIRSIM_MODE : unsigned
+    {
+        DRONE,
+        CAR
+    };
+
     AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
     ~AirsimROSWrapper() {}; 
 
@@ -182,7 +190,8 @@ private:
     tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat) const;
     msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion& geometry_msgs_quat) const;
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
-    nav_msgs::Odometry get_odom_msg_from_airsim_state(const msr::airlib::MultirotorState& drone_state) const;
+    nav_msgs::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
+    nav_msgs::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
     sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
@@ -205,9 +214,13 @@ private:
     ros::ServiceServer takeoff_group_srvr_;
     ros::ServiceServer land_group_srvr_;
 
+    AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
+
     // utility struct for a SINGLE robot
-    struct VehicleROS
+    class VehicleROS
     {
+    public:
+        virtual ~VehicleROS() {}
         std::string vehicle_name;
 
         /// All things ROS
@@ -217,13 +230,7 @@ private:
 
         ros::Subscriber vel_cmd_body_frame_sub;
         ros::Subscriber vel_cmd_world_frame_sub;
-
-        ros::ServiceServer takeoff_srvr;
-        ros::ServiceServer land_srvr;
-
-        /// State
-        msr::airlib::MultirotorState curr_drone_state;
-        // bool in_air_; // todo change to "status" and keep track of this
+        
         nav_msgs::Odometry curr_odom_ned;
         sensor_msgs::NavSatFix gps_sensor_msg;
         bool has_vel_cmd;
@@ -231,9 +238,28 @@ private:
 
         std::string odom_frame_id;
         /// Status
-        // bool in_air_; // todo change to "status" and keep track of this
         // bool is_armed_;
         // std::string mode_;
+    };
+
+    class CarROS : public VehicleROS
+    {
+    public:
+        msr::airlib::CarApiBase::CarState curr_car_state;
+    };
+
+    class MultiRotorROS : public VehicleROS
+    {
+    public:
+        /// State
+        msr::airlib::MultirotorState curr_drone_state;
+        // bool in_air_; // todo change to "status" and keep track of this
+
+        ros::ServiceServer takeoff_srvr;
+        ros::ServiceServer land_srvr;
+
+        /// Status
+        // bool in_air_; // todo change to "status" and keep track of this
     };
 
     ros::ServiceServer reset_srvr_;
@@ -241,7 +267,7 @@ private:
     msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin 
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
 
-    std::vector<VehicleROS> vehicle_ros_vec_;
+    std::vector< std::unique_ptr< VehicleROS> > vehicle_ros_vec_;
 
     std::vector<string> vehicle_names_;
     std::vector<VehicleSetting> vehicle_setting_vec_;
@@ -253,9 +279,9 @@ private:
     std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec_;
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
-    msr::airlib::MultirotorRpcLibClient airsim_client_;
-    msr::airlib::MultirotorRpcLibClient airsim_client_images_;
-    msr::airlib::MultirotorRpcLibClient airsim_client_lidar_;
+    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_ = nullptr;
+    msr::airlib::RpcLibClientBase airsim_client_images_;
+    msr::airlib::RpcLibClientBase airsim_client_lidar_;
 
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
