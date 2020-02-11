@@ -33,7 +33,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method) const
 {
     std::vector<std::shared_ptr<RenderRequest::RenderParams>> render_params;
-    std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
+    //std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
 
     bool visibilityChanged = false;
     for (unsigned int i = 0; i < requests.size(); ++i) {
@@ -89,16 +89,27 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
     };
     RenderRequest render_request { gameViewport, std::move(query_camera_pose_cb) };
 
-    render_request.getScreenshot(render_params.data(), render_results, render_params.size(), use_safe_method);
+    //render_request.getScreenshot(render_params.data(), render_results, render_params.size(), use_safe_method);
+	//////
+	render_request.fast_param_ = render_params.at(0).get();
+	render_request.fast_result_ = new RenderRequest::RenderResult(); //TODO: MEMORY LEAK //std::make_shared<RenderRequest::RenderResult>();
 
-    for (unsigned int i = 0; i < requests.size(); ++i) {
-        const ImageRequest& request = requests.at(i);
-        ImageResponse& response = responses.at(i);
-              
+	//auto param = render_params.at(0);
+	//auto result = std::make_shared<RenderRequest::RenderResult>();
+	UAirBlueprintLib::RunCommandOnGameThread([this, &render_request]() {
+		render_request.fastScreenshot(nullptr, nullptr);
+	}, true);
+	//////
+
+    //for (unsigned int i = 0; i < requests.size(); ++i) {
+    //    const ImageRequest& request = requests.at(i);
+    //    ImageResponse& response = responses.at(i);
+	const ImageRequest &request = requests.at(0);
+	ImageResponse &response = responses.at(0);
         response.camera_name = request.camera_name;
-        response.time_stamp = render_results[i]->time_stamp;
-        response.image_data_uint8 = std::vector<uint8_t>(render_results[i]->image_data_uint8.GetData(), render_results[i]->image_data_uint8.GetData() + render_results[i]->image_data_uint8.Num());
-        response.image_data_float = std::vector<float>(render_results[i]->image_data_float.GetData(), render_results[i]->image_data_float.GetData() + render_results[i]->image_data_float.Num());
+        response.time_stamp = render_request.fast_result_->time_stamp;
+        response.image_data_uint8 = std::vector<uint8_t>(render_request.fast_result_->image_data_uint8.GetData(), render_request.fast_result_->image_data_uint8.GetData() + render_request.fast_result_->image_data_uint8.Num());
+        //response.image_data_float = std::vector<float>(result->image_data_float.GetData(), result->image_data_float.GetData() + render_results[i]->image_data_float.Num());
 
         if (use_safe_method) {
             // Currently, we don't have a way to synthronize image capturing and camera pose when safe method is used, 
@@ -109,10 +120,10 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
         }
         response.pixels_as_float = request.pixels_as_float;
         response.compress = request.compress;
-        response.width = render_results[i]->width;
-        response.height = render_results[i]->height;
+        response.width = render_request.fast_result_->width;
+        response.height = render_request.fast_result_->height;
         response.image_type = request.image_type;
-    }
+    //}
 
 }
 
