@@ -4,7 +4,8 @@
 #include "TaskGraphInterfaces.h"
 #include "ImageUtils.h"
 #include "UnrealString.h"
-
+#include <thread>
+#include <chrono>
 #include "AirBlueprintLib.h"
 #include "Async/Async.h"
 
@@ -37,8 +38,11 @@ void RenderRequest::fastScreenshot(std::shared_ptr<RenderParams> param, std::sha
 				This->FastTask();
 			}
 		);
-	}, true);
-	while (!fast_cap_done_) {} //Spin lock.
+	}, false);
+	while (!fast_cap_done_) 
+	{
+		std::this_thread::sleep_for(std::chrono::microseconds(500));
+	} //Spin lock.
 }
 
 void RenderRequest::FastTask()
@@ -47,15 +51,13 @@ void RenderRequest::FastTask()
 	EPixelFormat pixelFormat = fast_cap_texture_->GetFormat();
 	uint32 width = fast_cap_texture_->GetSizeX();
 	uint32 height = fast_cap_texture_->GetSizeY();
-	fast_cap_tex_size_ = width * height;
-	//
 	uint32 stride;
-	auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture_, 0, RLM_ReadOnly, stride, false); // needs to be on render thread?
+	auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture_, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
 	fast_result_->image_data_uint8.Reset(fast_result_->image_data_uint8.Num());
-	fast_result_->image_data_uint8.Append(src, width * height);
+	fast_result_->image_data_uint8.Append(src, height * stride);
 	//void *dest = static_cast<void*>(fast_result_->image_data_uint8.GetData());
 	//if (src && dest)
-//		FMemory::BigBlockMemcpy(dest, src, fast_cap_tex_size_);
+	//	FMemory::BigBlockMemcpy(dest, src, height * stride);
 	RHIUnlockTexture2D(fast_cap_texture_, 0, false);
 	fast_cap_done_ = true;
 }
