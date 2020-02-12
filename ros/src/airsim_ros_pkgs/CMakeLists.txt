@@ -41,6 +41,7 @@ add_message_files(
   GPSYaw.msg
   VelCmd.msg
   VelCmdGroup.msg
+  CarControls.msg
 )
 
 add_service_files(

@@ -24,6 +24,7 @@ STRICT_MODE_ON
 #include <airsim_ros_pkgs/TakeoffGroup.h>
 #include <airsim_ros_pkgs/VelCmd.h>
 #include <airsim_ros_pkgs/VelCmdGroup.h>
+#include <airsim_ros_pkgs/CarControls.h>
 #include <chrono>
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -155,6 +156,8 @@ private:
     void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
     void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
 
+    void car_cmd_cb(const airsim_ros_pkgs::CarControls::ConstPtr& msg, const std::string& vehicle_name);
+
     // void set_zero_vel_cmd();
 
     /// ROS service callbacks
@@ -226,15 +229,11 @@ private:
         /// All things ROS
         ros::Publisher odom_local_ned_pub;
         ros::Publisher global_gps_pub;
-        // ros::Publisher home_geo_point_pub_; // geo coord of unreal origin
-
-        ros::Subscriber vel_cmd_body_frame_sub;
-        ros::Subscriber vel_cmd_world_frame_sub;
+        // ros::Publisher home_geo_point_pub_; // geo coord of unreal origin       
         
         nav_msgs::Odometry curr_odom_ned;
         sensor_msgs::NavSatFix gps_sensor_msg;
-        bool has_vel_cmd;
-        VelCmd vel_cmd;
+        
 
         std::string odom_frame_id;
         /// Status
@@ -246,6 +245,11 @@ private:
     {
     public:
         msr::airlib::CarApiBase::CarState curr_car_state;
+
+        ros::Subscriber car_cmd_sub;
+
+        bool has_car_cmd;
+        msr::airlib::CarApiBase::CarControls car_cmd;
     };
 
     class MultiRotorROS : public VehicleROS
@@ -255,8 +259,14 @@ private:
         msr::airlib::MultirotorState curr_drone_state;
         // bool in_air_; // todo change to "status" and keep track of this
 
+        ros::Subscriber vel_cmd_body_frame_sub;
+        ros::Subscriber vel_cmd_world_frame_sub;
+
         ros::ServiceServer takeoff_srvr;
         ros::ServiceServer land_srvr;
+
+        bool has_vel_cmd;
+        VelCmd vel_cmd;
 
         /// Status
         // bool in_air_; // todo change to "status" and keep track of this

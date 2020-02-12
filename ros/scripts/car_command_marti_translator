@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+
+#transfer ros commands from a HUD using SWRI marti messaging to AirSim
+
+import rospy
+import threading
+import marti_common_msgs as mcm
+import marti_common_msgs.msg
+import airsim_ros_pkgs as air
+import airsim_ros_pkgs.msg
+
+class CarCommandTranslator(object):
+    def __init__(self):
+        self.lock = threading.Lock()
+
+        update_rate_hz = rospy.get_param('~update_rate_hz', 20.0)
+        curvature_topic = rospy.get_param('~curvature_topic', '/simulation/steering_actual')
+        throttle_topic = rospy.get_param('~throttle_topic', '/simulation/throttle_actual')
+        brake_topic = rospy.get_param('~brake_topic', '/simulation/brake_actual')
+        transmission_topic = rospy.get_param('~transmission_topic', '/simulation/transmission_actual')
+        car_control_topic = rospy.get_param('~car_control_topic', '/airsim_node/drone_1/car_cmd')
+
+        self.curvature_msg = None
+        self.throttle_msg = None
+        self.brake_msg = None
+        self.transmission_msg = None
+
+        self.curvature_sub = rospy.Subscriber(
+            curvature_topic,
+            mcm.msg.Float32Stamped,
+            self.handle_curvature
+        )
+
+        self.throttle_sub = rospy.Subscriber(
+            throttle_topic,
+            mcm.msg.Float32Stamped,
+            self.handle_throttle
+        )
+
+        self.brake_sub = rospy.Subscriber(
+            brake_topic,
+            mcm.msg.Float32Stamped,
+            self.handle_brake
+        )
+
+        self.transmission_sub = rospy.Subscriber(
+            transmission_topic,
+            mcm.msg.StringStamped,
+            self.handle_transmission
+        )
+
+        self.command_pub = rospy.Publisher(
+            car_control_topic,
+            air.msg.CarControls,
+            queue_size=0
+        )
+
+        self.update_time = rospy.Timer(
+            rospy.Duration(1.0/update_rate_hz),
+            self.handle_update_timer
+        )
+
+    def handle_curvature(self, msg):
+        with self.lock:
+            self.curvature_msg = msg
+
+    def handle_throttle(self, msg):
+        with self.lock:
+            self.throttle_msg = msg
+
+    def handle_brake(self, msg):
+        with self.lock:
+            self.brake_msg = msg
+
+    def handle_transmission(self, msg):
+        with self.lock:
+            self.transmission_msg = msg
+
+    def handle_update_timer(self, ignored):
+        curvature = None
+        throttle = None
+        brake = None
+        transmission = None
+        with self.lock:
+            curvature = self.curvature_msg
+            throttle = self.throttle_msg
+            brake = self.brake_msg
+            transmission = self.transmission_msg
+
+        if curvature is None or throttle is None or brake is None or transmission is None:
+            return
+        
+        controls = airsim_ros_pkgs.msg.CarControls()
+        
+        now = rospy.Time.now()
+        controls.header.stamp = now
+        controls.throttle = throttle.value
+        controls.steering = curvature.value
+        controls.brake = brake.value
+        controls.manual = True
+        # -1 reverse, 0 N, 1 drive
+        controls.manual_gear = 0
+        if transmission.value.startswith("drive"):
+            controls.manual_gear = 1
+        elif transmission.value.startswith("reverse"):
+            controls.manual_gear = -1
+        
+        controls.handbrake = False
+        controls.gear_immediate = True
+
+        self.command_pub.publish(controls)
+
+    def run(self):
+        rospy.spin()
+
+if __name__ == '__main__':
+    rospy.init_node('car_command_translator')
+    node = CarCommandTranslator()
+    node.run()
