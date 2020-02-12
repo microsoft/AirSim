@@ -15,6 +15,7 @@ socketio = SocketIO(app, ping_timeout=100, ping_interval=100)
 
 hot_point_ned_coordinate = []
 air_sim = None
+initialize_height = 0 
 posts = [{
     'author': "yigal",
     'title': "1",
@@ -137,6 +138,8 @@ def takeoff():
         if operation:
             import sys
             sys.path.insert(1, '../icd_multirotor')
+
+            initializeHeight()
 
             thread = Thread(target=takeoff_operation, kwargs={'value': request.args.get('value', operation)})
             thread.start()
@@ -435,6 +438,16 @@ def init_airsim():
     return airsim_client
 
 
+#   initialize the client.          
+# ========================================================================== #
+def initializeHeight():
+    global air_sim 
+    global initialize_height
+    rpcinfo = air_sim.getMultirotorState()
+    kinematics_estimated = rpcinfo.kinematics_estimated
+    initialize_height = kinematics_estimated.position.z_val
+
+
 #   load telmetry          
 # ========================================================================== #   
 def load_airsim(airsim_client):
@@ -445,6 +458,11 @@ def load_airsim(airsim_client):
         rpcinfo.kinematics_estimated.orientation)
     homepoint = airsim_client.getHomeGeoPoint()
 
+    global initialize_height
+    if(initialize_height is not 0):
+        height_above_takeoff = -(kinematics_estimated.position.z_val) + initialize_height
+    else:
+        height_above_takeoff = initialize_height
     telemetry = {
         "battery_state": {
             "percentage": 70.04
@@ -455,7 +473,7 @@ def load_airsim(airsim_client):
             "pitch": pitch,
             "yaw": yaw
         },
-        "height_above_takeoff":-(kinematics_estimated.position.z_val) - 441, ## -( kinematics_estimated.position.linear_velocity.z_val),
+        "height_above_takeoff": height_above_takeoff, #-(kinematics_estimated.position.z_val) + initialize_height,
         "gps_health": 5,
         "heading": math.degrees(yaw),
         "velocity": {
@@ -569,7 +587,7 @@ def handle_force_stop(json):
 
 
 def geo_to_ned(gps_location):
-    ##air_sim = init_airsim()
+    #air_sim = init_airsim()
     global air_sim
     home_point = air_sim.getHomeGeoPoint()
     print(home_point)
