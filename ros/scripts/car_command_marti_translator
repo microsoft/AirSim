@@ -19,6 +19,10 @@ class CarCommandTranslator(object):
         brake_topic = rospy.get_param('~brake_topic', '/simulation/brake_actual')
         transmission_topic = rospy.get_param('~transmission_topic', '/simulation/transmission_actual')
         car_control_topic = rospy.get_param('~car_control_topic', '/airsim_node/drone_1/car_cmd')
+        self.auto_gear_max = rospy.get_param('~auto_gear_max', 5)
+
+
+        transmission_topic = rospy.get_param('~transmission_topic', '/simulation/transmission_actual')
 
         self.curvature_msg = None
         self.throttle_msg = None
@@ -98,15 +102,22 @@ class CarCommandTranslator(object):
         controls.steering = curvature.value
         controls.brake = brake.value
         controls.manual = True
-        # -1 reverse, 0 N, 1 drive
+        # -1 reverse, 0 N, >= 1 drive
         controls.manual_gear = 0
-        if transmission.value.startswith("drive"):
+        if transmission.value.startswith("drive_low"):
             controls.manual_gear = 1
+            controls.handbrake = False
+        elif transmission.value.startswith("drive_high"):
+            controls.manual_gear = self.auto_gear_max
+            controls.handbrake = False
         elif transmission.value.startswith("reverse"):
             controls.manual_gear = -1
+            controls.handbrake = False
+        elif transmission.value.startswith("park"):
+            controls.manual_gear = 0
+            controls.handbrake = True
         
-        controls.handbrake = False
-        controls.gear_immediate = True
+        controls.gear_immediate = False # automatic
 
         self.command_pub.publish(controls)
 
