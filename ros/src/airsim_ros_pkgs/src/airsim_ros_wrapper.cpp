@@ -119,6 +119,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     camera_info_msg_vec_.clear();
     static_tf_msg_vec_.clear();
     imu_pub_vec_.clear();
+    gps_pub_vec_.clear();
     lidar_pub_vec_.clear();
     vehicle_names_.clear(); // todo should eventually support different types of vehicles in a single instance
     // vehicle_setting_vec_.clear();
@@ -154,10 +155,12 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         vehicle_ros->odom_frame_id = curr_vehicle_name + "/odom_local_ned";
         vehicle_ros->vehicle_name = curr_vehicle_name;
         vehicle_ros->odom_local_ned_pub = nh_private_.advertise<nav_msgs::Odometry>(curr_vehicle_name + "/odom_local_ned", 10);
-        vehicle_ros->global_gps_pub = nh_private_.advertise<sensor_msgs::NavSatFix>(curr_vehicle_name + "/global_gps", 10);
 
         if (airsim_mode_ == AIRSIM_MODE::DRONE)
         {
+            // this pulls GPS directly out of the firmware for HIL testing
+            vehicle_ros->global_gps_pub = nh_private_.advertise<sensor_msgs::NavSatFix>(curr_vehicle_name + "/global_gps", 10);
+
             // bind to a single callback. todo optimal subs queue length
             // bind multiple topics to a single callback, but keep track of which vehicle name it was by passing curr_vehicle_name as the 2nd argument 
             (static_cast<MultiRotorROS*>(vehicle_ros.get()))->vel_cmd_body_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/vel_cmd_body_frame", 1, 
@@ -245,7 +248,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                 }
                 case SensorBase::SensorType::Gps:
                 {
+                    vehicle_gps_map_[curr_vehicle_name] = sensor_name; 
                     std::cout << "Gps" << std::endl; 
+                    gps_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::NavSatFix> (curr_vehicle_name + "/gps/" + sensor_name, 10));
                     break;
                 }
                 case SensorBase::SensorType::Magnetometer:
@@ -742,6 +747,21 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
 }
 
 // todo covariances
+sensor_msgs::NavSatFix AirsimROSWrapper::get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const
+{
+    sensor_msgs::NavSatFix gps_msg;
+    gps_msg.latitude = gps_data.gnss.geo_point.latitude;
+    gps_msg.longitude = gps_data.gnss.geo_point.longitude; 
+    gps_msg.altitude = gps_data.gnss.geo_point.altitude;
+    gps_msg.status.service = sensor_msgs::NavSatStatus::SERVICE_GLONASS;
+    gps_msg.status.status = gps_data.gnss.fix_type;
+    // gps_msg.position_covariance_type = 
+    // gps_msg.position_covariance = 
+
+    return gps_msg;
+}
+
+// todo covariances
 sensor_msgs::Imu AirsimROSWrapper::get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const
 {
     sensor_msgs::Imu imu_msg;
@@ -854,17 +874,15 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
             vehicle_ros->curr_odom_ned.child_frame_id = vehicle_ros->odom_frame_id;
             vehicle_ros->curr_odom_ned.header.stamp = curr_ros_time;
 
+            // publish to ROS!  
+            vehicle_ros->odom_local_ned_pub.publish(vehicle_ros->curr_odom_ned);
+            publish_odom_tf(vehicle_ros->curr_odom_ned);
             if (airsim_mode_ == AIRSIM_MODE::DRONE)
             {
                 vehicle_ros->gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(static_cast<MultiRotorROS*>(vehicle_ros.get())->curr_drone_state.gps_location);
                 vehicle_ros->gps_sensor_msg.header.stamp = curr_ros_time;
+                vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
             }
-            
-
-            // publish to ROS!  
-            vehicle_ros->odom_local_ned_pub.publish(vehicle_ros->curr_odom_ned);
-            publish_odom_tf(vehicle_ros->curr_odom_ned);
-            vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
 
             // send control commands from the last callback to airsim
             if (airsim_mode_ == AIRSIM_MODE::DRONE)
@@ -905,6 +923,23 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
                 imu_msg.header.frame_id = vehicle_imu_pair.first;
                 imu_msg.header.stamp = ros::Time::now();
                 imu_pub_vec_[ctr].publish(imu_msg);
+                ctr++;
+            } 
+        }
+
+        // GPSS
+        if (gps_pub_vec_.size() > 0)
+        {
+            int ctr = 0;
+            for (const auto& vehicle_gps_pair: vehicle_gps_map_)
+            {
+                std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
+                auto gps_data = airsim_client_->getGpsData(vehicle_gps_pair.second, vehicle_gps_pair.first);
+                lck.unlock();
+                sensor_msgs::NavSatFix gps_msg = get_gps_msg_from_airsim(gps_data);
+                gps_msg.header.frame_id = vehicle_gps_pair.first;
+                gps_msg.header.stamp = ros::Time::now();
+                gps_pub_vec_[ctr].publish(gps_msg);
                 ctr++;
             } 
         }

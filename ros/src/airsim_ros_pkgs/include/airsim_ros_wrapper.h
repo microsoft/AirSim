@@ -199,6 +199,7 @@ private:
     sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
     sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data) const;
+    sensor_msgs::NavSatFix get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const;
 
     // not used anymore, but can be useful in future with an unreal camera calibration environment
     void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info) const;
@@ -286,6 +287,7 @@ private:
     static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
     std::map<std::string, std::string> vehicle_imu_map_;
     std::map<std::string, std::string> vehicle_lidar_map_;
+    std::map<std::string, std::string> vehicle_gps_map_;
     std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec_;
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
@@ -330,6 +332,7 @@ private:
     std::vector<ros::Publisher> cam_info_pub_vec_;
     std::vector<ros::Publisher> lidar_pub_vec_;
     std::vector<ros::Publisher> imu_pub_vec_;
+    std::vector<ros::Publisher> gps_pub_vec_;
 
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
 

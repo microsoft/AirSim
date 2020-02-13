@@ -12,10 +12,14 @@
       "EnableCollisions": true,
       "AllowAPIAlways": true,
       "Sensors": {
+        "Gps": {
+          "SensorType": 3,
+          "Enabled" : true
+        },
         "Imu" : {
           "SensorType": 2,
           "Enabled": true
-        },
+        },        
         "LidarCustom": {
           "SensorType": 6,
           "Enabled": true,
