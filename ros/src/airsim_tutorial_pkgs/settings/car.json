@@ -16,6 +16,14 @@
           "SensorType": 3,
           "Enabled" : true
         },
+        "Barometer": {
+          "SensorType": 1,
+          "Enabled" : true
+        },
+        "Magnetometer": {
+          "SensorType": 4,
+          "Enabled" : true
+        },
         "Imu" : {
           "SensorType": 2,
           "Enabled": true

@@ -120,6 +120,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     static_tf_msg_vec_.clear();
     imu_pub_vec_.clear();
     gps_pub_vec_.clear();
+    barameter_pub_vec_.clear();
     lidar_pub_vec_.clear();
     vehicle_names_.clear(); // todo should eventually support different types of vehicles in a single instance
     // vehicle_setting_vec_.clear();
@@ -235,7 +236,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
             {
                 case SensorBase::SensorType::Barometer:
                 {
+                    vehicle_barometer_map_[curr_vehicle_name] = sensor_name;
                     std::cout << "Barometer" << std::endl; 
+                    barameter_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::FluidPressure> (curr_vehicle_name + "/pressure/" + sensor_name, 10));
                     break;
                 }
                 case SensorBase::SensorType::Imu:
@@ -255,7 +258,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                 }
                 case SensorBase::SensorType::Magnetometer:
                 {
+                    vehicle_magnetometer_map_[curr_vehicle_name] = sensor_name;
                     std::cout << "Magnetometer" << std::endl; 
+                    magnetometer_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::MagneticField> (curr_vehicle_name + "/magnetometer/" + sensor_name, 10));
                     break;
                 }
                 case SensorBase::SensorType::Distance:
@@ -746,6 +751,19 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
     return lidar_msg;
 }
 
+sensor_msgs::MagneticField AirsimROSWrapper::get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output& mag_data) const
+{
+    sensor_msgs::MagneticField mag_msg;
+    mag_msg.magnetic_field.x = mag_data.magnetic_field_body.x();
+    mag_msg.magnetic_field.y = mag_data.magnetic_field_body.y();
+    mag_msg.magnetic_field.z = mag_data.magnetic_field_body.z();
+    std::copy(std::begin(mag_data.magnetic_field_covariance), 
+        std::end(mag_data.magnetic_field_covariance), 
+        std::begin(mag_msg.magnetic_field_covariance));
+
+    return mag_msg;
+}
+
 // todo covariances
 sensor_msgs::NavSatFix AirsimROSWrapper::get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const
 {
@@ -911,7 +929,7 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
         }
 
         // IMUS
-        if (imu_pub_vec_.size() > 0)
+        if (!imu_pub_vec_.empty())
         {
             int ctr = 0;
             for (const auto& vehicle_imu_pair: vehicle_imu_map_)
@@ -928,7 +946,7 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
         }
 
         // GPSS
-        if (gps_pub_vec_.size() > 0)
+        if (!gps_pub_vec_.empty())
         {
             int ctr = 0;
             for (const auto& vehicle_gps_pair: vehicle_gps_map_)
@@ -942,6 +960,45 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
                 gps_pub_vec_[ctr].publish(gps_msg);
                 ctr++;
             } 
+        }
+
+        // Pressure
+        if (!barameter_pub_vec_.empty())
+        {
+            int ctr = 0;
+            for (const auto& vehicle_barometer_pair: vehicle_barometer_map_)
+            {
+                std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
+                auto baro_data = airsim_client_->getBarometerData(vehicle_barometer_pair.second, vehicle_barometer_pair.first);
+                lck.unlock();
+                sensor_msgs::FluidPressure baro_msg;
+                // rosflight_msgs::Barometer baro_msg;
+                // baro_msg.pressure = baro_data.pressure;
+                // baro_msg.altitude = baro_data.altitude;
+                // baro_msg.temperature = 
+                baro_msg.fluid_pressure = baro_data.pressure;
+                // baro_msg.variance = 
+                baro_msg.header.frame_id = vehicle_barometer_pair.first;
+                baro_msg.header.stamp = ros::Time::now();
+                barameter_pub_vec_[ctr].publish(baro_msg);
+                ctr++;
+            }
+        }
+
+        if (!magnetometer_pub_vec_.empty())
+        {
+            int ctr = 0;
+            for (const auto& vehicle_magnetometer_pair: vehicle_magnetometer_map_)
+            {
+                std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
+                auto mag_data = airsim_client_->getMagnetometerData(vehicle_magnetometer_pair.second, vehicle_magnetometer_pair.first);
+                lck.unlock();
+                sensor_msgs::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
+                mag_msg.header.frame_id = vehicle_magnetometer_pair.first;
+                mag_msg.header.stamp = ros::Time::now();
+                magnetometer_pub_vec_[ctr].publish(mag_msg);
+                ctr++;
+            }
         }
 
         if (static_tf_msg_vec_.size() > 0)
