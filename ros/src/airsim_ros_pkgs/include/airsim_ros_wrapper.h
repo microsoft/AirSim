@@ -223,6 +223,13 @@ private:
 
     AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
 
+    struct SensorPublisher
+    {
+        SensorBase::SensorType sensor_type;
+        std::string sensor_name;
+        ros::Publisher publisher;
+    };
+
     // utility struct for a SINGLE robot
     class VehicleROS
     {
@@ -233,7 +240,9 @@ private:
         /// All things ROS
         ros::Publisher odom_local_ned_pub;
         ros::Publisher global_gps_pub;
-        // ros::Publisher home_geo_point_pub_; // geo coord of unreal origin       
+        std::vector<SensorPublisher> sensor_pubs; 
+        // handle lidar seperately for max performance as data is collected on its own thread/callback
+        std::vector<SensorPublisher> lidar_pubs;
         
         nav_msgs::Odometry curr_odom_ned;
         sensor_msgs::NavSatFix gps_sensor_msg;
@@ -281,18 +290,11 @@ private:
     msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin 
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
 
-    std::vector< std::unique_ptr< VehicleROS> > vehicle_ros_vec_;
-
-    std::vector<string> vehicle_names_;
     std::vector<VehicleSetting> vehicle_setting_vec_;
     AirSimSettingsParser airsim_settings_parser_;
-    std::unordered_map<std::string, int> vehicle_name_idx_map_;
+    std::unordered_map< std::string, std::unique_ptr< VehicleROS > > vehicle_name_ptr_map_;
     static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
-    std::map<std::string, std::string> vehicle_imu_map_;
-    std::map<std::string, std::string> vehicle_lidar_map_;
-    std::map<std::string, std::string> vehicle_gps_map_;
-    std::map<std::string, std::string> vehicle_barometer_map_;
-    std::map<std::string, std::string> vehicle_magnetometer_map_;
+
     std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec_;
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
@@ -335,11 +337,6 @@ private:
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
     std::vector<image_transport::Publisher> image_pub_vec_; 
     std::vector<ros::Publisher> cam_info_pub_vec_;
-    std::vector<ros::Publisher> lidar_pub_vec_;
-    std::vector<ros::Publisher> imu_pub_vec_;
-    std::vector<ros::Publisher> gps_pub_vec_;
-    std::vector<ros::Publisher> barameter_pub_vec_;
-    std::vector<ros::Publisher> magnetometer_pub_vec_;
 
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
 
