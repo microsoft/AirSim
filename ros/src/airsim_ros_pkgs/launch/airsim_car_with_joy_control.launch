@@ -1,6 +1,6 @@
 <launch>
 	
-	<node name="airsim_node" pkg="airsim_ros_pkgs" type="airsim_node" output="screen">
+	<node name="airsim_node" pkg="airsim_ros_pkgs" type="airsim_node">
 	<!-- <node pkg="nodelet" type="nodelet" name="airsim_nodelet_manager" args="manager" output="screen" /> -->
 	<!-- <node pkg="nodelet" type="nodelet" name="airsim_nodelet" args="standalone airsim_ros_pkgs/airsim_ros_nodelet airsim_nodelet_manager" output="screen"> -->
 
