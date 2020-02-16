@@ -14,6 +14,7 @@ app = Flask(__name__)
 socketio = SocketIO(app, ping_timeout=100, ping_interval=100)
 
 hot_point_ned_coordinate = []
+way_point_ned_coordinate = []
 air_sim = None
 initialize_height = 0 
 posts = [{
@@ -74,6 +75,7 @@ class ICDOperation(enum.Enum):
     HotPoint = 6
     WayPoints = 7
     HotPointAction = 8
+    WayPointAction = 9
 
 
 Daytype = {}
@@ -85,6 +87,7 @@ Daytype[ICDOperation.Gimbal] = 'gimbal'
 Daytype[ICDOperation.HotPoint] = 'hotPoint/upload'
 Daytype[ICDOperation.WayPoints] = 'wayPoint/uploadComplex'
 Daytype[ICDOperation.HotPointAction] = 'hotPoint/action'
+Daytype[ICDOperation.WayPointAction] = 'waypoint/action'
 
 @app.route('/addRegion', methods=['POST'])
 def addRegion():
@@ -194,46 +197,12 @@ def land_operation():
 #     "yaw_mode": 2
 #  }
 # ========================================================================== #            
-# @app.route('/hotPoint/upload', methods=['GET', 'POST'])
-# def hotPoint():
-#     if request.method == "POST":
-#         data = request.get_json()
-#         print("request")
-#         msg = "data is missing !"
-#         # ned_c = geo_to_ned(gps_location)
-#         if data:
-#             import sys
-#             sys.path.insert(1, '../icd_multirotor')
-#             coordinates = []
-#             coordinates = [data['latitude'],data['longitude'],data['altitude']] ## get add lon\lat
-#             ned_coordinate = geo_to_ned(coordinates)
-#             thread = Thread(target=hotpoint_operation, kwargs={'value': request.args.get('value', ned_coordinate)})
-#             thread.start()
-            
-#             respons = {"success": True, "message": ""}
-#             return jsonify(respons)
-#         else:
-#             print(msg)
-#             respons = {"success": False, "message": msg}
-#             return jsonify(respons)
-
-
-# def hotpoint_operation(value):
-#     import hotPoint
-#     from hotPoint import HotPoint
-#     print(value[0], value[1], value[2])
-#     # _task = HotPoint(value[0], value[1], value[2])
-#     _task = HotPoint(value[0], value[1], 461)
-#     _task.start()
-#     #TODO::implement the mission..(orbit?) 
-
 @app.route('/hotPoint/upload', methods=['GET', 'POST'])
 def hotPoint():
     if request.method == "POST":
         data = request.get_json()
         print("request")
         msg = "data is missing !"
-        # ned_c = geo_to_ned(gps_location)
         if data:
             import sys
             sys.path.insert(1, '../icd_multirotor')
@@ -241,11 +210,7 @@ def hotPoint():
             coordinates = [data['latitude'],data['longitude'],data['altitude']] ## get add lon\lat
             global hot_point_ned_coordinate 
             ned_coordinates =  geo_to_ned(coordinates)
-            hot_point_ned_coordinate = [ned_coordinates[0],ned_coordinates[1],ned_coordinates[2]]
-            #thread = Thread(target=hotpoint_operation, kwargs={'value': request.args.get('value', ned_coordinate)})
-            #thread.start()
-            print("FFFFFFFFFFFFFFFFFFF")
-            print(ned_coordinates)
+            hot_point_ned_coordinate = [ned_coordinates[0],ned_coordinates[1],500] ##TODO:: hieght
             respons = {"success": True, "message": ""}
             return jsonify(respons)
         else:
@@ -288,7 +253,7 @@ def hotpoint_action_operation():
     import hotPoint
     from hotPoint import HotPoint
     ##global param....
-    _task = HotPoint(hot_point_ned_coordinate[0], hot_point_ned_coordinate[1], 461)
+    _task = HotPoint(hot_point_ned_coordinate[0], hot_point_ned_coordinate[1], hot_point_ned_coordinate[2])
     _task.start()
 
 
@@ -341,17 +306,87 @@ def wayPoints():
                 point = points[i] #{X,Y,Z}
                 x = point['latitude']
                 y = point['longitude']
-                z = point['altitude']
+                # z = point['altitude']
                 geo_point = []
-                geo_point = [x,y,z]
+                geo_point = [x,y,461] # geo_point = [x,y,z]
                 ned_coordinate = geo_to_ned(geo_point)
-                airSimPoint = airsim.Vector3r(ned_coordinate[0],ned_coordinate[0],461)
+                airSimPoint = airsim.Vector3r(ned_coordinate[1],ned_coordinate[0],-500)
                 print(airSimPoint)
                 path.append(airSimPoint)
-            #
-            thread = Thread(target=waypoint_operation, kwargs={'value': request.args.get('value', path)})
-            thread.start()
-            
+
+            global way_point_ned_coordinate
+            way_point_ned_coordinate = path
+
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
+        else:
+            print(msg)
+            respons = {"success": False, "message": msg}
+            return jsonify(respons)
+
+#############################################################
+@app.route('/wayPoint/upload', methods=['GET', 'POST'])
+def wayPointUpload():
+     if request.method == "POST":
+        data = request.get_json()
+        print("request")
+        msg = "data is missing !"
+        if data:
+            import sys
+            sys.path.insert(1, '../icd_multirotor')
+            path = []
+            x1 = data['latitude0']
+            y1 = data['longitude0']
+            z1 = data['altitude']
+            x2 = data['latitude1']
+            y2 = data['longitude1'] 
+            z1 = -1*z1
+
+            geo_point1 = []
+            geo_point1 = [x1,y1,z1]
+            ned_coordinate1 = geo_to_ned(geo_point1)
+            airSimPoint1 = airsim.Vector3r(ned_coordinate1[1],ned_coordinate1[0],-500)#ned_coordinate1[0],ned_coordinate1[1],500)
+            path.append(airSimPoint1)
+            geo_point2 = []
+            geo_point2 = [x2,y2,z1]
+            ned_coordinate2 = geo_to_ned(geo_point2)
+            airSimPoint2 = airsim.Vector3r(ned_coordinate2[1],ned_coordinate2[0],-500)#ned_coordinate2[0],ned_coordinate2[1],500)
+            path.append(airSimPoint2)
+
+            global way_point_ned_coordinate
+            way_point_ned_coordinate = path
+
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
+        else:
+            print(msg)
+            respons = {"success": False, "message": msg}
+            return jsonify(respons)
+#############################################################
+
+
+# wayPoint Action
+#
+# Body:
+# {	  
+#   "action": 0/1/2/3
+# }
+# ========================================================================== #            
+@app.route('/wayPoint/action', methods=['GET', 'POST'])
+def wayPointAction():
+    if request.method == "POST":
+        data = request.get_json()
+        msg = "action data is missing !"
+        if data:
+            import sys
+            sys.path.insert(1, '../icd_multirotor')
+            action = data['action']
+            if (action == 0):
+
+                print(way_point_ned_coordinate)
+                thread = Thread(target=waypoint_action_operation)
+                thread.start() 
+
             respons = {"success": True, "message": ""}
             return jsonify(respons)
         else:
@@ -360,11 +395,15 @@ def wayPoints():
             return jsonify(respons)
 
 
-def waypoint_operation(value):
+def waypoint_action_operation():
     import wayPoints
     from wayPoints import WayPoints
-    _task = WayPoints(value,80)
+    print("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
+    print("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
+    print(way_point_ned_coordinate)
+    _task = WayPoints(way_point_ned_coordinate,12)
     _task.start()
+
 
 
 
@@ -473,7 +512,7 @@ def load_airsim(airsim_client):
             "pitch": pitch,
             "yaw": yaw
         },
-        "height_above_takeoff": height_above_takeoff, #-(kinematics_estimated.position.z_val) + initialize_height,
+        "height_above_takeoff": height_above_takeoff,
         "gps_health": 5,
         "heading": math.degrees(yaw),
         "velocity": {
@@ -590,7 +629,6 @@ def geo_to_ned(gps_location):
     #air_sim = init_airsim()
     global air_sim
     home_point = air_sim.getHomeGeoPoint()
-    print(home_point)
     d_lat = gps_location[0] - home_point.latitude
     d_lon = gps_location[1] - home_point.longitude
     d_alt = home_point.altitude - gps_location[2]
