@@ -23,11 +23,14 @@ class CarCommandTranslator(object):
         self.last_shift_up_btn = 0
         self.parked = True
         self.last_gear = 0
+        self.shift_mode_manual = True
 
         update_rate_hz = rospy.get_param('~update_rate_hz', 20.0)
         self.max_curvature = rospy.get_param('~max_curvature', 0.75)
         self.steer_sign = rospy.get_param('~steer_sign', -1)
         self.throttle_brake_sign = rospy.get_param('~throttle_brake_sign', 1)
+        self.auto_gear_max = rospy.get_param('~auto_gear_max', 5)
+        self.manual_transmission = rospy.get_param('~manual_transmission', True)
         self.forward_btn_index = rospy.get_param('~forward_button_index', 0)
         self.reverse_btn_index = rospy.get_param('~reverse_button_index', 1)
         self.nuetral_btn_index = rospy.get_param('~nuetral_button_index', 2)
@@ -86,36 +89,47 @@ class CarCommandTranslator(object):
         
 
         # gearing: -1 reverse, 0 N, >= 1 drive
-        controls.manual = True
+        controls.manual = True #set to False for automatic transmission along with manual_gear > 1
         if not self.last_nuetral_btn and nuetral_btn:
             self.last_gear = 0
             self.parked = False
+            controls.manual = True
         elif not self.last_forward_btn and forward_btn:
-            self.last_gear = 1
+            if self.manual_transmission:
+                self.last_gear = 1
+                self.shift_mode_manual = True
+            else:
+                self.shift_mode_manual = False
+                self.last_gear = self.auto_gear_max
+
             self.parked = False
         elif not self.last_reverse_btn and reverse_btn:
             self.last_gear = -1
             self.parked = False
+            self.shift_mode_manual = True
         elif not self.last_park_btn and park_btn:
             self.parked = True
-        elif not self.last_shift_down_btn and shift_down_btn and self.last_gear > 1:
+        elif not self.last_shift_down_btn and shift_down_btn and self.last_gear > 1 and self.manual_transmission:
             self.last_gear-=1
             self.parked = False
-        elif not self.last_shift_up_btn and shift_up_btn and self.last_gear >= 1:
+            self.shift_mode_manual = True
+        elif not self.last_shift_up_btn and shift_up_btn and self.last_gear >= 1 and self.manual_transmission:
             self.last_gear+=1
             self.parked = False
+            self.shift_mode_manual = True
 
         if self.parked:
             self.last_gear = 0
+            self.shift_mode_manual = True
             controls.handbrake = True
         else:
             controls.handbrake = False
 
         controls.manual_gear = self.last_gear
-
+        controls.manual = self.shift_mode_manual
+        
         now = rospy.Time.now()
         controls.header.stamp = now
-        # I guess setting this to false would be automatic/autostick behavior if manual_gear > 1?
         controls.gear_immediate = True
 
         self.last_nuetral_btn = nuetral_btn
