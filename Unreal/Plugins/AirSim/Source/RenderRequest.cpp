@@ -39,10 +39,10 @@ void RenderRequest::fastScreenshot(std::shared_ptr<RenderParams> param, std::sha
 			}
 		);
 	}, false);
-	while (!fast_cap_done_) 
+	while (!fast_cap_done_) //Waits for render thread to finish. Game thread command above merely queues render command.
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(500));
-	} //Spin lock.
+	}
 }
 
 void RenderRequest::FastTask()
