@@ -169,6 +169,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         {
             (static_cast<CarROS*>(vehicle_ros.get()))->car_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::CarControls>(curr_vehicle_name + "/car_cmd", 1,
                 boost::bind(&AirsimROSWrapper::car_cmd_cb, this, _1, vehicle_ros->vehicle_name));
+            (static_cast<CarROS*>(vehicle_ros.get()))->car_state_pub = nh_private_.advertise<airsim_ros_pkgs::CarState>(curr_vehicle_name + "/car_state", 10);
         }
 
         // iterate over camera map std::map<std::string, CameraSetting> .cameras;
@@ -656,6 +657,22 @@ void AirsimROSWrapper::gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAn
     }
 }
 
+airsim_ros_pkgs::CarState AirsimROSWrapper::get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const
+{
+    airsim_ros_pkgs::CarState state_msg;
+    const auto odo = get_odom_msg_from_car_state(car_state);
+
+    state_msg.pose = odo.pose;
+    state_msg.twist = odo.twist;
+    state_msg.speed = car_state.speed;
+    state_msg.gear = car_state.gear;
+    state_msg.rpm = car_state.rpm;
+    state_msg.maxrpm = car_state.maxrpm;
+    state_msg.handbrake = car_state.handbrake;
+
+    return state_msg;
+}
+
 nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const
 {
     nav_msgs::Odometry odom_ned_msg;
@@ -865,6 +882,7 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
         for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
         {
             // get drone state from airsim
+            ros::Time curr_ros_time = ros::Time::now();
             std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
             auto& vehicle_ros = vehicle_name_ptr_pair.second;
             
@@ -879,13 +897,16 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
                 static_cast<CarROS*>(vehicle_ros.get())->curr_car_state = 
                     static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get())->getCarState(vehicle_ros->vehicle_name);
                 vehicle_ros->curr_odom_ned = get_odom_msg_from_car_state(static_cast<CarROS*>(vehicle_ros.get())->curr_car_state);
+                
+                airsim_ros_pkgs::CarState state_msg = get_roscarstate_msg_from_car_state(static_cast<CarROS*>(vehicle_ros.get())->curr_car_state);
+                state_msg.header.stamp = curr_ros_time;
+                state_msg.header.frame_id = vehicle_ros->vehicle_name;
+                static_cast<CarROS*>(vehicle_ros.get())->car_state_pub.publish(state_msg);
             }
 
             lck.unlock();
-            ros::Time curr_ros_time = ros::Time::now();
 
-            // convert airsim drone state to ROS msgs
-            
+            // convert airsim drone state to ROS msgs            
             vehicle_ros->curr_odom_ned.header.frame_id = vehicle_ros->vehicle_name;
             vehicle_ros->curr_odom_ned.child_frame_id = vehicle_ros->odom_frame_id;
             vehicle_ros->curr_odom_ned.header.stamp = curr_ros_time;

@@ -42,6 +42,7 @@ add_message_files(
   VelCmd.msg
   VelCmdGroup.msg
   CarControls.msg
+  CarState.msg
 )
 
 add_service_files(

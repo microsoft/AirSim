@@ -25,6 +25,7 @@ STRICT_MODE_ON
 #include <airsim_ros_pkgs/VelCmd.h>
 #include <airsim_ros_pkgs/VelCmdGroup.h>
 #include <airsim_ros_pkgs/CarControls.h>
+#include <airsim_ros_pkgs/CarState.h>
 #include <chrono>
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -197,6 +198,7 @@ private:
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
     nav_msgs::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
     nav_msgs::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
+    airsim_ros_pkgs::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
     sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
@@ -260,6 +262,7 @@ private:
         msr::airlib::CarApiBase::CarState curr_car_state;
 
         ros::Subscriber car_cmd_sub;
+        ros::Publisher car_state_pub;
 
         bool has_car_cmd;
         msr::airlib::CarApiBase::CarControls car_cmd;
