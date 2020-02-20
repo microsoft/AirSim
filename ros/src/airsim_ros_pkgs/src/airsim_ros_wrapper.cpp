@@ -315,7 +315,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     // todo add per vehicle reset in AirLib API
     reset_srvr_ = nh_private_.advertiseService("reset",&AirsimROSWrapper::reset_srv_cb, this);
 
-    clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 10); 
+    clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 1); 
 
     // if >0 cameras, add one more thread for img_request_timer_cb
     if(airsim_img_request_vehicle_name_pair_vec_.size() > 0)
