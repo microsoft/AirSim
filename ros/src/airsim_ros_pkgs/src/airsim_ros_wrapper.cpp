@@ -355,7 +355,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     }
 
     double update_clock_every_n_sec;
-    nh_private_.param("update_clock_every_n_sec", update_clock_every_n_sec, 0.001);
+    nh_private_.param<double>("update_clock_every_n_sec", update_clock_every_n_sec, 0.001);
+    ROS_INFO("clock will run at %f", update_clock_every_n_sec);
     airsim_clock_update_timer_ = nh_private_.createTimer(ros::Duration(update_clock_every_n_sec), &AirsimROSWrapper::clock_timer_cb, this);
 
     initialize_airsim();
