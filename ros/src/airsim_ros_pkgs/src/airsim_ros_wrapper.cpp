@@ -354,6 +354,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
     }
 
+    double update_clock_every_n_sec;
+    nh_private_.param("update_clock_every_n_sec", update_clock_every_n_sec, 0.001);
+    airsim_clock_update_timer_ = nh_private_.createTimer(ros::Duration(update_clock_every_n_sec), &AirsimROSWrapper::clock_timer_cb, this);
+
     initialize_airsim();
 }
 
@@ -879,15 +883,6 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
     try
     {
         std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
-
-        if (!airsim_client_->simIsPaused())
-        {
-            auto dur = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch());
-            ros::Time cur_time;
-            cur_time.fromSec(dur.count());
-            ros_clock_.clock = cur_time;
-        }
-        clock_pub_.publish(ros_clock_);
     
         // todo this is global origin
         origin_geo_point_pub_.publish(origin_geo_point_msg_);
@@ -1225,6 +1220,26 @@ void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
         std::cout << "Exception raised by the API, didn't get image response." << std::endl << msg << std::endl;
     }
 
+}
+
+void AirsimROSWrapper::clock_timer_cb(const ros::TimerEvent& event)
+{
+    try
+    {
+        if (!airsim_client_->simIsPaused())
+        {
+            auto dur = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch());
+            ros::Time cur_time;
+            cur_time.fromSec(dur.count());
+            ros_clock_.clock = cur_time;
+        }
+        clock_pub_.publish(ros_clock_);
+    }
+    catch (rpc::rpc_error& e)
+    {
+        std::string msg = e.get_error().as<std::string>();
+        std::cout << "Exception raised by the API, didn't get simualation pause status." << std::endl << msg << std::endl;
+    }
 }
 
 void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)

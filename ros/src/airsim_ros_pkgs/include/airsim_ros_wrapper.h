@@ -147,6 +147,7 @@ private:
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec
     void lidar_timer_cb(const ros::TimerEvent& event);
+    void clock_timer_cb(const ros::TimerEvent& event);
 
     /// ROS subscriber callbacks
     void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
@@ -350,6 +351,7 @@ private:
     /// ROS other publishers
     ros::Publisher clock_pub_;
     rosgraph_msgs::Clock ros_clock_;
+    ros::Timer airsim_clock_update_timer_;
 
     ros::Subscriber gimbal_angle_quat_cmd_sub_;
     ros::Subscriber gimbal_angle_euler_cmd_sub_;
