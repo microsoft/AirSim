@@ -51,6 +51,7 @@ STRICT_MODE_ON
 #include <sensor_msgs/MagneticField.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Range.h>
+#include <rosgraph_msgs/Clock.h>
 #include <std_srvs/Empty.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
@@ -348,6 +349,7 @@ private:
 
     /// ROS other publishers
     ros::Publisher clock_pub_;
+    rosgraph_msgs::Clock ros_clock_;
 
     ros::Subscriber gimbal_angle_quat_cmd_sub_;
     ros::Subscriber gimbal_angle_euler_cmd_sub_;

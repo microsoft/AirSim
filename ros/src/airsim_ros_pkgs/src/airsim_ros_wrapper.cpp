@@ -30,6 +30,7 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
     img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_ 
     lidar_async_spinner_(1, &lidar_timer_cb_queue_) // same as above, but for lidar
 {
+    ros_clock_.clock.fromSec(0);
     is_used_lidar_timer_cb_queue_ = false;
     is_used_img_timer_cb_queue_ = false;
 
@@ -314,8 +315,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     // todo add per vehicle reset in AirLib API
     reset_srvr_ = nh_private_.advertiseService("reset",&AirsimROSWrapper::reset_srv_cb, this);
 
-    // todo mimic gazebo's /use_sim_time feature which publishes airsim's clock time..via an rpc call?!
-    // clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 10); 
+    clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 10); 
 
     // if >0 cameras, add one more thread for img_request_timer_cb
     if(airsim_img_request_vehicle_name_pair_vec_.size() > 0)
@@ -880,10 +880,19 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
     {
         std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
 
+        if (!airsim_client_->simIsPaused())
+        {
+            auto dur = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch());
+            ros::Time cur_time;
+            cur_time.fromSec(dur.count());
+            ros_clock_.clock = cur_time;
+        }
+        clock_pub_.publish(ros_clock_);
+    
         // todo this is global origin
         origin_geo_point_pub_.publish(origin_geo_point_msg_);
-        // iterate over drones
 
+        // iterate over drones
         for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
         {
             // get drone state from airsim
@@ -894,15 +903,15 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
             if (airsim_mode_ == AIRSIM_MODE::DRONE)
             {
                 auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
-                drone->curr_drone_state = 
-                    static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->getMultirotorState(vehicle_ros->vehicle_name);
+                auto rpc = static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get());
+                drone->curr_drone_state = rpc->getMultirotorState(vehicle_ros->vehicle_name);
                 vehicle_ros->curr_odom_ned = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
             }
             else
             {
                 auto car = static_cast<CarROS*>(vehicle_ros.get());
-                car->curr_car_state = 
-                    static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get())->getCarState(vehicle_ros->vehicle_name);
+                auto rpc = static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get());
+                car->curr_car_state = rpc->getCarState(vehicle_ros->vehicle_name);
                 vehicle_ros->curr_odom_ned = get_odom_msg_from_car_state(car->curr_car_state);
                 
                 airsim_ros_pkgs::CarState state_msg = get_roscarstate_msg_from_car_state(car->curr_car_state);
