@@ -20,7 +20,10 @@
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <!--build_depend>hector_uav_msgs</build_depend-->
   <build_depend>std_msgs</build_depend>
+  <build_depend>geographic_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
 
   <!-- <exec_depend>nodelet</exec_depend> -->
   <exec_depend>geometry_msgs</exec_depend>
