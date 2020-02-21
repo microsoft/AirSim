@@ -322,17 +322,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     {
         double update_airsim_img_response_every_n_sec;
         nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
-        bool separate_spinner = true; // todo debugging race condition
-        if(separate_spinner)
-        {
-            ros::TimerOptions timer_options(ros::Duration(update_airsim_img_response_every_n_sec), boost::bind(&AirsimROSWrapper::img_response_timer_cb, this, _1), &img_timer_cb_queue_);
-            airsim_img_response_timer_ = nh_private_.createTimer(timer_options);
-            is_used_img_timer_cb_queue_ = true;
-        }
-        else
-        {
-            airsim_img_response_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_img_response_every_n_sec), &AirsimROSWrapper::img_response_timer_cb, this);
-        }
+
+        ros::TimerOptions timer_options(ros::Duration(update_airsim_img_response_every_n_sec), boost::bind(&AirsimROSWrapper::img_response_timer_cb, this, _1), &img_timer_cb_queue_);
+        airsim_img_response_timer_ = nh_private_.createTimer(timer_options);
+        is_used_img_timer_cb_queue_ = true;        
     }
 
     // lidars update on their own callback/thread at a given rate
@@ -341,23 +334,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_lidar_every_n_sec;
         nh_private_.getParam("update_lidar_every_n_sec", update_lidar_every_n_sec);
         // nh_private_.setCallbackQueue(&lidar_timer_cb_queue_);
-        bool separate_spinner = true; // todo debugging race condition
-        if(separate_spinner)
-        {
-            ros::TimerOptions timer_options(ros::Duration(update_lidar_every_n_sec), boost::bind(&AirsimROSWrapper::lidar_timer_cb, this, _1), &lidar_timer_cb_queue_);
-            airsim_lidar_update_timer_ = nh_private_.createTimer(timer_options);            
-            is_used_lidar_timer_cb_queue_ = true;
-        }
-        else
-        {
-            airsim_lidar_update_timer_ = nh_private_.createTimer(ros::Duration(update_lidar_every_n_sec), &AirsimROSWrapper::lidar_timer_cb, this);
-        }
+        ros::TimerOptions timer_options(ros::Duration(update_lidar_every_n_sec), boost::bind(&AirsimROSWrapper::lidar_timer_cb, this, _1), &lidar_timer_cb_queue_);
+        airsim_lidar_update_timer_ = nh_private_.createTimer(timer_options);            
+        is_used_lidar_timer_cb_queue_ = true;
     }
-
-    double update_clock_every_n_sec;
-    nh_private_.param<double>("update_clock_every_n_sec", update_clock_every_n_sec, 0.001);
-    ROS_INFO("clock will run at %f", update_clock_every_n_sec);
-    airsim_clock_update_timer_ = nh_private_.createTimer(ros::Duration(update_clock_every_n_sec), &AirsimROSWrapper::clock_timer_cb, this);
 
     initialize_airsim();
 }
@@ -365,7 +345,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 // todo: error check. if state is not landed, return error. 
 bool AirsimROSWrapper::takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response, const std::string& vehicle_name)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (airsim_mode_ == AIRSIM_MODE::DRONE)
     {
@@ -381,7 +361,7 @@ bool AirsimROSWrapper::takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request& request
 
 bool AirsimROSWrapper::takeoff_group_srv_cb(airsim_ros_pkgs::TakeoffGroup::Request& request, airsim_ros_pkgs::TakeoffGroup::Response& response)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (airsim_mode_ == AIRSIM_MODE::DRONE)
     {
@@ -399,7 +379,7 @@ bool AirsimROSWrapper::takeoff_group_srv_cb(airsim_ros_pkgs::TakeoffGroup::Reque
 
 bool AirsimROSWrapper::takeoff_all_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request.waitOnLastTask)
         for(const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
@@ -415,7 +395,7 @@ bool AirsimROSWrapper::takeoff_all_srv_cb(airsim_ros_pkgs::Takeoff::Request& req
 
 bool AirsimROSWrapper::land_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response, const std::string& vehicle_name)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request.waitOnLastTask)
         static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name)->waitOnLastTask();
@@ -427,7 +407,7 @@ bool AirsimROSWrapper::land_srv_cb(airsim_ros_pkgs::Land::Request& request, airs
 
 bool AirsimROSWrapper::land_group_srv_cb(airsim_ros_pkgs::LandGroup::Request& request, airsim_ros_pkgs::LandGroup::Response& response)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request.waitOnLastTask)
         for(const auto& vehicle_name : request.vehicle_names)
@@ -441,7 +421,7 @@ bool AirsimROSWrapper::land_group_srv_cb(airsim_ros_pkgs::LandGroup::Request& re
 
 bool AirsimROSWrapper::land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request.waitOnLastTask)
         for(const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
@@ -457,7 +437,7 @@ bool AirsimROSWrapper::land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, 
 // todo not async remove waitonlasttask
 bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, airsim_ros_pkgs::Reset::Response& response)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     airsim_client_.reset();
     return true; //todo
@@ -480,7 +460,7 @@ msr::airlib::Quaternionr AirsimROSWrapper::get_airlib_quat(const tf2::Quaternion
 
 void AirsimROSWrapper::car_cmd_cb(const airsim_ros_pkgs::CarControls::ConstPtr& msg, const std::string& vehicle_name)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     auto car = static_cast<CarROS*>(vehicle_name_ptr_map_[vehicle_name].get());
     car->car_cmd.throttle = msg->throttle;
@@ -497,7 +477,7 @@ void AirsimROSWrapper::car_cmd_cb(const airsim_ros_pkgs::CarControls::ConstPtr& 
 // void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg, const std::string& vehicle_name)
 void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
     
@@ -517,7 +497,7 @@ void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::Cons
 
 void AirsimROSWrapper::vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     for(const auto& vehicle_name : msg.vehicle_names)
     {
@@ -541,7 +521,7 @@ void AirsimROSWrapper::vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmd
 // void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg)
 void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     // todo expose waitOnLastTask or nah?
     for(auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
@@ -565,7 +545,7 @@ void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd& 
 
 void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
 
@@ -581,7 +561,7 @@ void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::Con
 // this is kinda unnecessary but maybe it makes life easier for the end user. 
 void AirsimROSWrapper::vel_cmd_group_world_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     for(const auto& vehicle_name : msg.vehicle_names)
     {
@@ -599,7 +579,7 @@ void AirsimROSWrapper::vel_cmd_group_world_frame_cb(const airsim_ros_pkgs::VelCm
 
 void AirsimROSWrapper::vel_cmd_all_world_frame_cb(const airsim_ros_pkgs::VelCmd& msg)
 {
-    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     // todo expose waitOnLastTask or nah?
     for(auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
@@ -883,180 +863,199 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 {
     try
     {
-        std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+        // on init, will publish 0 as expected for use_sim_time
+        if (!airsim_client_->simIsPaused())
+        {
+            // airsim_client needs to provide the simulation time in a future version of the API
+            auto dur = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch());
+            ros::Time cur_time;
+            cur_time.fromSec(dur.count());
+            ros_clock_.clock = cur_time;
+        }
+        clock_pub_.publish(ros_clock_);
     
         // todo this is global origin
         origin_geo_point_pub_.publish(origin_geo_point_msg_);
 
-        // iterate over drones
-        for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
-        {
-            // get drone state from airsim
-            ros::Time curr_ros_time = ros::Time::now();
-            std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-            auto& vehicle_ros = vehicle_name_ptr_pair.second;
-            
-            if (airsim_mode_ == AIRSIM_MODE::DRONE)
-            {
-                auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
-                auto rpc = static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get());
-                drone->curr_drone_state = rpc->getMultirotorState(vehicle_ros->vehicle_name);
-                vehicle_ros->curr_odom_ned = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
-            }
-            else
-            {
-                auto car = static_cast<CarROS*>(vehicle_ros.get());
-                auto rpc = static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get());
-                car->curr_car_state = rpc->getCarState(vehicle_ros->vehicle_name);
-                vehicle_ros->curr_odom_ned = get_odom_msg_from_car_state(car->curr_car_state);
-                
-                airsim_ros_pkgs::CarState state_msg = get_roscarstate_msg_from_car_state(car->curr_car_state);
-                state_msg.header.stamp = curr_ros_time;
-                state_msg.header.frame_id = vehicle_ros->vehicle_name;
-                car->car_state_pub.publish(state_msg);
-            }
+        // get all the basic sensor data for all vehicles (lidar and camera on their own thread/rates)
+        update_state();
 
-            lck.unlock();
+        // update transform tree
+        update_transforms();
 
-            // convert airsim drone state to ROS msgs            
-            vehicle_ros->curr_odom_ned.header.frame_id = vehicle_ros->vehicle_name;
-            vehicle_ros->curr_odom_ned.child_frame_id = vehicle_ros->odom_frame_id;
-            vehicle_ros->curr_odom_ned.header.stamp = curr_ros_time;
-
-            // publish to ROS!  
-            vehicle_ros->odom_local_ned_pub.publish(vehicle_ros->curr_odom_ned);
-            publish_odom_tf(vehicle_ros->curr_odom_ned);
-            if (airsim_mode_ == AIRSIM_MODE::DRONE)
-            {
-                auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
-                vehicle_ros->gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(drone->curr_drone_state.gps_location);
-                vehicle_ros->gps_sensor_msg.header.stamp = curr_ros_time;
-                vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
-
-                // send control commands from the last callback to airsim
-                if (drone->has_vel_cmd)
-                {
-                    std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                    static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->moveByVelocityAsync(drone->vel_cmd.x, drone->vel_cmd.y, drone->vel_cmd.z, vel_cmd_duration_, 
-                        msr::airlib::DrivetrainType::MaxDegreeOfFreedom, drone->vel_cmd.yaw_mode, drone->vehicle_name);
-                    lck.unlock();
-                }
-                drone->has_vel_cmd = false;
-            }
-            else
-            {
-                // send control commands from the last callback to airsim
-                auto car = static_cast<CarROS*>(vehicle_ros.get());
-                if (car->has_car_cmd)
-                {
-                    std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                    static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get())->setCarControls(car->car_cmd, vehicle_ros->vehicle_name);
-                    lck.unlock();
-                }
-                car->has_car_cmd = false;
-            }
-
-
-            for (auto& sensor_publisher : vehicle_ros->sensor_pubs)
-            {
-                switch (sensor_publisher.sensor_type)
-                {
-                    case SensorBase::SensorType::Barometer:
-                    {
-                        std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                        auto baro_data = airsim_client_->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
-                        lck.unlock();
-                        sensor_msgs::FluidPressure baro_msg;
-                        // rosflight_msgs::Barometer baro_msg;
-                        // baro_msg.pressure = baro_data.pressure;
-                        // baro_msg.altitude = baro_data.altitude;
-                        // baro_msg.temperature = 
-                        baro_msg.fluid_pressure = baro_data.pressure;
-                        // baro_msg.variance = 
-                        baro_msg.header.frame_id = vehicle_ros->vehicle_name;
-                        baro_msg.header.stamp = ros::Time::now();
-                        sensor_publisher.publisher.publish(baro_msg);                        
-                        break;
-                    }
-                    case SensorBase::SensorType::Imu:
-                    {
-                        std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                        auto imu_data = airsim_client_->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
-                        lck.unlock();
-                        sensor_msgs::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
-                        imu_msg.header.frame_id = vehicle_ros->vehicle_name;
-                        imu_msg.header.stamp = ros::Time::now();
-                        sensor_publisher.publisher.publish(imu_msg);
-                        break;
-                    }
-                    case SensorBase::SensorType::Distance:
-                    {
-                        std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                        auto distance_data = airsim_client_->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
-                        lck.unlock();
-                        sensor_msgs::Range dist_msg = get_range_from_airsim(distance_data);
-                        dist_msg.header.frame_id = vehicle_ros->vehicle_name;
-                        dist_msg.header.stamp = ros::Time::now();
-                        sensor_publisher.publisher.publish(dist_msg);
-                        break;
-                    }
-                    case SensorBase::SensorType::Gps:
-                    {
-                        std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                        auto gps_data = airsim_client_->getGpsData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
-                        lck.unlock();
-                        sensor_msgs::NavSatFix gps_msg = get_gps_msg_from_airsim(gps_data);
-                        gps_msg.header.frame_id = vehicle_ros->vehicle_name;
-                        gps_msg.header.stamp = ros::Time::now();
-                        sensor_publisher.publisher.publish(gps_msg);
-                        break;
-                    }
-                    case SensorBase::SensorType::Lidar:
-                    {
-                        // handled via callback
-                        break;
-                    }
-                    case SensorBase::SensorType::Magnetometer:
-                    {
-                        std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                        auto mag_data = airsim_client_->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
-                        lck.unlock();
-                        sensor_msgs::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
-                        mag_msg.header.frame_id = vehicle_ros->vehicle_name;
-                        mag_msg.header.stamp = ros::Time::now();
-                        sensor_publisher.publisher.publish(mag_msg);
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (static_tf_msg_vec_.size() > 0)
-        {
-            for (auto& static_tf_msg : static_tf_msg_vec_)
-            {
-                static_tf_msg.header.stamp = ros::Time::now();
-                static_tf_pub_.sendTransform(static_tf_msg);
-            }
-        }
-
-        // todo add and expose a gimbal angular velocity to airlib
-        if (has_gimbal_cmd_)
-        {
-            std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-            airsim_client_->simSetCameraOrientation(gimbal_cmd_.camera_name, gimbal_cmd_.target_quat, gimbal_cmd_.vehicle_name);
-            lck.unlock();
-        }
-
-        has_gimbal_cmd_ = false;
+        // send any commands out to the vehicles
+        update_commands();
     }
-
     catch (rpc::rpc_error& e)
     {
         std::cout << "error" << std::endl;
         std::string msg = e.get_error().as<std::string>();
         std::cout << "Exception raised by the API:" << std::endl << msg << std::endl;
     }
+}
+
+void AirsimROSWrapper::update_transforms()
+{
+    if (static_tf_msg_vec_.size() > 0)
+    {
+        for (auto& static_tf_msg : static_tf_msg_vec_)
+        {
+            static_tf_msg.header.stamp = ros::Time::now();
+            static_tf_pub_.sendTransform(static_tf_msg);
+        }
+    }
+}
+
+void AirsimROSWrapper::update_state()
+{
+    // iterate over drones
+    for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
+    {
+        // get drone state from airsim
+        ros::Time curr_ros_time = ros::Time::now();
+        
+        auto& vehicle_ros = vehicle_name_ptr_pair.second;
+        
+        if (airsim_mode_ == AIRSIM_MODE::DRONE)
+        {
+            auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
+            auto rpc = static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get());
+            drone->curr_drone_state = rpc->getMultirotorState(vehicle_ros->vehicle_name);
+
+            vehicle_ros->gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(drone->curr_drone_state.gps_location);
+            vehicle_ros->gps_sensor_msg.header.stamp = curr_ros_time;
+            vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
+
+            vehicle_ros->curr_odom_ned = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
+        }
+        else
+        {
+            auto car = static_cast<CarROS*>(vehicle_ros.get());
+            auto rpc = static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get());
+            car->curr_car_state = rpc->getCarState(vehicle_ros->vehicle_name);
+
+            vehicle_ros->curr_odom_ned = get_odom_msg_from_car_state(car->curr_car_state);
+            
+            airsim_ros_pkgs::CarState state_msg = get_roscarstate_msg_from_car_state(car->curr_car_state);
+            state_msg.header.stamp = curr_ros_time;
+            state_msg.header.frame_id = vehicle_ros->vehicle_name;
+            car->car_state_pub.publish(state_msg);
+        }
+
+        // convert airsim drone state to ROS msgs            
+        vehicle_ros->curr_odom_ned.header.frame_id = vehicle_ros->vehicle_name;
+        vehicle_ros->curr_odom_ned.child_frame_id = vehicle_ros->odom_frame_id;
+        vehicle_ros->curr_odom_ned.header.stamp = curr_ros_time;
+
+        // publish to ROS!  
+        vehicle_ros->odom_local_ned_pub.publish(vehicle_ros->curr_odom_ned);
+        publish_odom_tf(vehicle_ros->curr_odom_ned);
+
+        for (auto& sensor_publisher : vehicle_ros->sensor_pubs)
+        {
+            switch (sensor_publisher.sensor_type)
+            {
+                case SensorBase::SensorType::Barometer:
+                {
+                    auto baro_data = airsim_client_->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                    sensor_msgs::FluidPressure baro_msg;
+                    // rosflight_msgs::Barometer baro_msg;
+                    // baro_msg.pressure = baro_data.pressure;
+                    // baro_msg.altitude = baro_data.altitude;
+                    // baro_msg.temperature = 
+                    baro_msg.fluid_pressure = baro_data.pressure;
+                    // baro_msg.variance = 
+                    baro_msg.header.frame_id = vehicle_ros->vehicle_name;
+                    baro_msg.header.stamp = ros::Time::now();
+                    sensor_publisher.publisher.publish(baro_msg);                        
+                    break;
+                }
+                case SensorBase::SensorType::Imu:
+                {
+                    auto imu_data = airsim_client_->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                    sensor_msgs::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
+                    imu_msg.header.frame_id = vehicle_ros->vehicle_name;
+                    imu_msg.header.stamp = ros::Time::now();
+                    sensor_publisher.publisher.publish(imu_msg);
+                    break;
+                }
+                case SensorBase::SensorType::Distance:
+                {
+                    auto distance_data = airsim_client_->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                    sensor_msgs::Range dist_msg = get_range_from_airsim(distance_data);
+                    dist_msg.header.frame_id = vehicle_ros->vehicle_name;
+                    dist_msg.header.stamp = ros::Time::now();
+                    sensor_publisher.publisher.publish(dist_msg);
+                    break;
+                }
+                case SensorBase::SensorType::Gps:
+                {
+                    auto gps_data = airsim_client_->getGpsData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                    sensor_msgs::NavSatFix gps_msg = get_gps_msg_from_airsim(gps_data);
+                    gps_msg.header.frame_id = vehicle_ros->vehicle_name;
+                    gps_msg.header.stamp = ros::Time::now();
+                    sensor_publisher.publisher.publish(gps_msg);
+                    break;
+                }
+                case SensorBase::SensorType::Lidar:
+                {
+                    // handled via callback
+                    break;
+                }
+                case SensorBase::SensorType::Magnetometer:
+                {
+                    auto mag_data = airsim_client_->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                    sensor_msgs::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
+                    mag_msg.header.frame_id = vehicle_ros->vehicle_name;
+                    mag_msg.header.stamp = ros::Time::now();
+                    sensor_publisher.publisher.publish(mag_msg);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void AirsimROSWrapper::update_commands()
+{
+    for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
+    {
+        auto& vehicle_ros = vehicle_name_ptr_pair.second;
+
+        if (airsim_mode_ == AIRSIM_MODE::DRONE)
+        {
+            auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
+
+            // send control commands from the last callback to airsim
+            if (drone->has_vel_cmd)
+            {
+                std::lock_guard<std::mutex> guard(drone_control_mutex_);
+                static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->moveByVelocityAsync(drone->vel_cmd.x, drone->vel_cmd.y, drone->vel_cmd.z, vel_cmd_duration_, 
+                    msr::airlib::DrivetrainType::MaxDegreeOfFreedom, drone->vel_cmd.yaw_mode, drone->vehicle_name);
+            }
+            drone->has_vel_cmd = false;
+        }
+        else
+        {
+            // send control commands from the last callback to airsim
+            auto car = static_cast<CarROS*>(vehicle_ros.get());
+            if (car->has_car_cmd)
+            {
+                std::lock_guard<std::mutex> guard(drone_control_mutex_);
+                static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get())->setCarControls(car->car_cmd, vehicle_ros->vehicle_name);
+            }
+            car->has_car_cmd = false;
+        }
+    }
+
+    // todo add and expose a gimbal angular velocity to airlib
+    if (has_gimbal_cmd_)
+    {
+        std::lock_guard<std::mutex> guard(drone_control_mutex_);
+        airsim_client_->simSetCameraOrientation(gimbal_cmd_.camera_name, gimbal_cmd_.target_quat, gimbal_cmd_.vehicle_name);
+    }
+
+    has_gimbal_cmd_ = false;
 }
 
 // airsim uses nans for zeros in settings.json. we set them to zeros here for handling tfs in ROS 
@@ -1203,9 +1202,7 @@ void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
         int image_response_idx = 0;
         for (const auto& airsim_img_request_vehicle_name_pair : airsim_img_request_vehicle_name_pair_vec_)
         {
-            std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
             const std::vector<ImageResponse>& img_response = airsim_client_images_.simGetImages(airsim_img_request_vehicle_name_pair.first, airsim_img_request_vehicle_name_pair.second);
-            lck.unlock();
 
             if (img_response.size() == airsim_img_request_vehicle_name_pair.first.size()) 
             {
@@ -1223,26 +1220,6 @@ void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
 
 }
 
-void AirsimROSWrapper::clock_timer_cb(const ros::TimerEvent& event)
-{
-    try
-    {
-        if (!airsim_client_->simIsPaused())
-        {
-            auto dur = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch());
-            ros::Time cur_time;
-            cur_time.fromSec(dur.count());
-            ros_clock_.clock = cur_time;
-        }
-        clock_pub_.publish(ros_clock_);
-    }
-    catch (rpc::rpc_error& e)
-    {
-        std::string msg = e.get_error().as<std::string>();
-        std::cout << "Exception raised by the API, didn't get simualation pause status." << std::endl << msg << std::endl;
-    }
-}
-
 void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)
 {    
     try
@@ -1253,9 +1230,7 @@ void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)
             {
                 for (auto& lidar_publisher : vehicle_name_ptr_pair.second->lidar_pubs)
                 {
-                    std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
                     auto lidar_data = airsim_client_lidar_.getLidarData(lidar_publisher.sensor_name, vehicle_name_ptr_pair.first);
-                    lck.unlock();
                     sensor_msgs::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data);
                     lidar_msg.header.frame_id = vehicle_name_ptr_pair.first; // sensor frame name. todo add to doc
                     lidar_msg.header.stamp = ros::Time::now();
