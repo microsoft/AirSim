@@ -310,7 +310,7 @@ def wayPoints():
                 geo_point = []
                 geo_point = [x,y,461] # geo_point = [x,y,z]
                 ned_coordinate = geo_to_ned(geo_point)
-                airSimPoint = airsim.Vector3r(ned_coordinate[1],ned_coordinate[0],-500)
+                airSimPoint = airsim.Vector3r(ned_coordinate[0],ned_coordinate[1],-500)
                 print(airSimPoint)
                 path.append(airSimPoint)
 
