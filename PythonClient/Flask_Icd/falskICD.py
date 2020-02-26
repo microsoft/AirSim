@@ -236,8 +236,6 @@ def wayPoints():
             sys.path.insert(1, '../icd_multirotor')
             points = data['points']
         
-            #gps_location = get_gps_location()
-            #dron_altitude = gps_location.altitude 
             global initialize_height
             print("!!!!!!!!!!!!!")
             print(initialize_height)
@@ -295,8 +293,6 @@ def wayPointUpload():
             x2 = data['latitude1']
             y2 = data['longitude1'] 
 
-            #gps_location = get_gps_location() 
-            #z1 = z1 + gps_location.altitude 
             global initialize_height
             z1 = initialize_height - z1 
 
