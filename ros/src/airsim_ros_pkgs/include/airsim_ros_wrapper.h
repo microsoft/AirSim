@@ -366,6 +366,7 @@ private:
     /// ROS other publishers
     ros::Publisher clock_pub_;
     rosgraph_msgs::Clock ros_clock_;
+    bool publish_clock_ = false;
 
     ros::Subscriber gimbal_angle_quat_cmd_sub_;
     ros::Subscriber gimbal_angle_euler_cmd_sub_;

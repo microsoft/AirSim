@@ -94,6 +94,7 @@ void AirsimROSWrapper::initialize_ros()
     double update_airsim_control_every_n_sec;
     nh_private_.getParam("is_vulkan", is_vulkan_);
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
+    nh_private_.getParam("publish_clock", publish_clock_);
     vel_cmd_duration_ = 0.05; // todo rosparam
     // todo enforce dynamics constraints in this node as well?
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
@@ -314,7 +315,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     // todo add per vehicle reset in AirLib API
     reset_srvr_ = nh_private_.advertiseService("reset",&AirsimROSWrapper::reset_srv_cb, this);
 
-    clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 1);
+    if (publish_clock_)
+    {
+        clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 1);
+    }
 
     // if >0 cameras, add one more thread for img_request_timer_cb
     if(!airsim_img_request_vehicle_name_pair_vec_.empty())
@@ -909,7 +913,10 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
             ros_clock_.clock = now;
         }
         // publish the simulation clock
-        clock_pub_.publish(ros_clock_);
+        if (publish_clock_)
+        {
+            clock_pub_.publish(ros_clock_);
+        }
 
         // publish vehicle state, odom, and all basic sensor types
         publish_vehicle_state();
