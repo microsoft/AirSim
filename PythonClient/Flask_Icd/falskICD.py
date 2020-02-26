@@ -236,9 +236,11 @@ def wayPoints():
             sys.path.insert(1, '../icd_multirotor')
             points = data['points']
         
-            gps_location = get_gps_location()
-            dron_altitude = gps_location.altitude 
-            
+            #gps_location = get_gps_location()
+            #dron_altitude = gps_location.altitude 
+            global initialize_height
+            print("!!!!!!!!!!!!!")
+            print(initialize_height)
             path = []  
             array_length = len(points)
             for i in range(array_length):
@@ -246,12 +248,13 @@ def wayPoints():
                 x = point['latitude']
                 y = point['longitude']
                 z = point['altitude'] # add the const value {20}
-                z = z + dron_altitude
+                z = initialize_height - z
+                print(z)
                 geo_point = []
                 geo_point = [x,y,z] 
                 print(geo_point)
                 ned_coordinate = geo_to_ned(geo_point)
-                airSimPoint = airsim.Vector3r(ned_coordinate[0],ned_coordinate[1],-1*ned_coordinate[2])
+                airSimPoint = airsim.Vector3r(ned_coordinate[0],ned_coordinate[1], z)
                 path.append(airSimPoint)
 
             global way_point_ned_coordinate
@@ -292,18 +295,20 @@ def wayPointUpload():
             x2 = data['latitude1']
             y2 = data['longitude1'] 
 
-            gps_location = get_gps_location() 
-            z1 = z1 + gps_location.altitude 
+            #gps_location = get_gps_location() 
+            #z1 = z1 + gps_location.altitude 
+            global initialize_height
+            z1 = initialize_height - z1 
 
             geo_point1 = []
             geo_point1 = [x1,y1,z1]
             ned_coordinate1 = geo_to_ned(geo_point1)
-            airSimPoint1 = airsim.Vector3r(ned_coordinate1[1],ned_coordinate1[0],-1*ned_coordinate1[2])
+            airSimPoint1 = airsim.Vector3r(ned_coordinate1[1],ned_coordinate1[0],z1)
             path.append(airSimPoint1)
             geo_point2 = []
             geo_point2 = [x2,y2,z1]
             ned_coordinate2 = geo_to_ned(geo_point2)
-            airSimPoint2 = airsim.Vector3r(ned_coordinate2[1],ned_coordinate2[0],-1*ned_coordinate1[2])
+            airSimPoint2 = airsim.Vector3r(ned_coordinate2[1],ned_coordinate2[0],z1)
             path.append(airSimPoint2)
 
             global way_point_ned_coordinate
