@@ -75,7 +75,7 @@ class WebSocketClient:
                          await self.printit(websocket)
 
     async def start(self):
-        uri = "ws://10.0.0.1:7700"
+        uri = "ws://10.0.0.58:7700"
         #uri = "ws://localhost:8765"
         WebSocketClient.isContinuousLoop = True
         client = airsim.MultirotorClient()

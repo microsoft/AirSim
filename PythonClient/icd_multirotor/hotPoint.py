@@ -2,23 +2,23 @@ import setup_path
 import airsim
 
 
-class MoveToPosition:
+class HotPoint:
       def __init__(self, initX, initY, initZ):
           self.initX = initX
           self.initY = initY
           self.initZ = initZ
 
       def start(self):
-          print("MoveToPositionStart")
+          print("hot Point")
           client = airsim.MultirotorClient()
           client.confirmConnection()
           client.enableApiControl(True)
           client.armDisarm(True) 
-          print( -1 * float(self.initZ))
           client.moveToPositionAsync(float(self.initX),float(self.initY), -1 * float(self.initZ), 5).join()
+          #client.moveToPositionAsync(float(self.initX),float(self.initY), float(self.initZ), 10).join()
 
           print("simSetCameraOrientation")
-          position = client.getMultirotorState().kinematics_estimated.position;
+          position = client.getMultirotorState().kinematics_estimated.position
           print(position)  
 
           return "complit"
