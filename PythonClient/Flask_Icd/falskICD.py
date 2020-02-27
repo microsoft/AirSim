@@ -398,7 +398,50 @@ def position_set_operation(value):
     from positionSet import PositionSet
     _task = PositionSet(value[0], value[1], value[2])
     _task.start()
+####
 
+#   gimbal_set
+#
+# { 
+# 	"yaw": 0,
+# 	"pitch": 0,
+# 	"roll": 0
+# }    
+#}                        
+# ========================================================================== #  
+@app.route('/gimbal/set', methods=['GET', 'POST'])
+def gimbalSet():
+    if request.method == "POST":
+        data = request.get_json()
+        print("request")
+        yaw = data['yaw']
+        pitch = data['pitch']
+        roll = data['roll']
+        rotation = [yaw,pitch,roll]
+
+        msg = "rotation is missing"
+        if rotation:
+            import sys
+            sys.path.insert(1, '../icd_multirotor')
+
+            thread = Thread(target=gimbal_set_operation, kwargs={'value': request.args.get('value', rotation)})
+            thread.start()
+
+            respons = {"success": True, "message": ""}
+            return jsonify(respons)
+        else:
+            print(msg)
+            respons = {"success": False, "message": msg}
+            return jsonify(respons)
+
+
+def gimbal_set_operation(value):
+    import gimbal_set
+    from gimbal_set import Gimbal
+    _task = Gimbal(value[0], value[1], value[2])
+    _task.start()
+
+####
 
 #   WebSocket -> start !     
 # ========================================================================== #          
