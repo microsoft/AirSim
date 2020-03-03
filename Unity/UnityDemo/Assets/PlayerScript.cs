@@ -29,6 +29,10 @@ public class PlayerScript : NetworkBehaviour
                 componentsToDisabled[i].enabled = true;
             }
 
+
+            GameObject viewCameras = GameObject.FindGameObjectWithTag("HUD");
+            var hud = viewCameras.GetComponent<AirSimHUDScript>();
+            hud.SetUpViewCameras();
             sceneCamera = Camera.main;
             if (sceneCamera != null)
             {

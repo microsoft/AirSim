@@ -1,7 +1,7 @@
 import setup_path 
 import airsim
 
-client = airsim.MultirotorClient("",41455,36000)
+client = airsim.MultirotorClient("",4001,36000)
 client.confirmConnection()
 client.enableApiControl(True)
 
