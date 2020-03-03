@@ -114,6 +114,7 @@ ipch/
 *.vsp
 *.vspx
 
+
 # TFS 2012 Local Workspace
 $tf/
 
@@ -433,3 +434,5 @@ Unity/UnityDemo/Assets//\*.meta
 /Unity/UnityDemo/Assets/HttpClient/Enums/*.meta
 /Unity/UnityDemo/Assets/HttpClient/Example/*.meta
 /Unity/UnityDemo/Assets/HttpClient/Helpers/*.meta
+/Unity/UnityDemo/Assets/Scenes/123DroneDemo.unity.meta
+/Unity/UnityDemo/Assets/Scenes/123DroneDemo.unity
