@@ -1,0 +1,15 @@
+{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+	"SubWindows": [
+    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "Visible": false},
+    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "Visible": false},
+    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "Visible": false}    
+      ],
+  "OriginGeopoint": {
+    "Latitude": 32.919945,
+    "Longitude": 35.290146,
+    "Altitude": 122
+  }
+}
+
