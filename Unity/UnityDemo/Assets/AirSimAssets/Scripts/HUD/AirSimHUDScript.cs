@@ -25,8 +25,7 @@ namespace AirSimUnity
             String[] Data = Environment.GetCommandLineArgs();
             //before your loop
           //  var csv = new StringBuilder();
-            csv.Append("StartWS");
-
+          
             var flaskPortArg = @"/flaskPortArg=";
             int flaskPort, unityport;
             var unityDronwPortArg = @"/unityDronePort=";
