@@ -186,25 +186,15 @@ APawn* PawnSimApi::getPawn()
     return params_.pawn;
 }
 
-std::vector<PawnSimApi::ImageCaptureBase::ImageResponse> PawnSimApi::getImages(
-    const std::vector<ImageCaptureBase::ImageRequest>& requests) const
+void PawnSimApi::getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests, std::vector<ImageCaptureBase::ImageResponse> &responses) const
 {
-    std::vector<ImageCaptureBase::ImageResponse> responses;
-
-    const ImageCaptureBase* camera = getImageCapture();
-    camera->getImages(requests, responses);
-
-    return responses;
+	for (int i = 0; i < requests.size() && i < responses.size(); ++i)
+		getImage(requests[i], responses[i]);
 }
 
-std::vector<uint8_t> PawnSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
+void PawnSimApi::getImage(const ImageCaptureBase::ImageRequest& request, ImageCaptureBase::ImageResponse &response) const
 {
-    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_name, image_type) };
-    const std::vector<ImageCaptureBase::ImageResponse>& response = getImages(request);
-    if (response.size() > 0)
-        return response.at(0).image_data_uint8;
-    else
-        return std::vector<uint8_t>();
+	getImageCapture()->getImage(request, response);
 }
 
 void PawnSimApi::setRCForceFeedback(float rumble_strength, float auto_center)
