@@ -13,15 +13,10 @@ class RenderRequest : public FRenderCommand
 {
 public:
     struct RenderParams {
-        USceneCaptureComponent2D * const render_component;
+        USceneCaptureComponent2D *render_component;
         UTextureRenderTarget2D* render_target;
         bool pixels_as_float;
         bool compress;
-
-        RenderParams(USceneCaptureComponent2D * render_component_val, UTextureRenderTarget2D* render_target_val, bool pixels_as_float_val, bool compress_val)
-            : render_component(render_component_val), render_target(render_target_val), pixels_as_float(pixels_as_float_val), compress(compress_val)
-        {
-        }
     };
     struct RenderResult {
         TArray<uint8> image_data_uint8;
@@ -37,48 +32,32 @@ public:
     };
 
 private:
-    static FReadSurfaceDataFlags setupRenderResource(const FTextureRenderTargetResource* rt_resource, const RenderParams* params, RenderResult* result, FIntPoint& size);
-
     std::shared_ptr<RenderParams>* params_;
     std::shared_ptr<RenderResult>* results_;
 public:
-	RenderParams *fast_param_;
-	RenderResult *fast_result_;
+	RenderParams fast_param_{ nullptr, nullptr, false, false };
+	std::vector<uint8_t> *rgba_output_ = nullptr;
+
+private:
 	volatile bool fast_cap_done_ = false;
 	FTextureRenderTargetResource* fast_rt_resource_;
-private:
-	FRHITexture2D *fast_cap_texture_;
-	volatile unsigned int fast_cap_tex_size_;
-    volatile unsigned int req_size_;
 
     std::shared_ptr<msr::airlib::WorkerThreadSignal> wait_signal_;
 
     bool saved_DisableWorldRendering_ = false;
-    UGameViewportClient * const game_viewport_;
+    //UGameViewportClient * const game_viewport_;
     FDelegateHandle end_draw_handle_;
     std::function<void()> query_camera_pose_cb_;
 
 public:
-    RenderRequest(UGameViewportClient * game_viewport, std::function<void()>&& query_camera_pose_cb);
+    RenderRequest(std::vector<uint8_t>& rgb_output);
     ~RenderRequest();
-
-    void DoTask(ENamedThreads::Type CurrentThread, const FGraphEventRef& MyCompletionGraphEvent)
-    {
-        ExecuteTask();
-    } 
 
     FORCEINLINE TStatId GetStatId() const
     {
         RETURN_QUICK_DECLARE_CYCLE_STAT(RenderRequest, STATGROUP_RenderThreadCommands);
     }
 
-	void fastScreenshot(std::shared_ptr<RenderParams> param, std::shared_ptr<RenderResult> result);
-
-    // read pixels from render target using render thread, then compress the result into PNG
-    // argument on the thread that calls this method.
-    void getScreenshot(
-        std::shared_ptr<RenderParams> params[], std::vector<std::shared_ptr<RenderResult>>& results, unsigned int req_size, bool use_safe_method);
-
-    void ExecuteTask();
-	void FastTask();
+	void FastScreenshot();
+	void RenderThreadScreenshotTask();
 };
