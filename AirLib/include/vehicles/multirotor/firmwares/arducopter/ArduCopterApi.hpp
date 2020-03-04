@@ -34,7 +34,7 @@ class ArduCopterApi : public MultirotorApiBase {
 
 public:
     ArduCopterApi(const MultiRotorParams* vehicle_params, const AirSimSettings::MavLinkConnectionInfo& connection_info)
-        : ip(connection_info.ip_address), vehicle_params_(vehicle_params)
+        : ip(connection_info.udp_address), vehicle_params_(vehicle_params)
     {
         connection_info_ = connection_info;
         sensors_ = &getSensors();
@@ -48,7 +48,7 @@ public:
     }
 
 
-public: 
+public:
     virtual void resetImplementation() override
     {
         MultirotorApiBase::resetImplementation();
@@ -119,7 +119,7 @@ public: //TODO:MultirotorApiBase implementation
         return true;
     }
 
-protected: 
+protected:
     virtual Kinematics::State getKinematicsEstimated() const override
     {
         Utils::log("Not Implemented", Utils::kLogLevelInfo);
@@ -170,7 +170,7 @@ protected:
 
     virtual float getTakeoffZ() const override
     {
-        // pick a number, 3 meters is probably safe 
+        // pick a number, 3 meters is probably safe
         // enough to get out of the backwash turbulence.  Negative due to NED coordinate system.
         // return params_.takeoff.takeoff_z;
         return 3.0;
@@ -242,7 +242,7 @@ protected:
 
     void connect()
     {
-        port = static_cast<uint16_t>(connection_info_.ip_port);
+        port = static_cast<uint16_t>(connection_info_.udp_port);
 
         closeConnections();
 
@@ -255,10 +255,10 @@ protected:
         }
 
         Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
-        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.sitl_ip_port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
+        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
 
         udpSocket_ = std::make_shared<mavlinkcom::UdpSocket>();
-        udpSocket_->bind(connection_info_.local_host_ip, connection_info_.sitl_ip_port);
+        udpSocket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
     }
 
     const GpsBase* getGps() const
@@ -345,7 +345,7 @@ private:
         int ret = snprintf(buf, sizeof(buf),
                            "{"
                            "\"timestamp\": %" PRIu64 ","
-                           "\"imu\": {" 
+                           "\"imu\": {"
                            "\"angular_velocity\": [%lf, %lf, %lf],"
                            "\"linear_acceleration\": [%lf, %lf, %lf]"
                            "},"
@@ -405,7 +405,7 @@ private:
             } else {
                 Utils::log(Utils::stringf("Received %d bytes instead of %zu bytes", recv_ret, sizeof(pkt)), Utils::kLogLevelInfo);
             }
-            
+
             recv_ret = udpSocket_->recv(&pkt, sizeof(pkt), 100);
         }
 

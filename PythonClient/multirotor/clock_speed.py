@@ -1,4 +1,4 @@
-import setup_path 
+import setup_path
 import airsim
 
 import time
@@ -12,7 +12,7 @@ client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
-client.moveByVelocityZAsync(0, 0, -2, 3).join()
+client.moveByVelocityZAsync(0, 0, -20, 3).join()
 
 
 while True:

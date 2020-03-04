@@ -2,4 +2,5 @@ import setup_path
 import airsim
 
 client = airsim.MultirotorClient()
-client.armDisarm(False)
+client.confirmConnection()
+client.armDisarm(True)

@@ -11,6 +11,9 @@ namespace mavlink_utils {
 		// make the current thread run with maximum priority.
 		static bool setMaximumPriority();
 
+        // set a nice name on the current thread which aids in debugging.
+        static bool setThreadName(const std::string& name);
+
 	};
 
 }

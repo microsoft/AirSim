@@ -38,7 +38,7 @@ class OrbitNavigator:
         # center is just a direction vector, so normalize it to compute the actual cx,cy locations.
         cx = float(center[0])
         cy = float(center[1])
-        length = math.sqrt(cx*cx)+(cy*cy)
+        length = math.sqrt((cx*cx) + (cy*cy))
         cx /= length
         cy /= length
         cx *= self.radius

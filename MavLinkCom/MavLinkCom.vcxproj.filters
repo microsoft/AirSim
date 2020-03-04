@@ -124,9 +124,6 @@
     <ClInclude Include="mavlink\protocol.h">
       <Filter>Mavlink</Filter>
     </ClInclude>
-    <ClInclude Include="common_utils\MedianFilter.hpp">
-      <Filter>common_utils</Filter>
-    </ClInclude>
     <ClInclude Include="common_utils\type_utils.hpp">
       <Filter>common_utils</Filter>
     </ClInclude>

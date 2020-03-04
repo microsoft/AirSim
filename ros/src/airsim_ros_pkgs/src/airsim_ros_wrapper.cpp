@@ -49,6 +49,9 @@ void AirsimROSWrapper::initialize_airsim()
     try
     {
         airsim_client_.confirmConnection();
+        airsim_client_images_.confirmConnection();
+        airsim_client_lidar_.confirmConnection();
+
         for (const auto& vehicle_name : vehicle_names_)
         {
             airsim_client_.enableApiControl(true, vehicle_name); // todo expose as rosservice?
@@ -946,7 +949,7 @@ void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
         for (const auto& airsim_img_request_vehicle_name_pair : airsim_img_request_vehicle_name_pair_vec_)
         {
             std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-            const std::vector<ImageResponse>& img_response = airsim_client_.simGetImages(airsim_img_request_vehicle_name_pair.first, airsim_img_request_vehicle_name_pair.second);
+            const std::vector<ImageResponse>& img_response = airsim_client_images_.simGetImages(airsim_img_request_vehicle_name_pair.first, airsim_img_request_vehicle_name_pair.second);
             lck.unlock();
 
             if (img_response.size() == airsim_img_request_vehicle_name_pair.first.size()) 
@@ -977,7 +980,7 @@ void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)
             for (const auto& vehicle_lidar_pair: vehicle_lidar_map_)
             {
                 std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
-                auto lidar_data = airsim_client_.getLidarData(vehicle_lidar_pair.second, vehicle_lidar_pair.first); // airsim api is imu_name, vehicle_name
+                auto lidar_data = airsim_client_lidar_.getLidarData(vehicle_lidar_pair.second, vehicle_lidar_pair.first); // airsim api is imu_name, vehicle_name
                 lck.unlock();
                 sensor_msgs::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data); // todo make const ptr msg to avoid copy
                 lidar_msg.header.frame_id = vehicle_lidar_pair.second; // sensor frame name. todo add to doc

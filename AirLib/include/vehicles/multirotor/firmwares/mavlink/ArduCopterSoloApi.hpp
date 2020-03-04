@@ -101,8 +101,8 @@ protected:
 			MavLinkMultirotorApi::connect();
 		}
 		else {
-			const std::string& ip = connection_info_.ip_address;
-			int port = connection_info_.ip_port;
+			const std::string& ip = connection_info_.udp_address;
+			int port = connection_info_.udp_port;
 
 			close();
 
@@ -115,9 +115,9 @@ protected:
 			}
 
 			Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
-			Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.sitl_ip_port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
+			Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
 
-			udpSocket_ = mavlinkcom::AdHocConnection::connectLocalUdp("ArduCopterSoloConnector", ip, connection_info_.sitl_ip_port);
+			udpSocket_ = mavlinkcom::AdHocConnection::connectLocalUdp("ArduCopterSoloConnector", ip, connection_info_.control_port);
 			mavlinkcom::AdHocMessageHandler handler = [this](std::shared_ptr<mavlinkcom::AdHocConnection> connection, const std::vector<uint8_t> &msg) {
 				this->rotorPowerMessageHandler(connection, msg);
 			};

@@ -65,6 +65,11 @@ public:
         return input_channels_[index];
     }
 
+    virtual float getAvgMotorOutput() const override
+	{
+		return ((getMotorControlSignal(0) + getMotorControlSignal(1) + getMotorControlSignal(2) + getMotorControlSignal(3)) / 4);
+	}
+
     virtual bool isRcConnected() const override
     {
         return is_connected_;

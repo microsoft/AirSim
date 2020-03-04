@@ -32,11 +32,15 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnection::connectTcp(const std::str
     return MavLinkConnectionImpl::connectTcp(nodeName, localAddr, remoteIpAddr, remotePort);
 }
 
+void  MavLinkConnection::acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort)
+{
+    pImpl->acceptTcp(shared_from_this(), nodeName, localAddr, listeningPort);
+}
+
 void MavLinkConnection::startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort)
 {
     pImpl->startListening(shared_from_this(), nodeName, connectedPort);
 }
-
 
 // log every message that is "sent" using sendMessage.
 void MavLinkConnection::startLoggingSendMessage(std::shared_ptr<MavLinkLog> log)
@@ -102,6 +106,12 @@ int MavLinkConnection::subscribe(MessageHandler handler)
 void MavLinkConnection::unsubscribe(int id) 
 {
     pImpl->unsubscribe(id);
+}
+
+
+bool MavLinkConnection::isPublishThread() const
+{
+    return pImpl->isPublishThread();
 }
 
 MavLinkConnection::~MavLinkConnection() {

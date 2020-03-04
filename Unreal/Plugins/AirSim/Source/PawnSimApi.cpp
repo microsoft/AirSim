@@ -219,6 +219,7 @@ msr::airlib::RCData PawnSimApi::getRCData() const
 {
     joystick_.getJoyStickState(getRemoteControlID(), joystick_state_);
 
+    rc_data_.is_initialized = joystick_state_.is_initialized;
     rc_data_.is_valid = joystick_state_.is_valid;
 
     if (rc_data_.is_valid) {
