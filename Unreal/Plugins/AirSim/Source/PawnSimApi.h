@@ -72,8 +72,8 @@ public: //implementation of VehicleSimApiBase
     virtual void update() override;
 
     virtual const UnrealImageCapture* getImageCapture() const override;
-    virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const override;
-    virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
+    virtual void getImages(const std::vector<ImageCaptureBase::ImageRequest>& request, std::vector<ImageCaptureBase::ImageResponse> &responses) const override;
+    virtual void getImage(const ImageCaptureBase::ImageRequest& request, ImageCaptureBase::ImageResponse &response) const override;
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;

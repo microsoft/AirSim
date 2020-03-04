@@ -14,16 +14,14 @@ public:
     UnrealImageCapture(const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras);
     virtual ~UnrealImageCapture();
 
-    virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const override;
+	virtual void getImages(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const override;
+	virtual void getImage(const ImageRequest& request, ImageResponse& response) const override;
 
 private:
-    void getSceneCaptureImage(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, 
-        std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method) const;
+    void getSceneCaptureImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type, ImageResponse &response) const;
 
     void addScreenCaptureHandler(UWorld *world);
     bool getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng);
-
-    bool updateCameraVisibility(APIPCamera* camera, const msr::airlib::ImageCaptureBase::ImageRequest& request);
 
 private:
     const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras_;
