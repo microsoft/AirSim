@@ -30,9 +30,9 @@ public class PlayerScript : NetworkBehaviour
             }
 
 
-            GameObject viewCameras = GameObject.FindGameObjectWithTag("HUD");
-            var hud = viewCameras.GetComponent<AirSimHUDScript>();
-            hud.SetUpViewCameras();
+            //GameObject viewCameras = GameObject.FindGameObjectWithTag("HUD");
+            //var hud = viewCameras.GetComponent<AirSimHUDScript>();
+            //hud.SetUpViewCameras();
             sceneCamera = Camera.main;
             if (sceneCamera != null)
             {
