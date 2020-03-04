@@ -267,7 +267,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         std::cout << "Lidar" << std::endl;
                         auto lidar_setting = *static_cast<LidarSetting*>(sensor_setting.get());
                         set_nans_to_zeros_in_pose(*vehicle_setting, lidar_setting);
-                        append_static_lidar_tf(vehicle_ros.get(), sensor_name, lidar_setting); // todo is there a more readable way to down-cast?
+                        append_static_lidar_tf(vehicle_ros.get(), sensor_name, lidar_setting);
                         sensor_publisher.publisher = nh_private_.advertise<sensor_msgs::PointCloud2>(curr_vehicle_name + "/lidar/" + sensor_name, 10);
                         break;
                     }
