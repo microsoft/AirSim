@@ -250,6 +250,8 @@ GameObject:
   - component: {fileID: 124371674541753354}
   - component: {fileID: 81875936256676810}
   - component: {fileID: 114146339632205672}
+  - component: {fileID: 114704775984895828}
+  - component: {fileID: 114147150731460268}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1534,6 +1536,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shouldRotate: 1
   target: {fileID: 0}
+--- !u!114 &114147150731460268
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1489793753402450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e4b102f95b77a4383bce3a1230b6bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114242623881085402
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1668,6 +1681,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effect: 0
   effectsShader: {fileID: 4800000, guid: e03150fb5e358274881026fc928ae40f, type: 3}
+--- !u!114 &114704775984895828
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1489793753402450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21bb3fb397127f54fbf45c3e95fc2c48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114767387428751470
 MonoBehaviour:
   m_ObjectHideFlags: 1
