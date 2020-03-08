@@ -622,37 +622,6 @@ def handle_force_send(json):
 def handle_force_stop(json):
     print('received force_stop: ' + str(json))
 
-############# Socket.io #############
-@socketio.on('connect')
-def WSocketConnect():
-    print('connect')
-
-
-@socketio.on('disconnect')
-def WSocketDisconnect():
-    print('disconnect')
-
-
-@socketio.on('keepAlive')
-def WSocketHandleKeepAlive(json):
-    # print('received keepAlive: ' + str(json))
-    pass
-
-
-@socketio.on('my')
-def handle_my_custom_event(json):
-    print('received my: ' + str(json))
-
-
-@socketio.on('force_send')
-def handle_force_send(json):
-    print('received force_send: ' + str(json))
-
-
-@socketio.on('force_stop')
-def handle_force_stop(json):
-    print('received force_stop: ' + str(json))
-
 
 # geo_to_ned
 #
