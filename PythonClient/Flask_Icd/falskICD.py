@@ -65,6 +65,11 @@ def addRegion():
     # return (request.form['projectFilePath'])
     return "Nothing"
 
+#   missing         
+# ========================================================================== #  
+@app.route('/ICD/', methods=['GET', 'POST'])
+def ICD():
+    render_template('index.html')
 
 
 #   Takeoff            
