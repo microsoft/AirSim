@@ -15,6 +15,7 @@ socketio = SocketIO(app, ping_timeout=100, ping_interval=100)
 
 hot_point_ned_coordinate = []
 way_point_ned_coordinate = []
+way_point_status = -1
 air_sim = None
 initialize_height = 0 
 
@@ -263,6 +264,7 @@ def wayPoints():
             global way_point_ned_coordinate
             way_point_ned_coordinate = path
 
+
             respons = {"success": True, "message": ""}
             return jsonify(respons)
         else:
@@ -339,11 +341,18 @@ def wayPointAction():
             import sys
             sys.path.insert(1, '../icd_multirotor')
             action = data['action']
+            global way_point_status
             if (action == 0):
-
+                way_point_status = 0
                 print(way_point_ned_coordinate)
                 thread = Thread(target=waypoint_action_operation)
                 thread.start() 
+            elif (action == 1):
+                way_point_status = 1
+            elif (action == 2):
+                way_point_status = 2
+            elif (action == 3):
+                way_point_status = 3
 
             respons = {"success": True, "message": ""}
             return jsonify(respons)
@@ -356,9 +365,12 @@ def wayPointAction():
 def waypoint_action_operation():
     import wayPoints
     from wayPoints import WayPoints
+    global way_point_status
     print(way_point_ned_coordinate)
     _task = WayPoints(way_point_ned_coordinate,12)
     _task.start()
+    way_point_status = 1
+
 
 
 
@@ -463,14 +475,9 @@ def WebSocketStart():
             socketio.emit('my', data, broadcast=True)
             time.sleep(1)
         respons = {"success": True, "message": "WebSocket start"}
-        return jsonify(respons)
+        return jsonify(respons)  
 
-def init_airsim():
-    airsim_client = airsim.MultirotorClient()
-    airsim_client.confirmConnection()
-    airsim_client.enableApiControl(True)
-    airsim_client.armDisarm(True)
-    return airsim_client
+
 
 #   initialize the client.          
 # ========================================================================== #
@@ -520,7 +527,7 @@ def load_airsim(airsim_client):
     pitch, roll, yaw = airsim.to_eularian_angles(
         rpcinfo.kinematics_estimated.orientation)
     homepoint = airsim_client.getHomeGeoPoint()
-
+    global way_point_status
     global initialize_height
     if(initialize_height is not 0):
         height_above_takeoff = -(kinematics_estimated.position.z_val) + initialize_height
@@ -560,7 +567,7 @@ def load_airsim(airsim_client):
             "armed": True
         },
         "wayPoints": {
-            "status": 2
+            "status": way_point_status
         },
         "keepAlive": rpcinfo.timestamp
     }
