@@ -144,9 +144,9 @@ GameObject:
   - component: {fileID: 4429287858405142}
   - component: {fileID: 20721562190174508}
   - component: {fileID: 81698010782284886}
-  - component: {fileID: 114803641458078356}
-  - component: {fileID: 114503406075157864}
-  m_Layer: 0
+  - component: {fileID: 114391434416006674}
+  - component: {fileID: 114402284725588784}
+  m_Layer: 8
   m_Name: StreamCamera
   m_TagString: StreamCamera
   m_Icon: {fileID: 0}
@@ -933,7 +933,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: -10
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1034,7 +1034,7 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1356278675012888}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -1647,6 +1647,17 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 10
   m_InterpolateMovement: 1
+--- !u!114 &114391434416006674
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1356278675012888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e4b102f95b77a4383bce3a1230b6bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114392589330475114
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1659,6 +1670,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraName: 1
+--- !u!114 &114402284725588784
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1356278675012888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21bb3fb397127f54fbf45c3e95fc2c48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114490354504813046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1685,17 +1707,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effect: 0
   effectsShader: {fileID: 4800000, guid: e03150fb5e358274881026fc928ae40f, type: 3}
---- !u!114 &114503406075157864
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1356278675012888}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21bb3fb397127f54fbf45c3e95fc2c48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114508743249118194
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1772,17 +1783,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effect: 0
   effectsShader: {fileID: 4800000, guid: e03150fb5e358274881026fc928ae40f, type: 3}
---- !u!114 &114803641458078356
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1356278675012888}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5e4b102f95b77a4383bce3a1230b6bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114805483004363016
 MonoBehaviour:
   m_ObjectHideFlags: 1

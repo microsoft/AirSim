@@ -8,11 +8,12 @@ public class ScreenshotHandler : MonoBehaviour
 
 
     private static ScreenshotHandler instance;
+    private GameObject viewCameras;
     private DLLTest.RtaVideoStreamer videoStreamer = new DLLTest.RtaVideoStreamer();
     private Camera myCamera;
     private bool takeScreenshotOnNextFrame;
 
-    private void Awake()
+    private void Start()
     {
         instance = this;
         myCamera = GetComponent<Camera>();
