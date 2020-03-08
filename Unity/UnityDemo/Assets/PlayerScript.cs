@@ -28,8 +28,8 @@ public class PlayerScript : NetworkBehaviour
             {
                 componentsToDisabled[i].enabled = true;
             }
-
-
+            drone.InitializeVehicle();
+       
             //GameObject viewCameras = GameObject.FindGameObjectWithTag("HUD");
             //var hud = viewCameras.GetComponent<AirSimHUDScript>();
             //hud.SetUpViewCameras();
