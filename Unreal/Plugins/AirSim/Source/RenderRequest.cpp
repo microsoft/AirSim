@@ -28,13 +28,11 @@ void RenderRequest::FastScreenshot()
 				This->RenderThreadScreenshotTask();
 			}
 		);
-		//Reserve a default amount of space while the other threads run. If it's sufficient, it will save the render thread some time.
-		rgb_output_.reserve(126 * 126);
 	}, false);
 
 	//Try to wait just long enough for the render thread to finish the capture.
-	//Start with a long-ish wait, then check for completion more frequently.
-	for (int best_guess_cap_time_microseconds = 500; !fast_cap_done_; best_guess_cap_time_microseconds = 500)
+	//Start with a long wait, then check for completion more frequently.
+	for (int best_guess_cap_time_microseconds = 500; !fast_cap_done_; best_guess_cap_time_microseconds = 200)
 		std::this_thread::sleep_for(std::chrono::microseconds(best_guess_cap_time_microseconds));
 }
 
@@ -46,11 +44,10 @@ void RenderRequest::RenderThreadScreenshotTask()
 	uint32 height = fast_cap_texture->GetSizeY();
 	uint32 stride;
 	auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
-	//fast_result_->image_data_uint8.Reset(fast_result_->image_data_uint8.Num());
-	//fast_result_->image_data_uint8.Append(src, height * stride);
-	//void *dest = static_cast<void*>(fast_result_->image_data_uint8.GetData());
+
 	if (src)
-		rgba_output_->insert(rgba_output_->begin(), &src[0], &src[height * stride]);//FMemory::BigBlockMemcpy(rgb_output, src, height * stride);
+		rgba_output_->insert(rgba_output_->begin(), &src[0], &src[height * stride]);
+
 	RHIUnlockTexture2D(fast_cap_texture, 0, false);
 	fast_cap_done_ = true;
 }
