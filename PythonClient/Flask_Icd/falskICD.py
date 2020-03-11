@@ -157,7 +157,15 @@ def hotPoint():
             coordinates = [data['latitude'],data['longitude'],data['altitude']] ## get lon\lat
             global hot_point_ned_coordinate 
             ned_coordinates =  geo_to_ned(coordinates)
-            hot_point_ned_coordinate = [ned_coordinates[0],ned_coordinates[1],ned_coordinates[2]] ##TODO:: hieght
+
+            global initialize_height
+            z1 = data['altitude']
+            z1 = initialize_height - z1     
+            print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+            print(data['latitude'])
+            print(data['longitude'])
+            print(data['altitude'])            
+            hot_point_ned_coordinate = [ned_coordinates[0],ned_coordinates[1],-(z1)] ##TODO:: hieght
             respons = {"success": True, "message": ""}
             return jsonify(respons)
         else:
@@ -309,12 +317,12 @@ def wayPointUpload():
             geo_point1 = []
             geo_point1 = [x1,y1,z1]
             ned_coordinate1 = geo_to_ned(geo_point1)
-            airSimPoint1 = airsim.Vector3r(ned_coordinate1[1],ned_coordinate1[0],z1)
+            airSimPoint1 = airsim.Vector3r(ned_coordinate1[0],ned_coordinate1[1],z1)
             path.append(airSimPoint1)
             geo_point2 = []
             geo_point2 = [x2,y2,z1]
             ned_coordinate2 = geo_to_ned(geo_point2)
-            airSimPoint2 = airsim.Vector3r(ned_coordinate2[1],ned_coordinate2[0],z1)
+            airSimPoint2 = airsim.Vector3r(ned_coordinate2[0],ned_coordinate2[1],z1)
             path.append(airSimPoint2)
 
             global way_point_ned_coordinate
