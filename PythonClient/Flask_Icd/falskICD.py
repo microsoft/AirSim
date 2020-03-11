@@ -16,6 +16,7 @@ socketio = SocketIO(app, ping_timeout=100, ping_interval=100)
 hot_point_ned_coordinate = []
 way_point_ned_coordinate = []
 way_point_status = -1
+is_armed = False
 air_sim = None
 initialize_height = 0 
 
@@ -125,6 +126,8 @@ def land_operation():
     from land import Land
     _task = Land()
     _task.start()
+    global is_armed
+    is_armed = False
 
 
 
@@ -494,10 +497,11 @@ def init_airsim():
 def initializeHeight():
     global air_sim 
     global initialize_height
+    global is_armed
     rpcinfo = air_sim.getMultirotorState()
     kinematics_estimated = rpcinfo.kinematics_estimated
     initialize_height = kinematics_estimated.position.z_val
-
+    is_armed = True
 
 #   get current kinematics_estimated.          
 # ========================================================================== #
@@ -564,7 +568,7 @@ def load_airsim(airsim_client):
         },
         "owner": "droneService",
         "state": {
-            "armed": True
+            "armed": is_armed
         },
         "wayPoints": {
             "status": way_point_status
