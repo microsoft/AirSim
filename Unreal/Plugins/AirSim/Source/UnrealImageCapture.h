@@ -4,6 +4,8 @@
 #include "PIPCamera.h"
 #include "common/ImageCaptureBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
+#include "common/common_utils/BufferPool.h"
+
 
 
 class UnrealImageCapture : public msr::airlib::ImageCaptureBase
@@ -18,6 +20,8 @@ public:
 	virtual void getImage(const ImageRequest& request, ImageResponse& response) const override;
 
 private:
+	BufferPool *BufferPool_ = new BufferPool();
+
     void getSceneCaptureImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type, ImageResponse &response) const;
 
     void addScreenCaptureHandler(UWorld *world);
