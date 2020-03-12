@@ -15,21 +15,22 @@ public class PlayerScript : NetworkBehaviour
          var drone = GetComponent<Drone>();
         if (!isLocalPlayer)
         {
-            for (int i = 0; i < componentsToDisabled.Length; i++)
-            {
-                componentsToDisabled[i].enabled = false;
-            }
+            //for (int i = 0; i < componentsToDisabled.Length; i++)
+            //{
+            //    componentsToDisabled[i].enabled = false;
+            //}
         }
         else
         {
-
+            
             drone.enabled = true;
+          //  drone.InitializeVehicle();
             for (int i = 0; i < componentsToDisabled.Length; i++)
             {
                 componentsToDisabled[i].enabled = true;
             }
-            drone.InitializeVehicle();
-       
+
+
             //GameObject viewCameras = GameObject.FindGameObjectWithTag("HUD");
             //var hud = viewCameras.GetComponent<AirSimHUDScript>();
             //hud.SetUpViewCameras();

@@ -7,7 +7,6 @@ TagManager:
   - CaptureCameras
   - ViewCameras
   - HUD
-  - StreamCamera
   layers:
   - Default
   - TransparentFX

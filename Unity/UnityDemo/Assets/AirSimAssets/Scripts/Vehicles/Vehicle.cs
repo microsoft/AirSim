@@ -53,7 +53,7 @@ namespace AirSimUnity {
                 GetComponent<Rigidbody>().useGravity = false;
             }
 
-         
+            InitializeVehicle();
 
             airsimInterface = VehicleCompanion.GetVehicleCompanion(this);
             isServerStarted = airsimInterface.StartVehicleServer(AirSimSettings.GetSettings().LocalHostIP);
