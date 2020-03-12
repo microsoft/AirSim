@@ -34,7 +34,7 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
             }
             else {
                 std::ofstream file(image_full_file_path, std::ios::binary);
-                file.write(reinterpret_cast<const char*>(response.image_data_uint8.data()), response.image_data_uint8.size());
+                file.write(reinterpret_cast<const char*>(response.image_data_uint8->data()), response.image_data_uint8->size());
                 file.close();
             }
 

@@ -377,7 +377,7 @@ public:
             return request;
         }         
     };
-
+	/*
     struct ImageResponse {
         std::vector<uint8_t> image_data_uint8;
         std::vector<float> image_data_float;
@@ -464,7 +464,7 @@ public:
 
             return response_adapter;
         }
-    };
+    };*/
 
     struct LidarData {
 

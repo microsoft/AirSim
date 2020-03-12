@@ -9,7 +9,7 @@
 #include "AirBlueprintLib.h"
 #include "Async/Async.h"
 
-RenderRequest::RenderRequest(std::vector<uint8_t>& rgb_output) : rgba_output_(&rgb_output)
+RenderRequest::RenderRequest(std::vector<uint8_t>& rgba_output) : rgba_output_(&rgba_output)
 {}
 
 RenderRequest::~RenderRequest()
@@ -44,10 +44,13 @@ void RenderRequest::RenderThreadScreenshotTask()
 	uint32 height = fast_cap_texture->GetSizeY();
 	uint32 stride;
 	auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
+	//fast_result_->image_data_uint8.Reset(fast_result_->image_data_uint8.Num());
+	//fast_result_->image_data_uint8.Append(src, height * stride);
+	//void *dest = static_cast<void*>(fast_result_->image_data_uint8.GetData());
 
 	if (src)
-		rgba_output_->insert(rgba_output_->begin(), &src[0], &src[height * stride]);
-
+		//rgba_output_->insert(rgba_output_->begin(), &src[0], &src[height * stride]);
+		FMemory::BigBlockMemcpy(rgba_output_->data(), src, height * stride); //TODO MAYBE THIS IS THE SLOW PART
 	RHIUnlockTexture2D(fast_cap_texture, 0, false);
 	fast_cap_done_ = true;
 }

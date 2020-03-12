@@ -50,7 +50,7 @@ private:
     std::function<void()> query_camera_pose_cb_;
 
 public:
-    RenderRequest(std::vector<uint8_t>& rgb_output);
+    RenderRequest(std::vector<uint8_t> &rgba_output);
     ~RenderRequest();
 
     FORCEINLINE TStatId GetStatId() const

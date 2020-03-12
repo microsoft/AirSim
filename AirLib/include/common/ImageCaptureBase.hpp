@@ -4,8 +4,10 @@
 #ifndef air_ImageCaptureBase_hpp
 #define air_ImageCaptureBase_hpp
 
+#pragma once
 #include "common/Common.hpp"
 #include "common/common_utils/EnumFlags.hpp"
+#include <functional>
 
 namespace msr { namespace airlib {
 
@@ -44,7 +46,7 @@ public: //types
     };
 
     struct ImageResponse {
-        vector<uint8_t> image_data_uint8;
+        std::unique_ptr<vector<uint8_t>, std::function<void(vector<uint8_t>*)>> image_data_uint8 = nullptr;
         vector<float> image_data_float;
 
         std::string camera_name;
@@ -60,6 +62,7 @@ public: //types
 
 public: //methods
     virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const = 0;
+	virtual void getImage(const ImageRequest& request, ImageResponse& response) const = 0;
 };
 
 
