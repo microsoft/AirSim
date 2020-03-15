@@ -11,10 +11,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/CarDemo.unity
     guid: 48447221fb4a8864dbedfeed703bf275
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DroneDemo.unity
     guid: 012f6bdfaada17042bf7917f7d4fcbd8
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/NewDrone.unity
     guid: e7b96da5856a75244a96c15521b8d76e
   m_configObjects: {}
