@@ -1,16 +1,21 @@
 import setup_path 
 import airsim
 
-client = airsim.MultirotorClient()
-client.confirmConnection()
-client.enableApiControl(True)
-client.armDisarm(True)
+
 
 
 
 class Land:
     
+    def __init__(self, port):
+        self.port = port
+      
+    
     def start(self):
+        client = airsim.MultirotorClient('',self.port)
+        client.confirmConnection()
+        client.enableApiControl(True)
+        client.armDisarm(True)
         print("land requst") 
         print(client.getMultirotorState())   
 

@@ -46,7 +46,7 @@ way_point_ned_coordinate = []
 way_point_status = -1
 is_armed = False
 air_sim = None
-unityDronePort = 41451
+#unityDronePort = 41451
 initialize_height = 0
 
 posts = [{
@@ -132,7 +132,7 @@ def takeoff():
 def takeoff_operation(value):
      import takeoff
      from takeoff import Takeoff
-     _task = Takeoff(value)
+     _task = Takeoff(value,unitypot)
      _task.start()
 
 
@@ -153,7 +153,7 @@ def land():
 def land_operation():
     import land
     from land import Land
-    _task = Land()
+    _task = Land(unitypot)
     _task.start()
     global is_armed
     is_armed = False
@@ -236,7 +236,7 @@ def hotpoint_action_operation():
     import hotPoint
     from hotPoint import HotPoint
     ##global param....
-    _task = HotPoint(hot_point_ned_coordinate[0], hot_point_ned_coordinate[1], hot_point_ned_coordinate[2])
+    _task = HotPoint(hot_point_ned_coordinate[0], hot_point_ned_coordinate[1], hot_point_ned_coordinate[2],unitypot)
     _task.start()
 
 
@@ -407,7 +407,7 @@ def waypoint_action_operation():
     from wayPoints import WayPoints
     global way_point_status
     print(way_point_ned_coordinate)
-    _task = WayPoints(way_point_ned_coordinate,12)
+    _task = WayPoints(way_point_ned_coordinate,12,unitypot)
     _task.start()
     way_point_status = 1
 
@@ -453,7 +453,7 @@ def positionSet():
 def position_set_operation(value):
     import positionSet
     from positionSet import PositionSet
-    _task = PositionSet(value[0], value[1], value[2])
+    _task = PositionSet(value[0], value[1], value[2],unitypot)
     _task.start()
 ####
 
@@ -495,7 +495,7 @@ def gimbalSet():
 def gimbal_set_operation(value):
     import gimbal_set
     from gimbal_set import Gimbal
-    _task = Gimbal(value[0], value[1], value[2])
+    _task = Gimbal(value[0], value[1], value[2],unitypot)
     _task.start()
 
 ####
