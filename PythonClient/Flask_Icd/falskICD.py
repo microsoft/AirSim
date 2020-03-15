@@ -125,6 +125,7 @@ def land_operation():
     import land
     from land import Land
     _task = Land()
+    time.sleep(1)
     _task.start()
     global is_armed
     is_armed = False
