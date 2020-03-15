@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEditor;
 
-namespace AirSimUnity {
+namespace AirSimUnity
+{
     /*
      * Container class for settings.json file. This class utilizes JSONUtility in Unity for parsing the json file.
      * A new file will be created if settings.json file is not already present.
@@ -18,21 +19,24 @@ namespace AirSimUnity {
      */
 
     [Serializable]
-    public class AirSimSettings {
+    public class AirSimSettings
+    {
         private const int DEFAULT_DRONE_PORT = 41451;
         private const int DEFAULT_CAR_PORT = 41451;
 
         private static string AIRSIM_DATA_FOLDER = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/AirSim/";
 
         [Serializable]
-        public struct RecordingSettings {
+        public struct RecordingSettings
+        {
             public bool RecordOnMove;
             public float RecordInterval;
             public List<CamerasSettings> Cameras;
         }
 
         [Serializable]
-        public struct CamerasSettings {
+        public struct CamerasSettings
+        {
             public string CameraName;
             public int ImageType;
             public bool PixelAsFloat;
@@ -40,7 +44,8 @@ namespace AirSimUnity {
         }
 
         [Serializable]
-        public struct GimbleSettings {
+        public struct GimbleSettings
+        {
             public int Stabilization;
             public float Pitch;
             public float Roll;
@@ -48,7 +53,8 @@ namespace AirSimUnity {
         }
 
         [Serializable]
-        public struct CameraCaptureSettings {
+        public struct CameraCaptureSettings
+        {
             public int ImageType;
             public int Width;
             public int Height;
@@ -65,14 +71,16 @@ namespace AirSimUnity {
         }
 
         [Serializable]
-        public struct GeoPointSettings {
+        public struct GeoPointSettings
+        {
             public float Latitude;
             public float Longitude;
             public float Altitude;
         }
 
         [Serializable]
-        public struct TimeOfDaySettings {
+        public struct TimeOfDaySettings
+        {
             public bool Enable;
             public long StartDateTime;
             public int CelestialClockSpeed;
@@ -81,21 +89,24 @@ namespace AirSimUnity {
         }
 
         [Serializable]
-        public struct SubWindowsSettings {
+        public struct SubWindowsSettings
+        {
             public int WindowID;
             public int CameraID;
             public int ImageType;
             public bool Visible;
         }
 
-        public struct RCSettings {
+        public struct RCSettings
+        {
             public int RemoteControlID;
             public bool AllowAPIWhenDisconnected;
             public bool AllowAPIAlways;
         }
 
         [Serializable]
-        public struct SimpleFlightSettings {
+        public struct SimpleFlightSettings
+        {
             public string FirmwareName;
             public string DefaultVehicleState;
             public RCSettings RC;
@@ -103,7 +114,8 @@ namespace AirSimUnity {
         }
 
         [Serializable]
-        public struct PX4Settings {
+        public struct PX4Settings
+        {
             public string FirmwareName;
             public string LogViewerHostIp;
             public int LogViewerPort;
@@ -146,49 +158,99 @@ namespace AirSimUnity {
         public SimpleFlightSettings SimpleFlight;
         public PX4Settings PX4;
 
+
+
         private static AirSimSettings settings = null;
 
-        public static AirSimSettings GetSettings() {
+        private static int flaskPort = 5000;
+
+        public static int GetFlaskPort()
+        {
+            return flaskPort;
+        }
+
+        public static void SetFlaskPort(int port)
+        {
+            flaskPort = port;
+        }
+
+
+        public static AirSimSettings GetSettings()
+        {
             return settings;
         }
 
-        public static bool Initialize() {
+        public static bool Initialize()
+        {
             settings = new AirSimSettings();
             settings.SetDefaults();
 
-            if (!Directory.Exists(AIRSIM_DATA_FOLDER)) {
+            if (!Directory.Exists(AIRSIM_DATA_FOLDER))
+            {
                 Directory.CreateDirectory(AIRSIM_DATA_FOLDER);
             }
 
             string jsonString = GetSettingsContent();
-
-            var ssss = JsonUtility.FromJson<AirSimSettings>(jsonString);
-
             JsonUtility.FromJsonOverwrite(jsonString, settings);
             return true;
         }
 
-        public CameraCaptureSettings GetCaptureSettingsBasedOnImageType(ImageType type) {
-            if (CaptureSettings.Count == 1) {
+
+        public static bool PreInitialize(int port)
+        {
+            settings = new AirSimSettings();
+            settings.SetDefaults();
+
+
+            if (!Directory.Exists(AIRSIM_DATA_FOLDER))
+            {
+                Directory.CreateDirectory(AIRSIM_DATA_FOLDER);
+            }
+            string jsonString = GetSettingsContent();
+            JsonUtility.FromJsonOverwrite(jsonString, settings);
+            var sss = settings.GetPortIDForVehicle(true);
+            var serverport = jsonString.Replace(sss.ToString(), port.ToString());
+            SetSettingsContent(serverport);
+
+            return true;
+        }
+
+
+
+
+        public CameraCaptureSettings GetCaptureSettingsBasedOnImageType(ImageType type)
+        {
+
+            if (CaptureSettings.Count == 0) return new CameraCaptureSettings();
+
+            if (CaptureSettings.Count == 1)
+            {
                 return CaptureSettings[0];
             }
 
-            foreach (CameraCaptureSettings capSettings in CaptureSettings) {
-                if (capSettings.ImageType == (int)type) {
+            foreach (CameraCaptureSettings capSettings in CaptureSettings)
+            {
+                if (capSettings.ImageType == (int)type)
+                {
                     return capSettings;
                 }
             }
             return CaptureSettings[0];
         }
 
-        public int GetPortIDForVehicle(bool isDrone) {
-            if (!isDrone) {
+        public int GetPortIDForVehicle(bool isDrone)
+        {
+            if (!isDrone)
+            {
                 return DEFAULT_CAR_PORT;
             }
 
-            if ("PX4".Equals(DefaultVehicleConfig)) {
+            if ("PX4".Equals(DefaultVehicleConfig))
+            {
                 return PX4.ApiServerPort;
-            } else {
+            }
+            else
+            {
                 return SimpleFlight.ApiServerPort;
             }
         }
@@ -196,11 +258,13 @@ namespace AirSimUnity {
         /********** Methods internal to AirSimSettngs ********/
 
         //Get the settings from the "setting.json" file.
-        private static string GetSettingsContent() {
+        private static string GetSettingsContent()
+        {
             var fileName = InitializeAirSim.GetAirSimSettingsFileName();
 
             string content = "";
-            try {
+            try
+            {
                 string line = "";
                 using (var reader = new StreamReader(fileName, Encoding.Default))
                 {
@@ -211,14 +275,40 @@ namespace AirSimUnity {
                     } while (line != null);
                     reader.Close();
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Debug.LogError("Unable to read the settings file : " + e.Message);
                 throw e;
             }
             return content;
         }
-        
-        private void SetDefaults() {
+
+        //Set the settings from the "setting.json" file.
+        private static void SetSettingsContent(string str)
+        {
+            var fileName = InitializeAirSim.GetAirSimSettingsFileName();
+            try
+            {
+                using (var writer = new StreamWriter(fileName))
+                {
+                    writer.Write(str);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Unable to write the settings file : " + e.Message);
+                throw e;
+            }
+
+        }
+
+
+
+
+
+        private void SetDefaults()
+        {
             Recording.RecordInterval = 0.05f;
             Recording.RecordOnMove = false;
             Recording.Cameras = new List<CamerasSettings>();
@@ -247,7 +337,8 @@ namespace AirSimUnity {
             PX4 = GetDefaultPX4Settings();
         }
 
-        private PX4Settings GetDefaultPX4Settings() {
+        private PX4Settings GetDefaultPX4Settings()
+        {
             PX4Settings px4;
             px4.FirmwareName = "PX4";
             px4.LogViewerHostIp = "127.0.0.1";
@@ -271,7 +362,8 @@ namespace AirSimUnity {
             return px4;
         }
 
-        private SimpleFlightSettings GetDefaultSimpleFlightSettings() {
+        private SimpleFlightSettings GetDefaultSimpleFlightSettings()
+        {
             SimpleFlightSettings settings;
             settings.FirmwareName = "SimpleFlight";
             settings.DefaultVehicleState = "Armed";
@@ -284,7 +376,8 @@ namespace AirSimUnity {
             return settings;
         }
 
-        private SubWindowsSettings GetSubWindowSettings(int windowID, int camID, int imageType, bool visible) {
+        private SubWindowsSettings GetSubWindowSettings(int windowID, int camID, int imageType, bool visible)
+        {
             SubWindowsSettings subSettings;
             subSettings.WindowID = windowID;
             subSettings.CameraID = camID;
@@ -293,7 +386,8 @@ namespace AirSimUnity {
             return subSettings;
         }
 
-        private CamerasSettings GetDefaultCameraSettings() {
+        private CamerasSettings GetDefaultCameraSettings()
+        {
             CamerasSettings camSettings;
             camSettings.CameraName = "";
             camSettings.ImageType = 0;
@@ -302,7 +396,8 @@ namespace AirSimUnity {
             return camSettings;
         }
 
-        private CameraCaptureSettings GetDefaultCaptureSettings() {
+        private CameraCaptureSettings GetDefaultCaptureSettings()
+        {
             CameraCaptureSettings capSettings;
             capSettings.ImageType = 0;
             capSettings.Width = 256;
@@ -342,7 +437,7 @@ namespace AirSimUnity {
             capSettings.OrthoWidth = 5.12f;
             capSettings.Gimble.Stabilization = 1;
             capSettings.Gimble.Pitch = 20;
-            capSettings.Gimble.Roll =20;
+            capSettings.Gimble.Roll = 20;
             capSettings.Gimble.Yaw = 20;
             return capSettings;
         }

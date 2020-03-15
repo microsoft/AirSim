@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CaptureCameras
   - ViewCameras
+  - HUD
   layers:
   - Default
   - TransparentFX

@@ -3,16 +3,16 @@ import airsim
 
 
 class WayPoints:
-      def __init__(self, points, velocity):
+      def __init__(self, points, velocity,port):
           self.points = points
           self.velocity = velocity
-
+          self.port = port
 
       def start(self):
           print("wayPoints")
           
 
-          client = airsim.MultirotorClient()
+          client = airsim.MultirotorClient('',self.port)
           client.confirmConnection()
           client.enableApiControl(True)
           client.armDisarm(True) 

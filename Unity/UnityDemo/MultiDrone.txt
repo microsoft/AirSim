@@ -1,0 +1,4 @@
+subst m: /D
+subst m: C:\Doc\Documents1
+subst m: /D
+subst m: C:\Doc\Documents2
