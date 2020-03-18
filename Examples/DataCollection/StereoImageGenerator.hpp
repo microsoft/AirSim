@@ -144,9 +144,9 @@ private:
     static void processImages(common_utils::ProsumerQueue<ImagesResult>* results)
     {
         while (!results->getIsDone()) {
-            msr::airlib::ClockBase* clock = msr::airlib::ClockFactory::get();
+            //msr::airlib::ClockBase* clock = msr::airlib::ClockFactory::get();
 
-            ImagesResult result;
+            /*ImagesResult result;
             if (!results->tryPop(result)) {
                 clock->sleep_for(1);
                 continue;
@@ -184,7 +184,7 @@ private:
                 << " ori:" << VectorMath::toString(result.orientation)
                 << " render time " << result.render_time * 1E3f << "ms" 
                 << " process time " << clock->elapsedSince(process_time) * 1E3f << " ms"
-                << std::endl;
+                << std::endl;*/
 
         }
     }
