@@ -45,7 +45,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
 	render_request.FastScreenshot();
 
 	//response.time_stamp = result->time_stamp;
-	//response.image_data_uint8 = std::vector<uint8_t>(result->image_data_uint8.GetData(), result->image_data_uint8.GetData() + result->image_data_uint8.Num());
+	//response.image_data_uint8 = std::vector<uint8_t>(result->image_data_uint8->GetData(), result->image_data_uint8->GetData() + result->image_data_uint8->Num());
 	response.width = width;
 	response.height = height;
 	response.image_type = image_type;

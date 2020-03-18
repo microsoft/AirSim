@@ -143,82 +143,82 @@ public:
 
         std::vector<float> sgm_depth_image(params_.depth_height*params_.depth_width);
 
-        do {
-            const Pose current_pose = client.simGetVehiclePose();
+        //do {
+        //    const Pose current_pose = client.simGetVehiclePose();
 
-            const std::vector<ImageResponse>& response = client.simGetImages(request);
+        //    const std::vector<ImageResponse>& response = client.simGetImages(request);
 
-            if (response.size() == 0)
-                throw std::length_error("No images received!");
-            /*
-            if (response.at(0).height != params_.depth_height || response.at(0).width != params_.depth_height)
-                throw DepthNavException("Image Dimension mismatch. Please check left camera in the AirSim config file.");
+        //    if (response.size() == 0)
+        //        throw std::length_error("No images received!");
+        //    /*
+        //    if (response.at(0).height != params_.depth_height || response.at(0).width != params_.depth_height)
+        //        throw DepthNavException("Image Dimension mismatch. Please check left camera in the AirSim config file.");
 
-            if (response.at(1).height != params_.depth_height || response.at(1).width != params_.depth_height)
-                throw DepthNavException("Image Dimension mismatch. Please check right camera in the AirSim config file.");
-            */
-            const std::vector<uint8_t>& left_image = response.at(0).image_data_uint8;
-            const std::vector<uint8_t>& right_image = response.at(1).image_data_uint8;
+        //    if (response.at(1).height != params_.depth_height || response.at(1).width != params_.depth_height)
+        //        throw DepthNavException("Image Dimension mismatch. Please check right camera in the AirSim config file.");
+        //    */
+        //    const std::vector<uint8_t>& left_image = response.at(0).image_data_uint8;
+        //    const std::vector<uint8_t>& right_image = response.at(1).image_data_uint8;
 
-            //baseline * focal_length = depth * disparity
-            float f = params_.depth_width / (2 * tan(params_.fov/2));
-            float B = 0.25; 
+        //    //baseline * focal_length = depth * disparity
+        //    float f = params_.depth_width / (2 * tan(params_.fov/2));
+        //    float B = 0.25; 
    
-            p_state->ProcessFrameAirSim(counter, dtime, left_image, right_image);
-                                                                     
-	        for (unsigned int idx = 0; idx < (params_.depth_height*params_.depth_width); idx++)
-	        {
-		        float d = p_state->dispMap[idx];
-		        if (d < FLT_MAX)
-		        {
-                    //float dn = (d - dmin)/drange;
-                    sgm_depth_image[idx] = -(B*f/d);
+        //    p_state->ProcessFrameAirSim(counter, dtime, left_image, right_image);
+        //                                                             
+	       // for (unsigned int idx = 0; idx < (params_.depth_height*params_.depth_width); idx++)
+	       // {
+		      //  float d = p_state->dispMap[idx];
+		      //  if (d < FLT_MAX)
+		      //  {
+        //            //float dn = (d - dmin)/drange;
+        //            sgm_depth_image[idx] = -(B*f/d);
 
-		        }
-	        }
+		      //  }
+	       // }
 
-            counter++;
+        //    counter++;
 
-            const Pose next_pose = getNextPose(sgm_depth_image, goal_pose.position, 
-                current_pose, params_.control_loop_period);
+        //    const Pose next_pose = getNextPose(sgm_depth_image, goal_pose.position, 
+        //        current_pose, params_.control_loop_period);
 
-            if (VectorMath::hasNan(next_pose))
-                throw DepthNavException("No further path can be found.");
-            else { 
-                client.simSetVehiclePose(next_pose, true);
-            /*
-                //convert pose to velocity commands
-                //obey max linear speed constraint
-                Vector3r linear_vel = (next_pose.position - current_pose.position) / params_.control_loop_period;
-                if (linear_vel.norm() > params_.max_linear_speed) {
-                    linear_vel = linear_vel.normalized() * params_.max_linear_speed;
-                }
+        //    if (VectorMath::hasNan(next_pose))
+        //        throw DepthNavException("No further path can be found.");
+        //    else { 
+        //        client.simSetVehiclePose(next_pose, true);
+        //    /*
+        //        //convert pose to velocity commands
+        //        //obey max linear speed constraint
+        //        Vector3r linear_vel = (next_pose.position - current_pose.position) / params_.control_loop_period;
+        //        if (linear_vel.norm() > params_.max_linear_speed) {
+        //            linear_vel = linear_vel.normalized() * params_.max_linear_speed;
+        //        }
 
-                //obey max angular speed constraint
-                Quaternionr to_orientation = next_pose.orientation;
-                Vector3r angular_vel = VectorMath::toAngularVelocity(current_pose.orientation,
-                    next_pose.orientation, params_.control_loop_period);
-                real_T angular_vel_norm = angular_vel.norm();
-                if (angular_vel_norm > params_.max_angular_speed) {
-                    real_T slerp_alpha = params_.max_angular_speed / angular_vel_norm;
-                    to_orientation = VectorMath::slerp(current_pose.orientation, to_orientation, slerp_alpha);
-                }
+        //        //obey max angular speed constraint
+        //        Quaternionr to_orientation = next_pose.orientation;
+        //        Vector3r angular_vel = VectorMath::toAngularVelocity(current_pose.orientation,
+        //            next_pose.orientation, params_.control_loop_period);
+        //        real_T angular_vel_norm = angular_vel.norm();
+        //        if (angular_vel_norm > params_.max_angular_speed) {
+        //            real_T slerp_alpha = params_.max_angular_speed / angular_vel_norm;
+        //            to_orientation = VectorMath::slerp(current_pose.orientation, to_orientation, slerp_alpha);
+        //        }
 
-                //Now we can use (linear_vel, to_orientation) for vehicle commands
-                
-                //For ComputerVision mode, we will just create new pose
-                Pose contrained_next_pose(current_pose.position + linear_vel * params_.control_loop_period,
-                    to_orientation);
-                client.simSetVehiclePose(contrained_next_pose, true);
-            */  
-            }
+        //        //Now we can use (linear_vel, to_orientation) for vehicle commands
+        //        
+        //        //For ComputerVision mode, we will just create new pose
+        //        Pose contrained_next_pose(current_pose.position + linear_vel * params_.control_loop_period,
+        //            to_orientation);
+        //        client.simSetVehiclePose(contrained_next_pose, true);
+        //    */  
+        //    }
 
-            real_T dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
-            if (dist2goal <= params_.min_exit_dist_from_goal)
-                return;
-            Utils::log(Utils::stringf("Distance to target: %f", dist2goal));
+        //    real_T dist2goal = getDistanceToGoal(next_pose.position, goal_pose.position);
+        //    if (dist2goal <= params_.min_exit_dist_from_goal)
+        //        return;
+        //    Utils::log(Utils::stringf("Distance to target: %f", dist2goal));
 
-        } while (true);
+        //} while (true);
     }
 
 protected:    

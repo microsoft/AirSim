@@ -44,7 +44,7 @@ int main()
             std::getline(std::cin, path);
 
             for (const ImageResponse& image_info : response) {
-                std::cout << "Image uint8 size: " << image_info.image_data_uint8.size() << std::endl;
+                std::cout << "Image uint8 size: " << image_info.image_data_uint8->size() << std::endl;
                 std::cout << "Image float size: " << image_info.image_data_float.size() << std::endl;
 
                 if (path != "") {
@@ -55,7 +55,7 @@ int main()
                     }
                     else {
                         std::ofstream file(file_path + ".png", std::ios::binary);
-                        file.write(reinterpret_cast<const char*>(image_info.image_data_uint8.data()), image_info.image_data_uint8.size());
+                        file.write(reinterpret_cast<const char*>(image_info.image_data_uint8->data()), image_info.image_data_uint8->size());
                         file.close();
                     }
                 }

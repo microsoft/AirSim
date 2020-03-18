@@ -204,8 +204,8 @@ private:
                     counter++; 
                     continue;
                 }
-                left_img[idx-counter] = result->response.at(0).image_data_uint8 [idx];
-                right_img[idx-counter] = result->response.at(1).image_data_uint8 [idx];
+                //left_img[idx-counter] = result->response.at(0).image_data_uint8 [idx];
+                //right_img[idx-counter] = result->response.at(1).image_data_uint8 [idx];
             }
 
             //Get SGM disparity and confidence

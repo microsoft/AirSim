@@ -377,94 +377,94 @@ public:
             return request;
         }         
     };
-	/*
-    struct ImageResponse {
-        std::vector<uint8_t> image_data_uint8;
-        std::vector<float> image_data_float;
+	
+	struct ImageResponse {
+		std::vector<uint8_t> image_data_uint8;
+		std::vector<float> image_data_float;
 
-        std::string camera_name;
-        Vector3r camera_position;
-        Quaternionr camera_orientation;
-        msr::airlib::TTimePoint time_stamp;
-        std::string message;
-        bool pixels_as_float;
-        bool compress;
-        int width, height;
-        msr::airlib::ImageCaptureBase::ImageType image_type;
+		std::string camera_name;
+		Vector3r camera_position;
+		Quaternionr camera_orientation;
+		msr::airlib::TTimePoint time_stamp;
+		std::string message;
+		bool pixels_as_float;
+		bool compress;
+		int width, height;
+		msr::airlib::ImageCaptureBase::ImageType image_type;
 
-        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, camera_name,
-            camera_orientation, time_stamp, message, pixels_as_float, compress, width, height, image_type);
+		MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, camera_name,
+			camera_orientation, time_stamp, message, pixels_as_float, compress, width, height, image_type);
 
-        ImageResponse()
-        {}
+		ImageResponse()
+		{}
 
-        ImageResponse(const msr::airlib::ImageCaptureBase::ImageResponse& s)
-        {
-            pixels_as_float = s.pixels_as_float;
-            
-            image_data_uint8 = s.image_data_uint8;
-            image_data_float = s.image_data_float;
+		ImageResponse(const msr::airlib::ImageCaptureBase::ImageResponse& s)
+		{
+			pixels_as_float = s.pixels_as_float;
 
-            //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
-            if (image_data_uint8.size() == 0)
-                image_data_uint8.push_back(0);
-            if (image_data_float.size() == 0)
-                image_data_float.push_back(0);
+			image_data_uint8.insert(image_data_uint8.begin(), s.image_data_uint8->front(), s.image_data_uint8->back());
+			image_data_float = s.image_data_float;
 
-            camera_name = s.camera_name;
-            camera_position = Vector3r(s.camera_position);
-            camera_orientation = Quaternionr(s.camera_orientation);
-            time_stamp = s.time_stamp;
-            message = s.message;
-            compress = s.compress;
-            width = s.width;
-            height = s.height;
-            image_type = s.image_type;
-        }
+			//TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
+			if (image_data_uint8.size() == 0)
+				image_data_uint8.push_back(0);
+			if (image_data_float.size() == 0)
+				image_data_float.push_back(0);
 
-        msr::airlib::ImageCaptureBase::ImageResponse to() const
-        {
-            msr::airlib::ImageCaptureBase::ImageResponse d;
+			camera_name = s.camera_name;
+			camera_position = Vector3r(s.camera_position);
+			camera_orientation = Quaternionr(s.camera_orientation);
+			time_stamp = s.time_stamp;
+			message = s.message;
+			compress = s.compress;
+			width = s.width;
+			height = s.height;
+			image_type = s.image_type;
+		}
 
-            d.pixels_as_float = pixels_as_float;
+		msr::airlib::ImageCaptureBase::ImageResponse to() const
+		{
+			msr::airlib::ImageCaptureBase::ImageResponse d;
 
-            if (! pixels_as_float)
-                d.image_data_uint8 = image_data_uint8;
-            else
-                d.image_data_float = image_data_float;
+			d.pixels_as_float = pixels_as_float;
 
-            d.camera_name = camera_name;
-            d.camera_position = camera_position.to();
-            d.camera_orientation = camera_orientation.to();
-            d.time_stamp = time_stamp;
-            d.message = message;
-            d.compress = compress;
-            d.width = width;
-            d.height = height;
-            d.image_type = image_type;
+			if (!pixels_as_float)
+				d.image_data_uint8->insert(d.image_data_uint8->begin(), image_data_uint8.front(), image_data_uint8.back());
+			else
+				d.image_data_float = image_data_float;
 
-            return d;
-        }
+			d.camera_name = camera_name;
+			d.camera_position = camera_position.to();
+			d.camera_orientation = camera_orientation.to();
+			d.time_stamp = time_stamp;
+			d.message = message;
+			d.compress = compress;
+			d.width = width;
+			d.height = height;
+			d.image_type = image_type;
 
-        static std::vector<msr::airlib::ImageCaptureBase::ImageResponse> to(
-            const std::vector<ImageResponse>& response_adapter
-        ) {
-            std::vector<msr::airlib::ImageCaptureBase::ImageResponse> response;
-            for (const auto& item : response_adapter)
-                response.push_back(item.to());
+			return d;
+		}
 
-            return response;
-        }
-        static std::vector<ImageResponse> from(
-            const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& response
-        ) {
-            std::vector<ImageResponse> response_adapter;
-            for (const auto& item : response)
-                response_adapter.push_back(ImageResponse(item));
+		static std::vector<msr::airlib::ImageCaptureBase::ImageResponse> to(
+			const std::vector<ImageResponse>& response_adapter
+		) {
+			std::vector<msr::airlib::ImageCaptureBase::ImageResponse> response;
+			for (const auto& item : response_adapter)
+				response.push_back(item.to());
 
-            return response_adapter;
-        }
-    };*/
+			return response;
+		}
+		static std::vector<ImageResponse> from(
+			const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& response
+		) {
+			std::vector<ImageResponse> response_adapter;
+			for (const auto& item : response)
+				response_adapter.push_back(ImageResponse(item));
+
+			return response_adapter;
+		}
+	};
 
     struct LidarData {
 
