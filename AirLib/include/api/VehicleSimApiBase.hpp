@@ -23,7 +23,7 @@ public:
     }
 
     //this method is called at every render tick when we want to transfer state from
-    //physics engine to render engine. As physics engine is halted while 
+    //physics engine to render engine. As physics engine is halted while
     //this happens, this method should do minimal processing
     virtual void updateRenderedState(float dt)
     {
@@ -55,6 +55,7 @@ public:
 
     virtual CameraInfo getCameraInfo(const std::string& camera_name) const = 0;
     virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) = 0;
+    virtual void disableCamera(const std::string& camera_name, ImageCaptureBase::ImageType image_type) = 0;
 
     virtual CollisionInfo getCollisionInfo() const = 0;
     virtual int getRemoteControlID() const = 0; //which RC to use, 0 is first one, -1 means disable RC (use keyborad)

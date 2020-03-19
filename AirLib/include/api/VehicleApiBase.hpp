@@ -10,7 +10,6 @@
 #include "common/Waiter.hpp"
 #include "safety/SafetyEval.hpp"
 #include "common/CommonStructs.hpp"
-#include "common/ImageCaptureBase.hpp"
 #include "sensors/SensorCollection.hpp"
 #include "sensors/lidar/LidarBase.hpp"
 #include "sensors/imu/ImuBase.hpp"

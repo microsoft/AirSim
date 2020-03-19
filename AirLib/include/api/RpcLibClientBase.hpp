@@ -51,7 +51,7 @@ public:
     vector<string> simListSceneObjects(const string& name_regex = string(".*")) const;
     Pose simGetObjectPose(const std::string& object_name) const;
     bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
-    
+
     //task management APIs
     void cancelLastTask(const std::string& vehicle_name = "");
     virtual RpcLibClientBase* waitOnLastTask(bool* task_result = nullptr, float timeout_sec = Utils::nan<float>());
@@ -88,6 +88,7 @@ public:
 
     CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;
     void simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name = "");
+    void simDisableCamera(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "");
 
     msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
     msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;

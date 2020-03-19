@@ -40,7 +40,7 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 #ifdef _MSC_VER
 __pragma(warning( disable : 4239))
-#endif			  
+#endif
 
 
 namespace msr { namespace airlib {
@@ -125,7 +125,7 @@ void RpcLibClientBase::confirmConnection()
     while (getConnectionState() != RpcLibClientBase::ConnectionState::Connected)
     {
         std::cout << "X" << std::flush;
-        clock->sleep_for(pause_time); 
+        clock->sleep_for(pause_time);
     }
     std::cout << std::endl << "Connected!" << std::endl;
 
@@ -133,7 +133,7 @@ void RpcLibClientBase::confirmConnection()
     auto client_ver = getClientVersion();
     auto server_min_ver = getMinRequiredServerVersion();
     auto client_min_ver = getMinRequiredClientVersion();
-    
+
     std::string ver_info = Utils::stringf("Client Ver:%i (Min Req:%i), Server Ver:%i (Min Req:%i)",
         client_ver, client_min_ver, server_ver, server_min_ver);
 
@@ -221,7 +221,7 @@ void RpcLibClientBase::simSetVehiclePose(const Pose& pose, bool ignore_collision
 
 vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name)
 {
-    const auto& response_adaptor = pimpl_->client.call("simGetImages", 
+    const auto& response_adaptor = pimpl_->client.call("simGetImages",
         RpcLibAdapatorsBase::ImageRequest::from(request), vehicle_name)
         .as<vector<RpcLibAdapatorsBase::ImageResponse>>();
 
@@ -294,6 +294,10 @@ CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name, co
 void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name)
 {
     pimpl_->client.call("simSetCameraOrientation", camera_name, RpcLibAdapatorsBase::Quaternionr(orientation), vehicle_name);
+}
+void RpcLibClientBase::simDisableCamera(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name)
+{
+    pimpl_->client.call("simDisableCamera", camera_name, type, vehicle_name);
 }
 
 msr::airlib::Kinematics::State RpcLibClientBase::simGetGroundTruthKinematics(const std::string& vehicle_name) const

@@ -15,7 +15,7 @@ class VehicleClient:
         if (ip == ""):
             ip = "127.0.0.1"
         self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = timeout_value, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
-        
+
     # -----------------------------------  Common vehicle APIs ---------------------------------------------
     def reset(self):
         self.client.call('reset')
@@ -39,7 +39,7 @@ class VehicleClient:
         return self.client.call('isApiControlEnabled', vehicle_name)
     def armDisarm(self, arm, vehicle_name = ''):
         return self.client.call('armDisarm', arm, vehicle_name)
- 
+
     def simPause(self, is_paused):
         self.client.call('simPause', is_paused)
     def simIsPause(self):
@@ -59,7 +59,7 @@ class VehicleClient:
         client_ver = self.getClientVersion()
         server_min_ver = self.getMinRequiredServerVersion()
         client_min_ver = self.getMinRequiredClientVersion()
-    
+
         ver_info = "Client Ver:" + str(client_ver) + " (Min Req: " + str(client_min_ver) + \
               "), Server Ver:" + str(server_ver) + " (Min Req: " + str(server_min_ver) + ")"
 
@@ -133,6 +133,9 @@ class VehicleClient:
     def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraOrientation', str(camera_name), orientation, vehicle_name)
+    def simDisableCamera(self, camera_name, image_type, vehicle_name = ''):
+        # TODO: below str() conversion is only needed for legacy reason and should be removed in future
+        self.client.call('simDisableCamera', str(camera_name), image_type, vehicle_name)
 
     def simGetGroundTruthKinematics(self, vehicle_name = ''):
         kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
@@ -161,7 +164,7 @@ class VehicleClient:
 
     def getLidarData(self, lidar_name = '', vehicle_name = ''):
         return LidarData.from_msgpack(self.client.call('getLidarData', lidar_name, vehicle_name))
-        
+
     def simGetLidarSegmentation(self, lidar_name = '', vehicle_name = ''):
         return self.client.call('simGetLidarSegmentation', lidar_name, vehicle_name)
 
@@ -273,9 +276,9 @@ class MultirotorClient(VehicleClient, object):
         super(MultirotorClient, self).__init__(ip, port, timeout_value)
 
     def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
-        return self.client.call_async('takeoff', timeout_sec, vehicle_name)  
+        return self.client.call_async('takeoff', timeout_sec, vehicle_name)
     def landAsync(self, timeout_sec = 60, vehicle_name = ''):
-        return self.client.call_async('land', timeout_sec, vehicle_name)   
+        return self.client.call_async('land', timeout_sec, vehicle_name)
     def goHomeAsync(self, timeout_sec = 3e+38, vehicle_name = ''):
         return self.client.call_async('goHome', timeout_sec, vehicle_name)
 
@@ -288,16 +291,16 @@ class MultirotorClient(VehicleClient, object):
         return self.client.call_async('moveByVelocity', vx, vy, vz, duration, drivetrain, yaw_mode, vehicle_name)
     def moveByVelocityZAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
         return self.client.call_async('moveByVelocityZ', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
-    def moveOnPathAsync(self, path, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), 
+    def moveOnPathAsync(self, path, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(),
         lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
         return self.client.call_async('moveOnPath', path, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
-    def moveToPositionAsync(self, x, y, z, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), 
+    def moveToPositionAsync(self, x, y, z, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(),
         lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
         return self.client.call_async('moveToPosition', x, y, z, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
     def moveToZAsync(self, z, velocity, timeout_sec = 3e+38, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
         return self.client.call_async('moveToZ', z, velocity, timeout_sec, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
     def moveByManualAsync(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
-        """Read current RC state and use it to control the vehicles. 
+        """Read current RC state and use it to control the vehicles.
 
         Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints
         then that RC state would be ignored.
@@ -320,7 +323,7 @@ class MultirotorClient(VehicleClient, object):
 
     def moveByRC(self, rcdata = RCData(), vehicle_name = ''):
         return self.client.call('moveByRC', rcdata, vehicle_name)
-        
+
     # query vehicle state
     def getMultirotorState(self, vehicle_name = ''):
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState', vehicle_name))
