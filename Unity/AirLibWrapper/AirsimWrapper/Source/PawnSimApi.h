@@ -73,6 +73,7 @@ public:
 	virtual void setPose(const Pose& pose, bool ignore_collision) override;
 	virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
 	virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) override;
+    virtual void disableCamera(const std::string& camera_name, ImageCaptureBase::ImageType image_type) override;
 	virtual CollisionInfo getCollisionInfo() const override;
 	virtual int getRemoteControlID() const override;
 	virtual msr::airlib::RCData getRCData() const override;

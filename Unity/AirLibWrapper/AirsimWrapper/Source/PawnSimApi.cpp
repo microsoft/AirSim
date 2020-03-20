@@ -215,6 +215,11 @@ void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr:
 	SetCameraOrientation(camera_name.c_str(), airSimOrientation, params_.vehicle_name.c_str());
 }
 
+void PawnSimApi::disableCamera(const std::string& camera_name, ImageCaptureBase::ImageType image_type)
+{
+    // TODO: Implement this function, currently just a placeholder so that it compiles
+}
+
 //parameters in NED frame
 PawnSimApi::Pose PawnSimApi::getPose() const
 {
@@ -271,7 +276,7 @@ msr::airlib::Environment* PawnSimApi::getEnvironment()
 
 std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
 {
-	if (is_header_line) 
+	if (is_header_line)
 	{
 		return "TimeStamp\tPOS_X\tPOS_Y\tPOS_Z\tQ_W\tQ_X\tQ_Y\tQ_Z\t";
 	}
