@@ -123,6 +123,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getVehicleApi(vehicle_name)->armDisarm(arm);
     });
 
+    pimpl_->server.bind("simSetCameraFov", [&](std::string& camera_name, float fov_degrees) -> bool {
+        return getWorldSimApi()->setCameraFov(camera_name, fov_degrees);
+    });
+
     pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name) -> 
         vector<RpcLibAdapatorsBase::ImageResponse> {
             const auto& response = getVehicleSimApi(vehicle_name)->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));

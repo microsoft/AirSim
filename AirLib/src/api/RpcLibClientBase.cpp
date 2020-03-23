@@ -378,6 +378,11 @@ void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
     pimpl_->client.call("cancelLastTask", vehicle_name);
 }
 
+bool RpcLibClientBase::simSetCameraFov(std::string& camera_name, float fov_degrees)
+{
+    return pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees).as<bool>();
+}
+
 //return value of last task. It should be true if task completed without
 //cancellation or timeout
 RpcLibClientBase* RpcLibClientBase::waitOnLastTask(bool* task_result, float timeout_sec)

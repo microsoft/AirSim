@@ -72,6 +72,22 @@ std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_r
     return result;
 }
 
+bool WorldSimApi::setCameraFov(std::string& camera_name, float fov_degrees)
+{
+	bool found_camera = false;
+	UAirBlueprintLib::RunCommandOnGameThread([this, &camera_name, fov_degrees, &found_camera]() {
+		APIPCamera *camera = UAirBlueprintLib::FindActor<APIPCamera>(simmode_, FString(camera_name.c_str()));
+		if (camera == nullptr)
+			return;
+		found_camera = true;
+		auto *cam_component = camera->GetCameraComponent();
+		if (cam_component == nullptr)
+			return;
+		cam_component->FieldOfView = fov_degrees;
+	}, true);
+	return found_camera;
+}
+
 
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {

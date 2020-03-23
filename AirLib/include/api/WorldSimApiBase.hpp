@@ -55,6 +55,7 @@ public:
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const = 0;
     virtual Pose getObjectPose(const std::string& object_name) const = 0;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
+    virtual bool setCameraFov(std::string& camera_name, float fov_degrees) = 0;
 
 	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
     virtual vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const = 0;
