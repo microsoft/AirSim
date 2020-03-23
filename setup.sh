@@ -203,7 +203,7 @@ if ! $gccBuild; then
     if [ "$(uname)" == "Darwin" ]; then
         rm -rf llvm-build
     else
-        sudo rm -rf llvm-build
+        rm -rf llvm-build
     fi
     mkdir -p llvm-build
     pushd llvm-build >/dev/null
@@ -219,7 +219,7 @@ if ! $gccBuild; then
     if [ "$(uname)" == "Darwin" ]; then
         make install-libcxx install-libcxxabi
     else
-        sudo make install-libcxx install-libcxxabi
+        make install-libcxx install-libcxxabi
     fi
 
     popd >/dev/null
@@ -230,7 +230,7 @@ echo "Installing EIGEN library..."
 if [ "$(uname)" == "Darwin" ]; then
     rm -rf ./AirLib/deps/eigen3/Eigen
 else
-    sudo rm -rf ./AirLib/deps/eigen3/Eigen
+    rm -rf ./AirLib/deps/eigen3/Eigen
 fi
 echo "downloading eigen..."
 wget https://gitlab.com/libeigen/eigen/-/archive/3.3.2/eigen-3.3.2.zip
