@@ -397,3 +397,10 @@ class GpsData(MsgpackMixin):
     time_stamp = np.uint64(0)
     gnss = GnssReport()
     is_valid = False
+
+class DistanceSensorData(MsgpackMixin):
+    time_stamp = np.uint64(0)
+    distance = Quaternionr()
+    min_distance = Quaternionr()
+    max_distance = Quaternionr()
+    relative_pose = Pose()

@@ -156,7 +156,7 @@ class VehicleClient:
     def getGpsData(self, gps_name = '', vehicle_name = ''):
         return GpsData.from_msgpack(self.client.call('getGpsData', gps_name, vehicle_name))
 
-    def getDistanceSensorData(self, lidar_name = '', vehicle_name = ''):
+    def getDistanceSensorData(self, distance_sensor_name = '', vehicle_name = ''):
         return DistanceSensorData.from_msgpack(self.client.call('getDistanceSensorData', distance_sensor_name, vehicle_name))
 
     def getLidarData(self, lidar_name = '', vehicle_name = ''):
