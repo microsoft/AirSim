@@ -50,7 +50,7 @@ public:
     {
         for (PhysicsBody* body_ptr : *this) {
             reporter.writeValue("Phys", debug_string_.str());
-			reporter.writeValue("Is Gounded", body_ptr->isGrounded());
+			reporter.writeValue("Is Grounded", body_ptr->isGrounded());
 			reporter.writeValue("Force (world)", body_ptr->getWrench().force);
             reporter.writeValue("Torque (body)", body_ptr->getWrench().torque);
         }
