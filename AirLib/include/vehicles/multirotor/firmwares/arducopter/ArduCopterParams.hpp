@@ -28,12 +28,29 @@ public:
     }
 
 protected:
-    // TODO: Change the below function to setupGenericQuadX() which can be called by setupParams() based on connection_info.model
-    // This will be needed for different frames
     virtual void setupParams() override
     {
         auto& params = getParams();
 
+        // Use connection_info_.model for the model name, see Px4MultiRotorParams for example
+        
+        // Only Generic for now
+        setupFrameGenericQuad(params);
+    }
+
+    virtual const SensorFactory* getSensorFactory() const override
+    {
+        return sensor_factory_.get();
+    }
+
+    static const AirSimSettings::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting)
+    {
+        return vehicle_setting.connection_info;
+    }
+
+private:
+    void setupFrameGenericQuad(Params& params)
+    {
         /******* Below is same config as PX4 generic model ********/
 
         //set up arm lengths
@@ -63,17 +80,6 @@ protected:
         //leave everything else to defaults
     }
 
-    virtual const SensorFactory* getSensorFactory() const override
-    {
-        return sensor_factory_.get();
-    }
-
-    static const AirSimSettings::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting)
-    {
-        return vehicle_setting.connection_info;
-    }
-
-private:
     AirSimSettings::MavLinkConnectionInfo connection_info_;
     vector<unique_ptr<SensorBase>> sensor_storage_;
     // const AirSimSettings::MavlinkVehicleSetting* vehicle_setting_; //store as pointer because of derived classes

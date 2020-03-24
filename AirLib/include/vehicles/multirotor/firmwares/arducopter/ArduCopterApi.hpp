@@ -68,26 +68,25 @@ public:
     // TODO:VehicleApiBase implementation
     virtual bool isApiControlEnabled() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: isApiControlEnabled", Utils::kLogLevelInfo);
         return false;
     }
     virtual void enableApiControl(bool) override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: enableApiControl", Utils::kLogLevelInfo);
     }
     virtual bool armDisarm(bool) override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: armDisarm", Utils::kLogLevelInfo);
         return false;
     }
     virtual GeoPoint getHomeGeoPoint() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: getHomeGeoPoint", Utils::kLogLevelInfo);
         return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
     }
     virtual void getStatusMessages(std::vector<std::string>&) override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
     }
 
     virtual const SensorCollection& getSensors() const override
@@ -122,32 +121,32 @@ public: //TODO:MultirotorApiBase implementation
 protected:
     virtual Kinematics::State getKinematicsEstimated() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: getKinematicsEstimated", Utils::kLogLevelInfo);
         Kinematics::State state;
         return state;
     }
 
     virtual Vector3r getPosition() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: getPosition", Utils::kLogLevelInfo);
         return Vector3r(Utils::nan<float>(), Utils::nan<float>(), Utils::nan<float>());
     }
 
     virtual Vector3r getVelocity() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: getVelocity", Utils::kLogLevelInfo);
         return Vector3r(Utils::nan<float>(), Utils::nan<float>(), Utils::nan<float>());
     }
 
     virtual Quaternionr getOrientation() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: getOrientation", Utils::kLogLevelInfo);
         return Quaternionr(Utils::nan<float>(), Utils::nan<float>(), Utils::nan<float>(), Utils::nan<float>());
     }
 
     virtual LandedState getLandedState() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: getLandedState", Utils::kLogLevelInfo);
         return LandedState::Landed;
     }
 
@@ -159,7 +158,7 @@ protected:
 
     virtual GeoPoint getGpsLocation() const override
     {
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: getGpsLocation", Utils::kLogLevelInfo);
         return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
     }
 
@@ -187,7 +186,7 @@ protected:
         unused(roll);
         unused(throttle);
         unused(yaw_rate);
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: commandRollPitchThrottle", Utils::kLogLevelInfo);
     }
 
     virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
@@ -196,7 +195,7 @@ protected:
         unused(roll);
         unused(z);
         unused(yaw);
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: commandRollPitchZ", Utils::kLogLevelInfo);
     }
 
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
@@ -205,7 +204,7 @@ protected:
         unused(vy);
         unused(vz);
         unused(yaw_mode);
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: commandVelocity", Utils::kLogLevelInfo);
     }
 
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
@@ -214,7 +213,7 @@ protected:
         unused(vy);
         unused(z);
         unused(yaw_mode);
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: commandVelocityZ", Utils::kLogLevelInfo);
     }
 
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
@@ -223,7 +222,7 @@ protected:
         unused(y);
         unused(z);
         unused(yaw_mode);
-        Utils::log("Not Implemented", Utils::kLogLevelInfo);
+        Utils::log("Not Implemented: commandPosition", Utils::kLogLevelInfo);
     }
 
     virtual const MultirotorApiParams& getMultirotorApiParams() const override
@@ -346,21 +345,21 @@ private:
                            "{"
                            "\"timestamp\": %" PRIu64 ","
                            "\"imu\": {"
-                           "\"angular_velocity\": [%lf, %lf, %lf],"
-                           "\"linear_acceleration\": [%lf, %lf, %lf]"
+                           "\"angular_velocity\": [%.12f, %.12f, %.12f],"
+                           "\"linear_acceleration\": [%.12f, %.12f, %.12f]"
                            "},"
                            "\"gps\": {"
-                           "\"lat\": %lf,"
-                           "\"lon\": %lf,"
-                           "\"alt\": %lf"
+                           "\"lat\": %.7f,"
+                           "\"lon\": %.7f,"
+                           "\"alt\": %.3f"
                            "},"
                            "\"velocity\": {"
-                           "\"world_linear_velocity\": [%lf, %lf, %lf]"
+                           "\"world_linear_velocity\": [%.12f, %.12f, %.12f]"
                            "},"
                            "\"pose\": {"
-                           "\"roll\": %lf,"
-                           "\"pitch\": %lf,"
-                           "\"yaw\": %lf"
+                           "\"roll\": %.12f,"
+                           "\"pitch\": %.12f,"
+                           "\"yaw\": %.12f"
                            "}"
                            "%s"
                            "}\n",
