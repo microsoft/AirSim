@@ -1,5 +1,6 @@
 #include "WorldSimApi.h"
 #include "AirBlueprintLib.h"
+#include "TextureShuffleActor.h"
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 
@@ -116,6 +117,43 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     UWeatherLib::setWeatherParamScalar(simmode_->GetWorld(), param_e, val);
 }
 
+std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
+{
+	auto swappedObjectNames = std::make_unique<std::vector<std::string>>();
+	UAirBlueprintLib::RunCommandOnGameThread([this, &tag, tex_id, component_id, material_id, &swappedObjectNames]() {
+		//Split the tag string into individual tags.
+		TArray<FString> splitTags;
+		FString notSplit = FString(tag.c_str());
+		FString next = "";
+		while (notSplit.Split(",", &next, &notSplit))
+		{
+			next.TrimStartInline();
+			splitTags.Add(next);
+		}
+		notSplit.TrimStartInline();
+		splitTags.Add(notSplit);
+
+		//Texture swap on actors that have all of those tags.
+		TArray<AActor*> shuffleables;
+		UAirBlueprintLib::FindAllActor<ATextureShuffleActor>(simmode_, shuffleables);
+		for (auto *shuffler : shuffleables)
+		{
+			bool invalidChoice = false;
+			for (auto required_tag : splitTags)
+			{
+				invalidChoice |= !shuffler->ActorHasTag(FName(*required_tag));
+				if (invalidChoice)
+					break;
+			}
+			
+			if (invalidChoice)
+				continue;
+			dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(tex_id, component_id, material_id);
+			swappedObjectNames->push_back(TCHAR_TO_UTF8(*shuffler->GetName()));
+		}
+	}, true);
+	return swappedObjectNames;
+}
 
 //------------------------------------------------- Char APIs -----------------------------------------------------------/
 

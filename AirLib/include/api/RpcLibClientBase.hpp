@@ -51,7 +51,7 @@ public:
     vector<string> simListSceneObjects(const string& name_regex = string(".*")) const;
     Pose simGetObjectPose(const std::string& object_name) const;
     bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
-    
+
     //task management APIs
     void cancelLastTask(const std::string& vehicle_name = "");
     virtual RpcLibClientBase* waitOnLastTask(bool* task_result = nullptr, float timeout_sec = Utils::nan<float>());
@@ -109,6 +109,8 @@ public:
     void simSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name = "");
     void simSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name = "");
     std::unordered_map<std::string, msr::airlib::Pose> simGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name = "") const;
+
+	std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
 
 protected:
     void* getClient();
