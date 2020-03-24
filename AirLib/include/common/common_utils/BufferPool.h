@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_set>
 #include <functional>
+#include <limits>
 
 typedef std::vector<uint8_t> Buffer;
 typedef std::function<void(Buffer*)> Deleter;
@@ -16,7 +17,7 @@ class BufferPool
 {
 public:
 	BufferPtr GetBufferExactSize(size_t size);
-	BufferPtr GetBufferAtLeastSize(size_t size, size_t max_size = _CRT_SIZE_MAX);
+	BufferPtr GetBufferAtLeastSize(size_t size, size_t max_size = std::numeric_limits<size_t>::max());
 
 private:
 	class BufferCollection
