@@ -24,6 +24,7 @@ class MultirotorApiBase : public VehicleApiBase {
 protected: //must be implemented
 
     /************************* low level move APIs *********************************/
+    virtual void commandMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm) = 0;
     virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) = 0;
     virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) = 0;
     virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) = 0;
@@ -88,6 +89,7 @@ public: //these APIs uses above low level APIs
     virtual bool land(float timeout_sec);
     virtual bool goHome(float timeout_sec);
 
+    virtual bool moveByMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration);
     virtual bool moveByRollPitchYawZ(float roll, float pitch, float yaw, float z, float duration);
     virtual bool moveByRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle, float duration);
     virtual bool moveByRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle, float duration);

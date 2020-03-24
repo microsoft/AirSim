@@ -249,6 +249,9 @@ class VehicleClient:
         raise Exception("hover API is deprecated. Please use hoverAsync() API." + self.upgrade_api_help)
 
     # low-level control API
+    def moveByMotorPWMsAsync(self, front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration, vehicle_name = ''):
+        return self.client.call_async('moveByMotorPWMs', front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration, vehicle_name)
+
     def moveByRollPitchYawZAsync(self, roll, pitch, yaw, z, duration, vehicle_name = ''):
         """
         - z is given in local NED frame of the vehicle.  

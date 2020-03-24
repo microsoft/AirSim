@@ -75,6 +75,12 @@ MultirotorRpcLibClient* MultirotorRpcLibClient::goHomeAsync(float timeout_sec, c
     return this;
 }
 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByMotorPWMsAsync(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration, const std::string& vehicle_name)
+{
+    pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByMotorPWMs", front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration, vehicle_name);
+    return this;
+}
+
 MultirotorRpcLibClient* MultirotorRpcLibClient::moveByRollPitchYawZAsync(float roll, float pitch, float yaw, float z, float duration, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByRollPitchYawZ", roll, pitch, yaw, z, duration, vehicle_name);

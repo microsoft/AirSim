@@ -59,8 +59,17 @@ public:
 
         const Axis4r& output_controls = controller_->getOutput();
 
-        //convert controller output in to motor outputs
-        mixer_.getMotorOutput(output_controls, motor_outputs_);
+        // if last goal mode is passthrough for all axes (which means moveByMotorPWMs was called), 
+        // we directly set the motor outputs to controller outputs
+        // note that the order of motors is as explained MultiRotorParams::initializeRotorQuadX()
+        if (controller_->isLastGoalModeAllPassthrough()) {
+            for (uint16_t motor_index = 0; motor_index < params_->motor.motor_count; ++motor_index)
+                    motor_outputs_[motor_index] = output_controls[motor_index];
+        }
+        else {
+            // apply motor mixing matrix to convert from controller output to motor outputs
+            mixer_.getMotorOutput(output_controls, motor_outputs_);
+        }
 
         //finally write the motor outputs
         for (uint16_t motor_index = 0; motor_index < params_->motor.motor_count; ++motor_index)

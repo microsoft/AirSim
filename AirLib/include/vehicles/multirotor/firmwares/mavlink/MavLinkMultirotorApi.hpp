@@ -482,6 +482,15 @@ protected: //methods
         Utils::log("Not Implemented: setControllerGains", Utils::kLogLevelInfo);
     }
 
+    virtual void commandMotorPWMs(float front_right_pwm, float front_left_pwm, float rear_right_pwm, float rear_left_pwm) override
+    {
+        unused(front_right_pwm);
+        unused(front_left_pwm);
+        unused(rear_right_pwm);
+        unused(rear_left_pwm);
+        Utils::log("Not Implemented: commandMotorPWMs", Utils::kLogLevelInfo);
+    }
+
     virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
     {
         if (target_height_ != -z) {

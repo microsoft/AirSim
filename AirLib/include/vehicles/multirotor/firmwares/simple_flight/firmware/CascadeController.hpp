@@ -115,6 +115,18 @@ public:
         return output_;
     }
 
+    virtual bool isLastGoalModeAllPassthrough() override
+    {
+        is_last_goal_mode_all_passthrough_ = true;
+
+        for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis) {
+            if (last_goal_mode_[axis] != GoalModeType::Passthrough) {
+                is_last_goal_mode_all_passthrough_ = false;
+            }
+        }
+
+        return is_last_goal_mode_all_passthrough_;
+    }
 
 private:
     Params* params_;
@@ -128,6 +140,7 @@ private:
 
     GoalMode last_goal_mode_;
     Axis4r last_goal_val_;
+    bool is_last_goal_mode_all_passthrough_;
 
     std::unique_ptr<IAxisController> axis_controllers_[Axis4r::AxisCount()];
 };

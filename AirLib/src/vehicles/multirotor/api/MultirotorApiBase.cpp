@@ -72,6 +72,19 @@ bool MultirotorApiBase::goHome(float timeout_sec)
     return moveToPosition(0, 0, 0, 0.5f, timeout_sec, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
 }
 
+bool MultirotorApiBase::moveByMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration)
+{
+    SingleTaskCall lock(this);
+
+    if (duration <= 0)
+        return true;
+
+    return waitForFunction([&]() {
+        commandMotorPWMs(front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
+}
+
 bool MultirotorApiBase::moveByRollPitchYawZ(float roll, float pitch, float yaw, float z, float duration)
 {
     SingleTaskCall lock(this);
