@@ -38,13 +38,13 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
 	unsigned long log2;
 	_BitScanReverse(&log2, width - 1);
 	unsigned long long stride = 1ULL << (log2 + 1); //Round up to nearest power of 2.
-	response.image_data_uint8 = std::move(BufferPool_->GetBufferExactSize(height * stride * 4)); //TODO get resolution, figure out stride, figure out buffer size
+	response.image_data_uint8 = std::move(BufferPool_->GetBufferExactSize(height * stride * 4));
 	//TODO check not nullptr
 	RenderRequest render_request(*response.image_data_uint8);
 	render_request.fast_param_ = RenderRequest::RenderParams{ capture, textureTarget, false, false }; //render_params.at(0).get();
 	render_request.FastScreenshot();
 
-	//response.time_stamp = result->time_stamp;
+	response.time_stamp = render_request.latest_result_.time_stamp;
 	//response.image_data_uint8 = std::vector<uint8_t>(result->image_data_uint8->GetData(), result->image_data_uint8->GetData() + result->image_data_uint8->Num());
 	response.width = width;
 	response.height = height;

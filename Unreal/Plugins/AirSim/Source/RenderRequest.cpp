@@ -32,6 +32,7 @@ void RenderRequest::FastScreenshot()
 
 	//Try to wait just long enough for the render thread to finish the capture.
 	//Start with a long wait, then check for completion more frequently.
+	//TODO: Optimize these numbers.
 	for (int best_guess_cap_time_microseconds = 500; !fast_cap_done_; best_guess_cap_time_microseconds = 200)
 		std::this_thread::sleep_for(std::chrono::microseconds(best_guess_cap_time_microseconds));
 }
@@ -44,13 +45,15 @@ void RenderRequest::RenderThreadScreenshotTask()
 	uint32 height = fast_cap_texture->GetSizeY();
 	uint32 stride;
 	auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
-	//fast_result_->image_data_uint8->Reset(fast_result_->image_data_uint8->Num());
-	//fast_result_->image_data_uint8->Append(src, height * stride);
-	//void *dest = static_cast<void*>(fast_result_->image_data_uint8->GetData());
+	
+	latest_result_.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
+	latest_result_.width = width;
+	latest_result_.height = height;
 
 	if (src)
 		//rgba_output_->insert(rgba_output_->begin(), &src[0], &src[height * stride]);
 		FMemory::BigBlockMemcpy(rgba_output_->data(), src, height * stride); //TODO MAYBE THIS IS THE SLOW PART
 	RHIUnlockTexture2D(fast_cap_texture, 0, false);
+
 	fast_cap_done_ = true;
 }

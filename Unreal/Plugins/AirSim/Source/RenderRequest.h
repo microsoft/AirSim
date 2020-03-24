@@ -19,12 +19,6 @@ public:
         bool compress;
     };
     struct RenderResult {
-        TArray<uint8> image_data_uint8;
-        TArray<float> image_data_float;
-
-        TArray<FColor> bmp;
-        TArray<FFloat16Color> bmp_float;
-
         int width;
         int height;
 
@@ -36,6 +30,7 @@ private:
     std::shared_ptr<RenderResult>* results_;
 public:
 	RenderParams fast_param_{ nullptr, nullptr, false, false };
+	volatile RenderResult latest_result_{};
 	std::vector<uint8_t> *rgba_output_ = nullptr;
 
 private:
