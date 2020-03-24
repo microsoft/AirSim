@@ -50,7 +50,7 @@ public:
     {
         for (PhysicsBody* body_ptr : *this) {
             reporter.writeValue("Phys", debug_string_.str());
-			reporter.writeValue("Is Gounded", body_ptr->isGrounded());
+			reporter.writeValue("Is Grounded", body_ptr->isGrounded());
 			reporter.writeValue("Force (world)", body_ptr->getWrench().force);
             reporter.writeValue("Torque (body)", body_ptr->getWrench().torque);
         }
@@ -324,10 +324,11 @@ private:
         const Wrench body_wrench = getBodyWrench(body, current.pose.orientation);
 
         if (body.isGrounded()) {
-            // make it stick to the ground until we see body wrench force greater than gravity.
-            float normalizedForce = body_wrench.force.squaredNorm();
-            float normalizedGravity = body.getEnvironment().getState().gravity.squaredNorm();
-            if (normalizedForce >= normalizedGravity)
+            // make it stick to the ground until the magnitude of net external force on body exceeds its weight.
+            float external_force_magnitude = body_wrench.force.squaredNorm();
+            Vector3r weight = body.getMass() * body.getEnvironment().getState().gravity;
+            float weight_magnitude = weight.squaredNorm();
+            if (external_force_magnitude >= weight_magnitude)
             {
                 //throttledLogOutput("*** Losing ground lock due to body_wrench " + VectorMath::toString(body_wrench.force), 0.1);
 				body.setGrounded(false);

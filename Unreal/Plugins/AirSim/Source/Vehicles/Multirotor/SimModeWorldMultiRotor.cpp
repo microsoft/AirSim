@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "SimModeWorldMultiRotor.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Logging/MessageLog.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"

@@ -38,11 +38,13 @@ done
 
 if $gccBuild; then
     # gcc tools
-    gcc_ver=$(gcc -dumpfullversion)
-    gcc_path=$(which cmake)
-    if [[ "$gcc_path" == "" ]] ; then
+    if ! which gcc; then
+        # GCC not installed
         gcc_ver=0
+    else
+        gcc_ver=$(gcc -dumpfullversion)
     fi
+
     if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
         if [ "$(uname)" == "Darwin" ]; then # osx
             brew update
@@ -102,37 +104,39 @@ else #linux
     #install additional tools
     sudo apt-get install -y build-essential
     sudo apt-get install -y unzip
+fi
 
+if ! which cmake; then
+    # CMake not installed
+    cmake_ver=0
+else
     cmake_ver=$(cmake --version 2>&1 | head -n1 | cut -d ' ' -f3 | awk '{print $NF}')
-    cmake_path=$(which cmake)
-    if [[ "$cmake_path" == "" ]] ; then
-        cmake_ver=0
+fi
+
+#download cmake - v3.10.2 is not out of box in Ubuntu 16.04
+if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
+    if [[ ! -d "cmake_build/bin" ]]; then
+        echo "Downloading cmake..."
+        wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \
+            -O cmake.tar.gz
+        tar -xzf cmake.tar.gz
+        rm cmake.tar.gz
+        rm -rf ./cmake_build
+        mv ./cmake-3.10.2 ./cmake_build
+        pushd cmake_build
+        ./bootstrap
+        make
+        popd
     fi
 
-    #download cmake - v3.10.2 is not out of box in Ubuntu 16.04
-    if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
-        if [[ ! -d "cmake_build/bin" ]]; then
-            echo "Downloading cmake..."
-            wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \
-                -O cmake.tar.gz
-            tar -xzf cmake.tar.gz
-            rm cmake.tar.gz
-            rm -rf ./cmake_build
-            mv ./cmake-3.10.2 ./cmake_build
-            pushd cmake_build
-            ./bootstrap
-            make
-            popd
-        fi
-        if [ "$(uname)" == "Darwin" ]; then
-            CMAKE="$(greadlink -f cmake_build/bin/cmake)"
-        else
-            CMAKE="$(readlink -f cmake_build/bin/cmake)"
-        fi
+    if [ "$(uname)" == "Darwin" ]; then
+        CMAKE="$(greadlink -f cmake_build/bin/cmake)"
     else
-        echo "Already have good version of cmake: $cmake_ver"
-        CMAKE=$(which cmake)
+        CMAKE="$(readlink -f cmake_build/bin/cmake)"
     fi
+else
+    echo "Already have good version of cmake: $cmake_ver"
+    CMAKE=$(which cmake)
 fi
 
 # Download rpclib
@@ -203,7 +207,7 @@ if ! $gccBuild; then
     if [ "$(uname)" == "Darwin" ]; then
         rm -rf llvm-build
     else
-        sudo rm -rf llvm-build
+        rm -rf llvm-build
     fi
     mkdir -p llvm-build
     pushd llvm-build >/dev/null
@@ -219,7 +223,7 @@ if ! $gccBuild; then
     if [ "$(uname)" == "Darwin" ]; then
         make install-libcxx install-libcxxabi
     else
-        sudo make install-libcxx install-libcxxabi
+        make install-libcxx install-libcxxabi
     fi
 
     popd >/dev/null
@@ -230,15 +234,15 @@ echo "Installing EIGEN library..."
 if [ "$(uname)" == "Darwin" ]; then
     rm -rf ./AirLib/deps/eigen3/Eigen
 else
-    sudo rm -rf ./AirLib/deps/eigen3/Eigen
+    rm -rf ./AirLib/deps/eigen3/Eigen
 fi
 echo "downloading eigen..."
-wget https://gitlab.com/libeigen/eigen/-/archive/3.3.2/eigen-3.3.2.zip
-unzip eigen-3.3.2.zip -d temp_eigen
+wget -O eigen3.zip https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip
+unzip eigen3.zip -d temp_eigen
 mkdir -p AirLib/deps/eigen3
 mv temp_eigen/eigen*/Eigen AirLib/deps/eigen3
 rm -rf temp_eigen
-rm eigen-3.3.2.zip
+rm eigen3.zip
 
 popd >/dev/null
 
