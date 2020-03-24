@@ -314,7 +314,7 @@ namespace AirSimUnity {
 
         /****************** Methods for vehicle management **************************/
 
-        private void InitializeVehicle() {
+        public void InitializeVehicle() {
             //Setting the initial get pose(HomePoint in AirLib) values to that of vehicle's location in the scene for initial setup in AirLib
             DataManager.SetToAirSim(transform.position, ref currentPose.position);
             DataManager.SetToAirSim(transform.rotation, ref currentPose.orientation);

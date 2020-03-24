@@ -3,14 +3,15 @@ import airsim
 
 
 class Takeoff:
-    def __init__(self, operationalAlt):
+    def __init__(self, operationalAlt,port):
         self.operationalAlt = operationalAlt
+        self.port = port
 
     def start(self):
         print("operationalAlt")
         print(self.operationalAlt)
         alt = float(self.operationalAlt)
-        client = airsim.MultirotorClient()
+        client = airsim.MultirotorClient('',self.port)
         client.confirmConnection()
         client.enableApiControl(True)
         client.armDisarm(True)

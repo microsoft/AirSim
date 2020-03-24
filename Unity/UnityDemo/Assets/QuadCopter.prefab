@@ -250,6 +250,8 @@ GameObject:
   - component: {fileID: 124371674541753354}
   - component: {fileID: 81875936256676810}
   - component: {fileID: 114146339632205672}
+  - component: {fileID: 114946789892153760}
+  - component: {fileID: 114862921593281638}
   m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -881,7 +883,7 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1489793753402450}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -1507,7 +1509,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1489793753402450}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!114 &114017817132523056
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1527,7 +1529,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1489793753402450}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89ec63efd5856254da3392afd167a560, type: 3}
   m_Name: 
@@ -1694,6 +1696,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effect: 5
   effectsShader: {fileID: 4800000, guid: e03150fb5e358274881026fc928ae40f, type: 3}
+--- !u!114 &114862921593281638
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1489793753402450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45d19550ab34c214fb75b6ecfb4ba009, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114939585568126580
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1713,6 +1726,17 @@ MonoBehaviour:
   m_MovementThreshold: 0.001
   m_InterpolateRotation: 0.2
   m_InterpolateMovement: 0
+--- !u!114 &114946789892153760
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1489793753402450}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00d4f7fba11e1c24ab30aacbd112a1a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114963231925819786
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1785,9 +1809,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   componentsToDisabled:
+  - {fileID: 20335074592223288}
   - {fileID: 81875936256676810}
   - {fileID: 114146339632205672}
-  - {fileID: 20335074592223288}
 --- !u!124 &124371674541753354
 Behaviour:
   m_ObjectHideFlags: 1

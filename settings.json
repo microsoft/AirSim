@@ -10,6 +10,16 @@
     "Latitude": 32.919945,
     "Longitude": 35.290146,
     "Altitude": 122
+  },
+  "SimpleFlight": {
+    "FirmwareName": "SimpleFlight",
+    "DefaultVehicleState": "Armed",
+    "RC": {
+      "RemoteControlID": 0,
+      "AllowAPIWhenDisconnected": false,
+      "AllowAPIAlways": true
+    },
+    "ApiServerPort": 41455
   }
 }
 
