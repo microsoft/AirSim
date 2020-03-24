@@ -473,6 +473,15 @@ public: //methods
     }
 
 protected: //methods
+    virtual void setControllerGains(uint8_t controllerType, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) override
+    {
+        unused(controllerType);
+        unused(kp);
+        unused(ki);
+        unused(kd);
+        Utils::log("Not Implemented: setControllerGains", Utils::kLogLevelInfo);
+    }
+
     virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
     {
         if (target_height_ != -z) {

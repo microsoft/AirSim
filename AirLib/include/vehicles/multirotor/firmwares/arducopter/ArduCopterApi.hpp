@@ -180,6 +180,15 @@ protected:
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
     }
 
+    virtual void setControllerGains(uint8_t controllerType, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) override
+    {
+        unused(controllerType);
+        unused(kp);
+        unused(ki);
+        unused(kd);
+        Utils::log("Not Implemented: setControllerGains", Utils::kLogLevelInfo);
+    }
+
     virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) override
     {
         unused(roll);

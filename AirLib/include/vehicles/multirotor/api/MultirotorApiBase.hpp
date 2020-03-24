@@ -35,7 +35,7 @@ protected: //must be implemented
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) = 0;
 
     /************************* set Controller Gains APIs *********************************/
-    virtual void setControllerGains(uint8_t controllerType, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) { }
+    virtual void setControllerGains(uint8_t controllerType, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) = 0;
 
     /************************* State APIs *********************************/
     virtual Kinematics::State getKinematicsEstimated() const = 0;
