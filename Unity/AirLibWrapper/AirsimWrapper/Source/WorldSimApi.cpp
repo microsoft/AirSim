@@ -52,6 +52,14 @@ void WorldSimApi::printLogMessage(const std::string& message, const std::string&
 	PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
 }
 
+std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
+{
+    std::unique_ptr<std::vector<std::string>> swappedObjectNames(new std::vector<std::string>());
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simSwapTextures is not supported on Unity").c_str());
+    return swappedObjectNames;
+}
+
 std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_regex) const
 {
 	std::vector<std::string> result;
