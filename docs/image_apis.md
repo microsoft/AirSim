@@ -11,7 +11,7 @@ Here's a sample code to get a single image from camera named "0". The returned v
 ```python
 import airsim #pip install airsim
 
-# for car use CarClient() 
+# for car use CarClient()
 client = airsim.MultirotorClient()
 
 png_image = client.simGetImage("0", airsim.ImageType.Scene)
@@ -23,11 +23,11 @@ png_image = client.simGetImage("0", airsim.ImageType.Scene)
 ```cpp
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 
-int getOneImage() 
+int getOneImage()
 {
     using namespace std;
     using namespace msr::airlib;
-    
+
     //for car use CarRpcLibClient
     msr::airlib::MultirotorRpcLibClient client;
 
@@ -45,17 +45,17 @@ The `simGetImages` API which is slightly more complex to use than `simGetImage` 
 ```python
 import airsim #pip install airsim
 
-# for car use CarClient() 
+# for car use CarClient()
 client = airsim.MultirotorClient()
 
 responses = client.simGetImages([
     # png format
-    airsim.ImageRequest(0, airsim.ImageType.Scene), 
+    airsim.ImageRequest(0, airsim.ImageType.Scene),
     # uncompressed RGB array bytes
     airsim.ImageRequest(1, airsim.ImageType.Scene, False, False),
     # floating point uncompressed image
     airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
- 
+
  # do something with response which contains image data, pose, timestamp etc
 ```
 
@@ -68,7 +68,7 @@ responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene
 response = responses[0]
 
 # get numpy array
-img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
+img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8)
 
 # reshape array to 4 channel image array H X W X 4
 img_rgb = img1d.reshape(response.height, response.width, 3)
@@ -76,8 +76,8 @@ img_rgb = img1d.reshape(response.height, response.width, 3)
 # original image is fliped vertically
 img_rgb = np.flipud(img_rgb)
 
-# write to png 
-airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) 
+# write to png
+airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 ```
 
 #### Quick Tips
@@ -92,11 +92,11 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 ### C++
 
 ```cpp
-int getStereoAndDepthImages() 
+int getStereoAndDepthImages()
 {
     using namespace std;
     using namespace msr::airlib;
-    
+
     typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType ImageType;
@@ -106,13 +106,13 @@ int getStereoAndDepthImages()
     msr::airlib::MultirotorRpcLibClient client;
 
     //get right, left and depth images. First two as png, second as float16.
-    vector<ImageRequest> request = { 
+    vector<ImageRequest> request = {
         //png format
         ImageRequest("0", ImageType::Scene),
         //uncompressed RGB array bytes
-        ImageRequest("1", ImageType::Scene, false, false),       
-        //floating point uncompressed image  
-        ImageRequest("1", ImageType::DepthPlanner, true) 
+        ImageRequest("1", ImageType::Scene, false, false),
+        //floating point uncompressed image
+        ImageRequest("1", ImageType::DepthPlanner, true)
     };
 
     const vector<ImageResponse>& response = client.simGetImages(request);
@@ -128,7 +128,7 @@ For a more complete ready to run sample code please see [sample code in AirSimCl
 
 ### C++
 
-For a more complete ready to run sample code please see [sample code in HelloDrone project](https://github.com/Microsoft/AirSim/tree/master/HelloDrone//main.cpp) for multirotors or [HelloCar project](https://github.com/Microsoft/AirSim/tree/master/HelloCar//main.cpp). 
+For a more complete ready to run sample code please see [sample code in HelloDrone project](https://github.com/Microsoft/AirSim/tree/master/HelloDrone//main.cpp) for multirotors or [HelloCar project](https://github.com/Microsoft/AirSim/tree/master/HelloCar//main.cpp).
 
 See also [other example code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images along with ground truth depth and disparity and saving it to [pfm format](pfm.md).
 
@@ -136,7 +136,7 @@ See also [other example code](https://github.com/Microsoft/AirSim/tree/master/Ex
 ### Car
 The cameras on car can be accessed by following names in API calls: `front_center`, `front_right`, `front_left`, `fpv` and `back_center`. Here FPV camera is driver's head position in the car.
 ### Multirotor
-The cameras in CV mode can be accessed by following names in API calls: `front_center`, `front_right`, `front_left`, `bottom_center` and `back_center`. 
+The cameras in CV mode can be accessed by following names in API calls: `front_center`, `front_right`, `front_left`, `bottom_center` and `back_center`.
 ### Computer Vision Mode
 Camera names are same as in multirotor.
 
@@ -171,6 +171,14 @@ The `simSetCameraOrientation` sets the orientation for the specified camera as q
 client.simSetCameraOrientation(0, airsim.to_quaternion(0.261799, 0, 0)); #radians
 ```
 
+`simDisableCamera` disables a camera, this can be useful when a camera is being used infrequently to capture images, such as after a long interval, or only when a particular event occurs. Disabling the camera prevents it from affecting the performance of the simulator, this is particulary noticable when a very high-resolution camera is used once, after which the FPS can drop rather drastically. Only implemented in Unreal currently
+
+Please see [high_res_camera.py](https://github.com/microsoft/AirSim/tree/master/PythonClient/multirotor/high_res_camera.py) in the PythonClient/multirotor folder for an example, the effect can be observed by commenting out the API call, and changing the camera settings.
+Usage:
+```
+client.simDisableCamera("camera-name", Image-Type)
+```
+
 ### Gimbal
 You can set stabilization for pitch, roll or yaw for any camera [using settings](settings.md#gimbal).
 
@@ -201,15 +209,15 @@ To change resolution, FOV etc, you can use [settings.json](settings.md). For exa
 ## What Does Pixel Values Mean in Different Image Types?
 ### Available ImageType Values
 ```cpp
-  Scene = 0, 
-  DepthPlanner = 1, 
+  Scene = 0,
+  DepthPlanner = 1,
   DepthPerspective = 2,
-  DepthVis = 3, 
+  DepthVis = 3,
   DisparityNormalized = 4,
   Segmentation = 5,
   SurfaceNormals = 6,
   Infrared = 7
-```                
+```
 
 ### DepthPlanner and DepthPerspective
 You normally want to retrieve the depth image as float (i.e. set `pixels_as_float = true`) and specify `ImageType = DepthPlanner` or `ImageType = DepthPerspective` in `ImageRequest`. For `ImageType = DepthPlanner`, you get depth in camera plan, i.e., all points that are in plan parallel to camera have same depth. For `ImageType = DepthPerspective`, you get depth from camera using a projection ray that hits that pixel. Depending on your use case, planner depth or perspective depth may be the ground truth image that you want. For example, you may be able to feed perspective depth to ROS package such as `depth_image_proc` to generate a point cloud. Or planner depth may be more compatible with estimated depth image generated by stereo algorithms such as SGM.
@@ -249,7 +257,7 @@ img_rgb = np.flipud(img_rgb) #original image is fliped vertically
 #find unique colors
 print(np.unique(img_rgb[:,:,0], return_counts=True)) #red
 print(np.unique(img_rgb[:,:,1], return_counts=True)) #green
-print(np.unique(img_rgb[:,:,2], return_counts=True)) #blue  
+print(np.unique(img_rgb[:,:,2], return_counts=True)) #blue
 ```
 
 A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/segmentation.py).
