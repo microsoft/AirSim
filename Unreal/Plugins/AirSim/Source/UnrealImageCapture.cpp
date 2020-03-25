@@ -1,6 +1,7 @@
 #include "UnrealImageCapture.h"
 #include "Engine/World.h"
 #include "ImageUtils.h"
+#include "AirLib/include/common/common_utils/Utils.hpp"
 #include "RenderRequest.h"
 #include "common/ClockFactory.hpp"
 
@@ -35,17 +36,13 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
 
 	int height = capture->TextureTarget->SizeY;
 	int width = capture->TextureTarget->SizeX;
-	unsigned long log2;
-	_BitScanReverse(&log2, width - 1);
-	unsigned long long stride = 1ULL << (log2 + 1); //Round up to nearest power of 2.
-	response.image_data_uint8 = std::move(BufferPool_->GetBufferExactSize(height * stride * 4));
-	//TODO check not nullptr
+	int stride = Utils::nextPowerOfTwo(width); //Round up to nearest power of 2.
+	response.image_data_uint8 = BufferPool_->GetBufferExactSize(height * stride * 4);
 	RenderRequest render_request(*response.image_data_uint8);
-	render_request.fast_param_ = RenderRequest::RenderParams{ capture, textureTarget, false, false }; //render_params.at(0).get();
+	render_request.fast_param_ = RenderRequest::RenderParams{ capture, textureTarget, false, false };
 	render_request.FastScreenshot();
 
 	response.time_stamp = render_request.latest_result_.time_stamp;
-	//response.image_data_uint8 = std::vector<uint8_t>(result->image_data_uint8->GetData(), result->image_data_uint8->GetData() + result->image_data_uint8->Num());
 	response.width = width;
 	response.height = height;
 	response.image_type = image_type;
