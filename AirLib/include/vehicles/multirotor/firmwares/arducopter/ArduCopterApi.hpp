@@ -180,22 +180,76 @@ protected:
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
     }
 
-    virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
+    virtual void setControllerGains(uint8_t controllerType, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) override
     {
-        unused(pitch);
-        unused(roll);
-        unused(throttle);
-        unused(yaw_rate);
-        Utils::log("Not Implemented: commandRollPitchThrottle", Utils::kLogLevelInfo);
+        unused(controllerType);
+        unused(kp);
+        unused(ki);
+        unused(kd);
+        Utils::log("Not Implemented: setControllerGains", Utils::kLogLevelInfo);
     }
 
-    virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
+    virtual void commandMotorPWMs(float front_right_pwm, float front_left_pwm, float rear_right_pwm, float rear_left_pwm) override
     {
-        unused(pitch);
+        unused(front_right_pwm);
+        unused(front_left_pwm);
+        unused(rear_right_pwm);
+        unused(rear_left_pwm);
+        Utils::log("Not Implemented: commandMotorPWMs", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) override
+    {
         unused(roll);
-        unused(z);
+        unused(pitch);
+        unused(yaw_rate);
+        unused(throttle);
+        Utils::log("Not Implemented: commandRollPitchYawrateThrottle", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
+    {
+        unused(roll);
+        unused(pitch);
         unused(yaw);
-        Utils::log("Not Implemented: commandRollPitchZ", Utils::kLogLevelInfo);
+        unused(z);
+        Utils::log("Not Implemented: commandRollPitchYawZ", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) override
+    {
+        unused(roll);
+        unused(pitch);
+        unused(yaw);
+        unused(throttle);
+        Utils::log("Not Implemented: commandRollPitchYawThrottle", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandRollPitchYawrateZ(float roll, float pitch, float yaw_rate, float z) override
+    {
+        unused(roll);
+        unused(pitch);
+        unused(yaw_rate);
+        unused(z);
+        Utils::log("Not Implemented: commandRollPitchYawrateZ", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
+    {
+        unused(roll_rate);
+        unused(pitch_rate);
+        unused(yaw_rate);
+        unused(z);
+        Utils::log("Not Implemented: commandAngleRatesZ", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle) override
+    {
+        unused(roll_rate);
+        unused(pitch_rate);
+        unused(yaw_rate);
+        unused(throttle);
+        Utils::log("Not Implemented: commandAngleRatesZ", Utils::kLogLevelInfo);
     }
 
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
