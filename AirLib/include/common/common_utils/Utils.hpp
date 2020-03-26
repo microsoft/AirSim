@@ -126,16 +126,16 @@ public:
         return static_cast<float>(radians * 180.0f / M_PI);
     }
 
-	static int nextPowerOfTwo(unsigned long long number) {
-		--number;
-		number |= number >> 1;
-		number |= number >> 2;
-		number |= number >> 4;
-		number |= number >> 8;
-		number |= number >> 16;
-		number |= number >> 32;
-		return ++number;
-	}
+    static int nextPowerOfTwo(unsigned long long number) {
+        --number;
+        number |= number >> 1;
+        number |= number >> 2;
+        number |= number >> 4;
+        number |= number >> 8;
+        number |= number >> 16;
+        number |= number >> 32;
+        return ++number;
+    }
 
     static bool startsWith(const string& s, const string& prefix) {
         return s.size() >= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
@@ -354,7 +354,7 @@ public:
                 }
                 it++;
                 start = it;
-                for (; it != end; it++) {					
+                for (; it != end; it++) {                   
                     if (*it == ch) {
                         break;
                     } 
@@ -606,20 +606,20 @@ public:
         return std::numeric_limits<TReal>::epsilon();
     }
 
-	//implements relative method - do not use for comparing with zero
-	//use this most of the time, tolerance needs to be meaningful in your context
-	template<typename TReal>
-	static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = epsilon<TReal>())
-	{
-		TReal diff = std::fabs(a - b);
-		if (diff <= tolerance)
-			return true;
+    //implements relative method - do not use for comparing with zero
+    //use this most of the time, tolerance needs to be meaningful in your context
+    template<typename TReal>
+    static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = epsilon<TReal>())
+    {
+        TReal diff = std::fabs(a - b);
+        if (diff <= tolerance)
+            return true;
 
-		if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
-			return true;
+        if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
+            return true;
 
-		return false;
-	}
+        return false;
+    }
 
     //supply tolerance that is meaningful in your context
     //for example, default tolerance may not work if you are comparing double with float

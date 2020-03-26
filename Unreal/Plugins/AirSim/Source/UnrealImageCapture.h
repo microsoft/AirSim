@@ -6,8 +6,6 @@
 #include "common/common_utils/UniqueValueMap.hpp"
 #include "common/common_utils/BufferPool.h"
 
-
-
 class UnrealImageCapture : public msr::airlib::ImageCaptureBase
 {
 public:
@@ -16,11 +14,11 @@ public:
     UnrealImageCapture(const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras);
     virtual ~UnrealImageCapture();
 
-	virtual void getImages(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const override;
-	virtual void getImage(const ImageRequest& request, ImageResponse& response) const override;
+    virtual void getImages(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests, std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses) const override;
+    virtual void getImage(const ImageRequest& request, ImageResponse& response) const override;
 
 private:
-	BufferPool *BufferPool_ = new BufferPool();
+    BufferPool *BufferPool_ = new BufferPool();
 
     void getSceneCaptureImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type, ImageResponse &response) const;
 

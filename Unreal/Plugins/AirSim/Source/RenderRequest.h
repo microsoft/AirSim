@@ -29,13 +29,13 @@ private:
     std::shared_ptr<RenderParams>* params_;
     std::shared_ptr<RenderResult>* results_;
 public:
-	RenderParams fast_param_{ nullptr, nullptr, false, false };
-	volatile RenderResult latest_result_{};
-	std::vector<uint8_t> *rgba_output_ = nullptr;
+    RenderParams fast_param_{ nullptr, nullptr, false, false };
+    volatile RenderResult latest_result_{};
+    std::vector<uint8_t> *rgba_output_ = nullptr;
 
 private:
-	volatile bool fast_cap_done_ = false;
-	FTextureRenderTargetResource* fast_rt_resource_;
+    volatile bool fast_cap_done_ = false;
+    FTextureRenderTargetResource* fast_rt_resource_;
 
     std::shared_ptr<msr::airlib::WorkerThreadSignal> wait_signal_;
 
@@ -53,6 +53,6 @@ public:
         RETURN_QUICK_DECLARE_CYCLE_STAT(RenderRequest, STATGROUP_RenderThreadCommands);
     }
 
-	void FastScreenshot();
-	void RenderThreadScreenshotTask();
+    void FastScreenshot();
+    void RenderThreadScreenshotTask();
 };
