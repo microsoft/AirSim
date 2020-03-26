@@ -82,6 +82,15 @@ FTransform NedTransform::fromGlobalNed(const Pose& pose) const
 {
     return FTransform(fromNed(pose.orientation), fromGlobalNed(pose.position));
 }
+FQuat NedTransform::fromUUtoFLU(const FQuat& q) const
+{
+    return FQuat(-q.X, q.Y, -q.Z, q.W);
+}
+// todo unused. need to manually plots tf axes' line in right handed FLU instead of using DrawDebugCoordinateSystem
+FQuat NedTransform::fromGlobalNedToFLU(const Quaternionr& q) const
+{
+    return fromUUtoFLU(fromNed(q));
+}
 
 FVector NedTransform::getGlobalOffset() const
 {

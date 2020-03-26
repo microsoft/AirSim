@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Actor.h"
-
 #include "common/Common.hpp"
 
 /*
@@ -38,7 +37,6 @@ public:
     Pose toLocalNed(const FTransform& pose) const;
     Pose toGlobalNed(const FTransform& pose) const;
 
-
     //local NED -> UU
     FVector fromLocalNed(const Vector3r& position) const;
     FVector fromGlobalNed(const Vector3r& position) const;
@@ -46,6 +44,11 @@ public:
     float fromNed(float length) const;
     FTransform fromLocalNed(const Pose& pose) const;
     FTransform fromGlobalNed(const Pose& pose) const;
+
+    // UU -> ROS FLU. UU is XYZ:FrontRightUp (left handed); ROS FLU is XYZ:FrontLeftUp (right handed)
+    // used by simPlotApis:
+    FQuat fromUUtoFLU(const FQuat& q) const;
+    FQuat fromGlobalNedToFLU(const Quaternionr& q) const;
 
     FVector getGlobalOffset() const;
     FVector getLocalOffset() const;
