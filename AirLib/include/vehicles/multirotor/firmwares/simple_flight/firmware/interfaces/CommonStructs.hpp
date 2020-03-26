@@ -20,10 +20,12 @@ public:
     {
         return vals_[index];
     }
+
     virtual const T& operator[] (unsigned int index) const
     {
         return vals_[index];
     }
+
     virtual std::string toString() const
     {
         return std::to_string(static_cast<float>(vals_[0]))
@@ -93,6 +95,14 @@ public:
     {
         for(unsigned int axis = 0; axis < Axis3<T>::AxisCount(); ++axis)
             (*this)[axis] = axis3[axis];
+    }
+
+    void setValues(const vector<T>& vals)
+    {
+        (*this)[0] = vals[0];
+        (*this)[1] = vals[1];
+        (*this)[2] = vals[2];
+        val4_ = vals[3];
     }
 
     T& val4()

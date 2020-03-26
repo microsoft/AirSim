@@ -19,7 +19,7 @@ namespace simple_flight {
 
 class CascadeController : public IController {
 public:
-    CascadeController(const Params* params, const IBoardClock* clock, ICommLink* comm_link)
+    CascadeController(Params* params, const IBoardClock* clock, ICommLink* comm_link)
         : params_(params), clock_(clock), comm_link_(comm_link)
     {
     }
@@ -62,8 +62,8 @@ public:
         }
 
         for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis) {
-            //re-create axis controllers if goal mode was changed since last time
-            if (goal_mode[axis] != last_goal_mode_[axis]) {
+            //re-create axis controllers if goal mode was changed since last time, or if gains have been updated
+            if (goal_mode[axis] != last_goal_mode_[axis] || params_->gains_changed == true) {
                 switch (goal_mode[axis]) {
                 case GoalModeType::AngleRate:
                     axis_controllers_[axis].reset(new AngleRateController(params_, clock_));
@@ -107,6 +107,7 @@ public:
             else
                 comm_link_->log(std::string("Axis controller type is not set for axis ").append(std::to_string(axis)), ICommLink::kLogLevelInfo);
         }
+        params_->gains_changed = false;
     }
 
     virtual const Axis4r& getOutput() override
@@ -114,9 +115,21 @@ public:
         return output_;
     }
 
+    virtual bool isLastGoalModeAllPassthrough() override
+    {
+        is_last_goal_mode_all_passthrough_ = true;
+
+        for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis) {
+            if (last_goal_mode_[axis] != GoalModeType::Passthrough) {
+                is_last_goal_mode_all_passthrough_ = false;
+            }
+        }
+
+        return is_last_goal_mode_all_passthrough_;
+    }
 
 private:
-    const Params* params_;
+    Params* params_;
     const IBoardClock* clock_;
 
     const IGoal* goal_;
@@ -127,6 +140,7 @@ private:
 
     GoalMode last_goal_mode_;
     Axis4r last_goal_val_;
+    bool is_last_goal_mode_all_passthrough_;
 
     std::unique_ptr<IAxisController> axis_controllers_[Axis4r::AxisCount()];
 };

@@ -473,7 +473,25 @@ public: //methods
     }
 
 protected: //methods
-    virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
+    virtual void setControllerGains(uint8_t controllerType, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) override
+    {
+        unused(controllerType);
+        unused(kp);
+        unused(ki);
+        unused(kd);
+        Utils::log("Not Implemented: setControllerGains", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandMotorPWMs(float front_right_pwm, float front_left_pwm, float rear_right_pwm, float rear_left_pwm) override
+    {
+        unused(front_right_pwm);
+        unused(front_left_pwm);
+        unused(rear_right_pwm);
+        unused(rear_left_pwm);
+        Utils::log("Not Implemented: commandMotorPWMs", Utils::kLogLevelInfo);
+    }
+
+    virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
     {
         if (target_height_ != -z) {
             // these PID values were calculated experimentally using AltHoldCommand n MavLinkTest, this provides the best
@@ -487,11 +505,44 @@ protected: //methods
         float thrust = 0.21f + thrust_controller_.control(-state.local_est.pos.z);
         mav_vehicle_->moveByAttitude(roll, pitch, yaw, 0, 0, 0, thrust);
     }
-    virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
+    virtual void commandRollPitchYawrateZ(float roll, float pitch, float yaw_rate, float z) override
+    {
+        if (target_height_ != -z) {
+            thrust_controller_.setPoint(-z, .05f, .005f, 0.09f);
+            target_height_ = -z;
+        }
+        checkValidVehicle();
+        auto state = mav_vehicle_->getVehicleState();
+        float thrust = 0.21f + thrust_controller_.control(-state.local_est.pos.z);
+        mav_vehicle_->moveByAttitude(roll, pitch, 0, 0, 0, yaw_rate, thrust);
+    }
+    virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) override
     {
         checkValidVehicle();
-        mav_vehicle_->moveByAttitude(roll, pitch, yaw_rate, 0, 0, 0, throttle);
+        mav_vehicle_->moveByAttitude(roll, pitch, yaw, 0, 0, 0, throttle);
     }
+    virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) override
+    {
+        checkValidVehicle();
+        mav_vehicle_->moveByAttitude(roll, pitch, 0, 0, 0, yaw_rate, throttle);
+    }
+    virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
+    {
+        if (target_height_ != -z) {
+            thrust_controller_.setPoint(-z, .05f, .005f, 0.09f);
+            target_height_ = -z;
+        }
+        checkValidVehicle();
+        auto state = mav_vehicle_->getVehicleState();
+        float thrust = 0.21f + thrust_controller_.control(-state.local_est.pos.z);
+        mav_vehicle_->moveByAttitude(0, 0, 0, roll_rate, pitch_rate, yaw_rate, thrust);
+    }
+    virtual void commandAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle) override
+    {
+        checkValidVehicle();
+        mav_vehicle_->moveByAttitude(0, 0, 0, roll_rate, pitch_rate, yaw_rate, throttle);
+    }
+
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
         checkValidVehicle();

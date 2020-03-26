@@ -58,6 +58,19 @@ public:
 		return output_controls_;
 	}
 
+    virtual bool isLastGoalModeAllPassthrough() override
+    {
+        is_last_goal_mode_all_passthrough_ = true;
+
+        for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis) {
+            if (last_mode_[axis] != GoalModeType::Passthrough) {
+                is_last_goal_mode_all_passthrough_ = false;
+            }
+        }
+
+        return is_last_goal_mode_all_passthrough_;
+    }
+
 private:
 	const IBoardClock* clock_;
 	const IGoal* goal_;
@@ -101,6 +114,7 @@ private:
 	bool reset = true;
 	double x_0[12];
 	GoalMode last_mode_;
+	bool is_last_goal_mode_all_passthrough_;
 	//double error[3] = { 0 };
 	double ref_vec[10][3] = {{ 0 }};
 	double ref_sum[3] = { 0 };
