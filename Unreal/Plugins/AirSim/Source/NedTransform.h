@@ -31,6 +31,7 @@ public:
 
     //UU -> local NED
     Vector3r toLocalNed(const FVector& position) const;
+    Vector3r toLocalNedVelocity(const FVector& velocity) const;
     Vector3r toGlobalNed(const FVector& position) const;
     Quaternionr toNed(const FQuat& q) const;
     float toNed(float length) const;
