@@ -220,7 +220,7 @@ void WorldSimApi::simPlotTransforms(const std::vector<Pose>& poses, float scale,
 {
     for (const auto& pose : poses)
     {
-        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(pose).GetLocation(), simmode_->getGlobalNedTransform().fromGlobalNedToUUENU(pose).Rotator(), scale, is_persistent, duration, 0, thickness);
+        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(pose.position), simmode_->getGlobalNedTransform().fromNed(pose.orientation).Rotator(), scale, is_persistent, duration, 0, thickness);
     }
 }
 
@@ -230,7 +230,7 @@ void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, con
     FLinearColor color {text_color_rgba[0], text_color_rgba[1], text_color_rgba[2], text_color_rgba[3]};
     for (int idx = 0; idx < poses.size(); idx += 1)
     {
-        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(), simmode_->getGlobalNedTransform().fromGlobalNedToUUENU(poses[idx]).Rotator(), tf_scale, false, duration, 0, tf_thickness);
+        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx].position), simmode_->getGlobalNedTransform().fromNed(poses[idx].orientation).Rotator(), tf_scale, false, duration, 0, tf_thickness);
         DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(), FString(names[idx].c_str()), NULL, color.ToFColor(true), duration, false, text_scale);
     }
 }

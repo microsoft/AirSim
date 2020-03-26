@@ -45,9 +45,10 @@ public:
     FTransform fromLocalNed(const Pose& pose) const;
     FTransform fromGlobalNed(const Pose& pose) const;
 
-    // NED -> ENU. We want to visualize in world ENU (right handed)
-    FQuat fromNedtoEnu(const FQuat& q) const;
-    FTransform fromGlobalNedToUUENU(const Pose& pose) const;
+    // UU -> ROS FLU. UU is XYZ:FrontRightUp (left handed); ROS FLU is XYZ:FrontLeftUp (right handed)
+    // used by simPlotApis:
+    FQuat fromUUtoFLU(const FQuat& q) const;
+    FQuat fromGlobalNedToFLU(const Quaternionr& q) const;
 
     FVector getGlobalOffset() const;
     FVector getLocalOffset() const;
