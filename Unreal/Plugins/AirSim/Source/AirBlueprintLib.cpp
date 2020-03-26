@@ -383,7 +383,7 @@ std::vector<msr::airlib::MeshResponse> UAirBlueprintLib::GetStaticMeshComponents
 		mesh.orientation.y() = att.Y;
 		mesh.orientation.z() = att.Z;
 
-		FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].PositionVertexBuffer;
+		FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].VertexBuffers.PositionVertexBuffer;
 		if (vertex_buffer)
 		{
 			const int32 vertex_count = vertex_buffer->VertexBufferRHI->GetSize();
