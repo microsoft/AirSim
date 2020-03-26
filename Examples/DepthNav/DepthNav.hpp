@@ -158,7 +158,7 @@ public:
                 throw DepthNavException("Image Dimension mismatch. Please check right camera in the AirSim config file.");
             */
             const std::vector<uint8_t> left_image(response.at(0).image_data_uint8->begin(), response.at(0).image_data_uint8->end());
-			const std::vector<uint8_t> right_image(response.at(1).image_data_uint8->begin(), response.at(1).image_data_uint8->end());
+            const std::vector<uint8_t> right_image(response.at(1).image_data_uint8->begin(), response.at(1).image_data_uint8->end());
 
             //baseline * focal_length = depth * disparity
             float f = params_.depth_width / (2 * tan(params_.fov/2));

@@ -45,8 +45,8 @@ public:
 
     virtual void initialize() = 0;
 
-	virtual void getImages(const std::vector<ImageCaptureBase::ImageRequest>& request, std::vector<ImageCaptureBase::ImageResponse> &responses) const = 0;
-	virtual void getImage(const ImageCaptureBase::ImageRequest& request, ImageCaptureBase::ImageResponse &response) const = 0;
+    virtual void getImages(const std::vector<ImageCaptureBase::ImageRequest>& request, std::vector<ImageCaptureBase::ImageResponse> &responses) const = 0;
+    virtual void getImage(const ImageCaptureBase::ImageRequest& request, ImageCaptureBase::ImageResponse &response) const = 0;
 
     virtual Pose getPose() const = 0;
     virtual void setPose(const Pose& pose, bool ignore_collision) = 0;

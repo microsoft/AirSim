@@ -16,22 +16,22 @@ typedef std::unique_ptr<Buffer, Deleter> BufferPtr;
 class BufferPool
 {
 public:
-	BufferPtr GetBufferExactSize(size_t size);
-	BufferPtr GetBufferAtLeastSize(size_t size, size_t max_size = std::numeric_limits<size_t>::max());
+    BufferPtr GetBufferExactSize(size_t size);
+    BufferPtr GetBufferAtLeastSize(size_t size, size_t max_size = std::numeric_limits<size_t>::max());
 
 private:
-	class BufferCollection
-	{
-	public:
-		BufferCollection(size_t size) : Size(size) {}
-		BufferPtr DemandBuffer();
-		BufferPtr GetBufferIfAvailable();
+    class BufferCollection
+    {
+    public:
+        BufferCollection(size_t size) : Size(size) {}
+        BufferPtr DemandBuffer();
+        BufferPtr GetBufferIfAvailable();
 
-	private:
-		size_t Size;
-		std::unordered_set<Buffer*> AvailableBuffers;
-		BufferPtr MakeBufferPtr(Buffer *underlyingBuffer = nullptr);
-		void ReturnToCollection(Buffer *buffer);
-	};
-	std::map<size_t, BufferCollection> CollectionsBySize;
+    private:
+        size_t Size;
+        std::unordered_set<Buffer*> AvailableBuffers;
+        BufferPtr MakeBufferPtr(Buffer *underlyingBuffer = nullptr);
+        void ReturnToCollection(Buffer *buffer);
+    };
+    std::map<size_t, BufferCollection> CollectionsBySize;
 };
