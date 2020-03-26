@@ -496,7 +496,7 @@ void PawnSimApi::updateKinematics(float dt)
     auto next_kinematics = kinematics_->getState();
 
     next_kinematics.pose = getPose();
-    next_kinematics.twist.linear = getNedTransform().toLocalNed(getPawn()->GetVelocity());
+    next_kinematics.twist.linear = getNedTransform().toLocalNedVelocity(getPawn()->GetVelocity());
     next_kinematics.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
         kinematics_->getPose().orientation, next_kinematics.pose.orientation, dt);
 
