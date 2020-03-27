@@ -60,13 +60,19 @@ if $gccBuild; then
 else
     # llvm tools
     if [ "$(uname)" == "Darwin" ]; then # osx
-        brew update
 
-        # brew install llvm@3.9
-        brew tap llvm-hs/homebrew-llvm
-        brew install llvm-5.0
-        export C_COMPILER=/usr/local/opt/llvm-5.0/bin/clang-5.0
-        export COMPILER=/usr/local/opt/llvm-5.0/bin/clang++-5.0
+        if [[ -n $CIINSTALL ]]; then # use downloaded binaries on Travis
+            export C_COMPILER=${LLVM_DIR}/bin/clang
+            export COMPILER=${LLVM_DIR}/bin/clang++
+        else
+            brew update
+
+            # brew install llvm@3.9
+            brew tap llvm-hs/homebrew-llvm
+            brew install llvm-5.0
+            export C_COMPILER=/usr/local/opt/llvm-5.0/bin/clang-5.0
+            export COMPILER=/usr/local/opt/llvm-5.0/bin/clang++-5.0
+        fi
 
     else #linux
         #install clang and build tools
@@ -203,12 +209,9 @@ if ! $gccBuild; then
     else
         echo "folder llvm-source-50 already exists, skipping git clone..."
     fi
-    #build libc++
-    if [ "$(uname)" == "Darwin" ]; then
-        rm -rf llvm-build
-    else
-        rm -rf llvm-build
-    fi
+
+    # build libc++
+    rm -rf llvm-build
     mkdir -p llvm-build
     pushd llvm-build >/dev/null
 
@@ -219,23 +222,15 @@ if ! $gccBuild; then
 
     make cxx -j`nproc`
 
-    #install libc++ locally in output folder
-    if [ "$(uname)" == "Darwin" ]; then
-        make install-libcxx install-libcxxabi
-    else
-        make install-libcxx install-libcxxabi
-    fi
+    # install libc++ locally in output folder
+    make install-libcxx install-libcxxabi
 
     popd >/dev/null
 fi
 
 echo "Installing EIGEN library..."
 
-if [ "$(uname)" == "Darwin" ]; then
-    rm -rf ./AirLib/deps/eigen3/Eigen
-else
-    rm -rf ./AirLib/deps/eigen3/Eigen
-fi
+rm -rf ./AirLib/deps/eigen3/Eigen
 echo "downloading eigen..."
 wget -O eigen3.zip https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip
 unzip eigen3.zip -d temp_eigen
