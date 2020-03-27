@@ -795,6 +795,9 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
                 static_tf_msg.header.stamp = ros::Time::now();
                 static_tf_pub_.sendTransform(static_tf_msg);
             }
+
+            // we've sent these static transforms, so no need to keep sending them
+            static_tf_msg_vec_.clear();
         }
 
         // todo add and expose a gimbal angular velocity to airlib
