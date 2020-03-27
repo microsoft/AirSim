@@ -34,7 +34,7 @@ class ArduCopterApi : public MultirotorApiBase {
 
 public:
     ArduCopterApi(const MultiRotorParams* vehicle_params, const AirSimSettings::MavLinkConnectionInfo& connection_info)
-        : ip(connection_info.udp_address), vehicle_params_(vehicle_params)
+        : ip_(connection_info.udp_address), vehicle_params_(vehicle_params)
     {
         connection_info_ = connection_info;
         sensors_ = &getSensors();
@@ -71,13 +71,15 @@ public:
         Utils::log("Not Implemented: isApiControlEnabled", Utils::kLogLevelInfo);
         return false;
     }
-    virtual void enableApiControl(bool) override
+    virtual void enableApiControl(bool is_enabled) override
     {
         Utils::log("Not Implemented: enableApiControl", Utils::kLogLevelInfo);
+        unused(is_enabled);
     }
-    virtual bool armDisarm(bool) override
+    virtual bool armDisarm(bool arm) override
     {
         Utils::log("Not Implemented: armDisarm", Utils::kLogLevelInfo);
+        unused(arm);
         return false;
     }
     virtual GeoPoint getHomeGeoPoint() const override
@@ -85,8 +87,9 @@ public:
         Utils::log("Not Implemented: getHomeGeoPoint", Utils::kLogLevelInfo);
         return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
     }
-    virtual void getStatusMessages(std::vector<std::string>&) override
+    virtual void getStatusMessages(std::vector<std::string>& messages) override
     {
+        unused(messages);
     }
 
     virtual const SensorCollection& getSensors() const override
@@ -99,21 +102,28 @@ public: //TODO:MultirotorApiBase implementation
     {
         return rotor_controls_[rotor_index];
     }
+
     virtual size_t getActuatorCount() const override
     {
         return vehicle_params_->getParams().rotor_count;
     }
+
     virtual void moveByRC(const RCData& rc_data) override
     {
         setRCData(rc_data);
     }
-    virtual void setSimulatedGroundTruth(const Kinematics::State*, const Environment*) override
+
+    virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment) override
     {
+        Utils::log("Not Implemented: setSimulatedGroundTruth", Utils::kLogLevelInfo);
+        unused(kinematics);
+        unused(environment);
     }
+
     virtual bool setRCData(const RCData& rc_data) override
     {
         last_rcData_ = rc_data;
-        is_rc_connected = true;
+        is_rc_connected_ = true;
 
         return true;
     }
@@ -295,20 +305,20 @@ protected:
 
     void connect()
     {
-        port = static_cast<uint16_t>(connection_info_.udp_port);
+        port_ = static_cast<uint16_t>(connection_info_.udp_port);
 
         closeConnections();
 
-        if (ip == "") {
+        if (ip_ == "") {
             throw std::invalid_argument("UdpIp setting is invalid.");
         }
 
-        if (port == 0) {
+        if (port_ == 0) {
             throw std::invalid_argument("UdpPort setting has an invalid value.");
         }
 
-        Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
-        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip.c_str()), Utils::kLogLevelInfo);
+        Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port_, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
+        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
 
         udpSocket_ = std::make_shared<mavlinkcom::UdpSocket>();
         udpSocket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
@@ -357,7 +367,7 @@ private:
         std::ostringstream oss;
 
         // Send RC channels to Ardupilot if present
-        if (is_rc_connected && last_rcData_.is_valid) {
+        if (is_rc_connected_ && last_rcData_.is_valid) {
             oss << ","
                    "\"rc\": {"
                    "\"channels\": ["
@@ -443,7 +453,7 @@ private:
 
         // Send data
         if (udpSocket_ != nullptr) {
-            udpSocket_->sendto(buf, strlen(buf), ip, port);
+            udpSocket_->sendto(buf, strlen(buf), ip_, port_);
         }
     }
 
@@ -479,15 +489,15 @@ private:
     std::shared_ptr<mavlinkcom::UdpSocket> udpSocket_;
 
     AirSimSettings::MavLinkConnectionInfo connection_info_;
-    uint16_t port;
-    const std::string& ip;
+    uint16_t port_;
+    const std::string& ip_;
     const SensorCollection* sensors_;
     const MultiRotorParams* vehicle_params_;
 
     MultirotorApiParams safety_params_;
 
     RCData last_rcData_;
-    bool is_rc_connected;
+    bool is_rc_connected_;
 
     // TODO: Increase to 6 or 8 for hexa or larger frames, 11 was used in SoloAPI
     static const int RotorControlCount = 4;
