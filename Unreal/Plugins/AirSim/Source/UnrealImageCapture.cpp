@@ -1,7 +1,6 @@
 #include "UnrealImageCapture.h"
 #include "Engine/World.h"
 #include "ImageUtils.h"
-#include "AirLib/include/common/common_utils/Utils.hpp"
 #include "RenderRequest.h"
 #include "common/ClockFactory.hpp"
 
@@ -34,18 +33,21 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
     USceneCaptureComponent2D* capture = camera->getCaptureComponent(image_type, false);
     UTextureRenderTarget2D* textureTarget = capture->TextureTarget;
 
-    int height = capture->TextureTarget->SizeY;
-    int width = capture->TextureTarget->SizeX;
-    int stride = Utils::nextPowerOfTwo(width); //Round up to nearest power of 2.
-    response.image_data_uint8 = BufferPool_->GetBufferExactSize(height * stride * 4);
-    RenderRequest render_request(*response.image_data_uint8);
+    RenderRequest render_request(BufferPool_);
     render_request.fast_param_ = RenderRequest::RenderParams{ capture, textureTarget, false, false };
     render_request.FastScreenshot();
 
+    int height = capture->TextureTarget->SizeY;
+    int stride = render_request.latest_result_.stride;
+    int bytes = render_request.latest_result_.pixels->size();
+    int bytes_per_pixel = bytes / (height * stride);
+    int padded_width = stride / bytes_per_pixel;
+
     response.time_stamp = render_request.latest_result_.time_stamp;
-    response.width = width;
+    response.width = padded_width;
     response.height = height;
     response.image_type = image_type;
+    response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
 }
 
 bool UnrealImageCapture::getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng)

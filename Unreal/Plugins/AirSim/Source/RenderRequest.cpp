@@ -6,10 +6,11 @@
 #include "UnrealString.h"
 #include <thread>
 #include <chrono>
+#include "common/common_utils/BufferPool.h"
 #include "AirBlueprintLib.h"
 #include "Async/Async.h"
 
-RenderRequest::RenderRequest(std::vector<uint8_t>& rgba_output) : rgba_output_(&rgba_output)
+RenderRequest::RenderRequest(BufferPool *buffer_pool) : buffer_pool_(buffer_pool)
 {}
 
 RenderRequest::~RenderRequest()
@@ -21,13 +22,10 @@ void RenderRequest::FastScreenshot()
         fast_cap_done_ = false;
         fast_rt_resource_ = fast_param_.render_component->TextureTarget->GameThread_GetRenderTargetResource();
         fast_param_.render_component->CaptureScene();
-        ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
-            SceneDrawCompletion,
-            RenderRequest *, This, this,
-            {
-                This->RenderThreadScreenshotTask();
-            }
-        );
+        ENQUEUE_RENDER_COMMAND(SceneDrawCompletion)([this](FRHICommandListImmediate& RHICmdList)
+        {
+            this->RenderThreadScreenshotTask(this->latest_result_);
+        });
     }, false);
 
     //Try to wait just long enough for the render thread to finish the capture.
@@ -37,7 +35,7 @@ void RenderRequest::FastScreenshot()
         std::this_thread::sleep_for(std::chrono::microseconds(best_guess_cap_time_microseconds));
 }
 
-void RenderRequest::RenderThreadScreenshotTask()
+void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &result)
 {
     FRHITexture2D *fast_cap_texture = fast_rt_resource_->TextureRHI->GetTexture2D();
     EPixelFormat pixelFormat = fast_cap_texture->GetFormat();
@@ -46,13 +44,15 @@ void RenderRequest::RenderThreadScreenshotTask()
     uint32 stride;
     auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
     
-    latest_result_.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
-    latest_result_.width = width;
-    latest_result_.height = height;
+    result.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
+    result.pixels = buffer_pool_->GetBufferExactSize(height*stride);
+    result.stride = stride;
+    result.width = width;
+    result.height = height;
 
     if (src)
-        //rgba_output_->insert(rgba_output_->begin(), &src[0], &src[height * stride]);
-        FMemory::BigBlockMemcpy(rgba_output_->data(), src, height * stride); //TODO MAYBE THIS IS THE SLOW PART
+		FMemory::BigBlockMemcpy(latest_result_.pixels->data(), src, height * stride);
+    
     RHIUnlockTexture2D(fast_cap_texture, 0, false);
 
     fast_cap_done_ = true;
