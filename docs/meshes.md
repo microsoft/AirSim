@@ -6,7 +6,7 @@ AirSim supports the ability to access the static meshes that make up the scene
 ## Mesh structure
 Each mesh is represented with the below struct.
 ```
-struct MeshResponse {
+struct MeshPositionVertexBuffersResponse {
 
 	Vector3r position;
 	Quaternionr orientation;
@@ -39,7 +39,7 @@ client = airsim.VehicleClient(ip=AIRSIM_HOST_IP)
 client.confirmConnection()
 
 # List of returned meshes are received via this function
-meshes=client.simGetMeshes()
+meshes=client.simGetMeshPositionVertexBuffers()
 
 
 index=0

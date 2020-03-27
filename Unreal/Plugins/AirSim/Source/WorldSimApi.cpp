@@ -231,9 +231,9 @@ void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, con
     }
 }
 
-std::vector<WorldSimApi::MeshResponse> WorldSimApi::getMeshes() const
+std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMeshPositionVertexBuffers() const
 {
-	std::vector<WorldSimApi::MeshResponse> responses;
+	std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> responses;
 	UAirBlueprintLib::RunCommandOnGameThread([&responses]() {
 		responses = UAirBlueprintLib::GetStaticMeshComponents();
 	}, true);

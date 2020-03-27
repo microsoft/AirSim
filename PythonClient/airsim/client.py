@@ -115,9 +115,9 @@ class VehicleClient:
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
 
     # gets the static meshes in the unreal scene
-    def simGetMeshes(self):
-        responses_raw = self.client.call('simGetMeshes')
-        return [MeshResponse.from_msgpack(response_raw) for response_raw in responses_raw]
+    def simGetMeshPositionVertexBuffers(self):
+        responses_raw = self.client.call('simGetMeshPositionVertexBuffers')
+        return [MeshPositionVertexBuffersResponse.from_msgpack(response_raw) for response_raw in responses_raw]
 
     def simGetCollisionInfo(self, vehicle_name = ''):
         return CollisionInfo.from_msgpack(self.client.call('simGetCollisionInfo', vehicle_name))
