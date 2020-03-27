@@ -58,6 +58,10 @@ public:
         Kinematics::State kinematics_estimated;
         uint64_t timestamp;
 
+        CarState()
+        {
+        }
+
         CarState(float speed_val, int gear_val, float rpm_val, float maxrpm_val, bool handbrake_val, 
             const Kinematics::State& kinematics_estimated_val, uint64_t timestamp_val)
             : speed(speed_val), gear(gear_val), rpm(rpm_val), maxrpm(maxrpm_val), handbrake(handbrake_val), 
@@ -127,8 +131,9 @@ public:
     }
 
     virtual void setCarControls(const CarControls& controls) = 0;
-    virtual CarState getCarState() const = 0;
-    virtual const CarApiBase::CarControls& getCarControls() const = 0;
+    virtual void updateCarState(const CarState& state) = 0;
+    virtual const CarState& getCarState() const = 0;
+    virtual const CarControls& getCarControls() const = 0;
 
     virtual ~CarApiBase() = default;
 
