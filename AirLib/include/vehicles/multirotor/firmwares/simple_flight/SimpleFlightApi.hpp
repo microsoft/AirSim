@@ -362,6 +362,11 @@ protected:
                 params_.position_pid.d.setValues(kd_axis4);
                 params_.gains_changed = true;
                 break;
+            case simple_flight::GoalModeType::Unknown:
+            case simple_flight::GoalModeType::Passthrough:
+            case simple_flight::GoalModeType::ConstantOutput:
+                // no gains to set associated with these modes
+                break;
         }
     }
 
