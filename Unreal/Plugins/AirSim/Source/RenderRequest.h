@@ -8,21 +8,30 @@
 #include <memory>
 #include "common/Common.hpp"
 
+class BufferPool; 
 
 class RenderRequest : public FRenderCommand
 {
 public:
-    struct RenderParams {
+    struct RenderParams
+    {
         USceneCaptureComponent2D *render_component;
         UTextureRenderTarget2D* render_target;
         bool pixels_as_float;
         bool compress;
     };
+
     struct RenderResult {
+        RenderResult() = default;
+        RenderResult(RenderResult&) = default;
+        RenderResult(RenderResult&&) = default;
+        RenderResult &operator=(RenderResult &&) = default;
+
         int width;
         int height;
-
+        int stride;
         msr::airlib::TTimePoint time_stamp;
+        std::unique_ptr<std::vector<uint8_t>, std::function<void(std::vector<uint8_t>*)>> pixels = nullptr;
     };
 
 private:
@@ -31,7 +40,6 @@ private:
 public:
     RenderParams fast_param_{ nullptr, nullptr, false, false };
     volatile RenderResult latest_result_{};
-    std::vector<uint8_t> *rgba_output_ = nullptr;
 
 private:
     volatile bool fast_cap_done_ = false;
@@ -45,7 +53,7 @@ private:
     std::function<void()> query_camera_pose_cb_;
 
 public:
-    RenderRequest(std::vector<uint8_t> &rgba_output);
+    RenderRequest(BufferPool *buffer_pool);
     ~RenderRequest();
 
     FORCEINLINE TStatId GetStatId() const
@@ -54,5 +62,5 @@ public:
     }
 
     void FastScreenshot();
-    void RenderThreadScreenshotTask();
+    void RenderThreadScreenshotTask(RenderResult &result);
 };

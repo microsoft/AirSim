@@ -126,17 +126,6 @@ public:
         return static_cast<float>(radians * 180.0f / M_PI);
     }
 
-    static int nextPowerOfTwo(unsigned long long number) {
-        --number;
-        number |= number >> 1;
-        number |= number >> 2;
-        number |= number >> 4;
-        number |= number >> 8;
-        number |= number >> 16;
-        number |= number >> 32;
-        return ++number;
-    }
-
     static bool startsWith(const string& s, const string& prefix) {
         return s.size() >= prefix.size() && s.compare(0, prefix.size(), prefix) == 0;
     }
