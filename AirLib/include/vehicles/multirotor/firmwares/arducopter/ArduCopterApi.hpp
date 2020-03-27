@@ -324,27 +324,6 @@ protected:
         udpSocket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
     }
 
-    const GpsBase* getGps() const
-    {
-        return static_cast<const GpsBase*>(sensors_->getByType(SensorBase::SensorType::Gps));
-    }
-    const ImuBase* getImu() const
-    {
-        return static_cast<const ImuBase*>(sensors_->getByType(SensorBase::SensorType::Imu));
-    }
-    const MagnetometerBase* getMagnetometer() const
-    {
-        return static_cast<const MagnetometerBase*>(sensors_->getByType(SensorBase::SensorType::Magnetometer));
-    }
-    const BarometerBase* getBarometer() const
-    {
-        return static_cast<const BarometerBase*>(sensors_->getByType(SensorBase::SensorType::Barometer));
-    }
-    const LidarBase* getLidar() const
-    {
-        return static_cast<const LidarBase*>(sensors_->getByType(SensorBase::SensorType::Lidar));
-    }
-
 private:
     virtual void normalizeRotorControls()
     {
@@ -359,10 +338,8 @@ private:
         if (sensors_ == nullptr)
             return;
 
-        const auto& gps_output = getGps()->getOutput();
-        const auto& imu_output = getImu()->getOutput();
-        // const auto& baro_output = getBarometer()->getOutput();
-        // const auto& mag_output = getMagnetometer()->getOutput();
+        const auto& gps_output = getGpsData("");
+        const auto& imu_output = getImuData("");
 
         std::ostringstream oss;
 
@@ -382,11 +359,11 @@ private:
                 << "]}";
         }
 
-        const auto lidar = getLidar();
+        const uint count_lidars = getSensors().size(SensorBase::SensorType::Lidar);
         // TODO: Add bool value in settings to check whether to send lidar data or not
         // Since it's possible that we don't want to send the lidar data to Ardupilot but still have the lidar (maybe as a ROS topic)
-        if (lidar != nullptr) {
-            const auto& lidar_output = lidar->getOutput();
+        if (count_lidars != 0) {
+            const auto& lidar_output = getLidarData("");
             oss << ","
                    "\"lidar\": {"
                    "\"point_cloud\": [";

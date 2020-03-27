@@ -104,9 +104,9 @@ public: //methods
             }
 
             //send sensor updates
-            const auto& imu_output = getImu()->getOutput();
-            const auto& mag_output = getMagnetometer()->getOutput();
-            const auto& baro_output = getBarometer()->getOutput();
+            const auto& imu_output = getImuData("");
+            const auto& mag_output = getMagnetometerData("");
+            const auto& baro_output = getBarometerData("");
 
             sendHILSensor(imu_output.linear_acceleration,
                 imu_output.angular_velocity,
@@ -114,9 +114,9 @@ public: //methods
                 baro_output.pressure * 0.01f /*Pa to Millibar */, baro_output.altitude);
 
 
-            const auto * distance = getDistance();
-            if (distance) {
-                const auto& distance_output = distance->getOutput();
+            const uint count_distance_sensors = getSensors().size(SensorBase::SensorType::Distance);
+            if (count_distance_sensors != 0) {
+                const auto& distance_output = getDistanceSensorData("");
                 float pitch, roll, yaw;
                 VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
 
@@ -128,9 +128,9 @@ public: //methods
                     pitch); //TODO: convert from radians to degrees?
             }
 
-            const auto gps = getGps();
-            if (gps != nullptr) {
-                const auto& gps_output = gps->getOutput();
+            const uint count_gps_sensors = getSensors().size(SensorBase::SensorType::Gps);
+            if (count_gps_sensors != 0) {
+                const auto& gps_output = getGpsData("");
 
                 //send GPS
                 if (gps_output.is_valid && gps_output.gnss.time_utc > last_gps_time_) {
@@ -667,27 +667,6 @@ protected: //methods
     virtual void close()
     {
         disconnect();
-    }
-
-    const ImuBase* getImu() const
-    {
-        return static_cast<const ImuBase*>(sensors_->getByType(SensorBase::SensorType::Imu));
-    }
-    const MagnetometerBase* getMagnetometer() const
-    {
-        return static_cast<const MagnetometerBase*>(sensors_->getByType(SensorBase::SensorType::Magnetometer));
-    }
-    const BarometerBase* getBarometer() const
-    {
-        return static_cast<const BarometerBase*>(sensors_->getByType(SensorBase::SensorType::Barometer));
-    }
-    const DistanceBase* getDistance() const
-    {
-        return static_cast<const DistanceBase*>(sensors_->getByType(SensorBase::SensorType::Distance));
-    }
-    const GpsBase* getGps() const
-    {
-        return static_cast<const GpsBase*>(sensors_->getByType(SensorBase::SensorType::Gps));
     }
 
     void closeAllConnection()

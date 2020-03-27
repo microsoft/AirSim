@@ -22,12 +22,10 @@ public:
 			return;
 
 		// send GPS and other sensor updates
-		const auto gps = getGps();
-		if (gps != nullptr) {
-			const auto& gps_output = gps->getOutput();
-			const auto& imu_output = getImu()->getOutput();
-			//                    const auto& mag_output = getMagnetometer()->getOutput();
-			//                    const auto& baro_output = getBarometer()->getOutput();
+        const uint count_gps_sensors = getSensors().size(SensorBase::SensorType::Gps);
+        if (count_gps_sensors != 0) {
+            const auto& gps_output = getGpsData("");
+            const auto& imu_output = getImuData("");
 
 			SensorMessage packet;
 			packet.timestamp = Utils::getTimeSinceEpochNanos() / 1000;
