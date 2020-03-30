@@ -242,6 +242,46 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->setObjectPose(object_name, pose.to(), teleport);
     });
 
+    pimpl_->server.bind("simFlushPersistentMarkers", [&]() -> void {
+        getWorldSimApi()->simFlushPersistentMarkers();
+    });
+    pimpl_->server.bind("simPlotPoints", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotPoints(conv_points, color_rgba, size, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotLineStrip", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotLineStrip(conv_points, color_rgba, thickness, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotLineList", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotLineList(conv_points, color_rgba, thickness, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotArrows", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points_start, const std::vector<RpcLibAdapatorsBase::Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points_start;
+        RpcLibAdapatorsBase::to(points_start, conv_points_start);
+        vector<Vector3r> conv_points_end;
+        RpcLibAdapatorsBase::to(points_end, conv_points_end);
+        getWorldSimApi()->simPlotArrows(conv_points_start, conv_points_end, color_rgba, thickness, arrow_size, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotStrings", [&](const std::vector<std::string> strings, const std::vector<RpcLibAdapatorsBase::Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration) -> void {
+        vector<Vector3r> conv_positions;
+        RpcLibAdapatorsBase::to(positions, conv_positions);
+        getWorldSimApi()->simPlotStrings(strings, conv_positions, scale, color_rgba, duration);
+    });
+    pimpl_->server.bind("simPlotTransforms", [&](const std::vector<RpcLibAdapatorsBase::Pose>& poses, float scale, float thickness, float duration, bool is_persistent) -> void {
+        vector<Pose> conv_poses;
+        RpcLibAdapatorsBase::to(poses, conv_poses);
+        getWorldSimApi()->simPlotTransforms(conv_poses, scale, thickness, duration, is_persistent);
+    });
+    pimpl_->server.bind("simPlotTransformsWithNames", [&](const std::vector<RpcLibAdapatorsBase::Pose>& poses, const std::vector<std::string> names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration) -> void {
+        vector<Pose> conv_poses;
+        RpcLibAdapatorsBase::to(poses, conv_poses);
+        getWorldSimApi()->simPlotTransformsWithNames(conv_poses, names, tf_scale, tf_thickness, text_scale, text_color_rgba, duration);
+    });
     pimpl_->server.bind("simGetGroundTruthKinematics", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::KinematicsState {
         const Kinematics::State& result = *getVehicleSimApi(vehicle_name)->getGroundTruthKinematics();
         return RpcLibAdapatorsBase::KinematicsState(result);
