@@ -266,32 +266,36 @@
 <p>Make sure you are <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html">registered with Epic Games</a>. This is required to get source code access for Unreal Engine.</p>
 </li>
 <li>
-<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal 4.18 at present.
-   <code>bash
-   # go to the folder where you clone GitHub projects
-   git clone -b 4.18 https://github.com/EpicGames/UnrealEngine.git
-   cd UnrealEngine
-   ./Setup.sh
-   ./GenerateProjectFiles.sh
-   make</code></p>
-</li>
-<li>
-<p>Clone AirSim and build it:
-   ```bash
-   # go to the folder where you clone GitHub projects
-   git clone https://github.com/Microsoft/AirSim.git
-   cd AirSim</p>
+<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal 4.18 at present.</p>
 </li>
 </ul>
+<pre><code class="bash">  # go to the folder where you clone GitHub projects
+  git clone -b 4.18 https://github.com/EpicGames/UnrealEngine.git
+  cd UnrealEngine
+  ./Setup.sh
+  ./GenerateProjectFiles.sh
+  make
+</code></pre>
+
+<ul>
+<li>Clone AirSim and build it:</li>
+</ul>
+<pre><code class="bash">  # go to the folder where you clone GitHub projects
+  git clone https://github.com/Microsoft/AirSim.git
+  cd AirSim
+</code></pre>
+
 <p>By default AirSim recommends using clang 5 to build the binaries as those will be compatible with Unreal.  The setup script
-  will install the right version of cmake, llvm, and eigen:
-   ./setup.sh
-   ./build.sh
-   ```</p>
-<p>Optionally, if you need GCC binaries for some other reason, you can simply add gcc to the setup and build invocation, like this:
-   <code>bash
-   ./setup.sh --gcc
-   ./build.sh --gcc</code></p>
+  will install the right version of cmake, llvm, and eigen:</p>
+<pre><code class="bash">./setup.sh
+./build.sh
+</code></pre>
+
+<p>Optionally, if you need GCC binaries for some other reason, you can simply add gcc to the setup and build invocation, like this:</p>
+<pre><code class="bash">./setup.sh --gcc
+./build.sh --gcc
+</code></pre>
+
 <h3 id="build-unreal-environment">Build Unreal Environment<a class="headerlink" href="#build-unreal-environment" title="Permanent link">#</a></h3>
 <p>Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see <a href="../unreal_proj/">setting up Unreal Environment</a>.</p>
 <h3 id="optional-setup-remote-control-multirotor-only">[Optional] Setup Remote Control (Multirotor Only)<a class="headerlink" href="#optional-setup-remote-control-multirotor-only" title="Permanent link">#</a></h3>
@@ -309,9 +313,14 @@
 <h2 id="faqs">FAQs<a class="headerlink" href="#faqs" title="Permanent link">#</a></h2>
 <ul>
 <li>I'm getting error "<MyProject> could not be compiled. Try rebuilding from source manually".</li>
-<li>This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
-   <code>fatal error: file  '/usr/include/linux/version.h''/usr/include/linux/version.h'  has  been  modified  since  the  precompiled  header</code></li>
-<li>If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's <a href="https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html">relevant thread</a> on Unreal Engine forums.</li>
+<li>This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?</li>
+</ul>
+<p><code>bash
+  fatal error: file  '/usr/include/linux/version.h''/usr/include/linux/version.h'  has  been  modified  since  the  precompiled  header</code></p>
+<ul>
+<li>
+<p>If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's <a href="https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html">relevant thread</a> on Unreal Engine forums.</p>
+</li>
 <li>
 <p>If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.</p>
 </li>
@@ -320,7 +329,7 @@
 </li>
 <li>
 <p>Go to the <code>MyUnrealProject/Saved/Crashes</code> folder and search for the file <code>MyProject.log</code> within its subdirectories. At the end of this file you will see the stack trace and messages.  <br />
-   You can also take a look at the <code>Diagnostics.txt</code> file.</p>
+  You can also take a look at the <code>Diagnostics.txt</code> file.</p>
 </li>
 <li>
 <p>How do I use an IDE on Linux?</p>
