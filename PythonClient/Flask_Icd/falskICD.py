@@ -12,6 +12,7 @@ import base64
 # iris123456
 
 from threading import Thread
+import threading
 
 import json
 # Config from filepath in env
@@ -34,7 +35,9 @@ camInfo = None
 is_armed = False
 air_sim = None
 air_sim2 = None
-socketConnection = True
+stop_threads1 = None
+stop_threads2 = None
+workers = []
 # unityDronePort = 41451
 initialize_height = 0
 
@@ -495,21 +498,22 @@ def WebSocketStart():
     if request.method == "GET":
         print("GET /WebSocket/start")
         time.sleep(1)
-        global air_sim
-        global socketConnection
-        print("pre load airsim")
-        air_sim = init_airsim()
-        print("post load airsim")
+        global stop_threads1
+        global stop_threads2
+        global workers
+        stop_threads1 = False
+        stop_threads2 = False
+
         # call a image send function in other thread
-        thread = Thread(target=sendImage_action_operation)
-        thread.start()
-        while True:
-            if socketConnection == False:
-                break
-            data = load_airsim(air_sim)
-            print('send telemetry')
-            socketio.emit('my', data, broadcast=True)
-            time.sleep(1)
+        imageThread = threading.Thread(
+            target=sendImage_action_operation, args=(id, lambda: stop_threads1))
+        imageThread.start()
+        # # call a telemetry send function in other thread
+        telemetryThread = threading.Thread(
+            target=sendTelemetry_action_operation, args=(id, lambda: stop_threads2))
+        workers.append(telemetryThread)
+        workers.append(imageThread)
+        telemetryThread.start()
         respons = {"success": True, "message": "WebSocket start"}
         return jsonify(respons)
 
@@ -518,17 +522,68 @@ def WebSocketStart():
 # ========================================================================== #
 
 
-def sendImage_action_operation():
+def sendImage_action_operation(id, stop):
     global air_sim2
     air_sim2 = init_airsim()
-    global socketConnection
     while True:
-        if socketConnection == False:
+        if stop():
+            print("  Exiting loop.")
+            air_sim2.armDisarm(False)
+            air_sim2.reset()
+            air_sim2.enableApiControl(False)
+            print('STOP send images')
             break
         data = load_image(air_sim2)
         print('send image')
         socketio.emit('image', data, broadcast=True)
         time.sleep(0.1)
+
+
+def sendTelemetry_action_operation(id, stop):
+    global air_sim
+    air_sim = init_airsim()
+
+    while True:
+        if stop():
+            print("  Exiting loop.")
+            air_sim.armDisarm(False)
+            air_sim.reset()
+            air_sim.enableApiControl(False)
+            print('STOP send telemetry')
+            break
+        data = load_airsim(air_sim)
+        print('send telemetry')
+        socketio.emit('my', data, broadcast=True)
+        time.sleep(1)
+
+
+
+ ##combine websockets
+ # 
+ # def sendTelemetry_action_operation(id, stop):
+    # global air_sim
+    # air_sim = init_airsim()
+    # counter = 0
+    # global 
+    # interval = 0.1
+    # while True:
+    #     if stop():
+    #         print("  Exiting loop.")
+    #         air_sim.armDisarm(False)
+    #         air_sim.reset()
+    #         air_sim.enableApiControl(False)
+    #         print('STOP send telemetry')
+    #         break
+    #     counter = round(counter + interval, 2)
+    #     if counter == 1:
+    #         data = load_airsim(air_sim)
+    #         print('send telemetry')
+    #         socketio.emit('my', data, broadcast=True)
+    #         counter = 0
+    #     imageData = load_image(air_sim)
+    #     print('send image')
+    #     socketio.emit('image', imageData, broadcast=True)
+    #     time.sleep(0.1)       
 
 
 #   initialize the client.
@@ -642,9 +697,14 @@ def load_airsim(airsim_client):
 @app.route('/api/WebSocket/end', methods=['GET'])
 def WebSocketEnd():
     if request.method == "GET":
-        global socketConnection
+        global stop_threads1
+        global stop_threads2
         print("GET /WebSocket/end")
-        socketConnection = False
+        stop_threads1 = True
+        stop_threads2 = True
+        global workers
+        for worker in workers:
+            worker.join()
         respons = {"success": True, "message": "WebSocket end"}
         return jsonify(respons)
 
@@ -680,6 +740,11 @@ def WSocketHandleKeepAlive(json):
 @socketio.on('my')
 def handle_my_custom_event(json):
     print('received my: ' + str(json))
+
+
+@socketio.on('image')
+def handle_image_custom_event(json):
+    print('received image: ' + str(json))
 
 
 @socketio.on('force_send')
