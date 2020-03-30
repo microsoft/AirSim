@@ -4,7 +4,6 @@
 #include "common/CommonStructs.hpp"
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
-#include "AirSimCharacter.h"
 #include <string>
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase {
@@ -47,31 +46,6 @@ public:
     virtual void simPlotTransforms(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent) override;
     virtual void simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration) override;
 
-    //----------- APIs to control ACharacter in scene ----------/
-    virtual void charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name) override;
-    virtual float charGetFaceExpression(const std::string& expression_name, const std::string& character_name) const override;
-    virtual std::vector<std::string> charGetAvailableFaceExpressions() override;
-    virtual void charSetSkinDarkness(float value, const std::string& character_name) override;
-    virtual float charGetSkinDarkness(const std::string& character_name) const override;
-    virtual void charSetSkinAgeing(float value, const std::string& character_name) override;
-    virtual float charGetSkinAgeing(const std::string& character_name) const override;
-    virtual void charSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name) override;
-    virtual msr::airlib::Quaternionr charGetHeadRotation(const std::string& character_name) const override;
-    virtual void charSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name) override;
-    virtual msr::airlib::Pose charGetBonePose(const std::string& bone_name, const std::string& character_name) const override;
-    virtual void charResetBonePose(const std::string& bone_name, const std::string& character_name) override;
-    virtual void charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name) override;
-    virtual void charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name) override;
-    virtual void charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name) override;
-    virtual std::unordered_map<std::string, msr::airlib::Pose> charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const override;
-
-private:
-    AAirSimCharacter* getAirSimCharacter(const std::string& character_name);
-    const AAirSimCharacter* getAirSimCharacter(const std::string& character_name) const;
-
-
-
 private:
     ASimModeBase* simmode_;
-    std::map<std::string, AAirSimCharacter*> chars_;
 };

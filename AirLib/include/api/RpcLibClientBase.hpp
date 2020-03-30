@@ -100,24 +100,6 @@ public:
     msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
     msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
 
-    //----------- APIs to control ACharacter in scene ----------/
-    void simCharSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name = "");
-    float simCharGetFaceExpression(const std::string& expression_name, const std::string& character_name = "") const;
-    std::vector<std::string> simCharGetAvailableFaceExpressions();
-    void simCharSetSkinDarkness(float value, const std::string& character_name = "");
-    float simCharGetSkinDarkness(const std::string& character_name = "") const;
-    void simCharSetSkinAgeing(float value, const std::string& character_name = "");
-    float simCharGetSkinAgeing(const std::string& character_name = "") const;
-    void simCharSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name = "");
-    msr::airlib::Quaternionr simCharGetHeadRotation(const std::string& character_name = "") const;
-    void simCharSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name = "");
-    msr::airlib::Pose simCharGetBonePose(const std::string& bone_name, const std::string& character_name = "") const;
-    void simCharResetBonePose(const std::string& bone_name, const std::string& character_name = "");
-    void simCharSetFacePreset(const std::string& preset_name, float value, const std::string& character_name = "");
-    void simSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name = "");
-    void simSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name = "");
-    std::unordered_map<std::string, msr::airlib::Pose> simGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name = "") const;
-
 	std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
 
 protected:
