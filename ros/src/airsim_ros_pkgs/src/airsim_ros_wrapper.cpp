@@ -1087,6 +1087,10 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 
     for (const auto& curr_img_response : img_response_vec)
     {
+        // if a render request failed for whatever reason, this img will be empty.
+        // Attempting to use a make_ts(0) results in ros::Duration runtime error.
+        if (curr_img_response.time_stamp == 0) continue;
+
         // todo publishing a tf for each capture type seems stupid. but it foolproofs us against render thread's async stuff, I hope. 
         // Ideally, we should loop over cameras and then captures, and publish only one tf.  
         publish_camera_tf(curr_img_response, curr_ros_time, vehicle_name, curr_img_response.camera_name);
