@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,16 +87,27 @@
                        });
             });
             $(function () {
+            $("#actiondbtn").click(function (event) {
+                var action = { "action": 0};
+                 $.ajax({
+                       type : 'POST',
+                       url : "hotPoint/action",
+                       contentType: "application/json",
+                       data: JSON.stringify (action),
+                       dataType: 'json'
+                       });
+                       });
+            });
+            $(function () {
              $("#moveToPositionbtn").click(function (event) {
                  var variableX = document.getElementById('textX').value;
                  var variableY = document.getElementById('textY').value;
                  var variableZ = document.getElementById('textZ').value;
-                 var moveToPositionJson = { "name": "moveToPosition", "operation": "moveToPosition", "coordinates":[variableX,variableY,variableZ] };
-
+                 var moveToPositionJson = { "name": "moveToPosition", "operation": "moveToPosition", "latitude":parseInt(variableX), "longitude":parseInt(variableY), "altitude":parseInt(variableZ) };
 
                  $.ajax({
                        type : 'POST',
-                       url : "{{url_for('ICD')}}",
+                       url : "hotPoint/upload",
                        contentType: "application/json",
                        data: JSON.stringify (moveToPositionJson),
                        dataType: 'json'
@@ -119,4 +131,5 @@
     {% endblock %}
 
 </body>
+
 </html>

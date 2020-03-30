@@ -17,10 +17,10 @@ public:
 	virtual void pause(bool is_paused) override;
 	virtual void continueForTime(double seconds) override;
         virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
-            float celestial_clock_speed, float update_interval_secs, bool move_sun);
+            float celestial_clock_speed, float update_interval_secs, bool move_sun) override;
 
-    virtual void enableWeather(bool enable);
-    virtual void setWeatherParameter(WeatherParameter param, float val);
+    virtual void enableWeather(bool enable)override;
+    virtual void setWeatherParameter(WeatherParameter param, float val)override;
 
 	virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) override;
 	virtual int getSegmentationObjectID(const std::string& mesh_name) const override;
@@ -30,6 +30,8 @@ public:
 	virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
 	virtual Pose getObjectPose(const std::string& object_name) const override;
 	virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
+
+	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) override;
 
 	//----------- APIs to control ACharacter in scene ----------/
 	virtual void charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name) override;

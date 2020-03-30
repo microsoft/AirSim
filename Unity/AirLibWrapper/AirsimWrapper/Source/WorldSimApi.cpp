@@ -72,6 +72,13 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 	return SetPose(airSimPose, false, object_name.c_str());
 }
 
+std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string & tag, int tex_id, int component_id, int material_id)
+{
+	return std::unique_ptr<std::vector<std::string>>();
+}
+
+
+
 void WorldSimApi::enableWeather(bool enable)
 {
     unused(enable);
