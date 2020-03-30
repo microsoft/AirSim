@@ -1,8 +1,0 @@
-quote '+'
-headings_flag 1
-heading_prefix "{\\bf "
-heading_suffix "}\\nopagebreak%\n \\indexspace\\nopagebreak%"
-delim_0 "\\idxquad "
-delim_1 "\\idxquad "
-delim_2 "\\idxquad "
-delim_n ",\\,"
