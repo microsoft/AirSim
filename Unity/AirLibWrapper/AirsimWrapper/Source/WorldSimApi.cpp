@@ -77,6 +77,38 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 	return std::unique_ptr<std::vector<std::string>>();
 }
 
+void WorldSimApi::simFlushPersistentMarkers()
+{
+}
+
+void WorldSimApi::simPlotPoints(const std::vector<msr::airlib::Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent)
+{
+}
+
+void WorldSimApi::simPlotLineStrip(const std::vector<msr::airlib::Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+}
+
+void WorldSimApi::simPlotLineList(const std::vector<msr::airlib::Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+}
+
+void WorldSimApi::simPlotArrows(const std::vector<msr::airlib::Vector3r>& points_start, const std::vector<msr::airlib::Vector3r>& points_end, const std::vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
+{
+}
+
+void WorldSimApi::simPlotStrings(const std::vector<std::string>& strings, const std::vector<msr::airlib::Vector3r>& positions, float scale, const std::vector<float>& color_rgba, float duration)
+{
+}
+
+void WorldSimApi::simPlotTransforms(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
+{
+}
+
+void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration)
+{
+}
+
 
 
 void WorldSimApi::enableWeather(bool enable)
