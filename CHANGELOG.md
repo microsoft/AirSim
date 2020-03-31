@@ -2,6 +2,9 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### March 2020
+* Upgraded to Unreal Engine 4.24
+
 ### November, 2018
 * Added Weather Effects and [APIs](docs/apis.md#weather-apis)
 * Added [Time of Day API](docs/apis.md#time-of-day-api)
