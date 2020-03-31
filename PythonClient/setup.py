@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="airsim",
-    version="1.2.3",
+    version="1.2.4",
     author="Shital Shah",
     author_email="shitals@microsoft.com",
     description="Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research",

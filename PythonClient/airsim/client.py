@@ -25,25 +25,32 @@ class VehicleClient:
 
     def getClientVersion(self):
         return 1 # sync with C++ client
+
     def getServerVersion(self):
         return self.client.call('getServerVersion')
+
     def getMinRequiredServerVersion(self):
         return 1 # sync with C++ client
+
     def getMinRequiredClientVersion(self):
         return self.client.call('getMinRequiredClientVersion')
 
     # basic flight control
     def enableApiControl(self, is_enabled, vehicle_name = ''):
         return self.client.call('enableApiControl', is_enabled, vehicle_name)
+
     def isApiControlEnabled(self, vehicle_name = ''):
         return self.client.call('isApiControlEnabled', vehicle_name)
+
     def armDisarm(self, arm, vehicle_name = ''):
         return self.client.call('armDisarm', arm, vehicle_name)
  
     def simPause(self, is_paused):
         self.client.call('simPause', is_paused)
+
     def simIsPause(self):
         return self.client.call("simIsPaused")
+
     def simContinueForTime(self, seconds):
         self.client.call('simContinueForTime', seconds)
 
@@ -83,6 +90,7 @@ class VehicleClient:
     # weather
     def simEnableWeather(self, enable):
         return self.client.call('simEnableWeather', enable)
+
     def simSetWeatherParameter(self, param, val):
         return self.client.call('simSetWeatherParameter', param, val)
 
@@ -111,12 +119,15 @@ class VehicleClient:
 
     def simSetVehiclePose(self, pose, ignore_collison, vehicle_name = ''):
         self.client.call('simSetVehiclePose', pose, ignore_collison, vehicle_name)
+
     def simGetVehiclePose(self, vehicle_name = ''):
         pose = self.client.call('simGetVehiclePose', vehicle_name)
         return Pose.from_msgpack(pose)
+
     def simGetObjectPose(self, object_name):
         pose = self.client.call('simGetObjectPose', object_name)
         return Pose.from_msgpack(pose)
+
     def simSetObjectPose(self, object_name, pose, teleport = True):
         return self.client.call('simSetObjectPose', object_name, pose, teleport)
 
@@ -125,14 +136,17 @@ class VehicleClient:
 
     def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
         return self.client.call('simSetSegmentationObjectID', mesh_name, object_id, is_name_regex)
+
     def simGetSegmentationObjectID(self, mesh_name):
         return self.client.call('simGetSegmentationObjectID', mesh_name)
+
     def simPrintLogMessage(self, message, message_param = "", severity = 0):
         return self.client.call('simPrintLogMessage', message, message_param, severity)
 
     def simGetCameraInfo(self, camera_name, vehicle_name = ''):
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name))
+
     def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraOrientation', str(camera_name), orientation, vehicle_name)
@@ -141,6 +155,7 @@ class VehicleClient:
         kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
         return KinematicsState.from_msgpack(kinematics_state)
     simGetGroundTruthKinematics.__annotations__ = {'return': KinematicsState}
+
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
         env_state = self.client.call('simGetGroundTruthEnvironment', vehicle_name)
         return EnvironmentState.from_msgpack(env_state)
@@ -276,49 +291,86 @@ class VehicleClient:
     def waitOnLastTask(self, timeout_sec = float('nan')):
         return self.client.call('waitOnLastTask', timeout_sec)
 
-    # legacy handling
-    # TODO: remove below legacy wrappers in future major releases
-    upgrade_api_help = "\nPlease see https://github.com/Microsoft/AirSim/blob/master/docs/upgrade_apis.md for more info."
-    def simGetPose(self):
-        logging.warning("simGetPose API is renamed to simGetVehiclePose. Please update your code." + self.upgrade_api_help)
-        return self.simGetVehiclePose()
-    def simSetPose(self, pose, ignore_collison):
-        logging.warning("simSetPose API is renamed to simSetVehiclePose. Please update your code." + self.upgrade_api_help)
-        return self.simSetVehiclePose(pose, ignore_collison)
-    def getCollisionInfo(self):
-        logging.warning("getCollisionInfo API is renamed to simGetCollisionInfo. Please update your code." + self.upgrade_api_help)
-        return self.simGetCollisionInfo()
-    def getCameraInfo(self, camera_id):
-        logging.warning("getCameraInfo API is renamed to simGetCameraInfo. Please update your code." + self.upgrade_api_help)
-        return self.simGetCameraInfo(camera_id)
-    def setCameraOrientation(self, camera_id, orientation):
-        logging.warning("setCameraOrientation API is renamed to simSetCameraOrientation. Please update your code." + self.upgrade_api_help)
-        return self.simSetCameraOrientation(camera_id, orientation)
-    def getPosition(self):
-        logging.warning("getPosition API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
-        return self.simGetGroundTruthKinematics().position
-    def getVelocity(self):
-        logging.warning("getVelocity API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
-        return self.simGetGroundTruthKinematics().linear_velocity
-    def getOrientation(self):
-        logging.warning("getOrientation API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
-        return self.simGetGroundTruthKinematics().orientation
-    def getLandedState(self):
-        raise Exception("getLandedState API is deprecated. Please use getMultirotorState() API")
-    def getGpsLocation(self):
-        logging.warning("getGpsLocation API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
-        return self.simGetGroundTruthEnvironment().geo_point
-    def takeoff(self, max_wait_seconds = 15):
-        raise Exception("takeoff API is deprecated. Please use takeoffAsync() API." + self.upgrade_api_help)
-    def land(self, max_wait_seconds = 60):
-        raise Exception("land API is deprecated. Please use landAsync() API." + self.upgrade_api_help)
-    def goHome(self):
-        raise Exception("goHome API is deprecated. Please use goHomeAsync() API." + self.upgrade_api_help)
-    def hover(self):
-        raise Exception("hover API is deprecated. Please use hoverAsync() API." + self.upgrade_api_help)
+# -----------------------------------  Multirotor APIs ---------------------------------------------
+class MultirotorClient(VehicleClient, object):
+    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
+        super(MultirotorClient, self).__init__(ip, port, timeout_value)
+
+    def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
+        return self.client.call_async('takeoff', timeout_sec, vehicle_name)  
+
+    def landAsync(self, timeout_sec = 60, vehicle_name = ''):
+        return self.client.call_async('land', timeout_sec, vehicle_name)   
+
+    def goHomeAsync(self, timeout_sec = 3e+38, vehicle_name = ''):
+        return self.client.call_async('goHome', timeout_sec, vehicle_name)
+
+    # APIs for control
+    def moveByAngleZAsync(self, pitch, roll, z, yaw, duration, vehicle_name = ''):
+        return self.client.call_async('moveByAngleZ', pitch, roll, z, yaw, duration, vehicle_name)
+
+    def moveByAngleThrottleAsync(self, pitch, roll, throttle, yaw_rate, duration, vehicle_name = ''):
+        return self.client.call_async('moveByAngleThrottle', pitch, roll, throttle, yaw_rate, duration, vehicle_name)
+
+    def moveByVelocityAsync(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
+        return self.client.call_async('moveByVelocity', vx, vy, vz, duration, drivetrain, yaw_mode, vehicle_name)
+
+    def moveByVelocityZAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
+        return self.client.call_async('moveByVelocityZ', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
+
+    def moveOnPathAsync(self, path, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), 
+        lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
+        return self.client.call_async('moveOnPath', path, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
+
+    def moveToPositionAsync(self, x, y, z, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), 
+        lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
+        return self.client.call_async('moveToPosition', x, y, z, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
+
+    def moveToZAsync(self, z, velocity, timeout_sec = 3e+38, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
+        return self.client.call_async('moveToZ', z, velocity, timeout_sec, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
+
+    def moveByManualAsync(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
+        """Read current RC state and use it to control the vehicles. 
+
+        Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints
+        then that RC state would be ignored.
+
+        :param vx_max: max velocity allowed in x direction
+        :param vy_max: max velocity allowed in y direction
+        :param vz_max: max velocity allowed in z direction
+        :param z_min: min z allowed for vehicle position
+        :param duration: after this duration vehicle would switch back to non-manual mode
+        :param drivetrain: when ForwardOnly, vehicle rotates itself so that its front is always facing the direction of travel. If MaxDegreeOfFreedom then it doesn't do that (crab-like movement)
+        :param yaw_mode: Specifies if vehicle should face at given angle (is_rate=False) or should be rotating around its axis at given rate (is_rate=True)
+        """
+        return self.client.call_async('moveByManual', vx_max, vy_max, z_min, duration, drivetrain, yaw_mode, vehicle_name)
+
+    def rotateToYawAsync(self, yaw, timeout_sec = 3e+38, margin = 5, vehicle_name = ''):
+        return self.client.call_async('rotateToYaw', yaw, timeout_sec, margin, vehicle_name)
+
+    def rotateByYawRateAsync(self, yaw_rate, duration, vehicle_name = ''):
+        return self.client.call_async('rotateByYawRate', yaw_rate, duration, vehicle_name)
+
+    def hoverAsync(self, vehicle_name = ''):
+        return self.client.call_async('hover', vehicle_name)
+
+    def moveByRC(self, rcdata = RCData(), vehicle_name = ''):
+        return self.client.call('moveByRC', rcdata, vehicle_name)
 
     # low-level control API
     def moveByMotorPWMsAsync(self, front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration, vehicle_name = ''):
+        """
+        - Directly control the motors using PWM values
+        Args:
+            front_right_pwm (float): PWM value for the front right motor (between 0.0 to 1.0)
+            rear_left_pwm (float): PWM value for the rear left motor (between 0.0 to 1.0)
+            front_left_pwm (float): PWM value for the front left motor (between 0.0 to 1.0)
+            rear_right_pwm (float): PWM value for the rear right motor (between 0.0 to 1.0)
+            duration (float): Desired amount of time (seconds), to send this command for
+            vehicle_name (str, optional): Name of the multirotor to send this command to
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
         return self.client.call_async('moveByMotorPWMs', front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration, vehicle_name)
 
     def moveByRollPitchYawZAsync(self, roll, pitch, yaw, z, duration, vehicle_name = ''):
@@ -513,25 +565,6 @@ class VehicleClient:
         """
         return self.client.call_async('moveByAngleRatesThrottle', roll_rate, -pitch_rate, -yaw_rate, throttle, duration, vehicle_name)
 
-    def moveByVelocity(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
-        raise Exception("moveByVelocity API is deprecated. Please use moveByVelocityAsync() API." + self.upgrade_api_help)
-    def moveByVelocityZ(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
-        raise Exception("moveByVelocityZ API is deprecated. Please use moveByVelocityZAsync() API." + self.upgrade_api_help)
-    def moveOnPath(self, path, velocity, max_wait_seconds = 60, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
-        raise Exception("moveOnPath API is deprecated. Please use moveOnPathAsync() API." + self.upgrade_api_help)
-    def moveToZ(self, z, velocity, max_wait_seconds = 60, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
-        raise Exception("moveToZ API is deprecated. Please use moveToZAsync() API." + self.upgrade_api_help)
-    def moveToPosition(self, x, y, z, velocity, max_wait_seconds = 60, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1):
-        raise Exception("moveToPosition API is deprecated. Please use moveToPositionAsync() API." + self.upgrade_api_help)
-    def moveByManual(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode()):
-        raise Exception("moveByManual API is deprecated. Please use moveByManualAsync() API." + self.upgrade_api_help)
-    def rotateToYaw(self, yaw, max_wait_seconds = 60, margin = 5):
-        raise Exception("rotateToYaw API is deprecated. Please use rotateToYawAsync() API." + self.upgrade_api_help)
-    def rotateByYawRate(self, yaw_rate, duration):
-        raise Exception("rotateByYawRate API is deprecated. Please use rotateByYawRateAsync() API." + self.upgrade_api_help)
-    def setRCData(self, rcdata = RCData()):
-        raise Exception("setRCData API is deprecated. Please use moveByRC() API." + self.upgrade_api_help)
-
     def setAngleRateControllerGains(self, angle_rate_gains=AngleRateControllerGains(), vehicle_name = ''):
         """
         - Modifying these gains will have an affect on *ALL* move*() APIs. 
@@ -592,60 +625,6 @@ class VehicleClient:
         """
         self.client.call('setPositionControllerGains', *(position_gains.to_lists()+(vehicle_name,)))
 
-# -----------------------------------  Multirotor APIs ---------------------------------------------
-class MultirotorClient(VehicleClient, object):
-    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
-        super(MultirotorClient, self).__init__(ip, port, timeout_value)
-
-    def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
-        return self.client.call_async('takeoff', timeout_sec, vehicle_name)  
-    def landAsync(self, timeout_sec = 60, vehicle_name = ''):
-        return self.client.call_async('land', timeout_sec, vehicle_name)   
-    def goHomeAsync(self, timeout_sec = 3e+38, vehicle_name = ''):
-        return self.client.call_async('goHome', timeout_sec, vehicle_name)
-
-    # APIs for control
-    def moveByAngleZAsync(self, pitch, roll, z, yaw, duration, vehicle_name = ''):
-        return self.client.call_async('moveByAngleZ', pitch, roll, z, yaw, duration, vehicle_name)
-    def moveByAngleThrottleAsync(self, pitch, roll, throttle, yaw_rate, duration, vehicle_name = ''):
-        return self.client.call_async('moveByAngleThrottle', pitch, roll, throttle, yaw_rate, duration, vehicle_name)
-    def moveByVelocityAsync(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
-        return self.client.call_async('moveByVelocity', vx, vy, vz, duration, drivetrain, yaw_mode, vehicle_name)
-    def moveByVelocityZAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
-        return self.client.call_async('moveByVelocityZ', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
-    def moveOnPathAsync(self, path, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), 
-        lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
-        return self.client.call_async('moveOnPath', path, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
-    def moveToPositionAsync(self, x, y, z, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), 
-        lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
-        return self.client.call_async('moveToPosition', x, y, z, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
-    def moveToZAsync(self, z, velocity, timeout_sec = 3e+38, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
-        return self.client.call_async('moveToZ', z, velocity, timeout_sec, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
-    def moveByManualAsync(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
-        """Read current RC state and use it to control the vehicles. 
-
-        Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints
-        then that RC state would be ignored.
-
-        :param vx_max: max velocity allowed in x direction
-        :param vy_max: max velocity allowed in y direction
-        :param vz_max: max velocity allowed in z direction
-        :param z_min: min z allowed for vehicle position
-        :param duration: after this duration vehicle would switch back to non-manual mode
-        :param drivetrain: when ForwardOnly, vehicle rotates itself so that its front is always facing the direction of travel. If MaxDegreeOfFreedom then it doesn't do that (crab-like movement)
-        :param yaw_mode: Specifies if vehicle should face at given angle (is_rate=False) or should be rotating around its axis at given rate (is_rate=True)
-        """
-        return self.client.call_async('moveByManual', vx_max, vy_max, z_min, duration, drivetrain, yaw_mode, vehicle_name)
-    def rotateToYawAsync(self, yaw, timeout_sec = 3e+38, margin = 5, vehicle_name = ''):
-        return self.client.call_async('rotateToYaw', yaw, timeout_sec, margin, vehicle_name)
-    def rotateByYawRateAsync(self, yaw_rate, duration, vehicle_name = ''):
-        return self.client.call_async('rotateByYawRate', yaw_rate, duration, vehicle_name)
-    def hoverAsync(self, vehicle_name = ''):
-        return self.client.call_async('hover', vehicle_name)
-
-    def moveByRC(self, rcdata = RCData(), vehicle_name = ''):
-        return self.client.call('moveByRC', rcdata, vehicle_name)
-        
     # query vehicle state
     def getMultirotorState(self, vehicle_name = ''):
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState', vehicle_name))
@@ -663,6 +642,7 @@ class CarClient(VehicleClient, object):
     def getCarState(self, vehicle_name = ''):
         state_raw = self.client.call('getCarState', vehicle_name)
         return CarState.from_msgpack(state_raw)
+
     def getCarControls(self, vehicle_name=''):
         controls_raw = self.client.call('getCarControls', vehicle_name)
         return CarControls.from_msgpack(controls_raw)
