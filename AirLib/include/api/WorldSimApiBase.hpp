@@ -57,24 +57,6 @@ public:
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
 
 	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
-    //----------- APIs to control ACharacter in scene ----------/
-    virtual void charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name) = 0;
-    virtual float charGetFaceExpression(const std::string& expression_name, const std::string& character_name) const = 0;
-    virtual std::vector<std::string> charGetAvailableFaceExpressions() = 0;
-    virtual void charSetSkinDarkness(float value, const std::string& character_name) = 0;
-    virtual float charGetSkinDarkness(const std::string& character_name) const = 0;
-    virtual void charSetSkinAgeing(float value, const std::string& character_name) = 0;
-    virtual float charGetSkinAgeing(const std::string& character_name) const = 0;
-    virtual void charSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name) = 0;
-    virtual msr::airlib::Quaternionr charGetHeadRotation(const std::string& character_name) const = 0;
-    virtual void charSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name) = 0;
-    virtual msr::airlib::Pose charGetBonePose(const std::string& bone_name, const std::string& character_name) const = 0;
-    virtual void charResetBonePose(const std::string& bone_name, const std::string& character_name) = 0;
-    virtual void charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name) = 0;
-    virtual void charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name) = 0;
-    virtual void charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name) = 0;
-    virtual std::unordered_map<std::string, msr::airlib::Pose> charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const = 0;
-
 };
 
 

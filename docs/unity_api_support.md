@@ -47,22 +47,6 @@
 | rotateToYaw | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
 | setCameraOrientation | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
 | setRCData | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
-| simCharGetAvailableFaceExpressions | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharGetBonePose | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharGetBonePoses | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharGetFaceExpression | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharGetHeadRotation | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharGetSkinAgeing | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharGetSkinDarkness | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharResetBonePose | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetBonePose | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetBonePoses | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetFaceExpression | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetFacePreset | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetFacePresets | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetHeadRotation | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetSkinAgeing | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
-| simCharSetSkinDarkness | <span style="color:red">Not Supported</span></span> | <span style="color:red">Not Supported</span></span> |
 | simContinueForTime | <span style="color:green">Supported</span> | <span style="color:green">Supported</span> |
 | simGetCameraInfo | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
 | simGetGroundTruthEnvironment | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
