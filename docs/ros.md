@@ -6,7 +6,7 @@ AirSim and ROS can be integrated using C++ or Python.  Some example ROS nodes ar
 
 ## Prerequisites
 
-These instructions are for Ubuntu 16.04, ROS Kinetic, UE4 4.18 or higher, and latest AirSim release.
+These instructions are for Ubuntu 16.04, ROS Kinetic, UE4 4.22 or higher, and latest AirSim release.
 You should have these components installed and working before proceeding
 
 ## Setup
