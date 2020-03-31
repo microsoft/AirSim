@@ -27,6 +27,16 @@ public:
 	virtual void printLogMessage(const std::string& message,
 		const std::string& message_param = "", unsigned char severity = 0) override;
 
+	  virtual void simFlushPersistentMarkers() override;
+    virtual void simPlotPoints(const std::vector<msr::airlib::Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent) override;
+    virtual void simPlotLineStrip(const std::vector<msr::airlib::Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override;
+    virtual void simPlotLineList(const std::vector<msr::airlib::Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent) override;
+    virtual void simPlotArrows(const std::vector<msr::airlib::Vector3r>& points_start, const std::vector<msr::airlib::Vector3r>& points_end, const std::vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) override;
+    virtual void simPlotStrings(const std::vector<std::string>& strings, const std::vector<msr::airlib::Vector3r>& positions, float scale, const std::vector<float>& color_rgba, float duration) override;
+    virtual void simPlotTransforms(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent) override;
+    virtual void simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration) override;
+
+	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) override;
 	virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
 	virtual Pose getObjectPose(const std::string& object_name) const override;
 	virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
