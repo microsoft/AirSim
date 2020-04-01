@@ -1,7 +1,7 @@
 #! /bin/bash
 
 if [[ -d "llvm-source-39" ]]; then
-    echo "Hello there! We just upgraded AirSim to Unreal Engine 4.18."
+    echo "Hello there! We just upgraded AirSim to Unreal Engine 4.24."
     echo "Here are few easy steps for upgrade so everything is new and shiny :)"
     echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
     exit 1

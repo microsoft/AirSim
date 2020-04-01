@@ -33,7 +33,7 @@ protected:
         auto& params = getParams();
 
         // Use connection_info_.model for the model name, see Px4MultiRotorParams for example
-        
+
         // Only Generic for now
         setupFrameGenericQuad(params);
     }
@@ -81,8 +81,6 @@ private:
     }
 
     AirSimSettings::MavLinkConnectionInfo connection_info_;
-    vector<unique_ptr<SensorBase>> sensor_storage_;
-    // const AirSimSettings::MavlinkVehicleSetting* vehicle_setting_; //store as pointer because of derived classes
     std::shared_ptr<const SensorFactory> sensor_factory_;
 };
 

@@ -12,10 +12,10 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 ### Build Unreal Engine and Airsim
 - Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
 
-- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal 4.18 at present.
+- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support >= Unreal 4.22 at present. We recommend using 4.24. 
    ```bash
    # go to the folder where you clone GitHub projects
-   git clone -b 4.18 https://github.com/EpicGames/UnrealEngine.git
+   git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git
    cd UnrealEngine
    ./Setup.sh
    ./GenerateProjectFiles.sh

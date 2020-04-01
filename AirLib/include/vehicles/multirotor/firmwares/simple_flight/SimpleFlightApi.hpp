@@ -137,7 +137,7 @@ public: //MultirotorApiBase implementation
         return true;
     }
 
-protected: 
+protected:
     virtual Kinematics::State getKinematicsEstimated() const override
     {
         return AirSimSimpleFlightCommon::toKinematicsState3r(firmware_->offboardApi().
@@ -185,7 +185,7 @@ protected:
 
     virtual float getTakeoffZ() const override
     {
-        // pick a number, 3 meters is probably safe 
+        // pick a number, 3 meters is probably safe
         // enough to get out of the backwash turbulence.  Negative due to NED coordinate system.
         return params_.takeoff.takeoff_z;
     }
@@ -195,7 +195,7 @@ protected:
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
     }
 
-    virtual void commandMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm)
+    virtual void commandMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm) override
     {
         //Utils::log(Utils::stringf("commandMotorPWMs %f, %f, %f, %f", front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm));
 
@@ -291,8 +291,8 @@ protected:
         //Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
-            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld,
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel,
             GoalModeType::VelocityWorld);
 
         simple_flight::Axis4r goal(vy, vx, Utils::degreesToRadians(yaw_mode.yaw_or_rate), vz);
@@ -306,8 +306,8 @@ protected:
         //Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
-            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld,
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel,
             GoalModeType::PositionWorld);
 
         simple_flight::Axis4r goal(vy, vx, Utils::degreesToRadians(yaw_mode.yaw_or_rate), z);
@@ -362,6 +362,9 @@ protected:
                 params_.position_pid.d.setValues(kd_axis4);
                 params_.gains_changed = true;
                 break;
+            default:
+                Utils::log("Unimplemented controller type");
+                break;
         }
     }
 
@@ -370,8 +373,8 @@ protected:
         //Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
-            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+        simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld,
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel,
             GoalModeType::PositionWorld);
 
         simple_flight::Axis4r goal(y, x, Utils::degreesToRadians(yaw_mode.yaw_or_rate), z);
@@ -429,4 +432,4 @@ private:
 };
 
 }} //namespace
-#endif 
+#endif

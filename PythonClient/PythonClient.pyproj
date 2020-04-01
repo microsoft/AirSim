@@ -78,6 +78,7 @@
     <Compile Include="imitation_learning\Generator.py" />
     <Compile Include="imitation_learning\setup_path.py" />
     <Compile Include="imitation_learning\train_model.py" />
+    <Compile Include="multirotor\drone_lidar.py" />
     <Compile Include="multirotor\gimbal.py" />
     <Compile Include="multirotor\hello_drone.py" />
     <Compile Include="multirotor\land.py" />
@@ -87,7 +88,6 @@
     <Compile Include="multirotor\clock_speed.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="multirotor\lidar.py" />
     <Compile Include="multirotor\manual_mode_demo.py">
       <SubType>Code</SubType>
     </Compile>

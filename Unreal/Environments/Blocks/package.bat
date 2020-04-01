@@ -7,7 +7,7 @@ set OutPath=%1
 set ToolPath=%2
 set UEVer=%3
 
-if "%UEVer%"=="" set "UEVer=4.18"
+if "%UEVer%"=="" set "UEVer=4.24"
 
 set "_ToolPath=%PROGRAMFILES%\Epic Games\UE_%UEVer%\Engine\Build\BatchFiles"
 if "%ToolPath%"=="" set ToolPath=%_ToolPath%
