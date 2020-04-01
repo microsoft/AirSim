@@ -289,28 +289,28 @@
 <h2 id="whats-new">What's New<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h2>
 <ul>
 <li>A ROS wrapper for multirotors is available. See <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs">airsim_ros_pkgs</a> for the ROS API, and <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs">airsim_tutorial_pkgs</a> for tutorials. </li>
-<li><a href="https://microsoft.github.io/AirSim/docs/sensors">Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor</a> </li>
+<li><a href="https://microsoft.github.io/AirSim/sensors">Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor</a> </li>
 <li>Added support for <a href="https://github.com/microsoft/AirSim/blob/master/docs/docker_ubuntu.md">docker in ubuntu</a> </li>
-<li>Added Weather Effects and <a href="https://microsoft.github.io/AirSim/docs/apis#weather-apis">APIs</a></li>
-<li>Added <a href="https://microsoft.github.io/AirSim/docs/apis#time-of-day-api">Time of Day API</a></li>
+<li>Added Weather Effects and <a href="https://microsoft.github.io/AirSim/apis#weather-apis">APIs</a></li>
+<li>Added <a href="https://microsoft.github.io/AirSim/apis#time-of-day-api">Time of Day API</a></li>
 <li>An experimental integration of <a href="https://github.com/Microsoft/AirSim/tree/master/Unity">AirSim on Unity</a> is now available. Learn more in <a href="https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation">Unity blog post</a>.</li>
 <li><a href="https://github.com/Microsoft/AirSim/releases/tag/v1.2.1">New environments</a>: Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)</li>
-<li>Highly efficient <a href="https://microsoft.github.io/AirSim/docs/settings#viewmode">NoDisplay view mode</a> to turn off main screen rendering so you can capture images at high rate</li>
-<li><a href="https://microsoft.github.io/AirSim/docs/lidar">Lidar Sensor</a></li>
+<li>Highly efficient <a href="https://microsoft.github.io/AirSim/settings#viewmode">NoDisplay view mode</a> to turn off main screen rendering so you can capture images at high rate</li>
+<li><a href="https://microsoft.github.io/AirSim/lidar">Lidar Sensor</a></li>
 <li>Case Study: <a href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Driverless</a></li>
-<li><a href="https://microsoft.github.io/AirSim/docs/multi_vehicle">Multi-Vehicle Capability</a></li>
+<li><a href="https://microsoft.github.io/AirSim/multi_vehicle">Multi-Vehicle Capability</a></li>
 <li><a href="https://github.com/Microsoft/AirSim/pull/1135">ROS publisher</a></li>
 </ul>
 <p>For complete list of changes, view our <a href="CHANGELOG/">Changelog</a></p>
 <h2 id="how-to-get-it">How to Get It<a class="headerlink" href="#how-to-get-it" title="Permanent link">#</a></h2>
 <h3 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">#</a></h3>
 <ul>
-<li><a href="https://microsoft.github.io/AirSim/docs/use_precompiled">Download binaries</a></li>
-<li><a href="https://microsoft.github.io/AirSim/docs/build_windows">Build it</a></li>
+<li><a href="https://microsoft.github.io/AirSim/use_precompiled">Download binaries</a></li>
+<li><a href="https://microsoft.github.io/AirSim/build_windows">Build it</a></li>
 </ul>
 <h3 id="linux">Linux<a class="headerlink" href="#linux" title="Permanent link">#</a></h3>
 <ul>
-<li><a href="https://microsoft.github.io/AirSim/docs/build_linux">Build it</a></li>
+<li><a href="https://microsoft.github.io/AirSim/build_linux">Build it</a></li>
 </ul>
 <p><a href="https://travis-ci.org/Microsoft/AirSim"><img alt="Build Status" src="https://travis-ci.org/Microsoft/AirSim.svg?branch=master" /></a></p>
 <h2 id="how-to-use-it">How to Use It<a class="headerlink" href="#how-to-use-it" title="Permanent link">#</a></h2>
@@ -318,23 +318,23 @@
 <p>View our <a href="https://microsoft.github.io/AirSim/">detailed documentation</a> on all aspects of AirSim.</p>
 <h3 id="manual-drive">Manual drive<a class="headerlink" href="#manual-drive" title="Permanent link">#</a></h3>
 <p>If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.</p>
-<p><a href="https://microsoft.github.io/AirSim/docs/remote_control/">More details</a></p>
+<p><a href="https://microsoft.github.io/AirSim/remote_control/">More details</a></p>
 <p><img alt="record screenshot" src="images/AirSimDroneManual.gif" /></p>
 <p><img alt="record screenshot" src="images/AirSimCarManual.gif" /></p>
 <h3 id="programmatic-control">Programmatic control<a class="headerlink" href="#programmatic-control" title="Permanent link">#</a></h3>
 <p>AirSim exposes APIs so you can interact with the vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through the RPC, and are accessible via a variety of languages, including C++, Python, C# and Java.</p>
 <p>These APIs are also available as part of a separate, independent cross-platform library, so you can deploy them on a companion computer on your vehicle. This way you can write and test your code in the simulator, and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.</p>
-<p>Note that you can use <a href="https://microsoft.github.io/AirSim/docs/settings#simmode">SimMode setting</a> to specify the default vehicle or the new <a href="https://microsoft.github.io/AirSim/docs/image_apis#computer-vision-mode-1">ComputerVision mode</a> so you don't get prompted each time you start AirSim.</p>
-<p><a href="https://microsoft.github.io/AirSim/docs/apis/">More details</a></p>
+<p>Note that you can use <a href="https://microsoft.github.io/AirSim/settings#simmode">SimMode setting</a> to specify the default vehicle or the new <a href="https://microsoft.github.io/AirSim/image_apis#computer-vision-mode-1">ComputerVision mode</a> so you don't get prompted each time you start AirSim.</p>
+<p><a href="https://microsoft.github.io/AirSim/apis/">More details</a></p>
 <h3 id="gathering-training-data">Gathering training data<a class="headerlink" href="#gathering-training-data" title="Permanent link">#</a></h3>
 <p>There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button in the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's content.</p>
 <p><img alt="record screenshot" src="images/record_data.png" /></p>
 <p>A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data. </p>
 <h3 id="computer-vision-mode">Computer Vision mode<a class="headerlink" href="#computer-vision-mode" title="Permanent link">#</a></h3>
 <p>Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation. </p>
-<p><a href="https://microsoft.github.io/AirSim/docs/image_apis/">More details</a></p>
+<p><a href="https://microsoft.github.io/AirSim/image_apis/">More details</a></p>
 <h3 id="weather-effects">Weather Effects<a class="headerlink" href="#weather-effects" title="Permanent link">#</a></h3>
-<p>Press F10 to see various options available for weather effects. You can also control the weather using <a href="https://microsoft.github.io/AirSim/docs/apis#weather-apis">APIs</a>. Press F1 to see other options available.</p>
+<p>Press F10 to see various options available for weather effects. You can also control the weather using <a href="https://microsoft.github.io/AirSim/apis#weather-apis">APIs</a>. Press F1 to see other options available.</p>
 <p><img alt="record screenshot" src="images/weather_menu.png" /></p>
 <h2 id="tutorials">Tutorials<a class="headerlink" href="#tutorials" title="Permanent link">#</a></h2>
 <ul>
@@ -361,17 +361,17 @@
 <h3 id="contribute">Contribute<a class="headerlink" href="#contribute" title="Permanent link">#</a></h3>
 <p>Please take a look at <a href="https://github.com/microsoft/airsim/issues">open issues</a> if you are looking for areas to contribute to.</p>
 <ul>
-<li><a href="https://microsoft.github.io/AirSim/docs/design">More on AirSim design</a></li>
-<li><a href="https://microsoft.github.io/AirSim/docs/code_structure">More on code structure</a></li>
+<li><a href="https://microsoft.github.io/AirSim/design">More on AirSim design</a></li>
+<li><a href="https://microsoft.github.io/AirSim/code_structure">More on code structure</a></li>
 <li><a href="CONTRIBUTING/">Contribution Guidelines</a></li>
 <li><a href="https://trello.com/b/1t2qCeaA/wishlist-by-community-for-community">Trello Board</a></li>
 </ul>
 <h3 id="who-is-using-airsim">Who is Using AirSim?<a class="headerlink" href="#who-is-using-airsim" title="Permanent link">#</a></h3>
-<p>We are maintaining a <a href="https://microsoft.github.io/AirSim/docs/who_is_using">list</a> of a few projects, people and groups that we are aware of. If you would like to be featured in this list please <a href="https://github.com/microsoft/airsim/issues">make a request here</a>.</p>
+<p>We are maintaining a <a href="https://microsoft.github.io/AirSim/who_is_using">list</a> of a few projects, people and groups that we are aware of. If you would like to be featured in this list please <a href="https://github.com/microsoft/airsim/issues">make a request here</a>.</p>
 <h2 id="contact">Contact<a class="headerlink" href="#contact" title="Permanent link">#</a></h2>
 <p>Join the AirSim group on <a href="https://www.facebook.com/groups/1225832467530667/">Facebook</a> to stay up to date or ask any questions.</p>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
-<p>If you run into problems, check the <a href="https://microsoft.github.io/AirSim/docs/faq">FAQ</a> and feel free to post issues in the  <a href="https://github.com/Microsoft/AirSim/issues">AirSim</a> repository.</p>
+<p>If you run into problems, check the <a href="https://microsoft.github.io/AirSim/faq">FAQ</a> and feel free to post issues in the  <a href="https://github.com/Microsoft/AirSim/issues">AirSim</a> repository.</p>
 <h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">#</a></h2>
 <p>This project is released under the MIT License. Please review the <a href="LICENSE">License file</a> for more details.</p>
               
@@ -431,6 +431,5 @@
 
 <!--
 MkDocs version : 1.1
-Build Date UTC : 2020-03-31 19:26:18
+Build Date UTC : 2020-04-01 20:48:24
 -->
-
