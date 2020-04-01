@@ -16,7 +16,7 @@ jobs:
     - name: Windows 10
       os: windows
       env:
-        - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
+        - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\16.0\Bin"
         - PATH_FIX="C:\Windows\System32"
 
     - name: MacOS
@@ -30,6 +30,9 @@ before_install:
       sudo apt-get -y install build-essential software-properties-common cmake rsync libboost-all-dev;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
       echo "No before_install actions for OSX";
+    elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+      choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional";
+      choco install visualstudio2019-workload-vctools;
     fi
 
 script:
@@ -39,7 +42,7 @@ script:
       cd Unity && ./build.sh 2> Unity_error.txt || (tail -n 100 Unity_error.txt && exit 1);
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
       export PATH=$MSBUILD_PATH:$PATH_FIX:$PATH;
-      cmd.exe //C 'C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat' amd64 '&&'
+      cmd.exe //C 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat' amd64 '&&'
       build.cmd '&&'
       cd Unity '&&' build.cmd;
     elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
