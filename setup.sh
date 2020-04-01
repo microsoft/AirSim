@@ -51,17 +51,9 @@ if $gccBuild; then
 else
     # llvm tools
     if [ "$(uname)" == "Darwin" ]; then # osx
-        if [[ -n $CIINSTALL ]]; then # use downloaded binaries on Travis
-            export C_COMPILER=${LLVM_DIR}/bin/clang
-            export COMPILER=${LLVM_DIR}/bin/clang++
-        else
-            brew update
-
-            # brew install llvm@3.9
-            brew tap llvm-hs/homebrew-llvm
-            brew install llvm-8.0
-        fi
-
+        brew update
+        brew tap llvm-hs/homebrew-llvm
+        brew install llvm@8
     else #linux
         #install clang and build tools
         VERSION=$(lsb_release -rs | cut -d. -f1)
@@ -71,7 +63,7 @@ else
             wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
             sudo apt-get update
         fi
-        sudo apt-get install -y clang-8 clang++-8 libc++-8-dev libc++abi-8-dev 
+        sudo apt-get install -y clang-8 clang++-8 libc++-8-dev libc++abi-8-dev
     fi
 fi
 
@@ -119,15 +111,8 @@ if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
         make
         popd
     fi
-
-    if [ "$(uname)" == "Darwin" ]; then
-        CMAKE="$(greadlink -f cmake_build/bin/cmake)"
-    else
-        CMAKE="$(readlink -f cmake_build/bin/cmake)"
-    fi
 else
     echo "Already have good version of cmake: $cmake_ver"
-    CMAKE=$(which cmake)
 fi
 
 # Download rpclib

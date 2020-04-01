@@ -65,15 +65,8 @@ else
     # variable for build output
     build_dir=build_debug
     if [ "$(uname)" == "Darwin" ]; then
-
-        if [[ -n $CIINSTALL ]]; then # use downloaded binaries on Travis
-            export CC=${LLVM_DIR}/bin/clang
-            export CXX=${LLVM_DIR}/bin/clang++
-        else
-            export CC=/usr/local/opt/llvm-5.0/bin/clang-5.0
-            export CXX=/usr/local/opt/llvm-5.0/bin/clang++-5.0
-        fi
-
+        export CC=/usr/local/opt/llvm@8/bin/clang
+        export CXX=/usr/local/opt/llvm@8/bin/clang++
     else
         export CC="clang-8"
         export CXX="clang++-8"
