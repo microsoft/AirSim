@@ -62,25 +62,6 @@ if $gccBuild; then
         export CXX="g++"
     fi
 else
-    #check for correct verion of llvm
-    if [[ ! -d "llvm-source-50" ]]; then
-        if [[ -d "llvm-source-39" ]]; then
-            echo "Hello there! We just upgraded AirSim to Unreal Engine 4.24."
-            echo "Here are few easy steps for upgrade so everything is new and shiny :)"
-            echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
-            exit 1
-        else
-            echo "The llvm-souce-50 folder was not found! Mystery indeed."
-        fi
-    fi
-
-    # check for libc++
-    if [[ !(-d "./llvm-build/output/lib") ]]; then
-        echo "ERROR: clang++ and libc++ is necessary to compile AirSim and run it in Unreal engine"
-        echo "Please run setup.sh first."
-        exit 1
-    fi
-
     # variable for build output
     build_dir=build_debug
     if [ "$(uname)" == "Darwin" ]; then
@@ -94,8 +75,8 @@ else
         fi
 
     else
-        export CC="clang-5.0"
-        export CXX="clang++-5.0"
+        export CC="clang-8"
+        export CXX="clang++-8"
     fi
 fi
 
@@ -131,7 +112,6 @@ pushd $build_dir  >/dev/null
 make -j`nproc`
 popd >/dev/null
 
-
 mkdir -p AirLib/lib/x64/Debug
 mkdir -p AirLib/deps/rpclib/lib
 mkdir -p AirLib/deps/MavLinkCom/lib
@@ -164,6 +144,5 @@ echo ""
 echo "For help see:"
 echo "https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md"
 echo "=================================================================="
-
 
 popd >/dev/null

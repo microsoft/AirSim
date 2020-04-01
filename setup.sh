@@ -1,14 +1,5 @@
 #! /bin/bash
-
-if [[ -d "llvm-source-39" ]]; then
-    echo "Hello there! We just upgraded AirSim to Unreal Engine 4.24."
-    echo "Here are few easy steps for upgrade so everything is new and shiny :)"
-    echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
-    exit 1
-fi
-
 set -x
-# set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
@@ -60,7 +51,6 @@ if $gccBuild; then
 else
     # llvm tools
     if [ "$(uname)" == "Darwin" ]; then # osx
-
         if [[ -n $CIINSTALL ]]; then # use downloaded binaries on Travis
             export C_COMPILER=${LLVM_DIR}/bin/clang
             export COMPILER=${LLVM_DIR}/bin/clang++
@@ -69,24 +59,19 @@ else
 
             # brew install llvm@3.9
             brew tap llvm-hs/homebrew-llvm
-            brew install llvm-5.0
-            export C_COMPILER=/usr/local/opt/llvm-5.0/bin/clang-5.0
-            export COMPILER=/usr/local/opt/llvm-5.0/bin/clang++-5.0
+            brew install llvm-8.0
         fi
 
     else #linux
         #install clang and build tools
-
         VERSION=$(lsb_release -rs | cut -d. -f1)
-        # Since Ubuntu 17 clang-5.0 is part of the core repository
-        # See https://packages.ubuntu.com/search?keywords=clang-5.0
+        # Since Ubuntu 17 clang is part of the core repository
+        # See https://packages.ubuntu.com/search?keywords=clang-8
         if [ "$VERSION" -lt "17" ]; then
-            wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+            wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
             sudo apt-get update
         fi
-        sudo apt-get install -y clang-5.0 clang++-5.0
-        export C_COMPILER=clang-5.0
-        export COMPILER=clang++-5.0
+        sudo apt-get install -y clang-8 clang++-8 libc++-8-dev libc++abi-8-dev 
     fi
 fi
 
@@ -187,45 +172,6 @@ if $downloadHighPolySuv; then
     fi
 else
     echo "### Not downloading high-poly car asset (--no-full-poly-car). The default unreal vehicle will be used."
-fi
-
-# Below is alternative way to get clang by downloading binaries
-# get clang, libc++
-# sudo rm -rf llvm-build
-# mkdir -p llvm-build/output
-# wget "http://releases.llvm.org/4.0.1/clang+llvm-4.0.1-x86_64-linux-gnu-debian8.tar.xz"
-# tar -xf "clang+llvm-4.0.1-x86_64-linux-gnu-debian8.tar.xz" -C llvm-build/output
-
-# #other packages - not need for now
-# #sudo apt-get install -y clang-3.9-doc libclang-common-3.9-dev libclang-3.9-dev libclang1-3.9 libclang1-3.9-dbg libllvm-3.9-ocaml-dev libllvm3.9 libllvm3.9-dbg lldb-3.9 llvm-3.9 llvm-3.9-dev llvm-3.9-doc llvm-3.9-examples llvm-3.9-runtime clang-format-3.9 python-clang-3.9 libfuzzer-3.9-dev
-
-#get libc++ source
-if ! $gccBuild; then
-    echo "### Installing llvm 5 libc++ library..."
-    if [[ ! -d "llvm-source-50" ]]; then
-        git clone --depth=1 -b release_50  https://github.com/llvm-mirror/llvm.git llvm-source-50
-        git clone --depth=1 -b release_50  https://github.com/llvm-mirror/libcxx.git llvm-source-50/projects/libcxx
-        git clone --depth=1 -b release_50  https://github.com/llvm-mirror/libcxxabi.git llvm-source-50/projects/libcxxabi
-    else
-        echo "folder llvm-source-50 already exists, skipping git clone..."
-    fi
-
-    # build libc++
-    rm -rf llvm-build
-    mkdir -p llvm-build
-    pushd llvm-build >/dev/null
-
-    "$CMAKE" -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
-          -LIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF -DLIBCXX_INSTALL_EXPERIMENTAL_LIBRARY=OFF \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=./output \
-                ../llvm-source-50
-
-    make cxx -j`nproc`
-
-    # install libc++ locally in output folder
-    make install-libcxx install-libcxxabi
-
-    popd >/dev/null
 fi
 
 echo "Installing EIGEN library..."
