@@ -363,6 +363,12 @@ void PawnSimApi::toggleTrace()
     }
 }
 
+void PawnSimApi::setTraceLine(const std::vector<float>& color_rgba, float thickness) {
+    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
+    trace_color_ = color.ToFColor(true);
+    trace_thickness_ = thickness;
+}
+
 void PawnSimApi::allowPassthroughToggleInput()
 {
     state_.passthrough_enabled = !state_.passthrough_enabled;
@@ -463,7 +469,7 @@ void PawnSimApi::setPoseInternal(const Pose& pose, bool ignore_collision)
         params_.pawn->SetActorLocationAndRotation(position, orientation, true);
 
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
-        DrawDebugLine(params_.pawn->GetWorld(), state_.last_position, position, FColor::Purple, true, -1.0F, 0, 3.0F);
+        DrawDebugLine(params_.pawn->GetWorld(), state_.last_position, position, trace_color_, true, -1.0F, 0, trace_thickness_);
         state_.last_position = position;
     }
     else if (!state_.tracing_enabled) {
