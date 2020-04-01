@@ -22,7 +22,7 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 #include "UnitTests.h"
 
-#if defined(_WIN32)
+#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
 #include <filesystem>
 #define USE_CPP_FILESYSTEM
 #else

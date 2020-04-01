@@ -10,15 +10,15 @@
 #include <string>
 #include "FileSystem.hpp"
 #include "Utils.hpp"
-#include <filesystem>
 
 #if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
-
+#include <filesystem>
+using namespace std::filesystem;
 #define USE_CPP_FILESYSTEM
 #else
+using namespace std::experimental::filesystem;
 #undef USE_CPP_FILESYSTEM
 #endif
-
 
 using namespace mavlink_utils;
 using namespace mavlinkcom;
@@ -467,9 +467,6 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
 void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     unused(com);
-
-    using namespace std::filesystem;
-
     path dirPath(log_folder_);
 
     for (directory_iterator next(dirPath), end; next != end; ++next) {
