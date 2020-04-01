@@ -22,7 +22,7 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 #include "UnitTests.h"
 
-#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
+#if defined(_WIN32)
 #include <filesystem>
 #define USE_CPP_FILESYSTEM
 #else
@@ -154,11 +154,6 @@ std::shared_ptr<MavLinkVehicle> mavLinkVehicle;
 
 
 #if defined(USE_CPP_FILESYSTEM)
-
-//can't use experimental stuff on Linux because of potential ABI issues
-#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus < 201700L))
-using namespace std::experimental::filesystem;
-#else
 using namespace std::filesystem;
 #endif
 
@@ -392,9 +387,6 @@ void ConvertLogFilesToCsv(std::string directory)
         }
     }
 }
-
-
-#endif
 
 void OpenLogFiles() {
     if (logDirectory.size() > 0)
@@ -1033,7 +1025,14 @@ std::string findPixhawk() {
             if (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
             {
                 printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
-                return std::string(info.portName.begin(), info.portName.end());
+
+                std::string portName_str;
+
+                for (wchar_t ch : info.portName)
+                {
+                    portName_str.push_back(static_cast<char>(ch));
+                }
+                return portName_str;
             }
         }
     }

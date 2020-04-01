@@ -10,9 +10,10 @@
 #include <string>
 #include "FileSystem.hpp"
 #include "Utils.hpp"
+#include <filesystem>
 
 #if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
-#include <filesystem>
+
 #define USE_CPP_FILESYSTEM
 #else
 #undef USE_CPP_FILESYSTEM
@@ -466,14 +467,8 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
 void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     unused(com);
-//TODO: make below future proof (i.e. usable by C++17 compiler) - also change same in main.cpp
-#if defined(USE_CPP_FILESYSTEM)
-//can't use experimental stuff on Linux because of potential ABI issues
-#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus < 201700L))
-    using namespace std::experimental::filesystem;
-#else
+
     using namespace std::filesystem;
-#endif
 
     path dirPath(log_folder_);
 
@@ -491,9 +486,6 @@ void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     }
 
     printf("dumplogcommands is done\n");
-#else
-    printf("dumplogcommands is available only with C++17 features\n");
-#endif
 }
 
 
