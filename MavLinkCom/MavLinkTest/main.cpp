@@ -22,12 +22,8 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 #include "UnitTests.h"
 
-#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
 #include <filesystem>
-#define USE_CPP_FILESYSTEM
-#else
-#undef USE_CPP_FILESYSTEM
-#endif
+using namespace std::filesystem;
 
 /* enable math defines on Windows */
 
@@ -152,10 +148,6 @@ std::shared_ptr<MavLinkConnection> droneConnection;
 std::shared_ptr<MavLinkConnection> logConnection;
 std::shared_ptr<MavLinkVehicle> mavLinkVehicle;
 
-
-#if defined(USE_CPP_FILESYSTEM)
-using namespace std::filesystem;
-#endif
 
 void ConvertLogFileToJson(std::string logFile)
 {

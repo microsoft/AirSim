@@ -11,19 +11,11 @@
 #include "FileSystem.hpp"
 #include "Utils.hpp"
 
-#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
 #include <filesystem>
 using namespace std::filesystem;
-#define USE_CPP_FILESYSTEM
-#else
-using namespace std::experimental::filesystem;
-#undef USE_CPP_FILESYSTEM
-#endif
 
 using namespace mavlink_utils;
 using namespace mavlinkcom;
-
-// from main.cpp.
 
 static std::vector<Command*> const * all_commands_;
 std::vector<Command*> const * Command::getAllCommand() { return all_commands_;  }
