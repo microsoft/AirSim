@@ -159,16 +159,19 @@ else
     echo "### Not downloading high-poly car asset (--no-full-poly-car). The default unreal vehicle will be used."
 fi
 
-echo "Installing EIGEN library..."
+echo "Installing Eigen library..."
 
-rm -rf ./AirLib/deps/eigen3/Eigen
-echo "downloading eigen..."
-wget -O eigen3.zip https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip
-unzip eigen3.zip -d temp_eigen
-mkdir -p AirLib/deps/eigen3
-mv temp_eigen/eigen*/Eigen AirLib/deps/eigen3
-rm -rf temp_eigen
-rm eigen3.zip
+if [ ! -d "AirLib/deps/eigen3" ]; then
+    echo "Downloading Eigen..."
+    wget -O eigen3.zip https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip
+    unzip eigen3.zip -d temp_eigen
+    mkdir -p AirLib/deps/eigen3
+    mv temp_eigen/eigen*/Eigen AirLib/deps/eigen3
+    rm -rf temp_eigen
+    rm eigen3.zip
+else
+    echo "Eigen is already installed."
+fi
 
 popd >/dev/null
 
