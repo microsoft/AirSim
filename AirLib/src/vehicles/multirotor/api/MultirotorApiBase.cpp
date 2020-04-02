@@ -476,12 +476,11 @@ bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
 
     auto start_pos = getPosition();
     YawMode yaw_mode(true, yaw_rate);
-    Waiter waiter(getCommandPeriod(), duration, getCancelToken());
-    do {
+    
+    return waitForFunction([&]() {
         moveToPositionInternal(start_pos, yaw_mode);
-    } while (waiter.sleep());
-
-    return waiter.isTimeout();
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
 }
 
 void MultirotorApiBase::setAngleLevelControllerGains(const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) 
