@@ -446,25 +446,29 @@ bool MultirotorApiBase::rotateToYaw(float yaw, float timeout_sec, float margin)
 {
     SingleTaskCall lock(this);
 
-    const YawMode yaw_mode(false, VectorMath::normalizeAngle(yaw));
-    Waiter waiter(getCommandPeriod(), timeout_sec, getCancelToken());
-
-    float estimated_pitch, estimated_roll, estimated_yaw;
+    if (timeout_sec <= 0)
+        return true;
 
     auto start_pos = getPosition();
-    do {
-        auto kinematics = getKinematicsEstimated();
-        VectorMath::toEulerianAngle(kinematics.pose.orientation,
-            estimated_pitch, estimated_roll, estimated_yaw);
+    float yaw_target = VectorMath::normalizeAngle(yaw);
+    YawMode move_yaw_mode(false, yaw_target);
+    YawMode stop_yaw_mode(true, 0);
 
-        if (isYawWithinMargin(estimated_yaw, margin))
-            return true;
+    return waitForFunction([&]() {
+        if (isYawWithinMargin(yaw_target, margin)) { // yaw is within margin, then trying to stop rotation
+            moveToPositionInternal(start_pos, stop_yaw_mode); // let yaw rate be zero
+            auto yaw_rate = getKinematicsEstimated().twist.angular.z();
+            if (abs(yaw_rate) <= approx_zero_angular_vel_) { // already sopped
+                return true; //stop all for stably achieving the goal
+            }
+        }
+        else { // yaw is not within margin, go on rotation
+            moveToPositionInternal(start_pos, move_yaw_mode);
+        }
 
-        //change yaw by moving to same position but constant yaw mode
-        moveToPositionInternal(start_pos, yaw_mode);
-    } while (waiter.sleep());
-
-    return false; //we are not exiting because we reached yaw
+        // yaw is not within margin
+        return false; //keep moving until timeout
+    }, timeout_sec).isComplete();
 }
 
 bool MultirotorApiBase::rotateByYawRate(float yaw_rate, float duration)
