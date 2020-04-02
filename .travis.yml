@@ -28,7 +28,7 @@ before_install:
       sudo apt-get update;
       sudo apt-get -y install git wget unzip;
       sudo apt-get -y install build-essential software-properties-common cmake rsync libboost-all-dev;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       echo "No before_install actions for OSX";
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
       choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional";
@@ -39,7 +39,8 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       ./setup.sh;
       ./build.sh;
-      cd Unity && ./build.sh 2> Unity_error.txt || (tail -n 100 Unity_error.txt && exit 1);
+      echo "Starting Unity Build!";
+      cd Unity && ./build.sh 2> Unity_error.txt || ((cat Unity_error.txt | grep -i "error:" -B 10 -A 10) && exit 1);
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
       export PATH=$MSBUILD_PATH:$PATH_FIX:$PATH;
       cmd.exe //C 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat' amd64 '&&'
@@ -48,5 +49,6 @@ script:
     elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       ./setup.sh;
       ./build.sh;
-      cd Unity && ./build.sh 2> Unity_error.txt || (tail -n 100 Unity_error.txt && exit 1);
+      echo "Starting Unity Build!";
+      cd Unity && ./build.sh 2> Unity_error.txt || ((cat Unity_error.txt | grep -i "error:" -B 10 -A 10) && exit 1);
     fi

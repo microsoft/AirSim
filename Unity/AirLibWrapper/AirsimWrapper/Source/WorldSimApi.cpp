@@ -52,6 +52,14 @@ void WorldSimApi::printLogMessage(const std::string& message, const std::string&
 	PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
 }
 
+std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
+{
+    std::unique_ptr<std::vector<std::string>> result;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "swapTextures is not supported on unity").c_str());
+    return result;
+}
+
 std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_regex) const
 {
 	std::vector<std::string> result;
@@ -82,6 +90,63 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     unused(param);
     unused(val);
     //TODO: implement weather for Unity
+}
+
+//----------------Plotting APIs-----------/
+void WorldSimApi::simFlushPersistentMarkers()
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simFlushPersistentMarkers is not supported on unity").c_str());
+}
+
+void WorldSimApi::simPlotPoints(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simPlotPoints is not supported on unity").c_str());
+}
+
+void WorldSimApi::simPlotLineStrip(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simPlotLineStrip is not supported on unity").c_str());
+}
+
+void WorldSimApi::simPlotLineList(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simPlotLineList is not supported on unity").c_str());
+}
+
+void WorldSimApi::simPlotArrows(const std::vector<Vector3r>& points_start, const std::vector<Vector3r>& points_end, const std::vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simPlotArrows is not supported on unity").c_str());
+}
+
+void WorldSimApi::simPlotStrings(const std::vector<std::string>& strings, const std::vector<Vector3r>& positions, float scale, const std::vector<float>& color_rgba, float duration)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simPlotStrings is not supported on unity").c_str());
+}
+
+void WorldSimApi::simPlotTransforms(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simPlotTransforms is not supported on unity").c_str());
+}
+
+void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simPlotTransformsWithNames is not supported on unity").c_str());
+}
+
+std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMeshPositionVertexBuffers() const
+{
+    std::vector<MeshPositionVertexBuffersResponse> result;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "getMeshPositionVertexBuffers is not supported on unity").c_str());
+    return result;
 }
 
 #pragma endregion
