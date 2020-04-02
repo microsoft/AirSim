@@ -362,8 +362,8 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
 
         std::string name = common_utils::Utils::toLower(GetMeshName(*comp));
         //The skybox is ignored here as it is huge, and really is of no use to the end user typically. Also the associated meshes with the cameras
-        if (name == "" || common_utils::Utils::startsWith(name, "default_") 
-            || common_utils::Utils::startsWith(name, "sky") 
+        if (name == "" || common_utils::Utils::startsWith(name, "default_")
+            || common_utils::Utils::startsWith(name, "sky")
             || common_utils::Utils::startsWith(name, "camera"))
         {
             continue;
@@ -394,10 +394,9 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
             TArray<FVector> vertices;
             vertices.SetNum(vertex_count);
             FVector* data = vertices.GetData();
-            ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
-                GetVertexBuffer,
-                FPositionVertexBuffer*, vertex_buffer, vertex_buffer,
-                FVector*, data, data,
+
+            ENQUEUE_RENDER_COMMAND(GetVertexBuffer)(
+                [vertex_buffer, data](FRHICommandListImmediate& RHICmdList)
                 {
                     FVector* indices = (FVector*)RHILockVertexBuffer(vertex_buffer->VertexBufferRHI, 0, vertex_buffer->VertexBufferRHI->GetSize(), RLM_ReadOnly);
                     memcpy(data, indices, vertex_buffer->VertexBufferRHI->GetSize());
@@ -412,11 +411,12 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
             if (lod.IndexBuffer.IndexBufferRHI->GetStride() == 2) {
                 TArray<uint16_t> indices_vec;
                 indices_vec.SetNum(num_indices);
-                uint16_t* data_ptr = indices_vec.GetData();
-                ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
-                    GetIndexBuffer,
-                    FRawStaticIndexBuffer*, IndexBuffer, &lod.IndexBuffer,
-                    uint16_t*, data, data_ptr,
+
+                FRawStaticIndexBuffer* IndexBuffer = &lod.IndexBuffer;
+                uint16_t* data = indices_vec.GetData();
+
+                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
+                    [IndexBuffer, data](FRHICommandListImmediate& RHICmdList)
                     {
                         uint16_t* indices = (uint16_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
                         memcpy(data, indices, IndexBuffer->IndexBufferRHI->GetSize());
@@ -435,11 +435,12 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
             else { //stride ==4
                 TArray<uint32_t> indices_vec;
                 indices_vec.SetNum(num_indices);
-                uint32_t* data_ptr = indices_vec.GetData();
-                ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
-                    GetIndexBuffer,
-                    FRawStaticIndexBuffer*, IndexBuffer, &lod.IndexBuffer,
-                    uint32_t*, data, data_ptr,
+
+                FRawStaticIndexBuffer* IndexBuffer = &lod.IndexBuffer;
+                uint32_t* data = indices_vec.GetData();
+
+                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
+                    [IndexBuffer, data](FRHICommandListImmediate& RHICmdList)
                     {
                         uint32_t* indices = (uint32_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
                         memcpy(data, indices, IndexBuffer->IndexBufferRHI->GetSize());
