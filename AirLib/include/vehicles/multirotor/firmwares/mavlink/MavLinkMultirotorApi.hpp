@@ -939,7 +939,14 @@ private: //methods
                 (info.displayName.find(L"PX4_") != std::string::npos)
                 )) {
                 // printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
-                return std::string(info.portName.begin(), info.portName.end());
+
+                std::string portName_str;
+
+                for (wchar_t ch : info.portName)
+                {
+                    portName_str.push_back(static_cast<char>(ch));
+                }
+                return portName_str;
             }
         }
         return "";

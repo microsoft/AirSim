@@ -55,7 +55,7 @@ macro(CommonSetup)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__CLANG__")
         else ()
             set(CMAKE_CXX_FLAGS "\
-                -std=c++14 -stdlib=libc++ -ggdb -Wall -Wextra -Wstrict-aliasing -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy \
+                -std=c++17 -stdlib=libc++ -ggdb -Wall -Wextra -Wstrict-aliasing -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy \
                 -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch-default \
                 -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wswitch-default -Wundef \
                 -Wno-variadic-macros -Wno-parentheses -Wno-unused-function -Wno-unused -Wno-documentation -fdiagnostics-show-option \
@@ -63,6 +63,7 @@ macro(CommonSetup)
                 ${RPC_LIB_DEFINES} ${CMAKE_CXX_FLAGS}")
 
             if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+                set(CXX_EXP_LIB "-lc++fs -ferror-limit=10")
             else()
                 set(CXX_EXP_LIB "-lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
             endif ()
