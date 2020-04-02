@@ -77,7 +77,7 @@ public:
         measured_ = T();
         last_time_ = clock_ == nullptr ? 0 : clock_->millis();
         integrator->reset();
-	last_error_ = goal_ - measured_;
+        last_error_ = goal_ - measured_;
         min_dt_ = config_.time_scale * config_.time_scale;
     }
 
