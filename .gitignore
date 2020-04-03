@@ -308,6 +308,8 @@ cmake_build/
 /[Ee]igen
 /build_debug
 /build_gcc_debug
+/build_release
+/build_gcc_release
 /cmake/CPackSourceConfig.cmake
 /cmake/CPackConfig.cmake
 /cmake/arch.c
