@@ -50,8 +50,7 @@ macro(CommonSetup)
         set(BUILD_TYPE "linux")
 
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-            #TODO: need to check why below is needed
-            set(CMAKE_CXX_STANDARD 14)
+            set(CMAKE_CXX_STANDARD 17)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__CLANG__")
         else ()
             set(CMAKE_CXX_FLAGS "\
