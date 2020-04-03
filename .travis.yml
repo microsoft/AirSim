@@ -21,6 +21,7 @@ jobs:
 
     - name: MacOS
       os: osx
+      osx_image: xcode11.3
 
 
 before_install:
