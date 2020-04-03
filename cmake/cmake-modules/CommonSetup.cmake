@@ -66,8 +66,11 @@ macro(CommonSetup)
                 # libc++ is a Clang-only option
                 set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
                 set(CXX_EXP_LIB "-lc++fs -ferror-limit=10")
-            else()
-                set(CXX_EXP_LIB "-lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
+            else() # gcc
+                set(CXX_EXP_LIB "-nostdinc++ -I/usr/include/c++/8 -I/usr/include/x86_64-linux-gnu/c++/8 -nodefaultlibs 
+                    -l/usr/lib/x86_64-linux-gnu/libc++.so -l/usr/lib/x86_64-linux-gnu/libc++abi.so
+                    -lm -lc -lgcc_s -lgcc  
+                    -lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
             endif ()
         endif ()
 

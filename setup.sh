@@ -43,7 +43,7 @@ if $gccBuild; then
         else
             sudo add-apt-repository ppa:ubuntu-toolchain-r/test
             sudo apt-get -y update
-            sudo apt-get install -y gcc-8 g++-8
+            sudo apt-get install -y gcc-8 g++-8 gcc-8-multilib g++-8-multilib
         fi
     else
         echo "Already have good version of gcc: $gcc_ver"
