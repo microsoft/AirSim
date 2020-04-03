@@ -110,6 +110,7 @@ rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/$folder_name
 rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
+rm -rf Unreal/Plugins/AirSim/Source/AirLib/src
 
 # Update Blocks project
 Unreal/Environments/Blocks/clean.sh
