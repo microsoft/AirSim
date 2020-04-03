@@ -5,9 +5,28 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"  >/dev/null
 
 set -e
-set -x
 
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
+debug=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    --gcc)
+    gccBuild=true
+    shift # past argument
+    ;;
+esac
+case $key in
+    --debug)
+    debug=true
+    shift # past argument
+    ;;
+esac
+done
 
 # check for rpclib
 if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
@@ -53,13 +72,23 @@ if [[ -d "./cmake/CMakeFiles" ]]; then
     rm -rf "./cmake/CMakeFiles"
 fi
 
+folder_name=""
+
 if [[ ! -d $build_dir ]]; then
     mkdir -p $build_dir
     pushd $build_dir  >/dev/null
 
-    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug \
-        || (popd && rm -r $build_dir && exit 1)
-    popd >/dev/null
+    if $debug; then
+        folder_name="Debug"
+        "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug \
+            || (popd && rm -r $build_dir && exit 1)
+        popd >/dev/null
+    else
+        folder_name="Release"
+        "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Release \
+            || (popd && rm -r $build_dir && exit 1)
+        popd >/dev/null
+    fi
 fi
 
 pushd $build_dir  >/dev/null
@@ -69,7 +98,7 @@ pushd $build_dir  >/dev/null
 make -j`nproc`
 popd >/dev/null
 
-mkdir -p AirLib/lib/x64/Debug
+mkdir -p AirLib/lib/x64/$folder_name
 mkdir -p AirLib/deps/rpclib/lib
 mkdir -p AirLib/deps/MavLinkCom/lib
 cp $build_dir/output/lib/libAirLib.a AirLib/lib
@@ -77,7 +106,7 @@ cp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
 cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
 
 # Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
-rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/Debug
+rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/$folder_name
 rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
@@ -86,8 +115,6 @@ rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 Unreal/Environments/Blocks/clean.sh
 mkdir -p Unreal/Environments/Blocks/Plugins
 rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
-
-set +x
 
 echo ""
 echo ""
