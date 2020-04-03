@@ -7,7 +7,7 @@ pushd "$SCRIPT_DIR" >/dev/null
 downloadHighPolySuv=true
 gccBuild=false
 MIN_CMAKE_VERSION=3.10.0
-MIN_GCC_VERSION=6.0.0
+MIN_GCC_VERSION=8.0.0
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
 # Parse command line arguments
@@ -39,11 +39,11 @@ if $gccBuild; then
     if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
         if [ "$(uname)" == "Darwin" ]; then # osx
             brew update
-            brew install gcc-6 g++-6
+            brew install gcc-8 g++-8
         else
             sudo add-apt-repository ppa:ubuntu-toolchain-r/test
             sudo apt-get -y update
-            sudo apt-get install -y gcc-6 g++-6
+            sudo apt-get install -y gcc-8 g++-8
         fi
     else
         echo "Already have good version of gcc: $gcc_ver"

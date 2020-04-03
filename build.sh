@@ -7,7 +7,7 @@ pushd "$SCRIPT_DIR"  >/dev/null
 set -e
 set -x
 
-MIN_GCC_VERSION=6.0.0
+MIN_GCC_VERSION=8.0.0
 gccBuild=false
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
@@ -55,8 +55,8 @@ if $gccBuild; then
     fi
 
     if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
-        export CC="gcc-6"
-        export CXX="g++-6"
+        export CC="gcc-8"
+        export CXX="g++-8"
     else
         export CC="gcc"
         export CXX="g++"
