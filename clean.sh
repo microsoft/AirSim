@@ -8,7 +8,7 @@ set -e
 set +x
 
 rm -rf build_debug
-rm -rf build_release
+rm -rf build_gcc_debug
 rm -rf cmake/output
 
 popd >/dev/null
