@@ -1,10 +1,12 @@
 # Build AirSim on Linux
 
-The current recommended and tested environment is **Ubuntu 16.04 LTS**. Theoretically, you can build on other distros and OSX as well, but we haven't tested it.
+The current recommended and tested environment is **Ubuntu 18.04 LTS**. Theoretically, you can build on other distros as well, but we haven't tested it.
 
-We've two options - you can either build inside docker containers or your host machine. 
+**Note**: It should be possible to build AirSim on OSX as well, but it isn't actively tested. Only macOS Catalina (10.15) is supported. Follow the same steps as Linux for building AirSim.
 
-## Docker 
+We've two options - you can either build inside docker containers or your host machine.
+
+## Docker
 Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md)
 
 ## Host machine
@@ -12,7 +14,8 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 ### Build Unreal Engine and Airsim
 - Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
 
-- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support >= Unreal 4.22 at present. We recommend using 4.24. 
+- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.22 at present. We recommend using 4.24.
+
    ```bash
    # go to the folder where you clone GitHub projects
    git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git
@@ -23,20 +26,22 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
    ```
 
 - Clone AirSim and build it:
+
    ```bash
    # go to the folder where you clone GitHub projects
    git clone https://github.com/Microsoft/AirSim.git
    cd AirSim
    ```
 
-  By default AirSim recommends using clang 5 to build the binaries as those will be compatible with Unreal.  The setup script
-  will install the right version of cmake, llvm, and eigen:
+  By default AirSim recommends using clang 8 to build the binaries as those will be compatible with UE 4.24.  The setup script will install the right version of cmake, llvm, and eigen.
+
   ```bash
    ./setup.sh
    ./build.sh
    ```
 
   Optionally, if you need GCC binaries for some other reason, you can simply add gcc to the setup and build invocation, like this:
+
    ```bash
    ./setup.sh --gcc
    ./build.sh --gcc
@@ -74,7 +79,7 @@ See [Using APIs](apis.md) and [settings.json](settings.md) for various options a
   * If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.
 
 - Unreal crashed! How do I know what went wrong?
-  * Go to the `MyUnrealProject/Saved/Crashes` folder and search for the file `MyProject.log` within its subdirectories. At the end of this file you will see the stack trace and messages.    
+  * Go to the `MyUnrealProject/Saved/Crashes` folder and search for the file `MyProject.log` within its subdirectories. At the end of this file you will see the stack trace and messages.
    You can also take a look at the `Diagnostics.txt` file.
 
 - How do I use an IDE on Linux?
@@ -84,15 +89,15 @@ See [Using APIs](apis.md) and [settings.json](settings.md) for various options a
   * Yes, you can, but we haven't tested it. You can find the instructions [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html).
 
 - What compiler and stdlib does AirSim use?
-  * We use the same compiler that Unreal Engine uses, **Clang 5.0**, and stdlib, **libc++**. AirSim's `setup.sh` will automatically download them both. The libc++ source code is cloned into the `llvm-source-(version)` folder and is built into the `llvm-build` folder, from where CMake uses libc++.
+  * We use the same compiler that Unreal Engine uses, **Clang 8**, and stdlib, **libc++**. AirSim's `setup.sh` will automatically download them.
 
 - What version of CMake does the AirSim build use?
-  * 3.9.0 or higher. This is *not* the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using `cmake --version`. If you have an older version, follow [these instructions](cmake_linux.md) or see the [CMake website](https://cmake.org/install/).
+  * 3.10.0 or higher. This is *not* the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using `cmake --version`. If you have an older version, follow [these instructions](cmake_linux.md) or see the [CMake website](https://cmake.org/install/).
 
 - Can I compile AirSim in BashOnWindows?
-  * Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.    
-   See the [BashOnWindows install guide](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).   
-   Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.    
+  * Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
+   See the [BashOnWindows install guide](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).
+   Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
    Also, don't invoke `bash` from `Visual Studio Command Prompt`, otherwise CMake might find VC++ and try and use that!
 
 - Where can I find more info on running Unreal on Linux?
