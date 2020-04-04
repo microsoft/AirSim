@@ -27,9 +27,11 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
    # go to the folder where you clone GitHub projects
    git clone https://github.com/Microsoft/AirSim.git
    cd AirSim
+   ```
 
   By default AirSim recommends using clang 5 to build the binaries as those will be compatible with Unreal.  The setup script
   will install the right version of cmake, llvm, and eigen:
+  ```bash
    ./setup.sh
    ./build.sh
    ```
