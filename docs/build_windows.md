@@ -10,9 +10,9 @@ Click on the `Add Versions` which should show the option to download **Unreal 4.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ## Build AirSim
-* Install Visual Studio 2017.    
-**Make sure** to select **VC++** and **Windows SDK 8.1** while installing VS 2017.   
-* Start `x64 Native Tools Command Prompt for VS 2017`. 
+* Install Visual Studio 2019.    
+**Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.18362** (should be selected by default) while installing VS 2019.   
+* Start `Developer Command Prompt for VS 2019`. 
 * Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
 * Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
 
@@ -62,5 +62,5 @@ In some cases, these settings will still not lead to the desired result and erro
 
 To resolve such issues the following procedure can be applied:
 1. Uninstall all old versions of VS using the [VisualStudioUninstaller](https://github.com/Microsoft/VisualStudioUninstaller/releases)
-2. Repair/Install VS2017
+2. Repair/Install VS 2019
 3. Restart machine and install Epic launcher and desired version of the engine

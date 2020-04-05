@@ -48,6 +48,8 @@ ELSE()
     LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/windows/WindowsFindSerialPorts.cpp")
 ENDIF()
 
+
+
 add_library(MavLinkCom STATIC ${MAVLINK_SOURCES})
 
 CommonTargetLink()
