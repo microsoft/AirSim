@@ -48,11 +48,9 @@ macro(CommonSetup)
     IF(UNIX)
         set(RPC_LIB_DEFINES "-D MSGPACK_PP_VARIADICS_MSVC=0")
         set(BUILD_TYPE "linux")
-
-        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-            #TODO: need to check why below is needed
-            set(CMAKE_CXX_STANDARD 14)
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__CLANG__")
+        if (APPLE)
+            set(CMAKE_CXX_STANDARD 17)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wstrict-aliasing -D__CLANG__")
         else ()
             set(CMAKE_CXX_FLAGS "\
                 -std=c++17 -stdlib=libc++ -ggdb -Wall -Wextra -Wstrict-aliasing -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy \

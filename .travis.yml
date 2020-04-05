@@ -21,6 +21,7 @@ jobs:
 
     - name: MacOS
       os: osx
+      osx_image: xcode11.3
 
 
 before_install:
@@ -38,7 +39,7 @@ before_install:
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       ./setup.sh;
-      ./build.sh;
+      ./build.sh || travis_terminate 1;
       echo "Starting Unity Build!";
       cd Unity && ./build.sh 2> Unity_error.txt || ((cat Unity_error.txt | grep -i "error:" -B 10 -A 10) && exit 1);
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
@@ -48,7 +49,7 @@ script:
       cd Unity '&&' build.cmd;
     elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       ./setup.sh;
-      ./build.sh;
+      ./build.sh || travis_terminate 1;
       echo "Starting Unity Build!";
       cd Unity && ./build.sh 2> Unity_error.txt || ((cat Unity_error.txt | grep -i "error:" -B 10 -A 10) && exit 1);
     fi
