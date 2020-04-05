@@ -403,23 +403,21 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
                     RHIUnlockVertexBuffer(vertex_buffer->VertexBufferRHI);
                 });
 
-            const FRawStaticIndexBuffer& IndexBuffer = comp->GetStaticMesh()->RenderData->LODResources[0].IndexBuffer;
-
             FStaticMeshLODResources& lod = comp->GetStaticMesh()->RenderData->LODResources[0];
-            int num_indices = lod.IndexBuffer.IndexBufferRHI->GetSize() / lod.IndexBuffer.IndexBufferRHI->GetStride();
+            FRawStaticIndexBuffer* IndexBuffer = &lod.IndexBuffer;
+            int num_indices = IndexBuffer->IndexBufferRHI->GetSize() / IndexBuffer->IndexBufferRHI->GetStride();
 
-            if (lod.IndexBuffer.IndexBufferRHI->GetStride() == 2) {
+            if (IndexBuffer->IndexBufferRHI->GetStride() == 2) {
                 TArray<uint16_t> indices_vec;
                 indices_vec.SetNum(num_indices);
 
-                FRawStaticIndexBuffer* IndexBuffer = &lod.IndexBuffer;
-                uint16_t* data = indices_vec.GetData();
+                uint16_t* data_ptr = indices_vec.GetData();
 
                 ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
-                    [IndexBuffer, data](FRHICommandListImmediate& RHICmdList)
+                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList)
                     {
                         uint16_t* indices = (uint16_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
-                        memcpy(data, indices, IndexBuffer->IndexBufferRHI->GetSize());
+                        memcpy(data_ptr, indices, IndexBuffer->IndexBufferRHI->GetSize());
                         RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
                     });
 
@@ -436,14 +434,13 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
                 TArray<uint32_t> indices_vec;
                 indices_vec.SetNum(num_indices);
 
-                FRawStaticIndexBuffer* IndexBuffer = &lod.IndexBuffer;
-                uint32_t* data = indices_vec.GetData();
+                uint32_t* data_ptr = indices_vec.GetData();
 
                 ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
-                    [IndexBuffer, data](FRHICommandListImmediate& RHICmdList)
+                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList)
                     {
                         uint32_t* indices = (uint32_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
-                        memcpy(data, indices, IndexBuffer->IndexBufferRHI->GetSize());
+                        memcpy(data_ptr, indices, IndexBuffer->IndexBufferRHI->GetSize());
                         RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
                     });
 
