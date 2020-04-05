@@ -412,6 +412,14 @@ void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr:
     }, true);
 }
 
+void PawnSimApi::setCameraFoV(const std::string& camera_name, const float& fov_degrees)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, fov_degrees]() {
+        APIPCamera* camera = getCamera(camera_name);
+        camera->setCameraFoV(fov_degrees);
+    }, true);
+}
+
 //parameters in NED frame
 PawnSimApi::Pose PawnSimApi::getPose() const
 {

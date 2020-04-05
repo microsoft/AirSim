@@ -364,6 +364,11 @@ void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, c
     pimpl_->client.call("simSetCameraOrientation", camera_name, RpcLibAdapatorsBase::Quaternionr(orientation), vehicle_name);
 }
 
+void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, const float& fov_degrees, const std::string& vehicle_name)
+{
+    pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name);
+}
+
 msr::airlib::Kinematics::State RpcLibClientBase::simGetGroundTruthKinematics(const std::string& vehicle_name) const
 {
     return pimpl_->client.call("simGetGroundTruthKinematics", vehicle_name).as<RpcLibAdapatorsBase::KinematicsState>().to();
@@ -376,11 +381,6 @@ msr::airlib::Environment::State RpcLibClientBase::simGetGroundTruthEnvironment(c
 void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
 {
     pimpl_->client.call("cancelLastTask", vehicle_name);
-}
-
-bool RpcLibClientBase::simSetCameraFov(std::string& camera_name, float fov_degrees)
-{
-    return pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees).as<bool>();
 }
 
 //return value of last task. It should be true if task completed without
