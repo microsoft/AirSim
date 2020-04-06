@@ -259,7 +259,7 @@
             <div class="section">
               
                 <h1 id="sensors-in-airsim">Sensors in AirSim<a class="headerlink" href="#sensors-in-airsim" title="Permanent link">#</a></h1>
-<p>AirSim currently supports the following sensors.  <br />
+<p>AirSim currently supports the following sensors.
 Each sensor is associated with a integer enum specifying its sensor type.</p>
 <ul>
 <li>Camera</li>
@@ -267,10 +267,10 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <li>Imu = 2</li>
 <li>Gps = 3</li>
 <li>Magnetometer = 4</li>
-<li>Distance Sensor = 5 </li>
+<li>Distance Sensor = 5</li>
 <li>Lidar = 6</li>
 </ul>
-<p><strong>Note</strong> :  Cameras are configured differently than the other sensors and do not have an enum associated with them.    Look at <a href="../settings/">general settings</a> and <a href="../image_apis/">image API</a> for camera config and API. </p>
+<p><strong>Note</strong> :  Cameras are configured differently than the other sensors and do not have an enum associated with them.    Look at <a href="../settings/">general settings</a> and <a href="../image_apis/">image API</a> for camera config and API.</p>
 <h2 id="default-sensors">Default sensors<a class="headerlink" href="#default-sensors" title="Permanent link">#</a></h2>
 <p>If no sensors are specified in the <code>settings.json</code>, the the following sensors are enabled by default based on the sim mode.</p>
 <h3 id="multirotor">Multirotor<a class="headerlink" href="#multirotor" title="Permanent link">#</a></h3>
@@ -288,7 +288,7 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <ul>
 <li>None</li>
 </ul>
-<p>Behind the scenes, 'createDefaultSensorSettings' method in <a href="https://github.com/Microsoft/AirSim/blob/master/AirLib/include/common/AirSimSettings.hpp">AirSimSettings.hpp</a> which sets up the above sensors with their default parameters, depending on the sim mode specified in the <code>settings.json</code> file. </p>
+<p>Behind the scenes, <code>createDefaultSensorSettings</code> method in <a href="https://github.com/Microsoft/AirSim/blob/master/AirLib/include/common/AirSimSettings.hpp">AirSimSettings.hpp</a> sets up the above sensors with their default parameters, depending on the sim mode specified in the <code>settings.json</code> file.</p>
 <h2 id="configuring-the-default-sensor-list">Configuring the default sensor list<a class="headerlink" href="#configuring-the-default-sensor-list" title="Permanent link">#</a></h2>
 <p>The default sensor list can be configured in settings json:</p>
 <pre><code class="JSON">&quot;DefaultSensors&quot;: {
@@ -312,7 +312,7 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
          &quot;SensorType&quot;: 5,
          &quot;Enabled&quot; : true
     },
-    &quot;Lidar2&quot;: { 
+    &quot;Lidar2&quot;: {
          &quot;SensorType&quot;: 6,
          &quot;Enabled&quot; : true,
          &quot;NumberOfChannels&quot;: 4,
@@ -322,7 +322,7 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 </code></pre>
 
 <h2 id="configuring-vehicle-specific-sensor-list">Configuring vehicle-specific sensor list<a class="headerlink" href="#configuring-vehicle-specific-sensor-list" title="Permanent link">#</a></h2>
-<p>If a vehicle provides its sensor list, it <strong>must</strong> provide the whole list. Selective add/remove/update of the default sensor list is <strong>NOT</strong> supported. <br />
+<p>If a vehicle provides its sensor list, it <strong>must</strong> provide the whole list. Selective add/remove/update of the default sensor list is <strong>NOT</strong> supported.
 A vehicle specific sensor list can be specified in the vehicle settings part of the json.
 e.g.,</p>
 <pre><code>    &quot;Vehicles&quot;: {
@@ -332,7 +332,7 @@ e.g.,</p>
             &quot;AutoCreate&quot;: true,
             ...
             &quot;Sensors&quot;: {
-                &quot;MyLidar1&quot;: { 
+                &quot;MyLidar1&quot;: {
                     &quot;SensorType&quot;: 6,
                     &quot;Enabled&quot; : true,
                     &quot;NumberOfChannels&quot;: 16,
@@ -340,7 +340,7 @@ e.g.,</p>
                     &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
                     &quot;DrawDebugPoints&quot;: true
                 },
-                &quot;MyLidar2&quot;: { 
+                &quot;MyLidar2&quot;: {
                     &quot;SensorType&quot;: 6,
                     &quot;Enabled&quot; : true,
                     &quot;NumberOfChannels&quot;: 4,
@@ -354,10 +354,10 @@ e.g.,</p>
 </code></pre>
 
 <h3 id="sensor-specific-settings">Sensor specific settings<a class="headerlink" href="#sensor-specific-settings" title="Permanent link">#</a></h3>
-<p>Each sensor-type has its own set of settings as well. <br />
+<p>Each sensor-type has its own set of settings as well.
 Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.</p>
 <h2 id="sensor-apis">Sensor APIs<a class="headerlink" href="#sensor-apis" title="Permanent link">#</a></h2>
-<p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API. </p>
+<p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API.</p>
 <ul>
 <li>
 <p>Barometer</p>
@@ -370,17 +370,13 @@ barometer_data = getBarometerData(barometer_name = "", vehicle_name = "")</code>
 </li>
 <li>
 <p>IMU</p>
-</li>
-</ul>
 <p>C++
-    <code>cpp
-    msr::airlib::ImuBase::Output getImuData(const std::string&amp; imu_name = "", const std::string&amp; vehicle_name = "");</code></p>
-<pre><code>Python
-```python
-imu_data = getImuData(imu_name = "", vehicle_name = "")
-```
-</code></pre>
-<ul>
+<code>cpp
+msr::airlib::ImuBase::Output getImuData(const std::string&amp; imu_name = "", const std::string&amp; vehicle_name = "");</code></p>
+<p>Python
+<code>python
+imu_data = getImuData(imu_name = "", vehicle_name = "")</code></p>
+</li>
 <li>
 <p>GPS</p>
 <p>C++
@@ -409,7 +405,7 @@ Python
 distance_sensor_name = getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")</code></p>
 </li>
 <li>
-<p>Lidar <br />
+<p>Lidar
     See <a href="../lidar/">lidar</a> for Lidar API.</p>
 </li>
 </ul>

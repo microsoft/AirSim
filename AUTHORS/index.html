@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>ROS - AirSim</title>
+  <title>Authors - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "ROS";
-    var mkdocs_page_input_path = "ros.md";
+    var mkdocs_page_name = "Authors";
+    var mkdocs_page_input_path = "AUTHORS.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -67,7 +67,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Using AirSim</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../apis/">Core APIs</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../image_apis/">Image APIs</a>
@@ -94,9 +94,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">ROS</a>
-    <ul class="current">
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../ros/">ROS</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../playback/">Playing Logs</a>
                     </li>
@@ -219,15 +217,11 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
-        
-          <li>Using AirSim &raquo;</li>
-        
-      
     
-    <li>ROS</li>
+    <li>Authors</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/ros.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/AUTHORS.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -238,54 +232,14 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="how-to-use-airsim-with-robot-operating-system-ros">How to use AirSim with Robot Operating System (ROS)<a class="headerlink" href="#how-to-use-airsim-with-robot-operating-system-ros" title="Permanent link">#</a></h1>
-<p>AirSim and ROS can be integrated using C++ or Python.  Some example ROS nodes are provided demonstrating how to publish data from AirSim as ROS topics.</p>
-<h1 id="python">Python<a class="headerlink" href="#python" title="Permanent link">#</a></h1>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">#</a></h2>
-<p>These instructions are for Ubuntu 16.04, ROS Kinetic, UE4 4.22 or higher, and latest AirSim release.
-You should have these components installed and working before proceeding</p>
-<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
-<h3 id="create-a-new-ros-package-in-your-catkin-workspace-following-these-instructions">Create a new ROS package in your catkin workspace following these instructions.<a class="headerlink" href="#create-a-new-ros-package-in-your-catkin-workspace-following-these-instructions" title="Permanent link">#</a></h3>
-<p>Create a new ROS package called airsim or whatever you like.</p>
-<p><a href="http://wiki.ros.org/ROS/Tutorials/CreatingPackage">Create ROS package</a></p>
-<p>If you don't already have a catkin workspace, you should first work through the ROS beginner tutorials.</p>
-<h3 id="add-airsim-ros-node-examples-to-ros-package">Add AirSim ROS node examples to ROS package<a class="headerlink" href="#add-airsim-ros-node-examples-to-ros-package" title="Permanent link">#</a></h3>
-<p>In the ROS package directory you made, copy the ros examples from the AirSim/PythonClient directory to your ROS package. Change the code below to match your AirSim and catkin workspace paths.</p>
-<pre><code># copy package
-mkdir -p ../catkin_ws/src/airsim/scripts/airsim
-cp AirSim/PythonClient/airsim/*.py ../catkin_ws/src/airsim/scripts/airsim
-
-# copy ROS examples
-cp AirSim/PythonClient/ros/*.py ../catkin_ws/src/airsim/scripts
-</code></pre>
-
-<h3 id="build-ros-airsim-package">Build ROS AirSim package<a class="headerlink" href="#build-ros-airsim-package" title="Permanent link">#</a></h3>
-<p>Change directory to your top level catkin workspace folder i.e. <code>cd ~/catkin_ws</code>  and run <code>catkin_make</code>
-This will build the airsim package.  Next, run <code>source devel/setup.bash</code> so ROS can find the new package.
-You can add this command to your ~/.bashrc to load your catkin workspace automatically.</p>
-<h2 id="how-to-run-ros-airsim-nodes">How to run ROS AirSim nodes<a class="headerlink" href="#how-to-run-ros-airsim-nodes" title="Permanent link">#</a></h2>
-<p>First make sure UE4 is running an airsim project, the car or drone should be selected, and the simulations is playing.
-Examples support car or drone.  Make sure to have the correct vehicle for the ros example running. </p>
-<p>The example airsim nodes can be run using <code>rosrun airsim example_name.py</code> The output of the node 
-can be viewed in another terminal by running <code>rostopic echo /example_name</code>  You can view a list of the
-topics currently published via tab completion after typing <code>rostopic echo</code> in the terminal.
-Rviz is a useful visualization tool that can display the published data. </p>
-<h3 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h3>
-<p>In the case of <code>rosrun airsim example_name.py</code> returning <code>Couldn't find executable named...</code> you may <code>chmod +x example_name.py</code> to tell the system that this is executable.</p>
-<h1 id="c-coming-soon">C++ (coming soon)<a class="headerlink" href="#c-coming-soon" title="Permanent link">#</a></h1>
+                <h1 id="authors">Authors<a class="headerlink" href="#authors" title="Permanent link">#</a></h1>
+<p>AirSim was originally created by <a href="https://github.com/sytelus">Shital Shah</a> during late 2016. Shital authored physics engine, multirotor model, car model, environment models, sensor models, all Unreal Engine related code, APIs, SimpleFlight firmware, computer vision components, documentation etc.</p>
+<p><a href="https://github.com/lovettchris">Chris Lovett</a>, another original author, contributed the MavLink communication library, PX4 related components, Settings system, build system, several important bug fixes and so on.</p>
+<p>List of all contributors since our first release in February 2017 can be <a href="https://github.com/Microsoft/AirSim/graphs/contributors">found here</a>.</p>
               
             </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../playback/" class="btn btn-neutral float-right" title="Playing Logs">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-        <a href="../lidar/" class="btn btn-neutral" title="LIDAR"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
@@ -313,10 +267,6 @@ Rviz is a useful visualization tool that can display the published data. </p>
           <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../lidar/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-        <span style="margin-left: 15px"><a href="../playback/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

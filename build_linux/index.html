@@ -255,8 +255,9 @@
             <div class="section">
               
                 <h1 id="build-airsim-on-linux">Build AirSim on Linux<a class="headerlink" href="#build-airsim-on-linux" title="Permanent link">#</a></h1>
-<p>The current recommended and tested environment is <strong>Ubuntu 16.04 LTS</strong>. Theoretically, you can build on other distros and OSX as well, but we haven't tested it.</p>
-<p>We've two options - you can either build inside docker containers or your host machine. </p>
+<p>The current recommended and tested environment is <strong>Ubuntu 18.04 LTS</strong>. Theoretically, you can build on other distros as well, but we haven't tested it.</p>
+<p><strong>Note</strong>: It should be possible to build AirSim on OSX as well, but it isn't actively tested. Only macOS Catalina (10.15) is supported. Follow the same steps as Linux for building AirSim.</p>
+<p>We've two options - you can either build inside docker containers or your host machine.</p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>Please see instructions <a href="https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md">here</a></p>
 <h2 id="host-machine">Host machine<a class="headerlink" href="#host-machine" title="Permanent link">#</a></h2>
@@ -266,30 +267,29 @@
 <p>Make sure you are <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html">registered with Epic Games</a>. This is required to get source code access for Unreal Engine.</p>
 </li>
 <li>
-<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support &gt;= Unreal 4.22 at present. We recommend using 4.24. 
-   <code>bash
+<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal &gt;= 4.22 at present. We recommend using 4.24.</p>
+</li>
+</ul>
+<p><code>bash
    # go to the folder where you clone GitHub projects
    git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git
    cd UnrealEngine
    ./Setup.sh
    ./GenerateProjectFiles.sh
    make</code></p>
-</li>
-<li>
-<p>Clone AirSim and build it:
-   ```bash
+<ul>
+<li>Clone AirSim and build it:</li>
+</ul>
+<p><code>bash
    # go to the folder where you clone GitHub projects
    git clone https://github.com/Microsoft/AirSim.git
-   cd AirSim</p>
-</li>
-</ul>
-<p>By default AirSim recommends using clang 5 to build the binaries as those will be compatible with Unreal.  The setup script
-  will install the right version of cmake, llvm, and eigen:
+   cd AirSim</code></p>
+<p>By default AirSim recommends using clang 8 to build the binaries as those will be compatible with UE 4.24.  The setup script will install the right version of cmake, llvm, and eigen.</p>
+<p><code>bash
    ./setup.sh
-   ./build.sh
-   ```</p>
-<p>Optionally, if you need GCC binaries for some other reason, you can simply add gcc to the setup and build invocation, like this:
-   <code>bash
+   ./build.sh</code></p>
+<p>Optionally, if you need GCC binaries for some other reason, you can simply add gcc to the setup and build invocation, like this:</p>
+<p><code>bash
    ./setup.sh --gcc
    ./build.sh --gcc</code></p>
 <h3 id="build-unreal-environment">Build Unreal Environment<a class="headerlink" href="#build-unreal-environment" title="Permanent link">#</a></h3>
@@ -319,7 +319,7 @@
 <p>Unreal crashed! How do I know what went wrong?</p>
 </li>
 <li>
-<p>Go to the <code>MyUnrealProject/Saved/Crashes</code> folder and search for the file <code>MyProject.log</code> within its subdirectories. At the end of this file you will see the stack trace and messages.  <br />
+<p>Go to the <code>MyUnrealProject/Saved/Crashes</code> folder and search for the file <code>MyProject.log</code> within its subdirectories. At the end of this file you will see the stack trace and messages.
    You can also take a look at the <code>Diagnostics.txt</code> file.</p>
 </li>
 <li>
@@ -338,21 +338,21 @@
 <p>What compiler and stdlib does AirSim use?</p>
 </li>
 <li>
-<p>We use the same compiler that Unreal Engine uses, <strong>Clang 5.0</strong>, and stdlib, <strong>libc++</strong>. AirSim's <code>setup.sh</code> will automatically download them both. The libc++ source code is cloned into the <code>llvm-source-(version)</code> folder and is built into the <code>llvm-build</code> folder, from where CMake uses libc++.</p>
+<p>We use the same compiler that Unreal Engine uses, <strong>Clang 8</strong>, and stdlib, <strong>libc++</strong>. AirSim's <code>setup.sh</code> will automatically download them.</p>
 </li>
 <li>
 <p>What version of CMake does the AirSim build use?</p>
 </li>
 <li>
-<p>3.9.0 or higher. This is <em>not</em> the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using <code>cmake --version</code>. If you have an older version, follow <a href="../cmake_linux/">these instructions</a> or see the <a href="https://cmake.org/install/">CMake website</a>.</p>
+<p>3.10.0 or higher. This is <em>not</em> the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using <code>cmake --version</code>. If you have an older version, follow <a href="../cmake_linux/">these instructions</a> or see the <a href="https://cmake.org/install/">CMake website</a>.</p>
 </li>
 <li>
 <p>Can I compile AirSim in BashOnWindows?</p>
 </li>
 <li>
-<p>Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.  <br />
-   See the <a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">BashOnWindows install guide</a>. <br />
-   Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.  <br />
+<p>Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
+   See the <a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">BashOnWindows install guide</a>.
+   Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
    Also, don't invoke <code>bash</code> from <code>Visual Studio Command Prompt</code>, otherwise CMake might find VC++ and try and use that!</p>
 </li>
 <li>

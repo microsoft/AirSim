@@ -259,9 +259,9 @@ Click on the <code>Add Versions</code> which should show the option to download 
    <strong>Note</strong>: If you have UE 4.16 or older projects, please see the <a href="../unreal_upgrade/">upgrade guide</a> to upgrade your projects.</p>
 <h2 id="build-airsim">Build AirSim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h2>
 <ul>
-<li>Install Visual Studio 2017.  <br />
-<strong>Make sure</strong> to select <strong>VC++</strong> and <strong>Windows SDK 8.1</strong> while installing VS 2017.   </li>
-<li>Start <code>x64 Native Tools Command Prompt for VS 2017</code>. </li>
+<li>Install Visual Studio 2019.  <br />
+<strong>Make sure</strong> to select <strong>Desktop Development with C++</strong> and <strong>Windows 10 SDK 10.0.18362</strong> (should be selected by default) while installing VS 2019.   </li>
+<li>Start <code>Developer Command Prompt for VS 2019</code>. </li>
 <li>Clone the repo: <code>git clone https://github.com/Microsoft/AirSim.git</code>, and go the AirSim directory by <code>cd AirSim</code>. </li>
 <li>Run <code>build.cmd</code> from the command line. This will create ready to use plugin bits in the <code>Unreal\Plugins</code> folder that can be dropped into any Unreal project.</li>
 </ul>
@@ -296,7 +296,7 @@ Click on the <code>Add Versions</code> which should show the option to download 
 <p>In some cases, these settings will still not lead to the desired result and errors such as the following might be produced: LINK : fatal error LNK1181: cannot open input file 'ws2_32.lib'</p>
 <p>To resolve such issues the following procedure can be applied:
 1. Uninstall all old versions of VS using the <a href="https://github.com/Microsoft/VisualStudioUninstaller/releases">VisualStudioUninstaller</a>
-2. Repair/Install VS2017
+2. Repair/Install VS 2019
 3. Restart machine and install Epic launcher and desired version of the engine</p>
               
             </div>
