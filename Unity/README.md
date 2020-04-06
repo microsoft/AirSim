@@ -28,38 +28,39 @@ This project is still in early development, expect some rough edges. We are work
 * Additionally, there is a free environment `Windridge City` which you can download from [Unity Asset Store](https://assetstore.unity.com/packages/3d/environments/roadways/windridge-city-132222). And, of course, you can always create your own environment.
 
 ## Linux
-#### Necessary Packages
-The linux wrapper requires Boost filesystem, which you can install by running the following command:
+#### Dependencies
 ```
 sudo apt-get install libboost-all-dev
 ```
 #### Download and Install Unity for Linux
 <span style="color:red">Warning:</span> Unity Editor for Linux is still in Beta. Expect some rough edges.
 
-[Unity Editor](https://forum.unity.com/threads/unity-on-linux-release-notes-and-known-issues.350256/#post-2556301)
-* Download the editor by doing one of the following:
-	1. Navigate to the latest post on [this thread](https://forum.unity.com/threads/unity-on-linux-release-notes-and-known-issues.350256/#post-2556301) and click the download link
-	2. Open a terminal window and enter the following command:
-		```
-		wget https://beta.unity3d.com/download/dad990bf2728/UnitySetup-2018.2.7f1
-		```
-* Install The editor
-```
-chmod +x UnitySetup-2018.2.7f1
-./UnitySetup-2018.2.7f1
-```
+* **Download** Unity editor version `2019.1.0f2`
+	```shell
+	wget https://beta.unity3d.com/download/292b93d75a2c/UnitySetup-2019.1.0f2
+	```
+	Note: While the latest version of linux build of Unity can be found on the last post of [this thread](https://forum.unity.com/threads/unity-on-linux-release-notes-and-known-issues.350256/page-2#post-4458286), we recommend `2019.1.0f2`.
 
-#### Build Airsim in Linux
-* Open a new terminal window on your linux machine
-* Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
-* Run `setup.sh ` and subsequently `build.sh` from the the terminal.
+* **Install** the editor
+	```shell
+	chmod +x UnitySetup-2019.1.0f2
+	./UnitySetup-2019.1.0f2
+	```
+
+#### Build Airsim
+```
+git clone https://github.com/Microsoft/AirSim.git;
+cd AirSim;
+./setup.sh;
+./build.sh
+```
 
 #### Generate AirsimWrapper Shared Library
-* On your linux machine, navigate to your AirSim repository, and run the following commands in a terminal window:
-	```
-	cd Unity
-	./build.sh
-	```
+```
+cd AirSim/Unity
+./build.sh
+```
+
 This will generate the necessary shared library and copy it to the UnityDemo Plugins folder.
 
 ## Usage 

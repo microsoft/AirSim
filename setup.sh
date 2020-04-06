@@ -1,14 +1,5 @@
 #! /bin/bash
-
-if [[ -d "llvm-source-39" ]]; then
-    echo "Hello there! We just upgraded AirSim to Unreal Engine 4.18."
-    echo "Here are few easy steps for upgrade so everything is new and shiny :)"
-    echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
-    exit 1
-fi
-
 set -x
-# set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
@@ -38,11 +29,13 @@ done
 
 if $gccBuild; then
     # gcc tools
-    gcc_ver=$(gcc -dumpfullversion)
-    gcc_path=$(which cmake)
-    if [[ "$gcc_path" == "" ]] ; then
+    if ! which gcc; then
+        # GCC not installed
         gcc_ver=0
+    else
+        gcc_ver=$(gcc -dumpfullversion)
     fi
+
     if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
         if [ "$(uname)" == "Darwin" ]; then # osx
             brew update
@@ -59,26 +52,18 @@ else
     # llvm tools
     if [ "$(uname)" == "Darwin" ]; then # osx
         brew update
-
-        # brew install llvm@3.9
         brew tap llvm-hs/homebrew-llvm
-        brew install llvm-5.0
-        export C_COMPILER=/usr/local/opt/llvm-5.0/bin/clang-5.0
-        export COMPILER=/usr/local/opt/llvm-5.0/bin/clang++-5.0
-
+        brew install llvm@8
     else #linux
         #install clang and build tools
-
         VERSION=$(lsb_release -rs | cut -d. -f1)
-        # Since Ubuntu 17 clang-5.0 is part of the core repository
-        # See https://packages.ubuntu.com/search?keywords=clang-5.0
+        # Since Ubuntu 17 clang is part of the core repository
+        # See https://packages.ubuntu.com/search?keywords=clang-8
         if [ "$VERSION" -lt "17" ]; then
-            wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+            wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
             sudo apt-get update
         fi
-        sudo apt-get install -y clang-5.0 clang++-5.0
-        export C_COMPILER=clang-5.0
-        export COMPILER=clang++-5.0
+        sudo apt-get install -y clang-8 clang++-8 libc++-8-dev libc++abi-8-dev
     fi
 fi
 
@@ -102,37 +87,32 @@ else #linux
     #install additional tools
     sudo apt-get install -y build-essential
     sudo apt-get install -y unzip
+fi
 
+if ! which cmake; then
+    # CMake not installed
+    cmake_ver=0
+else
     cmake_ver=$(cmake --version 2>&1 | head -n1 | cut -d ' ' -f3 | awk '{print $NF}')
-    cmake_path=$(which cmake)
-    if [[ "$cmake_path" == "" ]] ; then
-        cmake_ver=0
-    fi
+fi
 
-    #download cmake - v3.10.2 is not out of box in Ubuntu 16.04
-    if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
-        if [[ ! -d "cmake_build/bin" ]]; then
-            echo "Downloading cmake..."
-            wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \
-                -O cmake.tar.gz
-            tar -xzf cmake.tar.gz
-            rm cmake.tar.gz
-            rm -rf ./cmake_build
-            mv ./cmake-3.10.2 ./cmake_build
-            pushd cmake_build
-            ./bootstrap
-            make
-            popd
-        fi
-        if [ "$(uname)" == "Darwin" ]; then
-            CMAKE="$(greadlink -f cmake_build/bin/cmake)"
-        else
-            CMAKE="$(readlink -f cmake_build/bin/cmake)"
-        fi
-    else
-        echo "Already have good version of cmake: $cmake_ver"
-        CMAKE=$(which cmake)
+#download cmake - v3.10.2 is not out of box in Ubuntu 16.04
+if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
+    if [[ ! -d "cmake_build/bin" ]]; then
+        echo "Downloading cmake..."
+        wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \
+            -O cmake.tar.gz
+        tar -xzf cmake.tar.gz
+        rm cmake.tar.gz
+        rm -rf ./cmake_build
+        mv ./cmake-3.10.2 ./cmake_build
+        pushd cmake_build
+        ./bootstrap
+        make
+        popd
     fi
+else
+    echo "Already have good version of cmake: $cmake_ver"
 fi
 
 # Download rpclib
@@ -179,66 +159,19 @@ else
     echo "### Not downloading high-poly car asset (--no-full-poly-car). The default unreal vehicle will be used."
 fi
 
-# Below is alternative way to get clang by downloading binaries
-# get clang, libc++
-# sudo rm -rf llvm-build
-# mkdir -p llvm-build/output
-# wget "http://releases.llvm.org/4.0.1/clang+llvm-4.0.1-x86_64-linux-gnu-debian8.tar.xz"
-# tar -xf "clang+llvm-4.0.1-x86_64-linux-gnu-debian8.tar.xz" -C llvm-build/output
+echo "Installing Eigen library..."
 
-# #other packages - not need for now
-# #sudo apt-get install -y clang-3.9-doc libclang-common-3.9-dev libclang-3.9-dev libclang1-3.9 libclang1-3.9-dbg libllvm-3.9-ocaml-dev libllvm3.9 libllvm3.9-dbg lldb-3.9 llvm-3.9 llvm-3.9-dev llvm-3.9-doc llvm-3.9-examples llvm-3.9-runtime clang-format-3.9 python-clang-3.9 libfuzzer-3.9-dev
-
-#get libc++ source
-if ! $gccBuild; then
-    echo "### Installing llvm 5 libc++ library..."
-    if [[ ! -d "llvm-source-50" ]]; then
-        git clone --depth=1 -b release_50  https://github.com/llvm-mirror/llvm.git llvm-source-50
-        git clone --depth=1 -b release_50  https://github.com/llvm-mirror/libcxx.git llvm-source-50/projects/libcxx
-        git clone --depth=1 -b release_50  https://github.com/llvm-mirror/libcxxabi.git llvm-source-50/projects/libcxxabi
-    else
-        echo "folder llvm-source-50 already exists, skipping git clone..."
-    fi
-    #build libc++
-    if [ "$(uname)" == "Darwin" ]; then
-        rm -rf llvm-build
-    else
-        sudo rm -rf llvm-build
-    fi
-    mkdir -p llvm-build
-    pushd llvm-build >/dev/null
-
-    "$CMAKE" -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${COMPILER} \
-          -LIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF -DLIBCXX_INSTALL_EXPERIMENTAL_LIBRARY=OFF \
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=./output \
-                ../llvm-source-50
-
-    make cxx -j`nproc`
-
-    #install libc++ locally in output folder
-    if [ "$(uname)" == "Darwin" ]; then
-        make install-libcxx install-libcxxabi
-    else
-        sudo make install-libcxx install-libcxxabi
-    fi
-
-    popd >/dev/null
-fi
-
-echo "Installing EIGEN library..."
-
-if [ "$(uname)" == "Darwin" ]; then
-    rm -rf ./AirLib/deps/eigen3/Eigen
+if [ ! -d "AirLib/deps/eigen3" ]; then
+    echo "Downloading Eigen..."
+    wget -O eigen3.zip https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip
+    unzip eigen3.zip -d temp_eigen
+    mkdir -p AirLib/deps/eigen3
+    mv temp_eigen/eigen*/Eigen AirLib/deps/eigen3
+    rm -rf temp_eigen
+    rm eigen3.zip
 else
-    sudo rm -rf ./AirLib/deps/eigen3/Eigen
+    echo "Eigen is already installed."
 fi
-echo "downloading eigen..."
-wget https://gitlab.com/libeigen/eigen/-/archive/3.3.2/eigen-3.3.2.zip
-unzip eigen-3.3.2.zip -d temp_eigen
-mkdir -p AirLib/deps/eigen3
-mv temp_eigen/eigen*/Eigen AirLib/deps/eigen3
-rm -rf temp_eigen
-rm eigen-3.3.2.zip
 
 popd >/dev/null
 

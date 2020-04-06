@@ -58,6 +58,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\setup_path.py" />
+    <Compile Include="multirotor\drone_lidar.py" />
     <Compile Include="multirotor\gimbal.py" />
     <Compile Include="multirotor\land.py" />
     <Compile Include="car\pause_continue_car.py">
@@ -66,7 +67,6 @@
     <Compile Include="multirotor\clock_speed.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="multirotor\lidar.py" />
     <Compile Include="multirotor\manual_mode_demo.py">
       <SubType>Code</SubType>
     </Compile>

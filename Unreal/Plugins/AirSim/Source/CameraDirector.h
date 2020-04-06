@@ -13,14 +13,14 @@
 UENUM(BlueprintType)
 enum class ECameraDirectorMode : uint8
 {
-    CAMERA_DIRECTOR_MODE_FPV = 1	UMETA(DisplayName = "FPV"),
-    CAMERA_DIRECTOR_MODE_GROUND_OBSERVER = 2	UMETA(DisplayName = "GroundObserver"),
-    CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 3	UMETA(DisplayName = "FlyWithMe"),
-    CAMERA_DIRECTOR_MODE_MANUAL = 4	UMETA(DisplayName = "Manual"),
-    CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE = 5	UMETA(DisplayName = "SpringArmChase"),
-    CAMERA_DIRECTOR_MODE_BACKUP = 6     UMETA(DisplayName = "Backup"),
-    CAMERA_DIRECTOR_MODE_NODISPLAY = 7      UMETA(DisplayName = "No Display"),
-	CAMERA_DIRECTOR_MODE_FRONT = 8	UMETA(DisplayName = "Front")
+    CAMERA_DIRECTOR_MODE_FPV = 0	UMETA(DisplayName = "FPV"),
+    CAMERA_DIRECTOR_MODE_GROUND_OBSERVER = 1	UMETA(DisplayName = "GroundObserver"),
+    CAMERA_DIRECTOR_MODE_FLY_WITH_ME = 2	UMETA(DisplayName = "FlyWithMe"),
+    CAMERA_DIRECTOR_MODE_MANUAL = 3	UMETA(DisplayName = "Manual"),
+    CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE = 4	UMETA(DisplayName = "SpringArmChase"),
+    CAMERA_DIRECTOR_MODE_BACKUP = 5     UMETA(DisplayName = "Backup"),
+    CAMERA_DIRECTOR_MODE_NODISPLAY = 6      UMETA(DisplayName = "No Display"),
+	CAMERA_DIRECTOR_MODE_FRONT = 7	UMETA(DisplayName = "Front")
 };
 
 UCLASS()
