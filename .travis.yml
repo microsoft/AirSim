@@ -2,7 +2,10 @@ language: cpp
 
 jobs:
   allow_failures:
-    - env: ALLOW_FAILURES=true
+    # TODO: Remove this when OSX 10.15 is available in Travis
+    - name: MacOS
+      os: osx
+      osx_image: xcode11.3
 
   include:
     - name: Ubuntu 18.04
