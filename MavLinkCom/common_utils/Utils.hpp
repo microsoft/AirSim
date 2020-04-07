@@ -65,6 +65,7 @@ using std::experimental::optional;
 */
 
 #ifndef _MSC_VER
+__attribute__((__format__ (__printf__, 1, 0)))
 static int _vscprintf(const char * format, va_list pargs)
 {
     int retval;
@@ -214,20 +215,9 @@ public:
         return str.substr(i, len - i);
     }
 
-    static string formatNumber(double number, int digits_after_decimal = -1, int digits_before_decimal = -1, bool sign_always = false)
-    {
-        std::string format_string = "%";
-        if (sign_always)
-            format_string += "+";
-        if (digits_before_decimal >= 0)
-            format_string += "0" + std::to_string(digits_before_decimal + std::max(digits_after_decimal, 0) + 1);
-        if (digits_after_decimal >= 0)
-            format_string += "." + std::to_string(digits_after_decimal);
-        format_string += "f";
-
-        return stringf(format_string.c_str(), number);
-    }
-
+    #ifndef _MSC_VER
+    __attribute__((__format__ (__printf__, 1, 0)))
+    #endif
     static string stringf(const char* format, ...)
     {
         va_list args;
