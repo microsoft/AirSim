@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="TopToBottom" Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="2c15319c-7069-4696-9df6-dd34a562d6891" Category="Comment" Bounds="905.355040283203,567.759958544922,240.81,121.72" Label="We do not allow drone to go back to offboard mode here because user flipped the switch, app has to go back through &quot;requestControl&quot; after user re-enables offboard mode by setting OFFB_SW to &quot;off&quot;.  User can also take over here with rc input." UseManualLocation="True" />
+    <Node Id="AutonomouseFlight" Bounds="676.021666666667,288.48,98.77,25.96" Label="Offboard flight" UseManualLocation="True" />
+    <Node Id="Loiter" Bounds="998.165040278457,482.480052490234,50.1033333333332,25.96" UseManualLocation="True" />
+    <Node Id="Loiter1" Bounds="683.708343098958,450.799858546456,66.2566666666667,25.96" Label="pos hold" UseManualLocation="True" />
+    <Node Id="ManualFlying" Bounds="265.526857867296,499.858611875636,91.9966666666669,25.9600000000001" Label="Manual flying" UseManualLocation="True" />
+    <Node Id="ManualRead" Bounds="404.663333333334,203.673140359058,92.1933333333334,25.96" Label="Manual ready" UseManualLocation="True" />
+    <Node Id="OFFB_SWIsTheValueOfTheRC_MAP_OFFB_SWChannel" Category="Comment" Bounds="95.0965531457475,269.189991091357,249.52,73.8399999999999" Label="OFFB_SW is the value of the RC_MAP_OFFB_SW channel defined by the user to turn off offboard mode.  This switch is important safety feature." UseManualLocation="True" />
+    <Node Id="OffboardReady" Bounds="838.406666666667,207.68,100.706666666667,25.96" Label="Offboard ready" />
+    <Node Id="Start" Bounds="196.76,202,50,25.96" UseManualLocation="True" />
+    <Node Id="b0935ca8-ea30-47d4-9618-f5c536ee85c01" Category="Comment" Bounds="402.974928385416,407.039858546456,242.803333333333,73.84" Label="There is an offboard timeout built into the PX4.  If no offboard moves are received within small timeout (50 ms) then it will disable offboard and go to position hold." UseManualLocation="True" />
+  </Nodes>
+  <Links>
+    <Link Source="2c15319c-7069-4696-9df6-dd34a562d6891" Target="Loiter" Bounds="1023.63649015455,517.438411321188,0.961133666054934,50.3215472237345" />
+    <Link Source="AutonomouseFlight" Target="AutonomouseFlight" Bounds="700.714172363281,258.480010986328,49.3817749023438,30" Label="RC input ignored" LabelBounds="645.656108350445,238.855663599167,89.9266666666667,15.96" />
+    <Link Source="AutonomouseFlight" Target="Loiter" Bounds="745.332302114673,314.44,250.41768105422,163.127620625474" Label="OFFB_SW on" LabelBounds="871.632794167285,378.368012906465,67.3166666666664,15.96" />
+    <Link Source="AutonomouseFlight" Target="Loiter1" Bounds="721.168273925781,314.440002441406,6.5775146484375,127.376220703125" Label="offboard timeout" LabelBounds="728.658758317001,369.784518789092,90.7333333333336,15.96" />
+    <Link Source="Loiter" Target="Loiter" Index="1" Bounds="1010.69085693359,452.480041503906,25.0499877929688,30" Label="move*() is an error" LabelBounds="1007.12618912496,432.602003304964,98.2166666666666,15.96" />
+    <Link Source="Loiter" Target="Loiter" Bounds="1010.69085693359,452.480041503906,25.0499877929688,30" Label="OFFB_SW off" LabelBounds="1037.92059652781,449.941630239697,68.0399999999995,15.96" />
+    <Link Source="Loiter" Target="ManualFlying" Bounds="366.520842512084,496.071780840564,631.644197766373,15.4239104422153" Label="rc input" LabelBounds="815.063093325697,504.048257929111,40.6100000000001,15.96" />
+    <Link Source="Loiter1" Target="AutonomouseFlight" Bounds="714.614929199219,323.42822265625,6.66259765625,127.371643066406" Label="requestControl" LabelBounds="635.350063264675,372.620170864477,79.17,15.96" />
+    <Link Source="Loiter1" Target="Loiter" Bounds="749.965009765625,467.205382146272,239.247761634916,24.7386080500161" Label="OFFB_SW on" LabelBounds="850.349415128674,459.614629618019,67.3166666666666,15.96" />
+    <Link Source="ManualFlying" Target="ManualFlying" Bounds="288.526031494141,469.858612060547,45.9953002929688,30" Label="RC input" LabelBounds="275.656206578578,450.234237171598,45.3299999999999,15.96" />
+    <Link Source="ManualRead" Target="ManualFlying" Bounds="321.455875113323,229.633140359058,123.202313717608,262.080550797926" Label="rc input" LabelBounds="384.86701435405,361.524276367716,40.6099999999997,15.96" />
+    <Link Source="ManualRead" Target="ManualRead" Bounds="427.711669921875,173.673141479492,46.0936279296875,30" Label="requestControl with&#xD;&#xA;OFFB_SW  on is ignored" LabelBounds="333.755129305629,138.088766969929,126.486666666667,31.9200000000001" />
+    <Link Source="ManualRead" Target="OffboardReady" Bounds="496.856666666667,217.074836416703,332.550376569632,3.04219790515282" Label="requestControl&#xD;&#xA;(OFFB_SW  off)" LabelBounds="543.025606023238,181.939153060624,79.1700000000001,31.92" />
+    <Link Source="OffboardReady" Target="AutonomouseFlight" Bounds="759.715416015188,233.64,102.80292226864,50.8497497406816" Label="Move*(...)" LabelBounds="812.003599429357,260.857561010863,49.873333333333,15.96" />
+    <Link Source="OffboardReady" Target="Loiter" Bounds="895.110974245938,233.64,117.799255346129,240.755870702968" Label="OFFB_SW on" LabelBounds="955.807086760617,337.178934661013,67.3166666666666,15.96" />
+    <Link Source="Start" Target="ManualRead" Bounds="246.76,215.162657244439,148.903573542133,1.08793265721093" Label="armed" LabelBounds="304.246398960614,195.746623571619,33.9599999999999,15.96" />
+    <Link Source="Start" Target="OFFB_SWIsTheValueOfTheRC_MAP_OFFB_SWChannel" Bounds="220.815650615387,227.96,0.673234026515075,32.2319536800576" />
+    <Link Source="b0935ca8-ea30-47d4-9618-f5c536ee85c01" Target="Loiter1" Bounds="645.778261718749,456.462092859554,28.9774292855958,2.98416505034049" />
+  </Links>
+  <Categories>
+    <Category Id="Comment" Label="Comment" Description="Represents a user defined comment on the diagram" CanBeDataDriven="True" IsProviderRoot="False" NavigationActionLabel="Comments" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="GraphDirection" DataType="Microsoft.VisualStudio.Diagrams.Layout.LayoutOrientation" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="IsProviderRoot" Label="IsProviderRoot" Description="IsProviderRoot" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="LabelBounds" DataType="System.Windows.Rect" />
+    <Property Id="Layout" DataType="System.String" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+    <Property Id="ZoomLevel" DataType="System.String" />
+  </Properties>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Async" ValueLabel="True">
+      <Condition Expression="HasCategory('Async')" />
+      <Setter Property="Background" Value="#FF7D7FCC" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Comment" ValueLabel="Has comment">
+      <Condition Expression="HasCategory('Comment')" />
+      <Setter Property="Background" Value="#FFF7E88B" />
+      <Setter Property="Stroke" Value="#FFE5C365" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="NodeRadius" Value="2" />
+      <Setter Property="MaxWidth" Value="250" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Start" ValueLabel="True">
+      <Condition Expression="HasCategory('Start')" />
+      <Setter Property="Background" Value="#FF48A646" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Problem" ValueLabel="True">
+      <Condition Expression="HasCategory('Problem')" />
+      <Setter Property="Background" Value="#FFA40A0A" />
+    </Style>
+  </Styles>
+</DirectedGraph>

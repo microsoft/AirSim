@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>ROS: AirSim ROS Wrapper - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "ROS: AirSim ROS Wrapper";
+    var mkdocs_page_input_path = "airsim_ros_pkgs.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../CHANGELOG/">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../build_windows/">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../build_linux/">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../custom_unity_environments/">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../unity_api_support/">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../apis/">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../image_apis/">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../camera_views/">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../using_car/">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../remote_control/">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../xbox_controller/">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../steering_wheel_installation/">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">ROS: AirSim ROS Wrapper</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build">Build</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running">Running</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../airsim_tutorial_pkgs/">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../retexturing/">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../meshes/">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../playback/">Playing Logs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../design/">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../code_structure/">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../coding_guidelines/">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../flight_controller/">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../simple_flight/">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../unreal_upgrade/">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../upgrade_apis/">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../upgrade_settings/">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../reinforcement_learning/">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../custom_drone/">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../cmake_linux/">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../hard_drive/">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../pfm/">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../unreal_proj/">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../unreal_blocks/">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../who_is_using/">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../working_with_plugin_contents/">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../SUPPORT/">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../create_issue/">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Using AirSim &raquo;</li>
+        
+      
+    
+    <li>ROS: AirSim ROS Wrapper</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/airsim_ros_pkgs.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="airsim_ros_pkgs">airsim_ros_pkgs<a class="headerlink" href="#airsim_ros_pkgs" title="Permanent link">#</a></h1>
+<p>A ROS wrapper over the AirSim C++ client library. </p>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
+<ul>
+<li>Ubuntu 16.04</li>
+<li>
+<p>Install <a href="https://wiki.ros.org/kinetic/Installation/Ubuntu">ROS kinetic</a></p>
+</li>
+<li>
+<p>Ubuntu 18.04</p>
+</li>
+<li>Install <a href="https://wiki.ros.org/melodic/Installation/Ubuntu">ROS melodic</a></li>
+</ul>
+<h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">#</a></h2>
+<ul>
+<li>Build AirSim </li>
+</ul>
+<pre><code>git clone https://github.com/Microsoft/AirSim.git;
+cd AirSim;
+./setup.sh;
+./build.sh;
+</code></pre>
+
+<ul>
+<li>Build ROS package</li>
+</ul>
+<pre><code>cd ros;
+catkin_make; # or catkin build
+</code></pre>
+
+<h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">#</a></h2>
+<pre><code>source devel/setup.bash;
+roslaunch airsim_ros_pkgs airsim_node.launch;
+roslaunch airsim_ros_pkgs rviz.launch;
+</code></pre>
+
+<h1 id="using-airsim-ros-wrapper">Using AirSim ROS wrapper<a class="headerlink" href="#using-airsim-ros-wrapper" title="Permanent link">#</a></h1>
+<p>The ROS wrapper is composed of two ROS nodes - the first is a wrapper over AirSim's multirotor C++ client library, and the second is a simple PD position controller.  <br />
+Let's look at the ROS API for both nodes: </p>
+<h3 id="airsim-ros-wrapper-node">AirSim ROS Wrapper Node<a class="headerlink" href="#airsim-ros-wrapper-node" title="Permanent link">#</a></h3>
+<h4 id="publishers">Publishers:<a class="headerlink" href="#publishers" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p><code>/airsim_node/origin_geo_point</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GPSYaw.msg">airsim_ros_pkgs/GPSYaw</a> <br />
+GPS coordinates corresponding to global NED frame. This is set in the airsim's <a href="https://microsoft.github.io/AirSim/docs/settings/">settings.json</a> file under the <code>OriginGeopoint</code> key. </p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/global_gps</code> <a href="https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html">sensor_msgs/NavSatFix</a> <br />
+This the current GPS coordinates of the drone in airsim. </p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/odom_local_ned</code> <a href="https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html">nav_msgs/Odometry</a> <br />
+Odometry in NED frame wrt take-off point.  </p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/CAMERA_NAME/IMAGE_TYPE/camera_info</code> <a href="https://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html">sensor_msgs/CameraInfo</a></p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/CAMERA_NAME/IMAGE_TYPE</code> <a href="https://docs.ros.org/api/sensor_msgs/html/msg/Image.html">sensor_msgs/Image</a> <br />
+  RGB or float image depending on image type requested in settings.json.</p>
+</li>
+<li>
+<p><code>/tf</code> <a href="https://docs.ros.org/api/tf2_msgs/html/msg/TFMessage.html">tf2_msgs/TFMessage</a></p>
+</li>
+</ul>
+<h4 id="subscribers">Subscribers:<a class="headerlink" href="#subscribers" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p><code>/airsim_node/vel_cmd_body_frame</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg">airsim_ros_pkgs/VelCmd</a>  <br />
+  Ignore <code>vehicle_name</code> field, leave it to blank. We will use <code>vehicle_name</code> in future for multiple drones.</p>
+</li>
+<li>
+<p><code>/airsim_node/vel_cmd_world_frame</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg">airsim_ros_pkgs/VelCmd</a>  <br />
+  Ignore <code>vehicle_name</code> field, leave it to blank. We will use <code>vehicle_name</code> in future for multiple drones.</p>
+</li>
+<li>
+<p><code>/gimbal_angle_euler_cmd</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GimbalAngleEulerCmd.msg">airsim_ros_pkgs/GimbalAngleEulerCmd</a> <br />
+  Gimbal set point in euler angles.    </p>
+</li>
+<li>
+<p><code>/gimbal_angle_quat_cmd</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GimbalAngleQuatCmd.msg">airsim_ros_pkgs/GimbalAngleQuatCmd</a> <br />
+  Gimbal set point in quaternion.    </p>
+</li>
+</ul>
+<h4 id="services">Services:<a class="headerlink" href="#services" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/land</code> <a href="https://docs.ros.org/api/std_srvs/html/srv/Empty.html">airsim_ros_pkgs/Takeoff</a></p>
+</li>
+<li>
+<p><code>/airsim_node/takeoff</code> <a href="https://docs.ros.org/api/std_srvs/html/srv/Empty.html">airsim_ros_pkgs/Takeoff</a></p>
+</li>
+<li>
+<p><code>/airsim_node/reset</code> <a href="https://docs.ros.org/api/std_srvs/html/srv/Empty.html">airsim_ros_pkgs/Reset</a>
+ Resets <em>all</em> drones</p>
+</li>
+</ul>
+<h4 id="parameters">Parameters:<a class="headerlink" href="#parameters" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p><code>/airsim_node/update_airsim_control_every_n_sec</code> [double] <br />
+  Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
+  Default: 0.01 seconds.  <br />
+  Timer callback frequency for updating drone odom and state from airsim, and sending in control commands.  <br />
+  The current RPClib interface to unreal engine maxes out at 50 Hz. <br />
+  Timer callbacks in ROS run at maximum rate possible, so it's best to not touch this parameter. </p>
+</li>
+<li>
+<p><code>/airsim_node/update_airsim_img_response_every_n_sec</code> [double] <br />
+  Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
+  Default: 0.01 seconds.  <br />
+  Timer callback frequency for receiving images from all cameras in airsim.  <br />
+  The speed will depend on number of images requested and their resolution. <br />
+  Timer callbacks in ROS run at maximum rate possible, so it's best to not touch this parameter. </p>
+</li>
+</ul>
+<h3 id="simple-pid-position-controller-node">Simple PID Position Controller Node<a class="headerlink" href="#simple-pid-position-controller-node" title="Permanent link">#</a></h3>
+<h4 id="parameters_1">Parameters:<a class="headerlink" href="#parameters_1" title="Permanent link">#</a></h4>
+<ul>
+<li>PD controller parameters:</li>
+<li>
+<p><code>/pd_position_node/kd_x</code> [double], <br />
+<code>/pd_position_node/kp_y</code> [double], <br />
+<code>/pd_position_node/kp_z</code> [double], <br />
+<code>/pd_position_node/kp_yaw</code> [double] <br />
+    Proportional gains</p>
+</li>
+<li>
+<p><code>/pd_position_node/kd_x</code> [double], <br />
+<code>/pd_position_node/kd_y</code> [double], <br />
+<code>/pd_position_node/kd_z</code> [double], <br />
+<code>/pd_position_node/kd_yaw</code> [double] <br />
+    Derivative gains</p>
+</li>
+<li>
+<p><code>/pd_position_node/reached_thresh_xyz</code> [double] <br />
+    Threshold euler distance (meters) from current position to setpoint position </p>
+</li>
+<li>
+<p><code>/pd_position_node/reached_yaw_degrees</code> [double] <br />
+    Threshold yaw distance (degrees) from current position to setpoint position </p>
+</li>
+<li>
+<p><code>/pd_position_node/update_control_every_n_sec</code> [double] <br />
+  Default: 0.01 seconds</p>
+</li>
+</ul>
+<h4 id="services_1">Services:<a class="headerlink" href="#services_1" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/gps_goal</code> [Request: <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/SetGPSPosition.srv">srv/SetGPSPosition</a>] <br />
+  Target gps position + yaw. <br />
+  In <strong>absolute</strong> altitude. </p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/local_position_goal</code> [Request: <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/SetLocalPosition.srv">srv/SetLocalPosition</a> <br />
+  Target local position + yaw in global NED frame.   </p>
+</li>
+</ul>
+<h4 id="subscribers_1">Subscribers:<a class="headerlink" href="#subscribers_1" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p><code>/airsim_node/origin_geo_point</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GPSYaw.msg">airsim_ros_pkgs/GPSYaw</a> <br />
+  Listens to home geo coordinates published by <code>airsim_node</code>.  </p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/odom_local_ned</code> <a href="https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html">nav_msgs/Odometry</a> <br />
+  Listens to odometry published by <code>airsim_node</code></p>
+</li>
+</ul>
+<h4 id="publishers_1">Publishers:<a class="headerlink" href="#publishers_1" title="Permanent link">#</a></h4>
+<ul>
+<li><code>/vel_cmd_world_frame</code> <a href="airsim_ros_pkgs/VelCmd">airsim_ros_pkgs/VelCmd</a> <br />
+  Sends velocity command to <code>airsim_node</code></li>
+</ul>
+<h3 id="global-params">Global params<a class="headerlink" href="#global-params" title="Permanent link">#</a></h3>
+<ul>
+<li>
+<p>Dynamic constraints. These can be changed in <code>dynamic_constraints.launch</code>:  </p>
+<ul>
+<li>
+<p><code>/max_vel_horz_abs</code> [double] <br />
+  Maximum horizontal velocity of the drone (meters/second)</p>
+</li>
+<li>
+<p><code>/max_vel_vert_abs</code> [double] <br />
+  Maximum vertical velocity of the drone (meters/second)</p>
+</li>
+<li>
+<p><code>/max_yaw_rate_degree</code> [double] <br />
+  Maximum yaw rate (degrees/second)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">#</a></h3>
+<h4 id="windows-subsytem-for-linux-on-windows-10">Windows Subsytem for Linux on Windows 10<a class="headerlink" href="#windows-subsytem-for-linux-on-windows-10" title="Permanent link">#</a></h4>
+<ul>
+<li>WSL setup:</li>
+<li>Get <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows Subsystem for Linux</a></li>
+<li>Get <a href="https://www.microsoft.com/en-us/p/ubuntu-1604-lts/9pjn388hp8c9?activetab=pivot:overviewtab">Ubuntu 16.04</a> or <a href="https://www.microsoft.com/en-us/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot%3Aoverviewtab">Ubuntu 18.04</a>  </li>
+<li>
+<p>Go to Ubuntu 16 / 18 instructions!</p>
+</li>
+<li>
+<p>Setup for X apps (like RViz, rqt_image_view, terminator) in Windows + WSL</p>
+</li>
+<li>Install <a href="https://sourceforge.net/projects/xming/">Xming X Server</a>. </li>
+<li>Find and run <code>XLaunch</code> from the Windows start menu. <br />
+  Select <code>Multiple Windows</code> in first popup, <code>Start no client</code> in second popup, <strong>only</strong> <code>Clipboard</code> in third popup. Do <strong>not</strong> select <code>Native Opengl</code>.  </li>
+<li>Open Ubuntu 16.04 / 18.04 session by typing <code>Ubuntu 16.04</code>  / <code>Ubuntu 18.04</code> in Windows start menu.  </li>
+<li>Recommended: Install <a href="http://www.ubuntugeek.com/terminator-multiple-gnome-terminals-in-one-window.html">terminator</a> : <code>$ sudo apt-get install terminator.</code> <ul>
+<li>You can open terminator in a new window by entering <code>$ DISPLAY=:0 terminator -u</code>. </li>
+</ul>
+</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../airsim_tutorial_pkgs/" class="btn btn-neutral float-right" title="ROS: AirSim Tutorial Packages">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../InfraredCamera/" class="btn btn-neutral" title="Infrared Camera"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2018 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../InfraredCamera/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../airsim_tutorial_pkgs/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
