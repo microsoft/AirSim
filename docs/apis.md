@@ -4,7 +4,7 @@
 AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on.
 
 ## Python Quickstart
-If you want to use Python to call AirSim APIs, we recommend using Anaconda with Python 3.5 or later versions however some code may also work with Python 2.7 ([help us](../CONTRIBUTING.md) improve compatibility!).
+If you want to use Python to call AirSim APIs, we recommend using Anaconda with Python 3.5 or later versions however some code may also work with Python 2.7 ([help us](CONTRIBUTING.md) improve compatibility!).
 
 First install this package:
 

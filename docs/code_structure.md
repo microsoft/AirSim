@@ -26,7 +26,7 @@ DroneShell demonstrates how to connect to the simulator using UDP.  The simulato
 
 ## Contributing
 
-See [Contribution Guidelines](../CONTRIBUTING.md)
+See [Contribution Guidelines](CONTRIBUTING.md)
 
 ## Unreal Framework
 
