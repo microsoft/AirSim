@@ -7,7 +7,7 @@ FlyingPawn::FlyingPawn(std::string multirotor_name) : multirotor_name_(multiroto
 	pawn_events_.getActuatorSignal().connect_member(this, &FlyingPawn::setRotorSpeed);
 }
 
-void FlyingPawn::setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorInfo>& rotor_infos)
+void FlyingPawn::setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorActuatorInfo>& rotor_infos)
 {
 	for (auto rotor_index = 0; rotor_index < rotor_infos.size(); ++rotor_index)
 	{

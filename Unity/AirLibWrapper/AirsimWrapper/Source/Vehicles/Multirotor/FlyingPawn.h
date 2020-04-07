@@ -15,7 +15,7 @@ public:
 		return &pawn_events_;
 	}
 	//called by API to set rotor speed
-	void setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorInfo>& rotor_infos);
+	void setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorActuatorInfo>& rotor_infos);
 
 private:
 	static constexpr size_t rotor_count = 4;

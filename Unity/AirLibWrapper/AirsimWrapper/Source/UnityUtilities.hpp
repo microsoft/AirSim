@@ -5,7 +5,7 @@
 
 namespace UnityUtilities
 {
-	static AirSimUnity::RotorInfo Convert_to_UnityRotorInfo(const MultirotorPawnEvents::RotorInfo& rotor_info)
+	static AirSimUnity::RotorInfo Convert_to_UnityRotorInfo(const MultirotorPawnEvents::RotorActuatorInfo& rotor_info)
 	{
 		AirSimUnity::RotorInfo unityRotorInfo;
 		unityRotorInfo.rotor_control_filtered = rotor_info.rotor_control_filtered;
