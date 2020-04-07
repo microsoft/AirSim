@@ -75,6 +75,7 @@ void DebugOutput(const char* message, ...) {
 }
 #else 
 // how do you write to the debug output windows on Unix ?
+ __attribute__((__format__ (__printf__, 1, 0))) 
 void DebugOutput(const char* message, ...) {
     va_list args;
     va_start(args, message);
