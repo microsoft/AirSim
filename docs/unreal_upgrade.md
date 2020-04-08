@@ -7,9 +7,9 @@ These instructions apply if you are already using AirSim on Unreal Engine 4.16. 
 ## Do this first
 
 ### For Windows Users
-1. Install Visual Studio 2017 with VC++, Python and C#.
+1. Install Visual Studio 2019 with VC++, Python and C#.
 2. Install UE 4.24 through Epic Games Launcher.
-3. Start `x64 Native Tools Command Prompt for VS 2017` and navigate to AirSim repo.
+3. Start `x64 Native Tools Command Prompt for VS 2019` and navigate to AirSim repo.
 4. Run `clean_rebuild.bat` to remove all unchecked/extra stuff and rebuild everything.
 
 ### For Linux Users
