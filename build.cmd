@@ -8,12 +8,12 @@ set "noFullPolyCar="
 set "buildMode="
 
 REM //check VS version
-if "%VisualStudioVersion%"=="" (
+if "%VisualStudioVersion%" == "" (
     echo(
     echo oh oh... You need to run this command from x64 Native Tools Command Prompt for VS 2019.
     goto :buildfailed_nomsg
 )
-if "%VisualStudioVersion%"=="15.0" (
+if "%VisualStudioVersion%" lss "16.0" (
     echo(
     echo Hello there! We just upgraded AirSim to Unreal Engine 4.24 and Visual Studio 2019.
     echo Here are few easy steps for upgrade so everything is new and shiny:
