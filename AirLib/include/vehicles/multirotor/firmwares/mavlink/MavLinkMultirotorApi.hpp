@@ -1333,14 +1333,21 @@ private: //methods
         hil_sensor.ygyro = gyro.y();
         hil_sensor.zgyro = gyro.z();
 
+        hil_sensor.fields_updated = 0b111 | 0b111000; // Set accel and gyro bit fields respectively
+
         hil_sensor.xmag = mag.x();
         hil_sensor.ymag = mag.y();
         hil_sensor.zmag = mag.z();
 
+        hil_sensor.fields_updated = hil_sensor.fields_updated | 0b111000000; // Set mag bit field
+
         hil_sensor.abs_pressure = abs_pressure;
         hil_sensor.pressure_alt = pressure_alt;
+
+        hil_sensor.fields_updated = hil_sensor.fields_updated | 0b1101000000000; // Set baro bit field
+
         //TODO: enable temperature? diff_pressure
-        hil_sensor.fields_updated = was_reset_ ? (1 << 31) : 0;
+        hil_sensor.fields_updated = was_reset_ ? (1 << 31) : hil_sensor.fields_updated;
 
         if (hil_node_ != nullptr) {
             hil_node_->sendMessage(hil_sensor);
