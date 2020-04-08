@@ -15,16 +15,16 @@ This project is still in early development, expect some rough edges. We are work
 * Note: If you are using Unity for the first time, check out [the Getting started guide](https://docs.unity3d.com/Manual/GettingStarted.html). The [Unity User Manual](https://docs.unity3d.com/Manual/UnityManual.html) has additional tips, resources, and FAQs.
 
 #### Build Airsim
-* Install Visual Studio 2017. 
-**Make sure** to select **VC++** and **Windows SDK 8.1** while installing VS 2017.   
+* Install Visual Studio 2019. 
+**Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.18362** (should be selected by default) while installing VS 2019. 
 
-* Start `x64 Native Tools Command Prompt for VS 2017`. 
+* Start `x64 Native Tools Command Prompt for VS 2019`. 
 * Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
 * Run `build.cmd` from the command line. 
 
 #### Build Unity Project
 * Go inside the AirSim\Unity directory: `cd Unity`. 
-* Build the unity project: `build.cmd`.   
+* Build the unity project: `build.cmd`. 
 * Additionally, there is a free environment `Windridge City` which you can download from [Unity Asset Store](https://assetstore.unity.com/packages/3d/environments/roadways/windridge-city-132222). And, of course, you can always create your own environment.
 
 ## Linux
