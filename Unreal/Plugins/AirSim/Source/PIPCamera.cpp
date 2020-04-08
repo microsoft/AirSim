@@ -254,7 +254,7 @@ void APIPCamera::setCameraOrientation(const FRotator& rotator)
     this->SetActorRelativeRotation(rotator);
 }
 
-void APIPCamera::setCameraFoV(const float& fov_degrees)
+void APIPCamera::setCameraFoV(float fov_degrees)
 {
     int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
     for (int image_type = 0; image_type < image_count; ++image_type) {

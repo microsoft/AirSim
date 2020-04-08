@@ -215,7 +215,7 @@ void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr:
 	SetCameraOrientation(camera_name.c_str(), airSimOrientation, params_.vehicle_name.c_str());
 }
 
-void PawnSimApi::setCameraFoV(const std::string& camera_name, const float& fov_degrees)
+void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
 {
 	SetCameraFoV(camera_name.c_str(), fov_degrees, params_.vehicle_name.c_str());
 }
