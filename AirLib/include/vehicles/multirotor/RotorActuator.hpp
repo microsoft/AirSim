@@ -3,8 +3,8 @@
 
 
 
-#ifndef airsimcore_motor_hpp
-#define airsimcore_motor_hpp
+#ifndef rotor_actuator_hpp
+#define rotor_actuator_hpp
 
 #include <limits>
 #include "common/Common.hpp"
@@ -18,7 +18,7 @@ namespace msr { namespace airlib {
 //Rotor gets control signal as input (PWM or voltage represented from 0 to 1) which causes 
 //change in rotation speed and turning direction and ultimately produces force and thrust as
 //output
-class Rotor : public PhysicsBodyVertex {
+class RotorActuator : public PhysicsBodyVertex {
 public: //types
     struct Output {
         real_T thrust;
@@ -30,11 +30,11 @@ public: //types
     };
 
 public: //methods
-    Rotor()
+    RotorActuator()
     {
         //allow default constructor with later call for initialize
     }
-    Rotor(const Vector3r& position, const Vector3r& normal, RotorTurningDirection turning_direction, 
+    RotorActuator(const Vector3r& position, const Vector3r& normal, RotorTurningDirection turning_direction, 
         const RotorParams& params, const Environment* environment, uint id = -1)
     {
         initialize(position, normal, turning_direction, params, environment, id);

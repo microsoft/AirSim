@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef msr_airlib_multirotor_hpp
-#define msr_airlib_multirotor_hpp
+#ifndef msr_airlib_multirotorphysicsbody_hpp
+#define msr_airlib_multirotorphysicsbody_hpp
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "Rotor.hpp"
+#include "RotorActuator.hpp"
 #include "api/VehicleApiBase.hpp"
 #include "api/VehicleSimApiBase.hpp"
 #include "MultiRotorParams.hpp"
@@ -16,9 +16,9 @@
 
 namespace msr { namespace airlib {
 
-class MultiRotor : public PhysicsBody {
+class MultiRotorPhysicsBody : public PhysicsBody {
 public:
-    MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
+    MultiRotorPhysicsBody(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
         Kinematics* kinematics, Environment* environment)
         : params_(params), vehicle_api_(vehicle_api)
     {
@@ -101,15 +101,15 @@ public:
 
     virtual uint dragVertexCount() const override
     {
-        return static_cast<uint>(drag_vertices_.size());
+        return static_cast<uint>(drag_faces_.size());
     }
     virtual PhysicsBodyVertex& getDragVertex(uint index)  override
     {
-        return drag_vertices_.at(index);
+        return drag_faces_.at(index);
     }
     virtual const PhysicsBodyVertex& getDragVertex(uint index) const override
     {
-        return drag_vertices_.at(index);
+        return drag_faces_.at(index);
     }
 
     virtual real_T getRestitution() const override
@@ -121,12 +121,12 @@ public:
         return params_->getParams().friction;
     }
 
-    Rotor::Output getRotorOutput(uint rotor_index) const
+    RotorActuator::Output getRotorOutput(uint rotor_index) const
     {
         return rotors_.at(rotor_index).getOutput();
     }
 
-    virtual ~MultiRotor() = default;
+    virtual ~MultiRotorPhysicsBody() = default;
 
 private: //methods
     void initialize(Kinematics* kinematics, Environment* environment)
@@ -139,7 +139,7 @@ private: //methods
         initSensors(*params_, getKinematics(), getEnvironment());
     }
 
-    static void createRotors(const MultiRotorParams& params, vector<Rotor>& rotors, const Environment* environment)
+    static void createRotors(const MultiRotorParams& params, vector<RotorActuator>& rotors, const Environment* environment)
     {
         rotors.clear();
         //for each rotor pose
@@ -191,13 +191,13 @@ private: //methods
             * params.linear_drag_coefficient / 2; 
 
         //add six drag vertices representing 6 sides
-        drag_vertices_.clear();
-        drag_vertices_.emplace_back(Vector3r(0, 0, -params.body_box.z()), Vector3r(0, 0, -1), drag_factor_unit.z());
-        drag_vertices_.emplace_back(Vector3r(0, 0,  params.body_box.z()), Vector3r(0, 0,  1), drag_factor_unit.z());
-        drag_vertices_.emplace_back(Vector3r(0, -params.body_box.y(), 0), Vector3r(0, -1, 0), drag_factor_unit.y());
-        drag_vertices_.emplace_back(Vector3r(0,  params.body_box.y(), 0), Vector3r(0,  1, 0), drag_factor_unit.y());
-        drag_vertices_.emplace_back(Vector3r(-params.body_box.x(), 0, 0), Vector3r(-1, 0, 0), drag_factor_unit.x());
-        drag_vertices_.emplace_back(Vector3r( params.body_box.x(), 0, 0), Vector3r( 1, 0, 0), drag_factor_unit.x());
+        drag_faces_.clear();
+        drag_faces_.emplace_back(Vector3r(0, 0, -params.body_box.z()), Vector3r(0, 0, -1), drag_factor_unit.z());
+        drag_faces_.emplace_back(Vector3r(0, 0,  params.body_box.z()), Vector3r(0, 0,  1), drag_factor_unit.z());
+        drag_faces_.emplace_back(Vector3r(0, -params.body_box.y(), 0), Vector3r(0, -1, 0), drag_factor_unit.y());
+        drag_faces_.emplace_back(Vector3r(0,  params.body_box.y(), 0), Vector3r(0,  1, 0), drag_factor_unit.y());
+        drag_faces_.emplace_back(Vector3r(-params.body_box.x(), 0, 0), Vector3r(-1, 0, 0), drag_factor_unit.x());
+        drag_faces_.emplace_back(Vector3r( params.body_box.x(), 0, 0), Vector3r( 1, 0, 0), drag_factor_unit.x());
 
     }
 
@@ -205,8 +205,8 @@ private: //fields
     MultiRotorParams* params_;
 
     //let us be the owner of rotors object
-    vector<Rotor> rotors_;
-    vector<PhysicsBodyVertex> drag_vertices_;
+    vector<RotorActuator> rotors_;
+    vector<PhysicsBodyVertex> drag_faces_;
 
     std::unique_ptr<Environment> environment_;
     VehicleApiBase* vehicle_api_;

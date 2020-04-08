@@ -2,7 +2,7 @@
 #define msr_airlib_ArduCopterSoloApi_h
 
 #include "AdHocConnection.hpp"
-#include "vehicles/multirotor/MultiRotor.hpp"
+#include "vehicles/multirotor/MultiRotorPhysicsBody.hpp"
 #include "vehicles/multirotor/firmwares/mavlink/MavLinkMultirotorApi.hpp"
 
 namespace msr { namespace airlib {

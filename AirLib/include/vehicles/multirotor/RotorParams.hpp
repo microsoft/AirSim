@@ -4,7 +4,6 @@
 #ifndef msr_airlib_RotorParams_hpp
 #define msr_airlib_RotorParams_hpp
 
-
 #include "common/Common.hpp"
 
 namespace msr {

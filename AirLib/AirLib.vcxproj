@@ -165,10 +165,10 @@
     <ClInclude Include="include\sensors\SensorCollection.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\Px4MultiRotorParams.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\SimpleFlightQuadXParams.hpp" />
-    <ClInclude Include="include\vehicles\multirotor\MultiRotor.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\MultiRotorPhysicsBody.hpp" />
     <ClInclude Include="include\vehicles\multirotor\MultiRotorParams.hpp" />
     <ClInclude Include="include\vehicles\multirotor\MultiRotorParamsFactory.hpp" />
-    <ClInclude Include="include\vehicles\multirotor\Rotor.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\RotorActuator.hpp" />
     <ClInclude Include="include\vehicles\multirotor\RotorParams.hpp" />
   </ItemGroup>
   <ItemGroup>
