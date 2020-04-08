@@ -72,7 +72,6 @@ std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_r
     return result;
 }
 
-
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
     Pose result;

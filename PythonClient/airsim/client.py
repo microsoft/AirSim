@@ -153,8 +153,28 @@ class VehicleClient:
         return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name))
 
     def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
+        """
+        - Control the orientation of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            orientation (airsim.Quaternion()): Quaternion representing the desired orientation of the camera
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+        """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraOrientation', str(camera_name), orientation, vehicle_name)
+        
+    def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = ''):
+        """
+        - Control the field of view of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            fov_degrees (float): Value of field of view in degrees
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+        """
+        # TODO: below str() conversion is only needed for legacy reason and should be removed in future
+        return self.client.call('simSetCameraFov', str(camera_name), fov_degrees, vehicle_name)
 
     def simGetGroundTruthKinematics(self, vehicle_name = ''):
         kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
