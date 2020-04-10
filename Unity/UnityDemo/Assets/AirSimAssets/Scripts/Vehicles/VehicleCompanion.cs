@@ -94,6 +94,7 @@ namespace AirSimUnity {
                 Marshal.GetFunctionPointerForDelegate(new Func<string, CarState>(GetCarState)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, string, CameraInfo>(GetCameraInfo)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, AirSimQuaternion, string, bool>(SetCameraOrientation)),
+                Marshal.GetFunctionPointerForDelegate(new Func<string, float, string, bool>(SetCameraFoV)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, int, bool, bool>(SetSegmentationObjectId)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, int>(GetSegmentationObjectId)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, string, string, int, bool>(PrintLogMessage)),
@@ -186,6 +187,11 @@ namespace AirSimUnity {
         private static bool SetCameraOrientation(string cameraName, AirSimQuaternion orientation, string vehicleName) {
             var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
             return vehicle.VehicleInterface.SetCameraOrientation(cameraName, orientation);
+        }
+
+        private static bool SetCameraFoV(string cameraName, float fov_degrees, string vehicleName) {
+            var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
+            return vehicle.VehicleInterface.SetCameraFoV(cameraName, fov_degrees);
         }
 
         private static bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity) {
