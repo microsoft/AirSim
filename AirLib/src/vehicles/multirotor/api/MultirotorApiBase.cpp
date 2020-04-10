@@ -288,7 +288,7 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
     float goal_dist = 0;
 
     //until we are at the end of the path (last seg is always zero size)
-    while (!waiter.isTimeout() && (next_path_loc.seg_index < path_segs.size()-1 || goal_dist > 0)
+    while (!waiter.isTimeout() && (next_path_loc.seg_index < path_segs.size()-1 || goal_dist >= 0)
         ) { //current position is approximately at the last end point
 
         float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
