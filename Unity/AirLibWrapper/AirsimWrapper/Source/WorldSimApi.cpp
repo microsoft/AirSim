@@ -80,6 +80,13 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 	return SetPose(airSimPose, false, object_name.c_str());
 }
 
+void WorldSimApi::disableActor(const std::string& object_name)
+{
+    unused(object_name);
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simDisableActor is not supported on unity").c_str());
+}
+
 void WorldSimApi::enableWeather(bool enable)
 {
     unused(enable);
