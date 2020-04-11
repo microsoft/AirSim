@@ -268,6 +268,15 @@ class VehicleClient:
         responses_raw = self.client.call('simGetMeshPositionVertexBuffers')
         return [MeshPositionVertexBuffersResponse.from_msgpack(response_raw) for response_raw in responses_raw]
 
+    def simDisableActor(self, object_name):
+        """
+        - Disables an actor from the simulation
+
+        Args:
+            object_name (str): Name of the object(actor) to be disabled
+        """
+        self.client.call('simDisableActor', object_name)
+
     def simGetCollisionInfo(self, vehicle_name = ''):
         """
         Args:
