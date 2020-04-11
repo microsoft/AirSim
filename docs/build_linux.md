@@ -1,8 +1,8 @@
-# Build AirSim on Linux
+# Build AirSim on Linux & MacOS
 
 The current recommended and tested environment is **Ubuntu 18.04 LTS**. Theoretically, you can build on other distros as well, but we haven't tested it.
 
-**Note**: It should be possible to build AirSim on OSX as well, but it isn't actively tested. Only macOS Catalina (10.15) is supported. Follow the same steps as Linux for building AirSim.
+Only macOS **Catalina (10.15)** is supported.
 
 We've two options - you can either build inside docker containers or your host machine.
 
@@ -11,7 +11,8 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 
 ## Host machine
 
-### Build Unreal Engine and Airsim
+### Linux - Build Unreal Engine
+
 - Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
 
 - Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.22 at present. We recommend using 4.24.
@@ -24,6 +25,17 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
    ./GenerateProjectFiles.sh
    make
    ```
+
+### MacOS
+
+1. [Download](https://www.unrealengine.com/download) the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.
+2. Run the Epic Games Launcher, open the `Library` tab on the left pane.
+Click on the `Add Versions` which should show the option to download **Unreal 4.24** as shown below. If you have multiple versions of Unreal installed then **make sure 4.24 is set to `current`** by clicking down arrow next to the Launch button for the version.
+
+   **Note**: AirSim also works with UE >= 4.22, however, we recommend you update to 4.24.
+   **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
+
+### Build AirSim
 
 - Clone AirSim and build it:
 
