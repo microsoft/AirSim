@@ -3,6 +3,10 @@
 A ROS wrapper over the AirSim C++ client library. 
 
 ##  Setup 
+- Install gcc >= 8.0.0
+`sudo apt-get install gcc-8 g++-8`
+Verify version by `gcc --version`
+
 - Ubuntu 16.04
   * Install [ROS kinetic](https://wiki.ros.org/kinetic/Installation/Ubuntu)
 
