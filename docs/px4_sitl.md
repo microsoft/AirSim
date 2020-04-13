@@ -14,13 +14,13 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
     cd PX4
     git clone https://github.com/PX4/Firmware.git
     cd Firmware
-    git checkout v1.9.2  # Pick a well known "good" release tag.
+    git checkout v1.10.1 # recommended version 
     ```
 3. Use following command to build and start PX4 firmware in SITL mode:
     ```
     make px4_sitl_default none_iris
     ```
-   If you are using older version v1.8.* use this command instead: `make posix_sitl_ekf2  none_iris`.
+   If you are using older version v1.8.* use this command instead: `make posix_sitl_ekf2 none_iris`.
 
 4. You should see a message saying the SITL PX4 app is waiting for the simulator (AirSim) to connect.
 You will also see information about which ports are configured for mavlink connection to the PX4 app.
