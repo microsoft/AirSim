@@ -7,22 +7,7 @@ pushd "$SCRIPT_DIR"  >/dev/null
 set -e
 set -x
 
-MIN_GCC_VERSION=6.0.0
-gccBuild=false
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
-
-# Parse command line arguments
-while [[ $# -gt 0 ]]
-do
-key="$1"
-
-case $key in
-    --gcc)
-    gccBuild=true
-    shift # past argument
-    ;;
-esac
-done
 
 # check for rpclib
 if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
@@ -42,35 +27,14 @@ else
     CMAKE=$(which cmake)
 fi
 
-# set up paths of cc and cxx compiler
-if $gccBuild; then
-    # variable for build output
-    build_dir=build_gcc_debug
-    # gcc tools
-    if ! which gcc; then
-        echo "ERROR: run setup.sh to install a good version of gcc."
-        exit 1
-    else
-        gcc_ver=$(gcc -dumpfullversion)
-    fi
-
-    if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
-        export CC="gcc-6"
-        export CXX="g++-6"
-    else
-        export CC="gcc"
-        export CXX="g++"
-    fi
+# variable for build output
+build_dir=build_debug
+if [ "$(uname)" == "Darwin" ]; then
+    export CC=/usr/local/opt/llvm@8/bin/clang
+    export CXX=/usr/local/opt/llvm@8/bin/clang++
 else
-    # variable for build output
-    build_dir=build_debug
-    if [ "$(uname)" == "Darwin" ]; then
-        export CC=/usr/local/opt/llvm@8/bin/clang
-        export CXX=/usr/local/opt/llvm@8/bin/clang++
-    else
-        export CC="clang-8"
-        export CXX="clang++-8"
-    fi
+    export CC="clang-8"
+    export CXX="clang++-8"
 fi
 
 #install EIGEN library
