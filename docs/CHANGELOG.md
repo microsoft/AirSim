@@ -2,8 +2,49 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### April 2020
+
+* [Fix issues with PX4 latest master branch](https://github.com/microsoft/AirSim/pull/2634)
+* [Fix Lidar DrawDebugPoints causing crash](https://github.com/microsoft/AirSim/pull/2614)
+* [Add docstrings for Python API](https://github.com/microsoft/AirSim/pull/2565)
+* [Add missing noise, weather texture materials](https://github.com/microsoft/AirSim/pull/2625)
+* [Update AirSim.uplugin version to 1.3.1](https://github.com/microsoft/AirSim/pull/2584)
+* [Camera Roll angle control using Q,E keys in CV mode, manual camera](https://github.com/microsoft/AirSim/pull/2610)
+* [Remove broken GCC build](https://github.com/microsoft/AirSim/pull/2572)
+* New API - [`simSetTraceLine()`](https://github.com/microsoft/AirSim/pull/2506)
+* [ROS package compilation fixes and updates](https://github.com/microsoft/AirSim/pull/2571)
+* Latest release `v1.3.1` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux)
+* APIs added and fixed - [`simSetCameraFov`](https://github.com/microsoft/AirSim/pull/2534), [`rotateToYaw`](https://github.com/microsoft/AirSim/pull/2516)
+* [airsim](https://pypi.org/project/airsim/) Python package update to `1.2.8`
+* [NoDisplay ViewMode render state fix](https://github.com/microsoft/AirSim/pull/2518)
+
 ### March 2020
-* Upgraded to Unreal Engine 4.24
+
+* Latest release `v1.3.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.3.0-Windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.3.0-linux)
+* Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard
+* Mac OSX Catalina support
+* Updated [airsim](https://pypi.org/project/airsim/) Python package, with lots of new APIs
+* [Removed legacy API wrappers](https://github.com/microsoft/AirSim/pull/2494)
+* [Support for latest PX4 stable release](px4_setup.md)
+* Support for [ArduPilot](https://ardupilot.org/ardupilot/) - [Copter, Rover vehicles](https://ardupilot.org/dev/docs/sitl-with-airsim.html)
+* [Updated Unity support](Unity.md)
+* [Removed simChar* APIs](https://github.com/microsoft/AirSim/pull/2493)
+* [Plotting APIs for Debugging](https://github.com/microsoft/AirSim/pull/2304)
+* [Low-level Multirotor APIs](https://github.com/microsoft/AirSim/pull/2297)
+* [Updated Eigen version to 3.3.7](https://github.com/microsoft/AirSim/pull/2325)
+* [Distance Sensor API fix](https://github.com/microsoft/AirSim/pull/2403)
+* Add [`simSwapTextures`](retexturing.md) API
+* Fix [`simContinueForTime`](https://github.com/microsoft/AirSim/pull/2299), [`simPause`](https://github.com/microsoft/AirSim/pull/2292) APIs
+* [Lidar Sensor Trace Casting fix](https://github.com/microsoft/AirSim/pull/2143)
+* [Fix rare `reset()` bug which causes Unreal crash](https://github.com/microsoft/AirSim/pull/2146)
+* [Lidar sensor improvements, add `simGetLidarSegmentation` API](https://github.com/microsoft/AirSim/pull/2011)
+* [Add RpcLibPort in settings](https://github.com/microsoft/AirSim/pull/2185)
+* [Recording thread deadlock fix](https://github.com/microsoft/AirSim/pull/1695)
+* [Prevent environment crash when Sun is not present](https://github.com/microsoft/AirSim/pull/2147)
+* [Africa Tracking feautre, add `simListSceneObjects()` API, fix camera projection matrix](https://github.com/microsoft/AirSim/pull/1959)
+* ROS wrapper for multirotors is available. See [airsim_ros_pkgs](airsim_ros_pkgs.md) for the ROS API, and [airsim_tutorial_pkgs](airsim_tutorial_pkgs.md) for tutorials.
+* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](sensors.md)
+* Added support for [docker in ubuntu](docker_ubuntu.md)
 
 ### November, 2018
 * Added Weather Effects and [APIs](apis.md#weather-apis)
