@@ -377,3 +377,6 @@ ros/src/CMakeLists.txt
 # docs
 docs/README.md
 build_docs/
+
+# api docs
+PythonClient/docs/_build
