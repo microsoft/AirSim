@@ -13,6 +13,10 @@ Verify version by `gcc --version`
 - Ubuntu 18.04
   * Install [ROS melodic](https://wiki.ros.org/melodic/Installation/Ubuntu)
 
+- Install [catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html)
+    `sudo apt-get install python-catkin-tools` or
+    `pip install catkin_tools`
+
 ##  Build
 - Build AirSim 
 ```
@@ -25,7 +29,13 @@ cd AirSim;
 
 ```
 cd ros;
-catkin_make; # or catkin build
+catkin build; # or catkin_make
+```
+
+If your default GCC isn't 8 or greater (check using `gcc --version`), then compilation will fail. In that case, use `gcc-8` explicitly as follows-
+
+```
+catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
 ```
 
 ## Running
