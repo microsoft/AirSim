@@ -82,6 +82,7 @@ public:
 		return params_.vehicle_name;
 	}
 	virtual void toggleTrace() override;
+	virtual void setTraceLine(const std::vector<float>& color_rgba, float thickness) override;
 	virtual void updateRenderedState(float dt) override;
 	virtual void updateRendering(float dt) override;
 	virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;

@@ -183,6 +183,12 @@ void PawnSimApi::toggleTrace()
 	state_.tracing_enabled = !state_.tracing_enabled;
 }
 
+void PawnSimApi::setTraceLine(const std::vector<float>& color_rgba, float thickness)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "setTraceLine is not supported on unity").c_str());
+}
+
 void PawnSimApi::allowPassthroughToggleInput()
 {
 	state_.passthrough_enabled = !state_.passthrough_enabled;

@@ -129,6 +129,9 @@ class VehicleClient:
         pose = self.client.call('simGetVehiclePose', vehicle_name)
         return Pose.from_msgpack(pose)
 
+    def simSetTraceLine(self, color_rgba, thickness=1.0, vehicle_name = ''):
+        self.client.call('simSetTraceLine', color_rgba, thickness, vehicle_name)
+
     def simGetObjectPose(self, object_name):
         pose = self.client.call('simGetObjectPose', object_name)
         return Pose.from_msgpack(pose)
