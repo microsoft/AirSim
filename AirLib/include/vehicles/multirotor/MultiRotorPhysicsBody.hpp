@@ -192,12 +192,12 @@ private: //methods
 
         //add six drag vertices representing 6 sides
         drag_faces_.clear();
-        drag_faces_.emplace_back(Vector3r(0, 0, -params.body_box.z()), Vector3r(0, 0, -1), drag_factor_unit.z());
-        drag_faces_.emplace_back(Vector3r(0, 0,  params.body_box.z()), Vector3r(0, 0,  1), drag_factor_unit.z());
-        drag_faces_.emplace_back(Vector3r(0, -params.body_box.y(), 0), Vector3r(0, -1, 0), drag_factor_unit.y());
-        drag_faces_.emplace_back(Vector3r(0,  params.body_box.y(), 0), Vector3r(0,  1, 0), drag_factor_unit.y());
-        drag_faces_.emplace_back(Vector3r(-params.body_box.x(), 0, 0), Vector3r(-1, 0, 0), drag_factor_unit.x());
-        drag_faces_.emplace_back(Vector3r( params.body_box.x(), 0, 0), Vector3r( 1, 0, 0), drag_factor_unit.x());
+        drag_faces_.emplace_back(Vector3r(0, 0, -params.body_box.z() / 2.0f), Vector3r(0, 0, -1), drag_factor_unit.z());
+        drag_faces_.emplace_back(Vector3r(0, 0,  params.body_box.z() / 2.0f), Vector3r(0, 0,  1), drag_factor_unit.z());
+        drag_faces_.emplace_back(Vector3r(0, -params.body_box.y() / 2.0f, 0), Vector3r(0, -1, 0), drag_factor_unit.y());
+        drag_faces_.emplace_back(Vector3r(0,  params.body_box.y() / 2.0f, 0), Vector3r(0,  1, 0), drag_factor_unit.y());
+        drag_faces_.emplace_back(Vector3r(-params.body_box.x() / 2.0f, 0, 0), Vector3r(-1, 0, 0), drag_factor_unit.x());
+        drag_faces_.emplace_back(Vector3r( params.body_box.x() / 2.0f, 0, 0), Vector3r( 1, 0, 0), drag_factor_unit.x());
 
     }
 
