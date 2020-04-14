@@ -5,9 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
 
 downloadHighPolySuv=true
-gccBuild=false
 MIN_CMAKE_VERSION=3.10.0
-MIN_GCC_VERSION=6.0.0
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
 # Parse command line arguments
@@ -20,51 +18,24 @@ case $key in
     downloadHighPolySuv=false
     shift # past value
     ;;
-    --gcc)
-    gccBuild=true
-    shift # past argument
-    ;;
 esac
 done
 
-if $gccBuild; then
-    # gcc tools
-    if ! which gcc; then
-        # GCC not installed
-        gcc_ver=0
-    else
-        gcc_ver=$(gcc -dumpfullversion)
+# llvm tools
+if [ "$(uname)" == "Darwin" ]; then # osx
+    brew update
+    brew tap llvm-hs/homebrew-llvm
+    brew install llvm@8
+else #linux
+    #install clang and build tools
+    VERSION=$(lsb_release -rs | cut -d. -f1)
+    # Since Ubuntu 17 clang is part of the core repository
+    # See https://packages.ubuntu.com/search?keywords=clang-8
+    if [ "$VERSION" -lt "17" ]; then
+        wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo apt-get update
     fi
-
-    if version_less_than_equal_to $gcc_ver $MIN_GCC_VERSION; then
-        if [ "$(uname)" == "Darwin" ]; then # osx
-            brew update
-            brew install gcc-6 g++-6
-        else
-            sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-            sudo apt-get -y update
-            sudo apt-get install -y gcc-6 g++-6
-        fi
-    else
-        echo "Already have good version of gcc: $gcc_ver"
-    fi
-else
-    # llvm tools
-    if [ "$(uname)" == "Darwin" ]; then # osx
-        brew update
-        brew tap llvm-hs/homebrew-llvm
-        brew install llvm@8
-    else #linux
-        #install clang and build tools
-        VERSION=$(lsb_release -rs | cut -d. -f1)
-        # Since Ubuntu 17 clang is part of the core repository
-        # See https://packages.ubuntu.com/search?keywords=clang-8
-        if [ "$VERSION" -lt "17" ]; then
-            wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-            sudo apt-get update
-        fi
-        sudo apt-get install -y clang-8 clang++-8 libc++-8-dev libc++abi-8-dev
-    fi
+    sudo apt-get install -y clang-8 clang++-8 libc++-8-dev libc++abi-8-dev
 fi
 
 #give user perms to access USB port - this is not needed if not using PX4 HIL
