@@ -1,6 +1,18 @@
+# Please add "EnableTrace": true to your setting.json as shown below
+
+# {
+#   "SettingsVersion": 1.2,
+#   "SimMode": "Multirotor",
+#   "Vehicles": {
+#       "Drone": {
+#           "VehicleType": "SimpleFlight",
+#           "EnableTrace": true
+#         }
+#     }
+# }
+
 import setup_path
 import airsim
-
 import time
 
 # connect to the AirSim simulator
