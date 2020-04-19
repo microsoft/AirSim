@@ -304,13 +304,13 @@ class CarControls(MsgpackMixin):
 
     def set_throttle(self, throttle_val, forward):
         if (forward):
-            is_manual_gear = False
-            manual_gear = 0
-            throttle = abs(throttle_val)
+            self.is_manual_gear = False
+            self.manual_gear = 0
+            self.throttle = abs(throttle_val)
         else:
-            is_manual_gear = False
-            manual_gear = -1
-            throttle = - abs(throttle_val)
+            self.is_manual_gear = False
+            self.manual_gear = -1
+            self.throttle = - abs(throttle_val)
 
 class KinematicsState(MsgpackMixin):
     position = Vector3r()
