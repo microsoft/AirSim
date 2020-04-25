@@ -417,17 +417,17 @@ class VehicleClient:
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name))
 
-    def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
+    def simSetCameraPose(self, camera_name, pose, vehicle_name = ''):
         """
-        - Control the orientation of a selected camera
+        - Control the pose of a selected camera
 
         Args:
             camera_name (str): Name of the camera to be controlled
-            orientation (Quaternionr): Quaternion representing the desired orientation of the camera
+            orientation (airsim.Pose()): Pose representing the desired position and orientation of the camera
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
-        self.client.call('simSetCameraOrientation', str(camera_name), orientation, vehicle_name)
+        self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name)
 
     def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = ''):
         """
