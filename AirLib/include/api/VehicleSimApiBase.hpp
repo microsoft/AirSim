@@ -54,7 +54,7 @@ public:
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const = 0;
 
     virtual CameraInfo getCameraInfo(const std::string& camera_name) const = 0;
-    virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) = 0;
+    virtual void setCameraPose(const std::string& camera_name, const Pose& orientation) = 0;
     virtual void setCameraFoV(const std::string& camera_name, float fov_degrees) = 0;
 
     virtual CollisionInfo getCollisionInfo() const = 0;

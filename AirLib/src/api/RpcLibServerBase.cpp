@@ -228,9 +228,9 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
     });
 
-    pimpl_->server.bind("simSetCameraOrientation", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Quaternionr& orientation, 
+    pimpl_->server.bind("simSetCameraPose", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Pose& pose, 
         const std::string& vehicle_name) -> void {
-        getVehicleSimApi(vehicle_name)->setCameraOrientation(camera_name, orientation.to());
+        getVehicleSimApi(vehicle_name)->setCameraPose(camera_name, pose.to());
     });
 
     pimpl_->server.bind("simSetCameraFov", [&](const std::string& camera_name, float fov_degrees,

@@ -98,7 +98,7 @@ public:
     CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
 
     CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;
-    void simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name = "");
+    void simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name = "");
     void simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name = "");
 
     msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
