@@ -4,6 +4,9 @@
 #include "common/CommonStructs.hpp"
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
+#include "AirSimCharacter.h"
+#include "Components/StaticMeshComponent.h"
+#include "AirBlueprintLib.h"
 #include <string>
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase {
@@ -14,6 +17,11 @@ public:
 
     WorldSimApi(ASimModeBase* simmode);
     virtual ~WorldSimApi() = default;
+
+	virtual bool loadLevel(const std::string& level_name) override;
+	
+	virtual std::string spawnObject(std::string& object_name, const std::string& load_name, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale) override;
+	virtual bool destroyObject(const std::string& object_name) override;
 
     virtual bool isPaused() const override;
     virtual void reset() override;
@@ -36,6 +44,9 @@ public:
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
     virtual Pose getObjectPose(const std::string& object_name) const override;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
+    virtual Vector3r getObjectScale(const std::string& object_name) const override;
+    virtual Vector3r getObjectScaleInternal(const std::string& object_name) const override;
+    virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) override;
 
     //----------- Plotting APIs ----------/
     virtual void simFlushPersistentMarkers() override;
@@ -54,5 +65,10 @@ public:
     virtual bool isRecording() const override;
 
 private:
+	void createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);
+	void spawnPlayer();
+
+private:
     ASimModeBase* simmode_;
+	ULevelStreamingDynamic* current_level_;
 };

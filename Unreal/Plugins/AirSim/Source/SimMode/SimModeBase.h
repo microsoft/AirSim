@@ -13,10 +13,16 @@
 #include "api/ApiServerBase.hpp"
 #include "api/ApiProvider.hpp"
 #include "PawnSimApi.h"
+#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/StateReporterWrapper.hpp"
+#include "LoadingScreenWidget.h"
 
+#include "Components/LineBatchComponent.h" 
 #include "SimModeBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRaceStartEvent, int, RaceTier);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRaceResetEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
 
 UCLASS()
 class AIRSIM_API ASimModeBase : public AActor
@@ -24,6 +30,9 @@ class AIRSIM_API ASimModeBase : public AActor
 public:
 
     GENERATED_BODY()
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FLevelLoaded OnLevelLoaded;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Refs")
     ACameraDirector* CameraDirector;
@@ -34,7 +43,15 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Recording")
     bool toggleRecording();
 
-public:	
+    UFUNCTION(BlueprintPure, Category = "Airsim | get stuff")
+    static ASimModeBase* getSimMode();
+
+    UFUNCTION(BlueprintCallable, Category = "Airsim | get stuff")
+    void toggleLoadingScreen(bool is_visible);
+
+    UFUNCTION(BlueprintCallable, Category = "Airsim | get stuff")
+    virtual void reset();
+
     // Sets default values for this actor's properties
     ASimModeBase();
     virtual void BeginPlay() override;
@@ -42,7 +59,6 @@ public:
     virtual void Tick( float DeltaSeconds ) override;
 
     //additional overridable methods
-    virtual void reset();
     virtual std::string getDebugReport();
     virtual ECameraDirectorMode getInitialViewMode() const;
 
@@ -110,6 +126,7 @@ protected:
 
     UPROPERTY() UClass* pip_camera_class;
     UPROPERTY() UParticleSystem* collision_display_template;
+
 private:
     typedef common_utils::Utils Utils;
     typedef msr::airlib::ClockFactory ClockFactory;
@@ -121,6 +138,7 @@ private:
     UPROPERTY() UClass* external_camera_class_;
     UPROPERTY() UClass* camera_director_class_;
     UPROPERTY() UClass* sky_sphere_class_;
+    UPROPERTY() ULoadingScreenWidget* loading_screen_widget_;
 
 
     UPROPERTY() AActor* sky_sphere_;
@@ -147,7 +165,7 @@ private:
 
     bool lidar_checks_done_ = false; 
     bool lidar_draw_debug_points_ = false;
-
+    static ASimModeBase* SIMMODE;
 private:
     void setStencilIDs();
     void initializeTimeOfDay();
@@ -156,4 +174,6 @@ private:
     void setupPhysicsLoopPeriod();
     void showClockStats();
     void drawLidarDebugPoints();
+    void plot_multirotor_trajectory();
+    void plot_debuggers();
 };
