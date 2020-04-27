@@ -251,10 +251,35 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         const auto& pose = getWorldSimApi()->getObjectPose(object_name); 
         return RpcLibAdapatorsBase::Pose(pose);
     });
+	pimpl_->server.bind("simLoadLevel", [&](const std::string& level_name) -> bool {
+		return getWorldSimApi()->loadLevel(level_name);
+	});
+	pimpl_->server.bind("simSpawnObject", [&](string& object_name, const string& load_component, const RpcLibAdapatorsBase::Pose& pose, const RpcLibAdapatorsBase::Vector3r& scale) -> string {
+		return getWorldSimApi()->spawnObject(object_name, load_component, pose.to(), scale.to());
+	});
+	pimpl_->server.bind("simDestroyObject", [&](const string& object_name) -> bool {
+		return getWorldSimApi()->destroyObject(object_name);
+	});
+
+    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name, bool add_noise) -> RpcLibAdapatorsBase::Pose {
+        const auto& pose = getWorldSimApi()->getObjectPose(object_name, add_noise); 
+        return RpcLibAdapatorsBase::Pose(pose);
+    });
+	pimpl_->server.bind("simGetObjectScale", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Vector3r {
+		const auto& scale = getWorldSimApi()->getObjectScale(object_name);
+		return RpcLibAdapatorsBase::Vector3r(scale);
+	});
+    pimpl_->server.bind("simGetObjectScaleInternal", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Vector3r {
+        const auto& scale = getWorldSimApi()->getObjectScaleInternal(object_name);
+        return RpcLibAdapatorsBase::Vector3r(scale);
+    });
     pimpl_->server.bind("simSetObjectPose", [&](const std::string& object_name, const RpcLibAdapatorsBase::Pose& pose, bool teleport) -> bool {
         return getWorldSimApi()->setObjectPose(object_name, pose.to(), teleport);
     });
 
+	pimpl_->server.bind("simSetObjectScale", [&](const std::string& object_name, const RpcLibAdapatorsBase::Vector3r& scale) -> bool {
+		return getWorldSimApi()->setObjectScale(object_name, scale.to());
+	});
     pimpl_->server.bind("simFlushPersistentMarkers", [&]() -> void {
         getWorldSimApi()->simFlushPersistentMarkers();
     });
