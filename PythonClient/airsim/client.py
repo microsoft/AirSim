@@ -423,7 +423,7 @@ class VehicleClient:
 
         Args:
             camera_name (str): Name of the camera to be controlled
-            orientation (airsim.Pose()): Pose representing the desired position and orientation of the camera
+            pose (Pose): Pose representing the desired position and orientation of the camera
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
