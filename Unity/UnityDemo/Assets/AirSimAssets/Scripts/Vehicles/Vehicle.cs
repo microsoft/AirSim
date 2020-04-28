@@ -264,10 +264,10 @@ namespace AirSimUnity {
             return info;
         }
 
-        public bool SetCameraOrientation(string cameraName, AirSimQuaternion orientation) {
+        public bool SetCameraPose(string cameraName, AirSimPose pose) {
             foreach (DataCaptureScript capture in captureCameras) {
                 if (capture.GetCameraName() == cameraName) {
-                    capture.SetOrientation(orientation);
+                    capture.SetPose(pose);
                     return true;
                 }
             }

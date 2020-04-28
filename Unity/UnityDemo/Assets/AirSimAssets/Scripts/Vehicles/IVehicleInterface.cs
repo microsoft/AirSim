@@ -33,7 +33,7 @@ namespace AirSimUnity {
 
         CameraInfo GetCameraInfo(string cameraName);
 
-        bool SetCameraOrientation(string cameraName, AirSimQuaternion orientation);
+        bool SetCameraPose(string cameraName, AirSimPose pose);
 
         bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity);
 

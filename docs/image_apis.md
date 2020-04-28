@@ -166,9 +166,10 @@ To move around the environment using APIs you can use `simSetVehiclePose` API. T
 ## Camera APIs
 The `simGetCameraInfo` returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see [example usage](https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py).
 
-The `simSetCameraOrientation` sets the orientation for the specified camera as quaternion in NED frame. The handy `airsim.to_quaternion()` function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch, you can use:
+The `simSetCameraPose` sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy `airsim.to_quaternion()` function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:
 ```
-client.simSetCameraOrientation(0, airsim.to_quaternion(0.261799, 0, 0)); #radians
+camera_pose = airsim.Pose(airsim.Vector3(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #RPY in radians
+client.simSetCameraPose(0, camera_pose);
 ```
 
 ### Gimbal
