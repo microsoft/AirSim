@@ -7,7 +7,9 @@
 #include "PIPCamera.h"
 #include "api/ApiServerBase.hpp"
 #include <memory>
+
 #include "SimHUD.generated.h"
+
 
 
 UENUM(BlueprintType)
@@ -59,6 +61,7 @@ private:
     void createSimMode();
     void initializeSettings();
     void setUnrealEngineSettings();
+	void loadLevel();
     void createMainWidget();
     const std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings() const;
     std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings();
