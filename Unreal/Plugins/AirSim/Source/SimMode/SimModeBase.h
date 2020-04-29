@@ -166,9 +166,7 @@ private:
     bool lidar_checks_done_ = false; 
     bool lidar_draw_debug_points_ = false;
     static ASimModeBase* SIMMODE;
-    int plot_multirotor_trajectory_start_ctr_; // hack to get around initial crash 
-    std::vector<TArray<FBatchedLine>> traj_lines_;
-    std::vector<bool> traj_changed_;
+
 private:
     void setStencilIDs();
     void initializeTimeOfDay();

@@ -20,7 +20,6 @@
 #include "Weather/WeatherLib.h"
 
 #include "DrawDebugHelpers.h"
-#include "Components/LineBatchComponent.h" 
 
 //TODO: this is going to cause circular references which is fine here but
 //in future we should consider moving SimMode not derived from AActor and move
@@ -37,7 +36,7 @@ ASimModeBase* ASimModeBase::getSimMode()
 ASimModeBase::ASimModeBase()
 {
     SIMMODE = this;
-
+    
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
@@ -87,7 +86,6 @@ void ASimModeBase::toggleLoadingScreen(bool is_visible)
 void ASimModeBase::BeginPlay()
 {
     Super::BeginPlay();
-    plot_multirotor_trajectory_start_ctr_ = 0;
 
     debug_reporter_.initialize(false);
     debug_reporter_.reset();
@@ -96,7 +94,7 @@ void ASimModeBase::BeginPlay()
     //this must be done from within actor otherwise we don't get player start
     APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
     FTransform player_start_transform = player_controller->GetViewTarget()->GetActorTransform();
-    global_ned_transform_.reset(new NedTransform(player_start_transform, 
+    global_ned_transform_.reset(new NedTransform(player_start_transform,
         UAirBlueprintLib::GetWorldToMetersScale(this)));
 
     world_sim_api_.reset(new WorldSimApi(this));
@@ -106,7 +104,7 @@ void ASimModeBase::BeginPlay()
     setupClockSpeed();
 
     setStencilIDs();
-    
+
     record_tick_count = 0;
     setupInputBindings();
 
@@ -157,7 +155,6 @@ void ASimModeBase::setStencilIDs()
 
     if (getSettings().segmentation_setting.init_method ==
         AirSimSettings::SegmentationSetting::InitMethodType::CommonObjectsRandomIDs) {
-     
         UAirBlueprintLib::InitializeMeshStencilIDs(!getSettings().segmentation_setting.override_existing);
     }
     //else don't init
@@ -203,7 +200,6 @@ void ASimModeBase::initializeTimeOfDay()
         sun_ = Cast<ADirectionalLight>(sun_obj);
         if (sun_)
             default_sun_rotation_ = sun_->GetActorRotation();
-
     }
 }
 
@@ -211,7 +207,7 @@ void ASimModeBase::setTimeOfDay(bool is_enabled, const std::string& start_dateti
     float celestial_clock_speed, float update_interval_secs, bool move_sun)
 {
     bool enabled_currently = tod_enabled_;
-    
+
     if (is_enabled) {
 
         if (!sun_) {
@@ -309,10 +305,6 @@ void ASimModeBase::Tick(float DeltaSeconds)
 
     drawLidarDebugPoints();
 
-    plot_multirotor_trajectory();
-
-    plot_debuggers();
-
     Super::Tick(DeltaSeconds);
 }
 
@@ -320,8 +312,8 @@ void ASimModeBase::showClockStats()
 {
     float clock_speed = getSettings().clock_speed;
     if (clock_speed != 1) {
-        UAirBlueprintLib::LogMessageString("ClockSpeed config, actual: ", 
-            Utils::stringf("%f, %f", clock_speed, ClockFactory::get()->getTrueScaleWrtWallClock()), 
+        UAirBlueprintLib::LogMessageString("ClockSpeed config, actual: ",
+            Utils::stringf("%f, %f", clock_speed, ClockFactory::get()->getTrueScaleWrtWallClock()),
             LogDebugLevel::Informational);
     }
 }
@@ -336,7 +328,7 @@ void ASimModeBase::advanceTimeOfDay()
             tod_last_update_ = ClockFactory::get()->nowNanos();
 
             auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * tod_celestial_clock_speed_;
-            uint64_t cur_time = ClockFactory::get()->addTo(tod_start_time_, interval)  / 1E9;
+            uint64_t cur_time = ClockFactory::get()->addTo(tod_start_time_, interval) / 1E9;
 
             UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(cur_time), LogDebugLevel::Informational);
 
@@ -356,7 +348,7 @@ void ASimModeBase::setSunRotation(FRotator rotation)
 
             FOutputDeviceNull ar;
             sky_sphere_->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), ar, NULL, true);
-        }, true /*wait*/);
+            }, true /*wait*/);
     }
 }
 
@@ -367,7 +359,7 @@ void ASimModeBase::reset()
         for (auto& api : getApiProvider()->getVehicleSimApis()) {
             api->reset();
         }
-    }, true);
+        }, true);
 }
 
 std::string ASimModeBase::getDebugReport()
@@ -401,13 +393,13 @@ void ASimModeBase::initializeCameraDirector(const FTransform& camera_transform, 
         FActorSpawnParameters camera_spawn_params;
         camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
         camera_spawn_params.Name = "CameraDirector";
-        CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_, 
+        CameraDirector = this->GetWorld()->SpawnActor<ACameraDirector>(camera_director_class_,
             camera_transform, camera_spawn_params);
         CameraDirector->setFollowDistance(follow_distance);
         CameraDirector->setCameraRotationLagEnabled(false);
         //create external camera required for the director
         camera_spawn_params.Name = "ExternalCamera";
-        CameraDirector->ExternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_, 
+        CameraDirector->ExternalCamera = this->GetWorld()->SpawnActor<APIPCamera>(external_camera_class_,
             camera_transform, camera_spawn_params);
     }
     else {
@@ -433,7 +425,7 @@ void ASimModeBase::stopRecording()
 void ASimModeBase::startRecording()
 {
     FRecordingThread::startRecording(getVehicleSimApi()->getImageCapture(),
-        getVehicleSimApi()->getGroundTruthKinematics(), getSettings().recording_setting ,
+        getVehicleSimApi()->getGroundTruthKinematics(), getSettings().recording_setting,
         getVehicleSimApi());
 }
 
@@ -524,9 +516,9 @@ void ASimModeBase::setupVehiclesAndCamera()
 
     //determine camera director camera default pose and spawn it
     const auto& camera_director_setting = getSettings().camera_director;
-    FVector camera_director_position_uu = uu_origin.GetLocation() + 
+    FVector camera_director_position_uu = uu_origin.GetLocation() +
         getGlobalNedTransform().fromLocalNed(camera_director_setting.position);
-    FTransform camera_transform(toFRotator(camera_director_setting.rotation, FRotator::ZeroRotator), 
+    FTransform camera_transform(toFRotator(camera_director_setting.rotation, FRotator::ZeroRotator),
         camera_director_position_uu);
     initializeCameraDirector(camera_transform, camera_director_setting.follow_distance);
 
@@ -559,7 +551,7 @@ void ASimModeBase::setupVehiclesAndCamera()
                     ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
                 auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
                     getSettings().pawn_paths.at(getVehiclePawnPathName(vehicle_setting)).pawn_bp);
-                APawn* spawned_pawn = static_cast<APawn*>( this->GetWorld()->SpawnActor(
+                APawn* spawned_pawn = static_cast<APawn*>(this->GetWorld()->SpawnActor(
                     vehicle_bp_class, &spawn_position, &spawn_rotation, pawn_spawn_params));
 
                 spawned_actors_.Add(spawned_pawn);
@@ -580,11 +572,11 @@ void ASimModeBase::setupVehiclesAndCamera()
             //create vehicle sim api
             const auto& ned_transform = getGlobalNedTransform();
             const auto& pawn_ned_pos = ned_transform.toLocalNed(vehicle_pawn->GetActorLocation());
-            const auto& home_geopoint= msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
+            const auto& home_geopoint = msr::airlib::EarthUtils::nedToGeodetic(pawn_ned_pos, getSettings().origin_geopoint);
             const std::string vehicle_name = std::string(TCHAR_TO_UTF8(*(vehicle_pawn->GetName())));
 
             PawnSimApi::Params pawn_sim_api_params(vehicle_pawn, &getGlobalNedTransform(),
-                getVehiclePawnEvents(vehicle_pawn), getVehiclePawnCameras(vehicle_pawn), pip_camera_class, 
+                getVehiclePawnEvents(vehicle_pawn), getVehiclePawnCameras(vehicle_pawn), pip_camera_class,
                 collision_display_template, home_geopoint, vehicle_name);
 
             auto vehicle_sim_api = createVehicleSimApi(pawn_sim_api_params);
@@ -595,9 +587,6 @@ void ASimModeBase::setupVehiclesAndCamera()
                 getApiProvider()->makeDefaultVehicle(vehicle_name);
 
             vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));
-            TArray<FBatchedLine> lines;
-            traj_lines_.push_back(lines);
-            traj_changed_.push_back(false);
         }
     }
 
@@ -682,7 +671,7 @@ void ASimModeBase::drawLidarDebugPoints()
 
         msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
         if (api != nullptr) {
-            
+
             msr::airlib::uint count_lidars = api->getSensors().size(msr::airlib::SensorBase::SensorType::Lidar);
 
             for (msr::airlib::uint i = 0; i < count_lidars; i++) {
@@ -728,154 +717,4 @@ void ASimModeBase::drawLidarDebugPoints()
     }
 
     lidar_checks_done_ = true;
-}
-
-// linebatcher->drawlines() is apparently most efficient
-// see unreal_engine/drawdebughelpers.cpp::DrawDebugCircle https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Source/Runtime/Engine/Private/DrawDebugHelpers.cpp#L403
-// https://answers.unrealengine.com/questions/73788/whats-the-most-efficient-way-to-draw-a-bunch-of-li.html?sort=oldest
-void ASimModeBase::plot_multirotor_trajectory()
-{
-    if (plot_multirotor_trajectory_start_ctr_ < 500) 
-    {
-        // std::cout << plot_multirotor_trajectory_start_ctr_ << std::endl;
-        plot_multirotor_trajectory_start_ctr_++;
-        return;
-    }
-
-    if (getApiProvider() == nullptr)
-        return;
-
-    bool flushed_once = false;
-    int pawn_idx = 0;
-
-    for (auto& sim_api : getApiProvider()->getVehicleSimApis())
-    {
-        PawnSimApi* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
-        std::string vehicle_name = pawn_sim_api->getVehicleName();
-        msr::airlib::VehicleApiBase* vehicle_api = getApiProvider()->getVehicleApi(vehicle_name);
-        MultirotorApiBase* multirotor_api = static_cast<MultirotorApiBase*>(vehicle_api);
-
-        // first, flush all traj lines if any multirotor's traj has changed. 
-        if (multirotor_api != nullptr)
-        {
-            // hackmax with public members
-            if (multirotor_api->curr_traj_viz_idx_ > 0)
-            {
-                // last_traj_viz_idx_ is always trailing curr_traj_viz_idx_ by 1 as latter is incremented in multirotorapibase.cpp
-                if ((multirotor_api->viz_traj_) && (multirotor_api->last_traj_viz_idx_ != multirotor_api->curr_traj_viz_idx_))
-                {
-                    traj_changed_[pawn_idx] = true;
-
-                    // std::cout << "FIRST changed " << vehicle_name << "last " << multirotor_api->last_traj_viz_idx_ << "curr " << multirotor_api->curr_traj_viz_idx_ << std::endl;
-                    // std::cout << "spline changed " << vehicle_name << "last " << multirotor_api->last_traj_viz_idx_ << "curr " << multirotor_api->curr_traj_viz_idx_ << std::endl;
-                    if(!flushed_once)
-                    {
-                        // std::cout << "flush all viz traj" << std::endl;
-                        FlushPersistentDebugLines(this->GetWorld()); // flush all previous traj lines as of now
-                        flushed_once = true;
-                    }
-                    multirotor_api->last_traj_viz_idx_ = multirotor_api->curr_traj_viz_idx_;
-                }
-                else
-                {
-                    traj_changed_[pawn_idx] = false;
-                }
-            }
-        }
-        pawn_idx++;
-    }
-
-    if (flushed_once)
-    {
-        const float coordinate_axis_size = 25.0; 
-        pawn_idx = 0;
-        for (auto& sim_api : getApiProvider()->getVehicleSimApis())
-        {
-            PawnSimApi* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
-            std::string vehicle_name = pawn_sim_api->getVehicleName();
-            msr::airlib::VehicleApiBase* vehicle_api = getApiProvider()->getVehicleApi(vehicle_name);
-            MultirotorApiBase* multirotor_api = static_cast<MultirotorApiBase*>(vehicle_api);
-
-            if (multirotor_api != nullptr)
-            {
-                if ((multirotor_api->curr_traj_viz_idx_ > 0) && (multirotor_api->viz_traj_) && traj_changed_[pawn_idx])
-                {
-                    // RGBA of spline color 
-                    FLinearColor color{ multirotor_api->viz_traj_color_rgba_[0], multirotor_api->viz_traj_color_rgba_[1], 
-                                        multirotor_api->viz_traj_color_rgba_[2], multirotor_api->viz_traj_color_rgba_[3] };
-
-                    // std::cout << "SECOND changed " << vehicle_name << "last " << multirotor_api->last_traj_viz_idx_ << "curr " << multirotor_api->curr_traj_viz_idx_ << std::endl;
-                    traj_lines_[pawn_idx].Empty();
-                    for(int traj_idx=0; traj_idx < multirotor_api->curr_traj_viz_.size()-1; traj_idx++)
-                    {
-
-                        traj_lines_[pawn_idx].Add(FBatchedLine(pawn_sim_api->getNedTransform().fromLocalNed(multirotor_api->curr_traj_viz_[traj_idx]), 
-                            pawn_sim_api->getNedTransform().fromLocalNed(multirotor_api->curr_traj_viz_[traj_idx+1]), 
-                            color, -1, 1, 0));
-                    }
-
-                    // ref https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Source/Runtime/Engine/Private/DrawDebugHelpers.cpp#L304
-                    // put the debug coordinates' lines in linebatcher at once for efficient plotting. 
-                    // DrawDebugCoordinateSystem is not ideal. 
-                    for(int waypoint_idx=0; waypoint_idx < multirotor_api->curr_traj_viz_tf_.size(); waypoint_idx++)
-                    {
-                        FRotationMatrix R(FRotator::ZeroRotator);
-                        FVector const X = R.GetScaledAxis( EAxis::X );
-                        FVector const Y = R.GetScaledAxis( EAxis::Y );
-                        FVector const Z = R.GetScaledAxis( EAxis::Z );
-                        FVector AxisLoc = pawn_sim_api->getNedTransform().fromLocalNed(multirotor_api->curr_traj_viz_tf_[waypoint_idx]);
-                        traj_lines_[pawn_idx].Add(FBatchedLine(AxisLoc, AxisLoc + X*coordinate_axis_size, FColor::Red, -1, 2, 0));
-                        traj_lines_[pawn_idx].Add(FBatchedLine(AxisLoc, AxisLoc + Y*coordinate_axis_size, FColor::Green, -1, 2, 0));
-                        traj_lines_[pawn_idx].Add(FBatchedLine(AxisLoc, AxisLoc + Z*coordinate_axis_size, FColor::Blue, -1, 2, 0));
-                    }
-                }
-            }
-            pawn_idx++;
-        }
-
-        TArray<FBatchedLine> combined;
-        for (auto& lines : traj_lines_)
-        {
-            combined += lines;
-        }
-        this->GetWorld()->PersistentLineBatcher->DrawLines(combined);
-    }
-}
-
-void ASimModeBase::plot_debuggers()
-{
-    if (plot_multirotor_trajectory_start_ctr_ < 500)
-    {
-        // plot_multirotor_trajectory_start_ctr_++; // already taken care of by plot_multirotor_trajectory
-        return;
-    }
-
-    if (getApiProvider() == nullptr)
-        return;
-
-    for (auto& sim_api : getApiProvider()->getVehicleSimApis())
-    {
-        PawnSimApi* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
-        std::string vehicle_name = pawn_sim_api->getVehicleName();
-        // std::cout << "got vehicle_name : " << vehicle_name << std::endl;
-        msr::airlib::VehicleApiBase* vehicle_api = getApiProvider()->getVehicleApi(vehicle_name);
-        MultirotorApiBase* multirotor_api = static_cast<MultirotorApiBase*>(vehicle_api);
-        // std::cout << "down casted to multirotor_api\n";
-        
-
-        if (multirotor_api != nullptr)
-        {
-            if (multirotor_api->tf_to_plot_)
-            {
-                for(int idx=0; idx < multirotor_api->viz_poses_vec_.size(); idx++)
-                {
-                    DrawDebugCoordinateSystem(this->GetWorld(), 
-                        pawn_sim_api->getNedTransform().fromLocalNed(multirotor_api->viz_poses_vec_[idx]).GetLocation(),  
-                        pawn_sim_api->getNedTransform().fromLocalNed(multirotor_api->viz_poses_vec_[idx]).Rotator(),  
-                        25.0, true, multirotor_api->viz_poses_duration_, 0, 2);
-                        // 35.0, true, 1, 0, 2);
-                }
-            }
-        }
-    }
 }
