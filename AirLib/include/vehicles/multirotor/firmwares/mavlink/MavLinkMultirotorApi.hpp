@@ -1315,6 +1315,7 @@ private: //methods
             }
 
             if (!received_actuator_controls_) {
+                last_hil_sensor_time_ = now;
                 // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
                 return;
             }
