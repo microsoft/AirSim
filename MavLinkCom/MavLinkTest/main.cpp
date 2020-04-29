@@ -1019,12 +1019,8 @@ std::string findPixhawk() {
             {
                 printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
 
-                std::string portName_str;
-
-                for (wchar_t ch : info.portName)
-                {
-                    portName_str.push_back(static_cast<char>(ch));
-                }
+                std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+                std::string portName_str = converter.to_bytes(info.portName);
                 return portName_str;
             }
         }

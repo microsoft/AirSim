@@ -972,6 +972,7 @@ private: //methods
         got_first_heartbeat_ = false;
         is_hil_mode_set_ = false;
         is_armed_ = false;
+        has_home_ = false;
         is_controls_0_1_ = true;
         Utils::setValue(rotor_controls_, 0.0f);
 
@@ -999,7 +1000,7 @@ private: //methods
 
             connection_ = mavlinkcom::MavLinkConnection::connectRemoteUdp("hil", connection_info_.local_host_ip, connection_info.udp_address, connection_info.udp_port);
         }
-        else  {
+        else {
             throw std::invalid_argument("Please provide valid connection info for your drone.");
         }
 
@@ -1025,37 +1026,45 @@ private: //methods
             if (connection_info_.control_port == 0) {
                 throw std::invalid_argument("ControlPort setting has an invalid value.");
             }
-
-            // The PX4 SITL mode app cannot receive commands to control the drone over the same HIL mavlink connection.
-            // The HIL mavlink connection can only handle HIL_SENSOR messages.  This separate channel is needed for
-            // everything else.
-            addStatusMessage(Utils::stringf("Connecting to PX4 Control UDP port %d, local IP %s, remote IP...",
-                connection_info_.control_port, connection_info_.local_host_ip.c_str(), connection_info_.control_ip_address.c_str()));
-
-            // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-
-            auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
-                connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
-            mav_vehicle_->connect(gcsConnection);
-
-            addStatusMessage(std::string("Ground control connected over UDP."));
-
-            // listen to this UDP mavlink connection also
-            auto mavcon = mav_vehicle_->getConnection();
-            if (mavcon != connection_) {
-                mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
-                    unused(connection);
-                    processMavMessages(msg);
-                    });
-            }
-            else {
-                mav_vehicle_->connect(connection_);
-            }
-
-            connected_ = true;
-            mav_vehicle_->startHeartbeat();
+            connectionDelayed_ = true;
         }
+        else {
+            connectVehicle();
+        }
+    }
+
+    void connectVehicle()
+    {
+        // The PX4 SITL mode app cannot receive commands to control the drone over the same HIL mavlink connection.
+        // The HIL mavlink connection can only handle HIL_SENSOR messages.  This separate channel is needed for
+        // everything else.
+        addStatusMessage(Utils::stringf("Connecting to PX4 Control UDP port %d, local IP %s, remote IP...",
+            connection_info_.control_port, connection_info_.local_host_ip.c_str(), connection_info_.control_ip_address.c_str()));
+
+        // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
+        auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
+            connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
+        mav_vehicle_->connect(gcsConnection);
+
+        addStatusMessage(std::string("Ground control connected over UDP."));
+
+        // listen to this UDP mavlink connection also
+        auto mavcon = mav_vehicle_->getConnection();
+        if (mavcon != connection_) {
+            mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
+                unused(connection);
+                processMavMessages(msg);
+                });
+        }
+        else {
+            mav_vehicle_->connect(connection_);
+        }
+
+        connected_ = true;
+        // now we can start our heartbeats.
+        mav_vehicle_->startHeartbeat();
     }
 
     void createMavSerialConnection(const std::string& port_name, int baud_rate)
@@ -1100,7 +1109,6 @@ private: //methods
                 mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
                 mav_vehicle_->connect(connection_); // in this case we can use the same connection.
                 mav_vehicle_->startHeartbeat();
-
                 // start listening to the HITL connection.
                 connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                     unused(connection);
@@ -1210,6 +1218,11 @@ private: //methods
                     // and it scales multi rotor servo output to 0 to 1.
                     is_controls_0_1_ = false;
                 }
+
+                if (connectionDelayed_) {
+                    connectionDelayed_ = false;
+                    connectVehicle();
+                }
                 send_params_ = true;
             }
             else if (is_simulation_mode_ && !is_hil_mode_set_) {
@@ -1235,7 +1248,6 @@ private: //methods
                 std::lock_guard<std::mutex> guard_controls(hil_controls_mutex_);
 
                 HilControlsMessage.decode(msg);
-                //is_arned_ = (HilControlsMessage.mode & 128) > 0; //TODO: is this needed?
                 rotor_controls_[0] = HilControlsMessage.roll_ailerons;
                 rotor_controls_[1] = HilControlsMessage.pitch_elevator;
                 rotor_controls_[2] = HilControlsMessage.yaw_rudder;
@@ -1264,14 +1276,17 @@ private: //methods
                     rotor_controls_[i] = 0;
                 }
             }
-            if (isarmed)
-            {
+            if (isarmed) {
                 normalizeRotorControls();
             }
             received_actuator_controls_ = true;
             // if the timestamps match then it means we are in lockstep mode.
             if (!lock_step_enabled_) {
-                if (hil_sensor_clock_ == HilActuatorControlsMessage.time_usec) {
+                if (HilActuatorControlsMessage.flags & 0x1) {
+                    addStatusMessage("Lockstep flag enabled");
+                    lock_step_enabled_ = true;
+                }
+                else if (hil_sensor_clock_ == HilActuatorControlsMessage.time_usec) {
                     addStatusMessage("Enabling lockstep mode");
                     lock_step_enabled_ = true;
                 }
@@ -1285,7 +1300,12 @@ private: //methods
             if (locked && !has_gps_lock_) {
                 addStatusMessage("Got GPS lock");
                 has_gps_lock_ = true;
+            }           
+            if (!has_home_ && current_state_.home.is_set) {
+                addStatusMessage("Got GPS Home Location");
+                has_home_ = true;
             }
+
         }
         else if (msg.msgid == mavlinkcom::MavLinkLocalPositionNed::kMessageId) {
             // we are getting position information... so we can use this to check the stability of the z coordinate before takeoff.
@@ -1315,6 +1335,7 @@ private: //methods
             }
 
             if (!received_actuator_controls_) {
+                last_hil_sensor_time_ = now;
                 // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
                 return;
             }
@@ -1329,25 +1350,29 @@ private: //methods
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
         hil_sensor.zacc = acceleration.z();
+        hil_sensor.fields_updated = 0b111; // Set accel bit fields
+
         hil_sensor.xgyro = gyro.x();
         hil_sensor.ygyro = gyro.y();
         hil_sensor.zgyro = gyro.z();
 
-        hil_sensor.fields_updated = 0b111 | 0b111000; // Set accel and gyro bit fields respectively
+        hil_sensor.fields_updated |= 0b111000; // Set gyro bit fields 
 
         hil_sensor.xmag = mag.x();
         hil_sensor.ymag = mag.y();
         hil_sensor.zmag = mag.z();
 
-        hil_sensor.fields_updated = hil_sensor.fields_updated | 0b111000000; // Set mag bit field
+        hil_sensor.fields_updated |= 0b111000000; // Set mag bit fields
 
         hil_sensor.abs_pressure = abs_pressure;
         hil_sensor.pressure_alt = pressure_alt;
 
-        hil_sensor.fields_updated = hil_sensor.fields_updated | 0b1101000000000; // Set baro bit field
+        hil_sensor.fields_updated |= 0b1101000000000; // Set baro bit fields
 
         //TODO: enable temperature? diff_pressure
-        hil_sensor.fields_updated = was_reset_ ? (1 << 31) : hil_sensor.fields_updated;
+        if (was_reset_) {
+            hil_sensor.fields_updated = (1 << 31);
+        }
 
         if (hil_node_ != nullptr) {
             hil_node_->sendMessage(hil_sensor);
@@ -1509,7 +1534,8 @@ private: //variables
     uint64_t last_gps_time_ = 0;
     uint64_t last_hil_sensor_time_ = 0;
     uint64_t hil_sensor_clock_ = 0;
-    bool was_reset_ = false;
+    bool was_reset_ = false; 
+    bool has_home_ = false;
     bool is_ready_ = false;
     bool has_gps_lock_ = false;
     bool lock_step_enabled_ = false;
@@ -1519,6 +1545,7 @@ private: //variables
     std::thread connect_thread_;
     bool connecting_ = false;
     bool connected_ = false;
+    bool connectionDelayed_ = false;
     common_utils::SmoothingFilter<float> ground_filter_;
     double ground_variance_ = 1;
     const double GroundTolerance = 0.1;
