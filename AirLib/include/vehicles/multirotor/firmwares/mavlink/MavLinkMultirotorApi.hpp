@@ -1371,7 +1371,7 @@ private: //methods
 
         //TODO: enable temperature? diff_pressure
         if (was_reset_) {
-            hil_sensor.fields_updated = (1 << 31);
+            hil_sensor.fields_updated = static_cast<uint32_t>(1 << 31);
         }
 
         if (hil_node_ != nullptr) {
