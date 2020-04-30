@@ -1,5 +1,5 @@
 #include "ThreadUtils.hpp"
-
+#include "StrictMode.hpp"
 #include <codecvt>
 
 #ifdef _WIN32
@@ -57,12 +57,10 @@ bool CurrentThread::setThreadName(const std::string& name)
         }
     }
     if (setThreadDescriptionFunction != nullptr) {
-        const char* str = name.c_str();
-        int size_needed = MultiByteToWideChar(CP_UTF8, 0, str, (int)strlen(str), NULL, 0);
-        WCHAR* wstrTo = (WCHAR*)malloc(size_needed);
-        MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)strlen(str), wstrTo, size_needed);
-        
-        return S_OK == (*setThreadDescriptionFunction)(GetCurrentThread(), wstrTo);
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+        std::wstring wide_path = converter.from_bytes(name);
+        auto rc = (*setThreadDescriptionFunction)(GetCurrentThread(), wide_path.c_str());
+        return S_OK == rc;
     }
     return false;
 #elif defined(__APPLE__)
