@@ -9,9 +9,11 @@ Verify version by `gcc --version`
 
 - Ubuntu 16.04
   * Install [ROS kinetic](https://wiki.ros.org/kinetic/Installation/Ubuntu)
+  * Install mavros packages: `sudo apt-get install ros-kinetic-mavros*`
 
 - Ubuntu 18.04
   * Install [ROS melodic](https://wiki.ros.org/melodic/Installation/Ubuntu)
+  * Install mavros packages: `sudo apt-get install ros-melodic-mavros*`
 
 - Install [catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html)
     `sudo apt-get install python-catkin-tools` or
