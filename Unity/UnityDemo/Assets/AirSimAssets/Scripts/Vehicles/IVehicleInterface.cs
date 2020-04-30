@@ -35,6 +35,8 @@ namespace AirSimUnity {
 
         bool SetCameraOrientation(string cameraName, AirSimQuaternion orientation);
 
+        bool SetCameraFoV(string cameraName, float fov_degrees);
+
         bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity);
 
         void ResetVehicle();

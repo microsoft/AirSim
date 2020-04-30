@@ -275,7 +275,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     set(UNUSED_LAMBDA_CAPTURE_WARN_SUPPORTED)
     check_warning_flag("unused-lambda-capture" UNUSED_LAMBDA_CAPTURE_WARN_SUPPORTED)
     if(${UNUSED_LAMBDA_CAPTURE_WARN_SUPPORTED})
-      list(APPEND RPCLIB_BUILD_FLAGS -Wno-no-unused-lambda-capture)
+      list(APPEND RPCLIB_BUILD_FLAGS -Wno-unused-lambda-capture)
     endif()
 
     check_warning_flag("zero-as-null-pointer-constant" ZERO_AS_NULL_POINTER_CONSTANT_WARN_SUPPORTED)

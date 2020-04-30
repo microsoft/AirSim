@@ -94,6 +94,10 @@ namespace AirSimUnity {
             isPoseOverride = true;
         }
 
+        public void SetFoV(float fov_degrees) {
+            fov = fov_degrees;
+        }
+
         public void ToggleRecording() {
             isCapturing = !isCapturing;
             if (isCapturing) {
