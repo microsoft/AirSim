@@ -58,6 +58,8 @@ public:
 
 	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
     virtual vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const = 0;
+
+    virtual void disableActor(const std::string& object_name) = 0;
 };
 
 

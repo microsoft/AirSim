@@ -37,6 +37,8 @@ public:
     virtual Pose getObjectPose(const std::string& object_name) const override;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
 
+    virtual void disableActor(const std::string& object_name) override;
+
     //----------- Plotting APIs ----------/
     virtual void simFlushPersistentMarkers() override;
     virtual void simPlotPoints(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent) override;

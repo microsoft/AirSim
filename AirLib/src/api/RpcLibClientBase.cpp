@@ -351,6 +351,11 @@ std::vector<std::string> RpcLibClientBase::simSwapTextures(const std::string& ta
 	return pimpl_->client.call("simSwapTextures", tags, tex_id, component_id, material_id).as<vector<string>>();
 }
 
+void RpcLibClientBase::simDisableActor(const std::string& object_name)
+{
+    pimpl_->client.call("simDisableActor", object_name);
+}
+
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name) const
 {
     return pimpl_->client.call("simGetObjectPose", object_name).as<RpcLibAdapatorsBase::Pose>().to();

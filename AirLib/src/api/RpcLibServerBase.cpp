@@ -313,6 +313,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 		return *getWorldSimApi()->swapTextures(tag, tex_id, component_id, material_id);
 	});
 
+    pimpl_->server.bind("simDisableActor", [&](const std::string& object_name) -> void {
+        getWorldSimApi()->disableActor(object_name);
+    });
+
     //if we don't suppress then server will bomb out for exceptions raised by any method
     pimpl_->server.suppress_exceptions(true);
 }

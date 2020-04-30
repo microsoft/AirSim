@@ -151,6 +151,24 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 	}, true);
 	return swappedObjectNames;
 }
+
+void WorldSimApi::disableActor(const std::string& object_name)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name]() {
+        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        if(actor) {
+            // Hides visible components
+            actor->SetActorHiddenInGame(true);
+
+            // Disables collision components
+            actor->SetActorEnableCollision(false);
+
+            // Stops the Actor from ticking
+            actor->SetActorTickEnabled(false);
+        }
+    }, true);
+}
+
 //----------- Plotting APIs ----------/
 void WorldSimApi::simFlushPersistentMarkers()
 {
