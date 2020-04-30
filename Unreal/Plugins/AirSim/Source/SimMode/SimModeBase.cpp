@@ -671,10 +671,10 @@ void ASimModeBase::drawLidarDebugPoints()
                         DrawDebugPoint(
                             this->GetWorld(),
                             uu_point,
-                            5,              //size
+                            5,              // size
                             FColor::Green,
-                            true,           //persistent (never goes away)
-                            0.1             //point leaves a trail on moving object
+                            false,          // persistent (never goes away)
+                            0.03            // LifeTime: point leaves a trail on moving object
                         );
                     }
                 }
