@@ -327,6 +327,7 @@ private: //fields
 
 public: //fields
     std::string simmode_name = "";
+	std::string level_name = "";
 
     std::vector<SubwindowSetting> subwindow_settings;
     RecordingSetting recording_setting;
