@@ -15,20 +15,21 @@ Cars in AirSim
 [![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
 ## What's New
-* A ROS wrapper for multirotors is available. See [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs) for the ROS API, and [airsim_tutorial_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs) for tutorials.
-* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](https://microsoft.github.io/AirSim/sensors)
-* Added support for [docker in ubuntu](https://github.com/microsoft/AirSim/blob/master/docs/docker_ubuntu.md)
-* Added Weather Effects and [APIs](https://microsoft.github.io/AirSim/apis#weather-apis)
-* Added [Time of Day API](https://microsoft.github.io/AirSim/apis#time-of-day-api)
-* An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation).
-* [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
-* Highly efficient [NoDisplay view mode](https://microsoft.github.io/AirSim/settings#viewmode) to turn off main screen rendering so you can capture images at high rate
-* [Lidar Sensor](https://microsoft.github.io/AirSim/lidar)
-* Case Study: [Formula Student Technion Driverless](https://github.com/Microsoft/AirSim/wiki/technion)
-* [Multi-Vehicle Capability](https://microsoft.github.io/AirSim/multi_vehicle)
-* [ROS publisher](https://github.com/Microsoft/AirSim/pull/1135)
 
-For complete list of changes, view our [Changelog](CHANGELOG.md)
+* Latest release `v1.3.1` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux)
+* Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard
+* Mac OSX Catalina support
+* Updated [airsim](https://pypi.org/project/airsim/) Python package, with lots of new APIs
+* [Removed legacy API wrappers](https://github.com/microsoft/AirSim/pull/2494)
+* [Support for latest PX4 stable release](https://microsoft.github.io/AirSim/px4_setup/)
+* Support for [ArduPilot](https://ardupilot.org/ardupilot/) - [Copter, Rover vehicles](https://ardupilot.org/dev/docs/sitl-with-airsim.html)
+* [Updated Unity support](https://microsoft.github.io/AirSim/Unity/)
+* [Removed simChar* APIs](https://github.com/microsoft/AirSim/pull/2493)
+* [Plotting APIs for Debugging](https://github.com/microsoft/AirSim/pull/2304)
+* ROS wrapper for multirotors is available. See [airsim_ros_pkgs](https://microsoft.github.io/AirSim/airsim_ros_pkgs/) for the ROS API, and [airsim_tutorial_pkgs](https://microsoft.github.io/AirSim/airsim_tutorial_pkgs/) for tutorials.
+* Added support for [docker in ubuntu](https://microsoft.github.io/AirSim/docker_ubuntu/)
+
+For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## How to Get It
 
