@@ -55,7 +55,7 @@ class VehicleClient:
             is_enabled (bool): True to enable, False to disable API control
             vehicle_name (str, optional): Name of the vehicle to send this command to
         """
-        return self.client.call('enableApiControl', is_enabled, vehicle_name)
+        self.client.call('enableApiControl', is_enabled, vehicle_name)
 
     def isApiControlEnabled(self, vehicle_name = ''):
         """
@@ -186,7 +186,7 @@ class VehicleClient:
             update_interval_secs (float, optional): Interval to update the Sun's position
             move_sun (bool, optional): Whether or not to move the Sun
         """
-        return self.client.call('simSetTimeOfDay', is_enabled, start_datetime, is_start_datetime_dst, celestial_clock_speed, update_interval_secs, move_sun)
+        self.client.call('simSetTimeOfDay', is_enabled, start_datetime, is_start_datetime_dst, celestial_clock_speed, update_interval_secs, move_sun)
 
     # weather
     def simEnableWeather(self, enable):
@@ -196,7 +196,7 @@ class VehicleClient:
         Args:
             enable (bool): True to enable, False to disable
         """
-        return self.client.call('simEnableWeather', enable)
+        self.client.call('simEnableWeather', enable)
 
     def simSetWeatherParameter(self, param, val):
         """
@@ -206,7 +206,7 @@ class VehicleClient:
             param (WeatherParameter): Weather effect to be enabled
             val (float): Intensity of the effect, Range 0-1
         """
-        return self.client.call('simSetWeatherParameter', param, val)
+        self.client.call('simSetWeatherParameter', param, val)
 
     # camera control
     # simGetImage returns compressed png in array of bytes
@@ -401,7 +401,7 @@ class VehicleClient:
             message_param (str, optional): Parameter to be printed next to the message
             severity (int, optional): Range 0-3, inclusive, corresponding to the severity of the message
         """
-        return self.client.call('simPrintLogMessage', message, message_param, severity)
+        self.client.call('simPrintLogMessage', message, message_param, severity)
 
     def simGetCameraInfo(self, camera_name, vehicle_name = ''):
         """
@@ -439,7 +439,7 @@ class VehicleClient:
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
-        return self.client.call('simSetCameraFov', str(camera_name), fov_degrees, vehicle_name)
+        self.client.call('simSetCameraFov', str(camera_name), fov_degrees, vehicle_name)
 
     def simGetGroundTruthKinematics(self, vehicle_name = ''):
         """
