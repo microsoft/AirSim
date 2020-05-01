@@ -73,25 +73,6 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1 (
 	)
 )
 
-REM //---------- Build nlopt -------------
-ECHO Starting cmake to build nlopt...
-IF NOT EXIST external\nlopt_airsim\build mkdir external\nlopt_airsim\build
-cd external\nlopt_airsim\build
-REM cmake -G"Visual Studio 14 2015 Win64" ..
-cmake -G"Visual Studio 15 2017 Win64" ..
-
-if "%buildMode%" == "--Debug" (
-cmake --build . --config Debug
-) else if "%buildMode%" == "--Release" (
-cmake --build . --config Release
-) else (
-cmake --build .
-cmake --build . --config Release
-)
-
-if ERRORLEVEL 1 goto :buildfailed
-chdir /d %ROOT_DIR%
-
 REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
@@ -111,21 +92,6 @@ cmake --build . --config Release
 if ERRORLEVEL 1 goto :buildfailed
 chdir /d %ROOT_DIR% 
 
-REM //---------- copy nlopt binaries and include folder inside AirLib folder ----------
-set NLOPT_TARGET_LIB=AirLib\deps\nloptlib\lib\x64
-if NOT exist %NLOPT_TARGET_LIB% mkdir %NLOPT_TARGET_LIB%
-set NLOPTLIB_TARGET_INCLUDE=AirLib\deps\nloptlib\include
-if NOT exist %NLOPTLIB_TARGET_INCLUDE% mkdir %NLOPTLIB_TARGET_INCLUDE%
-robocopy /MIR external\nlopt_airsim\include %NLOPTLIB_TARGET_INCLUDE%
-
-if "%buildMode%" == "--Debug" (
-robocopy /MIR external\nlopt_airsim\build\Debug %NLOPT_TARGET_LIB%\Debug
-) else if "%buildMode%" == "--Release" (
-robocopy /MIR external\nlopt_airsim\build\Release %NLOPT_TARGET_LIB%\Release
-) else (
-robocopy /MIR external\nlopt_airsim\build\Debug %NLOPT_TARGET_LIB%\Debug
-robocopy /MIR external\nlopt_airsim\build\Release %NLOPT_TARGET_LIB%\Release
-)
 REM //---------- copy rpclib binaries and include folder inside AirLib folder ----------
 set RPCLIB_TARGET_LIB=AirLib\deps\rpclib\lib\x64
 if NOT exist %RPCLIB_TARGET_LIB% mkdir %RPCLIB_TARGET_LIB%
