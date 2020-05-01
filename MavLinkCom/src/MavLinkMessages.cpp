@@ -4775,7 +4775,8 @@ int MavLinkGpsInput::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->gps_id), 60);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->fix_type), 61);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->satellites_visible), 62);
-    return 63;
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->yaw), 63);
+    return 65;
 }
 
 int MavLinkGpsInput::unpack(const char* buffer) {
@@ -4797,7 +4798,8 @@ int MavLinkGpsInput::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->gps_id), 60);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->fix_type), 61);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->satellites_visible), 62);
- return 63;
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->yaw), 63);
+ return 65;
 }
 
 std::string MavLinkGpsInput::toJSon() {
@@ -4821,6 +4823,7 @@ std::string MavLinkGpsInput::toJSon() {
     ss << ", \"gps_id\":"  << static_cast<unsigned int>(this->gps_id);
     ss << ", \"fix_type\":"  << static_cast<unsigned int>(this->fix_type);
     ss << ", \"satellites_visible\":"  << static_cast<unsigned int>(this->satellites_visible);
+    ss << ", \"yaw\":"  << this->yaw;
     ss << "} },";
  return ss.str();
 }
@@ -6104,8 +6107,8 @@ void MavCmdDoMountControl::pack() {
     param2 = RollDependingMount;
     param3 = YawDependingMount;
     param4 = Altitude;
-    param5 = LatitudeDegreesP;
-    param6 = LongitudeDegreesP;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Mode;
 }
 void MavCmdDoMountControl::unpack() {
@@ -6113,8 +6116,8 @@ void MavCmdDoMountControl::unpack() {
     RollDependingMount = param2;
     YawDependingMount = param3;
     Altitude = param4;
-    LatitudeDegreesP = param5;
-    LongitudeDegreesP = param6;
+    Latitude = param5;
+    Longitude = param6;
     Mode = param7;
 }
 void MavCmdDoSetCamTriggDist::pack() {
@@ -6331,6 +6334,12 @@ void MavCmdComponentArmDisarm::unpack() {
     Arm = param1;
     Force = param2;
 }
+void MavCmdIlluminatorOnOff::pack() {
+    param1 = Enable;
+}
+void MavCmdIlluminatorOnOff::unpack() {
+    Enable = param1;
+}
 void MavCmdGetHomePosition::pack() {
 }
 void MavCmdGetHomePosition::unpack() {
@@ -6362,12 +6371,20 @@ void MavCmdSetMessageInterval::unpack() {
 void MavCmdRequestMessage::pack() {
     param1 = MessageId;
     param2 = IndexId;
-    param3 = ResponseTarget;
+    param3 = TheUseOf;
+    param4 = TheUseOf2;
+    param5 = TheUseOf3;
+    param6 = TheUseOf4;
+    param7 = ResponseTarget;
 }
 void MavCmdRequestMessage::unpack() {
     MessageId = param1;
     IndexId = param2;
-    ResponseTarget = param3;
+    TheUseOf = param3;
+    TheUseOf2 = param4;
+    TheUseOf3 = param5;
+    TheUseOf4 = param6;
+    ResponseTarget = param7;
 }
 void MavCmdRequestProtocolVersion::pack() {
     param1 = Protocol;
