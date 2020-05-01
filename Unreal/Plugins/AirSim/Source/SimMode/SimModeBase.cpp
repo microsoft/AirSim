@@ -359,7 +359,7 @@ void ASimModeBase::reset()
         for (auto& api : getApiProvider()->getVehicleSimApis()) {
             api->reset();
         }
-        }, true);
+    }, true);
 }
 
 std::string ASimModeBase::getDebugReport()

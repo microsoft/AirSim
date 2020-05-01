@@ -73,6 +73,63 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1 (
 	)
 )
 
+REM //---------- Build gflags ------------
+ECHO Starting cmake to build gflags...
+IF NOT EXIST external\gflags_airsim\build mkdir external\gflags_airsim\build
+cd external\gflags_airsim\build
+REM cmake -G"Visual Studio 14 2015 Win64" ..
+cmake -G"Visual Studio 15 2017 Win64" ..
+
+if "%buildMode%" == "--Debug" (
+cmake --build . --config Debug
+) else if "%buildMode%" == "--Release" (
+cmake --build . --config Release
+) else (
+cmake --build .
+cmake --build . --config Release
+)
+
+if ERRORLEVEL 1 goto :buildfailed
+chdir /d %ROOT_DIR% 
+
+REM //---------- Build glog --------------
+ECHO Starting cmake to build glog...
+IF NOT EXIST external\glog_airsim\build mkdir external\glog_airsim\build
+cd external\glog_airsim\build
+REM cmake -G"Visual Studio 14 2015 Win64" ..
+cmake -G"Visual Studio 15 2017 Win64" ..
+
+if "%buildMode%" == "--Debug" (
+cmake --build . --config Debug
+) else if "%buildMode%" == "--Release" (
+cmake --build . --config Release
+) else (
+cmake --build . --config Debug
+cmake --build . --config Release
+)
+
+if ERRORLEVEL 1 goto :buildfailed
+chdir /d %ROOT_DIR% 
+
+REM //---------- Build nlopt -------------
+ECHO Starting cmake to build nlopt...
+IF NOT EXIST external\nlopt_airsim\build mkdir external\nlopt_airsim\build
+cd external\nlopt_airsim\build
+REM cmake -G"Visual Studio 14 2015 Win64" ..
+cmake -G"Visual Studio 15 2017 Win64" ..
+
+if "%buildMode%" == "--Debug" (
+cmake --build . --config Debug
+) else if "%buildMode%" == "--Release" (
+cmake --build . --config Release
+) else (
+cmake --build .
+cmake --build . --config Release
+)
+
+if ERRORLEVEL 1 goto :buildfailed
+chdir /d %ROOT_DIR%
+
 REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
@@ -92,6 +149,53 @@ cmake --build . --config Release
 if ERRORLEVEL 1 goto :buildfailed
 chdir /d %ROOT_DIR% 
 
+REM //---------- copy gflags binaries and include folder inside AirLib folder ----------
+set GFLAGS_TARGET_LIB=AirLib\deps\gflagslib\lib\x64
+if NOT exist %GFLAGS_TARGET_LIB% mkdir %GFLAGS_TARGET_LIB%
+set GFLAGS_TARGET_INCLUDE=AirLib\deps\gflagslib\include
+if NOT exist %GFLAGS_TARGET_INCLUDE% mkdir %GFLAGS_TARGET_INCLUDE%
+robocopy /MIR external\gflags_airsim\build\include %GFLAGS_TARGET_INCLUDE%
+
+if "%buildMode%" == "--Debug" (
+robocopy /MIR external\gflags_airsim\build\lib\Debug %GFLAGS_TARGET_LIB%\Debug
+) else if "%buildMode%" == "--Release" (
+robocopy /MIR external\gflags_airsim\build\lib\Release %GFLAGS_TARGET_LIB%\Release
+) else (
+robocopy /MIR external\gflags_airsim\build\lib\Debug %GFLAGS_TARGET_LIB%\Debug
+robocopy /MIR external\gflags_airsim\build\lib\Release %GFLAGS_TARGET_LIB%\Release
+)
+
+REM //---------- copy glog binaries and include folder inside AirLib folder ----------
+set GLOG_TARGET_LIB=AirLib\deps\gloglib\lib\x64
+if NOT exist %GLOG_TARGET_LIB% mkdir %GLOG_TARGET_LIB%
+set GLOG_TARGET_INCLUDE=AirLib\deps\gloglib\include\glog
+if NOT exist %GLOG_TARGET_INCLUDE% mkdir %GLOG_TARGET_INCLUDE%
+robocopy /MIR external\glog_airsim\build\glog %GLOG_TARGET_INCLUDE%
+
+if "%buildMode%" == "--Debug" (
+robocopy /MIR external\glog_airsim\build\Debug %GLOG_TARGET_LIB%\Debug
+) else if "%buildMode%" == "--Release" (
+robocopy /MIR external\glog_airsim\build\Release %GLOG_TARGET_LIB%\Release
+) else (
+robocopy /MIR external\glog_airsim\build\Debug %GLOG_TARGET_LIB%\Debug
+robocopy /MIR external\glog_airsim\build\Release %GLOG_TARGET_LIB%\Release
+)
+
+REM //---------- copy nlopt binaries and include folder inside AirLib folder ----------
+set NLOPT_TARGET_LIB=AirLib\deps\nloptlib\lib\x64
+if NOT exist %NLOPT_TARGET_LIB% mkdir %NLOPT_TARGET_LIB%
+set NLOPTLIB_TARGET_INCLUDE=AirLib\deps\nloptlib\include
+if NOT exist %NLOPTLIB_TARGET_INCLUDE% mkdir %NLOPTLIB_TARGET_INCLUDE%
+robocopy /MIR external\nlopt_airsim\include %NLOPTLIB_TARGET_INCLUDE%
+
+if "%buildMode%" == "--Debug" (
+robocopy /MIR external\nlopt_airsim\build\Debug %NLOPT_TARGET_LIB%\Debug
+) else if "%buildMode%" == "--Release" (
+robocopy /MIR external\nlopt_airsim\build\Release %NLOPT_TARGET_LIB%\Release
+) else (
+robocopy /MIR external\nlopt_airsim\build\Debug %NLOPT_TARGET_LIB%\Debug
+robocopy /MIR external\nlopt_airsim\build\Release %NLOPT_TARGET_LIB%\Release
+)
 REM //---------- copy rpclib binaries and include folder inside AirLib folder ----------
 set RPCLIB_TARGET_LIB=AirLib\deps\rpclib\lib\x64
 if NOT exist %RPCLIB_TARGET_LIB% mkdir %RPCLIB_TARGET_LIB%
@@ -154,8 +258,24 @@ IF NOT EXIST AirLib\deps\eigen3 (
 )
 IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
+IF NOT EXIST build_debug (
+	mkdir build_debug
+	cd build_debug
+	echo "Building CMAKE stuff"
+	if "%buildMode%" == "--Debug" (
+	  cmake ..\cmake -DCMAKE_BUILD_TYPE=Debug -A x64
+	)  else if "%buildMode%" == "--Release" (
+		cmake ..\cmake -DCMAKE_BUILD_TYPE=Release -A x64
+	) else (
+		  cmake ..\cmake -DCMAKE_BUILD_TYPE=Debug -A x64
+		  cmake ..\cmake -DCMAKE_BUILD_TYPE=Release -A x64
+	)
+	if ERRORLEVEL 1 goto :buildfailed
+	cd ..
+)
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
+cd build_debug
 if "%buildMode%" == "--Debug" (
 msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
 if ERRORLEVEL 1 goto :buildfailed
