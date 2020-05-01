@@ -225,6 +225,17 @@ WorldSimApi::Vector3r WorldSimApi::getObjectScale(const std::string& object_name
 	return result;
 }
 
+WorldSimApi::Vector3r WorldSimApi::getObjectScaleInternal(const std::string& object_name) const
+{
+	Vector3r result;
+	UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
+		AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+		result = actor ? Vector3r(actor->GetActorScale().X, actor->GetActorScale().Y, actor->GetActorScale().Z)
+			: Vector3r::Zero();
+		}, true);
+	return result;
+}
+
 bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimApi::Pose& pose, bool teleport)
 {
     bool result;

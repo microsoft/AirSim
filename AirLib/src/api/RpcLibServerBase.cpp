@@ -261,8 +261,8 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 		return getWorldSimApi()->destroyObject(object_name);
 	});
 
-    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name, bool add_noise) -> RpcLibAdapatorsBase::Pose {
-        const auto& pose = getWorldSimApi()->getObjectPose(object_name, add_noise); 
+    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Pose {
+        const auto& pose = getWorldSimApi()->getObjectPose(object_name); 
         return RpcLibAdapatorsBase::Pose(pose);
     });
 	pimpl_->server.bind("simGetObjectScale", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Vector3r {

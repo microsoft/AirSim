@@ -45,6 +45,7 @@ public:
     virtual Pose getObjectPose(const std::string& object_name) const override;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
     virtual Vector3r getObjectScale(const std::string& object_name) const override;
+    virtual Vector3r getObjectScaleInternal(const std::string& object_name) const override;
     virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) override;
 
     //----------- Plotting APIs ----------/

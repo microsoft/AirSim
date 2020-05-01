@@ -356,21 +356,6 @@ bool RpcLibClientBase::simLoadLevel(const string& level_name)
     return pimpl_->client.call("simLoadLevel", level_name).as<bool>();
 }
 
-void RpcLibClientBase::simDisableRaceLog()
-{
-    pimpl_->client.call("simDisableRaceLog");
-}
-
-void RpcLibClientBase::simStartRace(int tier)
-{
-    pimpl_->client.call("simStartRace", tier);
-}
-
-void RpcLibClientBase::simResetRace()
-{
-    pimpl_->client.call("simResetRace");
-}
-
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name, bool add_noise) const
 {
     return pimpl_->client.call("simGetObjectPose", object_name, add_noise).as<RpcLibAdapatorsBase::Pose>().to();
