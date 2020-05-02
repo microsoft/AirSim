@@ -60,7 +60,6 @@ public:
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const = 0;
     virtual Pose getObjectPose(const std::string& object_name) const = 0;
     virtual Vector3r getObjectScale(const std::string& object_name) const = 0;
-    virtual Vector3r getObjectScaleInternal(const std::string& object_name) const = 0;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
     virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) = 0;
 

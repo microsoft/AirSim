@@ -13,15 +13,11 @@
 #include "api/ApiServerBase.hpp"
 #include "api/ApiProvider.hpp"
 #include "PawnSimApi.h"
-#include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
 
-#include "Components/LineBatchComponent.h" 
 #include "SimModeBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRaceStartEvent, int, RaceTier);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRaceResetEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
 
 UCLASS()
@@ -174,6 +170,4 @@ private:
     void setupPhysicsLoopPeriod();
     void showClockStats();
     void drawLidarDebugPoints();
-    void plot_multirotor_trajectory();
-    void plot_debuggers();
 };

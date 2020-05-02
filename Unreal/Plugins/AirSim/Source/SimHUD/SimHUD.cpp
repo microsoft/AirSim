@@ -1,5 +1,5 @@
 #include "SimHUD.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Misc/FileHelper.h"
 
@@ -9,7 +9,6 @@
 
 #include "common/AirSimSettings.hpp"
 #include <stdexcept>
-
 
 
 ASimHUD::ASimHUD()
@@ -25,10 +24,10 @@ void ASimHUD::BeginPlay()
     try {
         UAirBlueprintLib::OnBeginPlay();
         loadLevel();
+
         initializeSettings();
         setUnrealEngineSettings();
         createSimMode();
-
         createMainWidget();
         setupInputBindings();
         if (simmode_)
@@ -40,7 +39,6 @@ void ASimHUD::BeginPlay()
         //FGenericPlatformMisc::MessageBoxExt(EAppMsgType::Ok, TEXT("Error at Startup"), ANSI_TO_TCHAR(ex.what()));
         UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("Error at startup: ") + ex.what(), "Error");
     }
-
 }
 
 void ASimHUD::Tick(float DeltaSeconds)
@@ -293,7 +291,6 @@ void ASimHUD::loadLevel()
     else
         UAirBlueprintLib::RunCommandOnGameThread([&]() {UAirBlueprintLib::loadLevel(this->GetWorld(), FString("Blocks"));}, true);
 }
-
 void ASimHUD::createSimMode()
 {
     std::string simmode_name = AirSimSettings::singleton().simmode_name;

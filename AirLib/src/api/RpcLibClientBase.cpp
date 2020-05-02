@@ -356,18 +356,9 @@ bool RpcLibClientBase::simLoadLevel(const string& level_name)
     return pimpl_->client.call("simLoadLevel", level_name).as<bool>();
 }
 
-msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name, bool add_noise) const
-{
-    return pimpl_->client.call("simGetObjectPose", object_name, add_noise).as<RpcLibAdapatorsBase::Pose>().to();
-}
 msr::airlib::Vector3r RpcLibClientBase::simGetObjectScale(const std::string& object_name) const
 {
     return pimpl_->client.call("simGetObjectScale", object_name).as<RpcLibAdapatorsBase::Vector3r>().to();
-}
-
-msr::airlib::Vector3r RpcLibClientBase::simGetObjectScaleInternal(const std::string& object_name) const
-{
-    return pimpl_->client.call("simGetObjectScaleInternal", object_name).as<RpcLibAdapatorsBase::Vector3r>().to();
 }
 
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name) const

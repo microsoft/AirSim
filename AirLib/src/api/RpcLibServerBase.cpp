@@ -258,11 +258,6 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->listSceneObjects(name_regex);
     });
 
-    pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Pose {
-        const auto& pose = getWorldSimApi()->getObjectPose(object_name); 
-        return RpcLibAdapatorsBase::Pose(pose);
-    });
-
     pimpl_->server.bind("simLoadLevel", [&](const std::string& level_name) -> bool {
         return getWorldSimApi()->loadLevel(level_name);
     });
@@ -280,11 +275,6 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::Pose(pose);
     });
 
-	pimpl_->server.bind("simGetObjectScale", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Vector3r {
-		const auto& scale = getWorldSimApi()->getObjectScale(object_name);
-		return RpcLibAdapatorsBase::Vector3r(scale);
-	});
-
     pimpl_->server.bind("simGetObjectScale", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Vector3r {
         const auto& scale = getWorldSimApi()->getObjectScale(object_name);
         return RpcLibAdapatorsBase::Vector3r(scale);
@@ -301,6 +291,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("simFlushPersistentMarkers", [&]() -> void {
         getWorldSimApi()->simFlushPersistentMarkers();
     });
+
     pimpl_->server.bind("simPlotPoints", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) -> void {
         vector<Vector3r> conv_points;
         RpcLibAdapatorsBase::to(points, conv_points);

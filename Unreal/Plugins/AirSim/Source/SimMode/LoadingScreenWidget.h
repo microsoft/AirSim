@@ -12,12 +12,4 @@ UCLASS()
 class AIRSIM_API ULoadingScreenWidget : public UUserWidget
 {
 	GENERATED_BODY()
-//
-//public:
-//	UFUNCTION(BlueprintImplementable, "c++ interface")
-//		UImage setImage();
-//private:
-//	int count{ 0 };
-//	int num_images{ 3 };
-	
 };

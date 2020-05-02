@@ -58,11 +58,6 @@ public:
         else
     	    return clock()->elapsedSince(proc_start_) >= timeout_sec_;
     }
-
-	bool isCancelled() const
-	{
-		return cancelable_action_.isCancelled();
-	}
 private:
     TTimeDelta sleep_duration_, timeout_sec_;
     CancelToken& cancelable_action_;
