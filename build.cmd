@@ -154,24 +154,8 @@ IF NOT EXIST AirLib\deps\eigen3 (
 )
 IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
-IF NOT EXIST build_debug (
-	mkdir build_debug
-	cd build_debug
-	echo "Building CMAKE stuff"
-	if "%buildMode%" == "--Debug" (
-	  cmake ..\cmake -DCMAKE_BUILD_TYPE=Debug -A x64
-	)  else if "%buildMode%" == "--Release" (
-		cmake ..\cmake -DCMAKE_BUILD_TYPE=Release -A x64
-	) else (
-		  cmake ..\cmake -DCMAKE_BUILD_TYPE=Debug -A x64
-		  cmake ..\cmake -DCMAKE_BUILD_TYPE=Release -A x64
-	)
-	if ERRORLEVEL 1 goto :buildfailed
-	cd ..
-)
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-cd build_debug
 if "%buildMode%" == "--Debug" (
 msbuild /p:Platform=x64 /p:Configuration=Debug AirSim.sln
 if ERRORLEVEL 1 goto :buildfailed
