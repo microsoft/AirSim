@@ -380,6 +380,7 @@ ros/src/CMakeLists.txt
 
 # docs
 docs/README.md
+docs/api_docs
 build_docs/
 
 # api docs
