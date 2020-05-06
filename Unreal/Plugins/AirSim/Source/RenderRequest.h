@@ -23,7 +23,7 @@ public:
 
     struct RenderResult {
         RenderResult() = default;
-        RenderResult(RenderResult&) = default;
+        // RenderResult(RenderResult&) = default;
         RenderResult(RenderResult&&) = default;
         RenderResult &operator=(RenderResult &&) = default;
 
