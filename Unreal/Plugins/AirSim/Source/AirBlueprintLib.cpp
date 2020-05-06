@@ -21,6 +21,7 @@
 #include "Engine/Engine.h"
 #include <exception>
 #include "common/common_utils/Utils.hpp"
+#include "Modules/ModuleManager.h"
 
 /*
 //TODO: change naming conventions to same as other files?
