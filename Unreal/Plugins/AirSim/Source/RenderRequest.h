@@ -39,7 +39,7 @@ private:
     std::shared_ptr<RenderResult>* results_;
 public:
     RenderParams fast_param_{ nullptr, nullptr, false, false };
-    volatile RenderResult latest_result_{};
+    RenderResult latest_result_{};
 
 private:
     volatile bool fast_cap_done_ = false;
@@ -52,6 +52,7 @@ private:
     FDelegateHandle end_draw_handle_;
     std::function<void()> query_camera_pose_cb_;
 
+    BufferPool* buffer_pool_ = nullptr;
 public:
     RenderRequest(BufferPool *buffer_pool);
     ~RenderRequest();
