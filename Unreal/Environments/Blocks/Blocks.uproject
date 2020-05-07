@@ -17,6 +17,14 @@
 		{
 			"Name": "AirSim",
 			"Enabled": true
-		}
+		},
+		{
+            		"Name": "SteamVR",
+		        "Enabled": false
+	        },
+        	{
+		        "Name": "OculusVR",
+		        "Enabled": false
+	        },
 	]
 }
