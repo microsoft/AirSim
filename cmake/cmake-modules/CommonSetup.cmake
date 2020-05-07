@@ -53,10 +53,8 @@ macro(CommonSetup)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wstrict-aliasing -D__CLANG__")
         else ()
             set(CMAKE_CXX_FLAGS "\
-                -std=c++17 -ggdb -Wall -Wextra -Wstrict-aliasing -Wunreachable-code -Wcast-qual -Wctor-dtor-privacy \
-                -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch-default \
-                -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wswitch-default -Wundef \
-                -Wno-variadic-macros -Wno-parentheses -Wno-unused-function -Wno-unused -fdiagnostics-show-option \
+                -std=c++17 -ggdb -Wall -Wextra \
+                -Wno-variadic-macros -Wno-parentheses -Wno-unused-function -Wno-unused \
                 -pthread \
                 ${RPC_LIB_DEFINES} ${CMAKE_CXX_FLAGS}")
 
