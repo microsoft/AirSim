@@ -125,7 +125,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   # clang is the compiler used for developing mainly, so
   # this is where I set the highest warning level
   list(APPEND RPCLIB_BUILD_FLAGS
-    -Wall -pedantic -Weverything -Wno-c++98-compat
+    -Wall -Wextra -Wno-c++98-compat
     -Wno-c++98-compat-pedantic -Wno-padded -Wno-missing-prototypes
     -Wno-undef -pthread)
 
@@ -268,7 +268,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   # clang is the compiler used for developing mainly, so
   # this is where I set the highest warning level
   list(APPEND RPCLIB_BUILD_FLAGS
-    -Wall -pedantic -Weverything -Wno-c++98-compat
+    -Wall -Wextra -Wno-c++98-compat
     -Wno-c++98-compat-pedantic -Wno-padded -Wno-missing-prototypes
     -Wno-undef -pthread)
 
