@@ -19,7 +19,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay() override;
 	void Tick(float DeltaSeconds) override;
-	UnityPawn* GetVehiclePawn();
+	UnityPawn* GetVehiclePawn() override;
 
 private:
 	typedef FlyingPawn TVehiclePawn;
