@@ -44,7 +44,7 @@ script:
       ./setup.sh;
       ./build.sh || travis_terminate 1;
       echo "Starting Unity Build!";
-      cd Unity && ./build.sh 2> Unity_error.txt || ((cat Unity_error.txt | grep -i "error:" -B 10 -A 10) && exit 1);
+      cd Unity && ./build.sh || travis_terminate 1;
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
       export PATH=$MSBUILD_PATH:$PATH_FIX:$PATH;
       cmd.exe //C 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat' amd64 '&&'
@@ -54,5 +54,5 @@ script:
       ./setup.sh;
       ./build.sh || travis_terminate 1;
       echo "Starting Unity Build!";
-      cd Unity && ./build.sh 2> Unity_error.txt || ((cat Unity_error.txt | grep -i "error:" -B 10 -A 10) && exit 1);
+      cd Unity && ./build.sh || travis_terminate 1;
     fi
