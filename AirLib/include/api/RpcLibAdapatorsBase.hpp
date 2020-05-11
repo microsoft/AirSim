@@ -402,7 +402,7 @@ public:
         {
             pixels_as_float = s.pixels_as_float;
 
-            image_data_uint8 = std::move(*(s.image_data_uint8));
+            image_data_uint8 = *(s.image_data_uint8);
             image_data_float = s.image_data_float;
 
             //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
