@@ -227,7 +227,6 @@ public:
 	// write to the serial port
 	int write(const uint8_t* ptr, int count)
 	{
-		socklen_t addrlen = sizeof(sockaddr_in);
 		int hr = send(sock, reinterpret_cast<const char*>(ptr), count, 0);
 		if (hr == SOCKET_ERROR)
 		{
@@ -262,7 +261,6 @@ public:
 
 		while (!closed_)
 		{
-			socklen_t addrlen = sizeof(sockaddr_in);
 			int rc = recv(sock, reinterpret_cast<char*>(result), bytesToRead, 0);
 			if (rc < 0)
 			{
