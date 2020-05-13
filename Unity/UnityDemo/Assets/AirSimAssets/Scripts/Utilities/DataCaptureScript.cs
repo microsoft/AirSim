@@ -23,7 +23,7 @@ namespace AirSimUnity {
         private Texture2D screenShot;
         private Rect captureRect;
         private AirSimPose currentPose;
-        private Quaternion poseFromAirLib;
+        private Pose poseFromAirLib;
 
         private bool isCapturing;
         private bool isPoseOverride;
@@ -40,7 +40,8 @@ namespace AirSimUnity {
             DataManager.SetToAirSim(transform.rotation, ref currentPose.orientation);
 
             if (isPoseOverride) {
-                transform.rotation = poseFromAirLib;
+                transform.position = poseFromAirLib.position;
+                transform.rotation = poseFromAirLib.rotation;
                 isPoseOverride = false;
             }
         }
@@ -89,8 +90,9 @@ namespace AirSimUnity {
             return currentPose;
         }
 
-        public void SetOrientation(AirSimQuaternion orientation) {
-            DataManager.SetToUnity(orientation, ref poseFromAirLib);
+        public void SetPose(AirSimPose pose) {
+            DataManager.SetToUnity(pose.position, ref poseFromAirLib.position);
+            DataManager.SetToUnity(pose.orientation, ref poseFromAirLib.rotation);
             isPoseOverride = true;
         }
 
