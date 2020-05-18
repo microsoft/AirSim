@@ -74,6 +74,10 @@ WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) con
 	return UnityUtilities::Convert_to_Pose(airSimPose);
 }
 
+Vector3r WorldSimApi::getObjectScale(const std::string& object_name) const {}
+Vector3r WorldSimApi::getObjectScaleInternal(const std::string& object_name) const {}
+bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r& scale);
+
 bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimApi::Pose& pose, bool teleport)
 {
 	AirSimUnity::AirSimPose airSimPose = UnityUtilities::Convert_to_AirSimPose(pose);
