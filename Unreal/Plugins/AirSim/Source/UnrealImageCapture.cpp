@@ -38,11 +38,13 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
     render_request.FastScreenshot();
 
     int height = capture->TextureTarget->SizeY;
+    int width = capture->TextureTarget->SizeX;
     int stride = render_request.latest_result_.stride;
     int bytes = render_request.latest_result_.pixels->size();
-    int bytes_per_pixel = bytes / (height * stride);
+    int bytes_per_pixel = bytes / (height * width);
     int padded_width = stride / bytes_per_pixel;
 
+    response.camera_name = camera_name;
     response.time_stamp = render_request.latest_result_.time_stamp;
     response.width = padded_width;
     response.height = height;
