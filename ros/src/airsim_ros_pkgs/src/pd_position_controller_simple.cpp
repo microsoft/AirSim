@@ -127,6 +127,10 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
         reset_errors(); // todo
         return true;
     }
+
+    // Already have goal, and have reached it
+    ROS_INFO_STREAM("[PIDPositionController] Already have goal and have reached it");
+    return false;
 }
 
 bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response)
@@ -206,6 +210,10 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         reset_errors(); // todo
         return true;
     }
+
+    // Already have goal, this shouldn't happen
+    ROS_INFO_STREAM("[PIDPositionController] Goal already received, ignoring!");
+    return false;
 }
 
 // todo do relative altitude, or add an option for the same?
