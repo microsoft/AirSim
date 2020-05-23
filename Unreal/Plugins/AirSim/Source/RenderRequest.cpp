@@ -3,7 +3,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Async/TaskGraphInterfaces.h"
 #include "ImageUtils.h"
-#include "UnrealString.h"
+#include "Containers/UnrealString.h"
 #include <thread>
 #include <chrono>
 #include "common/common_utils/BufferPool.h"
