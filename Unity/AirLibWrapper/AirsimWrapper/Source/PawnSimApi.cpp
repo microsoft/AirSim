@@ -183,6 +183,12 @@ void PawnSimApi::toggleTrace()
 	state_.tracing_enabled = !state_.tracing_enabled;
 }
 
+void PawnSimApi::setTraceLine(const std::vector<float>& color_rgba, float thickness)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "setTraceLine is not supported on unity").c_str());
+}
+
 void PawnSimApi::allowPassthroughToggleInput()
 {
 	state_.passthrough_enabled = !state_.passthrough_enabled;
@@ -213,6 +219,11 @@ void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr:
 	airSimOrientation.w = orientation.w();
 
 	SetCameraOrientation(camera_name.c_str(), airSimOrientation, params_.vehicle_name.c_str());
+}
+
+void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
+{
+	SetCameraFoV(camera_name.c_str(), fov_degrees, params_.vehicle_name.c_str());
 }
 
 //parameters in NED frame

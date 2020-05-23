@@ -4,14 +4,15 @@
 
 1. [Download](https://www.unrealengine.com/download) the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.
 2. Run the Epic Games Launcher, open the `Library` tab on the left pane.   
-Click on the `Add Versions` which should show the option to download **Unreal 4.18** as shown below. If you have multiple versions of Unreal installed then **make sure 4.18 is set to `current`** by clicking down arrow next to the Launch button for the version.
+Click on the `Add Versions` which should show the option to download **Unreal 4.24** as shown below. If you have multiple versions of Unreal installed then **make sure 4.24 is set to `current`** by clicking down arrow next to the Launch button for the version.
 
+   **Note**: AirSim also works with UE >= 4.22, however, we recommend you update to 4.24.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ## Build AirSim
-* Install Visual Studio 2017.    
-**Make sure** to select **VC++** and **Windows SDK 8.1** while installing VS 2017.   
-* Start `x64 Native Tools Command Prompt for VS 2017`. 
+* Install Visual Studio 2019.    
+**Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.18362** (should be selected by default) while installing VS 2019.   
+* Start `Developer Command Prompt for VS 2019`. 
 * Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
 * Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
 
@@ -36,7 +37,7 @@ Once AirSim is set up by following above steps, you can,
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available.
 
 # AirSim on Unity (Experimental)
-[Unity](https://unity3d.com/) is another great game engine platform and we have an [experimental release](https://github.com/Microsoft/AirSim/tree/master/Unity) of AirSim on Unity. Please note that this is work in progress and all features may not work yet. 
+[Unity](https://unity3d.com/) is another great game engine platform and we have an **experimental** integration of [AirSim with Unity](https://microsoft.github.com/AirSim/Unity). Please note that this is work in progress and all features may not work yet. 
 
 # FAQ
 #### I get `error C100 : An internal error has occurred in the compiler` when running build.cmd
@@ -61,5 +62,5 @@ In some cases, these settings will still not lead to the desired result and erro
 
 To resolve such issues the following procedure can be applied:
 1. Uninstall all old versions of VS using the [VisualStudioUninstaller](https://github.com/Microsoft/VisualStudioUninstaller/releases)
-2. Repair/Install VS2017
+2. Repair/Install VS 2019
 3. Restart machine and install Epic launcher and desired version of the engine

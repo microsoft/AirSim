@@ -1,7 +1,7 @@
 #pragma once
 
 #include <future>
-#include "vehicles/multirotor/MultiRotor.hpp"
+#include "vehicles/multirotor/MultiRotorPhysicsBody.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
 #include "MultirotorPawnEvents.h"
@@ -12,11 +12,11 @@ class MultirotorPawnSimApi : public PawnSimApi
 public:
 	typedef msr::airlib::real_T real_T;
 	typedef msr::airlib::Utils Utils;
-	typedef msr::airlib::MultiRotor MultiRotor;
+	typedef msr::airlib::MultiRotorPhysicsBody MultiRotor;
 	typedef msr::airlib::StateReporter StateReporter;
 	typedef msr::airlib::UpdatableObject UpdatableObject;
 	typedef msr::airlib::Pose Pose;
-	typedef MultirotorPawnEvents::RotorInfo RotorInfo;
+	typedef MultirotorPawnEvents::RotorActuatorInfo RotorActuatorInfo;
 
 public:
     virtual void initialize() override;
@@ -39,9 +39,9 @@ public:
 private:
 	std::unique_ptr<msr::airlib::MultirotorApiBase> vehicle_api_;
 	std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
-	std::unique_ptr<MultiRotor> phys_vehicle_;
+	std::unique_ptr<MultiRotor> multirotor_physics_body_;
 	unsigned int rotor_count_;
-	std::vector<RotorInfo> rotor_info_;
+	std::vector<RotorActuatorInfo> rotor_actuator_info_;
 	enum class PendingPoseStatus
 	{
 		NonePending,

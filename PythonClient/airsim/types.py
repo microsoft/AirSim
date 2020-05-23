@@ -304,13 +304,13 @@ class CarControls(MsgpackMixin):
 
     def set_throttle(self, throttle_val, forward):
         if (forward):
-            is_manual_gear = False
-            manual_gear = 0
-            throttle = abs(throttle_val)
+            self.is_manual_gear = False
+            self.manual_gear = 0
+            self.throttle = abs(throttle_val)
         else:
-            is_manual_gear = False
-            manual_gear = -1
-            throttle = - abs(throttle_val)
+            self.is_manual_gear = False
+            self.manual_gear = -1
+            self.throttle = - abs(throttle_val)
 
 class KinematicsState(MsgpackMixin):
     position = Vector3r()
@@ -498,3 +498,10 @@ class PositionControllerGains():
     
     def to_lists(self):
         return [self.x_gains.kp, self.y_gains.kp, self.z_gains.kp], [self.x_gains.ki, self.y_gains.ki, self.z_gains.ki], [self.x_gains.kd, self.y_gains.kd, self.z_gains.kd]
+
+class MeshPositionVertexBuffersResponse(MsgpackMixin):
+    position = Vector3r()
+    orientation = Quaternionr()
+    vertices = 0.0
+    indices = 0.0
+    name = ''

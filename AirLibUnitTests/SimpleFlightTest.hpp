@@ -8,7 +8,7 @@
 #include "physics/FastPhysicsEngine.hpp"
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/SteppableClock.hpp"
-#include "vehicles/multirotor/MultiRotor.hpp"
+#include "vehicles/multirotor/MultiRotorPhysicsBody.hpp"
 
 namespace msr { namespace airlib {
 
@@ -39,7 +39,7 @@ public:
         initial_environment.geo_point = GeoPoint();
         environment.reset(new Environment(initial_environment));
 
-        MultiRotor vehicle(params.get(), api.get(), kinematics.get(), environment.get());
+        MultiRotorPhysicsBody vehicle(params.get(), api.get(), kinematics.get(), environment.get());
 
         std::vector<UpdatableObject*> vehicles = { &vehicle };
         std::unique_ptr<PhysicsEngineBase> physics_engine(new FastPhysicsEngine());

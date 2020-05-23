@@ -339,6 +339,7 @@ private: //variables
     //TODO: make this configurable?
     float landing_vel_ = 0.2f; //velocity to use for landing
     float approx_zero_vel_ = 0.05f;
+    float approx_zero_angular_vel_ = 0.01f;
 };
 
 }} //namespace
