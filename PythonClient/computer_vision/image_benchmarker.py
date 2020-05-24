@@ -62,7 +62,7 @@ class ImageBenchmarker():
         request = [airsim.ImageRequest("front_center", airsim.ImageType.Scene, False, False)]
         response = self.airsim_client.simGetImages(request)
         np_arr = np.frombuffer(response[0].image_data_uint8, dtype=np.uint8)
-        img_rgb = np_arr.reshape(response[0].height, response[0].width, 4)
+        img_rgb = np_arr.reshape(response[0].height, response[0].width, -1)
         self.image_benchmark_total_time += time.time() - iter_start_time
         avg_fps = 1.0 / ((self.image_benchmark_total_time) / float(self.image_benchmark_num_images))
         print("result + {} avg_fps for {} num of images".format(avg_fps, self.image_benchmark_num_images))
