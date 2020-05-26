@@ -18,7 +18,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
 )
 
-
 catkin_package(
   INCLUDE_DIRS
   CATKIN_DEPENDS message_runtime roscpp std_msgs airsim_ros_pkgs  

@@ -505,7 +505,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngleZAsync(pitch, roll, z, yaw, duration);
+            context->client.moveByRollPitchYawZAsync(roll, pitch, yaw, z, duration);
         });
 
         return false;
@@ -534,7 +534,7 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngleThrottleAsync(pitch, roll, throttle, yaw_rate, duration);
+            context->client.moveByRollPitchYawrateThrottleAsync(roll, pitch, yaw_rate, throttle, duration);
         });
 
         return false;
@@ -693,13 +693,13 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngleZAsync(pitch, roll, z, yaw, duration);
+            context->client.moveByRollPitchYawZAsync(roll, pitch, yaw, z, duration);
             if (!context->client.waitOnLastTask()) {
                 throw std::runtime_error("BackForthByAngleCommand canceled");
             }
             context->client.hoverAsync();
             context->sleep_for(pause_time);
-            context->client.moveByAngleZAsync(-pitch, -roll, z, yaw, duration);
+            context->client.moveByRollPitchYawZAsync(-roll, -pitch, yaw, z, duration);
             if (!context->client.waitOnLastTask()){
                 throw std::runtime_error("BackForthByAngleCommand canceled");
             }
@@ -782,28 +782,28 @@ public:
         CommandContext* context = params.context;
 
         context->tasker.execute([=]() {
-            context->client.moveByAngleZAsync(pitch, -roll, z, yaw, 0);
+            context->client.moveByRollPitchYawZAsync(-roll, pitch, yaw, z, 0);
             if (!context->client.waitOnLastTask()) {
                 throw std::runtime_error("SquareByAngleCommand canceled");
             }
             context->client.hoverAsync();
             context->sleep_for(pause_time);
 
-            context->client.moveByAngleZAsync(-pitch, -roll, z, yaw, 0);
+            context->client.moveByRollPitchYawZAsync(-roll, -pitch, yaw, z, 0);
             if (!context->client.waitOnLastTask()) {
                 throw std::runtime_error("SquareByAngleCommand canceled");
             }
             context->client.hoverAsync();
             context->sleep_for(pause_time);
 
-            context->client.moveByAngleZAsync(-pitch, roll, z, yaw, 0);
+            context->client.moveByRollPitchYawZAsync(roll, -pitch, yaw, z, 0);
             if (!context->client.waitOnLastTask()) {
                 throw std::runtime_error("SquareByAngleCommand canceled");
             }
             context->client.hoverAsync();
             context->sleep_for(pause_time);
 
-            context->client.moveByAngleZAsync(-pitch, -roll, z, yaw, 0);
+            context->client.moveByRollPitchYawZAsync(-roll, -pitch, yaw, z, 0);
             if (!context->client.waitOnLastTask()){
                 throw std::runtime_error("SquareByAngleCommand canceled");
             }

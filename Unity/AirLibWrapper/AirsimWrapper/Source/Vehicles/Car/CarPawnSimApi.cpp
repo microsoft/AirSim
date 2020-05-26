@@ -8,12 +8,12 @@
 
 
 CarPawnSimApi::CarPawnSimApi(const Params& params,
-	const CarPawnApi::CarControls&  keyboard_controls, std::string car_name)
+	const msr::airlib::CarApiBase::CarControls& keyboard_controls, std::string car_name)
 	: PawnSimApi(params), params_(params),
 	keyboard_controls_(keyboard_controls), car_name_(car_name)
 {
 	createVehicleApi(static_cast<CarPawn*>(params.pawn), params.home_geopoint);
-	joystick_controls_ = CarPawnApi::CarControls();
+	joystick_controls_ = msr::airlib::CarApiBase::CarControls();
 }
 
 void CarPawnSimApi::initialize()
@@ -23,16 +23,16 @@ void CarPawnSimApi::initialize()
     createVehicleApi(static_cast<CarPawn*>(params_.pawn), params_.home_geopoint);
 
     //TODO: should do reset() here?
-    joystick_controls_ = CarPawnApi::CarControls();
+    joystick_controls_ = msr::airlib::CarApiBase::CarControls();
 }
 
 void CarPawnSimApi::createVehicleApi(CarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
 {
-	std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
+    std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
 
-	vehicle_api_ = std::unique_ptr<msr::airlib::CarApiBase>(new CarPawnApi(pawn, getGroundTruthKinematics(), home_geopoint,
-		getVehicleSetting(), sensor_factory, car_name_,
-		(*getGroundTruthKinematics()), (*getGroundTruthEnvironment())));
+    vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(), sensor_factory, (*getGroundTruthKinematics()),
+                                            (*getGroundTruthEnvironment()), home_geopoint);
+    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(pawn, getGroundTruthKinematics(), car_name_, vehicle_api_.get()));
 }
 
 std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
@@ -45,7 +45,7 @@ std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
 	}
 
 	const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
-	const auto state = vehicle_api_->getCarState();
+	const auto state = pawn_api_->getCarState();
 
 	common_line
 		.append(std::to_string(current_controls_.throttle)).append("\t")
@@ -154,11 +154,13 @@ void CarPawnSimApi::updateCarControls()
 	{
 		//all car controls from anywhere must be routed through API component
 		vehicle_api_->setCarControls(current_controls_);
+		pawn_api_->updateMovement(current_controls_);
 	}
 	else
 	{
 		PrintLogMessage("Control Mode: ", "API", getVehicleName().c_str(), ErrorLogSeverity::Information);
 		current_controls_ = vehicle_api_->getCarControls();
+		pawn_api_->updateMovement(current_controls_);
 	}
 }
 
@@ -169,13 +171,13 @@ void CarPawnSimApi::resetImplementation()
 	Reset(getVehicleName().c_str());
 
 	PawnSimApi::resetImplementation();
-	vehicle_api_->reset();
+	pawn_api_->reset();
 }
 
 //physics tick
 void CarPawnSimApi::update()
 {
-	vehicle_api_->update();
+	pawn_api_->update();
 	PawnSimApi::update();
 }
 

@@ -131,7 +131,7 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
+    AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string & host_ip);
     ~AirsimROSWrapper() {}; 
 
     void initialize_airsim();
@@ -258,8 +258,10 @@ private:
     /// camera helper methods
     sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
     cv::Mat manual_decode_depth(const ImageResponse& img_response) const;
-    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id) const;
-    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id) const;
+
+    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
+    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
+    
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name);
 
     // methods which parse setting json ang generate ros pRangeBaseubsubsrv
@@ -323,6 +325,7 @@ private:
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
+    std::string host_ip_;
     std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_ = nullptr;
     // seperate busy connections to airsim, update in their own thread
     msr::airlib::RpcLibClientBase airsim_client_images_;

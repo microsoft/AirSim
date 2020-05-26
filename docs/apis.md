@@ -4,7 +4,7 @@
 AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on.
 
 ## Python Quickstart
-If you want to use Python to call AirSim APIs, we recommend using Anaconda with Python 3.5 or later versions however some code may also work with Python 2.7 ([help us](../CONTRIBUTING.md) improve compatibility!).
+If you want to use Python to call AirSim APIs, we recommend using Anaconda with Python 3.5 or later versions however some code may also work with Python 2.7 ([help us](CONTRIBUTING.md) improve compatibility!).
 
 First install this package:
 
@@ -18,7 +18,7 @@ You can either get AirSim binaries from [releases](https://github.com/Microsoft/
 python hello_car.py
 ```
 
-If you are using Visual Studio 2017 then just open AirSim.sln, set PythonClient as startup project and choose `car\hello_car.py` as your startup script.
+If you are using Visual Studio 2019 then just open AirSim.sln, set PythonClient as startup project and choose `car\hello_car.py` as your startup script.
 
 ### Installing AirSim Package
 You can also install `airsim` package simply by,
@@ -127,6 +127,7 @@ for response in responses:
 AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
 
 More on [image APIs and Computer Vision mode](image_apis.md).
+For vision problems that can benefit from domain randomization, there is also an [object retexturing API](retexturing.md), which can be used in supported scenes.
 
 ### Pause and Continue APIs
 AirSim allows to pause and continue the simulation through `pause(is_paused)` API. To pause the simulation call `pause(True)` and to continue the simulation call `pause(False)`. You may have scenario, especially while using reinforcement learning, to run the simulation for specified amount of time and then automatically pause. While simulation is paused, you may then do some expensive computation, send a new command and then again run the simulation for specified amount of time. This can be achieved by API `continueForTime(seconds)`. This API runs the simulation for the specified number of seconds and then pauses the simulation. For example usage, please see [pause_continue_car.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/pause_continue_car.py) and [pause_continue_drone.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/pause_continue_drone.py).
@@ -263,7 +264,7 @@ The APIs use [msgpack-rpc protocol](https://github.com/msgpack-rpc/msgpack-rpc) 
 If you see Unreal getting slowed down dramatically when Unreal Engine window loses focus then go to 'Edit->Editor Preferences' in Unreal Editor, in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
 
 #### Do I need anything else on Windows?
-You should install VS2017 with VC++, Windows SDK 8.1 and Python. To use Python APIs you will need Python 3.5 or later (install it using Anaconda).
+You should install VS2019 with VC++, Windows SDK 10.0 and Python. To use Python APIs you will need Python 3.5 or later (install it using Anaconda).
 
 #### Which version of Python should I use?
 We recommend [Anaconda](https://www.anaconda.com/download/) to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have [problems](https://stackoverflow.com/a/45934992/207661).

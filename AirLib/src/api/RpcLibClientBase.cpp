@@ -219,6 +219,11 @@ void RpcLibClientBase::simSetVehiclePose(const Pose& pose, bool ignore_collision
     pimpl_->client.call("simSetVehiclePose", RpcLibAdapatorsBase::Pose(pose), ignore_collision, vehicle_name);
 }
 
+void RpcLibClientBase::simSetTraceLine(const std::vector<float>& color_rgba, float thickness, const std::string & vehicle_name)
+{
+    pimpl_->client.call("simSetTraceLine", color_rgba, thickness, vehicle_name);
+}
+
 vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name)
 {
     const auto& response_adaptor = pimpl_->client.call("simGetImages", 
@@ -237,9 +242,72 @@ vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, Im
     return result;
 }
 
+vector<MeshPositionVertexBuffersResponse> RpcLibClientBase::simGetMeshPositionVertexBuffers()
+{
+    const auto& response_adaptor = pimpl_->client.call("simGetMeshPositionVertexBuffers").as<vector<RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse>>();
+    return RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse::to(response_adaptor);
+}
+
 void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)
 {
     pimpl_->client.call("simPrintLogMessage", message, message_param, severity);
+}
+
+void RpcLibClientBase::simFlushPersistentMarkers()
+{
+    pimpl_->client.call("simFlushPersistentMarkers");
+}
+
+void RpcLibClientBase::simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points;
+    RpcLibAdapatorsBase::from(points, conv_points);
+    pimpl_->client.call("simPlotPoints", conv_points, color_rgba, size, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points;
+    RpcLibAdapatorsBase::from(points, conv_points);
+    pimpl_->client.call("simPlotLineStrip", conv_points, color_rgba, thickness, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points;
+    RpcLibAdapatorsBase::from(points, conv_points);
+    pimpl_->client.call("simPlotLineList", conv_points, color_rgba, thickness, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotArrows(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points_start;
+    RpcLibAdapatorsBase::from(points_start, conv_points_start);
+    vector<RpcLibAdapatorsBase::Vector3r> conv_points_end;
+    RpcLibAdapatorsBase::from(points_end, conv_points_end);
+    pimpl_->client.call("simPlotArrows", conv_points_start, conv_points_end, color_rgba, thickness, arrow_size, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotStrings(const vector<std::string>& strings, const vector<Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration)
+{
+    vector<RpcLibAdapatorsBase::Vector3r> conv_positions;
+    RpcLibAdapatorsBase::from(positions, conv_positions);
+    pimpl_->client.call("simPlotStrings", strings, conv_positions, scale, color_rgba, duration);
+}
+
+void RpcLibClientBase::simPlotTransforms(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
+{
+    vector<RpcLibAdapatorsBase::Pose> conv_poses;
+    RpcLibAdapatorsBase::from(poses, conv_poses);
+    pimpl_->client.call("simPlotTransforms", conv_poses, scale, thickness, duration, is_persistent);
+}
+
+void RpcLibClientBase::simPlotTransformsWithNames(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration)
+{
+    vector<RpcLibAdapatorsBase::Pose> conv_poses;
+    RpcLibAdapatorsBase::from(poses, conv_poses);
+    pimpl_->client.call("simPlotTransformsWithNames", conv_poses, names, tf_scale, tf_thickness, text_scale, text_color_rgba, duration);
+
 }
 
 bool RpcLibClientBase::simIsPaused() const
@@ -278,6 +346,11 @@ vector<string> RpcLibClientBase::simListSceneObjects(const string& name_regex) c
     return pimpl_->client.call("simListSceneObjects", name_regex).as<vector<string>>();
 }
 
+std::vector<std::string> RpcLibClientBase::simSwapTextures(const std::string& tags, int tex_id, int component_id, int material_id)
+{
+	return pimpl_->client.call("simSwapTextures", tags, tex_id, component_id, material_id).as<vector<string>>();
+}
+
 msr::airlib::Pose RpcLibClientBase::simGetObjectPose(const std::string& object_name) const
 {
     return pimpl_->client.call("simGetObjectPose", object_name).as<RpcLibAdapatorsBase::Pose>().to();
@@ -294,6 +367,10 @@ CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name, co
 void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name)
 {
     pimpl_->client.call("simSetCameraOrientation", camera_name, RpcLibAdapatorsBase::Quaternionr(orientation), vehicle_name);
+}
+void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name)
+{
+    pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name);
 }
 
 msr::airlib::Kinematics::State RpcLibClientBase::simGetGroundTruthKinematics(const std::string& vehicle_name) const
@@ -330,99 +407,6 @@ const void* RpcLibClientBase::getClient() const
 {
     return &pimpl_->client;
 }
-
-//----------- APIs to control ACharacter in scene ----------/
-void RpcLibClientBase::simCharSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name)
-{
-    pimpl_->client.call("simCharSetFaceExpression", expression_name, value, character_name);
-}
-
-float RpcLibClientBase::simCharGetFaceExpression(const std::string& expression_name, const std::string& character_name) const
-{
-    return pimpl_->client.call("simCharGetFaceExpression", expression_name, character_name).as<float>();
-}
-
-std::vector<std::string> RpcLibClientBase::simCharGetAvailableFaceExpressions()
-{
-    return pimpl_->client.call("simCharGetAvailableFaceExpressions").as<std::vector<std::string>>();
-}
-
-void RpcLibClientBase::simCharSetSkinDarkness(float value, const std::string& character_name)
-{
-    pimpl_->client.call("simCharSetSkinDarkness", character_name, value);
-}
-
-float RpcLibClientBase::simCharGetSkinDarkness(const std::string& character_name) const
-{
-    return pimpl_->client.call("simCharGetSkinDarkness", character_name).as<float>();
-}
-
-void RpcLibClientBase::simCharSetSkinAgeing(float value, const std::string& character_name)
-{
-    pimpl_->client.call("simCharSetSkinAgeing", character_name, value);
-}
-
-float RpcLibClientBase::simCharGetSkinAgeing(const std::string& character_name) const
-{
-    return pimpl_->client.call("simCharGetSkinAgeing", character_name).as<float>();
-}
-
-void RpcLibClientBase::simCharSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name)
-{
-    pimpl_->client.call("simCharSetHeadRotation", RpcLibAdapatorsBase::Quaternionr(q), character_name);
-}
-
-msr::airlib::Quaternionr RpcLibClientBase::simCharGetHeadRotation(const std::string& character_name) const
-{
-    return pimpl_->client.call("simCharGetHeadRotation", character_name)
-        .as<RpcLibAdapatorsBase::Quaternionr>().to();
-}
-
-void RpcLibClientBase::simCharSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name)
-{
-    pimpl_->client.call("simCharSetBonePose", bone_name, RpcLibAdapatorsBase::Pose(pose), character_name);
-}
-
-msr::airlib::Pose RpcLibClientBase::simCharGetBonePose(const std::string& bone_name, const std::string& character_name) const
-{
-    return pimpl_->client.call("simCharGetBonePose", bone_name, character_name)
-        .as<RpcLibAdapatorsBase::Pose>().to();
-}
-
-void RpcLibClientBase::simCharResetBonePose(const std::string& bone_name, const std::string& character_name)
-{
-    pimpl_->client.call("simCharResetBonePose", bone_name, character_name);
-}
-
-void RpcLibClientBase::simCharSetFacePreset(const std::string& preset_name, float value, const std::string& character_name)
-{
-    pimpl_->client.call("simCharSetFacePreset", preset_name, value, character_name);
-}
-void RpcLibClientBase::simSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name)
-{
-    pimpl_->client.call("simSetFacePresets", presets, character_name);
-}
-void RpcLibClientBase::simSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name)
-{
-    std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> r;
-    for (const auto& p : poses)
-        r[p.first] = RpcLibAdapatorsBase::Pose(p.second);
-
-    pimpl_->client.call("simSetBonePoses", r, character_name);
-}
-std::unordered_map<std::string, msr::airlib::Pose> RpcLibClientBase::simGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const
-{
-    std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> t =
-        pimpl_->client.call("simGetBonePoses", bone_names, character_name)
-            .as<std::unordered_map<std::string, RpcLibAdapatorsBase::Pose>>();
-
-    std::unordered_map<std::string, msr::airlib::Pose> r;
-    for (const auto& p : t)
-        r[p.first] = p.second.to();
-
-    return r;
-}
-
 
 }} //namespace
 

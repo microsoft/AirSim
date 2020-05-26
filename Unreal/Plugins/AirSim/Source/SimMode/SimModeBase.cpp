@@ -3,7 +3,7 @@
 #include "Misc/MessageDialog.h"
 #include "Misc/EngineVersion.h"
 #include "Runtime/Launch/Resources/Version.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Engine/World.h"
@@ -671,10 +671,10 @@ void ASimModeBase::drawLidarDebugPoints()
                         DrawDebugPoint(
                             this->GetWorld(),
                             uu_point,
-                            5,              //size
+                            5,              // size
                             FColor::Green,
-                            true,           //persistent (never goes away)
-                            0.1             //point leaves a trail on moving object
+                            false,          // persistent (never goes away)
+                            0.03            // LifeTime: point leaves a trail on moving object
                         );
                     }
                 }

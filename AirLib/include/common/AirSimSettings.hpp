@@ -29,6 +29,7 @@ public: //types
 	static constexpr char const * kVehicleTypeSimpleFlight = "simpleflight";
     static constexpr char const * kVehicleTypeArduCopter = "arducopter";
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
+    static constexpr char const * kVehicleTypeArduRover = "ardurover";
     static constexpr char const * kVehicleTypeComputerVision = "computervision";
 
     static constexpr char const * kVehicleInertialFrame = "VehicleInertialFrame";
@@ -336,7 +337,7 @@ public: //fields
     std::vector<std::string> error_messages;
 
     bool is_record_ui_visible = false;
-    int initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
+    int initial_view_mode = 2; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
     bool enable_rpc = true;
     std::string api_server_address = "";
 	int api_port = RpcLibPort;
@@ -528,21 +529,21 @@ private:
         }
 
         if (view_mode_string == "Fpv")
-            initial_view_mode = 1; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV;
+            initial_view_mode = 0; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV;
         else if (view_mode_string == "GroundObserver")
-            initial_view_mode = 2; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
+            initial_view_mode = 1; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER;
         else if (view_mode_string == "FlyWithMe")
-            initial_view_mode = 3; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
+            initial_view_mode = 2; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME;
         else if (view_mode_string == "Manual")
-            initial_view_mode = 4; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL;
+            initial_view_mode = 3; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL;
         else if (view_mode_string == "SpringArmChase")
-            initial_view_mode = 5; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE;
+            initial_view_mode = 4; // ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE;
         else if (view_mode_string == "Backup")
-            initial_view_mode = 6; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_BACKUP;
+            initial_view_mode = 5; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_BACKUP;
         else if (view_mode_string == "NoDisplay")
-            initial_view_mode = 7; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_NODISPLAY;
+            initial_view_mode = 6; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_NODISPLAY;
         else if (view_mode_string == "Front")
-            initial_view_mode = 8; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_FRONT;
+            initial_view_mode = 7; // ECameraDirectorMode::CAMREA_DIRECTOR_MODE_FRONT;
         else
             error_messages.push_back("ViewMode setting is not recognized: " + view_mode_string);
     }
@@ -706,7 +707,8 @@ private:
         auto vehicle_type = Utils::toLower(settings_json.getString("VehicleType", ""));
 
         std::unique_ptr<VehicleSetting> vehicle_setting;
-        if (vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo || vehicle_type == kVehicleTypeArduCopter)
+        if (vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo 
+            || vehicle_type == kVehicleTypeArduCopter || vehicle_type == kVehicleTypeArduRover)
             vehicle_setting = createMavLinkVehicleSetting(settings_json);
         //for everything else we don't need derived class yet
         else {

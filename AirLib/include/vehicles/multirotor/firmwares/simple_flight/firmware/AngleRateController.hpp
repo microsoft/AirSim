@@ -16,7 +16,7 @@ namespace simple_flight {
 
 class AngleRateController : public IAxisController {
 public:
-    AngleRateController(const Params* params, const IBoardClock* clock)
+    AngleRateController(Params* params, const IBoardClock* clock)
         : params_(params), clock_(clock)
     {
     }
@@ -31,7 +31,7 @@ public:
         state_estimator_ = state_estimator;
 
         pid_.reset(new PidController<float>(clock_,
-           PidConfig<float>(params_->angle_rate_pid.p[axis], 0, 0)));
+           PidConfig<float>(params_->angle_rate_pid.p[axis], params_->angle_rate_pid.i[axis], params_->angle_rate_pid.d[axis])));
     }
 
     virtual void reset() override
@@ -65,7 +65,7 @@ private:
 
     TReal output_;
 
-    const Params* params_;
+    Params* params_;
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
 };

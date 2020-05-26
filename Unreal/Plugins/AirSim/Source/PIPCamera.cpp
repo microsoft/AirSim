@@ -1,5 +1,5 @@
 #include "PIPCamera.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
@@ -253,6 +253,15 @@ void APIPCamera::setCameraOrientation(const FRotator& rotator)
     }
     this->SetActorRelativeRotation(rotator);
 }
+
+void APIPCamera::setCameraFoV(float fov_degrees)
+{
+    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
+    for (int image_type = 0; image_type < image_count; ++image_type) {
+        captures_[image_type]->FOVAngle = fov_degrees;
+    }
+}
+
 
 void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera_setting, const NedTransform& ned_transform)
 {

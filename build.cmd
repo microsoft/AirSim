@@ -8,14 +8,14 @@ set "noFullPolyCar="
 set "buildMode="
 
 REM //check VS version
-if "%VisualStudioVersion%"=="" (
+if "%VisualStudioVersion%" == "" (
     echo(
-    echo oh oh... You need to run this command from x64 Native Tools Command Prompt for VS 2017.
+    echo oh oh... You need to run this command from x64 Native Tools Command Prompt for VS 2019.
     goto :buildfailed_nomsg
 )
-if "%VisualStudioVersion%"=="14.0" (
+if "%VisualStudioVersion%" lss "16.0" (
     echo(
-    echo Hello there! We just upgraded AirSim to Unreal Engine 4.18 and Visual Studio 2017.
+    echo Hello there! We just upgraded AirSim to Unreal Engine 4.24 and Visual Studio 2019.
     echo Here are few easy steps for upgrade so everything is new and shiny:
     echo https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md
     goto :buildfailed_nomsg
@@ -78,7 +78,7 @@ ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
 cd external\rpclib\rpclib-2.2.1\build
 REM cmake -G"Visual Studio 14 2015 Win64" ..
-cmake -G"Visual Studio 15 2017 Win64" ..
+cmake -G"Visual Studio 16 2019" ..
 
 if "%buildMode%" == "--Debug" (
 cmake --build . --config Debug
@@ -143,7 +143,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
 REM //---------- get Eigen library ----------
 IF NOT EXIST AirLib\deps mkdir AirLib\deps
 IF NOT EXIST AirLib\deps\eigen3 (
-    powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://gitlab.com/libeigen/eigen/-/archive/3.3.2/eigen-3.3.2.zip -OutFile eigen3.zip }"
+    powershell -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip -OutFile eigen3.zip }"
     powershell -command "& { Expand-Archive -Path eigen3.zip -DestinationPath AirLib\deps }"
     powershell -command "& { Move-Item -Path AirLib\deps\eigen* -Destination AirLib\deps\del_eigen }"
     REM move AirLib\deps\eigen* AirLib\deps\del_eigen

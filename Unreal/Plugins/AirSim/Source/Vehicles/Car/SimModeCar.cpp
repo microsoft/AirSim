@@ -1,5 +1,5 @@
 #include "SimModeCar.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 
 #include "AirBlueprintLib.h"
 #include "common/AirSimSettings.hpp"
@@ -88,7 +88,8 @@ void ASimModeCar::getExistingVehiclePawns(TArray<AActor*>& pawns) const
 
 bool ASimModeCar::isVehicleTypeSupported(const std::string& vehicle_type) const
 {
-    return vehicle_type == AirSimSettings::kVehicleTypePhysXCar;
+    return ((vehicle_type == AirSimSettings::kVehicleTypePhysXCar) ||
+            (vehicle_type == AirSimSettings::kVehicleTypeArduRover));
 }
 
 std::string ASimModeCar::getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const

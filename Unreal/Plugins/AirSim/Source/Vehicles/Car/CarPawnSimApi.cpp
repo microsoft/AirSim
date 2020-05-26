@@ -7,7 +7,7 @@
 using namespace msr::airlib;
 
 CarPawnSimApi::CarPawnSimApi(const Params& params,
-    const CarPawnApi::CarControls&  keyboard_controls, UWheeledVehicleMovementComponent* movement)
+    const msr::airlib::CarApiBase::CarControls& keyboard_controls, UWheeledVehicleMovementComponent* movement)
     : PawnSimApi(params), params_(params),
       keyboard_controls_(keyboard_controls)
 {
@@ -20,16 +20,17 @@ void CarPawnSimApi::initialize()
     createVehicleApi(static_cast<ACarPawn*>(params_.pawn), params_.home_geopoint);
 
     //TODO: should do reset() here?
-    joystick_controls_ = CarPawnApi::CarControls();
+    joystick_controls_ = msr::airlib::CarApiBase::CarControls();
 }
 
 void CarPawnSimApi::createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
 {
     //create vehicle params
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
-    vehicle_api_ = std::unique_ptr<CarApiBase>(new CarPawnApi(pawn, getGroundTruthKinematics(), home_geopoint,
-        getVehicleSetting(), sensor_factory, 
-        (*getGroundTruthKinematics()), (*getGroundTruthEnvironment())));
+
+    vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(), sensor_factory, (*getGroundTruthKinematics()),
+                                            (*getGroundTruthEnvironment()), home_geopoint);
+    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(pawn, getGroundTruthKinematics(), vehicle_api_.get()));
 }
 
 std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
@@ -41,7 +42,7 @@ std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
     }
 
     const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
-    const auto state = vehicle_api_->getCarState();
+    const auto state = pawn_api_->getCarState();
 
     common_line
         .append(std::to_string(current_controls_.throttle)).append("\t")
@@ -60,7 +61,7 @@ std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
 void CarPawnSimApi::updateRenderedState(float dt)
 {
     PawnSimApi::updateRenderedState(dt);
-    
+
     vehicle_api_->getStatusMessages(vehicle_api_messages_);
 
     //TODO: do we need this for cars?
@@ -146,10 +147,12 @@ void CarPawnSimApi::updateCarControls()
     if (!vehicle_api_->isApiControlEnabled()) {
         //all car controls from anywhere must be routed through API component
         vehicle_api_->setCarControls(current_controls_);
+        pawn_api_->updateMovement(current_controls_);
     }
     else {
         UAirBlueprintLib::LogMessageString("Control Mode: ", "API", LogDebugLevel::Informational);
         current_controls_ = vehicle_api_->getCarControls();
+        pawn_api_->updateMovement(current_controls_);
     }
     UAirBlueprintLib::LogMessageString("Accel: ", std::to_string(current_controls_.throttle), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessageString("Break: ", std::to_string(current_controls_.brake), LogDebugLevel::Informational);
@@ -163,13 +166,13 @@ void CarPawnSimApi::resetImplementation()
 {
     PawnSimApi::resetImplementation();
 
-    vehicle_api_->reset();
+    pawn_api_->reset();
 }
 
 //physics tick
 void CarPawnSimApi::update()
 {
-    vehicle_api_->update();
+    pawn_api_->update();
 
     PawnSimApi::update();
 }

@@ -55,7 +55,7 @@ SGMStereo::SGMStereo(int _w, int _h, int minDisparity, int maxDisparity, int num
 	wLUT = new float[256];
 	for (int i = 0; i < 256; i++)
 	{
-		wLUT[i] = m_penalty1 + m_alpha * exp(-i * rec_penalty2);
+		wLUT[i] = (float)(m_penalty1 + m_alpha * exp(-i * rec_penalty2));
 	}
 }
 
@@ -327,7 +327,7 @@ void SGMStereo::scanlineOptimization(DSI &dv, DSI &msgs, unsigned char* img, flo
 
 	short * buffervec = (short*)_aligned_malloc(planes * sizeof(short), 16);
 
-	float dist = sqrt((float)(dx_*dx_+dy_*dy_));
+	float dist = (float)sqrt((dx_*dx_+dy_*dy_));
 
 	for (int j = 0; j < (int)startx.size(); j++)
 	{

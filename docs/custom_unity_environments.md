@@ -1,5 +1,5 @@
 # Adding AirSim to Custom Unity Projects
-Before completing these steps, make sure you have properly [set up AirSim for Unity](../Unity/README.md)
+Before completing these steps, make sure you have properly [set up AirSim for Unity](Unity.md)
 1. Open the Containing folder of your custom unity project
 2. Copy and paste the following items from Unity demo into the main project folder of your custom environment:
 ```

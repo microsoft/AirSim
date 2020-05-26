@@ -21,7 +21,7 @@ class AngleLevelController :
     public IGoal  //for internal rate controller
 {
 public:
-    AngleLevelController(const Params* params, const IBoardClock* clock = nullptr)
+    AngleLevelController(Params* params, const IBoardClock* clock = nullptr)
         : params_(params), clock_(clock)
     {
     }
@@ -37,7 +37,7 @@ public:
 
         //initialize level PID
         pid_.reset(new PidController<float>(clock_,
-            PidConfig<float>(params_->angle_level_pid.p[axis], 0, 0)));
+            PidConfig<float>(params_->angle_level_pid.p[axis], params_->angle_level_pid.i[axis], params_->angle_level_pid.d[axis])));
 
         //initialize rate controller
         rate_controller_.reset(new AngleRateController(params_, clock_));
@@ -135,7 +135,7 @@ private:
 
     TReal output_;
 
-    const Params* params_;
+    Params* params_;
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
     std::unique_ptr<AngleRateController> rate_controller_;

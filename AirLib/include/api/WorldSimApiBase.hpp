@@ -42,28 +42,22 @@ public:
     virtual void printLogMessage(const std::string& message,
         const std::string& message_param = "", unsigned char severity = 0) = 0;
 
+    //----------- Plotting APIs ----------/
+    virtual void simFlushPersistentMarkers() = 0;
+    virtual void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) = 0; 
+    virtual void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 
+    virtual void simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) = 0; 
+    virtual void simPlotArrows(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) = 0; 
+    virtual void simPlotStrings(const vector<std::string>& strings, const vector<Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration) = 0;
+    virtual void simPlotTransforms(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent) = 0; 
+    virtual void simPlotTransformsWithNames(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration) = 0;
+
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const = 0;
     virtual Pose getObjectPose(const std::string& object_name) const = 0;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
 
-    //----------- APIs to control ACharacter in scene ----------/
-    virtual void charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name) = 0;
-    virtual float charGetFaceExpression(const std::string& expression_name, const std::string& character_name) const = 0;
-    virtual std::vector<std::string> charGetAvailableFaceExpressions() = 0;
-    virtual void charSetSkinDarkness(float value, const std::string& character_name) = 0;
-    virtual float charGetSkinDarkness(const std::string& character_name) const = 0;
-    virtual void charSetSkinAgeing(float value, const std::string& character_name) = 0;
-    virtual float charGetSkinAgeing(const std::string& character_name) const = 0;
-    virtual void charSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name) = 0;
-    virtual msr::airlib::Quaternionr charGetHeadRotation(const std::string& character_name) const = 0;
-    virtual void charSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name) = 0;
-    virtual msr::airlib::Pose charGetBonePose(const std::string& bone_name, const std::string& character_name) const = 0;
-    virtual void charResetBonePose(const std::string& bone_name, const std::string& character_name) = 0;
-    virtual void charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name) = 0;
-    virtual void charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name) = 0;
-    virtual void charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name) = 0;
-    virtual std::unordered_map<std::string, msr::airlib::Pose> charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const = 0;
-
+	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
+    virtual vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const = 0;
 };
 
 

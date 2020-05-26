@@ -42,6 +42,7 @@ public:
     bool getCameraTypeEnabled(ImageType type) const;
     void setupCameraFromSettings(const APIPCamera::CameraSetting& camera_setting, const NedTransform& ned_transform);
     void setCameraOrientation(const FRotator& rotator);
+    void setCameraFoV(float fov_degrees);
 
     msr::airlib::ProjectionMatrix getProjectionMatrix(const APIPCamera::ImageType image_type) const;
 

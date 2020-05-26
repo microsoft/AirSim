@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "SimModeComputerVision.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
 
 #include "AirBlueprintLib.h"
