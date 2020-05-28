@@ -50,6 +50,10 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
     response.height = height;
     response.image_type = image_type;
     response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
+
+    // Disable camera after capturing image, this reduces resource consumption when images are not being taken
+    // Particulary when a high-resolution camera is used occasionally
+    camera->setCameraTypeEnabled(image_type, false);
 }
 
 bool UnrealImageCapture::getScreenshotScreen(ImageType image_type, std::vector<uint8_t>& compressedPng)
