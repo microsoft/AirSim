@@ -1,7 +1,7 @@
 <launch>
 	<arg name="output" default="log"/>
 	<arg name="publish_clock" default="false"/>
-	<arg name="is_vulkan" default="false"/>
+	<arg name="is_vulkan" default="true"/>
 	<arg name="host" default="localhost" />
 
 	<node name="airsim_node" pkg="airsim_ros_pkgs" type="airsim_node" output="$(arg output)">
