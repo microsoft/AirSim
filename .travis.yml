@@ -26,6 +26,8 @@ before_install:
       sudo apt-get update;
       sudo apt-get -y install git wget unzip;
       sudo apt-get -y install build-essential software-properties-common cmake rsync libboost-all-dev;
+      sudo apt-get -y install python3 python3-pip python3-setuptools python3-wheel;
+      pip3 install mkdocs Sphinx sphinx_rtd_theme pymdown-extensions numpy msgpack-rpc-python;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       echo "No before_install actions for OSX";
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
@@ -56,3 +58,14 @@ script:
       ./tools/install_ros_deps.sh;
       (cd ros && source ~/.bashrc && catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8);
     fi
+
+after_success:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      ./build_docs.sh;
+    fi
+
+deploy:
+  - provider: script
+    script: bash deploy_docs.sh
+    on:
+      branch: master
