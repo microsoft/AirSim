@@ -38,7 +38,7 @@ script:
       ./setup.sh;
       ./build.sh || travis_terminate 1;
       echo "Starting Unity Build!";
-      cd Unity && ./build.sh || travis_terminate 1;
+      (cd Unity && ./build.sh || travis_terminate 1);
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
       export PATH=$MSBUILD_PATH:$PATH_FIX:$PATH;
       cmd.exe //C 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat' amd64 '&&'
@@ -48,5 +48,11 @@ script:
       ./setup.sh;
       ./build.sh || travis_terminate 1;
       echo "Starting Unity Build!";
-      cd Unity && ./build.sh || travis_terminate 1;
+      (cd Unity && ./build.sh || travis_terminate 1);
+    fi
+
+  # Test ROS wrapper compilation
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      ./tools/install_ros_deps.sh;
+      (cd ros && source ~/.bashrc && catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8);
     fi
