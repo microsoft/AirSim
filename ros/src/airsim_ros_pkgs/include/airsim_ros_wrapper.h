@@ -265,7 +265,7 @@ private:
     
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name);
 
-    // methods which parse setting json ang generate ros pRangeBaseubsubsrv
+    // methods which parse setting json ang generate ros pubsubsrv
     void create_ros_pubs_from_settings_json();
     void append_static_camera_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting);
     void append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const LidarSetting& lidar_setting);

@@ -33,7 +33,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
-  # hector_uav_msgs
   std_msgs
   geographic_msgs
   geometry_msgs

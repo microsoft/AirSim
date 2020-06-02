@@ -40,12 +40,6 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
     is_used_lidar_timer_cb_queue_ = false;
     is_used_img_timer_cb_queue_ = false;
 
-    nh_private_.param("world_frame_id", world_frame_id_, world_frame_id_);
-    odom_frame_id_ = world_frame_id_ == AIRSIM_FRAME_ID ? AIRSIM_ODOM_FRAME_ID : ENU_ODOM_FRAME_ID;
-    nh_private_.param("odom_frame_id", odom_frame_id_, odom_frame_id_);
-    isENU_ = !(odom_frame_id_ == AIRSIM_ODOM_FRAME_ID);
-    nh_private_.param("coordinate_system_enu", isENU_, isENU_);
-
     if (AirSimSettings::singleton().simmode_name != "Car")
     {
         airsim_mode_ = AIRSIM_MODE::DRONE;
@@ -105,6 +99,11 @@ void AirsimROSWrapper::initialize_ros()
     nh_private_.getParam("is_vulkan", is_vulkan_);
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
     nh_private_.getParam("publish_clock", publish_clock_);
+    nh_private_.param("world_frame_id", world_frame_id_, world_frame_id_);
+    odom_frame_id_ = world_frame_id_ == AIRSIM_FRAME_ID ? AIRSIM_ODOM_FRAME_ID : ENU_ODOM_FRAME_ID;
+    nh_private_.param("odom_frame_id", odom_frame_id_, odom_frame_id_);
+    isENU_ = !(odom_frame_id_ == AIRSIM_ODOM_FRAME_ID);
+    nh_private_.param("coordinate_system_enu", isENU_, isENU_);
     vel_cmd_duration_ = 0.05; // todo rosparam
     // todo enforce dynamics constraints in this node as well?
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
