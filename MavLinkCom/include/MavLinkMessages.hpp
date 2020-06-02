@@ -943,10 +943,12 @@ enum class FENCE_BREACH {
 
 // Actions being taken to mitigate/prevent fence breach
 enum class FENCE_MITIGATE {
+    // Unknown
+    FENCE_MITIGATE_UNKNOWN = 0,
     // No actions being taken
-    FENCE_MITIGATE_NONE = 0,
+    FENCE_MITIGATE_NONE = 1,
     // Velocity limiting active to prevent breach
-    FENCE_MITIGATE_VEL_LIMIT = 1
+    FENCE_MITIGATE_VEL_LIMIT = 2
 };
 
 // Enumeration of possible mount operation modes
@@ -1001,6 +1003,20 @@ enum class STORAGE_STATUS {
     // Camera does not supply storage status information. Capacity information in
     // STORAGE_INFORMATION fields will be ignored.
     STORAGE_STATUS_NOT_SUPPORTED = 3
+};
+
+// Yaw behaviour during orbit flight.
+enum class ORBIT_YAW_BEHAVIOUR {
+    // Vehicle front points to the center (default).
+    ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TO_CIRCLE_CENTER = 0,
+    // Vehicle front holds heading when message received.
+    ORBIT_YAW_BEHAVIOUR_HOLD_INITIAL_HEADING = 1,
+    // Yaw uncontrolled.
+    ORBIT_YAW_BEHAVIOUR_UNCONTROLLED = 2,
+    // Vehicle front follows flight path (tangential to circle).
+    ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TANGENT_TO_CIRCLE = 3,
+    // Yaw controlled by RC input.
+    ORBIT_YAW_BEHAVIOUR_RC_CONTROLLED = 4
 };
 
 // Commands to be executed by the MAV. They can be executed on user request, or as
@@ -1218,6 +1234,11 @@ enum class MAV_CMD {
     MAV_CMD_MISSION_START = 300,
     // Arms / Disarms a component
     MAV_CMD_COMPONENT_ARM_DISARM = 400,
+    // Turns illuminators ON/OFF. An illuminator is a light source that is used for
+    // lighting up dark areas external to the sytstem: e.g. a torch or searchlight
+    // (as opposed to a light source for illuminating the system itself, e.g. an indicator
+    // light).
+    MAV_CMD_ILLUMINATOR_ON_OFF = 405,
     // Request the home position from the vehicle.
     MAV_CMD_GET_HOME_POSITION = 410,
     // Starts receiver pairing.
@@ -1957,7 +1978,10 @@ enum class ADSB_FLAGS {
     ADSB_FLAGS_VALID_VELOCITY = 8,
     ADSB_FLAGS_VALID_CALLSIGN = 16,
     ADSB_FLAGS_VALID_SQUAWK = 32,
-    ADSB_FLAGS_SIMULATED = 64
+    ADSB_FLAGS_SIMULATED = 64,
+    ADSB_FLAGS_VERTICAL_VELOCITY_VALID = 128,
+    ADSB_FLAGS_BARO_VALID = 256,
+    ADSB_FLAGS_SOURCE_UAT = 32768
 };
 
 // Bitmap of options for the MAV_CMD_DO_REPOSITION
@@ -2100,7 +2124,7 @@ enum class GPS_FIX_TYPE {
 enum class RTK_BASELINE_COORDINATE_SYSTEM {
     // Earth-centered, Earth-fixed
     RTK_BASELINE_COORDINATE_SYSTEM_ECEF = 0,
-    // North, East, Down
+    // RTK basestation centered, north, east, down
     RTK_BASELINE_COORDINATE_SYSTEM_NED = 1
 };
 
@@ -2580,6 +2604,176 @@ enum class TUNE_FORMAT {
     TUNE_FORMAT_QBASIC1_1 = 1,
     // Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML.
     TUNE_FORMAT_MML_MODERN = 2
+};
+
+// Component capability flags (Bitmap)
+enum class COMPONENT_CAP_FLAGS {
+    // Component has parameters, and supports the parameter protocol (PARAM messages).
+    COMPONENT_CAP_FLAGS_PARAM = 1,
+    // Component has parameters, and supports the extended parameter protocol (PARAM_EXT
+    // messages).
+    COMPONENT_CAP_FLAGS_PARAM_EXT = 2
+};
+
+// Type of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html
+enum class AIS_TYPE {
+    // Not available (default).
+    AIS_TYPE_UNKNOWN = 0,
+    AIS_TYPE_RESERVED_1 = 1,
+    AIS_TYPE_RESERVED_2 = 2,
+    AIS_TYPE_RESERVED_3 = 3,
+    AIS_TYPE_RESERVED_4 = 4,
+    AIS_TYPE_RESERVED_5 = 5,
+    AIS_TYPE_RESERVED_6 = 6,
+    AIS_TYPE_RESERVED_7 = 7,
+    AIS_TYPE_RESERVED_8 = 8,
+    AIS_TYPE_RESERVED_9 = 9,
+    AIS_TYPE_RESERVED_10 = 10,
+    AIS_TYPE_RESERVED_11 = 11,
+    AIS_TYPE_RESERVED_12 = 12,
+    AIS_TYPE_RESERVED_13 = 13,
+    AIS_TYPE_RESERVED_14 = 14,
+    AIS_TYPE_RESERVED_15 = 15,
+    AIS_TYPE_RESERVED_16 = 16,
+    AIS_TYPE_RESERVED_17 = 17,
+    AIS_TYPE_RESERVED_18 = 18,
+    AIS_TYPE_RESERVED_19 = 19,
+    // Wing In Ground effect.
+    AIS_TYPE_WIG = 20,
+    AIS_TYPE_WIG_HAZARDOUS_A = 21,
+    AIS_TYPE_WIG_HAZARDOUS_B = 22,
+    AIS_TYPE_WIG_HAZARDOUS_C = 23,
+    AIS_TYPE_WIG_HAZARDOUS_D = 24,
+    AIS_TYPE_WIG_RESERVED_1 = 25,
+    AIS_TYPE_WIG_RESERVED_2 = 26,
+    AIS_TYPE_WIG_RESERVED_3 = 27,
+    AIS_TYPE_WIG_RESERVED_4 = 28,
+    AIS_TYPE_WIG_RESERVED_5 = 29,
+    AIS_TYPE_FISHING = 30,
+    AIS_TYPE_TOWING = 31,
+    // Towing: length exceeds 200m or breadth exceeds 25m.
+    AIS_TYPE_TOWING_LARGE = 32,
+    // Dredging or other underwater ops.
+    AIS_TYPE_DREDGING = 33,
+    AIS_TYPE_DIVING = 34,
+    AIS_TYPE_MILITARY = 35,
+    AIS_TYPE_SAILING = 36,
+    AIS_TYPE_PLEASURE = 37,
+    AIS_TYPE_RESERVED_20 = 38,
+    AIS_TYPE_RESERVED_21 = 39,
+    // High Speed Craft.
+    AIS_TYPE_HSC = 40,
+    AIS_TYPE_HSC_HAZARDOUS_A = 41,
+    AIS_TYPE_HSC_HAZARDOUS_B = 42,
+    AIS_TYPE_HSC_HAZARDOUS_C = 43,
+    AIS_TYPE_HSC_HAZARDOUS_D = 44,
+    AIS_TYPE_HSC_RESERVED_1 = 45,
+    AIS_TYPE_HSC_RESERVED_2 = 46,
+    AIS_TYPE_HSC_RESERVED_3 = 47,
+    AIS_TYPE_HSC_RESERVED_4 = 48,
+    AIS_TYPE_HSC_UNKNOWN = 49,
+    AIS_TYPE_PILOT = 50,
+    // Search And Rescue vessel.
+    AIS_TYPE_SAR = 51,
+    AIS_TYPE_TUG = 52,
+    AIS_TYPE_PORT_TENDER = 53,
+    // Anti-pollution equipment.
+    AIS_TYPE_ANTI_POLLUTION = 54,
+    AIS_TYPE_LAW_ENFORCEMENT = 55,
+    AIS_TYPE_SPARE_LOCAL_1 = 56,
+    AIS_TYPE_SPARE_LOCAL_2 = 57,
+    AIS_TYPE_MEDICAL_TRANSPORT = 58,
+    // Noncombatant ship according to RR Resolution No. 18.
+    AIS_TYPE_NONECOMBATANT = 59,
+    AIS_TYPE_PASSENGER = 60,
+    AIS_TYPE_PASSENGER_HAZARDOUS_A = 61,
+    AIS_TYPE_PASSENGER_HAZARDOUS_B = 62,
+    AIS_TYPE_AIS_TYPE_PASSENGER_HAZARDOUS_C = 63,
+    AIS_TYPE_PASSENGER_HAZARDOUS_D = 64,
+    AIS_TYPE_PASSENGER_RESERVED_1 = 65,
+    AIS_TYPE_PASSENGER_RESERVED_2 = 66,
+    AIS_TYPE_PASSENGER_RESERVED_3 = 67,
+    AIS_TYPE_AIS_TYPE_PASSENGER_RESERVED_4 = 68,
+    AIS_TYPE_PASSENGER_UNKNOWN = 69,
+    AIS_TYPE_CARGO = 70,
+    AIS_TYPE_CARGO_HAZARDOUS_A = 71,
+    AIS_TYPE_CARGO_HAZARDOUS_B = 72,
+    AIS_TYPE_CARGO_HAZARDOUS_C = 73,
+    AIS_TYPE_CARGO_HAZARDOUS_D = 74,
+    AIS_TYPE_CARGO_RESERVED_1 = 75,
+    AIS_TYPE_CARGO_RESERVED_2 = 76,
+    AIS_TYPE_CARGO_RESERVED_3 = 77,
+    AIS_TYPE_CARGO_RESERVED_4 = 78,
+    AIS_TYPE_CARGO_UNKNOWN = 79,
+    AIS_TYPE_TANKER = 80,
+    AIS_TYPE_TANKER_HAZARDOUS_A = 81,
+    AIS_TYPE_TANKER_HAZARDOUS_B = 82,
+    AIS_TYPE_TANKER_HAZARDOUS_C = 83,
+    AIS_TYPE_TANKER_HAZARDOUS_D = 84,
+    AIS_TYPE_TANKER_RESERVED_1 = 85,
+    AIS_TYPE_TANKER_RESERVED_2 = 86,
+    AIS_TYPE_TANKER_RESERVED_3 = 87,
+    AIS_TYPE_TANKER_RESERVED_4 = 88,
+    AIS_TYPE_TANKER_UNKNOWN = 89,
+    AIS_TYPE_OTHER = 90,
+    AIS_TYPE_OTHER_HAZARDOUS_A = 91,
+    AIS_TYPE_OTHER_HAZARDOUS_B = 92,
+    AIS_TYPE_OTHER_HAZARDOUS_C = 93,
+    AIS_TYPE_OTHER_HAZARDOUS_D = 94,
+    AIS_TYPE_OTHER_RESERVED_1 = 95,
+    AIS_TYPE_OTHER_RESERVED_2 = 96,
+    AIS_TYPE_OTHER_RESERVED_3 = 97,
+    AIS_TYPE_OTHER_RESERVED_4 = 98,
+    AIS_TYPE_OTHER_UNKNOWN = 99
+};
+
+// Navigational status of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html
+enum class AIS_NAV_STATUS {
+    // Under way using engine.
+    UNDER_WAY = 0,
+    AIS_NAV_ANCHORED = 1,
+    AIS_NAV_UN_COMMANDED = 2,
+    AIS_NAV_RESTRICTED_MANOEUVERABILITY = 3,
+    AIS_NAV_DRAUGHT_CONSTRAINED = 4,
+    AIS_NAV_MOORED = 5,
+    AIS_NAV_AGROUND = 6,
+    AIS_NAV_FISHING = 7,
+    AIS_NAV_SAILING = 8,
+    AIS_NAV_RESERVED_HSC = 9,
+    AIS_NAV_RESERVED_WIG = 10,
+    AIS_NAV_RESERVED_1 = 11,
+    AIS_NAV_RESERVED_2 = 12,
+    AIS_NAV_RESERVED_3 = 13,
+    // Search And Rescue Transponder.
+    AIS_NAV_AIS_SART = 14,
+    // Not available (default).
+    AIS_NAV_UNKNOWN = 15
+};
+
+// These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data
+// in the other message fields. When set, the data is valid.
+enum class AIS_FLAGS {
+    // 1 = Position accuracy less than 10m, 0 = position accuracy greater than 10m.
+    AIS_FLAGS_POSITION_ACCURACY = 1,
+    AIS_FLAGS_VALID_COG = 2,
+    AIS_FLAGS_VALID_VELOCITY = 4,
+    // 1 = Velocity over 52.5765m/s (102.2 knots)
+    AIS_FLAGS_HIGH_VELOCITY = 8,
+    AIS_FLAGS_VALID_TURN_RATE = 16,
+    // Only the sign of the returned turn rate value is valid, either greater than
+    // 5deg/30s or less than -5deg/30s
+    AIS_FLAGS_TURN_RATE_SIGN_ONLY = 32,
+    AIS_FLAGS_VALID_DIMENSIONS = 64,
+    // Distance to bow is larger than 511m
+    AIS_FLAGS_LARGE_BOW_DIMENSION = 128,
+    // Distance to stern is larger than 511m
+    AIS_FLAGS_LARGE_STERN_DIMENSION = 256,
+    // Distance to port side is larger than 63m
+    AIS_FLAGS_LARGE_PORT_DIMENSION = 512,
+    // Distance to starboard side is larger than 63m
+    AIS_FLAGS_LARGE_STARBOARD_DIMENSION = 1024,
+    AIS_FLAGS_VALID_CALLSIGN = 2048,
+    AIS_FLAGS_VALID_NAME = 4096
 };
 
 // The heartbeat message shows that a system or component is present and responding.
@@ -5070,11 +5264,11 @@ public:
     float std_dev_horz = 0;
     // Vertical position standard deviation
     float std_dev_vert = 0;
-    // True velocity in NORTH direction in earth-fixed NED frame
+    // True velocity in north direction in earth-fixed NED frame
     float vn = 0;
-    // True velocity in EAST direction in earth-fixed NED frame
+    // True velocity in east direction in earth-fixed NED frame
     float ve = 0;
-    // True velocity in DOWN direction in earth-fixed NED frame
+    // True velocity in down direction in earth-fixed NED frame
     float vd = 0;
     virtual std::string toJSon();
 protected:
@@ -5192,11 +5386,11 @@ public:
     uint16_t epv = 0;
     // GPS ground speed. If unknown, set to: 65535
     uint16_t vel = 0;
-    // GPS velocity in NORTH direction in earth-fixed NED frame
+    // GPS velocity in north direction in earth-fixed NED frame
     int16_t vn = 0;
-    // GPS velocity in EAST direction in earth-fixed NED frame
+    // GPS velocity in east direction in earth-fixed NED frame
     int16_t ve = 0;
-    // GPS velocity in DOWN direction in earth-fixed NED frame
+    // GPS velocity in down direction in earth-fixed NED frame
     int16_t vd = 0;
     // Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees.
     // If unknown, set to: 65535
@@ -6334,11 +6528,11 @@ public:
     float hdop = 0;
     // GPS VDOP vertical dilution of position
     float vdop = 0;
-    // GPS velocity in NORTH direction in earth-fixed NED frame
+    // GPS velocity in north direction in earth-fixed NED frame
     float vn = 0;
-    // GPS velocity in EAST direction in earth-fixed NED frame
+    // GPS velocity in east direction in earth-fixed NED frame
     float ve = 0;
-    // GPS velocity in DOWN direction in earth-fixed NED frame
+    // GPS velocity in down direction in earth-fixed NED frame
     float vd = 0;
     // GPS speed accuracy
     float speed_accuracy = 0;
@@ -6348,6 +6542,9 @@ public:
     float vert_accuracy = 0;
     // Number of satellites visible.
     uint8_t satellites_visible = 0;
+    // Yaw of vehicle relative to Earth's North, zero means not available, use 36000
+    // for north
+    uint16_t yaw = 0;
     virtual std::string toJSon();
 protected:
     virtual int pack(char* buffer) const;
@@ -7205,8 +7402,7 @@ public:
     float Radius = 0;
     // Tangential Velocity. NaN: Vehicle configuration default.
     float Velocity = 0;
-    // Yaw behavior of the vehicle. 0: vehicle front points to the center (default).
-    // 1: Hold last heading. 2: Leave yaw uncontrolled.
+    // Yaw behavior of the vehicle.
     float YawBehavior = 0;
     // Center point latitude (if no MAV_FRAME specified) / X coordinate according
     // to MAV_FRAME. NaN: Use current vehicle position or current center if already
@@ -7663,9 +7859,9 @@ public:
     // Yaw heading, NaN for unchanged. For planes indicates loiter direction (0: clockwise,
     // 1: counter clockwise)
     float Yaw = 0;
-    // Latitude (deg * 1E7)
+    // Latitude
     float Latitude = 0;
-    // Longitude (deg * 1E7)
+    // Longitude
     float Longitude = 0;
     // Altitude (meters)
     float Altitude = 0;
@@ -7870,10 +8066,10 @@ public:
     float YawDependingMount = 0;
     // altitude depending on mount mode.
     float Altitude = 0;
-    // latitude in degrees * 1E7, set if appropriate mount mode.
-    float LatitudeDegreesP = 0;
-    // longitude in degrees * 1E7, set if appropriate mount mode.
-    float LongitudeDegreesP = 0;
+    // latitude, set if appropriate mount mode.
+    float Latitude = 0;
+    // longitude, set if appropriate mount mode.
+    float Longitude = 0;
     // Mount mode.
     float Mode = 0;
 protected:
@@ -8239,6 +8435,19 @@ protected:
     virtual void pack();
     virtual void unpack();
 };
+// Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting
+// up dark areas external to the sytstem: e.g. a torch or searchlight (as opposed
+// to a light source for illuminating the system itself, e.g. an indicator light).
+class MavCmdIlluminatorOnOff : public MavLinkCommand {
+public:
+    const static uint16_t kCommandId = 405;
+    MavCmdIlluminatorOnOff() { command = kCommandId; }
+    // 0: Illuminators OFF, 1: Illuminators ON
+    float Enable = 0;
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
 // Request the home position from the vehicle.
 class MavCmdGetHomePosition : public MavLinkCommand {
 public:
@@ -8303,6 +8512,18 @@ public:
     // Index id (if appropriate). The use of this parameter (if any), must be defined
     // in the requested message.
     float IndexId = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float TheUseOf = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float TheUseOf2 = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float TheUseOf3 = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float TheUseOf4 = 0;
     // Target address for requested message (if message has target address fields).
     // 0: Flight-stack default, 1: address of requestor, 2: broadcast.
     float ResponseTarget = 0;

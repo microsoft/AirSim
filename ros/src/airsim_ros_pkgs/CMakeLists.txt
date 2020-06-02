@@ -111,6 +111,7 @@ target_link_libraries(pd_position_controller_simple_node pd_position_controller_
 
 install(TARGETS
     #list of nodes
+    airsim_node
     pd_position_controller_simple_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
