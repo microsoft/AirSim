@@ -3,6 +3,8 @@
 // #include <pluginlib/class_list_macros.h>
 // PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
 #include "common/AirSimSettings.hpp"
+#include <tf2_sensor_msgs/tf2_sensor_msgs.h>
+
 
 constexpr char AirsimROSWrapper::CAM_YML_NAME[];
 constexpr char AirsimROSWrapper::WIDTH_YML_NAME[];
@@ -31,13 +33,18 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
     lidar_async_spinner_(1, &lidar_timer_cb_queue_), // same as above, but for lidar
     host_ip_(host_ip),
     airsim_client_images_(host_ip),
-    airsim_client_lidar_(host_ip)
+    airsim_client_lidar_(host_ip),
+    tf_listener_(tf_buffer_)
 {
     ros_clock_.clock.fromSec(0);
     is_used_lidar_timer_cb_queue_ = false;
     is_used_img_timer_cb_queue_ = false;
 
-    world_frame_id_ = "world_ned"; // todo rosparam?
+    nh_private_.param("world_frame_id", world_frame_id_, world_frame_id_);
+    odom_frame_id_ = world_frame_id_ == AIRSIM_FRAME_ID ? AIRSIM_ODOM_FRAME_ID : ENU_ODOM_FRAME_ID;
+    nh_private_.param("odom_frame_id", odom_frame_id_, odom_frame_id_);
+    isENU_ = !(odom_frame_id_ == AIRSIM_ODOM_FRAME_ID);
+    nh_private_.param("coordinate_system_enu", isENU_, isENU_);
 
     if (AirSimSettings::singleton().simmode_name != "Car")
     {
@@ -142,12 +149,12 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
             vehicle_ros = std::unique_ptr<CarROS>(new CarROS());
         }
 
-        vehicle_ros->odom_frame_id = curr_vehicle_name + "/odom_local_ned";
+        vehicle_ros->odom_frame_id = curr_vehicle_name + "/" + odom_frame_id_;
         vehicle_ros->vehicle_name = curr_vehicle_name;
 
         append_static_vehicle_tf(vehicle_ros.get(), *vehicle_setting);
         
-        vehicle_ros->odom_local_ned_pub = nh_private_.advertise<nav_msgs::Odometry>(curr_vehicle_name + "/odom_local_ned", 10);
+        vehicle_ros->odom_local_pub = nh_private_.advertise<nav_msgs::Odometry>(curr_vehicle_name + "/" + odom_frame_id_, 10);
 
         vehicle_ros->env_pub = nh_private_.advertise<airsim_ros_pkgs::Environment>(curr_vehicle_name + "/environment", 10);
 
@@ -658,61 +665,80 @@ airsim_ros_pkgs::CarState AirsimROSWrapper::get_roscarstate_msg_from_car_state(c
 
 nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const
 {
-    nav_msgs::Odometry odom_ned_msg;
-    // odom_ned_msg.header.frame_id = world_frame_id_;
-    // odom_ned_msg.child_frame_id = "/airsim/odom_local_ned"; // todo make param
-    odom_ned_msg.header.stamp = airsim_timestamp_to_ros(car_state.timestamp);
+    nav_msgs::Odometry odom_msg;
 
-    odom_ned_msg.pose.pose.position.x = car_state.getPosition().x();
-    odom_ned_msg.pose.pose.position.y = car_state.getPosition().y();
-    odom_ned_msg.pose.pose.position.z = car_state.getPosition().z();
-    odom_ned_msg.pose.pose.orientation.x = car_state.getOrientation().x();
-    odom_ned_msg.pose.pose.orientation.y = car_state.getOrientation().y();
-    odom_ned_msg.pose.pose.orientation.z = car_state.getOrientation().z();
-    odom_ned_msg.pose.pose.orientation.w = car_state.getOrientation().w();
+    odom_msg.pose.pose.position.x = car_state.getPosition().x();
+    odom_msg.pose.pose.position.y = car_state.getPosition().y();
+    odom_msg.pose.pose.position.z = car_state.getPosition().z();
+    odom_msg.pose.pose.orientation.x = car_state.getOrientation().x();
+    odom_msg.pose.pose.orientation.y = car_state.getOrientation().y();
+    odom_msg.pose.pose.orientation.z = car_state.getOrientation().z();
+    odom_msg.pose.pose.orientation.w = car_state.getOrientation().w();
 
-    odom_ned_msg.twist.twist.linear.x = car_state.kinematics_estimated.twist.linear.x();
-    odom_ned_msg.twist.twist.linear.y = car_state.kinematics_estimated.twist.linear.y();
-    odom_ned_msg.twist.twist.linear.z = car_state.kinematics_estimated.twist.linear.z();
-    odom_ned_msg.twist.twist.angular.x = car_state.kinematics_estimated.twist.angular.x();
-    odom_ned_msg.twist.twist.angular.y = car_state.kinematics_estimated.twist.angular.y();
-    odom_ned_msg.twist.twist.angular.z = car_state.kinematics_estimated.twist.angular.z();
+    odom_msg.twist.twist.linear.x = car_state.kinematics_estimated.twist.linear.x();
+    odom_msg.twist.twist.linear.y = car_state.kinematics_estimated.twist.linear.y();
+    odom_msg.twist.twist.linear.z = car_state.kinematics_estimated.twist.linear.z();
+    odom_msg.twist.twist.angular.x = car_state.kinematics_estimated.twist.angular.x();
+    odom_msg.twist.twist.angular.y = car_state.kinematics_estimated.twist.angular.y();
+    odom_msg.twist.twist.angular.z = car_state.kinematics_estimated.twist.angular.z();
 
-    return odom_ned_msg;
+    if (isENU_)
+    {
+        std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
+        odom_msg.pose.pose.position.z = -odom_msg.pose.pose.position.z;
+        std::swap(odom_msg.pose.pose.orientation.x, odom_msg.pose.pose.orientation.y);        
+        odom_msg.pose.pose.orientation.z = -odom_msg.pose.pose.orientation.z;
+        std::swap(odom_msg.twist.twist.linear.x, odom_msg.twist.twist.linear.y);
+        odom_msg.twist.twist.linear.z = -odom_msg.twist.twist.linear.z;
+        std::swap(odom_msg.twist.twist.angular.x, odom_msg.twist.twist.angular.y);
+        odom_msg.twist.twist.angular.z = -odom_msg.twist.twist.angular.z;
+    }
+
+    return odom_msg;
 }
 
 nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const
 {
-    nav_msgs::Odometry odom_ned_msg;
-    // odom_ned_msg.header.frame_id = world_frame_id_;
-    // odom_ned_msg.child_frame_id = "/airsim/odom_local_ned"; // todo make param
-    odom_ned_msg.header.stamp = airsim_timestamp_to_ros(drone_state.timestamp);
+    nav_msgs::Odometry odom_msg;
 
-    odom_ned_msg.pose.pose.position.x = drone_state.getPosition().x();
-    odom_ned_msg.pose.pose.position.y = drone_state.getPosition().y();
-    odom_ned_msg.pose.pose.position.z = drone_state.getPosition().z();
-    odom_ned_msg.pose.pose.orientation.x = drone_state.getOrientation().x();
-    odom_ned_msg.pose.pose.orientation.y = drone_state.getOrientation().y();
-    odom_ned_msg.pose.pose.orientation.z = drone_state.getOrientation().z();
-    odom_ned_msg.pose.pose.orientation.w = drone_state.getOrientation().w();
+    odom_msg.pose.pose.position.x = drone_state.getPosition().x();
+    odom_msg.pose.pose.position.y = drone_state.getPosition().y();
+    odom_msg.pose.pose.position.z = drone_state.getPosition().z();
+    odom_msg.pose.pose.orientation.x = drone_state.getOrientation().x();
+    odom_msg.pose.pose.orientation.y = drone_state.getOrientation().y();
+    odom_msg.pose.pose.orientation.z = drone_state.getOrientation().z();
+    odom_msg.pose.pose.orientation.w = drone_state.getOrientation().w();
 
-    odom_ned_msg.twist.twist.linear.x = drone_state.kinematics_estimated.twist.linear.x();
-    odom_ned_msg.twist.twist.linear.y = drone_state.kinematics_estimated.twist.linear.y();
-    odom_ned_msg.twist.twist.linear.z = drone_state.kinematics_estimated.twist.linear.z();
-    odom_ned_msg.twist.twist.angular.x = drone_state.kinematics_estimated.twist.angular.x();
-    odom_ned_msg.twist.twist.angular.y = drone_state.kinematics_estimated.twist.angular.y();
-    odom_ned_msg.twist.twist.angular.z = drone_state.kinematics_estimated.twist.angular.z();
+    odom_msg.twist.twist.linear.x = drone_state.kinematics_estimated.twist.linear.x();
+    odom_msg.twist.twist.linear.y = drone_state.kinematics_estimated.twist.linear.y();
+    odom_msg.twist.twist.linear.z = drone_state.kinematics_estimated.twist.linear.z();
+    odom_msg.twist.twist.angular.x = drone_state.kinematics_estimated.twist.angular.x();
+    odom_msg.twist.twist.angular.y = drone_state.kinematics_estimated.twist.angular.y();
+    odom_msg.twist.twist.angular.z = drone_state.kinematics_estimated.twist.angular.z();
 
-    return odom_ned_msg;
+    if (isENU_)
+    {
+        std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
+        odom_msg.pose.pose.position.z = -odom_msg.pose.pose.position.z;
+        std::swap(odom_msg.pose.pose.orientation.x, odom_msg.pose.pose.orientation.y);        
+        odom_msg.pose.pose.orientation.z = -odom_msg.pose.pose.orientation.z;
+        std::swap(odom_msg.twist.twist.linear.x, odom_msg.twist.twist.linear.y);
+        odom_msg.twist.twist.linear.z = -odom_msg.twist.twist.linear.z;
+        std::swap(odom_msg.twist.twist.angular.x, odom_msg.twist.twist.angular.y);
+        odom_msg.twist.twist.angular.z = -odom_msg.twist.twist.angular.z;
+    }
+
+    return odom_msg;
 }
 
 // https://docs.ros.org/jade/api/sensor_msgs/html/point__cloud__conversion_8h_source.html#l00066
 // look at UnrealLidarSensor.cpp UnrealLidarSensor::getPointCloud() for math
 // read this carefully https://docs.ros.org/kinetic/api/sensor_msgs/html/msg/PointCloud2.html
-sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data) const
+sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const
 {
     sensor_msgs::PointCloud2 lidar_msg;
-    lidar_msg.header.frame_id = world_frame_id_; // todo
+    lidar_msg.header.stamp = ros::Time::now();
+    lidar_msg.header.frame_id = vehicle_name;
 
     if (lidar_data.point_cloud.size() > 3)
     {
@@ -723,6 +749,7 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
         lidar_msg.fields[0].name = "x"; 
         lidar_msg.fields[1].name = "y"; 
         lidar_msg.fields[2].name = "z";
+
         int offset = 0;
 
         for (size_t d = 0; d < lidar_msg.fields.size(); ++d, offset += 4)
@@ -739,7 +766,7 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
         lidar_msg.is_dense = true; // todo
         std::vector<float> data_std = lidar_data.point_cloud;
 
-        const unsigned char* bytes = reinterpret_cast<const unsigned char*>(&data_std[0]);
+        const unsigned char* bytes = reinterpret_cast<const unsigned char*>(data_std.data());
         vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
         lidar_msg.data = std::move(lidar_msg_data);
     }
@@ -747,6 +774,27 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
     {
         // msg = []
     }
+
+    if (isENU_)
+    {
+        try
+        {
+            sensor_msgs::PointCloud2 lidar_msg_enu;
+            auto transformStampedENU = tf_buffer_.lookupTransform(AIRSIM_FRAME_ID, vehicle_name, ros::Time(0), ros::Duration(1));
+            tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
+
+            lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
+            lidar_msg_enu.header.frame_id = lidar_msg.header.frame_id;
+
+            lidar_msg = std::move(lidar_msg_enu);
+        }
+        catch (tf2::TransformException &ex)
+        {
+            ROS_WARN("%s", ex.what());
+            ros::Duration(1.0).sleep();
+        }
+    }
+
     return lidar_msg;
 }
 
@@ -849,18 +897,18 @@ sensor_msgs::Imu AirsimROSWrapper::get_imu_msg_from_airsim(const msr::airlib::Im
     return imu_msg;
 }
 
-void AirsimROSWrapper::publish_odom_tf(const nav_msgs::Odometry& odom_ned_msg)
+void AirsimROSWrapper::publish_odom_tf(const nav_msgs::Odometry& odom_msg)
 {
     geometry_msgs::TransformStamped odom_tf;
-    odom_tf.header = odom_ned_msg.header;
-    odom_tf.child_frame_id = odom_ned_msg.child_frame_id; 
-    odom_tf.transform.translation.x = odom_ned_msg.pose.pose.position.x;
-    odom_tf.transform.translation.y = odom_ned_msg.pose.pose.position.y;
-    odom_tf.transform.translation.z = odom_ned_msg.pose.pose.position.z;
-    odom_tf.transform.rotation.x = odom_ned_msg.pose.pose.orientation.x;
-    odom_tf.transform.rotation.y = odom_ned_msg.pose.pose.orientation.y;
-    odom_tf.transform.rotation.z = odom_ned_msg.pose.pose.orientation.z;
-    odom_tf.transform.rotation.w = odom_ned_msg.pose.pose.orientation.w;
+    odom_tf.header = odom_msg.header;
+    odom_tf.child_frame_id = odom_msg.child_frame_id; 
+    odom_tf.transform.translation.x = odom_msg.pose.pose.position.x;
+    odom_tf.transform.translation.y = odom_msg.pose.pose.position.y;
+    odom_tf.transform.translation.z = odom_msg.pose.pose.position.z;
+    odom_tf.transform.rotation.x = odom_msg.pose.pose.orientation.x;
+    odom_tf.transform.rotation.y = odom_msg.pose.pose.orientation.y;
+    odom_tf.transform.rotation.z = odom_msg.pose.pose.orientation.z;
+    odom_tf.transform.rotation.w = odom_msg.pose.pose.orientation.w;
     tf_broadcaster_.sendTransform(odom_tf);
 }
 
@@ -982,7 +1030,7 @@ ros::Time AirsimROSWrapper::update_state()
             vehicle_ros->gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(drone->curr_drone_state.gps_location);
             vehicle_ros->gps_sensor_msg.header.stamp = vehicle_time;
 
-            vehicle_ros->curr_odom_ned = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
+            vehicle_ros->curr_odom = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
         }
         else
         {
@@ -1000,7 +1048,7 @@ ros::Time AirsimROSWrapper::update_state()
             vehicle_ros->gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(env_data.geo_point);
             vehicle_ros->gps_sensor_msg.header.stamp = vehicle_time;
 
-            vehicle_ros->curr_odom_ned = get_odom_msg_from_car_state(car->curr_car_state);
+            vehicle_ros->curr_odom = get_odom_msg_from_car_state(car->curr_car_state);
             
             airsim_ros_pkgs::CarState state_msg = get_roscarstate_msg_from_car_state(car->curr_car_state);
             state_msg.header.frame_id = vehicle_ros->vehicle_name;
@@ -1015,9 +1063,9 @@ ros::Time AirsimROSWrapper::update_state()
         vehicle_ros->env_msg = env_msg;
 
         // convert airsim drone state to ROS msgs            
-        vehicle_ros->curr_odom_ned.header.frame_id = vehicle_ros->vehicle_name;
-        vehicle_ros->curr_odom_ned.child_frame_id = vehicle_ros->odom_frame_id;
-        vehicle_ros->curr_odom_ned.header.stamp = vehicle_time;
+        vehicle_ros->curr_odom.header.frame_id = vehicle_ros->vehicle_name;
+        vehicle_ros->curr_odom.child_frame_id = vehicle_ros->odom_frame_id;
+        vehicle_ros->curr_odom.header.stamp = vehicle_time;
     }
 
     return curr_ros_time;
@@ -1040,8 +1088,8 @@ void AirsimROSWrapper::publish_vehicle_state()
         }
 
         // odom and transforms
-        vehicle_ros->odom_local_ned_pub.publish(vehicle_ros->curr_odom_ned);
-        publish_odom_tf(vehicle_ros->curr_odom_ned);
+        vehicle_ros->odom_local_pub.publish(vehicle_ros->curr_odom);
+        publish_odom_tf(vehicle_ros->curr_odom);
 
         // ground truth GPS position from sim/HITL
         vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
@@ -1218,7 +1266,7 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
     vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name;
     vehicle_tf_msg.transform.translation.x = vehicle_setting.position.x();
     vehicle_tf_msg.transform.translation.y = vehicle_setting.position.y();
-    vehicle_tf_msg.transform.translation.z = vehicle_setting.position.z();
+    vehicle_tf_msg.transform.translation.z = vehicle_setting.position.z();    
     tf2::Quaternion quat;
     quat.setRPY(vehicle_setting.rotation.roll, vehicle_setting.rotation.pitch, vehicle_setting.rotation.yaw);
     vehicle_tf_msg.transform.rotation.x = quat.x();
@@ -1226,14 +1274,22 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
     vehicle_tf_msg.transform.rotation.z = quat.z();
     vehicle_tf_msg.transform.rotation.w = quat.w();
 
+    if (isENU_)
+    {
+        std::swap(vehicle_tf_msg.transform.translation.x, vehicle_tf_msg.transform.translation.y);
+        std::swap(vehicle_tf_msg.transform.rotation.x, vehicle_tf_msg.transform.rotation.y);
+        vehicle_tf_msg.transform.translation.z = -vehicle_tf_msg.transform.translation.z;
+        vehicle_tf_msg.transform.rotation.z = -vehicle_tf_msg.transform.rotation.z;
+    }
+
     vehicle_ros->static_tf_msg_vec.emplace_back(vehicle_tf_msg);
 }
 
 void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const LidarSetting& lidar_setting)
 {
     geometry_msgs::TransformStamped lidar_tf_msg;
-    lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name + "/odom_local_ned";
-    lidar_tf_msg.child_frame_id = lidar_name;
+    lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name + "/" + odom_frame_id_;
+    lidar_tf_msg.child_frame_id = vehicle_ros->vehicle_name + "/" + lidar_name;
     lidar_tf_msg.transform.translation.x = lidar_setting.position.x();
     lidar_tf_msg.transform.translation.y = lidar_setting.position.y();
     lidar_tf_msg.transform.translation.z = lidar_setting.position.z();
@@ -1244,13 +1300,21 @@ void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std
     lidar_tf_msg.transform.rotation.z = quat.z();
     lidar_tf_msg.transform.rotation.w = quat.w();
 
+    if (isENU_)
+    {
+        std::swap(lidar_tf_msg.transform.translation.x, lidar_tf_msg.transform.translation.y);
+        std::swap(lidar_tf_msg.transform.rotation.x, lidar_tf_msg.transform.rotation.y);
+        lidar_tf_msg.transform.translation.z = -lidar_tf_msg.transform.translation.z;
+        lidar_tf_msg.transform.rotation.z = -lidar_tf_msg.transform.rotation.z;
+    }
+
     vehicle_ros->static_tf_msg_vec.emplace_back(lidar_tf_msg);
 }
 
 void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting)
 {
     geometry_msgs::TransformStamped static_cam_tf_body_msg;
-    static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name + "/odom_local_ned";
+    static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name + "/" + odom_frame_id_;
     static_cam_tf_body_msg.child_frame_id = camera_name + "_body/static";
     static_cam_tf_body_msg.transform.translation.x = camera_setting.position.x();
     static_cam_tf_body_msg.transform.translation.y = camera_setting.position.y();
@@ -1261,6 +1325,14 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     static_cam_tf_body_msg.transform.rotation.y = quat.y();
     static_cam_tf_body_msg.transform.rotation.z = quat.z();
     static_cam_tf_body_msg.transform.rotation.w = quat.w();
+
+    if (isENU_)
+    {
+        std::swap(static_cam_tf_body_msg.transform.translation.x, static_cam_tf_body_msg.transform.translation.y);
+        std::swap(static_cam_tf_body_msg.transform.rotation.x, static_cam_tf_body_msg.transform.rotation.y);
+        static_cam_tf_body_msg.transform.translation.z = -static_cam_tf_body_msg.transform.translation.z;
+        static_cam_tf_body_msg.transform.rotation.z = -static_cam_tf_body_msg.transform.rotation.z;
+    }
 
     geometry_msgs::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
     static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
@@ -1317,9 +1389,7 @@ void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)
                 for (auto& lidar_publisher : vehicle_name_ptr_pair.second->lidar_pubs)
                 {
                     auto lidar_data = airsim_client_lidar_.getLidarData(lidar_publisher.sensor_name, vehicle_name_ptr_pair.first);
-                    sensor_msgs::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data);
-                    lidar_msg.header.frame_id = vehicle_name_ptr_pair.first; // sensor frame name. todo add to doc
-                    lidar_msg.header.stamp = ros::Time::now();
+                    sensor_msgs::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data, vehicle_name_ptr_pair.first);
                     lidar_publisher.publisher.publish(lidar_msg);
                 }
             }
@@ -1450,6 +1520,14 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_body_msg.transform.rotation.y = img_response.camera_orientation.y();
     cam_tf_body_msg.transform.rotation.z = img_response.camera_orientation.z();
     cam_tf_body_msg.transform.rotation.w = img_response.camera_orientation.w();
+
+    if (isENU_)
+    {
+        std::swap(cam_tf_body_msg.transform.translation.x, cam_tf_body_msg.transform.translation.y);
+        std::swap(cam_tf_body_msg.transform.rotation.x, cam_tf_body_msg.transform.rotation.y);
+        cam_tf_body_msg.transform.translation.z = -cam_tf_body_msg.transform.translation.z;
+        cam_tf_body_msg.transform.rotation.z = -cam_tf_body_msg.transform.rotation.z;
+    }
 
     geometry_msgs::TransformStamped cam_tf_optical_msg;
     cam_tf_optical_msg.header.stamp = ros_time;

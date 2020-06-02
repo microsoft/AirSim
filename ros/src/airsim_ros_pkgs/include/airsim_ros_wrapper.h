@@ -60,6 +60,7 @@ STRICT_MODE_ON
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
+#include <tf2/convert.h>
 #include <unordered_map>
 #include <memory>
 // #include "nodelet/nodelet.h"
@@ -159,7 +160,7 @@ private:
         std::string vehicle_name;
 
         /// All things ROS
-        ros::Publisher odom_local_ned_pub;
+        ros::Publisher odom_local_pub;
         ros::Publisher global_gps_pub;
         ros::Publisher env_pub;
         airsim_ros_pkgs::Environment env_msg;
@@ -167,7 +168,7 @@ private:
         // handle lidar seperately for max performance as data is collected on its own thread/callback
         std::vector<SensorPublisher> lidar_pubs;
         
-        nav_msgs::Odometry curr_odom_ned;
+        nav_msgs::Odometry curr_odom;
         sensor_msgs::NavSatFix gps_sensor_msg;
 
         std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
@@ -253,7 +254,7 @@ private:
 
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
-    void publish_odom_tf(const nav_msgs::Odometry& odom_ned_msg);
+    void publish_odom_tf(const nav_msgs::Odometry& odom_msg);
 
     /// camera helper methods
     sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
@@ -285,7 +286,7 @@ private:
     sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
     airsim_ros_pkgs::Altimeter get_altimeter_msg_from_airsim(const msr::airlib::BarometerBase::Output& alt_data) const;
     sensor_msgs::Range get_range_from_airsim(const msr::airlib::DistanceBase::Output& dist_data) const;
-    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data) const;
+    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const;
     sensor_msgs::NavSatFix get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const;
     sensor_msgs::MagneticField get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output& mag_data) const;
     airsim_ros_pkgs::Environment get_environment_msg_from_airsim(const msr::airlib::Environment::State& env_data) const;
@@ -346,10 +347,17 @@ private:
     GimbalCmd gimbal_cmd_; 
 
     /// ROS tf
-    std::string world_frame_id_;
+    const std::string AIRSIM_FRAME_ID = "world_ned";
+    std::string world_frame_id_ = AIRSIM_FRAME_ID;
+    const std::string AIRSIM_ODOM_FRAME_ID = "odom_local_ned";
+    const std::string ENU_ODOM_FRAME_ID = "odom_local_enu";
+    std::string odom_frame_id_ = AIRSIM_ODOM_FRAME_ID;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::StaticTransformBroadcaster static_tf_pub_;
+    
+    bool isENU_ = false;
     tf2_ros::Buffer tf_buffer_;
+    tf2_ros::TransformListener tf_listener_;
 
     /// ROS params
     double vel_cmd_duration_;

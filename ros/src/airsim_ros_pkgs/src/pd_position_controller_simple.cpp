@@ -127,6 +127,8 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
         reset_errors(); // todo
         return true;
     }
+
+    return false;
 }
 
 bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response)
@@ -206,6 +208,8 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         reset_errors(); // todo
         return true;
     }
+
+    return false;
 }
 
 // todo do relative altitude, or add an option for the same?

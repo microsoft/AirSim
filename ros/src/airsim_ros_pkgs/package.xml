@@ -24,6 +24,8 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>geographic_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
+  <build_depend>tf2_sensor_msgs</build_depend>
+
 
   <!-- <exec_depend>nodelet</exec_depend> -->
   <exec_depend>geometry_msgs</exec_depend>
