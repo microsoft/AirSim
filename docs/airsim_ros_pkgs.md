@@ -137,6 +137,11 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
   The speed will depend on number of images requested and their resolution.   
   Timer callbacks in ROS run at maximum rate possible, so it's best to not touch this parameter. 
 
+- `/airsim_node/publish_clock` [double]   
+  Set in: `$(airsim_ros_pkgs)/launch/airsim_node.launch`   
+  Default: false   
+  Will publish the ros /clock topic if set to true.    
+
 ### Simple PID Position Controller Node 
 
 #### Parameters:
