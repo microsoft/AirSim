@@ -6,7 +6,7 @@ The [PX4 software stack](http://github.com/px4/firmware) is an open source very 
 
 ## Supported Hardware
 
-The following pixhawk hardware has been tested with AirSim:
+The following Pixhawk hardware has been tested with AirSim:
 
 1. [3DR Pixhawk v2](https://3dr.com/support/pixhawk/)
 2. [3DR Pixhawk mini](https://store.3dr.com/products/3dr-pixhawk)
@@ -21,14 +21,14 @@ The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash w
 
 For this you will need one of the supported device listed above. For manual flight you will also need RC + transmitter.
 
-1. Make sure your RC receiver is bound with its RC transmitter. Connect the RC trasmitter to the flight controller's RC port. Refer to your RC manual and [PX4 docs](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) for more information.
+1. Make sure your RC receiver is bound with its RC transmitter. Connect the RC transmitter to the flight controller's RC port. Refer to your RC manual and [PX4 docs](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) for more information.
 2. Download [QGroundControl](http://qgroundcontrol.com/), launch it and connect your flight controller to the USB port.
 3. Use QGroundControl to flash the latest PX4 Flight Stack.
 See also [initial firmware setup video](https://dev.px4.io/starting-initial-config.html).
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected.
-5. In QGroundControl, go to Radio tab and calibrate (make sure, remote control is on and the receiver is showing the indicator for the binding). 
+5. In QGroundControl, go to Radio tab and calibrate (make sure the remote control is on and the receiver is showing the indicator for the binding). 
 6. Go to the Flight Mode tab and chose one of the remote control switches as "Mode Channel". Then set (for example) Stabilized and Attitude flight modes for two positions of the switch.
-7. Go to the Tuning section of QGroundControl and set appropriate values. For example, for Fly Sky's FS-TH9X remote control, following settings gives more realistic feel: Hover Throttle = mid+1 mark, Roll and pitch sensitivity = mid-3 mark, Altitude and position control sensitivity = mid-2 mark.
+7. Go to the Tuning section of QGroundControl and set appropriate values. For example, for Fly Sky's FS-TH9X remote control, the following settings give a more realistic feel: Hover Throttle = mid+1 mark, Roll and pitch sensitivity = mid-3 mark, Altitude and position control sensitivity = mid-2 mark.
 8. In [AirSim settings](settings.md) file, specify PX4 for your vehicle config like this:
 ```
 {
@@ -49,13 +49,13 @@ You can also control the drone from [Python APIs](apis.md).
 See [Walkthrough Demo Video](https://youtu.be/HNWdYrtw3f0) and  [Unreal AirSim Setup  Video](https://youtu.be/1oY8Qu5maQQ) that shows you all the setup steps in this document.
 
 ## Setting up PX4 Software-in-Loop
-The PX4 SITL mode doesn't require you to have separate device such as Pixhawk or Pixracer. This is in fact the recommended way to use PX4 with simulators by PX4 team. However this is indeed more harder to set up. Please see [this dedicated page](px4_sitl.md) for setting up PX4 in SITL mode.
+The PX4 SITL mode doesn't require you to have separate device such as a Pixhawk or Pixracer. This is in fact the recommended way to use PX4 with simulators by PX4 team. However, this is indeed harder to set up. Please see [this dedicated page](px4_sitl.md) for setting up PX4 in SITL mode.
 
 ## FAQ
 
 #### Drone doesn't fly properly, it just goes "crazy".
 
-There are few reasons that can cause this. First make sure your drone doesn't fall down large distance when starting simulator. This might happen if you have created custom Unreal environment and Player Start is placed too high above ground. It seems that when this happens internal calibration in PX4 gets confused. 
+There are a few reasons that can cause this. First, make sure your drone doesn't fall down large distance when starting the simulator. This might happen if you have created a custom Unreal environment and Player Start is placed too high above the ground. It seems that when this happens internal calibration in PX4 gets confused. 
 
 You should also use QGroundControl and make sure you can arm and takeoff in QGroundControl properly.
 
@@ -66,10 +66,10 @@ Finally, this also can be a machine performance issue in some rare cases, check 
 Our code is tested with the [PX4 firmware](https://dev.px4.io/). We have not tested Arducopter or other mavlink implementations. Some of the flight API's do use the
 PX4 custom modes in the MAV_CMD_DO_SET_MODE messages (like PX4_CUSTOM_MAIN_MODE_AUTO)
 
-#### It is not finding my pixhawk hardware
+#### It is not finding my Pixhawk hardware
 
-Check your settings.json file for this line "SerialPort":"*,115200".  The asterix here means "find any 
-serial port that looks like a Pixhawk device, but this doesn't always work for all types of pixhawk hardware.
+Check your settings.json file for this line "SerialPort":"*,115200".  The asterisk here means "find any 
+serial port that looks like a Pixhawk device, but this doesn't always work for all types of Pixhawk hardware.
 So on Windows you can find the actual COM port using Device Manager, look under "Ports (COM & LPT), plug the 
 device in and see what new COM port shows up.  Let's say you see a new port named "USB Serial Port (COM5)". 
 Well, then change the SerialPort setting to this: "SerialPort":"COM5,115200".  
@@ -79,7 +79,7 @@ like this `usb-3D_Robotics_PX4_FMU_v2.x_0-if00` then you can use that name to co
 "SerialPort":"/dev/serial/by-id/usb-3D_Robotics_PX4_FMU_v2.x_0-if00".  Note this long name is actually a symbolic link to the real 
 name, if you use "ls -l ..." you can find that symbolic link, it is usually something like "/dev/ttyACM0",
 so this will also work "SerialPort":"/dev/ttyACM0,115200".  But that mapping is similar to windows, it is
-automatically assigned and can change, whereas the long name will work even if the actual tty serial device
+automatically assigned and can change, whereas the long name will work even if the actual TTY serial device
 mapping changes.
 
 #### WARN  [commander] Takeoff denied, disarm and re-try

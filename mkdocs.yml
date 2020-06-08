@@ -1,0 +1,111 @@
+site_name: AirSim
+site_dir: build_docs
+repo_url: https://github.com/microsoft/airsim
+site_description: 'Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research'
+
+markdown_extensions:
+    - toc:
+        permalink: "#"
+
+remote_branch: gh-pages
+
+theme: 
+  name: 'readthedocs'
+  logo:
+    icon: ' '
+
+extra:
+  highlightjs: true
+  version: 1.2.1
+  feature:
+      tabs: true
+  palette:
+  social:
+      - type: facebook
+        link: https://www.facebook.com/groups/1225832467530667/ 
+      - type: github-alt
+        link: https://github.com/Microsoft/AirSim
+
+copyright: Copyright &copy; 2018 Microsoft Research
+
+nav:
+  - "Home": 
+    - "Home": 'README.md'
+  - "Changelog": 'CHANGELOG.md'
+  - "Get AirSim":
+    - "Download Binaries": 'use_precompiled.md'
+    - "Build on Windows": 'build_windows.md'
+    - "Build on Linux": 'build_linux.md'
+    - "Docker on Linux": 'docker_ubuntu.md'
+    - "Custom Unreal Environment": 'unreal_custenv.md'
+    - "AirSim with Unity": "Unity.md"
+    - "Custom Unity Environment": "custom_unity_environments.md"
+    - "Unity APIs": "unity_api_support.md"
+  - "Using AirSim":
+    - "Core APIs": 'apis.md'
+    - "Image APIs": 'image_apis.md'
+    - "C++ APIs": 'apis_cpp.md'
+    - "Development Workflow": 'dev_workflow.md'
+    - "Settings": 'settings.md'
+    - "Camera Views": 'camera_views.md'      
+    - "Car Mode": 'using_car.md'
+    - "Remote Control": 'remote_control.md'
+    - "XBox Controller": 'xbox_controller.md'
+    - "Steering Wheel": 'steering_wheel_installation.md'
+    - "Multiple Vehicles": 'multi_vehicle.md'
+    - "Sensors": 'sensors.md'
+    - "LIDAR": 'lidar.md'
+    - "Infrared Camera": "InfraredCamera.md"
+    - "ROS: AirSim ROS Wrapper": "airsim_ros_pkgs.md"     
+    - "ROS: AirSim Tutorial Packages": "airsim_tutorial_pkgs.md"     
+    - "Domain Randomization": "retexturing.md"
+    - "Mesh Vertex Buffers": "meshes.md"
+    - "Playing Logs": 'playback.md'
+  - "Design":
+    - "Architecture": 'design.md'
+    - "Code Structure": 'code_structure.md'
+    - "Coding Guidelines": 'coding_guidelines.md'
+    - "Flight Controller": 'flight_controller.md'
+    - "Simple Flight": 'simple_flight.md'
+    - "Hello Drone": 'hello_drone.md'
+  - "MavLink and PX4":
+    - "PX4 Setup for AirSim": 'px4_setup.md'
+    - "PX4 in SITL": 'px4_sitl.md'
+    - "AirSim with Pixhawk": 'https://youtu.be/1oY8Qu5maQQ'
+    - "PX4 Setup with AirSim": 'https://youtu.be/HNWdYrtw3f0'
+    - "Debugging Attitude Estimation": 'https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be'
+    - "Intercepting MavLink Messages": 'https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages'
+    - "Rapid Descent on PX4 Drones": 'https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
+    - "Building PX4": "px4_build.md"
+    - "PX4/MavLink Logging": 'px4_logging.md'
+    - "MavLink LogViewer": "log_viewer.md"
+    - "MavLinkCom": 'mavlinkcom.md'
+    - "MavLink MoCap": 'mavlinkcom_mocap.md'
+  - "Upgrading":
+    - "Upgrading Unreal": 'unreal_upgrade.md'
+    - "Upgrading APIs": 'upgrade_apis.md'
+    - "Upgrading Settings": 'upgrade_settings.md'
+  - "Contributed Tutorials":
+    - "Reinforcement Learning": 'reinforcement_learning.md'
+    - "Using Environments from Marketplace": 'https://www.youtube.com/watch?v=y09VbdQWvQY'
+    - "Simple Collision Avoidance": 'https://github.com/simondlevy/AirSimTensorFlow'
+    - "Autonomous Driving on Azure": 'https://aka.ms/AutonomousDrivingCookbook'
+    - "Building Hexacopter": 'https://github.com/Microsoft/AirSim/wiki/hexacopter'
+    - "Moving on Path Demo": 'https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo'
+    - "Building Point Clouds": 'https://github.com/Microsoft/AirSim/wiki/Point-Clouds'
+    - "Surveying Using Drone": 'https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script'      
+  - "Misc":
+    - "AirSim on Real Drones": 'custom_drone.md'
+    - "Installing cmake on Linux": 'cmake_linux.md'
+    - "Tips for Busy HDD": 'hard_drive.md'
+    - "pfm format": 'pfm.md'
+    - "Setting up Unreal Environment": 'unreal_proj.md'
+    - "Blocks Environment": 'unreal_blocks.md'
+    - "Who is Using AirSim": 'who_is_using.md'
+    - "Working with UE Plugin Contents": 'working_with_plugin_contents.md'
+    - "Formula Student Technion Self-drive": 'https://github.com/Microsoft/AirSim/wiki/technion'
+  - "Support": 
+    - "FAQ": 'faq.md'
+    - "Support": 'SUPPORT.md'
+    - "Create Issue": 'create_issue.md'
+    - "Contribute": 'CONTRIBUTING.md'

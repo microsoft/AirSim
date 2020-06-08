@@ -102,6 +102,34 @@ public:
         return true;
     }
 
+    void wait()
+    {
+        // wait for signal or timeout or cancel predicate
+        std::unique_lock<std::mutex> lock(mutex_);
+        while (!signaled_) {
+            cv_.wait(lock);
+        }
+        lock.unlock();
+        signaled_ = false;
+    }
+
+    bool waitForRetry(double timeout_sec, int n_times)
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        while (!signaled_ && n_times > 0) {
+            cv_.wait_for(lock, std::chrono::milliseconds(static_cast<long long>(timeout_sec * 1000)));
+            --n_times;
+        }
+        lock.unlock();
+        if (n_times == 0 && !signaled_) {
+            return false;
+        }
+        else {
+            signaled_ = false;
+            return true;
+        }
+    }
+
 };
 
 // This class provides a synchronized worker thread that guarantees to execute

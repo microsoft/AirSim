@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), AirSim.props))\AirSim.props" />
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
@@ -34,7 +35,6 @@
     <ProjectGuid>{8510C7A4-BF63-41D2-94F6-D8731D137A5A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>PX4_P</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <ProjectName>MavLinkCom</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -47,7 +47,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -60,7 +59,6 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -138,6 +136,7 @@
       <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -207,6 +206,7 @@
       <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -244,6 +244,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -314,6 +315,7 @@
       <AdditionalIncludeDirectories>common_utils;include</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -345,6 +347,10 @@
   <ItemGroup>
     <ClCompile Include="common_utils\FileSystem.cpp" />
     <ClCompile Include="common_utils\ThreadUtils.cpp" />
+    <ClCompile Include="src\UdpSocket.cpp" />
+    <ClCompile Include="src\impl\UdpSocketImpl.cpp" />
+    <ClCompile Include="src\AdHocConnection.cpp" />
+    <ClCompile Include="src\impl\AdHocConnectionImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkFtpClientImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkNodeImpl.cpp" />
     <ClCompile Include="src\impl\MavLinkTcpServerImpl.cpp" />
@@ -374,16 +380,19 @@
     <ClInclude Include="common_utils\json.hpp" />
     <ClInclude Include="common_utils\StrictMode.hpp" />
     <ClInclude Include="common_utils\ThreadUtils.hpp" />
+    <ClInclude Include="include\UdpSocket.hpp" />
+    <ClInclude Include="include\AdHocConnection.hpp" />
     <ClInclude Include="include\AsyncResult.hpp" />
     <ClInclude Include="common_utils\EnumFlags.hpp" />
     <ClInclude Include="common_utils\ExceptionUtils.hpp" />
-    <ClInclude Include="common_utils\MedianFilter.hpp" />
     <ClInclude Include="common_utils\optional.hpp" />
     <ClInclude Include="common_utils\prettyprint.hpp" />
     <ClInclude Include="common_utils\sincos.hpp" />
     <ClInclude Include="common_utils\type_utils.hpp" />
     <ClInclude Include="common_utils\Utils.hpp" />
     <ClInclude Include="include\Semaphore.hpp" />
+    <ClInclude Include="src\impl\UdpSocketImpl.hpp" />
+    <ClInclude Include="src\impl\AdHocConnectionImpl.hpp" />
     <ClInclude Include="src\impl\MavLinkFtpClientImpl.hpp" />
     <ClInclude Include="src\impl\MavLinkNodeImpl.hpp" />
     <ClInclude Include="src\impl\MavLinkTcpServerImpl.hpp" />

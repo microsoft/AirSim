@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#include "MavLinkMessages.hpp"
 #include "MavLinkConnectionImpl.hpp"
 #include "Utils.hpp"
 #include "ThreadUtils.hpp"
@@ -27,6 +28,7 @@ MavLinkConnectionImpl::MavLinkConnectionImpl()
     // todo: if we support signing then initialize
     // mavlink_intermediate_status_.signing callbacks
 }
+
 std::string MavLinkConnectionImpl::getName() {
     return name;
 }
@@ -84,6 +86,21 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std:
     return createConnection(nodeName, socket);
 }
 
+void MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort)
+{
+    std::string local = localAddr;
+    close();
+    std::shared_ptr<TcpClientPort> socket = std::make_shared<TcpClientPort>();
+
+    port = socket; // this is so that a call to close() can cancel this blocking accept call.
+    socket->accept(localAddr, listeningPort);
+
+    socket->setNonBlocking();
+    socket->setNoDelay();
+
+    parent->startListening(nodeName, socket);
+}
+
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, const std::string& portName, int baudRate, const std::string& initString)
 {
     std::shared_ptr<SerialPort> serial = std::make_shared<SerialPort>();
@@ -104,9 +121,11 @@ void MavLinkConnectionImpl::startListening(std::shared_ptr<MavLinkConnection> pa
 {
     name = nodeName;
     con_ = parent;
-    close();
+    if (port != connectedPort) {
+        close();
+        port = connectedPort;
+    }
     closed = false;
-    port = connectedPort;
 
     Utils::cleanupThread(read_thread);
     read_thread = std::thread{ &MavLinkConnectionImpl::readPackets, this };
@@ -222,7 +241,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     // as per  https://github.com/mavlink/mavlink/blob/master/doc/MAVLink2.md
     int seqno = getNextSequence();
 
-    bool mavlink1 = !supports_mavlink2_;
+    bool mavlink1 = !supports_mavlink2_ && msg.protocol_version != 2;
     bool signing = !mavlink1 && mavlink_status_.signing && (mavlink_status_.signing->flags & MAVLINK_SIGNING_FLAG_SIGN_OUTGOING);
     uint8_t signature_len = signing ? MAVLINK_SIGNATURE_BLOCK_LEN : 0;
 
@@ -253,15 +272,23 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     int msglen = 0;
     if (entry != nullptr) {
         crc_extra = entry->crc_extra;
-        msglen = entry->msg_len;
+        msglen = entry->min_msg_len;
     }
     if (msg.msgid == MavLinkTelemetry::kMessageId) {
         msglen = 28; // mavlink doesn't know about our custom telemetry message.
     }
+
     if (len != msglen) {
-        throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
-    }
-    msg.len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
+        if (mavlink1) {
+            throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
+        }
+        else {
+            // mavlink2 supports trimming the payload of trailing zeros so the messages
+            // are variable length as a result.
+        }
+    }    
+    len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
+    msg.len = len;
 
     // form the header as a byte array for the crc
     buf[0] = msg.magic;
@@ -319,6 +346,7 @@ int MavLinkConnectionImpl::subscribe(MessageHandler handler)
     snapshot_stale = true;
     return entry.id;
 }
+
 void MavLinkConnectionImpl::unsubscribe(int id)
 {
     std::lock_guard<std::mutex> guard(listener_mutex);
@@ -337,6 +365,11 @@ void MavLinkConnectionImpl::joinLeftSubscriber(std::shared_ptr<MavLinkConnection
 {
     unused(connection);
     // forward messages from our connected node to the remote proxy.
+    if (supports_mavlink2_)
+    {
+        // tell the remote connection to expect mavlink2 messages.
+        remote->pImpl->supports_mavlink2_ = true;
+    }
     remote->sendMessage(msg);
 }
 
@@ -359,6 +392,7 @@ void MavLinkConnectionImpl::join(std::shared_ptr<MavLinkConnection> remote, bool
 void MavLinkConnectionImpl::readPackets()
 {
     //CurrentThread::setMaximumPriority();
+    CurrentThread::setThreadName("MavLinkThread");
     std::shared_ptr<Port> safePort = this->port;
     mavlink_message_t msg;
     mavlink_message_t msgBuffer; // intermediate state.
@@ -407,7 +441,7 @@ void MavLinkConnectionImpl::readPackets()
                 if (mavlink_intermediate_status_.flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
                 {
                     // then this is a mavlink 1 message
-                } else {
+                } else if (!supports_mavlink2_) {
                     // then this mavlink sender supports mavlink 2
                     supports_mavlink2_ = true;
                 }
@@ -431,6 +465,7 @@ void MavLinkConnectionImpl::readPackets()
                         message.compat_flags = msg.compat_flags;
                         message.seq = msg.seq;
                         message.msgid = msg.msgid;
+                        message.protocol_version = supports_mavlink2_ ? 2 : 1;
                         ::memcpy(message.signature, msg.signature, 13);
                         ::memcpy(message.payload64, msg.payload64, PayloadSize * sizeof(uint64_t));
                         msg_queue_.push(message);
@@ -484,6 +519,16 @@ void MavLinkConnectionImpl::drainQueue()
         }
         auto end = snapshot.end();
 
+        if (message.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION))
+        {
+            MavLinkAutopilotVersion cap;
+            cap.decode(message);
+            if ((cap.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2) != 0)
+            {
+                this->supports_mavlink2_ = true;
+            }
+        }
+
         auto startTime = std::chrono::system_clock::now();
         std::shared_ptr<MavLinkConnection> sharedPtr = std::shared_ptr<MavLinkConnection>(this->con_);
         for (auto ptr = snapshot.begin(); ptr != end; ptr++)
@@ -511,6 +556,8 @@ void MavLinkConnectionImpl::drainQueue()
 void MavLinkConnectionImpl::publishPackets()
 {
     //CurrentThread::setMaximumPriority();
+    CurrentThread::setThreadName("MavLinkThread");
+    publish_thread_id_ = std::this_thread::get_id();
     while (!closed) {
 
         drainQueue();
@@ -519,6 +566,11 @@ void MavLinkConnectionImpl::publishPackets()
         msg_available_.wait();
         waiting_for_msg_ = false;
     }
+}
+
+bool MavLinkConnectionImpl::isPublishThread() const
+{
+    return std::this_thread::get_id() == publish_thread_id_;
 }
 
 void MavLinkConnectionImpl::getTelemetry(MavLinkTelemetry& result)

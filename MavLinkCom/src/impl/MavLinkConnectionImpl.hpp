@@ -36,6 +36,7 @@ namespace mavlinkcom_impl {
         static std::shared_ptr<MavLinkConnection>  connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort);
         static std::shared_ptr<MavLinkConnection>  connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort);
         static std::shared_ptr<MavLinkConnection>  connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort);
+        void acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort);
 
         std::string getName();
         int getTargetComponentId();
@@ -55,6 +56,7 @@ namespace mavlinkcom_impl {
         void getTelemetry(MavLinkTelemetry& result);
         void ignoreMessage(uint8_t message_id);
         int prepareForSending(MavLinkMessage& msg);
+        bool isPublishThread() const;
     private:
         static std::shared_ptr<MavLinkConnection> createConnection(const std::string& nodeName, std::shared_ptr<Port> port);
         void joinLeftSubscriber(std::shared_ptr<MavLinkConnection> remote, std::shared_ptr<MavLinkConnection>con, const MavLinkMessage& msg);
@@ -91,6 +93,7 @@ namespace mavlinkcom_impl {
         mavlink_utils::Semaphore msg_available_;
         bool waiting_for_msg_ = false;
         bool supports_mavlink2_ = false;
+        std::thread::id publish_thread_id_;
         bool signing_ = false;
         mavlink_status_t mavlink_intermediate_status_;
         mavlink_status_t mavlink_status_;

@@ -51,44 +51,64 @@ public:
     struct AngleRatePid {
         //max_xxx_rate > 5 would introduce wobble/oscillations
         const float kMaxLimit = 2.5f;
+        const float kP = 0.25f;
+        const float kI = 0.0f;
+        const float kD = 0.0f;
+
         Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //roll, pitch, yaw - in radians/sec
 
         //p_xxx_rate params are sensitive to gyro noise. Values higher than 0.5 would require 
         //noise filtration
-        const float kP = 0.25f;
         Axis4r p = Axis4r(kP, kP, kP, 1.0f);
+        Axis4r i = Axis4r(kI, kI, kI, 0.0f);
+        Axis4r d = Axis4r(kD, kD, kD, 0.0f);
     } angle_rate_pid;
 
     struct AngleLevelPid {
         const float pi = 3.14159265359f; //180-degrees
+        const float kP = 2.5f;
+        const float kI = 0.0f;
+        const float kD = 0.0f;
         
-        //max_pitch/roll_angle > 5.5 would produce versicle thrust that is not enough to keep vehicle in air at extremities of controls
+        //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremities of controls
         Axis4r max_limit = Axis4r(pi / 5.5f, pi / 5.5f, pi, 1.0f); //roll, pitch, yaw - in radians/sec
 
-        const float kP = 2.5f;
         Axis4r p = Axis4r(kP, kP, kP, 1.0f);
+        Axis4r i = Axis4r(kI, kI, kI, 0.0f);
+        Axis4r d = Axis4r(kD, kD, kD, 0.0f);
     } angle_level_pid;
 
     struct PositionPid {
         const float kMaxLimit = 8.8E26f; //some big number like size of known universe
+        const float kP = 0.25f;
+        const float kI = 0.0f;
+        const float kD = 0.0f;
+
         Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, kMaxLimit, 1.0f); //x, y, z in meters
 
-        Axis4r p = Axis4r( 0.25f,  0.25f, 0, 0.25f);
+        Axis4r p = Axis4r(kP, kP, 0, kP);
+        Axis4r i = Axis4r(kI, kI, kI, kI);
+        Axis4r d = Axis4r(kD, kD, kD, kD);
     } position_pid;
 
     struct VelocityPid {
         const float kMinThrottle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);
         const float kMaxLimit = 6.0f; // m/s
+        const float kP = 0.2f;
+        const float kI = 2.0f;
+        const float kD = 0.0f;
+
         Axis4r max_limit = Axis4r(kMaxLimit, kMaxLimit, 0, kMaxLimit); //x, y, yaw, z in meters
 
-        Axis4r p = Axis4r(0.2f, 0.2f, 0, 2.0f);
+        Axis4r p = Axis4r(kP, kP, 0.0f, 2.0f); // todo why 2.0f hardcoded
+        Axis4r i = Axis4r(0.0f, 0.0f, 0.0f, kI);
+        Axis4r d = Axis4r(kD, kD, kD, kD);
 
-        Axis4r i = Axis4r(0, 0, 0, 2.0f);
         Axis4r iterm_discount = Axis4r(1, 1, 1, 0.9999f);
         Axis4r output_bias = Axis4r(0, 0, 0, 0);
                 
         //we keep min throttle higher so that if we are angling a lot, its still supported
-        float min_throttle =kMinThrottle ;
+        float min_throttle = kMinThrottle ;
     } velocity_pid;
 
     struct Takeoff {
@@ -105,6 +125,7 @@ public:
     VehicleStateType default_vehicle_state = VehicleStateType::Inactive;
     uint64_t api_goal_timeout = 60; //milliseconds
     ControllerType controller_type = ControllerType::Cascade;
+    bool gains_changed;
 };
 
 

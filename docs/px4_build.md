@@ -23,31 +23,13 @@ The full instructions are available on the [dev.px4.io](http://dev.px4.io/starti
 but we've copied the relevant subset of those instructions here for your convenience.
 
 (Note that [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)) can be used to build
-the SITL version, but not the ARM firmware for pixhawk harddware).
-
-First run this command to cache your admin credentials:
-````
-sudo ls
-````
-
-Now you can block copy/paste the following to a bash terminal and it should run them all to completion, but be sure
-to check each command for success:
-
-````
-sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
-sudo apt-get update
-sudo apt-get install python-argparse git-core wget zip \
-    python-empy cmake build-essential genromfs -y
-sudo apt-get install python-serial openocd \
-    flex bison libncurses5-dev autoconf texinfo libftdi-dev libtool zlib1g-dev -y
-sudo apt-get install python-pip python-jinja2 -y
-````
+the PX4 firmware, just follow the BashOnWindows instructions at the bottom of this page).
 
 ## Build SITL version
 
 Now you can make the SITL version that runs in posix, from the Firmware folder you created above:
 ````
-make posix_sitl_default
+make posix_sitl_ekf2
 ````
 
 Note: this build system is quite special, it knows how to update git submodules (and there's a lot of them),
@@ -56,7 +38,7 @@ then it runs cmake (if necessary), then it runs the build itself.  So in a way t
 It shouldn't take long, about 2 minutes.  If all succeeds, the last line will link the `px4` app, which you can then run using the following:
 
 ````
-./build_posix_sitl_default/src/firmware/posix/px4 ./posix-configs/SITL/init/ekf2/iris
+make posix_sitl_ekf2  none_iris
 ````
 
 And you should see output that looks like this:
@@ -96,38 +78,12 @@ any wonky state if you need to (it's equivalent to a Pixhawk hardware reboot).
 ## ARM embedded tools
 
 If you plan to build the PX4 firmware for real Pixhawk hardware then you will need the gcc cross-compiler
-for ARM Cortex-M4 chipset.  You can find out what version, if any, you may already have by typing this
-command `arm-none-eabi-gcc --version`.  Note: you do not need this to build the SITL version of PX4.
+for ARM Cortex-M4 chipset.  You can get this compiler by PX4 DevGuide, specifically this is in their `ubuntu_sim_nuttx.sh` setup script.
 
-Note: This does not work in BashOnWindows because the arm-none-eabi-gcc tool is a 32-bit app which BashOnWindows cannot run.  See [installing arm-none-eabi-gcc on BashOnWindows](#installing-arm-none-eabi-gcc-in-bashonwindows) at the bottom of this page.
-
-Anyway, first we make sure to remove any old version of arm-none-eabi-gcc: 
-
+After following those setup instructions you can verify the install by entering this command `arm-none-eabi-gcc --version`.  You should see the following output:
 ````
-sudo apt-get remove gcc-arm-none-eabi gdb-arm-none-eabi binutils-arm-none-eabi gcc-arm-embedded -y
-sudo add-apt-repository --remove ppa:team-gcc-arm-embedded/ppa -y
-````
-
-That previous command prompts you to hit ENTER, so be sure to run that separately before the following:
-
-````
-pushd .
-cd ~
-wget https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q2-update/+download/gcc-arm-none-eabi-5_4-2016q2-20160622-linux.tar.bz2
-tar -jxf gcc-arm-none-eabi-5_4-2016q2-20160622-linux.tar.bz2
-exportline="export PATH=$HOME/gcc-arm-none-eabi-5_4-2016q2/bin:\$PATH"
-if grep -Fxq "$exportline" ~/.profile; then echo nothing to do ; else echo $exportline >> ~/.profile; fi
-. ~/.profile
-popd
-sudo dpkg --add-architecture i386
-sudo apt-get update
-sudo apt-get install libc6:i386 libgcc1:i386 libstdc++5:i386 libstdc++6:i386 -y
-````
-
-So now when you type this command `arm-none-eabi-gcc --version` and you should see:
-````
-arm-none-eabi-gcc (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-branch revision 237715]
-Copyright (C) 2015 Free Software Foundation, Inc.
+arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204]
+Copyright (C) 2017 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ````
@@ -170,23 +126,6 @@ param NAV_RCL_ACT 0
 param set SYS_LOGGER 1
 ````
 
-## Installing arm-none-eabi-gcc in BashOnWindows
+## Using BashOnWindows
 
-`SolinGuo` built a 64 bit  version of `gcc-arm-none-eabi` so that it will run inside `BashOnWindows`.
-See [gcc-arm-none-eabi-5_4-2017q2-20170512-linux.tar.bz2 ](https://github.com/SolinGuo/arm-none-eabi-bash-on-win10-/blob/master/gcc-arm-none-eabi-5_4-2017q2-20170512-linux.tar.bz2).
-If you download the *.tar.bz2 file to your machine and unpack it using this command line in BashOnWindows console:
-
-````
-tar -xvf gcc-arm-none-eabi-5_4-2017q2-20170512-linux.tar.bz2
-````
-
-you will get the following folder which contains the arm gcc cross-compiler:
-
-````
-gcc-arm-none-eabi-5_4-2017q2/bin
-````
-
-If you add this folder to your PATH using the usual `export PATH=...` trick then the PX4 build will be able to find
-and run this compiler.  After that, you can run `make px4fmu-v2_default` in BashOnWindows and the firmware will appear
-here: `build_px4fmu-v2_default/src/firmware/nuttx/px4fmu-v2_default.px4`.  You can then flash this new firmware on your 
-Pixhawk using QGroundControl.
+See [Bash on Windows Toolchain](https://dev.px4.io/en/setup/dev_env_windows_bash_on_win.html).

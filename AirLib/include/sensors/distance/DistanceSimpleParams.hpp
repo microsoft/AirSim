@@ -5,6 +5,7 @@
 #define msr_airlib_DistanceSimpleParams_hpp
 
 #include "common/Common.hpp"
+#include "common/AirSimSettings.hpp"
 
 
 namespace msr { namespace airlib {
@@ -36,6 +37,11 @@ struct DistanceSimpleParams {
     real_T update_latency = 0.0f;    //sec
     real_T update_frequency = 50;    //Hz
     real_T startup_delay = 0;        //sec
+
+    void initializeFromSettings(const AirSimSettings::DistanceSetting& settings)
+    {
+        unused(settings);
+    }
 };
 
 

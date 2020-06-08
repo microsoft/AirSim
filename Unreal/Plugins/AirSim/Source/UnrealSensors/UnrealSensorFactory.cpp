@@ -2,23 +2,27 @@
 // Licensed under the MIT License.
 #include "UnrealSensorFactory.h"
 #include "UnrealSensors/UnrealDistanceSensor.h"
-
+#include "UnrealSensors/UnrealLidarSensor.h"
 
 UnrealSensorFactory::UnrealSensorFactory(AActor* actor, const NedTransform* ned_transform)
 {
     setActor(actor, ned_transform);
 }
 
-
-std::unique_ptr<msr::airlib::SensorBase> UnrealSensorFactory::createSensor(msr::airlib::SensorBase::SensorType sensor_type) const
+std::unique_ptr<msr::airlib::SensorBase> UnrealSensorFactory::createSensorFromSettings(
+    const AirSimSettings::SensorSetting* sensor_setting) const
 {
     using SensorBase = msr::airlib::SensorBase;
 
-    switch (sensor_type) {
+    switch (sensor_setting->sensor_type) {
     case SensorBase::SensorType::Distance:
-        return std::unique_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(actor_, ned_transform_));
+        return std::unique_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(
+            *static_cast<const AirSimSettings::DistanceSetting*>(sensor_setting), actor_, ned_transform_));
+    case SensorBase::SensorType::Lidar:
+        return std::unique_ptr<UnrealLidarSensor>(new UnrealLidarSensor(
+            *static_cast<const AirSimSettings::LidarSetting*>(sensor_setting), actor_, ned_transform_));
     default:
-        return msr::airlib::SensorFactory::createSensor(sensor_type);
+        return msr::airlib::SensorFactory::createSensorFromSettings(sensor_setting);
     }
 }
 

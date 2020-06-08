@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Source\SimHUD\SimHUD.cpp">
+      <Filter>SimHUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SimMode\SimModeBase.cpp">
+      <Filter>SimMode</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PawnSimApi.cpp" />
+    <ClCompile Include="Source\PInvokeWrapper.cpp" />
+    <ClCompile Include="Source\UnityImageCapture.cpp" />
+    <ClCompile Include="Source\WorldSimApi.cpp" />
+    <ClCompile Include="Source\Vehicles\Car\SimModeCar.cpp">
+      <Filter>Vehicles\Car</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vehicles\Car\CarPawnSimApi.cpp">
+      <Filter>Vehicles\Car</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vehicles\Car\CarPawn.cpp">
+      <Filter>Vehicles\Car</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vehicles\Car\CarPawnApi.cpp">
+      <Filter>Vehicles\Car</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Logger.cpp" />
+    <ClCompile Include="Source\SimMode\SimModeWorldBase.cpp">
+      <Filter>SimMode</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vehicles\Multirotor\SimModeWorldMultiRotor.cpp">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vehicles\Multirotor\MultirotorPawnSimApi.cpp">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vehicles\Multirotor\MultirotorPawnEvents.cpp">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UnitySensors\UnitySensorFactory.cpp">
+      <Filter>UnitySensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UnitySensors\UnityDistanceSensor.cpp">
+      <Filter>UnitySensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NedTransform.cpp" />
+    <ClCompile Include="Source\Vehicles\Multirotor\FlyingPawn.cpp">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UnityToAirSimCalls.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\SimHUD\SimHUD.h">
+      <Filter>SimHUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SimMode\SimModeBase.h">
+      <Filter>SimMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AirSimStructs.hpp" />
+    <ClInclude Include="Source\PawnSimApi.h" />
+    <ClInclude Include="Source\PInvokeWrapper.h" />
+    <ClInclude Include="Source\UnityImageCapture.h" />
+    <ClInclude Include="Source\WorldSimApi.h" />
+    <ClInclude Include="Source\Vehicles\Car\SimModeCar.h">
+      <Filter>Vehicles\Car</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vehicles\Car\CarPawnSimApi.h">
+      <Filter>Vehicles\Car</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vehicles\Car\CarPawn.h">
+      <Filter>Vehicles\Car</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vehicles\Car\CarPawnApi.h">
+      <Filter>Vehicles\Car</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Logger.h" />
+    <ClInclude Include="Source\UnityPawn.h" />
+    <ClInclude Include="Source\SimMode\SimModeWorldBase.h">
+      <Filter>SimMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vehicles\Multirotor\SimModeWorldMultiRotor.h">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vehicles\Multirotor\MultirotorPawnSimApi.h">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vehicles\Multirotor\MultirotorPawnEvents.h">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UnitySensors\UnitySensorFactory.h">
+      <Filter>UnitySensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\NedTransform.h" />
+    <ClInclude Include="Source\UnitySensors\UnityDistanceSensor.h">
+      <Filter>UnitySensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vehicles\Multirotor\FlyingPawn.h">
+      <Filter>Vehicles\Multirotor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UnityUtilities.hpp" />
+    <ClInclude Include="Source\UnityToAirSimCalls.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="SimHUD">
+      <UniqueIdentifier>{b526ebfb-481f-47a3-9524-7ac6d98e06c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SimMode">
+      <UniqueIdentifier>{af91538c-f3f7-4781-9e3f-f666b1314fd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vehicles">
+      <UniqueIdentifier>{3e8a492f-6c2e-4428-ae53-b3146d20d724}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vehicles\Car">
+      <UniqueIdentifier>{c4858585-d97e-48dc-86b3-9137e23517e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vehicles\Multirotor">
+      <UniqueIdentifier>{f89f941b-b899-46b5-af60-65e45cb01d8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitySensors">
+      <UniqueIdentifier>{d16ecc78-9de7-4c13-8d8d-cbcb29994648}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

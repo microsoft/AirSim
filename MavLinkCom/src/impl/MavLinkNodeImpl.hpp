@@ -69,6 +69,8 @@ namespace mavlinkcom_impl {
 
         AsyncResult<MavLinkHeartbeat>  waitForHeartbeat();
 
+        void sendOneHeartbeat();
+
         // Encode and send the given message to the connected node
         void sendMessage(MavLinkMessageBase& msg);
 
@@ -84,6 +86,7 @@ namespace mavlinkcom_impl {
     protected:
         // this is called for all messages received on the connection.
         virtual void handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message);
+        void assertNotPublishingThread();
     private:
         void sendHeartbeat();
         AsyncResult<MavLinkParameter> getParameterByIndex(int16_t index);
@@ -95,6 +98,7 @@ namespace mavlinkcom_impl {
         std::vector<MavLinkParameter> parameters_; //cached snapshot.
         MavLinkAutopilotVersion cap_;
         bool has_cap_ = false;
+        bool req_cap_ = false;
         bool heartbeat_running_ = false;
         std::thread heartbeat_thread_;
     };

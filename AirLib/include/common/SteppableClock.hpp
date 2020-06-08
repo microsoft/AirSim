@@ -24,6 +24,8 @@ public:
         start_ = current_ = start ? start : Utils::getTimeSinceEpochNanos();
     }
 
+    virtual ~SteppableClock() {}
+
     TTimePoint stepBy(TTimeDelta amount)
     {
         current_ = addTo(current_, amount);

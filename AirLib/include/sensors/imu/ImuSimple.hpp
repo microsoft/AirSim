@@ -14,18 +14,19 @@ namespace msr { namespace airlib {
 class ImuSimple : public ImuBase {
 public:
     //constructors
-    ImuSimple(const ImuSimpleParams& params = ImuSimpleParams())
-        : params_(params)
+    ImuSimple(const AirSimSettings::ImuSetting& setting = AirSimSettings::ImuSetting())
+        : ImuBase(setting.sensor_name)
     {
+        // initialize params
+        params_.initializeFromSettings(setting);
+
         gyro_bias_stability_norm = params_.gyro.bias_stability / sqrt(params_.gyro.tau);
         accel_bias_stability_norm = params_.accel.bias_stability / sqrt(params_.accel.tau);
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        ImuBase::reset();
-
         last_time_ = clock()->nowNanos();
 
         state_.gyroscope_bias = params_.gyro.turn_on_bias;
@@ -61,6 +62,8 @@ private: //methods
         //add noise
         addNoise(output.linear_acceleration, output.angular_velocity);
         // TODO: Add noise in orientation?
+
+        output.time_stamp = clock()->nowNanos();
 
         setOutput(output);
     }

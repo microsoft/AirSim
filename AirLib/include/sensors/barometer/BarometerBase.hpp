@@ -11,8 +11,14 @@
 namespace msr { namespace airlib {
 
 class BarometerBase  : public SensorBase {
+public:
+    BarometerBase(const std::string& sensor_name = "")
+        : SensorBase(sensor_name)
+    {}
+
 public: //types
     struct Output { //same fields as ROS message
+        TTimePoint time_stamp;
         real_T altitude;    //meters
         real_T pressure;    //Pascal
         real_T qnh;

@@ -6,6 +6,7 @@
 
 #include "common/Common.hpp"
 #include "common/EarthUtils.hpp"
+#include "common/AirSimSettings.hpp"
 #include <cmath>
 
 
@@ -42,6 +43,11 @@ struct ImuSimpleParams {
     } accel;
 
     real_T min_sample_time = 1 / 1000.0f;   //internal IMU frequency
+
+    void initializeFromSettings(const AirSimSettings::ImuSetting& settings)
+    {
+        unused(settings);
+    }
 };
 
 

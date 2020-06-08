@@ -5,6 +5,7 @@ import numpy as np
 import os
 import tempfile
 import pprint
+import cv2
 
 # connect to the AirSim simulator
 client = airsim.MultirotorClient()
@@ -15,6 +16,22 @@ client.armDisarm(True)
 state = client.getMultirotorState()
 s = pprint.pformat(state)
 print("state: %s" % s)
+
+imu_data = client.getImuData()
+s = pprint.pformat(imu_data)
+print("imu_data: %s" % s)
+
+barometer_data = client.getBarometerData()
+s = pprint.pformat(barometer_data)
+print("barometer_data: %s" % s)
+
+magnetometer_data = client.getMagnetometerData()
+s = pprint.pformat(magnetometer_data)
+print("magnetometer_data: %s" % s)
+
+gps_data = client.getGpsData()
+s = pprint.pformat(gps_data)
+print("gps_data: %s" % s)
 
 airsim.wait_key('Press any key to takeoff')
 client.takeoffAsync().join()
@@ -59,11 +76,9 @@ for idx, response in enumerate(responses):
         airsim.write_file(os.path.normpath(filename + '.png'), response.image_data_uint8)
     else: #uncompressed array
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
-        img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
-        img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
-        img_rgba = np.flipud(img_rgba) #original image is flipped vertically
-        img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
-        airsim.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png
+        img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) # get numpy array
+        img_rgb = img1d.reshape(response.height, response.width, 3) # reshape array to 4 channel image array H X W X 3
+        cv2.imwrite(os.path.normpath(filename + '.png'), img_rgb) # write to png
 
 airsim.wait_key('Press any key to reset to original state')
 

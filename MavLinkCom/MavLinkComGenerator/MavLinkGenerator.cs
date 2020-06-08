@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -80,7 +81,15 @@ namespace MavLinkComGenerator
                 UniqueList unique = new UniqueList();
                 foreach (var p in cmd.parameters)
                 {
-                    string fieldName = NameFromDescription(p.description);
+                    string fieldName = p.label;
+                    if (string.IsNullOrWhiteSpace(fieldName))
+                    {
+                        fieldName = NameFromDescription(p.description);
+                    }
+                    else
+                    {
+                        fieldName = LegalizeIdentifier(fieldName);
+                    }
                     if (fieldName != "Empty" && fieldName != "Reserved")
                     {
                         if (!string.IsNullOrWhiteSpace(p.description))
@@ -100,7 +109,15 @@ namespace MavLinkComGenerator
                 foreach (var p in cmd.parameters)
                 {
                     i++;
-                    string fieldName = NameFromDescription(p.description);
+                    string fieldName = p.label;
+                    if (string.IsNullOrWhiteSpace(fieldName))
+                    {
+                        fieldName = NameFromDescription(p.description);
+                    }
+                    else
+                    {
+                        fieldName = LegalizeIdentifier(fieldName);
+                    }
                     if (fieldName != "Empty" && fieldName != "Reserved")
                     {
                         impl.WriteLine("    param{0} = {1};", i, unique.Add(fieldName));
@@ -116,7 +133,15 @@ namespace MavLinkComGenerator
                 foreach (var p in cmd.parameters)
                 {
                     i++;
-                    string fieldName = NameFromDescription(p.description);
+                    string fieldName = p.label;
+                    if (string.IsNullOrWhiteSpace(fieldName))
+                    {
+                        fieldName = NameFromDescription(p.description);
+                    }
+                    else
+                    {
+                        fieldName = LegalizeIdentifier(fieldName);
+                    }
                     if (fieldName != "Empty" && fieldName != "Reserved")
                     {
                         impl.WriteLine("    {1} = param{0};", i, unique.Add(fieldName));
@@ -152,7 +177,6 @@ namespace MavLinkComGenerator
 
         private string NameFromDescription(string description)
         {
-            StringBuilder sb = new StringBuilder();
             int i = description.IndexOf("this sets");
             if (i > 0)
             {
@@ -163,22 +187,23 @@ namespace MavLinkComGenerator
             {
                 description = description.Substring(0, i);
             }
-            string[] words = description.Split(whitespace, StringSplitOptions.RemoveEmptyEntries);
+            return LegalizeIdentifier(description);
+        }
+
+        private string LegalizeIdentifier(string identifier)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            string[] words = identifier.Split(whitespace, StringSplitOptions.RemoveEmptyEntries);
             int count = 0;
             for (int j = 0; j < words.Length; j++)
             {
                 string w = words[j];
-                w = w.Replace("'", "");
-                w = w.Replace("/", "");
-                w = w.Replace("?", "");
+                w = RemoveIllegalNameChars(w);
                 w = CamelCase(w);
                 if (j > 0 && (w == "In" || w == "From" || w == "And" || w == "As" || w == "The" || w == "And" || w == "It" || w == "On"))
                 {
                     continue; // skip filler words
-                }
-                if (j == 0 && Char.IsDigit(w[0]))
-                {
-                    w = "p" + w; // make it a legal C++ identifier.
                 }
                 sb.Append(w);
                 count++;
@@ -186,6 +211,32 @@ namespace MavLinkComGenerator
                 {
                     break;
                 }
+            }
+            if (sb.Length == 0)
+            {
+                sb.Append("p");
+            }
+            return sb.ToString();
+        }
+
+        private string RemoveIllegalNameChars(string w)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0, n = w.Length; i < n; i++)
+            {
+                char ch = w[i];
+                if (!char.IsLetter(ch) && ch != '_')
+                {
+                    sb.Append("p");
+                }
+                if (char.IsLetterOrDigit(ch) || ch == '_')
+                {
+                    sb.Append(ch);
+                }
+            }
+            if (sb.Length == 0)
+            {
+                sb.Append("p");
             }
             return sb.ToString();
         }
@@ -226,9 +277,6 @@ namespace MavLinkComGenerator
                     }
                 }
 
-                // mavlink packs the fields by descending size for some odd reason.
-                m.fields = m.fields.OrderByDescending(x => typeSize[x.type]).ToList();
-
                 int length = m.fields.Count;
                 for (int i = 0; i < length; i++)
                 {
@@ -251,6 +299,19 @@ namespace MavLinkComGenerator
                         header.WriteLine("    {0} {1} = 0;", type, field.name);
                     }
                 }
+
+                // mavlink packs the fields in order of descending size (but not including the extension fields.
+                var sortedFields = m.fields;
+                int extensionPos = m.ExtensionPos;
+                if (extensionPos == 0)
+                {
+                    extensionPos = m.fields.Count;
+                }
+                sortedFields = new List<MavField>(m.fields.Take(extensionPos));
+                sortedFields = sortedFields.OrderByDescending(x => typeSize[x.type]).ToList();
+                sortedFields.AddRange(m.fields.Skip(extensionPos));
+
+                m.fields = sortedFields;
 
                 header.WriteLine("    virtual std::string toJSon();");
                 header.WriteLine("protected:");

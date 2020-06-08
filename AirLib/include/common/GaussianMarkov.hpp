@@ -11,7 +11,7 @@
 
 namespace msr { namespace airlib {
 
-class GaussianMarkov : UpdatableObject {
+class GaussianMarkov : public UpdatableObject {
 public:
     GaussianMarkov()
     {}
@@ -32,10 +32,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableObject::reset();
-
         last_time_ = clock()->nowNanos();
         output_ = initial_output_;
         rand_.reset();

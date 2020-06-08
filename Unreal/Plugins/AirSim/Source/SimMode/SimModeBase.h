@@ -50,6 +50,9 @@ public:
     virtual void pause(bool is_paused);
     virtual void continueForTime(double seconds);
 
+    virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+        float celestial_clock_speed, float update_interval_secs, bool move_sun);
+
     virtual void startRecording();
     virtual void stopRecording();
     virtual bool isRecording() const;
@@ -121,10 +124,16 @@ private:
 
 
     UPROPERTY() AActor* sky_sphere_;
-    UPROPERTY() ADirectionalLight* sun_;;
-    TTimePoint tod_sim_clock_start_;
+    UPROPERTY() ADirectionalLight* sun_;
+    FRotator default_sun_rotation_;
+    TTimePoint tod_sim_clock_start_;             // sim start in local time
     TTimePoint tod_last_update_;
-    std::time_t tod_start_time_;
+    TTimePoint tod_start_time_;                  // tod, configurable
+    bool tod_enabled_;
+    float tod_celestial_clock_speed_;
+    float tod_update_interval_secs_;
+    bool tod_move_sun_;
+
     std::unique_ptr<NedTransform> global_ned_transform_;
     std::unique_ptr<msr::airlib::WorldSimApiBase> world_sim_api_;
     std::unique_ptr<msr::airlib::ApiProvider> api_provider_;
@@ -136,11 +145,15 @@ private:
     UPROPERTY()
         TArray<AActor*> spawned_actors_; //keep refs alive from Unreal GC
 
+    bool lidar_checks_done_ = false; 
+    bool lidar_draw_debug_points_ = false;
 
 private:
     void setStencilIDs();
-    void setupTimeOfDay();
+    void initializeTimeOfDay();
     void advanceTimeOfDay();
+    void setSunRotation(FRotator rotation);
     void setupPhysicsLoopPeriod();
     void showClockStats();
+    void drawLidarDebugPoints();
 };

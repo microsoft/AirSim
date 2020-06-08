@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), AirSim.props))\AirSim.props" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="UserMacros">
+    <AirSimDir>$(ProjectDir)..\..\..\..\MSAirSim_2</AirSimDir>
+    <ProjectGuid>{B3142B89-A825-4A07-84D3-45C65CF0D7B0}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{B3142B89-A825-4A07-84D3-45C65CF0D7B0}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>AirsimWrapper</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;AIRSIMWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\AirLib\include\vehicles\car;$(ProjectDir)..\..\..\AirLib\include;$(ProjectDir)..\..\..\AirLib\deps\eigen3;$(ProjectDir)..\..\..\external\rpclib\rpclib-2.2.1\include;$(ProjectDir)..\..\..\MavLinkCom\include;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\$(Platform)\$(Configuration);$(AirSimDir)\AirLib\deps\MavLinkCom\lib\$(Platform)\$(Configuration);$(AirSimDir)\AirLib\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;AIRSIMWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\AirLib\include\vehicles\car;$(ProjectDir)..\..\..\AirLib\include;$(ProjectDir)..\..\..\AirLib\deps\eigen3;$(ProjectDir)..\..\..\external\rpclib\rpclib-2.2.1\include;$(ProjectDir)..\..\..\MavLinkCom\include;$(ProjectDir)include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>..\$(Platform)\$(Configuration);..\..\..\AirLib\lib\$(Platform)\$(Configuration);..\..\..\MavLinkCom\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MavLinkCom.lib;AirLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>LinkVerbose</ShowProgress>
+      <LinkStatus>false</LinkStatus>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;AIRSIMWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\AirLib\include\vehicles\car;$(ProjectDir)..\..\..\AirLib\include;$(ProjectDir)..\..\..\AirLib\deps\eigen3;$(ProjectDir)..\..\..\external\rpclib\rpclib-2.2.1\include;$(ProjectDir)..\..\..\MavLinkCom\include;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\$(Platform)\$(Configuration);$(AirSimDir)\AirLib\deps\MavLinkCom\lib\$(Platform)\$(Configuration);$(AirSimDir)\AirLib\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;AIRSIMWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\AirLib\include\vehicles\car;$(ProjectDir)..\..\..\AirLib\include;$(ProjectDir)..\..\..\AirLib\deps\eigen3;$(ProjectDir)..\..\..\external\rpclib\rpclib-2.2.1\include;$(ProjectDir)..\..\..\MavLinkCom\include;$(ProjectDir)include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>..\$(Platform)\$(Configuration);..\..\..\AirLib\lib\$(Platform)\$(Configuration);..\..\..\MavLinkCom\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MavLinkCom.lib;AirLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <LinkStatus>
+      </LinkStatus>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\AirSimStructs.hpp" />
+    <ClInclude Include="Source\Logger.h" />
+    <ClInclude Include="Source\NedTransform.h" />
+    <ClInclude Include="Source\SimMode\SimModeWorldBase.h" />
+    <ClInclude Include="Source\UnityPawn.h" />
+    <ClInclude Include="Source\PawnSimApi.h" />
+    <ClInclude Include="Source\PInvokeWrapper.h" />
+    <ClInclude Include="Source\SimHUD\SimHUD.h" />
+    <ClInclude Include="Source\SimMode\SimModeBase.h" />
+    <ClInclude Include="Source\UnityImageCapture.h" />
+    <ClInclude Include="Source\UnitySensors\UnityDistanceSensor.h" />
+    <ClInclude Include="Source\UnitySensors\UnitySensorFactory.h" />
+    <ClInclude Include="Source\UnityToAirSimCalls.h" />
+    <ClInclude Include="Source\UnityUtilities.hpp" />
+    <ClInclude Include="Source\Vehicles\Car\CarPawn.h" />
+    <ClInclude Include="Source\Vehicles\Car\CarPawnApi.h" />
+    <ClInclude Include="Source\Vehicles\Car\CarPawnSimApi.h" />
+    <ClInclude Include="Source\Vehicles\Car\SimModeCar.h" />
+    <ClInclude Include="Source\Vehicles\Multirotor\FlyingPawn.h" />
+    <ClInclude Include="Source\Vehicles\Multirotor\MultirotorPawnEvents.h" />
+    <ClInclude Include="Source\Vehicles\Multirotor\MultirotorPawnSimApi.h" />
+    <ClInclude Include="Source\Vehicles\Multirotor\SimModeWorldMultiRotor.h" />
+    <ClInclude Include="Source\WorldSimApi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Logger.cpp" />
+    <ClCompile Include="Source\NedTransform.cpp" />
+    <ClCompile Include="Source\PawnSimApi.cpp" />
+    <ClCompile Include="Source\PInvokeWrapper.cpp" />
+    <ClCompile Include="Source\SimHUD\SimHUD.cpp" />
+    <ClCompile Include="Source\SimMode\SimModeBase.cpp" />
+    <ClCompile Include="Source\SimMode\SimModeWorldBase.cpp" />
+    <ClCompile Include="Source\UnityImageCapture.cpp" />
+    <ClCompile Include="Source\UnitySensors\UnityDistanceSensor.cpp" />
+    <ClCompile Include="Source\UnitySensors\UnitySensorFactory.cpp" />
+    <ClCompile Include="Source\UnityToAirSimCalls.cpp" />
+    <ClCompile Include="Source\Vehicles\Car\CarPawn.cpp" />
+    <ClCompile Include="Source\Vehicles\Car\CarPawnApi.cpp" />
+    <ClCompile Include="Source\Vehicles\Car\CarPawnSimApi.cpp" />
+    <ClCompile Include="Source\Vehicles\Car\SimModeCar.cpp" />
+    <ClCompile Include="Source\Vehicles\Multirotor\FlyingPawn.cpp" />
+    <ClCompile Include="Source\Vehicles\Multirotor\MultirotorPawnEvents.cpp" />
+    <ClCompile Include="Source\Vehicles\Multirotor\MultirotorPawnSimApi.cpp" />
+    <ClCompile Include="Source\Vehicles\Multirotor\SimModeWorldMultiRotor.cpp" />
+    <ClCompile Include="Source\WorldSimApi.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

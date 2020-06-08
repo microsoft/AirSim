@@ -79,6 +79,18 @@ private:
                     throw std::invalid_argument("Unsupported axis_type in getMappedValue");
                 }
             }
+			else if (device_pid_vid == "VID_0401&PID_0401") { //Flysky FS-SM100 RC USB adapter
+				switch (axis_type) {
+				case AxisMap::AxisType::LeftX: rc_axis = AxisMap::AxisType::RightY; break;
+				case AxisMap::AxisType::LeftY: rc_axis = AxisMap::AxisType::LeftX; break;
+				case AxisMap::AxisType::LeftZ: rc_axis = AxisMap::AxisType::RightX; break;
+				case AxisMap::AxisType::RightX: rc_axis = AxisMap::AxisType::LeftY; break;
+				case AxisMap::AxisType::RightY: rc_axis = AxisMap::AxisType::LeftZ; break;
+				case AxisMap::AxisType::RightZ: rc_axis = AxisMap::AxisType::RightZ; break;
+				default:
+					throw std::invalid_argument("Unsupported axis_type in getMappedValue");
+				}
+			}
             else { //Xbox controllers
                 rc_axis = axis_type;
             }
@@ -115,7 +127,7 @@ private:
             if (
                 ((device_pid_vid == "" || device_pid_vid == "VID_0483&PID_5710") &&
                     (axis_type == AxisMap::AxisType::LeftZ || axis_type == AxisMap::AxisType::RightY)) ||
-                ((device_pid_vid != "" && device_pid_vid != "VID_0483&PID_5710") &&
+                ((device_pid_vid != "" && device_pid_vid != "VID_0483&PID_5710" && device_pid_vid != "VID_0401&PID_0401") &&
                     (axis_type == AxisMap::AxisType::LeftY))
                )
                 val = 1 - val;

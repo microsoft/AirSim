@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -93,11 +93,14 @@
     <ClCompile Include="unreal\plugins\airsim\source\simjoystick\SimJoyStick.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeBase.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\TextureShuffleActor.cpp" />
     <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.cpp" />
     <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealDistanceSensor.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealLidarSensor.cpp" />
     <ClCompile Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealSensorFactory.cpp" />
     <ClCompile Include="unreal\plugins\airsim\source\VehicleCameraConnector.cpp" />
     <ClCompile Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.cpp" />
+    <ClCompile Include="Unreal\Plugins\AirSim\Source\Weather\WeatherLib.cpp" />
     <ClCompile Include="Unreal\Plugins\AirSim\Source\WorldSimApi.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,10 +130,12 @@
     <ClInclude Include="unreal\plugins\airsim\source\simmode\SimModeWorldBase.h" />
     <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealImageCapture.h" />
     <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealDistanceSensor.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealLidarSensor.h" />
     <ClInclude Include="Unreal\Plugins\AirSim\Source\UnrealSensors\UnrealSensorFactory.h" />
     <ClInclude Include="unreal\plugins\airsim\source\VehicleCameraConnector.h" />
     <ClInclude Include="unreal\plugins\airsim\source\VehiclePawnWrapper.h" />
     <ClInclude Include="Unreal\Plugins\AirSim\Source\VehicleSimApi.h" />
+    <ClInclude Include="Unreal\Plugins\AirSim\Source\Weather\WeatherLib.h" />
     <ClInclude Include="Unreal\Plugins\AirSim\Source\WorldSimApi.h" />
   </ItemGroup>
   <ItemGroup>

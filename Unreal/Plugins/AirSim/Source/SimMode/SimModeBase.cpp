@@ -3,7 +3,7 @@
 #include "Misc/MessageDialog.h"
 #include "Misc/EngineVersion.h"
 #include "Runtime/Launch/Resources/Version.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Engine/World.h"
@@ -15,6 +15,11 @@
 #include "common/SteppableClock.hpp"
 #include "SimJoyStick/SimJoyStick.h"
 #include "common/EarthCelestial.hpp"
+#include "sensors/lidar/LidarSimple.hpp"
+
+#include "Weather/WeatherLib.h"
+
+#include "DrawDebugHelpers.h"
 
 //TODO: this is going to cause circular references which is fine here but
 //in future we should consider moving SimMode not derived from AActor and move
@@ -69,11 +74,22 @@ void ASimModeBase::BeginPlay()
     record_tick_count = 0;
     setupInputBindings();
 
-    setupTimeOfDay();
+    initializeTimeOfDay();
+    AirSimSettings::TimeOfDaySetting tod_setting = getSettings().tod_setting;
+    setTimeOfDay(tod_setting.enabled, tod_setting.start_datetime, tod_setting.is_start_datetime_dst,
+        tod_setting.celestial_clock_speed, tod_setting.update_interval_secs, tod_setting.move_sun);
 
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
     setupVehiclesAndCamera();
+    FRecordingThread::init();
+
+    UWorld* World = GetWorld();
+    if (World)
+    {
+        UWeatherLib::initWeather(World, spawned_actors_);
+        //UWeatherLib::showWeatherMenu(World);
+    }
 }
 
 const NedTransform& ASimModeBase::getGlobalNedTransform()
@@ -87,8 +103,10 @@ void ASimModeBase::checkVehicleReady()
         if (api) { //sim-only vehicles may have api as null
             std::string message;
             if (!api->isReady(message)) {
-                UAirBlueprintLib::LogMessage("Vehicle %s was not initialized: ", 
-                    "", LogDebugLevel::Failure); //TODO: add vehicle name in message
+                UAirBlueprintLib::LogMessage("Vehicle was not initialized", "", LogDebugLevel::Failure);
+                if (message.size() > 0) {
+                    UAirBlueprintLib::LogMessage(message.c_str(), "", LogDebugLevel::Failure);
+                }
                 UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
             }
         }
@@ -111,6 +129,7 @@ void ASimModeBase::setStencilIDs()
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     FRecordingThread::stopRecording();
+    FRecordingThread::killRecording();
     world_sim_api_.reset();
     api_provider_.reset();
     api_server_.reset();
@@ -126,42 +145,69 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-void ASimModeBase::setupTimeOfDay()
+void ASimModeBase::initializeTimeOfDay()
 {
     sky_sphere_ = nullptr;
+    sun_ = nullptr;
 
-    const auto& tod_setting = getSettings().tod_setting;
+    TArray<AActor*> sky_spheres;
+    UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), sky_sphere_class_, sky_spheres);
 
-    if (tod_setting.enabled) {
-        TArray<AActor*> sky_spheres;
-        UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), sky_sphere_class_, sky_spheres);
-        if (sky_spheres.Num() == 0)
-            UAirBlueprintLib::LogMessage(TEXT("BP_Sky_Sphere was not found. "), 
+    if (sky_spheres.Num() > 1)
+        UAirBlueprintLib::LogMessage(TEXT("More than BP_Sky_Sphere were found. "),
+            TEXT("TimeOfDay settings would be applied to first one."), LogDebugLevel::Failure);
+
+    if (sky_spheres.Num() >= 1) {
+        sky_sphere_ = sky_spheres[0];
+        static const FName sun_prop_name(TEXT("Directional light actor"));
+        auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
+        UObjectProperty* sun_prop = Cast<UObjectProperty>(p);
+        UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
+        sun_ = Cast<ADirectionalLight>(sun_obj);
+        if (sun_)
+            default_sun_rotation_ = sun_->GetActorRotation(); 
+    }
+}
+
+void ASimModeBase::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+{
+    bool enabled_currently = tod_enabled_;
+    
+    if (is_enabled) {
+
+        if (!sun_) {
+            UAirBlueprintLib::LogMessage(TEXT("BP_Sky_Sphere was not found. "),
                 TEXT("TimeOfDay settings would be ignored."), LogDebugLevel::Failure);
-        else if (sky_spheres.Num() > 1)
-            UAirBlueprintLib::LogMessage(TEXT("More than BP_Sky_Sphere were found. "), 
-                TEXT("TimeOfDay settings would be applied to first one."), LogDebugLevel::Failure);
+        }
+        else {
+            sun_->GetRootComponent()->Mobility = EComponentMobility::Movable;
 
-        if (sky_spheres.Num() >= 1) {
-            sky_sphere_ = sky_spheres[0];
-            static const FName sun_prop_name(TEXT("Directional light actor"));
-            auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
-            UObjectProperty* sun_prop = Cast<UObjectProperty>( p);
-            UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
-            sun_ = Cast<ADirectionalLight>(sun_obj);
-            if (sun_) {
-                sun_->GetRootComponent()->Mobility = EComponentMobility::Movable;
-            }
-
+            // this is a bit odd but given how advanceTimeOfDay() works currently, 
+            // tod_sim_clock_start_ needs to be reset here.
             tod_sim_clock_start_ = ClockFactory::get()->nowNanos();
+
             tod_last_update_ = 0;
-            if (tod_setting.start_datetime != "")
-                tod_start_time_ = Utils::to_time_t(tod_setting.start_datetime, tod_setting.is_start_datetime_dst);
+            if (start_datetime != "")
+                tod_start_time_ = Utils::to_time_t(start_datetime, is_start_datetime_dst) * 1E9;
             else
-                tod_start_time_ = std::time(nullptr);
+                tod_start_time_ = std::time(nullptr) * 1E9;
         }
     }
-    //else ignore
+    else if (enabled_currently) {
+        // Going from enabled to disabled
+        if (sun_) {
+            setSunRotation(default_sun_rotation_);
+            UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(ClockFactory::get()->nowNanos() / 1E9), LogDebugLevel::Informational);
+        }
+    }
+
+    // do these in the end to ensure that advanceTimeOfDay() doesn't see
+    // any inconsistent state.
+    tod_enabled_ = is_enabled;
+    tod_celestial_clock_speed_ = celestial_clock_speed;
+    tod_update_interval_secs_ = update_interval_secs;
+    tod_move_sun_ = move_sun;
 }
 
 bool ASimModeBase::isPaused() const
@@ -223,6 +269,8 @@ void ASimModeBase::Tick(float DeltaSeconds)
 
     updateDebugReport(debug_reporter_);
 
+    drawLidarDebugPoints();
+
     Super::Tick(DeltaSeconds);
 }
 
@@ -240,26 +288,33 @@ void ASimModeBase::advanceTimeOfDay()
 {
     const auto& settings = getSettings();
 
-    if (settings.tod_setting.enabled && sky_sphere_ && sun_) {
+    if (tod_enabled_ && sky_sphere_ && sun_ && tod_move_sun_) {
         auto secs = ClockFactory::get()->elapsedSince(tod_last_update_);
-        if (secs > settings.tod_setting.update_interval_secs) {
+        if (secs > tod_update_interval_secs_) {
             tod_last_update_ = ClockFactory::get()->nowNanos();
 
-            auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * settings.tod_setting.celestial_clock_speed;
-            uint64_t cur_time = ClockFactory::get()->addTo(tod_sim_clock_start_, interval)  / 1E9;
+            auto interval = ClockFactory::get()->elapsedSince(tod_sim_clock_start_) * tod_celestial_clock_speed_;
+            uint64_t cur_time = ClockFactory::get()->addTo(tod_start_time_, interval)  / 1E9;
 
             UAirBlueprintLib::LogMessageString("DateTime: ", Utils::to_string(cur_time), LogDebugLevel::Informational);
 
             auto coord = msr::airlib::EarthCelestial::getSunCoordinates(cur_time, settings.origin_geopoint.home_geo_point.latitude,
                 settings.origin_geopoint.home_geo_point.longitude);
 
-            auto rot = FRotator(-coord.altitude, coord.azimuth, 0);
-            sun_->SetActorRotation(rot);
+            setSunRotation(FRotator(-coord.altitude, coord.azimuth, 0));
+        }
+    }
+}
+
+void ASimModeBase::setSunRotation(FRotator rotation)
+{
+    if (sun_ && sky_sphere_) {
+        UAirBlueprintLib::RunCommandOnGameThread([this, rotation]() {
+            sun_->SetActorRotation(rotation);
 
             FOutputDeviceNull ar;
             sky_sphere_->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), ar, NULL, true);
-        }
-         
+        }, true /*wait*/);
     }
 }
 
@@ -357,7 +412,7 @@ void ASimModeBase::startApiServer()
 #endif
 
         try {
-            api_server_->start();
+            api_server_->start(false, spawned_actors_.Num() + 4);
         }
         catch (std::exception& ex) {
             UAirBlueprintLib::LogMessageString("Cannot start RpcLib Server", ex.what(), LogDebugLevel::Failure);
@@ -452,7 +507,7 @@ void ASimModeBase::setupVehiclesAndCamera()
                 FVector spawn_position = uu_origin.GetLocation();
                 msr::airlib::Vector3r settings_position = vehicle_setting.position;
                 if (!msr::airlib::VectorMath::hasNan(settings_position))
-                    spawn_position = getGlobalNedTransform().fromLocalNed(settings_position);
+                    spawn_position = getGlobalNedTransform().fromGlobalNed(settings_position);
                 FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
 
                 //spawn vehicle pawn
@@ -552,11 +607,80 @@ std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleSimApi(
     const PawnSimApi::Params& pawn_sim_api_params) const
 {
     unused(pawn_sim_api_params);
-    return std::unique_ptr<PawnSimApi>();
+    auto sim_api = std::unique_ptr<PawnSimApi>();
+    sim_api->initialize();
+
+    return sim_api;
 }
 msr::airlib::VehicleApiBase* ASimModeBase::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
     const PawnSimApi* sim_api) const
 {
     //derived class should override this method to retrieve types of pawns they support
     return nullptr;
+}
+
+// Draws debug-points on main viewport for Lidar laser hits.
+// Used for debugging only.
+void ASimModeBase::drawLidarDebugPoints()
+{
+    // Currently we are checking the sensor-collection instead of sensor-settings.
+    // Also using variables to optimize not checking the collection if not needed.
+    if (lidar_checks_done_ && !lidar_draw_debug_points_)
+        return;
+
+    if (getApiProvider() == nullptr)
+        return;
+
+    for (auto& sim_api : getApiProvider()->getVehicleSimApis()) {
+        PawnSimApi* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
+        std::string vehicle_name = pawn_sim_api->getVehicleName();
+
+        msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
+        if (api != nullptr) {
+            
+            msr::airlib::uint count_lidars = api->getSensors().size(msr::airlib::SensorBase::SensorType::Lidar);
+
+            for (msr::airlib::uint i = 0; i < count_lidars; i++) {
+                // TODO: Is it incorrect to assume LidarSimple here?
+                const msr::airlib::LidarSimple* lidar =
+                    static_cast<const msr::airlib::LidarSimple*>(api->getSensors().getByType(msr::airlib::SensorBase::SensorType::Lidar, i));
+                if (lidar != nullptr && lidar->getParams().draw_debug_points) {
+                    lidar_draw_debug_points_ = true;
+
+                    msr::airlib::LidarData lidar_data = lidar->getOutput();
+
+                    if (lidar_data.point_cloud.size() < 3)
+                        return;
+
+                    for (int j = 0; j < lidar_data.point_cloud.size(); j = j + 3) {
+                        msr::airlib::Vector3r point(lidar_data.point_cloud[j], lidar_data.point_cloud[j + 1], lidar_data.point_cloud[j + 2]);
+
+                        FVector uu_point;
+
+                        if (lidar->getParams().data_frame == AirSimSettings::kVehicleInertialFrame) {
+                            uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point);
+                        }
+                        else if (lidar->getParams().data_frame == AirSimSettings::kSensorLocalFrame) {
+
+                            msr::airlib::Vector3r point_w = msr::airlib::VectorMath::transformToWorldFrame(point, lidar_data.pose, true);
+                            uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point_w);
+                        }
+                        else
+                            throw std::runtime_error("Unknown requested data frame");
+
+                        DrawDebugPoint(
+                            this->GetWorld(),
+                            uu_point,
+                            5,              // size
+                            FColor::Green,
+                            false,          // persistent (never goes away)
+                            0.03            // LifeTime: point leaves a trail on moving object
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    lidar_checks_done_ = true;
 }

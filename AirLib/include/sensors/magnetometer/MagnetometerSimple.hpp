@@ -17,9 +17,12 @@ namespace msr { namespace airlib {
 
 class MagnetometerSimple : public MagnetometerBase {
 public: 
-    MagnetometerSimple(const MagnetometerSimpleParams& params = MagnetometerSimpleParams())
-        : params_(params)
+    MagnetometerSimple(const AirSimSettings::MagnetometerSetting& setting = AirSimSettings::MagnetometerSetting())
+        : MagnetometerBase(setting.sensor_name)
     {
+        // initialize params
+        params_.initializeFromSettings(setting);
+
         noise_vec_ = RandomVectorGaussianR(Vector3r::Zero(), params_.noise_sigma);
         bias_vec_ = RandomVectorR(-params_.noise_bias, params_.noise_bias).next();
 
@@ -29,10 +32,8 @@ public:
     }
 
     //*** Start: UpdatableObject implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        MagnetometerBase::reset();
-
         //Ground truth is reset before sensors are reset
         updateReference(getGroundTruth());
         noise_vec_.reset();
@@ -91,6 +92,9 @@ private: //methods
             ground_truth.kinematics->pose.orientation, true) * params_.scale_factor
             + noise_vec_.next()
             + bias_vec_;
+
+        // todo output.magnetic_field_covariance ? 
+        output.time_stamp = clock()->nowNanos();
 
         return output;
     }

@@ -10,6 +10,7 @@
 #include "physics/Environment.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "safety/SafetyEval.hpp"
+#include "api/WorldSimApiBase.hpp"
 
 #include "common/common_utils/WindowsApisCommonPre.hpp"
 #include "rpc/msgpack.hpp"
@@ -381,6 +382,7 @@ public:
         std::vector<uint8_t> image_data_uint8;
         std::vector<float> image_data_float;
 
+        std::string camera_name;
         Vector3r camera_position;
         Quaternionr camera_orientation;
         msr::airlib::TTimePoint time_stamp;
@@ -390,7 +392,7 @@ public:
         int width, height;
         msr::airlib::ImageCaptureBase::ImageType image_type;
 
-        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, 
+        MSGPACK_DEFINE_MAP(image_data_uint8, image_data_float, camera_position, camera_name,
             camera_orientation, time_stamp, message, pixels_as_float, compress, width, height, image_type);
 
         ImageResponse()
@@ -409,6 +411,7 @@ public:
             if (image_data_float.size() == 0)
                 image_data_float.push_back(0);
 
+            camera_name = s.camera_name;
             camera_position = Vector3r(s.camera_position);
             camera_orientation = Quaternionr(s.camera_orientation);
             time_stamp = s.time_stamp;
@@ -430,6 +433,7 @@ public:
             else
                 d.image_data_float = image_data_float;
 
+            d.camera_name = camera_name;
             d.camera_position = camera_position.to();
             d.camera_orientation = camera_orientation.to();
             d.time_stamp = time_stamp;
@@ -461,6 +465,297 @@ public:
             return response_adapter;
         }
     };
+
+    struct LidarData {
+
+        msr::airlib::TTimePoint time_stamp;    // timestamp
+        std::vector<float> point_cloud;        // data
+        Pose pose;
+
+        MSGPACK_DEFINE_MAP(time_stamp, point_cloud, pose);
+
+        LidarData()
+        {}
+
+        LidarData(const msr::airlib::LidarData& s)
+        {
+            time_stamp = s.time_stamp;
+            point_cloud = s.point_cloud;
+
+            //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
+            if (point_cloud.size() == 0)
+                point_cloud.push_back(0);
+
+            pose = s.pose;
+        }
+
+        msr::airlib::LidarData to() const
+        {
+            msr::airlib::LidarData d;
+
+            d.time_stamp = time_stamp;
+            d.point_cloud = point_cloud;
+            d.pose = pose.to();
+
+            return d;
+        }
+    };
+
+    struct ImuData {
+        msr::airlib::TTimePoint time_stamp;
+        Quaternionr orientation;
+        Vector3r angular_velocity;
+        Vector3r linear_acceleration;
+
+        MSGPACK_DEFINE_MAP(time_stamp, orientation, angular_velocity, linear_acceleration);
+
+        ImuData()
+        {}
+
+        ImuData(const msr::airlib::ImuBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            orientation = s.orientation;
+            angular_velocity = s.angular_velocity;
+            linear_acceleration = s.linear_acceleration;
+        }
+
+        msr::airlib::ImuBase::Output to() const
+        {
+            msr::airlib::ImuBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.orientation = orientation.to();
+            d.angular_velocity = angular_velocity.to();
+            d.linear_acceleration = linear_acceleration.to();
+
+            return d;
+        }
+    };
+
+    struct BarometerData {
+        msr::airlib::TTimePoint time_stamp;
+        msr::airlib::real_T altitude;
+        msr::airlib::real_T pressure;
+        msr::airlib::real_T qnh;
+
+        MSGPACK_DEFINE_MAP(time_stamp, altitude, pressure, qnh);
+
+        BarometerData()
+        {}
+
+        BarometerData(const msr::airlib::BarometerBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            altitude = s.altitude;
+            pressure = s.pressure;
+            qnh = s.qnh;
+        }
+
+        msr::airlib::BarometerBase::Output to() const
+        {
+            msr::airlib::BarometerBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.altitude = altitude;
+            d.pressure = pressure;
+            d.qnh = qnh;
+
+            return d;
+        }
+    };
+
+    struct MagnetometerData {
+        msr::airlib::TTimePoint time_stamp;
+        Vector3r magnetic_field_body;
+        std::vector<float> magnetic_field_covariance; // not implemented in MagnetometerBase.hpp
+
+        MSGPACK_DEFINE_MAP(time_stamp, magnetic_field_body, magnetic_field_covariance);
+
+        MagnetometerData()
+        {}
+
+        MagnetometerData(const msr::airlib::MagnetometerBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            magnetic_field_body = s.magnetic_field_body;
+            magnetic_field_covariance = s.magnetic_field_covariance;
+        }
+
+        msr::airlib::MagnetometerBase::Output to() const
+        {
+            msr::airlib::MagnetometerBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.magnetic_field_body = magnetic_field_body.to();
+            d.magnetic_field_covariance = magnetic_field_covariance;
+
+            return d;
+        }
+    };
+
+    struct GnssReport {
+        GeoPoint geo_point;
+        msr::airlib::real_T eph = 0.0, epv = 0.0; 
+        Vector3r velocity;
+        msr::airlib::GpsBase::GnssFixType fix_type;
+        uint64_t time_utc = 0;
+
+        MSGPACK_DEFINE_MAP(geo_point, eph, epv, velocity, fix_type, time_utc);
+
+        GnssReport()
+        {}
+
+        GnssReport(const msr::airlib::GpsBase::GnssReport& s)
+        {
+            geo_point = s.geo_point;
+            eph = s.eph;
+            epv = s.epv;
+            velocity = s.velocity;
+            fix_type = s.fix_type;
+            time_utc = s.time_utc;
+        }
+
+        msr::airlib::GpsBase::GnssReport to() const
+        {
+            msr::airlib::GpsBase::GnssReport d;
+
+            d.geo_point = geo_point.to();
+            d.eph = eph;
+            d.epv = epv;
+            d.velocity = velocity.to();
+            d.fix_type = fix_type;
+            d.time_utc = time_utc;
+
+            return d;
+        }
+    };
+
+    struct GpsData {
+        msr::airlib::TTimePoint time_stamp;
+        GnssReport gnss;
+        bool is_valid = false;
+
+        MSGPACK_DEFINE_MAP(time_stamp, gnss, is_valid);
+
+        GpsData()
+        {}
+
+        GpsData(const msr::airlib::GpsBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            gnss = s.gnss;
+            is_valid = s.is_valid;
+        }
+
+        msr::airlib::GpsBase::Output to() const
+        {
+            msr::airlib::GpsBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.gnss = gnss.to();
+            d.is_valid = is_valid;
+
+            return d;
+        }
+    };
+
+    struct DistanceSensorData {
+        msr::airlib::TTimePoint time_stamp;
+        msr::airlib::real_T distance;    //meters
+        msr::airlib::real_T min_distance;//m
+        msr::airlib::real_T max_distance;//m
+        Pose relative_pose;
+
+        MSGPACK_DEFINE_MAP(time_stamp, distance, min_distance, max_distance, relative_pose);
+
+        DistanceSensorData()
+        {}
+
+        DistanceSensorData(const msr::airlib::DistanceBase::Output& s)
+        {
+            time_stamp = s.time_stamp;
+            distance = s.distance;
+            min_distance = s.min_distance;
+            max_distance = s.max_distance;
+            relative_pose = s.relative_pose;
+        }
+
+        msr::airlib::DistanceBase::Output to() const
+        {
+            msr::airlib::DistanceBase::Output d;
+
+            d.time_stamp = time_stamp;
+            d.distance = distance;
+            d.min_distance = min_distance;
+            d.max_distance = max_distance;
+            d.relative_pose = relative_pose.to();
+
+            return d;
+        }
+    };
+
+    struct MeshPositionVertexBuffersResponse {
+        Vector3r position;
+        Quaternionr orientation;
+
+        std::vector<float> vertices;
+        std::vector<uint32_t> indices;
+        std::string name;
+
+        MSGPACK_DEFINE_MAP(position, orientation, vertices, indices, name);
+
+        MeshPositionVertexBuffersResponse()
+        {}
+
+        MeshPositionVertexBuffersResponse(const msr::airlib::MeshPositionVertexBuffersResponse& s)
+        {
+            position = Vector3r(s.position);
+            orientation = Quaternionr(s.orientation);
+
+            vertices = s.vertices;
+            indices = s.indices;
+
+            if (vertices.size() == 0)
+                vertices.push_back(0);
+            if (indices.size() == 0)
+                indices.push_back(0);
+
+            name = s.name;
+        }
+
+        msr::airlib::MeshPositionVertexBuffersResponse to() const
+        {
+            msr::airlib::MeshPositionVertexBuffersResponse d;
+            d.position = position.to();
+            d.orientation = orientation.to();
+            d.vertices = vertices;
+            d.indices = indices;
+            d.name = name;
+
+            return d;
+        }
+
+        static std::vector<msr::airlib::MeshPositionVertexBuffersResponse> to(
+            const std::vector<MeshPositionVertexBuffersResponse>& response_adapter) {
+            std::vector<msr::airlib::MeshPositionVertexBuffersResponse> response;
+            for (const auto& item : response_adapter)
+                response.push_back(item.to());
+
+            return response;
+        }
+
+        static std::vector<MeshPositionVertexBuffersResponse> from(
+            const std::vector<msr::airlib::MeshPositionVertexBuffersResponse>& response) {
+            std::vector<MeshPositionVertexBuffersResponse> response_adapter;
+            for (const auto& item : response)
+                response_adapter.push_back(MeshPositionVertexBuffersResponse(item));
+
+            return response_adapter;
+        }
+    };
+
+
 };
 
 }} //namespace
@@ -468,6 +763,7 @@ public:
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::SafetyViolationType_);
 MSGPACK_ADD_ENUM(msr::airlib::SafetyEval::ObsAvoidanceStrategy);
 MSGPACK_ADD_ENUM(msr::airlib::ImageCaptureBase::ImageType);
-
+MSGPACK_ADD_ENUM(msr::airlib::WorldSimApiBase::WeatherParameter);
+MSGPACK_ADD_ENUM(msr::airlib::GpsBase::GnssFixType);
 
 #endif

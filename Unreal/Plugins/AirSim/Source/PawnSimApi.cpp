@@ -10,22 +10,30 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
+#include "DrawDebugHelpers.h"
+
 PawnSimApi::PawnSimApi(const Params& params)
     : params_(params), ned_transform_(params.pawn, *params.global_transform)
 {
-    image_capture_.reset(new UnrealImageCapture(&params_.cameras));
+}
 
-    msr::airlib::Environment::State initial_environment;
-    initial_environment.position = getPose().position;
+void PawnSimApi::initialize()
+{
+    Kinematics::State initial_kinematic_state = Kinematics::State::zero();;
+    initial_kinematic_state.pose = getPose();
+    kinematics_.reset(new Kinematics(initial_kinematic_state));
+
+    Environment::State initial_environment;
+    initial_environment.position = initial_kinematic_state.pose.position;
     initial_environment.geo_point = params_.home_geopoint;
-    environment_.reset(new msr::airlib::Environment(initial_environment));
+    environment_.reset(new Environment(initial_environment));
 
     //initialize state
     params_.pawn->GetActorBounds(true, initial_state_.mesh_origin, initial_state_.mesh_bounds);
     initial_state_.ground_offset = FVector(0, 0, initial_state_.mesh_bounds.Z);
     initial_state_.transformation_offset = params_.pawn->GetActorLocation() - initial_state_.ground_offset;
     ground_margin_ = FVector(0, 0, 20); //TODO: can we explain params_.pawn experimental setting? 7 seems to be minimum
-    ground_trace_end_ = initial_state_.ground_offset + ground_margin_; 
+    ground_trace_end_ = initial_state_.ground_offset + ground_margin_;
 
     setStartPosition(getUUPosition(), getUUOrientation());
 
@@ -39,6 +47,8 @@ PawnSimApi::PawnSimApi(const Params& params)
     initial_state_.was_last_move_teleport = canTeleportWhileMove();
 
     setupCamerasFromSettings(params_.cameras);
+    image_capture_.reset(new UnrealImageCapture(&cameras_));
+
     //add listener for pawn's collision event
     params_.pawn_events->getCollisionSignal().connect_member(this, &PawnSimApi::onCollision);
     params_.pawn_events->getPawnTickSignal().connect_member(this, &PawnSimApi::pawnTick);
@@ -60,7 +70,9 @@ void PawnSimApi::setStartPosition(const FVector& position, const FRotator& rotat
 
 void PawnSimApi::pawnTick(float dt)
 {
-
+    //default behavior is to call update every tick
+    //for custom physics engine, this method should be overridden and update should be
+    //called from every physics tick
     update();
     updateRenderedState(dt);
     updateRendering(dt);
@@ -207,6 +219,7 @@ msr::airlib::RCData PawnSimApi::getRCData() const
 {
     joystick_.getJoyStickState(getRemoteControlID(), joystick_state_);
 
+    rc_data_.is_initialized = joystick_state_.is_initialized;
     rc_data_.is_valid = joystick_state_.is_valid;
 
     if (rc_data_.is_valid) {
@@ -275,25 +288,33 @@ int PawnSimApi::getCameraCount()
     return cameras_.valsSize();
 }
 
-void PawnSimApi::reset()
+void PawnSimApi::resetImplementation()
 {
-    VehicleSimApiBase::reset();
-
     state_ = initial_state_;
     rc_data_ = msr::airlib::RCData();
     params_.pawn->SetActorLocationAndRotation(state_.start_location, state_.start_rotation, false, nullptr, ETeleportType::TeleportPhysics);
-
+    kinematics_->reset();
     environment_->reset();
 }
 
 void PawnSimApi::update()
 {
-    //update position from kinematics so we have latest position after physics update
-    environment_->setPosition(kinematics_.pose.position);
+    //sync environment from kinematics
+    environment_->setPosition(kinematics_->getPose().position);
     environment_->update();
-    //kinematics_->update();
-
     VehicleSimApiBase::update();
+}
+
+void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
+{
+    msr::airlib::VehicleSimApiBase::reportState(reporter);
+
+    kinematics_->reportState(reporter);
+    environment_->reportState(reporter);
+
+    // report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
+    FVector unrealPosition = getUUPosition();
+    reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
 }
 
 //void playBack()
@@ -342,6 +363,12 @@ void PawnSimApi::toggleTrace()
     }
 }
 
+void PawnSimApi::setTraceLine(const std::vector<float>& color_rgba, float thickness) {
+    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
+    trace_color_ = color.ToFColor(true);
+    trace_thickness_ = thickness;
+}
+
 void PawnSimApi::allowPassthroughToggleInput()
 {
     state_.passthrough_enabled = !state_.passthrough_enabled;
@@ -363,7 +390,7 @@ void PawnSimApi::plot(std::istream& s, FColor color, const Vector3r& offset)
         Vector3r current_point(x, y, z);
         current_point += offset;
         if (!VectorMath::hasNan(last_point)) {
-            UKismetSystemLibrary::DrawDebugLine(params_.pawn->GetWorld(), ned_transform_.fromLocalNed(last_point), ned_transform_.fromLocalNed(current_point), color, 0, 3.0F);
+            DrawDebugLine(params_.pawn->GetWorld(), ned_transform_.fromLocalNed(last_point), ned_transform_.fromLocalNed(current_point), color, true, -1.0F, 0, 3.0F);
         }
         last_point = current_point;
     }
@@ -388,6 +415,14 @@ void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr:
         APIPCamera* camera = getCamera(camera_name);
         FQuat quat = ned_transform_.fromNed(orientation);
         camera->setCameraOrientation(quat.Rotator());
+    }, true);
+}
+
+void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, fov_degrees]() {
+        APIPCamera* camera = getCamera(camera_name);
+        camera->setCameraFoV(fov_degrees);
     }, true);
 }
 
@@ -434,7 +469,7 @@ void PawnSimApi::setPoseInternal(const Pose& pose, bool ignore_collision)
         params_.pawn->SetActorLocationAndRotation(position, orientation, true);
 
     if (state_.tracing_enabled && (state_.last_position - position).SizeSquared() > 0.25) {
-        UKismetSystemLibrary::DrawDebugLine(params_.pawn->GetWorld(), state_.last_position, position, FColor::Purple, -1, 3.0f);
+        DrawDebugLine(params_.pawn->GetWorld(), state_.last_position, position, trace_color_, true, -1.0F, 0, trace_thickness_);
         state_.last_position = position;
     }
     else if (!state_.tracing_enabled) {
@@ -448,7 +483,7 @@ void PawnSimApi::setDebugPose(const Pose& debug_pose)
     if (state_.tracing_enabled && !VectorMath::hasNan(debug_pose.position)) {
         FVector debug_position = state_.current_debug_position - state_.debug_position_offset;
         if ((state_.last_debug_position - debug_position).SizeSquared() > 0.25) {
-            UKismetSystemLibrary::DrawDebugLine(params_.pawn->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), -1, 10.0F);
+            DrawDebugLine(params_.pawn->GetWorld(), state_.last_debug_position, debug_position, FColor(0xaa, 0x33, 0x11), true, -1.0F, 0, 10.0F);
             UAirBlueprintLib::LogMessage(FString("Debug Pose: "), debug_position.ToCompactString(), LogDebugLevel::Informational);
             state_.last_debug_position = debug_position;
         }
@@ -468,30 +503,28 @@ bool PawnSimApi::canTeleportWhileMove()  const
     return !state_.collisions_enabled || (state_.collision_info.has_collided && !state_.was_last_move_teleport && state_.passthrough_enabled);
 }
 
-const msr::airlib::Kinematics::State* PawnSimApi::getPawnKinematics() const
-{
-    return &kinematics_;
-}
-
 void PawnSimApi::updateKinematics(float dt)
 {
-    const auto last_kinematics = kinematics_;
+    //update kinematics from pawn's movement instead of physics engine
 
-    kinematics_.pose = getPose();
+    auto next_kinematics = kinematics_->getState();
 
-    kinematics_.twist.linear = getNedTransform().toLocalNed(getPawn()->GetVelocity());
-    kinematics_.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
-        kinematics_.pose.orientation, last_kinematics.pose.orientation, dt);
+    next_kinematics.pose = getPose();
+    next_kinematics.twist.linear = getNedTransform().toLocalNedVelocity(getPawn()->GetVelocity());
+    next_kinematics.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
+        kinematics_->getPose().orientation, next_kinematics.pose.orientation, dt);
 
-    kinematics_.accelerations.linear = (kinematics_.twist.linear - last_kinematics.twist.linear) / dt;
-    kinematics_.accelerations.angular = (kinematics_.twist.angular - last_kinematics.twist.angular) / dt;
+    next_kinematics.accelerations.linear = (next_kinematics.twist.linear - kinematics_->getTwist().linear) / dt;
+    next_kinematics.accelerations.angular = (next_kinematics.twist.angular - kinematics_->getTwist().angular) / dt;
 
-    //TODO: update other fields?
-
+    kinematics_->setState(next_kinematics);
+    kinematics_->update();
 }
 
 void PawnSimApi::updateRenderedState(float dt)
 {
+    //by default we update kinematics from UE pawn
+    //if SimMod uses its own physics engine then this should be overriden
     updateKinematics(dt);
 }
 
@@ -503,9 +536,17 @@ void PawnSimApi::updateRendering(float dt)
 
 const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() const
 {
-    return &kinematics_;
+    return & kinematics_->getState();
 }
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
+{
+    return environment_.get();
+}
+msr::airlib::Kinematics* PawnSimApi::getKinematics()
+{
+    return kinematics_.get();
+}
+msr::airlib::Environment* PawnSimApi::getEnvironment()
 {
     return environment_.get();
 }
@@ -516,7 +557,7 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
         return "TimeStamp\tPOS_X\tPOS_Y\tPOS_Z\tQ_W\tQ_X\tQ_Y\tQ_Z\t";
     }
 
-    const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
+    const Kinematics::State* kinematics = getGroundTruthKinematics();
     uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
 
     //TODO: because this bug we are using alternative code with stringstream
@@ -541,4 +582,9 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
     //ss << kinematics.pose.orientation.w() << "\t" << kinematics.pose.orientation.x() << "\t" << kinematics.pose.orientation.y() << "\t" << kinematics.pose.orientation.z() << "\t";
     //ss << "\n";
     //return ss.str();
+}
+
+msr::airlib::VehicleApiBase* PawnSimApi::getVehicleApiBase() const
+{
+    return nullptr;
 }

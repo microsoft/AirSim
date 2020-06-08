@@ -6,34 +6,26 @@
 #include "CarPawn.h"
 
 
-class CarPawnApi : public msr::airlib::CarApiBase {
+class CarPawnApi {
 public:
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
-    CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, const msr::airlib::GeoPoint& home_geopoint);
+    CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, 
+                msr::airlib::CarApiBase* vehicle_api);
 
-    virtual void setCarControls(const CarApiBase::CarControls& controls) override;
+    void updateMovement(const msr::airlib::CarApiBase::CarControls& controls);
 
-    virtual CarApiBase::CarState getCarState() const override;
+    msr::airlib::CarApiBase::CarState getCarState() const;
 
-    virtual void reset() override;
-    virtual void update() override;
-
-    virtual msr::airlib::GeoPoint getHomeGeoPoint() const override;
-
-    virtual void enableApiControl(bool is_enabled) override;
-    virtual bool isApiControlEnabled() const override;
-    virtual bool armDisarm(bool arm) override;
-
-    virtual const CarApiBase::CarControls& getCarControls() const override;
+    void reset();
+    void update();
 
     virtual ~CarPawnApi();
 
 private:
     UWheeledVehicleMovementComponent* movement_;
-    bool api_control_enabled_ = false;
-    CarControls last_controls_;
+    msr::airlib::CarApiBase::CarControls last_controls_;
     ACarPawn* pawn_;
     const msr::airlib::Kinematics::State* pawn_kinematics_;
-    msr::airlib::GeoPoint  home_geopoint_;
+    msr::airlib::CarApiBase* vehicle_api_;
 };

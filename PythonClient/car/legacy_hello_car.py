@@ -40,7 +40,7 @@ responses = client.simGetImages([
     ImageRequest(0, airsim.AirSimImageType.DepthVis),  #depth visualiztion image
     ImageRequest(1, airsim.AirSimImageType.DepthPerspective, True), #depth in perspective projection
     ImageRequest(1, airsim.AirSimImageType.Scene), #scene vision image in png format
-    ImageRequest(1, airsim.AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
+    ImageRequest(1, airsim.AirSimImageType.Scene, False, False)])  #scene vision image in uncompressed RGB array
 print('Retrieved images: %d' % len(responses))
 
 tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_drone")
@@ -64,10 +64,8 @@ for idx, response in enumerate(responses):
     else: #uncompressed array
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
-        img_rgba = img1d.reshape(response.height, response.width, 4) #reshape array to 4 channel image array H X W X 4
-        img_rgba = np.flipud(img_rgba) #original image is fliped vertically
-        img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
-        AirSimClientBase.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png
+        img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
+        AirSimClientBase.write_png(os.path.normpath(filename + '.png'), img_rgb) #write to png
 
 AirSimClientBase.wait_key('Press any key to reset to original state')
 

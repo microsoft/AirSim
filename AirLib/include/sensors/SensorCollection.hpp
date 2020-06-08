@@ -12,7 +12,7 @@
 
 namespace msr { namespace airlib {
 
-class SensorCollection : UpdatableObject {
+class SensorCollection : public UpdatableObject {
 public: //types
     typedef SensorBase* SensorBasePtr;
 public:
@@ -68,10 +68,8 @@ public:
     }
     
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        UpdatableObject::reset();
-
         for (auto& pair : sensors_) {
             pair.second->reset();
         }

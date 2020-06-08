@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "SimModeComputerVision.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
 
 #include "AirBlueprintLib.h"
@@ -23,7 +23,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeComputerVision::createApiSer
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::RpcLibServerBase(
-        getApiProvider(), getSettings().api_server_address));
+        getApiProvider(), getSettings().api_server_address, getSettings().api_port));
 #endif
 }
 
@@ -65,6 +65,7 @@ std::unique_ptr<PawnSimApi> ASimModeComputerVision::createVehicleSimApi(
     const PawnSimApi::Params& pawn_sim_api_params) const
 {
     auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new PawnSimApi(pawn_sim_api_params));
+    vehicle_sim_api->initialize();
     vehicle_sim_api->reset();
     return vehicle_sim_api;
 }
@@ -74,4 +75,14 @@ msr::airlib::VehicleApiBase* ASimModeComputerVision::getVehicleApi(const PawnSim
 {
     //we don't have real vehicle so no vehicle API
     return nullptr;
+}
+
+bool ASimModeComputerVision::isPaused() const
+{
+    return UGameplayStatics::IsGamePaused(this->GetWorld());
+}
+
+void ASimModeComputerVision::pause(bool is_paused)
+{
+    UGameplayStatics::SetGamePaused(this->GetWorld(), is_paused);
 }

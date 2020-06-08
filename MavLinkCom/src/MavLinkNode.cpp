@@ -75,6 +75,10 @@ AsyncResult<MavLinkHeartbeat> MavLinkNode::waitForHeartbeat() {
 	return pImpl->waitForHeartbeat();
 }
 
+void MavLinkNode::sendOneHeartbeat() {
+    return pImpl->sendOneHeartbeat();
+}
+
 void MavLinkNode::setMessageInterval(int msgId, int frequency)
 {
 	pImpl->setMessageInterval(msgId, frequency);

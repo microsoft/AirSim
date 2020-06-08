@@ -53,14 +53,38 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(ApiProvider* api_provider, string
         bind("goHome", [&](float timeout_sec, const std::string& vehicle_name) -> bool { 
         return getVehicleApi(vehicle_name)->goHome(timeout_sec); 
     });
-
     (static_cast<rpc::server*>(getServer()))->
-        bind("moveByAngleZ", [&](float pitch, float roll, float z, float yaw, float duration, const std::string& vehicle_name) ->
-        bool { return getVehicleApi(vehicle_name)->moveByAngleZ(pitch, roll, z, yaw, duration); });
+        bind("moveByMotorPWMs", [&](float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration, const std::string& vehicle_name) ->
+        bool { return getVehicleApi(vehicle_name)->moveByMotorPWMs(front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration);
+    });
     (static_cast<rpc::server*>(getServer()))->
-        bind("moveByAngleThrottle", [&](float pitch, float roll, float throttle, float yaw_rate, float duration, 
+        bind("moveByRollPitchYawZ", [&](float roll, float pitch, float yaw, float z, float duration, const std::string& vehicle_name) ->
+        bool { return getVehicleApi(vehicle_name)->moveByRollPitchYawZ(roll, pitch, yaw, z, duration);
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("moveByRollPitchYawThrottle", [&](float roll, float pitch, float yaw, float throttle, float duration, 
             const std::string& vehicle_name) -> bool { 
-                return getVehicleApi(vehicle_name)->moveByAngleThrottle(pitch, roll, throttle, yaw_rate, duration); 
+                return getVehicleApi(vehicle_name)->moveByRollPitchYawThrottle(roll, pitch, yaw, throttle, duration); 
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("moveByRollPitchYawrateThrottle", [&](float roll, float pitch, float yaw_rate, float throttle, float duration, 
+            const std::string& vehicle_name) -> bool { 
+                return getVehicleApi(vehicle_name)->moveByRollPitchYawrateThrottle(roll, pitch, yaw_rate, throttle, duration); 
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("moveByRollPitchYawrateZ", [&](float roll, float pitch, float yaw_rate, float z, float duration, 
+            const std::string& vehicle_name) -> bool { 
+                return getVehicleApi(vehicle_name)->moveByRollPitchYawrateZ(roll, pitch, yaw_rate, z, duration); 
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("moveByAngleRatesZ", [&](float roll_rate, float pitch_rate, float yaw_rate, float z, float duration, 
+            const std::string& vehicle_name) -> bool { 
+                return getVehicleApi(vehicle_name)->moveByAngleRatesZ(roll_rate, pitch_rate, yaw_rate, z, duration); 
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("moveByAngleRatesThrottle", [&](float roll_rate, float pitch_rate, float yaw_rate, float throttle, float duration, 
+            const std::string& vehicle_name) -> bool { 
+                return getVehicleApi(vehicle_name)->moveByAngleRatesThrottle(roll_rate, pitch_rate, yaw_rate, throttle, duration); 
     });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByVelocity", [&](float vx, float vy, float vz, float duration, DrivetrainType drivetrain, 
@@ -106,6 +130,22 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(ApiProvider* api_provider, string
     (static_cast<rpc::server*>(getServer()))->
         bind("hover", [&](const std::string& vehicle_name) -> bool {
         return getVehicleApi(vehicle_name)->hover(); 
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("setAngleLevelControllerGains", [&](const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name) -> void {
+            getVehicleApi(vehicle_name)->setAngleLevelControllerGains(kp, ki, kd);
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("setAngleRateControllerGains", [&](const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name) -> void {
+            getVehicleApi(vehicle_name)->setAngleRateControllerGains(kp, ki, kd);
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("setVelocityControllerGains", [&](const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name) -> void {
+            getVehicleApi(vehicle_name)->setVelocityControllerGains(kp, ki, kd);
+    });
+    (static_cast<rpc::server*>(getServer()))->
+        bind("setPositionControllerGains", [&](const vector<float>& kp, const vector<float>& ki, const vector<float>& kd, const std::string& vehicle_name) -> void {
+            getVehicleApi(vehicle_name)->setPositionControllerGains(kp, ki, kd);
     });
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByRC", [&](const MultirotorRpcLibAdapators::RCData& data, const std::string& vehicle_name) -> void {

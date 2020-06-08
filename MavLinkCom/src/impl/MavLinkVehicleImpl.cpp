@@ -148,7 +148,8 @@ AsyncResult<bool> MavLinkVehicleImpl::allowFlightControlOverUsb()
 
 void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg)
 {
-    unused(connection);
+    MavLinkNodeImpl::handleMessage(connection, msg);
+
     //status messages should usually be only sent by actual PX4. However if someone else is sending it to, we should listen it.
     //in future it would be good to have ability to add system IDs we are interested in
     //if (msg.sysid != getTargetSystemId())
@@ -178,7 +179,11 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
             int submode = (custom >> 8);
 
             bool isOffboard = (mode == PX4_CUSTOM_MAIN_MODE_OFFBOARD);
-            if (vehicle_state_.controls.offboard != isOffboard) {
+            if (isOffboard) {
+                vehicle_state_.controls.offboard = isOffboard;
+                Utils::log("MavLinkVehicle: confirmed offboard mode\n");
+            }
+            else if (vehicle_state_.controls.offboard != isOffboard) {
                 vehicle_state_.controls.offboard = isOffboard;
                 Utils::log("MavLinkVehicle: is no longer in offboard mode\n");
             }
@@ -481,7 +486,7 @@ void MavLinkVehicleImpl::writeMessage(MavLinkMessageBase& msg, bool update_stats
 AsyncResult<bool> MavLinkVehicleImpl::armDisarm(bool arm)
 {
     MavCmdComponentArmDisarm cmd{};
-    cmd.p1ToArm = arm ? 1.0f : 0.0f;
+    cmd.Arm = arm ? 1.0f : 0.0f;
     return sendCommandAndWaitForAck(cmd);
 }
 
@@ -492,8 +497,8 @@ AsyncResult<bool> MavLinkVehicleImpl::takeoff(float z, float pitch, float yaw)
     float targetAlt = vehicle_state_.home.global_pos.alt - deltaZ;
     Utils::log(Utils::stringf("Take off to %f", targetAlt));
     MavCmdNavTakeoff cmd{};
-    cmd.MinimumPitch = pitch;
-    cmd.YawAngle = yaw;
+    cmd.Pitch = pitch;
+    cmd.Yaw = yaw;
     cmd.Latitude = INFINITY;
     cmd.Longitude = INFINITY;
     cmd.Altitude = targetAlt;
@@ -526,10 +531,10 @@ AsyncResult<bool> MavLinkVehicleImpl::land(float yaw, float lat, float lon, floa
 {
     MavCmdNavLand cmd{};
     cmd.AbortAlt = 1;
-    cmd.DesiredYawAngle = yaw;
+    cmd.YawAngle = yaw;
     cmd.Latitude = lat;
     cmd.Longitude = lon;
-    cmd.Altitude = altitude;
+    cmd.LandingAltitude = altitude;
     return sendCommandAndWaitForAck(cmd);
 }
 
@@ -542,7 +547,8 @@ AsyncResult<bool> MavLinkVehicleImpl::returnToHome()
 bool MavLinkVehicleImpl::getRcSwitch(int channel, float threshold)
 {
     if (threshold < -1 || threshold > 1) {
-        throw std::runtime_error(Utils::stringf("RC channel threshold is out of range, expecting -1 < threshold < 1, but got %f", threshold));
+        auto msg = Utils::stringf("RC channel threshold is out of range, expecting -1 < threshold < 1, but got %f", threshold);
+        throw std::runtime_error(msg);
     }
     // if threshold < 0 then the threshold is inverted.
     if (channel > 0 && channel < 18) {
@@ -580,7 +586,7 @@ void MavLinkVehicleImpl::releaseControl()
     control_request_sent_ = false;
     vehicle_state_.controls.offboard = false;
     MavCmdNavGuidedEnable cmd{};
-    cmd.OnOff = 0;
+    cmd.Enable = 0;
     sendCommand(cmd);
 }
 
@@ -607,7 +613,7 @@ void MavLinkVehicleImpl::checkOffboard()
         // now the command should succeed.
         bool r = false;
         MavCmdNavGuidedEnable cmd{};
-        cmd.OnOff = 1;
+        cmd.Enable = 1;
         // Note: we can't wait for ACK here, I've tried it.  The ACK takes too long to get back to
         // us by which time the PX4 times out offboard mode!!
         sendCommand(cmd);
@@ -689,7 +695,7 @@ AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int cust
     MavCmdDoSetMode cmd{};
     cmd.Mode = static_cast<float>(mode);
     cmd.CustomMode = static_cast<float>(customMode);
-    cmd.CustomSubMode = static_cast<float>(customSubMode);
+    cmd.CustomSubmode = static_cast<float>(customSubMode);
     return sendCommandAndWaitForAck(cmd);
 }
 
@@ -733,8 +739,9 @@ AsyncResult<bool> MavLinkVehicleImpl::loiter()
 bool MavLinkVehicleImpl::isLocalControlSupported()
 {
     MavLinkAutopilotVersion cap;
+    assertNotPublishingThread();
     if (!getCapabilities().wait(2000, &cap)) {
-        throw std::runtime_error(Utils::stringf("Two second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"));
+        throw std::runtime_error("Two second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES");
     }
     return (cap.capabilities & static_cast<int>(MAV_PROTOCOL_CAPABILITY::MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED)) != 0;
 }
@@ -833,8 +840,9 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
 bool MavLinkVehicleImpl::isAttitudeControlSupported()
 {
     MavLinkAutopilotVersion cap;
+    assertNotPublishingThread();
     if (!getCapabilities().wait(5000, &cap)) {
-        throw std::runtime_error(Utils::stringf("Five second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"));
+        throw std::runtime_error("Five second timeout waiting for response to mavlink command MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES");
     }
     return (cap.capabilities & static_cast<int>(MAV_PROTOCOL_CAPABILITY::MAV_PROTOCOL_CAPABILITY_SET_ATTITUDE_TARGET)) != 0;
 }

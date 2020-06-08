@@ -34,6 +34,9 @@ public:
 	std::string remoteAddress();
 	int remotePort();
 
+    void setNonBlocking();
+    void setNoDelay();
+
 private:
 	class TcpSocketImpl;
 	std::unique_ptr<TcpSocketImpl> impl_;

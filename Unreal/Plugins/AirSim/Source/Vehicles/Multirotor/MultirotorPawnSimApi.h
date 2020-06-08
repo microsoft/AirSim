@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "PawnSimApi.h"
-#include "vehicles/multirotor/MultiRotor.hpp"
+#include "vehicles/multirotor/MultiRotorPhysicsBody.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "physics//Kinematics.hpp"
 #include "common/Common.hpp"
@@ -18,14 +18,16 @@ class MultirotorPawnSimApi : public PawnSimApi
 public:
     typedef msr::airlib::real_T real_T;
     typedef msr::airlib::Utils Utils;
-    typedef msr::airlib::MultiRotor MultiRotor;
+    typedef msr::airlib::MultiRotorPhysicsBody MultiRotor;
     typedef msr::airlib::StateReporter StateReporter;
     typedef msr::airlib::UpdatableObject UpdatableObject;
     typedef msr::airlib::Pose Pose;
 
-    typedef MultirotorPawnEvents::RotorInfo RotorInfo;
+    typedef MultirotorPawnEvents::RotorActuatorInfo RotorActuatorInfo;
 
 public:
+    virtual void initialize() override;
+
     virtual ~MultirotorPawnSimApi() = default;
 
     //VehicleSimApiBase interface
@@ -36,15 +38,12 @@ public:
 
     //PhysicsBody interface
     //this just wrapped around MultiRotor physics body
-    virtual void reset() override;
+    virtual void resetImplementation() override;
     virtual void update() override;
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
-    virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
-    virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
-
     virtual void pawnTick(float dt) override;
 
     msr::airlib::MultirotorApiBase* getVehicleApi() const
@@ -52,14 +51,18 @@ public:
         return vehicle_api_.get();
     }
 
+    virtual msr::airlib::VehicleApiBase* getVehicleApiBase() const override
+    {
+        return vehicle_api_.get();
+    }
 
 private:
     std::unique_ptr<msr::airlib::MultirotorApiBase> vehicle_api_;
     std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;
 
-    std::unique_ptr<MultiRotor> phys_vehicle_;
+    std::unique_ptr<MultiRotor> multirotor_physics_body_;
     unsigned int rotor_count_;
-    std::vector<RotorInfo> rotor_info_;
+    std::vector<RotorActuatorInfo> rotor_actuator_info_;
 
     //show info on collision response from physics engine
     CollisionResponse collision_response;

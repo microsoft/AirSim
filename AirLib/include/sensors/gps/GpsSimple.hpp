@@ -17,9 +17,12 @@ namespace msr { namespace airlib {
 
 class GpsSimple : public GpsBase {
 public: //methods
-    GpsSimple(const GpsSimpleParams& params = GpsSimpleParams())
-        : params_(params)
+    GpsSimple(const AirSimSettings::GpsSetting& setting = AirSimSettings::GpsSetting())
+        : GpsBase(setting.sensor_name)
     {
+        // initialize params
+        params_.initializeFromSettings(setting);
+
         //initialize frequency limiter
         freq_limiter_.initialize(params_.update_frequency, params_.startup_delay);
         delay_line_.initialize(params_.update_latency);
@@ -30,10 +33,8 @@ public: //methods
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        GpsBase::reset();
-
         freq_limiter_.reset();
         delay_line_.reset();
 
@@ -82,6 +83,8 @@ private:
             output.gnss.eph <= params_.eph_min_3d ? GnssFixType::GNSS_FIX_3D_FIX
             : output.gnss.eph <= params_.eph_min_2d ? GnssFixType::GNSS_FIX_2D_FIX
             : GnssFixType::GNSS_FIX_NO_FIX;
+
+        output.time_stamp = clock()->nowNanos();
 
         delay_line_.push_back(output);
     }

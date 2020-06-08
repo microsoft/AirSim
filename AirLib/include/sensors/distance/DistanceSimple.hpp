@@ -16,9 +16,12 @@ namespace msr { namespace airlib {
 
 class DistanceSimple  : public DistanceBase {
 public:
-    DistanceSimple(const DistanceSimpleParams& params = DistanceSimpleParams())
-    : params_(params)
+    DistanceSimple(const AirSimSettings::DistanceSetting& setting = AirSimSettings::DistanceSetting())
+        : DistanceBase(setting.sensor_name)
     {
+        // initialize params
+        params_.initializeFromSettings(setting);
+
         uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
         //correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
 
@@ -29,13 +32,10 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        DistanceBase::reset();
-
         //correlated_noise_.reset();
         uncorrelated_noise_.reset();
-
 
         freq_limiter_.reset();
         delay_line_.reset();
@@ -85,6 +85,7 @@ private: //methods
         output.min_distance = params_.min_distance;
         output.max_distance = params_.max_distance;
         output.relative_pose = params_.relative_pose;
+        output.time_stamp = clock()->nowNanos();
 
         return output;
     }

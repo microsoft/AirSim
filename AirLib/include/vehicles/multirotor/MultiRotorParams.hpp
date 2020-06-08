@@ -7,6 +7,7 @@
 #include "common/Common.hpp"
 #include "RotorParams.hpp"
 #include "sensors/SensorCollection.hpp"
+#include "sensors/SensorFactory.hpp"
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 
 namespace msr { namespace airlib {
@@ -26,14 +27,6 @@ public: //types
         {}
     };
 
-    struct EnabledSensors {
-        bool imu = true;
-        bool magnetometer = true;
-        bool gps = true;
-        bool barometer = true;
-        bool distance = false; //this causes ray casts so disabled by default
-    };
-
     struct Params {
         /*********** required parameters ***********/
         uint rotor_count;
@@ -51,27 +44,26 @@ public: //types
         real_T angular_drag_coefficient = linear_drag_coefficient; 
         real_T restitution = 0.55f; // value of 1 would result in perfectly elastic collisions, 0 would be completely inelastic.
         real_T friction = 0.5f;
-        EnabledSensors enabled_sensors;
         RotorParams rotor_params;
     };
 
 
 protected: //must override by derived class
     virtual void setupParams() = 0;
-    virtual std::unique_ptr<SensorBase> createSensor(SensorBase::SensorType sensor_type) = 0;
+    virtual const SensorFactory* getSensorFactory() const = 0;
 
 public: //interface
     virtual std::unique_ptr<MultirotorApiBase> createMultirotorApi() = 0;
 
     virtual ~MultiRotorParams() = default;
-    virtual void initialize()
+    virtual void initialize(const AirSimSettings::VehicleSetting* vehicle_setting)
     {
         sensor_storage_.clear();
         sensors_.clear();
 
         setupParams();
 
-        addEnabledSensors(params_.enabled_sensors);
+        addSensorsFromSettings(vehicle_setting);
     }
 
     const Params& getParams() const
@@ -91,30 +83,15 @@ public: //interface
         return sensors_;
     }
 
-    void addEnabledSensors(const EnabledSensors& enabled_sensors)
+    void addSensorsFromSettings(const AirSimSettings::VehicleSetting* vehicle_setting)
     {
-        if (enabled_sensors.imu)
-            addSensor(SensorBase::SensorType::Imu);
-        if (enabled_sensors.magnetometer)
-            addSensor(SensorBase::SensorType::Magnetometer);
-        if (enabled_sensors.gps)
-            addSensor(SensorBase::SensorType::Gps);
-        if (enabled_sensors.barometer)
-            addSensor(SensorBase::SensorType::Barometer);
-        if (enabled_sensors.distance)
-            addSensor(SensorBase::SensorType::Distance);
-    }
+        // use sensors from vehicle settings; if empty list, use default sensors.
+        // note that the vehicle settings completely override the default sensor "list";
+        // there is no piecemeal add/remove/update per sensor.
+        const std::map<std::string, std::unique_ptr<AirSimSettings::SensorSetting>>& sensor_settings
+            = vehicle_setting->sensors.size() > 0 ? vehicle_setting->sensors : AirSimSettings::AirSimSettings::singleton().sensor_defaults;
 
-    SensorBase* addSensor(SensorBase::SensorType sensor_type)
-    {
-        std::unique_ptr<SensorBase> sensor = createSensor(sensor_type);
-        if (sensor) {
-            SensorBase* sensor_temp = sensor.get();
-            sensor_storage_.push_back(std::move(sensor));
-            sensors_.insert(sensor_temp, sensor_type);
-            return sensor_temp;
-        }
-        return nullptr;
+        getSensorFactory()->createSensorsFromSettings(sensor_settings, sensors_, sensor_storage_);
     }
 
 protected: //static utility functions for derived classes to use
@@ -183,19 +160,20 @@ protected: //static utility functions for derived classes to use
             */
 
             // vectors below are rotated according to NED left hand rule (so the vectors are rotated counter clockwise).
-            Quaternionr quadx_rot(AngleAxisr(M_PIf / 6, unit_z));
+            Quaternionr hexa_rot30(AngleAxisr(M_PIf / 6, unit_z)); // 30 degrees
+            Quaternionr hexa_rot60(AngleAxisr(M_PIf / 3, unit_z)); // 60 degrees
             Quaternionr no_rot(AngleAxisr(0, unit_z));
             rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[0], rotor_z), no_rot, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCW);
             rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[1], rotor_z), no_rot, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(arm_lengths[2], 0, rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(arm_lengths[2], 0, rotor_z), hexa_rot30, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(-arm_lengths[3], 0, rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(-arm_lengths[3], 0, rotor_z), hexa_rot30, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[4], rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, arm_lengths[4], rotor_z), hexa_rot60, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCCW);
-            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[5], rotor_z), quadx_rot, true),
+            rotor_poses.emplace_back(VectorMath::rotateVector(Vector3r(0, -arm_lengths[5], rotor_z), hexa_rot60, true),
                 unit_z, RotorTurningDirection::RotorTurningDirectionCW);
         }
         else

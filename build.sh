@@ -5,26 +5,9 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"  >/dev/null
 
 set -e
-# set -x
+set -x
 
-#check for correct verion of llvm
-if [[ ! -d "llvm-source-50" ]]; then
-    if [[ -d "llvm-source-39" ]]; then
-        echo "Hello there! We just upgraded AirSim to Unreal Engine 4.18."
-        echo "Here are few easy steps for upgrade so everything is new and shiny :)"
-        echo "https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md"
-        exit 1
-    else
-        echo "The llvm-souce-50 folder was not found! Mystery indeed."
-    fi
-fi
-
-# check for libc++
-if [[ !(-d "./llvm-build/output/lib") ]]; then
-    echo "ERROR: clang++ and libc++ is necessary to compile AirSim and run it in Unreal engine"
-    echo "Please run setup.sh first."
-    exit 1
-fi
+function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
 # check for rpclib
 if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
@@ -33,42 +16,34 @@ if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
     exit 1
 fi
 
-# check for cmake build
-if [ ! -d "./cmake_build" ]; then
-    echo "ERROR: cmake build was not found."
-    echo "please run setup.sh first and then run build.sh again."
-    exit 1
-fi
-
-
-# set up paths of cc and cxx compiler
-if [ "$1" == "gcc" ]; then
-    export CC="gcc"
-    export CXX="g++"
-else
+# check for local cmake build created by setup.sh
+if [ -d "./cmake_build" ]; then
     if [ "$(uname)" == "Darwin" ]; then
         CMAKE="$(greadlink -f cmake_build/bin/cmake)"
-
-        export CC=/usr/local/opt/llvm-5.0/bin/clang-5.0
-        export CXX=/usr/local/opt/llvm-5.0/bin/clang++-5.0
     else
         CMAKE="$(readlink -f cmake_build/bin/cmake)"
-
-        export CC="clang-5.0"
-        export CXX="clang++-5.0"
     fi
+else
+    CMAKE=$(which cmake)
 fi
-
-#install EIGEN library
-if [[ !(-d "./AirLib/deps/eigen3/Eigen") ]]; then 
-    echo "eigen is not installed. Please run setup.sh first."
-    exit 1
-fi
-
 
 # variable for build output
 build_dir=build_debug
-echo "putting build in build_debug folder, to clean, just delete the directory..."
+if [ "$(uname)" == "Darwin" ]; then
+    export CC=/usr/local/opt/llvm@8/bin/clang
+    export CXX=/usr/local/opt/llvm@8/bin/clang++
+else
+    export CC="clang-8"
+    export CXX="clang++-8"
+fi
+
+#install EIGEN library
+if [[ !(-d "./AirLib/deps/eigen3/Eigen") ]]; then
+    echo "### Eigen is not installed. Please run setup.sh first."
+    exit 1
+fi
+
+echo "putting build in $build_dir folder, to clean, just delete the directory..."
 
 # this ensures the cmake files will be built in our $build_dir instead.
 if [[ -f "./cmake/CMakeCache.txt" ]]; then
@@ -91,9 +66,8 @@ pushd $build_dir  >/dev/null
 # final linking of the binaries can fail due to a missing libc++abi library
 # (happens on Fedora, see https://bugzilla.redhat.com/show_bug.cgi?id=1332306).
 # So we only build the libraries here for now
-make 
+make -j`nproc`
 popd >/dev/null
-
 
 mkdir -p AirLib/lib/x64/Debug
 mkdir -p AirLib/deps/rpclib/lib
@@ -127,6 +101,5 @@ echo ""
 echo "For help see:"
 echo "https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md"
 echo "=================================================================="
-
 
 popd >/dev/null

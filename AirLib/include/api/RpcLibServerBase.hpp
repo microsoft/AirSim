@@ -14,10 +14,10 @@ namespace msr { namespace airlib {
 
 class RpcLibServerBase : public ApiServerBase {
 public:
-    RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = 41451);
+    RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = RpcLibPort);
     virtual ~RpcLibServerBase() override;
 
-    virtual void start(bool block = false) override;
+    virtual void start(bool block, std::size_t thread_count) override;
     virtual void stop() override;
 
     class ApiNotSupported : public std::runtime_error {

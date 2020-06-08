@@ -18,9 +18,12 @@ namespace msr { namespace airlib {
 
 class BarometerSimple  : public BarometerBase {
 public:
-    BarometerSimple(const BarometerSimpleParams& params = BarometerSimpleParams())
-        : params_(params)
+    BarometerSimple(const AirSimSettings::BarometerSetting& setting = AirSimSettings::BarometerSetting())
+        : BarometerBase(setting.sensor_name)
     {
+        // initialize params
+        params_.initializeFromSettings(setting);
+
         //GM process that would do random walk for pressure factor
         pressure_factor_.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, 0);
 
@@ -33,10 +36,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        BarometerBase::reset();
-
         pressure_factor_.reset();
         //correlated_noise_.reset();
         uncorrelated_noise_.reset();
@@ -89,6 +90,8 @@ private: //methods
         //TODO: use same formula as in driver code?
         output.altitude = (1 - pow(pressure / EarthUtils::SeaLevelPressure, 0.190284f)) * 145366.45f * 0.3048f;
         output.qnh = params_.qnh;
+
+        output.time_stamp = clock()->nowNanos();
 
         return output;
     }
