@@ -258,7 +258,7 @@ A complete ready-to-run example can be found in [segmentation.py](https://github
 An object's ID can be set to -1 to make it not show up on the segmentation image.
 
 #### How to Find Mesh Names?
-To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for he ground in Blocks environment in right panel in the editor:
+To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for the ground in Blocks environment in right panel in the editor:
 
 ![record screenshot](images/unreal_editor_blocks.png)
 
