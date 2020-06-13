@@ -106,7 +106,7 @@ int getStereoAndDepthImages()
     msr::airlib::MultirotorRpcLibClient client;
 
     //get right, left and depth images. First two as png, second as float16.
-    vector<ImageRequest> request = { 
+    msr::airlib::vector<ImageRequest> request = { 
         //png format
         ImageRequest("0", ImageType::Scene),
         //uncompressed RGB array bytes
