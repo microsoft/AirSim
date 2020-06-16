@@ -31,7 +31,9 @@ public:
         int height;
         int stride;
         msr::airlib::TTimePoint time_stamp;
+        bool pixels_as_float;
         std::unique_ptr<std::vector<uint8_t>, std::function<void(std::vector<uint8_t>*)>> pixels = nullptr;
+        std::unique_ptr<std::vector<float>, std::function<void(std::vector<float>*)>> pixels_float = nullptr;
     };
 
 private:

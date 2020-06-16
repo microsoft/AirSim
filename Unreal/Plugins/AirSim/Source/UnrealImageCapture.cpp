@@ -49,8 +49,28 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
     response.width = padded_width;
     response.height = height;
     response.image_type = image_type;
-    response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
+    //response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
 
+    switch (textureTarget->GetFormat())
+    {
+    case PF_B8G8R8A8:
+        response.pixels_as_float = false;
+        response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
+        break;
+
+    case PF_FloatRGBA:
+        response.pixels_as_float = true;
+        response.image_data_float = std::move(render_request.latest_result_.pixels_float);
+        break;
+
+    default:
+        UE_LOG(LogTemp, Warning, TEXT("Unexpected pixel format: %d"), textureTarget->GetFormat());
+        break;
+    }
+
+
+    UE_LOG(LogTemp, Warning, TEXT("stats: H: %d  W: %d  bpp: %d  S: %d  bytes: %d  type: %d  px_format: %d"),
+                        height, width, bytes_per_pixel, stride, bytes, image_type, textureTarget->GetFormat());
     // Disable camera after capturing image, this reduces resource consumption when images are not being taken
     // Particulary when a high-resolution camera is used occasionally
     camera->setCameraTypeEnabled(image_type, false);

@@ -50,8 +50,26 @@ void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &resu
     result.width = width;
     result.height = height;
 
-    if (src)
-		FMemory::BigBlockMemcpy(latest_result_.pixels->data(), src, height * stride);
+    if (src) {
+        switch (pixelFormat) {
+        case PF_B8G8R8A8:
+            result.pixels_as_float = false;
+            //response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
+            FMemory::BigBlockMemcpy(latest_result_.pixels->data(), src, height * stride);
+            break;
+
+        case PF_FloatRGBA:
+            result.pixels_as_float = true;
+            //response.image_data_float = std::move(render_request.latest_result_.pixels);
+            FMemory::BigBlockMemcpy(latest_result_.pixels_float->data(), src, height * stride);
+            break;
+
+        default:
+            UE_LOG(LogTemp, Warning, TEXT("Unexpected pixel format: %d"), pixelFormat);
+            break;
+        }
+    }
+		//FMemory::BigBlockMemcpy(latest_result_.pixels->data(), src, height * stride);
     
     RHIUnlockTexture2D(fast_cap_texture, 0, false);
 
