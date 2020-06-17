@@ -49,24 +49,13 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
     response.width = padded_width;
     response.height = height;
     response.image_type = image_type;
+    response.pixels_as_float = render_request.latest_result_.pixels_as_float;
     //response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
 
-    switch (textureTarget->GetFormat())
-    {
-    case PF_B8G8R8A8:
-        response.pixels_as_float = false;
+    if(!response.pixels_as_float)
         response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
-        break;
-
-    case PF_FloatRGBA:
-        response.pixels_as_float = true;
+    else
         response.image_data_float = std::move(render_request.latest_result_.pixels_float);
-        break;
-
-    default:
-        UE_LOG(LogTemp, Warning, TEXT("Unexpected pixel format: %d"), textureTarget->GetFormat());
-        break;
-    }
 
 
     UE_LOG(LogTemp, Warning, TEXT("stats: H: %d  W: %d  bpp: %d  S: %d  bytes: %d  type: %d  px_format: %d"),

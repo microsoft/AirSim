@@ -403,7 +403,7 @@ public:
             pixels_as_float = s.pixels_as_float;
 
             image_data_uint8 = *(s.image_data_uint8);
-            image_data_float = s.image_data_float;
+            image_data_float = *(s.image_data_float);
 
             //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
             if (image_data_uint8.size() == 0)
@@ -431,7 +431,7 @@ public:
             if (!pixels_as_float)
                 d.image_data_uint8->insert(d.image_data_uint8->begin(), image_data_uint8.front(), image_data_uint8.back());
             else
-                d.image_data_float = image_data_float;
+                d.image_data_float->insert(d.image_data_float->begin(), image_data_float.front(), image_data_float.back());
 
             d.camera_name = camera_name;
             d.camera_position = camera_position.to();

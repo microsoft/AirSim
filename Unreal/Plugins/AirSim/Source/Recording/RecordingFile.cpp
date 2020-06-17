@@ -29,7 +29,7 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
         //write image file
         try {
             if (response.pixels_as_float) {
-                common_utils::Utils::writePfmFile(response.image_data_float.data(), response.width, response.height,
+                common_utils::Utils::writePfmFile(response.image_data_float->data(), response.width, response.height,
                     image_full_file_path);
             }
             else {

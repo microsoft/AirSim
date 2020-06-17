@@ -39,12 +39,12 @@ int main()
 
             for (const ImageResponse& image_info : response) {
                 std::cout << "Image uint8 size: " << image_info.image_data_uint8->size() << std::endl;
-                std::cout << "Image float size: " << image_info.image_data_float.size() << std::endl;
+                std::cout << "Image float size: " << image_info.image_data_float->size() << std::endl;
 
                 if (path != "") {
                     std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
                     if (image_info.pixels_as_float) {
-                        Utils::writePfmFile(image_info.image_data_float.data(), image_info.width, image_info.height,
+                        Utils::writePfmFile(image_info.image_data_float->data(), image_info.width, image_info.height,
                             file_path + ".pfm");
                     }
                     else {

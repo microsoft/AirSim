@@ -47,7 +47,6 @@ public: //types
 
     struct ImageResponse {
         std::unique_ptr<vector<uint8_t>, std::function<void(vector<uint8_t>*)>> image_data_uint8 = nullptr;
-        //vector<float> image_data_float;
         std::unique_ptr<vector<float>, std::function<void(vector<float>*)>> image_data_float = nullptr;
 
         std::string camera_name;
@@ -64,8 +63,8 @@ public: //types
 
         ImageResponse(const ImageResponse& other)
         {
-            image_data_uint8 = std::unique_ptr<vector<uint8_t>, std::function<void(vector<uint8_t>*)>>(other.image_data_uint8.get(), std::bind(&ImageResponse::CopyDeleter, this, std::placeholders::_1));
-            image_data_float = std::unique_ptr<vector<float>, std::function<void(vector<float>*)>>(other.image_data_float.get(), std::bind(&ImageResponse::CopyDeleter, this, std::placeholders::_1));
+            image_data_uint8 = std::unique_ptr<vector<uint8_t>, std::function<void(vector<uint8_t>*)>>(other.image_data_uint8.get(), std::bind(&ImageResponse::CopyDeleter<uint8_t>, this, std::placeholders::_1));
+            image_data_float = std::unique_ptr<vector<float>, std::function<void(vector<float>*)>>(other.image_data_float.get(), std::bind(&ImageResponse::CopyDeleter<float>, this, std::placeholders::_1));
             camera_name = other.camera_name;
             camera_position = other.camera_position;
             camera_orientation = other.camera_orientation;
@@ -80,8 +79,8 @@ public: //types
 
         ImageResponse& operator=(const ImageResponse& other)
         {
-            image_data_uint8 = std::unique_ptr<vector<uint8_t>, std::function<void(vector<uint8_t>*)>>(other.image_data_uint8.get(), std::bind(&ImageResponse::CopyDeleter, this, std::placeholders::_1));
-            image_data_float = std::unique_ptr<vector<float>, std::function<void(vector<float>*)>>(other.image_data_uint8.get(), std::bind(&ImageResponse::CopyDeleter, this, std::placeholders::_1));
+            image_data_uint8 = std::unique_ptr<vector<uint8_t>, std::function<void(vector<uint8_t>*)>>(other.image_data_uint8.get(), std::bind(&ImageResponse::CopyDeleter<uint8_t>, this, std::placeholders::_1));
+            image_data_float = std::unique_ptr<vector<float>, std::function<void(vector<float>*)>>(other.image_data_float.get(), std::bind(&ImageResponse::CopyDeleter<float>, this, std::placeholders::_1));
             camera_name = other.camera_name;
             camera_position = other.camera_position;
             camera_orientation = other.camera_orientation;
@@ -96,13 +95,10 @@ public: //types
         }
 
     private:
-        void CopyDeleter(vector<uint8_t>* buf) {
+        template <typename T>
+        void CopyDeleter(vector<T>* buf) {
             buf = nullptr; //Avoid error for unreferenced formal parameter.
         } //Copies of an ImageResponse effectively contain weak pointers. The original response handles deleting the buffer. Ultimately, response copying should be removed from everywhere.
-    
-        void CopyDeleter(vector<float>* buf) {
-            buf = nullptr; //Avoid error for unreferenced formal parameter.
-        }
     };
 
 public: //methods
