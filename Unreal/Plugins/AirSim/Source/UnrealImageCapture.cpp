@@ -27,6 +27,7 @@ void UnrealImageCapture::getImage(const msr::airlib::ImageCaptureBase::ImageRequ
 
 void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, msr::airlib::ImageCaptureBase::ImageType image_type, msr::airlib::ImageCaptureBase::ImageResponse& response) const
 {
+    FString fcam_name(camera_name.c_str());
     APIPCamera* camera = cameras_->at(camera_name);
     camera->setCameraTypeEnabled(image_type, true);
 
@@ -37,29 +38,21 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
     render_request.fast_param_ = RenderRequest::RenderParams{ capture, textureTarget, false, false };
     render_request.FastScreenshot();
 
-    int height = capture->TextureTarget->SizeY;
-    int width = capture->TextureTarget->SizeX;
-    int stride = render_request.latest_result_.stride;
-    int bytes = render_request.latest_result_.pixels->size();
-    int bytes_per_pixel = bytes / (height * width);
-    int padded_width = stride / bytes_per_pixel;
-
     response.camera_name = camera_name;
     response.time_stamp = render_request.latest_result_.time_stamp;
-    response.width = padded_width;
-    response.height = height;
+    response.width = render_request.latest_result_.width;
+    response.height = render_request.latest_result_.height;
     response.image_type = image_type;
     response.pixels_as_float = render_request.latest_result_.pixels_as_float;
-    //response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
 
     if(!response.pixels_as_float)
         response.image_data_uint8 = std::move(render_request.latest_result_.pixels);
     else
         response.image_data_float = std::move(render_request.latest_result_.pixels_float);
 
+    UE_LOG(LogTemp, Warning, TEXT("%s: stats: H: %d  W: %d  type: %d  px_format: %d"),
+            *fcam_name, response.height, response.width, image_type, textureTarget->GetFormat());
 
-    UE_LOG(LogTemp, Warning, TEXT("stats: H: %d  W: %d  bpp: %d  S: %d  bytes: %d  type: %d  px_format: %d"),
-                        height, width, bytes_per_pixel, stride, bytes, image_type, textureTarget->GetFormat());
     // Disable camera after capturing image, this reduces resource consumption when images are not being taken
     // Particulary when a high-resolution camera is used occasionally
     camera->setCameraTypeEnabled(image_type, false);

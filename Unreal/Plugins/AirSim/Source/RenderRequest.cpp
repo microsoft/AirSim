@@ -46,7 +46,6 @@ void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &resu
     auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
     
     result.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
-    // result.pixels = buffer_pool_->GetBufferExactSize(height*stride);
     result.stride = stride;
     result.width = width;
     result.height = height;
@@ -73,7 +72,6 @@ void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &resu
             break;
         }
     }
-	//FMemory::BigBlockMemcpy(latest_result_.pixels->data(), src, height * stride);
     
     RHIUnlockTexture2D(fast_cap_texture, 0, false);
 
