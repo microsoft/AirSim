@@ -9,12 +9,14 @@
 #include <functional>
 #include <limits>
 
-typedef std::vector<uint8_t> Buffer;
-typedef std::function<void(Buffer*)> Deleter;
-typedef std::unique_ptr<Buffer, Deleter> BufferPtr;
-
+template <typename T>
 class BufferPool
 {
+public:
+    typedef typename std::vector<T> Buffer;
+    typedef std::function<void(Buffer*)> Deleter;
+    typedef std::unique_ptr<Buffer, Deleter> BufferPtr;
+
 public:
     BufferPtr GetBufferExactSize(size_t size);
     BufferPtr GetBufferAtLeastSize(size_t size, size_t max_size = std::numeric_limits<size_t>::max());

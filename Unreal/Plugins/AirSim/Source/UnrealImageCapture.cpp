@@ -33,7 +33,7 @@ void UnrealImageCapture::getSceneCaptureImage(const std::string& camera_name, ms
     USceneCaptureComponent2D* capture = camera->getCaptureComponent(image_type, false);
     UTextureRenderTarget2D* textureTarget = capture->TextureTarget;
 
-    RenderRequest render_request(BufferPool_);
+    RenderRequest render_request(BufferPool_, BufferPool_float_);
     render_request.fast_param_ = RenderRequest::RenderParams{ capture, textureTarget, false, false };
     render_request.FastScreenshot();
 

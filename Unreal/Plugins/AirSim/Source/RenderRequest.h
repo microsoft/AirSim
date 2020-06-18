@@ -8,8 +8,6 @@
 #include <memory>
 #include "common/Common.hpp"
 
-class BufferPool; 
-
 class RenderRequest : public FRenderCommand
 {
 public:
@@ -54,9 +52,11 @@ private:
     FDelegateHandle end_draw_handle_;
     std::function<void()> query_camera_pose_cb_;
 
-    BufferPool* buffer_pool_ = nullptr;
+    BufferPool<uint8_t>* buffer_pool_ = nullptr;
+    BufferPool<float>* buffer_pool_float_ = nullptr;
+
 public:
-    RenderRequest(BufferPool *buffer_pool);
+    RenderRequest(BufferPool<uint8_t> *buffer_pool, BufferPool<float> *buffer_pool_float);
     ~RenderRequest();
 
     FORCEINLINE TStatId GetStatId() const

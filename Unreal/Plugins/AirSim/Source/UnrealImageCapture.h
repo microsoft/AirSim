@@ -18,7 +18,8 @@ public:
     virtual void getImage(const ImageRequest& request, ImageResponse& response) const override;
 
 private:
-    BufferPool *BufferPool_ = new BufferPool();
+    BufferPool<uint8_t> *BufferPool_ = new BufferPool<uint8_t>();
+    BufferPool<float> *BufferPool_float_ = new BufferPool<float>();
 
     void getSceneCaptureImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type, ImageResponse &response) const;
 
