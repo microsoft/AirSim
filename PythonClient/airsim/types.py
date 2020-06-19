@@ -400,9 +400,9 @@ class GpsData(MsgpackMixin):
 
 class DistanceSensorData(MsgpackMixin):
     time_stamp = np.uint64(0)
-    distance = Quaternionr()
-    min_distance = Quaternionr()
-    max_distance = Quaternionr()
+    distance = np.float32(0)
+    min_distance = np.float32(0)
+    max_distance = np.float32(0)
     relative_pose = Pose()
 
 class PIDGains():

@@ -196,6 +196,16 @@ public: //types
     };
 
     struct DistanceSetting : SensorSetting {
+	//nan means keep the default values set in components
+	Vector3r position = VectorMath::nanVector();
+	Rotation rotation = Rotation::nanRotation();
+
+	real_T min_distance = 20.0f / 100; //m
+	real_T max_distance = 4000.0f / 100; //m 
+	real_T unnorrelated_noise_sigma = 0.002f * 100;
+	real_T update_latency = 0.0f;    //sec
+	real_T update_frequency = 50;    //Hz
+	real_T startup_delay = 0;        //sec
     };
 
     struct LidarSetting : SensorSetting {
@@ -1154,10 +1164,14 @@ private:
 
     static void initializeDistanceSetting(DistanceSetting& distance_setting, const Settings& settings_json)
     {
-        unused(distance_setting);
-        unused(settings_json);
-
-        //TODO: set from json as needed
+        distance_setting.min_distance = settings_json.getFloat("MinDistance", distance_setting.min_distance);
+        distance_setting.max_distance = settings_json.getFloat("MaxDistance", distance_setting.max_distance);
+        distance_setting.unnorrelated_noise_sigma = settings_json.getFloat("Noise", distance_setting.unnorrelated_noise_sigma);
+        distance_setting.update_latency = settings_json.getFloat("UpdateLatency", distance_setting.update_latency);
+        distance_setting.update_frequency = settings_json.getFloat("UpdateFrequency", distance_setting.update_frequency);
+        distance_setting.startup_delay = settings_json.getFloat("StartupDelay", distance_setting.startup_delay);
+        distance_setting.position = createVectorSetting(settings_json, distance_setting.position);
+        distance_setting.rotation = createRotationSetting(settings_json, distance_setting.rotation);
     }
 
     static void initializeLidarSetting(LidarSetting& lidar_setting, const Settings& settings_json)
