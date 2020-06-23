@@ -184,15 +184,71 @@ public: //types
     };
 
     struct BarometerSetting : SensorSetting {
+	real_T qnh = EarthUtils::SeaLevelPressure / 100.0f; // hPa
+	real_T pressure_factor_sigma = 0.0365f / 20;
+	real_T pressure_factor_tau = 3600;
+	real_T unnorrelated_noise_sigma = 0.027f * 100;
+	real_T update_latency = 0.0f;    //sec
+	real_T update_frequency = 50;    //Hz
+	real_T startup_delay = 0;        //sec
+        Vector3r position = VectorMath::nanVector();
+        Rotation rotation = Rotation::nanRotation();
     };
 
     struct ImuSetting : SensorSetting {
+	//angule random walk (ARW)
+	real_T gyro_arw = 0.30f / sqrt(3600.0f) * M_PIf / 180; //deg/sqrt(hour) converted to rad/sqrt(sec)
+	//Bias Stability (tau = 500s)
+	real_T gyro_tau = 500;
+	real_T gyro_bias_stability = 4.6f / 3600 * M_PIf / 180; //deg/hr converted to rad/sec
+	Vector3r gyro_turn_on_bias = Vector3r::Zero(); //assume calibration is done
+
+	//velocity random walk (ARW)
+	real_T accel_vrw = 0.24f * EarthUtils::Gravity / 1.0E3f; //mg converted to m/s^2 
+	//Bias Stability (tau = 800s)
+	real_T accel_tau = 800;
+	real_T accel_bias_stability = 36.0f * 1E-6f * 9.80665f; //ug converted to m/s^2
+	Vector3r accel_turn_on_bias = Vector3r::Zero(); //assume calibration is done
+        Vector3r position = VectorMath::nanVector();
+        Rotation rotation = Rotation::nanRotation();
+
     };
 
     struct GpsSetting : SensorSetting {
+
+	real_T eph_time_constant = 0.9f, epv_time_constant = 0.9f;
+	real_T eph_initial = 100.0f, epv_initial = 100.0f;   //initially fully diluted positions
+	real_T eph_final = 0.3f, epv_final = 0.4f;
+	real_T eph_min_3d = 3.0f, eph_min_2d = 4.0f;
+
+	real_T update_latency = 0.2f;    //sec
+	real_T update_frequency = 50;    //Hz
+	real_T startup_delay = 1;        //sec
+
+	Vector3r position = VectorMath::nanVector();
+	Rotation rotation = Rotation::nanRotation();
+
     };
 
     struct MagnetometerSetting : SensorSetting {
+	Vector3r noise_sigma = Vector3r(0.005f, 0.005f, 0.005f); //5 mgauss as per specs sheet (RMS is same as stddev) https://goo.gl/UOz6FT
+	real_T scale_factor = 1.0f;
+	Vector3r noise_bias = Vector3r(0.0f, 0.0f, 0.0f); //no offset as per specsheet (zero gauss level) https://goo.gl/UOz6FT
+	float ref_update_frequency = 0.2f;    //Hz
+
+	//use dipole model if there is enough compute power available
+	bool dynamic_reference_source = true;
+	// ref_source 0==ConstantModel; 1==DipoleModel
+	int ref_source = 1;
+
+	//see PX4 param reference for EKF: https://dev.px4.io/en/advanced/parameter_reference.html
+	real_T update_latency = 0.0f;    //sec: from PX4 doc
+	real_T update_frequency = 50;    //Hz
+	real_T startup_delay = 0;        //sec
+
+	Vector3r position = VectorMath::nanVector();
+	Rotation rotation = Rotation::nanRotation();
+	
     };
 
     struct DistanceSetting : SensorSetting {
@@ -704,11 +760,40 @@ private:
             settings_json.getFloat("Y", default_vec.y()),
             settings_json.getFloat("Z", default_vec.z()));
     }
+
     static Rotation createRotationSetting(const Settings& settings_json, const Rotation& default_rot)
     {
         return Rotation(settings_json.getFloat("Yaw", default_rot.yaw),
             settings_json.getFloat("Pitch", default_rot.pitch),
             settings_json.getFloat("Roll", default_rot.roll));
+    }
+
+    static Vector3r createGyroBiasSetting(const Settings& settings_json, const Vector3r& default_vec)
+    {
+        return Vector3r(settings_json.getFloat("GyroBias_X", default_vec.x()),
+            settings_json.getFloat("GyroBias_Y", default_vec.y()),
+            settings_json.getFloat("GyroBias_Z", default_vec.z()));
+    }
+
+    static Vector3r createAccelBiasSetting(const Settings& settings_json, const Vector3r& default_vec)
+    {
+        return Vector3r(settings_json.getFloat("AccelBias_X", default_vec.x()),
+            settings_json.getFloat("AccelBias_Y", default_vec.y()),
+            settings_json.getFloat("AccelBias_Z", default_vec.z()));
+    }
+
+    static Vector3r createNoiseSigmaSetting(const Settings& settings_json, const Vector3r& default_vec)
+    {
+        return Vector3r(settings_json.getFloat("NoiseSigma_X", default_vec.x()),
+            settings_json.getFloat("NoiseSigma_Y", default_vec.y()),
+            settings_json.getFloat("NoiseSigma_Z", default_vec.z()));
+    }
+
+    static Vector3r createNoiseBiasSetting(const Settings& settings_json, const Vector3r& default_vec)
+    {
+        return Vector3r(settings_json.getFloat("NoiseBias_X", default_vec.x()),
+            settings_json.getFloat("NoiseBias_Y", default_vec.y()),
+            settings_json.getFloat("NoiseBias_Z", default_vec.z()));
     }
 
     static std::unique_ptr<VehicleSetting> createVehicleSetting(const std::string& simmode_name,  const Settings& settings_json,
@@ -1132,34 +1217,63 @@ private:
 
     static void initializeBarometerSetting(BarometerSetting& barometer_setting, const Settings& settings_json)
     {
-        unused(barometer_setting);
-        unused(settings_json);
-
-        //TODO: set from json as needed
+	barometer_setting.qnh = settings_json.getFloat("SeaLevelPressure", barometer_setting.qnh);
+	barometer_setting.pressure_factor_sigma = settings_json.getFloat("PressureFactorSigma", barometer_setting.pressure_factor_sigma);
+	barometer_setting.pressure_factor_tau = settings_json.getFloat("PressureFactorTau", barometer_setting.pressure_factor_tau);
+	barometer_setting.unnorrelated_noise_sigma = settings_json.getFloat("NoiseSigma", barometer_setting.unnorrelated_noise_sigma);
+	barometer_setting.update_latency = settings_json.getFloat("UpdateLatency", barometer_setting.update_latency);
+	barometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", barometer_setting.update_frequency);
+	barometer_setting.startup_delay = settings_json.getFloat("StartupDelay", barometer_setting.startup_delay);
+        barometer_setting.position = createVectorSetting(settings_json, barometer_setting.position);
+        barometer_setting.rotation = createRotationSetting(settings_json, barometer_setting.rotation);
     }
 
     static void initializeImuSetting(ImuSetting& imu_setting, const Settings& settings_json)
     {
-        unused(imu_setting);
-        unused(settings_json);
+        imu_setting.gyro_arw = settings_json.getFloat("GyroAngleRandomWalk", imu_setting.gyro_arw);
+        imu_setting.gyro_tau = settings_json.getFloat("GyroBiasTau", imu_setting.gyro_tau);
+        imu_setting.gyro_bias_stability = settings_json.getFloat("GyroBiasStability", imu_setting.gyro_bias_stability);
+        imu_setting.gyro_turn_on_bias = createGyroBiasSetting(settings_json, imu_setting.gyro_turn_on_bias);
 
-        //TODO: set from json as needed
+        imu_setting.accel_vrw = settings_json.getFloat("AccelerometerVelocityRandomWalk", imu_setting.accel_vrw);
+        imu_setting.accel_tau = settings_json.getFloat("AccelerometerBiasTau", imu_setting.accel_tau);
+        imu_setting.accel_bias_stability = settings_json.getFloat("AccelerometerBiasStability", imu_setting.accel_bias_stability);
+        imu_setting.accel_turn_on_bias = createAccelBiasSetting(settings_json, imu_setting.accel_turn_on_bias);
+
+        imu_setting.position = createVectorSetting(settings_json, imu_setting.position);
+        imu_setting.rotation = createRotationSetting(settings_json, imu_setting.rotation);
     }
 
     static void initializeGpsSetting(GpsSetting& gps_setting, const Settings& settings_json)
     {
-        unused(gps_setting);
-        unused(settings_json);
+	gps_setting.eph_time_constant = settings_json.getFloat("EphTimeConstant", gps_setting.eph_time_constant);
+	gps_setting.epv_time_constant = settings_json.getFloat("EpvTimeConstant", gps_setting.epv_time_constant);
+	gps_setting.eph_initial = settings_json.getFloat("EphInitial", gps_setting.eph_initial);
+	gps_setting.epv_initial = settings_json.getFloat("EpvInitial", gps_setting.epv_initial);
+	gps_setting.eph_final = settings_json.getFloat("EphFinal", gps_setting.eph_final);
+	gps_setting.epv_final = settings_json.getFloat("EpvFinal", gps_setting.epv_final);
+	gps_setting.eph_min_3d = settings_json.getFloat("EphMin3d", gps_setting.eph_min_3d);
+	gps_setting.eph_min_2d = settings_json.getFloat("EphMin2d", gps_setting.eph_min_2d);
+	gps_setting.update_latency = settings_json.getFloat("UpdateLatency", gps_setting.update_latency);
+	gps_setting.update_frequency = settings_json.getFloat("UpdateFrequency", gps_setting.update_frequency);
+	gps_setting.startup_delay = settings_json.getFloat("StartupDelay", gps_setting.startup_delay);
+        gps_setting.position = createVectorSetting(settings_json, gps_setting.position);
+        gps_setting.rotation = createRotationSetting(settings_json, gps_setting.rotation);
 
-        //TODO: set from json as needed
     }
 
     static void initializeMagnetometerSetting(MagnetometerSetting& magnetometer_setting, const Settings& settings_json)
     {
-        unused(magnetometer_setting);
-        unused(settings_json);
-
-        //TODO: set from json as needed
+        magnetometer_setting.noise_sigma = createNoiseSigmaSetting(settings_json, magnetometer_setting.noise_sigma);
+        magnetometer_setting.scale_factor = settings_json.getFloat("ScaleFactor", magnetometer_setting.scale_factor);
+	magnetometer_setting.dynamic_reference_source = settings_json.getBool("DynamicReferenceSource", magnetometer_setting.dynamic_reference_source);
+        magnetometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", magnetometer_setting.update_frequency);
+	magnetometer_setting.ref_source = settings_json.getInt("ReferenceSource", magnetometer_setting.ref_source);
+        magnetometer_setting.update_latency = settings_json.getFloat("UpdateLatency", magnetometer_setting.update_latency);
+        magnetometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", magnetometer_setting.update_frequency);
+        magnetometer_setting.startup_delay = settings_json.getFloat("StartupDelay", magnetometer_setting.startup_delay);
+        magnetometer_setting.position = createVectorSetting(settings_json, magnetometer_setting.position);
+        magnetometer_setting.rotation = createRotationSetting(settings_json, magnetometer_setting.rotation);
     }
 
     static void initializeDistanceSetting(DistanceSetting& distance_setting, const Settings& settings_json)

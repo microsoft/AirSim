@@ -5,6 +5,7 @@
 #define msr_airlib_MagnetometerSimpleParams_hpp
 
 #include "common/Common.hpp"
+#include "common/AirSimSettings.hpp"
 
 
 namespace msr { namespace airlib {
@@ -32,9 +33,38 @@ struct MagnetometerSimpleParams {
     real_T update_frequency = 50;    //Hz
     real_T startup_delay = 0;        //sec
 
+    Pose relative_pose;
+
     void initializeFromSettings(const AirSimSettings::MagnetometerSetting& settings)
     {
-        unused(settings);
+        noise_sigma = settings.noise_sigma;
+	noise_bias = settings.noise_bias;
+        scale_factor = settings.scale_factor;
+	dynamic_reference_source = settings.dynamic_reference_source;
+        ref_update_frequency = settings.update_frequency;
+	if (settings.ref_source == 0){
+		ref_source = ReferenceSource::ReferenceSource_Constant;
+	}
+        update_latency = settings.update_latency;
+        update_frequency = settings.update_frequency;
+        startup_delay = settings.startup_delay;
+
+        relative_pose.position = settings.position;
+        if (std::isnan(relative_pose.position.x()))
+            relative_pose.position.x() = 0;
+        if (std::isnan(relative_pose.position.y()))
+            relative_pose.position.y() = 0;
+        if (std::isnan(relative_pose.position.z())) 
+	    relative_pose.position.z() = 0;
+
+        float pitch, roll, yaw;
+        pitch = !std::isnan(settings.rotation.pitch) ? settings.rotation.pitch : 0;
+        roll = !std::isnan(settings.rotation.roll) ? settings.rotation.roll : 0;
+        yaw = !std::isnan(settings.rotation.yaw) ? settings.rotation.yaw : 0;
+        relative_pose.orientation = VectorMath::toQuaternion(
+            Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
+            Utils::degreesToRadians(roll),    //roll  - rotation around X axis
+            Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
     }
 };
 
