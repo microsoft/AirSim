@@ -92,7 +92,7 @@ nav:
     - "Autonomous Driving on Azure": 'https://aka.ms/AutonomousDrivingCookbook'
     - "Building Hexacopter": 'https://github.com/Microsoft/AirSim/wiki/hexacopter'
     - "Moving on Path Demo": 'https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo'
-    - "Building Point Clouds": 'https://github.com/Microsoft/AirSim/wiki/Point-Clouds'
+    - "Building Point Clouds": 'point_clouds.md'
     - "Surveying Using Drone": 'drone_survey.md'
     - "Orbit Trajectory": "orbit.md"
   - "Misc":
