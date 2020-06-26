@@ -94,6 +94,7 @@ nav:
     - "Moving on Path Demo": 'https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo'
     - "Building Point Clouds": 'https://github.com/Microsoft/AirSim/wiki/Point-Clouds'
     - "Surveying Using Drone": 'drone_survey.md'
+    - "Orbit Trajectory": "orbit.md"
   - "Misc":
     - "AirSim on Real Drones": 'custom_drone.md'
     - "Installing cmake on Linux": 'cmake_linux.md'
