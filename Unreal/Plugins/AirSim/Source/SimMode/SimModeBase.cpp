@@ -16,6 +16,7 @@
 #include "SimJoyStick/SimJoyStick.h"
 #include "common/EarthCelestial.hpp"
 #include "sensors/lidar/LidarSimple.hpp"
+#include "sensors/distance/DistanceSimple.hpp"
 
 #include "Weather/WeatherLib.h"
 
@@ -304,6 +305,8 @@ void ASimModeBase::Tick(float DeltaSeconds)
 
     drawLidarDebugPoints();
 
+    drawDistanceSensorDebugPoints();
+
     Super::Tick(DeltaSeconds);
 }
 
@@ -538,8 +541,8 @@ void ASimModeBase::setupVehiclesAndCamera()
 
                 //compute initial pose
                 FVector spawn_position = uu_origin.GetLocation();
-                msr::airlib::Vector3r settings_position = vehicle_setting.position;
-                if (!msr::airlib::VectorMath::hasNan(settings_position))
+                Vector3r settings_position = vehicle_setting.position;
+                if (!VectorMath::hasNan(settings_position))
                     spawn_position = getGlobalNedTransform().fromGlobalNed(settings_position);
                 FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
 
@@ -670,12 +673,12 @@ void ASimModeBase::drawLidarDebugPoints()
 
         msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
         if (api != nullptr) {
-            msr::airlib::uint count_lidars = api->getSensors().size(msr::airlib::SensorBase::SensorType::Lidar);
+            msr::airlib::uint count_lidars = api->getSensors().size(SensorType::Lidar);
 
             for (msr::airlib::uint i = 0; i < count_lidars; i++) {
                 // TODO: Is it incorrect to assume LidarSimple here?
                 const msr::airlib::LidarSimple* lidar =
-                    static_cast<const msr::airlib::LidarSimple*>(api->getSensors().getByType(msr::airlib::SensorBase::SensorType::Lidar, i));
+                    static_cast<const msr::airlib::LidarSimple*>(api->getSensors().getByType(SensorType::Lidar, i));
                 if (lidar != nullptr && lidar->getParams().draw_debug_points) {
                     lidar_draw_debug_points_ = true;
 
@@ -685,7 +688,7 @@ void ASimModeBase::drawLidarDebugPoints()
                         return;
 
                     for (int j = 0; j < lidar_data.point_cloud.size(); j = j + 3) {
-                        msr::airlib::Vector3r point(lidar_data.point_cloud[j], lidar_data.point_cloud[j + 1], lidar_data.point_cloud[j + 2]);
+                        Vector3r point(lidar_data.point_cloud[j], lidar_data.point_cloud[j + 1], lidar_data.point_cloud[j + 2]);
 
                         FVector uu_point;
 
@@ -694,7 +697,7 @@ void ASimModeBase::drawLidarDebugPoints()
                         }
                         else if (lidar->getParams().data_frame == AirSimSettings::kSensorLocalFrame) {
 
-                            msr::airlib::Vector3r point_w = msr::airlib::VectorMath::transformToWorldFrame(point, lidar_data.pose, true);
+                            Vector3r point_w = VectorMath::transformToWorldFrame(point, lidar_data.pose, true);
                             uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point_w);
                         }
                         else
@@ -715,4 +718,51 @@ void ASimModeBase::drawLidarDebugPoints()
     }
 
     lidar_checks_done_ = true;
+}
+
+// Draw debug-point on main viewport for Distance sensor hit
+void ASimModeBase::drawDistanceSensorDebugPoints()
+{
+    if (getApiProvider() == nullptr)
+        return;
+
+    for (auto& sim_api : getApiProvider()->getVehicleSimApis()) {
+        PawnSimApi* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
+        std::string vehicle_name = pawn_sim_api->getVehicleName();
+
+        msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
+
+        if (api != nullptr) {
+            msr::airlib::uint count_distance_sensors = api->getSensors().size(SensorType::Distance);
+            Pose vehicle_pose = pawn_sim_api->getGroundTruthKinematics()->pose;
+
+            for (msr::airlib::uint i=0; i<count_distance_sensors; i++) {
+                const msr::airlib::DistanceSimple* distance_sensor = 
+                    static_cast<const msr::airlib::DistanceSimple*>(api->getSensors().getByType(SensorType::Distance, i));
+
+                if (distance_sensor != nullptr && distance_sensor->getParams().draw_debug_points) {
+                    msr::airlib::DistanceSensorData distance_sensor_data = distance_sensor->getOutput();
+
+                    // Find position of point hit
+                    // Similar to UnrealDistanceSensor.cpp#L19
+                    // order of Pose addition is important here because it also adds quaternions which is not commutative!
+                    Pose distance_sensor_pose = distance_sensor_data.relative_pose + vehicle_pose;
+                    Vector3r start = distance_sensor_pose.position;
+                    Vector3r point = start + VectorMath::rotateVector(VectorMath::front(), 
+                                                distance_sensor_pose.orientation, true) * distance_sensor_data.distance;
+
+                    FVector uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point);
+
+                    DrawDebugPoint(
+                        this->GetWorld(),
+                        uu_point,
+                        10,              // size
+                        FColor::Green,
+                        false,          // persistent (never goes away)
+                        0.03            // LifeTime: point leaves a trail on moving object
+                    );
+                }
+            }
+        }
+    }
 }

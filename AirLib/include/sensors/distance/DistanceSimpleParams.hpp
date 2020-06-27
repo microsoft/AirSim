@@ -16,6 +16,8 @@ struct DistanceSimpleParams {
     real_T max_distance = 4000.0f / 100; //m
     Pose relative_pose;
 
+    bool draw_debug_points = true;
+
 /*
     Ref: A Stochastic Approach to Noise Modeling for Barometric Altimeters
      Angelo Maria Sabatini* and Vincenzo Genovese
