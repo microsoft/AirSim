@@ -6,6 +6,7 @@ site_description: 'Open source simulator based on Unreal Engine for autonomous v
 markdown_extensions:
     - toc:
         permalink: "#"
+    - pymdownx.extra:
 
 remote_branch: gh-pages
 
