@@ -371,6 +371,7 @@ class LidarData(MsgpackMixin):
     point_cloud = 0.0
     time_stamp = np.uint64(0)
     pose = Pose()
+    segmentation = 0
 
 class ImuData(MsgpackMixin):
     time_stamp = np.uint64(0)
