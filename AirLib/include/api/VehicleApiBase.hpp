@@ -119,15 +119,6 @@ public:
         return lidar->getOutput();
     }
 
-    virtual vector<int> getLidarSegmentation(const std::string& lidar_name) const
-    {
-        auto *lidar = findLidarByName(lidar_name);
-        if (lidar == nullptr)
-            throw VehicleControllerException(Utils::stringf("No lidar with name %s exist on vehicle", lidar_name.c_str()));
-
-        return lidar->getSegmentationOutput();
-    }
-
     // IMU API
     virtual ImuBase::Output getImuData(const std::string& imu_name) const
     {
