@@ -20,7 +20,7 @@ az vm deallocate --resource-group MyResourceGroup --name MyVMName
 - Press `F1` and run the `Remote - SSH: Connect to host...` command
 - Add the recently create VM details. For instance, `AzureUser@11.22.33.44`
 - Run the `Remote - SSH: Connect to host...` command again, and now select the newly added connection.
-- Once connected, click on the `Clone Repository` button in Visual Studio Code, and either clone this repository in the remote VM and open *just the `azure` folder*, or create a brand new repository, clone it and copy the contents of the `azure` folder from this repository in it.
+- Once connected, click on the `Clone Repository` button in Visual Studio Code, and either clone this repository in the remote VM and open *just the `azure` folder*, or create a brand new repository, clone it and copy the contents of the `azure` folder from this repository in it. It is important to open that directory so Visual Studio Code can use the specific `.vscode` directory for the scenario and not the general AirSim `.vscode` directory. It contains the recommended extensions to install, the task to start AirSim remotely and the launch configuration for the Python application.
 - Install all the recommended extensions
 - Run the `Start AirSim` task from Visual Studio Code
 - Open the `multirotor.py` file inside the `app` directory

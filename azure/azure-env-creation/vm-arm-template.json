@@ -39,7 +39,7 @@
             "metadata": {
                 "description": "Location of the setup script"
             },
-            "defaultValue": "https://raw.githubusercontent.com/airsimcloud/airsim-env-azure/master/azure-env-creation"
+            "defaultValue": "https://raw.githubusercontent.com/microsoft/airsim/master/azure/azure-env-creation"
         },
         "ScriptFileName": {
             "type": "string",
