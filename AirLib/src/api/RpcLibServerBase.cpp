@@ -128,12 +128,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
             return RpcLibAdapatorsBase::ImageResponse::from(response);
     });
     pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<uint8_t> {
-        auto result = getVehicleSimApi(vehicle_name)->getImage(camera_name, type);
-        if (result.size() == 0) {
-            // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-            result.push_back(0);
-        }
-        return result;
+        return getVehicleSimApi(vehicle_name)->getImage(camera_name, type);
     });
 
     pimpl_->server.bind("simGetMeshPositionVertexBuffers", [&]() ->vector<RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse> {
