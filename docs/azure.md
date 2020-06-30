@@ -3,7 +3,7 @@
 This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code
 
 ## Automatically Deploy Your Azure VM
-Use [this](`../azure/azure-env-creation/vm-arm-template.json`) template to create, deploy and configure an Azure VM to work with AirSim
+Use [this](../azure/azure-env-creation/vm-arm-template.json) template to create, deploy and configure an Azure VM to work with AirSim
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fairsim%2Fmaster%2Fazure%2Fazure-env-creation%2Fvm-arm-template.json" target="_blank">
     <img src="https://azuredeploy.net/deploybutton.png"/>
