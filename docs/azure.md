@@ -1,13 +1,12 @@
 # AirSim Development Environment on Azure
-AirSim is an open-source, cross platform simulator for drones, ground vehicles such as cars and various other objects, built on Epic Games’ Unreal Engine 4 as a platform for AI research.
 
 This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code
 
 ## Automatically Deploy Your Azure VM
-Use [this](`azure-env-creation/vm-arm-template.json`) template to create, deploy and configure an Azure VM to work with AirSim
+Use [this](`../azure/azure-env-creation/vm-arm-template.json`) template to create, deploy and configure an Azure VM to work with AirSim
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fairsimcloud%2Fairsim-env-azure%2Fmaster%2Fazure-env-creation%2Fvm-arm-template.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fairsim%2Fmaster%2Fazure%2Fazure-env-creation%2Fvm-arm-template.json" target="_blank">
+    <img src="https://azuredeploy.net/deploybutton.png"/>
 </a>
 
 *To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the [Azure Portal](https://portal.azure.com) or use the following command from the Azure CLI:*
@@ -21,7 +20,7 @@ az vm deallocate --resource-group MyResourceGroup --name MyVMName
 - Press `F1` and run the `Remote - SSH: Connect to host...` command
 - Add the recently create VM details. For instance, `AzureUser@11.22.33.44`
 - Run the `Remote - SSH: Connect to host...` command again, and now select the newly added connection.
-- Once connected, click on the `Clone Repository` button in Visual Studio Code, clone this repository in the remote VM and open it.
+- Once connected, click on the `Clone Repository` button in Visual Studio Code, and either clone this repository in the remote VM and open *just the `azure` folder*, or create a brand new repository, clone it and copy the contents of the `azure` folder from this repository in it.
 - Install all the recommended extensions
 - Run the `Start AirSim` task from Visual Studio Code
 - Open the `multirotor.py` file inside the `app` directory
@@ -31,14 +30,14 @@ az vm deallocate --resource-group MyResourceGroup --name MyVMName
 
 - Follow the steps in the previous section to connect via `Remote - SSH`
 - In the *Remote Explorer*, add the port `41451` as a forwarded port to localhost
+- Either clone this repository locally and open *just the `azure` folder* in Visual Studio Code, or create a brand new repository, clone it and copy the contents of the `azure` folder from this repository in it.
 - Either run the `Start AirSim` task or manually start the AirSim binary in the VM
-- Open this repository locally in Visual Studio Code
 - Run `pip install -r requirements.txt` inside the `app` directory
 - Open the `multirotor.py` file inside the `app` directory 
 - Start debugging with Python
 
 ## Running with Docker
-Once both the AirSim environment and the Python application are ready, you can package everything as a Docker image. This sample project is already prepared to run a prebuilt AirSim binary and Python code using Docker.
+Once both the AirSim environment and the Python application are ready, you can package everything as a Docker image. The sample project inside the `azure` directory is already prepared to run a prebuilt AirSim binary and Python code using Docker.
 
 This would be a perfect scenario when you want to run the simulation at scale. For instance, you could have several different configurations for the same simulation and execute them in a parallel, unattended way using a Docker image on Azure Container Services
 
@@ -56,15 +55,15 @@ docker build -t <your-registry-url>/<your-image-name> -f ./docker/Dockerfile .`
 
 ## Using a different AirSim binary
 
-To use a different AirSim binary, first check the official documentation on [How to Build AirSim on Windows](https://github.com/microsoft/AirSim/blob/master/docs/build_windows.md) and [How to Build AirSim on Linux](https://github.com/microsoft/AirSim/blob/master/docs/build_linux.md) if you also want to run it with Docker
+To use a different AirSim binary, first check the official documentation on [How to Build AirSim on Windows](build_windows.md) and [How to Build AirSim on Linux](build_linux.md) if you also want to run it with Docker
 
-Once you have a zip file with the new AirSim environment (or prefer to use one from the [Official Releases](https://github.com/microsoft/AirSim/releases)), you need to modify some of the scripts in the repository to point to point to the new environment:
-- In [`azure-env-creation/configure-vm.ps1`](azure-env-creation/configure-vm.ps1), modify all the parameters starting with `$airSimBinary` with the new values
-- In [`start-airsim.ps1`](start-airsim.ps1), modify `$airSimExecutable` and `$airSimProcessName` with the new values
+Once you have a zip file with the new AirSim environment (or prefer to use one from the [Official Releases](https://github.com/microsoft/AirSim/releases)), you need to modify some of the scripts in the `azure` directory of the repository to point to the new environment:
+- In [`azure/azure-env-creation/configure-vm.ps1`](../azure/azure-env-creation/configure-vm.ps1), modify all the parameters starting with `$airSimBinary` with the new values
+- In [`azure/start-airsim.ps1`](../azure/start-airsim.ps1), modify `$airSimExecutable` and `$airSimProcessName` with the new values
 
 If you are using the docker image, you also need a linux binary zip file and modify the following Docker-related files:
-- In [`docker/Dockerfile`](docker/Dockerfile), modify the `AIRSIM_BINARY_ZIP_URL` and `AIRSIM_BINARY_ZIP_FILENAME` ENV declarations with the new values
-- In [`docker/docker-entrypoint.sh`](docker/docker-entrypoint.sh), modify `AIRSIM_EXECUTABLE` with the new value 
+- In [`azure/docker/Dockerfile`](../azure/docker/Dockerfile), modify the `AIRSIM_BINARY_ZIP_URL` and `AIRSIM_BINARY_ZIP_FILENAME` ENV declarations with the new values
+- In [`azure/docker/docker-entrypoint.sh`](../azure/docker/docker-entrypoint.sh), modify `AIRSIM_EXECUTABLE` with the new value 
 
 ## Maintaining this project
 
