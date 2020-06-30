@@ -65,6 +65,6 @@ If you are using the docker image, you also need a linux binary zip file and mod
 - In [`azure/docker/Dockerfile`](../azure/docker/Dockerfile), modify the `AIRSIM_BINARY_ZIP_URL` and `AIRSIM_BINARY_ZIP_FILENAME` ENV declarations with the new values
 - In [`azure/docker/docker-entrypoint.sh`](../azure/docker/docker-entrypoint.sh), modify `AIRSIM_EXECUTABLE` with the new value 
 
-## Maintaining this project
+## Maintaining this development environment
 
-Several components of this project (ARM templates, initialization scripts and VSCode tasks) directly depend on the current directory structures file names and repository locations. When planning to modify/fork any of those, make sure to check every script and template to make any required adjustment.
+Several components of this development environment (ARM templates, initialization scripts and VSCode tasks) directly depend on the current directory structures file names and repository locations. When planning to modify/fork any of those, make sure to check every script and template to make any required adjustment.
