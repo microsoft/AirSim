@@ -20,3 +20,4 @@ sleep 2
 
 # Start new AirSim instance
 Start-Process -NoNewWindow  -FilePath $airSimExecutable -ArgumentList "-RenderOffScreen"
+echo "Starting the AirSim environment has completed."
