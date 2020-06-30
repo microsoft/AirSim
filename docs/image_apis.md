@@ -71,7 +71,7 @@ response = responses[0]
 img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
 
 # reshape array to 4 channel image array H X W X 4
-img_rgb = img1d.reshape(response.height, response.width, 3)
+img_rgb = img1d.reshape(response.height, response.width, 4)
 
 # original image is fliped vertically
 img_rgb = np.flipud(img_rgb)
@@ -81,6 +81,7 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 ```
 
 #### Quick Tips
+- When reshaping the 1d array make sure that H X W X D is equal to the size of the 1d array
 - The API `simGetImage` returns `binary string literal` which means you can simply dump it in binary file to create a .png file. However if you want to process it in any other way than you can handy function `airsim.string_to_uint8_array`. This converts binary string literal to NumPy uint8 array.
 
 - The API `simGetImages` can accept request for multiple image types from any cameras in single call. You can specify if image is png compressed, RGB uncompressed or float array. For png compressed images, you get `binary string literal`. For float array you get Python list of float64. You can convert this float array to NumPy 2D array using
