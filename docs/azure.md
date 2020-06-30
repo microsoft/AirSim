@@ -3,7 +3,7 @@
 This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code
 
 ## Automatically Deploy Your Azure VM
-Use [this](../azure/azure-env-creation/vm-arm-template.json) template to create, deploy and configure an Azure VM to work with AirSim 
+Use [this](https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creation/vm-arm-template.json) template to create, deploy and configure an Azure VM to work with AirSim 
 
 *Note: the VM deployment and configuration process may take 20+ minutes to complete*
 
@@ -72,12 +72,12 @@ docker build -t <your-registry-url>/<your-image-name> -f ./docker/Dockerfile .`
 To use a different AirSim binary, first check the official documentation on [How to Build AirSim on Windows](build_windows.md) and [How to Build AirSim on Linux](build_linux.md) if you also want to run it with Docker
 
 Once you have a zip file with the new AirSim environment (or prefer to use one from the [Official Releases](https://github.com/microsoft/AirSim/releases)), you need to modify some of the scripts in the `azure` directory of the repository to point to the new environment:
-- In [`azure/azure-env-creation/configure-vm.ps1`](../azure/azure-env-creation/configure-vm.ps1), modify all the parameters starting with `$airSimBinary` with the new values
-- In [`azure/start-airsim.ps1`](../azure/start-airsim.ps1), modify `$airSimExecutable` and `$airSimProcessName` with the new values
+- In [`azure/azure-env-creation/configure-vm.ps1`](https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creation/configure-vm.ps1), modify all the parameters starting with `$airSimBinary` with the new values
+- In [`azure/start-airsim.ps1`](https://github.com/microsoft/AirSim/blob/master/azure/start-airsim.ps1), modify `$airSimExecutable` and `$airSimProcessName` with the new values
 
 If you are using the docker image, you also need a linux binary zip file and modify the following Docker-related files:
-- In [`azure/docker/Dockerfile`](../azure/docker/Dockerfile), modify the `AIRSIM_BINARY_ZIP_URL` and `AIRSIM_BINARY_ZIP_FILENAME` ENV declarations with the new values
-- In [`azure/docker/docker-entrypoint.sh`](../azure/docker/docker-entrypoint.sh), modify `AIRSIM_EXECUTABLE` with the new value 
+- In [`azure/docker/Dockerfile`](https://github.com/microsoft/AirSim/blob/master/azure/docker/Dockerfile), modify the `AIRSIM_BINARY_ZIP_URL` and `AIRSIM_BINARY_ZIP_FILENAME` ENV declarations with the new values
+- In [`azure/docker/docker-entrypoint.sh`](https://github.com/microsoft/AirSim/blob/master/azure/docker/docker-entrypoint.sh), modify `AIRSIM_EXECUTABLE` with the new value 
 
 ## Maintaining this development environment
 
