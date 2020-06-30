@@ -66,6 +66,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
@@ -348,7 +350,7 @@
 <pre><code>python hello_car.py
 </code></pre>
 
-<p>If you are using Visual Studio 2017 then just open AirSim.sln, set PythonClient as startup project and choose <code>car\hello_car.py</code> as your startup script.</p>
+<p>If you are using Visual Studio 2019 then just open AirSim.sln, set PythonClient as startup project and choose <code>car\hello_car.py</code> as your startup script.</p>
 <h3 id="installing-airsim-package">Installing AirSim Package<a class="headerlink" href="#installing-airsim-package" title="Permanent link">#</a></h3>
 <p>You can also install <code>airsim</code> package simply by,</p>
 <pre><code>pip install airsim
@@ -543,7 +545,7 @@ client.takeoffAsync().join()
 <h4 id="unreal-is-slowed-down-dramatically-when-i-run-api">Unreal is slowed down dramatically when I run API<a class="headerlink" href="#unreal-is-slowed-down-dramatically-when-i-run-api" title="Permanent link">#</a></h4>
 <p>If you see Unreal getting slowed down dramatically when Unreal Engine window loses focus then go to 'Edit-&gt;Editor Preferences' in Unreal Editor, in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.</p>
 <h4 id="do-i-need-anything-else-on-windows">Do I need anything else on Windows?<a class="headerlink" href="#do-i-need-anything-else-on-windows" title="Permanent link">#</a></h4>
-<p>You should install VS2017 with VC++, Windows SDK 8.1 and Python. To use Python APIs you will need Python 3.5 or later (install it using Anaconda).</p>
+<p>You should install VS2019 with VC++, Windows SDK 10.0 and Python. To use Python APIs you will need Python 3.5 or later (install it using Anaconda).</p>
 <h4 id="which-version-of-python-should-i-use">Which version of Python should I use?<a class="headerlink" href="#which-version-of-python-should-i-use" title="Permanent link">#</a></h4>
 <p>We recommend <a href="https://www.anaconda.com/download/">Anaconda</a> to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have <a href="https://stackoverflow.com/a/45934992/207661">problems</a>.</p>
 <h4 id="i-get-error-on-import-cv2">I get error on <code>import cv2</code><a class="headerlink" href="#i-get-error-on-import-cv2" title="Permanent link">#</a></h4>

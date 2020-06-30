@@ -66,6 +66,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
@@ -275,10 +277,16 @@
 <p>This is a set of sample AirSim <code>settings.json</code>s, roslaunch and rviz files to give a starting point for using AirSim with ROS.   <br />
 See <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/README.md">airsim_ros_pkgs</a> for the ROS API.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
+<p>Make sure that the <a href="../airsim_ros_pkgs/">airsim_ros_pkgs Setup</a> has been completed and the prerequisites installed.</p>
 <pre><code class="shell">$ cd PATH_TO/AirSim/ros
 $ catkin build airsim_tutorial_pkgs
 </code></pre>
 
+<p>If your default GCC isn't 8 or greater (check using <code>gcc --version</code>), then compilation will fail. In that case, use <code>gcc-8</code> explicitly as follows-</p>
+<pre><code class="shell">catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
+</code></pre>
+
+<p>Note: For running examples, and also whenever a new terminal is opened, sourcing the <code>setup.bash</code> file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the <code>source PATH_TO/AirSim/ros/devel/setup.bash</code> to your <code>~/.profile</code> or <code>~/.bashrc</code> to avoid the need to run the command every time a new terminal is opened</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
 <h3 id="single-drone-with-monocular-and-depth-cameras-and-lidar">Single drone with monocular and depth cameras, and lidar<a class="headerlink" href="#single-drone-with-monocular-and-depth-cameras-and-lidar" title="Permanent link">#</a></h3>
 <ul>
@@ -291,6 +299,7 @@ $ catkin build airsim_tutorial_pkgs
 <p>## Start your unreal package or binary here</p>
 <p>$ roslaunch airsim_ros_pkgs airsim_node.launch;</p>
 <p># in a new pane / terminal
+ $ source PATH_TO/AirSim/ros/devel/setup.bash
  $ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch
  <code>``
  The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [</code>depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. </p>

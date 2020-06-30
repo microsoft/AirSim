@@ -66,6 +66,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
@@ -291,17 +293,19 @@
 <li>Install UE 4.24 through Epic Games Launcher.</li>
 <li>Start <code>x64 Native Tools Command Prompt for VS 2019</code> and navigate to AirSim repo.</li>
 <li>Run <code>clean_rebuild.bat</code> to remove all unchecked/extra stuff and rebuild everything.</li>
+<li>See also <a href="../build_windows/">Build AirSim on Windows</a> for more information.</li>
 </ol>
 <h3 id="for-linux-users">For Linux Users<a class="headerlink" href="#for-linux-users" title="Permanent link">#</a></h3>
 <ol>
 <li>From your AirSim repo folder, run 'clean_rebuild.sh`.</li>
 <li>Rename or delete your existing folder for Unreal Engine.</li>
 <li>Follow step 1 and 2 to <a href="https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md#install-and-build">install Unreal Engine 4.24</a>.</li>
+<li>See also <a href="../build_linux/">Build AirSim on Linux</a> for more information.</li>
 </ol>
 <h2 id="upgrading-your-custom-unreal-project">Upgrading Your Custom Unreal Project<a class="headerlink" href="#upgrading-your-custom-unreal-project" title="Permanent link">#</a></h2>
-<p>If you have your own Unreal project created in an older version of Unreal Engine then you need to upgrade your project to Unreal 4.24. To do this, </p>
+<p>If you have your own Unreal project created in an older version of Unreal Engine then you need to upgrade your project to Unreal 4.24. To do this,</p>
 <ol>
-<li>Open .uproject file and look for the line <code>"EngineAssociation"</code> and make sure it reads like <code>"EngineAssociation": "4.24"</code>. </li>
+<li>Open .uproject file and look for the line <code>"EngineAssociation"</code> and make sure it reads like <code>"EngineAssociation": "4.24"</code>.</li>
 <li>Delete <code>Plugins/AirSim</code> folder in your Unreal project's folder.</li>
 <li>Go to your AirSim repo folder and copy <code>Unreal\Plugins</code> folder to your Unreal project's folder.</li>
 <li>Copy <em>.bat (or </em>.sh for Linux) from <code>Unreal\Environments\Blocks</code> to your project's folder.</li>
@@ -310,7 +314,7 @@
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
 <h3 id="i-have-an-unreal-project-that-is-older-than-416-how-do-i-upgrade-it">I have an Unreal project that is older than 4.16. How do I upgrade it?<a class="headerlink" href="#i-have-an-unreal-project-that-is-older-than-416-how-do-i-upgrade-it" title="Permanent link">#</a></h3>
 <h4 id="option-1-just-recreate-project">Option 1: Just Recreate Project<a class="headerlink" href="#option-1-just-recreate-project" title="Permanent link">#</a></h4>
-<p>If your project doesn't have any code or assets other than environment you downloaded then you can also simply <a href="../unreal_custenv/">recreate the project in Unreal 4.24 Editor</a> and then copy Plugins folder from <code>AirSim/Unreal/Plugins</code>. </p>
+<p>If your project doesn't have any code or assets other than environment you downloaded then you can also simply <a href="../unreal_custenv/">recreate the project in Unreal 4.24 Editor</a> and then copy Plugins folder from <code>AirSim/Unreal/Plugins</code>.</p>
 <h4 id="option-2-modify-few-files">Option 2: Modify Few Files<a class="headerlink" href="#option-2-modify-few-files" title="Permanent link">#</a></h4>
 <p>Unreal versions newer than Unreal 4.15 has breaking changes. So you need to modify your <em>.Build.cs and </em>.Target.cs which you can find in the <code>Source</code> folder of your Unreal project. So what are those changes? Below is the gist of it but you should really refer to <a href="https://forums.unrealengine.com/showthread.php?145757-C-4-16-Transition-Guide">Unreal's official 4.16 transition post</a>.</p>
 <h5 id="in-your-projects-targetcs">In your project's *.Target.cs<a class="headerlink" href="#in-your-projects-targetcs" title="Permanent link">#</a></h5>

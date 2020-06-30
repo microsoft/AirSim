@@ -66,6 +66,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
@@ -277,13 +279,22 @@ Verify version by <code>gcc --version</code></p>
 <li>
 <p>Ubuntu 16.04</p>
 </li>
+<li>Install <a href="https://wiki.ros.org/kinetic/Installation/Ubuntu">ROS kinetic</a></li>
 <li>
-<p>Install <a href="https://wiki.ros.org/kinetic/Installation/Ubuntu">ROS kinetic</a></p>
+<p>Install mavros packages: <code>sudo apt-get install ros-kinetic-mavros*</code></p>
 </li>
 <li>
 <p>Ubuntu 18.04</p>
 </li>
 <li>Install <a href="https://wiki.ros.org/melodic/Installation/Ubuntu">ROS melodic</a></li>
+<li>
+<p>Install mavros packages: <code>sudo apt-get install ros-melodic-mavros*</code></p>
+</li>
+<li>
+<p>Install <a href="https://catkin-tools.readthedocs.io/en/latest/installing.html">catkin_tools</a>
+    <code>sudo apt-get install python-catkin-tools</code> or
+    <code>pip install catkin_tools</code></p>
+</li>
 </ul>
 <h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">#</a></h2>
 <ul>
@@ -299,7 +310,11 @@ cd AirSim;
 <li>Build ROS package</li>
 </ul>
 <pre><code>cd ros;
-catkin_make; # or catkin build
+catkin build; # or catkin_make
+</code></pre>
+
+<p>If your default GCC isn't 8 or greater (check using <code>gcc --version</code>), then compilation will fail. In that case, use <code>gcc-8</code> explicitly as follows-</p>
+<pre><code>catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
 </code></pre>
 
 <h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">#</a></h2>

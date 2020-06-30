@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>MavLink MoCap - AirSim</title>
+  <title>AirSim on Azure - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "MavLink MoCap";
-    var mkdocs_page_input_path = "mavlinkcom_mocap.md";
+    var mkdocs_page_name = "AirSim on Azure";
+    var mkdocs_page_input_path = "azure.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -57,7 +57,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Get AirSim</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../build_windows/">Build on Windows</a>
@@ -66,7 +66,29 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">AirSim on Azure</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#automatically-deploy-your-azure-vm">Automatically Deploy Your Azure VM</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#regarding-the-deployment-of-the-azure-vm">Regarding the deployment of the Azure VM</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-and-debug-from-visual-studio-code-and-remote-ssh">Code and debug from Visual Studio Code and Remote SSH</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-and-debug-from-a-local-visual-studio-code-and-connect-to-airsim-via-forwarded-ports">Code and debug from a local Visual Studio Code and connect to AirSim via forwarded ports</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-with-docker">Running with Docker</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#building-the-docker-image">Building the docker image</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-a-different-airsim-binary">Using a different AirSim binary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#maintaining-this-development-environment">Maintaining this development environment</a>
+    </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
@@ -134,7 +156,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
@@ -157,17 +179,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">MavLink MoCap</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies:</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#setup-rigidbody">Setup RigidBody</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#mavlinktest">MavLinkTest</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -251,14 +263,14 @@
     
       
         
-          <li>MavLink and PX4 &raquo;</li>
+          <li>Get AirSim &raquo;</li>
         
       
     
-    <li>MavLink MoCap</li>
+    <li>AirSim on Azure</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/mavlinkcom_mocap.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/azure.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -269,28 +281,76 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="welcome-to-mavlinkmocap">Welcome to MavLinkMoCap<a class="headerlink" href="#welcome-to-mavlinkmocap" title="Permanent link">#</a></h1>
-<p>This folder contains the MavLinkMoCap library which connects to a OptiTrack camera system
-for accurate indoor location.</p>
-<h2 id="dependencies">Dependencies:<a class="headerlink" href="#dependencies" title="Permanent link">#</a></h2>
+                <h1 id="airsim-development-environment-on-azure">AirSim Development Environment on Azure<a class="headerlink" href="#airsim-development-environment-on-azure" title="Permanent link">#</a></h1>
+<p>This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code</p>
+<h2 id="automatically-deploy-your-azure-vm">Automatically Deploy Your Azure VM<a class="headerlink" href="#automatically-deploy-your-azure-vm" title="Permanent link">#</a></h2>
+<p>Use <a href="https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creation/vm-arm-template.json">this</a> template to create, deploy and configure an Azure VM to work with AirSim </p>
+<p><em>Note: the VM deployment and configuration process may take 20+ minutes to complete</em></p>
+<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fairsim%2Fmaster%2Fazure%2Fazure-env-creation%2Fvm-arm-template.json" target="_blank">
+    <img src="https://azuredeploy.net/deploybutton.png"/>
+</a></p>
+<h3 id="regarding-the-deployment-of-the-azure-vm">Regarding the deployment of the Azure VM<a class="headerlink" href="#regarding-the-deployment-of-the-azure-vm" title="Permanent link">#</a></h3>
 <ul>
-<li><a href="http://www.optitrack.com/products/motive/">OptiTrack Motive</a>.</li>
-<li><a href="../mavlinkcom/">MavLinkCom</a>.</li>
+<li>
+<p>When using an Azure Trial account, the default vCPU quota may not be enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to make a support request to increase the default quota.</p>
+</li>
+<li>
+<p>To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the <a href="https://portal.azure.com">Azure Portal</a> or use the following command from the Azure CLI:
+    <code>bash
+    az vm deallocate --resource-group MyResourceGroup --name MyVMName</code></p>
+</li>
 </ul>
-<h3 id="setup-rigidbody">Setup RigidBody<a class="headerlink" href="#setup-rigidbody" title="Permanent link">#</a></h3>
-<p>First you need to define a RigidBody named 'Quadrocopter' using Motive.
-See <a href="http://wiki.optitrack.com/index.php?title=Rigid_Body_Tracking">Rigid_Body_Tracking</a>.</p>
-<h3 id="mavlinktest">MavLinkTest<a class="headerlink" href="#mavlinktest" title="Permanent link">#</a></h3>
-<p>Use MavLinkTest to talk to your PX4 drone, with "-server:addr:port", for example, when connected
-to drone wifi use: </p>
-<pre><code>MavLinkMoCap -server:10.42.0.228:14590 "-project:D:\OptiTrack\Motive Project 2016-12-19 04.09.42 PM.ttp"
+<h2 id="code-and-debug-from-visual-studio-code-and-remote-ssh">Code and debug from Visual Studio Code and Remote SSH<a class="headerlink" href="#code-and-debug-from-visual-studio-code-and-remote-ssh" title="Permanent link">#</a></h2>
+<ul>
+<li>Install Visual Studio Code</li>
+<li>Install the <em>Remote - SSH</em> extension</li>
+<li>Press <code>F1</code> and run the <code>Remote - SSH: Connect to host...</code> command</li>
+<li>Add the recently create VM details. For instance, <code>AzureUser@11.22.33.44</code></li>
+<li>Run the <code>Remote - SSH: Connect to host...</code> command again, and now select the newly added connection.</li>
+<li>Once connected, click on the <code>Clone Repository</code> button in Visual Studio Code, and either clone this repository in the remote VM and open <em>just the <code>azure</code> folder</em>, or create a brand new repository, clone it and copy the contents of the <code>azure</code> folder from this repository in it. It is important to open that directory so Visual Studio Code can use the specific <code>.vscode</code> directory for the scenario and not the general AirSim <code>.vscode</code> directory. It contains the recommended extensions to install, the task to start AirSim remotely and the launch configuration for the Python application.</li>
+<li>Install all the recommended extensions</li>
+<li>Press <code>F1</code> and select the <code>Tasks: Run Task</code> option. Then, select the <code>Start AirSim</code> task from Visual Studio Code to execute the <code>start-airsim.ps1</code> script from Visual Studio Code.</li>
+<li>Open the <code>multirotor.py</code> file inside the <code>app</code> directory</li>
+<li>Start debugging with Python</li>
+<li>When finished, remember to stop an deallocate the Azure VM to avoid extra charges</li>
+</ul>
+<h2 id="code-and-debug-from-a-local-visual-studio-code-and-connect-to-airsim-via-forwarded-ports">Code and debug from a local Visual Studio Code and connect to AirSim via forwarded ports<a class="headerlink" href="#code-and-debug-from-a-local-visual-studio-code-and-connect-to-airsim-via-forwarded-ports" title="Permanent link">#</a></h2>
+<p><em>Note: this scenario, will be using two Visual Studio Code instances. 
+The first one will be used as a bridge to forward ports via SSH to the Azure VM and execute remote processes, and the second one will 
+be used for local Python development.
+To be able to reach the VM from the local Python code, it is required to keep the <code>Remote - SSH</code> instance of Visual Studio Code opened, while working with the local Python environment on the second instance</em></p>
+<ul>
+<li>Open the first Visual Studio Code instance</li>
+<li>Follow the steps in the previous section to connect via <code>Remote - SSH</code></li>
+<li>In the <em>Remote Explorer</em>, add the port <code>41451</code> as a forwarded port to localhost</li>
+<li>Either run the <code>Start AirSim</code> task on the Visual Studio Code with the remote session as explained in the previous scenario or manually start the AirSim binary in the VM</li>
+<li>Open a second Visual Studio Code instance, without disconnecting or closing the first one</li>
+<li>Either clone this repository locally and open <em>just the <code>azure</code> folder</em> in Visual Studio Code, or create a brand new repository, clone it and copy the contents of the <code>azure</code> folder from this repository in it.</li>
+<li>Run <code>pip install -r requirements.txt</code> inside the <code>app</code> directory</li>
+<li>Open the <code>multirotor.py</code> file inside the <code>app</code> directory </li>
+<li>Start debugging with Python</li>
+<li>When finished, remember to stop an deallocate the Azure VM to avoid extra charges</li>
+</ul>
+<h2 id="running-with-docker">Running with Docker<a class="headerlink" href="#running-with-docker" title="Permanent link">#</a></h2>
+<p>Once both the AirSim environment and the Python application are ready, you can package everything as a Docker image. The sample project inside the <code>azure</code> directory is already prepared to run a prebuilt AirSim binary and Python code using Docker.</p>
+<p>This would be a perfect scenario when you want to run the simulation at scale. For instance, you could have several different configurations for the same simulation and execute them in a parallel, unattended way using a Docker image on Azure Container Services</p>
+<p>Since AirSim requires access to the host GPU, it is required to use a Docker runtime that supports it. For more information about running AirSim in Docker, click <a href="https://github.com/microsoft/AirSim/blob/master/docs/docker_ubuntu.md">here</a>.</p>
+<p>When using Azure Container Services to run this image, the only extra-requirement is to add GPU support to the Container Group where it will be deployed. </p>
+<p>It can use either public docker images from DockerHub or images deployed to a private Azure Container Registry</p>
+<h3 id="building-the-docker-image">Building the docker image<a class="headerlink" href="#building-the-docker-image" title="Permanent link">#</a></h3>
+<pre><code class="bash">docker build -t &lt;your-registry-url&gt;/&lt;your-image-name&gt; -f ./docker/Dockerfile .`
 </code></pre>
-<p>This publishes the ATT_POS_MOCAP messages and you can proxy those through to the PX4 by running 
-MavLinkTest on the dronebrain using:</p>
-<pre><code>MavLinkTest -serial:/dev/ttyACM0,115200 -proxy:10.42.0.228:14590
-</code></pre>
-<p>Now the drone will get the ATT_POS_MOCAP and you should see the light turn green meaning it is
-now has a home position and is ready to fly.</p>
+
+<h2 id="using-a-different-airsim-binary">Using a different AirSim binary<a class="headerlink" href="#using-a-different-airsim-binary" title="Permanent link">#</a></h2>
+<p>To use a different AirSim binary, first check the official documentation on <a href="../build_windows/">How to Build AirSim on Windows</a> and <a href="../build_linux/">How to Build AirSim on Linux</a> if you also want to run it with Docker</p>
+<p>Once you have a zip file with the new AirSim environment (or prefer to use one from the <a href="https://github.com/microsoft/AirSim/releases">Official Releases</a>), you need to modify some of the scripts in the <code>azure</code> directory of the repository to point to the new environment:
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creation/configure-vm.ps1"><code>azure/azure-env-creation/configure-vm.ps1</code></a>, modify all the parameters starting with <code>$airSimBinary</code> with the new values
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/start-airsim.ps1"><code>azure/start-airsim.ps1</code></a>, modify <code>$airSimExecutable</code> and <code>$airSimProcessName</code> with the new values</p>
+<p>If you are using the docker image, you also need a linux binary zip file and modify the following Docker-related files:
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/docker/Dockerfile"><code>azure/docker/Dockerfile</code></a>, modify the <code>AIRSIM_BINARY_ZIP_URL</code> and <code>AIRSIM_BINARY_ZIP_FILENAME</code> ENV declarations with the new values
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/docker/docker-entrypoint.sh"><code>azure/docker/docker-entrypoint.sh</code></a>, modify <code>AIRSIM_EXECUTABLE</code> with the new value </p>
+<h2 id="maintaining-this-development-environment">Maintaining this development environment<a class="headerlink" href="#maintaining-this-development-environment" title="Permanent link">#</a></h2>
+<p>Several components of this development environment (ARM templates, initialization scripts and VSCode tasks) directly depend on the current directory structures file names and repository locations. When planning to modify/fork any of those, make sure to check every script and template to make any required adjustment.</p>
               
             </div>
           </div>
@@ -298,10 +358,10 @@ now has a home position and is ready to fly.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../unreal_upgrade/" class="btn btn-neutral float-right" title="Upgrading Unreal">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../unreal_custenv/" class="btn btn-neutral float-right" title="Custom Unreal Environment">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../mavlinkcom/" class="btn btn-neutral" title="MavLinkCom"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../docker_ubuntu/" class="btn btn-neutral" title="Docker on Linux"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -331,10 +391,10 @@ now has a home position and is ready to fly.</p>
           <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../mavlinkcom/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../docker_ubuntu/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../unreal_upgrade/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../unreal_custenv/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

@@ -55,6 +55,8 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#april-2020">April 2020</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#march-2020">March 2020</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#november-2018">November, 2018</a>
@@ -85,6 +87,8 @@
                     <li class="toctree-l1"><a class="reference internal" href="../build_linux/">Build on Linux</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
@@ -275,9 +279,49 @@
               
                 <h1 id="whats-new">What's new<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h1>
 <p>Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review <a href="https://github.com/Microsoft/AirSim/commits/master">commit history</a>.</p>
+<h3 id="april-2020">April 2020<a class="headerlink" href="#april-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/2634">Fix issues with PX4 latest master branch</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2614">Fix Lidar DrawDebugPoints causing crash</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2565">Add docstrings for Python API</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2625">Add missing noise, weather texture materials</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2584">Update AirSim.uplugin version to 1.3.1</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2610">Camera Roll angle control using Q,E keys in CV mode, manual camera</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2572">Remove broken GCC build</a></li>
+<li>New API - <a href="https://github.com/microsoft/AirSim/pull/2506"><code>simSetTraceLine()</code></a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2571">ROS package compilation fixes and updates</a></li>
+<li>Latest release <code>v1.3.1</code> for <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows">Windows</a> and <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux">Linux</a></li>
+<li>APIs added and fixed - <a href="https://github.com/microsoft/AirSim/pull/2534"><code>simSetCameraFov</code></a>, <a href="https://github.com/microsoft/AirSim/pull/2516"><code>rotateToYaw</code></a></li>
+<li><a href="https://pypi.org/project/airsim/">airsim</a> Python package update to <code>1.2.8</code></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2518">NoDisplay ViewMode render state fix</a></li>
+</ul>
 <h3 id="march-2020">March 2020<a class="headerlink" href="#march-2020" title="Permanent link">#</a></h3>
 <ul>
-<li>Upgraded to Unreal Engine 4.24</li>
+<li>Latest release <code>v1.3.0</code> for <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.0-Windows">Windows</a> and <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.0-linux">Linux</a></li>
+<li>Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard</li>
+<li>Mac OSX Catalina support</li>
+<li>Updated <a href="https://pypi.org/project/airsim/">airsim</a> Python package, with lots of new APIs</li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2494">Removed legacy API wrappers</a></li>
+<li><a href="../px4_setup/">Support for latest PX4 stable release</a></li>
+<li>Support for <a href="https://ardupilot.org/ardupilot/">ArduPilot</a> - <a href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">Copter, Rover vehicles</a></li>
+<li><a href="../Unity/">Updated Unity support</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2493">Removed simChar* APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2304">Plotting APIs for Debugging</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2297">Low-level Multirotor APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2325">Updated Eigen version to 3.3.7</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2403">Distance Sensor API fix</a></li>
+<li>Add <a href="../retexturing/"><code>simSwapTextures</code></a> API</li>
+<li>Fix <a href="https://github.com/microsoft/AirSim/pull/2299"><code>simContinueForTime</code></a>, <a href="https://github.com/microsoft/AirSim/pull/2292"><code>simPause</code></a> APIs</li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2143">Lidar Sensor Trace Casting fix</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2146">Fix rare <code>reset()</code> bug which causes Unreal crash</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2011">Lidar sensor improvements, add <code>simGetLidarSegmentation</code> API</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2185">Add RpcLibPort in settings</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/1695">Recording thread deadlock fix</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2147">Prevent environment crash when Sun is not present</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/1959">Africa Tracking feautre, add <code>simListSceneObjects()</code> API, fix camera projection matrix</a></li>
+<li>ROS wrapper for multirotors is available. See <a href="../airsim_ros_pkgs/">airsim_ros_pkgs</a> for the ROS API, and <a href="../airsim_tutorial_pkgs/">airsim_tutorial_pkgs</a> for tutorials.</li>
+<li><a href="../sensors/">Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor</a></li>
+<li>Added support for <a href="../docker_ubuntu/">docker in ubuntu</a></li>
 </ul>
 <h3 id="november-2018">November, 2018<a class="headerlink" href="#november-2018" title="Permanent link">#</a></h3>
 <ul>

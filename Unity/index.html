@@ -66,6 +66,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">AirSim with Unity</a>
@@ -91,6 +93,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#download-and-install-unity-for-linux">Download and Install Unity for Linux</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#install-unity_1">Install Unity</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#build-airsim_1">Build Airsim</a>
     </li>
@@ -326,7 +330,7 @@
 <h4 id="install-unity">Install Unity<a class="headerlink" href="#install-unity" title="Permanent link">#</a></h4>
 <ul>
 <li>Download <strong>Unity Hub</strong> from <a href="https://unity3d.com/get-unity/download">this page</a>. </li>
-<li>Install <strong>Unity 2018.2.15f1</strong> using the Unity Hub. <a href="https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html">Detailed instructions here</a>. </li>
+<li>Install <strong>Unity 2019.3.12</strong> using the Unity Hub from <a href="https://unity3d.com/get-unity/update?_ga=2.150316848.720992218.1588269226-65412882.1588269226">here</a>. <a href="https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html">Detailed instructions here</a>. </li>
 <li>Note: If you are using Unity for the first time, check out <a href="https://docs.unity3d.com/Manual/GettingStarted.html">the Getting started guide</a>. The <a href="https://docs.unity3d.com/Manual/UnityManual.html">Unity User Manual</a> has additional tips, resources, and FAQs.</li>
 </ul>
 <h4 id="build-airsim">Build Airsim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h4>
@@ -354,19 +358,11 @@
 
 <h4 id="download-and-install-unity-for-linux">Download and Install Unity for Linux<a class="headerlink" href="#download-and-install-unity-for-linux" title="Permanent link">#</a></h4>
 <p><span style="color:red">Warning:</span> Unity Editor for Linux is still in Beta. Expect some rough edges.</p>
+<h4 id="install-unity_1">Install Unity<a class="headerlink" href="#install-unity_1" title="Permanent link">#</a></h4>
 <ul>
-<li>
-<p><strong>Download</strong> Unity editor version <code>2019.1.0f2</code>
-    <code>shell
-    wget https://beta.unity3d.com/download/292b93d75a2c/UnitySetup-2019.1.0f2</code>
-    Note: While the latest version of linux build of Unity can be found on the last post of <a href="https://forum.unity.com/threads/unity-on-linux-release-notes-and-known-issues.350256/page-2#post-4458286">this thread</a>, we recommend <code>2019.1.0f2</code>.</p>
-</li>
-<li>
-<p><strong>Install</strong> the editor
-    <code>shell
-    chmod +x UnitySetup-2019.1.0f2
-    ./UnitySetup-2019.1.0f2</code></p>
-</li>
+<li>Download <strong>Unity Hub</strong> from <a href="https://unity3d.com/get-unity/download">this page</a>. </li>
+<li><a href="https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html">Install <strong>Unity 2019.3.12</strong> using the Unity Hub</a>. </li>
+<li>Note: If you are using Unity for the first time, check out <a href="https://docs.unity3d.com/Manual/GettingStarted.html">the Getting started guide</a>. The <a href="https://docs.unity3d.com/Manual/UnityManual.html">Unity User Manual</a> has additional tips, resources, and FAQs.</li>
 </ul>
 <h4 id="build-airsim_1">Build Airsim<a class="headerlink" href="#build-airsim_1" title="Permanent link">#</a></h4>
 <pre><code>git clone https://github.com/Microsoft/AirSim.git;
@@ -383,9 +379,10 @@ cd AirSim;
 <p>This will generate the necessary shared library and copy it to the UnityDemo Plugins folder.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">#</a></h2>
 <ul>
-<li>Start Unity and click <code>Open project</code>. </li>
-<li>Select the folder <code>AirSim\Unity\UnityDemo</code>, and then hit the button <code>Select Folder</code>. </li>
-<li>In the bottom pane, Click on <code>Projects</code>-&gt;<code>Assets</code>-&gt;<code>Scenes</code>. Then, <strong>Double-click</strong> on <code>SimModeSelector</code>. This will load the SimModeSelector scene into the scene hierarchy pane. <em>DO NOT</em> add CarDemo or DroneDemo scene into the scene hierarchy pane.</li>
+<li>Start Unity Hub, click on <code>Projects</code> on left pane, and then click on the <code>Add</code> button </li>
+<li>Select the folder <code>AirSim\Unity\UnityDemo</code>, and then hit the <code>OK</code> button. </li>
+<li>Click on the new project which showed up in the Unity Hub menu to open it in Unity. </li>
+<li>In the bottom pane, click on <code>Projects</code>-&gt;<code>Assets</code>-&gt;<code>Scenes</code>. Then, <strong>Double-click</strong> on <code>SimModeSelector</code>. This will load the SimModeSelector scene into the scene hierarchy pane. <em>DO NOT</em> add CarDemo or DroneDemo scene into the scene hierarchy pane.</li>
 <li>Hit the play button to start the simulation (and hit play again to stop the simulation. .  </li>
 <li>Alternatively, you can change the SimMode in your <code>Settings.json</code> file. (You can read more about <a href="https://github.com/Microsoft/AirSim/blob/master/docs/settings.md"><code>Settings.json</code> here</a>)</li>
 <li>Controlling the car:  <br />
