@@ -3,16 +3,21 @@
 This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code
 
 ## Automatically Deploy Your Azure VM
-Use [this](../azure/azure-env-creation/vm-arm-template.json) template to create, deploy and configure an Azure VM to work with AirSim
+Use [this](../azure/azure-env-creation/vm-arm-template.json) template to create, deploy and configure an Azure VM to work with AirSim 
+
+*Note: the VM deployment and configuration process may take 20+ minutes to complete*
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fairsim%2Fmaster%2Fazure%2Fazure-env-creation%2Fvm-arm-template.json" target="_blank">
     <img src="https://azuredeploy.net/deploybutton.png"/>
 </a>
 
-*To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the [Azure Portal](https://portal.azure.com) or use the following command from the Azure CLI:*
-```bash
-az vm deallocate --resource-group MyResourceGroup --name MyVMName
-```  
+### Regarding the deployment of the Azure VM
+- When using an Azure Trial account, the default vCPU quota may not be enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to make a support request to increase the default quota.
+
+- To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the [Azure Portal](https://portal.azure.com) or use the following command from the Azure CLI:
+    ```bash
+    az vm deallocate --resource-group MyResourceGroup --name MyVMName
+    ```
 
 ## Code and debug from Visual Studio Code and Remote SSH
 - Install Visual Studio Code
@@ -22,19 +27,28 @@ az vm deallocate --resource-group MyResourceGroup --name MyVMName
 - Run the `Remote - SSH: Connect to host...` command again, and now select the newly added connection.
 - Once connected, click on the `Clone Repository` button in Visual Studio Code, and either clone this repository in the remote VM and open *just the `azure` folder*, or create a brand new repository, clone it and copy the contents of the `azure` folder from this repository in it. It is important to open that directory so Visual Studio Code can use the specific `.vscode` directory for the scenario and not the general AirSim `.vscode` directory. It contains the recommended extensions to install, the task to start AirSim remotely and the launch configuration for the Python application.
 - Install all the recommended extensions
-- Run the `Start AirSim` task from Visual Studio Code
+- Press `F1` and select the `Tasks: Run Task` option. Then, select the `Start AirSim` task from Visual Studio Code to execute the `start-airsim.ps1` script from Visual Studio Code.
 - Open the `multirotor.py` file inside the `app` directory
 - Start debugging with Python
+- When finished, remember to stop an deallocate the Azure VM to avoid extra charges
 
 ## Code and debug from a local Visual Studio Code and connect to AirSim via forwarded ports
 
+*Note: this scenario, will be using two Visual Studio Code instances. 
+The first one will be used as a bridge to forward ports via SSH to the Azure VM and execute remote processes, and the second one will 
+be used for local Python development.
+To be able to reach the VM from the local Python code, it is required to keep the `Remote - SSH` instance of Visual Studio Code opened, while working with the local Python environment on the second instance*
+
+- Open the first Visual Studio Code instance
 - Follow the steps in the previous section to connect via `Remote - SSH`
 - In the *Remote Explorer*, add the port `41451` as a forwarded port to localhost
+- Either run the `Start AirSim` task on the Visual Studio Code with the remote session as explained in the previous scenario or manually start the AirSim binary in the VM
+- Open a second Visual Studio Code instance, without disconnecting or closing the first one
 - Either clone this repository locally and open *just the `azure` folder* in Visual Studio Code, or create a brand new repository, clone it and copy the contents of the `azure` folder from this repository in it.
-- Either run the `Start AirSim` task or manually start the AirSim binary in the VM
 - Run `pip install -r requirements.txt` inside the `app` directory
 - Open the `multirotor.py` file inside the `app` directory 
 - Start debugging with Python
+- When finished, remember to stop an deallocate the Azure VM to avoid extra charges
 
 ## Running with Docker
 Once both the AirSim environment and the Python application are ready, you can package everything as a Docker image. The sample project inside the `azure` directory is already prepared to run a prebuilt AirSim binary and Python code using Docker.
