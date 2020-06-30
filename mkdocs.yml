@@ -37,6 +37,7 @@ nav:
     - "Build on Windows": 'build_windows.md'
     - "Build on Linux": 'build_linux.md'
     - "Docker on Linux": 'docker_ubuntu.md'
+    - "AirSim on Azure": 'azure.md'
     - "Custom Unreal Environment": 'unreal_custenv.md'
     - "AirSim with Unity": "Unity.md"
     - "Custom Unity Environment": "custom_unity_environments.md"
