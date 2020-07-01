@@ -7,7 +7,7 @@ Use [this](https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creat
 
 *Note: the VM deployment and configuration process may take 20+ minutes to complete*
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fairsim%2Fmaster%2Fazure%2Fazure-env-creation%2Fvm-arm-template.json" target="_blank">
+<a href="https://aka.ms/AA8umgt" target="_blank">
     <img src="https://azuredeploy.net/deploybutton.png"/>
 </a>
 
