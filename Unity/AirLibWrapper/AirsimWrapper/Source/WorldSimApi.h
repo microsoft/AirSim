@@ -44,6 +44,11 @@ public:
     virtual void simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration) override;
     virtual std::vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const override;
 
+    // Recording APIs
+    virtual void startRecording() override;
+    virtual void stopRecording() override;
+    virtual bool isRecording() const override;
+
 private:
 	SimModeBase * simmode_;
 	std::string vehicle_name_;
