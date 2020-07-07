@@ -399,6 +399,21 @@ RpcLibClientBase* RpcLibClientBase::waitOnLastTask(bool* task_result, float time
     return this;
 }
 
+void RpcLibClientBase::startRecording()
+{
+    pimpl_->client.call("startRecording");
+}
+
+void RpcLibClientBase::stopRecording()
+{
+    pimpl_->client.call("stopRecording");
+}
+
+bool RpcLibClientBase::isRecording()
+{
+    return pimpl_->client.call("isRecording").as<bool>();
+}
+
 void* RpcLibClientBase::getClient()
 {
     return &pimpl_->client;

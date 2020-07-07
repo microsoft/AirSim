@@ -675,6 +675,30 @@ class VehicleClient:
         """
         return self.client.call('waitOnLastTask', timeout_sec)
 
+    # Recording APIs
+    def startRecording(self):
+        """
+        Start Recording
+
+        Recording will be done according to the settings
+        """
+        self.client.call('startRecording')
+
+    def stopRecording(self):
+        """
+        Stop Recording
+        """
+        self.client.call('stopRecording')
+
+    def isRecording(self):
+        """
+        Whether Recording is running or not
+
+        Returns:
+            bool: True if Recording, else False
+        """
+        return self.client.call('isRecording')
+
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):

@@ -238,3 +238,19 @@ std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMesh
 	}, true);
 	return responses;
 }
+
+// Recording APIs
+void WorldSimApi::startRecording()
+{
+    simmode_->startRecording();
+}
+
+void WorldSimApi::stopRecording()
+{
+    simmode_->stopRecording();
+}
+
+bool WorldSimApi::isRecording() const
+{
+    return simmode_->isRecording();
+}
