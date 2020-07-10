@@ -286,12 +286,21 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
         const auto& noise_setting = camera_setting.noise_settings.at(image_type);
 
         if (image_type >= 0) { //scene capture components
-            if (image_type==0 || image_type==5 || image_type==6 || image_type==7)
-                updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], false, 
-                    image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform);
-            else
-                updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, 
-                    image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform); 
+            switch (image_type) {
+                case 0:
+                case 7:
+                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], false, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, false);
+                    break;
+
+                case 5:
+                case 6:
+                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, true);
+                    break;
+
+                default:
+                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, false);
+                    break;
+            }
 
             setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
         }
@@ -304,7 +313,8 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
 }
 
 void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture, UTextureRenderTarget2D* render_target, 
-    bool auto_format, const EPixelFormat& pixel_format, const CaptureSetting& setting, const NedTransform& ned_transform)
+    bool auto_format, const EPixelFormat& pixel_format, const CaptureSetting& setting, const NedTransform& ned_transform,
+    bool force_linear_gamma)
 {
     if (auto_format)
     {
@@ -312,7 +322,7 @@ void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture
     }
     else
     {
-        render_target->InitCustomFormat(setting.width, setting.height, pixel_format, false);
+        render_target->InitCustomFormat(setting.width, setting.height, pixel_format, force_linear_gamma);
     } 
 
     if (!std::isnan(setting.target_gamma))
