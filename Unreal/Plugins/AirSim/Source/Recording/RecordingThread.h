@@ -16,14 +16,16 @@ class FRecordingThread : public FRunnable
 {
 public:
     typedef msr::airlib::AirSimSettings::RecordingSetting RecordingSetting;
+    typedef msr::airlib::VehicleSimApiBase VehicleSimApiBase;
+    typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
 public:
     FRecordingThread();
     virtual ~FRecordingThread();
 
     static void init();
-    static void startRecording(const msr::airlib::ImageCaptureBase* camera, const msr::airlib::Kinematics::State* kinematics, 
-        const RecordingSetting& settings, msr::airlib::VehicleSimApiBase* vehicle_sim_api);
+    static void startRecording(const RecordingSetting& settings,
+        const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis);
     static void stopRecording();
     static void killRecording();
     static bool isRecording();
@@ -48,13 +50,12 @@ private:
     std::unique_ptr<FRunnableThread> thread_;
 
     RecordingSetting settings_;
-    const msr::airlib::ImageCaptureBase* image_capture_;
     std::unique_ptr<RecordingFile> recording_file_;
-    const msr::airlib::Kinematics::State* kinematics_;
-    msr::airlib::VehicleSimApiBase* vehicle_sim_api_;
+    common_utils::UniqueValueMap<std::string, VehicleSimApiBase*> vehicle_sim_apis_;
+    std::unordered_map<std::string, const ImageCaptureBase*> image_captures_;
+    std::unordered_map<std::string, msr::airlib::Pose> last_poses_;
 
     msr::airlib::TTimePoint last_screenshot_on_;
-    msr::airlib::Pose last_pose_;
 
     bool is_ready_;
 };

@@ -51,12 +51,16 @@ public: //types
     };
 
     struct RecordingSetting {
-        bool record_on_move;
-        float record_interval;
+        bool record_on_move = false;
+        float record_interval = 0.05f;
 
-        std::vector<msr::airlib::ImageCaptureBase::ImageRequest> requests;
+        std::map<std::string, std::vector<ImageCaptureBase::ImageRequest> > requests;
 
-        RecordingSetting(bool record_on_move_val = false, float record_interval_val = 0.05f)
+        RecordingSetting()
+        {
+        }
+
+        RecordingSetting(bool record_on_move_val, float record_interval_val)
             : record_on_move(record_on_move_val), record_interval(record_interval_val)
         {
         }
@@ -395,14 +399,14 @@ public: //methods
         loadCameraDirectorSetting(settings_json, camera_director, simmode_name);
         loadSubWindowsSettings(settings_json, subwindow_settings);
         loadViewModeSettings(settings_json);
-        loadRecordingSetting(settings_json, recording_setting);
         loadSegmentationSetting(settings_json, segmentation_setting);
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
         loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults);
         loadVehicleSettings(simmode_name, settings_json, vehicles);
 
-        //this should be done last because it depends on type of vehicles we have
+        //this should be done last because it depends on vehicles (and/or their type) we have
+        loadRecordingSetting(settings_json, recording_setting);
         loadClockSettings(settings_json);
     }
 
@@ -582,8 +586,10 @@ private:
             std::to_string(settings_json.getInt("CameraID", 0)));
     }
 
-    static void loadRecordingSetting(const Settings& settings_json, RecordingSetting& recording_setting)
+    void loadRecordingSetting(const Settings& settings_json, RecordingSetting& recording_setting)
     {
+        recording_setting.requests.clear();
+
         Settings recording_json;
         if (settings_json.getChild("Recording", recording_json)) {
             recording_setting.record_on_move = recording_json.getBool("RecordOnMove", recording_setting.record_on_move);
@@ -600,16 +606,22 @@ private:
                                 req_camera_settings.getInt("ImageType", 0));
                         bool compress = req_camera_settings.getBool("Compress", true);
                         bool pixels_as_float = req_camera_settings.getBool("PixelsAsFloat", false);
+                        std::string vehicle_name =req_camera_settings.getString("VehicleName", "");
 
-                        recording_setting.requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(
+                        recording_setting.requests[vehicle_name].push_back(ImageCaptureBase::ImageRequest(
                             camera_name, image_type, pixels_as_float, compress));
                     }
                 }
             }
         }
-        if (recording_setting.requests.size() == 0)
-            recording_setting.requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(
-                "", ImageType::Scene, false, true));
+
+        if (recording_setting.requests.empty()) {
+            // Add Scene image for each vehicle
+            for (const auto& vehicle : vehicles) {
+                recording_setting.requests[vehicle.first].push_back(ImageCaptureBase::ImageRequest(
+                    "", ImageType::Scene, false, true));
+            }
+        }
     }
 
     static void initializeCaptureSettings(std::map<int, CaptureSetting>& capture_settings)

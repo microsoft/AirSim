@@ -8,7 +8,8 @@
 
 
 void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, msr::airlib::VehicleSimApiBase* vehicle_sim_api)
-{   bool save_success = false;
+{
+    bool save_success = false;
     std::stringstream image_file_names;
 
     for (auto i = 0; i < responses.size(); ++i) {
@@ -16,7 +17,9 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
 
         //build image file name
         std::stringstream image_file_name;
-        image_file_name << "img_" << response.camera_name << "_" <<
+        image_file_name << "img_"
+            << vehicle_sim_api->getVehicleName() << "_" 
+            << response.camera_name << "_" <<
             common_utils::Utils::toNumeric(response.image_type) << "_" <<
             common_utils::Utils::getTimeSinceEpochNanos() << 
             (response.pixels_as_float ? ".pfm" : ".png");

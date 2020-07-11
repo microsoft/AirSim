@@ -578,7 +578,7 @@ msr::airlib::Environment* PawnSimApi::getEnvironment()
 std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
 {
     if (is_header_line) {
-        return "TimeStamp\tPOS_X\tPOS_Y\tPOS_Z\tQ_W\tQ_X\tQ_Y\tQ_Z\t";
+        return "VehicleName\tTimeStamp\tPOS_X\tPOS_Y\tPOS_Z\tQ_W\tQ_X\tQ_Y\tQ_Z\t";
     }
 
     const Kinematics::State* kinematics = getGroundTruthKinematics();
@@ -588,7 +588,8 @@ std::string PawnSimApi::getRecordFileLine(bool is_header_line) const
     //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
 
     std::string line;
-    line.append(std::to_string(timestamp_millis)).append("\t")
+    line.append(getVehicleName()).append("\t")
+        .append(std::to_string(timestamp_millis)).append("\t")
         .append(std::to_string(kinematics->pose.position.x())).append("\t")
         .append(std::to_string(kinematics->pose.position.y())).append("\t")
         .append(std::to_string(kinematics->pose.position.z())).append("\t")
