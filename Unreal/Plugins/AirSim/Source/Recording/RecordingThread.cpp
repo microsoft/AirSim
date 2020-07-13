@@ -46,7 +46,7 @@ void FRecordingThread::startRecording(const RecordingSetting& settings,
 
     running_instance_->recording_file_.reset(new RecordingFile());
     // Just need any 1 instance, to set the header line of the record file
-    running_instance_->recording_file_->startRecording(*(vehicle_sim_apis.begin()));
+    running_instance_->recording_file_->startRecording(*(vehicle_sim_apis.begin()), settings.folder);
 }
 
 FRecordingThread::~FRecordingThread()

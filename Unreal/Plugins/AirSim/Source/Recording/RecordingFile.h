@@ -14,7 +14,7 @@ public:
 
     void appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, msr::airlib::VehicleSimApiBase* vehicle_sim_api);
     void appendColumnHeader(const std::string& header_columns);
-    void startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_api);
+    void startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_api, const std::string& folder="");
     void stopRecording(bool ignore_if_stopped);
     bool isRecording();
 
