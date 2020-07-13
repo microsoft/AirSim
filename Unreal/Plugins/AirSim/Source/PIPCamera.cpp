@@ -286,19 +286,25 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
         const auto& noise_setting = camera_setting.noise_settings.at(image_type);
 
         if (image_type >= 0) { //scene capture components
-            switch (image_type) {
-                case 0:
-                case 7:
-                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], false, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, false);
+            switch (Utils::toEnum<ImageType>(image_type)) {
+                case ImageType::Scene:
+                case ImageType::Infrared:
+                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], 
+                        false, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, 
+                        false);
                     break;
 
-                case 5:
-                case 6:
-                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, true);
+                case ImageType::Segmentation:
+                case ImageType::SurfaceNormals:                
+                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], 
+                        true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, 
+                        true);
                     break;
 
                 default:
-                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, false);
+                    updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], 
+                        true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform,
+                        false);
                     break;
             }
 
