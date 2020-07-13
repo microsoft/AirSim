@@ -38,7 +38,6 @@ protected:
 
 private:
     FThreadSafeCounter stop_task_counter_;
-    FRenderCommandFence read_pixel_fence_;
 
     static std::unique_ptr<FRecordingThread> running_instance_;
     static std::unique_ptr<FRecordingThread> finishing_instance_;

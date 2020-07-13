@@ -50,7 +50,8 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
     }
 
     //write to CSV file
-    if (save_success) {
+    if (save_success || (responses.size() == 0)) {
+        // Either images were saved successfully, or there were no images 
         writeString(vehicle_sim_api->getRecordFileLine(false).append(image_file_names.str()).append("\n"));
 
         //UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
