@@ -407,7 +407,7 @@ public: //methods
         loadVehicleSettings(simmode_name, settings_json, vehicles);
 
         //this should be done last because it depends on vehicles (and/or their type) we have
-        loadRecordingSetting(settings_json, recording_setting);
+        loadRecordingSetting(settings_json);
         loadClockSettings(settings_json);
     }
 
@@ -587,9 +587,19 @@ private:
             std::to_string(settings_json.getInt("CameraID", 0)));
     }
 
-    void loadRecordingSetting(const Settings& settings_json, RecordingSetting& recording_setting)
+    void loadDefaultRecordingSettings()
     {
         recording_setting.requests.clear();
+        // Add Scene image for each vehicle
+        for (const auto& vehicle : vehicles) {
+            recording_setting.requests[vehicle.first].push_back(ImageCaptureBase::ImageRequest(
+                "", ImageType::Scene, false, true));
+        }
+    }
+
+    void loadRecordingSetting(const Settings& settings_json)
+    {
+        loadDefaultRecordingSettings();
 
         Settings recording_json;
         if (settings_json.getChild("Recording", recording_json)) {
@@ -599,29 +609,23 @@ private:
 
             Settings req_cameras_settings;
             if (recording_json.getChild("Cameras", req_cameras_settings)) {
+                // If 'Cameras' field is present, clear defaults
+                recording_setting.requests.clear();
+
                 for (size_t child_index = 0; child_index < req_cameras_settings.size(); ++child_index) {
                     Settings req_camera_settings;
                     if (req_cameras_settings.getChild(child_index, req_camera_settings)) {
                         std::string camera_name = getCameraName(req_camera_settings);
-                        ImageType image_type =
-                            Utils::toEnum<ImageType>(
-                                req_camera_settings.getInt("ImageType", 0));
+                        ImageType image_type = Utils::toEnum<ImageType>(
+                                                req_camera_settings.getInt("ImageType", 0));
                         bool compress = req_camera_settings.getBool("Compress", true);
                         bool pixels_as_float = req_camera_settings.getBool("PixelsAsFloat", false);
-                        std::string vehicle_name =req_camera_settings.getString("VehicleName", "");
+                        std::string vehicle_name = req_camera_settings.getString("VehicleName", "");
 
                         recording_setting.requests[vehicle_name].push_back(ImageCaptureBase::ImageRequest(
                             camera_name, image_type, pixels_as_float, compress));
                     }
                 }
-            }
-        }
-
-        if (recording_setting.requests.empty()) {
-            // Add Scene image for each vehicle
-            for (const auto& vehicle : vehicles) {
-                recording_setting.requests[vehicle.first].push_back(ImageCaptureBase::ImageRequest(
-                    "", ImageType::Scene, false, true));
             }
         }
     }

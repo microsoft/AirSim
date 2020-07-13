@@ -42,11 +42,12 @@ void FRecordingThread::startRecording(const RecordingSetting& settings,
 
     running_instance_->last_screenshot_on_ = 0;
 
-    running_instance_->is_ready_ = true;
-
     running_instance_->recording_file_.reset(new RecordingFile());
     // Just need any 1 instance, to set the header line of the record file
     running_instance_->recording_file_->startRecording(*(vehicle_sim_apis.begin()), settings.folder);
+
+    // Set is_ready at the end, setting this before can cause a race when the file isn't open yet
+    running_instance_->is_ready_ = true;
 }
 
 FRecordingThread::~FRecordingThread()
@@ -97,7 +98,7 @@ bool FRecordingThread::Init()
     else {
         finishing_signal_.wait();
     }
-    if (!image_captures_.empty() && recording_file_)
+    if (recording_file_)
     {
         UAirBlueprintLib::LogMessage(TEXT("Initiated recording thread"), TEXT(""), LogDebugLevel::Success);
     }
