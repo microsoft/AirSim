@@ -110,10 +110,10 @@ RecordingFile::~RecordingFile()
     stopRecording(true);
 }
 
-void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_api)
+void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_api, const std::string& folder)
 {
     try {
-        std::string log_folderpath = common_utils::FileSystem::getLogFolderPath(true);
+        std::string log_folderpath = common_utils::FileSystem::getLogFolderPath(true, folder);
         image_path_ = common_utils::FileSystem::ensureFolder(log_folderpath, "images");
         std::string log_filepath = common_utils::FileSystem::getLogFileNamePath(log_folderpath, record_filename, "", ".txt", false);
         if (log_filepath != "")

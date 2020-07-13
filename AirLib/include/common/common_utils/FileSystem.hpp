@@ -108,10 +108,11 @@ public:
         return str.substr(ui, len - ui);
     }
 
-    static std::string getLogFolderPath(bool folder_timestamp)
+    static std::string getLogFolderPath(bool folder_timestamp, const std::string& parent = "")
     {
         std::string logfolder = folder_timestamp ? Utils::to_string(Utils::now()) : "";
-        std::string fullPath = combine(getAppDataFolder(), logfolder);
+        std::string parent_folder = (parent == "") ? getAppDataFolder() : parent;
+        std::string fullPath = combine(parent_folder, logfolder);
         ensureFolder(fullPath);
 
         return fullPath;
