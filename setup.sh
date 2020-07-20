@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e
 set -x
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -27,6 +28,15 @@ if [ "$(uname)" == "Darwin" ]; then # osx
     brew tap llvm-hs/homebrew-llvm
     brew install llvm@8
 else #linux
+    sudo apt-get update
+    sudo apt-get -y install --no-install-recommends \
+        lsb-release \
+        rsync \
+        software-properties-common \
+        wget \
+        libvulkan1 \
+        vulkan-utils
+
     #install clang and build tools
     VERSION=$(lsb_release -rs | cut -d. -f1)
     # Since Ubuntu 17 clang is part of the core repository
@@ -58,6 +68,22 @@ else #linux
     #install additional tools
     sudo apt-get install -y build-essential
     sudo apt-get install -y unzip
+fi
+
+# in ubuntu 18 docker CI, avoid building cmake from scratch to save time 
+# ref: https://apt.kitware.com/
+if [ "$(uname)" == "Linux" ]; then 
+    if [[ $(lsb_release -rs) == "18.04" ]]; then
+        sudo apt-get -y install \
+            apt-transport-https \
+            ca-certificates \
+            gnupg 
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+        sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+        sudo apt-get -y install --no-install-recommends \
+            make \
+            cmake
+    fi
 fi
 
 if ! which cmake; then
