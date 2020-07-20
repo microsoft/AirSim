@@ -44,6 +44,8 @@ public:
     virtual void erase_remove(TUpdatableObjectPtr obj) { 
         members_.erase(std::remove(members_.begin(), members_.end(), obj), members_.end()); }
 
+    virtual void setWind(const Vector3r& wind) {};
+
 private:
     MembersContainer members_;
 };
