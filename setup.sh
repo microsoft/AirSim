@@ -27,6 +27,15 @@ if [ "$(uname)" == "Darwin" ]; then # osx
     brew tap llvm-hs/homebrew-llvm
     brew install llvm@8
 else #linux
+    sudo apt-get update
+    sudo apt-get -y install --no-install-recommends \
+        lsb-release \
+        rsync \
+        software-properties-common \
+        wget \
+        libvulkan1 \
+        vulkan-utils
+
     #install clang and build tools
     VERSION=$(lsb_release -rs | cut -d. -f1)
     # Since Ubuntu 17 clang is part of the core repository
@@ -38,6 +47,13 @@ else #linux
     sudo apt-get install -y clang-8 clang++-8 libc++-8-dev libc++abi-8-dev
 fi
 
+if ! which cmake; then
+    # CMake not installed
+    cmake_ver=0
+else
+    cmake_ver=$(cmake --version 2>&1 | head -n1 | cut -d ' ' -f3 | awk '{print $NF}')
+fi
+
 #give user perms to access USB port - this is not needed if not using PX4 HIL
 #TODO: figure out how to do below in travis
 if [ "$(uname)" == "Darwin" ]; then # osx
@@ -47,7 +63,9 @@ if [ "$(uname)" == "Darwin" ]; then # osx
 
     brew install wget
     brew install coreutils
-    brew install cmake  # should get cmake 3.8
+    if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
+        brew install cmake  # should get cmake 3.8
+    fi
 
 else #linux
     if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
@@ -60,12 +78,22 @@ else #linux
     sudo apt-get install -y unzip
 fi
 
-if ! which cmake; then
-    # CMake not installed
-    cmake_ver=0
-else
-    cmake_ver=$(cmake --version 2>&1 | head -n1 | cut -d ' ' -f3 | awk '{print $NF}')
+# in ubuntu 18 docker CI, avoid building cmake from scratch to save time 
+# ref: https://apt.kitware.com/
+if [ "$(uname)" == "Linux" ]; then 
+    if [[ $(lsb_release -rs) == "18.04" ]]; then
+        sudo apt-get -y install \
+            apt-transport-https \
+            ca-certificates \
+            gnupg 
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+        sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+        sudo apt-get -y install --no-install-recommends \
+            make \
+            cmake
+    fi
 fi
+
 
 #download cmake - v3.10.2 is not out of box in Ubuntu 16.04
 if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
