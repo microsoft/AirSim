@@ -95,9 +95,9 @@ stages:
 
           - script: |
               call "C:\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-              call .\update_from_git.bat
+              call .\update_from_git_ci.bat
             workingDirectory: Unreal/Environments/Blocks
-            displayName: Copy AirLib to Blocks (update_from_git.bat)
+            displayName: Copy AirLib to Blocks (update_from_git_ci.bat)
 
           # Build Blocks
           - script: |
