@@ -114,6 +114,8 @@ public:
     void stopRecording();
     bool isRecording();
 
+    void simSetWind(const Vector3r& wind) const;
+
 protected:
     void* getClient();
     const void* getClient() const;

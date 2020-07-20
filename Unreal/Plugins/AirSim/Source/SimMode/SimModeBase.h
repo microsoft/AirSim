@@ -62,6 +62,8 @@ public:
     virtual void pause(bool is_paused);
     virtual void continueForTime(double seconds);
 
+    virtual void setWind(const msr::airlib::Vector3r& wind) const;
+
     virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
         float celestial_clock_speed, float update_interval_secs, bool move_sun);
 
