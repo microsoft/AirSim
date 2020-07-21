@@ -7,7 +7,7 @@ We've two options for docker. You can either build an image for running [airsim 
 
 #### Build the docker image
 - Below are the default arguments.   
-  `--base_image`: This is image over which we'll install airsim. We've tested on Ubuntu 18.04 + CUDA 10.0.  
+  `--base_image`: This is image over which we'll install airsim. We've tested on Ubuntu 18.04 with CUDA 10.0.  
    You can specify any [NVIDIA cudagl](https://hub.docker.com/r/nvidia/cudagl/) at your own risk.    
    `--target_image` is the desired name of your docker image.    
    Defaults to `airsim_binary` with same tag as the base image
