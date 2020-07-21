@@ -106,6 +106,11 @@ public:
 
 	std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
 
+    // Recording APIs
+    void startRecording();
+    void stopRecording();
+    bool isRecording();
+
 protected:
     void* getClient();
     const void* getClient() const;

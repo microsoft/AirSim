@@ -314,6 +314,18 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 		return *getWorldSimApi()->swapTextures(tag, tex_id, component_id, material_id);
 	});
 
+    pimpl_->server.bind("startRecording", [&]() -> void {
+        getWorldSimApi()->startRecording();
+    });
+
+    pimpl_->server.bind("stopRecording", [&]() -> void {
+        getWorldSimApi()->stopRecording();
+    });
+
+    pimpl_->server.bind("isRecording", [&]() -> bool {
+        return getWorldSimApi()->isRecording();
+    });
+
     //if we don't suppress then server will bomb out for exceptions raised by any method
     pimpl_->server.suppress_exceptions(true);
 }
