@@ -10,7 +10,7 @@ class UdpClientPort : public Port
 {
 public:
 	UdpClientPort();
-	~UdpClientPort();
+	virtual ~UdpClientPort();
 
 	// Connect can set you up two different ways.  Pass 0 for local port to get any free local
 	// port and pass a fixed remotePort if you want to send to a specific remote port. 
