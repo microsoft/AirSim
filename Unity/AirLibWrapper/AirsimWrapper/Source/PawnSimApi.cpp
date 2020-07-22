@@ -210,15 +210,9 @@ msr::airlib::CameraInfo PawnSimApi::getCameraInfo(const std::string& camera_name
 	return camera_info;
 }
 
-void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr::airlib::Quaternionr& orientation)
+void PawnSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose)
 {
-	AirSimQuaternion airSimOrientation;
-	airSimOrientation.x = orientation.x();
-	airSimOrientation.y = orientation.y();
-	airSimOrientation.z = orientation.z();
-	airSimOrientation.w = orientation.w();
-
-	SetCameraOrientation(camera_name.c_str(), airSimOrientation, params_.vehicle_name.c_str());
+	SetCameraPose(camera_name.c_str(), UnityUtilities::Convert_to_AirSimPose(pose), params_.vehicle_name.c_str());
 }
 
 void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)

@@ -409,12 +409,12 @@ msr::airlib::CameraInfo PawnSimApi::getCameraInfo(const std::string& camera_name
     return camera_info;
 }
 
-void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr::airlib::Quaternionr& orientation)
+void PawnSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose)
 {
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, orientation]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, pose]() {
         APIPCamera* camera = getCamera(camera_name);
-        FQuat quat = ned_transform_.fromNed(orientation);
-        camera->setCameraOrientation(quat.Rotator());
+        FTransform pose_unreal = ned_transform_.fromRelativeNed(pose);
+        camera->setCameraPose(pose_unreal);
     }, true);
 }
 
