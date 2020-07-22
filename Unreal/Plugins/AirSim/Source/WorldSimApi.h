@@ -5,6 +5,7 @@
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
 #include "Components/StaticMeshComponent.h"
+#include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "Engine/LevelStreamingDynamic.h" 
 #include <string>
 
