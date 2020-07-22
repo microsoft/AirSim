@@ -34,9 +34,12 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  geographic_msgs
+  geometry_msgs
   std_srvs
   tf2
   tf2_ros
+  tf2_sensor_msgs
 )
 
 add_message_files(
@@ -46,6 +49,10 @@ add_message_files(
   GPSYaw.msg
   VelCmd.msg
   VelCmdGroup.msg
+  CarControls.msg
+  CarState.msg
+  Altimeter.msg
+  Environment.msg
 )
 
 add_service_files(
@@ -63,6 +70,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs
   geometry_msgs
+  geographic_msgs
 )
 
 catkin_package(

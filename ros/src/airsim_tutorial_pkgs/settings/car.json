@@ -1,0 +1,108 @@
+{
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SettingsVersion": 1.2,
+  "SimMode": "Car",
+  "ViewMode": "SpringArmChase",
+  "ClockSpeed": 1.0,
+  "Vehicles": {
+    "drone_1": {
+      "VehicleType": "PhysXCar",
+      "DefaultVehicleState": "Armed",
+      "EnableCollisionPassthrogh": false,
+      "EnableCollisions": true,
+      "AllowAPIAlways": true,
+      "Sensors": {
+        "Gps": {
+          "SensorType": 3,
+          "Enabled" : true
+        },
+        "Barometer": {
+          "SensorType": 1,
+          "Enabled" : true
+        },
+        "Magnetometer": {
+          "SensorType": 4,
+          "Enabled" : true
+        },
+        "Imu" : {
+          "SensorType": 2,
+          "Enabled": true
+        },        
+        "LidarCustom": {
+          "SensorType": 6,
+          "Enabled": true,
+          "NumberOfChannels": 16,
+          "PointsPerSecond": 10000,
+          "X": 0,
+          "Y": 0,
+          "Z": -1.5,
+          "DrawDebugPoints": true,
+          "DataFrame": "SensorLocalFrame"
+        }
+      },
+      "Cameras": {
+        "front_center_custom": {
+          "CaptureSettings": [
+            {
+              "PublishToRos": 1,
+              "ImageType": 0,
+              "Width": 640,
+              "Height": 480,
+              "FOV_Degrees": 27,
+              "DepthOfFieldFstop": 2.8,
+              "DepthOfFieldFocalDistance": 200.0, 
+              "DepthOfFieldFocalRegion": 200.0,
+              "TargetGamma": 1.5
+            }
+          ],
+          "X": 1.75, "Y": 0, "Z": -1.25,
+          "Pitch": 0, "Roll": 0, "Yaw": 0
+        },
+        "front_left_custom": {
+          "CaptureSettings": [
+            {
+              "PublishToRos": 1,
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 1.5
+            }, 
+            {
+              "PublishToRos": 1,
+              "ImageType": 1,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 1.5
+            }
+          ],
+          "X": 1.75, "Y": -0.06, "Z": -1.25,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
+        },
+        "front_right_custom": {
+          "CaptureSettings": [
+            {
+              "PublishToRos": 1,
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 1.5
+            }
+          ],
+          "X": 1.75, "Y": 0.06, "Z": -1.25,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
+        }
+      },
+      "X": 0, "Y": 0, "Z": 0,
+      "Pitch": 0, "Roll": 0, "Yaw": 0
+    }
+  },
+  "SubWindows": [
+    {"WindowID": 0, "ImageType": 0, "CameraName": "front_left_custom", "Visible": true},
+    {"WindowID": 1, "ImageType": 0, "CameraName": "front_center_custom", "Visible": false},
+    {"WindowID": 2, "ImageType": 0, "CameraName": "front_right_custom", "Visible": true}
+  ]
+}
+
