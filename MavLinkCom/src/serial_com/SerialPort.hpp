@@ -37,7 +37,7 @@ class SerialPort : public Port
 {
 public:
 	SerialPort();
-	~SerialPort();
+	virtual ~SerialPort();
 
 	// open the serial port
 	virtual int connect(const char* portName, int baudRate);

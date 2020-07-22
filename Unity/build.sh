@@ -1,7 +1,7 @@
 #! /bin/bash
 
 set -x
-# set -e
+set -e
 
 # check for rpclib
 if [ ! -f ../external/rpclib/rpclib-2.2.1/rpclib.pc.in ]; then

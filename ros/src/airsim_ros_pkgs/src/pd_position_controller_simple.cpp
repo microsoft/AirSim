@@ -128,6 +128,8 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
         return true;
     }
 
+    // Already have goal, and have reached it
+    ROS_INFO_STREAM("[PIDPositionController] Already have goal and have reached it");
     return false;
 }
 
@@ -209,6 +211,8 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         return true;
     }
 
+    // Already have goal, this shouldn't happen
+    ROS_INFO_STREAM("[PIDPositionController] Goal already received, ignoring!");
     return false;
 }
 

@@ -149,4 +149,24 @@ std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMesh
     return result;
 }
 
+// Recording APIs
+void WorldSimApi::startRecording()
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "startRecording is not supported on unity").c_str());
+}
+
+void WorldSimApi::stopRecording()
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "stopRecording is not supported on unity").c_str());
+}
+
+bool WorldSimApi::isRecording() const
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "isRecording is not supported on unity").c_str());
+    return false;
+}
+
 #pragma endregion
