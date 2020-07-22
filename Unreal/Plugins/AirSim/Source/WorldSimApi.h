@@ -5,6 +5,7 @@
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/LevelStreamingDynamic.h" 
 #include <string>
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase {
