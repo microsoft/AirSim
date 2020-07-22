@@ -57,15 +57,18 @@ fi
 
 #give user perms to access USB port - this is not needed if not using PX4 HIL
 #TODO: figure out how to do below in travis
+# Install additional tools, CMake if required
 if [ "$(uname)" == "Darwin" ]; then # osx
     if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
         sudo dseditgroup -o edit -a `whoami` -t user dialout
     fi
 
-    brew install wget
-    brew install coreutils
+    brew install wget coreutils
+
     if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
         brew install cmake  # should get cmake 3.8
+    else
+        echo "Already have good version of cmake: $cmake_ver"
     fi
 
 else #linux
@@ -74,46 +77,46 @@ else #linux
         sudo usermod -a -G dialout $USER
     fi
 
-    #install additional tools
-    sudo apt-get install -y build-essential
-    sudo apt-get install -y unzip
-fi
+    # install additional tools
+    sudo apt-get install -y build-essential unzip
 
-# in ubuntu 18 docker CI, avoid building cmake from scratch to save time
-# ref: https://apt.kitware.com/
-if [ "$(uname)" == "Linux" ]; then
-    if [[ $(lsb_release -rs) == "18.04" ]]; then
-        sudo apt-get -y install \
-            apt-transport-https \
-            ca-certificates \
-            gnupg
-        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
-        sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
-        sudo apt-get -y install --no-install-recommends \
-            make \
-            cmake
+    if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
+        # in ubuntu 18 docker CI, avoid building cmake from scratch to save time
+        # ref: https://apt.kitware.com/
+        if [ "$(lsb_release -rs)" == "18.04" ]; then
+            sudo apt-get -y install \
+                apt-transport-https \
+                ca-certificates \
+                gnupg
+            wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+            sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+            sudo apt-get -y install --no-install-recommends \
+                make \
+                cmake
+
+        else
+            # For Ubuntu 16.04, or anything else, build CMake 3.10.2 from source
+            if [[ ! -d "cmake_build/bin" ]]; then
+                echo "Downloading cmake..."
+                wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \
+                    -O cmake.tar.gz
+                tar -xzf cmake.tar.gz
+                rm cmake.tar.gz
+                rm -rf ./cmake_build
+                mv ./cmake-3.10.2 ./cmake_build
+                pushd cmake_build
+                ./bootstrap
+                make
+                popd
+            fi
+        fi
+    
+    else
+        echo "Already have good version of cmake: $cmake_ver"
     fi
-fi
 
+fi # End USB setup, CMake install
 
-#download cmake - v3.10.2 is not out of box in Ubuntu 16.04
-if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
-    if [[ ! -d "cmake_build/bin" ]]; then
-        echo "Downloading cmake..."
-        wget https://cmake.org/files/v3.10/cmake-3.10.2.tar.gz \
-            -O cmake.tar.gz
-        tar -xzf cmake.tar.gz
-        rm cmake.tar.gz
-        rm -rf ./cmake_build
-        mv ./cmake-3.10.2 ./cmake_build
-        pushd cmake_build
-        ./bootstrap
-        make
-        popd
-    fi
-else
-    echo "Already have good version of cmake: $cmake_ver"
-fi
 
 # Download rpclib
 if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
