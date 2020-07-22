@@ -244,8 +244,12 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
-void APIPCamera::setCameraOrientation(const FRotator& rotator)
+void APIPCamera::setCameraPose(const FTransform& pose)
 {
+    FVector position = pose.GetLocation();
+    this->SetActorRelativeLocation(pose.GetLocation());
+
+    FRotator rotator = pose.GetRotation().Rotator();
     if (gimbal_stabilization_ > 0) {
         gimbald_rotator_.Pitch = rotator.Pitch;
         gimbald_rotator_.Roll = rotator.Roll;

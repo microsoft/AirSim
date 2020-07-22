@@ -68,6 +68,16 @@ public:
               kinematics_estimated(kinematics_estimated_val), timestamp(timestamp_val)
         {
         }
+        
+        //shortcuts
+        const Vector3r& getPosition() const
+        {
+            return kinematics_estimated.pose.position;
+        }
+        const Quaternionr& getOrientation() const
+        {
+            return kinematics_estimated.pose.orientation;
+        }
     };
 
 public:

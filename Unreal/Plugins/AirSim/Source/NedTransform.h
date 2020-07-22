@@ -42,6 +42,8 @@ public:
     FVector fromGlobalNed(const Vector3r& position) const;
     FQuat fromNed(const Quaternionr& q) const;
     float fromNed(float length) const;
+    FVector fromRelativeNed(const Vector3r& position) const;
+    FTransform fromRelativeNed(const Pose& pose) const;
     FTransform fromLocalNed(const Pose& pose) const;
     FTransform fromGlobalNed(const Pose& pose) const;
 

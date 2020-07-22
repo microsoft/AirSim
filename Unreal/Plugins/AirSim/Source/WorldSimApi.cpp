@@ -406,9 +406,3 @@ bool WorldSimApi::isRecording() const
 {
     return simmode_->isRecording();
 }
-    std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> responses;
-    UAirBlueprintLib::RunCommandOnGameThread([&responses]() {
-        responses = UAirBlueprintLib::GetStaticMeshComponents();
-    }, true);
-    return responses;
-}

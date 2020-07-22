@@ -13,8 +13,9 @@ pp = pprint.PrettyPrinter(indent=4)
 client = airsim.VehicleClient()
 client.confirmConnection()
 
-airsim.wait_key('Press any key to set camera-0 gimble to 15-degree pitch')
-client.simSetCameraOrientation("0", airsim.to_quaternion(0.261799, 0, 0)); #radians
+airsim.wait_key('Press any key to set camera-0 gimbal to 15-degree pitch')
+camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0)) #radians
+client.simSetCameraPose("0", camera_pose)
 
 airsim.wait_key('Press any key to get camera parameters')
 for camera_name in range(5):

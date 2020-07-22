@@ -449,7 +449,7 @@ private:
             recv_ret = udpSocket_->recv(&pkt, sizeof(pkt), 100);
         }
 
-        for (auto i = 0; i < RotorControlCount && i < kArduCopterRotorControlCount; ++i) {
+        for (auto i = 0; i < kArduCopterRotorControlCount; ++i) {
             rotor_controls_[i] = pkt.pwm[i];
         }
 
@@ -476,10 +476,7 @@ private:
     RCData last_rcData_;
     bool is_rc_connected_;
 
-    // TODO: Increase to 6 or 8 for hexa or larger frames, 11 was used in SoloAPI
-    static const int RotorControlCount = 4;
-
-    float rotor_controls_[RotorControlCount];
+    float rotor_controls_[kArduCopterRotorControlCount];
 };
 
 }} //namespace
