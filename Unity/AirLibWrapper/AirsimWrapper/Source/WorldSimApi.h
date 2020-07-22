@@ -13,6 +13,12 @@ public:
 
 	WorldSimApi(SimModeBase* simmode, std::string vehicle_name);
 	virtual ~WorldSimApi();
+
+    // ------ Level setting apis ----- //
+    virtual bool loadLevel(const std::string& level_name) { return false; };
+    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale) { return ""; };
+    virtual bool destroyObject(const std::string& object_name) { return false; };
+
 	virtual bool isPaused() const override;
 	virtual void reset() override;
 	virtual void pause(bool is_paused) override;
@@ -31,7 +37,11 @@ public:
     virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) override;
 	virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
 	virtual Pose getObjectPose(const std::string& object_name) const override;
+
+    virtual Vector3r getObjectScale(const std::string& object_name) const override;
+    Vector3r getObjectScaleInternal(const std::string& object_name) const;
 	virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
+    virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) override;
 
     //----------- Plotting APIs ----------/
     virtual void simFlushPersistentMarkers() override;

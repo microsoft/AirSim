@@ -50,7 +50,10 @@ public:
 
     vector<string> simListSceneObjects(const string& name_regex = string(".*")) const;
     Pose simGetObjectPose(const std::string& object_name) const;
+    bool simLoadLevel(const string& level_name);
+    Vector3r simGetObjectScale(const std::string& object_name) const;
     bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
+    bool simSetObjectScale(const std::string& object_name, const Vector3r& scale);
 
     //task management APIs
     void cancelLastTask(const std::string& vehicle_name = "");

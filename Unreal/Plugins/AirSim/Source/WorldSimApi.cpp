@@ -1,13 +1,137 @@
 #include "WorldSimApi.h"
+#include "common/common_utils/Utils.hpp"
 #include "AirBlueprintLib.h"
 #include "TextureShuffleActor.h"
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 #include "DrawDebugHelpers.h"
+#include <cstdlib>
+#include <ctime>
 
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
-    : simmode_(simmode)
+    : simmode_(simmode) {}
+
+bool WorldSimApi::loadLevel(const std::string& level_name)
 {
+    bool success;
+    using namespace std::chrono_literals;
+
+    // Add loading screen to viewport
+    simmode_->toggleLoadingScreen(true);
+    std::this_thread::sleep_for(0.1s);
+    UAirBlueprintLib::RunCommandOnGameThread([this, level_name]() {
+        
+        this->current_level_ = UAirBlueprintLib::loadLevel(this->simmode_->GetWorld(), FString(level_name.c_str()));
+    }, true);
+
+    if (this->current_level_)
+    {
+        success = true;
+        std::this_thread::sleep_for(1s);
+        spawnPlayer();
+    }
+    else
+        success = false;
+
+    //Remove Loading screen from viewport
+    UAirBlueprintLib::RunCommandOnGameThread([this, level_name]() {
+        this->simmode_->OnLevelLoaded.Broadcast();
+    }, true);
+    this->simmode_->toggleLoadingScreen(false);
+
+    return success;
+}
+
+void WorldSimApi::spawnPlayer()
+{
+    using namespace std::chrono_literals;
+    UE_LOG(LogTemp, Log, TEXT("spawning player"));
+    bool success{ false };
+
+    UAirBlueprintLib::RunCommandOnGameThread([&]() {
+        success = UAirBlueprintLib::spawnPlayer(this->simmode_->GetWorld());
+    }, true);
+
+    if (!success)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Could not find valid PlayerStart Position"));
+    }
+    else
+    {
+        std::this_thread::sleep_for(1s);
+        simmode_->reset();
+    }
+}
+
+bool WorldSimApi::destroyObject(const std::string& object_name)
+{
+    bool result{ false };
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
+        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        if (actor)
+        {
+            actor->Destroy();
+            result = actor->IsPendingKill();
+        }
+    }, true);
+    return result;
+}
+
+std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale)
+{
+    // Create struct for Location and Rotation of actor in Unreal
+    FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
+    bool found_object;
+    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &scale]() {
+            // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
+            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(UAirBlueprintLib::GetMeshFromRegistry(load_object));
+            if (LoadObject)
+            {
+                std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_->GetWorld(), ".*"+object_name+".*");
+                if (matching_names.size() > 0)
+                {
+                    size_t greatest_num{ 0 }, result{ 0 };
+                    for (auto match : matching_names)
+                    {
+                        std::string number_extension = match.substr(match.find_last_not_of("0123456789") + 1);
+                        if (number_extension != "")
+                        {
+                            result = std::stoi(number_extension);
+                            greatest_num = greatest_num > result ? greatest_num : result;
+                        }
+                    }
+                    object_name += std::to_string(greatest_num + 1);
+                }
+                FActorSpawnParameters new_actor_spawn_params;
+                new_actor_spawn_params.Name = FName(object_name.c_str());
+                this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
+                found_object  = true;
+            }
+            else
+            {
+                found_object = false;
+            }
+    }, true);
+
+    if (!found_object)
+    {
+        throw std::invalid_argument(
+            "There were no objects with name " + load_object + " found in the Registry");
+    }
+    return object_name;
+}
+
+void WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
+{
+    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); // new
+    UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
+    ObjectComponent->SetStaticMesh(static_mesh);
+    ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
+    ObjectComponent->SetWorldScale3D(FVector(scale[0], scale[1], scale[2]));
+    ObjectComponent->SetHiddenInGame(false, true);
+    ObjectComponent->RegisterComponent();
+    NewActor->SetRootComponent(ObjectComponent);
+    NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
 }
 
 bool WorldSimApi::isPaused() const
@@ -80,6 +204,18 @@ WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) con
         result = actor ? simmode_->getGlobalNedTransform().toGlobalNed(FTransform(actor->GetActorRotation(), actor->GetActorLocation()))
             : Pose::nanPose();
     }, true);
+
+    return result;
+}
+
+WorldSimApi::Vector3r WorldSimApi::getObjectScale(const std::string& object_name) const
+{
+    Vector3r result;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
+        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        result = actor ? Vector3r(actor->GetActorScale().X, actor->GetActorScale().Y, actor->GetActorScale().Z)
+            : Vector3r::Zero();
+    }, true);
     return result;
 }
 
@@ -94,6 +230,21 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
                 result = actor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
             else
                 result = actor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), true);
+        }
+        else
+            result = false;
+    }, true);
+    return result;
+}
+
+bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r& scale)
+{
+    bool result;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &scale, &result]() {
+        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        if (actor) {
+            actor->SetActorScale3D(FVector(scale[0], scale[1], scale[2]));
+            result = true;
         }
         else
             result = false;
@@ -116,41 +267,42 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
 
 std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
 {
-	auto swappedObjectNames = std::make_unique<std::vector<std::string>>();
-	UAirBlueprintLib::RunCommandOnGameThread([this, &tag, tex_id, component_id, material_id, &swappedObjectNames]() {
-		//Split the tag string into individual tags.
-		TArray<FString> splitTags;
-		FString notSplit = FString(tag.c_str());
-		FString next = "";
-		while (notSplit.Split(",", &next, &notSplit))
-		{
-			next.TrimStartInline();
-			splitTags.Add(next);
-		}
-		notSplit.TrimStartInline();
-		splitTags.Add(notSplit);
+    auto swappedObjectNames = std::make_unique<std::vector<std::string>>();
+    UAirBlueprintLib::RunCommandOnGameThread([this, &tag, tex_id, component_id, material_id, &swappedObjectNames]() {
+        //Split the tag string into individual tags.
+        TArray<FString> splitTags;
+        FString notSplit = FString(tag.c_str());
+        FString next = "";
+        while (notSplit.Split(",", &next, &notSplit))
+        {
+            next.TrimStartInline();
+            splitTags.Add(next);
+        }
+        notSplit.TrimStartInline();
+        splitTags.Add(notSplit);
 
-		//Texture swap on actors that have all of those tags.
-		TArray<AActor*> shuffleables;
-		UAirBlueprintLib::FindAllActor<ATextureShuffleActor>(simmode_, shuffleables);
-		for (auto *shuffler : shuffleables)
-		{
-			bool invalidChoice = false;
-			for (auto required_tag : splitTags)
-			{
-				invalidChoice |= !shuffler->ActorHasTag(FName(*required_tag));
-				if (invalidChoice)
-					break;
-			}
-			
-			if (invalidChoice)
-				continue;
-			dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(tex_id, component_id, material_id);
-			swappedObjectNames->push_back(TCHAR_TO_UTF8(*shuffler->GetName()));
-		}
-	}, true);
-	return swappedObjectNames;
+        //Texture swap on actors that have all of those tags.
+        TArray<AActor*> shuffleables;
+        UAirBlueprintLib::FindAllActor<ATextureShuffleActor>(simmode_, shuffleables);
+        for (auto *shuffler : shuffleables)
+        {
+            bool invalidChoice = false;
+            for (auto required_tag : splitTags)
+            {
+                invalidChoice |= !shuffler->ActorHasTag(FName(*required_tag));
+                if (invalidChoice)
+                    break;
+            }
+            
+            if (invalidChoice)
+                continue;
+            dynamic_cast<ATextureShuffleActor*>(shuffler)->SwapTexture(tex_id, component_id, material_id);
+            swappedObjectNames->push_back(TCHAR_TO_UTF8(*shuffler->GetName()));
+        }
+    }, true);
+    return swappedObjectNames;
 }
+
 //----------- Plotting APIs ----------/
 void WorldSimApi::simFlushPersistentMarkers()
 {

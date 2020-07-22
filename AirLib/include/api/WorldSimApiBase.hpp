@@ -25,6 +25,11 @@ public:
 
     virtual ~WorldSimApiBase() = default;
 
+    // ------ Level setting apis ----- //
+    virtual bool loadLevel(const std::string& level_name) = 0;
+    virtual string spawnObject(string& object_name, const string& load_component, const Pose& pose, const Vector3r& scale) = 0;
+    virtual bool destroyObject(const string& object_name) = 0;
+
     virtual bool isPaused() const = 0;
     virtual void reset() = 0;
     virtual void pause(bool is_paused) = 0;
@@ -54,7 +59,9 @@ public:
 
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const = 0;
     virtual Pose getObjectPose(const std::string& object_name) const = 0;
+    virtual Vector3r getObjectScale(const std::string& object_name) const = 0;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
+    virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) = 0;
 
 	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
     virtual vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const = 0;
