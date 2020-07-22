@@ -324,6 +324,9 @@ public:
 
 	static Vector3T toAngularVelocity(const QuaternionT& start, const QuaternionT& end, RealT dt)
 	{
+		if (dt == 0)
+			return Vector3T(0, 0, 0);
+
 		RealT p_s, r_s, y_s;
 		toEulerianAngle(start, p_s, r_s, y_s);
 
