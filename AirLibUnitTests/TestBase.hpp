@@ -9,6 +9,7 @@ namespace msr { namespace airlib {
 
 class TestBase {
 public:
+    virtual ~TestBase() = default;
     virtual void run() = 0;
 
     void testAssert(double lhs, double rhs, const std::string& message) {

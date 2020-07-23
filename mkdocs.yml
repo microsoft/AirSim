@@ -9,7 +9,7 @@ markdown_extensions:
 
 remote_branch: gh-pages
 
-theme: 
+theme:
   name: 'readthedocs'
   logo:
     icon: ' '
@@ -22,14 +22,14 @@ extra:
   palette:
   social:
       - type: facebook
-        link: https://www.facebook.com/groups/1225832467530667/ 
+        link: https://www.facebook.com/groups/1225832467530667/
       - type: github-alt
         link: https://github.com/Microsoft/AirSim
 
 copyright: Copyright &copy; 2018 Microsoft Research
 
 nav:
-  - "Home": 
+  - "Home":
     - "Home": 'README.md'
   - "Changelog": 'CHANGELOG.md'
   - "Get AirSim":
@@ -48,7 +48,7 @@ nav:
     - "C++ APIs": 'apis_cpp.md'
     - "Development Workflow": 'dev_workflow.md'
     - "Settings": 'settings.md'
-    - "Camera Views": 'camera_views.md'      
+    - "Camera Views": 'camera_views.md'
     - "Car Mode": 'using_car.md'
     - "Remote Control": 'remote_control.md'
     - "XBox Controller": 'xbox_controller.md'
@@ -57,8 +57,8 @@ nav:
     - "Sensors": 'sensors.md'
     - "LIDAR": 'lidar.md'
     - "Infrared Camera": "InfraredCamera.md"
-    - "ROS: AirSim ROS Wrapper": "airsim_ros_pkgs.md"     
-    - "ROS: AirSim Tutorial Packages": "airsim_tutorial_pkgs.md"     
+    - "ROS: AirSim ROS Wrapper": "airsim_ros_pkgs.md"
+    - "ROS: AirSim Tutorial Packages": "airsim_tutorial_pkgs.md"
     - "Domain Randomization": "retexturing.md"
     - "Mesh Vertex Buffers": "meshes.md"
     - "Playing Logs": 'playback.md'
@@ -93,8 +93,9 @@ nav:
     - "Autonomous Driving on Azure": 'https://aka.ms/AutonomousDrivingCookbook'
     - "Building Hexacopter": 'https://github.com/Microsoft/AirSim/wiki/hexacopter'
     - "Moving on Path Demo": 'https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo'
-    - "Building Point Clouds": 'https://github.com/Microsoft/AirSim/wiki/Point-Clouds'
-    - "Surveying Using Drone": 'https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script'      
+    - "Building Point Clouds": 'point_clouds.md'
+    - "Surveying Using Drone": 'drone_survey.md'
+    - "Orbit Trajectory": "orbit.md"
   - "Misc":
     - "AirSim on Real Drones": 'custom_drone.md'
     - "Installing cmake on Linux": 'cmake_linux.md'
@@ -105,7 +106,7 @@ nav:
     - "Who is Using AirSim": 'who_is_using.md'
     - "Working with UE Plugin Contents": 'working_with_plugin_contents.md'
     - "Formula Student Technion Self-drive": 'https://github.com/Microsoft/AirSim/wiki/technion'
-  - "Support": 
+  - "Support":
     - "FAQ": 'faq.md'
     - "Support": 'SUPPORT.md'
     - "Create Issue": 'create_issue.md'

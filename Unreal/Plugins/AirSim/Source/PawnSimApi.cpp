@@ -409,12 +409,12 @@ msr::airlib::CameraInfo PawnSimApi::getCameraInfo(const std::string& camera_name
     return camera_info;
 }
 
-void PawnSimApi::setCameraOrientation(const std::string& camera_name, const msr::airlib::Quaternionr& orientation)
+void PawnSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose)
 {
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, orientation]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, pose]() {
         APIPCamera* camera = getCamera(camera_name);
-        FQuat quat = ned_transform_.fromNed(orientation);
-        camera->setCameraOrientation(quat.Rotator());
+        FTransform pose_unreal = ned_transform_.fromRelativeNed(pose);
+        camera->setCameraPose(pose_unreal);
     }, true);
 }
 
@@ -514,8 +514,8 @@ void PawnSimApi::updateKinematics(float dt)
     next_kinematics.twist.angular = msr::airlib::VectorMath::toAngularVelocity(
         kinematics_->getPose().orientation, next_kinematics.pose.orientation, dt);
 
-    next_kinematics.accelerations.linear = (next_kinematics.twist.linear - kinematics_->getTwist().linear) / dt;
-    next_kinematics.accelerations.angular = (next_kinematics.twist.angular - kinematics_->getTwist().angular) / dt;
+    next_kinematics.accelerations.linear = dt > 0 ? (next_kinematics.twist.linear - kinematics_->getTwist().linear) / dt : next_kinematics.accelerations.linear;
+    next_kinematics.accelerations.angular = dt > 0 ? (next_kinematics.twist.angular - kinematics_->getTwist().angular) / dt : next_kinematics.accelerations.angular;
 
     kinematics_->setState(next_kinematics);
     kinematics_->update();

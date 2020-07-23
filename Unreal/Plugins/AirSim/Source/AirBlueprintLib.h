@@ -4,8 +4,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/AssetRegistry/Public/AssetRegistryModule.h"
 #include "GameFramework/Actor.h"
 #include "Components/InputComponent.h"
+#include "EngineUtils.h"
 #include "GameFramework/PlayerInput.h"
 #include "IImageWrapperModule.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
@@ -15,13 +17,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Engine/World.h"
-
 #include "Runtime/Landscape/Classes/LandscapeComponent.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "AirsimLevelStreaming.h"
+#include "Runtime/Core/Public/HAL/FileManager.h"
 #include "common/AirSimSettings.hpp"
 #include <string>
 #include <regex>
 #include "AirBlueprintLib.generated.h"
 
+class ULevelStreamingDynamic;
 
 UENUM(BlueprintType)
 enum class LogDebugLevel : uint8 {
@@ -46,25 +51,21 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Utils")
         static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
     static float GetWorldToMetersScale(const AActor* context);
-
     template<typename T>
     static T* GetActorComponent(AActor* actor, FString name);
 
     template<typename T>
     static T* FindActor(const UObject* context, FString name)
     {
-        TArray<AActor*> foundActors;
-        FindAllActor<T>(context, foundActors);
         FName name_n = FName(*name);
-
-        for (AActor* actor : foundActors) {
-            if (actor->ActorHasTag(name_n) || actor->GetName().Compare(name) == 0) {
-                return static_cast<T*>(actor);
+        for (TActorIterator<AActor> It(context->GetWorld(), T::StaticClass()); It; ++It)
+        {
+            AActor* Actor = *It;
+            if (!Actor->IsPendingKill() && (Actor->ActorHasTag(name_n) || Actor->GetName().Compare(name) == 0))
+            {
+                return static_cast<T*>(Actor);
             }
         }
-
-        //UAirBlueprintLib::LogMessage(name + TEXT(" Actor not found!"), TEXT(""), LogDebugLevel::Failure);
-
         return nullptr;
     }
 
@@ -73,8 +74,17 @@ public:
     {
         UGameplayStatics::GetAllActorsOfClass(context, T::StaticClass(), foundActors);
     }
+    
+    static ULevelStreamingDynamic *CURRENT_LEVEL;
 
     static std::vector<std::string> ListMatchingActors(const UObject *context, const std::string& name_regex);
+    UFUNCTION(BlueprintCallable, Category = "AirSim|LevelAPI")
+    static ULevelStreamingDynamic* loadLevel(UObject* context, const FString& level_name);
+    UFUNCTION(BlueprintCallable, Category = "AirSim|LevelAPI")
+    static bool spawnPlayer(UWorld* context);
+    UFUNCTION(BlueprintPure, Category = "AirSim|LevelAPI")
+    static TArray<FName> ListWorldsInRegistry();
+    static UObject* GetMeshFromRegistry(const std::string& load_object);
 
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end,
         const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
@@ -182,9 +192,7 @@ public:
     static void setUnrealClockSpeed(const AActor* context, float clock_speed);
     static IImageWrapperModule* getImageWrapperModule();
     static void CompressImageArray(int32 width, int32 height, const TArray<FColor> &src, TArray<uint8> &dest);
-
-	static std::vector<msr::airlib::MeshPositionVertexBuffersResponse> GetStaticMeshComponents();
-
+    static std::vector<msr::airlib::MeshPositionVertexBuffersResponse> GetStaticMeshComponents();
 private:
     template<typename T>
     static void InitializeObjectStencilID(T* mesh, bool ignore_existing = true)

@@ -10,7 +10,7 @@ class TcpClientPort : public Port
 {
 public:
 	TcpClientPort();
-	~TcpClientPort();
+	virtual ~TcpClientPort();
 
 	// Connect can set you up two different ways.  Pass 0 for local port to get any free local
 	// port. localHost allows you to be specific about which local adapter to use in case you 

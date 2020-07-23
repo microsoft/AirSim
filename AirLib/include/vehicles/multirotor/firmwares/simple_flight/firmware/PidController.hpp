@@ -99,7 +99,7 @@ public:
         if (dt > min_dt_) {
             integrator->update(dt, error, last_time_);
 
-            float error_der = (error - last_error_) / dt;
+            float error_der = dt > 0 ? (error - last_error_) / dt : 0;
             dterm = error_der * config_.kd;
             last_error_ = error;
         }

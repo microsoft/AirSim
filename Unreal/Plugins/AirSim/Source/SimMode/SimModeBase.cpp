@@ -26,9 +26,17 @@
 //it to AirLib and directly implement WorldSimApiBase interface
 #include "WorldSimApi.h"
 
+ASimModeBase *ASimModeBase::SIMMODE = nullptr;
+
+ASimModeBase* ASimModeBase::getSimMode()
+{
+    return SIMMODE;
+}
 
 ASimModeBase::ASimModeBase()
 {
+    SIMMODE = this;
+
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
@@ -47,6 +55,30 @@ ASimModeBase::ASimModeBase()
 
     static ConstructorHelpers::FClassFinder<AActor> sky_sphere_class(TEXT("Blueprint'/Engine/EngineSky/BP_Sky_Sphere'"));
     sky_sphere_class_ = sky_sphere_class.Succeeded() ? sky_sphere_class.Class : nullptr;
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> loading_screen_class_find(TEXT("WidgetBlueprint'/AirSim/Blueprints/BP_LoadingScreenWidget'"));
+    if (loading_screen_class_find.Succeeded())
+    {
+        auto loading_screen_class = loading_screen_class_find.Class;
+        loading_screen_widget_ = CreateWidget<ULoadingScreenWidget>(this->GetWorld(), loading_screen_class);
+
+    }
+    else
+        loading_screen_widget_ = nullptr;
+
+}
+
+void ASimModeBase::toggleLoadingScreen(bool is_visible)
+{
+    if (loading_screen_widget_ == nullptr)
+        return;
+    else {
+
+        if (is_visible)
+            loading_screen_widget_->SetVisibility(ESlateVisibility::Visible);
+        else
+            loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
+    }
 }
 
 void ASimModeBase::BeginPlay()
@@ -90,6 +122,9 @@ void ASimModeBase::BeginPlay()
         UWeatherLib::initWeather(World, spawned_actors_);
         //UWeatherLib::showWeatherMenu(World);
     }
+
+    loading_screen_widget_->AddToViewport();
+    loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
 }
 
 const NedTransform& ASimModeBase::getGlobalNedTransform()
@@ -110,7 +145,6 @@ void ASimModeBase::checkVehicleReady()
                 UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
             }
         }
-
     }
 }
 
@@ -119,8 +153,7 @@ void ASimModeBase::setStencilIDs()
     UAirBlueprintLib::SetMeshNamingMethod(getSettings().segmentation_setting.mesh_naming_method);
 
     if (getSettings().segmentation_setting.init_method ==
-        AirSimSettings::SegmentationSetting::InitMethodType::CommonObjectsRandomIDs) {
-     
+            AirSimSettings::SegmentationSetting::InitMethodType::CommonObjectsRandomIDs) {     
         UAirBlueprintLib::InitializeMeshStencilIDs(!getSettings().segmentation_setting.override_existing);
     }
     //else don't init
@@ -637,7 +670,6 @@ void ASimModeBase::drawLidarDebugPoints()
 
         msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
         if (api != nullptr) {
-            
             msr::airlib::uint count_lidars = api->getSensors().size(msr::airlib::SensorBase::SensorType::Lidar);
 
             for (msr::airlib::uint i = 0; i < count_lidars; i++) {

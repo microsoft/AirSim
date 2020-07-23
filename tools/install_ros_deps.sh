@@ -30,4 +30,5 @@ fi
 
 sudo apt-get install gcc-8 g++-8
 sudo apt-get install ros-$ROS_DISTRO-mavros*
+sudo apt-get install ros-$ROS_DISTRO-tf2-sensor-msgs
 sudo apt-get install python-catkin-tools

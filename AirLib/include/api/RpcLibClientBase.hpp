@@ -50,7 +50,10 @@ public:
 
     vector<string> simListSceneObjects(const string& name_regex = string(".*")) const;
     Pose simGetObjectPose(const std::string& object_name) const;
+    bool simLoadLevel(const string& level_name);
+    Vector3r simGetObjectScale(const std::string& object_name) const;
     bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
+    bool simSetObjectScale(const std::string& object_name, const Vector3r& scale);
 
     //task management APIs
     void cancelLastTask(const std::string& vehicle_name = "");
@@ -98,13 +101,18 @@ public:
     CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
 
     CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;
-    void simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name = "");
+    void simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name = "");
     void simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name = "");
 
     msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
     msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
 
 	std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
+
+    // Recording APIs
+    void startRecording();
+    void stopRecording();
+    bool isRecording();
 
 protected:
     void* getClient();
