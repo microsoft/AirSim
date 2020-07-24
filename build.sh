@@ -5,8 +5,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"  >/dev/null
 
 set -e
+set -x
 
-function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 debug=false
 
 # Parse command line arguments
@@ -15,18 +15,15 @@ do
 key="$1"
 
 case $key in
-    --gcc)
-    gccBuild=true
-    shift # past argument
-    ;;
-esac
-case $key in
-    --debug)
+--debug)
     debug=true
     shift # past argument
     ;;
 esac
+
 done
+
+function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
 # check for rpclib
 if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
@@ -47,7 +44,11 @@ else
 fi
 
 # variable for build output
-build_dir=build_debug
+if $debug; then
+    build_dir=build_debug
+else
+    build_dir=build_release
+fi 
 if [ "$(uname)" == "Darwin" ]; then
     export CC=/usr/local/opt/llvm@8/bin/clang
     export CXX=/usr/local/opt/llvm@8/bin/clang++
@@ -116,6 +117,8 @@ rm -rf Unreal/Plugins/AirSim/Source/AirLib/src
 Unreal/Environments/Blocks/clean.sh
 mkdir -p Unreal/Environments/Blocks/Plugins
 rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
+
+set +x
 
 echo ""
 echo ""
