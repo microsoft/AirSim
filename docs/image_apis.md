@@ -25,14 +25,13 @@ png_image = client.simGetImage("0", airsim.ImageType.Scene)
 
 int getOneImage() 
 {
-    using namespace std;
     using namespace msr::airlib;
     
-    //for car use CarRpcLibClient
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use CarRpcLibClient
+    MultirotorRpcLibClient client;
 
-    vector<uint8_t> png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
-    //do something with images
+    std::vector<uint8_t> png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
+    // do something with images
 }
 ```
 
@@ -94,19 +93,18 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 ```cpp
 int getStereoAndDepthImages() 
 {
-    using namespace std;
     using namespace msr::airlib;
     
     typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType ImageType;
 
-    //for car use
-    //msr::airlib::CarRpcLibClient client;
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use
+    // CarRpcLibClient client;
+    MultirotorRpcLibClient client;
 
-    //get right, left and depth images. First two as png, second as float16.
-    msr::airlib::vector<ImageRequest> request = { 
+    // get right, left and depth images. First two as png, second as float16.
+    std::vector<ImageRequest> request = { 
         //png format
         ImageRequest("0", ImageType::Scene),
         //uncompressed RGB array bytes
@@ -115,8 +113,8 @@ int getStereoAndDepthImages()
         ImageRequest("1", ImageType::DepthPlanner, true) 
     };
 
-    const vector<ImageResponse>& response = client.simGetImages(request);
-    //do something with response which contains image data, pose, timestamp etc
+    const std::vector<ImageResponse>& response = client.simGetImages(request);
+    // do something with response which contains image data, pose, timestamp etc
 }
 ```
 
