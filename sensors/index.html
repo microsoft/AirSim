@@ -126,6 +126,20 @@
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#sensor-apis">Sensor APIs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#barometer">Barometer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#imu">IMU</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#gps">GPS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#magnetometer">Magnetometer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#distance-sensor_1">Distance sensor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#lidar">Lidar</a>
+    </li>
+        </ul>
     </li>
     </ul>
                     </li>
@@ -354,32 +368,32 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <p>If a vehicle provides its sensor list, it <strong>must</strong> provide the whole list. Selective add/remove/update of the default sensor list is <strong>NOT</strong> supported.
 A vehicle specific sensor list can be specified in the vehicle settings part of the json.
 e.g.,</p>
-<pre><code class="json">    &quot;Vehicles&quot;: {
+<pre><code class="json">&quot;Vehicles&quot;: {
 
-        &quot;Drone1&quot;: {
-            &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-            &quot;AutoCreate&quot;: true,
-            ...
-            &quot;Sensors&quot;: {
-                &quot;MyLidar1&quot;: {
-                    &quot;SensorType&quot;: 6,
-                    &quot;Enabled&quot; : true,
-                    &quot;NumberOfChannels&quot;: 16,
-                    &quot;PointsPerSecond&quot;: 10000,
-                    &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
-                    &quot;DrawDebugPoints&quot;: true
-                },
-                &quot;MyLidar2&quot;: {
-                    &quot;SensorType&quot;: 6,
-                    &quot;Enabled&quot; : true,
-                    &quot;NumberOfChannels&quot;: 4,
-                    &quot;PointsPerSecond&quot;: 10000,
-                    &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
-                    &quot;DrawDebugPoints&quot;: true
-                }
+    &quot;Drone1&quot;: {
+        &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
+        &quot;AutoCreate&quot;: true,
+        ...
+        &quot;Sensors&quot;: {
+            &quot;MyLidar1&quot;: {
+                &quot;SensorType&quot;: 6,
+                &quot;Enabled&quot; : true,
+                &quot;NumberOfChannels&quot;: 16,
+                &quot;PointsPerSecond&quot;: 10000,
+                &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
+                &quot;DrawDebugPoints&quot;: true
+            },
+            &quot;MyLidar2&quot;: {
+                &quot;SensorType&quot;: 6,
+                &quot;Enabled&quot; : true,
+                &quot;NumberOfChannels&quot;: 4,
+                &quot;PointsPerSecond&quot;: 10000,
+                &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
+                &quot;DrawDebugPoints&quot;: true
             }
         }
-   }
+    }
+}
 </code></pre>
 
 <h3 id="sensor-specific-settings">Sensor specific settings<a class="headerlink" href="#sensor-specific-settings" title="Permanent link">#</a></h3>
@@ -435,57 +449,43 @@ Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.
 
 <h2 id="sensor-apis">Sensor APIs<a class="headerlink" href="#sensor-apis" title="Permanent link">#</a></h2>
 <p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API.</p>
-<ul>
-<li>
-<p>Barometer</p>
-<p>C++
-<code>cpp
-msr::airlib::BarometerBase::Output getBarometerData(const std::string&amp; barometer_name, const std::string&amp; vehicle_name);</code></p>
-<p>Python
-<code>python
-barometer_data = client.getBarometerData(barometer_name = "", vehicle_name = "")</code></p>
-</li>
-<li>
-<p>IMU</p>
-<p>C++
-<code>cpp
-msr::airlib::ImuBase::Output getImuData(const std::string&amp; imu_name = "", const std::string&amp; vehicle_name = "");</code></p>
-<p>Python
-<code>python
-imu_data = client.getImuData(imu_name = "", vehicle_name = "")</code></p>
-</li>
-<li>
-<p>GPS</p>
-<p>C++
-<code>cpp
-msr::airlib::GpsBase::Output getGpsData(const std::string&amp; gps_name = "", const std::string&amp; vehicle_name = "");</code>
-Python
-<code>python
-gps_data = client.getGpsData(gps_name = "", vehicle_name = "")</code></p>
-</li>
-<li>
-<p>Magnetometer</p>
-<p>C++
-<code>cpp
-msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string&amp; magnetometer_name = "", const std::string&amp; vehicle_name = "");</code>
-Python
-<code>python
-magnetometer_data = client.getMagnetometerData(magnetometer_name = "", vehicle_name = "")</code></p>
-</li>
-<li>
-<p>Distance sensor</p>
-<p>C++
-<code>cpp
-msr::airlib::DistanceSensorData getDistanceSensorData(const std::string&amp; distance_sensor_name = "", const std::string&amp; vehicle_name = "");</code>
-Python
-<code>python
-distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")</code></p>
-</li>
-<li>
-<p>Lidar
-    See <a href="../lidar/">lidar</a> for Lidar API.</p>
-</li>
-</ul>
+<h5 id="barometer">Barometer<a class="headerlink" href="#barometer" title="Permanent link">#</a></h5>
+<pre><code class="cpp">msr::airlib::BarometerBase::Output getBarometerData(const std::string&amp; barometer_name, const std::string&amp; vehicle_name);
+</code></pre>
+
+<pre><code class="python">barometer_data = client.getBarometerData(barometer_name = &quot;&quot;, vehicle_name = &quot;&quot;)
+</code></pre>
+
+<h5 id="imu">IMU<a class="headerlink" href="#imu" title="Permanent link">#</a></h5>
+<pre><code class="cpp">msr::airlib::ImuBase::Output getImuData(const std::string&amp; imu_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
+</code></pre>
+
+<pre><code class="python">imu_data = client.getImuData(imu_name = &quot;&quot;, vehicle_name = &quot;&quot;)
+</code></pre>
+
+<h5 id="gps">GPS<a class="headerlink" href="#gps" title="Permanent link">#</a></h5>
+<pre><code class="cpp">msr::airlib::GpsBase::Output getGpsData(const std::string&amp; gps_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
+</code></pre>
+
+<pre><code class="python">gps_data = client.getGpsData(gps_name = &quot;&quot;, vehicle_name = &quot;&quot;)
+</code></pre>
+
+<h5 id="magnetometer">Magnetometer<a class="headerlink" href="#magnetometer" title="Permanent link">#</a></h5>
+<pre><code class="cpp">msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string&amp; magnetometer_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
+</code></pre>
+
+<pre><code class="python">magnetometer_data = client.getMagnetometerData(magnetometer_name = &quot;&quot;, vehicle_name = &quot;&quot;)
+</code></pre>
+
+<h5 id="distance-sensor_1">Distance sensor<a class="headerlink" href="#distance-sensor_1" title="Permanent link">#</a></h5>
+<pre><code class="cpp">msr::airlib::DistanceSensorData getDistanceSensorData(const std::string&amp; distance_sensor_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
+</code></pre>
+
+<pre><code class="python">distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = &quot;&quot;, vehicle_name = &quot;&quot;)
+</code></pre>
+
+<h5 id="lidar">Lidar<a class="headerlink" href="#lidar" title="Permanent link">#</a></h5>
+<p>See the <a href="../lidar/">lidar page</a> for Lidar API.</p>
               
             </div>
           </div>

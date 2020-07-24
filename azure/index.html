@@ -297,11 +297,12 @@
 <p>When using an Azure Trial account, the default vCPU quota may not be enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to make a support request to increase the default quota.</p>
 </li>
 <li>
-<p>To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the <a href="https://portal.azure.com">Azure Portal</a> or use the following command from the Azure CLI:
-    <code>bash
-    az vm deallocate --resource-group MyResourceGroup --name MyVMName</code></p>
+<p>To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the <a href="https://portal.azure.com">Azure Portal</a> or use the following command from the Azure CLI:</p>
 </li>
 </ul>
+<pre><code class="bash">az vm deallocate --resource-group MyResourceGroup --name MyVMName
+</code></pre>
+
 <h2 id="code-and-debug-from-visual-studio-code-and-remote-ssh">Code and debug from Visual Studio Code and Remote SSH<a class="headerlink" href="#code-and-debug-from-visual-studio-code-and-remote-ssh" title="Permanent link">#</a></h2>
 <ul>
 <li>Install Visual Studio Code</li>

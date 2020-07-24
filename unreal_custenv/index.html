@@ -313,7 +313,7 @@
 <p>Edit the <code>LandscapeMountains.uproject</code> so that it looks like this</p>
 </li>
 </ol>
-<pre><code>{
+<pre><code class="json">{
     &quot;FileVersion&quot;: 3,
     &quot;EngineAssociation&quot;: &quot;4.24&quot;,
     &quot;Category&quot;: &quot;Samples&quot;,
@@ -391,17 +391,20 @@ but you can use any environment. Another free environment is <a href="https://ww
 <p>In this case, create a new blank C++ project with no Starter Content and add your environment in to it.</p>
 <h4 id="i-already-have-my-own-unreal-project-how-do-i-use-airsim-with-it">I already have my own Unreal project. How do I use AirSim with it?<a class="headerlink" href="#i-already-have-my-own-unreal-project-how-do-i-use-airsim-with-it" title="Permanent link">#</a></h4>
 <p>Copy the <code>Unreal\Plugins</code> folder from the build you did in the above section into the root of your Unreal project's folder. In your Unreal project's .uproject file, add the key <code>AdditionalDependencies</code> to the "Modules" object
-as we showed in the <code>LandscapeMountains.uproject</code> above.
-   <code>"AdditionalDependencies": [
-    "AirSim"
-]</code>              <br />
-and the <code>Plugins</code> section to the top level object:
-   <code>"Plugins": [
-            {
-                "Name": "AirSim",
-                "Enabled": true
-            }
-        ]</code></p>
+as we showed in the <code>LandscapeMountains.uproject</code> above.</p>
+<pre><code class="json">&quot;AdditionalDependencies&quot;: [
+    &quot;AirSim&quot;
+]
+</code></pre>
+
+<p>and the <code>Plugins</code> section to the top level object:</p>
+<pre><code class="json">&quot;Plugins&quot;: [
+    {
+        &quot;Name&quot;: &quot;AirSim&quot;,
+        &quot;Enabled&quot;: true
+    }
+]      
+</code></pre>
               
             </div>
           </div>
