@@ -199,9 +199,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -278,7 +280,7 @@
                 <h1 id="setting-up-px4-software-in-loop">Setting up PX4 Software-in-Loop<a class="headerlink" href="#setting-up-px4-software-in-loop" title="Permanent link">#</a></h1>
 <p>The <a href="http://dev.px4.io">PX4</a> software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. If you are on Windows then you must
 use the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html">Cygwin Toolchain</a> as the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html">Bash On Windows</a> toolchain no longer works for SITL.</p>
-<p><strong>Note</strong> that every time you stop the unreal app you have top restart the <code>px4</code> app.</p>
+<p><strong>Note</strong> that every time you stop the unreal app you have to restart the <code>px4</code> app.</p>
 <ol>
 <li>
 <p>From your bash terminal follow <a href="http://dev.px4.io/starting-installing-linux.html">these steps for Linux</a> and follow <strong>all</strong> the instructions under <code>NuttX based hardware</code> to install prerequisites. We've also included out own copy of the <a href="../px4_build/">PX4 build instructions</a> which is a bit more concise about what we need exactly.</p>

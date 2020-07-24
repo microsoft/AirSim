@@ -257,9 +257,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -335,9 +337,18 @@
               
                 <h1 id="airsim-settings">AirSim Settings<a class="headerlink" href="#airsim-settings" title="Permanent link">#</a></h1>
 <h2 id="where-are-settings-stored">Where are Settings Stored?<a class="headerlink" href="#where-are-settings-stored" title="Permanent link">#</a></h2>
-<p>Windows: <code>Documents\AirSim</code>
-Linux: <code>~/Documents/AirSim</code></p>
-<p>The file is in usual <a href="https://en.wikipedia.org/wiki/JSON">json format</a>. On first startup AirSim would create <code>settings.json</code> file with no settings. To avoid problems, always use ASCII format to save json file.</p>
+<p>AirSim is searching for the settings definition in 4 different ways in the following order. The first match will be used:</p>
+<ol>
+<li>Looking at the (absolute) path specified by the <code>--settings</code> command line argument.<br />
+For example, in Windows: <code>AirSim.exe --settings 'C:\path\to\settings.json'</code> <br />
+In Linux <code>./Blocks.sh --settings '/home/$USER/path/to/settings.json'</code></li>
+<li>Looking for a json document passed as a command line argument by the <code>--settings</code> argument.<br />
+For example, in Windows: <code>AirSim.exe --settings '{"foo" : "bar"}'</code> <br />
+In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
+<li>Looking in the folder of the executable for a file called <code>settings.json</code>.</li>
+<li>Looking in the users home folder for a file called <code>settings.json</code>. The AirSim subfolder is located at <code>Documents\AirSim</code> on Windows and <code>~/Documents/AirSim</code> on Linux systems.</li>
+</ol>
+<p>The file is in usual <a href="https://en.wikipedia.org/wiki/JSON">json format</a>. On first startup AirSim would create <code>settings.json</code> file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.</p>
 <h2 id="how-to-chose-between-car-and-multirotor">How to Chose Between Car and Multirotor?<a class="headerlink" href="#how-to-chose-between-car-and-multirotor" title="Permanent link">#</a></h2>
 <p>The default is to use multirotor. To use car simple set <code>"SimMode": "Car"</code> like this:</p>
 <pre><code>{
@@ -531,7 +542,7 @@ Linux: <code>~/Documents/AirSim</code></p>
 <h2 id="segmentation-settings">Segmentation Settings<a class="headerlink" href="#segmentation-settings" title="Permanent link">#</a></h2>
 <p>The <code>InitMethod</code> determines how object IDs are initialized at startup to generate <a href="../image_apis/#segmentation">segmentation</a>. The value "" or "CommonObjectsRandomIDs" (default) means assign random IDs to each object at startup. This will generate segmentation view with random colors assign to each object. The value "None" means don't initialize object IDs. This will cause segmentation view to have single solid colors. This mode is useful if you plan to set up object IDs using <a href="../image_apis/#segmentation">APIs</a> and it can save lot of delay at startup for large environments like CityEnviron.</p>
 <p>If <code>OverrideExisting</code> is false then initialization does not alter non-zero object IDs already assigned otherwise it does.</p>
-<p>If <code>MeshNamingMethod</code> is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If its "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.</p>
+<p>If <code>MeshNamingMethod</code> is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If it is "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.</p>
 <h2 id="camera-settings">Camera Settings<a class="headerlink" href="#camera-settings" title="Permanent link">#</a></h2>
 <p>The <code>CameraDefaults</code> element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in <code>Cameras</code> element inside <code>Vehicles</code> as described later.</p>
 <h3 id="note-on-imagetype-element">Note on ImageType element<a class="headerlink" href="#note-on-imagetype-element" title="Permanent link">#</a></h3>
@@ -652,7 +663,7 @@ from the PX4 app.  The second channel for controlling the vehicle is defined by 
 <h3 id="enginesound">EngineSound<a class="headerlink" href="#enginesound" title="Permanent link">#</a></h3>
 <p>To turn off the engine sound use <a href="./">setting</a> <code>"EngineSound": false</code>. Currently this setting applies only to car.</p>
 <h3 id="pawnpaths">PawnPaths<a class="headerlink" href="#pawnpaths" title="Permanent link">#</a></h3>
-<p>This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file <code>Content\MyCar\MySedanBP.uasset</code> in your project then you can set <code>"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}</code>. The <code>XYZ.XYZ_C</code> is a special notation required to specify class for BP <code>XYZ</code>. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It's also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.</p>
+<p>This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file <code>Content\MyCar\MySedanBP.uasset</code> in your project then you can set <code>"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}</code>. The <code>XYZ.XYZ_C</code> is a special notation required to specify class for BP <code>XYZ</code>. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It is also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.</p>
 <h3 id="physicsenginename">PhysicsEngineName<a class="headerlink" href="#physicsenginename" title="Permanent link">#</a></h3>
 <p>For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support <code>"FastPhysicsEngine"</code> only.</p>
 <h3 id="localhostip-setting">LocalHostIp Setting<a class="headerlink" href="#localhostip-setting" title="Permanent link">#</a></h3>

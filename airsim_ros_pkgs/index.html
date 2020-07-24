@@ -191,9 +191,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -281,14 +283,14 @@ Verify version by <code>gcc --version</code></p>
 </li>
 <li>Install <a href="https://wiki.ros.org/kinetic/Installation/Ubuntu">ROS kinetic</a></li>
 <li>
-<p>Install mavros packages: <code>sudo apt-get install ros-kinetic-mavros*</code></p>
+<p>Install tf2 sensor and mavros packages: <code>sudo apt-get install ros-kinetic-tf2-sensor-msgs ros-kinetic-mavros*</code></p>
 </li>
 <li>
 <p>Ubuntu 18.04</p>
 </li>
 <li>Install <a href="https://wiki.ros.org/melodic/Installation/Ubuntu">ROS melodic</a></li>
 <li>
-<p>Install mavros packages: <code>sudo apt-get install ros-melodic-mavros*</code></p>
+<p>Install tf2 sensor and mavros packages: <code>sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-mavros*</code></p>
 </li>
 <li>
 <p>Install <a href="https://catkin-tools.readthedocs.io/en/latest/installing.html">catkin_tools</a>
@@ -339,7 +341,7 @@ This the current GPS coordinates of the drone in airsim. </p>
 </li>
 <li>
 <p><code>/airsim_node/VEHICLE_NAME/odom_local_ned</code> <a href="https://docs.ros.org/api/nav_msgs/html/msg/Odometry.html">nav_msgs/Odometry</a> <br />
-Odometry in NED frame wrt take-off point.  </p>
+Odometry in NED frame (default name: odom_local_ned, launch name and frame type are configurable) wrt take-off point.  </p>
 </li>
 <li>
 <p><code>/airsim_node/VEHICLE_NAME/CAMERA_NAME/IMAGE_TYPE/camera_info</code> <a href="https://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html">sensor_msgs/CameraInfo</a></p>
@@ -350,6 +352,25 @@ Odometry in NED frame wrt take-off point.  </p>
 </li>
 <li>
 <p><code>/tf</code> <a href="https://docs.ros.org/api/tf2_msgs/html/msg/TFMessage.html">tf2_msgs/TFMessage</a></p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/altimeter/SENSOR_NAME</code> [airsim_ros_pkgs::Altimeter] This the current altimeter reading for altitude, pressure, and QNH (https://en.wikipedia.org/wiki/QNH)</p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/imu/SENSOR_NAME</code> [sensor_msgs::Imu] (http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html)
+  IMU sensor data</p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/magnetometer/SENSOR_NAME</code> [sensor_msgs::MagneticField] (http://docs.ros.org/api/sensor_msgs/html/msg/MagneticField.html)
+  Meausrement of magnetic field vector/compass</p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/distance/SENSOR_NAME</code> [sensor_msgs::Range] (http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)
+  Meausrement of distance from an active ranger, such as infrared or IR</p>
+</li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/lidar/SENSOR_NAME</code> [sensor_msgs::PointCloud2] (http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html)
+  LIDAR pointcloud</p>
 </li>
 </ul>
 <h4 id="subscribers">Subscribers:<a class="headerlink" href="#subscribers" title="Permanent link">#</a></h4>
@@ -370,6 +391,10 @@ Odometry in NED frame wrt take-off point.  </p>
 <p><code>/gimbal_angle_quat_cmd</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GimbalAngleQuatCmd.msg">airsim_ros_pkgs/GimbalAngleQuatCmd</a> <br />
   Gimbal set point in quaternion.    </p>
 </li>
+<li>
+<p><code>/airsim_node/VEHICLE_NAME/car_cmd</code> [airsim_ros_pkgs/CarControls]
+  Throttle, brake, steering and gear selections for control. Both automatic and manual transmission control possible, see the car_joy.py script for use.</p>
+</li>
 </ul>
 <h4 id="services">Services:<a class="headerlink" href="#services" title="Permanent link">#</a></h4>
 <ul>
@@ -387,20 +412,44 @@ Odometry in NED frame wrt take-off point.  </p>
 <h4 id="parameters">Parameters:<a class="headerlink" href="#parameters" title="Permanent link">#</a></h4>
 <ul>
 <li>
+<p><code>/airsim_node/world_frame_id</code> [string] <br />
+  Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
+  Default: world_ned <br />
+  Set to "world_enu" to switch to ENU frames automatically</p>
+</li>
+<li>
+<p><code>/airsim_node/odom_frame_id</code> [string] <br />
+  Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
+  Default: odom_local_ned <br />
+  If you set world_frame_id to "world_enu", the default odom name will instead default to "odom_local_enu"</p>
+</li>
+<li>
+<p><code>/airsim_node/coordinate_system_enu</code> [boolean] <br />
+  Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
+  Default: false <br />
+  If you set world_frame_id to "world_enu", this setting will instead default to true</p>
+</li>
+<li>
 <p><code>/airsim_node/update_airsim_control_every_n_sec</code> [double] <br />
   Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
-  Default: 0.01 seconds.  <br />
+  Default: 0.01 seconds. <br />
   Timer callback frequency for updating drone odom and state from airsim, and sending in control commands.  <br />
   The current RPClib interface to unreal engine maxes out at 50 Hz. <br />
-  Timer callbacks in ROS run at maximum rate possible, so it's best to not touch this parameter. </p>
+  Timer callbacks in ROS run at maximum rate possible, so it's best to not touch this parameter.</p>
 </li>
 <li>
 <p><code>/airsim_node/update_airsim_img_response_every_n_sec</code> [double] <br />
   Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
-  Default: 0.01 seconds.  <br />
+  Default: 0.01 seconds. <br />
   Timer callback frequency for receiving images from all cameras in airsim.  <br />
   The speed will depend on number of images requested and their resolution. <br />
   Timer callbacks in ROS run at maximum rate possible, so it's best to not touch this parameter. </p>
+</li>
+<li>
+<p><code>/airsim_node/publish_clock</code> [double] <br />
+  Set in: <code>$(airsim_ros_pkgs)/launch/airsim_node.launch</code> <br />
+  Default: false <br />
+  Will publish the ros /clock topic if set to true.    </p>
 </li>
 </ul>
 <h3 id="simple-pid-position-controller-node">Simple PID Position Controller Node<a class="headerlink" href="#simple-pid-position-controller-node" title="Permanent link">#</a></h3>

@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Simple Flight - AirSim</title>
+  <title>Building Point Clouds - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Simple Flight";
-    var mkdocs_page_input_path = "simple_flight.md";
+    var mkdocs_page_name = "Building Point Clouds";
+    var mkdocs_page_input_path = "point_clouds.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -119,7 +119,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Design</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../design/">Architecture</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../code_structure/">Code Structure</a>
@@ -128,21 +128,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../flight_controller/">Flight Controller</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Simple Flight</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#advantages">Advantages</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#design">Design</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#control">Control</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#state-estimation">State Estimation</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#supported-boards">Supported Boards</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a>
-    </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../simple_flight/">Simple Flight</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
@@ -184,7 +170,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../reinforcement_learning/">Reinforcement Learning</a>
                     </li>
                     <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
@@ -197,7 +183,9 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Building Point Clouds</a>
+    <ul class="current">
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
                     </li>
@@ -257,14 +245,14 @@
     
       
         
-          <li>Design &raquo;</li>
+          <li>Contributed Tutorials &raquo;</li>
         
       
     
-    <li>Simple Flight</li>
+    <li>Building Point Clouds</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/simple_flight.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/point_clouds.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -275,56 +263,15 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="simple_flight">simple_flight<a class="headerlink" href="#simple_flight" title="Permanent link">#</a></h1>
-<p>If you don't know what flight controller does than see <a href="../flight_controller/">What is Flight Controller?</a>. </p>
-<p>AirSim has built-in flight controller called simple_flight and it is used by default. You don't need to do anything to use or configure it. AirSim also supports <a href="../px4_setup/">PX4</a> as another flight controller for advanced users. In future, we also plan to support <a href="https://rosflight.org/">ROSFlight</a> and <a href="https://github.com/simondlevy/hackflight">Hackflight</a>.</p>
-<h2 id="advantages">Advantages<a class="headerlink" href="#advantages" title="Permanent link">#</a></h2>
-<p>The advantage of using simple_flight is zero additional setup you need to do and it "just works". Also, simple_flight uses steppable clock which means you can pause the simulation and things are not at mercy of high variance low precision clock that operating system provides. Further, simple_flight is simple, cross platform and 100% header-only dependency-free C++ code which means you can literally step through from simulator to inside flight controller code within same code base!</p>
-<h2 id="design">Design<a class="headerlink" href="#design" title="Permanent link">#</a></h2>
-<p>Normally flight controllers are designed to run on actual hardware on vehicles and their support for running in simulator varies widely. They are often fairly difficult to configure for non-expert users and typically have complex build usually lacking cross platform support. All these problems have played significant part in design of simple_flight.</p>
-<p>simple_flight is designed from ground up as library with clean interface that can work onboard the vehicle as well as simulator. The core principle is that flight controller has no way to specify special simulation mode and there for it has no way to know if it is running under simulation or real vehicle. We thus view flight controller simply as collection of algorithms packaged in a library. Another key emphasis is to develop this code as dependency free header-only pure standard C++11 code. This means there is no special build required to compile simple_flight. You just copy its source code to any project you wish and it just works.</p>
-<h2 id="control">Control<a class="headerlink" href="#control" title="Permanent link">#</a></h2>
-<p>simple_flight can control vehicle by taking in desired input as angle rate, angle level, velocity or position. Each axis of control can be specified with one of these modes. Internally simple_flight uses cascade of PID controllers to finally generate actuator signals. This means position PID drives velocity PID which drives angle level PID which finally drives angle rate PID.</p>
-<h2 id="state-estimation">State Estimation<a class="headerlink" href="#state-estimation" title="Permanent link">#</a></h2>
-<p>In current release we are using ground truth from simulator for our state estimation. We plan to add complimentary filter based state estimation for angular velocity and orientation using 2 sensors (gyroscope, accelerometer) in near future. In more longer term, we plan to integrate another library to do velocity and position estimation using 4 sensors (gyroscope, accelerometer, magnetometer and barometer) using EKF. If you have experience this area than we encourage you to engage with us and contribute!</p>
-<h2 id="supported-boards">Supported Boards<a class="headerlink" href="#supported-boards" title="Permanent link">#</a></h2>
-<p>Currently we have implemented simple_flight interfaces for simulated board. We plan to implement it for Pixhawk V2 board and possibly Naze32 board. We expect all our code to remain unchanged and the implementation would mainly involve adding drivers for various sensors, handling ISRs and managing other board specific details. If you have experience this area than we encourage you to engage with us and contribute!</p>
-<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">#</a></h2>
-<p>To have AirSim use simple_flight, you can specify it in <a href="../settings/">settings.json</a> as shown below. Note that this is default so you don't have to do it explicitly.</p>
-<pre><code>&quot;Vehicles&quot;: {
-    &quot;SimpleFlight&quot;: {
-      &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-    }
-}
-</code></pre>
-
-<p>By default, vehicle using simple_flight is already armed which is why you would see propellers spinning. However if you don't want that than set <code>DefaultVehicleState</code> to <code>Inactive</code> like this:</p>
-<pre><code>&quot;Vehicles&quot;: {
-    &quot;SimpleFlight&quot;: {
-      &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-      &quot;DefaultVehicleState&quot;: &quot;Inactive&quot;
-    }
-}
-</code></pre>
-
-<p>In this case, you will need to either manually arm using RC sticks in down inward position or using APIs.</p>
-<p>For safety reasons, flight controllers would disallow API control unless human operator has consented using a switch on RC. Also, when RC control is lost, vehicle should disable API control and enter hover mode for safety reasons. To simplify things a bit, simple_flight enables API control without human consent using RC and even when RC is not detected by default however you can change this using following setting:</p>
-<pre><code>&quot;Vehicles&quot;: {
-    &quot;SimpleFlight&quot;: {
-      &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-
-      &quot;AllowAPIAlways&quot;: true,
-      &quot;RC&quot;: {
-        &quot;RemoteControlID&quot;: 0,      
-        &quot;AllowAPIWhenDisconnected&quot;: true
-      }
-    }
-}
-</code></pre>
-
-<p>Finally, simple_flight uses steppable clock by default which means clock advances when simulator tells it to advance (unlike wall clock which advances strictly according to passage of time). This means clock can be paused, for example, if code hits the break point and there is zero variance in clock (clock APIs provides by operating system might have significant variance unless its "real time" OS). If you want simple_flight to use wall clock instead than use following settings:</p>
-<pre><code>  &quot;ClockType&quot;: &quot;ScalableClock&quot;
-</code></pre>
+                <h1 id="point-clouds">Point Clouds<a class="headerlink" href="#point-clouds" title="Permanent link">#</a></h1>
+<p>Moved here from <a href="https://github.com/microsoft/AirSim/wiki/Point-Clouds">https://github.com/microsoft/AirSim/wiki/Point-Clouds</a></p>
+<p>A Python script <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/point_cloud.py">point_cloud.py</a> shows how to convert the depth image returned from AirSim into a point cloud.</p>
+<p>The following depth image was captured using the Modular Neighborhood environment:</p>
+<p><img alt="depth" src="../images/depth.png" /></p>
+<p>And with the appropriate projection matrix, the OpenCV <code>reprojectImageTo3D</code> function can turn this into a point cloud.  The following is the result, which is also available here: <a href="https://skfb.ly/68r7y">https://skfb.ly/68r7y</a>.</p>
+<p><img alt="depth" src="../images/point_cloud.png" /></p>
+<p><a href="https://sketchfab.com">SketchFab</a> can upload the resulting file <code>cloud.asc</code> and render it for you.</p>
+<p>PS: you may notice the scene is reflected on the Y axis, so I may have a sign wrong in the projection matrix.  An exercise for the reader :-)</p>
               
             </div>
           </div>
@@ -332,10 +279,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../hello_drone/" class="btn btn-neutral float-right" title="Hello Drone">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../drone_survey/" class="btn btn-neutral float-right" title="Surveying Using Drone">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../flight_controller/" class="btn btn-neutral" title="Flight Controller"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../reinforcement_learning/" class="btn btn-neutral" title="Reinforcement Learning"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -365,10 +312,10 @@
           <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../flight_controller/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../reinforcement_learning/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../hello_drone/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../drone_survey/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

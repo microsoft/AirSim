@@ -118,6 +118,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#configuring-vehicle-specific-sensor-list">Configuring vehicle-specific sensor list</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#sensor-specific-settings">Sensor specific settings</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#distance-sensor">Distance Sensor</a>
+    </li>
+        </ul>
     </li>
         </ul>
     </li>
@@ -205,9 +209,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -314,7 +320,7 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <p>Behind the scenes, <code>createDefaultSensorSettings</code> method in <a href="https://github.com/Microsoft/AirSim/blob/master/AirLib/include/common/AirSimSettings.hpp">AirSimSettings.hpp</a> sets up the above sensors with their default parameters, depending on the sim mode specified in the <code>settings.json</code> file.</p>
 <h2 id="configuring-the-default-sensor-list">Configuring the default sensor list<a class="headerlink" href="#configuring-the-default-sensor-list" title="Permanent link">#</a></h2>
 <p>The default sensor list can be configured in settings json:</p>
-<pre><code class="JSON">&quot;DefaultSensors&quot;: {
+<pre><code class="json">&quot;DefaultSensors&quot;: {
     &quot;Barometer&quot;: {
          &quot;SensorType&quot;: 1,
          &quot;Enabled&quot; : true
@@ -348,7 +354,7 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <p>If a vehicle provides its sensor list, it <strong>must</strong> provide the whole list. Selective add/remove/update of the default sensor list is <strong>NOT</strong> supported.
 A vehicle specific sensor list can be specified in the vehicle settings part of the json.
 e.g.,</p>
-<pre><code>    &quot;Vehicles&quot;: {
+<pre><code class="json">    &quot;Vehicles&quot;: {
 
         &quot;Drone1&quot;: {
             &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
@@ -379,6 +385,54 @@ e.g.,</p>
 <h3 id="sensor-specific-settings">Sensor specific settings<a class="headerlink" href="#sensor-specific-settings" title="Permanent link">#</a></h3>
 <p>Each sensor-type has its own set of settings as well.
 Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.</p>
+<h4 id="distance-sensor">Distance Sensor<a class="headerlink" href="#distance-sensor" title="Permanent link">#</a></h4>
+<p>By default, Distance Sensor points to the front of the vehicle. It can be pointed in any direction by modifying the settings</p>
+<p>Configurable Parameters -</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X Y Z</td>
+<td>Position of the sensor relative to the vehicle (in NED, in meters) (Default (0,0,0)-Multirotor, (0,0,-1)-Car)</td>
+</tr>
+<tr>
+<td>Yaw Pitch Roll</td>
+<td>Orientation of the sensor relative to the vehicle (degrees) (Default (0,0,0))</td>
+</tr>
+<tr>
+<td>MinDistance</td>
+<td>Minimum distance measured by distance sensor (metres, only used to fill Mavlink message for PX4) (Default 0.2m)</td>
+</tr>
+<tr>
+<td>MaxDistance</td>
+<td>Maximum distance measured by distance sensor (metres) (Default 40.0m)</td>
+</tr>
+</tbody>
+</table>
+<p>For example, to make the sensor point towards the ground (for altitude measurement similar to barometer), the orientation can be modified as follows -</p>
+<pre><code class="json">&quot;Distance&quot;: {
+    &quot;SensorType&quot;: 5,
+    &quot;Enabled&quot; : true,
+    &quot;Yaw&quot;: 0, &quot;Pitch&quot;: -90, &quot;Roll&quot;: 0
+}
+</code></pre>
+
+<p><strong>Note:</strong> For Cars, the sensor is placed 1 meter above the vehicle center by default. This is required since otherwise the sensor gives strange data due it being inside the vehicle. This doesn't affect the sensor values say when measuring the distance between 2 cars. See <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/distance_sensor_multi.py"><code>PythonClient/car/distance_sensor_multi.py</code></a> for an example usage.</p>
+<h5 id="server-side-visualization-for-debugging">Server side visualization for debugging<a class="headerlink" href="#server-side-visualization-for-debugging" title="Permanent link">#</a></h5>
+<p>Be default, the points hit by distance sensor are not drawn on the viewport. To enable the drawing of hit points on the viewport, please enable setting <code>DrawDebugPoints</code> via settings json. E.g. -</p>
+<pre><code class="json">&quot;Distance&quot;: {
+    &quot;SensorType&quot;: 5,
+    &quot;Enabled&quot; : true,
+    ...
+    &quot;DrawDebugPoints&quot;: true
+}
+</code></pre>
+
 <h2 id="sensor-apis">Sensor APIs<a class="headerlink" href="#sensor-apis" title="Permanent link">#</a></h2>
 <p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API.</p>
 <ul>
@@ -389,7 +443,7 @@ Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.
 msr::airlib::BarometerBase::Output getBarometerData(const std::string&amp; barometer_name, const std::string&amp; vehicle_name);</code></p>
 <p>Python
 <code>python
-barometer_data = getBarometerData(barometer_name = "", vehicle_name = "")</code></p>
+barometer_data = client.getBarometerData(barometer_name = "", vehicle_name = "")</code></p>
 </li>
 <li>
 <p>IMU</p>
@@ -398,7 +452,7 @@ barometer_data = getBarometerData(barometer_name = "", vehicle_name = "")</code>
 msr::airlib::ImuBase::Output getImuData(const std::string&amp; imu_name = "", const std::string&amp; vehicle_name = "");</code></p>
 <p>Python
 <code>python
-imu_data = getImuData(imu_name = "", vehicle_name = "")</code></p>
+imu_data = client.getImuData(imu_name = "", vehicle_name = "")</code></p>
 </li>
 <li>
 <p>GPS</p>
@@ -407,7 +461,7 @@ imu_data = getImuData(imu_name = "", vehicle_name = "")</code></p>
 msr::airlib::GpsBase::Output getGpsData(const std::string&amp; gps_name = "", const std::string&amp; vehicle_name = "");</code>
 Python
 <code>python
-gps_data = getGpsData(gps_name = "", vehicle_name = "")</code></p>
+gps_data = client.getGpsData(gps_name = "", vehicle_name = "")</code></p>
 </li>
 <li>
 <p>Magnetometer</p>
@@ -416,16 +470,16 @@ gps_data = getGpsData(gps_name = "", vehicle_name = "")</code></p>
 msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string&amp; magnetometer_name = "", const std::string&amp; vehicle_name = "");</code>
 Python
 <code>python
-magnetometer_data = getMagnetometerData(magnetometer_name = "", vehicle_name = "")</code></p>
+magnetometer_data = client.getMagnetometerData(magnetometer_name = "", vehicle_name = "")</code></p>
 </li>
 <li>
 <p>Distance sensor</p>
 <p>C++
 <code>cpp
-msr::airlib::DistanceBase::Output getDistanceSensorData(const std::string&amp; distance_sensor_name = "", const std::string&amp; vehicle_name = "");</code>
+msr::airlib::DistanceSensorData getDistanceSensorData(const std::string&amp; distance_sensor_name = "", const std::string&amp; vehicle_name = "");</code>
 Python
 <code>python
-distance_sensor_name = getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")</code></p>
+distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")</code></p>
 </li>
 <li>
 <p>Lidar

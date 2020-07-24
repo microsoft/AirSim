@@ -136,6 +136,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#what-flight-controllers-are-supported">What Flight Controllers are Supported?</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-airsim-without-flight-controller">Using AirSim Without Flight Controller</a>
+    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../simple_flight/">Simple Flight</a>
@@ -193,9 +195,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -279,8 +283,8 @@
 <p>In "software-in-loop" simulation (SITL or SIL) mode the firmware runs in your computer as opposed to separate board. This is generally fine except that now you are not touching any code paths that are specific to your device. Also, none of your code now runs with real-time clock usually provided by specialized hardware board. For well-designed flight controllers with software clock, these are usually not concerning issues.</p>
 <h2 id="what-flight-controllers-are-supported">What Flight Controllers are Supported?<a class="headerlink" href="#what-flight-controllers-are-supported" title="Permanent link">#</a></h2>
 <p>AirSim has built-in flight controller called <a href="../simple_flight/">simple_flight</a> and it is used by default. You don't need to do anything to use or configure it. AirSim also supports <a href="../px4_setup/">PX4</a> as another flight controller for advanced users. In the future, we also plan to support <a href="https://rosflight.org/">ROSFlight</a> and <a href="https://github.com/simondlevy/hackflight">Hackflight</a>.</p>
-<p>## Using AirSim Without Flight Controller
-Yes, now it's possible to use AirSim without flight controller. Please see the <a href="../image_apis/">instructions here</a> for how to use so-called "Computer Vision" mode. If you don't need vehicle dynamics, we highly recommend using this mode.</p>
+<h2 id="using-airsim-without-flight-controller">Using AirSim Without Flight Controller<a class="headerlink" href="#using-airsim-without-flight-controller" title="Permanent link">#</a></h2>
+<p>Yes, now it's possible to use AirSim without flight controller. Please see the <a href="../image_apis/">instructions here</a> for how to use so-called "Computer Vision" mode. If you don't need vehicle dynamics, we highly recommend using this mode.</p>
               
             </div>
           </div>

@@ -107,6 +107,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#weather-apis">Weather APIs</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#recording-apis">Recording APIs</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#lidar-apis">Lidar APIs</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#multiple-vehicles">Multiple Vehicles</a>
@@ -261,9 +263,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -484,6 +488,14 @@ For vision problems that can benefit from domain randomization, there is also an
 
 <p>Please note that <code>Roadwetness</code>, <code>RoadSnow</code> and <code>RoadLeaf</code> effects requires adding <a href="https://github.com/Microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Content/Weather/WeatherFX">materials</a> to your scene.</p>
 <p>Please see <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/weather.py">example code</a> for more details.</p>
+<h3 id="recording-apis">Recording APIs<a class="headerlink" href="#recording-apis" title="Permanent link">#</a></h3>
+<p>Recording APIs can be used to start recording data through APIs. Data to be recorded can be specified using <a href="../settings/#recording">settings</a>. To start recording, use -</p>
+<pre><code>client.startRecording()
+</code></pre>
+
+<p>Similarly, to stop recording, use <code>client.stopRecording()</code>. To check whether Recording is running, call <code>client.isRecording()</code>, returns a <code>bool</code>.</p>
+<p>This API works alongwith toggling Recording using R button, therefore if it's enabled using R key, <code>isRecording()</code> will return <code>True</code>, and recording can be stopped via API using <code>stopRecording()</code>. Similarly, recording started using API will be stopped if R key is pressed in Viewport. LogMessage will also appear in the top-left of the viewport if recording is started or stopped using API.</p>
+<p>Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.</p>
 <h3 id="lidar-apis">Lidar APIs<a class="headerlink" href="#lidar-apis" title="Permanent link">#</a></h3>
 <p>AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in <a href="../settings/">settings.json</a>.</p>
 <p>More on <a href="../lidar/">lidar APIs and settings</a> and <a href="../sensors/">sensor settings</a></p>

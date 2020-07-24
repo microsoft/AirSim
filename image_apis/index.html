@@ -271,9 +271,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -366,14 +368,13 @@ png_image = client.simGetImage(&quot;0&quot;, airsim.ImageType.Scene)
 
 int getOneImage() 
 {
-    using namespace std;
     using namespace msr::airlib;
 
-    //for car use CarRpcLibClient
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use CarRpcLibClient
+    MultirotorRpcLibClient client;
 
-    vector&lt;uint8_t&gt; png_image = client.simGetImage(&quot;0&quot;, VehicleCameraBase::ImageType::Scene);
-    //do something with images
+    std::vector&lt;uint8_t&gt; png_image = client.simGetImage(&quot;0&quot;, VehicleCameraBase::ImageType::Scene);
+    // do something with images
 }
 </code></pre>
 
@@ -428,19 +429,18 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 <h3 id="c_1">C++<a class="headerlink" href="#c_1" title="Permanent link">#</a></h3>
 <pre><code class="cpp">int getStereoAndDepthImages() 
 {
-    using namespace std;
     using namespace msr::airlib;
 
     typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType ImageType;
 
-    //for car use
-    //msr::airlib::CarRpcLibClient client;
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use
+    // CarRpcLibClient client;
+    MultirotorRpcLibClient client;
 
-    //get right, left and depth images. First two as png, second as float16.
-    vector&lt;ImageRequest&gt; request = { 
+    // get right, left and depth images. First two as png, second as float16.
+    std::vector&lt;ImageRequest&gt; request = { 
         //png format
         ImageRequest(&quot;0&quot;, ImageType::Scene),
         //uncompressed RGB array bytes
@@ -449,8 +449,8 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
         ImageRequest(&quot;1&quot;, ImageType::DepthPlanner, true) 
     };
 
-    const vector&lt;ImageResponse&gt;&amp; response = client.simGetImages(request);
-    //do something with response which contains image data, pose, timestamp etc
+    const std::vector&lt;ImageResponse&gt;&amp; response = client.simGetImages(request);
+    // do something with response which contains image data, pose, timestamp etc
 }
 </code></pre>
 
@@ -484,8 +484,9 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 <p>To move around the environment using APIs you can use <code>simSetVehiclePose</code> API. This API takes position and orientation and sets that on the invisible vehicle where the front-center camera is located. All rest of the cameras move along keeping the relative position. If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values. The <code>simGetVehiclePose</code> allows to retrieve the current pose. You can also use <code>simGetGroundTruthKinematics</code> to get the quantities kinematics quantities for the movement. Many other non-vehicle specific APIs are also available such as segmentation APIs, collision APIs and camera APIs.</p>
 <h2 id="camera-apis">Camera APIs<a class="headerlink" href="#camera-apis" title="Permanent link">#</a></h2>
 <p>The <code>simGetCameraInfo</code> returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">example usage</a>.</p>
-<p>The <code>simSetCameraOrientation</code> sets the orientation for the specified camera as quaternion in NED frame. The handy <code>airsim.to_quaternion()</code> function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch, you can use:</p>
-<pre><code>client.simSetCameraOrientation(0, airsim.to_quaternion(0.261799, 0, 0)); #radians
+<p>The <code>simSetCameraPose</code> sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy <code>airsim.to_quaternion()</code> function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:</p>
+<pre><code>camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #RPY in radians
+client.simSetCameraPose(0, camera_pose);
 </code></pre>
 
 <h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
@@ -530,7 +531,7 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 <h3 id="disparitynormalized">DisparityNormalized<a class="headerlink" href="#disparitynormalized" title="Permanent link">#</a></h3>
 <p>You normally want to retrieve disparity image as float (i.e. set <code>pixels_as_float = true</code> and specify <code>ImageType = DisparityNormalized</code> in <code>ImageRequest</code>) in which case each pixel is <code>(Xl - Xr)/Xmax</code>, which is thereby normalized to values between 0 to 1.</p>
 <h3 id="segmentation">Segmentation<a class="headerlink" href="#segmentation" title="Permanent link">#</a></h3>
-<p>When you specify <code>ImageType = Segmentation</code> in <code>ImageRequest</code>, you get an image that gives you ground truth segmentation of the scene. At the startup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is than mapped to a specific color in <a href="https://github.com/Microsoft/AirSim/tree/master/Unreal//Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png">the pallet</a>. The RGB values for each object ID can be found in <a href="../seg_rgbs.txt">this file</a>.</p>
+<p>When you specify <code>ImageType = Segmentation</code> in <code>ImageRequest</code>, you get an image that gives you ground truth segmentation of the scene. At the startup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is then mapped to a specific color in <a href="https://github.com/Microsoft/AirSim/tree/master/Unreal//Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png">the pallet</a>. The RGB values for each object ID can be found in <a href="../seg_rgbs.txt">this file</a>.</p>
 <p>You can assign a specific value (limited to the range 0-255) to a specific mesh using APIs. For example, below Python code sets the object ID for the mesh called "Ground" to 20 in Blocks environment and hence changes its color in Segmentation view:</p>
 <pre><code class="python">success = client.simSetSegmentationObjectID(&quot;Ground&quot;, 20);
 </code></pre>
@@ -557,7 +558,7 @@ print(np.unique(img_rgb[:,:,2], return_counts=True)) #blue
 <h4 id="unsetting-object-id">Unsetting object ID<a class="headerlink" href="#unsetting-object-id" title="Permanent link">#</a></h4>
 <p>An object's ID can be set to -1 to make it not show up on the segmentation image.</p>
 <h4 id="how-to-find-mesh-names">How to Find Mesh Names?<a class="headerlink" href="#how-to-find-mesh-names" title="Permanent link">#</a></h4>
-<p>To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for he ground in Blocks environment in right panel in the editor:</p>
+<p>To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for the ground in Blocks environment in right panel in the editor:</p>
 <p><img alt="record screenshot" src="../images/unreal_editor_blocks.png" /></p>
 <p>If you don't know how to open Unreal Environment in Unreal Editor then try following the guide for <a href="../build_windows/">building from source</a>.</p>
 <p>Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs. There are <a href="../settings/#segmentation-settings">few settings</a> available to change object ID generation behavior.</p>

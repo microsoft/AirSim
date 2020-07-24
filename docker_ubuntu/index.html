@@ -211,9 +211,11 @@
                     </li>
                     <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Point-Clouds">Building Point Clouds</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
                     </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script">Surveying Using Drone</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
@@ -298,14 +300,14 @@
 <ul>
 <li>
 <p>Below are the default arguments. <br />
-<code>--base_image</code>: This is image over which we'll install airsim. We've tested on Ubuntu 16.04 + CUDA 10.0.<br />
+<code>--base_image</code>: This is image over which we'll install airsim. We've tested on Ubuntu 18.04 with CUDA 10.0.<br />
    You can specify any <a href="https://hub.docker.com/r/nvidia/cudagl/">NVIDIA cudagl</a> at your own risk.  <br />
 <code>--target_image</code> is the desired name of your docker image.  <br />
    Defaults to <code>airsim_binary</code> with same tag as the base image
    <code>$ cd Airsim/docker;
    $ python build_airsim_image.py \
-      --base_image=nvidia/cudagl:10.0-devel-ubuntu16.04 \
-      --target_image=airsim_binary:10.0-devel-ubuntu16.04</code></p>
+      --base_image=nvidia/cudagl:10.0-devel-ubuntu18.04 \
+      --target_image=airsim_binary:10.0-devel-ubuntu18.04</code></p>
 </li>
 <li>
 <p>Verify you have an image by:
@@ -325,10 +327,10 @@ You can download it by running
 <p>Running an unreal binary inside a docker container 
    The syntax is:
    <code>$ ./run_airsim_image_binary.sh DOCKER_IMAGE_NAME UNREAL_BINARY_SHELL_SCRIPT UNREAL_BINARY_ARGUMENTS -- headless</code>
-   For blocks, you can do a <code>$ ./run_airsim_image_binary.sh airsim_binary:10.0-devel-ubuntu16.04 Blocks/Blocks.sh -windowed -ResX=1080 -ResY=720</code></p>
+   For blocks, you can do a <code>$ ./run_airsim_image_binary.sh airsim_binary:10.0-devel-ubuntu18.04 Blocks/Blocks.sh -windowed -ResX=1080 -ResY=720</code></p>
 </li>
 <li>
-<p><code>DOCKER_IMAGE_NAME</code>: Same as <code>target_image</code> parameter in previous step. By default, enter <code>airsim_binary:10.0-devel-ubuntu16.04</code>   </p>
+<p><code>DOCKER_IMAGE_NAME</code>: Same as <code>target_image</code> parameter in previous step. By default, enter <code>airsim_binary:10.0-devel-ubuntu18.04</code>   </p>
 </li>
 <li><code>UNREAL_BINARY_SHELL_SCRIPT</code>: for Blocks enviroment, it will be <code>Blocks/Blocks.sh</code></li>
 <li>
