@@ -366,9 +366,10 @@ bool ASimHUD::getSettingsText(std::string& settingsText)
         readSettingsTextFromFile(FString(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
 }
 
-// Attempts to parse the settings text from the command line
+// Attempts to parse the settings file path or the settings text from the command line
 // Looks for the flag "--settings". If it exists, settingsText will be set to the value.
-// Example: AirSim.exe -s '{"foo" : "bar"}' -> settingsText will be set to {"foo": "bar"}
+// Example (Path): AirSim.exe --settings "C:\path\to\settings.json"
+// Example (Text): AirSim.exe -s '{"foo" : "bar"}' -> settingsText will be set to {"foo": "bar"}
 // Returns true if the argument is present, false otherwise.
 bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText) 
 {
@@ -381,6 +382,11 @@ bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText)
         FString commandLineArgsFString = FString(commandLineArgs);
         int idx = commandLineArgsFString.Find(TEXT("-settings"));
         FString settingsJsonFString = commandLineArgsFString.RightChop(idx + 10);
+
+        if (readSettingsTextFromFile(settingsJsonFString.TrimQuotes(), settingsText)) {
+            return true;
+        }
+
         if (FParse::QuotedString(*settingsJsonFString, settingsTextFString)) {
             settingsText = std::string(TCHAR_TO_UTF8(*settingsTextFString));
             found = true;

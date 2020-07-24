@@ -1,10 +1,18 @@
 # AirSim Settings
 
 ## Where are Settings Stored?
-Windows: `Documents\AirSim`
-Linux: `~/Documents/AirSim`
+AirSim is searching for the settings definition in 4 different ways in the following order. The first match will be used:
 
-The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings. To avoid problems, always use ASCII format to save json file.
+1. Looking at the (absolute) path specified by the `--settings` command line argument.  
+For example, in Windows: `AirSim.exe --settings 'C:\path\to\settings.json'`   
+In Linux `./Blocks.sh --settings '/home/$USER/path/to/settings.json'`
+1. Looking for a json document passed as a command line argument by the `--settings` argument.  
+For example, in Windows: `AirSim.exe --settings '{"foo" : "bar"}'`   
+In Linux `./Blocks.sh --settings '{"foo" : "bar"}'`
+1. Looking in the folder of the executable for a file called `settings.json`.
+2. Looking in the users home folder for a file called `settings.json`. The AirSim subfolder is located at `Documents\AirSim` on Windows and `~/Documents/AirSim` on Linux systems.
+
+The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.
 
 ## How to Chose Between Car and Multirotor?
 The default is to use multirotor. To use car simple set `"SimMode": "Car"` like this:
