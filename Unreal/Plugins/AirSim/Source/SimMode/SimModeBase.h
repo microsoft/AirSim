@@ -128,6 +128,10 @@ private:
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef msr::airlib::TTimePoint TTimePoint;
     typedef msr::airlib::TTimeDelta TTimeDelta;
+    typedef msr::airlib::SensorBase::SensorType SensorType;
+    typedef msr::airlib::Vector3r Vector3r;
+    typedef msr::airlib::Pose Pose;
+    typedef msr::airlib::VectorMath VectorMath;
 
 private:
     //assets loaded in constructor
@@ -170,4 +174,5 @@ private:
     void setupPhysicsLoopPeriod();
     void showClockStats();
     void drawLidarDebugPoints();
+    void drawDistanceSensorDebugPoints();
 };

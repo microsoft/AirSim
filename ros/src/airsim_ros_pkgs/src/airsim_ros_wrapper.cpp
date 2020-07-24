@@ -851,7 +851,7 @@ sensor_msgs::NavSatFix AirsimROSWrapper::get_gps_msg_from_airsim(const msr::airl
     return gps_msg;
 }
 
-sensor_msgs::Range AirsimROSWrapper::get_range_from_airsim(const msr::airlib::DistanceBase::Output& dist_data) const
+sensor_msgs::Range AirsimROSWrapper::get_range_from_airsim(const msr::airlib::DistanceSensorData& dist_data) const
 {
     sensor_msgs::Range dist_msg;
     dist_msg.header.stamp = airsim_timestamp_to_ros(dist_data.time_stamp);
