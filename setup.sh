@@ -119,13 +119,12 @@ fi # End USB setup, CMake install
 
 
 # Download rpclib
-RPC_VERSION=c4fb37acbe67ec99e47e5187acd2a7450bde0cec
-if [ ! -d "external/rpclib/rpclib-${RPC_VERSION}" ]; then
+if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
     echo "*********************************************************************************************"
     echo "Downloading rpclib..."
     echo "*********************************************************************************************"
 
-    wget https://github.com/qchateau/rpclib/archive/${RPC_VERSION}.zip -O rpclib.zip
+    wget https://github.com/madratman/rpclib/archive/v2.2.1.zip
 
     # remove previous versions
     rm -rf "external/rpclib"
