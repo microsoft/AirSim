@@ -73,32 +73,32 @@ A vehicle specific sensor list can be specified in the vehicle settings part of 
 e.g.,
 
 ```json
-    "Vehicles": {
+"Vehicles": {
 
-        "Drone1": {
-            "VehicleType": "SimpleFlight",
-            "AutoCreate": true,
-            ...
-            "Sensors": {
-                "MyLidar1": {
-                    "SensorType": 6,
-                    "Enabled" : true,
-                    "NumberOfChannels": 16,
-                    "PointsPerSecond": 10000,
-                    "X": 0, "Y": 0, "Z": -1,
-                    "DrawDebugPoints": true
-                },
-                "MyLidar2": {
-                    "SensorType": 6,
-                    "Enabled" : true,
-                    "NumberOfChannels": 4,
-                    "PointsPerSecond": 10000,
-                    "X": 0, "Y": 0, "Z": -1,
-                    "DrawDebugPoints": true
-                }
+    "Drone1": {
+        "VehicleType": "SimpleFlight",
+        "AutoCreate": true,
+        ...
+        "Sensors": {
+            "MyLidar1": {
+                "SensorType": 6,
+                "Enabled" : true,
+                "NumberOfChannels": 16,
+                "PointsPerSecond": 10000,
+                "X": 0, "Y": 0, "Z": -1,
+                "DrawDebugPoints": true
+            },
+            "MyLidar2": {
+                "SensorType": 6,
+                "Enabled" : true,
+                "NumberOfChannels": 4,
+                "PointsPerSecond": 10000,
+                "X": 0, "Y": 0, "Z": -1,
+                "DrawDebugPoints": true
             }
         }
-   }
+    }
+}
 ```
 
 ### Sensor specific settings
@@ -146,62 +146,47 @@ Be default, the points hit by distance sensor are not drawn on the viewport. To 
 ## Sensor APIs
 Jump straight to [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py) or [`hello_drone.cpp`](https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp) for example usage, or see follow below for the full API.
 
-- Barometer
+##### Barometer
+```cpp
+msr::airlib::BarometerBase::Output getBarometerData(const std::string& barometer_name, const std::string& vehicle_name);
+```
 
-    C++
-    ```cpp
-    msr::airlib::BarometerBase::Output getBarometerData(const std::string& barometer_name, const std::string& vehicle_name);
-    ```
+```python
+barometer_data = client.getBarometerData(barometer_name = "", vehicle_name = "")
+```
 
-    Python
-    ```python
-    barometer_data = client.getBarometerData(barometer_name = "", vehicle_name = "")
-    ```
+##### IMU
+```cpp
+msr::airlib::ImuBase::Output getImuData(const std::string& imu_name = "", const std::string& vehicle_name = "");
+```
 
-- IMU
+```python
+imu_data = client.getImuData(imu_name = "", vehicle_name = "")
+```
 
-    C++
-    ```cpp
-    msr::airlib::ImuBase::Output getImuData(const std::string& imu_name = "", const std::string& vehicle_name = "");
-    ```
+##### GPS
+```cpp
+msr::airlib::GpsBase::Output getGpsData(const std::string& gps_name = "", const std::string& vehicle_name = "");
+```
+```python
+gps_data = client.getGpsData(gps_name = "", vehicle_name = "")
+```
 
-    Python
-    ```python
-    imu_data = client.getImuData(imu_name = "", vehicle_name = "")
-    ```
+##### Magnetometer
+```cpp
+msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string& magnetometer_name = "", const std::string& vehicle_name = "");
+```
+```python
+magnetometer_data = client.getMagnetometerData(magnetometer_name = "", vehicle_name = "")
+```
 
-- GPS
+##### Distance sensor
+```cpp
+msr::airlib::DistanceSensorData getDistanceSensorData(const std::string& distance_sensor_name = "", const std::string& vehicle_name = "");
+```
+```python
+distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")
+```
 
-    C++
-    ```cpp
-    msr::airlib::GpsBase::Output getGpsData(const std::string& gps_name = "", const std::string& vehicle_name = "");
-    ```
-    Python
-    ```python
-    gps_data = client.getGpsData(gps_name = "", vehicle_name = "")
-    ```
-
-- Magnetometer
-
-    C++
-    ```cpp
-    msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string& magnetometer_name = "", const std::string& vehicle_name = "");
-    ```
-    Python
-    ```python
-    magnetometer_data = client.getMagnetometerData(magnetometer_name = "", vehicle_name = "")
-    ```
-
-- Distance sensor
-
-    C++
-    ```cpp
-    msr::airlib::DistanceSensorData getDistanceSensorData(const std::string& distance_sensor_name = "", const std::string& vehicle_name = "");
-    ```
-    Python
-    ```python
-    distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")
-    ```
-
-- Lidar
-    See [lidar](lidar.md) for Lidar API.
+##### Lidar
+See the [lidar page](lidar.md) for Lidar API.

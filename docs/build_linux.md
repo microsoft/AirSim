@@ -19,14 +19,14 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 
 - Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.22 at present. We recommend using 4.24.
 
-   ```bash
-   # go to the folder where you clone GitHub projects
-   git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git
-   cd UnrealEngine
-   ./Setup.sh
-   ./GenerateProjectFiles.sh
-   make
-   ```
+```bash
+# go to the folder where you clone GitHub projects
+git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git
+cd UnrealEngine
+./Setup.sh
+./GenerateProjectFiles.sh
+make
+```
 
 #### macOS - Download Unreal Engine
 
@@ -41,18 +41,19 @@ Click on the `Add Versions` which should show the option to download **Unreal 4.
 
 - Clone AirSim and build it:
 
-   ```bash
-   # go to the folder where you clone GitHub projects
-   git clone https://github.com/Microsoft/AirSim.git
-   cd AirSim
-   ```
+```bash
+# go to the folder where you clone GitHub projects
+git clone https://github.com/Microsoft/AirSim.git
+cd AirSim
+```
 
-  By default AirSim recommends using clang 8 to build the binaries as those will be compatible with UE 4.24.  The setup script will install the right version of cmake, llvm, and eigen.
+  By default AirSim uses clang 8 to build for compatibility with UE 4.24. The setup script will install the right version of cmake, llvm, and eigen.
 
-  ```bash
-   ./setup.sh
-   ./build.sh
-   ```
+```bash
+./setup.sh
+./build.sh
+# use ./build.sh --debug to build in debug mode
+```
 
 ### Build Unreal Environment
 
